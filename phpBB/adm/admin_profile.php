@@ -233,7 +233,7 @@ if ($mode == 'create' || $mode == 'edit')
 			// Or we are creating a new dropdown list.
 			$cp->vars['lang_options']	= explode("\n", $options);
 		}
-		else if($mode == 'edit')
+		else if ($mode == 'edit')
 		{
 			$cp->vars['lang_options']	= $lang_options;
 			$error[] = 'You are not allowed to remove or add options within already existing profile fields';
@@ -376,7 +376,7 @@ if ($mode == 'create' || $mode == 'edit')
 			$error[] = $user->lang['EMPTY_FIELD_IDENT'];
 		}
 
-		if(!preg_match('/^[a-z_]$/', $cp->vars['field_ident']))
+		if (!preg_match('/^[a-z_]+$/', $cp->vars['field_ident']))
 		{
 			$error[] = $user->lang['INVALID_CHARS_FIELD_IDENT'];
 		}
@@ -502,7 +502,7 @@ if ($mode == 'create' || $mode == 'edit')
 				// Initialize these array elements if we are creating a new field
 				if (!sizeof($cp->vars['lang_options']))
 				{
-					if($field_type == FIELD_BOOL)
+					if ($field_type == FIELD_BOOL)
 					{
 						// No options have been defined for a boolean field.
 						$cp->vars['lang_options'][0] = '';

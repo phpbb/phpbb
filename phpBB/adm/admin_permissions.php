@@ -295,7 +295,7 @@ switch ($submit)
 			{
 				$option_id_ary[] = $row['auth_option_id'];
 			}
-			while($row = $db->sql_fetchrow($result));
+			while ($row = $db->sql_fetchrow($result));
 
 			foreach ($ug_data as $id)
 			{

@@ -648,12 +648,12 @@ if (!empty($poll_start))
 		for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 		{
 			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
-			$poll_info[$i]['poll_option_text'] = smilie_text($poll_info[$i]['poll_option_text']);
+			$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
 			$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
 		}
 
 		$poll_bbcode->bbcode_second_pass($poll_title, $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-		$poll_title = smilie_text($poll_title);
+		$poll_title = smiley_text($poll_title);
 		$poll_title = str_replace("\n", '<br />', censor_text($poll_title));
 
 		unset($poll_bbcode);
@@ -742,6 +742,7 @@ while ($row = $db->sql_fetchrow($result))
 	$post_list[$i] = $row['post_id'];
 	($store_reverse) ? --$i : ++$i;
 }
+$db->sql_freeresult($result);
 
 if (empty($post_list))
 {
@@ -1118,7 +1119,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
-		$user_cache[$poster_id]['sig'] = smilie_text($user_cache[$poster_id]['sig']);
+		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', censor_text($user_cache[$poster_id]['sig']));
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
@@ -1139,7 +1140,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	// Always process smilies after parsing bbcodes
-	$message = smilie_text($message);
+	$message = smiley_text($message);
 
 	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
 	{

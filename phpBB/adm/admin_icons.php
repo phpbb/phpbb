@@ -19,7 +19,7 @@ if (!empty($setmodules))
 	}
 
 	$filename = basename(__FILE__);
-	$module['POST']['SMILE'] = "$filename$SID&amp;mode=emoticons";
+	$module['POST']['SMILIES'] = "$filename$SID&amp;mode=smilies";
 	$module['POST']['ICONS'] = "$filename$SID&amp;mode=icons";
 
 	return;
@@ -47,10 +47,10 @@ $id = request_var('id', 0);
 // What are we working on?
 switch ($mode)
 {
-	case 'emoticons':
+	case 'smilies':
 		$table = SMILIES_TABLE;
-		$lang = 'SMILE';
-		$fields = 'smile';
+		$lang = 'SMILIES';
+		$fields = 'smiley';
 		$img_path = $config['smilies_path'];
 		break;
 
@@ -141,7 +141,7 @@ switch ($action)
 						$after = FALSE;
 					}
 
-					$after_txt = ($mode == 'emoticons') ? $row['code'] : $row['icons_url'];
+					$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
 					$order_list = '<option value="' . ($row[$fields . '_order']) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
 				}
 			}
@@ -156,7 +156,7 @@ switch ($action)
 			$data = $_images;
 		}
 
-		$colspan = (($mode == 'emoticons') ? '7' : '5');
+		$colspan = (($mode == 'smilies') ? '7' : '5');
 		$colspan += ($id) ? 1 : 0;
 		$colspan += ($action == 'add') ? 2 : 0;
 
@@ -177,7 +177,7 @@ switch ($action)
 	<td class="cat"><?php echo $user->lang[$lang . '_URL'] ?></td>
 	<td class="cat"><?php echo $user->lang[$lang . '_LOCATION'] ?></td>
 <?php
-	if ($mode == 'emoticons')
+	if ($mode == 'smilies')
 	{
 ?>
 	<td class="cat"><?php echo $user->lang[$lang . '_CODE'] ?></td>
@@ -216,12 +216,12 @@ switch ($action)
 	<td valign="top" class="<?php echo $row_class; ?>">[<?php echo $img; ?>]</td>
 <?php
 
-	if ($mode == 'emoticons')
+	if ($mode == 'smilies')
 	{
 
 ?>
 		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="code[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['code'])) ? $img_row['code'] : '' ?>" size="10" /></td>
-		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="emotion[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['emoticon'])) ? $img_row['emoticon'] : '' ?>" size="10" /></td>
+		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="emotion[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['smiley'])) ? $img_row['smiley'] : '' ?>" size="10" /></td>
 <?php
 
 	}
@@ -286,7 +286,7 @@ switch ($action)
 
 		foreach ($images as $image)
 		{
-			if (($mode == 'emoticons' && ($image_emotion[$image] == '' || $image_code[$image] == '')) ||
+			if (($mode == 'smilies' && ($image_emotion[$image] == '' || $image_code[$image] == '')) ||
 				($action == 'create' && !isset($image_add[$image])))
 			{
 			}
@@ -306,10 +306,10 @@ switch ($action)
 					'display_on_posting'=>	(isset($image_display_on_posting[$image])) ? 1 : 0,
 				);
 
-				if ($mode == 'emoticons')
+				if ($mode == 'smilies')
 				{
 					$img_sql = array_merge($img_sql, array(
-						'emoticon'	=>	$image_emotion[$image],
+						'smiley'	=>	$image_emotion[$image],
 						'code'		=>	$image_code[$image])
 					);
 				}
@@ -403,7 +403,7 @@ switch ($action)
 
 				switch ($mode)
 				{
-					case 'emoticons':
+					case 'smilies':
 						break;
 
 					case 'icons':
@@ -419,7 +419,7 @@ switch ($action)
 			{
 				$cur_img = array();
 
-				$field_sql = ($mode == 'emoticons') ? 'code' : 'icons_url';
+				$field_sql = ($mode == 'smilies') ? 'code' : 'icons_url';
 				$result = $db->sql_query("SELECT $field_sql FROM $table");
 
 				while ($row = $db->sql_fetchrow($result))
@@ -441,7 +441,7 @@ switch ($action)
 				if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
 				{
 					if ((sizeof($data[1]) != 3 && $mode == 'icons') || 
-						(sizeof($data[1]) != 5 && $mode == 'emoticons'))
+						(sizeof($data[1]) != 5 && $mode == 'smilies'))
 					{
 						trigger_error($user->lang['WRONG_PAK_TYPE']);
 					}
@@ -456,19 +456,19 @@ switch ($action)
 					}
 
 					if ($current == 'replace' && 
-						(($mode == 'emoticons' && !empty($cur_img[$code])) || 
+						(($mode == 'smilies' && !empty($cur_img[$code])) || 
 						($mode == 'icons' && !empty($cur_img[$img]))))
 					{
-						$replace_sql = ($mode == 'emoticons') ? $code : $img;
+						$replace_sql = ($mode == 'smilies') ? $code : $img;
 						$sql = array(
 							$fields . '_url'	=>	$img,
 							$fields . '_height'	=>	(int) $height,
 							$fields . '_width'	=>	(int) $width,
 						);
-						if ($mode == 'emoticons')
+						if ($mode == 'smilies')
 						{
 							$sql = array_merge($sql, array(
-								'emoticon'	=>	$emotion
+								'smiley'	=>	$emotion
 							));
 						}
 
@@ -486,11 +486,11 @@ switch ($action)
 							$fields . '_order'	=>	(int) $order,
 						);
 
-						if ($mode == 'emoticons')
+						if ($mode == 'smilies')
 						{
 							$sql = array_merge($sql, array(
 								'code'		=>	$code,
-								'emoticon'	=>	$emotion
+								'smiley'	=>	$emotion
 							));
 						}
 						$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
@@ -581,9 +581,9 @@ switch ($action)
 			$pak .= "'" . addslashes($row[$fields . '_url']) . "', ";
 			$pak .= "'" . addslashes($row[$fields . '_height']) . "', ";
 			$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
-			if ($mode == 'emoticons')
+			if ($mode == 'smilies')
 			{
-				$pak .= "'" . addslashes($row['emoticon']) . "', ";
+				$pak .= "'" . addslashes($row['smiley']) . "', ";
 				$pak .= "'" . addslashes($row['code']) . "', ";
 			}
 			$pak .= "\n";
@@ -612,7 +612,7 @@ switch ($action)
 
 		switch ($mode)
 		{
-			case 'emoticons':
+			case 'smilies':
 				break;
 
 			case 'icons':
@@ -704,7 +704,7 @@ switch ($action)
 		<tr>
 			<th><?php echo $user->lang[$lang]; ?></th>
 <?php
-			if ($mode == 'emoticons')
+			if ($mode == 'smilies')
 			{
 ?>
 				<th><?php echo $user->lang['CODE']; ?></th>
@@ -730,23 +730,23 @@ switch ($action)
 				$spacer = TRUE;
 ?>
 		<tr>
-			<td class="row3" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><?php echo $user->lang[$lang . '_NOT_DISPLAYED'] ?></td>
+			<td class="row3" colspan="<?php echo ($mode == 'smilies') ? 5 : 3; ?>" align="center"><?php echo $user->lang[$lang . '_NOT_DISPLAYED'] ?></td>
 		</tr>
 <?php
 			}
 
 			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
-			$alt_text = ($mode == 'emoticon') ? htmlspecialchars($row['code']) : '';
+			$alt_text = ($mode == 'smilies') ? htmlspecialchars($row['code']) : '';
 ?>
 		<tr>
 			<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo $phpbb_root_path . $img_path . '/' . $row[$fields . '_url']; ?>" width="<?php echo $row[$fields . '_width']; ?>" height="<?php echo $row[$fields . '_height']; ?>" alt="<?php echo $alt_text; ?>" title="<?php echo $alt_text; ?>" /></td>
 <?php
 
-			if ($mode == 'emoticons')
+			if ($mode == 'smilies')
 			{
 ?>
 				<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
-				<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['smiley']; ?></td>
 <?php
 			}
 ?>
@@ -760,7 +760,7 @@ switch ($action)
 
 ?>
 		<tr>
-			<td class="cat" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><input type="submit" name="add" value="<?php echo $user->lang['ADD_' . $lang]; ?>" class="btnmain" />&nbsp;<input type="submit" name="edit" value="<?php echo $user->lang['EDIT_' . $lang]; ?>" class="btnmain" /></td>
+			<td class="cat" colspan="<?php echo ($mode == 'smilies') ? 5 : 3; ?>" align="center"><input type="submit" name="add" value="<?php echo $user->lang['ADD_' . $lang]; ?>" class="btnmain" />&nbsp;<input type="submit" name="edit" value="<?php echo $user->lang['EDIT_' . $lang]; ?>" class="btnmain" /></td>
 		</tr>
 		</table>
 	</td>

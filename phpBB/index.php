@@ -56,7 +56,8 @@ if ($config['load_birthdays'])
 	$now = getdate();
 	$sql = 'SELECT user_id, username, user_colour, user_birthday
 		FROM ' . USERS_TABLE . "
-		WHERE user_birthday LIKE '" . sprintf('%2d-%2d-', $now['mday'], $now['mon']) . "%'";
+		WHERE user_birthday LIKE '" . sprintf('%2d-%2d-', $now['mday'], $now['mon']) . "%'
+			AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

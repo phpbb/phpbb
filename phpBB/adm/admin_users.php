@@ -1058,7 +1058,7 @@ function marklist(match, status)
 					'viewcensors'	=> false, 
 					'bbcode'		=> true, 
 					'html'			=> false, 
-					'smile'			=> true,
+					'smilies'		=> true,
 					'attachsig'		=> true, 
 				);
 
@@ -1081,7 +1081,7 @@ function marklist(match, status)
 				unset($data);
 
 				// Set the popuppm option
-				$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smile', 'attachsig');
+				$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smilies', 'attachsig');
 
 				foreach ($option_ary as $option)
 				{
@@ -1133,7 +1133,7 @@ function marklist(match, status)
 			}
 			unset($option_ary);
 
-			$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smile', 'attachsig');
+			$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smilies', 'attachsig');
 
 			foreach ($option_ary as $option)
 			{
@@ -1210,8 +1210,8 @@ function marklist(match, status)
 				<td class="row2"><input type="radio" name="html" value="1"<?php echo $html_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="html" value="0"<?php echo $html_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b><?php echo $user->lang['DEFAULT_SMILE']; ?>:</b></td>
-				<td class="row2"><input type="radio" name="smile" value="1"<?php echo $smile_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="smile" value="0"<?php echo $smile_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
+				<td class="row1"><b><?php echo $user->lang['DEFAULT_SMILIES']; ?>:</b></td>
+				<td class="row2"><input type="radio" name="smilies" value="1"<?php echo $smilies_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="smilies" value="0"<?php echo $smilies_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_ADD_SIG']; ?>:</b></td>

@@ -47,7 +47,7 @@ function arraypop(thearray) {
 	return retval;
 }
 
-function emoticon(text) {
+function smiley(text) {
 	text = ' ' + text + ' ';
 	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) {
 		var caretPos = document.forms[form_name].elements[text_name].caretPos;

@@ -34,9 +34,6 @@ $lang += array(
 	'ADD_POLL'					=> 'Add Poll',
 	'ADD_POLL_EXPLAIN'			=> 'If you do not want to add a poll to your topic leave the fields blank',
 	'ALREADY_DELETED'			=> 'Sorry but this message is already deleted.',
-	'ATTACHMENT_PHP_SIZE_NA'	=> 'The attachment is too big.<br />Could not get determine the maximum size defined by PHP in php.ini.',
-	'ATTACHMENT_PHP_SIZE_OVERRUN'	=> 'The attachment is too big, maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
-	'ATTACHMENT_TOO_BIG'		=> 'The attachment is too big, maximum allowed size is %1d %2s',
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
@@ -87,9 +84,9 @@ $lang += array(
 
 	'EDIT_POST'					=> 'Edit Post',
 	'EDIT_REASON'				=> 'Reason for editing this post',
-	'EMOTICONS'					=> 'Emoticons',
+	'SMILIES'					=> 'Smilies',
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',
-	'ERROR_IMAGESIZE'			=> 'The Image you tried to attach is too big, maximum allowed dimensions are %1d px X %2d px.',
+	'EMPTY_REMOTE_DATA'			=> 'File could not be uploaded, please try uploading the file manually.',
 
 	'FLASH_IS_OFF'				=> '[flash] is <u>OFF</u>',
 	'FLASH_IS_ON'				=> '[flash] is <u>ON</u>',
@@ -119,14 +116,17 @@ $lang += array(
 
 	'MESSAGE_BODY_EXPLAIN'		=> 'Enter your message here, it may contain no more than <b>%d</b> characters.',
 	'MESSAGE_DELETED'			=> 'Your message has been deleted successfully',
-	'MORE_EMOTICONS'			=> 'View more Emoticons',
+	'MORE_SMILIES'				=> 'View more smilies',
 
 	'NOTIFY_REPLY'				=> 'Send me an email when a reply is posted',
+	'NOT_UPLOADED'				=> 'File could not be uploaded.',
 	'NO_DELETE_POLL_OPTIONS'	=> 'You cannot delete existing poll options',
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified',
 
+	'PHP_SIZE_NA'				=> 'The attachment is too big.<br />Could not determine the maximum size defined by PHP in php.ini.',
+	'PHP_SIZE_OVERRUN'			=> 'The attachment is too big, maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'PLACE_INLINE'				=> 'Place Inline',
 	'POLL_DELETE'				=> 'Delete Poll',
 	'POLL_FOR'					=> 'Run poll for',
@@ -169,7 +169,7 @@ $lang += array(
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maxmimum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options',
-	'TOO_MANY_SMILIES'			=> 'Your message contains too many emoticons. A maximum of %d emoticons are allowed.',
+	'TOO_MANY_SMILIES'			=> 'Your message contains too many smilies. A maximum of %d smilies are allowed.',
 	'TOO_MANY_URLS'				=> 'Your message contains too many urls. A maximum of %d urls are allowed.',
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more Options per User than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
@@ -177,6 +177,7 @@ $lang += array(
 
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
 	'UPDATE_COMMENT'			=> 'Update comment',
+	'URL_INVALID'				=> 'The URL you specified is invalid.',
 	'USER_CANNOT_BUMP'			=> 'You cannot bump topics in this forum',
 	'USER_CANNOT_DELETE'		=> 'You cannot delete posts in this forum',
 	'USER_CANNOT_EDIT'			=> 'You cannot edit posts in this forum',
@@ -184,6 +185,9 @@ $lang += array(
 	'USER_CANNOT_REPLY'			=> 'You cannot reply in this forum',
 
 	'VIEW_MESSAGE'				=> 'Click %sHere%s to view your message',
+
+	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s',
+	'WRONG_SIZE'				=> 'The image must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.',
 );
 
 ?>

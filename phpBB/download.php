@@ -130,16 +130,16 @@ else
 // Determine the 'presenting'-method
 if ($download_mode == PHYSICAL_LINK)
 {
-	if (!@is_dir($phpbb_root_path . $config['upload_dir']))
+	if (!@is_dir($phpbb_root_path . $config['upload_path']))
 	{
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 	}
 
-	redirect($phpbb_root_path . $config['upload_dir'] . '/' . $attachment['physical_filename']);
+	redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
 }
 else
 {
-	send_file_to_browser($attachment, $config['upload_dir'], $extensions[$attachment['extension']]['display_cat']);
+	send_file_to_browser($attachment, $config['upload_path'], $extensions[$attachment['extension']]['display_cat']);
 	exit;
 }
 

@@ -358,7 +358,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	// Obtain other topics
 //	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
 	$sql_rownum = '';
-	$sql_where = ($forum_data['forum_type'] == FORUM_POST) ? "= $forum_id" : 'IN (' . implode(', ', $active_forum_ary['forum_id']) . ')';
+	$sql_where = ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? "= $forum_id" : 'IN (' . implode(', ', $active_forum_ary['forum_id']) . ')';
 	$sql = "SELECT t.* $sql_select$sql_rownum
 		FROM $sql_from
 		WHERE t.forum_id $sql_where

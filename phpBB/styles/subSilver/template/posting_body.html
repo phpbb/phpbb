@@ -215,15 +215,15 @@ function checkForm()
 	<tr>
 		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
-				<td class="gensmall" align="center"><b>{L_EMOTICONS}</b></td>
+				<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
 			</tr>
 			<tr>
-				<td align="center"><!-- BEGIN emoticon --><a href="javascript:emoticon('{emoticon.SMILEY_CODE}')"><img src="{emoticon.SMILEY_IMG}" width="{emoticon.SMILEY_WIDTH}" height="{emoticon.SMILEY_HEIGHT}" border="0" alt="{emoticon.SMILEY_DESC}" title="{emoticon.SMILEY_DESC}" onclick="emoticon('{emoticon.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END emoticon --></td>
+				<td align="center"><!-- BEGIN smiley --><a href="javascript:smiley('{smiley.SMILEY_CODE}')"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
 			</tr>
 
-			<!-- IF S_SHOW_EMOTICON_LINK -->
+			<!-- IF S_SHOW_SMILEY_LINK -->
 				<tr>
-					<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_EMOTICONS}</a></td>
+					<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_SMILIES}</a></td>
 				</tr>
 			<!-- ENDIF -->
 

@@ -2521,7 +2521,7 @@ function install_style($action, &$error, $name, $copyright, $active, $default, $
 		// and do the install if necessary
 		if (!${$element . '_id'})
 		{
-			$error = install_element($element, $action, $root_path, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
+			$error = install_element($element, $error, $action, $root_path, ${$element . '_id'}, ${$element . '_name'}, ${$element . '_copyright'});
 		}
 	}
 
@@ -3051,7 +3051,8 @@ function install($type, $action, $id)
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_NAME']; ?>:</b></td>
 		<td class="row2"><?php
-	
+		$style_name = 'proSilver';
+		$style_copyright = '(c) 2004 Tom Beddard';
 	echo ($action == 'add') ? '<input class="post" type="text" name="name" maxlength="30" size="30" value="' . $name . '" />' : '<b>' . ${$type . '_name'} . '</b>';
 
 ?></td>

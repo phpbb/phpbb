@@ -621,7 +621,7 @@ if ($stage == 1)
 
 	// Generate list of available DB's
 	$dbms_options = '';
-	foreach($available_dbms as $dbms_name => $details)
+	foreach ($available_dbms as $dbms_name => $details)
 	{
 		$selected = ($dbms_name == $dbms) ? ' selected="selected"' : '';
 		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';

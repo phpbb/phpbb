@@ -533,13 +533,13 @@ CREATE TABLE [phpbb_sitelist] (
 GO
 
 CREATE TABLE [phpbb_smilies] (
-	[smile_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[smiley_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (10) NULL ,
-	[emoticon] [varchar] (50) NULL ,
-	[smile_url] [varchar] (50) NULL ,
-	[smile_width] [int] NOT NULL ,
-	[smile_height] [int] NOT NULL ,
-	[smile_order] [int] NOT NULL ,
+	[smiley] [varchar] (50) NULL ,
+	[smiley_url] [varchar] (50) NULL ,
+	[smiley_width] [int] NOT NULL ,
+	[smiley_height] [int] NOT NULL ,
+	[smiley_order] [int] NOT NULL ,
 	[display_on_posting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -1073,7 +1073,7 @@ GO
 ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_smilies] PRIMARY KEY  CLUSTERED 
 	(
-		[smile_id]
+		[smiley_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -1463,9 +1463,9 @@ ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
-	CONSTRAINT [DF_smilie_smile_width] DEFAULT (0) FOR [smile_width],
-	CONSTRAINT [DF_smilie_smile_height] DEFAULT (0) FOR [smile_height],
-	CONSTRAINT [DF_smilie_smile_order] DEFAULT (0) FOR [smile_order],
+	CONSTRAINT [DF_smilie_smiley_width] DEFAULT (0) FOR [smiley_width],
+	CONSTRAINT [DF_smilie_smiley_height] DEFAULT (0) FOR [smiley_height],
+	CONSTRAINT [DF_smilie_smiley_order] DEFAULT (0) FOR [smiley_order],
 	CONSTRAINT [DF_smilie_display_on_posting] DEFAULT (1) FOR [display_on_posting]
 GO
 

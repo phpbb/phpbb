@@ -139,7 +139,8 @@ if ($search_keywords || $search_author || $search_id)
 		$sql_where = (strstr($search_author, '*') !== false) ? ' LIKE ' : ' = ';
 		$sql = 'SELECT user_id 
 			FROM ' . USERS_TABLE . "
-			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $search_author)) . "'";
+			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $search_author)) . "'
+				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query($sql);
 
 		if (!$row = $db->sql_fetchrow($result))
@@ -758,7 +759,7 @@ if ($search_keywords || $search_author || $search_id)
 			// via php.net's annotated manual
 			$row['post_text'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $hilit . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $row['post_text'] . '<'), 1, -1));
 
-			$row['post_text'] = smilie_text($row['post_text']);
+			$row['post_text'] = smiley_text($row['post_text']);
 
 			$tpl_ary = array(
 				'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'], 

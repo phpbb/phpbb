@@ -709,7 +709,7 @@ function swatch()
 	<tr>
 		<td class="cat" colspan="5" align="right"><select name="action"><option class="sep" value=""><?php echo $user->lang['SELECT_OPTION']; ?></option><?php
 
-				foreach(array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE') as $option => $lang)
+				foreach (array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE') as $option => $lang)
 				{
 					echo '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 				}

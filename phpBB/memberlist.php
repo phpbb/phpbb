@@ -135,7 +135,8 @@ switch ($mode)
 		// Grab relevant data
 		$sql = "SELECT user_id, username, user_email, user_lang, $sql_field
 			FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id";
+			WHERE user_id = $user_id
+				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -227,9 +228,10 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = 'SELECT username, user_id, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
+		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . "
-			WHERE user_id = $user_id";
+			WHERE user_id = $user_id
+				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query($sql);
 
 		if (!($member = $db->sql_fetchrow($result)))
@@ -358,7 +360,7 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text(smilie_text($member['user_sig']));
+			$member['user_sig'] = censor_text(smiley_text($member['user_sig']));
 		}
 
 		$poster_avatar = '';
@@ -818,7 +820,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT COUNT(u.user_id) AS total_users
 				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type <> " . USER_IGNORE . "
+				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where";
 			$result = $db->sql_query($sql);
 

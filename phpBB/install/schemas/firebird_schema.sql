@@ -528,13 +528,13 @@ CREATE TABLE phpbb_sitelist (
 
 # phpbb_smilies
 CREATE TABLE phpbb_smilies (
-  smile_id INTEGER NOT NULL,
+  smiley_id INTEGER NOT NULL,
   code VARCHAR(10),
-  emoticon VARCHAR(50),
-  smile_url VARCHAR(50),
-  smile_width INTEGER DEFAULT 0  NOT NULL,
-  smile_height INTEGER DEFAULT 0  NOT NULL,
-  smile_order INTEGER DEFAULT 0  NOT NULL,
+  smiley VARCHAR(50),
+  smiley_url VARCHAR(50),
+  smiley_width INTEGER DEFAULT 0  NOT NULL,
+  smiley_height INTEGER DEFAULT 0  NOT NULL,
+  smiley_order INTEGER DEFAULT 0  NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -1275,7 +1275,7 @@ ADD PRIMARY KEY (
 
 ALTER TABLE phpbb_smilies
 ADD PRIMARY KEY (
-  smile_id
+  smiley_id
 );;
 
 ALTER TABLE phpbb_styles
@@ -1530,9 +1530,9 @@ CREATE GENERATOR G_phpbb_sitelistsite_idGen24;;
 
 SET GENERATOR G_phpbb_sitelistsite_idGen24 TO 0;;
 
-CREATE GENERATOR G_phpbb_smiliessmile_idGen25;;
+CREATE GENERATOR G_phpbb_smiliessmiley_idGen25;;
 
-SET GENERATOR G_phpbb_smiliessmile_idGen25 TO 0;;
+SET GENERATOR G_phpbb_smiliessmiley_idGen25 TO 0;;
 
 CREATE GENERATOR G_phpbb_stylesstyle_idGen26;;
 
@@ -1737,11 +1737,11 @@ BEGIN
   NEW.site_id = GEN_ID(G_phpbb_sitelistsite_idGen24, 1);
 END;;
 
-CREATE TRIGGER NextG_phpbb_smiliessmile_idGen2 FOR phpbb_smilies
+CREATE TRIGGER NextG_phpbb_smiliessmiley_idGen2 FOR phpbb_smilies
 BEFORE INSERT
 AS
 BEGIN
-  NEW.smile_id = GEN_ID(G_phpbb_smiliessmile_idGen25, 1);
+  NEW.smiley_id = GEN_ID(G_phpbb_smiliessmiley_idGen25, 1);
 END;;
 
 CREATE TRIGGER tNextG_phpbb_stylesstyle_idGen2 FOR phpbb_styles

@@ -847,25 +847,25 @@ CREATE TABLE phpbb_sitelist (
 SELECT SETVAL('phpbb_sitelist_site_id_seq',(select case when max(site_id)>0 then max(site_id)+1 else 1 end from phpbb_sitelist));
 
 /* Table: phpbb_smilies */
-CREATE SEQUENCE phpbb_smilies_smile_id_seq;
+CREATE SEQUENCE phpbb_smilies_smiley_id_seq;
 
 CREATE TABLE phpbb_smilies (
-   smile_id INT2 DEFAULT nextval('phpbb_smilies_smile_id_seq'),
+   smiley_id INT2 DEFAULT nextval('phpbb_smilies_smiley_id_seq'),
    code char(10),
-   emoticon char(50),
-   smile_url char(50),
-   smile_width INT2  NOT NULL,
-   smile_height INT2  NOT NULL,
-   smile_order INT2  NOT NULL,
+   smiley char(50),
+   smiley_url char(50),
+   smiley_width INT2  NOT NULL,
+   smiley_height INT2  NOT NULL,
+   smiley_order INT2  NOT NULL,
    display_on_posting INT2  DEFAULT '1' NOT NULL,
-   PRIMARY KEY (smile_id),
-  CHECK (smile_width>=0),
-  CHECK (smile_height>=0),
-  CHECK (smile_order>=0),
+   PRIMARY KEY (smiley_id),
+  CHECK (smiley_width>=0),
+  CHECK (smiley_height>=0),
+  CHECK (smiley_order>=0),
   CHECK (display_on_posting>=0)
 );
 
-SELECT SETVAL('phpbb_smilies_smile_id_seq',(select case when max(smile_id)>0 then max(smile_id)+1 else 1 end from phpbb_smilies));
+SELECT SETVAL('phpbb_smilies_smiley_id_seq',(select case when max(smiley_id)>0 then max(smiley_id)+1 else 1 end from phpbb_smilies));
 
 /* Table: phpbb_styles */
 CREATE SEQUENCE phpbb_styles_style_id_seq;

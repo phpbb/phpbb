@@ -622,15 +622,15 @@ CREATE TABLE phpbb_sitelist (
 
 # Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
-   smile_id tinyint(4) UNSIGNED NOT NULL auto_increment,
+   smiley_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    code char(10),
-   emoticon char(50),
-   smile_url char(50),
-   smile_width tinyint(4) UNSIGNED NOT NULL,
-   smile_height tinyint(4) UNSIGNED NOT NULL,
-   smile_order tinyint(4) UNSIGNED NOT NULL,
+   smiley char(50),
+   smiley_url char(50),
+   smiley_width tinyint(4) UNSIGNED NOT NULL,
+   smiley_height tinyint(4) UNSIGNED NOT NULL,
+   smiley_order tinyint(4) UNSIGNED NOT NULL,
    display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-   PRIMARY KEY (smile_id)
+   PRIMARY KEY (smiley_id)
 );
 
 # Table: 'phpbb_styles'

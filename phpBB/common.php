@@ -251,6 +251,9 @@ $db			= new sql_db();
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
+// We do not need this any longer, unset for safety purposes
+unset($dbpasswd);
+
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
 {
