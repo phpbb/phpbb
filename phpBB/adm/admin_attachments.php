@@ -578,8 +578,10 @@ if ($mode == 'attach')
 	</tr>
 <?php
 	
+	$supported_types = get_supported_image_types();
+
 	// Check Thumbnail Support
-	if (!$new['img_imagick'] && !count(get_supported_image_types()))
+	if (!$new['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format'])))
 	{
 		$new['img_create_thumbnail'] = '0';
 	}
