@@ -30,6 +30,7 @@ body {
 	scrollbar-darkshadow-color: #98AAB1;
 	background: white url('templates/subSilver/images/background.png') repeat-x;
 	font-family: Verdana, Helvetica, sans-serif;
+	margin: 15px;
 }
 
 h1 {
@@ -234,7 +235,7 @@ span.hilit {
 /* titles for the topics: could specify viewed link colour too */
 .topictitle	{
 	color: black;
-	font-size:	70%;
+	font-size:	65%;
 	font-weight:bold;
 }
 

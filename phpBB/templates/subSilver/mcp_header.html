@@ -1,50 +1,27 @@
 <!-- INCLUDE overall_header.html -->
-<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<!-- IF FORUM_NAME -->
 	<tr>
-		<td align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
+		<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- IF PAGINATION -->
 	<tr>
-		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
+		<td valign="bottom" class="gensmall">{MODERATORS}</td>
+		<td align="right" valign="bottom" nowrap="nowrap"><b class="gensmall">{PAGINATION}</b></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td class="nav" width="100%" align="left" valign="middle">
-		<!-- IF S_FORUM_NAV -->
-			<span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a class="nav" href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></span>
-		<!-- ENDIF -->
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td valign="top">
-			<table cellspacing="1" cellpadding="4" border="0" bgcolor="#006699" align="left">
-				<tr>
-					<!-- BEGIN tab -->
-					<td class="cat">&nbsp;<span class="nav">
-						<!-- IF tab.S_IS_SELECTED -->
-							<a href="{tab.U_LINK}"><i>{tab.NAME}</i></a>
-						<!-- ELSE -->
-							<a href="{tab.U_LINK}">{tab.NAME}</a>
-						<!-- ENDIF -->
-						</span>&nbsp;</td>
-					<!-- END tab -->
-				</tr>
-			</table>
-		</td>
-		<td align="right" valign="bottom">
-			<table cellspacing="1" cellpadding="4" border="0">
-				<tr>
-					<td><!-- INCLUDE jumpbox.html --></td>
-				</tr>
-			</table>
-		</td>
+		<td class="nav" colspan="2" align="left" valign="middle"><!-- IF S_FORUM_NAV --><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --><!-- ENDIF --></td>
 	</tr>
 </table>
+
+<table class="tablebg" cellspacing="1" cellpadding="4" border="0" align="left">
+	<tr>
+		<!-- BEGIN tab --><!-- IF tab.S_IS_SELECTED --><td class="row1" nowrap="nowrap">&nbsp;<span class="gen"><b>{tab.NAME}</b><!-- ELSE --><td class="row2" nowrap="nowrap">&nbsp;<a class="nav" href="{tab.U_LINK}">{tab.NAME}</a><!-- ENDIF -->&nbsp;</td>
+		<!-- END tab -->
+	</tr>
+</table>
+
+<br clear="all" />

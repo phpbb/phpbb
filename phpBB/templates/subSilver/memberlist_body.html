@@ -32,54 +32,58 @@ function marklist(status)
 </script>
 
 <form method="post" action="{S_MODE_ACTION}" name="search"><table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
-	<tr class="gen">
+	<tr>
 		<th colspan="2" height="25">{L_SEARCH_USERNAME}</th>
 	</tr>
 	<tr>
-		<td class="row2" colspan="2"><span class="gensmall">{L_SEARCH_EXPLAIN}</span></td>
+		<td class="row3" colspan="2"><span class="gensmall">{L_SEARCH_EXPLAIN}</span></td>
 	</tr>
-	<tr class="gen">
-		<td class="row1">{L_USERNAME}: </span></td>
-		<td class="row1"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
+	<tr>
+		<td class="row1"><span class="gen">{L_USERNAME}:</span></span></td>
+		<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row2">{L_EMAIL}: </td>
+	<tr>
+		<td class="row1"><span class="gen">{L_EMAIL}:</span></td>
 		<td class="row2"><input class="post" type="text" name="email" value="{EMAIL}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row1">{L_ICQ_NUMBER}: </td>
-		<td class="row1"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
+	<tr>
+		<td class="row1"><span class="gen">{L_ICQ}:</span></td>
+		<td class="row2"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row2">{L_AIM}: </td>
+	<tr>
+		<td class="row1"><span class="gen">{L_AIM}:</span></td>
 		<td class="row2"><input class="post" type="text" name="aim" value="{AIM}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row1">{L_YAHOO}: </td>
-		<td class="row1"><input class="post" type="text" name="yahoo" value="{YAHOO}" /></td>
+	<tr>
+		<td class="row1"><span class="gen">{L_YIM}:</span></td>
+		<td class="row2"><input class="post" type="text" name="yahoo" value="{YAHOO}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row2">{L_MESSENGER}: </td>
+	<tr>
+		<td class="row1"><span class="gen">{L_MSNM}:</span></td>
 		<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row1">{L_JOINED}: </td>
-		<td class="row1"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
+	<tr>
+		<td class="row1"><span class="gen">{L_JOINED}:</span></td>
+		<td class="row2"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row2">{L_ACTIVE}: </td>
+	<tr>
+		<td class="row1"><span class="gen">{L_ACTIVE}:</span></td>
 		<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
 	</tr>
-	<tr class="gen">
-		<td class="row1"><span>{L_POSTS}: </td>
-		<td class="row1"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="text" name="count" value="{COUNT}" /></td>
+	<tr>
+		<td class="row1"><span class="gen">{L_POSTS}:</span></td>
+		<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="text" name="count" value="{COUNT}" /></td>
 	</tr>
 	<tr>
-		<td class="row2">{L_SORT_BY}:&nbsp;</td>
-		<td class="row2" valign="middle" nowrap="nowrap"><span class="genmed">{S_SORT_OPTIONS} {S_ORDER_SELECT}</span>&nbsp;</td>
+		<td class="row1"><span class="gen">{L_POST_IP}:</span></td>
+		<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center"><input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" /></td>
+		<td class="row1"><span class="gen">{L_SORT_BY}:&nbsp;</td>
+		<td class="row2" valign="middle" nowrap="nowrap">{S_SORT_OPTIONS} {S_ORDER_SELECT}&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" /></td>
 	</tr>
 </table></form>
 <!-- ENDIF -->
