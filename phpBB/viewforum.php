@@ -56,13 +56,9 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id, f.prune_enable, f.prune_next
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
-		WHERE f.forum_id = $forum_id 
-			AND aa.auth_mod = 1
-			AND aa.forum_id = f.forum_id 
-			AND ug.group_id = aa.group_id
-			AND u.user_id = ug.user_id";
+	$sql = "SELECT forum_name, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
+		FROM ".FORUMS_TABLE." 
+		WHERE forum_id = $forum_id";
 }
 else
 {
@@ -73,14 +69,17 @@ if(!$result = $db->sql_query($sql))
 {
 	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
 }
+
+//
 // If the query doesn't return any rows this
 // isn't a valid forum. Inform the user.
+//
 if(!$total_rows = $db->sql_numrows($result))
 {
    error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 
-$forum_row = $db->sql_fetchrowset($result);
+$forum_row = $db->sql_fetchrow($result);
 if(!$forum_row)
 {
 	error_die(SQL_QUERY, "Couldn't obtain rowset.", __LINE__, __FILE__);
@@ -89,8 +88,7 @@ if(!$forum_row)
 //
 // Start auth check
 //
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
-
+$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 {
@@ -121,7 +119,7 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 //
 if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_enable'] )
 {
-	if( $forum_row[0]['prune_next'] < time() && $forum_row[0]['prune_enable'] )
+	if( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
 	{
 		include('includes/prune.php');
 		auto_prune($forum_id);
@@ -131,20 +129,43 @@ if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_e
 // End of forum prune
 //
 
-$forum_name = stripslashes($forum_row[0]['forum_name']);
+$forum_name = stripslashes($forum_row['forum_name']);
 if(empty($HTTP_POST_VARS['postdays']))
 {
-	$topics_count = $forum_row[0]['forum_topics'];
+	$topics_count = $forum_row['forum_topics'];
 }
 
-for($x = 0; $x < $db->sql_numrows($result); $x++)
+
+//
+// Obtain list of moderators of this forum
+//
+$sql = "SELECT u.username, u.user_id 
+	FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
+		WHERE aa.forum_id = $forum_id 
+			AND aa.auth_mod = 1
+			AND ug.group_id = aa.group_id
+			AND u.user_id = ug.user_id";
+if(!$result_mods = $db->sql_query($sql))
 {
-	if($x > 0)
-		$forum_moderators .= ", ";
-
-	$forum_moderators .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $forum_row[$x]['user_id']) . "\">" . $forum_row[$x]['username'] . "</a>";
+	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
 }
+$total_mods = $db->sql_numrows($result_mods);
+if($total_mods)
+{
+	$mods_rowset = $db->sql_fetchrowset($result_mods);
 
+	for($i = 0; $i < $total_mods; $i++)
+	{
+		if($i > 0)
+			$forum_moderators .= ", ";
+
+		$forum_moderators .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id']) . "\">" . $mods_rowset[$i]['username'] . "</a>";
+	}
+}
+else
+{
+	$forum_moderators = $lang['None'];
+}
 
 //
 // Generate a 'Show posts in previous x days'
