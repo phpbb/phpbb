@@ -51,7 +51,6 @@ if(!isset($topic_id) && !isset($post_id))
 // Find topic id if user requested a newer
 // or older topic
 //
-include('language/lang_english.php');
 if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if($HTTP_GET_VARS["view"] == "next")
