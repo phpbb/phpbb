@@ -451,27 +451,10 @@ switch ($mode)
 		<td class="row1"><?php echo $user->lang['Forum_desc'] ?></td>
 		<td class="row2"><textarea class="post" rows="5" cols="45" wrap="virtual" name="forum_desc"><?php echo $forum_desc ?></textarea></td>
 	</tr>
-	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_TYPE'] ?></td>
-		<td class="row2"><input type="radio" name="is_postable" value="1" <?php echo $postable_checked ?>/><?php echo $user->lang['IS_POSTABLE'] ?> &nbsp; <input type="radio" name="is_postable" value="0" <?php echo $nonpostable_checked ?>/><?php echo $user->lang['NOT_POSTABLE'] ?></td>
-	</tr>
-	<tr>
-		<th colspan="2"><?php echo $user->lang['Forum_settings'] ?></th>
-	</tr>
 <?php
 
-	if ($forum_postable || $mode == 'add')
+	if ($forum_postable && $mode == 'edit')
 	{
-
-?>
-	<tr>
-		<td class="row1"><?php echo $user->lang['FORUM_STATUS'] ?></td>
-		<td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
-	</tr>
-<?php
-
-		if ($mode == 'edit')
-		{
 
 ?>
 	<tr>
@@ -490,9 +473,33 @@ switch ($mode)
 	</tr>
 <?php
 
-		}
+	}
+	else
+	{
 
 ?>
+	<tr>
+		<td class="row1"><?php echo $user->lang['FORUM_TYPE'] ?></td>
+		<td class="row2"><input type="radio" name="is_postable" value="1" <?php echo $postable_checked ?>/><?php echo $user->lang['IS_POSTABLE'] ?> &nbsp; <input type="radio" name="is_postable" value="0" <?php echo $nonpostable_checked ?>/><?php echo $user->lang['NOT_POSTABLE'] ?></td>
+	</tr>
+<?php
+
+	}
+
+?>
+	<tr>
+		<th colspan="2"><?php echo $user->lang['Forum_settings'] ?></th>
+	</tr>
+<?php
+
+	if ($forum_postable || $mode == 'add')
+	{
+
+?>
+	<tr>
+		<td class="row1"><?php echo $user->lang['FORUM_STATUS'] ?></td>
+		<td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
+	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_STYLE'] ?></td>
 		<td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['Default_style'] ?></option><?php echo $styles_list ?></select></td>
