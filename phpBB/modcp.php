@@ -188,6 +188,9 @@ if( !$is_auth['auth_mod'] )
 switch($mode)
 {
 	case 'delete':
+		$page_title = $lang['Mod_CP'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 		if($confirm)
 		{
 			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
@@ -479,6 +482,9 @@ switch($mode)
 		break;
 
 	case 'move':
+		$page_title = $lang['Mod_CP'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 		if( $confirm )
 		{
 			$new_forum_id = $HTTP_POST_VARS['new_forum'];
@@ -694,6 +700,9 @@ switch($mode)
 		break;
 
 	case 'split':
+		$page_title = $lang['Mod_CP'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 		if( $HTTP_POST_VARS['split_type_all'] || $HTTP_POST_VARS['split_type_beyond'] )
 		{
 			$posts = $HTTP_POST_VARS['post_id_list'];
@@ -891,6 +900,9 @@ switch($mode)
 		break;
 
 	case 'ip':
+		$page_title = $lang['Mod_CP'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 		$rdns_ip_num = ( isset($HTTP_GET_VARS['rdns']) ) ? $HTTP_GET_VARS['rdns'] : "";
 
 		if( !$post_id )
