@@ -625,7 +625,15 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 					WHERE user_id = $user_id";
 					if( $result = $db->sql_query($sql) )
 					{
-						message_die(GENERL_MESSAGE, $lang['User_deleted']);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
+						
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => $lang['User_deleted'])
+						);
+						$template->pparse("body");
 					}
 					else
 					{
@@ -649,7 +657,15 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			WHERE poster_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
-				message_die(GENERAL_MESSAGE, $lang['Profile_updated']);
+						$template->set_filenames(array(
+							"body" => "admin/admin_message_body.tpl")
+						);
+						
+						$template->assign_vars(array(
+							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
+							"MESSAGE_TEXT" => $lang['Profile_updated'])
+						);
+						$template->pparse("body");
 			}
 			else
 			{
