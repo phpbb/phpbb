@@ -677,7 +677,7 @@ function show_profile($data)
 	$user_id = $data['user_id'];
 
 	$poster_avatar = '';
-	if (isset($data['user_avatar_type']) && $user_id && !empty($data['user_allowavatar']))
+	if (isset($data['user_avatar_type']) && $user_id && !empty($data['user_allowavatar']) && $user->data['user_viewavatars'])
 	{
 		switch($data['user_avatar_type'])
 		{
