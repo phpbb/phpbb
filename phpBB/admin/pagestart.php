@@ -136,31 +136,35 @@ function add_admin_log()
 	return;
 }
 
-function view_admin_log($limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
 	global $db, $lang, $phpEx, $SID;
 
+	$table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
+	$forum_sql = ( $mode == 'mod' && $forum_id ) ? "AND l.forum_id = $forum_id" : '';
 	$limit_sql = ( $limit ) ? ( ( $offset ) ? "LIMIT $offset, $limit" : "LIMIT $limit" ) : '';
+
 	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username 
-		FROM " . LOG_ADMIN_TABLE . " l, " . USERS_TABLE . " u 
+		FROM $table_sql l, " . USERS_TABLE . " u 
 		WHERE u.user_id = l.user_id 
 			AND l.log_time >= $limit_days 
+			$forum_sql 
 		ORDER BY $sort_by 
 		$limit_sql";
 	$result = $db->sql_query($sql);
 
-	$admin_log = array();
+	$log = array();
 	if ( $row = $db->sql_fetchrow($result) )
 	{
 		$i = 0;
 		do
 		{
-			$admin_log[$i]['id'] = $row['log_id'];
-			$admin_log[$i]['username'] = '<a href="admin_users.'.$phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
-			$admin_log[$i]['ip'] = $row['log_ip'];
-			$admin_log[$i]['time'] = $row['log_time'];
+			$log[$i]['id'] = $row['log_id'];
+			$log[$i]['username'] = '<a href="admin_users.'.$phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
+			$log[$i]['ip'] = $row['log_ip'];
+			$log[$i]['time'] = $row['log_time'];
 
-			$admin_log[$i]['action'] = ( !empty($lang[$row['log_operation']]) ) ? $lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+			$log[$i]['action'] = ( !empty($lang[$row['log_operation']]) ) ? $lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
 
 			if ( !empty($row['log_data']) )
 			{
@@ -168,7 +172,7 @@ function view_admin_log($limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'l.
 
 				foreach ( $log_data_ary as $log_data )
 				{
-					$admin_log[$i]['action'] = preg_replace('#%s#', $log_data, $admin_log[$i]['action'], 1);
+					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
 				}
 			}
 
@@ -179,7 +183,18 @@ function view_admin_log($limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'l.
 
 	$db->sql_freeresult($result);
 
-	return $admin_log;
+	$sql = "SELECT COUNT(*) AS total_entries 
+		FROM $table_sql l 
+		WHERE l.log_time >= $limit_days
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$log_count =  $row['total_entries'];
+
+	return;
 }
 //
 // End Functions

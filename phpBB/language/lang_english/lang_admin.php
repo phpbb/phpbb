@@ -63,6 +63,7 @@ $lang['DB_Restore'] = 'DB Restore';
 $lang['Basic_Config'] = 'Basic Configuration';
 $lang['Administrators'] = 'Administrators';
 $lang['Admin_logs'] = 'Admin Log';
+$lang['Mod_logs'] = 'Moderator Log';
 
 $lang['Users'] = 'Users';
 $lang['Groups'] = 'Groups';
@@ -116,7 +117,8 @@ $lang['log_prune_user_del_anon'] = '<b>Users Pruned and Posts Retained</b> => %s
 //
 // View log
 //
-$lang['Admin_log_explain'] = 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.';
+$lang['Admin_logs_explain'] = 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.';
+$lang['Mod_logs_explain'] = 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.';
 $lang['Display_log'] = 'Display entries from previous';
 $lang['All_Entries'] = 'All entries';
 $lang['Sort_ip'] = 'IP address';
@@ -171,17 +173,25 @@ $lang['Database_Utilities'] = 'Database Utilities';
 
 $lang['Restore'] = 'Restore';
 $lang['Backup'] = 'Backup';
-$lang['Restore_explain'] = 'This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.';
+$lang['Restore_explain'] = 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.';
 $lang['Backup_explain'] = 'Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.';
 
 $lang['Backup_options'] = 'Backup options';
+$lang['Backup_type'] = 'Backup type';
 $lang['Start_backup'] = 'Start Backup';
-$lang['Full_backup'] = 'Full backup';
-$lang['Structure_backup'] = 'Structure Only backup';
-$lang['Data_backup'] = 'Data only backup';
+$lang['Full_backup'] = 'Full';
+$lang['Structure_only'] = 'Structure Only';
+$lang['Data_only'] = 'Data only';
+$lang['Include_search_index'] = 'Include Search Index tables';
+$lang['Include_search_index_explain'] = 'Disabling this will exclude the <i>search</i> tables in full or data only backups, reducing the backup size but requiring a Search Index upon restore.';
 $lang['Additional_tables'] = 'Additional tables';
+$lang['Additional_tables_explain'] = 'Include any other tables you wish to backup here each seperated by a comma.';
 $lang['Gzip_compress'] = 'Gzip compress file';
+
+$lang['Upload_file'] = 'Upload backup file';
 $lang['Select_file'] = 'Select a file';
+$lang['Local_backup_file'] = 'Location of backup file';
+$lang['Local_backup_file_explain'] = 'Location on the server where backup file is stored relative to the phpBB root, e.g. ../tmp/backup.sql';
 $lang['Start_Restore'] = 'Start Restore';
 
 $lang['Restore_success'] = 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.';
@@ -203,7 +213,15 @@ $lang['Permissions_explain'] = 'Here you can alter which users and groups can ac
 $lang['Moderators'] = 'Moderators';
 $lang['Moderators_explain'] = 'Here you can assign users and groups as forum moderators. You can give users or groups individual access to certain moderator functions as you set fit. Moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
 
+$lang['Super_Moderators'] = 'Super Moderators';
+$lang['Super_Moderators_explain'] = 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. You can give users or groups individual access to certain moderator functions as you set fit. As with moderators, super moderators have additional power in a given forum and by default can post and reply even when a forum or topic is locked.';
+
 $lang['Administrators_explain'] = 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. However you can limit selected users or groups to only certain sections if you wish by clicking <i>Advanced</i>.';
+
+$lang['ADMINISTRATORS'] = 'ADMINISTRATORS';
+$lang['SUPER_MODERATORS'] = 'SUPER MODERATORS';
+$lang['REGISTERED'] = 'REGISTERED USERS';
+$lang['GUESTS'] = 'GUESTS';
 
 $lang['Manage_users'] = 'Manage Users';
 $lang['Add_users'] = 'Add Users';

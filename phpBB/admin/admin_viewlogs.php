@@ -28,6 +28,7 @@ if ( !empty($setmodules) )
 
 	$filename = basename(__FILE__);
 	$module['General']['Admin_logs'] = $filename . "$SID&amp;mode=admin";
+	$module['General']['Mod_logs'] = $filename . "$SID&amp;mode=mod";
 
 	return;
 }
@@ -48,6 +49,9 @@ if ( !$acl->get_acl_admin('general') )
 	message_die(MESSAGE, $lang['No_admin']);
 }
 
+//
+// Set some variables
+//
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if ( isset($HTTP_POST_VARS['mode']) ||  isset($HTTP_GET_VARS['mode']) )
@@ -59,6 +63,16 @@ else
 	$mode = 'admin';
 }
 
+//
+// Define some vars depending on which logs we're looking at
+//
+$log_table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
+$l_title = ( $mode == 'admin' ) ? $lang['Admin_logs'] : $lang['Mod_logs'];
+$l_title_explain = ( $mode == 'admin' ) ? $lang['Admin_logs_explain'] : $lang['Mod_logs_explain'];
+
+//
+// Delete entries if requested and able
+//
 if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) ) && $acl->get_acl_admin('clearlogs'))
 {
 	$where_sql = '';
@@ -71,15 +85,15 @@ if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) )
 		$where_sql = "WHERE log_id IN ($where_sql)";
 	}
 
-	$sql = "DELETE FROM " . LOG_ADMIN_TABLE . " 
+	$sql = "DELETE FROM $table_sql 
 		$where_sql";
 	$db->sql_query($sql);
 
-	add_admin_log('log_admin_clear');
+	add_admin_log('log_' . $mode . '_clear');
 }
 
 //
-//
+// Sorting ... this could become a function
 //
 if ( isset($HTTP_POST_VARS['sort']) || $start )
 {
@@ -105,9 +119,6 @@ else
 	$sort_dir = 'd';
 }
 
-//
-// Sorting
-//
 $previous_days = array(0 => $lang['All_Entries'], 1 => $lang['1_Day'], 7 => $lang['7_Days'], 14 => $lang['2_Weeks'], 30 => $lang['1_Month'], 90 => $lang['3_Months'], 180 => $lang['6_Months'], 364 => $lang['1_Year']);
 $sort_by_text = array('u' => $lang['Sort_Username'], 't' => $lang['Sort_date'], 'i' => $lang['Sort_ip'], 'o' => $lang['Sort_action']);
 $sort_by = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
@@ -131,29 +142,64 @@ $sort_order_options = ( $sort_dir == 'a' ) ? '<option value="a" selected="select
 $sort_sql = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
 
 //
-// Grab data
+// Define forum list if we're looking @ mod logs
 //
-$sql = "SELECT COUNT(*) AS total_entries 
-	FROM " . LOG_ADMIN_TABLE . " 
-	WHERE log_time >= $where_sql";
-$result = $db->sql_query($sql);
+$forum_options = '';
+if ( $mode == 'mod' )
+{
+	$sql = "SELECT forum_id, forum_name
+		FROM " . FORUMS_TABLE . " 
+		ORDER BY cat_id, forum_order";
+	$result = $db->sql_query($sql);
 
-$row = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+	if ( $row = $db->sql_fetchrow($result) )
+	{
+		$forum_id = ( isset($HTTP_POST_VARS['f']) ) ? intval($HTTP_POST_VARS['f']) : $row['forum_id'];
 
-$total_entries =  $row['total_entries'];
-$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir
-", $total_entries, $board_config['topics_per_page'], $start). '&nbsp;';
+		do
+		{
+			$selected = ( $row['forum_id'] == $forum_id ) ? ' selected="selected"' : '';
+			$forum_options .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $row['forum_name'] . '</option>';
+		}
+		while ( $row = $db->sql_fetchrow($result) );
+	}
+	else
+	{
+		$forum_id = 0;
+		$forum_options = '<option>' . $lang['No_forums'] . '</option>';
+	}
+}
 
-page_header($lang['Admin_logs']);
+//
+// Output page
+//
+page_header($l_title);
 
 ?>
 
-<h1><?php echo $lang['Admin_logs']; ?></h1>
+<h1><?php echo $l_title; ?></h1>
 
-<p><?php echo $lang['Admin_log_explain']; ?></p>
+<p><?php echo $l_title_explain; ?></p>
 
-<form method="post" name="log" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>"><table width="100%" cellpadding="4" cellspacing="1" border="0" bgcolor="#98AAB1">
+<form method="post" name="log" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
+<?php
+
+if ( $mode == 'mod' )
+{
+
+?>
+<table width="100%" cellpadding="1" cellspacing="1" border="0">
+	<tr>
+		<td align="right"><?php echo $lang['Select_forum']; ?>: <select name="f"><?php echo $forum_options; ?></select> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
+	</tr>
+</table>
+<?php
+
+}
+
+?>
+
+<table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
 		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" name="sort" /></span></td>
 	</tr>
@@ -166,9 +212,14 @@ page_header($lang['Admin_logs']);
 	</tr>
 <?php
 
-$log_data = view_admin_log($board_config['topics_per_page'], $start, $where_sql, $sort_sql);
+//
+// Grab log data
+//
+$log_data = array();
+$log_count = 0;
+view_log($mode, $log_data, $log_count, $board_config['topics_per_page'], $start, $forum_id, $where_sql, $sort_sql);
 
-if ( sizeof($log_data) )
+if ( $log_count )
 {
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
@@ -201,9 +252,10 @@ else
 {
 ?>
 	<tr>
-		<td class="row1" colspan="5" nowrap="nowrap"><?php echo $lang['No_entries']; ?></td>
+		<td class="row1" colspan="5" align="center" nowrap="nowrap"><?php echo $lang['No_entries']; ?></td>
 	</tr>
 <?php
+
 }
 
 ?>
@@ -211,7 +263,7 @@ else
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_entries / $board_config['topics_per_page'] )); ?></span></td>
+		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $board_config['topics_per_page'], $start); ?></span></td>
 		<td align="right" valign="top" nowrap="nowrap"><?php 
 
 	if ( $acl->get_acl_admin('clearlogs') )
@@ -221,7 +273,9 @@ else
 ?><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b>&nbsp;<br /><br /><?php
 
 	}
-		
+
+	$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir", $log_count, $board_config['topics_per_page'], $start);
+
 		?><span class="nav"><?php echo $pagination; ?></span></td>
 	</tr>
 </table></form>
