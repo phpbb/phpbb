@@ -228,7 +228,7 @@ if( isset($HTTP_GET_VARS['import_pack']) || isset($HTTP_POST_VARS['import_pack']
 		$template->pparse("body");
 	}
 }
-else if( isset($HTTP_GET_VARS['export_pack']) )
+else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_pack']) )
 {
 	//
 	// Export our smiley config as a smiley pak...
@@ -265,7 +265,7 @@ else if( isset($HTTP_GET_VARS['export_pack']) )
 	message_die(GENERAL_MESSAGE, $message);
 
 }
-else if( isset($HTTP_GET_VARS['add']) )
+else if( isset($HTTP_POST_VARS['add']) )
 {
 	//
 	// Admin has selected to add a smiley.
