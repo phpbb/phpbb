@@ -1,4 +1,5 @@
 Subject: Du er nå lagt til i denne grupppen
+Charset: iso-8859-1
 
 Gratulerer,
 

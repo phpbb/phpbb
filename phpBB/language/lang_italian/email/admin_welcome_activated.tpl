@@ -1,4 +1,5 @@
 Subject: Account Attivato
+Charset: iso-8859-1
 
 Ciao {USERNAME},
 

@@ -28,8 +28,9 @@
 // For questions and comments use: onurturgay@isnet.net.tr
 //
 
+// Comment out the line below if you use windows based server
+// setlocale(LC_ALL, "tr_TR.ISO-8859-9");
 
-setlocale(LC_ALL, "tr_TR.ISO-8859-9");
 $lang['ENCODING'] = "iso-8859-9";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -48,7 +49,7 @@ $lang['Replies'] = "Cevaplar";
 $lang['Views'] = "Görüntüleme";
 $lang['Post'] = "Mesaj";
 $lang['Posts'] = "Mesajlar";
-$lang['Posted'] = "Gönderilen";
+$lang['Posted'] = "Tarih";
 $lang['Username'] = "Kullanýcý Adý";
 $lang['Password'] = "Þifre";
 $lang['Email'] = "E-mail";
@@ -187,7 +188,7 @@ $lang['Logout'] = "Logout";
 
 $lang['Forgotten_password'] = "Þifremi Unuttum";
 
-$lang['Log_me_in'] = "Otomatik login";
+$lang['Log_me_in'] = "Beni hatýrla";
 
 $lang['Error_login'] = "Yanlýþ ya da aktive edilmemiþ bir kullanýcý adý veya yanlýþ bir þifre girdiniz";
 
@@ -195,7 +196,7 @@ $lang['Error_login'] = "Yanlýþ ya da aktive edilmemiþ bir kullanýcý adý veya yan
 //
 // Index page
 //
-$lang['Index'] = "Ýndeks";
+$lang['Index'] = "Ana Sayfa";
 $lang['No_Posts'] = "Mesaj Yok";
 $lang['No_forums'] = "Bu sitenin henüz hiç forumu yok";
 
@@ -230,8 +231,8 @@ $lang['Rules_post_can'] = "Bu forumda yeni konular <b>açabilirsiniz</b>";
 $lang['Rules_post_cannot'] = "Bu forumda yeni konular <b>açamazsýnýz</b>";
 $lang['Rules_reply_can'] = "Bu forumdaki mesajlara cevap <b>verebilirsiniz</b>";
 $lang['Rules_reply_cannot'] = "Bu forumdaki mesajlara cevap <b>veremezsiniz</b>";
-$lang['Rules_edit_can'] = "Bu forumdaki mesajlarýnýzý edit <b>edebilirsiniz</b>";
-$lang['Rules_edit_cannot'] = "Bu forumdaki mesajlarýnýzý edit <b>edemezsiniz</b>";
+$lang['Rules_edit_can'] = "Bu forumdaki mesajlarýnýzý <b>deðiþtirebilirsiniz</b>";
+$lang['Rules_edit_cannot'] = "Bu forumdaki mesajlarýnýzý <b>deðiþtiremezsiniz</b>";
 $lang['Rules_delete_can'] = "Bu forumdaki mesajlarýnýzý <b>silebilirsiniz</b>";
 $lang['Rules_delete_cannot'] = "Bu forumdaki mesajlarýnýzý <b>silemezsiniz</b>";
 $lang['Rules_vote_can'] = "Bu forumdaki anketlerde oy <b>kullanabilirsiniz</b>";
@@ -269,7 +270,7 @@ $lang['Read_profile'] = "Kullanýcý profilini gör";
 $lang['Send_email'] = "Kullanýcýya e-mail gönder";
 $lang['Visit_website'] = "Kullanýcýnýn web sitesini ziyaret et";
 $lang['ICQ_status'] = "ICQ Status";
-$lang['Edit_delete_post'] = "Mesajý editle/sil";
+$lang['Edit_delete_post'] = "Mesajý deðiþtir/sil";
 $lang['View_IP'] = "Bu mesajý gönderenin IP adresine bak";
 $lang['Delete_post'] = "Bu mesajý sil";
 
@@ -277,8 +278,8 @@ $lang['wrote'] = "demiþ ki"; // proceeds the username and is followed by the quo
 $lang['Quote'] = "Alýntý"; // comes before bbcode quote output.
 $lang['Code'] = "Kod"; // comes before bbcode code output.
 
-$lang['Edited_time_total'] = "En son %s tarafýndan %s tarihinde editlendi, toplamda %d kere editlendi"; // Last edited by me on 12 Oct 2001, edited 1 time in total
-$lang['Edited_times_total'] = "En son %s tarafýndan %s tarihinde editlendi, toplamda %d kere editlendi"; // Last edited by me on 12 Oct 2001, edited 2 times in total
+$lang['Edited_time_total'] = "En son %s tarafýndan %s tarihinde deðiþtirildi, toplamda %d kere deðiþtirildi"; // Last edited by me on 12 Oct 2001, edited 1 time in total
+$lang['Edited_times_total'] = "En son %s tarafýndan %s tarihinde deðiþtirildi, toplamda %d kere deðiþtirildi"; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
 $lang['Lock_topic'] = "Bu baþlýðý kilitle";
 $lang['Unlock_topic'] = "Bu baþlýðýn kilidini aç";
@@ -304,7 +305,7 @@ $lang['No_post_mode'] = "Hiçbir post metodu seçilmedi"; // If posting.php is cal
 $lang['Post_a_new_topic'] = "Yeni bir baþlýk gönder";
 $lang['Post_a_reply'] = "Cevap Gönder";
 $lang['Post_topic_as'] = "Mesaj Türü";
-$lang['Edit_Post'] = "Mesajý editle";
+$lang['Edit_Post'] = "Mesajý Deðiþtir";
 $lang['Options'] = "Seçenekler";
 
 $lang['Post_Announcement'] = "Duyuru";
@@ -346,7 +347,7 @@ $lang['Delete_poll'] = "Anketi sil";
 
 $lang['Disable_HTML_post'] = "Bu mesajda HTML kullanma";
 $lang['Disable_BBCode_post'] = "Bu mesajda BBCode kullanma";
-$lang['Disable_Smilies_post'] = "Bu mesajda Smilileri kullanme";
+$lang['Disable_Smilies_post'] = "Bu mesajda Smilileri kullanma";
 
 $lang['HTML_is_ON'] = "HTML <u>Açýk</u>";
 $lang['HTML_is_OFF'] = "HTML <u>Kapalý</u>";
@@ -506,7 +507,7 @@ $lang['Avatar_gallery'] = "Avatar galerisi";
 
 $lang['Website'] = "Web sitesi";
 $lang['Location'] = "Nerden";
-$lang['Contact'] = "ile haberleþme";
+$lang['Contact'] = "Haberleþme:";
 $lang['Email_address'] = "E-mail adresi";
 $lang['Email'] = "E-mail";
 $lang['Send_private_message'] = "Özel mesaj gönder";
@@ -557,6 +558,7 @@ $lang['password_confirm_if_changed'] = "Sadece þifrenizi deðiþtirdiyseniz yeni þ
 
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Mesajlarýnýzýn yanýndaki küçük resim. Bir seferde sadece bir resim gösterilebilir, geniþliði %d pixelden, yüksekliði %d pixelden ve boyutu %dkB'tan büyük olamaz.";
+$lang['Upload_Avatar_file'] = "Bilgisayarýnýzdan Avatar gönderin";
 $lang['Upload_Avatar_URL'] = "Bir URL'den Avatar gönderin";
 $lang['Upload_Avatar_URL_explain'] = "Avatar'ýn olduðu sitenin URL'sini girin, buraya kopyalanacaktýr";
 $lang['Pick_local_Avatar'] = "Avatar'ý galeriden seçin";
@@ -566,7 +568,7 @@ $lang['Avatar_URL'] = "Avatar URL'si";
 $lang['Select_from_gallery'] = "Galeriden Avatar seçin";
 $lang['View_avatar_gallery'] = "Galeriyi göster";
 
-$lang['Select_avatar'] = "Avatarý Seç ";
+$lang['Select_avatar'] = "Avatarý Seç";
 $lang['Return_profile'] = "Ýptal";
 $lang['Select_category'] = "Kategori seç";
 
@@ -670,11 +672,11 @@ $lang['Pending_members'] = "Onay bekleyen üyeler";
 
 $lang['Group_type'] = "Grup türü";
 $lang['Group_open'] = "Açýk grup";
-$lang['Group_closed'] = "Kapalý group";
-$lang['Group_hidden'] = "Gizli group";
+$lang['Group_closed'] = "Kapalý grup";
+$lang['Group_hidden'] = "Gizli grup";
 
 $lang['Current_memberships'] = "Þu andaki üyelikler";
-$lang['Non_member_groups'] = "Üyelik istemeyen gruplar";
+$lang['Non_member_groups'] = "Üye olunmamýþ gruplar";
 $lang['Memberships_pending'] = "Onay bekleyen üyelikler";
 
 $lang['No_groups_exist'] = "Hiç kullanýcý grubu yok";
@@ -764,7 +766,7 @@ $lang['Close_window'] = "Pencereyi kapat";
 // Auth related entries
 //
 // Note the %s will be replaced with one of the following 'user' arrays
-$lang['Sorry_auth_announce'] = "Üzgünüz, sadece %s bu foruma duyu gönderebilir";
+$lang['Sorry_auth_announce'] = "Üzgünüz, sadece %s bu foruma duyuru gönderebilir";
 $lang['Sorry_auth_sticky'] = "Üzgünüz, sadece %s bu foruma sabit mesaj gönderebilir";
 $lang['Sorry_auth_read'] = "Üzgünüz, sadece %s bu forumdaki mesajlarý okuyabilir";
 $lang['Sorry_auth_post'] = "Üzgünüz, sadece %s bu foruma baþlýk gönderebilir";
@@ -780,7 +782,7 @@ $lang['Auth_Users_granted_access'] = "<b>özel haklara sahip kullanýcýlar</b>";
 $lang['Auth_Moderators'] = "<b>moderatorler</b>";
 $lang['Auth_Administrators'] = "<b>administratorler</b>";
 
-$lang['Not_Moderator'] = "Bu forumun moderatoru deðilsiniz";
+$lang['Not_Moderator'] = "Bu forumun moderatörü deðilsiniz";
 $lang['Not_Authorised'] = "Ýzniniz yok";
 
 $lang['You_been_banned'] = "Bu forumdan atýldýnýz<br />Ayrýntýlý bilgi için webmaster ya da forum admini ile baðlantýya geçin";

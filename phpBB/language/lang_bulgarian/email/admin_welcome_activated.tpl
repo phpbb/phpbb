@@ -1,4 +1,5 @@
 Subject: Потребителя е активиран
+Charset: windows-1251
 
 Здравейте {USERNAME}!
 

@@ -1,4 +1,5 @@
 Subject: ï‘êMÇÃí ím - {TOPIC_TITLE}
+Charset: shift_jis
 
 {USERNAME}Ç≥ÇÒÇ÷
 

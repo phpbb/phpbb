@@ -1,4 +1,5 @@
 Subject: Активизация нового пароля
+Charset: windows-1251
 
 Здравствуйте, {USERNAME}!
 

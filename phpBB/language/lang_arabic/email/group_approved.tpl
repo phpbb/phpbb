@@ -1,4 +1,5 @@
 Subject:  „  «·„Ê«›ﬁ… ⁄·Ï ÿ·»ﬂ
+Charset: windows-1256
 
 „»—Êﬂ,
 

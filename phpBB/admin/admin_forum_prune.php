@@ -32,9 +32,9 @@ if ( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = '../';
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/prune.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx); 
 
@@ -178,6 +178,7 @@ else
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_name,
 
+			'L_FORUM' => $lang['Forum'], 
 			'L_FORUM_PRUNE' => $lang['Forum_Prune'], 
 			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'], 
 			'L_DO_PRUNE' => $lang['Do_Prune'],
@@ -193,6 +194,6 @@ else
 //
 $template->pparse('body');
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

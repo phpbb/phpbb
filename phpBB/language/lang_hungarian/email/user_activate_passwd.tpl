@@ -1,4 +1,5 @@
 Subject: Új jelszó aktiválása
+Charset: iso-8859-2
 
 Helló {USERNAME},
 

@@ -28,20 +28,6 @@
 *     email                : boby@azholding.com
 ****************************************************************************/
 
-//
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
-//
-
-
-setlocale(LC_ALL, "ru_RU.ISO-8859-5");
 $lang['ENCODING'] = "windows-1251";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";

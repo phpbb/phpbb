@@ -1,4 +1,5 @@
 Subject: Получихте ново лично съобщения
+Charset: windows-1251
 
 Здравейте {USERNAME}!
 

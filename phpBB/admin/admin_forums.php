@@ -32,9 +32,9 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 $forum_auth_ary = array(
@@ -826,7 +826,7 @@ if( !empty($mode) )
 
 	if ($show_index != TRUE)
 	{
-		include('page_footer_admin.'.$phpEx);
+		include('./page_footer_admin.'.$phpEx);
 		exit;
 	}
 }
@@ -931,6 +931,6 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

@@ -1,4 +1,5 @@
 Subject: Nouveau compte utilisateur
+Charset: ISO-8859-1
 
 Hello,
 

@@ -1,3 +1,5 @@
+Charset: ISO-8859-1
+
 {WELCOME_MSG}
 
 Veuillez conserver cet email dans vos archives. Les informations concernant votre compte:

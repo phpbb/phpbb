@@ -1,4 +1,4 @@
-Subject: 新的會員帳號
+Charset: big5
 
 您好,
 

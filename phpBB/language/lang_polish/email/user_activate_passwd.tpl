@@ -1,4 +1,5 @@
 Subject: Aktywacja nowego has³a
+Charset: iso-8859-2
 
 Witaj {USERNAME}
 

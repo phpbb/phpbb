@@ -1,4 +1,5 @@
 Subject: 이 유저그룹에 추가되었습니다.
+Charset: euc-kr
 
 Congratulations,
 

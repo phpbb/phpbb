@@ -7,21 +7,21 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_admin.php,v 1.33 2002/02/15 15:36:35 psotfx Exp $
+ *     $Id: lang_admin.php,v 1.35 2002/03/10 03:41:33 dougk_ff7 Exp $
  *
  ****************************************************************************/
 
 /***************************************************************************
- *                            Traditional Chinese[繁體中文語系] Translation
+ *                            Traditional Chinese Translation [繁體中文語系] 
  *                              -------------------
  *     begin                : Thu Nov 26 2001
  *     by                   : 小竹子, OOHOO, 皇家騎士, 思
  *     email                : kyo.yoshika@msa.hinet.net
- *                            mchiang@bigpond.net.au
+ *                            webdev@hotmail.com
  *                            sjwu1@ms12.hinet.net
  *                            f8806077@mail.dyu.edu.tw
  *
- *     last modify          : Wed Feb 27 2002
+ *     last modify          : Fri Apr 5 2002
  *
  ***************************************************************************/
 
@@ -39,7 +39,7 @@
 //
 
 // Translator credit
-$lang['TRANSLATION_INFO'] = '繁體中文化由&nbsp;<a href="http://heaven.wusdsl.net/phpbb/viewtopic.php?p=2811#2811"><font color="#FF6633">竹貓星球PBB2中文強化開發小組</font></a>&nbsp;製作';
+$lang['TRANSLATION_INFO'] = '繁體中文強化版由&nbsp;<a href="http://heaven.wusdsl.net/phpbb/viewtopic.php?p=2811#2811"><font color="#FF6633">竹貓星球PBB2中文強化開發小組</font></a>&nbsp;製作';
 
 //
 // Modules, this replaces the keys used
@@ -93,11 +93,11 @@ $lang['Users_per_day'] = "平均每天註冊的會員總數";
 $lang['Board_started'] = "討論區啟用日期";
 $lang['Avatar_dir_size'] = "頭像資料夾檔案大小";
 $lang['Database_size'] = "資料庫檔案大小";
-$lang['Gzip_compression'] ="Gzip compression";
+$lang['Gzip_compression'] ="Gzip 檔案壓縮功能";
 $lang['Not_available'] = "無";
 
 $lang['ON'] = "開啟"; // This is for GZip compression
-$lang['OFF'] = "關閉";
+$lang['OFF'] = "關閉"; 
 
 
 //
@@ -136,12 +136,12 @@ $lang['Restore_Error_no_file'] = "沒有上傳的檔案";
 $lang['Select_a_User'] = "選擇一個使用者";
 $lang['Select_a_Group'] = "選擇一個群組";
 $lang['Select_a_Forum'] = "選擇一個版面";
-$lang['Auth_Control_User'] = "會員權限設定";
-$lang['Auth_Control_Group'] = "群組權限設定";
-$lang['Auth_Control_Forum'] = "版面權限設定";
-$lang['Look_up_User'] = "查詢會員";
-$lang['Look_up_Group'] = "查詢群組";
-$lang['Look_up_Forum'] = "查詢版面";
+$lang['Auth_Control_User'] = "會員權限設定"; 
+$lang['Auth_Control_Group'] = "群組權限設定"; 
+$lang['Auth_Control_Forum'] = "版面權限設定"; 
+$lang['Look_up_User'] = "查詢會員"; 
+$lang['Look_up_Group'] = "查詢群組"; 
+$lang['Look_up_Forum'] = "查詢版面"; 
 
 $lang['Group_auth_explain'] = "在這個選項中, 您可以更改群組的權限設定及指定管理員資格. 請注意, 即使修改群組權限設定, 會員可能仍然擁有進入限制版面的會員權限. 如果發生上述情形, 系統會顯示權限衝突的警告.";
 $lang['User_auth_explain'] = "在這個選項中, 您可以更改會員的權限設定及指定管理員資格. 請注意, 即使修改會員權限設定, 會員可能仍然擁有進入限制版面的群組權限. 如果發生上述情形, 系統會顯示權限衝突的警告.";
@@ -184,14 +184,14 @@ $lang['Reply'] = "回覆";
 $lang['Edit'] = "編輯";
 $lang['Delete'] = "刪除";
 $lang['Sticky'] = "置頂";
-$lang['Announce'] = "公告";
+$lang['Announce'] = "公告"; 
 $lang['Vote'] = "投票";
 $lang['Pollcreate'] = "票選活動";
 
 $lang['Permissions'] = "權限設定";
 $lang['Simple_Permission'] = "基本權限";
 
-$lang['User_Level'] = "會員等級";
+$lang['User_Level'] = "會員等級"; 
 $lang['Auth_User'] = "會員";
 $lang['Auth_Admin'] = "系統管理員";
 $lang['Group_memberships'] = "會員群組清單";
@@ -272,7 +272,7 @@ $lang['Acc_Admin'] = "由系統管理員開啟";
 $lang['Abilities_settings'] = "會員及版面基本設定";
 $lang['Max_poll_options'] = "票選項目的最高限制數目";
 $lang['Flood_Interval'] = "灌水機制";
-$lang['Flood_Interval_explain'] = "文章發表的間隔時間 (秒)";
+$lang['Flood_Interval_explain'] = "文章發表的間隔時間 (秒)"; 
 $lang['Board_email_form'] = "會員聯絡簿";
 $lang['Board_email_form_explain'] = "會員可以發送電子郵件給討論區的其他會員";
 $lang['Topics_per_page'] = "每頁顯示主題數";
@@ -334,7 +334,7 @@ $lang['Inbox_limits'] = "收件夾最大容量";
 $lang['Sentbox_limits'] = "寄件夾最大容量";
 $lang['Savebox_limits'] = "儲存夾最大容量";
 
-$lang['Cookie_settings'] = "Cookie 設定";
+$lang['Cookie_settings'] = "Cookie 設定"; 
 $lang['Cookie_settings_explain'] = "這些設定控制著 Cookie 的定義, 就一般的情況, 使用系統預設值就可以了. 如果您要更改這些設定, 請小心處理, 不當的設定將導致會員需重複登入";
 $lang['Cookie_domain'] = "Cookie 指定網域 [ 可讀取 Cookie 資料的網域 ]";
 $lang['Cookie_name'] = "Cookie 名稱";
@@ -374,8 +374,8 @@ $lang['Forum_desc'] = "版面描述";
 $lang['Forum_status'] = "版面狀態";
 $lang['Forum_pruning'] = "定期刪文";
 
-$lang['prune_freq'] = 'Check for topic age every';
-$lang['prune_days'] = "刪除在幾天內沒有文章回覆的主題";
+$lang['prune_freq'] = '定期 (每隔幾天) 檢查主題狀態';
+$lang['prune_days'] = "刪除 (在幾天內) 沒有文章回覆的主題";
 $lang['Set_prune_data'] = "您已經開啟版面定期刪文的功能, 但並未完成相關設定. 請回到上一步設定相關的項目";
 
 $lang['Move_and_Delete'] = "移動/刪除";
@@ -523,9 +523,9 @@ $lang['Click_return_wordadmin'] = "點選 %s這裡%s 返回文字過濾";
 // Mass Email
 //
 $lang['Mass_email_explain'] = "在這個選項中, 您可以發送電子郵件訊息給所有的會員或是特定的群組. 這封電子郵件將被寄送至系統管理員的電子郵件信箱, 並以密件副本的方式寄送給所有收件人. 如果收件人數過多, 系統需要較長的時間來執行這個動作, 請在訊息送出之後耐心等候, <b>切勿</b>在程序完成之前停止網頁動作.";
-$lang['Compose'] = "通知訊息";
+$lang['Compose'] = "通知訊息"; 
 
-$lang['Recipients'] = "收件人";
+$lang['Recipients'] = "收件人"; 
 $lang['All_users'] = "所有會員";
 
 $lang['Email_successfull'] = "通知訊息已經寄出";
@@ -553,6 +553,7 @@ $lang['No_assigned_rank'] = "沒有指定的等級";
 $lang['Rank_updated'] = "等級名稱已經完成更新";
 $lang['Rank_added'] = "新的等級名稱已經成功加入";
 $lang['Rank_removed'] = "等級名稱已被順利移除";
+$lang['No_update_ranks'] = "等級名稱已經順利移除了, 但是原先使用這項等級的會員資料並未更新. 您必須重新設定這些會員的等級.";
 
 $lang['Click_return_rankadmin'] = "點選 %s這裡%s 返回等級管理";
 

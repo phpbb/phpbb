@@ -1,4 +1,5 @@
 Subject: Emnet er besvaret - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Hej {USERNAME},
 

@@ -34,11 +34,10 @@
 // sintaxis varia ... escoja como mejor la parezca!
 //
 
-//setlocale(LC_ALL, "es");
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // Esto se debería cambiar al formato predeterminado para su idioma, formato como php date()
 
 //
@@ -60,7 +59,7 @@ $lang['Email'] = "Email";
 $lang['Poster'] = "Autor";
 $lang['Author'] = "Autor";
 $lang['Time'] = "Horas";
-$lang['Hours'] = "Horas";
+$lang['Horas'] = "Horas";
 $lang['Message'] = "Mensaje";
 
 $lang['1_Day'] = "1 Día";
@@ -101,7 +100,8 @@ $lang['AIM'] = "Dirección AIM";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
-$lang['Forum_Index'] = "%s Indice de Foros";  // eg. Nombre de Sitio Indice de Foros, %s se puede quitar si lo desea
+//$lang['Forum_Index'] = "%s Indice de Foros";  // eg. Nombre de Sitio Indice de Foros, %s se puede quitar si lo desea
+$lang['Forum_Index'] = "Foros de discusión";  // eg. Nombre de Sitio Indice de Foros, %s se puede quitar si lo desea
 
 $lang['Post_new_topic'] = "Publicar nuevo tema";
 $lang['Reply_to_topic'] = "Responder al tema";
@@ -187,8 +187,8 @@ $lang['Forum_is_locked'] = "Foro cerrado";
 // Login
 //
 $lang['Enter_password'] = "Por favor ingrese su nombre de usuario y contraseña para entrar";
-$lang['Login'] = "Entrar";
-$lang['Logout'] = "Salir";
+$lang['Login'] = "Login";
+$lang['Logout'] = "Logout";
 
 $lang['Forgotten_password'] = "Olvidé mi contraseña";
 
@@ -348,6 +348,8 @@ $lang['Poll_for'] = "Correr encuesta por";
 $lang['Days'] = "Días"; // This is used for the Run poll for ... Days + in admin_forums for pruning
 $lang['Poll_for_explain'] = "[ Escriba 0 o deje en blanco para que la encuesta no termine ]";
 $lang['Delete_poll'] = "Borrar Encuesta";
+$lang['Already_voted'] = 'Usted ya ha votado en este encuesta'; 
+$lang['No_vote_option'] = 'Debe especificar una opción al votar'; 
 
 $lang['Disable_HTML_post'] = "Deshabilitar HTML en este mensaje";
 $lang['Disable_BBCode_post'] = "Deshabilitar BBCode en este mensaje";
@@ -494,6 +496,15 @@ $lang['Savebox_size'] = "Su Bandeja de Elementos Guardados está %d%% llena";
 
 $lang['Click_view_privmsg'] = "Click %saquí%s para visitar su Bandeja de Entrada";
 
+$lang['Read_pm'] = 'Leer mensaje'; 
+$lang['Post_new_pm'] = 'Enviar mensaje'; 
+$lang['Post_reply_pm'] = 'Contestar mensaje'; 
+$lang['Post_quote_pm'] = 'Citar mensaje'; 
+$lang['Edit_pm'] = 'Editar mensaje'; 
+
+$lang['Unread_message'] = 'Mensaje no leido'; 
+$lang['Read_message'] = 'Mensaje leido'; 
+
 
 //
 // Profiles/Registration
@@ -609,6 +620,7 @@ $lang['Account_added'] = "Gracias por registrarse, su cuenta ha sido creada. Aho
 $lang['Account_inactive'] = "Su cuenta ha sido creada. Sin embargo, este foro requiere activación de la cuenta, una clave de activación se ha enviado a su email. Por favor revise su email para mas información";
 $lang['Account_inactive_admin'] = "Su cuenta ha sido creada. Sin embargo, este foro requiere activación del Administrador. Un email ha sido enviado al Administrador y Usted será informado cuando su cuenta haya sido activada";
 $lang['Account_active'] = "Su cuenta ha sido activada. Gracias por registrarse";
+$lang['Already_activated'] = 'Usted ya ha activado su cuenta'; 
 $lang['Account_active_admin'] = "La cuenta ha sido activada";
 $lang['Reactivate'] = "¡Reactive su cuenta!";
 $lang['COPPA'] = "Su cuenta ha sido creada pero debe ser aprobada, por favor revise su email por mayores detalles.";
@@ -872,69 +884,71 @@ $lang['Lookup_IP'] = "Buscar por IP";
 //
 $lang['All_times'] = "Todas las horas son %s"; // ej. Todas las horas son GMT - 12 Horas 
 
-$lang['-12'] = "GMT - 12 Horas";
-$lang['-11'] = "GMT - 11 Horas";
-$lang['-10'] = "HST (Hawaii)";
-$lang['-9'] = "GMT - 9 Horas";
-$lang['-8'] = "PST (U.S./Canadá)";
-$lang['-7'] = "MST (U.S./Canadá)";
-$lang['-6'] = "CST (U.S./Canadá)";
-$lang['-5'] = "EST (Lima /U.S.A./Canadá)";
-$lang['-4'] = "GMT - 4 Horas";
-$lang['-3.5'] = "GMT - 3.5 Horas";
-$lang['-3'] = "GMT - 3 Horas";
-$lang['-2'] = "Mid-Atlantic";
-$lang['-1'] = "GMT - 1 Hora";
-$lang['0'] = "GMT";
-$lang['1'] = "CET (Europa)";
-$lang['2'] = "EET (Europa)";
-$lang['3'] = "GMT + 3 Horas";
-$lang['3.5'] = "GMT + 3.5 Horas";
-$lang['4'] = "GMT + 4 Horas";
-$lang['4.5'] = "GMT + 4.5 Horas";
-$lang['5'] = "GMT + 5 Horas";
-$lang['5.5'] = "GMT + 5.5 Horas";
-$lang['6'] = "GMT + 6 Horas";
-$lang['7'] = "GMT + 7 Horas";
-$lang['8'] = "WST (Australia)";
-$lang['9'] = "GMT + 9 Horas";
-$lang['9.5'] = "CST (Australia)";
-$lang['10'] = "EST (Australia)";
-$lang['11'] = "GMT + 11 Horas";
-$lang['12'] = "GMT + 12 Horas";
-
 // Estos se muestran en la lista desplegable de zona horaria
-$lang['tz']['-12'] = "(GMT -12:00 horas) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 horas) Midway Island, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 horas) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 horas) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 horas) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-7'] = "(GMT -7:00 horas) Mountain Time (US &amp; Canada), Arizona";
-$lang['tz']['-6'] = "(GMT -6:00 horas) Central Time (US &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 horas) Lima, Bogotá, Quito, Eastern Time (US &amp; Canada)";
-$lang['tz']['-4'] = "(GMT -4:00 horas) Atlantic Time (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 horas) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 horas) Brassila, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 horas) Mid-Atlantic, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 horas) Azores, Cape Verde Islands";
-$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 horas) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 horas) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
-$lang['tz']['3'] = "(GMT +3:00 horas) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 horas) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 horas) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 horas) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 horas) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 horas) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 horas) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 horas) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 horas) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 horas) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 horas) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 horas) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 horas) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 horas) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 horas) Auckland, Wellington, Fiji, Marshall Island";
+$lang['-12'] = 'GMT - 12 Horas'; 
+$lang['-11'] = 'GMT - 11 Horas'; 
+$lang['-10'] = 'GMT - 10 Horas'; 
+$lang['-9'] = 'GMT - 9 Horas'; 
+$lang['-8'] = 'GMT - 8 Horas'; 
+$lang['-7'] = 'GMT - 7 Horas'; 
+$lang['-6'] = 'GMT - 6 Horas'; 
+$lang['-5'] = 'GMT - 5 Horas'; 
+$lang['-4'] = 'GMT - 4 Horas'; 
+$lang['-3.5'] = 'GMT - 3.5 Horas'; 
+$lang['-3'] = 'GMT - 3 Horas'; 
+$lang['-2'] = 'GMT - 2 Horas'; 
+$lang['-1'] = 'GMT - 1 Horas'; 
+$lang['0'] = 'GMT'; 
+$lang['1'] = 'GMT + 1 Hora'; 
+$lang['2'] = 'GMT + 2 Horas'; 
+$lang['3'] = 'GMT + 3 Horas'; 
+$lang['3.5'] = 'GMT + 3.5 Horas'; 
+$lang['4'] = 'GMT + 4 Horas'; 
+$lang['4.5'] = 'GMT + 4.5 Horas'; 
+$lang['5'] = 'GMT + 5 Horas'; 
+$lang['5.5'] = 'GMT + 5.5 Horas'; 
+$lang['6'] = 'GMT + 6 Horas'; 
+$lang['6.5'] = 'GMT + 6.5 Horas'; 
+$lang['7'] = 'GMT + 7 Horas'; 
+$lang['8'] = 'GMT + 8 Horas'; 
+$lang['9'] = 'GMT + 9 Horas'; 
+$lang['9.5'] = 'GMT + 9.5 Horas'; 
+$lang['10'] = 'GMT + 10 Horas'; 
+$lang['11'] = 'GMT + 11 Horas'; 
+$lang['12'] = 'GMT + 12 Horas'; 
+
+// These are displayed in the timezone select box 
+$lang['tz']['-12'] = 'GMT - 12 Horas'; 
+$lang['tz']['-11'] = 'GMT - 11 Horas'; 
+$lang['tz']['-10'] = 'GMT - 10 Horas'; 
+$lang['tz']['-9'] = 'GMT - 9 Horas'; 
+$lang['tz']['-8'] = 'GMT - 8 Horas'; 
+$lang['tz']['-7'] = 'GMT - 7 Horas'; 
+$lang['tz']['-6'] = 'GMT - 6 Horas'; 
+$lang['tz']['-5'] = 'GMT - 5 Horas'; 
+$lang['tz']['-4'] = 'GMT - 4 Horas'; 
+$lang['tz']['-3.5'] = 'GMT - 3.5 Horas'; 
+$lang['tz']['-3'] = 'GMT - 3 Horas'; 
+$lang['tz']['-2'] = 'GMT - 2 Horas'; 
+$lang['tz']['-1'] = 'GMT - 1 Horas'; 
+$lang['tz']['0'] = 'GMT'; 
+$lang['tz']['1'] = 'GMT + 1 Hora'; 
+$lang['tz']['2'] = 'GMT + 2 Horas'; 
+$lang['tz']['3'] = 'GMT + 3 Horas'; 
+$lang['tz']['3.5'] = 'GMT + 3.5 Horas'; 
+$lang['tz']['4'] = 'GMT + 4 Horas'; 
+$lang['tz']['4.5'] = 'GMT + 4.5 Horas'; 
+$lang['tz']['5'] = 'GMT + 5 Horas'; 
+$lang['tz']['5.5'] = 'GMT + 5.5 Horas'; 
+$lang['tz']['6'] = 'GMT + 6 Horas'; 
+$lang['tz']['6.5'] = 'GMT + 6.5 Horas'; 
+$lang['tz']['7'] = 'GMT + 7 Horas'; 
+$lang['tz']['8'] = 'GMT + 8 Horas'; 
+$lang['tz']['9'] = 'GMT + 9 Horas'; 
+$lang['tz']['9.5'] = 'GMT + 9.5 Horas'; 
+$lang['tz']['10'] = 'GMT + 10 Horas'; 
+$lang['tz']['11'] = 'GMT + 11 Horas'; 
+$lang['tz']['12'] = 'GMT + 12 Horas'; 
 
 $lang['datetime']['Sunday'] = "Domingo";
 $lang['datetime']['Monday'] = "Lunes";

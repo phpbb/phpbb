@@ -1,4 +1,5 @@
 Subject: Twoja pro¶ba zosta³a zaakceptowana
+Charset: iso-8859-2
 
 Gratulacje,
 

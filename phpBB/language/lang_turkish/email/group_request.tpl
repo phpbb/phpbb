@@ -1,4 +1,5 @@
 Subject: Grubunuza katýlmak için bir baþvuru var
+Charset: iso-8859-9
 
 Degerli {GROUP_MODERATOR},
 

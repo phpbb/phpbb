@@ -20,18 +20,27 @@
  *
  ***************************************************************************/
 
-// 
+//  *************************************
 //  Swedish Translation by:
 //	
 //	Marcus Svensson
-//  xsvennemanx@hotmail.com
-//	
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//	-------------------------------------
 // 	Janåke Rönnblom
 //	jan-ake.ronnblom@skeria.skelleftea.se
-//	
+//	-------------------------------------
 //	Bruce
 //	bruce@webway.se
-// 
+//  *************************************
+
+//  *************************************
+//  Maintained and kept up-to-date by:
+//  
+//  Marcus Svensson
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//  *************************************
 
 // 
 // To add an entry to your FAQ simply add a line to this file in this format:

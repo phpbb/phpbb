@@ -1,4 +1,4 @@
-Subject: w迎來到 {SITENAME} 討論區
+Charset: big5
 
 {WELCOME_MSG}
 

@@ -1,3 +1,5 @@
+Charset: iso-8859-2
+
 Helló {TO_USERNAME},
 
 A következõ üzenetet {FROM_USERNAME} küldte a {SITENAME} fórumon lévõ azonosítójával. Ha ez az üzenet spam, sértõ, vagy egyéb módon nemkívánatos, vegye fel a kapcsolatot a fórum üzemeltetõivel az alábbi címen:

@@ -1,4 +1,4 @@
-Subject: 您的帳號已經恢復啟用!
+Charset: big5
 
 親愛的 {USERNAME} 您好,
 

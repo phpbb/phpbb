@@ -1,4 +1,4 @@
-Subject: 您已經被加入這個會員群組
+Charset: big5
 
 恭喜您,
 

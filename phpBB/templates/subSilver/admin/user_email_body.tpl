@@ -3,7 +3,11 @@
 
 <p>{L_EMAIL_EXPLAIN}</p>
 
-<form method="post" action="{S_USER_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+<form method="post" action="{S_USER_ACTION}">
+
+{ERROR_BOX}
+
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_COMPOSE}</th>
 	</tr>
@@ -22,4 +26,6 @@
 	<tr> 
 	  <td class="catBottom" align="center" colspan="2"><input type="submit" value="{L_EMAIL}" name="submit" class="mainoption" /></td>
 	</tr>
-</table></form>
+</table>
+
+</form>

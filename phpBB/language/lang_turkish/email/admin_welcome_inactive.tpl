@@ -1,4 +1,5 @@
 Subject: {SITENAME} Forumlarýna Hoþgeldiniz
+Charset: iso-8859-9
 
 {WELCOME_MSG}
 

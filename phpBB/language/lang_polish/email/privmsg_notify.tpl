@@ -1,4 +1,5 @@
 Subject: Nadesz³a nowa Prywatna Wiadomo¶æ
+Charset: iso-8859-2
 
 Witaj {USERNAME},
 

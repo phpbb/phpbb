@@ -1,5 +1,4 @@
 <?php
-
 /***************************************************************************
  *                            lang_admin.php [Spanish]
  *                              -------------------
@@ -202,7 +201,7 @@ $lang['Select_ip'] = "Seleccione una dirección IP";
 $lang['Select_email'] = "Seleccione una dirección de Email";
 
 $lang['Ban_username'] = "Banear a uno o varios Usuarios";
-$lang['Ban_username_explain'] = "Usted puede banear múltiples Usuarios usando la combinación apropiada de mouse y teclado para su computadora y navegador";
+
 
 $lang['Ban_IP'] = "Banear una o varias direcciones IP o HOSTNAMES";
 $lang['IP_hostname'] = "Direcciones IP o HOSTNAMES";
@@ -466,6 +465,7 @@ $lang['delete_moderator_explain'] = "Si está cambiando el moderador del Grupo, s
 $lang['Click_return_groupsadmin'] = "Presione %sAquí%s para volver al Panel de Administración de Grupos.";
 $lang['Select_group'] = "Seleccione un Grupo";
 $lang['Look_up_group'] = "Observar un Grupo";
+$lang['No_group_action'] = 'No se especificó una acción'; 
 
 
 //

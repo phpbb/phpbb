@@ -1,4 +1,5 @@
 Subject: {SITENAME}
+Charset: euc-kr
 
 {WELCOME_MSG}
 

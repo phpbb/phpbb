@@ -46,6 +46,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			}
 
 			$username = $row['username'];
+			$user_id = $row['user_id'];
 
 			$user_actkey = gen_rand_string(true);
 			$key_len = 54 - strlen($server_url);
@@ -54,7 +55,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$user_password = gen_rand_string(false);
 			
 			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+				SET user_newpasswd = '" . md5($user_password) . "', user_actkey = '$user_actkey'  
 				WHERE user_id = " . $row['user_id'];
 			if ( !$db->sql_query($sql) )
 			{
@@ -64,7 +65,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 			$emailer = new emailer($board_config['smtp_delivery']);
 
-			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+			$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 			$emailer->use_template('user_activate_passwd', $row['user_lang']);
 			$emailer->email_address($row['user_email']);
@@ -77,7 +78,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				'PASSWORD' => $user_password,
 				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
 
-				'U_ACTIVATE' => $server_url . "?mode=activate&act_key=$user_actkey")
+				'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 			);
 			$emailer->send();
 			$emailer->reset();
@@ -124,7 +125,9 @@ $template->assign_vars(array(
 	'L_ITEMS_REQUIRED' => $lang['Items_required'],
 	'L_EMAIL_ADDRESS' => $lang['Email_address'],
 	'L_SUBMIT' => $lang['Submit'],
-	'L_RESET' => $lang['Reset'])
+	'L_RESET' => $lang['Reset'],
+	
+	'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=sendpassword"))
 );
 
 $template->pparse('body');

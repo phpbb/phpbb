@@ -34,7 +34,7 @@ if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_U
 }
 else if ( isset($HTTP_GET_VARS['forum']))
 {
-	$forum_id = $HTTP_GET_VARS['forum'];
+	$forum_id = intval($HTTP_GET_VARS['forum']);
 }
 else
 {
@@ -102,9 +102,10 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 {
 	if ( !$userdata['session_logged_in'] )
 	{
-		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : "" );
+		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
 		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 		header($header_location . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
+		exit;
 	}
 	//
 	// The user is not authed to read this forum ...
@@ -256,7 +257,7 @@ if ( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays'])
 	}
 	$row = $db->sql_fetchrow($result);
 
-	$topics_count = ( $forum_row['forum_topics'] ) ? $forum_row['forum_topics'] : 1;
+	$topics_count = ( $row['forum_topics'] ) ? $row['forum_topics'] : 1;
 	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
 	if ( !empty($HTTP_POST_VARS['topicdays']) )
@@ -480,7 +481,7 @@ if( $total_topics )
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
 			$folder_image =  $images['folder'];
-			$folder_alt = $lang['Topic_Moved'];
+			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		}
 		else

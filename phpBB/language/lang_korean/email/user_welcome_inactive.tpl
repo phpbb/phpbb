@@ -1,4 +1,5 @@
 Subject: {SITENAME}
+Charset: euc-kr
 
 안녕하세요.. {WELCOME_MSG} 입니다..
 

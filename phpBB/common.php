@@ -101,18 +101,19 @@ if( !get_magic_quotes_gpc() )
 // malicious rewriting of language and otherarray values via
 // URI params
 //
-$board_config = Array();
-$userdata = Array();
-$theme = Array();
-$images = Array();
-$lang = Array();
+$board_config = array();
+$userdata = array();
+$theme = array();
+$images = array();
+$lang = array();
 $gen_simple_header = FALSE;
 
-@include($phpbb_root_path . 'config.'.$phpEx);
+include($phpbb_root_path . 'config.'.$phpEx);
 
 if( !defined("PHPBB_INSTALLED") )
 {
 	header("Location: install.$phpEx");
+	exit;
 }
 
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
@@ -153,7 +154,7 @@ if( getenv('HTTP_X_FORWARDED_FOR') != '' )
 
 	if ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", getenv('HTTP_X_FORWARDED_FOR'), $ip_list) )
 	{
-		$private_ip = array('/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10..*/', '/^224..*/', '/^240..*/');
+		$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10..*/', '/^224..*/', '/^240..*/');
 		$client_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
 	}
 }
@@ -170,16 +171,14 @@ $user_ip = encode_ip($client_ip);
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
-if(!$result = $db->sql_query($sql))
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
-else
+
+while ( $row = $db->sql_fetchrow($result) )
 {
-	while($row = $db->sql_fetchrow($result))
-	{
-		$board_config[$row['config_name']] = $row['config_value'];
-	}
+	$board_config[$row['config_name']] = $row['config_value'];
 }
 
 //

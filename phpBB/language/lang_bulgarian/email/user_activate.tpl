@@ -1,4 +1,5 @@
 Subject: Ре-активирайте потребителя си!
+Charset: windows-1251
 
 Здравейте {USERNAME}!
 

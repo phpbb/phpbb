@@ -64,7 +64,7 @@ if ( $do_gzip_compress )
 	$gzip_contents = gzcompress($gzip_contents, 9);
 	$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
 
-	echo '\x1f\x8b\x08\x00\x00\x00\x00\x00';
+	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;
 	echo pack('V', $gzip_crc);
 	echo pack('V', $gzip_size);

@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Følgende e-post ble sendt til deg fra en forumadministrator på {SITENAME}.
 Hvis denne e-posten er spam, har støtende eller har annet plagsomt innhold vennligst gi beskjed til forumets webmaster på følgende e-post :
 

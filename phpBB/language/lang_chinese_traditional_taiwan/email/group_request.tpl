@@ -1,4 +1,4 @@
-Subject: 有一個會員申請加入您的群組
+Charset: big5
 
 親愛的 {GROUP_MODERATOR} 您好,
 

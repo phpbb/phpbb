@@ -1,4 +1,5 @@
 Subject: Aktivoi uudelleen käyttäjätunnuksesi!
+Charset: iso-8859-1
 
 Tervehdys {USERNAME},
 

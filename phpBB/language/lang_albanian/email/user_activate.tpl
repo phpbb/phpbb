@@ -1,4 +1,5 @@
 Subject: Riaktivizoni llogarinë tuaj
+Charset: iso-8859-1
 
 Përshëndetje {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: »¶Ó­Äú·ÃÎÊ {SITENAME} ÂÛÌ³
+Charset: gb2312
 
 {WELCOME_MSG}
 

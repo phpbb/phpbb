@@ -1,4 +1,5 @@
 Subject: A kérése elfogadva
+Charset: iso-8859-2
 
 Gratulálunk,
 

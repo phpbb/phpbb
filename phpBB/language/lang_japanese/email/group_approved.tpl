@@ -1,4 +1,5 @@
 Subject: グループ参加の申し込みは承諾されました
+Charset: shift_jis
 
 おめでとうございます
 

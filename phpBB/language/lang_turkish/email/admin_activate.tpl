@@ -1,4 +1,5 @@
 Subject: Yeni kullanýcý hesabý
+Charset: iso-8859-9
 
 Merhaba,
 

@@ -79,11 +79,10 @@ $is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 //
 // Get user list
 //
-$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip
+$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
-		AND ( s.session_time >= ".( time() - 300 ) . " 
-			OR u.user_session_time >= " . ( time() - 300 ) . " )
+		AND s.session_time >= ".( time() - 300 ) . "
 	ORDER BY u.username ASC, s.session_ip ASC";
 if ( !($result = $db->sql_query($sql)) )
 {
@@ -134,9 +133,6 @@ while ( $row = $db->sql_fetchrow($result) )
 				$registered_users++;
 			}
 
-			$last_update = $row['user_session_time'];
-			$user_page = $row['user_session_page'];
-
 			$which_counter = 'reg_counter';
 			$which_row = 'reg_user_row';
 			$prev_user = $user_id;
@@ -146,13 +142,10 @@ while ( $row = $db->sql_fetchrow($result) )
 	{
 		if ( $row['session_ip'] != $prev_ip )
 		{
+			$username = $lang['Guest'];
 			$view_online = true;
 			$guest_users++;
 	
-			$username = $lang['Guest'];
-			$last_update = $row['session_time'];
-			$user_page = $row['session_page'];
-
 			$which_counter = 'guest_counter';
 			$which_row = 'guest_user_row';
 		}
@@ -162,9 +155,9 @@ while ( $row = $db->sql_fetchrow($result) )
 
 	if ( $view_online )
 	{
-		if ( $user_page < 1 || !$is_auth_ary[$user_page]['auth_view'] )
+		if ( $row['session_page'] < 1 || !$is_auth_ary[$row['session_page']]['auth_view'] )
 		{
-			switch( $user_page )
+			switch( $row['session_page'] )
 			{
 				case PAGE_INDEX:
 					$location = $lang['Forum_index'];
@@ -209,8 +202,8 @@ while ( $row = $db->sql_fetchrow($result) )
 		}
 		else
 		{
-			$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $user_page);
-			$location = $forum_data[$user_page];
+			$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $row['session_page']);
+			$location = $forum_data[$row['session_page']];
 		}
 
 		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
@@ -220,7 +213,7 @@ while ( $row = $db->sql_fetchrow($result) )
 			'ROW_COLOR' => '#' . $row_color,
 			'ROW_CLASS' => $row_class,
 			'USERNAME' => $username,
-			'LASTUPDATE' => create_date($board_config['default_dateformat'], $last_update, $board_config['board_timezone']),
+			'LASTUPDATE' => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
 			'FORUM_LOCATION' => $location,
 
 			'U_USER_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),

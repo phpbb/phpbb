@@ -32,9 +32,9 @@ if( !empty($setmodules) )
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
@@ -255,7 +255,7 @@ if( $mode != "" )
 		$template->assign_vars(array(
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK" => $lang['Rank'],
+			"L_RANK" => $lang['Rank_title'],
 			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
 			"L_SPECIAL_RANK" => $lang['Special_rank'],
 			"L_EDIT" => $lang['Edit'],
@@ -360,6 +360,6 @@ else
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

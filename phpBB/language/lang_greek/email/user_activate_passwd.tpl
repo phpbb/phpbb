@@ -1,4 +1,5 @@
 Subject: Ενεργοποίηση νέου κωδικού
+Charset: iso-8859-7
 
 Γεια σας {USERNAME}
 

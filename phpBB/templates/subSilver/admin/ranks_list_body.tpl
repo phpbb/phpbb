@@ -16,8 +16,8 @@
 		<td class="{ranks.ROW_CLASS}" align="center">{ranks.RANK}</td>
         <td class="{ranks.ROW_CLASS}" align="center">{ranks.RANK_MIN}</td>
 		<td class="{ranks.ROW_CLASS}" align="center">{ranks.SPECIAL_RANK}</td>
-		<td class="{ranks.ROW_CLASS}" align="center"><a href="{ranks.U_RANK_EDIT}">{L_EDIT}</td>
-		<td class="{ranks.ROW_CLASS}" align="center"><a href="{ranks.U_RANK_DELETE}">{L_DELETE}</td>
+		<td class="{ranks.ROW_CLASS}" align="center"><a href="{ranks.U_RANK_EDIT}">{L_EDIT}</a></td>
+		<td class="{ranks.ROW_CLASS}" align="center"><a href="{ranks.U_RANK_DELETE}">{L_DELETE}</a></td>
 	</tr>
 	<!-- END ranks -->			
 	<tr>

@@ -1,4 +1,5 @@
 Subject: New password activation
+Charset: iso-8859-1
 
 Hello {USERNAME}
 

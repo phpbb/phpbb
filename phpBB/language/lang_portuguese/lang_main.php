@@ -24,11 +24,11 @@
  *
  ***************************************************************************/
 
-//setlocale(LC_ALL, "pt");
+//setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "ltr";
-$lang['LEFT'] = "left";
-$lang['RIGHT'] = "right";
+$lang['DIRECTION'] = "LTR";
+$lang['LEFT'] = "LEFT";
+$lang['RIGHT'] = "RIGHT";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -169,7 +169,7 @@ $lang['New_post'] = "Mensagem nova";
 $lang['No_new_posts_hot'] = "Não há mensagens novas [ Popular ]";
 $lang['New_posts_hot'] = "Mensagens novas [ Popular ]";
 $lang['No_new_posts_locked'] = "Não há mensagens novas [ Bloqueadas ]";
-$lang['New_posts_locked'] = "New posts [ Bloqueadas ]";
+$lang['New_posts_locked'] = "Mensagens novas [ Bloqueadas ]";
 $lang['Forum_is_locked'] = "Fórum Bloqueado";
 
 
@@ -885,6 +885,7 @@ $lang['4.5'] = "TMG + 4.5 Horas";
 $lang['5'] = "TMG + 5 Horas";
 $lang['5.5'] = "TMG + 5.5 Horas";
 $lang['6'] = "TMG + 6 Horas";
+$lang['6.5'] = "TMG + 6.5 Horas"; 
 $lang['7'] = "TMG + 7 Horas";
 $lang['8'] = "WST (Austrália)";
 $lang['9'] = "TMG + 9 Horas";
@@ -940,6 +941,7 @@ $lang['datetime']['Wed'] = "Qua";
 $lang['datetime']['Thu'] = "Qui";
 $lang['datetime']['Fri'] = "Sex";
 $lang['datetime']['Sat'] = "Sáb";
+
 $lang['datetime']['January'] = "Janeiro";
 $lang['datetime']['February'] = "Fevereiro";
 $lang['datetime']['March'] = "Março";
@@ -956,7 +958,7 @@ $lang['datetime']['Jan'] = "Jan";
 $lang['datetime']['Feb'] = "Fev";
 $lang['datetime']['Mar'] = "Mar";
 $lang['datetime']['Apr'] = "Abr";
-$lang['datetime']['May'] = "May";
+$lang['datetime']['May'] = "Mai";
 $lang['datetime']['Jun'] = "Jun";
 $lang['datetime']['Jul'] = "Jul";
 $lang['datetime']['Aug'] = "Ago";

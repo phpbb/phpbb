@@ -1,4 +1,5 @@
 Subject: Уведомление об ответе в теме - {TOPIC_TITLE}
+Charset: windows-1251
 
 Здравствуйте, {USERNAME}!
 

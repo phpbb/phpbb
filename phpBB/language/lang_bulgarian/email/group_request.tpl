@@ -1,4 +1,5 @@
 Subject: ѕолучена е за€вка за приемане в групата ви
+Charset: windows-1251
 
 {GROUP_MODERATOR},
 

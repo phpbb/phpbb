@@ -1,4 +1,4 @@
-Subject: 主題回覆通知 - {TOPIC_TITLE}
+Charset: big5
 
 親愛的 {USERNAME} 您好,
 

@@ -1,4 +1,5 @@
 Subject: 새로운 사용자 아이디
+Charset: euc-kr
 
 Hello,
 

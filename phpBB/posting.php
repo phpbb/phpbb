@@ -30,8 +30,7 @@ include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 //
 // Check and set various parameters
 //
-$params = array('submit' => 'post', 'confirm' => 'confirm', 'preview' => 'preview', 'delete' => 'delete', 'poll_delete' => 'poll_delete', 'poll_add' => 'add_poll_option', 'poll_edit' => 'edit_poll_option', 'mode' => 'mode', 'forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL);
-
+$params = array('submit' => 'post', 'confirm' => 'confirm', 'preview' => 'preview', 'delete' => 'delete', 'poll_delete' => 'poll_delete', 'poll_add' => 'add_poll_option', 'poll_edit' => 'edit_poll_option', 'mode' => 'mode');
 while( list($var, $param) = @each($params) )
 {
 	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
@@ -44,12 +43,25 @@ while( list($var, $param) = @each($params) )
 	}
 }
 
+$params = array('forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL);
+while( list($var, $param) = @each($params) )
+{
+	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
+	{
+		$$var = ( !empty($HTTP_POST_VARS[$param]) ) ? intval($HTTP_POST_VARS[$param]) : intval($HTTP_GET_VARS[$param]);
+	}
+	else
+	{
+		$$var = '';
+	}
+}
+
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 
 //
 // Set topic type
 //
-$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? $HTTP_POST_VARS['topictype'] : POST_NORMAL;
+$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? intval($HTTP_POST_VARS['topictype']) : POST_NORMAL;
 
 //
 // If the mode is set to topic review then output
@@ -69,6 +81,15 @@ else if ( $mode == 'smilies' )
 }
 
 //
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_POSTING);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
 // Was cancel pressed? If so then redirect to the appropriate
 // page, no point in continuing with any further checks
 //
@@ -82,32 +103,23 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 	else if ( $topic_id )
 	{
 		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-		$post_append = "";
+		$post_append = '';
 	}
 	else if ( $forum_id )
 	{
 		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-		$post_append = "";
+		$post_append = '';
 	}
 	else
 	{
 		$redirect = "index.$phpEx";
-		$post_append = "";
+		$post_append = '';
 	}
 
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect) . $post_append, true);
+	header($header_location . append_sid($redirect, true) . $post_append);
 	exit;
 }
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_POSTING);
-init_userprefs($userdata);
-//
-// End session management
-//
 
 //
 // What auth type do we need to check?
@@ -344,7 +356,7 @@ if ( !$is_auth[$is_auth_type] )
 //
 // Set toggles for various options
 //
-if( !$board_config['allow_html'] )
+if ( !$board_config['allow_html'] )
 {
 	$html_on = 0;
 }
@@ -353,7 +365,7 @@ else
 	$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_html'] : $userdata['user_allowhtml'] );
 }
 
-if( !$board_config['allow_bbcode'] )
+if ( !$board_config['allow_bbcode'] )
 {
 	$bbcode_on = 0;
 }
@@ -362,7 +374,7 @@ else
 	$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode'] );
 }
 
-if( !$board_config['allow_smilies'] )
+if ( !$board_config['allow_smilies'] )
 {
 	$smilies_on = 0;
 }
@@ -442,7 +454,7 @@ else if ( $mode == 'vote' )
 	//
 	if ( !empty($HTTP_POST_VARS['vote_id']) )
 	{
-		$vote_option_id = $HTTP_POST_VARS['vote_id'];
+		$vote_option_id = intval($HTTP_POST_VARS['vote_id']);
 
 		$sql = "SELECT vd.vote_id    
 			FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr
@@ -534,7 +546,9 @@ else if ( $submit || $confirm )
 
 				submit_post($mode, $post_data, $return_message, $return_meta, $forum_id, $topic_id, $post_id, $poll_id, $topic_type, $bbcode_on, $html_on, $smilies_on, $attach_sig, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $poll_title), $poll_options, $poll_length);
 				if ( $error_msg == '' )
-				user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
+				{
+					user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
+				}
 			}
 			break;
 
@@ -569,7 +583,7 @@ else if ( $submit || $confirm )
 		}
 
 		$template->assign_vars(array(
-			"META" => $return_meta)
+			'META' => $return_meta)
 		);
 		message_die(GENERAL_MESSAGE, $return_message);
 	}
@@ -607,11 +621,11 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != '' )
 
 	if ( $mode == 'newtopic' || $mode == 'reply')
 	{
-		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
+		$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 	}
 	else if ( $mode == 'editpost' )
 	{
-		$user_sig = ( $post_info['user_sig'] != '' ) ? $post_info['user_sig'] : '';
+		$user_sig = ( $post_info['user_sig'] != '' && $board_config['allow_sig'] ) ? $post_info['user_sig'] : '';
 	}
 	
 	if( $preview )
@@ -871,7 +885,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	if( $is_auth['auth_sticky'] )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
-		if ( $post_data['topic_type'] == POST_STICKY )
+		if ( $post_data['topic_type'] == POST_STICKY || $topic_type == POST_STICKY )
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
@@ -881,7 +895,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	if( $is_auth['auth_announce'] )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_ANNOUNCE . '"';
-		if ( $post_data['topic_type'] == POST_ANNOUNCE )
+		if ( $post_data['topic_type'] == POST_ANNOUNCE || $topic_type == POST_ANNOUNCE )
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
@@ -890,7 +904,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 
 	if ( $topic_type_toggle != '' )
 	{
-		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL || $topic_type == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 

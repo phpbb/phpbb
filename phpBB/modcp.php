@@ -69,32 +69,9 @@ else
 $confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
 
 //
-// Check if user did or did not confirm
-// If they did not, forward them to the last page they were on
-//
-if ( isset($HTTP_POST_VARS['cancel']) )
-{
-	if ( $topic_id )
-	{
-		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-	}
-	else if ( $forum_id )
-	{
-		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-	}
-	else
-	{
-		$redirect = "index.$phpEx";
-	}
-
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . append_sid($redirect, true));
-}
-
-//
 // Continue var definitions
 //
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 $delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : FALSE;
 $move = ( isset($HTTP_POST_VARS['move']) ) ? TRUE : FALSE;
@@ -175,6 +152,30 @@ init_userprefs($userdata);
 //
 // End session management
 //
+
+//
+// Check if user did or did not confirm
+// If they did not, forward them to the last page they were on
+//
+if ( isset($HTTP_POST_VARS['cancel']) )
+{
+	if ( $topic_id )
+	{
+		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
+	}
+	else if ( $forum_id )
+	{
+		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
+	}
+	else
+	{
+		$redirect = "index.$phpEx";
+	}
+
+	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . append_sid($redirect, true));
+	exit;
+}
 
 //
 // Start auth check
@@ -330,7 +331,6 @@ switch( $mode )
 		else
 		{
 			// Not confirmed, show confirmation message
-		
 			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
@@ -343,7 +343,7 @@ switch( $mode )
 				$topics = $HTTP_POST_VARS['topic_id_list'];
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '" />';
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '" />';
 				}
 			}
 			else
@@ -381,6 +381,11 @@ switch( $mode )
 
 		if ( $confirm )
 		{
+			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			{
+				message_die(GENERAL_MESSAGE, $lang['None_selected']);
+			}
+
 			$new_forum_id = $HTTP_POST_VARS['new_forum'];
 			$old_forum_id = $forum_id;
 
@@ -391,7 +396,7 @@ switch( $mode )
 				$topic_list = '';
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . $topics[$i];
+					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . intval($topics[$i]);
 				}
 
 				$sql = "SELECT * 
@@ -520,6 +525,11 @@ switch( $mode )
 		break;
 
 	case 'lock':
+		if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+		{
+			message_die(GENERAL_MESSAGE, $lang['None_selected']);
+		}
+
 		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
@@ -559,6 +569,11 @@ switch( $mode )
 		break;
 
 	case 'unlock':
+		if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+		{
+			message_die(GENERAL_MESSAGE, $lang['None_selected']);
+		}
+
 		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
@@ -624,7 +639,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
 			}
 
-			$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
+			$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
 			$topic_time = time();
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
@@ -858,7 +873,7 @@ switch( $mode )
 			FROM " . POSTS_TABLE . " 
 			WHERE poster_id = $poster_id 
 			GROUP BY poster_ip 
-			ORDER BY postings DESC";
+			ORDER BY " . (( SQL_LAYER == 'msaccess' ) ? 'COUNT(*)' : 'postings' ) . " DESC";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Could not get IP information for this user', '', __LINE__, __FILE__, $sql);
@@ -905,7 +920,7 @@ switch( $mode )
 			WHERE p.poster_id = u.user_id 
 				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
 			GROUP BY u.user_id, u.username
-			ORDER BY postings DESC";
+			ORDER BY " . (( SQL_LAYER == 'msaccess' ) ? 'COUNT(*)' : 'postings' ) . " DESC";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Could not get posters information based on IP', '', __LINE__, __FILE__, $sql);
@@ -1003,12 +1018,12 @@ switch( $mode )
 				if ( $row['topic_type'] == POST_ANNOUNCE )
 				{
 					$folder_img = $images['folder_announce'];
-					$folder_alt = $lang['Announcement'];
+					$folder_alt = $lang['Topic_Announcement'];
 				}
 				else if ( $row['topic_type'] == POST_STICKY )
 				{
 					$folder_img = $images['folder_sticky'];
-					$folder_alt = $lang['Sticky'];
+					$folder_alt = $lang['Topic_Sticky'];
 				}
 				else 
 				{

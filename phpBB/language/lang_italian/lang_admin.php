@@ -20,10 +20,12 @@
  *
  ***************************************************************************/
 
+
 //
 //	Translation produced by tesno
 //	http://www.snowbox.it/
 //
+
 
 //
 // Format is same as lang_main
@@ -81,7 +83,7 @@ $lang['Users_per_day'] = "Utenti per giorno";
 $lang['Board_started'] = "Forum attivato il";
 $lang['Avatar_dir_size'] = "Dimensione directory Avatar";
 $lang['Database_size'] = "Dimensione Database";
-$lang['Gzip_compression'] = "Compressione Gzip";
+$lang['Gzip_compression'] ="Gzip compression";
 $lang['Not_available'] = "Non disponibile";
 
 $lang['ON'] = "ON"; // This is for GZip compression
@@ -207,7 +209,6 @@ $lang['Select_ip'] = "Seleziona un indirizzo IP";
 $lang['Select_email'] = "Seleziona un indirizzo Email";
 
 $lang['Ban_username'] = "Disabilita uno o più utenti specifici";
-$lang['Ban_username_explain'] = "Puoi disabilitare più utenti con una sola operazione utilizzando l'appropriata combinazione di mouse e tastiera per il tuo computer e browser";
 
 $lang['Ban_IP'] = "Disabilita uno o più indirizzi IP o hostname";
 $lang['IP_hostname'] = "Indirizzo IP o hostname";
@@ -260,7 +261,7 @@ $lang['Acc_Admin'] = "Amministratore";
 $lang['Abilities_settings'] = "Impostazioni di base per Utenti e Forum";
 $lang['Max_poll_options'] = "Numero massimo di opzioni per sondaggio";
 $lang['Flood_Interval'] = "Intervallo del Flood";
-$lang['Flood_Interval_explain'] = "Numero di secondi di attesa tra ogni messaggio";
+$lang['Flood_Interval_explain'] = "Numero di secondi di attesa tra ogni messaggio"; 
 $lang['Board_email_form'] = "Messaggistica email attraverso il forum";
 $lang['Board_email_form_explain'] = "Gli utenti possono inviarsi email a vicenda utilizzando il forum";
 $lang['Topics_per_page'] = "Argomenti Per Pagina";
@@ -312,6 +313,10 @@ $lang['Email_sig_explain'] = "Questo testo verrà allegato ad ogni email spedita 
 $lang['Use_SMTP'] = "Usa un Server SMTP per le email";
 $lang['Use_SMTP_explain'] = "Rispondi sì se vuoi o devi inviare email attraverso un server specifico invece della funzione mail locale";
 $lang['SMTP_server'] = "Indirizzo Server SMTP";
+$lang['SMTP_username'] = "SMTP Username";
+$lang['SMTP_username_explain'] = "Inserisci uno username solo se il tuo server smtp lo richiede";
+$lang['SMTP_password'] = "SMTP Password";
+$lang['SMTP_password_explain'] = "Inserisci una password solo se il tuo server smtp lo richiede";
 
 $lang['Disable_privmsg'] = "Messaggi Privati";
 $lang['Inbox_limits'] = "Numero massimo di messaggi per Posta in Arrivo";
@@ -320,11 +325,12 @@ $lang['Savebox_limits'] = "Numero massimo di messaggi per Posta Salvata";
 
 $lang['Cookie_settings'] = "Impostazioni Cookie"; 
 $lang['Cookie_settings_explain'] = "Questo modulo controlla come vengono definiti i cookie inviati ai browser. In molti casi l'impostazione di default è sufficiente. Se devi cambiare queste impostazioni fallo con attenzione, le impostazioni non corrette possono impedire agli utenti di entrare.";
-$lang['Cookie_name'] = "Nome Cookie";
 $lang['Cookie_domain'] = "Dominio Cookie";
+$lang['Cookie_name'] = "Nome Cookie";
 $lang['Cookie_path'] = "Percorso Cookie";
-$lang['Session_length'] = "Lunghezza Sessione [ secondi ]";
 $lang['Cookie_secure'] = "Cookie secure [ http ]";
+$lang['Cookie_secure_explain'] = "Se il tuo server utilizza SSL selezionaquesto per abilitarlo, altrimenti lascialo disabilitato";
+$lang['Session_length'] = "Lunghezza Sessione [ secondi ]";
 
 
 //
@@ -357,7 +363,7 @@ $lang['Forum_desc'] = "Descrizione";
 $lang['Forum_status'] = "Stato del Forum";
 $lang['Forum_pruning'] = "Eliminazione Automatica";
 
-$lang['prune_freq'] = "Verifica l'età degli argomenti ogni";
+$lang['prune_freq'] = 'Check for topic age every';
 $lang['prune_days'] = "Rimuovi gli argomenti che non hanno avuto risposte per";
 $lang['Set_prune_data'] = "Hai attivato l'eliminazione automatica per questo forum ma non hai impostato la frequenza o il numero di giorni per il prune. Per favore torna indietro e fallo";
 
@@ -413,7 +419,7 @@ $lang['Click_return_smileadmin'] = "Clicca %squi%s per tornare al pannello Ammin
 //
 // User Management
 //
-$lang['User_admin'] = "Administrazione Utenti";
+$lang['User_admin'] = "Amministrazione Utenti";
 $lang['User_admin_explain'] = "Qui puoi cambiare le informazioni degli utenti e alcune opzioni specifiche. Per modificare il permessi degli utenti, per favore utilizza il modulo di Amministrazione dei Permessi per Utenti e Gruppi.";
 
 $lang['Look_up_user'] = "Cerca Utente";
@@ -434,6 +440,11 @@ $lang['Admin_avatar_explain'] = "Qui puoi vedere e cancellare l'avatar attuale d
 
 $lang['User_special'] = "Campi speciali solo per l'amministratore";
 $lang['User_special_explain'] = "Questi campi non possono essere modificati dagli utenti. Qui puoi impostare il loro stato e altre opzioni che non vengono date agli utenti.";
+// Added for enhanced user management
+$lang['User_lookup_explain'] = "Puoi controllare uno o più utenti utilizzando uno o più dei criteri qui sotto. Non servono abbreviazioni, verranno automaticamente aggiunte.";
+$lang['One_user_found'] = "E' stato trovato un solo utente, stai per essere rediretto a quell'utente";
+$lang['Click_goto_user'] = "Clicca %sQui%s per modificare il profilo di questi utenti";
+$lang['User_joined_explain'] = "La sintassi utilizzata è identica alla funzione PHP <a href=\"http://www.php.net/strtotime\" target=\"_other\">strtotime()</a>";
 
 
 //
@@ -466,7 +477,7 @@ $lang['delete_moderator_explain'] = "Se cambi il moderatore del gruppo, selezion
 $lang['Click_return_groupsadmin'] = "Clicca %squi%s per tornare al pannello Amministrazione Gruppi";
 $lang['Select_group'] = "Seleziona un gruppo";
 $lang['Look_up_group'] = "Controlla gruppo";
-
+$lang['No_group_action'] = 'No action was specified';
 
 //
 // Prune Administration
@@ -536,6 +547,7 @@ $lang['No_assigned_rank'] = "Nessun livello speciale assegnato";
 $lang['Rank_updated'] = "Il livello è stato aggiornato con successo";
 $lang['Rank_added'] = "Il livello è stato aggiunto con successo";
 $lang['Rank_removed'] = "Il livello è stato cancellato con seccesso";
+$lang['No_update_ranks'] = "Il livello è stato cancellato. Comunque gli account degli utenti che utilizzavano questo livello non sono stati aggiornati. Devi cancellare manualmente i livelli su questi account.";
 
 $lang['Click_return_rankadmin'] = "Clicca %squi%s per tornare al pannello Amministrazione Livelli";
 
@@ -675,6 +687,8 @@ $lang['Finish_Install'] = "Termina l'Installazione";
 $lang['Default_lang'] = "Lingua di Default";
 $lang['DB_Host'] = "Database Server Hostname / DSN";
 $lang['DB_Name'] = "Nome del tuo Database";
+$lang['DB_Username'] = "Username Database";
+$lang['DB_Password'] = "Password Database";
 $lang['Database'] = "Il tuo Database";
 $lang['Install_lang'] = "Scegli una lingua per l'Installazione";
 $lang['dbms'] = "Tipo di Database";
@@ -698,15 +712,18 @@ $lang['ftp_path'] = "Percorso FTP per phpBB 2";
 $lang['ftp_username'] = "Il tuo Username FTP";
 $lang['ftp_password'] = "La tua Password FTP";
 $lang['Transfer_config'] = "Inizio Trasferimento";
+$lang['NoFTP_config'] = "Il tentativo di modificare il file config via ftp è fallito. Per favore scarica il file config e caricalo via ftp manualmente";
 
 $lang['Install'] = "Installa";
 $lang['Upgrade'] = "Aggiorna";
 
+
 $lang['Install_Method'] = "Scegli un metodo di installazione";
 
-$lang['Install_No_Ext'] = "La configurazione php del tuo server non supporta il tipo di database che hai scelto"; 
+$lang['Install_No_Ext'] = "La configurazione php del tuo server non supporta il tipo di database che hai scelto";
 
-$lang['Install_No_PCRE'] = "phpBB2 Richiede il Perl-Compatible Regular Expressions Module per php che la tua configurazione php non sembra supportare!"; 
+$lang['Install_No_PCRE'] = "phpBB2 Richiede il Perl-Compatible Regular Expressions Module per php che la tua configurazione php non sembra supportare!";
+
 
 //
 // That's all Folks!

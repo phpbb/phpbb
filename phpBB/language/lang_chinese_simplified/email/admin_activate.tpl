@@ -1,4 +1,5 @@
 Subject: 新用户帐户
+Charset: gb2312
 
 您好,
 

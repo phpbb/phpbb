@@ -1,4 +1,5 @@
 Subject: Konto Aktiverat
+Charset: iso-8859-1
 
 Hej {USERNAME},
 

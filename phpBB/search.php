@@ -115,11 +115,12 @@ else
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-//
-// Define some globally used data
-//
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
-$sort_by_sql = array('p.post_time', 'pt.post_subject', 't.topic_title', 'u.username', 'f.forum_id');
+
+//
+// encoding match for workaround
+//
+$multibyte_charset = 'utf-8, big5, shift_jis, euc-kr, gb2312';
 
 //
 // Begin core code
@@ -161,7 +162,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search&search_id=newposts");
+					header("Location: login.$phpEx?redirect=search.$phpEx&search_id=newposts", true);
 					exit;
 				}
 
@@ -179,7 +180,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search&search_id=egosearch");
+					header("Location: login.$phpEx?redirect=search.$phpEx&search_id=egosearch", true);
 					exit;
 				}
 
@@ -239,10 +240,9 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
 		
 			$split_search = array();
-			$cleaned_search = clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array);
-			$split_search = split_words($cleaned_search, 'search');
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
 
-			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : '';
+			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( ( strstr($multibyte_charset, $lang['ENCODING']) ) ? '' : '' );
 
 			$word_count = 0;
 			$current_match_type = 'or';
@@ -272,14 +272,25 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 							$current_match_type = 'and';
 						}
 
-						$match_word = str_replace('*', '%', $split_search[$i]);
-
-						$sql = "SELECT m.post_id 
-							FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-							WHERE w.word_text LIKE '$match_word' 
-								AND m.word_id = w.word_id 
-								AND w.word_common <> 1 
+						if ( !strstr($multibyte_charset, $lang['ENCODING']) )
+						{
+							$match_word = str_replace('*', '%', $split_search[$i]);
+							$sql = "SELECT m.post_id 
+								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+								WHERE w.word_text LIKE '$match_word' 
+									AND m.word_id = w.word_id 
+									AND w.word_common <> 1 
+									$search_msg_only";
+						}
+						else
+						{
+							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
+							$search_msg_only = ( $search_fields ) ? "OR post_subject LIKE '$match_word'" : '';
+							$sql = "SELECT post_id
+								FROM " . POSTS_TEXT_TABLE . "
+								WHERE post_text LIKE '$match_word'
 								$search_msg_only";
+						}
 						if ( !($result = $db->sql_query($sql)) )
 						{
 							message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
@@ -446,8 +457,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 			else if ( $search_author != '' || $search_time || $auth_sql != '' )
 			{
-				$where_sql = ( $search_author == '' && $auth_sql == '' ) ? "post_id IN (" . implode(', ', $search_ids) . ")" : "p.post_id IN (" . implode(", ", $search_ids) . ")";
-				$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . " p";
+				$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_ids) . ')' : 'p.post_id IN (' . implode(', ', $search_ids) . ')';
+				$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
 
 				if ( $search_time )
 				{
@@ -640,10 +651,29 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					AND p2.post_id = t.topic_last_post_id
 					AND u2.user_id = p2.poster_id";
 		}
-		
+
 		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
-		$sql .= " ORDER BY " . $sort_by_sql[$sort_by] . " $sort_dir LIMIT $start, " . $per_page;
+		$sql .= " ORDER BY ";
+		switch ( $sort_by )
+		{
+			case 1:
+				$sql .= ( $show_results == 'posts' ) ? 'pt.post_subject' : 't.topic_title';
+				break;
+			case 2:
+				$sql .= 't.topic_title';
+				break;
+			case 3:
+				$sql .= 'u.username';
+				break;
+			case 4:
+				$sql .= 'f.forum_id';
+				break;
+			default:
+				$sql .= ( $show_results == 'posts' ) ? 'p.post_time' : 'p2.post_time';
+				break;
+		}
+		$sql .= " $sort_dir LIMIT $start, " . $per_page;
 
 		if ( !$result = $db->sql_query($sql) )
 		{
@@ -725,7 +755,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
-			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active#" . $searchset[$i]['post_id']);
+			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 

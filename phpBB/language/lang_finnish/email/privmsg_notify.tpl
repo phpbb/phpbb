@@ -1,4 +1,5 @@
 Subject: Uusi yksityinen viesti on saapunut
+Charset: iso-8859-1
 
 Tervehdys {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: Aktivering af nyt kodeord
+Charset: iso-8859-1
 
 Hej {USERNAME}
 

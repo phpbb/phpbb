@@ -1,4 +1,5 @@
 Subject: ĞÂÃÜÂë¼¤»î
+Charset: gb2312
 
 {USERNAME} ÄúºÃ,
 

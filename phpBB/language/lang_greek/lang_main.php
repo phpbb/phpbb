@@ -24,8 +24,6 @@
 // Email : arttor@eexi.gr
 //
 
-
-setlocale(LC_ALL, "el_GR.ISO-8859-7");
 $lang['ENCODING'] = "iso-8859-7";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
@@ -87,6 +85,7 @@ $lang['IP_Address'] = "IP Διεύθυνση";
 
 $lang['Select_forum'] = "Επιλέξτε μια Δημόσια Συζήτηση";
 $lang['View_latest_post'] = "Δείτε την πιο πρόσφατη Δημοσιεύση";
+$lang['View_newest_post'] = "Δείτε την νεότερη Δημοσιεύση";
 $lang['Page_of'] = "Σελίδα <b>%d</b> από <b>%d</b>"; // Replaces with: Page 1 of 2 for example
 
 $lang['ICQ'] = "ICQ Αριθμός";
@@ -94,7 +93,7 @@ $lang['AIM'] = "AIM διεύθυνση";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
-$lang['Forum_Index'] = "%s Forum Index";  // eg. sitename Forum Index, %s can be removed if you prefer
+$lang['Forum_Index'] = "%s Αρχική σελίδα";  // eg. sitename Forum Index, %s can be removed if you prefer
 
 $lang['Post_new_topic'] = "Δημοσίευση νέας  Θ.Ενότητας";
 $lang['Reply_to_topic'] = "Απάντηση στη Θ.Ενότητα";
@@ -116,16 +115,27 @@ $lang['Board_disable'] = "Συγνώμη αλλά αυτή η συζήτηση είναι προσωρινά μη διαθέσ
 // Global Header strings
 //
 $lang['Registered_users'] = "Εγγεγραμμένοι Χρήστες:";
+$lang['Browsing_forum'] = "Χρήστες συνδεδεμένοι στο forum:";
+$lang['Online_users_zero_total'] = "Συνολικά <b>0</b> χρήστες είναι συνδεδεμένοι :: ";
 $lang['Online_users_total'] = "%d χρήστες είναι συνδεδεμένοι αυτήν την στιγμή:: ";
 $lang['Online_user_total'] = "%d χρήστης είναι συνδεδεμένος αυτήν την στιγμή:: ";
+$lang['Reg_users_zero_total'] = "0 εγγεγραμένοι, ";
 $lang['Reg_users_total'] = "%d εγγεγραμμένοι, ";
 $lang['Reg_user_total'] = "%d εγγεγραμμένος, ";
+$lang['Hidden_users_zero_total'] = "0 μη ορατοί και ";
 $lang['Hidden_users_total'] = "%d μη ορατοί και ";
 $lang['Hidden_user_total'] = "%d μη ορατός και ";
+$lang['Guest_users_zero_total'] = "0 επισκέπτες";
 $lang['Guest_users_total'] = "%d επισκέπτες";
 $lang['Guest_user_total'] = "%d επισκέπτης";
+$lang['Record_online_users'] = "Περισσότεροι χρήστες υπό σύνδεση <b>%s</b> στίς %s"; // first %s = number of users, second %s is the date.
+
+$lang['Admin_online_color'] = "%sΔιαχειριστής%s";
+$lang['Mod_online_color'] = "%sΔιαμεσολαβητής%s";
 
 $lang['You_last_visit'] = "Η τελευταία επίσκεψή σας ήταν στίς %s"; // %s replaced by date/time
+$lang['Current_time'] = "Η ώρα είναι %s"; // %s replaced by time
+
 $lang['Search_new'] = "Δημοσιεύσεις που έγιναν μετά την τελευταία σας επίσκεψη";
 $lang['Search_your_posts'] = "Ανασκόπηση των δημοσιεύσεων σας";
 $lang['Search_unanswered'] = "Αναπάντητες δημοσιεύσεις";
@@ -135,16 +145,20 @@ $lang['Edit_profile'] = "Επεξεργασία του Προφίλ σας";
 $lang['Search'] = "Αναζήτηση";
 $lang['Memberlist'] = "Κατάλογος χρηστών";
 $lang['FAQ'] = "Σ.Ε";
+$lang['BBCode_guide'] = "BBCode Εγχειρίδιο";
 $lang['Usergroups'] = "Ομάδες Χρηστών";
 $lang['Last_Post'] = "Τελευταία  Δημοσίευση";
-$lang['Moderator'] = "Διαμεσολαβητής/τες";
+$lang['Moderator'] = "Διαμεσολαβητής";
+$lang['Moderators'] = "Διαμεσολαβητές";
 
 
 //
 // Stats block text
 //
+$lang['Posted_articles_zero_total'] = "Οι χρήστες μας έχουν δημοσιεύσει συνολικά <b>0</b> θέματα"; // Number of posts
 $lang['Posted_article_total'] = "Οι χρήστες μας έχουν δημοσιεύσει συνολικά <b>%d</b> θέμα"; // Number of posts
 $lang['Posted_articles_total'] = "Οι χρήστες μας έχουν δημοσιεύσει συνολικά <b>%d</b> θέματα"; // Number of posts
+$lang['Registered_users_zero_total'] = "Έχουμε <b>0</b> εγγεγραμμένους χρήστες"; // # registered users
 $lang['Registered_user_total'] = "Έχουμε <b>%d</b> εγγεγραμμένο χρήστη"; // # registered users
 $lang['Registered_users_total'] = "Οι εγγεγραμμένοι χρήστες μας είναι συνολικά <b>%d</b> "; // # registered users
 $lang['Newest_user'] = "Το νέο μέλος στις συζητήσεις μας είναι ο/η <b>%s%s%s</b>"; // a href, username, /a 
@@ -170,6 +184,7 @@ $lang['Logout'] = "Αποσύνδεση";
 $lang['Forgotten_password'] = "Έχω ξεχάσει το συνθηματικό μου";
 
 $lang['Log_me_in'] = "Να γίνετε η σύνδεση αυτόματα σε κάθε μου επίσκεψη";
+$lang['Error_login'] = "Έχετε εισαγάγει λάθος ή μη ενεργοποιημένο χρήστη ή λάθος κωδικό";
 
 
 //
@@ -243,7 +258,8 @@ $lang['All_Posts'] = "Όλες οι Δημοσιεύσεις";
 $lang['Newest_First'] = "Πρώτα οι νεώτερες";
 $lang['Oldest_First'] = "Πρώτα οι παλαιότερες";
 
-$lang['Return_to_top'] = "Επιστροφή στην κορυφή";
+// $lang['Return_to_top'] = "Επιστροφή στην κορυφή";
+$lang['Back_to_top'] = "Επιστροφή στην κορυφή";
 
 $lang['Read_profile'] = "Επισκόπηση του προφίλ των χρηστών"; 
 $lang['Send_email'] = "Αποστολή μηνύματος σε χρήστη";
@@ -271,6 +287,7 @@ $lang['Start_watching_topic'] = "Παρακολούθηση αυτής της Θ.Ενότητας για απαντήσε
 $lang['No_longer_watching'] = "Αυτήν την Θ.Ενότητα δεν την παρακολουθείτε πλέον";
 $lang['You_are_watching'] = "Αυτήν την Θ.Ενότητα  την παρακολουθείτε";
 
+$lang['Total_votes'] = "Σύνολο Ψήφων";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -320,6 +337,7 @@ $lang['Add_option'] = "Προσθήκη επιλογής";
 $lang['Update'] = "Ενημέρωση";
 $lang['Delete'] = "Διαγραφή";
 $lang['Poll_for'] = "Διεξαγωγή δημοψηφίσματος για";
+$lang['Days'] = "Ημέρες"; // This is used for the Run poll for ... Days + in admin_forums for pruning
 $lang['Poll_for_explain'] = "[ Εισαγάγετε 0 ή αφήστε το κενό, για δημοψήφισμα δίχως χρονικό όριο ]";
 $lang['Delete_poll'] = "Διαγραφή δημοψηφίσματος";
 
@@ -345,6 +363,48 @@ $lang['Vote_cast'] = "Η ψήφος σας καταχωρήθηκε";
 
 $lang['Topic_reply_notification'] = "Γνωστοποίηση απάντησης σε Θ.Ενότητα";
 
+$lang['bbcode_b_help'] = "Έντονο κείμενο: [b]κείμενο[/b]  (alt+b)";
+$lang['bbcode_i_help'] = "Πλάγια γραφή: [i]κείμενο[/i]  (alt+i)";
+$lang['bbcode_u_help'] = "Υπογραμμισμένο κείμενο: [u]κείμενο[/u]  (alt+u)";
+$lang['bbcode_q_help'] = "Κείμενο σε παράθεση: [quote]κείμενο[/quote]  (alt+q)";
+$lang['bbcode_c_help'] = "Εμφάνιση κώδικα: [code]κώδικας[/code]  (alt+c)";
+$lang['bbcode_l_help'] = "Λίστα: [list]Κείμενο[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Ταξινομημένη λίστα: [list=]κείμενο[/list]  (alt+o)";
+$lang['bbcode_p_help'] = "Εισαγωγή εικόνας: [img]http://image_url[/img]  (alt+p)";
+$lang['bbcode_w_help'] = "Εισαγωγή URL: [url]http://url[/url] ή [url=http://url]URL text[/url]  (alt+w)";
+$lang['bbcode_a_help'] = "Να κλείσουν όλα τα ανοιχτά bbCode tags";
+$lang['bbcode_s_help'] = "Χρώμα γραμματοσειράς: [color=red]κείμενο[/color]  Τεχ: επίσης μπορείτε να χρησιμοποιήσετε color=#FF0000";
+$lang['bbcode_f_help'] = "Μέγεθος γραμματοσειράς: [size=x-small]μικρή γραμματοσειρά[/size]";
+
+$lang['Emoticons'] = "Emoticons";
+$lang['More_emoticons'] = "Περισσότερα Emoticons";
+
+$lang['Font_color'] = "Χρώμα γραμματοσειράς";
+$lang['color_default'] = "Προεπιλογή";
+$lang['color_dark_red'] = "Βαθύ Κόκκινο";
+$lang['color_red'] = "Κόκκινο";
+$lang['color_orange'] = "Πορτοκαλί";
+$lang['color_brown'] = "Καφέ";
+$lang['color_yellow'] = "Κίτρινο";
+$lang['color_green'] = "Πράσινο";
+$lang['color_olive'] = "Λαδί";
+$lang['color_cyan'] = "Κυανό";
+$lang['color_blue'] = "Μπλέ";
+$lang['color_dark_blue'] = "Βαθύ Μπλέ";
+$lang['color_indigo'] = "Λουλακί";
+$lang['color_violet'] = "Βιολετί";
+$lang['color_white'] = "Λευκό";
+$lang['color_black'] = "Μαύρο";
+
+$lang['Font_size'] = "Μέγεθος γραμματοσειράς";
+$lang['font_tiny'] = "Μικρότερο";
+$lang['font_small'] = "Μικρό";
+$lang['font_normal'] = "Κανονικό";
+$lang['font_large'] = "Μεγάλο";
+$lang['font_huge'] = "Μέγιστο";
+
+$lang['Close_Tags'] = "Να κλείσουν τα Tags";
+$lang['Styles_tip'] = "Τεχ: Τα στίλ μπορούν να εφαρμοστούν γρηγορότερα σε επιλεγμένο κείμενο";
 
 //
 // Private Messaging
@@ -389,6 +449,10 @@ $lang['PM_disabled'] = "Στο σύστημα αυτό τα προσωπικά μηνύματα έχουν απενεργοποι
 $lang['Cannot_send_privmsg'] = "Συγνώμη αλλά ο Διαχειριστής σας έχει αποκλείσει από την δυνατότητα αποστολής προσωπικών μηνυμάτων ";
 $lang['No_to_user'] = "Πρέπει να ορίσετε τον παραλήπτη χρήστη για να αποσταλεί αυτό το μήνυμα";
 $lang['No_such_user'] = "Συγνώμη δεν υπάρχει αυτός ο χρήστης";
+
+$lang['Disable_HTML_pm'] = "Απενεργοποίηση της HTML σε αυτό το μήνυμα";
+$lang['Disable_BBCode_pm'] = "Απενεργοποίηση του BBCode σε αυτό το μήνυμα";
+$lang['Disable_Smilies_pm'] = "Απενεργοποίηση των Smilies σε αυτό το μήνυμα";
 
 $lang['Message_sent'] = "Το μήνυμα σας έχει αποσταλεί";
 
@@ -485,6 +549,7 @@ $lang['Public_view_email'] = "Να είναι πάντα εμφανές το email μου";
 $lang['Current_password'] = "Υπάρχον κωδικός";
 $lang['New_password'] = "Νέος κωδικός";
 $lang['Confirm_password'] = "Επαλήθευση κωδικού";
+$lang['Confirm_password_explain'] = "Πρέπει να επαληθευτή ο κωδικός σας εφόσον επιθυμείται να τον αλλάξετε ή να  τροποποιήσετε το email σας";
 $lang['password_if_changed'] = "Πρέπει να εισαγάγετε το κωδικό μόνο εφόσον σκοπεύετε να το αλλάξετε";
 $lang['password_confirm_if_changed'] = "Πρέπει να επαληθεύσετε το κωδικό μόνο εάν το αλλάξατε παραπάνω";
 
@@ -517,7 +582,16 @@ $lang['Profile_updated_inactive'] = "Το προφίλ σας έχει ενημερωθεί, όμως ο λογαρ
 
 $lang['Password_mismatch'] = "Οι κωδικοί που εισαγάγατε δεν ταιριάζουν";
 $lang['Current_password_mismatch'] = "Ο κωδικός που εισαγάγατε δεν ταιριάζει με αυτόν που είναι αποθηκευμένος στην βάση δεδομένων μας";
-$lang['Invalid_username'] = "Το όνομα χρήστη που επιλέξατε χρησιμοποιείται ή δεν επιτρέπετε ή περιέχει ακατάλληλους χαρακτήρες, όπως οι \" χαρακτήρες";
+
+$lang['Password_long'] = "Ο κωδικός σας δεν πρέπει να υπερβαίνει τους 32 χαρακτήρες";
+$lang['Username_taken'] = "Συγνώμη, το όνομα που επιλέξατε χρησιμοποιείται είδη";
+$lang['Username_invalid'] = "Συγνώμη, το όνομα που επιλέξατε περιέχει μη επιτρεπτούς χαρακτήρες όπως τα \"";
+$lang['Username_disallowed'] = "Συγνώμη, το όνομα που επιλέξατε δεν επιτρέπετε";
+$lang['Email_taken'] = "Συγνώμη, το email αυτό ανήκει είδη σε μέλος";
+$lang['Email_banned'] = "Συγνώμη, στο email αυτό έχει απαγορευθεί η συμμετοχή";
+$lang['Email_invalid'] = "Συγνώμη, το email αυτό είναι μη έγκυρο";
+
+// $lang['Invalid_username'] = "Το όνομα χρήστη που επιλέξατε χρησιμοποιείται ή δεν επιτρέπετε ή περιέχει ακατάλληλους χαρακτήρες, όπως οι \" χαρακτήρες";
 $lang['Signature_too_long'] = "Η υπογραφή σας είναι υπερβολικά μεγάλη";
 $lang['Fields_empty'] = "Πρέπει να συμπληρωθούν όλα τα υποχρεωτικά πεδία";
 $lang['Avatar_filetype'] = "Ο τύπος του αρχείου Άβαταρ πρέπει να είναι .jpg, .gif ή .png";
@@ -535,6 +609,13 @@ $lang['Account_active'] = "Ο λογαριασμός σας ενεργοποιήθηκε. Σας ευχαριστούμε γι
 $lang['Account_active_admin'] = "Ο λογαριασμός ενεργοποιήθηκε";
 $lang['Reactivate'] = "Επανεργοποιήστε τον λογαριασμό σας !";
 $lang['COPPA'] = "Ο λογαριασμό σας δημιουργήθηκε, πρέπει όμως να εγκριθεί. Ελέγξτε το email σας για περισσότερες πληροφορίες.";
+
+$lang['Registration'] = "Όροι Εγγραφής";
+$lang['Reg_agreement'] = "Οι διαχειριστές και οι διαμεσολαβητές προσπαθούν να διατηρούν το περιεχόμενο αυτής της Δ.Συζήτησης καθαρό από μεμπτό περιεχόμενο επεξεργάζοντας το και ενίοτε διαγράφοντας το. Όμως είναι αδύνατο να ελέγχονται όλα τα μηνύματα που αναρτώνται. Γι' αυτό λαμβάνεται την γνώση πως, ότι αναρτάται εκφράζει μόνο τον δημιουργό του μηνύματος και όχι την άποψη των διαχειριστών, των διαμεσολαβητών και του webmaster (εκτός από τα μηνύματα τα οποία αναρτήθηκαν από αυτούς) και δεν φέρουν καμία ευθύνη γι' αυτά.<br /><br />Συμφωνείτε να μην αναρτάτε μηνύματα με υβριστικό, άσεμνο, πρόστυχο, χυδαίο, συκοφαντικό, απεχθές, απειλητικό, με πορνογραφικό προσανατολισμό ή οποιοδήποτε άλλο περιεχόμενο που υπόκεινται στην νομοθετική αρχή. Μη συμμόρφωση θα οδηγήσει σε άμεση και μόνιμη διαγραφή του μέλους (με γνωστοποίηση της ενέργεια του στο φορέα παροχής υπηρεσιών Internet μέσω του οπίου συνδεθήκατε). Η διεύθυνση IP του εκάστοτε μηνύματος καταγράφετε για να πληρούνται τα παραπάνω. Συμφωνείτε στο ότι ο webmaster, ο διαχειριστής ή ο διαμεσολαβητής έχουν το δικαίωμα να διαγράψουν, να επεξεργαστούν ή να μετακινήσουν οποιαδήποτε ανάρτηση ή Θ.Ενότητα η οποία δεν πληροί τα παραπάνω. Ως μέλος αποδέχομαι, οι πληροφορίες οι οποίες θα εισαγάγω παρακάτω να αποθηκευτούν σε βάση δεδομένων. Οι πληροφορίες αυτές δεν πρόκειται να γνωστοποιηθούν σε τρίτο πρόσωπο ή φορέα χωρίς την άδεια σας, όμως ο webmaster, ο διαχειριστής ή ο διαμεσολαβητής δεν φέρει την ευθύνη απώλειας τους από κακόβουλους χρήστες σε περίπτωση εισβολής τους στον διακομιστή.<br /><br />Αυτό το σύστημα της Δ.Συζήτησης βασίζεται σε cookies τα οποία αποθηκεύονται στον υπολογιστή σας. Τα cookies αυτά δεν περιέχουν καμία απολύτως πληροφορία από τα στοιχεία που θα εισαγάγετε παρακάτω, εξυπηρετούν μόνο στο να βελτιωθεί η περιήγηση σας στην Δ.Συζήτηση. Η email διεύθυνση χρησιμοποιείτε μόνο για την επιβεβαίωση των στοιχείων εγγραφής σας και του κωδικού, καθώς και την αποστολή νέου κωδικού σε περίπτωση που λησμονήσετε το τρέχων ενεργό κωδικό σας.<br /><br />Πατώντας την εγγραφή σας παρακάτω δεσμεύεστε με τους παραπάνω όρους.";
+
+$lang['Agree_under_13'] = "Συμφωνώ με τα παραπάνω και είμαι <b>ΚΑΤΩ</b> των 13 ετών";
+$lang['Agree_over_13'] = "Συμφωνώ με τα παραπάνω και είμαι <b>ΑΝΩ</b> των 13 ετών";
+$lang['Agree_not'] = "Δεν συμφωνώ με τους παραπάνω όρους";
 
 $lang['Wrong_activation'] = "Το κλειδί ενεργοποίησης που εισαγάγατε δεν ταιριάζει με κανένα  κλειδί της βάσης δεδομένων";
 $lang['Send_password'] = "Αποστολή νέου κωδικού "; 
@@ -614,6 +695,7 @@ $lang['User_is_member_group'] = "Ο χρήστης αυτός είναι ήδη μέλος αυτής της ομάδα
 $lang['Group_type_updated'] = "Ο χαρακτήρας της ομάδας ανανεώθηκε επιτυχώς";
 
 $lang['Could_not_add_user'] = "Ο χρήστης που επιλέξατε δεν υπάρχει";
+$lang['Could_not_anon_user'] = "Δεν μπορείτε να εντάξετε σε ομάδα ανώνυμο χρήστη";
 
 $lang['Confirm_unsub'] = "Είσθε σίγουρος ότι θέλετε να ακυρώσετε την συμμετοχή σας σ' αυτήν την ομάδα;";
 $lang['Confirm_unsub_pending'] = "Η συμμετοχή σας σ' αυτήν την ομάδα δεν έχει εγκριθεί ακόμα. Είσθε σίγουρος ότι θέλετε να ακυρώσετε την συμμετοχή σας σ' αυτήν την ομάδα;";
@@ -634,7 +716,7 @@ $lang['This_hidden_group'] = "Αυτή η ομάδα είναι κρυφή δεν δέχεται μέλη με αυτομ
 $lang['Member_this_group'] = "Είστε μέλος αυτής της ομάδας";
 $lang['Pending_this_group'] = "Η ένταξη σας στην ομάδα προωθείτε";
 $lang['Are_group_moderator'] = "Είστε Διαμεσολαβητής Ομάδας";
-$lang['None'] = "Κανένα";
+$lang['None'] = "Κανένας";
 
 $lang['Subscribe'] = "Εγγραφή";
 $lang['Unsubscribe'] = "Τερματισμός εγγραφής";
@@ -654,6 +736,8 @@ $lang['Search_author_explain'] = "Ο χαρακτήρας * χρησιμοποιείται ως μπαλαντέρ";
 
 $lang['Search_for_any'] = "Αναζήτησε οποιονδήποτε όρο ή όπως εισήχθη το ερώτημα";
 $lang['Search_for_all'] = "Αναζήτησε όλους τους όρους";
+$lang['Search_title_msg'] = "Αναζήτησε σε θέμα και στο κείμενο του μηνύματος";
+$lang['Search_msg_only'] = "Αναζήτησε μόνο στο κείμενο του μηνύματος";
 
 $lang['Search_author'] = "Αναζήτηση αποστολέα";
 
@@ -696,9 +780,12 @@ $lang['Sorry_auth_vote'] = "Συγνώμη αλά μόνο οι %s μπορούν να συμμετάσχουν σε δη
 // These replace the %s in the above strings
 $lang['Anonymous_Users'] = "<b>ανώνυμοι χρήστες</b>";
 $lang['Registered_Users'] = "<b>εγγεγραμμένοι χρήστες</b>";
-$lang['Users_granted_access'] = "<b>χρήστες με δικαίωμα ειδικής πρόσβασης</b>";
-$lang['Moderators'] = "<b>διαμεσολαβητές</b>";
-$lang['Administrators'] = "<b>διαχειριστές</b>";
+// $lang['Users_granted_access'] = "<b>χρήστες με δικαίωμα ειδικής πρόσβασης</b>";
+$lang['Auth_Users_granted_access'] = "<b>χρήστες με δικαίωμα ειδικής πρόσβασης</b>";
+// $lang['Moderators'] = "<b>διαμεσολαβητές</b>";
+$lang['Auth_Moderators'] = "<b>διαμεσολαβητές</b>";
+//$lang['Administrators'] = "<b>διαχειριστές</b>";
+$lang['Auth_Administrators'] = "<b>διαχειριστές</b>";
 
 $lang['Not_Moderator'] = "Δεν είστε Διαμεσολαβητής σε αυτή τη Δ.Συζήτηση";
 $lang['Not_Authorised'] = "Μη εξουσιοδοτημένος";
@@ -710,9 +797,14 @@ $lang['You_been_banned'] = "Η συμμετοχή σ' αυτή την Δ.Συζήτηση σας έχει απαγορευ
 // Viewonline
 //
 $lang['Who_is_online'] = "Χρήστες σε σύνδεση";
-$lang['Reg_users_online'] = "Συνδεδεμένοι είναι %d Εγγεγραμμένοι και "; // There ae 5 Registered and
+$lang['Reg_users_zero_online'] = "Συνδεδεμένοι είναι 0 Μέλοι και "; // There ae 5 Registered and
+$lang['Reg_users_online'] = "Συνδεδεμένοι είναι %d Μέλοι και "; // There ae 5 Registered and
+$lang['Reg_user_online'] = "Είναι συνδεδεμένο %d Μέλος και "; // There ae 5 Registered and
+$lang['Hidden_users_zero_online'] = "0 Κρυφοί χρήστες"; // 6 Hidden users online
 $lang['Hidden_users_online'] = "%d Κρυφοί χρήστες"; // 6 Hidden users online
+$lang['Hidden_user_online'] = "%d Κρυφός χρήστης"; // 6 Hidden users online
 $lang['Guest_users_online'] = "Συνδεδεμένοι είναι %d Επισκέπτες"; // There are 10 Guest users online
+$lang['Guest_users_zero_online'] = "Συνδεδεμένοι είναι 0 Επισκέπτες"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "Συνδεδεμένος είναι %d Επισκέπτης"; // There is 1 Guest user online
 $lang['No_users_browsing'] = "Δεν υπάρχουν συνδεδεμένοι χρήστες αυτή την στιγμή";
 
@@ -748,6 +840,7 @@ $lang['Topics_Removed'] = "Οι επιλεγμένες Θ. Ενότητες διαγράφηκαν με επιτυχία απ
 $lang['Topics_Locked'] = "Οι επιλεγμένες Θ. Ενότητες έχουν κλειδώση";
 $lang['Topics_Moved'] = "Οι επιλεγμένες Θ. Ενότητες μετακινήθηκαν";
 $lang['Topics_Unlocked'] = "Οι επιλεγμένες Θ. Ενότητες έχουν ξεκλειδώση";
+$lang['No_Topics_Moved'] = "Οι Θ. Ενότητες δεν μετακινήθηκαν";
 
 $lang['Confirm_delete_topic'] = "Είσθε σίγουρος ότι θέλετε να διαγράψετε την /τις επιλεγμένη /ες Θ.Ενότητα /τες;";
 $lang['Confirm_lock_topic'] = "Είσθε σίγουρος ότι θέλετε να κλειδώσετε την /τις επιλεγμένη /ες Θ.Ενότητα /τες;";
@@ -896,7 +989,7 @@ $lang['Critical_Error'] = "Κρίσιμο Λάθος";
 $lang['An_error_occured'] = "Παρουσιάσθηκε Λάθος";
 $lang['A_critical_error'] = "Παρουσιάσθηκε Κρίσιμο Λάθος";
 
-$lang['Error_login'] = "Έχετε εισαγάγει λάθος ή μη ενεργοποιημένο χρήστη ή λάθος κωδικό";
+
 
 //
 // That's all Folks!
