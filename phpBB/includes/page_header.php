@@ -297,7 +297,7 @@ $template->assign_vars(array(
 	'L_LOGIN' 			=> $user->lang['Login'],
 	'L_LOG_ME_IN' 		=> $user->lang['Log_me_in'],
 	'L_AUTO_LOGIN' 		=> $user->lang['Log_me_in'],
-	'L_INDEX' 			=> sprintf($user->lang['Forum_Index'], $board_config['sitename']),
+	'L_INDEX' 			=> $user->lang['Forum_Index'],
 	'L_FAQ' 			=> $user->lang['FAQ'],
 	'L_REGISTER' 		=> $user->lang['Register'],
 	'L_PROFILE' 		=> $user->lang['Profile'],
