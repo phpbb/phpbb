@@ -875,6 +875,10 @@ switch ($row['config_value'])
 			VALUES ('enable_confirm', '0')";
 		_sql($sql, $errored, $error_ary);
 
+		$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('sendmail_fix', '0')";
+		_sql($sql, $errored, $error_ary);
+
 		break;
 
 	default:

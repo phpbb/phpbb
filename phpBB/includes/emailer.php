@@ -141,7 +141,7 @@ class emailer
 	// Send the mail out to the recipients set previously in var $this->address
 	function send()
 	{
-		global $board_config, $lang, $phpEx, $phpbb_root_path;
+		global $board_config, $lang, $phpEx, $phpbb_root_path, $db;
 
     	// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
@@ -207,7 +207,8 @@ class emailer
 		// Build header
 		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\n" : '') . (($this->from != '') ? "From: <$this->from>\n" : "From: <" . $board_config['board_email'] . ">\n") . "Return-Path: <" . $board_config['board_email'] . ">\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . (($cc != '') ? "Cc:$cc\n" : '')  . (($bcc != '') ? "Bcc:$bcc\n" : '') . trim($this->extra_headers); 
 
-		$to = ($to == '') ? "undisclosed-recipients:;" : $to;
+		$empty_to_header = ($to == '') ? TRUE : FALSE;
+		$to = ($to == '') ? (($board_config['sendmail_fix'] && !$this->use_smtp) ? ' ' : 'Undisclosed-recipients:;') : $to;
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )
@@ -222,6 +223,22 @@ class emailer
 		else
 		{
 			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
+			
+			if (!$result && !$board_config['sendmail_fix'] && $empty_to_header)
+			{
+				$to = ' ';
+
+				$sql = "UPDATE " . CONFIG_TABLE . " 
+					SET config_value = '1'
+					WHERE config_name = 'sendmail_fix'";
+				if (!$db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, 'Unable to update config table', '', __LINE__, __FILE__, $sql);
+				}
+
+				$board_config['sendmail_fix'] = 1;
+				$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
+			}
 		}
 
 		// Did it work?
