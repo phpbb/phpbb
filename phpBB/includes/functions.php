@@ -497,7 +497,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 //
 function validate_username($username)
 {
-	global $db, $lang;
+	global $db, $lang, $userdata;
 
 	$sql = "SELECT u.username, g.group_name
 		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
@@ -507,9 +507,23 @@ function validate_username($username)
 				OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
 	if ( $result = $db->sql_query($sql) )
 	{
-		if ( $db->sql_fetchrow($result) )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			return array('error' => $lang['Username_taken']);
+			if($userdata['session_logged_in'])
+			{
+				if($row['username'] != $userdata['username'])
+				{
+					return array('error' => $lang['Username_taken']);
+				}
+				else
+				{
+					return array('error' => '');
+				}
+			}
+			else
+			{
+				return array('error' => $lang['Username_taken']);
+			}
 		}
 	}
 
