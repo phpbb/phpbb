@@ -443,9 +443,11 @@ CREATE TABLE phpbb_posts (
    post_edit_time int(11),
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
-   KEY topic_id (topic_id), 
-   KEY poster_ip (poster_ip), 
-   KEY poster_id (poster_id)
+   KEY forum_id (forum_id),
+   KEY topic_id (topic_id),
+   KEY poster_ip (poster_ip),
+   KEY poster_id (poster_id),
+   KEY post_approved (post_approved)
 );
 
 
@@ -524,6 +526,7 @@ CREATE TABLE phpbb_reports (
   reason_id smallint(5) unsigned NOT NULL default '0',
   post_id mediumint(8) unsigned NOT NULL default '0',
   user_id mediumint(8) unsigned NOT NULL default '0',
+  user_notify tinyint(1) NOT NULL default '0',
   report_time int(10) unsigned NOT NULL default '0',
   report_text text NOT NULL,
   PRIMARY KEY  (report_id)

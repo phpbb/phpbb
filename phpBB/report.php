@@ -30,10 +30,6 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-// temp temp temp
-very_temporary_lang_strings();
-// temp temp temp
-
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
 $reason_id = (!empty($_REQUEST['reason_id'])) ? intval($_REQUEST['reason_id']) : 0;
@@ -81,12 +77,12 @@ if (!empty($_POST['reason_id']))
 		'reason_id'		=>	(int) $reason_id,
 		'post_id'		=>	(int) $post_id,
 		'user_id'		=>	(int) $user->user_id,
+		'user_notify'	=>	(!empty($_POST['notify'])) ? 1 : 0,
 		'report_time'	=>	(int) time(),
 		'report_text'	=>	(string) $description
 	);
 
-	$sql = 'INSERT INTO ' . REPORTS_TABLE . " (reason_id, post_id, user_id, report_time, report_text)
-		VALUES ($reason_id, $post_id, " . $user->data['user_id'] . ', ' . time() . ", '" . $db->sql_escape($description) . "')";
+	$sql = 'INSERT INTO ' . REPORTS_TABLE . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 
 	if (!$row['post_reported'])
@@ -98,6 +94,8 @@ if (!empty($_POST['reason_id']))
 		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET topic_reported = 1 WHERE topic_id = ' . $topic_id);
 	}
 
+	// TODO: warn moderators or something ;)
+
 	trigger_error($user->lang['POST_REPORTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'));
 }
 
@@ -108,12 +106,18 @@ generate_forum_nav($row);
 $result = $db->sql_query('SELECT * FROM ' . REASONS_TABLE . ' ORDER BY reason_priority ASC');
 while ($row = $db->sql_fetchrow($result))
 {
-	$reason_name = str_replace('_', ' ', $row['reason_name']);
-	$reason_name = ucwords($reason_name);
-
-	if (!empty($user->lang['reports_reasons'][$row['reason_name']]))
+	if (!empty($user->lang['report_reasons']['title'][$row['reason_name']]))
 	{
-		$reason_description = $user->lang['reports_reasons'][$row['reason_name']];
+		$reason_name = $user->lang['report_reasons']['title'][$row['reason_name']];
+	}
+	else
+	{
+		$reason_name = ucwords(str_replace('_', ' ', $row['reason_name']));
+	}
+
+	if (!empty($user->lang['report_reasons']['description'][$row['reason_name']]))
+	{
+		$reason_description = $user->lang['report_reasons']['description'][$row['reason_name']];
 	}
 	else
 	{
@@ -133,30 +137,5 @@ $template->set_filenames(array(
 
 include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 
-
-function very_temporary_lang_strings()
-{
-	global $user;
-	$user->lang['reports_reasons'] = array(
-		'warez'				=>	'The post contains links to illegal or pirated software'
-	);
-
-
-	$lang = array(
-		'REASON'					=>	'Reason',
-		'ADDITIONAL_INFOS'			=>	'Additional infos',
-		'CAN_BE_LEFT_BLANK'			=>	'(can be left blank)',
-
-		'POST_NOT_EXIST'			=>	'The post you requested does not exist',
-
-		'REPORT_TO_ADMIN_EXPLAIN'	=>	'Using this forum you can report the selected post to admins.',
-
-		'REPORT_NOTIFY'				=>	'Notify me when this report is reviewed',
-		'POST_REPORTED'				=>	'This post has been successfully reported'
-	);
-
-	$user->lang = array_merge($user->lang, $lang);
-
-}
 
 ?>

@@ -57,6 +57,7 @@ $lang = array(
 	'HOURS'			=> 'Hours',
 	'MESSAGE'		=> 'Message',
 	'POST_TIME'		=> 'Post time',
+	'TOPIC_TIME'	=> 'Topic time',
 
 	'1_DAY'		=> '1 Day',
 	'7_DAYS'	=> '7 Days',
@@ -322,17 +323,18 @@ $lang = array(
 	'QUOTE'	=> 'Quote',
 	'CODE'	=> 'Code',
 
-	'QUICK_MOD' => 'Quick-mod tools',
-	'LOCK_TOPIC' => 'Lock Topic',
-	'UNLOCK_TOPIC' => 'Unlock Topic',
-	'MOVE_TOPIC' => 'Move Topic',
-	'DELETE_TOPIC' => 'Delete Topic',
-	'SPLIT_TOPIC' => 'Split Topic',
-	'MERGE_TOPIC' => 'Merge Topic',
-	'MAKE_NORMAL'	=> 'Make Normal',
-	'MAKE_STICKY'	=> 'Make Sticky',
-	'MAKE_ANNOUNCE'	=> 'Make Announce',
-	'MAKE_GLOBAL'	=> 'Make Global',
+	'QUICK_MOD'			=>	'Quick-mod tools',
+	'LOCK_TOPIC'		=>	'Lock Topic',
+	'UNLOCK_TOPIC'		=>	'Unlock Topic',
+	'MOVE_TOPIC'		=>	'Move Topic',
+	'DELETE_TOPIC'		=>	'Delete Topic',
+	'SPLIT_TOPIC'		=>	'Split Topic',
+	'MERGE_TOPIC'		=>	'Merge Topic',
+	'MAKE_NORMAL'		=>	'Make Normal',
+	'MAKE_STICKY'		=>	'Make Sticky',
+	'MAKE_ANNOUNCE'		=>	'Make Announce',
+	'MAKE_GLOBAL'		=>	'Make Global',
+	'VIEW_TOPIC_LOGS'	=>	'View Logs',
 
 	'STOP_WATCHING_TOPIC'	=> 'Stop watching this topic',
 	'START_WATCHING_TOPIC'	=> 'Watch this topic for replies',
@@ -960,8 +962,29 @@ $lang = array(
 		'Oct' => 'Oct',
 		'Nov' => 'Nov',
 		'Dec' => 'Dec',
-	)
+	),
 
+	'REASON'					=>	'Reason',
+	'ADDITIONAL_INFOS'			=>	'Additional infos',
+	'CAN_BE_LEFT_BLANK'			=>	'(can be left blank)',
+
+	'POST_NOT_EXIST'			=>	'The post you requested does not exist',
+
+	'REPORT_TO_ADMIN_EXPLAIN'	=>	'Using this form you can report the selected post to forum admins.',
+
+	'REPORT_NOTIFY'				=>	'Notify me when this report is reviewed',
+	'POST_REPORTED'				=>	'This post has been successfully reported',
+
+	'report_reasons' => array(
+		'title' => array(
+			'warez'	=>	'Warez',
+			'other'	=>	'Other'
+		),
+		'description' => array(
+			'warez'	=>	'The post contains links to illegal or pirated software',
+			'other'	=>	'The reported post does not fit into any other category, please use the description field'
+		)
+	)
 );
 
 
@@ -969,8 +992,40 @@ $lang = array(
 // lang_mod strings
 
 $lang = array_merge($lang, array(
+	'FRONT_PAGE'		=>	'Front page',
+	'REPORTED_POSTS'	=>	'Reported posts',
+	'VIEW_FORUM'		=>	'View forum',
+	'VIEW_LOGS'			=>	'View logs',
+
+	'LATEST_UNAPPROVED'	=>	'Latest 5 posts awaiting for approval',
+	'LATEST_REPORTED'	=>	'Latest 5 post reports',
+	'LATEST_LOGS'		=>	'Latest 5 logged actions',
+
+	'UNAPPROVED_POSTS_ZERO_TOTAL'	=> 	'There are no posts waiting for approval',
+	'UNAPPROVED_POSTS_TOTAL'		=> 	'In total there are <b>%d</b> posts waiting for approval',
+	'UNAPPROVED_POST_TOTAL'			=> 	'In total there is <b>1</b> post waiting for approval',
+
+	'REPORTS_ZERO_TOTAL'		=> 	'There are no reports to review',
+	'REPORTS_TOTAL'				=> 	'In total there are <b>%d</b> reports to review',
+	'REPORT_TOTAL'				=> 	'In total there is <b>1</b> report to review',
+	'REPORTER'					=>	'Reporter',
+	'REPORT_TIME'				=>	'Report time',
+
+// ------
+// strings borrowed from lang_admin
 	'ALL_FORUMS'				=>	'All forums',
 	'LOOK_UP_FORUM'				=>	'Select a forum',
+	'IP'	=> 'User IP',
+	'ACTION'=> 'Action',
+
+	'DISPLAY_LOG' => 'Display entries from previous',
+	'ALL_ENTRIES' => 'All entries',
+	'SORT_IP' => 'IP address',
+	'SORT_DATE' => 'Date',
+	'SORT_ACTION' => 'Log action',
+	'NO_ENTRIES' => 'No log entries for this period',
+// ------
+	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs for:',
 
 	'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
 
@@ -980,14 +1035,21 @@ $lang = array_merge($lang, array(
 	'TOPIC_NUMBER_IS'			=>	'Topic #%d is %s',
 	'POST_DETAILS'				=>	'Post details',
 
+	'CONFIRM_DELETE_POST'		=>	'Are you sure you want to delete this post?',
 	'CONFIRM_DELETE_POSTS'		=>	'Are you sure you want to delete these posts?',
+	'CONFIRM_DELETE_TOPIC'		=>	'Are you sure you want to delete this topic?',
+	'CONFIRM_DELETE_TOPICS'		=>	'Are you sure you want to delete these topics?',
 	'POST_REMOVED'				=>	'The selected post has been successfully removed from the database',
 	'POSTS_REMOVED'				=>	'The selected posts have been successfully removed from the database',
+	'TOPIC_REMOVED'				=>	'The selected topic has been successfully removed from the database',
+	'TOPICS_REMOVED'			=>	'The selected topics have been successfully removed from the database',
 
 	'RESYNC'					=>	'Resync',
 	'TOPIC_RESYNCHRONISED'		=>	'The selected topic has been resynchronised',
 	'TOPICS_RESYNCHRONISED'		=>	'The selected topics have been resynchronised',
 
+	'MOVE'						=>	'Move',
+	'UNGLOBALISE_EXPLAIN'		=>	'Before you can change the topic type of a global announcement you have to assign it to a forum where it will be moved to',
 	'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
 	'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
 	'LEAVE_SHADOW'				=>	'Leave a shadow topic in the old forum',
@@ -1016,8 +1078,9 @@ $lang = array_merge($lang, array(
 	'TOPIC_SPLIT'				=>	'The selected topic has been split successfully',
 	'CANNOT_SPLIT_FIRST_POST'	=>	'You cannot split the first post of a topic',
 
-	'DELETE_POSTS'				=>	'Delete posts',
+	'MOD_QUEUE'					=>	'Moderation queue',
 	'APPROVE_POSTS'				=>	'Approve posts',
+	'DISAPPROVE_POSTS'			=>	'Reject posts',
 	'POST_APPROVED'				=>	'The selected post has been approved',
 	'POSTS_APPROVED'			=>	'The selected posts have been approved',
 	'POST_UNAPPROVED'			=>	'The selected post has been unapproved',
@@ -1026,8 +1089,6 @@ $lang = array_merge($lang, array(
 	'TOPICS_APPROVED'			=>	'The selected topics have been approved',
 	'TOPIC_UNAPPROVED'			=>	'The selected topic has been unapproved',
 	'TOPICS_UNAPPROVED'			=>	'The selected topics have been unapproved',
-
-	'MOVE'						=>	'Move',
 
 	'LOCK'						=>	'Lock',
 	'UNLOCK'					=>	'Unlock',
@@ -1043,23 +1104,22 @@ $lang = array_merge($lang, array(
 	'NO_POST_SELECTED'			=>	'You must select at least one post to perform this action',
 	'NO_SUBJECT'				=>	'&lt;No subject&gt;',
 
-	'MOD_QUEUE'					=>	'Moderation queue',
 
-	'logm_lock'				=>	'Locked topic',
-	'logm_unlock'			=>	'Unlocked topic',
-	'logm_move'				=>	'Moved topic from forum %s',
-	'logm_split'			=>	'Split topic from topic %s',
-	'logm_delete_topic'		=>	'Deleted topic',
-	'logm_delete_post'		=>	'Deleted post %s',
-	'logm_delete_posts'		=>	'Deleted posts %s',
-	'logm_approve_topic'	=>	'Approved topic',
-	'logm_approve_post'		=>	'Approved post %s',
-	'logm_unapprove_topic'	=>	'Unapproved topic',
-	'logm_unapprove_post'	=>	'Unapproved post %s',
-	'logm_merge'			=>	'Merged posts from topic %s',
-	'logm_make_announce'	=>	'Topic type changed to Announcement',
-	'logm_make_sticky'		=>	'Topic type changed to Sticky',
-	'logm_make_normal'		=>	'Topic type changed to Regular',
-	'logm_make_global'		=>	'Topic type changed to Global Announcement'
+	'logm_lock'				=>	'<b>Locked topic</b>',
+	'logm_unlock'			=>	'<b>Unlocked topic</b>',
+	'logm_move'				=>	'<b>Moved topic</b> from forum %s',
+	'logm_split'			=>	'<b>Split topic</b> from topic %s',
+	'logm_delete_topic'		=>	'<b>Deleted topic</b> %s',
+	'logm_delete_post'		=>	'<b>Deleted post</b> %s',
+	'logm_delete_posts'		=>	'<b>Deleted posts</b> %s',
+	'logm_approve_topic'	=>	'<b>Approved topic</b>',
+	'logm_approve_post'		=>	'<b>Approved post</b> %s',
+	'logm_unapprove_topic'	=>	'<b>Unapproved topic</b>',
+	'logm_unapprove_post'	=>	'<b>Unapproved post</b> %s',
+	'logm_merge'			=>	'<b>Merged posts</b> from topic %s',
+	'logm_make_announce'	=>	'<b>Topic type changed</b> to Announcement',
+	'logm_make_sticky'		=>	'<b>Topic type changed</b> to Sticky',
+	'logm_make_normal'		=>	'<b>Topic type changed</b> to Normal',
+	'logm_make_global'		=>	'<b>Topic type changed</b> to Global Announcement'
 ));
 ?>

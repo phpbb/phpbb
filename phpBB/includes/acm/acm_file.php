@@ -170,6 +170,9 @@ class acm
 	{
 		global $db, $phpEx;
 
+		// Remove extra spaces and tabs
+		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+
 		$filemtime = intval(@filemtime($this->cache_dir . md5($query) . '.' . $phpEx));
 		if (time() - $filemtime > $expire_time)
 		{
@@ -187,6 +190,10 @@ class acm
 	function sql_save($query, $result)
 	{
 		global $db, $phpEx;
+
+		// Remove extra spaces and tabs
+		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+
 		if ($fp = @fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);

@@ -156,6 +156,11 @@ input.liteoption {
 	background-color : #FAFAFA;
 }
 
+/* greyed options for mcp_jumpbox */
+option.greyed {
+	background-color:	#EFEFEF;
+}
+
 /* --------------------------- */
 
 
