@@ -380,15 +380,24 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	if($this_block_end < $total_pages)
 	{
 		$page_string_append = ", ";
-		for($i = $this_block_end + 1; $i < $total_pages; $i+=10)
+
+		if(!($total_pages%10))
 		{
-			$page_string_append .= "<a href=\"".append_sid($base_url."&start=".(($i*$per_page) - $per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ((($i+9) < $total_pages) ? ($i+9) : $total_pages) ."</a>";
-			if($i < $total_pages - 10)
+			$page_url = append_sid($base_url."&start=".( ( ($this_block_end + 1) * $per_page ) - $per_page ) );
+			$page_string_append .= "<a href=\"$page_url\">$total_pages</a>";
+		}
+		else
+		{
+
+			for($i = $this_block_end + 1; $i < $total_pages; $i+=10)
 			{
-				$page_string_append .= ", ";
+				$page_string_append .= "<a href=\"".append_sid($base_url."&start=".(($i*$per_page) - $per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ((($i+9) < $total_pages) ? ($i+9) : $total_pages) ."</a>";
+				if($i < $total_pages - 10)
+				{
+					$page_string_append .= ", ";
+				}
 			}
 		}
-
 		$page_string .= $page_string_append;
 	}
 
