@@ -242,7 +242,7 @@ function init_userprefs($userdata)
 	}
 	else
 	{
-		$theme = setuptheme($board_config['override_user_themes']);
+		$theme = setuptheme($board_config['default_theme']);
 	}
 
 	if( $userdata['user_id'] != ANONYMOUS )
@@ -793,7 +793,7 @@ function smilies_pass($message)
 	for($i = 0; $i < count($smilies); $i++)
 	{
 		$orig[] = "'(?<=.\\W|\\W.|^\\W)" . preg_quote($smilies[$i]['code']) . "(?=.\\W|\\W.|\\W$)'i";
-		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">';
+		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
 	}
 
 	if($i > 0)
