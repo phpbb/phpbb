@@ -74,12 +74,14 @@ if (isset($_GET['view']) && !$post_id)
 				$sql_unread_time = (!empty($tracking_topics[$topic_id])) ? $tracking_topics[$topic_id] : 0;
 			}
 
-			$sql = "SELECT p.post_id
-				FROM (" . POSTS_TABLE . " p 
-				$sql_lastread)
-				WHERE p.topic_id = $topic_id 
+			$sql = 'SELECT p.post_id
+				FROM (' . POSTS_TABLE . " p 
+				$sql_lastread, " . TOPICS_TABLE . " t)
+				WHERE t.topic_id = $topic_id
+					AND p.topic_id = t.topic_id 
 					" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
-					AND (p.post_time >= $sql_unread_time)
+					AND (p.post_time >= $sql_unread_time
+						OR p.post_id = t.topic_last_post_id)
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
 
