@@ -1949,7 +1949,7 @@ function marklist(match, status)
 						<td class="<?php echo $row_class; ?>" class="gensmall" style="padding: 4px;" align="center" nowrap="nowrap">&nbsp;<?php echo $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']); ?>&nbsp;</td>
 						<td class="<?php echo $row_class; ?>" style="padding: 4px;" align="center" nowrap="nowrap"><span class="gen"><?php echo ($row['filesize'] >= 1048576) ? (round($row['filesize'] / 1048576 * 100) / 100) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? (round($row['filesize'] / 1024 * 100) / 100) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']); ?></span></td>
 						<td class="<?php echo $row_class; ?>" style="padding: 4px;" align="center"><span class="gen"><?php echo $row['download_count']; ?></span></td>
-						<td class="<?php echo $row_class; ?>" style="padding: 4px;" align="center"><input type="checkbox" name="mark[<?php echo $row['attach_id']; ?>]" value="1" /></td>
+						<td class="<?php echo $row_class; ?>" style="padding: 4px;" align="center"><input type="checkbox" name="mark[]" value="<?php echo $row['attach_id']; ?>" /></td>
 					</tr>
 <?php
 
