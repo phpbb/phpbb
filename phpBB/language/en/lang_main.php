@@ -96,11 +96,12 @@ $lang = array(
 	'VIEW_NEWEST_POST' => 'View newest post',
 	'PAGE_OF' => 'Page <b>%1$d</b> of <b>%2$d</b>',
 
-	'ICQ'	=> 'ICQ',
-	'AIM'	=> 'AIM',
-	'MSNM'	=> 'MSNM',
-	'YIM'	=> 'YIM',
-	'RANK'	=> 'Rank',
+	'ICQ'		=> 'ICQ',
+	'AIM'		=> 'AIM',
+	'MSNM'		=> 'MSNM',
+	'YIM'		=> 'YIM',
+	'JABBER'	=> 'Jabber', 
+	'RANK'		=> 'Rank',
 
 	'FORUM_INDEX' => 'Board Index', 
 
@@ -307,7 +308,7 @@ $lang = array(
 		'-2'	=> 'Bad',
 		'-1'	=> 'Poor', 
 		'0'		=> 'Neutral', 
-		'1'		=> 'Not Bad',
+		'1'		=> 'Positive',
 		'2'		=> 'Good',
 		'3'		=> 'Very Good', 
 		'4'		=> 'Extremely good', 
@@ -715,7 +716,7 @@ $lang = array(
 	'UCP_AIM'		=> 'AOL Instant Messenger',
 	'UCP_MSNM'		=> 'MSN Messenger',
 	'UCP_YIM'		=> 'Yahoo Messenger',
-	'JABBER'		=> 'Jabber Address', 
+	'UCP_JABBER'	=> 'Jabber Address', 
 	'BIRTHDAY'			=> 'Birthday', 
 	'BIRTHDAY_EXPLAIN'	=> 'Setting a year will list your age when it is your birthday.', 
 
@@ -1003,9 +1004,21 @@ $lang = array(
 	'USER_OFFLINE'	=> 'Offline', 
 
 	'SEND_IM'			=> 'Instant Messaging', 
-	'SEND_IM_EXPLAIN'	=> 'Please note that users may have elected to not receive unsolicited instant messages.', 
-	'SEND_MSN'		=> 'Please note that you need Microsoft (or MSN) Messenger installed to use this.', 
-	'SEND_AIM'		=> 'Please note that you need AOL Instant Messenger installed to use this.', 
+	'IM_RECIPIENT'		=> 'Recipient', 
+	'IM_NAME'			=> 'Your Name', 
+	'IM_MESSAGE'		=> 'Your Message', 
+	'IM_ICQ'			=> 'Please note that users may have elected to not receive unsolicited instant messages.', 
+	'IM_MSN'			=> 'Please note that you need Windows Messenger installed to use this.', 
+	'IM_AIM'			=> 'Please note that you need AOL Instant Messenger installed to use this.', 
+	'IM_JABBER'			=> 'Please note that users may have elected to not receive unsolicited instant messages.', 
+	'IM_ADD_CONTACT'	=> 'Add Contact', 
+	'IM_SEND_MESSAGE'	=> 'Send Message', 
+	'IM_DOWNLOAD_APP'	=> 'Download Application', 
+	'IM_AIM_EXPRESS'	=> 'AIM Express', 
+	'IM_SEND'			=> 'Send Message', 
+	'IM_NO_JABBER'		=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.', 
+	'IM_SENT_JABBER'	=> 'Your message to %1$s has been sent successfully.', 
+	'IM_JABBER_SUBJECT' => 'Message from user %1$s at %2$s',  // This needs to be part of a contact template
 
 
 	'Group_Control_Panel' => 'Group Control Panel',
