@@ -22,7 +22,7 @@ if (!empty($setmodules))
 define('IN_PHPBB', 1);
 // Include files
 $phpbb_root_path = '../';
-require($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
 if (!$auth->acl_get('a_attach'))

@@ -18,9 +18,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['POST']['BBCODES'] = $filename . $SID;
-
+	$module['POST']['BBCODES'] = basename(__FILE__) . $SID;
 	return;
 }
 
