@@ -41,25 +41,36 @@ class sql_db
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
 	{
 
-		$this->persistency = $persistency;
-		$this->user = $sqluser;
-		$this->password = $sqlpassword;
-		$this->server = $sqlserver;
-		$this->dbname = $database;
+		if(eregi("^([[:alnum:]]+):([[:alnum:]]+)$", $sqlserver, $db_type))
+		{
+			$this->persistency = $persistency;
+			$this->user = $sqluser;
+			$this->password = $sqlpassword;
+			$this->dbname = $database;
 
-		if($this->user || $this->password)
-		{
-//			$this->server = "DSN=".$this->server;
+			$this->server = $db_type[2];
+			$db_type = strtoupper($db_type[1]);
+
+			switch($db_type)
+			{
+				case 'MSACCESS':
+					$this->db_type = "msaccess";
+					break;
+				case 'MSSQL':
+					$this->db_type = "mssql";
+					break;
+				case 'DB2':
+					$this->db_type = "db2";
+					break;
+				default:
+					$this->db_type = "";
+			}
 		}
-		if($this->user)
+		else
 		{
-			$this->dsn .= ";UID=".$this->user;
+			return false;
 		}
-		if($this->password)
-		{
-			$this->dsn .= ";PWD=".$this->password;
-		}
-		
+
 		if($this->persistency)
 		{
 			$this->db_connect_id = odbc_pconnect($this->server, "", "");
@@ -71,6 +82,10 @@ class sql_db
 
 		if($this->db_connect_id)
 		{
+			if($this->db_type == "db2")
+			{
+				@odbc_autocommit($this->db_connect_id, off);
+			}
 			return $this->db_connect_id;
 		}
 		else
@@ -133,7 +148,12 @@ class sql_db
 						$num_rows = $limits[2];
 					}
 
-					$this->query_result = @odbc_exec($this->db_connect_id, $query);
+					if($this->db_type == "db2")
+					{
+						$query .= " FETCH FIRST ".($row_offset+$num_rows)." ROWS ONLY OPTIMIZE FOR ".($row_offset+$num_rows)." ROWS";
+					}
+
+					$this->query_result = odbc_exec($this->db_connect_id, $query);
 
 					$query_limit_offset = $row_offset;
 					$this->result_numrows[$this->query_result] = $num_rows;
@@ -157,11 +177,12 @@ class sql_db
 
 					$i =  $row_offset + 1;
 					$k = 0;
-					while(odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
+					while(@odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
 					{
+
 						for($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
 						{
-							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = odbc_result($result_id, $j);
+							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = @odbc_result($result_id, $j);
 						}
 						$i++;
 						$k++;
@@ -173,17 +194,37 @@ class sql_db
 			}
 			else
 			{
-				$this->query_result = odbc_exec($this->db_connect_id, $query);
+				$this->query_result = @odbc_exec($this->db_connect_id, $query);
 
 				if($this->query_result)
 				{
-					// This works for MSSQL, MS Access ... no idea about other DBs ...
-					$id_result = odbc_exec($this->db_connect_id, "SELECT @@IDENTITY AS last_id");
+					switch($this->db_type)
+					{
+						case 'msaccess':
+							$sql_id = "SELECT @@IDENTITY";
+							break;
+						case 'mssql':
+							$sql_id = "SELECT @@IDENTITY";
+							break;
+						case 'db2':
+							$sql_id = "VALUES(IDENTITY_VAL_LOCAL())";
+							break;
+						default:
+							$sql_id = "";
+					}
+					$id_result = @odbc_exec($this->db_connect_id, $sql_id);
 					if($id_result)
 					{
-						@odbc_fetch_row($id_result);
-						$this->next_id[$this->query_result] = odbc_result($id_result, 1);
+						$row_result = @odbc_fetch_row($id_result);
+						if($row_result)
+						{
+							$this->next_id[$this->query_result] = odbc_result($id_result, 1);
+						}
 					}
+				}
+				if($this->db_type == "db2")
+				{
+					odbc_commit($this->db_connect_id);
 				}
 
 				$this->query_limit_offset[$this->query_result] = 0;
