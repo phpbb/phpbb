@@ -27,6 +27,7 @@ define(HEADER_INC, TRUE);
 //
 // gzip_compression
 //
+$do_gzip_compress = FALSE;
 if($board_config['gzip_compress'])
 {
 	$phpver = phpversion();
@@ -40,10 +41,14 @@ if($board_config['gzip_compress'])
 	}
 	else if($phpver > "4.0")
 	{
-		// It would be nice if we
-		// used output buffering here 
-		// to allow compression for
-		// versions < 4.0.4pl1
+		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
+		{ 
+			$do_gzip_compress = TRUE;
+			ob_start();
+			ob_implicit_flush(0); 
+
+			header("Content-Encoding: gzip"); 
+		}
 	}
 }
 
