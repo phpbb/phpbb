@@ -397,7 +397,8 @@ CREATE TABLE phpbb_sessions (
    session_ip varchar(40) DEFAULT '0' NOT NULL,
    session_browser varchar(100) DEFAULT '' NULL,
    session_page varchar(50) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (session_id)
+   PRIMARY KEY (session_id),
+   KEY session_time (session_time)
 );
 
 

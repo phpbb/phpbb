@@ -47,8 +47,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '2.0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021004]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021030]');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
@@ -85,6 +86,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_us
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_posts', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_topics', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 
 # -- auth options
 INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_', 1);
