@@ -184,7 +184,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 			$kill_session_sql .= ( ($kill_session_sql != "") ? " OR " : "" ) . "session_user_id = $user_list[$i]";
 
 			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_userid)
-				VALUES ('" . $user_list[$i] . "')";
+				VALUES (" . $user_list[$i] . ")";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert ban_userid info into database", "", __LINE__, __FILE__, $sql);
