@@ -381,8 +381,8 @@ $template->assign_vars(array(
 	"L_SEARCH_NEW" => $lang['Search_new'], 
 	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
 	"L_SEARCH_SELF" => $lang['Search_your_posts'], 
-	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:' . $theme['fontcolor3'] . '">', '</span>'), 
-	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:' . $theme['fontcolor2'] . '">', '</span>'), 
+	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'), 
+	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'), 
 	"L_RECORD_USERS" => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
 
 	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
