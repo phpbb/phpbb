@@ -123,7 +123,7 @@ CREATE TABLE phpbb_bots (
 CREATE TABLE phpbb_cache (
   var_name varchar(255) DEFAULT '' NOT NULL,
   var_expires int(10) UNSIGNED DEFAULT '0' NOT NULL,
-  var_data text NOT NULL,
+  var_data mediumtext NOT NULL,
   PRIMARY KEY  (var_name)
 );
 
@@ -159,7 +159,7 @@ CREATE TABLE phpbb_drafts (
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   save_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
   draft_subject varchar(60),
-  draft_message text DEFAULT '' NOT NULL,
+  draft_message mediumtext DEFAULT '' NOT NULL,
   PRIMARY KEY (draft_id),
   KEY save_time (save_time)
 );
@@ -383,7 +383,7 @@ CREATE TABLE phpbb_posts (
    enable_sig tinyint(1) DEFAULT '1' NOT NULL,
    post_username varchar(30),
    post_subject varchar(60),
-   post_text text,
+   post_text mediumtext,
    post_checksum varchar(32) NOT NULL,
    post_encoding varchar(11) DEFAULT 'iso-8859-15' NOT NULL,
    post_attachment tinyint(1) DEFAULT '0' NOT NULL,
@@ -418,7 +418,7 @@ CREATE TABLE phpbb_privmsgs (
    enable_magic_url tinyint(1) DEFAULT '1' NOT NULL,
    enable_sig tinyint(1) DEFAULT '1' NOT NULL,
    message_subject varchar(60),
-   message_text text,
+   message_text mediumtext,
    message_edit_reason varchar(100),
    message_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    message_checksum varchar(32) DEFAULT '' NOT NULL,
@@ -667,7 +667,7 @@ CREATE TABLE phpbb_styles_template_data (
    template_filename varchar(50) DEFAULT '' NOT NULL,
    template_included text NOT NULL,
    template_mtime int(11) DEFAULT '0' NOT NULL,
-   template_data text,
+   template_data mediumtext,
    KEY (template_id),
    KEY (template_filename)
 );
@@ -680,7 +680,7 @@ CREATE TABLE phpbb_styles_theme (
    theme_path varchar(30) DEFAULT '' NOT NULL,
    theme_storedb tinyint(1) DEFAULT '0' NOT NULL,
    theme_mtime int(11) DEFAULT '0' NOT NULL,
-   theme_data text DEFAULT '' NOT NULL,
+   theme_data mediumtext DEFAULT '' NOT NULL,
    PRIMARY KEY (theme_id),
    UNIQUE theme_name (theme_name)
 );
