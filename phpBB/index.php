@@ -67,8 +67,8 @@ if( $mark_read == "forums" )
 // End handle marking posts
 //
 
-$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : "";
-$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : "";
+$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
+$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
 
 //
 // If you don't use these stats on your index
