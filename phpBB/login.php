@@ -77,11 +77,11 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			}
 			else
 			{
-				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
-				);
-
 				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+
+				$template->assign_vars(array(
+					"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?$redirect") . '">')
+				);
 
 				$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
 					
@@ -90,7 +90,15 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Error_login']);
+			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?$redirect") . '">')
+			);
+
+			$message = $lang['Error_login'] . "<br /><br />" . sprintf($lang['Click_return_login'], "<a href=\"" . append_sid("login.$phpEx?$redirect") . "\">", "</a> ") . "<br /><br />" .  sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
+				
+			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
 	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
