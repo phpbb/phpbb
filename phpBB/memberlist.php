@@ -718,7 +718,8 @@ function show_profile($data)
 	{
 		if ((empty($rank['rank_special']) && empty($data['user_rank']) && $data['user_posts'] >= $rank['rank_min']) || (!empty($rank['rank_special']) && $data['user_rank'] == $rank['rank_id']))
 		{
-			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+			$rank_title = (!empty($rank['rank_title'])) ? $rank['rank_title'] : '';
+			$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' .$rank_title . '" title="' . $rank_title . '" /><br />' : '';
 			break;
 		}
 	}
@@ -785,28 +786,29 @@ function show_profile($data)
 
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'RANK_IMG'		=> $rank_img,
+		'PM_IMG'		=> $pm_img,
+		'EMAIL_IMG'		=> $email_img,
+		'WWW_IMG'		=> $www_img,
+		'ICQ_STATUS_IMG'=> $icq_status_img,
+		'ICQ_IMG'		=> $icq_img,
+		'AIM_IMG'		=> $aim_img,
+		'MSN_IMG'		=> $msn_img,
+		'YIM_IMG'		=> $yim_img,
 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
-		'PM_IMG'		=> $pm_img,
-		'PM'			=> $pm,
-		'EMAIL_IMG'		=> $email_img,
-		'EMAIL'			=> $email,
-		'WWW_IMG'		=> $www_img,
-		'WWW'			=> $www,
-		'ICQ_STATUS_IMG'=> $icq_status_img,
-		'ICQ_IMG'		=> $icq_img,
-		'ICQ'			=> $icq,
-		'AIM_IMG'		=> $aim_img,
-		'AIM'			=> $aim,
-		'MSN_IMG'		=> $msn_img,
-		'MSN'			=> $msn,
-		'YIM_IMG'		=> $yim_img,
-		'YIM'			=> $yim, 
+		'RANK'	=> $rank_title, 
+		'PM'	=> $pm,
+		'EMAIL'	=> $email,
+		'WWW'	=> $www,
+		'ICQ'	=> $icq,
+		'AIM'	=> $aim,
+		'MSN'	=> $msn,
+		'YIM'	=> $yim, 
 
-		'S_ONLINE'		=> (intval($data['session_time']) >= time() - 300) ? true : false
+		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
 	);
 
 	return $template_vars;

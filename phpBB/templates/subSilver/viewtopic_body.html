@@ -85,18 +85,48 @@
 		<th width="150" height="26" nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
 	</tr>
+
 	<!-- BEGIN postrow -->
+
 	<!-- IF postrow.S_ROW_COUNT is even -->
 	<tr class="row1">
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
-		<!-- IF postrow.S_BELOW_MIN_KARMA -->
-		<td colspan="2" height="25" align="center"><span class="gensmall">{postrow.L_IGNORE_POST}</span></td>
-		<!-- ELSEIF postrow.S_WRONG_ENCODING  -->
-		<td colspan="2" height="25" align="center"><span class="gensmall">{postrow.L_IGNORE_POST}</span></td>
+
+		<!-- IF postrow.S_IGNORE_POST -->
+		<td class="gensmall" colspan="2" height="25" align="center">{postrow.L_IGNORE_POST}</td>
 		<!-- ELSE -->
-		<td rowspan="2" width="150" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a><b class="name">{postrow.POSTER_NAME}</b><span class="postdetails"><br />{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><!-- IF postrow.POSTER_POSTS --><br />{L_JOINED}: {postrow.POSTER_JOINED}<!-- ENDIF --><!-- IF postrow.POSTER_POSTS --><br />{L_POSTS}: {postrow.POSTER_POSTS}<!-- ENDIF --><!-- IF postrow.POSTER_FROM --><br />{L_LOCATION}: {postrow.POSTER_FROM}<!-- ENDIF --></span></td>
+		<td rowspan="2" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a>
+			
+			<table width="150" cellspacing="0" cellpadding="4" border="0">
+				<tr>
+					<td align="center"><b class="name">{postrow.POSTER_NAME}</b></td>
+				</tr>
+				<!-- IF postrow.POSTER_RANK -->
+				<tr>
+					<td class="postdetails" align="center">{postrow.POSTER_RANK}</td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF postrow.RANK_IMAGE -->
+				<tr>
+					<td align="center">{postrow.RANK_IMAGE}</td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF postrow.POSTER_AVATAR -->
+				<tr>
+					<td align="center">{postrow.POSTER_AVATAR}</td>
+				</tr>
+				<!-- ENDIF -->
+			</table>
+
+			<span class="postdetails">
+			<!-- IF postrow.POSTER_POSTS --><br />{L_JOINED}: {postrow.POSTER_JOINED}<!-- ENDIF -->
+			<!-- IF postrow.POSTER_POSTS --><br />{L_POSTS}: {postrow.POSTER_POSTS}<!-- ENDIF -->
+			<!-- IF postrow.POSTER_FROM --><br />{L_LOCATION}: {postrow.POSTER_FROM}<!-- ENDIF -->
+			</span>
+
+		</td>
 		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td>{postrow.POST_ICON_IMG}&nbsp;</td>
@@ -106,16 +136,21 @@
 			</tr>
 		</table></td>
 	</tr>
+
 	<!-- IF postrow.S_ROW_COUNT is even -->
 	<tr class="row1">
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
+
 		<td><table width="100%" cellspacing="0" cellpadding="5" border="0">
 			<tr>
 				<td height="120" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
 					<tr>
-						<td><span class="postbody">{postrow.MESSAGE}</span><!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF --><!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF --><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
+						<td><span class="postbody">{postrow.MESSAGE}</span>
+						<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
+						<!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF -->
+						<span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -143,11 +178,13 @@
 			</tr>
 		</table></td>
 	</tr>
+
 	<!-- IF postrow.S_ROW_COUNT is even -->
 	<tr class="row1">
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
+
 		<td class="nav" width="150" align="center" valign="middle"><a href="#top">{L_BACK_TO_TOP}</a></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -166,7 +203,9 @@
 	<tr>
 		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
+
 	<!-- END postrow -->
+
 	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
 		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></td>
 	</form></tr>

@@ -19,12 +19,21 @@
 			<tr>
 				<td class="gen" align="center"><!-- IF USER_COLOR neq '' --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
 			</tr>
+			<!-- IF RANK -->
+			<tr>
+				<td class="postdetails" align="center">{RANK}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF RANK_IMG -->
 			<tr>
 				<td align="center">{RANK_IMG}</td>
 			</tr>
+			<!-- ENDIF -->
+			<!-- IF AVATAR_IMG -->
 			<tr>
 				<td align="center">{AVATAR_IMG}</td>
 			</tr>
+			<!-- ENDIF -->
 			<tr>
 				<td align="center">{ONLINE_IMG}</td>
 			</tr>

@@ -187,8 +187,12 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';
-	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
-	watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
+
+	if ($config['email_enable'] && $config['allow_forum_notify'])
+	{
+		$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
+		watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
+	}
 
 	$s_forum_rules = '';
 	gen_forum_rules('forum', $forum_id);
@@ -549,7 +553,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	// after reading a topic
 	if ($user->data['user_id'] != ANONYMOUS && $update_forum)
 	{
-		markread('mark', $forum_id, false, time());
+		markread('mark', $forum_id);
 	}
 }
 

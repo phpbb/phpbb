@@ -250,7 +250,7 @@ if ($topic_attachment)
 
 // Are we watching this topic?
 $s_watching_topic = $s_watching_topic_img = '';
-if ($config['email_enable'])
+if ($config['email_enable'] && $config['allow_topic_notify'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
 }
@@ -617,7 +617,7 @@ $force_encoding = '';
 $bbcode_bitfield = $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
+$sql = "SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
@@ -652,7 +652,7 @@ do
 	$rowset[] = array(
 		'post_id'				=> $row['post_id'],
 		'post_time'				=> $row['post_time'],
-		'poster'				=> $poster,
+		'poster'				=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 		'user_id'				=> $row['user_id'],
 		'topic_id'				=> $row['topic_id'],
 		'forum_id'				=> $row['forum_id'],
@@ -893,8 +893,8 @@ foreach ($rowset as $key => $row)
 	if (!empty($row['below_karma']))
 	{
 		$template->assign_block_vars('postrow', array(
-			'S_BELOW_MIN_KARMA' => true, 
-			'S_ROW_COUNT' => $i++,
+			'S_IGNORE_POST' => true, 
+			'S_ROW_COUNT'	=> $i++,
 
 			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
 		);
@@ -910,10 +910,10 @@ foreach ($rowset as $key => $row)
 		else
 		{
 			$template->assign_block_vars('postrow', array(
-				'S_WRONG_ENCODING' => true, 
-				'S_ROW_COUNT' => $i++,
+				'S_IGNORE_POST'	=> true, 
+				'S_ROW_COUNT'	=> $i++,
 
-				'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
+				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
 			);
 
 			continue;
