@@ -427,7 +427,7 @@ function topic_review($topic_id, $is_inline_review)
 	//
 	// Go ahead and pull all data for this topic
 	//
-	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject
+	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
@@ -1250,16 +1250,16 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			$new_topic_id = $topic_id;
 		}
 
-		$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig)
-			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
+		$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, enable_bbcode, enable_html, enable_smilies, enable_sig)
+			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
 		$result = ($mode == "reply") ? $db->sql_query($sql, BEGIN_TRANSACTION) : $db->sql_query($sql);
 
 		if( $result )
 		{
 			$new_post_id = $db->sql_nextid();
 
-			$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text)
-				VALUES ($new_post_id, '$post_subject', '$post_message')";
+			$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, bbcode_uid, post_text)
+				VALUES ($new_post_id, '$post_subject', '$bbcode_uid', '$post_message')";
 
 			if( $db->sql_query($sql) )
 			{
@@ -1865,12 +1865,12 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			}
 
 			$sql = "UPDATE " . POSTS_TABLE . "
-				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . "
+				SET enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . "
 				WHERE post_id = $post_id";
 			if($db->sql_query($sql))
 			{
 				$sql = "UPDATE " . POSTS_TEXT_TABLE . "
-					SET post_text = '$post_message', post_subject = '$post_subject'
+					SET post_text = '$post_message',  bbcode_uid = '$bbcode_uid', post_subject = '$post_subject'
 					WHERE post_id = $post_id"; 
 
 				if( $is_first_post_topic )
@@ -2308,7 +2308,7 @@ else
 	else if( $mode == "editpost" || $mode == "quote" && ( !$preview && !$refresh ) )
 	{
 
-		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type, t.topic_vote
+		$sql = "SELECT p.*, pt.post_text, pt.post_subject, pt.bbcode_uid, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_type, t.topic_vote
 			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt
 			WHERE p.post_id = $post_id
 				AND pt.post_id = p.post_id

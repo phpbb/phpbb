@@ -649,7 +649,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			if( $show_results == "posts" )
 			{
-				$sql = "SELECT pt.post_text, pt.post_subject, p.*, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid  
+				$sql = "SELECT pt.post_text, pt.bbcode_uid, pt.post_subject, p.*, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid  
 					FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt 
 					WHERE p.post_id IN ($search_results)
 						AND pt.post_id = p.post_id

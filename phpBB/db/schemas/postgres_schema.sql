@@ -167,7 +167,6 @@ CREATE TABLE phpbb_posts (
    enable_html int2 DEFAULT '0' NOT NULL,
    enable_smilies int2 DEFAULT '1' NOT NULL,
    enable_sig int2 DEFAULT '1' NOT NULL,
-   bbcode_uid varchar(10) DEFAULT '' NOT NULL,
    post_edit_time int4,
    post_edit_count int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
@@ -183,6 +182,7 @@ CREATE  INDEX topic_id_phpbb_posts_index ON phpbb_posts (topic_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_posts_text (
    post_id int4 DEFAULT '0' NOT NULL,
+   bbcode_uid varchar(10) DEFAULT '' NOT NULL,
    post_subject varchar(255),
    post_text text,
    CONSTRAINT phpbb_posts_text_pkey PRIMARY KEY (post_id)

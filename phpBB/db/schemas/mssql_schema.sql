@@ -235,7 +235,6 @@ CREATE TABLE [phpbb_posts] (
 	[enable_html] [smallint] NULL ,
 	[enable_smilies] [smallint] NULL ,
 	[enable_sig] [smallint] NULL ,
-	[bbcode_uid] [char] (10) NULL ,
 	[post_edit_time] [int] NULL ,
 	[post_edit_count] [smallint] NULL 
 ) ON [PRIMARY]
@@ -243,6 +242,7 @@ GO
 
 CREATE TABLE [phpbb_posts_text] (
 	[post_id] [int] NOT NULL ,
+	[bbcode_uid] [char] (10) NULL ,
 	[post_subject] [varchar] (100) NULL ,
 	[post_text] [text] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]

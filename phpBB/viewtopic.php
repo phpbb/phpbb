@@ -383,7 +383,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, p.*,  pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id

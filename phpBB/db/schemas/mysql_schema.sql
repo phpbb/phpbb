@@ -176,7 +176,6 @@ CREATE TABLE phpbb_posts (
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
    enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
    enable_sig tinyint(1) DEFAULT '1' NOT NULL, 
-   bbcode_uid char(10) NOT NULL,
    post_edit_time int(11),
    post_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (post_id),
@@ -194,6 +193,7 @@ CREATE TABLE phpbb_posts (
 DROP TABLE IF EXISTS phpbb_posts_text;
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   bbcode_uid char(10) NOT NULL,
    post_subject varchar(255),
    post_text text,
    PRIMARY KEY (post_id)
