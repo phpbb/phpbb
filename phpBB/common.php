@@ -100,9 +100,8 @@ define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
 define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('BANLIST_TABLE', $table_prefix.'banlist');
-define('CATEGORIES_TABLE', $table_prefix.'categories'); //
 define('CONFIG_TABLE', $table_prefix.'config');
-define('CONFIG_USER_TABLE', $table_prefix.'config_defaults');
+define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
@@ -117,6 +116,7 @@ define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
 define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('RANKS_TABLE', $table_prefix.'ranks');
+define('RATINGS_TABLE', $table_prefix.'ratings');
 define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SEARCH_WORD_TABLE', $table_prefix.'search_wordlist');
 define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
@@ -128,17 +128,12 @@ define('STYLES_CSS_TABLE', $table_prefix.'styles_theme');
 define('STYLES_IMAGE_TABLE', $table_prefix.'styles_imageset');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('TOPICS_PREFETCH_TABLE', $table_prefix.'topics_prefetch');
-define('TOPICS_RATINGS_TABLE', $table_prefix.'topics_rating');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
 define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
-// Unnecessary
-define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
-define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
-define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 
 // Set PHP error handler to ours
 set_error_handler('msg_handler');
@@ -149,7 +144,7 @@ $auth = new auth();
 
 // Need these here so instantiate them now
 $cache = new acm();// Experimental cache manager
-$template = new Template();
+$template = new template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Grab global variables, re-cache if necessary
