@@ -191,7 +191,8 @@ if ($forum_data['forum_postable'])
 		// ref type on as rows as topics ... also not great
 		$sql = "SELECT COUNT(topic_id) AS forum_topics
 			FROM " . TOPICS_TABLE . "
-			WHERE  forum_id = $forum_id
+			WHERE forum_id = $forum_id
+			" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 				AND topic_last_post_time >= $min_topic_time 
 				AND topic_type <> " . POST_ANNOUNCE;
 		$result = $db->sql_query($sql);
@@ -202,7 +203,14 @@ if ($forum_data['forum_postable'])
 	}
 	else
 	{
-		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
+		if ($auth->acl_get('m_approve', $forum_id))
+		{
+			$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
+		}
+		else
+		{
+			$topics_count = ($forum_data['forum_topics_real']) ? $forum_data['forum_topics_real'] : 1;
+		}
 		$limit_topics_time = '';
 	}
 
