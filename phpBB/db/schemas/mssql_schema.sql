@@ -89,7 +89,7 @@ CREATE TABLE [phpbb_forums] (
 GO
 
 CREATE TABLE [phpbb_groups] (
-	[group_id] [int] NOT NULL ,
+	[group_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_type] [smallint] NULL ,
 	[group_name] [varchar] (50) NOT NULL ,
 	[group_description] [varchar] (255) NOT NULL ,
