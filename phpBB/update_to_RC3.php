@@ -196,6 +196,8 @@ if( $row = $db->sql_fetchrow($result) )
 	}
 }
 
+print "<br />Updating topic first post info<br />";
+
 $sql = "SELECT MIN(post_id) AS first_post_id, topic_id
 	FROM " . POSTS_TABLE . "
 	GROUP BY topic_id
@@ -223,6 +225,37 @@ if ( $row = $db->sql_fetchrow($result) )
 	while ( $row = $db->sql_fetchrow($result) );
 }
 
+print "<br />Updating moderator user_level<br />";
+$sql = "SELECT DISTINCT u.user_id 
+	FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
+	WHERE aa.auth_mod = 1
+		AND ug.group_id = aa.group_id
+		AND u.user_id = ug.user_id 
+		AND u.user_level <> 1";
+if ( !$db->sql_query($sql) )
+{
+	die("Couldn't obtain moderator user ids");
+}
+
+if ( $row = $db->sql_fetchrow($result) )
+{
+	do
+	{
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_level = " . MOD . " 
+			WHERE user_id = " . $row['user_id'];
+		if ( !$db->sql_query($sql) )
+		{
+			die("Couldn't update user level");
+		}
+	}
+	while ( $row = $db->sql_fetchrow($result) );
+
+}
+
+
+print "<br />Updating config settings<br />";
+
 $sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value )
 	VALUES ('version', 'RC-3')";
 if ( !$db->sql_query($sql) )
@@ -230,7 +263,21 @@ if ( !$db->sql_query($sql) )
 	die("Couldn't insert new config var");
 }
 
-echo "\n<br /><br />\n<b>COMPLETE! Please delete this file before continuing!</b><br />\n";
+$sql = "INSERT INTO " . CONFIG_TABLE . "
+	(config_name, config_value) VALUES ('record_online_users', '1')";
+if( !$db->sql_query($sql) )
+{
+	die("Couldn't insert config key 'record_online_users'");
+}
+
+$sql = "INSERT INTO " . CONFIG_TABLE . "
+	(config_name, config_value) VALUES ('record_online_date', '" . time() . "')";
+if( !$db->sql_query($sql) )
+{  
+	die("Couldn't insert config key 'record_online_date'");
+}
+
+echo "\n<br />\n<b>COMPLETE! Please delete this file before continuing!</b><br />\n";
 
 ?>
 </body>
