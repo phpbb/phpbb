@@ -39,7 +39,7 @@ if ( !defined('INSTALLING') )
 
 	if( defined("PHPBB_INSTALLED") )
 	{
-		redirect("index.$phpEx);
+		redirect("../index.$phpEx);
 	}
 }
 
