@@ -175,7 +175,7 @@ INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny
 
 # -- Group auth
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type IN ('admin');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type IN ('forum', 'mod');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type IN ('forum');
 
 # -- Prefetch auth
 INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT -1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_type LIKE 'forum' AND auth_option IN ('list', 'read', 'post', 'reply');
