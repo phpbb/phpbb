@@ -20,7 +20,7 @@ if (!empty($setmodules))
 
 define('IN_PHPBB', 1);
 // Include files
-$phpbb_root_path = '../';
+$phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
@@ -81,11 +81,16 @@ if (isset($_POST['submit']))
 		$email_list = array();
 		do
 		{
-			$email_list[$row['user_lang']][$i]['method'] = $row['user_notify_type'];
-			$email_list[$row['user_lang']][$i]['email'] = $row['user_email'];
-			$email_list[$row['user_lang']][$i]['name'] = $row['username'];
-			$email_list[$row['user_lang']][$i]['jabber'] = $row['user_jabber'];
-			$i++;
+			if (($row['user_notify'] == NOTIFY_EMAIL && $row['user_email']) ||
+				($row['user_notify'] == NOTIFY_IM && $row['user_jabber']) ||
+				($row['user_notify'] == NOTIFY_BOTH && $row['user_email'] && $row['user_jabber']))
+			{
+				$email_list[$row['user_lang']][$i]['method'] = $row['user_notify_type'];
+				$email_list[$row['user_lang']][$i]['email'] = $row['user_email'];
+				$email_list[$row['user_lang']][$i]['name'] = $row['username'];
+				$email_list[$row['user_lang']][$i]['jabber'] = $row['user_jabber'];
+				$i++;
+			}
 		} 
 		while ($row = $db->sql_fetchrow($result));
 		$db->sql_freeresult($result);
@@ -175,7 +180,7 @@ adm_page_header($user->lang['MASS_EMAIL']);
 
 <p><?php echo $user->lang['MASS_EMAIL_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_email.$phpEx.$SID"; ?>" name="email"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_email.$phpEx$SID"; ?>" name="email"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['COMPOSE']; ?></th>
 	</tr>

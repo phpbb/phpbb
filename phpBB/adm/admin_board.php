@@ -470,9 +470,13 @@ switch ($mode)
 		$smtp_yes = ($new['smtp_delivery']) ? 'checked="checked"' : '';
 		$smtp_no = (!$new['smtp_delivery']) ? 'checked="checked"' : '';
 
-		$smtp_auth_plain = ($new['smtp_auth_method'] == 'PLAIN' || !$new['smtp_auth_method']) ? 'checked="checked"' : '';
-		$smtp_auth_login = ($new['smtp_auth_method'] == 'LOGIN') ? 'checked="checked"' : '';
+		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
+		$s_smtp_auth_options = '';
 
+		foreach ($auth_methods as $method)
+		{
+			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($new['smtp_auth_method'] == $method) ? ' selected="selected"' : '') . '>' . $user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
+		}
 ?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ENABLE_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_EMAIL_EXPLAIN']; ?></span></td>
@@ -516,7 +520,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SMTP_AUTH_METHOD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMTP_AUTH_METHOD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="smtp_auth_method" value="PLAIN" <?php echo $smtp_auth_plain; ?> /> <?php echo $user->lang['SMTP_PLAIN']; ?>&nbsp;&nbsp;<input type="radio" name="smtp_auth_method" value="LOGIN" <?php echo $smtp_auth_login; ?> /> <?php echo $user->lang['SMTP_LOGIN']; ?></td>
+		<td class="row2"><select name="smtp_auth_method"><?php echo $s_smtp_auth_options; ?></select></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SMTP_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMTP_USERNAME_EXPLAIN']; ?></span></td>
