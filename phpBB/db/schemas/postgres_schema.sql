@@ -479,7 +479,7 @@ CREATE TABLE phpbb_users (
    user_avatar_type int2 DEFAULT '0' NOT NULL, 
    user_level int4 DEFAULT '1',
    user_lang varchar(255),
-   user_timezone decimal(4) DEFAULT '0' NOT NULL,
+   user_timezone decimal(5) DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_notify_pm int2 DEFAULT '1' NOT NULL,
    user_popup_pm int2 DEFAULT '0' NOT NULL, 

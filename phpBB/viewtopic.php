@@ -60,9 +60,9 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 	{
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 
-		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
+		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) || isset($HTTP_GET_VARS['sid']) )
 		{
-			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'];
+			$session_id = isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) ? $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'] : $HTTP_GET_VARS['sid'];
 
 			if ( $session_id )
 			{
@@ -86,6 +86,8 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 
 				$db->sql_close();
 				$post_id = $row['post_id'];
+
+				$SID = (isset($HTTP_GET_VARS['sid'])) ? 'sid=' . $session_id : '';
 				header($header_location . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
 				exit;
 			}
@@ -1092,11 +1094,11 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		if ( $user_sig != '' )
 		{
-			$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
+			$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(' . $orig_word . ', ' . $replacement_word . ', '\\0')", '>' . $user_sig . '<'), 1, -1));
 		}
 
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-		$message = preg_replace($orig_word, $replacement_word, $message);
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(' . $orig_word . ', ' . $replacement_word . ', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 	//

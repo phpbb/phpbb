@@ -447,6 +447,7 @@ switch ( $row['config_value'] )
 	case '.0.3':
 
 		// Need to add index to post_id in search_wordmatch (mysql, postgresql, msaccess ... both indexes)
+		// Modify user_timezone to decimal(5,2) ... not for pgsql though 
 		// Add auto_increment equiv to groups table (Doug overlooked it ...) for pgsql and msaccess
 
 //mysql

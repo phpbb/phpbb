@@ -452,8 +452,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	{
 		$sql = "UPDATE " . TOPICS_TABLE . " SET 
 			$topic_update_sql 
-			WHERE topic_id = $topic_id 
-				OR topic_moved_id = $topic_id";
+			WHERE topic_id = $topic_id";
 		if ( !$db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);

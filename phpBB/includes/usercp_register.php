@@ -101,7 +101,7 @@ if (
 	{
 		if ( !empty($HTTP_POST_VARS[$param]) )
 		{
-			$$var = trim(htmlspecialchars(strip_tags($HTTP_POST_VARS[$param])));
+			$$var = trim(htmlspecialchars($HTTP_POST_VARS[$param]));
 		}
 	}
 
