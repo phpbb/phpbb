@@ -21,10 +21,10 @@
 
 if ( !defined('IN_PHPBB') )
 {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
-define("BBCODE_UID_LEN", 10);
+define('BBCODE_UID_LEN', 10);
 
 // global that holds loaded-and-prepared bbcode templates, so we only have to do 
 // that stuff once.
@@ -43,7 +43,7 @@ $bbcode_tpl = null;
 function load_bbcode_template()
 {
 	global $template;
-	$tpl_filename = $template->make_filename('bbcode.tpl');
+	$tpl_filename = $template->make_filename('bbcode.html');
 	$tpl = fread(fopen($tpl_filename, 'r'), filesize($tpl_filename));
 	
 	// replace \ with \\ and then ' with \'.
@@ -109,7 +109,7 @@ function prepare_bbcode_template($bbcode_tpl)
 
 	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
 	
-	define("BBCODE_TPL_READY", true);
+	define('BBCODE_TPL_READY', true);
 	
 	return $bbcode_tpl;
 }
@@ -120,16 +120,16 @@ function prepare_bbcode_template($bbcode_tpl)
  * a thread. Assumes the message is already first-pass encoded, and we are given the 
  * correct UID as used in first-pass encoding.
  */
-function bbencode_second_pass($text, $uid)
+function bbencode_second_pass($text, $uid, $enable_img = true)
 {
-	global $lang, $bbcode_tpl;
+	global $acl, $board_config, $lang, $bbcode_tpl;
 
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
-	$text = " " . $text;
+	$text = ' ' . $text;
 
 	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($text, "[") && strpos($text, "]")) )
+	if (! (strpos($text, '[') && strpos($text, ']')) )
 	{
 		// Remove padding, return.
 		$text = substr($text, 1);
@@ -137,7 +137,7 @@ function bbencode_second_pass($text, $uid)
 	}
 	
 	// Only load the templates ONCE..
-	if (!defined("BBCODE_TPL_READY"))
+	if (!defined('BBCODE_TPL_READY'))
 	{
 		// load templates from file into array.
 		$bbcode_tpl = load_bbcode_template();
@@ -194,8 +194,11 @@ function bbencode_second_pass($text, $uid)
 
 	// [img]image_url_here[/img] code..
 	// This one gets first-passed..
-	$patterns[0] = "#\[img:$uid\](.*?)\[/img:$uid\]#si";
-	$replacements[0] = $bbcode_tpl['img'];
+	if ( $enable_img )
+	{
+		$patterns[0] = "#\[img:$uid\](.*?)\[/img:$uid\]#si";
+		$replacements[0] = $bbcode_tpl['img'];
+	}
 	
 	// [url]xxxx://www.phpbb.com[/url] code..
 	$patterns[1] = "#\[url\]([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/url\]#si";
@@ -226,13 +229,13 @@ function bbencode_second_pass($text, $uid)
 
 } // bbencode_second_pass()
 
-// Need to initialize the random numbers only ONCE
-mt_srand( (double) microtime() * 1000000);
 
 function make_bbcode_uid()
 {
-	// Unique ID for this message..
+	// Need to initialize the random numbers only ONCE
+	mt_srand( (double) microtime() * 1000000);
 
+	// Unique ID for this message..
 	$uid = md5(mt_rand());
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 
@@ -243,7 +246,7 @@ function bbencode_first_pass($text, $uid)
 {
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
-	$text = " " . $text;
+	$text = ' ' . $text;
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
 	$text = bbencode_first_pass_pda($text, $uid, '[code]', '[/code]', '', true, '');
@@ -255,16 +258,16 @@ function bbencode_first_pass($text, $uid)
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = array();
-	$open_tag[0] = "[list]";
+	$open_tag[0] = '[list]';
 
 	// unordered..
-	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:u]", false, 'replace_listitems');
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, '[/list]', '[/list:u]', false, 'replace_listitems');
 
-	$open_tag[0] = "[list=1]";
-	$open_tag[1] = "[list=a]";
+	$open_tag[0] = '[list=1]';
+	$open_tag[1] = '[list=a]';
 
 	// ordered.
-	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:o]",  false, 'replace_listitems');
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, '[/list]', '[/list:o]',  false, 'replace_listitems');
 
 	// [color] and [/color] for setting text color
 	$text = preg_replace("#\[color=(\#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]#si", "[color=\\1:$uid]\\2[/color:$uid]", $text);
@@ -286,7 +289,6 @@ function bbencode_first_pass($text, $uid)
 
 	// Remove our padding from the string..
 	$text = substr($text, 1);
-
 
 	return $text;
 
@@ -741,31 +743,27 @@ function smilies_pass($message)
 	global $db, $board_config;
 	static $smilies;
 
-	if( empty($smilies) )
+	if ( empty($smilies) )
 	{
 		$sql = "SELECT code, smile_url
 			FROM " . SMILIES_TABLE;
-		if( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
-		if( !$db->sql_numrows($result) )
+		if ( !($smilies = $db->sql_fetchrowset($result)) ) 
 		{
 			return $message;
 		}
 
-		$smilies = $db->sql_fetchrowset($result);
+		usort($smilies, 'smiley_sort');
 	}
 
-	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "/(?<=.\\W|\\W.|^\\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\\W|\\W.|\\W$)/";
-		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />';
+		$orig[] = '/(?<=.\\W|\\W.|^\\W)' . preg_quote($smilies[$i]['code'], '/') . '(?=.\\W|\\W.|\\W$)/';
+		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" width="' . $smilies[$i]['smile_width'] . '" height="' . $smilies[$i]['smile_height'] . '" alt="' . $smilies[$i]['smile_url'] . '" title="' . $smilies[$i]['smile_url'] . '" border="0" />';
 	}
 
-	if( $i > 0 )
+	if ( $i > 0 )
 	{
 		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
 		$message = substr($message, 1, -1);
@@ -781,8 +779,7 @@ function smiley_sort($a, $b)
 		return 0;
 	}
 
-	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
+	return ( strlen($a['code']) > strlen($b['code']) ) ? - 1 : 1;
 }
-
 
 ?>
