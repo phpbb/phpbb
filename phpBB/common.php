@@ -40,7 +40,6 @@ if(empty($phpbb_root_path))
 include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/template.inc');
-include($phpbb_root_path . 'includes/error.'.$phpEx);
 include($phpbb_root_path . 'includes/message.'.$phpEx);
 include($phpbb_root_path . 'includes/sessions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.'.$phpEx);
@@ -98,7 +97,7 @@ else
 	$board_config['allow_sig'] = $config['allow_sig'];
 	$board_config['allow_namechange'] = $config['allow_namechange'];
 	$board_config['allow_avatar_local'] = $config['allow_avatar_local'];
-	$board_config['allow_avatar_remote'] = $config['allow_avatar_local'];
+	$board_config['allow_avatar_remote'] = $config['allow_avatar_remote'];
 	$board_config['allow_avatar_upload'] = $config['allow_avatar_upload'];
 	$board_config['require_activation'] = $config['require_activation'];
 	$board_config['override_user_themes'] = $config['override_themes'];
