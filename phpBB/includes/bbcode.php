@@ -533,6 +533,15 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 		$after_replace = $matches[1][$i];
 
 		$after_replace = preg_replace($html_entities_match, $html_entities_replace, $after_replace);
+		
+		// Replace all spaces with non-breaking spaces.
+		$after_replace = str_replace(" ", "&nbsp;", $after_replace);
+		
+		// Replace 3 nbsp's with "&nbsp; &nbsp;" so non-tabbed code indents without making huge long lines.
+		$after_replace = str_replace("&nbsp;&nbsp;&nbsp;", "&nbsp; &nbsp;", $after_replace);
+		
+		// Replace tabs with "&nbsp; &nbsp;" so tabbed code indents sorta right without making huge long lines.
+		$after_replace = str_replace("\t", "&nbsp; &nbsp;", $after_replace);
 
 		$str_to_match = "[code:1:$uid]" . $before_replace . "[/code:1:$uid]";
 
