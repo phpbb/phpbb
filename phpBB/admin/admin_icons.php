@@ -42,7 +42,7 @@ require('pagestart.' . $phpEx);
 // Do we have general permissions?
 if (!$auth->acl_get('a_icons'))
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['No_admin']);
 }
 
 // Grab some basic parameters
