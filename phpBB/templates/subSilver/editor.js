@@ -1,5 +1,5 @@
 // bbCode control by subBlue design [ www.subBlue.com ]
-// Includes the color bar by mat100 [ see forums ]
+// Includes unixsafe colour palette selector by SHS`
 
 // Startup variables
 var imageTag = false;
