@@ -67,7 +67,7 @@ if(isset($HTTP_GET_VARS['view']))
 						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
 						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
 						WHERE t.topic_id in
-						(select min(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
+						(select max(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
 						AND f.forum_id = ".$HTTP_GET_VARS[POST_FORUM_URL]."
 						AND f.forum_id = t.forum_id
 						AND fm.forum_id = t.forum_id
@@ -138,7 +138,15 @@ if(!$total_rows = $db->sql_numrows($result))
 	}
 	else
 	{
-   	error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+		if(DEBUG)
+		{
+			$error = $db->sql_error();
+			error_die(GENERAL_ERROR, "The forum/topic you selected does not exist.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+		}
+		else
+		{
+   		error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+   	}
    }
 }
 $forum_row = $db->sql_fetchrowset($result);
@@ -184,7 +192,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
 	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -392,7 +400,7 @@ flush();
 // right away and dosan't have to wait for this update query to finish.
 //
 $sql = "UPDATE ".TOPICS_TABLE." SET topic_views = topic_views + 1 WHERE topic_id = $topic_id";
-// We don't care too much if this query succeeds or not so I'm not going to bother checking 
+// We don't care too much if this query succeeds or not so I'm not going to bother checking
 $db->sql_query($sql);
 
 include('includes/page_tail.'.$phpEx);

@@ -54,26 +54,26 @@ init_userprefs($userdata);
 function prepare_message($message, $html_on, $bbocde_on, $smile_on, $bbcode_uid = 0)
 {
 	$message = trim($message);
-	
-	if(!$html_on) 
+
+	if(!$html_on)
 	{
 		$message = htmlspecialchars($message);
 	}
-	
+
 	if($bbocde_on)
 	{
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
-	
+
 	if($smile_on)
 	{
 		// No smile() function yet, write one...
 		//$message = smile($message);
 	}
-	
+
 	$message = addslashes($message);
 	return($message);
-}		
+}
 
 
 //
@@ -99,7 +99,7 @@ switch($mode)
 			{
 				$html_on = TRUE;
 			}
-			
+
 			if(isset($HTTP_POST_VARS['disable_bbcode']) || !$board_config['allow_bbcode'])
 			{
 				$bbcode_on = FALSE;
@@ -109,7 +109,7 @@ switch($mode)
 				$uid = make_bbcode_uid();
 				$bbocde_on = TRUE;
 			}
-			
+
 			if(isset($HTTP_POST_VARS['disable_smile']))
 			{
 				$smile_on = FALSE;
@@ -118,25 +118,25 @@ switch($mode)
 			{
 				$smile_on = TRUE;
 			}
-			
+
 			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbocde_on, $smile_on, $uid);
-			
+
 			if(isset($HTTP_POST_VARS['attach_sig']) && !empty($userdata['user_sig']))
 			{
 				$message .= "[addsig]";
 			}
 			$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
-			$topic_time = gmmktime(date("h, i, s, m, d, Y"));
+			$topic_time = gmmktime(gmdate("h, i, s, m, d, Y"));
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? $HTTP_POST_VARS['notify'] : 0;
 			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status)
 						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.")";
-			
+
 			if($db->sql_query($sql))
 			{
 				$new_topic_id = $db->sql_nextid();
 				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
 						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '".encode_ip($user_ip)."', '$uid')";
-				
+
 				if($db->sql_query($sql))
 				{
 					$new_post_id = $db->sql_nextid();
@@ -151,7 +151,7 @@ switch($mode)
 							{
 								include('includes/page_header.'.$phpEx);
 								// If we get here the post has been inserted successfully.
-								$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id")."\">$l_here</a> 
+								$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id")."\">$l_here</a>
    										$l_viewmsg<br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
 
 								$template->set_filenames(array(
@@ -161,8 +161,8 @@ switch($mode)
 									"ERROR_MESSAGE" => $msg
 								));
 								$template->pparse("reg_header");
-					
-								include('includes/page_tail.'.$phpEx);	
+
+								include('includes/page_tail.'.$phpEx);
 							}
 							else
 							{
@@ -207,7 +207,7 @@ switch($mode)
 						error_die(QUERY_ERROR);
 					}
 				}
-			}			
+			}
 			else
 			{
 				if(DEBUG)
@@ -219,15 +219,15 @@ switch($mode)
 				{
 					error_die(QUERY_ERROR);
 				}
-			}						
-			
-    		
-      		
+			}
+
+
+
 		}
       else if(isset($HTTP_POST_VARS['preview']))
       {
-      	
-      	
+
+
       }
 		if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
 		{
@@ -236,9 +236,9 @@ switch($mode)
 
 		$pagetype = "newtopic";
 		$page_title = " $l_postnew";
-	
-		$sql = "SELECT forum_name, forum_access 
-					FROM ".FORUMS_TABLE." 
+
+		$sql = "SELECT forum_name, forum_access
+					FROM ".FORUMS_TABLE."
 					WHERE forum_id = $forum_id";
 		if(!$result = $db->sql_query($sql))
 		{
@@ -277,7 +277,7 @@ switch($mode)
 										"L_POSTNEWIN" => $l_postnewin,
 										"FORUM_ID" => $forum_id,
 										"FORUM_NAME" => $forum_name,
-			
+
 										"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
 									 );
 
@@ -370,7 +370,7 @@ switch($mode)
 				"NOTIFY_TOGGLE" => $notify_toggle,
 				"BBCODE_TOGGLE" => $bbcode_toggle,
 				"BBCODE_STATUS" => $bbcode_status,
-				
+
 				"S_POST_ACTION" => append_sid("posting.$phpEx"),
 				"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
 		);
