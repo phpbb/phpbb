@@ -4,6 +4,66 @@
 # $id: mysql_schema.sql,v 1.5 2001/03/23 15:57:52 psotfx Exp $
 #
 
+#
+# Table structure for table 'phpbb_auth_access'
+#
+
+DROP TABLE IF EXISTS phpbb_auth_access;
+CREATE TABLE phpbb_auth_access (
+   group_id int(11) DEFAULT '0' NOT NULL,
+   forum_id tinyint(4) DEFAULT '0' NOT NULL,
+   auth_view tinyint(1) DEFAULT '0' NOT NULL,
+   auth_read tinyint(1) DEFAULT '0' NOT NULL,
+   auth_post tinyint(1) DEFAULT '0' NOT NULL,
+   auth_reply tinyint(1) DEFAULT '0' NOT NULL,
+   auth_edit tinyint(1) DEFAULT '0' NOT NULL,
+   auth_delete tinyint(1) DEFAULT '0' NOT NULL,
+   auth_votecreate tinyint(1) DEFAULT '0' NOT NULL,
+   auth_vote tinyint(1) DEFAULT '0' NOT NULL,
+   auth_mod tinyint(1) DEFAULT '0' NOT NULL,
+   auth_admin tinyint(1) DEFAULT '0' NOT NULL
+);
+
+#
+# Table structure for table 'phpbb_auth_forums'
+#
+
+DROP TABLE IF EXISTS phpbb_auth_forums;
+CREATE TABLE phpbb_auth_forums (
+   forum_id int(11) DEFAULT '0' NOT NULL,
+   auth_view tinyint(4) DEFAULT '0' NOT NULL,
+   auth_read tinyint(4) DEFAULT '0' NOT NULL,
+   auth_post tinyint(4) DEFAULT '0' NOT NULL,
+   auth_reply tinyint(4) DEFAULT '0' NOT NULL,
+   auth_edit tinyint(4) DEFAULT '0' NOT NULL,
+   auth_delete tinyint(4) DEFAULT '0' NOT NULL,
+   auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
+   auth_vote tinyint(4) DEFAULT '0' NOT NULL
+);
+
+#
+# Table structure for table 'phpbb_user_group'
+#
+
+DROP TABLE IF EXISTS phpbb_user_group;
+CREATE TABLE phpbb_user_group (
+   group_id int(11) DEFAULT '0' NOT NULL,
+   user_id int(11) DEFAULT '0' NOT NULL
+);
+
+#
+# Table structure for table 'phpbb_groups'
+#
+
+DROP TABLE IF EXISTS phpbb_groups;
+CREATE TABLE phpbb_groups (
+   group_id int(11) NOT NULL auto_increment,
+   group_name varchar(100) NOT NULL,
+   group_note varchar(255) NOT NULL,
+   group_level tinyint(4) DEFAULT '0' NOT NULL,
+   single_user tinyint(1) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (group_id)
+);
 
 # --------------------------------------------------------
 #
