@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function sql_addslashes($msg)
+function sql_escape($msg)
 {
 	return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
 }
@@ -80,79 +80,6 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	return $rows;
 }
 
-function forum_nav_links(&$forum_id, &$forum_data)
-{
-	global $SID, $template, $phpEx, $auth;
-
-	$type = 'parent';
-	$forum_rows = array();
-
-	if (!($forum_branch = get_forum_branch($forum_id)))
-	{
-		trigger_error($user->lang['Forum_not_exist']);
-	}
-
-	$s_has_subforums = FALSE;
-	foreach ($forum_branch as $row)
-	{
-		if ($type == 'parent')
-		{
-			$link = ($row['forum_status'] == ITEM_CATEGORY) ? 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'] : 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
-
-			$template->assign_block_vars('navlinks', array(
-				'FORUM_NAME'	=>	$row['forum_name'],
-				'U_VIEW_FORUM'	=>	$link
-			));
-
-			if ($row['forum_id'] == $forum_id)
-			{
-				$branch_root_id = 0;
-				$forum_data = $row;
-				$type = 'child';
-			}
-		}
-		else
-		{
-			if ($row['parent_id'] == $forum_data['forum_id'])
-			{
-				// Root-level forum
-				$forum_rows[] = $row;
-				$parent_id = $row['forum_id'];
-
-				if ($row['forum_status'] == ITEM_CATEGORY)
-				{
-					$branch_root_id = $row['forum_id'];
-				}
-				else
-				{
-					$s_has_subforums = TRUE;
-				}
-			}
-			elseif ($row['parent_id'] == $branch_root_id)
-			{
-				// Forum directly under a category
-				$forum_rows[] = $row;
-				$parent_id = $row['forum_id'];
-
-				if ($row['forum_status'] != ITEM_CATEGORY)
-				{
-					$s_has_subforums = TRUE;
-				}
-			}
-			elseif ($row['forum_status'] != ITEM_CATEGORY)
-			{
-				// Subforum
-				if ($auth->acl_get('f_list', $row['forum_id']))
-				{
-					$subforums[$parent_id][] = $row;
-				}
-			}
-		}
-	}
-
-	return $s_has_subforums;
-}
-
 // Obtain list of moderators of each forum
 // First users, then groups ... broken into two queries
 // We could cache this ... certainly into a DB table. Would
@@ -167,7 +94,14 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $SID, $db, $acl_options, $phpEx;
 
-	$forum_sql = ( $forum_id ) ? 'AND m.forum_id = ' . $forum_id : '';
+	if (is_array($forum_id))
+	{
+		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
+	}
+	else
+	{
+		$forum_sql = ( $forum_id ) ? 'AND a.forum_id = ' . $forum_id : '';
+	}
 /*
 	$sql = "SELECT m.forum_id, u.user_id, u.username, g.group_id, g.group_name
 		FROM phpbb_moderators m
@@ -182,12 +116,12 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_moderators[$row['forum_id']][] = ( !empty($row['user_id']) ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
 	}*/
 
-	$sql = "SELECT au.forum_id, u.user_id, u.username
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " au,  " . USERS_TABLE . "  u
-		WHERE au.auth_option_id = o.auth_option_id
-			AND au.user_id = u.user_id
+	$sql = "SELECT a.forum_id, u.user_id, u.username
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
+		WHERE a.auth_option_id = o.auth_option_id
+			AND a.user_id = u.user_id
 			AND o.auth_value = 'm_'
-			AND au.auth_allow_deny = 1
+			AND a.auth_allow_deny = 1
 			$forum_sql";
 	$result = $db->sql_query($sql);
 
@@ -196,12 +130,12 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 	}
 
-	$sql = "SELECT ag.forum_id, g.group_name, g.group_id
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " ag,  " . GROUPS_TABLE . "  g
-		WHERE ag.auth_option_id = o.auth_option_id
-			AND ag.group_id = g.group_id
+	$sql = "SELECT a.forum_id, g.group_name, g.group_id
+		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
+		WHERE a.auth_option_id = o.auth_option_id
+			AND a.group_id = g.group_id
 			AND o.auth_value = 'm_'
-			AND ag.auth_allow_deny = 1
+			AND a.auth_allow_deny = 1
 			AND g.group_type <> " . GROUP_HIDDEN . "
 			$forum_sql";
 	$result = $db->sql_query($sql);

@@ -1,12 +1,12 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF S_HAS_SUBFORUM -->
-<!-- INCLUDE viewforum_subforum.html -->
-<!-- ENDIF -->
-
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a> <br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ] <span class="gensmall">{MOD_CP}</span><br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
+		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a> <br /><span class="gensmall">
+		<!-- IF S_IS_POSTABLE -->
+		[ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ] {MOD_CP}<br />
+		<!-- ENDIF -->
+		<br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
 	</tr>
 	<tr>
@@ -20,6 +20,12 @@
 	</tr>
 </table>
 
+<!-- IF S_HAS_SUBFORUM -->
+<!-- INCLUDE viewforum_subforum.html -->
+<br /><br />
+<!-- ENDIF -->
+
+<!-- IF S_IS_POSTABLE -->
 <table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr>
 		<th class="thCornerL" colspan="3" height="25" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
@@ -108,5 +114,6 @@
 		<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
 </table>
+<!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

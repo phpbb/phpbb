@@ -29,22 +29,7 @@
 		<td class="catLeft" colspan="3" height="28"><span class="cattitle"><a href="{forumrow.U_VIEWCAT}" class="cattitle">{forumrow.CAT_NAME}</a></span></td>
 		<td class="rowpic" colspan="4" align="right">&nbsp;</td>
 	</tr>
-	<!-- ENDIF -->
-	<!-- IF forumrow.S_IS_ROOTFORUM -->
-	<tr>
-		<td class="row1" colspan="2" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
-		<!-- IF forumrow.SUBFORUMS -->
-		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
-		<!-- ENDIF -->
-		&nbsp;</td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.MODERATORS}</span></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF forumrow.S_IS_FORUM -->
+	<!-- ELSE -->
 	<tr> 
 		<td class="spaceRow" width="8"></td>
 		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
@@ -57,18 +42,6 @@
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.MODERATORS}</span></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- IF forumrow.S_IS_SUBCAT -->
-	<tr> 
-		<td class="spaceRow" width="8"></td>
-		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}</span><br />
-		<!-- IF forumrow.SUBFORUMS -->
-		<span class="gensmall"><b>{forumrow.L_SUBFORUM}</b> {forumrow.SUBFORUMS}</span>
-		<!-- ENDIF -->
-		&nbsp;</td>
-		<td class="row2" colspan="4">&nbsp;</td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- BEGINELSE -->

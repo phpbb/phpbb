@@ -112,98 +112,14 @@ if ($cat_id == 0)
 
 	$sql = 'SELECT * FROM ' . FORUMS_TABLE . ' ORDER BY left_id';
 }
-else
-{
-	$is_nav = TRUE;
 
-	if (!$auth->acl_get('f_list', $cat_id))
-	{
-		// TODO: Deal with hidden categories
-		message_die(ERROR, $user->lang['Category_not_exist']);
-	}
 
-	// NOTE: make sure that categories post count is set to 0
-	$sql = 'SELECT SUM(forum_posts) AS total
-			FROM ' . FORUMS_TABLE . '
-			WHERE post_count_inc = 1';
-
-	$result = $db->sql_query($sql);
-	$total_posts = $db->sql_fetchfield('total', 0, $result);
-
-	$result = $db->sql_query('SELECT left_id, right_id, parent_id FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $cat_id);
-	$catrow = $db->sql_fetchrow($result);
-
-	switch (SQL_LAYER)
-	{
-		case 'oracle':
-			$sql = 'SELECT f.*, u.username
-					FROM ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . 'u
-					WHERE (f.left_id BETWEEN ' . $catrow['left_id'] . ' AND ' . $catrow['right_id'] . '
-					   OR ' . $catrow['left_id'] . ' BETWEEN f.left_id AND f.right_id)
-					  AND f.forum_last_poster_id = u.user_id(+)
-					ORDER BY left_id';
-		break;
-
-		default:
-			$sql = 'SELECT f.*, u.username
-					FROM ' . FORUMS_TABLE . ' f
-					LEFT JOIN ' . USERS_TABLE . ' u ON f.forum_last_poster_id = u.user_id
-					WHERE f.left_id BETWEEN ' . $catrow['left_id'] . ' AND ' . $catrow['right_id'] . '
-					   	OR ' . $catrow['left_id'] . ' BETWEEN f.left_id AND f.right_id
-					ORDER BY f.left_id';
-	}
-}
-
-$result = $db->sql_query($sql);
-while ($row = $db->sql_fetchrow($result))
-{
-	if (!$cat_id && $row['post_count_inc'])
-	{
-		$total_posts += $row['forum_posts'];
-	}
-
-	if ($row['forum_id'] == $cat_id)
-	{
-		$nav_forums[] = $row;
-		$forum_rows[] = $row;
-		$is_nav = FALSE;
-	}
-	elseif ($is_nav)
-	{
-		$nav_forums[] = $row;
-	}
-	else
-	{
-		if ($row['parent_id'] == $cat_id)
-		{
-			// Root-level forum
-			$forum_rows[] = $row;
-			$parent_id = $row['forum_id'];
-
-			if (!$cat_id && $row['forum_status'] == ITEM_CATEGORY)
-			{
-				$branch_root_id = $row['forum_id'];
-			}
-		}
-		elseif ($row['parent_id'] == $branch_root_id)
-		{
-			// Forum directly under a category
-			$forum_rows[] = $row;
-			$parent_id = $row['forum_id'];
-		}
-		elseif ($row['display_on_index'] && $row['forum_status'] != ITEM_CATEGORY)
-		{
-			// Subforum, store it for direct linking
-			if ($auth->acl_get('f_list', $row['forum_id']))
-			{
-				$subforums[$parent_id][] = $row;
-			}
-		}
-	}
-}
-
-$root_id = ($cat_id) ? $catrow['parent_id'] : 0;
-include($phpbb_root_path . 'includes/forums_display.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+display_forums(array(
+	'forum_id'	=>	0,
+	'left_id'	=>	0,
+	'right_id'	=>	0
+));
 
 if ($total_posts == 0)
 {
@@ -227,17 +143,6 @@ $template->assign_vars(array(
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', $user->lang['New_posts']),
 	'FORUM_LOCKED_IMG'	=>	$user->img('forum_locked', $user->lang['No_new_posts_locked']),
 
-	'L_FORUM'			=>	$user->lang['Forum'],
-	'L_TOPICS'			=>	$user->lang['Topics'],
-	'L_REPLIES'			=>	$user->lang['Replies'],
-	'L_VIEWS'			=>	$user->lang['Views'],
-	'L_POSTS'			=>	$user->lang['Posts'],
-	'L_LASTPOST'		=>	$user->lang['Last_Post'],
-	'L_MODERATORS'		=>	$user->lang['Moderators'],
-	'L_NO_NEW_POSTS'	=>	$user->lang['No_new_posts'],
-	'L_NEW_POSTS'		=>	$user->lang['New_posts'],
-	'L_NO_NEW_POSTS_LOCKED'	=>	$user->lang['No_new_posts_locked'],
-	'L_NEW_POSTS_LOCKED'	=>	$user->lang['New_posts_locked'],
 	'L_ONLINE_EXPLAIN'		=>	$user->lang['Online_explain'],
 
 	'L_VIEW_MODERATORS'		=>	$user->lang['View_moderators'],

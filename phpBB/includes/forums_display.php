@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                             display_forums.php
+ *                           functions_display.php
  *                             ------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -18,6 +18,22 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+function display_forums($left_id=0, $right_id=0)
+{
+	global $db, $template, $auth;
+
+	$where_sql = ($left_id && $right_id) ? " WHERE left_id > $left_id AND left_id < $right_id" : '';
+	$sql = 'SELECT * FROM ' . FORUMS_TABLE . $where_sql . ' ORDER BY left_id ASC';
+	$result = $db->sql_query($sql);
+
+	$cat_header =
+	while ($row = $db->sql_fetchrow($result))
+	{
+		
+	}
+	
+}
 
 foreach ($forum_rows as $row)
 {
