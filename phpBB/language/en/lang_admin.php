@@ -69,11 +69,11 @@ $lang = array_merge($lang, array(
 	'ICONS'			=> 'Icons',
 	'WORD_CENSOR'	=> 'Word Censors',
 
-	'STYLE_CAT'		=> 'Styles',
-	'EDIT_STYLE'	=> 'Styles', 
-	'EDIT_TEMPLATE'	=> 'Templates', 
-	'EDIT_THEME'	=> 'Themes', 
-	'EDIT_IMAGESET'	=> 'Imagesets', 
+	'STYLE_CAT'			=> 'Styles',
+	'MANAGE_STYLE'		=> 'Styles', 
+	'MANAGE_TEMPLATE'	=> 'Templates', 
+	'MANAGE_THEME'		=> 'Themes', 
+	'MANAGE_IMAGESET'	=> 'Imagesets', 
 
 	'USER_CAT'		=> 'Users', 
 	'BAN_EMAILS'	=> 'Ban Emails',
@@ -893,14 +893,20 @@ $lang = array_merge($lang, array(
 	'Disallowed_already' => 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present',
 
 
+
+	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset.', 
+
+
+	'SELECT_TEMPLATE'	=> 'Select template', 
+
 	'THEMES'			=> 'Themes', 
 	'THEMES_EXPLAIN'	=> 'From here you can add, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. To manage templates, imagesets or styles please see the navigation menu.', 
-
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
 	'SELECT_CLASS'			=> 'Select class', 
 	'SHOW_RAW_CSS'			=> 'Show CSS', 
 	'HIDE_RAW_CSS'			=> 'Hide CSS', 
+	'SHOW_RAW_CSS_EXPLAIN'	=> 'Enter each element on a new line, ending with a ; Expand the data for each element, e.g. do not use font: use font-family:, font-weight:, etc.', 
 
 	'style_cat_text'		=> 'Text Classes', 
 	'style_body'			=> 'Body',
@@ -914,13 +920,14 @@ $lang = array_merge($lang, array(
 	'style_topicauthor'		=> 'Topic Author', 
 	'style_topicdetails'	=> 'Topic Details', 
 	'style_postbody'		=> 'Post Text', 
-	'style_posthilit'		=> 'Post Highlight Text', 
+	'style_posthilit'		=> 'Post Highlight', 
 	'style_postauthor'		=> 'Post Author', 
 	'style_postdetails'		=> 'Post Details',
-	'style_a'				=> 'General Anchor', 
-	'style_genmed'			=> 'General Text', 
-	'style_gensmall'		=> 'Small Text',
-	'style_copyright'		=> 'Copyright Text', 
+	'style_mainmenu'		=> 'Main Menu', 
+	'style_nav'				=> 'Navigation',
+	'style_genmed'			=> 'General Medium', 
+	'style_gensmall'		=> 'General Small',
+	'style_copyright'		=> 'Copyright', 
 
 	'style_cat_tables'		=> 'Tabular Classes', 
 	'style_table'			=> 'Table', 
@@ -942,7 +949,7 @@ $lang = array_merge($lang, array(
 	'style_post'			=> 'Text Input', 
 	'style_btnmain'			=> 'Primary Buttons',
 	'style_btnlite'			=> 'Secondary Buttons',
-	'style_button'			=> 'BBCode Buttons', 
+	'style_btnbbcode'		=> 'BBCode Buttons', 
 
 	'style_cat_bbcode'		=> 'BBCode Classes', 
 	'style_b'				=> 'Bold',
@@ -959,6 +966,8 @@ $lang = array_merge($lang, array(
 	'style_syntaxhtml'		=> 'Syntax HTML',
 	'style_syntaxkeyword'	=> 'Syntax Keyword',
 	'style_syntaxstring'	=> 'Syntax String',
+
+	'style_cat_custom'		=> 'Custom Classes', 
 
 	'STYLE_ANCHOR_LINK'		=> 'Link',
 	'STYLE_ANCHOR_ACTIVE'	=> 'Active',
