@@ -1642,7 +1642,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
-			$sql = "SELECT user_id, username, user_email 
+			$sql = "SELECT user_id, username, user_email, user_active
 				FROM " . USERS_TABLE . " 
 				WHERE user_email = '$email' 
 					AND username = '$username'";
@@ -1656,6 +1656,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$row = $db->sql_fetchrow($result); 
 
 				$username = $row['username'];
+				
+				if($row['user_active'] == 0)
+				{
+					message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
+				}
+				
 				$user_actkey = generate_activation_key();
 				$user_password = generate_password();
 				

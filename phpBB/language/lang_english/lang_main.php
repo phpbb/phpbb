@@ -461,6 +461,7 @@ $lang['File_no_data'] = "The file at the URL you gave contains no data";
 $lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
 $lang['Incomplete_URL'] = "The URL you entered is incomplete";
 $lang['Wrong_remote_avatar_format'] = "The URL of the remote avatar is not valid";
+$lang['No_send_account_inactive'] = "Sorry but you're password cannot be retrived because you account is currently inactive. Please contact the forum administrator for more information";
 
 $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
