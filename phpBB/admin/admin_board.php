@@ -223,7 +223,7 @@ $template->assign_vars(array(
 	"L_SUBMIT" => $lang['Submit'], 
 	"L_RESET" => $lang['Reset'], 
 	
-	"SERVER_NAME" => $new['cookie_domain'], 
+	"SERVER_NAME" => $new['server_name'], 
 	"SCRIPT_PATH" => $new['script_path'], 
 	"SERVER_PORT" => $new['server_port'], 
 	"SITENAME" => $new['sitename'],
@@ -255,6 +255,7 @@ $template->assign_vars(array(
 	"INBOX_LIMIT" => $new['max_inbox_privmsgs'], 
 	"SENTBOX_LIMIT" => $new['max_sentbox_privmsgs'],
 	"SAVEBOX_LIMIT" => $new['max_savebox_privmsgs'],
+	"COOKIE_DOMAIN" => $new['cookie_domain'], 
 	"COOKIE_NAME" => $new['cookie_name'], 
 	"COOKIE_PATH" => $new['cookie_path'], 
 	"SESSION_LENGTH" => $new['session_length'], 
