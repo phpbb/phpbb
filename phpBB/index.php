@@ -28,7 +28,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 //
 // End session management
 //
