@@ -797,6 +797,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_USER_NOTICE:
+			// 20021125 Bartvb (todo)
+			// This is a hack just to show something useful.
+			// $msg_text won't contain anything if $user isn't there yet.
+			// I ran into this problem when installing without makeing config_cache.php writable
+			if ( !class_exists($user) )
+			{
+				die("Unable to show notice, \$user class hasn't been instantiated yet.<br />Error triggered in: " . $errfile .":". $errline);
+			}
+			
 			if (empty($user->session_id))
 			{
 				$user->start();
