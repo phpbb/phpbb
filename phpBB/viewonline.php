@@ -58,7 +58,7 @@ $template->assign_vars(array(
 //
 $sql = "SELECT forum_name, forum_id
 	FROM " . FORUMS_TABLE;
-if( $result = $db->sql_query($sql) )
+if ( $result = $db->sql_query($sql) )
 {
 	while( $row = $db->sql_fetchrow($result) )
 	{
@@ -90,7 +90,7 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not obtain regd user/online information', '', __LINE__, __FILE__, $sql);
 }
 
-if( $row = $db->sql_fetchrow($result) )
+if ( $row = $db->sql_fetchrow($result) )
 {
 	$guest_users = 0;
 	$registered_users = 0;
@@ -157,10 +157,10 @@ if( $row = $db->sql_fetchrow($result) )
 
 				$which_counter = 'guest_counter';
 				$which_row = 'guest_user_row';
-
-				$prev_ip = $row['session_ip'];
 			}
 		}
+
+		$prev_ip = $row['session_ip'];
 
 		if ( $view_online )
 		{
