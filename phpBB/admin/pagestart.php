@@ -31,7 +31,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start($update);
-$acl = new auth('admin', $userdata);
+$acl = new acl('admin', $userdata);
 //
 // End session management
 //
@@ -189,7 +189,7 @@ function page_footer($copyright_html = true)
 
 }
 
-function page_message($title, $message, $show_header)
+function page_message($title, $message, $show_header = false)
 {
 	global $phpEx, $SID, $lang;
 
