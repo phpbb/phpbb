@@ -65,7 +65,7 @@ $template->set_filenames(array(
 //
 if($userdata['session_logged_in'])
 {
-	$u_login_logout = "login.$phpEx?submit=logout";
+	$u_login_logout = "login.$phpEx?logout=true";
 	$l_login_logout = $lang['Logout'] . " : " . $userdata["username"] . "";
 }
 else
@@ -96,11 +96,11 @@ $logged_visible_online = 0;
 $logged_hidden_online = 0;
 $guests_online = 0;
 
-while($row = $db->sql_fetchrow($result))
+while( $row = $db->sql_fetchrow($result) )
 {
-	if($row['session_logged_in'])
+	if( $row['session_logged_in'] )
 	{
-		if($row['user_allow_viewonline'])
+		if( $row['user_allow_viewonline'] )
 		{
 			$userlist_ary[] = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
 			$userlist_visible[] = 1;
@@ -144,23 +144,23 @@ $online_userlist = ($logged_visible_online > 0) ? $lang['Registered'] . " $l_r_u
 // Obtain number of new private messages
 // if user is logged in
 //
-if($userdata['session_logged_in'])
+if( $userdata['session_logged_in'] )
 {
 	$sql = "SELECT COUNT(privmsgs_type) AS new_messages
 		FROM " . PRIVMSGS_TABLE . "
-		WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
+		WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
 			AND privmsgs_to_userid = " . $userdata['user_id'];
-	$result_pm = $db->sql_query($sql);
-	if(!$result_pm)
+	if( !$result_pm = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_MESSAGE, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
 	}
-	if($pm_result = $db->sql_fetchrow($result_pm))
-	{
-		$new_messages = $pm_result['new_messages'];
 
-		$l_message_new = ($new_messages == 1) ? $lang['message'] : $lang['messages'];
-		$l_privmsgs_text = $lang['You_have'] . " $new_messages " . $lang['new'] . " $l_message_new";
+	if( $pm_result = $db->sql_fetchrow($result_pm) )
+	{
+		$new_pm_messages = $pm_result['new_messages'];
+
+		$l_message_new = ( $new_pm_messages == 1 ) ? $lang['message'] : $lang['messages'];
+		$l_privmsgs_text = $lang['You_have'] . " $new_pm_messages " . $lang['new'] . " $l_message_new";
 	}
 	else
 	{
@@ -180,10 +180,10 @@ else
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
 	"PAGE_TITLE" => $page_title,
-	"META_INFO" => $meta_tags,
 	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s ". $lang['and'] . " $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
 	"LOGGED_IN_USER_LIST" => $online_userlist,
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
+	"PRIVATE_MESSAGE_COUNT" => $new_pm_messages_session, 
 	"LAST_VISIT_DATE" => $s_last_visit,
 
 	"L_USERNAME" => $lang['Username'],
@@ -235,7 +235,6 @@ $template->assign_vars(array(
 
 	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['board_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
-	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
 	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
@@ -281,9 +280,13 @@ $template->assign_vars(array(
 //
 // Login box?
 //
-if(!$userdata['session_logged_in'])
+if( !$userdata['session_logged_in'] )
 {
-	$template->assign_block_vars("loginbox", array());
+	$template->assign_block_vars("user_logged_out", array());
+}
+else
+{
+	$template->assign_block_vars("user_logged_in", array());
 }
 
 header ("Cache-Control: no-store, no-cache, must-revalidate");
