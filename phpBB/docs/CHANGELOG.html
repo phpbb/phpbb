@@ -53,70 +53,73 @@ p,ul,td {font-size:10pt;}
 <a name="204"></a><h3 class="h3">1.i. Changes since 2.0.4</h3>
 
 <ul>
-<li>Fixed user activation - user was able to activate himself after his account got deactivated</li>
-<li>Fixed not correctly working phpbb_realpath function</li>
+<li>Removed user facing session_id checks</li>
+<li>Fixed user self-activation after deactivation</li>
+<li>Fixed incorrect functioning of phpbb_realpath</li>
 <li>Fixed wrong path to database schema files within the upgrade script</li>
-<li>Fixed username validation - catch double quotes correctly</li>
-<li>Changed email validation (apersands are allowed within emails now)</li>
+<li>Fixed double quote problem with username validation</li>
+<li>Allow & within email addresses</li>
 <li>Fixed email validation for banned email addresses</li>
 <li>Removed underline from email domain validation</li>
-<li>Fixed redirection for PM Sentbox Folder, Installation and sending Email to another user</li>
+<li>Fixed redirection for sentbox folder, installation and email</li>
 <li>Fixed poll deletion</li>
 <li>Fixed Mozilla navigation bar</li>
-<li>Changed/Fixed URL bbcode parsing</li>
+<li>Fixed URL bbcode parsing</li>
 <li>Fixed database timeouts while searching the forums</li>
 <li>Fixed wrong email return path in admin mass mailing - <b>netclectic</b></li>
 <li>Fixed MS-SQL failures within the update script</li>
 <li>Fixed memberlist sort order</li>
 <li>Fixed not showing leading spaces within Code BBCode</li>
 <li>Fixed problem with adding double quotes to subject titles</li>
-<li>Username input field is not shown within Profile Editing if user is not allowed to change his Username</li>
+<li>Remove username input field from profile when user cannot change name</li>
 <li>Fixed pagination error with highlighting</li>
 <li>Fixed errors if no smilies are installed</li>
-<li>Fixed CSS issues with IE 5.2 on MacOS X - maybe other browsers were affected too</li>
-<li>Fixed invalid session errors within the Moderator Control Panel</li>
-<li>Fixed language variables within Authentication - error message were not correctly displayed</li>
+<li>Fixed CSS issues with IE 5.2 on MacOS X</li>
+<li>Fixed missing sid propagation problem within the Moderator Control Panel</li>
+<li>Fixed language variables within Authentication error output</li>
 <li>Removed doubled CSS class definitions within input fields</li>
 <li>Fixed username change within the Administration Panel</li>
 <li>Added missing &lt;tr&gt; tags to index_body.tpl</li>
-<li>Added missing username language variable to statistics (Administration Panel)</li>
+<li>Added missing username language variable to admin index page</li>
 <li>Fixed moderator status update if a usergroup got deleted</li>
-<li>Fixed poll handling - if a user wanted to edit his post polls got doubled</li>
+<li>Fixed poll handling upon post edit</li>
 <li>Fixed remove common words from search table if post get pruned - <b>Nuttzy99</b></li>
 <li>Fixed behaviour on splitting topics if no checkbox is selected</li>
 <li>Anonymous is no longer displayed within Username dropdown boxes</li>
 <li>Fixed viewprofile redirection if an invalid mode was specified</li>
-<li>Fixed fraction settings within determining common words (only one PHP Version is affected) - <b>Novan</b></li>
-<li>Prevent admin to change usernames to his own username within the username administration</li>
-<li>Activation email is sent to all admins instead of sending the email to the board email address</li>
-<li>Fixed replacement of html entities</li>
-<li>Fixed Announcement count, preventing the user to see/delete announcements if a complete page was filled with them</li>
-<li>Added variable checks to database backup and restore screen - now users should be able to restore their backups with register_globals set to OFF</li>
-<li>Prevented profile field 'Pop up window on new Private Message' from resetting if user returns from the Avatar Gallery</li>
+<li>Fixed fraction settings within determining common words - <b>Novan</b></li>
+<li>Prevent admin change usernames to his own within the ACP</li>
+<li>Activation email is sent to all admins</li>
+<li>Fixed conversion of &amp; to &amp;amp; in appropriate cases</li>
+<li>Fixed display of "greater than topics per page" announcements preventing display of normal posts</li>
+<li>Added variable checks to database backup and restore screen</li>
+<li>Prevented pm popup window from resetting after visiting avatar gallery</li>
 <li>Fixed special character handling with word censor</li>
-<li>Added SID to jumpbox - now the session id should be delivered correctly after jumping to a new forum</li>
+<li>Added SID to jumpbox</li>
 <li>Fixed problems with usernames using html special chars</li>
-<li>Added GMT + 13 to English lang_main, all translators are encouraged to do likewise - within the last release a language variable was missing</li>
+<li>Added GMT + 13 to English lang_main, all translators are encouraged to do likewise</li>
 <li>Deleted doubled 'U_MEMBERLIST' assignment from page_header.php</li>
 <li>Fixed wrong display of Signature Checkbox while editing Private Message</li>
 <li>Fixed disappearing post text if emoticon was inserted directly after pressing a BBCode button</li>
-<li>Display correct alt-tag for smilies within postings - emoticon instead of filename</li>
-<li>Prevented the ability to apply BBCode to website contents - we will find another EasterEgg</li>
-<li>Fixed problems with very long user passwords</li>
-<li>Limited username length the strict way - duplicate username registrations should no longer occur</li>
-<li>Changed split words handling - now foreign characters are indexed correctly, searching for them works too</li>
-<li>Changed empty email To Field to use a non-disclosure delimiter - Anti-Spam software should handle those mails correctly, they are RFC compliant</li>
+<li>Display correct alt-tag for smilies within postings</li>
+<li>Prevented the ability to apply BBCode to website contents</li>
+<li>Fixed maxlength issue with password field in login_body.tpl</li>
+<li>Fixed possible username duplication issue with validation and username length</li>
+<li>Fixed split words function to handle additional foreign characters</li>
+<li>Changed empty email To Field to use a non-disclosure delimiter</li>
 <li>Fixed wrong language var in install.php - FTP Config screen</li>
 <li>Fixed alt tag for locked topic images in viewforum_body.tpl</li>
 <li>Fixed typo in groupcp.php - $lang['Unsub_success'] instead of $lang['Usub_success']</li>
 <li>Fixed timezone display</li>
 <li>Fixed wrong display of author quote tag within profile - <b>Cl1mh4224rd</b></li>
-<li>Delete user sessions after deactivating the username to prevent him navigating the forum (if logged in)</li>
+<li>Added deletion of sessions of users whose account is deactivated</li>
 <li>Added mail header X-MimeOLE to the emailer class</li>
-<li>Prevent registration if user is logged in or user trying to register a second time</li>
-<li>Prevent usage of ALT-255 in Usernames</li>
-<li>Fixed IP retrieval for users with two proxy setups while the first proxy is hiding the clients IP Address - <b>cosmos</b></li>
-<li>If user votes in poll without selecting an option, he will be redirected to the topic.</li>
+<li>Prevent registration if user is logged in or user trying to register again</li>
+<li>Prevent usage of char(255) in usernames</li>
+<li>Added check for additional FORWARDED_FOR IP's - <b>cosmos</b></li>
+<li>Fixed handling of non-selection of option when voting</li>
+<li>Fixed potential xss issue with memberslist mode</li>
+<li>Default English support for visual confirmation - translators are encouraged to support this</li>
 </ul>
 
 <a name="203"></a><h3 class="h3">1.ii. Changes since 2.0.3</h3>
