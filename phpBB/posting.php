@@ -995,6 +995,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									{
 										$script_name = "viewtopic.$phpEx";
 									}
+									$script_name = str_replace("posting.$phpEx", "viewtopic.$phpEx", $script_name);
 
 									if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
 									{
