@@ -21,6 +21,8 @@ class ucp_main extends module
 		{
 			case 'front':
 
+				$user->add_lang('memberlist');
+
 				if ($config['load_db_lastread'] || $config['load_db_track'])
 				{
 					if ($config['load_db_lastread'])
@@ -145,42 +147,63 @@ class ucp_main extends module
 				}
 				$db->sql_freeresult($result);
 
+				$post_count_ary = $auth->acl_getf('f_postcount');
+				
+				$forum_ary = array();
+				foreach ($post_count_ary as $forum_id => $allowed)
+				{
+					if ($allowed)
+					{
+						$forum_ary[] = $forum_id;
+					}
+				}
 
-				// Grab all the relevant data
-				$sql = 'SELECT COUNT(p.post_id) AS num_posts   
-					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-					WHERE p.poster_id = ' . $user->data['user_id'] . " 
-						AND f.forum_id = p.forum_id 
-						$post_count_sql";
-				$result = $db->sql_query($sql);
+				$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id IN (' . implode(', ', $forum_ary) . ')' : '';
+				unset($forum_ary, $post_count_ary);
 
-				$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
-				$db->sql_freeresult($result);
+				if ($post_count_sql)
+				{
+					// Grab all the relevant data
+					$sql = 'SELECT COUNT(p.post_id) AS num_posts   
+						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+						WHERE p.poster_id = ' . $user->data['user_id'] . " 
+							AND f.forum_id = p.forum_id 
+							$post_count_sql";
+					$result = $db->sql_query($sql);
 
-				$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-					WHERE p.poster_id = ' . $user->data['user_id'] . " 
-						AND f.forum_id = p.forum_id 
-						$post_count_sql
-					GROUP BY f.forum_id, f.forum_name  
-					ORDER BY num_posts DESC"; 
-				$result = $db->sql_query_limit($sql, 1);
+					$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+					$db->sql_freeresult($result);
 
-				$active_f_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+						WHERE p.poster_id = ' . $user->data['user_id'] . " 
+							AND f.forum_id = p.forum_id 
+							$post_count_sql
+						GROUP BY f.forum_id, f.forum_name  
+						ORDER BY num_posts DESC"; 
+					$result = $db->sql_query_limit($sql, 1);
 
-				$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-					WHERE p.poster_id = ' . $user->data['user_id'] . " 
-						AND t.topic_id = p.topic_id  
-						AND f.forum_id = t.forum_id 
-						$post_count_sql
-					GROUP BY t.topic_id, t.topic_title  
-					ORDER BY num_posts DESC";
-				$result = $db->sql_query_limit($sql, 1);
+					$active_f_row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
 
-				$active_t_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+						WHERE p.poster_id = ' . $user->data['user_id'] . " 
+							AND t.topic_id = p.topic_id  
+							AND f.forum_id = t.forum_id 
+							$post_count_sql
+						GROUP BY t.topic_id, t.topic_title  
+						ORDER BY num_posts DESC";
+					$result = $db->sql_query_limit($sql, 1);
+
+					$active_t_row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+				}
+				else
+				{
+					$num_real_posts = 0;
+					$active_f_row = $active_t_row = array();
+				}
 
 				// Do the relevant calculations 
 				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
@@ -210,7 +233,6 @@ class ucp_main extends module
 
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
-					'RANK_TITLE'		=> $rank_title, 
 					'KARMA'				=> ($config['enable_karma']) ? $user->lang['KARMA'][$user->data['user_karma']] : '', 
 					'JOINED'			=> $user->format_date($user->data['user_regdate'], $user->lang['DATE_FORMAT']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
@@ -231,7 +253,7 @@ class ucp_main extends module
 					'KARMA_LEFT_IMG'	=> $user->img('karma_left', ''),
 					'KARMA_RIGHT_IMG'	=> $user->img('karma_right', ''),
 
-					'S_GROUP_OPTIONS'	=> $group_options, 
+//					'S_GROUP_OPTIONS'	=> $group_options, 
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($user->data['username']) . "&amp;show_results=posts" : '',  
 					'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
@@ -674,11 +696,11 @@ class ucp_main extends module
 
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'				=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
-			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> $phpbb_root_path . "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_DISPLAY_MARK_ALL'=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
+			'S_HIDDEN_FIELDS'	=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
+			'S_UCP_ACTION'		=> $phpbb_root_path . "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
 		$this->display($user->lang['UCP_MAIN'], 'ucp_main_' . $mode . '.html');

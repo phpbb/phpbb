@@ -25,12 +25,12 @@ class ucp_confirm extends module
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		// Do we have an id? No, then just exit
-		if (empty($_GET['id']))
+		$confirm_id = request_var('id', '');
+
+		if (!$confirm_id)
 		{
 			exit;
 		}
-
-		$confirm_id = $_GET['id'];
 
 		// Define available charset
 		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
@@ -140,11 +140,13 @@ class ucp_confirm extends module
 		}
 		else
 		{
-			if (!empty($_GET['c']))
+			$char = request_var('c', 0);
+
+			if ($char)
 			{
 				$_png = $this->define_raw_pngs();
 
-				$char = substr($code, intval($HTTP_GET_VARS['c']) - 1, 1);
+				$char = substr($code, $char - 1, 1);
 				header('Content-Type: image/png');
 				header('Cache-control: no-cache, no-store');
 				echo base64_decode($_png[$char]);

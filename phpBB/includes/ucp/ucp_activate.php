@@ -45,8 +45,8 @@ class ucp_activate extends module
 		$sql_update_pass = ($row['user_newpasswd']) ? ", user_password = '" . $db->sql_escape($row['user_newpasswd']) . "', user_newpasswd = ''" : '';
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_type = ' . USER_NORMAL . ", user_actkey = ''$sql_update_pass 
-			WHERE user_id = " . $row['user_id'];
+			SET user_type = ' . USER_NORMAL . ", user_actkey = '$sql_update_pass' 
+			WHERE user_id = {$row['user_id']}";
 		$result = $db->sql_query($sql);
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass)
@@ -77,7 +77,6 @@ class ucp_activate extends module
 			$messenger->queue->save();
 
 			$message = 'ACCOUNT_ACTIVE_ADMIN';
-
 		}
 		else
 		{
@@ -91,7 +90,7 @@ class ucp_activate extends module
 			set_config('num_users', $config['num_users'] + 1, TRUE);
 		}
 
-		meta_refresh(3, "index.$phpEx$SID");
+		meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");
 		trigger_error($user->lang[$message]);
 	}
 }

@@ -631,7 +631,7 @@ class ucp_profile extends module
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
+			'L_TITLE'	=> $user->lang['UCP_PROFILE_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
