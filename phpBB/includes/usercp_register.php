@@ -215,6 +215,8 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 
 if ( isset($HTTP_POST_VARS['submit']) )
 {
+	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
+
 	$error = FALSE;
 
 	$passwd_sql = '';
@@ -354,47 +356,44 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
-		include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
-
-		if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
+	if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
+	{
+		$avatar_sql = user_avatar_delete($userdata['avatar_type'], $userdata['avatar_file']);
+	}
+	else if ( ( $user_avatar_loc != '' || !empty($user_avatar_url) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
+	{
+		if ( !empty($user_avatar_loc) && !empty($user_avatar_url) )
 		{
-			$avatar_sql = user_avatar_delete($userdata['avatar_type'], $userdata['avatar_file']);
-		}
-		else if ( ( $user_avatar_loc != '' || !empty($user_avatar_url) ) && $board_config['allow_avatar_upload'] )
-		{
-			if ( !empty($user_avatar_loc) && !empty($user_avatar_url) )
-			{
-				$error = true;
-				$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Only_one_avatar'];
-			}
-
-			$id = ( $mode == 'register' ) ? $new_user_id : $userdata['user_id'];
-
-			if ( !empty($user_avatar_loc) )
-			{
-				$avatar_sql = user_avatar_upload($mode, 'local', $id, $error, $error_msg, $user_avatar_loc, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
-			}
-			else if ( !empty($user_avatar_url) )
-			{
-				$avatar_sql = user_avatar_upload($mode, 'remote', $id, $error, $error_msg, $user_avatar_url, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
-			}
-			else if ( !empty($user_avatar_name) )
-			{
-				$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
-
-				$error = true;
-				$error_msg = ( ( !empty($error_msg) ) ? '<br />' : '' ) . $l_avatar_size;
-			}
-		}
-		else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] )
-		{
-			$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
-		}
-		else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] )
-		{
-			$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
+			$error = true;
+			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Only_one_avatar'];
 		}
 
+		$id = ( $mode == 'register' ) ? $new_user_id : $userdata['user_id'];
+
+		if ( !empty($user_avatar_loc) )
+		{
+			$avatar_sql = user_avatar_upload($mode, 'local', $id, $error, $error_msg, $user_avatar_loc, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+		}
+		else if ( !empty($user_avatar_url) )
+		{
+			$avatar_sql = user_avatar_upload($mode, 'remote', $id, $error, $error_msg, $user_avatar_url, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+		}
+		else if ( !empty($user_avatar_name) )
+		{
+			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
+
+			$error = true;
+			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $l_avatar_size;
+		}
+	}
+	else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] )
+	{
+		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
+	}
+	else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] )
+	{
+		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
+	}
 
 	if ( !$error )
 	{
@@ -831,7 +830,7 @@ else
 	// us from doing file uploads....
 	//
 	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-	$form_enctype = ( !$ini_val('file_uploads') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && $ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( !@$ini_val('file_uploads') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 	
 	$template->assign_vars(array(
 		'USERNAME' => $username,
