@@ -788,7 +788,7 @@ function smilies_pass($message)
 	for($i = 0; $i < count($smilies); $i++)
 	{
 		$orig[] = "'\B" . preg_quote($smilies[$i]['code']) . "\B'sxi";
-		$repl[] = '\1<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">\2';
+		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">';
 	}
 
 	if($i > 0)
