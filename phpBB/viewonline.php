@@ -50,6 +50,9 @@ $template->set_filenames(array(
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
+	"L_GO" => $lang['Go'], 
+	"L_JUMP_TO" => $lang['Jump_to'], 
+	"L_SELECT_FORUM" => $lang['Select_forum'], 
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
@@ -85,6 +88,7 @@ else
 
 $template->assign_vars(array(
 	"L_WHOSONLINE" => $lang['Who_is_online'],
+	"L_ONLINE_EXPLAIN" => $lang['Online_explain'], 
 	"L_USERNAME" => $lang['Username'],
 	"L_LOCATION" => $lang['Location'],
 	"L_LAST_UPDATE" => $lang['Last_updated'])
@@ -96,7 +100,8 @@ $guest_users = 0;
 $online_count = $db->sql_numrows($result);
 if($online_count)
 {
-	$count = 0;
+	$count_reg = 0;
+	$count_anon = 0;
 
 	for($i = 0; $i < $online_count; $i++)
 	{
@@ -198,24 +203,34 @@ if($online_count)
 
 		if( $logged_on && ( !$hidden || $userdata['user_level'] == ADMIN ) )
 		{
-			if(!($count % 2))
-			{
-				$row_color = "#" . $theme['td_color1'];
-			}
-			else
-			{
-				$row_color = "#" . $theme['td_color2'];
-			}
-			$count++;
+			$row_color = ( !($count_reg % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($count_reg % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$count_reg++;
 
-			$template->assign_block_vars("userrow", array(
-				"ROW_COLOR" => $row_color,
+			$template->assign_block_vars("reguserrow", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
 				"USERNAME" => $username,
-				"LOGGED_ON" => $logged_on,
 				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
 				"LOCATION" => $location,
 
-				"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
+				"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
+				"U_FORUM_LOCATION" => append_sid($location_url))
+			);
+		}
+		else if( !$hidden || $userdata['user_level'] == ADMIN )
+		{
+			$row_color = ( !($count_reg % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($count_reg % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$count_reg++;
+
+			$template->assign_block_vars("anonuserrow", array(
+				"ROW_COLOR" => "#" . $row_color,
+				"ROW_CLASS" => $row_class,
+				"USERNAME" => $lang['Guest'],
+				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
+				"LOCATION" => $location,
+
 				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
