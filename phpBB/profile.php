@@ -258,12 +258,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$percentage = 0;
 		}
 
-		if( $profiledata['user_viewemail'] && $profiledata['user_email'] != "" )
+		if( !empty($profiledata['user_viewemail']) )
 		{
-			$email_profile = append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL . "=" . $profiledata['user_id']);
+			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $profiledata['user_id']) : "mailto:" . $profiledata['user_email'];
 
-			$email = "<a href=\"$email_profile\">" . $lang['Send_email'] . "</a>";
-			$email_img = "<a href=\"$email_profile\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $profiledata['username'] . "\" border=\"0\" /></a>";
+			$email = "<a href=\"$email_uri\">" . $lang['Send_email'] . "</a>";
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $profiledata['username'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{

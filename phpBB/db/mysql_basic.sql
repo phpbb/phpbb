@@ -40,6 +40,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize','6144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width','80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height','80');

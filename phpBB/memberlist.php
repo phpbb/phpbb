@@ -187,7 +187,9 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		if( !empty($members[$i]['user_viewemail']) )
 		{
-			$email_img = "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=$user_id") . "\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\" /></a>";
+			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $members[$i]['user_id']) : "mailto:" . $members[$i]['user_email'];
+
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_email'] . " " . $members[$i]['username'] . "\" /></a>";
 		}
 		else
 		{

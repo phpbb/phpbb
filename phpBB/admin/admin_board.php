@@ -84,6 +84,9 @@ $activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "che
 $activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
 $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
 
+$board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
+$board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
+
 $gzip_yes = ( $new['gzip_compress'] ) ? "checked=\"checked\"" : "";
 $gzip_no = ( !$new['gzip_compress'] ) ? "checked=\"checked\"" : "";
 
@@ -136,7 +139,9 @@ $template->assign_vars(array(
 	"L_DISABLED" => $lang['Disabled'], 
 	"L_ABILITIES_SETTINGS" => $lang['Abilities_settings'],
 	"L_FLOOD_INTERVAL" => $lang['Flood_Interval'],
-	"L_FLOOD_INTERVAL_EXPLAIN" => $lang['Flood_Interval_explain'],
+	"L_FLOOD_INTERVAL_EXPLAIN" => $lang['Flood_Interval_explain'], 
+	"L_BOARD_EMAIL_FORM" => $lang['Board_email_form'], 
+	"L_BOARD_EMAIL_FORM_EXPLAIN" => $lang['Board_email_form_explain'], 
 	"L_TOPICS_PER_PAGE" => $lang['Topics_per_page'],
 	"L_POSTS_PER_PAGE" => $lang['Posts_per_page'],
 	"L_HOT_THRESHOLD" => $lang['Hot_threshold'],
@@ -193,6 +198,8 @@ $template->assign_vars(array(
 	"ACTIVATION_USER_CHECKED" => $activation_user,
 	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
+	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
+	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"FLOOD_INTERVAL" => $new['flood_interval'],
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
 	"POSTS_PER_PAGE" => $new['posts_per_page'],

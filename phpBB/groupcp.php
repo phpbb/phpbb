@@ -718,18 +718,19 @@ else if( $group_id )
 
 		$posts = ($group_members[$i]['user_posts']) ? $group_members[$i]['user_posts'] : 0;
 
-
 		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\" /></a>";
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
 		if( !empty($group_members[$i]['user_viewemail']) )
 		{
-			$email_img = ( $group_members[$i]['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_members[$i]['user_id']) . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_members[$i]['user_id']) : "mailto:" . $group_members[$i]['user_email'];
+
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $group_members[$i]['username'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
-			$email_img = "&nbsp;";
+			$email_img = "";
 		}
 
 		$www_img = ( $group_members[$i]['user_website'] ) ? "<a href=\"" . $group_members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
@@ -880,11 +881,13 @@ else if( $group_id )
 
 				if( !empty($modgroup_pending_list[$i]['user_viewemail']) )
 				{
-					$email_img = ( $modgroup_pending_list[$i]['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $modgroup_pending_list[$i]['user_id']) . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+					$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $modgroup_pending_list[$i]['user_id']) : "mailto:" . $modgroup_pending_list[$i]['user_email'];
+
+					$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $modgroup_pending_list[$i]['username'] . "\" border=\"0\" /></a>";
 				}
 				else
 				{
-					$email_img = "&nbsp;";
+					$email_img = "";
 				}
 
 				$www_img = ( $modgroup_pending_list[$i]['user_website'] ) ? "<a href=\"" . $modgroup_pending_list[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";

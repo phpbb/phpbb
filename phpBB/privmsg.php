@@ -388,7 +388,16 @@ if( $mode == "read" )
 
 	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $username_from\" border=\"0\" /></a>";
 
-	$email_img = ( $privmsg['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=$user_id_from") . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+	if( !empty($privmsg['user_viewemail']) )
+	{
+		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $user_id_from) : "mailto:" . $privmsg['user_email'];
+
+		$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $username_from\" border=\"0\" /></a>";
+	}
+	else
+	{
+		$email_img = "";
+	}
 
 	$www_img = ( $privmsg['user_website'])  ? "<a href=\"" . $privmsg['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 

@@ -956,7 +956,9 @@ $lang['Acct_activation'] = "Enable account activation";
 
 $lang['Abilities_settings'] = "User/Forum Ability Settings";
 $lang['Flood_Interval'] = "Flood Interval";
-$lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts";
+$lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts"; 
+$lang['Board_email_form'] = "User email via board";
+$lang['Board_email_form_explain'] = "Users send email to each other via this board";
 $lang['Topics_per_page'] = "Topics Per Page";
 $lang['Posts_per_page'] = "Posts Per Page";
 $lang['Hot_threshold'] = "Hot Threshold";
