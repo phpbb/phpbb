@@ -1203,7 +1203,6 @@ function topic_review($topic_id, $is_inline_review = false)
 		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
-			" . (($greater_post_id != 0) ? " AND p.post_id > " . $greater_post_id : "") . "
 		ORDER BY p.post_time DESC";
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
