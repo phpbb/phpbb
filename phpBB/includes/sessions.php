@@ -212,7 +212,7 @@ function session_pagestart($user_ip, $thispage_id)
 	}
 	else
 	{
-		$session_data = '';
+		$sessiondata = '';
 		$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : '';
 		$sessionmethod = SESSION_METHOD_GET;
 	}
