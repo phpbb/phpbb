@@ -119,6 +119,7 @@ $lang['Board_disable'] = "Sorry dit Board is tijdelijk buiten gebruik, probeer h
 // Global Header strings
 //
 $lang['Registered_users'] = "Geregistreerde gebruikers:";
+$lang['Browsing_forum'] = "Gebruikers op dit forum:";
 $lang['Online_users_zero_total'] = "Er zijn in totaal <b>0</b> gebruikers online :: ";
 $lang['Online_users_total'] = "Er zijn in totaal <b>%d</b> gebruikers online :: ";
 $lang['Online_user_total'] = "Er is in totaal <b>%d</b> gebruiker online :: ";
@@ -286,6 +287,7 @@ $lang['Start_watching_topic'] = "Abonneer op dit onderwerp";
 $lang['No_longer_watching'] = "Je bent niet meer geabonneerd op dit onderwerp";
 $lang['You_are_watching'] = "Je bent geabonneerd op dit onderwerp";
 
+$lang['Total_votes'] = "Totaal aantal stemmen";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -447,6 +449,10 @@ $lang['Cannot_send_privmsg'] = "De beheerder heeft ervoor gezorgd dat je geen pr
 $lang['No_to_user'] = "Je moet een gebruikersnaam opgeven om een bericht te versturen";
 $lang['No_such_user'] = "Sorry, deze gebruiker bestaat niet";
 
+$lang['Disable_HTML_pm'] = "Geen HTML in dit bericht";
+$lang['Disable_BBCode_pm'] = "Geen BBCode in dit bericht";
+$lang['Disable_Smilies_pm'] = "Geen Smilies in dit bericht";
+
 $lang['Message_sent'] = "Je bericht is verzonden";
 
 $lang['Click_return_inbox'] = "Klik %shier%s om terug te keren naar je Inbox";
@@ -565,7 +571,7 @@ $lang['Current_Image'] = "Huidige afbeelding";
 $lang['Notify_on_privmsg'] = "Breng me op de hoogte als ik nieuwe Privé berichten heb";
 $lang['Popup_on_privmsg'] = "Laat een Pop up zien als ik nieuwe Privé berichten heb"; 
 $lang['Popup_on_privmsg_explain'] = "Sommige templates openen een nieuw schermpje (popup) als er nieuwe Privé berichten zijn"; //BVB
-$lang['Hide_user'] = "Laat niet zien dat je online bent";
+$lang['Hide_user'] = "Onzichtbaar in 'Online gebruikers' lijst";
 
 $lang['Profile_updated'] = "Je profiel is bijgewerkt";
 $lang['Profile_updated_inactive'] = "Je profiel is bijgewerkt, al heb je wel belangrijke informatie aangepast waardoor je account nu tijdelijk uitgeschakeld is. Controleer je Email om te kijken hoe je je account weer kun activeren of, als dit door de beheerder gedaan word, wacht dan tot de beheerder dit gedaan heeft.";
@@ -674,7 +680,7 @@ $lang['No_group_members'] = "Deze groep heeft geen leden";
 $lang['Group_hidden_members'] = "Deze groep is verborgen, je kan de ledenlijst niet bekijken";
 $lang['No_pending_group_members'] = "Deze groep heeft geen wachtende leden";
 $lang["Group_joined"] = "Je hebt je succesvol aangemeld voor deze groep.<br />Je wordt op de hoogte gesteld als de groepsmoderator je aanmelding goedgekeurd heeft.";
-$lang['Group_request'] = "Je aanmelding is verwerkt";
+$lang['Group_request'] = "Verzoek om lid te worden van een groep";
 $lang['Group_approved'] = "Je aanmelding is goedgekeurd";
 $lang['Group_added'] = "Je bent toegevoegd aan deze groep"; 
 $lang['Already_member_group'] = "Je bent al lid van deze groep";

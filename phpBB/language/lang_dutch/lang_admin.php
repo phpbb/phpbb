@@ -152,6 +152,12 @@ $lang['Registered'] = "Geregistreerd";
 $lang['Administrators'] = "Administrators";
 $lang['Hidden'] = "Verborgen";
 
+$lang['Forum_ALL'] = "ALL";
+$lang['Forum_REG'] = "REG";
+$lang['Forum_PRIVATE'] = "PRIVATE";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "ADMIN";
+
 $lang['View'] = "Bekijk";
 $lang['Read'] = "Lees";
 $lang['Post'] = "Verstuur";
@@ -229,11 +235,20 @@ $lang['Config_explain'] = "Met het formulier hieronder kun je alle algemene boar
 $lang['Click_return_config'] = "Klik %sHier%s om terug te gaan naar Algemene Configuratie";
 
 $lang['General_settings'] = "Algemene Board Instellingen";
+$lang['Server_name'] = "Domain name";
+$lang['Server_name_explain'] = "Het domein naam van de server (b.v. www.phpbb.nl)";
+$lang['Script_path'] = "Script pad";
+$lang['Script_path_explain'] = "Het pad waar phpBB geinstalleerd is (b.v. /phpBB/)";
+$lang['Server_port'] = "Server Poort";
+$lang['Server_port_explain'] = "De poort waarop de HTTP server draait, normaal 80.";
 $lang['Site_name'] = "Site naam";
 $lang['Site_desc'] = "Site omschrijving";
 $lang['Board_disable'] = "Board uitschakelen";
 $lang['Board_disable_explain'] = "Dit maakt het board onbereikbaar voor gebruikers. Log niet uit wanneer je het board uitschakelt, je kunt namelijk niet meer inloggen!";
 $lang['Acct_activation'] = "Account activering aanzetten";
+$lang['Acc_None'] = "Geen"; // These three entries are the type of activation
+$lang['Acc_User'] = "Gebruiker";
+$lang['Acc_Admin'] = "Beheerder";
 
 $lang['Abilities_settings'] = "Gebruikers en Forum Basis Instellingen";
 $lang['Max_poll_options'] = "Max aantal poll opties";
@@ -675,6 +690,10 @@ $lang['Install'] = "Installeer";
 $lang['Upgrade'] = "Upgrade";
 
 $lang['Install_Method'] = "Kies je installatie methode";
+
+$lang['Install_No_Ext'] = "Je PHP configuratie ondersteund geen database systeem dat phpBB kan gebruiken.";
+
+$lang['Install_No_PCRE'] = "phpBB2 heeft de Perl-Compatible Regular Expressions Module voor PHP nodig. Deze is niet actief in je PHP installatie.";
 
 //
 // That's all Folks!
