@@ -22,18 +22,21 @@
  * 
  ***************************************************************************/ 
 
-if($setmodules==1)
+if( $setmodules == 1 )
 {
 	$filename = basename(__FILE__);
-	$module['forums']['add']		= "$filename?mode=add";
-	$module['forums']['edit']	= "$filename?mode=edit";
-	$module['forums']['delete']	= "$filename?mode=delete";
+	$module['Forums']['add']    = "$filename?mode=add";
+	$module['Forums']['edit']	= "$filename?mode=edit";
+	$module['Forums']['delete']	= "$filename?mode=delete";
+
 	return;
 }
 
 print "Got past the \$setmodules check<br>\n";
 print "Requested action was: $mode<br>\n";
 
-
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 ?>

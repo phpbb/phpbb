@@ -1,9 +1,16 @@
 <?php
 
-chdir("../");
+if($setmodules == 1)
+{
+	$filename = basename(__FILE__);
+	$module['Auth']['groups'] = $filename;
 
-include('extension.inc');
-include('common.'.$phpEx);
+	return;
+}
+
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Start session management
@@ -41,7 +48,6 @@ $forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_repl
 //
 function a_auth_check_user($type, $key, $u_auth, $is_admin)
 {
-
 	$single_user = 0;
 	$auth_user = array();
 
@@ -365,9 +371,11 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	$select_list .= "</select>";
 
 	$template->set_filenames(array(
-		"body" => "admin/userauth_select_body.tpl"));
+		"body" => "admin/ug_auth_select_body.tpl"));
 
 	$template->assign_vars(array(
+		"L_USER_OR_GROUP" => "Group", 
+
 		"S_USERAUTH_ACTION" => append_sid("admin_groupauth.$phpEx"), 
 		"S_USERS_SELECT" => $select_list, 
 		
@@ -386,7 +394,7 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 //
 
 $template->set_filenames(array(
-	"body" => "admin/userauth_body.tpl")
+	"body" => "admin/ug_auth_body.tpl")
 );
 
 $group_id = $HTTP_GET_VARS[POST_GROUPS_URL];
@@ -621,14 +629,20 @@ if($adv == -1)
 	}
 	else
 	{
-		$t_username_list = "has no members.";
+		$t_username_list = "<b>Has no members</b>";
 	}
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\">";
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_groupname, 
-		"USER_GROUP_LIST" => $t_username_list,
+		"USER_GROUP_MEMBERSHIPS" => "This group has the following members: $t_username_list",
+
+		"L_USER_OR_GROUPNAME" => "Groupname", 
+		"L_USER_OR_GROUP" => "Group", 
+
+		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"), 
+		"U_FORUMAUTH" => append_sid("admin_forumauth.$phpEx"), 
 		
 		"S_USER_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)

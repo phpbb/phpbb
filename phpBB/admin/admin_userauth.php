@@ -1,16 +1,16 @@
 <?php
 
-if($setmodules==1)
+if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Auth']['users']	= $filename;
+	$module['Auth']['users'] = $filename;
+
 	return;
 }
 
-chdir("../");
-
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Start session management
@@ -400,8 +400,8 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			}
 		}
 
-//		print_r($valid_auth_acl_sql);
-//		echo "<BR><BR>";
+		print_r($valid_auth_acl_sql);
+		echo "<BR><BR>";
 
 		//
 		// The next part requires that we know whether we're
@@ -435,6 +435,8 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			}
 		}
 
+exit;
+
 		header("Location: admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
 
 	}
@@ -449,8 +451,8 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	//
 
 	$sql = "SELECT user_id, username  
-		FROM ".USERS_TABLE . " 
-		WHERE user_id != " . ANONYMOUS;
+		FROM " . USERS_TABLE . " 
+		WHERE user_id <> " . ANONYMOUS;
 	$u_result = $db->sql_query($sql);
 	$user_list = $db->sql_fetchrowset($u_result);
 
@@ -462,10 +464,12 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	$select_list .= "</select>";
 
 	$template->set_filenames(array(
-		"body" => "admin/userauth_select_body.tpl"));
+		"body" => "admin/ug_auth_select_body.tpl"));
 
 	$template->assign_vars(array(
-		"S_USERAUTH_ACTION" => append_sid("admin_userauth.$phpEx"), 
+		"L_USER_OR_GROUP" => "User", 
+
+	"S_USERAUTH_ACTION" => append_sid("admin_userauth.$phpEx"), 
 		"S_USERS_SELECT" => $select_list, 
 		
 		"U_FORUMAUTH" => append_sid("admin_forumauth.$phpEx"))
@@ -483,7 +487,7 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 //
 
 $template->set_filenames(array(
-	"body" => "admin/userauth_body.tpl")
+	"body" => "admin/ug_auth_body.tpl")
 );
 
 $user_id = $HTTP_GET_VARS[POST_USERS_URL];
@@ -714,7 +718,7 @@ if($adv == -1)
 		$t_usergroup_list = "";
 		for($i = 0; $i < count($userinf); $i++)
 		{
-			$t_usergroup_list .= "<a href=\"groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id[$i] . "\">" . $group_name[$i] . "</a>";
+			$t_usergroup_list .= "<a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id[$i] . "\">" . $group_name[$i] . "</a>";
 			if($i < count($group_name) - 1)
 			{
 				$t_usergroup_list .= ", ";
@@ -723,19 +727,23 @@ if($adv == -1)
 	}
 	else
 	{
-		$t_usergroup_list = "belongs to no usergroups.";
+		$t_usergroup_list = "None";
 	}
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\">";
 	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
-	$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"" . "\">";
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_username, 
-		"USER_GROUP_LIST" => $t_usergroup_list,
-		
+		"USER_GROUP_MEMBERSHIPS" => "This user is a $s_user_type and belongs to the following groups: $t_usergroup_list",
+
+		"L_USER_OR_GROUPNAME" => "Username", 
+		"L_USER_OR_GROUP" => "User", 
+
+		"U_USER_OR_GROUP" => append_sid("admin_userauth.$phpEx"), 
+		"U_FORUMAUTH" => append_sid("admin_forumauth.$phpEx"), 
+
 		"S_USER_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
-		"S_USER_TYPE_SELECT" => $s_user_type, 
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
 

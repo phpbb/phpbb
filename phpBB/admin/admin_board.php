@@ -25,15 +25,19 @@
 if($setmodules==1)
 {
 	$file = basename(__FILE__);
-	$module['board']['config'] = $file;
+	$module['General']['config'] = $file;
 	//$module['users']['edit'] = $file.'?mode=edit';
 	//$module['users']['delete'] = $file.'?mode=delete';
+
 	return;
 }
 
 print "Got past the \$setmodules check<br>\n";
 print "Requested action was: $mode<br>\n";
 
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
 
 ?>

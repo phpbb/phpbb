@@ -22,45 +22,53 @@
  * 
  ***************************************************************************/ 
 
-chdir("../");
-include('extension.inc');
-include('common.'.$phpEx);
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+
+//
+// Start session management
+//
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
-
+// 
+// End sessionmanagement
+//
 
 if ($pane == 'top')
 {
 	$page_title = $lang['View_topic'] ." - $topic_title";
 	$pagetype = "viewtopic";
-	include('includes/page_header.'.$phpEx);
+
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 }
 elseif ($pane == 'left')
 {
 	print "<BASE TARGET=\"main\">";
-	// Hmm, should we make this variable?
-	chdir('admin/');
 	$dir = opendir(".");
 
-	$setmodules=1;
+	$setmodules = 1;
 	while($file = readdir($dir))
 	{
-			  if(preg_match("/^admin_.*/", $file))
-			  {
-						 //print "$file<br>\n";
-						 include($file);
-			  }
+		if(preg_match("/^admin_.*/", $file))
+		{
+			//print "$file<br>\n";
+			include($file);
+		}
 	}
 
-	while(list($cat, $action_array) = each($module))
+	while( list($cat, $action_array) = each($module) )
 	{
-			  print "<H3>$cat</H3>\n";
-			  print "<ul>\n";
-			  while(list($action, $file) = each($action_array))
-			  {
-						 print "<li><a href=\"$file\">$action</a></li>\n";
-			  }
-			  print "</ul>\n";
+		print "<H3>$cat</H3>\n";
+		print "<ul>\n";
+		
+		while( list($action, $file) = each($action_array) )
+		{
+			print "<li><a href=\"$file\">$action</a></li>\n";
+		}
+		
+		print "</ul>\n";
 	}
 	//var_dump($module);
 
@@ -69,12 +77,14 @@ elseif ($pane == 'left')
 elseif ($pane == 'right')
 {
 
-
 	echo "This the right pane ;)";
 
 }
 else
-{ // Generate frameset
+{ 
+	
+// Generate frameset
+
 ?>
 <html>
 <head>
@@ -97,6 +107,5 @@ else
 <?
 
 }
-
 
 ?>
