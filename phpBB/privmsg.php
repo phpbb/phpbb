@@ -674,6 +674,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 					if($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']))
 					{
 						$email_headers = "From: " . $board_config['board_email'] . "\r\n";
+						include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+						$emailer = new emailer($board_config['smtp_delivery']);
+						
 						$emailer->use_template("privmsg_notify");
 						$emailer->email_address($to_userdata['user_email']);
 						$emailer->set_subject($lang['Notification_subject']);

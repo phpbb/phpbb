@@ -69,6 +69,9 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 
 	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
+	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+	$emailer = new emailer($board_config['smtp_delivery']);
+	
 	$emailer->use_template("group_request");
 	$emailer->email_address($moderator[0]['user_email']);
 	$emailer->set_subject($lang['Group_request']);
