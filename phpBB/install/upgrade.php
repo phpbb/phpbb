@@ -20,7 +20,8 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path='./../';
+
+$phpbb_root_path = './../';
 
 if ( !defined('INSTALLING') )
 {
@@ -36,10 +37,9 @@ if ( !defined('INSTALLING') )
 	include($phpbb_root_path . 'includes/constants.'.$phpEx);
 	include($phpbb_root_path . 'includes/functions.'.$phpEx);
 
-	if ( defined('PHPBB_INSTALLED') )
+	if( defined("PHPBB_INSTALLED") )
 	{
-		header("Location: index.$phpEx");
-		exit;
+		redirect("index.$phpEx);
 	}
 }
 
@@ -812,30 +812,24 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
+				$group_id = 1;
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user) 
-						VALUES ('" . addslashes($row['username']) . "', 'Personal User', 1)";
+					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user) 
+						VALUES ($group_id, '" . addslashes($row['username']) . "', 'Personal User', 1)";
 					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".GROUPS_TABLE);
 
-					$group_id = $db->sql_nextid();
-
-					if ( $group_id != 0 )
-					{
-						$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
-							VALUES ($group_id, " . $row['user_id'] . ", 0)";
-						query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".USER_GROUP_TABLE);
-					}
-					else
-					{
-						print "Couldn't get insert ID for " . GROUPS_TABLE . " table<br>\n";
-					}
+					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
+						VALUES ($group_id, " . $row['user_id'] . ", 0)";
+					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".USER_GROUP_TABLE);
 
 					if ( is_int($row['user_regdate']) )
 					{
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
 					}
+
+					$group_id++;
 
 					//
 					// Nathan's bbcode2 conversion
@@ -1630,77 +1624,6 @@ if ( !empty($next) )
 			}
 
 			print " <span class=\"ok\"><b>OK</b></span><br />\n";
-			end_step('fulltext_search_indexing');
-
-		case 'fulltext_search_indexing':
-			//
-			// Generate search word list
-			//
-			// Fetch a batch of posts_text entries
-			//
-			$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
-				FROM " . POSTS_TEXT_TABLE;
-			$result = query($sql, "Couldn't get post count totals");
-
-			$max_post_id = $db->sql_fetchrow($result);
-
-			$totalposts = $max_post_id['total'];
-			$max_post_id = $max_post_id['max_post_id'];
-			$per_percent = round(( $totalposts / 500 ) * 10);
-
-			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
-
-			$batchsize = 150; // Process this many posts per loop
-			$batchcount = 0;
-			$total_percent = 0;
-
-			for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
-			{
-				$batchstart = $postcounter + 1;
-				$batchend = $postcounter + $batchsize;
-				$batchcount++;
-
-				print " * Fulltext Indexing ( $batchstart to $batchend ) :: ";
-				flush();
-				
-				$sql = "SELECT *
-					FROM " . POSTS_TEXT_TABLE ."
-					WHERE post_id 
-						BETWEEN $batchstart 
-							AND $batchend";
-				$posts_result = query($sql, "Couldn't obtain post_text");
-
-				$per_pct = ceil( $db->sql_numrows($posts_result) / 40 );
-				$inc = 0;
-
-				if ( $row = $db->sql_fetchrow($posts_result) )
-				{ 
-					do
-					{
-						add_search_words($row['post_id'], $row['post_text'], $row['post_subject']);
-
-						$inc++;
-						if ( $inc == $per_pct )
-						{
-							print ".";
-							flush();
-							$inc = 0;
-						}
-					}
-					while( $row = $db->sql_fetchrow($posts_result) );
-				}
-
-				$db->sql_freeresult($posts_result);
-				
-				// Remove common words after the first 2 batches and after every 4th batch after that.
-				if ( $batchcount % 4 == 3 )
-				{
-					remove_common('global', 0.4);
-				}
-
-				print " <span class=\"ok\"><b>OK</b></span><br />\n";
-			}
-
 			end_step('update_topics');
 
 		case 'update_topics':
@@ -1866,7 +1789,7 @@ if ( !empty($next) )
 			$sql = "UPDATE " . $table_prefix . "config 
 				SET config_value = '" . $script_path . "'
 				WHERE config_name = 'script_path'";
-			query($sql, "Couldn't insert Board admin email");
+			query($sql, "Couldn't insert Board script path");
 			
 			//
 			// Change session table to HEAP if MySQL version matches
@@ -1881,7 +1804,7 @@ if ( !empty($next) )
 			if ( preg_match("/^(3\.23)|(4\.)/", $version) )
 			{
 				$sql = "ALTER TABLE " . $table_prefix . "sessions 
-					TYPE=HEAP";
+					TYPE=HEAP MAX_ROWS=500";
 				$db->sql_query($sql);
 			}
 
@@ -1928,6 +1851,77 @@ if ( !empty($next) )
 				query($sql, "Couldn't drop table :: " . $drop_tables[$i]);
 
 				print "<span class=\"ok\"><b>OK</b></span><br />\n";
+			}
+
+			end_step('fulltext_search_indexing');
+
+		case 'fulltext_search_indexing':
+			//
+			// Generate search word list
+			//
+			// Fetch a batch of posts_text entries
+			//
+			$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
+				FROM " . POSTS_TEXT_TABLE;
+			$result = query($sql, "Couldn't get post count totals");
+
+			$max_post_id = $db->sql_fetchrow($result);
+
+			$totalposts = $max_post_id['total'];
+			$max_post_id = $max_post_id['max_post_id'];
+			$per_percent = round(( $totalposts / 500 ) * 10);
+
+			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
+
+			$batchsize = 150; // Process this many posts per loop
+			$batchcount = 0;
+			$total_percent = 0;
+
+			for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
+			{
+				$batchstart = $postcounter + 1;
+				$batchend = $postcounter + $batchsize;
+				$batchcount++;
+
+				print " * Fulltext Indexing ( $batchstart to $batchend ) :: ";
+				flush();
+				
+				$sql = "SELECT *
+					FROM " . POSTS_TEXT_TABLE ."
+					WHERE post_id 
+						BETWEEN $batchstart 
+							AND $batchend";
+				$posts_result = query($sql, "Couldn't obtain post_text");
+
+				$per_pct = ceil( $db->sql_numrows($posts_result) / 40 );
+				$inc = 0;
+
+				if ( $row = $db->sql_fetchrow($posts_result) )
+				{ 
+					do
+					{
+						add_search_words('global', $row['post_id'], $row['post_text'], $row['post_subject']);
+
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
+					}
+					while( $row = $db->sql_fetchrow($posts_result) );
+				}
+
+				$db->sql_freeresult($posts_result);
+				
+				// Remove common words after the first 2 batches and after every 4th batch after that.
+				if ( $batchcount % 4 == 3 )
+				{
+					remove_common('global', 0.4);
+				}
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
 			echo "\n<br /><br />\n\n<font size=\"+3\"><b>UPGRADE COMPLETED</b></font><br />\n";
