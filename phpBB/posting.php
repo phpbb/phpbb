@@ -1171,7 +1171,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'topic_title' 				=> stripslashes($subject),
 			'topic_time'				=> $current_time,
 			'topic_type'				=> $topic_type,
-			'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('f_ignorequeue', $data['forum_id'])) ? 0 : 1, 
+			'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
 			'icon_id'					=> $data['icon_id'],
 			'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0
 		);
@@ -1209,7 +1209,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'post_subject'		=> stripslashes($subject),
 		'icon_id'			=> $data['icon_id'], 
 		'poster_ip' 		=> $user->ip,
-		'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('f_ignorequeue', $data['forum_id'])) ? 0 : 1,
+		'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1,
 		'post_edit_time' 	=> ($mode == 'edit' && $data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
 		'enable_sig' 		=> $data['enable_sig'],
 		'enable_bbcode' 	=> $data['enable_bbcode'],
@@ -1462,7 +1462,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id']);
 
-	$message = ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('f_ignorequeue', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
+	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
 	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
 	trigger_error($message);
 }
