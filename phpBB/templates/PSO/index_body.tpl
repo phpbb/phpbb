@@ -31,11 +31,8 @@
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br/><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
 			</tr>
-			<tr><form method="post" action="{S_LOGIN_ACTION}">
-				<td colspan="6" bgcolor="{T_TH_COLOR3}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_USERNAME}: <input type="text" name="username">&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password">&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</font>:&nbsp;<input type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}">&nbsp;</font></td>
-			</form></tr>
 		</table></td>
 	</tr>
 </table></div>
