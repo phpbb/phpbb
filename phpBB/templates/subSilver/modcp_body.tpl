@@ -23,7 +23,7 @@
 	<!-- BEGIN topicrow -->
 	<tr> 
 	  <td class="row1" align="center" valign="middle">{topicrow.FOLDER_IMG}</td>
-	  <td class="row1">&nbsp;<span class="topictitle"><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span></td>
+	  <td class="row1">&nbsp;<span class="topictitle">{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span></td>
 	  <td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="postdetails">{topicrow.LAST_POST}</span></td>
 	  <td class="row2" align="center" valign="middle"> 

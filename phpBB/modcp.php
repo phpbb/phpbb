@@ -995,7 +995,7 @@ switch($mode)
 			WHERE t.forum_id = $forum_id
 				AND t.topic_poster = u.user_id
 				AND p.post_id = t.topic_last_post_id
-				AND t.topic_type <> " . TOPIC_MOVED . "
+				AND t.topic_status <> " . TOPIC_MOVED . "
 			ORDER BY t.topic_type DESC, p.post_time DESC
 			LIMIT $start, " . $board_config['topics_per_page'];
 
@@ -1029,29 +1029,41 @@ switch($mode)
 			}
 			else
 			{
-				$folder_image = "<img src=\"" . $images['folder'] . "\">";
+				if( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE )
+				{
+					$folder_image = "<img src=\"" . $images['folder_announce'] . "\">";
+				}
+				else if( $topic_rowset[$i]['topic_type'] == POST_STICKY )
+				{
+					$folder_image = "<img src=\"" . $images['folder_sticky'] . "\">";
+				}
+				else 
+				{
+					$folder_image = "<img src=\"" . $images['folder'] . "\">";
+				}
 			}
 
 			$topic_id = $topic_rowset[$i]['topic_id'];
-
-			if( $topic_rowset[$i]['topic_type'] == POST_STICKY )
-			{
-				$topic_type = $lang['Topic_Sticky'] . " ";
-			}
-			else if( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE )
+			$topic_type = $topic_rowset[$i]['topic_type'];
+			
+			if($topic_type == POST_ANNOUNCE)
 			{
 				$topic_type = $lang['Topic_Announcement'] . " ";
 			}
+			else if($topic_type == POST_STICKY)
+			{
+				$topic_type = $lang['Topic_Sticky'] . " ";
+			}
 			else
 			{
-				$topic_type = "";
+				$topic_type = "";		
 			}
-
+	
 			if( $topic_rowset[$i]['topic_vote'] )
 			{
 				$topic_type .= $lang['Topic_Poll'] . " ";
 			}
-
+	
 			$topic_title = $topic_rowset[$i]['topic_title'];
 			if( count($orig_word) )
 			{
