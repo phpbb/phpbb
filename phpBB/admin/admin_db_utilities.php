@@ -782,7 +782,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
-				include('page_header_admin.php');
+				include('page_header_admin.'.$phpEx);
 
 				$template->pparse("body");
 
