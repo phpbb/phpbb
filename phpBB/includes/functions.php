@@ -74,29 +74,14 @@ function get_db_stat($mode)
 	return 'ERROR';
 }
 
-function get_userdata_from_id($user_id)
+function get_userdata($user)
 {
 	global $db;
 
 	$sql = "SELECT *
-		FROM " . USERS_TABLE . "
-		WHERE user_id = $user_id";
-	if ( !($result = $db->sql_query($sql)) )
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain userdata for id", "", __LINE__, __FILE__, $sql);
-	}
-
-	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
-}
-
-function get_userdata($username)
-{
-	global $db;
-
-	$sql = "SELECT *
-		FROM " . USERS_TABLE . "
-		WHERE username = '" . str_replace("\'", "''", $username) . "'
-			AND user_id <> " . ANONYMOUS;
+		FROM " . USERS_TABLE . " 
+		WHERE ";
+	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
@@ -107,46 +92,52 @@ function get_userdata($username)
 
 function make_jumpbox($match_forum_id = 0)
 {
-	global $lang, $db, $SID;
-	global $nav_links, $phpEx;
+	global $lang, $db, $SID, $nav_links, $phpEx;
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
 		WHERE f.cat_id = c.cat_id
 		GROUP BY c.cat_id, c.cat_title, c.cat_order
 		ORDER BY c.cat_order";
-	if(!$q_categories = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain category list.", "", __LINE__, __FILE__, $sql);
 	}
-
-	if( $total_categories = $db->sql_numrows() )
+	
+	$category_rows = array();
+	while ( $row = $db->sql_fetchrow($result) )
 	{
-		$category_rows = $db->sql_fetchrowset($q_categories);
+		$category_rows[] = $row;
+	}
 
+	if ( $total_categories = count($category_rows) )
+	{
 		$sql = "SELECT *
 			FROM " . FORUMS_TABLE . "
 			ORDER BY cat_id, forum_order";
-		if(!$q_forums = $db->sql_query($sql))
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 		}
 
-		$total_forums = $db->sql_numrows($q_forums);
-		$forum_rows = $db->sql_fetchrowset($q_forums);
-
 		$boxstring = '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
-		if( $total_forums )
+		$forum_rows = array();
+		while ( $row = $db->sql_fetchrow($result) )
+		{
+			$forum_rows[] = $row;
+		}
+
+		if ( $total_forums = count($forum_rows) )
 		{
 			for($i = 0; $i < $total_categories; $i++)
-			{ 
+			{
 				$boxstring_forums = "";
 				for($j = 0; $j < $total_forums; $j++)
 				{
-					if( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
+					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
 					{
-						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? "selected=\"selected\"" : "";
+						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 
 						//
@@ -161,7 +152,7 @@ function make_jumpbox($match_forum_id = 0)
 					}
 				}
 
-				if( $boxstring_forums != "" )
+				if ( $boxstring_forums != "" )
 				{
 					$boxstring .= '<option value="-1">&nbsp;</option>';
 					$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
@@ -178,12 +169,12 @@ function make_jumpbox($match_forum_id = 0)
 		$boxstring .= '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
-	if( isset($SID) )
+	if ( isset($SID) )
 	{
 		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 	}
 
-	return($boxstring);
+	return $boxstring;
 }
 
 //
@@ -198,30 +189,23 @@ function make_forum_select($box_name, $ignore_forum = false)
 	$sql = "SELECT forum_id, forum_name
 		FROM " . FORUMS_TABLE . " 
 		ORDER BY cat_id, forum_order";
-	if( !$q_forums = $db->sql_query($sql) )
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 	}
 
 	$forum_list = "";
-	while( $row = $db->sql_fetchrow($q_forums) )
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		if( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
+		if ( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
 		{
-			$forum_list .= "<option value=\"" . $row['forum_id'] . "\">" . $row['forum_name'] . "</option>";
+			$forum_list .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
 		}
 	}
 
-	if( $forum_list == "" )
-	{
-		$forum_list .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
-	}
-	else
-	{
-		$forum_list = '<select name="' . $box_name . '">' . $forum_list . '</select>';
-	}
+	$forum_list .= ( $forum_list == "" ) ? '<option value="-1">-- ! No Forums ! --</option>' : '<select name="' . $box_name . '">' . $forum_list . '</select>';
 
-	return($forum_list);
+	return $forum_list;
 }
 
 //
@@ -231,34 +215,34 @@ function init_userprefs($userdata)
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpEx, $phpbb_root_path;
 
-	if( $userdata['user_id'] != ANONYMOUS )
+	if ( $userdata['user_id'] != ANONYMOUS )
 	{
-		if( !empty($userdata['user_lang']))
+		if ( !empty($userdata['user_lang']))
 		{
 			$board_config['default_lang'] = $userdata['user_lang'];
 		}
 
-		if( !empty($userdata['user_dateformat']) )
+		if ( !empty($userdata['user_dateformat']) )
 		{
 			$board_config['default_dateformat'] = $userdata['user_dateformat'];
 		}
 
-		if( isset($userdata['user_timezone']) )
+		if ( !empty($userdata['user_timezone']) )
 		{
 			$board_config['board_timezone'] = $userdata['user_timezone'];
 		}
 	}
 
-	if( !@file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
+	if ( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
 	{
 		$board_config['default_lang'] = "english";
 	}
 
 	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
 
-	if( defined("IN_ADMIN") )
+	if ( defined("IN_ADMIN") )
 	{
-		if( !@file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
+		if( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
 		{
 			$board_config['default_lang'] = "english";
 		}
@@ -269,11 +253,11 @@ function init_userprefs($userdata)
 	//
 	// Set up style
 	//
-	if( !$board_config['override_user_style'] )
+	if ( !$board_config['override_user_style'] )
 	{
-		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
+		if ( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
 		{
-			if( ($theme = setup_style($userdata['user_style'])) )
+			if ( $theme = setup_style($userdata['user_style']) )
 			{
 				return;
 			}
@@ -292,12 +276,12 @@ function setup_style($style)
 	$sql = "SELECT *
 		FROM " . THEMES_TABLE . "
 		WHERE themes_id = $style";
-	if( !($result = $db->sql_query($sql)) )
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(CRITICAL_ERROR, "Couldn't query database for theme info.");
 	}
 
-	if( !($row = $db->sql_fetchrow($result)) )
+	if ( !($row = $db->sql_fetchrow($result)) )
 	{
 		message_die(CRITICAL_ERROR, "Couldn't get theme data for themes_id=$style.");
 	}
@@ -307,17 +291,17 @@ function setup_style($style)
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name, $board_config, $db);
 
-	if( $template )
+	if ( $template )
 	{
 		$current_template_path = $template_path . $template_name;
 		@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
 
-		if( !defined("TEMPLATE_CONFIG") )
+		if ( !defined("TEMPLATE_CONFIG") )
 		{
 			message_die(CRITICAL_ERROR, "Couldn't open $template_name template config file");
 		}
 
-		if( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) )
+		if ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) )
 		{
 			while( list($key, $value) = @each($images) )
 			{
@@ -354,7 +338,7 @@ function generate_activation_key()
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
-	return (sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]));
+	return sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
 }
 
 function decode_ip($int_ip)
@@ -368,7 +352,7 @@ function decode_ip($int_ip)
 //
 function create_date($format, $gmepoch, $tz)
 {
-	return (@gmdate($format, $gmepoch + (3600 * $tz)));
+	return gmdate($format, $gmepoch + (3600 * $tz));
 }
 
 //
@@ -487,7 +471,7 @@ function validate_username($username)
 	{
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			return ( $userdata['session_logged_in'] ) ? ( ( $row['username'] != $userdata['username'] ) ? array('error' => $lang['Username_taken']) : array('error' => '') ) : array('error' => $lang['Username_taken']);
+			return ( $userdata['session_logged_in'] ) ? ( ( $row['username'] != $userdata['username'] ) ? array('error' => true, 'error_msg' => $lang['Username_taken']) : array('error' => false, 'error_msg' => '') ) : array('error' => true, 'error_msg' => $lang['Username_taken']);
 		}
 	}
 
@@ -498,7 +482,7 @@ function validate_username($username)
 	{
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			return array('error' => $lang['Username_taken']);
+			return array('error' => true, 'error_msg' => $lang['Username_taken']);
 		}
 	}
 
@@ -509,7 +493,7 @@ function validate_username($username)
 	{
 		if ( $db->sql_fetchrow($result) )
 		{
-			return array('error' => $lang['Username_disallowed']);
+			return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 		}
 	}
 
@@ -519,9 +503,9 @@ function validate_username($username)
 	{
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			if( preg_match("/\b(" . str_replace("\*", "\w*?", preg_quote($row['word'])) . ")\b/i", $username) )
+			if ( preg_match("/\b(" . str_replace("\*", "\w*?", preg_quote($row['word'])) . ")\b/i", $username) )
 			{
-				return array('error' => $lang['Username_disallowed']);
+				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 			}
 		}
 	}
@@ -529,10 +513,10 @@ function validate_username($username)
 	// Don't allow " in username.
 	if ( strstr($username, '"') )
 	{
-		return array('error' => $lang['Username_invalid']);
+		return array('error' => true, 'error_msg' => $lang['Username_invalid']);
 	}
 
-	return array('error' => '');
+	return array('error' => false, 'error_msg' => '');
 }
 
 
@@ -548,7 +532,7 @@ function sync($type, $id)
 		case 'all forums':
 			$sql = "SELECT forum_id
 				FROM " . FORUMS_TABLE;
-			if( !$result = $db->sql_query($sql) )
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get forum IDs", "Error", __LINE__, __FILE__, $sql);
 			}
@@ -562,7 +546,7 @@ function sync($type, $id)
 		case 'all topics':
 			$sql = "SELECT topic_id
 				FROM " . TOPICS_TABLE;
-			if( !$result = $db->sql_query($sql) )
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get topic ID's", "Error", __LINE__, __FILE__, $sql);
 			}
@@ -574,39 +558,22 @@ function sync($type, $id)
 			break;
 
 	  	case 'forum':
-			$sql = "SELECT MAX(p.post_id) AS last_post
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
-				WHERE p.forum_id = $id
-					AND p.topic_id = t.topic_id
-					AND t.topic_status <> " . TOPIC_MOVED;
-			if( !$result = $db->sql_query($sql) )
+			$sql = "SELECT MAX(post_id) AS last_post, COUNT(post_id) AS total 
+				FROM " . POSTS_TABLE . " 
+				WHERE forum_id = $id";
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
 			}
 
-			if( $row = $db->sql_fetchrow($result) )
+			if ( $row = $db->sql_fetchrow($result) )
 			{
 				$last_post = ($row['last_post']) ? $row['last_post'] : 0;
-			}
-			else
-			{
-				$last_post = 0;
-			}
-
-			$sql = "SELECT COUNT(post_id) AS total
-				FROM " . POSTS_TABLE . "
-				WHERE forum_id = $id";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
-			}
-
-			if( $row = $db->sql_fetchrow($result) )
-			{
 				$total_posts = ($row['total']) ? $row['total'] : 0;
 			}
 			else
 			{
+				$last_post = 0;
 				$total_posts = 0;
 			}
 
@@ -614,12 +581,12 @@ function sync($type, $id)
 				FROM " . TOPICS_TABLE . "
 				WHERE forum_id = $id 
 					AND topic_status <> " . TOPIC_MOVED;
-			if( !$result = $db->sql_query($sql) )
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get topic count", "Error", __LINE__, __FILE__, $sql);
 			}
 
-			if( $row = $db->sql_fetchrow($result) )
+			if ( $row = $db->sql_fetchrow($result) )
 			{
 				$total_topics = ($row['total']) ? $row['total'] : 0;
 			}
@@ -631,7 +598,7 @@ function sync($type, $id)
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
 				WHERE forum_id = $id";
-			if( !$result = $db->sql_query($sql) )
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not update forum $id", "Error", __LINE__, __FILE__, $sql);
 			}
@@ -641,17 +608,17 @@ function sync($type, $id)
 			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
 				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $id";
-			if( !$result = $db->sql_query($sql) )
+			if ( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
 			}
 
-			if( $row = $db->sql_fetchrow($result) )
+			if ( $row = $db->sql_fetchrow($result) )
 			{
 				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
 					WHERE topic_id = $id";
-				if( !($result = $db->sql_query($sql)) )
+				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, "Could not update topic $id", "Error", __LINE__, __FILE__, $sql);
 				}
@@ -675,7 +642,7 @@ function language_select($default, $select_name = "language", $dirname="language
 	$lang = array();
 	while ( $file = readdir($dir) )
 	{
-		if( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
+		if ( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
 		{
 			$filename = str_replace("lang_", "", $file);
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
@@ -709,19 +676,17 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 	$sql = "SELECT themes_id, style_name
 		FROM " . THEMES_TABLE . "
 		ORDER BY template_name, themes_id";
-	if( !$result = $db->sql_query($sql) )
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't query themes table", "", __LINE__, __FILE__, $sql);
 	}
 
-	$template_style = $db->sql_fetchrowset($result);
-	
 	$style_select = '<select name="' . $select_name . '">';
-	for($i = 0; $i < count($template_style); $i++)
+	while ( $row = $db->sql_fetchrow($result) )
 	{
-		$selected = ( $template_style[$i]['themes_id'] == $default_style ) ? ' selected="selected"' : '';
+		$selected = ( $row['themes_id'] == $default_style ) ? ' selected="selected"' : '';
 
-		$style_select .= '<option value="' . $template_style[$i]['themes_id'] . '"' . $selected . '>' . $template_style[$i]['style_name'] . '</option>';
+		$style_select .= '<option value="' . $row['themes_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
 	$style_select .= "</select>";
 
@@ -735,7 +700,7 @@ function tz_select($default, $select_name = 'timezone')
 {
 	global $sys_timezone, $lang;
 
-	if( !isset($default) )
+	if ( !isset($default) )
 	{
 		$default == $sys_timezone;
 	}
@@ -792,7 +757,7 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 	global $starttime;
 
 	$author_list = '';
-	if( !empty($search_match) )
+	if ( !empty($search_match) )
 	{
 		$username_search = preg_replace("/\*/", "%", trim(strip_tags($search_match)));
 
@@ -800,12 +765,12 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 			FROM " . USERS_TABLE . " 
 			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
 			ORDER BY username";
-		if( !($result = $db->sql_query($sql)) )
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
 		}
 
-		if( $row = $db->sql_fetchrow($result) )
+		if ( $row = $db->sql_fetchrow($result) )
 		{
 			do
 			{
@@ -820,10 +785,9 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 
 	}
 
-	if( !$is_inline_review )
+	if ( !$is_inline_review )
 	{
 		$gen_simple_header = TRUE;
-
 		$page_title = $lang['Search'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -848,7 +812,7 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 		// If we have results then dump them out and enable
 		// the appropriate switch block
 		//
-		if( !empty($author_list) )
+		if ( !empty($author_list) )
 		{
 			$template->assign_block_vars("switch_select_name", array());
 		}
@@ -898,23 +862,23 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
+	if ( DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
 	{
 		$sql_error = $db->sql_error();
 
 		$debug_text = "";
 
-		if($sql_error['message'] != "")
+		if ( $sql_error['message'] != "" )
 		{
 			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
 		}
 
-		if($sql_store != "")
+		if ( $sql_store != "" )
 		{
 			$debug_text .= "<br /><br />$sql_store";
 		}
 
-		if($err_line != "" && $err_file != "")
+		if ( $err_line != "" && $err_file != "" )
 		{
 			$debug_text .= "</br /><br />Line : " . $err_line . "<br />File : " . $err_file;
 		}
@@ -929,11 +893,11 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	//
 	// If the header hasn't been output then do it
 	//
-	if( !defined("HEADER_INC") && $msg_code != CRITICAL_ERROR )
+	if ( !defined("HEADER_INC") && $msg_code != CRITICAL_ERROR )
 	{
-		if( empty($lang) )
+		if ( empty($lang) )
 		{
-			if( !empty($board_config['default_lang']) )
+			if ( !empty($board_config['default_lang']) )
 			{
 				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx);
 			}
@@ -943,11 +907,11 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			}
 		}
 
-		if( empty($template) )
+		if ( empty($template) )
 		{
 			$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
 		}
-		if( empty($theme) )
+		if ( empty($theme) )
 		{
 			$theme = setup_style($board_config['default_style']);
 		}
@@ -955,7 +919,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		//
 		// Load the Page Header
 		//
-		if( !defined("IN_ADMIN") )
+		if ( !defined("IN_ADMIN") )
 		{
 			include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 		}
@@ -968,26 +932,26 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	switch($msg_code)
 	{
 		case GENERAL_MESSAGE:
-			if($msg_title == "")
+			if ( $msg_title == "" )
 			{
 				$msg_title = $lang['Information'];
 			}
 			break;
 
 		case CRITICAL_MESSAGE:
-			if($msg_title == "")
+			if ( $msg_title == "" )
 			{
 				$msg_title = $lang['Critical_Information'];
 			}
 			break;
 
 		case GENERAL_ERROR:
-			if($msg_text == "")
+			if ( $msg_text == "" )
 			{
 				$msg_text = $lang['An_error_occured'];
 			}
 
-			if($msg_title == "")
+			if ( $msg_title == "" )
 			{
 				$msg_title = $lang['General_Error'];
 			}
@@ -999,12 +963,12 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			//
 			include($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx);
 
-			if($msg_text == "")
+			if ( $msg_text == "" )
 			{
 				$msg_text = $lang['A_critical_error'];
 			}
 
-			if($msg_title == "")
+			if ( $msg_title == "" )
 			{
 				$msg_title = "phpBB : <b>" . $lang['Critical_Error'] . "</b>";
 			}
@@ -1016,22 +980,22 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	// prevents debug info being output for general messages should DEBUG be
 	// set TRUE by accident (preventing confusion for the end user!)
 	//
-	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
+	if ( DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
 	{
-		if($debug_text != "")
+		if ( $debug_text != "" )
 		{
 			$msg_text = $msg_text . "<br /><br /><b><u>DEBUG MODE</u></b>" . $debug_text;
 		}
 	}
 
-	if( $msg_code != CRITICAL_ERROR )
+	if ( $msg_code != CRITICAL_ERROR )
 	{
-		if( !empty($lang[$msg_text]) )
+		if ( !empty($lang[$msg_text]) )
 		{
 			$msg_text = $lang[$msg_text];
 		}
 
-		if( !defined("IN_ADMIN") )
+		if ( !defined("IN_ADMIN") )
 		{
 			$template->set_filenames(array(
 				"message_body" => "message_body.tpl")
@@ -1050,7 +1014,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		);
 		$template->pparse("message_body");
 
-		if( !defined("IN_ADMIN") )
+		if ( !defined("IN_ADMIN") )
 		{
 			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 		}
@@ -1065,7 +1029,6 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	}
 
 	exit;
-
 }
 
 //
