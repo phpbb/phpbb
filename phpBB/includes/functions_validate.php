@@ -102,8 +102,8 @@ function validate_username($username)
 	}
 	$db->sql_freeresult($result);
 
-	// Don't allow " in username.
-	if (strstr($username, '"') || strstr($username, '&quot;'))
+	// Don't allow " and ALT-255 in username.
+	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)))
 	{
 		return array('error' => true, 'error_msg' => $lang['Username_invalid']);
 	}

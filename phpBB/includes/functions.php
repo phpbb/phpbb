@@ -81,7 +81,15 @@ function get_userdata($user, $force_str = false)
 {
 	global $db;
 
-	$user = ((intval($user) == 0) || ($force_str)) ? str_replace("\'", "''", htmlspecialchars(trim($user))) : intval($user);
+	if (intval($user) == 0 || $force_str)
+	{
+		$user = trim(htmlspecialchars($user));
+		$user = substr(str_replace("\'", "'", $user), 0, 25);
+	}
+	else
+	{
+		$user = intval($user);
+	}
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . " 

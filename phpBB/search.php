@@ -641,6 +641,21 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		// so we can serialize it and place it in the DB
 		//
 		$store_search_data = array();
+
+		//
+		// Limit the character length (and with this the results displayed at all following pages) to prevent
+		// truncated result arrays. Normally, search results above 12000 are affected.
+		// - to include or not to include
+		/*
+		$max_result_length = 60000;
+		if (strlen($search_results) > $max_result_length)
+		{
+			$search_results = substr($search_results, 0, $max_result_length);
+			$search_results = substr($search_results, 0, strrpos($search_results, ','));
+			$total_match_count = count(explode(', ', $search_results));
+		}
+		*/
+
 		for($i = 0; $i < count($store_vars); $i++)
 		{
 			$store_search_data[$store_vars[$i]] = $$store_vars[$i];
@@ -653,7 +668,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$search_id = mt_rand();
 
 		$sql = "UPDATE " . SEARCH_TABLE . " 
-			SET search_id = $search_id, search_array = '$result_array'
+			SET search_id = $search_id, search_array = '" . str_replace("\'", "''", $result_array) . "'
 			WHERE session_id = '" . $userdata['session_id'] . "'";
 		if ( !($result = $db->sql_query($sql)) || !$db->sql_affectedrows() )
 		{
