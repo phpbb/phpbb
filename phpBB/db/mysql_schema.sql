@@ -1,26 +1,9 @@
-# ***************************************************************************  
-# *                              mysql_schema.sql 
-# *                            -------------------                         
-# *   begin                : Thursday, Apr 19, 2001 
-# *   copyright            : (C) 2001 The phpBB Group        
-# *   email                : support@phpbb.com                           
-# *                                                          
-# *   $Id$
-# *                                                            
-# * 
-# *************************************************************************** 
+# MySQL dump 8.13
 #
-#
-# ***************************************************************************  
-# *                                                     
-# *   This program is free software; you can redistribute it and/or modify    
-# *   it under the terms of the GNU General Public License as published by   
-# *   the Free Software Foundation; either version 2 of the License, or  
-# *   (at your option) any later version.                      
-# *                                                          
-# * 
-# *************************************************************************** 
-#
+# Host: localhost    Database: phpBBtest
+#--------------------------------------------------------
+# Server version	3.23.35
+
 #
 # Table structure for table 'phpbb_banlist'
 #
@@ -28,7 +11,7 @@
 CREATE TABLE phpbb_banlist (
   ban_id int(10) NOT NULL auto_increment,
   ban_userid int(10) default NULL,
-  ban_ip char(8) default NULL,
+  ban_ip int(11) default NULL,
   ban_start int(10) default NULL,
   ban_end int(10) default NULL,
   ban_time_type int(10) default NULL,
@@ -68,6 +51,7 @@ CREATE TABLE phpbb_config (
   default_dateformat varchar(20) default NULL,
   default_lang varchar(255) default NULL,
   system_timezone smallint(6) default NULL,
+  sys_template varchar(20) default NULL,
   PRIMARY KEY  (config_id),
   UNIQUE KEY selected (selected)
 ) TYPE=MyISAM;
@@ -144,7 +128,7 @@ CREATE TABLE phpbb_posts (
   forum_id int(10) NOT NULL default '0',
   poster_id int(10) NOT NULL default '0',
   post_time int(10) NOT NULL default '0',
-  poster_ip char(8) NOT NULL default '0',
+  poster_ip int(10) NOT NULL default '0',
   bbcode_uid varchar(10) NOT NULL default '',
   PRIMARY KEY  (post_id),
   KEY forum_id (forum_id),
@@ -171,7 +155,7 @@ CREATE TABLE phpbb_priv_msgs (
   from_userid int(10) NOT NULL default '0',
   to_userid int(10) NOT NULL default '0',
   msg_time int(10) NOT NULL default '0',
-  poster_ip char(8) NOT NULL default '0',
+  poster_ip int(10) NOT NULL default '0',
   msg_status int(10) NOT NULL default '0',
   msg_text text NOT NULL,
   PRIMARY KEY  (msg_id),
@@ -203,7 +187,7 @@ CREATE TABLE phpbb_session (
   session_id int(10) unsigned NOT NULL default '0',
   session_user_id int(10) NOT NULL default '0',
   session_time int(10) unsigned NOT NULL default '0',
-  session_ip char(8) default NULL,
+  session_ip char(10) default NULL,
   session_page int(10) NOT NULL default '0',
   session_logged_in tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (session_id)
@@ -290,8 +274,9 @@ CREATE TABLE phpbb_users (
   user_actkey varchar(32) default NULL,
   user_newpasswd varchar(32) default NULL,
   user_notify tinyint(3) default NULL,
-  user_timezone int(4) default NULL,
+  user_timezone float default NULL,
   user_active int(2) default NULL,
+  user_template varchar(20) default NULL,
   PRIMARY KEY  (user_id),
   KEY user_id (user_id)
 ) TYPE=MyISAM;

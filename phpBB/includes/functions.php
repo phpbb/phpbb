@@ -140,6 +140,31 @@ function make_jumpbox()
 	return($boxstring);
 }
 
+// NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
+// system so its not currently implemented that way
+// 			- James
+function template_select($default)
+{
+	$dir = opendir("templates");
+	$template_select = "<select name=\"selected_template\">\n";
+	while($file = readdir($dir))
+	{
+		unset($selected);
+
+		if($file != "." && $file != ".." && $file != "CVS")
+		{
+			if($file == $default)
+			{
+				$selected = " SELECTED";
+			}
+			$template_select .= "<option value=\"$file\"$selected>$file</option>\n";
+		}
+	}
+	$template_select .= "</select>";
+	closedir($dir);
+	return($template_select);
+}
+
 function language_select($default, $name="language", $dirname="language/")
 {
 	global $phpEx;
@@ -163,7 +188,7 @@ function language_select($default, $name="language", $dirname="language/")
 function theme_select($default)
 {
 	global $db;
-	
+
 	$sql = "SELECT theme_id, theme_name FROM ".THEMES_TABLE." ORDER BY theme_name";
 	if($result = $db->sql_query($sql))
 	{
@@ -197,7 +222,7 @@ function theme_select($default)
 function init_userprefs($userdata)
 {
 
-	global $override_user_theme;
+	global $override_user_theme, $template, $sys_template;
 	global $bgcolor, $table_bgcolor, $textcolor, $category_title, $table_header;
 	global $color1, $color2, $header_image, $newtopic_image;
 	global $reply_locked_image, $reply_image, $linkcolor, $vlinkcolor;
@@ -245,6 +270,16 @@ function init_userprefs($userdata)
 	if($userdata["user_timezone"])
 	{
 		$sys_timezone = $userdata["user_timezone"];
+	}
+
+	// Setup user's Template
+	if($userdata['user_template'] != '')
+	{
+		$template = new Template("templates/".$userdata['user_template']);
+	}
+	else
+	{
+		$template = new Template("templates/".$sys_template);
 	}
 
 	// Include the appropriate language file ... if it exists.

@@ -133,6 +133,8 @@ $l_itemsreq	= "Items marked with a * are required";
 $l_nouserid = "You must supply a user ID number in order to view profile data.";
 $l_viewingprofile = "Viewing profile of ";
 $l_hidden = "hidden";
+$l_boardtemplate = "Select Template";
+
 
 // Viewforum
 $l_viewforum	= "View Forum";

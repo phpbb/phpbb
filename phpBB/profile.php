@@ -201,6 +201,7 @@ switch($mode)
 					    user_bbcode,
 					    user_timezone,
 					    user_lang,
+					    user_template,
 					    user_active,
 					    user_actkey)
 					    VALUES (
@@ -226,6 +227,7 @@ switch($mode)
 					    '$alwaysbbcode',
 					    '$timezone',
 					    '$lang',
+					    '$selected_template',
 					    ";
 				if($require_activation || $coppa)
 				{
@@ -286,6 +288,11 @@ switch($mode)
 			{
 				$coppa = FALSE;
 			}
+
+			if(!isset($selected_template))
+			{
+				$selected_template = $sys_template;
+			}
 			$template->assign_vars(array("COPPA" => $coppa,
 												  "L_SUBMIT" => $l_submit,
 												  "USERNAME" => $username,
@@ -314,6 +321,7 @@ switch($mode)
 												  "LANGUAGE_SELECT" => language_select($default_lang, "lang"),
 												  "THEME_SELECT" => theme_select($theme, $db),
 												  "TIMEZONE_SELECT" => tz_select($timezone),
+												  "TEMPLATE_SELECT" => template_select($selected_template),
 												  "L_ICQNUMBER" => $l_icqnumber,
 												  "L_STORECOOKIE" => $l_storecookie,
 												  "L_MESSENGER" => $l_messenger,
@@ -325,6 +333,7 @@ switch($mode)
 												  "L_ALWAYSSMILE" => $l_alwayssmile,
 												  "L_BOARDLANG" => $l_boardlang,
 												  "L_BOARDTHEME" => $l_boardtheme,
+												  "L_BOARDTEMPLATE" => $l_boardtemplate,
 												  "L_TIMEZONE" => $l_timezone,
 												  "L_YES" => $l_yes,
 												  "L_NO" => $l_no,

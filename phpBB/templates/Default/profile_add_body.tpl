@@ -104,6 +104,10 @@
 					<td bgcolor="#CCCCCC">{THEME_SELECT}</td>
 				</tr>
 				<tr class="tablebody">
+					<td bgcolor="#DDDDDD"><b>{L_BOARDTEMPLATE}:</b></td>
+					<td bgcolor="#CCCCCC">{TEMPLATE_SELECT}</td>
+				</tr>
+				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_TIMEZONE}:</b></td>
 					<td bgcolor="#CCCCCC">{TIMEZONE_SELECT}</td>
 				</tr>
@@ -111,7 +115,7 @@
 		   	<td align="center" colspan="2">
 					<input type="hidden" name="mode" value="{MODE}">
 					<input type="hidden" name="agreed" value="true">
-					<input type="hidden" name="coppa" value="{COPPA}">		
+					<input type="hidden" name="coppa" value="{COPPA}">
 					<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;
 			</tr>
 			</table>

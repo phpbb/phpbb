@@ -1,38 +1,38 @@
 <?php
-/***************************************************************************  
- *                                common.php 
- *                            -------------------                         
- *   begin                : Saturday, Feb 23, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+/***************************************************************************
+ *                                common.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 23, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
 include('config.'.$phpEx);
 include('includes/constants.'.$phpEx);
 
 //
 // Default variable values - most if not all
-// of these have equivalents in a DB table but 
+// of these have equivalents in a DB table but
 // for situations where the DB cannot be read or where
 // data is missing this data is used instead
 //
 //$date_format = "m-d-Y H:i:s"; // American datesformat
-$date_format = "d M Y h:i:s a"; // European datesformat
+$date_format = "D, M d Y h:i:s a"; // European datesformat
 
 $url_images = "images";
 $image_quote = "$url_images/quote.gif";
@@ -54,9 +54,7 @@ $image_msnm = "$url_images/msnm.gif";
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
-// Setup what template to use. Currently just use default
 include('includes/template.inc');
-$template = new Template("./templates/Default");
 
 include('includes/error.'.$phpEx);
 include('includes/sessions.'.$phpEx);
@@ -74,9 +72,11 @@ $sql = "SELECT *
 	WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
+	// Our template class hasn't been instantiated so we do it here.
+	$template = new Template("templates/Default");
 	error_die(SQL_QUERY, "Could not query config information.", __LINE__, __FILE__);
 }
-else  
+else
 {
 	$config = $db->sql_fetchrow($result);
 	$sitename = stripslashes($config["sitename"]);
@@ -93,7 +93,8 @@ else
 	$default_lang = $config["default_lang"];
 	$require_activation = $config["require_activation"];
 	$sys_timezone = $config["system_timezone"];
-	$sys_lang = $default_lang;            
+	$sys_template = $config['sys_template'];
+	$sys_lang = $default_lang;
 }
 
 include('language/lang_'.$default_lang.'.'.$phpEx);
