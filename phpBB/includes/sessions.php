@@ -118,11 +118,6 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		$enable_autologin = 0;
 	}
 
-	if( empty($sessiondata['lastvisit']) )
-	{
-		$sessiondata['lastvisit'] = $current_time;
-	}
-
 	//
 	// Initial ban check against user id, IP and email address
 	//
@@ -156,20 +151,20 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 	//
 	// Create or update the session
 	//
-	$sql_update = "UPDATE " . SESSIONS_TABLE . "
-		SET session_user_id = $user_id, session_start = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_time = $current_time, session_page = $page_id, session_logged_in = $login
+	$sql = "UPDATE " . SESSIONS_TABLE . "
+		SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_page = $page_id, session_logged_in = $login
 		WHERE session_id = '" . $session_id . "' 
 			AND session_ip = '$user_ip'";
-	$result = $db->sql_query($sql_update);
+	$result = $db->sql_query($sql);
 
-	if(!$result || !$db->sql_affectedrows())
+	if( !$result || !$db->sql_affectedrows() )
 	{
 		$session_id = md5(uniqid($user_ip));
 
-		$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
+		$sql = "INSERT INTO " . SESSIONS_TABLE . "
 			(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
 			VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
-		$result = $db->sql_query($sql_insert);
+		$result = $db->sql_query($sql);
 		if(!$result)
 		{
 			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", "", __LINE__, __FILE__, $sql);
@@ -178,6 +173,14 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 
 	if( $user_id != ANONYMOUS )
 	{
+		$sql = "UPDATE " . USERS_TABLE . " 
+			SET user_session_time = $current_time, user_session_page = $page_id, user_lastvisit = " . $sessiondata['lastvisit'] . "
+			WHERE user_id = $user_id";
+		if( !$db->sql_query($sql) )
+		{
+			message_die(CRITICAL_ERROR, "Error updating last visit time : session_begin", "", __LINE__, __FILE__, $sql);
+		}
+
 		$sessiondata['autologinid'] = ( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE ) ? $auto_login_key : "";
 	}
 
@@ -402,7 +405,6 @@ function session_end($session_id, $user_id)
 	}
 
 	$sessiondata['userid'] = ANONYMOUS;
-	$sessiondata['lastvisit'] = $current_time;
 
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
