@@ -32,7 +32,6 @@ if($userdata['user_level'] == ADMIN)
 $current_time = time();
 $template->assign_vars(array(
 	"PHPBB_VERSION" => "2.0-alpha",
-	"CURRENT_TIME" => create_date($board_config['default_dateformat'], $current_time, $board_config['default_timezone']),
 	"ADMIN_LINK" => $admin_link));
 
 $template->pparse("overall_footer");

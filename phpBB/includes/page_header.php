@@ -75,7 +75,7 @@ else
 // situation
 //
 $sql = "SELECT u.username, u.user_id, s.session_logged_in
-	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
+	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".(time() - 300);
 $result = $db->sql_query($sql);
@@ -117,10 +117,10 @@ $userlist = ($logged_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $user
 //
 if($userdata['session_logged_in'])
 {
-	$sql = "SELECT COUNT(pm.privmsgs_type) AS new_messages 
-		FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug 
-		WHERE pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "  
-			AND ug.group_id = pm.privmsgs_to_groupid 
+	$sql = "SELECT COUNT(pm.privmsgs_type) AS new_messages
+		FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug
+		WHERE pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
+			AND ug.group_id = pm.privmsgs_to_groupid
 			AND ug.user_id = " . $userdata['user_id'];
 	$result_pm = $db->sql_query($sql);
 	if(!$result_pm)
@@ -149,8 +149,8 @@ else
 // variables that may be used at any point
 // in a template. Note that all URL's should
 // be wrapped in append_sid, as should all
-// S_x_ACTIONS for forms. 
-// 
+// S_x_ACTIONS for forms.
+//
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
 	"PAGE_TITLE" => $page_title,
@@ -170,10 +170,10 @@ $template->assign_vars(array(
 	"L_SEARCH" => $lang['Search'],
 	"L_PRIVATEMSGS" => $lang['Private_msgs'],
 	"L_MEMBERLIST" => $lang['Memberlist'],
-	"L_FAQ" => $lang['FAQ'], 
-	"L_USERGROUPS" => $lang['Usergroups'], 
+	"L_FAQ" => $lang['FAQ'],
+	"L_USERGROUPS" => $lang['Usergroups'],
 	"L_FORUM" => $lang['Forum'],
-	"L_TOPICS" => $lang['Topics'], 
+	"L_TOPICS" => $lang['Topics'],
 	"L_REPLIES" => $lang['Replies'],
 	"L_VIEWS" => $lang['Views'],
 	"L_POSTS" => $lang['Posts'],
@@ -195,7 +195,7 @@ $template->assign_vars(array(
 	"L_AUTHOR" => $lang['Author'],
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
-	"L_LOGIN_LOGOUT" => $l_login_logout, 
+	"L_LOGIN_LOGOUT" => $l_login_logout,
 	"L_PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"L_LAST_VISIT" => $l_last_visit,
 
@@ -208,13 +208,14 @@ $template->assign_vars(array(
 	"U_FAQ" => append_sid("faq.".$phpEx),
 	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
-	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx), 
-	"U_GROUP_ADMIN" => append_sid("groupadmin.".$phpEx), 
+	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
+	"U_GROUP_ADMIN" => append_sid("groupadmin.".$phpEx),
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
-	"S_LAST_VISIT_DATE" => $s_last_visit, 
+	"S_LAST_VISIT_DATE" => $s_last_visit,
+	"s_CURRENT_TIME" => create_date($board_config['default_dateformat'], $current_time, $board_config['default_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],
@@ -259,7 +260,7 @@ if(!$userdata['session_logged_in'])
 	$template->assign_var_from_handle("S_LOGINBOX", "loginbox");
 }
 
-header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT"); 
+header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 $template->pparse("overall_header");
