@@ -287,8 +287,7 @@ $lang['You_are_watching'] = "You are now watching this topic";
 $lang['Message_body'] = "Message body";
 $lang['Topic_review'] = "Topic review";
 
-$lang['No_post_mode'] = "No post mode specified"; //If posting.php is called without a mode (newtopic/reply/delete/etc, shouldn't be
- shown normaly)
+$lang['No_post_mode'] = "No post mode specified"; // If posting.php is called without a mode (newtopic/reply/delete/etc, shouldn't be shown normaly)
 
 $lang['Post_a_new_topic'] = "Post a new topic";
 $lang['Post_a_reply'] = "Post a reply";
