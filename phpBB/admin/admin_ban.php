@@ -305,7 +305,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 		//
 		// Update log
 		//
-		add_admin_log('log_ban_' . $mode, $ban_list_log, $ban_reason);
+		add_admin_log('log_ban_' . $mode, $ban_reason, $ban_list_log);
 	}
 
 	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . "admin_ban.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');

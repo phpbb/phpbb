@@ -62,7 +62,7 @@ $lang['DB_Backup'] = 'DB Backup';
 $lang['DB_Restore'] = 'DB Restore';
 $lang['Basic_Config'] = 'Basic Configuration';
 $lang['Administrators'] = 'Administrators';
-$lang['View_admin_log'] = 'Admin log';
+$lang['Admin_logs'] = 'Admin Log';
 
 $lang['Users'] = 'Users';
 $lang['Groups'] = 'Groups';
@@ -70,48 +70,48 @@ $lang['Groups'] = 'Groups';
 //
 // Logging
 //
-$lang['log_index_activate'] = 'Activated <b>%s</b> inactive users from admin index';
-$lang['log_index_delete'] = 'Deleted <b>%s</b> inactive users from admin index';
-$lang['log_index_remind'] = 'Sent reminder email to <b>%s</b> inactive users from admin index';
+$lang['log_index_activate'] = '<b>Activated inactive users</b> => %s users';
+$lang['log_index_delete'] = '<b>Deleted inactive users</b> => %s';
+$lang['log_index_remind'] = '<b>Sent reminder emails to inactive users</b> => %s users';
 
-$lang['log_mass_email'] = 'Sent mass email to <b>%s</b>';
-$lang['log_delete_word'] = 'Deleted word censor';
-$lang['log_edit_word'] = 'Edited word censor <b>%s</b>';
-$lang['log_add_word'] = 'Added word censor <b>%s</b>';
+$lang['log_mass_email'] = '<b>Sent mass email</b> => %s';
+$lang['log_delete_word'] = '<b>Deleted word censor</b>';
+$lang['log_edit_word'] = '<b>Edited word censor</b> => %s';
+$lang['log_add_word'] = '<b>Added word censor</b> => %s';
 
-$lang['log_template_edit'] = 'Edited template <b>%s</b> from template set <b>%s</b>';
-$lang['log_imageset_edit'] = 'Edited imageset <b>%s</b>';
-$lang['log_style_edit'] = 'Edited style <b>%s</b>';
-$lang['log_theme_edit'] = 'Edited theme <b>%s</b>';
+$lang['log_template_edit'] = '<b>Edited template</b> => %s / %s';
+$lang['log_imageset_edit'] = '<b>Edited imageset</b> => %s';
+$lang['log_style_edit'] = '<b>Edited style</b> => %s';
+$lang['log_theme_edit'] = '<b>Edited theme</b> => %s';
 
-$lang['log_db_backup'] = 'Database backup';
-$lang['log_db_restore'] = 'Database restore';
-$lang['log_search_index'] = 'Re-indexed search system [ <b>%s</b> ]';
+$lang['log_db_backup'] = '<b>Database backup</b>';
+$lang['log_db_restore'] = '<b>Database restore</b>';
+$lang['log_search_index'] = '<b>Re-indexed search system</b> => %s';
 
-$lang['log_disallow_add'] = 'Added disallowed username <b>%s</b>';
-$lang['log_disallow_delete'] = 'Deleted disallowed username';
+$lang['log_disallow_add'] = '<b>Added disallowed username</b> => %s';
+$lang['log_disallow_delete'] = '<b>Deleted disallowed username</b>';
 
-$lang['log_prune'] = 'Pruned forum <b>%s</b>';
+$lang['log_prune'] = '<b>Pruned forum</b> => %s';
 
-$lang['log_admin_clear'] = 'Cleared admin log';
+$lang['log_admin_clear'] = '<b>Cleared admin log</b>';
 
-$lang['log_ban'] = 'Banned : <b>%s</b> [ %s ]';
-$lang['log_ban_ip'] = 'Banned ip : <b>%s</b> [ %s ]';
-$lang['log_ban_email'] = 'Banned email : <b>%s</b> [ %s ]';
-$lang['log_unban_user'] = 'Unbanned username [ %s total ]';
-$lang['log_unban_ip'] = 'Unbanned ip [ %s total ]';
-$lang['log_unban_email'] = 'Unbanned email [ %s total ]';
+$lang['log_ban_user'] = '<b>Banned User</b> [ %s ] => %s ';
+$lang['log_ban_ip'] = '<b>Banned ip</b> [ %s ] => %s';
+$lang['log_ban_email'] = '<b>Banned email</b> [ %s ] => %s';
+$lang['log_unban_user'] = '<b>Unbanned username</b> => %s total';
+$lang['log_unban_ip'] = '<b>Unbanned ip</b> => %s total';
+$lang['log_unban_email'] = '<b>Unbanned email</b> => %s total';
 
-$lang['log_server_config'] = 'Altered server settings';
-$lang['log_default_config'] = 'Altered board defaults';
-$lang['log_setting_config'] = 'Altered board settings';
-$lang['log_cookie_config'] = 'Altered cookie settings';
-$lang['log_email_config'] = 'Altered email settings';
-$lang['log_avatar_config'] = 'Altered avatar settings';
+$lang['log_server_config'] = '<b>Altered server settings</b>';
+$lang['log_default_config'] = '<b>Altered board defaults</b>';
+$lang['log_setting_config'] = '<b>Altered board settings</b>';
+$lang['log_cookie_config'] = '<b>Altered cookie settings</b>';
+$lang['log_email_config'] = '<b>Altered email settings</b>';
+$lang['log_avatar_config'] = '<b>Altered avatar settings</b>';
 
-$lang['log_prune_user_deac'] = 'Users Deactivated => %s';
-$lang['log_prune_user_del_del'] = 'Users Pruned and Posts Deleted => %s';
-$lang['log_prune_user_del_anon'] = 'Users Pruned and Posts Retained => %s';
+$lang['log_prune_user_deac'] = '<b>Users Deactivated</b> => %s';
+$lang['log_prune_user_del_del'] = '<b>Users Pruned and Posts Deleted</b> => %s';
+$lang['log_prune_user_del_anon'] = '<b>Users Pruned and Posts Retained</b> => %s';
 
 //
 // View log
@@ -279,42 +279,6 @@ $lang['acl_forum_rate'] = 'Rate topics';
 $lang['acl_forum_print'] = 'Print topics';   
 $lang['acl_forum_ignoreflood'] = 'Ignore flood limit';   
 $lang['acl_forum_ignorequeue'] = 'Ignore mod queue'; 
-
-
-$lang['Select_a_User'] = 'Select a User';
-$lang['Select_a_Group'] = 'Select a Group';
-$lang['Select_a_Forum'] = 'Select a Forum';
-$lang['Auth_Control_User'] = 'User Permissions Control'; 
-$lang['Auth_Control_Group'] = 'Group Permissions Control'; 
-$lang['Auth_Control_Forum'] = 'Forum Permissions Control'; 
-$lang['Look_up_User'] = 'Look up User'; 
-$lang['Look_up_Group'] = 'Look up Group'; 
-$lang['Look_up_Forum'] = 'Look up Forum'; 
-
-$lang['Group_auth_explain'] = 'Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.';
-$lang['User_auth_explain'] = 'Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.';
-$lang['Forum_auth_explain'] = 'Here you can alter the authorisation levels of each forum. You will have both a simple and advanced method for doing this, advanced offers greater control of each forum operation. Remember that changing the permission level of forums will affect which users can carry out the various operations within them.';
-
-$lang['Simple_mode'] = 'Simple Mode';
-$lang['Advanced_mode'] = 'Advanced Mode';
-
-$lang['Conflict_warning'] = 'Authorisation Conflict Warning';
-$lang['Conflict_access_userauth'] = 'This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.';
-$lang['Conflict_mod_userauth'] = 'This user still has moderator rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having moderator rights. The groups granting rights (and the forums involved) are noted below.';
-
-$lang['Conflict_access_groupauth'] = 'The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.';
-$lang['Conflict_mod_groupauth'] = 'The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.';
-
-$lang['View'] = 'View';
-$lang['Read'] = 'Read';
-$lang['Post'] = 'Post';
-$lang['Reply'] = 'Reply';
-$lang['Edit'] = 'Edit';
-$lang['Delete'] = 'Delete';
-$lang['Sticky'] = 'Sticky';
-$lang['Announce'] = 'Announce'; 
-$lang['Vote'] = 'Vote';
-$lang['Pollcreate'] = 'Poll create';
 
 $lang['Auth_updated'] = 'Permissions have been updated';
 

@@ -145,11 +145,11 @@ $db->sql_freeresult($result);
 $total_entries =  $row['total_entries'];
 $pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;order=$sort_order", $total_entries, $board_config['topics_per_page'], $start). '&nbsp;';
 
-page_header($lang['General']);
+page_header($lang['Admin_logs']);
 
 ?>
 
-<h1><?php echo $lang['Admin_log']; ?></h1>
+<h1><?php echo $lang['Admin_logs']; ?></h1>
 
 <p><?php echo $lang['Admin_log_explain']; ?></p>
 
@@ -172,15 +172,15 @@ if ( sizeof($log_data) )
 {
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
-		$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 	
 ?>
 	<tr>
-		<td class="<?php echo $cell_bg; ?>" nowrap="nowrap"><?php echo $log_data[$i]['username']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center" nowrap="nowrap"><?php echo $log_data[$i]['ip']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center" nowrap="nowrap"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
-		<td class="<?php echo $cell_bg; ?>"><?php echo $log_data[$i]['action']; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center" nowrap="nowrap"><input type="checkbox" name="mark[]" value="<?php echo $log_data[$i]['id']; ?>" /></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $log_data[$i]['username']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $log_data[$i]['ip']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['action']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><input type="checkbox" name="mark[]" value="<?php echo $log_data[$i]['id']; ?>" /></td>
 	</tr>
 <?php
 

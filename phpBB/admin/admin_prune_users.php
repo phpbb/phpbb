@@ -157,7 +157,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 			{
 				if ( !empty($HTTP_POST_VARS['deleteposts']) )
 				{
-					$l_admin_log = $lang['log_prune_user_del_del'];
+					$l_admin_log = 'log_prune_user_del_del';
 
 					//
 					// Call unified post deletion routine?
@@ -165,7 +165,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 				}
 				else
 				{
-					$l_admin_log = $lang['log_prune_user_del_anon'];
+					$l_admin_log = 'log_prune_user_del_anon';
 
 					for($i = 0; $i < sizeof($user_ids); $i++)
 					{
@@ -180,7 +180,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 			}
 			else if ( !empty($HTTP_POST_VARS['deactivate']) )
 			{
-				$l_admin_log = $lang['log_prune_user_deac'];
+				$l_admin_log = 'log_prune_user_deac';
 
 				$sql = "UPDATE " . USERS_TABLE . " SET user_active = 0";
 			}

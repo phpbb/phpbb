@@ -82,17 +82,14 @@ a.copyright:hover {
 /*
 	Non-tag specific
 */
-.gen, .genmed, .gensmall {
+.gen, .gensmall {
 	color:	black;
 }
 .gen {
-	font-size:	12px;
-}
-.genmed {
-	font-size:	11px;
+	font-size:	8pt;
 }
 .gensmall {
-	font-size:	10px;
+	font-size:	7pt;
 }
 .nav {
 	color:			black;
