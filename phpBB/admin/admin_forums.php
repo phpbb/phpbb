@@ -640,6 +640,13 @@ if( !empty($mode) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
 			}
+			
+			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+				WHERE forum_id = $from_id";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
+			}
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
