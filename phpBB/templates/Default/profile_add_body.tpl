@@ -1,5 +1,5 @@
 <tr>
-  <td><form action="{S_PROFILE_ACTION}" method="POST">
+  <td><form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
    <table border="0" align="center" width="100%" bgcolor="#000000" cellpadding="0" cellspacing="1">
     <tr>
       <td>
@@ -57,6 +57,18 @@
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_INTERESTS}:</b></td>
 					<td bgcolor="#CCCCCC"><input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}"></td>
+				</tr>
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD"><b>{L_AVATAR}:</b><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_AVATAR_EXPLAIN}</font></td>
+					<td bgcolor="#CCCCCC"><table cellspacing="2" cellpadding="0" border="0">
+						<tr class="tablebody">
+							<td align="center">{L_CURRENT_IMAGE}</font></td>
+							<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{L_UPLOAD_IMAGE}:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{L_DELETE_IMAGE}:<input type="checkbox" name="avatardel"></td>
+						</tr>
+						<tr class="tablebody">
+							<td align="center">&nbsp;{AVATAR}&nbsp;</td>
+						</tr>
+					</table></td>
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_SIGNATURE}:</b><br><font style="{font-size: 8pt;}">{L_SIGNATURE_EXPLAIN}</font></td>
