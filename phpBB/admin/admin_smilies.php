@@ -439,7 +439,7 @@ function update_smile_dimensions()
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Display_on_posting'] ?></td>
-		<td class="row1"><input type="checkbox" name="smile_on_posting" <?php echo ($smile_data['smile_on_posting']) ? ' checked="checked"' : '' ?>/></td>
+		<td class="row1"><input type="checkbox" name="display_on_posting" <?php echo ($smile_data['display_on_posting']) ? ' checked="checked"' : '' ?>/></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['Smile_order'] ?></td>
@@ -472,7 +472,7 @@ function update_smile_dimensions()
 			'smile_height'		=>	$smile_height,
 			'smile_order'		=>	$smile_order,
 			'emoticon'			=>	stripslashes($_POST['smile_emotion']),
-			'smile_on_posting'	=>	(!empty($_POST['smile_on_posting'])) ? 1 : 0
+			'display_on_posting'	=>	(!empty($_POST['display_on_posting'])) ? 1 : 0
 		);
 
 		$smile_id = $_POST['smile_id'];
@@ -556,7 +556,7 @@ function update_smile_dimensions()
 
 		$sql = 'SELECT *
 				FROM ' . SMILIES_TABLE . '
-				ORDER BY smile_on_posting DESC, smile_order ASC';
+				ORDER BY display_on_posting DESC, smile_order ASC';
 		$result = $db->sql_query($sql);
 		page_header($user->lang['Emoticons']);
 ?>
@@ -594,7 +594,7 @@ function update_smile_dimensions()
 		$spacer = FALSE;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$spacer && !$row['smile_on_posting'])
+			if (!$spacer && !$row['display_on_posting'])
 			{
 				$spacer = TRUE;
 ?>

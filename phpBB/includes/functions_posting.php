@@ -480,7 +480,7 @@ function generate_smilies($mode)
 		);
 	}
 
-	$where_sql = ( $mode == 'inline' ) ? 'WHERE smile_on_posting = 1 ' : '';
+	$where_sql = ( $mode == 'inline' ) ? 'WHERE display_on_posting = 1 ' : '';
 	$sql = "SELECT emoticon, code, smile_url, smile_width, smile_height
 		FROM " . SMILIES_TABLE . "
 		$where_sql
