@@ -192,8 +192,6 @@ switch ($mode)
 			}
 			else if ($mode == 'edit')
 			{
-				echo "HERE";
-				exit;
 				$row = get_forum_info($forum_id);
 
 				if ($row['forum_type'] != $forum_type && $action)
