@@ -155,6 +155,7 @@ function get_forum_parents($forum_data)
 			{
 				$forum_parents[$row['forum_id']] = $row['forum_name'];
 			}
+			$db->sql_freeresult($result);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
@@ -176,7 +177,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	global $config, $template, $db;
 
 	// Have we disabled the display of moderators? If so, then return
-	// from whence we came ... after setting an S_ template var
+	// from whence we came ... 
 	if (empty($config['load_moderators']))
 	{
 		return;
@@ -256,18 +257,15 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	return;
 }
 
-function make_jumpbox($action, $forum_id = false, $enable_select_all = false)
+function make_jumpbox($action, $forum_id = false, $select_all = false)
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }">';
-	$boxstring .= ($enable_select_all) ? '<option value="0">' . $user->lang['ALL_FORUMS'] : '<option value="-1">' . $user->lang['SELECT_FORUM'];
-	$boxstring .= '</option><option value="-1">-----------------</option>';
-
+	$boxstring = '';
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql, 120);
+	$result = $db->sql_query($sql, 600);
 
 	$right = $cat_right = 0;
 	$padding = $forum_list = $holding = '';
@@ -322,16 +320,13 @@ function make_jumpbox($action, $forum_id = false, $enable_select_all = false)
 	}
 	$db->sql_freeresult($result);
 
-	if (!$right)
+	if ($boxstring != '')
 	{
-		$boxstring .= '<option value="-1">' . $user->lang['NO_FORUMS'] . '</option>';
+		$boxstring = (($select_all) ? '<option value="0">' . $user->lang['ALL_FORUMS'] : '<option value="-1">' . $user->lang['SELECT_FORUM']) . '</option><option value="-1">-----------------</option>' . $boxstring;
 	}
 
-	$boxstring .= '</select>';
-	$boxstring .= '<input type="hidden" name="sid" value="' . $user->session_id . '" />';
-
 	$template->assign_vars(array(
-		'S_JUMPBOX_SELECT' => $boxstring,
+		'S_JUMPBOX_OPTIONS' => $boxstring,
 		'S_JUMPBOX_ACTION' => $action)
 	);
 
@@ -434,14 +429,8 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					AND user_id = $user_id";
 			$result = $db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
-			{
-				$notify_status = $row['notify_status'];
-			}
-			else
-			{
-				$notify_status = NULL;
-			}
+			$notify_status = ($row = $db->sql_fetchrow($result)) ? $row['notify_status'] : NULL;
+			$db->sql_freeresult($result);
 		}
 
 		if (!is_null($notify_status))
@@ -532,7 +521,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 // Marks a topic or form as read in the 'lastread' table.
 function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 {
-	global $db, $user;
+	global $config, $db, $user;
 	
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
