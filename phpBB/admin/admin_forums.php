@@ -355,7 +355,7 @@ if( !empty($mode) )
 			$row = $db->sql_fetchrow($result);
 
 			$max_order = $row['max_order'];
-			$next_order = $max_order + 1;
+			$next_order = $max_order + 10;
 			
 			$sql = "SELECT MAX(forum_id) AS max_id
 				FROM " . FORUMS_TABLE;
