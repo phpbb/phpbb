@@ -123,7 +123,8 @@ CREATE TABLE phpbb_banlist (
    ban_start int(11),
    ban_end int(11),
    ban_exclude tinyint(1) DEFAULT '0' NOT NULL, 
-   ban_reason varchar(255),
+   ban_reason varchar(255), 
+   ban_give_reason varchar(255), 
    PRIMARY KEY (ban_id)
 );
 

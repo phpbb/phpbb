@@ -119,7 +119,10 @@ $lang = array(
 
 	'BOARD_DISABLE'		=> 'Sorry but this board is currently unavailable',
 	'BOARD_UNAVAILABLE' => 'Sorry but the board is temporarily unavailable, please try again in a few minutes',
-	'BOARD_BANNED'		=> 'You have been banned from this forum<br />Please contact the %sboard administrator%s for more information',
+	'BOARD_BAN_TIME'	=> 'You have been banned from this board until <b>%1$s</b>.<br /><br />Please contact the %2$sBoard Administrator%3$s for more information.',
+	'BOARD_BAN_PERM'	=> 'You have been <b>permanently</b> banned from this board.<br /><br />Please contact the %2$sBoard Administrator%3$s for more information.', 
+	'BOARD_BAN_REASON'	=> 'Reason given for ban: <b>%s</b>', 
+
 	'EMAIL_DISABLED'	=> 'Sorry but all emailing functions have been disabled.', 
 
 
