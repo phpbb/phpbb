@@ -501,6 +501,7 @@ $lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic(
 $lang['Split_posts'] = "Split Posts";
 $lang['Split_after'] = "Split Posts Beyond Selected";
 $lang['Topic_split'] = "The selected topic has been split successfully";
+$lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 
 
 //
