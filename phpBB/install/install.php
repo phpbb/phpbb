@@ -607,11 +607,9 @@ else
 				$sql_query = split_sql_file($sql_query, $delimiter);
 				$sql_count = count($sql_query);
 
-				@set_time_limit(30);
-
 				foreach ($sql_query as $sql)
 				{
-					$sql = str_replace('|', ';', $sql) . "\n";
+					$sql = str_replace('|', ';', $sql);
 
 					if (!$db->sql_query($sql))
 					{
