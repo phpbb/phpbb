@@ -6,7 +6,8 @@
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
- *   $Id$                                                      *                                                            
+ *   $Id$
+ *                                                            
  * 
  ***************************************************************************/ 
 
@@ -89,6 +90,7 @@ if(!$forum_row)
 
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
 $topics_count = $forum_row[0]["forum_topics"];
+
 for($x = 0; $x < $db->sql_numrows($result); $x++)
 {
 	if($x > 0)
@@ -197,39 +199,13 @@ if($total_topics)
 			"LAST_POST_USER" => $last_post_user,
 
 			"U_VIEW_TOPIC" => $view_topic_url,
-			"U_LAST_POST_USER_PROFILE" => $last_post_profile_url));
-	     }
-
-	$count = 1;
-	$next = $start + $board_config['topics_per_page'];
-	if($topics_count > $board_config['topics_per_page'])
-	{
-		if($next < $topics_count)
-		{
-			$pagination = "<a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$next")."\">$l_nextpage</a> | ";
-		}
-		for($x = 0; $x < $topics_count; $x++)
-		{
-			if(!($x % $board_config['topics_per_page']))
-			{
-				if($x == $start)
-				{
-					$pagination .= "$count";
-				}
-				else
-				{
-					$pagination .= " <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$x")."\">$count</a> ";
-				}
-				$count++;
-				if(!($count % 20))
-				{
-					$pagination .= "<br>";
-				}
-			}
-		}
+			"U_LAST_POST_USER_PROFILE" => $last_post_profile_url)
+		);
 	}
+
 	$template->assign_vars(array(
-		"PAGINATION" => $pagination));
+		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id", $topics_count, $board_config['topics_per_page'], $start))
+	);
 	$template->pparse("body");
 }
 else

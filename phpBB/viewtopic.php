@@ -293,43 +293,6 @@ if($total_replies > $board_config['posts_per_page'])
 		$times++;
 	}
 	$pages = $times . " $l_pages";
-	
-	$times = 1;
-	$pagination = "$l_gotopage (";
-	
-	$last_page = $start - $board_config['posts_per_page'];
-	if($start > 0)
-	{
-		$pagination .= "<a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$last_page")."\">$l_prevpage</a> ";
-	}
-	
-	for($x = 0; $x < $total_replies; $x += $board_config['posts_per_page'])
-	{
-		if($times != 1)
-		{
-			$pagination .=  " | ";
-		}
-		if($start && ($start == $x))
-		{
-			$pagination .=  $times;
-		}
-		else if($start == 0 && $x == 0)
-		{
-			$pagination .= "1";
-		}
-		else
-		{
-			$pagination .= "<a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$x")."\">$times</a>";
-		}
-		$times++;
-	}
-	
-	if(($start + $board_config['posts_per_page']) < $total_replies)
-	{
-		$next_page = $start + $board_config['posts_per_page'];
-		$pagination .=  " <a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$next_page")."\">$l_nextpage</a>";
-	}
-	$pagination .= " )";
 }
 else
 {
@@ -338,7 +301,7 @@ else
 
 $template->assign_vars(array(
 	"PAGES" => $pages,
-	"PAGINATION" => $pagination));
+	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start)));
 
 $template->pparse("body");
 
