@@ -447,10 +447,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
 
-// 20030226 Ashe: $start first? $offset first? current mysql.php file says that it should be the number of rows
-//$result = $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
-$result = $db->sql_query_limit($sql, intval($start), intval($config['posts_per_page']));
-
+$result = $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
 
 if ($row = $db->sql_fetchrow($result))
 {

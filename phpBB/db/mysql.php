@@ -209,21 +209,23 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0)
-	{
-		if ($query != '')
-		{
-			$this->query_result = false;
-			$this->num_queries++;
+	// 20030406 Ashe: switched up $total and $offset as per MySQL manual
+	// Note for other DBALs: if $total == -1 we only want to set an offset (no pun intended)
+	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0) 
+	{ 
+		if ($query != '') 
+		{ 
+			$this->query_result = false; 
+			$this->num_queries++; 
 
-			$query .= ' LIMIT ' . ((!empty($offset)) ? $total . ', ' . $offset : $total);
+			$query .= ' LIMIT ' . ((!empty($offset)) ? "$offset, $total" : $total); 
 
-			return $this->sql_query($query, $expire_time);
-		}
-		else
-		{
-			return false;
-		}
+			return $this->sql_query($query, $expire_time); 
+		} 
+		else 
+		{ 
+			return false; 
+		} 
 	}
 
 	// Idea for this from Ikonboard
