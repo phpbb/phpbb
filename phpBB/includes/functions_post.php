@@ -634,6 +634,8 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )
 			{
+				@set_time_limit(120);
+
 				$topic_title = preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title']));
 
 				do
