@@ -142,7 +142,7 @@ switch($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="backupstart" value="<?php echo $user->lang['Start_backup']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="backupstart" value="<?php echo $user->lang['Start_backup']; ?>" class="btnmain" /></td>
 	</tr>
 </table></form>
 
@@ -416,7 +416,7 @@ switch($mode)
 		<td class="row2"><input type="text" name="local" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="restorestart" value="<?php echo $user->lang['Start_Restore']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="restorestart" value="<?php echo $user->lang['Start_Restore']; ?>" class="btnmain" /></td>
 	</tr>
 </table></form>
 

@@ -269,7 +269,7 @@ function update_image_dimensions()
 	
 	}
 	
-?><input class="mainoption" type="submit" value="<?php echo $user->lang['SUBMIT'] ?>" /></td>
+?><input class="btnmain" type="submit" value="<?php echo $user->lang['SUBMIT'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -531,7 +531,7 @@ function update_image_dimensions()
 		<td class="row1"><input type="radio" name="current" value="keep" checked="checked" /> <?php echo $user->lang['KEEP_ALL'] ?>&nbsp; &nbsp;<input type="radio" name="current" value="replace" /> <?php echo $user->lang['REPLACE_MATCHES'] ?>&nbsp; &nbsp;<input type="radio" name="current" value="delete" /> <?php echo $user->lang['DELETE_ALL'] ?>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" name="import" type="submit" value="<?php echo $user->lang['IMPORT_' . $lang] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" name="import" type="submit" value="<?php echo $user->lang['IMPORT_' . $lang] ?>" /></td>
 	</tr>
 <?php
 
@@ -708,7 +708,7 @@ function update_image_dimensions()
 
 ?>
 			<tr>
-				<td class="cat" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><input type="submit" name="add" value="<?php echo $user->lang['ADD_' . $lang]; ?>" class="mainoption" /></td>
+				<td class="cat" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><input type="submit" name="add" value="<?php echo $user->lang['ADD_' . $lang]; ?>" class="btnmain" /></td>
 			</tr>
 		</table></td>
 	</tr>

@@ -479,7 +479,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 		<td class="row2"><b><?php echo ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="right"><input class="liteoption" type="submit" name="online" value="<?php echo $user->lang['RESET_ONLINE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="date" value="<?php echo $user->lang['RESET_DATE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="stats" value="<?php echo $user->lang['RESYNC_STATS']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="online" value="<?php echo $user->lang['RESET_ONLINE']; ?>" /> &nbsp;<input class="btnlite" type="submit" name="date" value="<?php echo $user->lang['RESET_DATE']; ?>" /> &nbsp;<input class="btnlite" type="submit" name="stats" value="<?php echo $user->lang['RESYNC_STATS']; ?>" />&nbsp;</td>
 	</tr>
 </table></form>
 
@@ -557,16 +557,16 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 ?>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="right"><input class="liteoption" type="submit" name="activate" value="<?php echo $user->lang['ACTIVATE']; ?>" />&nbsp; <?php 
+		<td class="cat" colspan="3" height="28" align="right"><input class="btnlite" type="submit" name="activate" value="<?php echo $user->lang['ACTIVATE']; ?>" />&nbsp; <?php 
 			
 			if (!empty($config['email_enable']))
 			{
 
-?><input class="liteoption" type="submit" name="remind" value="<?php echo $user->lang['REMIND']; ?>" />&nbsp; <?php
+?><input class="btnlite" type="submit" name="remind" value="<?php echo $user->lang['REMIND']; ?>" />&nbsp; <?php
 
 			}
 
-?><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE']; ?>" />&nbsp;</td>
+?><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['DELETE']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 

@@ -36,6 +36,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_user.'.$phpEx);
 
 // Check permissions
 if (!$auth->acl_get('a_names'))
@@ -45,7 +46,7 @@ if (!$auth->acl_get('a_names'))
 
 if (isset($_POST['disallow']))
 {
-	$disallowed_user = (isset($_REQUEST['disallowed_user'])) ? $_REQUEST['disallowed_user'] : '';
+	$disallowed_user = (isset($_REQUEST['disallowed_user'])) ? htmlspecialchars($_REQUEST['disallowed_user']) : '';
 	$disallowed_user = str_replace('*', '%', $disallowed_user);
 
 	if (validate_username($disallowed_user))
@@ -54,8 +55,8 @@ if (isset($_POST['disallow']))
 	}
 	else
 	{
-		$sql = "INSERT INTO " . DISALLOW_TABLE . " (disallow_username)
-			VALUES('" . str_replace("\'", "''", $disallowed_user) . "')";
+		$sql = 'INSERT INTO ' . DISALLOW_TABLE . " (disallow_username)
+			VALUES('" . $db->sql_escape(stripslashes($disallowed_user)) . "')";
 		$result = $db->sql_query($sql);
 
 		$message = $user->lang['Disallow_successful'];
@@ -74,7 +75,7 @@ else if (isset($_POST['allow']))
 		trigger_error($user->lang['No_user_selected']);
 	}
 
-	$sql = "DELETE FROM " . DISALLOW_TABLE . "
+	$sql = 'DELETE FROM ' . DISALLOW_TABLE . "
 		WHERE disallow_id = $disallowed_id";
 	$db->sql_query($sql);
 
@@ -84,8 +85,8 @@ else if (isset($_POST['allow']))
 }
 
 // Grab the current list of disallowed usernames...
-$sql = "SELECT *
-	FROM " . DISALLOW_TABLE;
+$sql = 'SELECT *
+	FROM ' . DISALLOW_TABLE;
 $result = $db->sql_query($sql);
 
 $disallow_select = '';
@@ -113,10 +114,10 @@ adm_page_header($user->lang['DISALLOW']);
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['USERNAME']; ?><br /><span class="gensmall"><?php echo $user->lang['Add_disallow_explain']; ?></span></td>
-		<td class="row2"><input type="text" name="disallowed_user" size="30" />&nbsp;</td>
+		<td class="row2"><input class="post" type="text" name="disallowed_user" size="30" />&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="disallow" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" />
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="disallow" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" />
 	</tr>
 </table>
 
@@ -136,10 +137,10 @@ adm_page_header($user->lang['DISALLOW']);
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['USERNAME']; ?></td>
-		<td class="row2"><select name="disallowed_id"><?php echo $disallow_select; ?></select></td>
+		<td class="row2"><select class="post" name="disallowed_id"><?php echo $disallow_select; ?></select></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="allow" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" />
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="allow" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" />
 	</tr>
 <?php
 

@@ -319,7 +319,7 @@ else
 
 <form method="post" action="<?php echo "admin_search.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
-		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $user->lang['START']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $user->lang['START']; ?>" class="btnmain" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>" class="btnmain" />&nbsp;</td>
 	</tr>
 </table></form>
 

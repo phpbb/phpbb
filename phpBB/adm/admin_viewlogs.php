@@ -120,7 +120,7 @@ if ($mode == 'mod')
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" /></td>
 	</tr>
 </table>
 <?php
@@ -131,7 +131,7 @@ if ($mode == 'mod')
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
+		<td class="cat" colspan="5" height="28" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
 	</tr>
 	<tr>
 		<th width="15%" height="25" nowrap="nowrap"><?php echo $user->lang['USERNAME']; ?></th>
@@ -172,7 +172,7 @@ if ($log_count)
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" height="28" align="right"><input class="liteoption" type="submit" name="delmarked" value="<?php echo $user->lang['DELETE_MARKED']; ?>" />&nbsp; <input class="liteoption" type="submit" name="delall" value="<?php echo $user->lang['DELETE_ALL']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" height="28" align="right"><input class="btnlite" type="submit" name="delmarked" value="<?php echo $user->lang['DELETE_MARKED']; ?>" />&nbsp; <input class="btnlite" type="submit" name="delall" value="<?php echo $user->lang['DELETE_ALL']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 

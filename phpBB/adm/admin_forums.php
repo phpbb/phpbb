@@ -531,7 +531,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" name="update" type="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" name="update" type="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -775,7 +775,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="update" value="<?php echo $user->lang['SUBMIT'] ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="update" value="<?php echo $user->lang['SUBMIT'] ?>" class="btnmain" /></td>
 	</tr>
 </table></form>
 <?php
@@ -1036,13 +1036,13 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input class="post" type="text" name="forum_name" /> <input class="liteoption" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
+		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input class="post" type="text" name="forum_name" /> <input class="btnlite" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
 	</tr>
 </table></form>
 
 <form method="get" action="admin_forums.<?php echo $phpEx,$SID ?>"><table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_FORUM']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }"><?php echo $forum_box; ?></select> <input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
 	</tr>
 </table></form>
 <?php

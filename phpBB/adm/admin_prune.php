@@ -163,7 +163,7 @@ if (!$forum_id)
 		<td class="row1" align="center"><select name="f[]" multiple="true" size="5"><?php echo make_forum_select(false, false, false); ?></select></td>
 	</tr>
 	<tr>
-		<td class="cat" align="center"><input class="mainoption" type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" align="center"><input class="btnmain" type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table></form>
 
@@ -220,7 +220,7 @@ else
 		<td class="row2"><input type="radio" name="prune_sticky" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_sticky" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption"></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain"></td>
 	</tr>
 </table></form>
 

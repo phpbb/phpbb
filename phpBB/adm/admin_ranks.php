@@ -175,7 +175,7 @@ function update_image_dimensions()
 		<td class="row2"><input class="post" type="text" name="min_posts" size="5" maxlength="10" value="<?php echo ($ranks['rank_special']) ? '' : $ranks['rank_min']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table></form>
 
@@ -316,7 +316,7 @@ function update_image_dimensions()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="center"><input type="submit" class="mainoption" name="add" value="<?php echo $user->lang['ADD_RANK']; ?>" /></td>
+		<td class="cat" colspan="5" align="center"><input type="submit" class="btnmain" name="add" value="<?php echo $user->lang['ADD_RANK']; ?>" /></td>
 	</tr>
 </table></form>
 

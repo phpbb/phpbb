@@ -456,7 +456,7 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 ?></select>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" align="center"><input type="submit" name="submit_usergroups" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="forum" /><input type="hidden" name="action" value="usergroups" /></td>
+		<td class="cat" align="center"><input type="submit" name="submit_usergroups" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /><input type="hidden" name="ug_type" value="forum" /><input type="hidden" name="action" value="usergroups" /></td>
 	</tr>
 <?php
 		
@@ -472,7 +472,7 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 		<td class="row1" align="center">&nbsp;<textarea cols="40" rows="4" name="ug_data[]"></textarea>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" align="center"><input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <input type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /></td>
+		<td class="cat" align="center"><input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" />&nbsp; <input type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="btnlite" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /></td>
 	</tr>
 <?php
 
@@ -507,7 +507,7 @@ if (in_array($mode, array('user', 'group', 'forum', 'mod')) && empty($submit))
 ?></select>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" align="center"><input type="submit" name="submit_edit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="group" /></td>
+		<td class="cat" align="center"><input type="submit" name="submit_edit_options" value="<?php echo $user->lang['LOOK_UP_GROUP']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /><input type="hidden" name="ug_type" value="group" /></td>
 	</tr>
 <?php
 
@@ -568,7 +568,7 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 ?></select></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"><input class="liteoption" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="user" /><?php echo $s_forum_id; ?></td>
+				<td class="cat" align="center"><input class="btnlite" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="btnlite" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="user" /><?php echo $s_forum_id; ?></td>
 			</tr>
 		</table></form></td>
 
@@ -598,7 +598,7 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 ?></select></td>
 		</tr>
 		<tr>
-			<td class="cat" align="center"><input class="liteoption" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
+			<td class="cat" align="center"><input class="btnlite" type="submit" name="submit_delete" value="<?php echo $user->lang['DELETE']; ?>" /> &nbsp; <input class="btnlite" type="submit" name="submit_edit_options" value="<?php echo $user->lang['SET_OPTIONS']; ?>" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
 		</tr>
 	</table></form></td>
 
@@ -613,7 +613,7 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 				<td class="row1" align="center"><textarea cols="40" rows="4" name="ug_data[]"></textarea></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <input type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /><?php echo $s_forum_id; ?></td>
+				<td class="cat" align="center"> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" />&nbsp; <input type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="btnlite" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="ug_type" value="user" /><?php echo $s_forum_id; ?></td>
 			</tr>
 		</table></form></td>
 
@@ -639,7 +639,7 @@ if ((in_array($submit, array('usergroups', 'delete', 'cancel'))) || (!strstr($su
 ?></select></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
+				<td class="cat" align="center"> <input type="submit" name="submit_add_options" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /><input type="hidden" name="ug_type" value="group" /><?php echo $s_forum_id; ?></td>
 			</tr>
 		</table></form></td>
 	</tr>
@@ -1262,7 +1262,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 ?>
 			<tr>
-				<td class="cat" colspan="<?php echo $colspan; ?>" align="center"><input class="mainoption" type="submit" name="submit_update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="submit_cancel" value="<?php echo $user->lang['CANCEL']; ?>" /><input type="hidden" name="ug_type" value="<?php echo $ug_type; ?>" /><?php echo $ug_hidden; ?><?php 
+				<td class="cat" colspan="<?php echo $colspan; ?>" align="center"><input class="btnmain" type="submit" name="submit_update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="submit_cancel" value="<?php echo $user->lang['CANCEL']; ?>" /><input type="hidden" name="ug_type" value="<?php echo $ug_type; ?>" /><?php echo $ug_hidden; ?><?php 
 
 	// Output forum id data
 	echo $s_forum_id;
@@ -1301,7 +1301,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 				</table></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="4" align="center"><input class="liteoption" type="submit" name="submit_presetsave" value="<?php echo $user->lang['SAVE']; ?>" /> &nbsp;<input class="liteoption" type="submit" name="submit_presetdel" value="<?php echo $user->lang['DELETE']; ?>" /></td>
+				<td class="cat" colspan="4" align="center"><input class="btnlite" type="submit" name="submit_presetsave" value="<?php echo $user->lang['SAVE']; ?>" /> &nbsp;<input class="btnlite" type="submit" name="submit_presetdel" value="<?php echo $user->lang['DELETE']; ?>" /></td>
 			</tr>
 		</table></td>
 	</tr>

@@ -26,7 +26,8 @@ if (!empty($setmodules) )
 		return;
 	}
 
-	$module['GROUP']['MANAGE'] = basename(__FILE__) . "$SID";
+	$module['GROUP']['MANAGE'] = basename(__FILE__) . "$SID&amp;mode=manage";
+	$module['GROUP']['PREFERENCES'] = basename(__FILE__) . "$SID&amp;mode=prefs";
 
 	return;
 }
@@ -329,7 +330,7 @@ function swatch()
 		<td class="row1">&nbsp;</td>
 	</tr -->
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -360,7 +361,7 @@ function swatch()
 		<td class="row1" nowrap="nowrap"><input type="radio" name="user_dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="user_dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="user_dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="submitprefs" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="submitprefs" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -583,7 +584,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="mod" /><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
+		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="mod" /><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
 	</tr>
 	<tr>
 		<th colspan="4"><?php echo $user->lang['ADD_USERS']; ?></th>
@@ -592,7 +593,7 @@ function swatch()
 		<td class="row1" colspan="4" align="center"><textarea name="usernames" cols="40" rows="5"></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=mod&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
+		<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=mod&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
 	</tr>
 </table>
 
@@ -661,7 +662,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="pend" /><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
+		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="pend" /><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
 	</tr>
 	<tr>
 		<th colspan="4"><?php echo $user->lang['ADD_USERS']; ?></th>
@@ -670,7 +671,7 @@ function swatch()
 		<td class="row1" colspan="4" align="center"><textarea name="usernames" cols="40" rows="5"></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=pend&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
+		<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=pend&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
 	</tr>
 </table>
 
@@ -749,7 +750,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="members" /><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
+		<td class="cat" colspan="4" align="right"><input type="hidden" name="mode" value="members" /><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
 	</tr>
 	<tr>
 		<th colspan="4"><?php echo $user->lang['ADD_USERS']; ?></th>
@@ -758,7 +759,7 @@ function swatch()
 		<td class="row1" colspan="4" align="center"><textarea name="usernames" cols="40" rows="5"></textarea><br /><?php echo $user->lang['USER_GETS_GROUP_SET']; ?> <input type="radio" name="settings" value="1"  checked="checked" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="settings" value="0" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=list&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
+		<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=list&amp;field=usernames', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
 	</tr>
 </table>
 
@@ -814,7 +815,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="addgroup" value="<?php echo $user->lang['ADD_NEW_GROUP']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addgroup" value="<?php echo $user->lang['ADD_NEW_GROUP']; ?>" /></td>
 	</tr>
 </table>
 
@@ -861,7 +862,7 @@ function swatch()
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $pending_ary['username'];?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Approve_selected'];?>" /> &nbsp; <input class="liteoption" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Deny_selected'];?>" /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input class="btnlite" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Approve_selected'];?>" /> &nbsp; <input class="btnlite" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Deny_selected'];?>" /></td>
 	</tr>
 <?php
 

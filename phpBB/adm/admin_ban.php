@@ -429,7 +429,7 @@ switch ($mode)
 		$l_unban_explain = $user->lang['UNBAN_USERNAME_EXPLAIN'];
 		$l_ban_cell = $user->lang['USERNAME'];
 		$l_no_ban_cell = $user->lang['NO_BANNED_USERS'];
-		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['LOOK_UP_USER'] . '" class="liteoption" onclick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
+		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['LOOK_UP_USER'] . '" class="btnlite" onclick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
 
 		$sql = "SELECT b.*, u.user_id, u.username
 			FROM " . BANLIST_TABLE . " b, " . USERS_TABLE . " u
@@ -563,7 +563,7 @@ function display_details(option)
 		<td class="row1"><input class="post" type="text" name="banreason" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
+		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" />&nbsp; <?php echo $s_submit_extra; ?></td>
 	</tr>
 </table>
 
@@ -594,7 +594,7 @@ function display_details(option)
 		<td class="row1"><input class="row1" style="border:0px" type="text" name="unbanlength" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 <?php
 

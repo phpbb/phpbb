@@ -568,7 +568,7 @@ if ($mode == 'manage')
 		<td class="row2"><input type="radio" name="allow_pm_attach" value="1" <?php echo $allow_pm_attach_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0" <?php echo $allow_pm_attach_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table>
 <?php
@@ -644,7 +644,7 @@ if ($mode == 'cats')
 		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="submit" name="search_imagick" value="<?php echo $user->lang['SEARCH_IMAGICK']; ?>" class="liteoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="search_imagick" value="<?php echo $user->lang['SEARCH_IMAGICK']; ?>" class="btnlite" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table>
 
@@ -742,7 +742,7 @@ if ($mode == 'ext_groups')
 		<td class="row1" align="center" valign="middle"><input type="checkbox" name="add_extension_group_check" /></td>
 	</tr>
 	<tr align="right">
-		<td class="cat" colspan="7"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="7"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
 	</tr>
 	<tr> 
 	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
@@ -832,7 +832,7 @@ if ($mode == 'ext_groups')
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="7" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="7" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 	</table>
 <?
@@ -862,7 +862,7 @@ if ($mode == 'extensions')
 	  <td class="row2" align="center" valign="middle"><input type="checkbox" name="add_extension_check" /></td>
 	</tr>
 	<tr align="right">
-		<td class="cat" colspan="4"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="4"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
 	</tr>
 	<tr> 
 	  <th>&nbsp;<?php echo $user->lang['COMMENT']; ?>&nbsp;</th>
@@ -891,7 +891,7 @@ if ($mode == 'extensions')
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="4" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 	</table>
 <?

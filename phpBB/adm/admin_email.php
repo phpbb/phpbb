@@ -212,7 +212,7 @@ adm_page_header($user->lang['MASS_EMAIL']);
 		<td class="row2"><textarea class="post" name="message" rows="10" cols="76" wrap="virtual" tabindex="3"><?php echo $message; ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $user->lang['EMAIL']; ?>" name="submit" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $user->lang['EMAIL']; ?>" name="submit" class="btnmain" /></td>
 	</tr>
 </table></form>
 

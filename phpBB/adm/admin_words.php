@@ -112,7 +112,7 @@ if ($mode != '')
 		<td class="row2"><input class="post" type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="save" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="btnmain" type="submit" name="save" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -216,7 +216,7 @@ else
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['ADD_WORD']; ?>" /></td>
+		<td class="cat" colspan="5" height="28" align="center"><?php echo $s_hidden_fields; ?><input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['ADD_WORD']; ?>" /></td>
 	</tr>
 </table></form>
 

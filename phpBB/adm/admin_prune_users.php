@@ -53,7 +53,7 @@ if (isset($_POST['prune']))
 	{
 		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'deleteposts');
 
-		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $user->lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="confirm" value="' . $user->lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="' . $user->lang['No'] . '" />';
+		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $user->lang['Confirm_prune_users'] . '<br /><br /><input class="btnlite" type="submit" name="confirm" value="' . $user->lang['Yes'] . '" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="' . $user->lang['No'] . '" />';
 
 		foreach ($values as $field)
 		{
@@ -249,7 +249,7 @@ adm_page_header($user->lang['Prune_users']);
 		<td class="row2"><input type="radio" name="deleteposts" value="1" /> <?php echo $user->lang['Yes']; ?> &nbsp;&nbsp; <input type="radio" name="deleteposts" value="0" checked="checked" /> <?php echo $user->lang['No']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['Prune_users']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="deactivate" value="<?php echo $user->lang['Deactivate']; ?>" />&nbsp;&nbsp;<input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID&amp;mode=searchuser&amp;field=users"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="prune" value="1" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="delete" value="<?php echo $user->lang['Prune_users']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="deactivate" value="<?php echo $user->lang['Deactivate']; ?>" />&nbsp;&nbsp;<input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="btnlite" onClick="window.open('<?php echo "../search.$phpEx$SID&amp;mode=searchuser&amp;field=users"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="prune" value="1" /></td>
 	</tr>
 </table></form>
 
