@@ -587,6 +587,8 @@ CREATE TABLE phpbb_styles_imageset (
   icon_no_aim varchar(200) default '',
   icon_no_yim varchar(200) default '',
   icon_no_msnm varchar(200) default '',
+  item_approved varchar(200) NOT NULL default '',
+  item_reported varchar(200) NOT NULL default '',
   goto_post varchar(200) default NULL,
   goto_post_new varchar(200) default NULL,
   goto_post_latest varchar(200) default NULL,
