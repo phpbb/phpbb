@@ -317,7 +317,7 @@ if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$perm['m_
 }
 
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !$perm['m_edit'] && $config['edit_time'] && $post_time > time() - $config['edit_time'])
+if (($mode == 'edit' || $mode == 'delete') && !$perm['m_edit'] && $config['edit_time'] && $post_time < time() - $config['edit_time'])
 {
 	trigger_error($user->lang['CANNOT_EDIT_TIME']);
 }
