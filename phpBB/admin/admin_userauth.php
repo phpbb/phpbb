@@ -227,9 +227,9 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		$valid_auth_mod = array();
 		$valid_auth_mod_sql = array();
 
-		reset($change_mod_ary);
+		@reset($change_mod_ary);
 
-		while(list($chg_forum_id, $value) = each($change_mod_ary))
+		while(list($chg_forum_id, $value) = @each($change_mod_ary))
 		{
 			$a_match = $value;
 
@@ -287,10 +287,10 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		$warning_mod = array();
 		$valid_auth_acl_sql = array();
 
-		reset($valid_auth_mod);
-		reset($change_prv_ary);
+		@reset($valid_auth_mod);
+		@reset($change_prv_ary);
 
-		while(list($chg_forum_id, $value) = each($change_prv_ary))
+		while(list($chg_forum_id, $value) = @each($change_prv_ary))
 		{
 			$valid_auth_acl_sql[$chg_forum_id] = "";
 			$auth_exists = FALSE;
