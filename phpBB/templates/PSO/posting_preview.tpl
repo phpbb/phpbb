@@ -19,9 +19,6 @@
 					<tr>
 						<td height="100%" valign="top"><span class="gen">{MESSAGE}</span></td>
 					</tr>
-					<tr>
-						<td><hr /></td>
-					</tr>
 				</table></td>
 			</tr>
 		</table></td>
