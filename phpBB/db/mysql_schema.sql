@@ -215,7 +215,7 @@ CREATE TABLE phpbb_session (
    session_user_id int(10) DEFAULT '0' NOT NULL,
    session_time int(10) unsigned DEFAULT '0' NOT NULL,
    session_ip int(10) DEFAULT '0' NOT NULL,
-   session_forum int(10),
+   session_page int(10) DEFAULT '0' NOT NULL,
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id)
 );
