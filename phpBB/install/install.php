@@ -717,6 +717,12 @@ else
 				WHERE forum_last_poster_name = 'Admin'";
 			$db->sql_query($sql);
 
+			$sql = "UPDATE " . $table_prefix . "topics
+				SET topic_first_poster_name = '" . $admin_name . "', topic_last_poster_name = '" . $admin_name . "'
+				WHERE topic_first_poster_name = 'Admin'
+					OR topic_last_poster_name = 'Admin'";
+			$db->sql_query($sql);
+
 			$sql = "UPDATE " . $table_prefix . "users
 				SET user_regdate = " . time();
 			$db->sql_query($sql);
