@@ -38,6 +38,9 @@ require($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 
+$html_entities_match = array('#<#', '#>#');
+$html_entities_replace = array('&lt;', '&gt;');
+
 //
 // Set mode
 //
@@ -753,7 +756,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		}
 		else
 		{
-			$this_userdata = get_userdata( $HTTP_POST_VARS['username'] );
+			$this_userdata = get_userdata(htmlspecialchars($HTTP_POST_VARS['username']));
 			if( !$this_userdata )
 			{
 				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
@@ -778,7 +781,9 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		$location = htmlspecialchars($this_userdata['user_from']);
 		$occupation = htmlspecialchars($this_userdata['user_occ']);
 		$interests = htmlspecialchars($this_userdata['user_interests']);
-		$signature = ( $this_userdata['user_sig_bbcode_uid'] != '' ) ? htmlspecialchars(preg_replace("/:(([a-z0-9]+:)?)" . $this_userdata['user_sig_bbcode_uid'] . "\]/si", ']', $userdata['user_sig'])) : htmlspecialchars($userdata['user_sig']);
+
+		$signature = ($this_userdata['user_sig_bbcode_uid'] != '') ? preg_replace('#:' . $this_userdata['user_sig_bbcode_uid'] . '#si', '', $this_userdata['user_sig']) : $this_userdata['user_sig'];
+		$signature = preg_replace($html_entities_match, $html_entities_replace, $signature);
 
 		$viewemail = $this_userdata['user_viewemail'];
 		$notifypm = $this_userdata['user_notify_pm'];

@@ -21,7 +21,7 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_ADDITIONAL_TABLES}</td>
-		<td class="row1"><input type="text" name="additional_tables" /></td>
+		<td class="row1"><input class="post" type="text name="additional_tables" /></td>
 	</tr>
 	<tr>
 		<td class="row1">{L_GZIP_COMPRESS}</td>
