@@ -67,7 +67,7 @@ class ucp_zebra extends module
 				}
 				$db->sql_freeresult($result);
 
-				$add = array_diff($add, $friends, $foes, array($user->data['user_id']));
+				$add = array_diff($add, $friends, $foes, array($user->data['username']));
 				unset($friends);
 				unset($foes);
 
