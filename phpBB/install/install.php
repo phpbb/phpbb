@@ -22,19 +22,17 @@
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
-define('IN_PHPBB', true);
-$phpbb_root_path='./../';
-require($phpbb_root_path . 'extension.inc');
-require($phpbb_root_path . 'includes/functions.'.$phpEx);
-
-$userdata = array();
-$lang = array();
-
 if ( !get_magic_quotes_gpc() )
 {
 	$_GET = slash_input_data($_GET);
 	$_POST = slash_input_data($_POST);
 }
+
+define('IN_PHPBB', true);
+$phpbb_root_path='./../';
+require($phpbb_root_path . 'extension.inc');
+require($phpbb_root_path . 'includes/functions.'.$phpEx);
+
 
 /***************************************************************************
  *				Install Customization Section
@@ -649,6 +647,16 @@ else
 				WHERE username = 'Admin'";
 			$db->sql_query($sql);
 
+			$sql = "UPDATE " . $table_prefix . "moderator_cache
+				SET username = '" . $admin_name . "'
+				WHERE username = 'Admin'";
+			$db->sql_query($sql);
+
+			$sql = "UPDATE " . $table_prefix . "forums
+				SET forum_last_poster_name = '" . $admin_name . "'
+				WHERE forum_last_poster_name = 'Admin'";
+			$db->sql_query($sql);
+
 			$sql = "UPDATE " . $table_prefix . "users
 				SET user_regdate = " . time();
 			$db->sql_query($sql);
@@ -861,7 +869,7 @@ function page_footer($l_submit, $s_hidden_fields)
 	</tr>
 </table></form>
 
-<div align="center"><span class="copyright">Powered by phpBB <?php echo $board_config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
+<div align="center"><span class="copyright">Powered by phpBB <?php echo $config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
 
 <br clear="all" />
 
