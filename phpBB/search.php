@@ -766,7 +766,7 @@ if ($search_keywords || $search_author || $search_id)
 			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 			'LAST_POST_AUTHOR' 	=> $last_post_author,
 			'GOTO_PAGE' 		=> $goto_page, 
-			'TOPIC_REPLIES'		=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
+			'TOPIC_REPLIES'		=> ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'TOPIC_VIEWS'		=> $row['topic_views'],
 			'FORUM_TITLE'		=> $row['forum_name'], 
 			'TOPIC_TITLE' 		=> censor_text($row['topic_title']),

@@ -238,6 +238,8 @@ $lang += array(
 	'USER_CANNOT_POST'		=> 'You cannot post in this forum',
 	'USER_CANNOT_REPORT'	=> 'You cannot report posts in this forum',
 
+	'VIEW_DETAILS'			=> 'View Details',
+
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s',
 
 	'report_reasons'		=> array(

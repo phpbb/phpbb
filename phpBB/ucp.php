@@ -101,15 +101,22 @@ class module
 					$submodules_ary = explode("\n", $row['module_subs']);
 					foreach ($submodules_ary as $submodule)
 					{
+						if (!trim($submodule))
+						{
+							continue;
+						}
+
 						$submodule = explode(',', trim($submodule));
 						$submodule_title = array_shift($submodule);
 
 						$is_auth = true;
 						foreach ($submodule as $auth_option)
 						{
-							if (!$auth->acl_get($auth_option))
+							eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($auth_option)) . ');');
+
+							if (!$is_auth)
 							{
-								$is_auth = false;
+								break;
 							}
 						}
 

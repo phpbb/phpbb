@@ -5,23 +5,22 @@
 		<th colspan="6" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
-		<td colspan="5" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+		<td colspan="5" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
 	<tr> 
-		<th height="28">&nbsp;{L_FORUM}&nbsp;</th>
-		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th height="28">&nbsp;{L_TOPIC}&nbsp;</th>
 		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
 		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
 		<th width="5%">&nbsp;{L_SELECT}&nbsp;</th>
 	</tr>
-
 	<!-- BEGIN postrow -->
-	<tr>
-		<td class="row1" width="15%"><a class="gen" href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></td>
-		<td class="row2" width="18%"><a class="gen" href="{postrow.U_VIEWTOPIC}">{postrow.TOPIC_TITLE}</a></td>
-		<td class="row1" align="center" width="15%"><span class="gen">{postrow.POSTER}</span></td>
-		<td class="row2" align="center" width="15%"><span class="gensmall">{postrow.POST_TIME}</span></td>
-		<td class="row1" align="center">{postrow.S_CHECKBOX}</td>
+	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWTOPIC}">{postrow.TOPIC_TITLE}</a></p><br />
+			<span class="gensmall">{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span></td>
+		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen"><!-- IF postrow.U_VIEWPROFILE --><a href="{postrow.U_VIEWPROFILE}">{postrow.POSTER}</a><!-- ELSE -->{postrow.POSTER}<!-- ENDIF --></span><br />
+			<span class="gensmall">[ <a href="{postrow.U_VIEW_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+		<td class="postdetails" style="padding: 4px;" align="left" valign="top" nowrap="nowrap">{postrow.POST_TIME}</td>
+		<td align="center">{postrow.S_CHECKBOX}</td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr>
@@ -34,9 +33,8 @@
 </form></table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
-		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
+	<tr>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', false);">{L_UNMARK_ALL}</a></b></td>
 	</tr>
 </table>
 

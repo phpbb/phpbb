@@ -410,7 +410,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			}
 
 			// Replies
-			$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
+			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			// Topic type/folder
 			$topic_type = '';
@@ -550,7 +550,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 				'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
 				'GOTO_PAGE' 		=> $goto_page, 
-				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
+				'REPLIES' 			=> ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
 				'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 				'TOPIC_TYPE' 		=> $topic_type,

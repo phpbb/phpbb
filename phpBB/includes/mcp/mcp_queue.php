@@ -24,14 +24,91 @@ class mcp_queue extends module
 
 		switch ($mode)
 		{
+			case 'approve':
+			case 'disapprove':
+
+				break;
+			
+			case 'approve_details':
+				
+				$user->add_lang('posting');
+				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
+				$post_id = request_var('p', 0);
+				$post_info = get_post_data(array($post_id), 'm_approve');
+
+				if (!sizeof($post_info))
+				{
+					trigger_error('NO_POST_SELECTED');
+				}
+
+				$post_info = $post_info[$post_id];
+
+				if ($post_info['topic_first_post_id'] != $post_id && topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
+				{
+					$template->assign_vars(array(
+						'S_TOPIC_REVIEW'	=> true,
+						'TOPIC_TITLE'		=> $post_info['topic_title'])
+					);
+				}
+
+				// Set some vars
+				$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
+
+				// Process message, leave it uncensored
+				$message = $post_info['post_text'];
+				if ($post_info['bbcode_bitfield'])
+				{
+					include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+					$bbcode = new bbcode($post_info['bbcode_bitfield']);
+					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
+				}
+				$message = smilie_text($message);
+
+				$template->assign_vars(array(
+					'S_APPROVE_ACTION'		=> "mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id&amp;f=$forum_id",
+					
+					'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
+					'S_POST_REPORTED'		=> $post_info['post_reported'],
+					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
+					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
+//					'S_USER_NOTES'			=> ($post_info['user_notes']) ? true : false,
+					'S_USER_WARNINGS'		=> ($post_info['user_warnings']) ? true : false,
+
+					'U_VIEW_PROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'],
+					'U_MCP_USERNOTES'		=> "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
+					'U_MCP_WARNINGS'		=> "mcp.$phpEx$SID&amp;i=warnings&amp;mode=view_user&amp;u=" . $post_info['user_id'],
+
+					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
+					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
+
+					'POSTER_NAME'			=> $poster,
+					'POST_PREVIEW'			=> $message,
+					'POST_SUBJECT'			=> $post_info['post_subject'],
+					'POST_DATE'				=> $user->format_date($post_info['post_time']),
+					'POST_IP'				=> $post_info['poster_ip'],
+					'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']))
+				);
+
+				$this->display($user->lang['MCP_QUEUE'], 'mcp_approve.html');
+
+				break;
+
 			case 'unapproved_topics':
 			case 'unapproved_posts':
-
 				$forum_info = array();
+
+				$forum_list_approve = get_forum_list('m_approve', false, true);
 
 				if (!$forum_id)
 				{
-					if (!$forum_list = implode(', ', get_forum_list('m_approve')))
+					$forum_list = array();
+					foreach ($forum_list_approve as $row)
+					{
+						$forum_list[] = $row['forum_id'];
+					}
+					
+					if (!$forum_list = implode(', ', $forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -42,6 +119,7 @@ class mcp_queue extends module
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics', 0, $result);
 					$db->sql_freeresult($result);
+
 				}
 				else
 				{
@@ -53,6 +131,13 @@ class mcp_queue extends module
 					}
 
 					$forum_info = $forum_info[$forum_id];
+					$forum_list = $forum_id;
+				}
+
+				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
+				foreach ($forum_list_approve as $row)
+				{
+					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . $row['forum_name'] . '</option>';
 				}
 
 				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
@@ -133,29 +218,32 @@ class mcp_queue extends module
 					}
 					else
 					{
-						$poster = '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'] . '">' . $row['username'] . '</a>';
+						$poster = $row['username'];
 					}
 
 					$s_checkbox = ($mode == 'unapproved_posts') ? '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />' : '<input type="checkbox" name="topic_id_list[]" value="' . $row['topic_id'] . '" />';
 
 					$template->assign_block_vars('postrow', array(
-						'U_VIEWFORUM'	=>	"viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
+						'U_VIEWFORUM'	=> "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
 						// A: To prevent the post from being hidden because of low karma or wrong encoding
-						'U_VIEWTOPIC'	=>	"viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . (($mode == 'unapproved_posts') ? '#' . $row['post_id'] : ''),
+						'U_VIEWTOPIC'	=> "viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . (($mode == 'unapproved_posts') ? '#' . $row['post_id'] : ''),
+						'U_VIEW_DETAILS'=> "mcp.$phpEx$SID&amp;i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
+						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
 
-						'FORUM_NAME'	=>	$row['forum_name'],
-						'TOPIC_TITLE'	=>	$row['topic_title'],
-						'POSTER'		=>	$poster,
-						'POST_TIME'		=>	$user->format_date($row['post_time']),
-						'S_CHECKBOX'	=>	$s_checkbox)
+						'FORUM_NAME'	=> $row['forum_name'],
+						'TOPIC_TITLE'	=> $row['topic_title'],
+						'POSTER'		=> $poster,
+						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'S_CHECKBOX'	=> $s_checkbox)
 					);
 				}
 				unset($rowset);
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_DISPLAY_ITEMS'		=>	($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'])
+					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
+					'S_FORUM_OPTIONS'		=> $forum_options)
 				);
 
 				$this->display($user->lang['MCP_QUEUE'], 'mcp_queue.html');

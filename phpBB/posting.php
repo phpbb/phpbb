@@ -1271,92 +1271,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 }
 
-// Topic Review
-function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0)
-{
-	global $user, $auth, $db, $template, $bbcode, $template;
-	global $config, $phpbb_root_path, $phpEx, $SID;
-
-	// Go ahead and pull all data for this topic
-	$sql = 'SELECT u.username, u.user_id, u.user_karma, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
-		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-		WHERE p.topic_id = $topic_id
-			AND p.poster_id = u.user_id
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
-			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
-		ORDER BY p.post_time DESC';
-	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
-
-	if (!$row = $db->sql_fetchrow($result))
-	{
-		return false;
-	}
-
-	$bbcode_bitfield = 0;
-	do
-	{
-		$rowset[] = $row;
-		$bbcode_bitfield |= $row['bbcode_bitfield'];
-	}
-	while ($row = $db->sql_fetchrow($result));
-	$db->sql_freeresult($result);
-
-	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield)
-	{
-		include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-		$bbcode = new bbcode($bbcode_bitfield);
-	}
-
-	foreach ($rowset as $i => $row)
-	{
-		$poster_id = $row['user_id'];
-		$poster = $row['username'];
-
-		// Handle anon users posting with usernames
-		if ($poster_id == ANONYMOUS && $row['post_username'])
-		{
-			$poster = $row['post_username'];
-			$poster_rank = $user->lang['GUEST'];
-		}
-
-		$post_subject = $row['post_subject'];
-		$message = $row['post_text'];
-
-		if ($row['bbcode_bitfield'])
-		{
-			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
-		}
-
-		$message = smilie_text($message, !$row['enable_smilies']);
-
-		$post_subject = censor_text($post_subject);
-		$message = censor_text($message);
-
-		$template->assign_block_vars($mode . '_row', array(
-			'KARMA_IMG'		=> ($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$row['user_karma']], false, (int) $row['user_karma']) : '',
-			'POSTER_NAME' 	=> $poster,
-			'POST_SUBJECT' 	=> $post_subject,
-			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
-			'POST_DATE' 	=> $user->format_date($row['post_time']),
-			'MESSAGE' 		=> str_replace("\n", '<br />', $message), 
-
-			'U_POST_ID'		=> $row['post_id'],
-			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
-			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '')
-		);
-		unset($rowset[$i]);
-	}
-
-	if ($mode == 'topic_review')
-	{
-		$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']));
-	}
-
-	return true;
-}
-
-
 // Delete Post
 function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 {
@@ -1443,7 +1357,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id " .
-						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '');
+						(($auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1456,7 +1370,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id " . 
-					(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
+					(($auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1998,7 +1912,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	markread($mark_mode, $data['forum_id'], $data['topic_id'], $data['post_time']);
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete')
+	if ($mode != 'edit' && $mode != 'delete' && !$auth->acl_get('f_moderate', $data['forum_id']))
 	{
 		user_notification($mode, stripslashes($subject), stripslashes($data['topic_title']), stripslashes($data['forum_name']), $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}

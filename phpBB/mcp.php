@@ -36,18 +36,16 @@ class module
 
 		if ($post_id)
 		{
-			if (!$topic_id || !$forum_id)
-			{
-				$sql = 'SELECT topic_id, forum_id
-					FROM ' . POSTS_TABLE . "
-					WHERE post_id = $post_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+			// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
+			$sql = 'SELECT topic_id, forum_id
+				FROM ' . POSTS_TABLE . "
+				WHERE post_id = $post_id";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-				$topic_id = (int) $row['topic_id'];
-				$forum_id = (int) $row['forum_id'];
-			}
+			$topic_id = (int) $row['topic_id'];
+			$forum_id = (int) $row['forum_id'];
 		}
 
 		if ($topic_id && !$forum_id)
@@ -60,6 +58,20 @@ class module
 			$db->sql_freeresult($result);
 
 			$forum_id = (int) $row['forum_id'];
+		}
+
+		// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
+		if (!$forum_id && !$auth->acl_get('m_'))
+		{
+			$forum_list = get_forum_list('m_');
+
+			if (!sizeof($forum_list))
+			{
+				trigger_error('MODULE_NOT_EXIST');
+			}
+
+			// We do not check all forums, only the first one should be sufficiant.
+			$forum_id = $forum_list[0];
 		}
 
 		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
@@ -76,7 +88,7 @@ class module
 			if ($row['module_acl'])
 			{
 				$is_auth = false;
-				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
+				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1", ' . $forum_id . ')', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
 
 				// The user is not authorised to use this module, skip it
 				if (!$is_auth)
@@ -106,19 +118,26 @@ class module
 					$submodules_ary = explode("\n", $row['module_subs']);
 					foreach ($submodules_ary as $submodule)
 					{
+						if (!trim($submodule))
+						{
+							continue;
+						}
+
 						$submodule = explode(',', trim($submodule));
 						$submodule_title = array_shift($submodule);
 
 						$is_auth = true;
 						foreach ($submodule as $auth_option)
 						{
-							if (!$auth->acl_get($auth_option))
+							eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1", ' . $forum_id . ')', '(int) $config["\\1"]'), trim($auth_option)) . ');');
+
+							if (!$is_auth)
 							{
-								$is_auth = false;
+								break;
 							}
 						}
 
-						if (!$is_auth || empty($submodule_title))
+						if (!$is_auth)
 						{
 							continue;
 						}
@@ -316,14 +335,14 @@ if ($mode2)
 }
 
 // Only Moderators can go beyond this point
-if ($user->data['user_id'] == ANONYMOUS || !$auth->acl_get('m_'))
+if ($user->data['user_id'] == ANONYMOUS)
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	login_box("{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=$mode&amp;i=$module", '', $user->lang['LOGIN_EXPLAIN_MCP']);
+
+	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		redirect("index.$phpEx$SID");
 	}
-	
-	login_box("{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=$mode&amp;i=$module", '', $user->lang['LOGIN_EXPLAIN_MCP']);
 }
 
 $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
@@ -365,7 +384,7 @@ if (!$quickmod)
 	$mcp->create('mcp', "mcp.$phpEx$SID", $post_id, $topic_id, $forum_id, $module, $mode);
 
 	// Load and execute the relevant module
-	$mcp->load();
+	$mcp->load('mcp', false, $mode);
 	exit;
 }
 

@@ -420,7 +420,7 @@ class ucp_main extends module
 					$topic_id = $row['topic_id'];
 
 					// Goto message generation
-					$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
+					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 					
 					$topic_type = '';
 					switch ($row['topic_type'])
@@ -637,7 +637,7 @@ class ucp_main extends module
 					$forum_id = $row['forum_id'];
 					$topic_id = $row['b_topic_id'];
 
-					$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
+					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 					
 					$topic_type = '';
 					switch ($row['topic_type'])
