@@ -1385,12 +1385,12 @@ else if( $submit || $refresh || $mode != "" )
 	//
 	if($board_config['allow_html'])
 	{
-		$html_status = $lang['ON'];
+		$html_status = $lang['HTML_is_ON'];
 		$template->assign_block_vars("html_checkbox", array());
 	}
 	else
 	{
-		$html_status = $lang['OFF'];
+		$html_status = $lang['HTML_is_OFF'];
 	}
 
 	//
@@ -1398,12 +1398,12 @@ else if( $submit || $refresh || $mode != "" )
 	//
 	if($board_config['allow_bbcode'])
 	{
-		$bbcode_status = $lang['ON'];
+		$bbcode_status = $lang['BBCode_is_ON'];
 		$template->assign_block_vars("bbcode_checkbox", array());
 	}
 	else
 	{
-		$bbcode_status = $lang['OFF'];
+		$bbcode_status = $lang['BBCode_is_OFF'];
 	}
 
 	//
@@ -1411,12 +1411,12 @@ else if( $submit || $refresh || $mode != "" )
 	//
 	if($board_config['allow_smilies'])
 	{
-		$smilies_status = $lang['ON'];
+		$smilies_status = $lang['Smilies_are_ON'];
 		$template->assign_block_vars("smilies_checkbox", array());
 	}
 	else
 	{
-		$smilies_status = $lang['OFF'];
+		$smilies_status = $lang['Smilies_are_OFF'];
 	}
 
 	//
