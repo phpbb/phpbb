@@ -395,7 +395,7 @@ else
 }
 
 $board_email = (!empty($HTTP_POST_VARS['board_email'])) ? $HTTP_POST_VARS['board_email'] : '';
-$script_path = (!empty($HTTP_POST_VARS['script_path'])) ? $HTTP_POST_VARS['script_path'] : preg_replace('#install/install\.'.$phpEx.'#i', '', $HTTP_SERVER_VARS['PHP_SELF']);
+$script_path = (!empty($HTTP_POST_VARS['script_path'])) ? $HTTP_POST_VARS['script_path'] : str_replace('install', '', dirname($HTTP_SERVER_VARS['PHP_SELF']));
 
 if (!empty($HTTP_POST_VARS['server_name']))
 {
@@ -1018,7 +1018,7 @@ else
 		// section.
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.' . $phpEx . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.'.$phpEx.'" />';
 		$s_hidden_fields .= '<input type="hidden" name="login" value="true" />';
 
 		page_header($lang['Inst_Step_2'], '../login.'.$phpEx);
