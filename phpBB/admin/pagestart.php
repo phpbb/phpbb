@@ -32,6 +32,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 $userdata = $session->start($update);
 $auth->acl($userdata);
+$user = new user($userdata);
 //
 // End session management
 //
@@ -39,7 +40,7 @@ $auth->acl($userdata);
 //
 // Configure style, language, etc.
 //
-$session->configure($userdata);
+//$session->configure($userdata);
 
 // -----------------------------
 // Functions

@@ -24,7 +24,7 @@ define('IN_PHPBB', 1);
 //
 // Define some vars
 //
-$pane = ( isset($HTTP_GET_VARS['pane']) ) ? $HTTP_GET_VARS['pane'] : '';
+$pane = ( isset($_GET['pane']) ) ? $_GET['pane'] : '';
 $update = ( $pane == 'right' ) ? true : false;
 
 //
@@ -42,10 +42,8 @@ if ( !$auth->get_acl_admin() )
 	message_die(MESSAGE, 'No_admin', '', true);
 }
 
-//
 // Generate relevant output
-//
-if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
+if ( isset($_GET['pane']) && $_GET['pane'] == 'top' )
 {
 	page_header('', '', false);
 
@@ -63,16 +61,12 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 	page_footer(false);
 
 }
-else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
+else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 {
-	//
 	// Cheat and use the meta tag to change some stylesheet info
-	//
 	page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
 
-	//
 	// Grab module information using Bart's "neat-o-module" system (tm)
-	//
 	$dir = @opendir('.');
 
 	$setmodules = 1;
@@ -142,59 +136,55 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 </html>
 <?php
 
-	//
 	// Output footer but don't include copyright info
-	//
 	page_footer(false);
 
 }
-elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
+elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 {
-	if ( ( isset($HTTP_POST_VARS['activate']) || isset($HTTP_POST_VARS['delete']) ) && !empty($HTTP_POST_VARS['mark']) )
+	if ( ( isset($_POST['activate']) || isset($_POST['delete']) ) && !empty($_POST['mark']) )
 	{
-		if ( is_array($HTTP_POST_VARS['mark']) )
+		if ( is_array($_POST['mark']) )
 		{
 			$in_sql = '';
-			foreach( $HTTP_POST_VARS['mark'] as $user_id )
+			foreach( $_POST['mark'] as $user_id )
 			{
 				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $user_id;
 			}
 
 			if ( $in_sql != '' )
 			{
-				$sql = ( isset($HTTP_POST_VARS['activate']) ) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
+				$sql = ( isset($_POST['activate']) ) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
 				$db->sql_query($sql);
 
-				if ( isset($HTTP_POST_VARS['delete']) )
+				if ( isset($_POST['delete']) )
 				{
 					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . "
+						SET config_value = config_value - " . sizeof($_POST['mark']) . "
 						WHERE config_name = 'num_users'";
 					$db->sql_query($sql);
 				}
 
-				$log_action = ( isset($HTTP_POST_VARS['activate']) ) ? 'log_index_activate' : 'log_index_delete';
-				add_admin_log($log_action, sizeof($HTTP_POST_VARS['mark']));
+				$log_action = ( isset($_POST['activate']) ) ? 'log_index_activate' : 'log_index_delete';
+				add_admin_log($log_action, sizeof($_POST['mark']));
 			}
 		}
 	}
-	else if ( isset($HTTP_POST_VARS['remind']) )
+	else if ( isset($_POST['remind']) )
 	{
 
 	}
-	else if ( isset($HTTP_POST_VARS['resetonline']) )
+	else if ( isset($_POST['resetonline']) )
 	{
 
 	}
 
-	//
 	// Get forum statistics
-	//
 	$total_posts = get_db_stat('postcount');
 	$total_topics = get_db_stat('topiccount');
 	$total_users = $board_config['num_users'];
 
-	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
+	$start_date = $user->format_date($board_config['board_startdate']);
 
 	$boarddays = ( time() - $board_config['board_startdate'] ) / 86400;
 
@@ -215,11 +205,9 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		}
 		@closedir($avatar_dir);
 
-		//
 		// This bit of code translates the avatar directory size into human readable format
 		// Borrowed the code from the PHP.net annoted manual, origanally written by:
 		// Jesse (jesse@jess.on.ca)
-		//
 		if ( $avatar_dir_size >= 1048576 )
 		{
 			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
@@ -255,12 +243,9 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		$users_per_day = $total_users;
 	}
 
-	//
 	// DB size ... MySQL only
-	//
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
-	//
 	if ( preg_match('/^mysql/', SQL_LAYER) )
 	{
 		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
@@ -319,7 +304,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		$dbsize = $lang['Not_available'];
 	}
 
-	if ( is_integer($dbsize) )
+	if ( is_int($dbsize) )
 	{
 		$dbsize = ( $dbsize >= 1048576 ) ? sprintf('%.2f MB', ( $dbsize / 1048576 )) : ( ( $dbsize >= 1024 ) ? sprintf('%.2f KB', ( $dbsize / 1024 )) : sprintf('%.2f Bytes', $dbsize) );
 	}
@@ -384,7 +369,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF']; ?></b></td>
 	</tr>
 	<!-- tr>
-		<td class="row1" colspan="4"><?php echo sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])); ?></td>
+		<td class="row1" colspan="4"><?php echo sprintf($lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])); ?></td>
 	</tr -->
 </table>
 
@@ -411,7 +396,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['username']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $log_data[$i]['ip']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $user->format_date($log_data[$i]['time']); ?></td>
 		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['action']; ?></td>
 	</tr>
 <?php
@@ -449,7 +434,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
-		<td class="<?php echo $row_class; ?>"><?php echo create_date($board_config['default_dateformat'], $row['user_regdate'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>"><?php echo $user->format_date($row['user_regdate']); ?></td>
 		<td class="<?php echo $row_class; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
 	</tr>
 <?php
