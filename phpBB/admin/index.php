@@ -149,29 +149,30 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			}
 		}
 		@closedir($avatar_dir);
+
+		//
+		// This bit of code translates the avatar directory size into human readable format
+		// Borrowed the code from the PHP.net annoted manual, origanally written by:
+		// Jesse (jesse@jess.on.ca)
+		//
+		if($avatar_dir_size >= 1048576)
+		{
+			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
+		}
+		else if($avatar_dir_size >= 1024)
+		{
+			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
+		}
+		else
+		{
+			$avatar_dir_size = $avatar_dir_size . " Bytes";
+		}
+
 	}
 	else
 	{
 		// Couldn't open Avatar dir.
 		$avatar_dir_size = $lang['Not_available'];
-	}
-
-	//
-	// This bit of code translates the avatar directory size into human readable format
-	// Borrowed the code from the PHP.net annoted manual, origanally written by:
-	// Jesse (jesse@jess.on.ca)
-	//
-	if($avatar_dir_size >= 1048576)
-	{
-		$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
-	}
-	else if($avatar_dir_size >= 1024)
-	{
-		$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
-	}
-	else
-	{
-		$avatar_dir_size = $avatar_dir_size . " Bytes";
 	}
 
 	if($posts_per_day > $total_posts)
