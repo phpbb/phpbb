@@ -1,6 +1,6 @@
 Olá {USERNAME}
 
-Está a receber este email porque você (ou alguém passando por si) pediu que uma senha nova relativa á sua conta em {SITENAME} fosse enviada. Se não solicitou este email por favor ignore-o. Caso continue a recebe-lo por favor contacte o Administrador dos fóruns.
+Está a receber este email porque você (ou alguém passando por si) pediu que uma senha nova relativa à sua conta em {SITENAME} fosse enviada. Se não solicitou este email por favor ignore-o. Caso continue a recebe-lo por favor contacte o Administrador dos fóruns.
 
 Para usar a nova senha é necessário que a active. Para o fazer carregue no endereço que se segue.
 

@@ -25,10 +25,6 @@
  ***************************************************************************/
 
 //
-// Format is same as lang_main
-//
-
-//
 // Modules, this replaces the keys used
 // in the modules[][] arrays in each module file
 //
@@ -51,8 +47,8 @@ $lang['Word_Censor'] = "Censura de Palavras";
 $lang['Export'] = "Exportar";
 $lang['Create_new'] = "Criar";
 $lang['Add_new'] = "Adicionar";
-$lang['Backup_DB'] = "Copiar a Base de Dados";
-$lang['Restore_DB'] = "Repor a Base de Dados";
+$lang['Backup_DB'] = "Copiar Base de Dados";
+$lang['Restore_DB'] = "Repor Base de Dados";
 
 
 //
@@ -71,7 +67,7 @@ $lang['Click_return_admin_index'] = "Premir %sAqui%s para voltar ao Índice de Ad
 
 $lang['Statistic'] = "Estatística";
 $lang['Value'] = "Valor";
-$lang['Number_posts'] = "Númeo de Mensagens";
+$lang['Number_posts'] = "Número de Mensagens";
 $lang['Posts_per_day'] = "Mensagens por Dia";
 $lang['Number_topics'] = "Número de Tópicos";
 $lang['Topics_per_day'] = "Tópicos por Dia";
@@ -107,7 +103,7 @@ $lang['Gzip_compress'] = "Comprimir ficheiro em Gzip";
 $lang['Select_file'] = "Seleccionar um ficheiro";
 $lang['Start_Restore'] = "Iniciar a Reposição";
 
-$lang['Restore_success'] = "A Base de Dados foi reposta com sucesso.<br /><br />Os seus fóruns deveráo voltar agora ao estado em que se encontravam na altura da cópia.";
+$lang['Restore_success'] = "A Base de Dados foi reposta com sucesso.<br /><br />Os seus fóruns deverão voltar agora ao estado em que se encontravam na altura da cópia.";
 $lang['Backup_download'] = "A cópia deverá iniciar em breve. Por favor aguarde até que comece.";
 $lang['Backups_not_supported'] = "O seu sistema de Base de Dados não permite presentemente efectuar cópias de Dados";
 
@@ -156,6 +152,14 @@ $lang['Private'] = "Privado";
 $lang['Registered'] = "Registado";
 $lang['Administrators'] = "Administradores";
 $lang['Hidden'] = "Invisível";
+                                              
+// These are displayed in the drop down boxes 
+// mode forum auth, try and keep them short!  
+$lang['Forum_ALL'] = "TODOS";                   
+$lang['Forum_REG'] = "REGIST";                   
+$lang['Forum_PRIVATE'] = "PRIVADO";           
+$lang['Forum_MOD'] = "MODERAD";                   
+$lang['Forum_ADMIN'] = "ADMIN";               
 
 $lang['View'] = "Verificar";
 $lang['Read'] = "Ler";
@@ -192,7 +196,7 @@ $lang['Click_return_forumauth'] = "Click %sHere%s para voltar a Permissões de Fó
 //
 $lang['Ban_control'] = "Controle de Expulsões";
 $lang['Ban_explain'] = "Pode ser a partir deste painel expulso  um utilizador específico ou um grupo de endereços de IP ou 'hostnames'. Estes métodos impedem utilizadores de alcançar sequer a página inicial dos fóruns. Para evitar que um utilizador se registe com um nome diferente pode ser também banido um endereço de email. De notar que ao banir um email só por si não impede um utilizador de se ligar ou colocar mensagens nos fóruns. Para que isso aconteça empregue um dos métodos descritos inicialmente.";
-$lang['Ban_explain_warn'] = "De notar que ao especificar um grupo de endereços de IP resulta em TODOS os endereços incluidos nessa seleção, ou seja desde o primeiro IP até ao último, sejam adicionados á lista de IPs banidos. O sistema de phpBB tenta minimizar o número de endereços a adicionar á base de dados empregando automaticamente filtros de seleção sempre que seja aplicável. Se você realmente tenha que mencionar um grupo de IPs tente fazê-lo de forma a abranger uma quantidade reduzida de endereços ou, melhor ainda, use endereços específícos.";
+$lang['Ban_explain_warn'] = "De notar que ao especificar um grupo de endereços de IP resulta em TODOS os endereços incluidos nessa seleção, ou seja desde o primeiro IP até ao último, sejam adicionados à lista de IPs banidos. O sistema de phpBB tenta minimizar o número de endereços a adicionar à base de dados empregando automaticamente filtros de seleção sempre que seja aplicável. Se você realmente tenha que mencionar um grupo de IPs tente fazê-lo de forma a abranger uma quantidade reduzida de endereços ou, melhor ainda, use endereços específícos.";
 
 $lang['Select_username'] = "Seleccionar um Utilizador";
 $lang['Select_ip'] = "Seleccionar um IP";
@@ -231,7 +235,7 @@ $lang['Click_return_banadmin'] = "Premir %sAqui%s para voltar ao Painel de Contr
 $lang['General_Config'] = "Configuração Geral";
 $lang['Config_explain'] = "Usar este formulário para ajustar todas as opções gerais do seu phpBB. Para configuração específica de fóruns ou utilizadores use os respectivos atalhos no painel esquerdo.";
 
-$lang['Click_return_config'] = "Premir %sAqui%s para voltar á Configuração Geral";
+$lang['Click_return_config'] = "Premir %sAqui%s para voltar à Configuração Geral";
 
 $lang['General_settings'] = "Configuração geral do phpBB";
 $lang['Site_name'] = "Nome do local do Fórum";
@@ -449,7 +453,7 @@ $lang['No_group_moderator'] = "Deve ser especificado um moderador para este grup
 $lang['No_group_mode'] = "Deve ser especificado um modo para este grupo, aberto ou encerrado";
 $lang['delete_group_moderator'] = "Remover o moderador antigo do grupo?";
 $lang['delete_moderator_explain'] = "Se está a mudar o moderador do grupo assinale aqui para remover o moderador anterior.  Caso contrário nao assinale e o utilizador passará a ser um membro normal do grupo.";
-$lang['Click_return_groupsadmin'] = "Premir %sAqui%s para voltar á Gerência de Grupos.";
+$lang['Click_return_groupsadmin'] = "Premir %sAqui%s para voltar à Gerência de Grupos.";
 $lang['Select_group'] = "Seleccionar um Grupo";
 $lang['Look_up_group'] = "Verificar";
 
@@ -485,7 +489,7 @@ $lang['Word_updated'] = "A palavra censurada foi actualizada com sucesso";
 $lang['Word_added'] = "A palavra a censurar foi adicionada com sucesso";
 $lang['Word_removed'] = "A palavra censurada foi removida com sucesso";
 
-$lang['Click_return_wordadmin'] = "Premir %sAqui%s para voltar á Gerência de Censura de Palavras";
+$lang['Click_return_wordadmin'] = "Premir %sAqui%s para voltar à Gerência de Censura de Palavras";
 
 
 //
@@ -554,7 +558,7 @@ $lang['Click_return_disallowadmin'] = "Premir %sAqui%s para voltar a Painel de C
 //
 $lang['Styles_admin'] = "Gerência de Estilos";
 $lang['Styles_explain'] = "Usando este painel poderá adicionar, remover e administrar estilos (Modelos e Temas) disponíveis aos utilizadores.";
-$lang['Styles_addnew_explain'] = "Este painel é destinado á listagem dos Temas de fórum para os Modelos que presentemente possui e ainda não se encontram instalados na base de dados do phpBB. Para instalar um tema específico premir em <b>Instalar</b> ao lado desse item.";
+$lang['Styles_addnew_explain'] = "Este painel é destinado à listagem dos Temas de fórum para os Modelos que presentemente possui e ainda não se encontram instalados na base de dados do phpBB. Para instalar um tema específico premir em <b>Instalar</b> ao lado desse item.";
 
 $lang['Select_template'] = "Seleccionar um Modelo";
 
@@ -586,7 +590,7 @@ $lang['No_template_dir'] = "Não foi possível abrir a pasta de Modelos. Pode ser 
 $lang['Cannot_remove_style'] = "Não pode remover o estilo seleccionado porque é presentemente o estilo básico do fórum. Mudar o estilo básico e tentar novamente.";
 $lang['Style_exists'] = "O nome para o estilo que seleccionou já existe, voltar atrás e escolher um nome diferente.";
 
-$lang['Click_return_styleadmin'] = "Premir %sAqui%s para voltar á Gerência de Estilos";
+$lang['Click_return_styleadmin'] = "Premir %sAqui%s para voltar à Gerência de Estilos";
 
 $lang['Theme_settings'] = "Configuração de Temas";
 $lang['Theme_element'] = "Elemento de Tema";
@@ -640,7 +644,7 @@ $lang['img_pm_size'] = "Tamanho de Estado de Mensagem Privada [px]";
 //
 // Install Process
 //
-$lang['Welcome_install'] = "Bem-vindo á Instalação do phpBB 2";
+$lang['Welcome_install'] = "Bem-vindo à Instalação do phpBB 2";
 $lang['Initial_config'] = "Configuração Básica";
 $lang['DB_config'] = "Configuração de Base de Dados";
 $lang['Admin_config'] = "Configuração de Admin";
@@ -651,7 +655,7 @@ $lang['Installer_Error'] = "Ocorreu um erro durante a instalação";
 $lang['Previous_Install'] = "Foi detectada uma instalação anterior";
 $lang['Install_db_error'] = "Ocorreu um erro ao tentar actualizar a base de dados";
 
-$lang['Re_install'] = "A sua instalação anterior ainda se encontra activa. <br /><br />Se pretende reinstalar phpBB 2 deverá carregar no botáo Sim abaixo. Ter em atenção que ao fazê-lo irá destruir toda a informação existente, não sendo feitas cópias de segurança! O Nome de Utilizador e Senha de administrador que tem usado para ligar ao fórum será recriada após esta reinstalação, nao sendo qualquer outros dados de configuração serão guardados. <br /><br />Pense cautelosamente antes de carregar em Sim!";
+$lang['Re_install'] = "A sua instalação anterior ainda se encontra activa. <br /><br />Se pretende reinstalar phpBB 2 deverá carregar no botão Sim abaixo. Ter em atenção que ao fazê-lo irá destruir toda a informação existente, não sendo feitas cópias de segurança! O Nome de Utilizador e Senha de administrador que tem usado para ligar ao fórum será recriada após esta reinstalação, nao sendo qualquer outros dados de configuração serão guardados. <br /><br />Pense cautelosamente antes de carregar em Sim!";
 
 $lang['Inst_Step_0'] = "Obrigado por ter escolhido phpBB 2. De modo a completar esta instalação preencher os detalhes pedidos abaixo. De notar que a base de dados onde a informação do fórum será instalada deve existir já. Caso se encontre a instalar numa base de dados que use ODBC, ou seja, MS Access, deve primeiro ser criado um DSN.";
 
@@ -693,6 +697,10 @@ $lang['Upgrade'] = "Actualizar";
 
 
 $lang['Install_Method'] = "Escolher o seu método de instalação";
+
+$lang['Install_No_Ext'] = "A configuração de php no seu server não aceita o tipo de base de dados que escolheu";
+
+$lang['Install_No_PCRE'] = "O phpBB2 requer o módulo para php 'Perl-Compatible Regular Expressions' cuja configuração do seu php parece não aceitar!";
 
 //
 // That's all Folks!
