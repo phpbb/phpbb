@@ -794,7 +794,7 @@ if ( !empty($forum_topic_data['topic_vote']) )
 			'POLL_QUESTION' => $vote_title,
 
 			'S_HIDDEN_FIELDS' => $s_hidden_fields,
-			'S_POLL_ACTION' => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
+			'S_POLL_ACTION' => append_sid("posting.$phpEx?mode=vote&amp;" . POST_TOPIC_URL . "=$topic_id"))
 		);
 
 		$template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');

@@ -663,32 +663,20 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		if ( isset($HTTP_POST_VARS['split_type_all']) || isset($HTTP_POST_VARS['split_type_beyond']) )
+		if (isset($HTTP_POST_VARS['split_type_all']) || isset($HTTP_POST_VARS['split_type_beyond']))
 		{
 			$posts = $HTTP_POST_VARS['post_id_list'];
 
-			if( !empty($HTTP_POST_VARS['split_type_all']) )
+			$post_id_sql = '';
+			for ($i = 0; $i < count($posts); $i++)
 			{
-				$post_id_sql = '';
-				for($i = 0; $i < count($posts); $i++)
-				{
-					$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($posts[$i]);
-				}
-
-				$sql = "SELECT post_id, poster_id, topic_id, post_time
-					FROM " . POSTS_TABLE . "
-					WHERE post_id IN ($post_id_sql) 
-					ORDER BY post_time ASC";
-			}
-			else if( !empty($HTTP_POST_VARS['split_type_beyond']) )
-			{
-				$sql = "SELECT post_id, poster_id, topic_id, post_time
-					FROM " . POSTS_TABLE . "
-					WHERE post_time >= $post_time
-						AND topic_id = $topic_id 
-					ORDER BY post_time ASC";
+				$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($posts[$i]);
 			}
 
+			$sql = "SELECT post_id, poster_id, topic_id, post_time
+				FROM " . POSTS_TABLE . "
+				WHERE post_id IN ($post_id_sql) 
+				ORDER BY post_time ASC";
 			if (!($result = $db->sql_query($sql)))
 			{
 				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
@@ -732,15 +720,17 @@ switch( $mode )
 				$sql = "UPDATE " . TOPICS_WATCH_TABLE . " 
 					SET topic_id = $new_topic_id 
 					WHERE topic_id = $topic_id 
-						AND user_id IN($user_id_sql)";
+						AND user_id IN ($user_id_sql)";
 				if (!$db->sql_query($sql))
 				{
 					message_die(GENERAL_ERROR, 'Could not update topics watch table', '', __LINE__, __FILE__, $sql);
 				}
 
+				$sql_where = (!empty($HTTP_POST_VARS['split_type_beyond'])) ? " post_time >= $post_time AND topic_id = $topic_id" : "post_id IN ($post_id_sql)";
+
 				$sql = 	"UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
-					WHERE post_id IN ($post_id_sql)";
+					WHERE $sql_where";
 				if (!$db->sql_query($sql, END_TRANSACTION))
 				{
 					message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
