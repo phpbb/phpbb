@@ -328,6 +328,7 @@ function setup_style($style)
 
 	if( $template )
 	{
+		$current_template_path = $template_path . $template_name . '/';
 		@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
 
 		if( !defined("TEMPLATE_CONFIG") )

@@ -331,7 +331,7 @@ function storeCaret(textEl) {
 					  <option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">Default</option>
 					  <option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">Dark 
 					  Red</option>
-					  <option style="color:red; background-color: #DEE3E7" value="darkred" class="genmed">Red</option>
+					  <option style="color:red; background-color: #DEE3E7" value="red" class="genmed">Red</option>
 					  <option style="color:orange; background-color: #DEE3E7" value="orange" class="genmed">Orange</option>
 					  <option style="color:brown; background-color: #DEE3E7" value="brown" class="genmed">Brown</option>
 					  <option style="color:yellow; background-color: #DEE3E7" value="yellow" class="genmed">Yellow</option>
