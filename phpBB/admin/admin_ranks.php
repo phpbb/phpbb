@@ -108,7 +108,7 @@ if( $mode != "" )
 			"NOT_SPECIAL_RANK" => $rank_is_not_special,
 			"MINIMUM" => ( $rank_is_special ) ? "" : $rank_info['rank_min'],
 			"IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
-			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="' . $rank_info['rank_image'] . '" />' : "",
+			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
 			
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],

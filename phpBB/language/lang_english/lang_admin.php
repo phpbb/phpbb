@@ -505,7 +505,7 @@ $lang['Rank_title'] = "Rank Title";
 $lang['Rank_special'] = "Set as Special Rank";
 $lang['Rank_minimum'] = "Minimum Posts";
 $lang['Rank_maximum'] = "Maximum Posts";
-$lang['Rank_image'] = "Rank Image";
+$lang['Rank_image'] = "Rank Image (Relative to phpBB2 root path)";
 $lang['Rank_image_explain'] = "Use this to define a small image associated with the rank";
 
 $lang['Must_select_rank'] = "You must select a rank";
