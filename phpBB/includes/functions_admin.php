@@ -71,7 +71,7 @@ function sync($type, $id)
 
 			while( $row = $db->sql_fetchrow($result) )
 			{
-				sync("forum", $row['forum_id']);
+				sync('forum', $row['forum_id']);
 			}
 		   	break;
 
@@ -85,7 +85,7 @@ function sync($type, $id)
 
 			while( $row = $db->sql_fetchrow($result) )
 			{
-				sync("topic", $row['topic_id']);
+				sync('topic', $row['topic_id']);
 			}
 			break;
 

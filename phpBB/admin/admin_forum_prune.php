@@ -70,7 +70,7 @@ $sql = "SELECT f.*
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
 if( !($result = $db->sql_query($sql)) )
 {
-	message_die(GENERAL_ERROR, "Couldn't obtain list of forums for pruning", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_ERROR, 'Could not obtain list of forums for pruning', '', __LINE__, __FILE__, $sql);
 }
 
 $forum_rows = array();
@@ -96,25 +96,26 @@ if( isset($HTTP_POST_VARS['doprune']) )
 	for($i = 0; $i < count($forum_rows); $i++)
 	{
 		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
+		sync('forum', $forum_rows[$i]['forum_id']);
 	
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 	
-		$template->assign_block_vars("prune_results", array(
-			"ROW_COLOR" => "#" . $row_color, 
-			"ROW_CLASS" => $row_class, 
-			"FORUM_NAME" => $forum_rows[$i]['forum_name'],
-			"FORUM_TOPICS" => $p_result['topics'],
-			"FORUM_POSTS" => $p_result['posts'])
+		$template->assign_block_vars('prune_results', array(
+			'ROW_COLOR' => '#' . $row_color, 
+			'ROW_CLASS' => $row_class, 
+			'FORUM_NAME' => $forum_rows[$i]['forum_name'],
+			'FORUM_TOPICS' => $p_result['topics'],
+			'FORUM_POSTS' => $p_result['posts'])
 		);
 	}
 
 	$template->assign_vars(array(
-		"L_FORUM_PRUNE" => $lang['Forum_Prune'],
-		"L_FORUM" => $lang['Forum'],
-		"L_TOPICS_PRUNED" => $lang['Topics_pruned'],
-		"L_POSTS_PRUNED" => $lang['Posts_pruned'],
-		"L_PRUNE_RESULT" => $lang['Prune_success'])
+		'L_FORUM_PRUNE' => $lang['Forum_Prune'],
+		'L_FORUM' => $lang['Forum'],
+		'L_TOPICS_PRUNED' => $lang['Topics_pruned'],
+		'L_POSTS_PRUNED' => $lang['Posts_pruned'],
+		'L_PRUNE_RESULT' => $lang['Prune_success'])
 	);
 }
 else
@@ -129,7 +130,7 @@ else
 		// Output a selection table if no forum id has been specified.
 		//
 		$template->set_filenames(array(
-			"body" => "admin/forum_prune_select_body.tpl")
+			'body' => 'admin/forum_prune_select_body.tpl')
 		);
 
 		$select_list = '<select name="' . POST_FORUM_URL . '">';
@@ -145,12 +146,12 @@ else
 		// Assign the template variables.
 		//
 		$template->assign_vars(array(
-			"L_FORUM_PRUNE" => $lang['Forum_Prune'],
-			"L_SELECT_FORUM" => $lang['Select_a_Forum'], 
-			"L_LOOK_UP" => $lang['Look_up_Forum'],
+			'L_FORUM_PRUNE' => $lang['Forum_Prune'],
+			'L_SELECT_FORUM' => $lang['Select_a_Forum'], 
+			'L_LOOK_UP' => $lang['Look_up_Forum'],
 
-			"S_FORUMPRUNE_ACTION" => append_sid("admin_forum_prune.$phpEx"),
-			"S_FORUMS_SELECT" => $select_list)
+			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.$phpEx"),
+			'S_FORUMS_SELECT' => $select_list)
 		);
 	}
 	else
@@ -161,7 +162,7 @@ else
 		// Output the form to retrieve Prune information.
 		//
 		$template->set_filenames(array(
-			"body" => "admin/forum_prune_body.tpl")
+			'body' => 'admin/forum_prune_body.tpl')
 		);
 
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
@@ -175,22 +176,22 @@ else
 		// Assign the template variables.
 		//
 		$template->assign_vars(array(
-			"FORUM_NAME" => $forum_name,
+			'FORUM_NAME' => $forum_name,
 
-			"L_FORUM_PRUNE" => $lang['Forum_Prune'], 
-			"L_FORUM_PRUNE_EXPLAIN" => $lang['Forum_Prune_explain'], 
-			"L_DO_PRUNE" => $lang['Do_Prune'],
+			'L_FORUM_PRUNE' => $lang['Forum_Prune'], 
+			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'], 
+			'L_DO_PRUNE' => $lang['Do_Prune'],
 
-			"S_FORUMPRUNE_ACTION" => append_sid("admin_forum_prune.$phpEx"),
-			"S_PRUNE_DATA" => $prune_data,
-			"S_HIDDEN_VARS" => $hidden_input)
+			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.$phpEx"),
+			'S_PRUNE_DATA' => $prune_data,
+			'S_HIDDEN_VARS' => $hidden_input)
 		);
 	}
 }
 //
 // Actually output the page here.
 //
-$template->pparse("body");
+$template->pparse('body');
 
 include('page_footer_admin.'.$phpEx);
 

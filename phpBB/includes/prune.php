@@ -26,7 +26,6 @@ if ( !defined('IN_PHPBB') )
 }
 
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 function prune($forum_id, $prune_date)
 {
@@ -110,8 +109,6 @@ function prune($forum_id, $prune_date)
 
 			remove_search_post($sql_post);
 
-			sync('forum', $forum_id);
-
 			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
 		}
 	}
@@ -125,6 +122,8 @@ function prune($forum_id, $prune_date)
 //
 function auto_prune($forum_id = 0)
 {
+	require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+
 	global $db, $lang;
 
 	$sql = "SELECT *
@@ -142,7 +141,8 @@ function auto_prune($forum_id = 0)
 			$prune_date = time() - ( $row['prune_days'] * 86400 );
 			$next_prune = time() + ( $row['prune_freq'] * 86400 );
 
-			$pruned = prune($forum_id, $prune_date);
+			prune($forum_id, $prune_date);
+			sync('forum', $forum_id);
 
 			$sql = "UPDATE " . FORUMS_TABLE . " 
 				SET prune_next = $next_prune 
