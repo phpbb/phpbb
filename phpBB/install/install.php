@@ -1058,7 +1058,7 @@ if ($stage == 3)
 
 		foreach ($sql_query as $sql)
 		{
-			$sql = trim($sql);
+			$sql = trim(str_replace('|', ';', $sql));
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();

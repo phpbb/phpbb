@@ -265,7 +265,7 @@ INSERT INTO phpbb_styles_template (template_id, template_name, template_path, po
 # MSSQL IDENTITY phpbb_styles_theme ON #
 
 # -- phpbb_styles_theme
-INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'body {background: white url(\'templates/subSilver/images/background.png\') repeat-x;}\nth { background-image: url(\'templates/subSilver/images/cellpic3.gif\') }\ntd.cat { background-image: url(\'templates/subSilver/images/cellpic1.gif\') }\ntd.rowpic { background-image: url(\'templates/subSilver/images/cellpic2.jpg\'); background-repeat: repeat-y }\ntd.icqback { background-image: url(\'templates/subSilver/images/icon_icq_add.gif\'); background-repeat: no-repeat }', 'subSilver/subSilver.css');
+INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'body {background: white url(''templates/subSilver/images/background.png'') repeat-x;}\nth { background-image: url(''templates/subSilver/images/cellpic3.gif'') }\ntd.cat { background-image: url(''templates/subSilver/images/cellpic1.gif'') }\ntd.rowpic { background-image: url(''templates/subSilver/images/cellpic2.jpg''); background-repeat: repeat-y }\ntd.icqback { background-image: url(''templates/subSilver/images/icon_icq_add.gif''); background-repeat: no-repeat }', 'subSilver/subSilver.css');
 
 # MSSQL IDENTITY phpbb_styles_theme OFF #
 
@@ -415,11 +415,11 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 
     
 # -- ucp modules
-INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (1, 'MAIN', 'main', 1);
-INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (2, 'PROFILE', 'profile', 2);
-INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (3, 'PREFERENCES', 'prefs', 3);
-INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (4, 'MESSAGING', 'pm', 4);
-INSERT INTO phpbb_ucp_modules (module_id, module_name, module_filename, module_order) VALUES (5, 'LISTS', 'zebra', 5);
+INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (1, 'MAIN', 'main', 1);
+INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (2, 'PROFILE', 'profile', 2);
+INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (3, 'PREFERENCES', 'prefs', 3);
+INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (4, 'MESSAGING', 'pm', 4);
+INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (5, 'LISTS', 'zebra', 5);
 
 
 # MSSQL IDENTITY phpbb_search_wordlist ON #

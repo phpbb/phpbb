@@ -135,7 +135,7 @@ obtain_word_list($censors);
 
 
 // Grab the other enabled UCP modules
-$sql = "SELECT module_id, module_name, module_filename 
+$sql = "SELECT module_id, module_title, module_filename 
 	FROM " . UCP_MODULES_TABLE . " 
 	ORDER BY module_order ASC";
 $result = $db->sql_query($sql);
@@ -143,7 +143,7 @@ $result = $db->sql_query($sql);
 while ($row = $db->sql_fetchrow($result))
 {
 	$template->assign_block_vars('ucp_sections', array(
-		'SECTION'	=> $user->lang['UCP_' . $row['module_name']], 
+		'SECTION'	=> $user->lang['UCP_' . $row['module_title']], 
 
 		'U_SECTION'	=> "ucp.$phpEx$SID&amp;i=" . $row['module_id'],
 
