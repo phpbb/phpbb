@@ -1845,10 +1845,6 @@ function csspreview()
 
 			case 'export':
 
-				// TODO
-				// Note, this won't cope with stylesheets stored in the db at present, it'll
-				// jump dump out the existing version stored on the filesystem
-
 				if ($theme_id)
 				{
 					include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
@@ -1864,16 +1860,33 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 					
-
-					// Where is the CSS stored?
-					if ($css_storedb)
-					{
-//						$stylesheet = &$css_data;
-					}
+					$theme_config  = "<?php\n";
+					$theme_config .= "//phpBB 2.2 auto-generated theme config file for $theme_name\n";
+					$theme_config .= "// Do not change anything in this file!\n";
+					$theme_config .= "\$themecfg['name'] = '" . addslashes($theme_name) . "';\n";
+					$theme_config .= "\$themecfg['copyright'] = '" . addslashes($theme_copyright) . "';\n";
+					$theme_config .= "\$themecfg['phpbbversion'] = '" . addslashes($config['version']) . "';\n";
+					$theme_config .= '?>';
 
 					$zip = new archive_zip('w', $phpbb_root_path . 'store/theme_' . $theme_path . '.zip');
-					$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/');
+
+					// If we have the css in the DB we'll use that in preference to the one on the
+					// filesystem. We will also create an appropriate cfg file
+					if ($css_storedb)
+					{
+						$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', $theme_path . '.css,theme.cfg');
+						$zip->add_data($css_data, $theme_path . '/' . $theme_path . '.css');
+					}
+					else
+					{
+						$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/', 'theme.cfg');
+					}
+					$zip->add_data($theme_config, $theme_path . '/theme.cfg');
+
 					$zip->close();
+
+					unset($theme_config);
+					unset($css_data);
 
 					add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
 					trigger_error(sprintf($user->lang['THEME_EXPORTED'], 'store/theme_' . $theme_path . '.zip'));
