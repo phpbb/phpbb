@@ -58,7 +58,7 @@ class bbcode
 		{
 			$this->bbcode_cache_init();
 		}
-//echo'<pre>';print_r($this);
+
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());
 
@@ -108,6 +108,9 @@ class bbcode
 			{
 				$merged_bitfield = $user->theme['primary']['bbcode_bitfield'] | $user->theme['secondary']['bbcode_bitfield'];
 
+				// If any of styles has a specific template for any of applicable
+				// bbcodes then load the primary bbcode.html if present, otherwise
+				// load the secondary bbcode.html file
 				if ($this->bbcode_bitfield & $merged_bitfield)
 				{
 					$style = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? 'primary' : 'secondary';
@@ -300,11 +303,7 @@ class bbcode
 
 		if (empty($this->bbcode_template))
 		{
-			global $user;
-
-			$tpl_filename = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html')) ? $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html' : $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/bbcode.html';
-
-			if (!($fp = @fopen($tpl_filename, 'rb')))
+			if (!($fp = @fopen($this->template_filename, 'rb')))
 			{
 				trigger_error('Could not load bbcode template');
 			}
