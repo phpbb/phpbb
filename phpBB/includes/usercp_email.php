@@ -36,9 +36,9 @@ else
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
 
-if ( !$userdata['session_logged_in'] )
+if ( $userdata['user_id'] == ANONYMOUS )
 {
-	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
+	header('Location: ' . "login.$phpEx$SID&redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id");
 	exit;
 }
 
@@ -121,7 +121,7 @@ if ( $result = $db->sql_query($sql) )
 					$emailer->reset();
 
 					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+						'META' => '<meta http-equiv="refresh" content="5;url=' . "index.$phpEx$SID" . '">')
 					);
 
 					$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
@@ -156,7 +156,7 @@ if ( $result = $db->sql_query($sql) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_POST_ACTION' => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
+			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id", 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 
 			'L_RECIPIENT' => $lang['Recipient'], 

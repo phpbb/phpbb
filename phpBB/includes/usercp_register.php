@@ -23,7 +23,7 @@
 
 if ( !defined('IN_PHPBB') )
 {
-	die("Hacking attempt");
+	die('Hacking attempt');
 	exit;
 }
 
@@ -36,7 +36,7 @@ function show_coppa()
 	global $template, $lang, $phpbb_root_path, $phpEx;
 
 	$template->set_filenames(array(
-		'body' => 'agreement.tpl')
+		'body' => 'agreement.html')
 	);
 
 	$template->assign_vars(array(
@@ -46,11 +46,13 @@ function show_coppa()
 		"AGREE_UNDER_13" => $lang['Agree_under_13'], 
 		'DO_NOT_AGREE' => $lang['Agree_not'], 
 
-		"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
-		"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
+		"U_AGREE_OVER13" => "profile.$phpEx$SID&amp;mode=register&amp;agreed=true",
+		"U_AGREE_UNDER13" => "profile.$phpEx$SID&amp;mode=register&amp;agreed=true&amp;coppa=true")
 	);
+}
 
-	$template->pparse('body');
+function update_user($mode)
+{
 
 }
 //
@@ -82,7 +84,7 @@ if (
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-	include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
+	include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
 	if ( $mode == 'editprofile' )
 	{
@@ -275,6 +277,10 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$error = TRUE;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
 	}
+	else
+	{
+		$password = $userdata['user_password'];
+	}
 
 	//
 	// Do a ban check on this email address
@@ -377,39 +383,72 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
 	}
+	else
+	{
+		$avatar_sql = array('data' => '', 'type' => USER_AVATAR_NONE);
+	}
 
 	if ( !$error )
 	{
-		if ( $avatar_sql == '' )
+		if ( ( ( $mode == 'editprofile' && $userdata['user_level'] != ADMIN && $email != $current_email ) || ( $mode == 'register' || $coppa ) ) && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) )
 		{
-			$avatar_sql = ( $mode == 'editprofile' ) ? '' : "'', " . USER_AVATAR_NONE;
+			$user_actkey = gen_rand_string(true);
+			$key_len = 54 - (strlen($server_url));
+			$key_len = ( $key_len > 6 ) ? $key_len : 6;
+
+			$user_actkey = substr($user_actkey, 0, $key_len);
+			$user_active = 0;
+
+			if ( $userdata['user_id'] != ANONYMOUS )
+			{
+				session_end($userdata['session_id'], $userdata['user_id']);
+			}
 		}
+		else
+		{
+			$user_active = 1;
+			$user_actkey = '';
+		}
+
+		$sql_ary = array(
+			'username' => $username, 
+			'user_regdate' => time(),
+			'user_password' => $password,
+			'user_email' => $email,
+			'user_icq' => $icq,
+			'user_aim' => $aim,
+			'user_yim' => $yim,
+			'user_msnm' => $msn,
+			'user_website' => $website,
+			'user_occ' => $occupation,
+			'user_from' => $location,
+			'user_interests' => $interests,
+			'user_sig' => $signature,
+			'user_sig_bbcode_uid' => $signature_bbcode_uid,
+			'user_viewemail' => $viewemail,
+			'user_attachsig' => $attachsig,
+			'user_allowsmile' => $allowsmilies,
+			'user_allowhtml' => $allowhtml,
+			'user_allowbbcode' => $allowbbcode,
+			'user_allow_viewonline' => $allowviewonline,
+			'user_notify' => $notifyreply,
+			'user_notify_pm' => $notifypm,
+			'user_popup_pm' => $popuppm, 
+			'user_avatar' => $avatar_sql['data'],
+			'user_avatar_type' => $avatar_sql['type'], 
+			'user_timezone' => (float) $user_timezone,
+			'user_dateformat' => $user_dateformat,
+			'user_lang' => $user_lang,
+			'user_style' => $user_style,
+			'user_level' => 0,
+			'user_allow_pm' => 1,
+			'user_active' => $user_active,
+			'user_actkey' => $user_actkey
+		);
 
 		if ( $mode == 'editprofile' )
 		{
-			if ( $email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN )
-			{
-				$user_active = 0;
-				$user_actkey = gen_rand_string(true);
-				$key_len = 54 - (strlen($server_url));
-				$key_len = ($key_len > 6) ? $key_len : 6;
-				$user_actkey = substr($user_actkey, 0, $key_len);
-
-				if ( $userdata['session_logged_in'] )
-				{
-					session_end($userdata['session_id'], $userdata['user_id']);
-				}
-			}
-			else
-			{
-				$user_active = 1;
-				$user_actkey = '';
-			}
-
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) ."', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_active = $user_active, user_actkey = '" . str_replace("\'", "''", $user_actkey) . "'" . $avatar_sql . "
-				WHERE user_id = $user_id";
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !($result = $db->sql_query_array('UPDATE ' . USERS_TABLE . ' SET WHERE user_id = ' . $user_id, &$sql_ary, BEGIN_TRANSACTION)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql);
 			}
@@ -422,7 +461,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 				$emailer = new emailer($board_config['smtp_delivery']);
 
-				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+				$email_headers = "From: " . $board_config['board_email'] . "\r\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 				$emailer->use_template('user_activate', stripslashes($user_lang));
 				$emailer->email_address($email);
@@ -439,89 +478,56 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->send();
 				$emailer->reset();
 
-				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 			}
 			else
 			{
-				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 			}
 
 			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+				"META" => '<meta http-equiv="refresh" content="5;url=' . "index.$phpEx$SID" . '">')
 			);
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
-			$sql = "SELECT MAX(user_id) AS total
-				FROM " . USERS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( !($row = $db->sql_fetchrow($result)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-			$user_id = $row['total'] + 1;
-
-			$sql = "SELECT MAX(group_id) AS total
-				FROM " . GROUPS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( !($row = $db->sql_fetchrow($result)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
-			}
-			$group_id = $row['total'] + 1;
-
-			//
-			// Get current date
-			//
-			$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_avatar_type, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-				VALUES ($user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', $avatar_sql, $viewemail, '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
-			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa )
-			{
-				$user_actkey = gen_rand_string(true);
-				$key_len = 54 - (strlen($server_url));
-				$key_len = ( $key_len > 6 ) ? $key_len : 6;
-				$user_actkey = substr($user_actkey, 0, $key_len);
-				$sql .= "0, '" . str_replace("\'", "''", $user_actkey) . "')";
-			}
-			else
-			{
-				$sql .= "1, '')";
-			}
-
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+			if ( !($result = $db->sql_query_array('INSERT INTO ' . USERS_TABLE, &$sql_ary, BEGIN_TRANSACTION)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into users table', '', __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
-				VALUES ($group_id, '', 'Personal User', 1, 0)";
+			$user_id = $db->sql_nextid();
+
+			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
+				VALUES ('', 'Personal User', 1, 0)";
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into groups table', '', __LINE__, __FILE__, $sql);
 			}
 
+			$group_id = $db->sql_nextid();
+
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 				VALUES ($user_id, $group_id, 0)";
-			if( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+			if( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into user_group table', '', __LINE__, __FILE__, $sql);
 			}
 
-			$user_update_id = "UPDATE " . CONFIG_TABLE . " SET config_value = $user_id WHERE config_name = 'newest_user_id'";
-			$user_update_name = "UPDATE " . CONFIG_TABLE . " SET config_value = '$username' WHERE config_name = 'newest_username'";
-			$user_update_count = "UPDATE " . CONFIG_TABLE . " SET config_value = " . ($board_config['num_users'] + 1) . " WHERE config_name = 'num_users'";
-			
-			if( !$db->sql_query($user_update_id) || !$db->sql_query($user_update_name) || !$db->sql_query($user_update_count) )
+			$user_update_id = "UPDATE " . CONFIG_TABLE . " 
+				SET config_value = $user_id 
+				WHERE config_name = 'newest_user_id'";
+			$user_update_name = "UPDATE " . CONFIG_TABLE . " 
+				SET config_value = '$username' 
+				WHERE config_name = 'newest_username'";
+			$user_update_count = "UPDATE " . CONFIG_TABLE . " 
+				SET config_value = " . ($board_config['num_users'] + 1) . " 
+				WHERE config_name = 'num_users'";
+			if( !$db->sql_query($user_update_id) || 
+				!$db->sql_query($user_update_name) || 
+				!$db->sql_query($user_update_count, END_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update user count information!', '', __LINE__, __FILE__);
 			}
@@ -614,7 +620,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->reset();
 			}
 
-			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} // if mode == register
@@ -709,7 +715,7 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 	$avatar_category = ( !empty($HTTP_POST_VARS['avatarcategory']) ) ? $HTTP_POST_VARS['avatarcategory'] : '';
 
 	$template->set_filenames(array(
-		'body' => 'profile_avatar_gallery.tpl')
+		'body' => 'profile_avatar_gallery.html')
 	);
 
 	$allowviewonline = !$allowviewonline;
@@ -718,8 +724,6 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 }
 else
 {
-	include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
-
 	if ( !isset($coppa) )
 	{
 		$coppa = FALSE;
@@ -772,7 +776,7 @@ else
 	if ( $error )
 	{
 		$template->set_filenames(array(
-			'reg_header' => 'error_body.tpl')
+			'reg_header' => 'error_body.html')
 		);
 		$template->assign_vars(array(
 			'ERROR_MESSAGE' => $error_msg)
@@ -781,20 +785,14 @@ else
 	}
 
 	$template->set_filenames(array(
-		'body' => 'profile_add_body.tpl')
+		'body' => 'profile_add_body.html')
 	);
-
-	if ( $mode == 'editprofile' )
-	{
-		$template->assign_block_vars('switch_edit_profile', array());
-	}
 
 	//
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....
 	//
-	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( @ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @ini_get('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 	
 	$template->assign_vars(array(
 		'USERNAME' => $username,
@@ -834,7 +832,7 @@ else
 		'TIMEZONE_SELECT' => tz_select($user_timezone, 'timezone'),
 		'DATE_FORMAT' => $user_dateformat,
 		'HTML_STATUS' => $html_status,
-		'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
+		'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'), 
 		'SMILIES_STATUS' => $smilies_status,
 
 		'L_CURRENT_PASSWORD' => $lang['Current_password'], 
@@ -893,12 +891,15 @@ else
 		'L_PROFILE_INFO_NOTICE' => $lang['Profile_info_warn'],
 		'L_EMAIL_ADDRESS' => $lang['Email_address'],
 
-		'S_ALLOW_AVATAR_UPLOAD' => $board_config['allow_avatar_upload'],
-		'S_ALLOW_AVATAR_LOCAL' => $board_config['allow_avatar_local'],
-		'S_ALLOW_AVATAR_REMOTE' => $board_config['allow_avatar_remote'],
+		'S_PROFILE_EDIT' => ( $mode == 'editprofile' ) ? true : false, 
+		'S_DISPLAY_AVATAR_BLOCK' => ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) ) ? true : false, 
+		'S_DISPLAY_AVATAR_UPLOAD' => ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) && $form_enctype != '' ) ? true : false,
+		'S_DISPLAY_AVATAR_URL' =>  ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) ) ? true : false,
+		'S_DISPLAY_AVATAR_REMOTE' => ( $board_config['allow_avatar_remote'] ) ? true : false, 
+		'S_DISPLAY_AVATAR_GALLERY' => ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) ) ? true : false, 
 		'S_HIDDEN_FIELDS' => $s_hidden_fields,
 		'S_FORM_ENCTYPE' => $form_enctype,
-		'S_PROFILE_ACTION' => append_sid("profile.$phpEx"))
+		'S_PROFILE_ACTION' => "profile.$phpEx$SID")
 	);
 
 	//
@@ -906,32 +907,7 @@ else
 	// of the templates to 'fake' an IF...ELSE...ENDIF solution
 	// it works well :)
 	//
-	if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
-	{
-		$template->assign_block_vars('switch_avatar_block', array() );
-
-		if ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) )
-		{
-			if ( $form_enctype != '' )
-			{
-				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', array() );
-			}
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', array() );
-		}
-
-		if ( $board_config['allow_avatar_remote'] )
-		{
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
-		}
-
-		if ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) )
-		{
-			$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
-		}
-	}
 }
-
-$template->pparse('body');
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
