@@ -358,7 +358,7 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = smilie_text($member['user_sig']);
+			$member['user_sig'] = censor_text(smilie_text($member['user_sig']));
 		}
 
 		$poster_avatar = '';
@@ -396,19 +396,18 @@ switch ($mode)
 			}
 		}
 
-
 		$template->assign_vars(array(
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
 			'ACTIVE_FORUM'		=> $active_f_name,
 			'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
 			'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct),
-			'ACTIVE_TOPIC'		=> $active_t_name,
+			'ACTIVE_TOPIC'		=> censor_text($active_t_name),
 			'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
 			'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct),
 
-			'OCCUPATION'	=> (!empty($member['user_occ'])) ? $member['user_occ'] : '',
-			'INTERESTS'		=> (!empty($member['user_interests'])) ? $member['user_interests'] : '',
+			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
+			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
 			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '',
 
 			'AVATAR_IMG'	=> $poster_avatar,
