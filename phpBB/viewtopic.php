@@ -309,30 +309,11 @@ if ($rate)
 	trigger_error($message);
 }
 
-
-
 // What is start equal to?
 if (!empty($post_id))
 {
 	$start = floor(($prev_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
-
-
-// Fill extension informations, if this topic has attachments
-$extensions = array();
-if ($topic_attachment)
-{
-	obtain_attach_extensions($extensions);
-}
-
-
-// Are we watching this topic?
-$s_watching_topic = $s_watching_topic_img = '';
-if ($config['email_enable'] && $config['allow_topic_notify'])
-{
-	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
-}
-
 
 // Post ordering options
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -369,8 +350,19 @@ else
 	$limit_posts_time = '';
 }
 
-// Select the sort order
-$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+// Fill extension informations, if this topic has attachments
+$extensions = array();
+if ($topic_attachment)
+{
+	obtain_attach_extensions($extensions);
+}
+
+// Are we watching this topic?
+$s_watching_topic = $s_watching_topic_img = '';
+if ($config['email_enable'] && $config['allow_topic_notify'])
+{
+	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
+}
 
 // Grab ranks
 $ranks = array();
@@ -414,7 +406,7 @@ $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_GL
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
+$pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;sk=$sort_key&amp;st=$sort_days&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 // Grab censored words
@@ -659,16 +651,10 @@ if (!empty($poll_start))
 	unset($voted_id);
 }
 
-// Container for user details, only process once
-$user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
-$has_attachments = $display_notice = FALSE;
-$force_encoding = '';
-$bbcode_bitfield = $i = $i_total = 0;
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = FALSE;
 $limit = $config['posts_per_page'];
-
 if ($start > $total_posts / 2)
 {
 	$store_reverse = TRUE;
@@ -678,13 +664,25 @@ if ($start > $total_posts / 2)
 		$limit = min($config['posts_per_page'], max(1, $total_posts - $start));
 	}
 
-	$sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sort_order);
+	$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
 	$start = max(0, $total_posts - $limit - $start);
 }
+else
+{
+	// Select the sort order
+	$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+}
+
+// Container for user details, only process once
+$user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
+$has_attachments = $display_notice = FALSE;
+$force_encoding = '';
+$bbcode_bitfield = $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
-$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
-	FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
+$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
+	FROM ((' . POSTS_TABLE . ' p 
+	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . " u)  
 	WHERE p.topic_id = $topic_id
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
 		$limit_posts_time
@@ -704,16 +702,29 @@ do
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
-	if ($row['user_karma'] < $user->data['user_min_karma'] && (!$view || $view != 'karma' || $post_id != $row['post_id']))
+	if (!$view || $view != 'show' || $post_id != $row['post_id'])
 	{
-		$rowset[] = array(
-			'below_karma'	=> TRUE,
-			'post_id'		=> $row['post_id'], 
-			'poster'		=> $poster,
-			'user_karma'	=> $row['user_karma']
-		);
+		if ($row['user_karma'] < $user->data['user_min_karma'])
+		{
+			$rowset[] = array(
+				'below_karma'	=> TRUE,
+				'post_id'		=> $row['post_id'], 
+				'poster'		=> $poster,
+				'user_karma'	=> $row['user_karma']
+			);
 
-		continue;
+			continue;
+		}
+		else if ($row['foe'])
+		{
+			$rowset[] = array(
+				'foe'		=> TRUE,
+				'post_id'	=> $row['post_id'], 
+				'poster'	=> $poster,
+			);
+
+			continue;
+		}
 	}
 
 	// Does post have an attachment? If so, add it to the list
@@ -749,7 +760,8 @@ do
 			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 			'enable_html'		=> $row['enable_html'],
 			'enable_smilies'	=> $row['enable_smilies'],
-			'enable_sig'		=> $row['enable_sig']
+			'enable_sig'		=> $row['enable_sig'],
+			'friend'			=> $row['friend'], 
 		));
 	}
 	else
@@ -774,7 +786,8 @@ do
 			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 			'enable_html'		=> $row['enable_html'],
 			'enable_smilies'	=> $row['enable_smilies'],
-			'enable_sig'		=> $row['enable_sig']
+			'enable_sig'		=> $row['enable_sig'], 
+			'friend'			=> $row['friend'], 
 		);
 	}
 
@@ -1020,7 +1033,18 @@ foreach ($rowset as $i => $row)
 			'S_IGNORE_POST' => true, 
 			'S_ROW_COUNT'	=> $i,
 
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], $row['user_karma'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], $row['user_karma'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
+		);
+
+		continue;
+	}
+	else if ($row['foe'])
+	{
+		$template->assign_block_vars('postrow', array(
+			'S_IGNORE_POST' => true, 
+			'S_ROW_COUNT'	=> $i,
+
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
 		);
 
 		continue;
@@ -1169,7 +1193,8 @@ foreach ($rowset as $i => $row)
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
-		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'])
+		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'], 
+		'S_FRIEND'			=> ($row['friend']) ? true : false)
 	);
 
 	// Process Attachments for this post

@@ -29,14 +29,12 @@ $sort_days = (isset($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!emp
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd');
 
-
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 if (!$forum_id)
 {
 	trigger_error('NO_FORUM');
 }
-
 
 // Grab appropriate forum data
 if ($user->data['user_id'] == ANONYMOUS)
@@ -87,7 +85,6 @@ if (!($forum_data = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
-
 // Is this forum a link? ... User got here either because the 
 // number of clicks is being tracked or they guessed the id
 if ($forum_data['forum_link'])
@@ -104,10 +101,8 @@ if ($forum_data['forum_link'])
 	redirect($forum_data['forum_link']);
 }
 
-
 // Configure style, language, etc.
 $user->setup(false, $forum_data['forum_style']);
-
 
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box
@@ -116,9 +111,8 @@ if ($forum_data['forum_password'])
 	login_forum_box($forum_data);
 }
 
-
 // Permissions check
-if (!$auth->acl_gets('f_read', $forum_id))
+if (!$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -128,10 +122,8 @@ if (!$auth->acl_gets('f_read', $forum_id))
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
-
 // Build navigation links
 generate_forum_nav($forum_data);
-
 
 // Do we have subforums?
 $moderators = array();
@@ -238,9 +230,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		$sql_limit_time = '';
 	}
 
-	// Select the sort order
-	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
 	// Basic pagewide vars
 	$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 
@@ -282,7 +271,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'U_MARK_READ' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
 	);
 
-
 	// Grab icons
 	$icons = array();
 	obtain_icons($icons);
@@ -302,12 +290,12 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
 
-	// Obtain announcements
+	// Obtain announcements ... removed sort ordering, sort by time in all cases
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from 
 		WHERE t.forum_id IN ($forum_id, 0)
-			AND t.topic_type IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ") 
-		ORDER BY $sql_sort_order";
+			AND t.topic_type IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ')
+		ORDER BY t.topic_time DESC';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -320,7 +308,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	// If the user is trying to reach late pages, start searching from the end
 	$store_reverse = FALSE;
 	$sql_limit = $config['topics_per_page'];
-
 	if ($start > $topics_count / 2)
 	{
 		$store_reverse = TRUE;
@@ -330,16 +317,20 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			$sql_limit = min($config['topics_per_page'], max(1, $topics_count - $start));
 		}
 
-		$sql_sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sql_sort_order);
+		// Select the sort order
+		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
 		$sql_start = max(0, $topics_count - $sql_limit - $start);
 	}
 	else
 	{
+		// Select the sort order
+		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$sql_start = $start;
 	}
 
 	// Obtain other topics
-	$sql = "SELECT t.* $sql_select 
+	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
+	$sql = "SELECT t.* $sql_select$sql_rownum 
 		FROM $sql_from
 		WHERE t.forum_id = $forum_id 
 			AND t.topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ") 
@@ -355,14 +346,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	}
 	$db->sql_freeresult($result);
 
-	if ($store_reverse)
-	{
-		$topic_list = array_merge($announcement_list, array_reverse($topic_list));
-	}
-	else
-	{
-		$topic_list = array_merge($announcement_list, $topic_list);
-	}
+	$topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 
 	// Okay, lets dump out the page ...
 	if (count($topic_list))

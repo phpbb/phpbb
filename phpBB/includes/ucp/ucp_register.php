@@ -11,9 +11,9 @@
 // 
 // -------------------------------------------------------------
 
-class ucp_register extends ucp
+class ucp_register extends module 
 {
-	function main($id)
+	function ucp_register($id, $mode)
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 

@@ -11,9 +11,9 @@
 // 
 // -------------------------------------------------------------
 
-class ucp_remind extends ucp
+class ucp_remind extends module 
 {
-	function main($id)
+	function ucp_remind($id, $mode)
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 

@@ -443,6 +443,7 @@ $lang += array(
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 
 	'POST_IGNORE'		=> 'This post was made by <b>%1$s</b> who is on your ignore list. To display this post click %sHERE%s.', 
 	'POST_BELOW_KARMA'	=> 'This post was made by <b>%1$s</b> whose karma rating of <b>%2$d</b> is below your desired minimum. To display this post click %3$sHERE%4$s.', 
+	'POST_BY_FOE'		=> 'This post was made by <b>%1$s</b> who is currently on your ignore list. To display this post click %2$sHERE%3$s.', 
 	'POST_ENCODING'		=> 'This post by <b>%1$s</b> was made in a character set different to yours. To view this post in its proper encoding click %2$sHERE%3$s.', 
 	'DISPLAY_POSTS'		=> 'Display posts from previous',
 	'ALL_POSTS'			=> 'All Posts',
@@ -678,8 +679,13 @@ $lang += array(
 
 // ucp
 $lang += array(
-	'UCP'			=> 'User Control Panel',
-	'UCP_OPTIONS'	=> 'Options', 
+	'UCP'				=> 'User Control Panel',
+	'UCP_OPTIONS'		=> 'Options', 
+	'FRIENDS'			=> 'Friends', 
+	'FRIENDS_ONLINE'	=> 'Online', 
+	'FRIENDS_OFFLINE'	=> 'Offline', 
+	'NO_FRIENDS_ONLINE'	=> 'No friends online', 
+	'NO_FRIENDS_OFFLINE'=> 'No friends offline', 
 
 	'UCP_MAIN'		=> 'Overview',
 
@@ -693,7 +699,10 @@ $lang += array(
 	'UNREAD_PMS'	=> 'You have $d unread private messages',
 	'TOTAL_NO_PM'	=> '0 private messages in total',
 	'TOTAL_PM'		=> '1 private messages in total',
-	'TOTAL_PMS'		=> '$d private messages in total',
+	'TOTAL_PMS'		=> '$d private messages in total', 
+	'YOUR_KARMA'	=> 'Your Karma level', 
+	'YOUR_WARNINGS'	=> 'Your Warning level', 
+	'SEARCH_YOUR_POSTS'	=> 'Show your posts', 
 
 	'UCP_WATCHED'		=> 'Watched items', 
 	'WATCHED_FORUMS'	=> 'Watched Forums',
@@ -781,50 +790,6 @@ $lang += array(
 	'PROFILE_UPDATED'	=> 'Your profile has been updated.', 
 
 
-	'UCP_PREFERENCES'	=> 'Preferences',
-
-	'UCP_PERSONAL'		=> 'Personal Settings', 
-	'HIDE_ONLINE'		=> 'Hide my online status',
-	'NOTIFY_ON_PM'		=> 'Email me on new private messages',
-	'POPUP_ON_PM'		=> 'Pop up window on new private message',
-	'SHOW_EMAIL'		=> 'Users can contact me by email',
-	'ADMIN_EMAIL'		=> 'Administrators can email me information',
-	'BOARD_STYLE'		=> 'My board style',
-	'BOARD_LANGUAGE'	=> 'My language', 
-	'BOARD_TIMEZONE'	=> 'My timezone', 
-	'BOARD_DST'			=> 'Daylight Saving Time is in effect', 
-	'BOARD_DATE_FORMAT'			=> 'My date format',
-	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function', 
-
-	'UCP_VIEW'			=> 'Viewing Posts', 
-	'VIEW_IMAGES'		=> 'Display Images within posts', 
-	'VIEW_FLASH'		=> 'Display Flash animations', 
-	'VIEW_SMILIES'		=> 'Display Smileys as images', 
-	'VIEW_SIGS'			=> 'Display Signatures', 
-	'VIEW_AVATARS'		=> 'Display Avatars', 
-	'DISABLE_CENSORS'	=> 'Enable Word censoring', 
-	'MINIMUM_KARMA'		=> 'Minimum User Karma', 
-	'MINIMUM_KARMA_EXPLAIN'=> 'Posts by users with Karma less than this will be ignored.', 
-	'VIEW_TOPICS_DAYS'	=> 'Display topics from previous days', 
-	'VIEW_TOPICS_KEY'	=> 'Display topics ordering by', 
-	'VIEW_TOPICS_DIR'	=> 'Display topic order direction', 
-
-	'UCP_POST'			=> 'Posting Messages',
-	'DEFAULT_SMILE'		=> 'Enable smilies by default',
-	'DEFAULT_HTML'		=> 'Enable HTML by default',
-	'DEFAULT_BBCODE'	=> 'Enable BBCode by default',
-	'DEFAULT_ADD_SIG'	=> 'Attach my signature by default',
-	'DEFAULT_NOTIFY'	=> 'Notify me upon replies by default',
-
-	'PREFERENCES_UPDATED'	=> 'Your preferences have been updated.', 
-
-
-	'UCP_MESSAGING'		=> 'Messaging', 
-
-
-	'UCP_LISTS'			=> 'Buddy/Ignore',
-
-
 	'REGISTRATION'	=> 'Registration',
 	'COPPA_BIRTHDAY'	=> 'To continue with the registration procedure please tell us when you were born.', 
 	'UCP_COPPA_BEFORE'	=> 'Before %s', 
@@ -880,14 +845,6 @@ $lang += array(
 
 
 	'PASSWORD_MISMATCH' => 'The passwords you entered did not match',
-	'Current_password_mismatch' => 'The current password you supplied does not match that stored in the database',
-	'Password_long' => 'Your password must be no more than 32 characters',
-	'Username_taken' => 'Sorry but this username has already been taken',
-	'Username_invalid' => 'Sorry but this username contains an invalid character such as \'',
-	'Username_disallowed' => 'Sorry but this username has been disallowed',
-	'Email_taken' => 'Sorry but that email address is already registered to a user',
-	'Email_banned' => 'Sorry but this email address has been banned',
-	'Email_invalid' => 'Sorry but this email address is invalid',
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.', 
 	'TOO_MANY_REGISTERS'	=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
 
@@ -910,7 +867,71 @@ $lang += array(
 	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
 );
 
-// usercp_messaging
+// ucp_prefs
+$lang += array(
+	'UCP_PREFS'	=> 'Preferences',
+
+	'UCP_PERSONAL'		=> 'Personal Settings', 
+	'HIDE_ONLINE'		=> 'Hide my online status',
+	'NOTIFY_ON_PM'		=> 'Email me on new private messages',
+	'POPUP_ON_PM'		=> 'Pop up window on new private message',
+	'SHOW_EMAIL'		=> 'Users can contact me by email',
+	'ADMIN_EMAIL'		=> 'Administrators can email me information',
+	'BOARD_STYLE'		=> 'My board style',
+	'BOARD_LANGUAGE'	=> 'My language', 
+	'BOARD_TIMEZONE'	=> 'My timezone', 
+	'BOARD_DST'			=> 'Daylight Saving Time is in effect', 
+	'BOARD_DATE_FORMAT'			=> 'My date format',
+	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function', 
+
+	'UCP_VIEW'			=> 'Viewing Posts', 
+	'VIEW_IMAGES'		=> 'Display Images within posts', 
+	'VIEW_FLASH'		=> 'Display Flash animations', 
+	'VIEW_SMILIES'		=> 'Display Smileys as images', 
+	'VIEW_SIGS'			=> 'Display Signatures', 
+	'VIEW_AVATARS'		=> 'Display Avatars', 
+	'DISABLE_CENSORS'	=> 'Enable Word censoring', 
+	'MINIMUM_KARMA'		=> 'Minimum User Karma', 
+	'MINIMUM_KARMA_EXPLAIN'=> 'Posts by users with Karma less than this will be ignored.', 
+	'VIEW_TOPICS_DAYS'	=> 'Display topics from previous days', 
+	'VIEW_TOPICS_KEY'	=> 'Display topics ordering by', 
+	'VIEW_TOPICS_DIR'	=> 'Display topic order direction', 
+
+	'UCP_POST'			=> 'Posting Messages',
+	'DEFAULT_SMILE'		=> 'Enable smilies by default',
+	'DEFAULT_HTML'		=> 'Enable HTML by default',
+	'DEFAULT_BBCODE'	=> 'Enable BBCode by default',
+	'DEFAULT_ADD_SIG'	=> 'Attach my signature by default',
+	'DEFAULT_NOTIFY'	=> 'Notify me upon replies by default',
+
+	'PREFS_UPDATED'	=> 'Your preferences have been updated.', 
+);
+
+// ucp_zebra
+$lang += array(
+	'UCP_ZEBRA'		=> 'Friends and Foes', 
+	'UCP_FRIENDS'	=> 'Friends', 
+	'UCP_FOES'		=> 'Foes', 
+
+	'FRIENDS_EXPLAIN'		=> 'Friends enable you quick access to members you communicate with frequently. If the template has relevant support any posts made by a friend may be highlighted.', 
+	'YOUR_FRIENDS'			=> 'Your friends', 
+	'YOUR_FRIENDS_EXPLAIN'	=> 'To remove usernames select them and click submit', 
+	'ADD_FRIENDS'			=> 'Add new friends', 
+	'ADD_FRIENDS_EXPLAIN'	=> 'You may enter several usernames each on a different line', 
+	'NO_FRIENDS'			=> 'No friends currently defined', 
+
+	'FOES_EXPLAIN'		=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible and personal messages will not be permitted. Please note that you cannot ignore moderators or administrators.', 
+	'YOUR_FOES'			=> 'Your foes', 
+	'YOUR_FOES_EXPLAIN'	=> 'To remove usernames select them and click submit', 
+	'ADD_FOES'			=> 'Add new foes', 
+	'ADD_FOES_EXPLAIN'	=> 'You may enter several usernames each on a different line', 
+	'NO_FOES'		=> 'No foes currently defined', 
+
+	'FRIENDS_UPDATED'	=> 'Your friends list has been updated successfully', 
+	'FOES_UPDATED'		=> 'Your foes list has been updated successfully', 
+);
+
+// ucp_pm
 $lang += array(
 	'Private_Messaging' => 'Private Messaging',
 	'Unread_message' => 'Unread message',

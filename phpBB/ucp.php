@@ -47,99 +47,186 @@ include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
 // ---------
 // FUNCTIONS
 //
-
-// Handles manipulation of user data. Primary used in registration
-// and user profile manipulation
-class ucp extends user
+class module
 {
-	var $modules = array();
-	var $error = array();
+	var $id = 0;
+	var $type;
+	var $name;
+	var $mode;
 
-	// Loads a given module (if it isn't already available), instantiates
-	// a new object, and where appropriate calls the modules init method
-	function load_module($module_name)
+	// Private methods, should not be overwritten
+	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		if (!class_exists('ucp_' . $module_name))
+		global $template, $auth, $db, $user;
+
+		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
+			FROM ' . MODULES_TABLE . "
+			WHERE module_type = '{$module_type}'
+				AND module_enabled = 1
+			ORDER BY module_order ASC";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
 		{
-			global $phpbb_root_path, $phpEx;
-
-			require_once($phpbb_root_path . 'includes/ucp/ucp_' . $module_name . '.'.$phpEx);
-			eval('$this->module = new ucp_' . $module_name . '();');
-
-			if (method_exists($this->module, 'init'))
+			// Authorisation is required for the basic module
+			if ($row['module_acl'])
 			{
-				$this->module->init();
-			}
-		}
-	}
-
-	// This is replaced by the loaded module
-	function main($module_id = false)
-	{
-		return false;
-	}
-
-	// This generates the block template variable for outputting the list
-	// of submodules, should be called with an associative array of modules
-	// in the form 'LANG_STRING' => 'LINK'
-	function menu(&$id, &$module_ary, &$selected_module)
-	{
-		global $template, $user, $phpEx, $SID, $s_modules;
-
-		foreach ($s_modules as $module_id => $section_data)
-		{
-			$template->assign_block_vars('ucp_section', array(
-				'L_TITLE'	=> $section_data['title'],
-
-				'S_SELECTED'=> $section_data['selected'], 
-
-				'U_TITLE'	=> $section_data['url'])
-			);
-
-			if ($module_id == $id)
-			{
-				foreach ($module_ary as $section_title => $module_link)
+				$is_auth = FALSE;
+				foreach (explode(',', $row['module_acl']) as $auth_option)
 				{
-					$template->assign_block_vars('ucp_section.ucp_subsection', array(
-						'L_TITLE'	=> $user->lang['UCP_' . $section_title],
+					if ($auth->acl_get($auth_option))
+					{
+						$is_auth = TRUE;
+						break;
+					}
+				}
 
-						'S_SELECTED'=> ($section_title == strtoupper($selected_module)) ? true : false, 
-
-						'U_TITLE'	=> "ucp.$phpEx$SID&amp;$module_link")
-					);
+				// The user is not authorised to use this module, skip it
+				if (!$is_auth)
+				{
+					continue;
 				}
 			}
+
+			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
+
+			// Get the localised lang string if available, or make up our own otherwise
+			$template->assign_block_vars($module_type . '_section', array(
+				'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
+				'S_SELECTED'	=> $selected, 
+				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
+			);
+
+			if ($selected)
+			{
+				$module_id = $row['module_id'];
+				$module_name = $row['module_filename'];
+
+				if ($row['module_subs'])
+				{
+					$j = 0;
+					$submodules_ary = explode("\n", $row['module_subs']);
+					foreach ($submodules_ary as $submodule)
+					{
+						$submodule = explode(',', trim($submodule));
+						$submodule_title = array_shift($submodule);
+
+						$is_auth = true;
+						foreach ($submodule as $auth_option)
+						{
+							if (!$auth->acl_get($auth_option))
+							{
+								$is_auth = false;
+							}
+						}
+
+						if (!$is_auth)
+						{
+							continue;
+						}
+
+						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
+
+						// Get the localised lang string if available, or make up our own otherwise
+						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
+							'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
+							'S_SELECTED'	=> $selected, 
+							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
+						));
+
+						if ($selected)
+						{
+							$this->mode = $submodule_title;
+						}
+
+						$j++;
+					}
+				}
+			}
+
+			$i++;
+		}
+		$db->sql_freeresult($result);
+
+		if (!$module_id)
+		{
+			trigger_error('MODULE_NOT_EXIST');
 		}
 
-		foreach ($module_ary as $section_title => $module_link)
+		$this->type = $module_type;
+		$this->id = $module_id;
+		$this->name = $module_name;
+	}
+
+	function load($type = false, $name = false, $mode = false, $run = true)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		if ($type)
 		{
-			$template->assign_block_vars('ucp_subsection', array(
-				'L_TITLE'	=> $user->lang['UCP_' . $section_title],
+			$this->type = $type;
+		}
 
-				'S_SELECTED'=> ($section_title == strtoupper($selected_module)) ? true : false, 
+		if ($name)
+		{
+			$this->name = $name;
+		}
 
-				'U_TITLE'	=> "ucp.$phpEx$SID&amp;$module_link")
-			);
+		if (!class_exists($this->type . '_' . $this->name))
+		{
+			require_once($phpbb_root_path . "includes/{$this->type}/{$this->type}_{$this->name}.$phpEx");
+
+			if ($run)
+			{
+				eval("\$this->module = new {$this->type}_{$this->name}(\$this->id, \$this->mode);");
+				if (method_exists($this->module, 'init'))
+				{
+					$this->module->init();
+				}
+			}
 		}
 	}
 
 	// Displays the appropriate template with the given title
-	function display(&$page_title, $tpl_name)
+	function display($page_title, $tpl_name)
 	{
-		global $template, $phpEx;
+		global $template;
 
 		page_header($page_title);
 
 		$template->set_filenames(array(
 			'body' => $tpl_name)
 		);
-		make_jumpbox('viewforum.'.$phpEx);
 
 		page_footer();
 	}
 
-	// Normalises supplied data dependant on required type/length, errors
-	// on incorrect data
+
+	// Public methods to be overwritten by modules
+	function module()
+	{
+		// Module name
+		// Module filename
+		// Module description
+		// Module version
+		// Module compatibility
+		return false;
+	}
+
+	function init()
+	{
+		return false;
+	}
+
+	function install()
+	{
+		return false;
+	}
+
+	function uninstall()
+	{
+		return false;
+	}
 }
 //
 // FUNCTIONS
@@ -151,26 +238,23 @@ $user->start();
 $auth->acl($user->data);
 $user->setup();
 
+$ucp = new module();
+
 // Basic parameter data
-$mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$module = (!empty($_REQUEST['i'])) ? intval($_REQUEST['i']) : 1;
-
-
-// Instantiate a new ucp object
-$ucp = new ucp();
-
+$mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : false;
+$module = (!empty($_REQUEST['i'])) ? intval($_REQUEST['i']) : false;
 
 // Basic "global" modes
 switch ($mode)
 {
 	case 'activate':
-		$ucp->load_module('activate');
-		$ucp->module->main();
+		$ucp->load('ucp', 'activate');
+		$ucp->module->ucp_activate();
 		break;
 
 	case 'remind':
-		$ucp->load_module('remind');
-		$ucp->module->main();
+		$ucp->load('ucp', 'remind');
+		$ucp->module->ucp_remind();
 		break;
 
 	case 'register':
@@ -179,13 +263,13 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		$ucp->load_module('register');
-		$ucp->module->main();
+		$ucp->load('ucp', 'register');
+		$ucp->module->ucp_register();
 		break;
 
 	case 'confirm':
-		$ucp->load_module('confirm');
-		$ucp->module->main();
+		$ucp->load('ucp', 'confirm');
+		$ucp->module->ucp_confirm();
 		break;
 
 	case 'login':
@@ -222,39 +306,34 @@ $censors = array();
 obtain_word_list($censors);
 
 
-// Grab the other enabled UCP modules
-$sql = 'SELECT module_id, module_title, module_filename 
-	FROM ' . UCP_MODULES_TABLE . ' 
-	ORDER BY module_order ASC';
+// Output listing of friends online
+$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_allow_viewonline) AS viewonline 
+	FROM ((' . ZEBRA_TABLE . ' z 
+	LEFT JOIN ' . SESSIONS_TABLE . ' s ON s.session_user_id = z.zebra_id), ' . USERS_TABLE . ' u)
+	WHERE z.user_id = ' . $user->data['user_id'] . ' 
+		AND z.friend = 1 
+		AND u.user_id = z.zebra_id  
+	GROUP BY z.zebra_id';
 $result = $db->sql_query($sql);
 
-$s_modules = array();
+$update_time = $config['load_online_time'] * 60;
 while ($row = $db->sql_fetchrow($result))
 {
-	$template->assign_block_vars('ucp_sections', array(
-		'SECTION'	=> $user->lang['UCP_' . $row['module_title']], 
+	$which = (time() - $update_time < $row['online_time']) ? 'online' : 'offline';
 
-		'U_SECTION'	=> "ucp.$phpEx$SID&amp;i=" . $row['module_id'],
+	$template->assign_block_vars("friends_{$which}", array(
+		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
 
-		'S_IS_TAB'	=> ($row['module_id'] == $module) ? true : false)
+		'USERNAME'	=> $row['username'])
 	);
-
-	$s_modules[$row['module_id']]['title'] = $user->lang['UCP_' . $row['module_title']];
-	$s_modules[$row['module_id']]['url'] = "ucp.$phpEx$SID&amp;i=" . $row['module_id'];
-	$s_modules[$row['module_id']]['selected'] = ($row['module_id'] == $module) ? true : false;
-
-	if ($row['module_id'] == $module)
-	{
-		$selected_module = $row['module_filename'];
-		$selected_id = $row['module_id'];
-	}
 }
 $db->sql_freeresult($result);
 
-if ($selected_module)
-{
-	$ucp->load_module($selected_module);
-	$ucp->module->main($selected_id);
-}
+
+// Instantiate module system and generate list of available modules
+$ucp->create('ucp', "ucp.$phpEx$SID", $module, $mode);
+
+// Load and execute the relevant module
+$ucp->load();
 
 ?>

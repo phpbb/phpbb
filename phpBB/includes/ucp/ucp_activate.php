@@ -11,7 +11,7 @@
 // 
 // -------------------------------------------------------------
  
-class ucp_activate extends ucp
+class ucp_activate extends module 
 {
 	function main($module_id)
 	{

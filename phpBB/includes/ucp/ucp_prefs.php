@@ -11,25 +11,16 @@
 // 
 // -------------------------------------------------------------
 
-class ucp_prefs extends ucp
+class ucp_prefs extends module 
 {
-	function main($id)
+	function ucp_prefs($id, $mode)
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : 'personal';
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
 
-		// Setup internal subsection display
-		$submodules['PERSONAL']	= "i=$id&amp;mode=personal";
-		$submodules['VIEW']		= "i=$id&amp;mode=view";
-		$submodules['POST']		= "i=$id&amp;mode=post";
-
-		$this->menu($id, $submodules, $submode);
-		unset($submodules);
-
-		switch($submode)
+		switch($mode)
 		{
 			case 'personal':
 
@@ -84,8 +75,8 @@ class ucp_prefs extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -191,8 +182,8 @@ class ucp_prefs extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -294,8 +285,8 @@ class ucp_prefs extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -334,11 +325,11 @@ class ucp_prefs extends ucp
 		}
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($submode)],
+			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
 
-			'S_DISPLAY_' . strtoupper($submode)	=> true, 
+			'S_DISPLAY_' . strtoupper($mode)	=> true, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode")
+			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
 		$this->display($user->lang['UCP_PROFILE'], 'ucp_prefs.html');

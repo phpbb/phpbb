@@ -11,27 +11,18 @@
 // 
 // -------------------------------------------------------------
 
-class ucp_profile extends ucp
+class ucp_profile extends module
 {
-	function main($id)
+	function ucp_profile($id, $mode)
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submode = (isset($_GET['mode'])) ? htmlspecialchars($_GET['mode']) : 'reg_details';
-		$preview = (isset($_POST['preview'])) ? true : false;
-		$submit	= (isset($_POST['submit'])) ? true : false;
-		$delete = (isset($_POST['delete'])) ? true : false;
+		$preview = (!empty($_POST['preview'])) ? true : false;
+		$submit	= (!empty($_POST['submit'])) ? true : false;
+		$delete = (!empty($_POST['delete'])) ? true : false;
 		$error = $data = array();
 
-		$submodules['REG_DETAILS']	= "i=$id&amp;mode=reg_details";
-		$submodules['PROFILE_INFO']	= "i=$id&amp;mode=profile_info";
-		$submodules['SIGNATURE']	= "i=$id&amp;mode=signature";       
-		$submodules['AVATAR']		= "i=$id&amp;mode=avatar";                               
-
-		$this->menu($id, $submodules, $submode);
-		unset($submodules);
-
-		switch ($submode)
+		switch ($mode)
 		{
 			case 'reg_details':
 
@@ -100,8 +91,8 @@ class ucp_profile extends ucp
 							update_username($user->data['username'], $username);
 						}
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -195,8 +186,8 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -294,7 +285,7 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 				}
@@ -437,8 +428,8 @@ class ucp_profile extends ucp
 							}
 						}
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
 					}
 
@@ -489,11 +480,11 @@ class ucp_profile extends ucp
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($submode)],
+			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
 
-			'S_DISPLAY_' . strtoupper($submode)	=> true, 
+			'S_DISPLAY_' . strtoupper($mode)	=> true, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode")
+			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
 		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile.html');

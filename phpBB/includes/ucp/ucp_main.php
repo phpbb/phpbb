@@ -11,23 +11,13 @@
 // 
 // -------------------------------------------------------------
 
-class ucp_main extends ucp
+class ucp_main extends module  
 {
-	function main($id)
+	function ucp_main($id, $mode)
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submode = ($_REQUEST['mode']) ? htmlspecialchars($_REQUEST['mode']) : 'front';
-
-		// Setup internal subsection display
-		$submodules['FRONT']	= "i=$id&amp;mode=front";
-		$submodules['WATCHED']	= "i=$id&amp;mode=watched";
-		$submodules['DRAFTS']	= "i=$id&amp;mode=drafts";
-
-		$this->menu($id, $submodules, $submode);
-		unset($submodules);
-
-		switch ($submode)
+		switch ($mode)
 		{
 			case 'front':
 
@@ -155,23 +145,11 @@ class ucp_main extends ucp
 				}
 				$db->sql_freeresult($result);
 
-				//TODO
-				$sql_and = '';
-				$sql = 'SELECT COUNT(post_id) AS total_posts
-					FROM ' . POSTS_TABLE . '
-					WHERE post_time > ' . $user->data['user_lastvisit'] . "
-						$sql_and";
-				$result = $db->sql_query($sql);
-				
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$user_id = $user->data['user_id'];
 
 				// Grab all the relevant data
-				$sql = "SELECT COUNT(p.post_id) AS num_posts   
-					FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
-					WHERE p.poster_id = $user_id 
+				$sql = 'SELECT COUNT(p.post_id) AS num_posts   
+					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
 						AND f.forum_id = p.forum_id 
 						$post_count_sql";
 				$result = $db->sql_query($sql);
@@ -179,9 +157,9 @@ class ucp_main extends ucp
 				$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
 				$db->sql_freeresult($result);
 
-				$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-					FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f 
-					WHERE p.poster_id = $user_id 
+				$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
 						AND f.forum_id = p.forum_id 
 						$post_count_sql
 					GROUP BY f.forum_id, f.forum_name  
@@ -191,9 +169,9 @@ class ucp_main extends ucp
 				$active_f_row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$sql = "SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-					FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
-					WHERE p.poster_id = $user_id 
+				$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
 						AND t.topic_id = p.topic_id  
 						AND f.forum_id = t.forum_id 
 						$post_count_sql
@@ -205,8 +183,8 @@ class ucp_main extends ucp
 				$db->sql_freeresult($result);
 
 				// Do the relevant calculations 
-				$memberdays = max(1, round((time() - $row['user_regdate']) / 86400));
-				$posts_per_day = $row['user_posts'] / $memberdays;
+				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
+				$posts_per_day = $user->data['user_posts'] / $memberdays;
 				$percentage = ($config['num_posts']) ? min(100, ($num_real_posts / $config['num_posts']) * 100) : 0;
 
 				$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
@@ -215,7 +193,7 @@ class ucp_main extends ucp
 					$active_f_name = $active_f_row['forum_name'];
 					$active_f_id = $active_f_row['forum_id'];
 					$active_f_count = $active_f_row['num_posts'];
-					$active_f_pct = ($active_f_count / $row['user_posts']) * 100;
+					$active_f_pct = ($active_f_count / $user->data['user_posts']) * 100;
 				}
 				unset($active_f_row);
 
@@ -225,19 +203,18 @@ class ucp_main extends ucp
 					$active_t_name = $active_t_row['topic_title'];
 					$active_t_id = $active_t_row['topic_id'];
 					$active_t_count = $active_t_row['num_posts'];
-					$active_t_pct = ($active_t_count / $row['user_posts']) * 100;
+					$active_t_pct = ($active_t_count / $user->data['user_posts']) * 100;
 				}
 				unset($active_t_row);
 
-//				$template->assign_vars(show_profile($row));
 
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
 					'RANK_TITLE'		=> $rank_title, 
-					'KARMA'				=> (!empty($row['user_karma'])) ? $user->data['user_karma'] : 0, 
+					'KARMA'				=> $user->lang['KARMA'][$user->data['user_karma']], 
 					'JOINED'			=> $user->format_date($user->data['user_regdate'], $user->lang['DATE_FORMAT']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
-					'POSTS'				=> ($data['user_posts']) ? $data['user_posts'] : 0,
+					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
 					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
 					'ACTIVE_FORUM'		=> $active_f_name, 
@@ -250,15 +227,17 @@ class ucp_main extends ucp
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
+					'KARMA_IMG'		=> '<img src="images/karma' . $user->data['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user->data['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user->data['user_karma']] . '" />', 
+
 					'S_GROUP_OPTIONS'	=> $group_options, 
 
+					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($user->data['username']) . "&amp;show_results=posts" : '',  
 					'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 					'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 				);
-
 				break;
 
-			case 'watched':
+			case 'subscribed':
 
 				if ($_POST['unwatch'])
 				{
@@ -540,9 +519,9 @@ class ucp_main extends ucp
 								AND user_id = " .$user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 						trigger_error($message);
 					}
 				}
@@ -567,9 +546,9 @@ class ucp_main extends ucp
 								AND user_id = " . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 						trigger_error($message);
 					}
 					else
@@ -654,7 +633,7 @@ class ucp_main extends ucp
 							'POST_SUBJECT' => ($submit) ? $post_subject : $draft['post_subject'],
 
 							'U_VIEW_TOPIC' => $view_topic_url,
-							'U_VIEW_EDIT' => "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode&amp;edit=" . $draft['draft_id'],
+							'U_VIEW_EDIT' => "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
 
 							'S_ROW_COUNT' => $row_count++,
 							'S_HIDDEN_FIELDS' => $s_hidden_fields
@@ -676,15 +655,34 @@ class ucp_main extends ucp
 
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($submode)],
+			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'				=> ($submode == 'watched' || ($submode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
-			'S_DISPLAY_' . strtoupper($submode)	=> true, 
+			'S_DISPLAY_MARK_ALL'				=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode")
+			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_MAIN'], 'ucp_main.html');
+		$this->display($user->lang['UCP_MAIN'], 'ucp_main_' . $mode . '.html');
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
+	}
+
+	function module()
+	{
+		$details = array(
+			'name'			=> 'UCP - Main',
+			'description'	=> 'Front end for User Control Panel', 
+			'filename'		=> 'main',
+			'version'		=> '1.0.0', 
+			'phpbbversion'	=> '2.2.0'
+		);
+		return $details;
 	}
 }
 

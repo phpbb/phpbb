@@ -162,6 +162,7 @@ define('ICONS_TABLE', $table_prefix.'icons');
 define('LANG_TABLE', $table_prefix.'lang');
 define('LOG_TABLE', $table_prefix.'log');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
+define('MODULES_TABLE', $table_prefix . 'modules');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
 define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
@@ -188,6 +189,7 @@ define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
 define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
+define('ZEBRA_TABLE', $table_prefix.'zebra');
 
 // Set PHP error handler to ours
 set_error_handler('msg_handler');

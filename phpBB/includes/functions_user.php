@@ -14,29 +14,6 @@
 //
 // User functions
 //
-function request_var($var_name, $default)
-{
-	if (!isset($_REQUEST[$var_name]))
-	{
-		return $default;
-	}
-	else
-	{
-		$var = $_REQUEST[$var_name];
-		$type = gettype($default);
-		settype($var, $type);
-
-		// Prevent use of &nbsp;, excess spaces or other html entity forms in profile strings,
-		// not generally applicable elsewhere
-		if ($type == 'string')
-		{
-			$var = trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), strtr($var, array_flip(get_html_translation_table(HTML_ENTITIES))))));
-		}
-
-		return $var;
-	}
-}
-
 function validate_data($data, $val_ary)
 {
 	$error = array();
@@ -460,14 +437,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 		$user_id_ary = array($user_id_ary);
 	}
 
-	$sql_in = array();
-	foreach ($$which_ary as $v)
-	{
-		if ($v = trim($v))
-		{
-			$sql_in[] = ($which_ary == 'user_id_ary') ? $v : "'$v'";
-		}
-	}
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
 	unset($$which_ary);
 
 	// Grab the user id/username records
@@ -539,6 +509,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 				break;
 
 			case 'mssql':
+			case 'mssql-odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
 					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
