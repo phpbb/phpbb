@@ -216,9 +216,9 @@ switch($mode)
 		{
 			while(list($key, $val) = each($theme_rowset[$i]))
 			{
-				if(!intval($key) && $key != "0")
+				if(!intval($key) && $key != "0" && $key != "themes_id")
 				{
-					$theme_data .= '$' . $template_name . "[$i][$key] = \"$val\";\n";
+					$theme_data .= '$' . $template_name . "[$i]['$key'] = \"$val\";\n";
 				}
 			}
 			$theme_data .= "\n";
