@@ -124,6 +124,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		{
 			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
 		}
+		$db->sql_freeresult($result);
 
 		$sql_fetchrow = ( $forum_id != AUTH_LIST_ALL ) ? 'sql_fetchrow' : 'sql_fetchrowset';
 
@@ -156,6 +157,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		{
 			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
 		}
+		$db->sql_freeresult($result);
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{

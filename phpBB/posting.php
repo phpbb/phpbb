@@ -221,6 +221,7 @@ switch ( $mode )
 if ( $result = $db->sql_query($sql) )
 {
 	$post_info = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
 	$forum_id = $post_info['forum_id'];
 	$forum_name = $post_info['forum_name'];
@@ -259,6 +260,7 @@ if ( $result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain vote data for this topic', '', __LINE__, __FILE__, $sql);
 			}
+			$db->sql_freeresult($result);
 
 			$poll_options = array();
 			$poll_results_sum = 0;
@@ -397,6 +399,7 @@ else
 		}
 
 		$notify_user = ( $db->sql_fetchrow($result) ) ? TRUE : $userdata['user_notify'];
+		$db->sql_freeresult($result);
 	}
 	else
 	{
@@ -471,12 +474,12 @@ else if ( $mode == 'vote' )
 				FROM " . VOTE_USERS_TABLE . "  
 				WHERE vote_id = $vote_id 
 					AND vote_user_id = " . $userdata['user_id'];
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !($result2 = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain user vote data for this topic', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( !($row = $db->sql_fetchrow($result)) )
+			if ( !($row = $db->sql_fetchrow($result2)) )
 			{
 				$sql = "UPDATE " . VOTE_RESULTS_TABLE . " 
 					SET vote_result = vote_result + 1 
@@ -500,11 +503,13 @@ else if ( $mode == 'vote' )
 			{
 				$message = $lang['Already_voted'];
 			}
+			$db->sql_freeresult($result2);
 		}
 		else
 		{
 			$message = $lang['No_vote_option'];
 		}
+		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')

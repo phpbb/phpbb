@@ -51,6 +51,7 @@ function topic_review($topic_id, $is_inline_review)
 		{
 			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 		}
+		$db->sql_freeresult($result);
 
 		$forum_id = $forum_row['forum_id'];
 		$topic_title = $forum_row['topic_title'];
@@ -207,6 +208,7 @@ function topic_review($topic_id, $is_inline_review)
 	{
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__, $sql);
 	}
+	$db->sql_freeresult($result);
 
 	$template->assign_vars(array(
 		'L_AUTHOR' => $lang['Author'],
