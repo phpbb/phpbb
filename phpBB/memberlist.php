@@ -89,9 +89,9 @@ else
 {
 	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 }
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar 
 	FROM " . USERS_TABLE . " 
-	WHERE user_id <> ".ANONYMOUS." 
+	WHERE user_id <> " . ANONYMOUS . " 
 	ORDER BY $order_by";
 
 //
@@ -141,8 +141,6 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 	$template->assign_vars(array(
-		"PM_IMG" => $images['privmsg'], 
-
 		"L_SELECT_SORT_METHOD" => $lang['Select_sort_method'], 
 		"L_EMAIL" => $lang['Email'],
 		"L_WEBSITE" => $lang['Website'],
@@ -150,7 +148,10 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		"L_ORDER" => $lang['Order'], 
 		"L_SORT" => $lang['Sort'], 
 		"L_SUBMIT" => $lang['Sort'], 
-		"L_SEND_PRIV_MSG" => $lang['Private_messaging'], 
+		"L_AIM" => $lang['AIM'], 
+		"L_YIM" => $lang['YIM'], 
+		"L_MSNM" => $lang['MSNM'], 
+		"L_ICQ" => $lang['ICQ'], 
 
 		"S_MODE_SELECT" => $select_sort_mode,
 		"S_ORDER_SELECT" => $select_sort_order, 
@@ -159,36 +160,76 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 											
 	$members = $db->sql_fetchrowset($result);
 
-	for($x = 0; $x < $selected_members; $x++)
+	for($i = 0; $i < $selected_members; $i++)
 	{
-		unset($email);
+		$username = stripslashes($members[$i]['username']);
+		$user_id = $members[$i]['user_id'];
 
-		$username = stripslashes($members[$x]['username']);
-		$user_id = $members[$x]['user_id'];
-		$posts = $members[$x]['user_posts'];
-		$from = stripslashes($members[$x]['user_from']);
-		$joined = create_date($board_config['default_dateformat'], $members[$x]['user_regdate'], $board_config['default_timezone']);
+		$from = stripslashes($members[$i]['user_from']);
+
+		$joined = create_date($board_config['default_dateformat'], $members[$i]['user_regdate'], $board_config['default_timezone']);
+
+		$posts = ($members[$i]['user_posts']) ? $members[$i]['user_posts'] : 0;
 		
-		if($members[$x]['user_viewemail'])
+		if($members[$i]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS)
 		{
-			$email = str_replace("@", " at ", $members[$x]['user_email']);
-			$email = "<a href=\"mailto:$email\">$email</a>";
+			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\">";
 		}
 		else
 		{
-			$email = "&nbsp;";
+			$poster_avatar = "";
 		}
-		
-		if($members[$x]['user_website'] != "")
+
+		if( !empty($members[$i]['user_viewemail']) )
 		{
-			$website = "<a href=\"" . stripslashes($members[$x]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
+			$altered_email = str_replace("@", " at ", $members[$i]['user_email']);
+			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
 		}
 		else
 		{
-			$website = "&nbsp;";
+			$email_img = "&nbsp;";
 		}
+
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['privmsg'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
 		
-		if(!($x % 2))
+		if($members[$i]['user_website'] != "")
+		{
+			if(!eregi("^http\:\/\/", $members[$i]['user_website']))
+			{
+				$website_url = "http://" . stripslashes($members[$i]['user_website']);
+			}
+			else
+			{
+				$website_url = stripslashes($members[$i]['user_website']);
+			}
+			$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
+		}
+		else
+		{
+			$www_img = "&nbsp;";
+		}
+
+		if($members[$i]['user_icq'])
+		{
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+		}
+		else
+		{
+			$icq_status_img = "&nbsp;";
+			$icq_add_img = "&nbsp;";
+		}
+
+		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
+
+		if(!($i % 2))
 		{
 			$row_color = "#" . $theme['td_color1'];
 		}
@@ -196,17 +237,24 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		{
 			$row_color = "#" . $theme['td_color2'];
 		}
+
 		$template->assign_block_vars("memberrow", array(
 			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $user_id), 
-			"U_PRIVATE_MESSAGE" => append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$x]['user_id']), 
 			
 			"ROW_COLOR" => $row_color,
 			"USERNAME" => $username,
 			"FROM" => $from,
 			"JOINED" => $joined,
 			"POSTS" => $posts,
-			"EMAIL" => $email,
-			"WEBSITE" => $website)
+			"EMAIL_IMG" => $email_img,
+			"PM_IMG" => $pm_img,
+			"WWW_IMG" => $www_img,
+			"ICQ_STATUS_IMG" => $icq_status_img, 
+			"ICQ_ADD_IMG" => $icq_add_img, 
+			"AIM_IMG" => $aim_img, 
+			"YIM_IMG" => $yim_img, 
+			"MSN_IMG" => $msn_img, 
+			"SEARCH_IMG" => $search)
 		);
 	}
 	

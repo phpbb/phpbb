@@ -11,21 +11,21 @@
 			<tr>
 				<th>&nbsp;</th>
 				<th><b>{L_USERNAME}</b></td>
+				<th><b>{L_EMAIL}</b></td>
 				<th><b>{L_FROM}</b></td>
 				<th><b>{L_JOINED}</b></td>
 				<th><b>{L_POSTS}</b></td>
-				<th><b>{L_EMAIL}</b></td>
 				<th><b>{L_WEBSITE}</b></td>
 			</tr>
 			<!-- BEGIN memberrow -->
 			<tr>
-				<td bgcolor="{memberrow.ROW_COLOR}" align="center">&nbsp;<a href="{memberrow.U_PRIVATE_MESSAGE}"><img src="{PM_IMG}" alt="{L_SEND_PRIV_MSG}" border="0"></a>&nbsp;</td>
+				<td width="8%" bgcolor="{memberrow.ROW_COLOR}" align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
 				<td bgcolor="{memberrow.ROW_COLOR}" align="center"><span class="gen"><a href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></span></td>
+				<td width="8%" bgcolor="{memberrow.ROW_COLOR}" align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
 				<td bgcolor="{memberrow.ROW_COLOR}" align="center" valign="middle"><span class="gen">{memberrow.FROM}</span></td>
 				<td bgcolor="{memberrow.ROW_COLOR}" align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
 				<td bgcolor="{memberrow.ROW_COLOR}" align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
-				<td bgcolor="{memberrow.ROW_COLOR}" align="center" valign="middle"><span class="gensmall">{memberrow.EMAIL}</span></td>
-				<td bgcolor="{memberrow.ROW_COLOR}" align="center"><span class="gensmall">{memberrow.WEBSITE}</span></a></td>
+				<td width="8%" bgcolor="{memberrow.ROW_COLOR}" align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</a></td>
 			</tr>
 			<!-- END memberrow -->
 			<tr>
