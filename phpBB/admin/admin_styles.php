@@ -48,6 +48,9 @@ $no_page_header = (!empty($HTTP_POST_VARS['send_file']) || $cancel) ? TRUE : FAL
 
 require('./pagestart.' . $phpEx);
 
+$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
+$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
+
 if ($cancel)
 {
 	redirect('admin/' . append_sid("admin_styles.$phpEx", true));
