@@ -236,6 +236,13 @@ function checkForm()
 		 	</tr>
 		</table></td>
 	</tr>
+	<!-- IF S_INLINE_ATTACHMENT_OPTIONS -->
+	<tr>
+		<td class="row1"><b class="genmed">{L_ATTACHMENTS}:</b></td>
+		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_inline();" />
+		</td>
+	</tr>
+	<!-- ENDIF -->
 	<tr>
 		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}:</b><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
@@ -319,7 +326,7 @@ function checkForm()
 
 	<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td> 
+		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}:</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td> 
 		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
 	</tr>
 	<!-- ENDIF -->

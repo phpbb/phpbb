@@ -331,14 +331,15 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 }
 
 // Display Attachments
-function display_attachments($blockname, $attachment_data, &$update_count, $force_physical = false)
+function display_attachments($blockname, $attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $extensions, $template, $cache, $attachment_tpl;
 	global $config, $user, $phpbb_root_path, $phpEx, $SID, $censors;
 
 //	$starttime = explode(' ', microtime());
 //	$starttime = $starttime[1] + $starttime[0];
-	
+	$return_tpl = array();
+
 	$blocks = array(WM_CAT => 'WM_STREAM', RM_CAT => 'RM_STREAM', THUMB_CAT => 'THUMBNAIL', IMAGE_CAT => 'IMAGE');
 
 	if (!isset($attachment_tpl))
@@ -428,7 +429,7 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 			// Replace {L_*} lang strings
 			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
-			$template->assign_block_vars('postrow.attachment', array(
+			$template->assign_block_vars($blockname, array(
 				'SHOW_ATTACHMENT' => $tpl)
 			);
 		} 
@@ -549,12 +550,20 @@ function display_attachments($blockname, $attachment_data, &$update_count, $forc
 			// Replace {L_*} lang strings
 			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
-			$template->assign_block_vars($blockname, array(
-				'DISPLAY_ATTACHMENT' => $tpl)
-			);
+			if (!$return)
+			{
+				$template->assign_block_vars($blockname, array(
+					'DISPLAY_ATTACHMENT' => $tpl)
+				);
+			}
+			else
+			{
+				$return_tpl[] = $tpl;
+			}
 		}
 	}
 
+	return $return_tpl;
 //	$mtime = explode(' ', microtime());
 //	$totaltime = $mtime[0] + $mtime[1] - $starttime;
 }

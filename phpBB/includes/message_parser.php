@@ -165,6 +165,7 @@ class parse_message
 		$this->bbcodes = array(
 			'code'		=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
 			'quote'		=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
+			'attachment'=>	array('bbcode_id' => 12, 'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']$1[/b:' . $this->bbcode_uid . ']')),
 			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']$1[/i:' . $this->bbcode_uid . ']')),
 			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
@@ -198,6 +199,12 @@ class parse_message
 				'regexp'	=>	array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
+	}
+
+	function bbcode_attachment($stx, $in)
+	{
+		$out = '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . $in . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
+		return $out;
 	}
 
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
@@ -673,7 +680,8 @@ class parse_message
 
 	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
 	{
-		global $config, $_FILES, $_POST, $auth, $user;
+		global $config, $auth, $user;
+		global $_FILES, $_POST;
 
 		$error = array();
 
@@ -708,6 +716,8 @@ class parse_message
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+					$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
+					
 					$this->filename_data['filecomment'] = '';
 
 					// This Variable is set to false here, because Attachments are entered into the
@@ -750,7 +760,8 @@ class parse_message
 				}
 				
 				unset($this->attachment_data[$index]);
-				
+				$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "(\\1 == \$index) ? '' : ((\\1 > \$index) ? '[attachment=' . (\\1 - 1) . ']\\2[/attachment]' : '\\0')", $this->message);
+
 				// Reindex Array
 				$this->attachment_data = array_values($this->attachment_data);
 			}
@@ -789,6 +800,7 @@ class parse_message
 							);
 
 							$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+							$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 							$this->filename_data['filecomment'] = '';
 						}
 					}

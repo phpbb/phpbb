@@ -127,7 +127,7 @@ class bbcode
 			}
 			$bbcode_ids[] = $bbcode_id;
 
-			if ($bbcode_id > 11)
+			if ($bbcode_id > NUM_CORE_BBCODES)
 			{
 				$sql .= (($sql) ? ',' : '') . $bbcode_id;
 			}
@@ -253,6 +253,12 @@ class bbcode
 						));
 					}
 				break;
+				case 12:
+					$this->bbcode_cache[$bbcode_id] = array('preg' => array(
+						'#\[attachment=([0-9]+):$uid\]#'	=>	$this->bbcode_tpl('inline_attachment_open', $bbcode_id),
+						'#\[\/attachment:$uid\]#'	=>	$this->bbcode_tpl('inline_attachment_close', $bbcode_id)
+					));
+					break;
 				default:
 					if (isset($rowset[$bbcode_id]))
 					{

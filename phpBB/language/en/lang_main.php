@@ -518,6 +518,8 @@ $lang += array(
 
 	'VIEW_TOPIC_POST'	=> '1 Post',
 	'VIEW_TOPIC_POSTS'	=> '%d Posts',
+
+	'MISSING_INLINE_ATTACHMENT' => 'The Attachment <b>%s</b> is no longer available'
 );
 
 // posting
@@ -623,6 +625,7 @@ $lang += array(
 	'POSTED_ATTACHMENTS'=> 'Posted attachments',
 	'UPDATE_COMMENT'	=> 'Update comment',
 	'DELETE_FILE'		=> 'Delete File',
+	'PLACE_INLINE'		=> 'Place Inline',
 
 	'DISABLE_HTML'		=> 'Disable HTML',
 	'DISABLE_BBCODE'	=> 'Disable BBCode',

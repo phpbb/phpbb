@@ -9,12 +9,20 @@
 
 	<tr> 
 		<td class="row1"><b class="genmed">{L_FILENAME}</b></td> 
-	    <td class="row2"><input class="post" type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="{FILENAME}" /></td> 
+	    <td class="row2"><input class="post" type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="{FILENAME}" class="btnlite" /></td> 
 	</tr> 
 	<tr> 
 		<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
-	    <td class="row2"><textarea class="post" name="filecomment" rows="3" cols="35" wrap="virtual" size="40">{FILE_COMMENT}</textarea>&nbsp;
-		<input class="btnlite" type="submit" name="add_file" value="{L_ADD_FILE}" /></td> 
+		<td class="row2"><table border="0" cellspacing="0" cellpadding="2">
+			<tr>
+				<td><textarea class="post" name="filecomment" rows="3" cols="35" wrap="virtual" size=40>{FILE_COMMENT}</textarea>&nbsp;</td>
+				<td valign="top"><table border="0" cellspacing="4" cellpadding="0">
+					<tr>
+						<td><input class="btnlite" type="submit" style="width:150px" name="add_file" value="{L_ADD_FILE}" /></td>
+					</tr></table>
+				</td>
+			</tr></table>
+		</td>
 	</tr> 
 
 	<!-- IF S_HAS_ATTACHMENTS -->
@@ -23,15 +31,25 @@
 	</tr>
 
 		<!-- BEGIN attach_row -->
-		<tr> 
+		<tr>
 			<td class="row1"><b class="genmed">{L_FILENAME}</b></td>
 			<td class="row2"><a class="genmed" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILENAME}</a></td> 
 		</tr>
-   		<tr> 
+		<tr> 
 			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
-			<td class="row2"><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size=40>{attach_row.FILE_COMMENT}</textarea> &nbsp;
-			<input class="btnlite" type="submit" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /> &nbsp;
-			<input class="btnlite" type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
+			<td class="row2"><table border="0" cellspacing="0" cellpadding="2">
+				<tr>
+					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size=40>{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
+					<td valign="top"><table border="0" cellspacing="4" cellpadding="0">
+						<tr>
+							<td><input class="btnlite" type="submit" style="width:150px" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /></td>
+						</tr>
+						<tr>
+							<td><input class="btnlite" type="submit" style="width:150px" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
+						</tr></table>
+					</td>
+				</tr></table>
+			</td>
 		</tr>
 		{attach_row.S_HIDDEN}	
 		<!-- END attach_row -->

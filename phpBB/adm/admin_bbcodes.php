@@ -206,9 +206,9 @@ switch ($mode)
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 
-				if (empty($row['min_id']) || $row['min_id'] > 12)
+				if (empty($row['min_id']) || $row['min_id'] >= NUM_CORE_BBCODES)
 				{
-					$bbcode_id = 12;
+					$bbcode_id = NUM_CORE_BBCODES + 1;
 				}
 				else
 				{

@@ -197,7 +197,6 @@ if ($sql)
 		$db->sql_freeresult($result);
 	}
 	
-
 	if ($poster_id == ANONYMOUS || !$poster_id)
 	{
 		$username = (in_array($mode, array('quote', 'edit', 'delete'))) ? trim($post_username) : '';
@@ -561,6 +560,8 @@ if ($submit || $preview || $refresh)
 		$refresh = true;
 	}
 
+	// Parse Attachments - before checksum is calculated
+	$message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
@@ -571,8 +572,6 @@ if ($submit || $preview || $refresh)
 		// Parse message
 		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
 	}
-
-	$message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh);
 
 	if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('f_ignoreflood', $forum_id))
 	{
@@ -897,6 +896,19 @@ if ($enable_icons)
 
 		$s_topic_icons = true;
 	}
+}
+
+// Generate inline attachment select box
+if (sizeof($message_parser->attachment_data))
+{
+	$s_inline_attachment_options = '';
+	foreach ($message_parser->attachment_data as $i => $attachment)
+	{
+		
+		$s_inline_attachment_options .= '<option value="' . $i . '">' . $attachment['real_filename'] . '</option>';
+	}
+
+	$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
 }
 
 // Topic type selection ... only for first post in topic.
@@ -1900,7 +1912,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			WHERE post_id = ' . $data['post_id']);
 	}
 
-	// Update Poll Tables and Attachment Entries
+	// Update Poll Tables
 	if ($poll['poll_options'])
 	{
 		$cur_poll_options = array();
@@ -1950,7 +1962,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	if (count($attach_data) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
 	{
 		$space_taken = $files_added = 0;
-		foreach ($attach_data as $attach_row)
+
+		foreach ($attach_data as $pos => $attach_row)
 		{
 			if ($attach_row['attach_id'])
 			{

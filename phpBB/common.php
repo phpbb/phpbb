@@ -146,6 +146,10 @@ define('THUMB_CAT', 4); // Not used within the database, only while displaying p
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);
 
+// Number of core BBCodes
+define('NUM_CORE_BBCODES', 12);
+
+// Profile Field Types
 define('FIELD_INT', 1);
 define('FIELD_STRING', 2);
 define('FIELD_TEXT', 3);

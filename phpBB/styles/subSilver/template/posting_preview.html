@@ -31,12 +31,21 @@
 		<td class="row1"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td><span class="postbody">{PREVIEW_MESSAGE}</span>
-					<!-- IF S_HAS_ATTACHMENTS -->
+				<!-- IF S_HAS_ATTACHMENTS -->
+				<br clear="all" /><br />
+							
+				<table class="tablebg" width="100%" cellspacing="1">
+					<tr>
+						<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+					</tr>
 					<!-- BEGIN attachment -->
-						<br /><br /><hr />{attachment.DISPLAY_ATTACHMENT}
+					<tr>
+						<td class="row2">{attachment.DISPLAY_ATTACHMENT}</td>
+					</tr>
 					<!-- END attachment -->
-					<!-- ENDIF -->
-					<!-- IF PREVIEW_SIGNATURE --><span class="postbody"><br />_________________<br />{PREVIEW_SIGNATURE}</span><!-- ENDIF --></td>
+				</table>
+				<!-- ENDIF -->
+				<!-- IF PREVIEW_SIGNATURE --><span class="postbody"><br />_________________<br />{PREVIEW_SIGNATURE}</span><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>
