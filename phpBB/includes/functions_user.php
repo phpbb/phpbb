@@ -249,10 +249,20 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 			AND group_id = " . $group_id_ary[$group_name];
 	$db->sql_query($sql);
 
-	$sql_update = ($group_id == $group_id_ary[$group_name]) ? ", group_id = $new_group_id" : '';
-	$sql_update .= ($user_actkey) ? ", user_actkey = '$user_actkey'" : '';
-	$sql = 'UPDATE ' . USERS_TABLE . ' 
-		SET user_type = ' . (($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL) . "$sql_update 
+	$sql_ary = array(
+		'user_type'		=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL
+	);
+
+	if ($group_id == $group_id_ary[$group_name])
+	{
+		$sql_ary['group_id'] = $new_group_id;
+	}
+
+	if ($user_actkey !== false)
+	{
+		$sql_ary['user_actkey'] = $user_actkey;
+	}
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 		WHERE user_id = $user_id";
 	$db->sql_query($sql);
 

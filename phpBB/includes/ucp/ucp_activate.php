@@ -44,22 +44,28 @@ class ucp_activate extends module
 
 		$update_password = ($row['user_newpasswd']) ? true : false;
 
-		$sql_ary = array(
-			'user_type'		=> USER_NORMAL,
-			'user_actkey'	=> ''
-		);
-
 		if ($update_password)
 		{
-			$sql_ary += array(
+			$sql_ary = array(
+				'user_type'			=> USER_NORMAL,
+				'user_actkey'		=> '',
 				'user_password'		=> $row['user_newpasswd'],
 				'user_newpasswd'	=> ''
 			);
+		
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . $row['user_id'];
+			$result = $db->sql_query($sql);
 		}
 
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-			WHERE user_id = ' . $row['user_id'];
-		$result = $db->sql_query($sql);
+		// TODO: check for group membership after password update... active_flip there too
+		if (!$update_password)
+		{
+			// Now we need to demote the user from the inactive group and add him to the registered group
+
+			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			user_active_flip($row['user_id'], $row['user_type'], '', $row['username']);
+		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{

@@ -648,7 +648,7 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_where = '';
+		$sql_where = $form = $field = '';
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$form	= request_var('form', '');

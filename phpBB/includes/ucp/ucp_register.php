@@ -59,11 +59,11 @@ class ucp_register extends module
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=0",
-					'U_COPPA_YES'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=1",
+					'U_COPPA_NO'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register&amp;coppa=0",
+					'U_COPPA_YES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register&amp;coppa=1",
 
 					'S_SHOW_COPPA'		=> true,
-					'S_REGISTER_ACTION'	=> "ucp.$phpEx$SID&amp;mode=register")
+					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
 				);
 			}
 			else
@@ -72,28 +72,28 @@ class ucp_register extends module
 					'L_AGREEMENT'		=> $user->lang['UCP_AGREEMENT'],
 
 					'S_SHOW_COPPA'		=> false,
-					'S_REGISTER_ACTION'	=> "ucp.$phpEx$SID&amp;mode=register")
+					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
 				);
 			}
 
 			$this->display($user->lang['REGISTER'], 'ucp_agreement.html');
 		}
 
+		$var_ary = array(
+			'username'			=> (string) '',
+			'password_confirm'	=> (string) '',
+			'new_password'		=> (string) '',
+			'cur_password'		=> (string) '',
+			'email'				=> (string) '',
+			'email_confirm'		=> (string) '',
+			'confirm_code'		=> (string) '',
+			'lang'				=> (string) $config['default_lang'],
+			'tz'				=> (float) $config['board_timezone'],
+		);
+
 		// If we change the language inline, we do not want to display errors, but pre-fill already filled out values
 		if ($change_lang)
 		{
-			$var_ary = array(
-				'username'			=> (string) '',
-				'password_confirm'	=> (string) '',
-				'new_password'		=> (string) '',
-				'cur_password'		=> (string) '',
-				'email'				=> (string) '',
-				'email_confirm'		=> (string) '',
-				'confirm_code'		=> (string) '',
-				'lang'				=> (string) $config['default_lang'],
-				'tz'				=> (float) $config['board_timezone'],
-			);
-
 			foreach ($var_ary as $var => $default)
 			{
 				$$var = request_var($var, $default);
@@ -103,18 +103,6 @@ class ucp_register extends module
 		// Check and initialize some variables if needed
 		if ($submit)
 		{
-			$var_ary = array(
-				'username'			=> (string) '',
-				'password_confirm'	=> (string) '',
-				'new_password'		=> (string) '',
-				'cur_password'		=> (string) '',
-				'email'				=> (string) '',
-				'email_confirm'		=> (string) '',
-				'confirm_code'		=> (string) '',
-				'lang'				=> (string) $config['default_lang'],
-				'tz'				=> (float) $config['board_timezone'],
-			);
-
 			foreach ($var_ary as $var => $default)
 			{
 				$data[$var] = request_var($var, $default);
@@ -369,11 +357,11 @@ class ucp_register extends module
 					}
 				}
 
-				if ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable'])
+				if ($user_type == USER_NORMAL || !$config['email_enable'])
 				{
 					set_config('newest_user_id', $user_id);
 					set_config('newest_username', $username);
-					set_config('num_users', $config['num_users'] + 1, TRUE);
+					set_config('num_users', $config['num_users'] + 1, true);
 				}
 				unset($data);
 

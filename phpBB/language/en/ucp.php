@@ -127,6 +127,7 @@ $lang += array(
 	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address you supplied when registering.',
 	'EMAIL_PM'					=> 'Email PM',
+	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use',
 	'EMPTY_DRAFT'				=> 'You must enter a message to submit your changes',
 	'EMPTY_DRAFT_TITLE'			=> 'You must enter a draft title',
 	'EXPORT_AS_XML'				=> 'Export as XML',
