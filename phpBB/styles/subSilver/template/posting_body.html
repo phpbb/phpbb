@@ -284,6 +284,11 @@ function checkForm()
 		</table></td>
 	</tr>
 	<!-- ENDIF -->
+	<!-- IF S_SHOW_ATTACH_BOX or S_SHOW_POLL_BOX -->
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+	</tr>
+	<!-- ENDIF -->
 	<!-- IF S_SHOW_ATTACH_BOX -->
 	<!-- INCLUDE posting_attach_body.html -->
 	<!-- ENDIF -->
