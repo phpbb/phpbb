@@ -137,7 +137,7 @@ class sql_db
 		return ( $this->query_result) ? $this->query_result : ( ( $transaction == END_TRANSACTION ) ? true : false );
 	}
 
-	function sql_query_limit($query = '', $total, $offset, $transaction = false)
+	function sql_query_limit($query = '', $total, $offset = 0, $transaction = false)
 	{
 		if ( $query != '' )
 		{

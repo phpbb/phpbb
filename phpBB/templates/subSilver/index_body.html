@@ -18,25 +18,34 @@
 		<th class="thTop" width="50" nowrap="nowrap">&nbsp;{L_POSTS}&nbsp;</th>
 		<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
 	</tr>
-	<!-- BEGIN catrow -->
+	<!-- BEGIN forumrow -->
+	<!-- IF forumrow.S_IS_CAT -->
 	<tr> 
-		<td class="catLeft" colspan="2" height="28"><span class="cattitle"><a href="{catrow.U_VIEWCAT}" class="cattitle">{catrow.CAT_DESC}</a></span></td>
+		<td class="catLeft" colspan="2" height="28"><span class="cattitle"><a href="{forumrow.U_VIEWCAT}" class="cattitle">{forumrow.CAT_NAME}</a></span></td>
 		<td class="rowpic" colspan="3" align="right">&nbsp;</td>
 	</tr>
-	<!-- BEGIN forumrow -->
+	<!-- ENDIF -->
+	<!-- IF forumrow.S_IS_ROOTFORUM -->
 	<tr> 
-		<td class="row1" width="50" height="50" align="center" valign="middle">{catrow.forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink">{catrow.forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{catrow.forumrow.FORUM_DESC}<br /></span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td class="row1" width="100%" height="50"><span class="forumlink"><a href="{forumrow.U_VIEWFORUM}" class="forumlink">{forumrow.FORUM_NAME}</a><br /></span> <span class="genmed">{forumrow.FORUM_DESC}<br /></span>
+		<!-- IF forumrow.MODERATORS -->
+		<span class="gensmall">{forumrow.L_MODERATOR} {forumrow.MODERATORS}</span><br />
+		<!-- ENDIF -->
+		<!-- IF forumrow.SUBFORUMS -->
+		<span class="gensmall">{forumrow.L_SUBFORUM} {forumrow.SUBFORUMS}</span>
+		<!-- ENDIF -->
+		</td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
+		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{forumrow.LAST_POST}</span></td>
 	</tr>
-	<!-- END forumrow -->
+	<!-- ENDIF -->
 	<!-- BEGINELSE -->
 	<tr>
 		<td class="row1" colspan="5" height="28" align="center"><span class="gen">{L_NO_FORUMS}</span></td>
 	</tr>
-	<!-- END catrow -->
+	<!-- END forumrow -->
 </table>
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">

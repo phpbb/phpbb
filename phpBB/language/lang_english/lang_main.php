@@ -37,6 +37,8 @@ $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date f
 // Common, these terms are used extensively on several pages
 //
 $lang['Forum'] = 'Forum';
+$lang['Subforum'] = 'Subforum: ';
+$lang['Subforums'] = 'Subforums: ';
 $lang['Category'] = 'Category';
 $lang['Topic'] = 'Topic';
 $lang['Topics'] = 'Topics';

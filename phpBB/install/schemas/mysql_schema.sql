@@ -135,7 +135,6 @@ CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL,
    cat_id smallint(5) UNSIGNED NOT NULL,
    parent_id smallint(5) UNSIGNED NOT NULL,
-   forum_order smallint(5) UNSIGNED DEFAULT '1' NOT NULL,
    left_id smallint(5) UNSIGNED NOT NULL,
    right_id smallint(5) UNSIGNED NOT NULL,
    forum_name varchar(150) NOT NULL,
@@ -149,12 +148,13 @@ CREATE TABLE phpbb_forums (
    forum_last_poster_id mediumint(8) DEFAULT '0' NOT NULL,
    forum_last_post_time int(11) DEFAULT '0' NOT NULL,
    forum_last_poster_name varchar(30),
+   display_on_index tinyint(1) DEFAULT '1' NOT NULL,
    post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
    prune_next int(11) UNSIGNED,
    prune_days tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
-   KEY forums_order (forum_order),
+   KEY left_id (left_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
 
@@ -576,6 +576,7 @@ CREATE TABLE phpbb_topics (
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
+   KEY topic_last_post_time (topic_last_post_time),
    KEY topic_type (topic_type)
 );
 

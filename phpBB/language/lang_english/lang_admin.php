@@ -537,12 +537,14 @@ $lang['Category_name'] = 'Category name';
 $lang['Forum_type'] = 'Forum type';
 
 $lang['Parent'] = 'Parent';
+$lang['No_parent'] = 'No parent';
 $lang['Locked'] = 'Locked';
 $lang['Unlocked'] = 'Unlocked';
 
 $lang['General_settings'] = 'General settings';
 $lang['Forum_settings'] = 'Forum settings';
 $lang['Disable_post_count'] = 'Disable post count';
+$lang['Display_on_index'] = 'Display a link to this forum on index';
 
 $lang['Forum_edit_delete_explain'] = 'The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side';
 

@@ -51,9 +51,9 @@ if (!$acl->get_acl_admin('forum'))
 //
 // Mode setting
 //
-if (isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']))
+if (isset($_POST['mode']) || isset($_GET['mode']))
 {
-	$mode = (!empty($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = (!empty($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
@@ -65,7 +65,7 @@ switch ($mode)
 	case 'move_up':
 	case 'move_down':
 		$show_index = TRUE;
-		$forum_id = intval($HTTP_GET_VARS['f']);
+		$forum_id = intval($_GET['f']);
 
 		$result = $db->sql_query('SELECT parent_id, left_id, right_id FROM ' . FORUMS_TABLE . " WHERE forum_id = $forum_id");
 		if (!$row = $db->sql_fetchrow($result))
@@ -92,7 +92,7 @@ switch ($mode)
 					WHERE parent_id = $parent_id AND left_id > $left_id
 					ORDER BY left_id ASC";
 		}
-		$result = $db->sql_query_limit($sql, 1, 0);
+		$result = $db->sql_query_limit($sql, 1);
 
 		if (!$row = $db->sql_fetchrow($result))
 		{
@@ -156,22 +156,22 @@ switch ($mode)
 	break;
 
 	case 'create':
-		if (!trim($HTTP_POST_VARS['forum_name']))
+		if (!trim($_POST['forum_name']))
 		{
 			message_die(ERROR, 'Cannot create a forum without a name');
 		}
 
-		$parent_id = (!empty($HTTP_POST_VARS['parent_id'])) ? $HTTP_POST_VARS['parent_id'] : 0;
-		$forum_status = (!empty($HTTP_POST_VARS['is_category'])) ? ITEM_CATEGORY : $HTTP_POST_VARS['forum_status'];
-		$forum_name = str_replace("\'", "''", $HTTP_POST_VARS['forum_name']);
-		$forum_desc = str_replace("\'", "''", $HTTP_POST_VARS['forum_desc']);
+		$parent_id = (!empty($_POST['parent_id'])) ? $_POST['parent_id'] : 0;
+		$forum_status = (!empty($_POST['is_category'])) ? ITEM_CATEGORY : $_POST['forum_status'];
+		$forum_name = str_replace("\'", "''", $_POST['forum_name']);
+		$forum_desc = str_replace("\'", "''", $_POST['forum_desc']);
 
-		$forum_style = (!empty($HTTP_POST_VARS['forum_style'])) ? intval($HTTP_POST_VARS['forum_style']) : 'NULL';
-		$post_count_inc = (!empty($HTTP_POST_VARS['disable_post_count'])) ? 0 : 1;
+		$forum_style = (!empty($_POST['forum_style'])) ? intval($_POST['forum_style']) : 'NULL';
+		$post_count_inc = (!empty($_POST['disable_post_count'])) ? 0 : 1;
 
-		$prune_enable = (!empty($HTTP_POST_VARS['prune_enable'])) ? 1 : 0;
-		$prune_days = intval($HTTP_POST_VARS['prune_days']);
-		$prune_freq = intval($HTTP_POST_VARS['prune_freq']);
+		$prune_enable = (!empty($_POST['prune_enable'])) ? 1 : 0;
+		$prune_days = intval($_POST['prune_days']);
+		$prune_freq = intval($_POST['prune_freq']);
 
 		$result = $db->sql_query('SELECT MAX(forum_id) AS max_id FROM ' . FORUMS_TABLE);
 		$forum_id = $db->sql_fetchfield('max_id', 0, $result) + 1;
@@ -208,14 +208,14 @@ switch ($mode)
 	break;
 
 	case 'modify':
-		if (!$forum_id = intval($HTTP_POST_VARS['forum_id']))
+		if (!$forum_id = intval($_POST['forum_id']))
 		{
 			message_die(ERROR, 'No forum specified');
 		}
 
 		$row = get_forum_info($forum_id);
-		$parent_id = intval($HTTP_POST_VARS['parent_id']);
-		$action = (!empty($HTTP_POST_VARS['action'])) ? $HTTP_POST_VARS['action'] : '';
+		$parent_id = intval($_POST['parent_id']);
+		$action = (!empty($_POST['action'])) ? $_POST['action'] : '';
 
 		if (($row['parent_id'] != $parent_id) && ($parent_id != -1))
 		{
@@ -223,22 +223,23 @@ switch ($mode)
 		}
 
 		$sql = array(
-			'forum_name'		=>	(!empty($HTTP_POST_VARS['forum_name'])) ? stripslashes($HTTP_POST_VARS['forum_name']) : $row['forum_name'],
-			'forum_desc'		=>	(!empty($HTTP_POST_VARS['forum_desc'])) ? stripslashes($HTTP_POST_VARS['forum_desc']) : $row['forum_desc'],
-			'forum_status'		=>	(!empty($HTTP_POST_VARS['set_category']) && $action) ? ITEM_CATEGORY : intval($HTTP_POST_VARS['forum_status']),
-			'forum_style'		=>	(!empty($HTTP_POST_VARS['forum_style'])) ? $HTTP_POST_VARS['forum_style'] : NULL,
+			'forum_name'		=>	(!empty($_POST['forum_name'])) ? stripslashes($_POST['forum_name']) : $row['forum_name'],
+			'forum_desc'		=>	(!empty($_POST['forum_desc'])) ? stripslashes($_POST['forum_desc']) : $row['forum_desc'],
+			'forum_status'		=>	(!empty($_POST['set_category']) && $action) ? ITEM_CATEGORY : intval($_POST['forum_status']),
+			'forum_style'		=>	(!empty($_POST['forum_style'])) ? $_POST['forum_style'] : NULL,
 			'parent_id'			=>	$parent_id,
-			'prune_enable'		=>	(!empty($HTTP_POST_VARS['prune_enable'])) ? 1 : 0,
-			'prune_days'		=>	intval($HTTP_POST_VARS['prune_days']),
-			'prune_freq'		=>	intval($HTTP_POST_VARS['prune_freq']),
-			'post_count_inc'	=>	(!empty($HTTP_POST_VARS['disable_post_count'])) ? 0 : 1
+			'prune_enable'		=>	(!empty($_POST['prune_enable'])) ? 1 : 0,
+			'prune_days'		=>	intval($_POST['prune_days']),
+			'prune_freq'		=>	intval($_POST['prune_freq']),
+			'display_on_index'	=>	(!empty($_POST['display_on_index'])) ? 0 : 1,
+			'post_count_inc'	=>	(!empty($_POST['disable_post_count'])) ? 0 : 1
 		);
 
-		if (!empty($HTTP_POST_VARS['set_category']) && $action)
+		if (!empty($_POST['set_category']) && $action)
 		{
-			if ($action == 'move' && $HTTP_POST_VARS['to_forum_id'])
+			if ($action == 'move' && $_POST['to_forum_id'])
 			{
-				move_forum_content($forum_id, $HTTP_POST_VARS['to_forum_id']);
+				move_forum_content($forum_id, $_POST['to_forum_id']);
 			}
 			elseif ($action == 'delete')
 			{
@@ -257,7 +258,7 @@ switch ($mode)
 	break;
 
 	case 'remove':
-		if (empty($HTTP_POST_VARS['submit']))
+		if (empty($_POST['submit']))
 		{
 			//
 			// wasn't this form submitted? is anyone trying to remotely delete forums
@@ -265,10 +266,10 @@ switch ($mode)
 			message_die(ERROR, 'Did not submit');
 		}
 
-		$action_subforums = (!empty($HTTP_POST_VARS['action_subforums'])) ? $HTTP_POST_VARS['action_subforums'] : '';
-		$action_posts = (!empty($HTTP_POST_VARS['action_posts'])) ? $HTTP_POST_VARS['action_posts'] : '';
+		$action_subforums = (!empty($_POST['action_subforums'])) ? $_POST['action_subforums'] : '';
+		$action_posts = (!empty($_POST['action_posts'])) ? $_POST['action_posts'] : '';
 
-		$row = get_forum_info($HTTP_GET_VARS['f']);
+		$row = get_forum_info($_GET['f']);
 		extract($row);
 
 		if ($action_posts == 'delete')
@@ -277,14 +278,14 @@ switch ($mode)
 		}
 		elseif ($action_posts == 'move')
 		{
-			if (empty($HTTP_POST_VARS['posts_to_id']))
+			if (empty($_POST['posts_to_id']))
 			{
 				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
 				message_die(ERROR, $message);
 			}
 
-			move_forum_content($forum_id, $HTTP_POST_VARS['posts_to_id']);
+			move_forum_content($forum_id, $_POST['posts_to_id']);
 		}
 
 		if ($action_subforums == 'delete')
@@ -302,7 +303,7 @@ switch ($mode)
 		}
 		elseif ($action_subforums == 'move')
 		{
-			if (empty($HTTP_POST_VARS['subforums_to_id']))
+			if (empty($_POST['subforums_to_id']))
 			{
 				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
@@ -312,9 +313,9 @@ switch ($mode)
 			$result = $db->sql_query('SELECT forum_id FROM ' . FORUMS_TABLE . " WHERE parent_id = $forum_id");
 			while ($row = $db->sql_fetchrow($result))
 			{
-				move_forum($row['forum_id'], $HTTP_POST_VARS['subforums_to_id']);
+				move_forum($row['forum_id'], $_POST['subforums_to_id']);
 			}
-			$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET parent_id = ' . $HTTP_POST_VARS['subforums_to_id'] . " WHERE parent_id = $forum_id");
+			$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET parent_id = ' . $_POST['subforums_to_id'] . " WHERE parent_id = $forum_id");
 
 			$diff = 2;
 			$db->sql_query('DELETE FROM ' . FORUMS_TABLE . " WHERE forum_id = $forum_id");
@@ -338,14 +339,14 @@ switch ($mode)
 				WHERE left_id > $right_id";
 		$db->sql_query($sql);
 
-		$return_id = (!empty($HTTP_POST_VARS['subforums_to_id'])) ? $HTTP_POST_VARS['subforums_to_id'] : $parent_id;
+		$return_id = (!empty($_POST['subforums_to_id'])) ? $_POST['subforums_to_id'] : $parent_id;
 		$message = $lang['Forum_deleted'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $return_id. '">', '</a>');
 
 		message_die(MESSAGE, $message);
 	break;
 
 	case 'forum_sync':
-		sync('forum', intval($HTTP_GET_VARS[POST_FORUM_URL]));
+		sync('forum', intval($_GET[POST_FORUM_URL]));
 		$show_index = TRUE;
 	break;
 
@@ -356,7 +357,7 @@ switch ($mode)
 		//
 		if ($mode == 'edit')
 		{
-			$forum_id = intval($HTTP_GET_VARS['f']);
+			$forum_id = intval($_GET['f']);
 
 			$row = get_forum_info($forum_id);
 			extract($row);
@@ -383,9 +384,9 @@ switch ($mode)
 		else
 		{
 			$parent_id = 0;
-			if (!empty($HTTP_POST_VARS['parent_id']))
+			if (!empty($_POST['parent_id']))
 			{
-				list($parent_id) = each($HTTP_POST_VARS['parent_id']);
+				list($parent_id) = each($_POST['parent_id']);
 			}
 			$parents_list = make_forums_list('all', $parent_id);
 
@@ -396,7 +397,7 @@ switch ($mode)
 			$forum_desc = '';
 			$forum_style = '';
 			$forum_status = ITEM_UNLOCKED;
-			$forum_name = (!empty($HTTP_POST_VARS['forum_name'][$parent_id])) ? htmlspecialchars($HTTP_POST_VARS['forum_name'][$parent_id]) : '';
+			$forum_name = (!empty($_POST['forum_name'][$parent_id])) ? htmlspecialchars($_POST['forum_name'][$parent_id]) : '';
 
 			$post_count_inc = TRUE;
 
@@ -452,7 +453,7 @@ switch ($mode)
 <tr>
   <td class="row1"><?php echo $lang['Parent'] ?></td>
   <td class="row2"><select name="parent_id">
-  <option value="0"><?php echo 'No parent' ?></option>
+  <option value="0"><?php echo $lang['No_parent'] ?></option>
   <?php echo $parents_list ?></select></td>
 </tr>
 <tr>
@@ -473,8 +474,18 @@ switch ($mode)
 </tr>
 <tr>
   <td class="row1"><?php echo $lang['Options'] ?></td>
-  <td class="row2"><input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Disable_post_count'] ?></td>
-</tr>
+  <td class="row2">
+	<input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Disable_post_count'] ?>
+<?php
+		if ($mode == 'edit')
+		{
+?>
+	<br />
+	<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Display_on_index'] ?>
+<?php
+		}
+?>
+</td></tr>
 <?php
 		if ($mode == 'edit')
 		{
@@ -523,7 +534,7 @@ switch ($mode)
 
 	case 'delete':
 		page_header($lang['Forum_delete']);
-		extract(get_forum_info($HTTP_GET_VARS['f']));
+		extract(get_forum_info($_GET['f']));
 
 		$subforums_id = array();
 		$subforums = get_forum_branch($forum_id, 'children');
@@ -597,7 +608,7 @@ if (empty($show_index))
 
 page_header($lang['Manage']);
 
-$parent_id = (!empty($HTTP_GET_VARS['parent_id'])) ? $HTTP_GET_VARS['parent_id'] : 0;
+$parent_id = (!empty($_GET['parent_id'])) ? $_GET['parent_id'] : 0;
 
 if (!$parent_id)
 {
