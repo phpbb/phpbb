@@ -51,6 +51,8 @@ INSERT INTO phpbb_config VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config VALUES ('board_timezone','0');
 INSERT INTO phpbb_config VALUES ('prune_enable','1');
 INSERT INTO phpbb_config VALUES ('gzip_compress','1');
+INSERT INTO phpbb_config VALUES ('record_online_users','0');
+INSERT INTO phpbb_config VALUES ('record_online_date','0');
 
 
 -- Categories
