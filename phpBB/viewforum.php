@@ -397,6 +397,10 @@ if($total_topics || $total_announcements)
 		{
 			$topic_title = preg_replace($orig_word, $replacement_word, stripslashes($topic_rowset[$i]['topic_title']));
 		}
+		else
+		{
+			$topic_title = stripslashes($topic_rowset[$i]['topic_title']);
+		}
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
@@ -412,7 +416,6 @@ if($total_topics || $total_announcements)
 		{
 			$topic_type = "";
 		}
-
 
 		$topic_id = $topic_rowset[$i]['topic_id'];
 

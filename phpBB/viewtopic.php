@@ -637,8 +637,6 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
-	$message = make_clickable($message);
-
 	$message = ($user_sig != "") ? ereg_replace("\[addsig]$", "<br /><br />_________________<br />" . $user_sig, $message) : ereg_replace("\[addsig]$", "", $message);
 
 	if( count($orig_word) )
@@ -646,6 +644,8 @@ for($i = 0; $i < $total_posts; $i++)
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
+
+	$message = make_clickable($message);
 
 	if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
 	{
