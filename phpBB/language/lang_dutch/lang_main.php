@@ -102,12 +102,12 @@ $lang['Post_new_topic'] = "Plaats nieuw bericht";
 $lang['Reply_to_topic'] = "Plaats Reactie";
 $lang['Reply_with_quote'] = "Reageer met quote";
 
-$lang['Click_return_topic'] = "Klik %sHier%s om terug te keren naar het onderwerp"; // %s's here are for uris, do not remove!
-$lang['Click_return_login'] = "Klik %sHier%s om het nogmaals te proberen";
-$lang['Click_return_forum'] = "Klik %sHier%s om terug te keren naar de onderwerpenlijst";
+$lang['Click_return_topic'] = "Klik %shier%s om terug te keren naar het onderwerp"; // %s's here are for uris, do not remove!
+$lang['Click_return_login'] = "Klik %shier%s om het nogmaals te proberen";
+$lang['Click_return_forum'] = "Klik %shier%s om terug te keren naar de onderwerpenlijst";
 $lang['Click_view_message'] = "klik %shier%s om je bericht te bekijken";
 $lang['Click_return_modcp'] = "klik %shier%s om terug te keren naar het Moderator Control Panel";
-$lang['Click_return_group'] = "Klik %sHier%s om terug te keren naar het groepen overzicht";
+$lang['Click_return_group'] = "Klik %shier%s om terug te keren naar het groepen overzicht";
 
 $lang['Admin_panel'] = "Ga naar Administratiepaneel";
 
@@ -128,7 +128,7 @@ $lang['Guest_users_total'] = "%d Gasten";
 $lang['Guest_user_total'] = "%d Gast";
 
 $lang['You_last_visit'] = "Je laatste bezoek was op %s"; // %s replaced by date/time
-$lang['Search_new'] = "Nieuwe berichten sinds laatste bezoek";
+$lang['Search_new'] = "Berichten sinds laatste bezoek";
 $lang['Search_your_posts'] = "Bekijk je berichten";
 $lang['Search_unanswered'] = "Bekijk onbeantwoorde berichten";
 $lang['Register'] = "Registreer";
@@ -173,6 +173,7 @@ $lang['Forgotten_password'] = "Wachtwoord vergeten";
 
 $lang['Log_me_in'] = "Log me automatisch in bij elk bezoek";
 
+$lang['Error_login'] = "Je hebt een foutieve of inactieve gebruikersnaam of een foutief wachtwoord opgegeven.";
 
 //
 // Index page
@@ -537,6 +538,26 @@ $lang['Account_active_admin'] = "Het account is geactiveerd";
 $lang['Reactivate'] = "Je moet je account opnieuw activeren!";
 $lang['COPPA'] = "Je account is aangemaakt maar moet goedkeuring krijgen, bekijk je Email voor meer details.";
 
+$lang['Registration'] = "Registratie Voorwaarden";
+$lang['Reg_agreement'] = "While the administrators and moderators of this forum will attempt to remove or edit any generally
+objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts
+made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for
+posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous,
+hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being
+immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in
+enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit,
+move or close any topic at any time should they see fit. As a user you agree to any information you     have entered above being
+stored in a database. While this information will not be disclosed to any third party without your consent the webmaster,
+administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br
+/><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the
+information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming
+your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking
+Register below you agree to be bound by these conditions.";
+
+$lang['Agree_under_13'] = "I stem toe met de voorwaarden en ben <b>jonger</b> dan 13 jaar";
+$lang['Agree_over_13'] = "I stem toe met de voorwaarden en ben <b>ouder</b> dan 13 jaar";
+$lang['Agree_not'] = "Ik ben het niet eens met de voorwaarden";
+
 $lang['Wrong_activation'] = "De activerings code is onjuist";
 $lang['Send_password'] = "Stuur me een nieuw wachtwoord"; 
 $lang['Password_updated'] = "Een nieuw wachtwoord is aangemaakt, bekijk je Email voor meer details over hoe je deze moet activeren";
@@ -897,8 +918,6 @@ $lang['General_Error'] = "Algemene Fout";
 $lang['Critical_Error'] = "Fatale Fout";
 $lang['An_error_occured'] = "Er is een fout opgetreden";
 $lang['A_critical_error'] = "Er is een fatale fout opgetreden";
-
-$lang['Error_login'] = "Je hebt een foutieve of inactieve gebruikersnaam of een foutief wachtwoord opgegeven.";
 
 //
 // That's all Folks!
