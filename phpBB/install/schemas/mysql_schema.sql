@@ -717,7 +717,7 @@ CREATE TABLE phpbb_users (
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL,
    user_popup_pm tinyint(1) DEFAULT '0' NOT NULL,
    user_avatar char(100),
-   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL,
+   user_avatar_type tinyint(4) DEFAULT '0',
    user_avatar_width tinyint(4) UNSIGNED,
    user_avatar_height tinyint(4) UNSIGNED,
    user_sig text,

@@ -555,6 +555,7 @@ else
 		{
 			if ( $dbms != 'msaccess' )
 			{
+				
 				//
 				// Ok we have the db info go ahead and read in the relevant schema
 				// and work on building the table.. probably ought to provide some
@@ -698,7 +699,7 @@ else
 			@umask(0111);
 			$no_open = FALSE;
 
-			if ( !($fp = @fopen('../config.'.$phpEx, 'w')) )
+			if ( !($fp = fopen('../config.'.$phpEx, 'w')) )
 			{
 				//
 				// Unable to open the file writeable do something here as an attempt
@@ -747,7 +748,7 @@ else
 					);
 				}
 
-				$template->assign_vars(array(
+				/*$template->assign_vars(array(
 					"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
 					"L_SUBMIT" => $lang['Download_config'],
 
@@ -756,7 +757,8 @@ else
 				);
 
 				$template->pparse('body');
-
+				*/
+				
 				exit;
 			}
 

@@ -74,6 +74,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method','db');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
