@@ -1,29 +1,23 @@
 <?php
-/***************************************************************************
- *                            index.php [ adm/ ]
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : adm/index.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
-// Define some vars
-$pane = (isset($_GET['pane'])) ? $_GET['pane'] : '';
-$update = ($pane == 'right') ? true : false;
 
 define('IN_PHPBB', 1);
+
+// Define some vars
+$pane = (!empty($_GET['pane'])) ? htmlspecialchars($_GET['pane']) : '';
+$update = ($pane == 'right') ? true : false;
+
 // Include files
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
@@ -35,8 +29,9 @@ if (!$auth->acl_get('a_'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
+
 // Generate relevant output
-if (isset($_GET['pane']) && $_GET['pane'] == 'top')
+if ($pane == 'top')
 {
 	adm_page_header('', '', false);
 
@@ -44,7 +39,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'top')
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><a href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td><a href="<?php echo "../index.$phpEx$SID"; ?>" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['ADMIN_TITLE']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
@@ -54,7 +49,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'top')
 	adm_page_footer(false);
 
 }
-else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
+else if ($pane == 'left')
 {
 	// Cheat and use the meta tag to change some stylesheet info
 	adm_page_header('', '<style type="text/css">body {background-color: #98AAB1}</style>', false);
@@ -84,10 +79,10 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 				<th class="menu" height="25">&#0187; <?php echo $user->lang['RETURN_TO']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $user->lang['ADMIN_INDEX']; ?></a></td>
+				<td class="row1"><a class="genmed" href="<?php echo "index.$phpEx$SID"; ?>&amp;pane=right" target="main"><?php echo $user->lang['ADMIN_INDEX']; ?></a></td>
 			</tr>
 			<tr>
-				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $user->lang['FORUM_INDEX']; ?></a></td>
+				<td class="row2"><a class="genmed" href="<?php echo "../index.$phpEx$SID"; ?>" target="_top"><?php echo $user->lang['FORUM_INDEX']; ?></a></td>
 			</tr>
 <?php
 
@@ -137,7 +132,7 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 	adm_page_footer(false);
 
 }
-elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
+elseif ($pane == 'right')
 {
 	if ((isset($_POST['activate']) || isset($_POST['delete'])) && !empty($_POST['mark']))
 	{
@@ -546,7 +541,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
+		<td class="<?php echo $row_class; ?>"><a href="<?php echo "admin_users.$phpEx$SID&amp;u=" . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
 		<td class="<?php echo $row_class; ?>"><?php echo $user->format_date($row['user_regdate']); ?></td>
 		<td class="<?php echo $row_class; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
 	</tr>

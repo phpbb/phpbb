@@ -47,7 +47,7 @@ td {
 
 function cell(color)
 {
-	opener.document.forms['<?php echo $_GET['form']; ?>'].<?php echo $_GET['name']; ?>.value = '#' + color;
+	opener.document.forms['<?php echo htmlspecialchars($_GET['form']); ?>'].<?php echo htmlspecialchars($_GET['name']); ?>.value = '#' + color;
 }
 //-->
 </script>
