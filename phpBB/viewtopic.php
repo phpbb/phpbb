@@ -403,26 +403,42 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 		AND u.user_id = p.poster_id
 	ORDER BY p.post_time $post_time_order
 	LIMIT $start, ".$board_config['posts_per_page'];
-if(!$result = $db->sql_query($sql))
+if ( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain post/user information.", "", __LINE__, __FILE__, $sql);
 }
 
-if(!$total_posts = $db->sql_numrows($result))
+if ( $row = $db->sql_fetchrow($result) )
+{
+	$postrow = array();
+	do
+	{
+		$postrow[] = $row;
+	}
+	while ( $row = $db->sql_fetchrow($result) );
+	$db->sql_freeresult($result);
+
+	$total_posts = count($postrow);
+}
+else
 {
 	message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
 }
-$postrow = $db->sql_fetchrowset($result);
-$db->sql_freeresult($result);
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
 	ORDER BY rank_special, rank_min";
-if( !($result = $db->sql_query($sql)) )
+if ( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
 }
-$ranksrow = $db->sql_fetchrowset($result);
+
+$ranksrow = array();
+while ( $row = $db->sql_fetchrow($result) )
+{
+	$ranksrow[] = $row;
+}
+$db->sql_freeresult($result);
 
 //
 // Define censored word matches
