@@ -224,8 +224,8 @@ switch ($mode)
 		}
 
 		$sql = array(
-			'forum_name'		=>	(!empty($_POST['forum_name'])) ? stripslashes($_POST['forum_name']) : $row['forum_name'],
-			'forum_desc'		=>	(!empty($_POST['forum_desc'])) ? stripslashes($_POST['forum_desc']) : $row['forum_desc'],
+			'forum_name'		=>	(!empty($_POST['forum_name'])) ? $_POST['forum_name'] : $row['forum_name'],
+			'forum_desc'		=>	(!empty($_POST['forum_desc'])) ? $_POST['forum_desc'] : $row['forum_desc'],
 			'forum_status'		=>	(!empty($_POST['set_category']) && $action) ? ITEM_CATEGORY : intval($_POST['forum_status']),
 			'forum_style'		=>	(!empty($_POST['forum_style'])) ? $_POST['forum_style'] : NULL,
 			'parent_id'			=>	$parent_id,
@@ -251,7 +251,7 @@ switch ($mode)
 			$sql['forum_posts'] = 0;
 			$sql['forum_topics'] = 0;
 		}
-echo 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . " WHERE forum_id = $forum_id";
+
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql) . " WHERE forum_id = $forum_id");
 
 		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
