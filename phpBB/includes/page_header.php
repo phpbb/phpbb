@@ -89,7 +89,7 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in, s.session_ip
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
@@ -116,20 +116,25 @@ while( $row = $db->sql_fetchrow($result) )
 		// Skip multiple sessions for one user
 		if( $row['user_id'] != $prev_user_id )
 		{
+			if( $row['user_level'] == ADMIN )
+			{
+				$row['username'] = '<b>' . $row['username'] . '</b>';
+			}
+
 			if( $row['user_allow_viewonline'] )
 			{
-				$user_online_link = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
 				$logged_visible_online++;
 			}
 			else
 			{
-				$user_online_link = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\"><i>" . $row['username'] . "</i></a>";
+				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"><i>' . $row['username'] . '</i></a>';
 				$logged_hidden_online++;
 			}
 			
 			if( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
 			{
-				$online_userlist .= ($online_userlist != "") ? ", " . $user_online_link : $user_online_link;
+				$online_userlist .= ( $online_userlist != "" ) ? ", " . $user_online_link : $user_online_link;
 			}
 		}
 	}
@@ -137,6 +142,7 @@ while( $row = $db->sql_fetchrow($result) )
 	{
 		$guests_online++;
 	}
+
 	$prev_user_id = $row['user_id'];
 }
 
