@@ -159,6 +159,8 @@ for($x = 0; $x < $total_posts; $x++)
 		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
 	
+	$message = make_clickable($message);
+	
 	$message = str_replace("\n", "<BR>", $message);
 	
 	if(!($x % 2))
