@@ -627,7 +627,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				}
 
 				$emailer->use_template("admin_activate", $board_config['default_lang']);
-				$emailer->email_address($lang['New_account_subject'] . ':;');
 				$emailer->set_subject($lang['New_account_subject']);
 
 				$emailer->assign_vars(array(

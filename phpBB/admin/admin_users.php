@@ -316,7 +316,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
 				}
-				else if ( strtolower(str_replace("\'", "''", $username)) == strtolower($userdata['username']) )
+				else if ( strtolower(str_replace("\\'", "''", $username)) == strtolower($userdata['username']) )
 				{
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Username_taken'];
@@ -325,7 +325,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 
 			if (!$error)
 			{
-				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
+				$username_sql = "username = '" . str_replace("\\'", "''", $username) . "', ";
 				$rename_user = $username; // Used for renaming usergroup
 			}
 		}

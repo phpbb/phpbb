@@ -84,7 +84,8 @@ function get_userdata($user, $force_str = false)
 	if (intval($user) == 0 || $force_str)
 	{
 		$user = trim(htmlspecialchars($user));
-		$user = substr(str_replace("\'", "'", $user), 0, 25);
+		$user = substr(str_replace("\\'", "'", $user), 0, 25);
+		$user = str_replace("'", "\\'", $user);
 	}
 	else
 	{

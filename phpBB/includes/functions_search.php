@@ -131,6 +131,8 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
 	$search_raw_words['title'] = split_words(clean_words('post', $post_title, $stopword_array, $synonym_array));
 
+	@set_time_limit(0);
+
 	$word = array();
 	$word_insert_sql = array();
 	while ( list($word_in, $search_matches) = @each($search_raw_words) )
@@ -256,7 +258,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 
 		if ( $match_sql != '' )
 		{
-			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+			$sql = "INSERT IGNORE INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
 				SELECT $post_id, word_id, $title_match  
 					FROM " . SEARCH_WORD_TABLE . " 
 					WHERE word_text IN ($match_sql)"; 

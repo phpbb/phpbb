@@ -55,12 +55,13 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
 		$username = isset($HTTP_POST_VARS['username']) ? trim(htmlspecialchars($HTTP_POST_VARS['username'])) : '';
-		$username = substr(str_replace("\'", "'", $username), 0, 25);
+		$username = substr(str_replace("\\'", "'", $username), 0, 25);
+		$username = str_replace("'", "\\'", $username);
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level
 			FROM " . USERS_TABLE . "
-			WHERE username = '" . str_replace("\'", "''", $username) . "'";
+			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
