@@ -188,6 +188,8 @@ class sql_db
 				$this->open_queries[] = $this->query_result;
 			}
 
+			$this->last_query_text[$this->query_result] = $query;
+
 			if (!empty($cache_result))
 			{
 				$cache->sql_save($query, $this->query_result);
@@ -209,7 +211,7 @@ class sql_db
 			$this->query_result = false;
 			$this->num_queries++;
 
-			$query .= ' ROWS ' . $total .((!empty($offset)) ? ' TO ' . $offset : '');
+			echo $query = 'SELECT FIRST ' . $total .((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
 			return $this->sql_query($query, $expire_time);
 		}
@@ -387,9 +389,9 @@ class sql_db
 
 	function sql_nextid()
 	{
-		if ($this->query_result)
+		if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text[$query_id], $tablename))
 		{
-			$query = "SELECT Gen_ID('" . $tablename[1] . "_id_seq',1) AS last_value 
+			$query = "SELECT GEN_ID('" . $tablename[1] . "_gen', 0) AS new_id  
 				FROM RDB\$DATABASE";
 			if (!($temp_q_id =  @ibase_query($this->db_connect_id, $query)))
 			{
@@ -415,7 +417,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($replace_min('match'), $replace_min('replace'), $msg) : str_replace($replace_max('match'), $replace_max('replace'), $msg);
+		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace($this->replace_min['match'], $this->replace_min['replace'], $msg) : str_replace($this->replace_max['match'], $this->replace_max['replace'], $msg);
 	}
 
 	function sql_error($sql = '')
