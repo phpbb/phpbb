@@ -497,15 +497,10 @@ function generate_smilies($mode)
 		{
 			$template->assign_vars(array(
 				'S_SHOW_EMOTICON_LINK' 	=> true,
-				'L_MORE_SMILIES' 		=> $user->lang['More_emoticons'],
+
 				'U_MORE_SMILIES' 		=> "posting.$phpEx$SID&amp;mode=smilies")
 			);
 		}
-
-		$template->assign_vars(array(
-			'L_EMOTICONS' 		=> $user->lang['Emoticons'],
-			'L_CLOSE_WINDOW' 	=> $user->lang['Close_window'])
-		);
 	}
 
 	if ($mode == 'window')

@@ -208,7 +208,7 @@ if (isset($post))
 		{
 			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']))
 			{
-				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Flood_Error'];
+				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['FLOOD_ERROR'];
 			}
 		}
 	}
@@ -476,7 +476,9 @@ if (isset($post))
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="5; url=' . "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=$post_id#$post_id" . '">')
 		);
-		trigger_error($user->lang['Stored']);
+
+		$message = (!empty($forum_moderated)) ? 'POST_STORED_MOD' : 'POST_STORED';
+		trigger_error($user->lang[$message]);
 	}
 
 	// Houston, we have an error ...
@@ -565,29 +567,29 @@ if ($row = $db->sql_fetchrow($result))
 $topic_type_toggle = '';
 if ($mode == 'post' || $mode == 'edit')
 {
-	if ($auth->acl_gets('f_sticky', 'm_sticky', 'a_', intval($forum_id)))
+	if ($auth->acl_gets('f_sticky', 'm_', 'a_', intval($forum_id)))
 	{
 		$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . POST_STICKY . '"';
 		if (intval($topic_type) == POST_STICKY)
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
-		$topic_type_toggle .= ' /> ' . $user->lang['Post_Sticky'] . '&nbsp;&nbsp;';
+		$topic_type_toggle .= ' /> ' . $user->lang['POST_STICKY'] . '&nbsp;&nbsp;';
 	}
 
-	if ($auth->acl_gets('f_announce', 'm_announce', 'a_', intval($forum_id)))
+	if ($auth->acl_gets('f_announce', 'm_', 'a_', intval($forum_id)))
 	{
 		$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . POST_ANNOUNCE . '"';
 		if (intval($topic_type) == POST_ANNOUNCE)
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
-		$topic_type_toggle .= ' /> ' . $user->lang['Post_Announcement'] . '&nbsp;&nbsp;';
+		$topic_type_toggle .= ' /> ' . $user->lang['POST_ANNOUNCEMENT'] . '&nbsp;&nbsp;';
 	}
 
 	if ($topic_type_toggle != '')
 	{
-		$topic_type_toggle = $user->lang['Post_topic_as'] . ': <input type="radio" name="topic_type" value="' . POST_NORMAL .'"' . ((intval($topic_type) == POST_NORMAL) ? ' checked="checked"' : '') . ' /> ' . $user->lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = $user->lang['POST_TOPIC_AS'] . ': <input type="radio" name="topic_type" value="' . POST_NORMAL .'"' . ((intval($topic_type) == POST_NORMAL) ? ' checked="checked"' : '') . ' /> ' . $user->lang['POST_NORMAL'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 
@@ -610,11 +612,11 @@ $s_action = "posting.$phpEx$SID&amp;mode=$mode&amp;f=" . intval($forum_id);
 switch ($mode)
 {
 	case 'post':
-		$page_title = $user->lang['Post_a_new_topic'];
+		$page_title = $user->lang['POST_TOPIC'];
 		break;
 
 	case 'reply':
-		$page_title = $user->lang['Post_a_reply'];
+		$page_title = $user->lang['POST_REPLY'];
 		$s_action .= '&amp;t=' . intval($topic_id);
 		break;
 
@@ -655,18 +657,8 @@ $template->assign_vars(array(
 	'MODERATORS' 		=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['None'],
 
 	'L_POST_A' 				=> $page_title,
-	'L_MODERATORS'			=> $user->lang['Moderators'],
-	'L_POST_SUBJECT' 		=> $user->lang['Post_subject'],
-	'L_TOPIC_ICON' 			=> $user->lang['Topic_icon'],
 	'L_SUBJECT' 			=> $user->lang['Subject'],
-	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['Message_body_explain'], intval($config['max_post_chars'])) : '',
-	'L_EMOTICONS'			=> $user->lang['Emoticons'],
-	'L_CANCEL' 				=> $user->lang['Cancel'],
-	'L_CONFIRM_DELETE' 		=> $user->lang['Confirm_delete'],
-	'L_DISABLE_HTML' 		=> $user->lang['Disable_HTML_post'],
-	'L_DISABLE_BBCODE' 		=> $user->lang['Disable_BBCode_post'],
-	'L_DISABLE_SMILIES' 	=> $user->lang['Disable_Smilies_post'],
-	'L_DISABLE_MAGIC_URL' 	=> $user->lang['Disable_magic_url'],
+	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 	'L_NONE' 				=> $user->lang['None'],
 
 	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=" . intval($forum_id),
@@ -703,18 +695,7 @@ if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_f
 		'S_SHOW_POLL_BOX' 	=> true,
 		'S_POLL_DELETE' 	=> ($mode = 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 
-		'L_ADD_A_POLL' 			=> $user->lang['Add_poll'],
-		'L_ADD_POLL_EXPLAIN' 	=> $user->lang['Add_poll_explain'],
-		'L_POLL_QUESTION' 		=> $user->lang['Poll_question'],
-		'L_POLL_OPTIONS' 		=> $user->lang['Poll_options'],
-		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['Poll_options_explain'], $config['max_poll_options']),
-		'L_ADD_OPTION' 			=> $user->lang['Add_option'],
-		'L_UPDATE_OPTION' 		=> $user->lang['Update'],
-		'L_DELETE_OPTION' 		=> $user->lang['Delete'],
-		'L_POLL_LENGTH' 		=> $user->lang['Poll_for'],
-		'L_DAYS' 				=> $user->lang['Days'],
-		'L_POLL_LENGTH_EXPLAIN' => $user->lang['Poll_for_explain'],
-		'L_POLL_DELETE' 		=> $user->lang['Delete_poll'],
+		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 
 		'POLL_TITLE' 	=> $poll_title,
 		'POLL_OPTIONS'	=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
@@ -726,13 +707,7 @@ if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_f
 if ($auth->acl_gets('f_attach', 'm_edit', 'a_', $forum_id))
 {
 	$template->assign_vars(array(
-		'S_SHOW_ATTACH_BOX' 		=> true,
-		'L_ADD_ATTACHMENT' 			=> $user->lang['Add_attach'],
-		'L_ADD_ATTACHMENT_EXPLAIN' 	=> $user->lang['Add_attach_explain'],
-
-		'L_ADD_FILE' 	=> $user->lang['Add_file'],
-		'L_FILE_NAME' 	=> $user->lang['Filename'],
-		'L_FILE_COMMENT'=> $user->lang['File_comment'],)
+		'S_SHOW_ATTACH_BOX' 		=> true,)
 	);
 }
 
