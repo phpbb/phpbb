@@ -19,8 +19,6 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_ban'))
@@ -36,6 +34,7 @@ if (!empty($setmodules))
 	return;
 }
 
+define('IN_PHPBB', 1);
 // Load default header
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
@@ -47,27 +46,26 @@ if (!$auth->acl_get('a_ban'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
+
 // Mode setting
-if (isset($_POST['mode']) || isset($_GET['mode']))
-{
-	$mode = (isset($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = '';
-}
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+
 
 $current_time = time();
 
+
 // Start program
-if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
+if (isset($_REQUEST['bansubmit']))
 {
-	$ban = (!empty($_POST['ban'])) ? $_POST['ban'] : $_GET['ban'];
+	// Grab the list of entries
+	$ban = (!empty($_REQUEST['ban'])) ? $_REQUEST['ban'] : '';
 	$ban_list = array_unique(explode("\n", $ban));
 	$ban_list_log = implode(', ', $ban_list);
 
+
 	$ban_exclude = (!empty($_POST['banexclude'])) ? 1 : 0;
 	$ban_reason = (isset($_POST['banreason'])) ? $_POST['banreason'] : '';
+
 
 	if (!empty($_POST['banlength']))
 	{
@@ -86,6 +84,7 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 		$ban_end = 0;
 	}
 
+
 	$banlist = array();
 
 	switch ($mode)
@@ -93,37 +92,34 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 		case 'user':
 			$type = 'ban_userid';
 
-			$banlist_tmp = array();
-			for($i = 0; $i < count($ban_list); $i++)
+			if (in_array('*', $ban_list))
 			{
-				if (trim($ban_list[$i]) != '')
+				$banlist[] = '*';
+			}
+			else
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE username IN (' . implode(', ', array_diff(preg_replace('#^[\s]*(.*?)[\s]*$#', "'\\1'", $ban_list), array("''"))) . ')';
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
 				{
-					$banlist_tmp[] = '\'' . trim($ban_list[$i]) . '\'';
+					do
+					{
+						$banlist[] = $row['user_id'];
+					}
+					while ($row = $db->sql_fetchrow($result));
 				}
 			}
-
-			$sql = "SELECT user_id
-				FROM " . USERS_TABLE . "
-				WHERE username IN (" . implode(', ', $banlist_tmp) . ")";
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				do
-				{
-					$banlist[] = $row['user_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-			}
-			unset($banlist_tmp);
 			break;
 
 		case 'ip':
 			$type = 'ban_ip';
 
-			for($i = 0; $i < count($ban_list); $i++)
+			foreach ($ban_list as $ban_item)
 			{
-				if (preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ban_list[$i]), $ip_range_explode))
+				if (preg_match('#^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$#', trim($ban_item), $ip_range_explode))
 				{
 					// Don't ask about all this, just don't ask ... !
 					$ip_1_counter = $ip_range_explode[1];
@@ -180,21 +176,25 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 						$ip_1_counter++;
 					}
 				}
-				else if (preg_match('/^([\w\-_]\.?){2,}$/is', trim($ban_list[$i])))
+				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
 				{
-					$ip = gethostbynamel(trim($ban_list[$i]));
+					$ip_ary = gethostbynamel(trim($ban_item));
 
-					for($j = 0; $j < count($ip); $j++)
+					foreach ($ip_ary as $ip)
 					{
-						if (!empty($ip[$j]))
+						if (!empty($ip))
 						{
-							$banlist[] = '\'' . $ip[$j] . '\'';
+							$banlist[] = "'" . $ip . "'";
 						}
 					}
 				}
-				else if (preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ban_list[$i])) || preg_match('/^[a-f0-9:]+\*?$/i', trim($ban_list[$i])))
+				else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($ban_item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($ban_item)))
 				{
-					$banlist[] = '\'' . trim($ban_list[$i]) . '\'';
+					$banlist[] = "'" . trim($ban_item) . "'";
+				}
+				else if (preg_match('#^\*$#', trim($ban_item)))
+				{
+					$banlist[] = "'*'";
 				}
 			}
 			break;
@@ -202,14 +202,11 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 		case 'email':
 			$type = 'ban_email';
 
-			for($i = 0; $i < count($ban_list); $i++)
+			foreach ($ban_list as $ban_item)
 			{
-				// This ereg match is based on one by php@unreelpro.com
-				// contained in the annotated php manual at php.com (ereg
-				// section)
-				if (eregi('^(([[:alnum:]\*]+([-_.][[:alnum:]\*]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$', trim($ban_list[$i])))
+				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', trim($ban_item)))
 				{
-					$banlist[] = '\'' . trim($ban_list[$i]) . '\'';
+					$banlist[] = "'" . trim($ban_item) . "'";
 				}
 			}
 			break;
@@ -233,11 +230,11 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 					break;
 
 				case 'ip':
-					$banlist_tmp[] = '\'' . $row['ban_ip'] . '\'';
+					$banlist_tmp[] = "'" . $row['ban_ip'] . "'";
 					break;
 
 				case 'email':
-					$banlist_tmp[] = '\'' . $row['ban_email'] . '\'';
+					$banlist_tmp[] = "'" . $row['ban_email'] . "'";
 					break;
 			}
 		}
@@ -249,11 +246,33 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 
 	if (sizeof($banlist))
 	{
-		for($i = 0; $i < count($banlist); $i++)
+		$sql = '';
+		foreach ($banlist as $ban_entry)
+		{
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+					$sql .= (($sql != '') ? ', ' : '') . "($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+					break;
+
+				case 'mssql':
+					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
+					break;
+
+				default:
+					$sql = "INSERT INTO " . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
+						VALUES ($ban_entryx, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+					$db->sql_query($sql);
+					$sql = '';
+			}
+		}
+
+		if ($sql != '')
 		{
 			$sql = "INSERT INTO " . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
-				VALUES (" . $banlist[$i] . ", $current_time, $ban_end, $ban_exclude, '$ban_reason')";
-			$db->sql_query($sql);
+				VALUES $sql";
+			$result = $db->sql_query($sql);
 		}
 
 		if (!$ban_exclude)
@@ -298,8 +317,8 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 		}
 
 		// Update log
-		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'log_ban_';
-		add_log('admin', $log_entry . $mode, $ban_reason, $ban_list_log);
+		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
+		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 	}
 
 	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
@@ -307,19 +326,45 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 }
 else if (isset($_POST['unbansubmit']))
 {
-	$unban_sql = '';
-	for($i = 0; $i < count($_POST['unban']); $i++)
-	{
-		$unban_sql .= (($unban_sql != '') ? ', ' : '') . intval($_POST['unban'][$i]);
-	}
+	$unban_sql = implode(', ', array_map('intval', $_POST['unban']));
 
 	if ($unban_sql != '')
 	{
+		$l_unban_list = '';
+		// Grab details of bans for logging information later
+		switch ($mode)
+		{
+			case 'user':
+				$sql = "SELECT u.username AS unban_info
+					FROM " . USERS_TABLE . " u, " . BANLIST_TABLE . " b 
+					WHERE b.ban_id IN ($unban_sql) 
+						AND u.user_id = b.ban_userid";
+				break;
+
+			case 'email':
+				$sql = "SELECT ban_email AS unban_info 
+					FROM " . BANLIST_TABLE . "
+					WHERE ban_id IN ($unban_sql)";
+				break;
+
+			case 'ip':
+				$sql = "SELECT ban_ip AS unban_info 
+					FROM " . BANLIST_TABLE . "
+					WHERE ban_id IN ($unban_sql)";
+				break;
+		}
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
+		}
+
 		$sql = "DELETE FROM " . BANLIST_TABLE . "
 			WHERE ban_id IN ($unban_sql)";
 		$db->sql_query($sql);
 
-		add_log('admin', 'log_unban_' . $mode, sizeof($_POST['unban']));
+		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
 
 	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
@@ -348,9 +393,7 @@ foreach ($ban_end_text as $length => $text)
 	$ban_end_options .= '<option value="' . $length . '">' . $text . '</option>';
 }
 
-//
 // Title
-//
 switch ($mode)
 {
 	case 'user':
@@ -364,9 +407,7 @@ switch ($mode)
 		break;
 }
 
-//
 // Output page
-//
 page_header($l_title);
 
 ?>
@@ -387,7 +428,7 @@ switch ($mode)
 		$l_unban_explain = $user->lang['UNBAN_USERNAME_EXPLAIN'];
 		$l_ban_cell = $user->lang['USERNAME'];
 		$l_no_ban_cell = $user->lang['NO_BANNED_USERS'];
-		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
+		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['LOOK_UP_USER'] . '" class="liteoption" onclick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
 
 		$sql = "SELECT b.*, u.user_id, u.username
 			FROM " . BANLIST_TABLE . " b, " . USERS_TABLE . " u
@@ -521,7 +562,7 @@ function display_details(option)
 		<td class="row1"><input type="text" name="banreason" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="RESET" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
+		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
 	</tr>
 </table>
 
@@ -552,7 +593,7 @@ function display_details(option)
 		<td class="row1"><input class="row1" style="border:0px" type="text" name="unbanlength" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="RESET" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
 	</tr>
 <?php
 
