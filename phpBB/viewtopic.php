@@ -128,7 +128,7 @@ $forum_name = stripslashes($forum_row[0]['forum_name']);
 $forum_id = $forum_row[0]['forum_id'];
 $topic_id = $forum_row[0]['topic_id'];
 $total_replies = $forum_row[0]['topic_replies'] + 1;
-$topic_title = $forum_row[0]['topic_title'];
+$topic_title = stripslashes($forum_row[0]['topic_title']);
 $topic_time = $forum_row[0]['topic_time'];
 
 if(!empty($post_id))
