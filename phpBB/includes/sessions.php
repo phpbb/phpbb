@@ -64,14 +64,28 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 	{
 		if($user_id == ANONYMOUS)
 		{
-			$login = 0;
+			$login = FALSE;
+			$autologin = FALSE;
+		}
+		//
+		// Remove duplicate user_id from session table
+		// if IP is different ... stops same user
+		// logging in from different PC's at same time 
+		// Do we want this ???
+		//
+		if( ( $login || $autologin ) && $user_id != ANONYMOUS && $user_id != DELETED )
+		{
+			$sql_delete_same_user = "DELETE FROM ".SESSIONS_TABLE."
+				WHERE session_user_id = '$user_id'
+					AND session_ip != '$int_ip'
+					AND session_logged_in = '1'";
+			$result = $db->sql_query($sql_delete_same_user);
 		}
 	
 		$sql_update = "UPDATE ".SESSIONS_TABLE."
 			SET session_user_id = '$user_id', session_start = '$current_time', session_time = '$current_time', session_page = '$page_id', session_logged_in = '$login'
 			WHERE (session_id = '".$cookiedata['sessionid']."')
 				AND (session_ip = '$int_ip')";
-	
 		$result = $db->sql_query($sql_update);
 
 		if(!$result || !$db->sql_affectedrows())
