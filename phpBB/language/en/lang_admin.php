@@ -202,16 +202,16 @@ $lang = array_merge($lang, array(
 	'ACL_EXPLAIN'			=> 'Permissions are based on a simple YES / NO system. Setting an option to NO for a user or usergroup overrides any other value assigned to it. If you do not wish to assign a value for an option for this user or group select UNSET. If values are assigned for this option elsewhere they will be used in preference, else NO is assumed.',
 	'PERMISSIONS_EXPLAIN'	=> 'Here you can alter which users and groups can access which forums. To assign moderators or define administrators please use the appropriate page (see left hand side menu).',
 	'MODERATORS'			=> 'Moderators',
-	'MODERATORS_EXPLAIN'	=> 'Here you can assign users and groups as forum moderators. To assign users access to forums, to define super moderators or administrators please use the appropriate page (see left hand side menu).',
+	'MODERATORS_EXPLAIN'	=> 'Here you can assign users and groups as forum moderators. To assign users access to forums, to define super moderators or administrators please use the appropriate page (see left hand side menu). If you are permitted you can also change permissions for this forum from this page. Use the select box to change views.',
 	'SUPER_MODERATORS'			=> 'Super Moderators',
-	'SUPER_MODERATORS_EXPLAIN'	=> 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. To assign users access to forums or define administrators please use the appropriate page (see left hand side menu).',
-	'ADMINISTRATORS_EXPLAIN'	=> 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel.',
+	'SUPER_MODERATORS_EXPLAIN'	=> 'Here you can assign users and groups as super moderators. Super Moderators are like ordinary moderators accept they have access to every forum on your board. To assign users access to forums or define administrators please use the appropriate page (see left hand side menu). If you are permitted you can also set permissions for forum options from this page. Use the select box to change views.',
+	'ADMINISTRATORS_EXPLAIN'	=> 'Here you can assign administrator rights to users or groups. All users with admin permissions can view the administration panel. If you are permitted you can also change permissions for forums, super moderator and moderator options from this page. Use the select box to change views.',
 	'USER_PERMISSIONS'			=> 'User Permissions', 
 	'USER_PERMISSIONS_EXPLAIN'	=> 'Here you can set user based permissions. These include capabilities such as the use of avatars, sending private messages, etc. To alter these settings for large numbers of users the Group permissions system is the prefered method.', 
 	'GROUP_PERMISSIONS'			=> 'Group Permissions', 
 	'GROUP_PERMISSIONS_EXPLAIN' => 'Here you can set usergroup based permissions. These include capabilities such as the use of avatars, sending private messages, etc. To alter these settings for single users the User permissions system is the prefered method.', 
 	'DEPENDENCIES'			=>	'Dependencies', 
-	'DEPENDENCIES_EXPLAIN'	=>	'Here you can define relationships between administrator or moderator permission options and forum options. Using this you can automatically update forum permissions based on setting admin or moderator options. While this can save time care should be taken in defining these dependencies.', 
+	'DEPENDENCIES_EXPLAIN'	=>	'Here you can define relationships between administrator or moderator permission options and forum options. Using this you can automatically update forum permissions based on setting admin or moderator options. While this can save time care should be taken in defining these dependencies. Remember, these settings apply to all users and all groups.', 
 
 	'LOOK_UP_GROUP'		=> 'Look up Usergroup', 
 	'MANAGE_USERS'		=> 'Manage Users',
@@ -241,6 +241,12 @@ $lang = array_merge($lang, array(
 	'PRESET_NAME'			=> 'Preset name', 
 	'EMPTY'					=> 'Empty',
 	'QUICK ACCESS'	=> 'Quick access', 
+
+	'ACL_VIEW_FORUM'	=> 'Forum Options', 
+	'ACL_VIEW_MOD'		=> 'Moderator Options', 
+	'ACL_VIEW_SUPERMOD'	=> 'Supermod Options', 
+	'ACL_VIEW_ADMIN'	=> 'Admin Options', 
+
 
 	'AUTH_UPDATED'	=> 'Permissions have been updated',
 
@@ -634,7 +640,7 @@ $lang = array_merge($lang, array(
 
 	'User_admin' => 'User Administration',
 	'User_admin_explain' => 'Here you can change your user\'s information and certain specific options. To modify the users permissions please use the user and group permissions system.',
-	'Look_up_user' => 'Look up user',
+	'LOOK_UP_USER' => 'Look up user',
 	'Admin_user_updated' => 'The users profile was successfully updated.',
 	'Click_return_useradmin' => 'Click %sHere%s to return to User Administration',
 	'User_delete' => 'Delete this user',
