@@ -298,7 +298,7 @@ else if( $mode == "read" )
 		{
 			$sent_info = $db->sql_fetchrow($result);
 
-			if( $sent_info['sent_items'] > $board_config['max_sentbox_privmsgs'] )
+			if( $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs'] )
 			{
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
@@ -743,7 +743,7 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 	{
 		$saved_info = $db->sql_fetchrow($result);
 
-		if( $saved_info['savebox_items'] > $board_config['max_savebox_privmsgs'] )
+		if( $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] )
 		{
 			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 				WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
@@ -979,7 +979,7 @@ else if( $submit || $refresh || $mode != "" )
 			{
 				$inbox_info = $db->sql_fetchrow($result);
 
-				if( $inbox_info['inbox_items'] > $board_config['max_inbox_privmsgs'] )
+				if( $inbox_info['inbox_items'] >= $board_config['max_inbox_privmsgs'] )
 				{
 					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
