@@ -86,7 +86,7 @@ $forum_rows = $db->sql_fetchrowset($f_result);
 //
 if( isset($HTTP_POST_VARS['doprune']) )
 {
-	$prunedays = ( isset($HTTP_POST_VARS['prunedays']) ) ? $HTTP_POST_VARS['prunedays'] : 0;
+	$prunedays = ( isset($HTTP_POST_VARS['prunedays']) ) ? intval($HTTP_POST_VARS['prunedays']) : 0;
 
 	// Convert days to seconds for timestamp functions...
 	$prunesecs = $prunedays * 1440 * 60;
@@ -142,7 +142,7 @@ else
 		);
 
 		$select_list = "<select name=\"" . POST_FORUM_URL . "\">\n";
-		$select_list .= "<option value=\"ALL\">" . $lang['All_Forums'] . "</option>\n";
+		$select_list .= "<option value=\"-1\">" . $lang['All_Forums'] . "</option>\n";
 
 		for($i = 0; $i < count($forum_rows); $i++)
 		{
@@ -164,9 +164,8 @@ else
 	}
 	else
 	{
-		$forum_id = $HTTP_POST_VARS[POST_FORUM_URL];
+		$forum_id = intval($HTTP_POST_VARS[POST_FORUM_URL]);
 		
-
 		//
 		// Output the form to retrieve Prune information.
 		//
@@ -174,7 +173,7 @@ else
 			"body" => "admin/forum_prune_body.tpl")
 		);
 
-		$forum_name = ( $forum_id == "ALL" ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
+		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
 		$prune_data .= "<input type=\"text\" name=\"prunedays\" size=\"4\"> " . $lang['Days'];
