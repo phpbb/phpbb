@@ -46,7 +46,7 @@ $lang['Manage'] = "Hallinta";
 $lang['Disallow'] = "Kielletyt nimet";
 $lang['Prune'] = "Siivous";
 $lang['Mass_Email'] = "Ryhmäsähköposti";
-$lang['Ranks'] = "Arvot";
+$lang['Ranks'] = "Tittelit";
 $lang['Smilies'] = "Hymiöt";
 $lang['Ban_Management'] = "Kieltojen hallinta";
 $lang['Word_Censor'] = "Sanasensuuri";
@@ -134,7 +134,7 @@ $lang['Look_up_Forum'] = "Näytä foorumi";
 
 $lang['Group_auth_explain'] = "Tässä voit muuttaa oikeuksia ja moderaattoristatusta jokaiselle käyttäjäryhmälle. Älä unohda muuttaessasi ryhmän oikeuksia, että jokin käyttäjä voi oikeuksiensa perusteella silti päästä foorumiin jne. Saat tällaisessa tilanteessa varoituksen ko. mahdollisuudesta.";
 $lang['User_auth_explain'] = "Tässä voit muuttaa oikeuksia ja moderaattoristatusta jokaiselle käyttäjälle. Älä unohda muuttaessasi käyttäjän oikeuksia, että ryhmän oikeudet saattavat silti sallia käyttäjän päästä foorumiin jne. Saat tällaisessa tilanteessa varoituksen ko. mahdollisuudesta.";
-$lang['Forum_auth_explain'] = "Tässä voi muuttaa ylläpito-oikeuksia kaikille foorumeille. Sinulla on sekä yksinkertainen, että yksityiskohtaisempi mahdollisuus. Yksityiskohtaisempi antaa enemmän mahdollisuuksia määritellä foormumin toimintaa. Muista, että foorumin oikeustason muuttaminen vaikuttaa siihen ketkä käyttäjät voivat tehdä tiettyjä toimenpiteitä niissä.";
+$lang['Forum_auth_explain'] = "Tässä voi muuttaa ylläpito-oikeuksia kaikille foorumeille. Sinulla on sekä yksinkertainen, että yksityiskohtaisempi mahdollisuus. Yksityiskohtaisempi antaa enemmän mahdollisuuksia määritellä foorumin toimintaa. Muista, että foorumin oikeustason muuttaminen vaikuttaa siihen ketkä käyttäjät voivat tehdä tiettyjä toimenpiteitä niissä.";
 
 $lang['Simple_mode'] = "Yksinkertainen";
 $lang['Advanced_mode'] = "Yksityiskohtainen";
@@ -185,14 +185,14 @@ $lang['Group_auth_updated'] = "Ryhmän oikeudet päivitetty";
 $lang['Auth_updated'] = "Oikeudet on päivitetty";
 $lang['Click_return_userauth'] = "Klikkaa %stästä%s palataksesi käyttäjäoikeuksiin";
 $lang['Click_return_groupauth'] = "Klikkaa %stästä%s palataksesi ryhmäoikeuksiin";
-$lang['Click_return_forumauth'] = "Klikkaa %stästä%s palataksei foorumin oikeuksiin";
+$lang['Click_return_forumauth'] = "Klikkaa %stästä%s palataksesi foorumin oikeuksiin";
 
 
 //
 // Banning
 //
 $lang['Ban_control'] = "Porttikieltojen hallinnointi";
-$lang['Ban_explain'] = "Täällä voit ylläpitää porttikieltoja. Voit antaa porttikiellon yksittäiselle käyttäjälle ja/tai ketjun IP osoitteita tai koneita. Näillä toimilla estetään käyttäjän pääsy edes foorumien pääsivulle. Estääksesi käyttäjää rekisteröitymästä toisella nimellä voit määritellä porttikiellon myös sähköpostiosoitteelle. Huomaa kuitenkin, että pelkkä sähköpostiosoitteen porttikielto ei estä käyttäjää kirjautumasta tai kirjoittamasta foorumeihin, tämä estetään käyttämällä jompaa kumpaa kahdesta ensimmäisestä tavasta.";
+$lang['Ban_explain'] = "Täällä voit ylläpitää porttikieltoja. Voit antaa porttikiellon yksittäiselle käyttäjälle ja/tai ketjulle IP osoitteita tai koneita. Näillä toimilla estetään käyttäjän pääsy edes foorumien pääsivulle. Estääksesi käyttäjää rekisteröitymästä toisella nimellä voit määritellä porttikiellon myös sähköpostiosoitteelle. Huomaa kuitenkin, että pelkkä sähköpostiosoitteen porttikielto ei estä käyttäjää kirjautumasta tai kirjoittamasta foorumeihin, tämä estetään käyttämällä jompaa kumpaa kahdesta ensimmäisestä tavasta.";
 $lang['Ban_explain_warn'] = "Huomaa, että antamalla IP osoitteiden sarjan, kaikki alku- ja loppuosoitteen välillä olevat IP osoitteet asetetaan porttikieltoon. Osoitteiden lukumäärää tietokannassa pyritään vähentämään käyttämällä jokerimerkkejä automaattisesti missä vain mahdollista. Jos todella täytyy antaa sarja IP osoitteita, pyri pitämään sarja mahdollisimman pienenä tai jos vain mahdollista käytä yksittäisiä osoitteita";
 
 $lang['Select_username'] = "Valitse käyttäjätunnus";
@@ -247,7 +247,7 @@ $lang['Acc_Admin'] = "Ylläpito";
 $lang['Abilities_settings'] = "Käyttäjien ja foorumien perusasetukset";
 $lang['Max_poll_options'] = "Äänestysvaihtoehtojen maksimi lukumäärä";
 $lang['Flood_Interval'] = "Ylivuoto (flood) tauko";
-$lang['Flood_Interval_explain'] = "Kuinka monta sekuntia käyttäjän pitää odottaa viestin lähetysten välillä"; 
+$lang['Flood_Interval_explain'] = "Kuinka monta sekuntia käyttäjän pitää odottaa viestien lähetysten välillä"; 
 $lang['Board_email_form'] = "Sähköpostin käyttö sivuston välityksellä";
 $lang['Board_email_form_explain'] = "Käyttäjät lähettävät toisilleen sähköpostia sivuston välityksellä";
 $lang['Topics_per_page'] = "Aiheita sivulla";
@@ -285,7 +285,7 @@ $lang['Max_avatar_size_explain'] = "(Korkeus x leveys pikseleinä)";
 $lang['Avatar_storage_path'] = "Avatarien tallennuspolku";
 $lang['Avatar_storage_path_explain'] = "Polku phpBB juurihakemiston alla, esim. images/avatars";
 $lang['Avatar_gallery_path'] = "Avatar Gallerian polku";
-$lang['Avatar_gallery_path_explain'] = " Polku phpBB juurihakemiston alla valmiiksi tallenetuille kuville, esim. images/avatars/gallery";
+$lang['Avatar_gallery_path_explain'] = " Polku phpBB juurihakemiston alle valmiiksi tallennetuille kuville, esim. images/avatars/gallery";
 
 $lang['COPPA_settings'] = "COPPA asetukset";
 $lang['COPPA_fax'] = "COPPA Faksi numero";
@@ -332,7 +332,7 @@ $lang['Move_up'] = "Siirrä ylöspäin";
 $lang['Move_down'] = "Siirrä alaspäin";
 $lang['Resync'] = "Synkronoi";
 $lang['No_mode'] = "Toimintoa ei asetettu";
-$lang['Forum_edit_delete_explain'] = "Alapuolella olevalla lomakkeella voit muokata kaikkia foorumien yleisiä toimintoja. Muihin konfigurointi tietoihin pääset sivun vasemman reunan linkeistä";
+$lang['Forum_edit_delete_explain'] = "Alapuolella olevalla lomakkeella voit muokata kaikkia foorumien yleisiä toimintoja. Muihin konfigurointitietoihin pääset sivun vasemman reunan linkeistä";
 
 $lang['Move_contents'] = "Siirrä kaikki sisältö";
 $lang['Forum_delete'] = "Poista foorumi";
@@ -346,7 +346,7 @@ $lang['Forum_pruning'] = "Autosiivous";
 
 $lang['prune_freq'] = 'Tarkista aiheiden ikä joka';
 $lang['prune_days'] = "Poista aiheet, joihin ei ole kirjoitettu";
-$lang['Set_prune_data'] = "Olet määritellyt automaattisen siivouksen tälle foorumille mutta et ole antanut siivoustiheyttä tai päivien lukumäärää or number of days. Ole hyvä ja anna tiedot";
+$lang['Set_prune_data'] = "Olet määritellyt automaattisen siivouksen tälle foorumille mutta et ole antanut siivoustiheyttä tai päivien lukumäärää. Ole hyvä ja anna tiedot";
 
 $lang['Move_and_Delete'] = "Siirrä ja poista";
 
@@ -356,7 +356,7 @@ $lang['Nowhere_to_move'] = "Ei ole paikkaa johon siirtää";
 $lang['Edit_Category'] = "Muokkaa kategoriaa";
 $lang['Edit_Category_explain'] = "Tällä lomakkeella määritellään kategorian nimi.";
 
-$lang['Forums_updated'] = "Foorumi ja kategoria tiedot päivitetty onnistuneesti";
+$lang['Forums_updated'] = "Foorumi- ja kategoriatiedot päivitetty onnistuneesti";
 
 $lang['Must_delete_forums'] = "Kaikki foorumit on poistettava ennen kuin tämä kategoria voidaan poistaa";
 
@@ -367,7 +367,7 @@ $lang['Click_return_forumadmin'] = "Klikkaa %stästä%s palataksesi foorumien hall
 // Smiley Management
 //
 $lang['smiley_title'] = "Hymiöiden hallinta";
-$lang['smile_desc'] = "Tällä sivulla voit lisätä, poistaa ja muokata emoticoneita ja hymiöitä, joita käyttäjät voivat käyttää tavallisissa ja yksityisissä viesteissä.";
+$lang['smile_desc'] = "Tällä sivulla voit lisätä, poistaa ja muokata hymiöitä, joita käyttäjät voivat käyttää tavallisissa ja yksityisissä viesteissä.";
 
 $lang['smiley_config'] = "Hymiöiden konfigurointi";
 $lang['smiley_code'] = "Hymiön koodi";
@@ -379,22 +379,22 @@ $lang['Emotion'] = "Emotio";
 
 $lang['Select_pak'] = "Valitse kokoelma (.pak) tiedosto";
 $lang['replace_existing'] = "Korvaa olemassa oleva hymiö";
-$lang['keep_existing'] = "Säilytä olemassa oleav hymiö";
-$lang['smiley_import_inst'] = "Sinun pitää purkaa hymiö kokoelma ja ladata kaikki tiedostot oikeaan hymiö-hakemistoon. Valitse sitten oikeat tiedot tällä lomakkeella lukeaksesi sisään hymiö kokoelman.";
-$lang['smiley_import'] = "Hymiö kokoelman sisäänluku";
-$lang['choose_smile_pak'] = "Valitse hymiö kokoelma .pak tiedosto";
+$lang['keep_existing'] = "Säilytä olemassa oleva hymiö";
+$lang['smiley_import_inst'] = "Sinun pitää purkaa hymiö kokoelma ja ladata kaikki tiedostot oikeaan hymiö-hakemistoon. Valitse sitten oikeat tiedot tällä lomakkeella lukeaksesi sisään hymiökokoelman.";
+$lang['smiley_import'] = "Hymiökokoelman sisäänluku";
+$lang['choose_smile_pak'] = "Valitse hymiökokoelman .pak tiedosto";
 $lang['import'] = "Lue sisään hymiöt";
 $lang['smile_conflicts'] = "Mitä pitää tehdä mahdollisissa päällekkäisyyksissä";
 $lang['del_existing_smileys'] = "Poista olemassa olevat hymiöt ennen sisään lukua";
-$lang['import_smile_pack'] = "Lue sisään hymiö kokoelma";
-$lang['export_smile_pack'] = "Luo hymiö kokoelma";
-$lang['export_smiles'] = "Luodaksesi hymiö kokoelman nykyisistä hymiöistä, klikkaa %stästä%s siirtääksesi hymiö tiedoston. Nimeä tiedosto säilyttäen .pak tarkenne. Luo zip tiedosto joka sisältää kaikki hymiö tiedostot ja tämän .pak konfigurointi tiedoston.";
+$lang['import_smile_pack'] = "Lue sisään hymiökokoelma";
+$lang['export_smile_pack'] = "Luo hymiökokoelma";
+$lang['export_smiles'] = "Luodaksesi hymiökokoelman nykyisistä hymiöistä, klikkaa %stästä%s siirtääksesi hymiö (smiles.pak) tiedoston. Nimeä tiedosto säilyttäen .pak tarkenne. Luo zip tiedosto joka sisältää kaikki hymiötiedostot ja tämän .pak konfigurointi tiedoston.";
 
 $lang['smiley_add_success'] = "Hymiön lisäys onnistui";
 $lang['smiley_edit_success'] = "Hymiön päivitys onnistui";
-$lang['smiley_import_success'] = "Hymiö kokoelman sisään luku onnistui!";
+$lang['smiley_import_success'] = "Hymiökokoelman sisäänluku onnistui!";
 $lang['smiley_del_success'] = "Hymiön poisto onnistui";
-$lang['Click_return_smileadmin'] = "Klikkaa %stästä%s palataksei hymiöiden hallintaan";
+$lang['Click_return_smileadmin'] = "Klikkaa %stästä%s palataksesi hymiöiden hallintaan";
 
 
 //
@@ -452,7 +452,7 @@ $lang['delete_group_moderator'] = "Poistetaanko ryhmän entinen moderaattori?";
 $lang['delete_moderator_explain'] = "Jos muutat ryhmän moderaattoria laita rasti tähän ruutuun poistaaksesi vanhan moderaattoritiedon. Muussa tapauksessa älä laita raksia ja käyttäjästä tulee tavallinen ryhmän jäsen.";
 $lang['Click_return_groupsadmin'] = "Klikkaa %stästä%s palataksesi ryhmän hallintaan.";
 $lang['Select_group'] = "Valitse ryhmä";
-$lang['Look_up_group'] = "Etsi ryhmä";
+$lang['Look_up_group'] = "Näytä ryhmä";
 
 
 //
@@ -577,7 +577,7 @@ $lang['Theme_installed'] = "Valittu teema on asennettu onnistuneesti";
 $lang['Style_removed'] = "Valittu tyyli on poistettu tietokannasta. Poistaaksesi kokonaan tyylin järjestelmästä täytyy sinun poistaa tyylitiedosto mallien hakemistosta.";
 $lang['Theme_info_saved'] = "Teeman tiedot valitussa mallissa on tallennettu. Sinun täytyy nyt palauttaa käyttöoikeudeksi pelkkä luku (read-only) tiedostoon theme_info.cfg (ja tarvittaessa valittuun mallihakemistoon)";
 $lang['Theme_updated'] = "Valittu teema on päivitetty. Siirrä nyt uudet teeman asetukset";
-$lang['Theme_created'] = "Teema luotu. Siirrä nyt teema konfigurointi tiedostoon varmuuden vuoksi, tai käytettäväksi myös muualla";
+$lang['Theme_created'] = "Teema luotu. Siirrä nyt teema konfigurointitiedostoon varmuuden vuoksi, tai käytettäväksi myös muualla";
 
 $lang['Confirm_delete_style'] = "Oletko varma, että haluat poistaa tämän tyylin";
 
@@ -645,7 +645,7 @@ $lang['Welcome_install'] = "Tervetuloa phpBB 2 asennukseen";
 $lang['Initial_config'] = "Perus konfiguraatio";
 $lang['DB_config'] = "Tietokanta konfiguraatio";
 $lang['Admin_config'] = "Ylläpidon konfiguraatio";
-$lang['continue_upgrade'] = "Kun olet ladannut configurointi tiedoston paikalliselle koneelle voit klikat\"jatka päivitystä\" painiketta alapuolella jatkaaksesi päivitystä.  Ole hyvä ja odota konfigurointitiedoston lataamista kunnes päivitys on valmis.";
+$lang['continue_upgrade'] = "Kun olet ladannut konfigurointi tiedoston paikalliselle koneelle voit klikata\"jatka päivitystä\" painiketta alapuolella jatkaaksesi päivitystä.  Ole hyvä ja odota konfigurointitiedoston lataamista kunnes päivitys on valmis.";
 $lang['upgrade_submit'] = "Jatka päivitystä";
 
 $lang['Installer_Error'] = "Asennuksen yhteydessä tapahtui virhe";
@@ -672,14 +672,14 @@ $lang['Admin_Username'] = "Ylläpitäjän käyttäjätunnus";
 $lang['Admin_Password'] = "Ylläpitäjän salasana";
 $lang['Admin_Password_confirm'] = "Ylläpitäjän salasana [ Vahvista ]";
 
-$lang['Inst_Step_2'] = "Ylläpitäjän käyttäjätunnus on luotu. Tässä vaiheessa perusasennus on valmis. Nyt saat seuraavan sivun jolla voit hallinnoida uutta asennustasi. Ole hyvä ja valmista perus konfiguraation tiedot ja tee tarvittavat muutokset. Kiitoksia, että valitsit phpBB 2.";
+$lang['Inst_Step_2'] = "Ylläpitäjän käyttäjätunnus on luotu. Tässä vaiheessa perusasennus on valmis. Nyt saat seuraavan sivun jolla voit hallinnoida uutta asennustasi. Ole hyvä ja varmista peruskonfiguraation tiedot ja tee tarvittavat muutokset. Kiitoksia, että valitsit phpBB 2:n.";
 
-$lang['Unwriteable_config'] = "Konfigurointitiedostosi ei ole kirjoituskelpoinen tällä hetkellä. Kopio konfigurointitiedostosta ladataan sinulle kun klikkaat painiketta alapuolella. Sinun tulee siirtää tämä tiedosto samaan hakemistoon kuin phpBB 2. Kun tämä on tehty kirjaudu sisään ylläpitäjän käyttäjätunnuksella ja salasanalla ja käy ylläpidon hallintasivuilla  (Linkki ilmestyy sivun alareunaan sisään kirjautumisen jälkeen) tarkistaaksei yleiset asetukset. Kiitos kun valitsit phpBB 2.";
+$lang['Unwriteable_config'] = "Konfigurointitiedostosi ei ole kirjoituskelpoinen tällä hetkellä. Kopio konfigurointitiedostosta ladataan sinulle kun klikkaat painiketta alapuolella. Sinun tulee siirtää tämä tiedosto samaan hakemistoon kuin phpBB 2. Kun tämä on tehty kirjaudu sisään ylläpitäjän käyttäjätunnuksella ja salasanalla ja käy ylläpidon hallintasivuilla  (Linkki ilmestyy sivun alareunaan sisään kirjautumisen jälkeen) tarkistaaksesi yleiset asetukset. Kiitos kun valitsit phpBB 2:n.";
 $lang['Download_config'] = "Lataa konfigurointitiedosto";
 
 $lang['ftp_choose'] = "Valitse tiedonsiirtotapa";
 $lang['ftp_option'] = "<br />Koska myös FTP on mahdollista tässä PHP versiossa sinulle voidaan antaa mahdollisuus automaattisesti siirtää ftp:llä tiedosto oikeaan paikkaan.";
-$lang['ftp_instructs'] = "Olet valinnut tiedoston siirrettäväksi automaattisesti ftp:llä. Ole hyvä ja anna alla kysytyt tiedot, jotta tiedonsiirto onnistuu.  Huomioi, että FTP polun tulee olla tarkka polku ftp:llä phpBB2 asennushakemistoon kuten siirtäisiti mitä tahansa tietoa ftp:llä.";
+$lang['ftp_instructs'] = "Olet valinnut tiedoston siirrettäväksi automaattisesti ftp:llä. Ole hyvä ja anna alla kysytyt tiedot, jotta tiedonsiirto onnistuu.  Huomioi, että FTP polun tulee olla tarkka polku ftp:llä phpBB2 asennushakemistoon kuten siirtäisit mitä tahansa tietoa ftp:llä.";
 $lang['ftp_info'] = "Anna FTP tiedot ";
 $lang['Attempt_ftp'] = "Yritetään siirtää konfigurointitiedosto ftp:llä";
 $lang['Send_file'] = "Lähetä tiedosto minulle ja siirrän sen ftp:llä manuaalisesti";

@@ -139,6 +139,9 @@ $lang['Guest_users_zero_total'] = "0 Vierasta";
 $lang['Guest_users_total'] = "%d Vieraita";
 $lang['Guest_user_total'] = "%d Vieras";
 
+$lang['Admin_online_color'] = "%sYlläpitäjä%s";
+$lang['Mod_online_color'] = "%sModeraattori%s";
+
 $lang['You_last_visit'] = "Edellinen käyntisi oli %s"; // %s replaced by date/time
 $lang['Current_time'] = "Kellonaika on nyt %s"; // %s replaced by time
 
@@ -170,7 +173,7 @@ $lang['Registered_users_total'] = "Meillä on  <b>%d</b> rekisteröityä käyttäjää"
 $lang['Registered_user_total'] = "Meillä on <b>%d</b> rekisteröity käyttäjä"; // # registered users
 $lang['Newest_user'] = "Uusin rekisteröitynyt käyttäjä on <b>%s%s%s</b>"; // a href, username, /a 
 
-$lang['No_new_posts_last_visit'] = "Ei uusia viestejä edellisen käynstisi jälkeen";
+$lang['No_new_posts_last_visit'] = "Ei uusia viestejä edellisen käyntisi jälkeen";
 $lang['No_new_posts'] = "Ei uusia viestejä";
 $lang['New_posts'] = "Uusia viestejä";
 $lang['New_post'] = "Uusi viesti";
@@ -257,7 +260,7 @@ $lang['Submit_vote'] = "Äänestä";
 $lang['View_results'] = "Näytä tulokset";
 
 $lang['No_newer_topics'] = "Tässä foorumissa ei ole uudempia aiheita";
-$lang['No_older_topics'] = "Tässä fooumissa ei ole vanhempia aiheita";
+$lang['No_older_topics'] = "Tässä foorumissa ei ole vanhempia aiheita";
 $lang['Topic_post_not_exist'] = "Hakemaasi aihetta tai viestiä ei löydy";
 $lang['No_posts_topic'] = "Otsikolla ei ole viestejä";
 
@@ -269,7 +272,7 @@ $lang['Oldest_First'] = "Vanhin ensin";
 $lang['Back_to_top'] = "Takaisin alkuun";
 
 $lang['Read_profile'] = "Näytä käyttäjän tiedot"; 
-$lang['Send_email'] = "Lähetä sähköpostia käyttjälle";
+$lang['Send_email'] = "Lähetä sähköpostia käyttäjälle";
 $lang['Visit_website'] = "Käy lähettäjän sivustolla";
 $lang['ICQ_status'] = "ICQ Status";
 $lang['Edit_delete_post'] = "Muokkaa/Poista viesti";
@@ -305,7 +308,7 @@ $lang['No_post_mode'] = "Viestin muotoa ei ole määritetty"; // If posting.php is
 
 $lang['Post_a_new_topic'] = "Luo uusi aihe";
 $lang['Post_a_reply'] = "Vastaa";
-$lang['Post_topic_as'] = "Luo aihe";
+$lang['Post_topic_as'] = "Viestin muoto";
 $lang['Edit_Post'] = "Muokkaa viestiä";
 $lang['Options'] = "Vaihtoehdot";
 
@@ -368,13 +371,13 @@ $lang['Vote_cast'] = "Äänesi on rekisteröity";
 
 $lang['Topic_reply_notification'] = "Ilmoitus vastauksesta aiheeseen";
 
-$lang['bbcode_b_help'] = "Lihvaointi: [b]text[/b]  (alt+b)";
+$lang['bbcode_b_help'] = "Lihavointi: [b]text[/b]  (alt+b)";
 $lang['bbcode_i_help'] = "Kursivointi: [i]text[/i]  (alt+i)";
 $lang['bbcode_u_help'] = "Alleviivaus: [u]text[/u]  (alt+u)";
 $lang['bbcode_q_help'] = "Lainaus: [quote]text[/quote]  (alt+q)";
 $lang['bbcode_c_help'] = "Koodin näyttö: [code]code[/code]  (alt+c)";
-$lang['bbcode_l_help'] = "Lista: [list]text[/list] (alt+l)";
-$lang['bbcode_o_help'] = "Järjestetty lista: [list=]text[/list]  (alt+o)";
+$lang['bbcode_l_help'] = "Luettelo: [list]text[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Järjestetty luettelo: [list=]text[/list]  (alt+o)";
 $lang['bbcode_p_help'] = "Lisää kuva: [img]http://image_url[/img]  (alt+p)";
 $lang['bbcode_w_help'] = "Lisää URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)";
 $lang['bbcode_a_help'] = "Sulje kaikki avoimet bbCode tagit";
@@ -496,7 +499,7 @@ $lang['About_user'] = "Kaikki käyttäjästä %s"; // %s is username
 
 $lang['Preferences'] = "Valinnat";
 $lang['Items_required'] = "Kentät, jotka on merkitty * ovat pakollisia ellei muuta mainita";
-$lang['Registration_info'] = "Rekisteröinti tiedot";
+$lang['Registration_info'] = "Rekisteröintitiedot";
 $lang['Profile_info'] = "Käyttäjätiedot";
 $lang['Profile_info_warn'] = "Nämä tiedot ovat kaikille näkyvissä";
 $lang['Avatar_panel'] = "Avatarien ohjauspaneeli";
@@ -512,7 +515,7 @@ $lang['Hidden_email'] = "[ Piilotettu ]";
 $lang['Search_user_posts'] = "Etsi tämän käyttäjän kirjoittamat viestit";
 $lang['Interests'] = "Harrastukset";
 $lang['Occupation'] = "Ammatti"; 
-$lang['Poster_rank'] = "Käyttäjä titteli";
+$lang['Poster_rank'] = "Käyttäjätitteli";
 
 $lang['Total_posts'] = "Viestejä yhteensä";
 $lang['User_post_pct_stats'] = "%.2f%% kaikista viesteistä"; // 1.25% of total
@@ -602,8 +605,8 @@ $lang['COPPA'] = "Käyttäjätunnuksesi on luotu mutta vaatii vahvistuksen, Tarkist
 $lang['Registration'] = "Rekisteröintisopimus";
 $lang['Reg_agreement'] = "Vaikka tämän sivuston ylläpitäjät ja moderaattorit pyrkivät poistamaan tai muokkaamaan kaiken yleisesti arvelluttavan sisällön niin nopeasti kuin mahdollista, on mahdotonta tarkistaa jokaista viestiä. Tiedostatte siis, että viestit sivuilla ovat kirjoittajiensa mielipiteitä eivätkä ylläpidon, moderaattoreiden tai webmasterin (lukuunottamatta heidän itsensä kirjoittamia viestejä) ja siksi he eivät ole vastuussa näistä kirjoituksista.<br /><br />Suostut olemaan esittämättä mitään loukkaavaa, vihamielistä, epämoraalista tai muutakaan materiaalia joka voisi loukata voimassa olevia lakeja. Toimimalla tätä vastoin voidaan sinut välittömästi ja lopullisesti poistaa järjestelmän käyttäjistä (tarvittaessa yhteydentarjoajaasi otetaan yhteyttä). Kaikkien viestien IP osoite tallennetaan tämän vuoksi. Suostut siihen, että webmaster, ylläpito ja moderaattorit ovat oikeutettuja poistamaan, muokkaamaan, siirtämään tai sulkemaan minkä tahansa aiheen milloin tahansa. Käyttäjänä suostut siihen, että kaikki yllä annettu tieto tallennetaan tietokantaan. Tätä tietoa ei anneta millekään kolmannelle osapuolelle ilman suostumustasi. Webmaster, ylläpito ja moderaattorit eivät ole vastuullisia jos tietoturva vaarantuu hakkerointiyrityksistä tms. johtuen.<br /><br />Tämä sivusto käyttää avusteita (cookies) tallentamaan tietoa paikalliselle tietokoneelle. Nämä avusteet eivät sisällä mitään yllä annetuista tiedoista, niiden ainoa tarkoitus on helpottaa käyttöä. Sähköpostiosoitetta käytetään vain käyttäjätunnus tietojen lähettämiseen (Sekä salasanan lähettämiseen jos unohdat sen).<br /><br /> Klikkaamalla Hyväksyn hyväksyt nämä ehdot.";
 
-$lang['Agree_under_13'] = "Hyväksyn ehdot ja olen <b>alle</b> 18 vuotias";
-$lang['Agree_over_13'] = "Hyväksyn ehdot ja olen <b>yli</b> 18 vuotias";
+$lang['Agree_under_13'] = "Hyväksyn ehdot ja olen <b>alle</b> 13 vuotias";
+$lang['Agree_over_13'] = "Hyväksyn ehdot ja olen <b>yli</b> 13 vuotias";
 $lang['Agree_not'] = "En hyväksy ehtoja";
 
 $lang['Wrong_activation'] = "Antamasi aktivointiavain ei täsmää tietokantaan tallennetun kanssa";
@@ -618,7 +621,7 @@ $lang['No_user_specified'] = "Käyttäjää ei ole määritelty";
 $lang['User_prevent_email'] = "Tämä käyttäjä ei halua vastaanottaa sähköpostia. Yritä lähettää yksityinen viesti";
 $lang['User_not_exist'] = "Käyttäjätunnusta ei ole olemassa";
 $lang['CC_email'] = "Lähetä kopio sähköpostista itsellesi";
-$lang['Email_message_desc'] = "Tämä viesti lähetetään pelkkänä tekstinä, älä käytä HTML or BBCode koodeja. Paluuosoitteeksi tälle viestille asetetaan sähköpostiosoitteesi.";
+$lang['Email_message_desc'] = "Tämä viesti lähetetään pelkkänä tekstinä, älä käytä HTML tai BBCode koodeja. Paluuosoitteeksi tälle viestille asetetaan sähköpostiosoitteesi.";
 $lang['Flood_email_limit'] = "Et voi lähettää uutta sähköpostia nyt, yritä myöhemmin uudelleen";
 $lang['Recipient'] = "Vastaanottaja";
 $lang['Email_sent'] = "Sähköposti on lähetetty";
@@ -724,7 +727,9 @@ $lang['Search_author'] = "Etsi kirjoittajaa";
 $lang['Search_author_explain'] = "Käytä * jokerimerkkinä";
 
 $lang['Search_for_any'] = "Hae millä tahansa ehdolla tai käytä annettua hakujonoa";
-$lang['Search_for_all'] = "Etsi kaikilla ehdoilla";
+$lang['Search_for_all'] = "Etsi kaikilla annetuilla ehdoilla";
+$lang['Search_title_msg'] = "Etsi viestin aiheesta ja tekstistä";
+$lang['Search_msg_only'] = "Etsi vain viestin tekstistä";
 
 $lang['Return_first'] = "Näytä ensimmäiset"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "merkkiä viestistä";
@@ -809,7 +814,7 @@ $lang['Viewing_FAQ'] = "Katsoo FAQ";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Moderaattorin ohjauspaneeli";
-$lang['Mod_CP_explain'] = "Käyttämällä alla olevaa lomaketta voit suorittaa useita moderointitoimia tässä foorumissa. Voit lukita, vapautta, siirtää tai poistaa mitä tahansa aiheita.";
+$lang['Mod_CP_explain'] = "Käyttämällä alla olevaa lomaketta voit suorittaa useita moderointitoimia tässä foorumissa. Voit lukita, vapauttaa, siirtää tai poistaa mitä tahansa aiheita.";
 
 $lang['Select'] = "Valitse";
 $lang['Delete'] = "Poista";

@@ -4,6 +4,6 @@ Olet saanut uuden yksityisen viestin käyttäjätunnuksellesi sivustolla "{SITENAME
 
 {U_INBOX}
 
-Muista, että voi milloin tahansa valita, ettei sinulle ilmoiteta uusista viesteistä muuttamalla vastaavaa asetusta käyttäjätiedoissasi.
+Muista, että voit milloin tahansa valita, ettei sinulle ilmoiteta uusista viesteistä muuttamalla vastaavaa asetusta käyttäjätiedoissasi.
 
 {EMAIL_SIG}
