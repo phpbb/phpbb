@@ -61,7 +61,7 @@ function emoticon(theSmilie) {
 								<td align="center"><span class="courier"><input type="button" name="addbbcode1" value=" B " title="Bold" style="font-weight:bold" onClick="bbstyle(this.form,'[b]','[/b]');"> <input type="button" name="addbbcode2" value=" i " title="Italic" style="font-style:italic" onClick="bbstyle(this.form,'[i]','[/i]');"> <input type="button" name="addbbcode3" value="Quote" title="Quote"  onClick="bbstyle(this.form,'[quote]','[/quote]');"> <input type="button" name="addbbcode4" value="Code" title="Code"  onClick="bbstyle(this.form,'[code]','[/code]');"> <input type="button" name="addbbcode5" value="List" title="List"  onClick="bbstyle(this.form,'[list]','[/list]');"> <input type="button" name="addbbcode6" value="List=" title="Ordered list" onClick="bbstyle(this.form,'[list=]','[/list]');"> <input type="button" name="addbbcode7" value="Img" title="Image"  onClick="bbstyle(this.form,'[img]','[/img]');"> <input type="button" name="addbbcode8" value="URL" title="URL" style="text-decoration: underline" onClick="bbstyle(this.form,'[url]','[/url]');"></span></td>
 							</tr>
 							<tr>
-								<td><span class="courier"><textarea name="message" rows="12" cols="45" wrap="virtual" tabindex="2" />{MESSAGE}</textarea></span></td>
+								<td><span class="courier"><textarea name="message" rows="12" cols="45" wrap="virtual" tabindex="2">{MESSAGE}</textarea></span></td>
 							</tr>
 						</table></td>
 						<td width="50%" valign="middle"><table border="0" cellspacing="0" cellpadding="5" align="center">
@@ -94,8 +94,8 @@ function emoticon(theSmilie) {
 							</tr>
 							<tr align="center" valign="middle">
 								<td><a href="javascript:emoticon(':idea:')"><img src="images/smiles/icon_idea.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_question.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':!')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15"	border="0"></a></td>
+								<td><a href="javascript:emoticon(':?:')"><img src="images/smiles/icon_question.gif" width="15" height="15"	border="0"></a></td>
+								<td><a href="javascript:emoticon(':!:')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15"	border="0"></a></td>
 								<td><a href="javascript:emoticon(':arrow:')"><img src="images/smiles/icon_arrow.gif" width="15" height="15"	border="0"></a></td>
 							</tr>
 						</table></td>
