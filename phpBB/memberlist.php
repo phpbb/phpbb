@@ -42,16 +42,16 @@ if(!$start)
 switch($mode)
 {
 	case 'top10':
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
 				  FROM ".USERS_TABLE." WHERE user_id != ".ANONYMOUS." AND user_level != ".DELETED." ORDER BY user_posts ASC LIMIT 10";
 		
 	break;
 	case 'alpha':
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
 				  FROM ".USERS_TABLE." WHERE user_id != ".ANONYMOUS." AND user_level != ".DELETED." ORDER BY username ASC LIMIT $start, ".$board_config['topics_per_page'];
 	break;
 	default:
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
 				  FROM ".USERS_TABLE." 	WHERE user_id != ".ANONYMOUS." AND user_level != ".DELETED." ORDER BY user_id ASC LIMIT $start, ".$board_config['topics_per_page'];
 	break;
 }
@@ -83,11 +83,13 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 	for($x = $start; $x < $selected_members; $x++)
 	{
+		unset($email);
 		$username = stripslashes($members[$x]['username']);
 		$user_id = $members[$x]['user_id'];
 		$posts = $members[$x]['user_posts'];
 		$from = stripslashes($members[$x]['user_from']);
 		$joined = create_date($board_config['default_dateformat'], $members[$x]['user_regdate'], $board_config['default_timezone']);
+		
 		if($members[$x]['user_viewemail'] != 0)
 		{
 			$email = str_replace("@", " at ", $members[$x]['user_email']);
@@ -98,10 +100,10 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$email = "&nbsp;";
 		}
 		
-		if($members[$x]['user_website'])
+		if($members[$x]['user_website'] != '')
 		{
 			$url_img = $images['www'];
-			$url = "<a href=\"".stripslashes($members[$x]['user_website'])."\"><img src=\"".$url_img."\" /></a>";
+			$url = "<a href=\"".stripslashes($members[$x]['user_website'])."\"><img src=\"".$url_img."\" border=\"0\"/></a>";
 		}
 		else
 		{
@@ -148,8 +150,12 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$total_members = $total[0]['total'];
 			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode", $total_members, $board_config['posts_per_page'], $start, TRUE);
 		}
-		$template->assign_vars(array("PAGINATION" => $pagination));
 	}
+	else
+	{
+		$pagination = "&nbsp;";
+	}
+	$template->assign_vars(array("PAGINATION" => $pagination));
 	$template->pparse("body");
 }
 

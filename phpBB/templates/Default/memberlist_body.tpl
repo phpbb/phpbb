@@ -20,7 +20,7 @@
 					<td align="center" valign="middle">{memberrow.JOINED}</td>
 					<td align="center" valign="middle">{memberrow.POSTS}</td>
 					<td align="center" valign="middle">{memberrow.EMAIL}</td>
-					<td align="center">{WEBSITE}</a></td>
+					<td align="center">{memberrow.WEBSITE}</a></td>
 				</tr>
 				<!-- END memberrow -->
 				<tr class="catheader">
