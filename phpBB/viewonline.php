@@ -96,18 +96,10 @@ $guest_users = 0;
 $online_count = $db->sql_numrows($result);
 if($online_count)
 {
+	$count = 0;
+
 	for($i = 0; $i < $online_count; $i++)
 	{
-
-		if(!($i % 2))
-		{
-			$row_color = "#" . $theme['td_color1'];
-		}
-		else
-		{
-			$row_color = "#" . $theme['td_color2'];
-		}
-
 		if($onlinerow[$i]['user_id'] != ANONYMOUS)
 		{
 			if($onlinerow[$i]['session_logged_in'])
@@ -206,6 +198,16 @@ if($online_count)
 
 		if( $logged_on && ( !$hidden || $userdata['user_level'] == ADMIN ) )
 		{
+			if($count % 2))
+			{
+				$row_color = "#" . $theme['td_color1'];
+			}
+			else
+			{
+				$row_color = "#" . $theme['td_color2'];
+			}
+			$count++;
+
 			$template->assign_block_vars("userrow", array(
 				"ROW_COLOR" => $row_color,
 				"USERNAME" => $username,
