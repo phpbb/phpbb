@@ -550,10 +550,10 @@ function delete_attachments($post_id_array = -1, $attach_id_array = -1, $page = 
 			// delete attachments
 			while ($row = $db->sql_fetchrow($result))
 			{
-				phpbb_unlink($row['physical_filename'], 'file', $config['use_ftp_upload']);
+				phpbb_unlink($row['physical_filename'], 'file');
 				if ($row['thumbnail'])
 				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
+					phpbb_unlink($row['physical_filename'], 'thumbnail');
 				}
 					
 				$sql = 'DELETE FROM ' . ATTACHMENTS_DESC_TABLE . '

@@ -21,7 +21,7 @@ function generate_smilies($mode)
 
 	if ($mode == 'window')
 	{
-		$user->setup(false);
+		$user->setup(FALSE);
 
 		page_header($user->lang['SMILIES'] . ' - ' . $topic_title);
 
@@ -65,7 +65,7 @@ function generate_smilies($mode)
 		if ($mode == 'inline' && $num_smilies >= $max_smilies_inline)
 		{
 			$template->assign_vars(array(
-				'S_SHOW_EMOTICON_LINK' 	=> true,
+				'S_SHOW_EMOTICON_LINK' 	=> TRUE,
 				'U_MORE_SMILIES' 		=> "posting.$phpEx$SID&amp;mode=smilies")
 			);
 		}
@@ -139,8 +139,9 @@ function update_last_post_information($type, $id, &$parent_sql)
 			$sql_where_add = 'AND p.topic_id = ' . (int) $id;
 			$sql_update_table = TOPICS_TABLE;
 			break;
+
 		default:
-			return;
+			return array();
 	}
 
 	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
@@ -175,7 +176,7 @@ function update_last_post_information($type, $id, &$parent_sql)
 	// Not able to test this, since subforums seems to be broken
 	if ($type == 'forum')
 	{
-		$forum_parents = get_forum_branch($id, 'parents', 'descending', false);
+		$forum_parents = get_forum_branch($id, 'parents', 'descending', FALSE);
 		$forum_ids = array();
 		foreach ($forum_parents as $row)
 		{
@@ -256,7 +257,7 @@ function upload_attachment($filename)
 			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
 			{
 				$filedata['error'][] = sprintf($user->lang['Error_imagesize'], $config['img_max_width'], $config['img_max_height']);
-				$filedata['post_attach'] = false;
+				$filedata['post_attach'] = FALSE;
 				return $filedata;
 			}
 		}
@@ -270,7 +271,7 @@ function upload_attachment($filename)
 		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
 			
 		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
-		$filedata['post_attach'] = false;
+		$filedata['post_attach'] = FALSE;
 		return $filedata;
 	}
 
@@ -280,7 +281,7 @@ function upload_attachment($filename)
 		if ($config['total_filesize'] + $filedata['filesize'] > $config['attachment_quota'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = false;
+			$filedata['post_attach'] = FALSE;
 			return $filedata;
 		}
 	}
@@ -311,7 +312,7 @@ function upload_attachment($filename)
 	if ($result != '')
 	{
 		$filedata['error'][] = $result;
-		$filedata['post_attach'] = false;
+		$filedata['post_attach'] = FALSE;
 	}
 	return $filedata;
 }
@@ -322,7 +323,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	global $user, $config;
 
 	$destination_filename = $filedata['destination_filename'];
-	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : false;
+	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : FALSE;
 
 	switch ($upload_mode)
 	{
@@ -367,7 +368,7 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 }
 
 // Delete File
-function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
+function phpbb_unlink($filename, $mode = 'file')
 {
 	global $config, $user;
 
