@@ -130,6 +130,8 @@ define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
 define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('RATINGS_TABLE', $table_prefix.'ratings');
+define('REPORTS_TABLE', $table_prefix.'reports');
+define('REASONS_TABLE', $table_prefix.'reports_reasons');
 define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SEARCH_WORD_TABLE', $table_prefix.'search_wordlist');
 define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
