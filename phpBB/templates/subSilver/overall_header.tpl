@@ -142,8 +142,8 @@ a:hover.postdetails	{ color: #C23030; text-decoration: underline; }
 /* The content of the posts (body of text) */
 .postbody { font-size : 12px; line-height: 150%}
 
-a.postbody	{ text-decoration: none; color : #0176BC }
-a:hover.postbody { text-decoration: underline; color : #C23030 }
+a.postlink	{ text-decoration: none; color : {T_BODY_LINK} }
+a:hover.postlink { text-decoration: underline; color : #C23030 }
 
 
 /* Quote Code (currently not used) */

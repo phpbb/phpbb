@@ -25,7 +25,7 @@
   </tr>
   <!-- BEGIN postrow -->
   <tr> 
-	<td width="22%" align="left" valign="top" class="{postrow.ROW_CLASS}" rowspan="2"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br />
+	<td width="22%" align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br />
 	  <span class="postdetails">{postrow.POSTER_RANK}<br />
 	  {postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br />
 	  <br />
@@ -33,7 +33,7 @@
 	  {postrow.POSTER_POSTS}<br />
 	  {postrow.POSTER_FROM}</span><br />
 	</td>
-	<td class="{postrow.ROW_CLASS}" height="28"> 
+	<td class="{postrow.ROW_CLASS}" height="28" valign="top"> 
 	  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr> 
 		  <td>{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
@@ -41,11 +41,14 @@
 		  <td nowrap="nowrap" valign="top" align="right">{postrow.IP_IMG} {postrow.QUOTE_IMG} 
 			{postrow.EDIT_IMG}</td>
 		</tr>
+		<tr> 
+		  <td colspan="2"><hr /></td>
+		</tr>
+		<tr> 
+		  <td colspan="2"><span class="postbody">{postrow.MESSAGE}</span></td>
+		</tr>
 	  </table>
 	</td>
-  </tr>
-  <tr> 
-	<td valign="top" class="{postrow.ROW_CLASS}"><span class="postbody">{postrow.MESSAGE}</span></td>
   </tr>
   <tr> 
 	<td width="22%" align="left" valign="middle" class="{postrow.ROW_CLASS}"><span class="nav"><a href="#top" class="nav">Back 
@@ -67,7 +70,7 @@
   <tr align="center"> 
 	<td class="catBottom" colspan="2" height="28"> 
 	  <table border="0" cellspacing="0" cellpadding="0">
-		<tr>
+		<tr> 
 		  <form method="post" action="{S_POST_DAYS_ACTION}">
 			<td align="center"><span class="gensmall">{L_DISPLAY_POSTS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;{S_SELECT_POST_ORDER}&nbsp; 
 			  <input type="submit" value="{L_GO}" class="liteoption" name="submit" />
