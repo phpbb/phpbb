@@ -14,7 +14,7 @@
 class acm
 {
 	var $vars = '';
-	var $vars_ts = array();
+	var $var_expires = array();
 	var $is_modified = FALSE;
 
 	var $sql_rowset = array();
@@ -35,7 +35,7 @@ class acm
 	{
 		$this->save();
 		unset($this->vars);
-		unset($this->vars_ts);
+		unset($this->var_expires);
 		unset($this->sql_rowset);
 	}
 
@@ -47,7 +47,7 @@ class acm
 		}
 
 		global $phpEx;
-		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->vars_ts=" . $this->format_array($this->vars_ts) . ' ?>';
+		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->var_expires=" . $this->format_array($this->var_expires) . ' ?>';
 
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
@@ -60,19 +60,21 @@ class acm
 		$this->is_modified = FALSE;
 	}
 
-	function tidy($max_age = 0)
+	function tidy()
 	{
 		global $phpEx;
 
 		$dir = opendir($this->cache_dir);
 		while ($entry = readdir($dir))
 		{
-			if (substr($entry, 0, 4) != 'sql_')
+			if (!preg_match('/^(sql_|data_(?!global))/', $entry))
 			{
 				continue;
 			}
 
-			if (time() > filemtime($this->cache_dir . $entry) + $max_age)
+			$expired = TRUE;
+			include($this->cache_dir . $entry);
+			if ($expired)
 			{
 				unlink($this->cache_dir . $entry);
 			}
@@ -81,35 +83,62 @@ class acm
 
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
-			foreach ($this->vars_ts as $var_name => $timestamp)
+			if (!is_array($this->vars))
 			{
-				if (time() > $timestamp + $max_age)
+				$this->load();
+			}
+
+			foreach ($this->var_expires as $var_name => $expires)
+			{
+				if (time() > $expires)
 				{
 					$this->destroy($var_name);
 				}
 			}
 		}
+	}
+
+	function get($var_name)
+	{
+		if ($var_name{0} == '_')
+		{
+			global $phpEx;
+
+			include($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			return (isset($data)) ? $data : NULL;
+		}
 		else
 		{
-			$this->vars = $this->vars_ts = array();
+			return ($this->exists($var_name)) ? $this->vars[$var_name] : NULL;
+		}
+	}
+
+	function put($var_name, $var, $ttl = 31536000)
+	{
+		if ($var_name{0} == '_')
+		{
+			global $phpEx;
+
+			if ($fp = @fopen($this->cache_dir . 'data' . $var_name . ".$phpEx", 'wb'))
+			{
+				@flock($fp, LOCK_EX);
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? TRUE : FALSE;\nif (\$expired) { return; }\n\n\$data = unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($var))) . "');\n?>");
+				@flock($fp, LOCK_UN);
+				fclose($fp);
+			}
+		}
+		else
+		{
+			$this->vars[$var_name] = $var;
+			$this->var_expires[$var_name] = time() + $ttl;
 			$this->is_modified = TRUE;
 		}
 	}
 
-	function get($var_name, $max_age = 0)
-	{
-		return ($this->exists($var_name, $max_age)) ? $this->vars[$var_name] : NULL;
-	}
-
-	function put($var_name, $var)
-	{
-		$this->vars[$var_name] = $var;
-		$this->vars_ts[$var_name] = time();
-		$this->is_modified = TRUE;
-	}
-
 	function destroy($var_name, $table = '')
 	{
+		global $phpEx;
+
 		if ($var_name == 'sql' && !empty($table))
 		{
 			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
@@ -133,31 +162,34 @@ class acm
 			}
 			@closedir($dir);
 		}
+		elseif ($var_name{0} == '_')
+		{
+			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
+		}
 		elseif (isset($this->vars[$var_name]))
 		{
 			$this->is_modified = TRUE;
 			unset($this->vars[$var_name]);
-			unset($this->vars_ts[$var_name]);
+			unset($this->var_expires[$var_name]);
 		}
 	}
 
-	function exists($var_name, $max_age = 0)
+	function exists($var_name)
 	{
-		if (!is_array($this->vars))
+		if ($var_name{0} == '_')
 		{
-			$this->load();
+			global $phpEx;
+			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
-
-		if ($max_age > 0 && isset($this->vars_ts[$var_name]))
+		else
 		{
-			if (time() > $this->vars_ts[$var_name] + $max_age)
+			if (!is_array($this->vars))
 			{
-				$this->destroy($var_name);
-				return FALSE;
+				$this->load();
 			}
-		}
 
-		return isset($this->vars[$var_name]);
+			return (time() > $this->var_expires[$var_name]) ? FALSE : isset($this->vars[$var_name]);
+		}
 	}
 
 	function format_array($array)
@@ -179,34 +211,35 @@ class acm
 			}
 			else
 			{
-				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
+				$lines[] = "'$k'=>'" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
 			}
 		}
 		return 'array(' . implode(',', $lines) . ')';
 	}
 
-	function sql_load($query, $max_age)
+	function sql_load($query)
 	{
 		global $phpEx;
 
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$query_id = 'Cache id #' . count($this->sql_rowset);
 
-		$filemtime = intval(@filemtime($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx));
-		if (time() > $filemtime + $max_age)
+		include($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+		if (!isset($expired))
 		{
 			return FALSE;
 		}
-
-		$query_id = 'Cache id #' . count($this->sql_rowset);
-		include($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx);
-
-//		$this->sql_rowset[$query_id] =& $rowset;
+		elseif ($expired)
+		{
+			unlink($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+			return FALSE;
+		}
 
 		return $query_id;
 	}
 
-	function sql_save($query, &$query_result)
+	function sql_save($query, &$query_result, $ttl)
 	{
 		global $db, $phpEx;
 
@@ -225,15 +258,11 @@ class acm
 			{
 				$this->sql_rowset[$query_id][] = $row;
 
-				$line = 'array(';
-				foreach ($row as $key => $val)
-				{
-					$line .= "'$key'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $val)) . "',";
-				}
-				$lines[] = substr($line, 0, -1) . ')';
+				$lines[] = "unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($row))) . "')";
 			}
+			$db->sql_freeresult($query_result);
 
-			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
+			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? TRUE : FALSE;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
