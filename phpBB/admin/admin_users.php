@@ -436,7 +436,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			{
 				if( file_exists(@realpath($user_avatar_loc)) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
 				{
-					if( $user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
+					if( $user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0)
 					{
 						$error_type = false;
 
