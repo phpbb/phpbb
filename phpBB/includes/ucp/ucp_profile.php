@@ -275,15 +275,20 @@ class ucp_profile extends module
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
-							$sql = 'UPDATE phpbb_profile_fields_data
+							$sql = 'UPDATE ' . CUSTOM_PROFILE_DATA . ' 
 								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
+
 							if (!$db->sql_affectedrows())
 							{
-								$db->return_on_error = true;
 								$cp_data['user_id'] = (int) $user->data['user_id'];
-								$db->sql_query('INSERT INTO phpbb_profile_fields_data ' . $db->sql_build_array('INSERT', $cp_data));
+
+								$db->return_on_error = true;
+
+								$sql = 'INSERT INTO ' . CUSTOM_PROFILE_DATA . ' ' . $db->sql_build_array('INSERT', $cp_data);
+								$db->sql_query($sql);
+
 								$db->return_on_error = false;
 							}
 						}
@@ -343,6 +348,7 @@ class ucp_profile extends module
 				
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
 				$user->get_profile_fields($user->data['user_id']);
+
 				$cp->generate_profile_fields('profile', $user->get_iso_lang_id(), $cp_error);
 
 				break;
