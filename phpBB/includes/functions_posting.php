@@ -935,7 +935,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $config, $phpbb_root_path, $phpEx, $SID;
 
 	// Go ahead and pull all data for this topic
-	$sql = 'SELECT u.username, u.user_id, u.user_karma, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
+	$sql = 'SELECT u.username, u.user_id, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
