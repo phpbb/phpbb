@@ -147,7 +147,7 @@ class emailer
 		// do this here because the subject may contain a variable
 		//
 		$match = array();
-		preg_match("/^(Subject:(.*?)[\r\n]+?)?(Charset:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
+		preg_match("/^(Subject:(.*?)(?:\r\n)+?)?(Charset:(.*?)(?:\r\n)+?)?(.*?)$/is", $this->msg, $match);
 
 		$this->msg = ( isset($match[5]) ) ? trim($match[5]) : '';
 		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
