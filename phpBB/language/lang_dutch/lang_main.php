@@ -31,7 +31,7 @@
 // varies ... give it your best guess!
 //
 
-//setlocale(LC_ALL, "en");
+setlocale(LC_ALL, "nl_NL");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
