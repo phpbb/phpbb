@@ -573,6 +573,8 @@ $template->assign_vars(array(
 	"L_POST_NEW_TOPIC" => $post_alt, 
 	"L_POST_REPLY_TOPIC" => $reply_alt, 
 
+	"L_BACK_TO_TOP" => $lang['Back_to_top'],
+
 	"IMG_POST" => $post_img,
 	"IMG_REPLY" => $reply_img,
 
@@ -777,6 +779,8 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" title="' . $lang['Post'] . '" border="0" />';
 	}
+	
+	$mini_post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $postrow[$i]['post_id']) ."#".$postrow[$i]['post_id'];
 
 	//
 	// Generate ranks
@@ -1067,6 +1071,8 @@ for($i = 0; $i < $total_posts; $i++)
 		"PMSG_IMG" => $pmsg_img,
 		"IP_IMG" => $ip_img, 
 		"DELETE_IMG" => $delpost_img, 
+
+		"U_MINI_POST" => $mini_post_url,
 
 		"U_POST_ID" => $postrow[$i]['post_id'])
 	);

@@ -248,6 +248,9 @@ $template->assign_vars(array(
 
 	"PRIVMSG_IMG" => $icon_pm,
 
+	"PHP_SELF" => $PHP_SELF,
+	"REQUEST_URI" => $REQUEST_URI,
+
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
 	"L_LOGIN" => $lang['Login'],

@@ -1,6 +1,6 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" colspan="2"><span class="maintitle">{TOPIC_TITLE}</span><br />
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{PHP_SELF}">{TOPIC_TITLE}</a><br />
 	  <span class="gensmall"><b>{PAGINATION}</b><br />
 	  &nbsp; </span></td>
   </tr>
@@ -35,7 +35,7 @@
 	<td class="{postrow.ROW_CLASS}" height="28" valign="top"> 
 	  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr> 
-		  <td width="100%">{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: 
+		  <td width="100%"><a href="{U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: 
 			{postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
 			{postrow.POST_SUBJECT}</span></td>
 		  <td nowrap="nowrap" valign="top" align="right">{postrow.QUOTE_IMG} 
@@ -51,8 +51,8 @@
 	</td>
   </tr>
   <tr> 
-	<td width="22%" align="left" valign="middle" class="{postrow.ROW_CLASS}"><span class="nav"><a href="#top" class="nav">Back 
-	  to top</a></span></td>
+	<td width="22%" align="left" valign="middle" class="{postrow.ROW_CLASS}">
+	  <span class="nav"><a href="#top" class="nav">{L_BACK_TO_TOP}</a></span></td>
 	<td width="78%" height="28" class="{postrow.ROW_CLASS}" nowrap="nowrap" valign="bottom"> 
 	  <table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 		<tr> 

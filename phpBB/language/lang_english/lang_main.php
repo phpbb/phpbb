@@ -250,7 +250,7 @@ $lang['All_Posts'] = "All Posts";
 $lang['Newest_First'] = "Newest First";
 $lang['Oldest_First'] = "Oldest First";
 
-$lang['Return_to_top'] = "Return to top";
+$lang['Back_to_top'] = "Back to top";
 
 $lang['Read_profile'] = "View users profile"; 
 $lang['Send_email'] = "Send email to user";

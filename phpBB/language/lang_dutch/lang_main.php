@@ -245,7 +245,7 @@ $lang['All_Posts'] = "Alle berichten";
 $lang['Newest_First'] = "Nieuwste eerst";
 $lang['Oldest_First'] = "Oudste eerst";
 
-$lang['Return_to_top'] = "Naar boven";
+$lang['Back_to_top'] = "Naar boven";
 
 $lang['Read_profile'] = "Bekijk gebruikers profiel"; 
 $lang['Send_email'] = "Stuur een mail aan deze gebruiker";
