@@ -79,13 +79,27 @@ if($online_count)
 	for($i = 0; $i < $online_count; $i++)
 	{
 
-		if($row_color == "#DDDDDD")
+		if(!(ix % 2))
 		{
-			$row_color = "#CCCCCC";
+			if(isset($theme['td_color1']))
+			{
+				$row_color = "#".$theme['td_color1'];
+			}
+			else
+			{
+				$row_color = "#DDDDDD";
+			}
 		}
 		else
 		{
-			$row_color = "#DDDDDD";
+			if(isset($theme['td_color2']))
+			{
+				$row_color = "#".$theme['td_color2'];
+			}
+			else
+			{
+				$row_color = "#CCCCCC";
+			}
 		}
 
 		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
@@ -174,12 +188,12 @@ if($online_count)
 			$template->assign_block_vars("userrow", 
 				array(
 					"ROW_COLOR" => $row_color,
-					"USER_ID" => $onlinerow[$i]['user_id'],
 					"USERNAME" => $username,
 					"LOGGED_ON" => $logged_on,
-					"LASTUPDATE" => create_date($date_format, $onlinerow[$i]['session_time'], $sys_timezone),
+					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
 					"LOCATION" => $location,
-					"LOCATION_URL" => $location_url
+					"U_USER_PROFILE" => "profile.".$phpEx."?mode=viewprofile&".POST_USERS_URL."=".$onlinerow[$i]['user_id'],
+					"U_FORUM_LOCATION" => $location_url
 				)
 			);
 		}

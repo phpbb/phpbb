@@ -1,17 +1,6 @@
-
+<div align="center"><table cellspacing="2" border="0" width="98%">
 	<tr>
-		<td align="center"><table border="0" width="100%" cellpadding="0" cellspacing="1">
-			<tr>
-				<td style="{font-size: 8pt;}" align="left" valign="top"><b>{S_TIMEZONE}</b></td>
-				<td style="{font-size: 8pt;}" align="right" ><table cellpadding="0" cellspacing="1" border="0" bgcolor="#000000">
-					<tr>
-						<td bgcolor="#CCCCCC"><table width="100%" cellpadding="1" cellspacing="1" border="0">
-							<tr>
-								<td style="{font-size:8pt; height:55px;}" align="right">{JUMPBOX}</td>
-							</tr>
-						</table></td>
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
+		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
+</table></div>

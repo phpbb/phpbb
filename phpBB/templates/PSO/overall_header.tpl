@@ -17,7 +17,7 @@
 			<tr>
 				<th bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" border="0">
 					<tr>
-						<td><a href="{U_INDEX}"><img src="templates/PSO/images/pso-online-small.gif" border="0" alt="PSO Online Forums" /></a></td>
+						<td><a href="{U_INDEX}"><img src="images/title.gif" border="0" alt="phpBB2 development forums" /></a></td>
 						<td align="right" valign="bottom"><font face="Arial,Helvetica,sans-serif" size="1"><a href="/">Back To {SITENAME}</a></font></td>
 					</tr>
 				</table></th>

@@ -4,7 +4,7 @@
 			<tr>
 				<td colspan="6" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td><font face="verdana,serif"><b>{FORUM_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{L_MODERATOR} : {MODERATORS}</font></TD>
+						<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b>{FORUM_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{L_MODERATOR} : {MODERATORS}</font></TD>
 						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
 					</tr>
 				</table></td>
