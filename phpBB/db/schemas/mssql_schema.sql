@@ -237,6 +237,8 @@ CREATE TABLE [phpbb_themes] (
 	[span_class1] [varchar] (25) NULL ,
 	[span_class2] [varchar] (25) NULL ,
 	[span_class3] [varchar] (25) NULL 
+	[img_size_poll] [smallint] NULL ,
+	[img_size_privmsg] [smallint] NULL 
 ) ON [PRIMARY]
 GO
 
@@ -271,7 +273,7 @@ CREATE TABLE [phpbb_themes_name] (
 	[fontcolor3_name] [varchar] (25) NULL ,
 	[span_class1_name] [varchar] (25) NULL ,
 	[span_class2_name] [varchar] (25) NULL ,
-	[span_class3_name] [varchar] (25) NULL 
+	[span_class3_name] [varchar] (25) NULL
 ) ON [PRIMARY]
 GO
 
