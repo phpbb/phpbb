@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [French]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -18,6 +18,12 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+//
+//	Translation produced by Helix
+//	http://www.phpbb-fr.com/
+//
+
 
 //
 // The format of this file is:
@@ -83,8 +89,8 @@ $lang['Enabled'] = "Activé";
 $lang['Disabled'] = "Désactivé";
 $lang['Error'] = "Erreur";
 
-$lang['Next'] = "Suivant";
-$lang['Previous'] = "Précédent";
+$lang['Next'] = "Suivante";
+$lang['Previous'] = "Précédente";
 $lang['Goto_page'] = "Aller à la page";
 $lang['Joined'] = "Inscrit le";
 $lang['IP_Address'] = "Adresse IP";
@@ -105,7 +111,7 @@ $lang['Post_new_topic'] = "Poster un nouveau sujet";
 $lang['Reply_to_topic'] = "Répondre au sujet";
 $lang['Reply_with_quote'] = "Répondre en citant";
 
-$lang['Click_return_topic'] = "Cliquez %sici%s pour revenir au sujet"; // %s's here are for uris, do not remove!
+$lang['Click_return_topic'] = "Cliquez %sici%s pour retourner au sujet de discussion"; // %s's here are for uris, do not remove!
 $lang['Click_return_login'] = "Cliquez %sici%s pour réessayer";
 $lang['Click_return_forum'] = "Cliquez %sici%s pour retourner au forum";
 $lang['Click_view_message'] = "Cliquez %sici%s pour voir votre message";
@@ -121,6 +127,7 @@ $lang['Board_disable'] = "Désolé, mais ce forum est actuellement indisponible, v
 // Global Header strings
 //
 $lang['Registered_users'] = "Utilisateurs enregistrés:";
+$lang['Browsing_forum'] = "Utilisateurs parcourant actuellement ce forum:";
 $lang['Online_users_zero_total'] = "Il y a en tout <b>0</b> utilisateur en ligne :: ";
 $lang['Online_users_total'] = "Il y a en tout <b>%d</b> utilisateurs en ligne :: ";
 $lang['Online_user_total'] = "Il y a en tout <b>%d</b> utilisateur en ligne :: ";
@@ -133,6 +140,7 @@ $lang['Hidden_user_total'] = "%d Invisible et ";
 $lang['Guest_users_zero_total'] = "0 Invité";
 $lang['Guest_users_total'] = "%d Invités";
 $lang['Guest_user_total'] = "%d Invité";
+$lang['Record_online_users'] = "Le record du nombre d'utilisateurs en ligne est de <b>%s</b> le %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sAdministrateur%s";
 $lang['Mod_online_color'] = "%sModérateur%s";
@@ -275,8 +283,8 @@ $lang['wrote'] = "a écrit"; // proceeds the username and is followed by the quot
 $lang['Quote'] = "Citation"; // comes before bbcode quote output.
 $lang['Code'] = "Code"; // comes before bbcode code output.
 
-$lang['Edited_time_total'] = "Dernière édition par %s le %s, édité %d fois en tout"; // Last edited by me on 12 Oct 2001, edited 1 time in total
-$lang['Edited_times_total'] = "Dernière édition par %s le %s, édité %d fois en tout"; // Last edited by me on 12 Oct 2001, edited 2 times in total
+$lang['Edited_time_total'] = "Dernière édition par %s le %s, édité %d fois"; // Last edited by me on 12 Oct 2001, edited 1 time in total
+$lang['Edited_times_total'] = "Dernière édition par %s le %s, édité %d fois"; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
 $lang['Lock_topic'] = "Verrouiller le sujet";
 $lang['Unlock_topic'] = "Dévérouiller le sujet";
@@ -289,6 +297,7 @@ $lang['Start_watching_topic'] = "Surveiller les réponses de ce sujet";
 $lang['No_longer_watching'] = "Vous ne surveillez plus ce sujet";
 $lang['You_are_watching'] = "Vous surveillez ce sujet à présent";
 
+$lang['Total_votes'] = "Total des votes";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -363,18 +372,18 @@ $lang['Vote_cast'] = "Votre vote a été pris en compte";
 
 $lang['Topic_reply_notification'] = "Notification de Réponse au Sujet";
 
-$lang['bbcode_b_help'] = "Texte Gras: [b]texte[/b] (alt+b)";
-$lang['bbcode_i_help'] = "Texte Italique: [i]texte[/i] (alt+i)";
-$lang['bbcode_u_help'] = "Texte Souligné: [u]texte[/u] (alt+u)";
+$lang['bbcode_b_help'] = "Texte gras: [b]texte[/b] (alt+b)";
+$lang['bbcode_i_help'] = "Texte italique: [i]texte[/i] (alt+i)";
+$lang['bbcode_u_help'] = "Texte souligné: [u]texte[/u] (alt+u)";
 $lang['bbcode_q_help'] = "Citation: [quote]texte cité[/quote] (alt+q)";
-$lang['bbcode_c_help'] = "Afficher du Code: [code]code[/code] (alt+c)";
+$lang['bbcode_c_help'] = "Afficher du code: [code]code[/code] (alt+c)";
 $lang['bbcode_l_help'] = "Liste: [list]texte[/list] (alt+l)";
-$lang['bbcode_o_help'] = "Liste Ordonnée: [list=]texte[/list] (alt+o)";
+$lang['bbcode_o_help'] = "Liste ordonnée: [list=]texte[/list] (alt+o)";
 $lang['bbcode_p_help'] = "Insérer une image: [img]http://image_url/[/img] (alt+p)";
 $lang['bbcode_w_help'] = "Insérer un lien: [url]http://url/[/url] ou [url=http://url/]Nom[/url] (alt+w)";
 $lang['bbcode_a_help'] = "Fermer toutes les balises BBCode ouvertes";
-$lang['bbcode_s_help'] = "Couleur du Texte: [color=red]texte[/color] Astuce: #FF0000 fonctionne aussi";
-$lang['bbcode_f_help'] = "Taille du Texte: [size=x-small]texte en petit[/size]";
+$lang['bbcode_s_help'] = "Couleur du texte: [color=red]texte[/color] Astuce: #FF0000 fonctionne aussi";
+$lang['bbcode_f_help'] = "Taille du texte: [size=x-small]texte en petit[/size]";
 
 $lang['Emoticons'] = "Emoticons";
 $lang['More_emoticons'] = "Voir plus d'Emoticons";
@@ -451,6 +460,10 @@ $lang['Cannot_send_privmsg'] = "Désolé, mais l'administrateur vous a empêché d'e
 $lang['No_to_user'] = "Vous devez préciser un nom d'utilisateur pour envoyer ce message";
 $lang['No_such_user'] = "Désolé, mais cet utilisateur n'existe pas";
 
+$lang['Disable_HTML_pm'] = "Désactiver le HTML dans ce message";
+$lang['Disable_BBCode_pm'] = "Désactiver le BBCode dans ce message";
+$lang['Disable_Smilies_pm'] = "Désactiver les Smilies dans ce message";
+
 $lang['Message_sent'] = "Votre message a été envoyé";
 
 $lang['Click_return_inbox'] = "Cliquez %sici%s pour retourner à votre Boîte de réception";
@@ -516,7 +529,6 @@ $lang['Search_user_posts'] = "Trouver tous les messages de %s"; // Find all post
 
 $lang['No_user_id_specified'] = "Désolé, mais cet utilisateur n'existe pas";
 $lang['Wrong_Profile'] = "Vous ne pouvez pas modifier un profil qui n'est pas le vôtre.";
-$lang['Sorry_banned_or_taken_email'] = "Désolé, mais l'adresse email que vous avez donné est soit bannie, soit déjà utilisée par un autre utilisateur ou soit invalide. Veuillez essayer avec une autre adresse email, si elle est aussi bannie, vous devriez contacter l'administrateur du forum";
 $lang['Only_one_avatar'] = "Seul un type d'avateur peut être spécifié";
 $lang['File_no_data'] = "Le fichier de l'URL que vous avez donné ne contient aucune données";
 $lang['No_connection_URL'] = "Une connexion ne peut être établie avec l'URL que vous avez donnée";
@@ -544,6 +556,7 @@ $lang['Public_view_email'] = "Toujours montrer mon Adresse Email";
 $lang['Current_password'] = "Mot de passe actuel";
 $lang['New_password'] = "Nouveau mot de passe";
 $lang['Confirm_password'] = "Confirmer le mot de passe";
+$lang['Confirm_password_explain'] = "Vous devez confirmer votre mot de passe si vous souhaitez modifier votre adresse email";
 $lang['password_if_changed'] = "Vous avez seulement besoin de fournir un mot de passe si vous voulez le changer";
 $lang['password_confirm_if_changed'] = "Vous avez seulement besoin de confirmer votre mot de passe si vous l'avez changé ci-dessus";
 
@@ -575,7 +588,13 @@ $lang['Profile_updated_inactive'] = "Votre profil a été mis à jour, toutefois vo
 
 $lang['Password_mismatch'] = "Les mots de passes que avez entrés sont différents";
 $lang['Current_password_mismatch'] = "Le mot de passe que vous avez fourni est différent de celui stocké sur la base de données";
-$lang['Invalid_username'] = "Le nom d'utilisateur que vous demandez est déjà pris ou est interdit, ou contient des caractères invalides comme \"";
+$lang['Password_long'] = "Votre mot de passe ne doit pas dépasser 32 caractères";
+$lang['Username_taken'] = "Désolé, mais ce nom d'utilisateur est déjà pris";
+$lang['Username_invalid'] = "Désolé, mais ce nom d'utilisateur contient contient un caractère invalide comme \" par exemple";
+$lang['Username_disallowed'] = "Désolé, mais ce nom d'utilisateur a été interdit d'utilisation";
+$lang['Email_taken'] = "Désolé, mais cette adresse email est déjà enregistrée par un autre utilisateur";
+$lang['Email_banned'] = "Désolé, mais cette adresse email a été bannie";
+$lang['Email_invalid'] = "Désolé, mais cette adresse email est invalide";
 $lang['Signature_too_long'] = "Votre signature est trop longue";
 $lang['Fields_empty'] = "Vous devez compléter les champs obligatoires";
 $lang['Avatar_filetype'] = "Le type de fichier de l'avatar doit être .jpg, .gif ou .png";
@@ -971,6 +990,9 @@ $lang['Critical_Error'] = "Erreur Critique";
 $lang['An_error_occured'] = "Une Erreur est Survenue";
 $lang['A_critical_error'] = "Une Erreur Critique est Survenue";
 
+
+// Translator credit 
+$lang['TRANSLATION_INFO'] = "Traduction par : <a href=\"http://www.phpbb-fr.com/\" target=\"_blank\">Helix</a>";
 
 //
 // That's all Folks!

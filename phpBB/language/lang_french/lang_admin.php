@@ -1,7 +1,7 @@
 <?php
 
 /***************************************************************************
- *                            lang_admin.php [English]
+ *                            lang_admin.php [French]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -19,6 +19,12 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+//
+//	Translation produced by Helix
+//	http://www.phpbb-fr.com/
+//
+
 
 //
 // Format is same as lang_main
@@ -152,6 +158,14 @@ $lang['Registered'] = "Enregistré";
 $lang['Administrators'] = "Administrateurs";
 $lang['Hidden'] = "Invisible";
 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "TOUS";
+$lang['Forum_REG'] = "MEMBRES";
+$lang['Forum_PRIVATE'] = "PRIVE";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "ADMIN";
+
 $lang['View'] = "Voir";
 $lang['Read'] = "Lire";
 $lang['Post'] = "Poster";
@@ -170,7 +184,7 @@ $lang['User_Level'] = "Niveau de l'utilisateur";
 $lang['Auth_User'] = "Utilisateur";
 $lang['Auth_Admin'] = "Administrateur";
 $lang['Group_memberships'] = "Effectifs des groupes d'utilisateurs";
-$lang['Usergroup_members'] = "Ce groupe a les membres suivants";
+$lang['Usergroup_members'] = "Ce groupe est composé des membres suivants";
 
 $lang['Forum_auth_updated'] = "Permissions du forum mises à jour";
 $lang['User_auth_updated'] = "Permissions de l'utilisateur mises à jour";
@@ -186,8 +200,8 @@ $lang['Click_return_forumauth'] = "Cliquez %sici%s pour revenir aux Permissions 
 // Banning
 //
 $lang['Ban_control'] = "Contrôle du Bannissement";
-$lang['Ban_explain'] = "Ici, vous pouvez contrôler les bannissement des utilisateurs. Vous pouvez accomplir cela en bannissant soit un utilisateur spécifique, soit une intervalle d'adresses IP ou un nom de serveur. Ces méthodes empêcheront un utilisateur d'atteindre votre forum. Pour empêcher un utilisateur de s'enregistrer sous un nom d'utilisateur différent, vous pouvez également bannir une adresse email spécifique. Veuillez noter que banir uniquement l'adresse email n'empêchera pas l'utilisateur concerné de ce connecter ou poster sur votre forum, vous devrez utiliser l'une des deux méthodes citées ci-dessus.";
-$lang['Ban_explain_warn'] = "Veuillez noter qu'en entrant un intervalle d'adresses IP aura pour résultat de prendre en compte toutes les adresses entre l'IP de départ et l'IP de fin dans la liste de bannissement. Des essais seront effectués afin de réduire le nombre d'adresses IP ajoutés à la base de données en introduisant des jokers automatiquement aux endroits appropriés. Si vous devez réellement entrer une intervalle, essayer de la garder réduite ou au mieux, fixez des adresses spécifiques.";
+$lang['Ban_explain'] = "Ici, vous pouvez contrôler les bannissement des utilisateurs. Vous pouvez accomplir cela en bannissant soit un utilisateur spécifique, soit un intervalle d'adresses IP ou un nom de serveur. Ces méthodes empêcheront un utilisateur d'atteindre votre forum. Pour empêcher un utilisateur de s'enregistrer sous un nom d'utilisateur différent, vous pouvez également bannir une adresse email spécifique. Veuillez noter que bannir uniquement l'adresse email n'empêchera pas l'utilisateur concerné de se connecter ou poster sur votre forum, vous devrez utiliser l'une des deux méthodes citées ci-dessus.";
+$lang['Ban_explain_warn'] = "Veuillez noter qu'entrer un intervalle d'adresses IP aura pour résultat de prendre en compte toutes les adresses entre l'IP de départ et l'IP de fin dans la liste de bannissement. Des essais seront effectués afin de réduire le nombre d'adresses IP ajoutées à la base de données en introduisant des jokers automatiquement aux endroits appropriés. Si vous devez réellement entrer un intervalle, essayez de le garder réduit ou au mieux, fixez des adresses spécifiques.";
 
 $lang['Select_username'] = "Sélectionner un Nom d'utilisateur";
 $lang['Select_ip'] = "Sélectionner une IP";
@@ -229,8 +243,14 @@ $lang['Config_explain'] = "Le formulaire ci-dessous vous permettra de personnali
 $lang['Click_return_config'] = "Cliquez %sici%s pour revenir à Configuration Générale";
 
 $lang['General_settings'] = "Options Générales du Forum";
-$lang['Site_name'] = "Nom du Site";
-$lang['Site_desc'] = "Description du Site";
+$lang['Server_name'] = "Nom de domaine";
+$lang['Server_name_explain'] = "Le nom de domaine à partir duquel ce forum fonctionne";
+$lang['Script_path'] = "Chemin du script";
+$lang['Script_path_explain'] = "Le chemin relatif de phpBB2 par rapport au nom de domaine";
+$lang['Server_port'] = "Port du serveur";
+$lang['Server_port_explain'] = "Le port utilisé par votre serveur est habituellement le 80, uniquement modifier si différent";
+$lang['Site_name'] = "Nom du site";
+$lang['Site_desc'] = "Description du site";
 $lang['Board_disable'] = "Désactiver le forum";
 $lang['Board_disable_explain'] = "Ceci rendra le forum indisponible aux utilisateurs. Ne vous déconnectez pas lorsque vous désactivez le forum, vous ne pourrez plus vous reconnecter !";
 $lang['Acct_activation'] = "Activation du compte";
@@ -240,7 +260,7 @@ $lang['Acc_Admin'] = "Administrateur";
 
 
 $lang['Abilities_settings'] = "Options de Base de l'Utilisateur et du Forum";
-$lang['Max_poll_options'] = "Nombre maximimal d'options pour les sondages";
+$lang['Max_poll_options'] = "Nombre maximal d'options pour les sondages";
 $lang['Flood_Interval'] = "Intervalle de Flood";
 $lang['Flood_Interval_explain'] = "Nombre de secondes durant lequel un utilisateur doit patienter avant de pouvoir reposter.";
 $lang['Board_email_form'] = "Messagerie email via le forum";
@@ -265,7 +285,7 @@ $lang['Smilies_path'] = "Chemin de stockage des Smilies";
 $lang['Smilies_path_explain'] = "Chemin sous votre répertoire phpBB, ex : images/smilies";
 $lang['Allow_sig'] = "Autoriser les Signatures";
 $lang['Max_sig_length'] = "Longueur Maximale de la signature";
-$lang['Max_sig_length_explain'] = "Nombre maxmimal de caractères dans la signature de l'utilisateur";
+$lang['Max_sig_length_explain'] = "Nombre maximal de caractères dans la signature de l'utilisateur";
 $lang['Allow_name_change'] = "Autoriser les changements de Nom d'utilisateur";
 
 $lang['Avatar_settings'] = "Option des Avatars";
@@ -294,6 +314,10 @@ $lang['Email_sig_explain'] = "Ce texte sera attaché à tous les emails que le for
 $lang['Use_SMTP'] = "Utiliser un serveur SMTP pour l'email";
 $lang['Use_SMTP_explain'] = "Dites oui si vous voulez ou devez envoyer des emails par un serveur spécifique au lieu de la fonction locale mail()";
 $lang['SMTP_server'] = "Adresse du serveur SMTP";
+$lang['SMTP_username'] = "Nom d'utilisateur SMTP";
+$lang['SMTP_username_explain'] = "N'entrez un nom d'utilisateur pour votre serveur smtp seulement si c'est nécessaire";
+$lang['SMTP_password'] = "Mot de passe SMTP";
+$lang['SMTP_password_explain'] = "N'entrez un mot de passe pour votre serveur smtp seulement si c'est nécessaire";
 
 $lang['Disable_privmsg'] = "Messagerie Privée";
 $lang['Inbox_limits'] = "Messages Max dans la Boîte de réception";
@@ -301,19 +325,20 @@ $lang['Sentbox_limits'] = "Messages Max dans la Boîte des messages envoyés";
 $lang['Savebox_limits'] = "Message Max dans la Boîte des Archives";
 
 $lang['Cookie_settings'] = "Options du Cookie";
-$lang['Cookie_settings_explain'] = "Ceci contrôle la manière dont le cookie est envoyé au navigateur internet. Dans la majeure partie des cas, la valeur par défaut devrait être suffisante. Si vous avez besoin de les changer, faites le avec précaution, des valeurs incorrectes pourraient empêcher les utilisateurs de se connecter.";
-$lang['Cookie_name'] = "Nom du Cookie";
-$lang['Cookie_domain'] = "Domaine du Cookie";
-$lang['Cookie_path'] = "Chemin du Cookie";
+$lang['Cookie_settings_explain'] = "Ces détails définissent la manière dont les cookies sont envoyés au navigateur internet des utilisateurs. Dans la majeure partie des cas, les valeurs par défaut devraient être suffisantes. Si vous avez besoin de les modifier, faites le avec précaution, des valeurs incorrectes pourraient empêcher les utilisateurs de se connecter.";
+$lang['Cookie_domain'] = "Domaine du cookie";
+$lang['Cookie_name'] = "Nom du cookie";
+$lang['Cookie_path'] = "Chemin du cookie";
+$lang['Cookie_secure'] = "Cookie sécurisé";
+$lang['Cookie_secure_explain'] = "Si votre serveur fonctionne via SSL, activez cette fonciton, sinon laissez là désactivé";
 $lang['Session_length'] = "Durée de la session [ secondes ]";
-$lang['Cookie_secure'] = "Cookie securisé [ https ]";
 
 
 //
 // Forum Management
 //
 $lang['Forum_admin'] = "Administration des Forums";
-$lang['Forum_admin_explain'] = "Depuis ce panneau de contrôle, vous pouvez ajouter, supprimer, éditer, reordonner et resynchroniser vos catégories et forums.";
+$lang['Forum_admin_explain'] = "Depuis ce panneau de contrôle, vous pouvez ajouter, supprimer, éditer, réordonner et resynchroniser vos catégories et forums.";
 $lang['Edit_forum'] = "Editer un forum";
 $lang['Create_forum'] = "Créer un nouveau forum";
 $lang['Create_category'] = "Créer une nouvelle catégorie";
@@ -340,7 +365,7 @@ $lang['Forum_status'] = "Statut du forum";
 $lang['Forum_pruning'] = "Auto-délestage";
 
 $lang['prune_freq'] = "Vérifier l'age des sujets tous les ";
-$lang['prune_days'] = "Retirer les sujets qui n'ont pas eu de messages depuis le";
+$lang['prune_days'] = "Retirer les sujets n'ayant pas eu de réponses depuis";
 $lang['Set_prune_data'] = "Vous avez activer l'auto-délestage pour ce forum mais n'avez pas défini une fréquence ou un nombre de jours à délester. Veuillez revenir en arrière et le faire";
 
 $lang['Move_and_Delete'] = "Déplacer et Supprimer";
@@ -396,7 +421,7 @@ $lang['Click_return_smileadmin'] = "Cliquez %sici%s pour revenir à l'Administrat
 // User Management
 //
 $lang['User_admin'] = "Administration des Utilisateurs";
-$lang['User_admin_explain'] = "Ici, vous pouvez changer les informations des utilisateurs et certains options spécifiques. Pour modifier les permissions des utilisateurs, veuillez utiliser le système de permissions d'utilisateurs et de groupes.";
+$lang['User_admin_explain'] = "Ici, vous pouvez changer les informations des utilisateurs et certaines options spécifiques. Pour modifier les permissions des utilisateurs, veuillez utiliser le système de permissions d'utilisateurs et de groupes.";
 
 $lang['Look_up_user'] = "Rechercher l'utilisateur";
 
@@ -454,7 +479,7 @@ $lang['Look_up_group'] = "Rechercher le groupe";
 // Prune Administration
 //
 $lang['Forum_Prune'] = "Délester un Forum";
-$lang['Forum_Prune_explain'] = "Ceci supprimera tous les sujets n'ayant pas eu de réponses depuis le nombre de jours que vous aurez choisi. Si vous n'entez pas de nombre, tous les sujets seront supprimés. Par contre cela ne supprimera ni les sujets dans lesquels un sondage est encore en cours, ni les annonces. Vous devrez supprimer ces sujets manuellement.";
+$lang['Forum_Prune_explain'] = "Ceci supprimera tous les sujets n'ayant pas eu de réponses depuis le nombre de jours que vous aurez choisi. Si vous n'entrez pas de nombre, tous les sujets seront supprimés. Par contre cela ne supprimera ni les sujets dans lesquels un sondage est encore en cours, ni les annonces. Vous devrez supprimer ces sujets manuellement.";
 $lang['Do_Prune'] = "Faire le Délestage";
 $lang['All_Forums'] = "Tous les Forums";
 $lang['Prune_topics_not_posted'] = "Délester les sujets sans réponses depuis cette période (en jours)";
@@ -500,7 +525,7 @@ $lang['Click_return_massemail'] = "Cliquez %sici%s pour revenir au formulaire de
 //
 // Ranks admin
 //
-$lang['Ranks_title'] = "Administrations des Rangs";
+$lang['Ranks_title'] = "Administration des Rangs";
 $lang['Ranks_explain'] = "En utilisant ce formulaire vous pouvez ajouter, éditer, voir et supprimer des rangs. Vous pouvez également créer des rangs personnalisés qui pourront être assignés à des utilisateurs spécifiques par l'outil de Gestion des Utilisateurs";
 
 $lang['Add_new_rank'] = "Ajouter un nouveau rang";
@@ -530,7 +555,7 @@ $lang['Disallow_explain'] = "Ici, vous pouvez contrôler les noms d'utilisateurs 
 
 $lang['Delete_disallow'] = "Supprimer";
 $lang['Delete_disallow_title'] = "Retirer un Nom d'utilisateur Interdit";
-$lang['Delete_disallow_explain'] = "Vous pouvez retirer un nom d'utilisateur interdit en sélectionnant le nom d'utilisateur depuis la liste et en cliquant sur Envoyer";
+$lang['Delete_disallow_explain'] = "Vous pouvez retirer un nom d'utilisateur interdit en sélectionnant le nom d'utilisateur depuis la liste et en cliquant sur Supprimer";
 
 $lang['Add_disallow'] = "Ajouter";
 $lang['Add_disallow_title'] = "Ajouter un nom d'utilisateur interdit";
@@ -566,18 +591,18 @@ $lang['Create_theme'] = "Créer un Thème";
 $lang['Create_theme_explain'] = "Utilisez le formulaire ci-dessous pour créer un nouveau thème pour un modèle de document sélectionné. Lorsque vous entrerez les couleurs (pour lesquelles vous devrez utiliser une notation hexadécimale), vous ne devrez pas inclure le # initial, ex : CCCCCC est valide, #CCCCCC ne l'est pas";
 
 $lang['Export_themes'] = "Exporter des Thèmes";
-$lang['Export_explain'] = "Dans ce panneau, vous pourrez exporter les données de ce thème pour un modèle de document sélectionné. Sélectionnez le modèle de document depuis la liste ci-dessous, et le script crééra le fichier de configuration du thème et essaiera de le copier dans le répertoire sélectionné des modèles de documents. S'il ne peut pas le copier lui-même, il vous proposera de le télécharger. Afin que le script puisse copier le fichier, vous devez donner les droits d'écriture pour le répertoire sur le serveur. Pour plus d'informations à propos de cela, allez voir le Guide de l'utilisateur de phpBB 2..";
+$lang['Export_explain'] = "Dans ce panneau, vous pourrez exporter les données de ce thème pour un modèle de document sélectionné. Sélectionnez le modèle de document depuis la liste ci-dessous, et le script crééra le fichier de configuration du thème et essaiera de le copier dans le répertoire sélectionné des modèles de documents. S'il ne peut pas le copier lui-même, il vous proposera de le télécharger. Afin que le script puisse copier le fichier, vous devez donner les droits d'écriture pour le répertoire sur le serveur. Pour plus d'informations à propos de cela, allez voir le Guide de l'utilisateur de phpBB 2.";
 
 $lang['Theme_installed'] = "Le thème sélectionné a été installé avec succès";
 $lang['Style_removed'] = "Le thème sélectionné a été retiré de la base de données. Pour enlever complètement ce thème de votre système, vous devez supprimer les fichiers appropriés dans le répertoire du modèle de document.";
-$lang['Theme_info_saved'] = "Les informations du thème pour le modèle de document sélectionné ont été sauvegardées. Vous devriez retreindre les permissions du fichier theme_info.cfg (et si possible dans le répertoire du modèle de document sélectionné) à la lecture seule";
+$lang['Theme_info_saved'] = "Les informations du thème pour le modèle de document sélectionné ont été sauvegardées. Vous devriez restreindre les permissions du fichier theme_info.cfg (et si possible dans le répertoire du modèle de document sélectionné) à la lecture seule";
 $lang['Theme_updated'] = "Le thème sélectionné a été mis à jour. Vous devriez exporter maintenant les nouveaux paramètres du thème";
 $lang['Theme_created'] = "Thème créé. Vous devriez exporter maintenant le thème vers le fichier de configuration du thème pour le conserver en lieu sûr ou l'utiliser ailleurs";
 
 $lang['Confirm_delete_style'] = "Etes-vous sûr de vouloir supprimer ce thème";
 
 $lang['Download_theme_cfg'] = "L'exportateur n'arrive pas à écrire le fichier des informations du thème. Cliquez sur le bouton ci-dessous pour télécharger ce fichier avec votre navigateur internet. Une fois téléchargé, vous pourrez le transférer vers le répertoire contenant les modèles de documents. Vous pourrez ensuite créer un pack des fichiers pour le distribuer ou l'utiliser ailleurs si vous le désirez";
-$lang['No_themes'] = "Le modèle de document que vous avez sélectionné n'a pas de thèmes. Pour créer un nouveau thème, cliquez sur Créer un Nouveau Thème sur le volet de gauche";
+$lang['No_themes'] = "Le modèle de document que vous avez sélectionné n'a pas de thème. Pour créer un nouveau thème, cliquez sur Créer un Nouveau Thème sur le volet de gauche";
 $lang['No_template_dir'] = "Impossible d'ouvrir le répertoire du modèle de document. Il peut être illisible par le serveur ou ne pas exister";
 $lang['Cannot_remove_style'] = "Vous ne pouvez pas enlever le thème sélectionné tant qu'il est utilisé par le forum en tant que thème par défaut. Veuillez changer le thème par défaut et réessayer.";
 $lang['Style_exists'] = "Le nom du thème choisi existe déjà, veuillez revenir en arrière et choisir un nom différent.";
@@ -595,7 +620,7 @@ $lang['Background_image'] = "Image de Fond";
 $lang['Background_color'] = "Couleur de Fond";
 $lang['Theme_name'] = "Nom du Thème";
 $lang['Link_color'] = "Couleur du Lien";
-$lang['Text_color'] = "Coleur du Texte";
+$lang['Text_color'] = "Couleur du Texte";
 $lang['VLink_color'] = "Couleur du Lien Visité";
 $lang['ALink_color'] = "Couleur du Lien Actif";
 $lang['HLink_color'] = "Couleur du Lien survolé";
@@ -632,9 +657,9 @@ $lang['span_class3'] = "Span Class 3";
 $lang['img_poll_size'] = "Taille Image Sondage [px]";
 $lang['img_pm_size'] = "Tauille Statut Message Privé [px]";
 
-// 
-// Install Process 
-// 
+//
+// Install Process
+//
 $lang['Welcome_install'] = "Bienvenue à l'Installation de phpBB 2";
 $lang['Initial_config'] = "Configuration de Base";
 $lang['DB_config'] = "Configuration de la Base de données";
@@ -687,6 +712,10 @@ $lang['Install'] = "Installation";
 $lang['Upgrade'] = "Mise à jour";
 
 $lang['Install_Method'] = "Choix du type d'installation";
+
+$lang['Install_No_Ext'] = "La configuration de php sur votre serveur ne supporte pas le type de base de données que vous avez choisi";
+
+$lang['Install_No_PCRE'] = "phpBB2 requiert le support des expressions régulières Perl pour php, mais votre configuration de php ne le supporte pas apparemment !";
 
 //
 // That's all Folks!
