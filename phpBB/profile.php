@@ -258,7 +258,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$percentage = 0;
 		}
 
-		if( !empty($profiledata['user_viewemail']) )
+		if( !empty($profiledata['user_viewemail']) || $userdata['user_level'] == ADMIN )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $profiledata['user_id']) : "mailto:" . $profiledata['user_email'];
 
@@ -731,7 +731,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 				$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
 			}
-			else if( $board_config['allow_avatar_upload'] && !$error )
+			else if( ( $user_avatar_loc != "" || !empty($user_avatar_url) ) && $board_config['allow_avatar_upload'] && !$error )
 			{
 				//
 				// Only allow one type of upload, either a
@@ -747,7 +747,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error_msg .= $lang['Only_one_avatar'];
 				}
 
-				if( $user_avatar_loc != "" && $board_config['allow_avatar_upload'] )
+				if( $user_avatar_loc != "" )
 				{
 					if( file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
 					{
@@ -823,7 +823,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 					}
 				}
-				else if( !empty($user_avatar_url) && $board_config['allow_avatar_upload'] )
+				else if( !empty($user_avatar_url) )
 				{
 					//
 					// First check what port we should connect
@@ -959,32 +959,26 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 				}
 			}
-			else if( $board_config['allow_avatar_remote'] && !$error )
+			else if( $user_avatar_remoteurl != "" && $board_config['allow_avatar_remote'] && $avatar_sql == "" && !$error )
 			{
-				if($user_avatar_remoteurl != "" && $avatar_sql == "")
+				if( !preg_match("#^http:\/\/#i", $user_avatar_remoteurl) )
 				{
-					if( !preg_match("#^http:\/\/#i", $user_avatar_remoteurl) )
-					{
-						$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
-					}
+					$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
+				}
 
-					if( preg_match("#^http:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$#is", $user_avatar_remoteurl) )
-					{
-						$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
-					}
-					else
-					{
-						$error = true;
-						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
-					}
+				if( preg_match("#^http:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$#is", $user_avatar_remoteurl) )
+				{
+					$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
+				}
+				else
+				{
+					$error = true;
+					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 				}
 			}
-			else if( $board_config['allow_avatar_local'] && !$error )
+			else if( $user_avatar_local != "" && $board_config['allow_avatar_local'] && $avatar_sql == "" && !$error )
 			{
-				if( $user_avatar_local != "" && $avatar_sql == "" )
-				{
-					$avatar_sql = ", user_avatar = '$user_avatar_local', user_avatar_type = " . USER_AVATAR_GALLERY;
-				}
+				$avatar_sql = ", user_avatar = '$user_avatar_local', user_avatar_type = " . USER_AVATAR_GALLERY;
 			}
 
 			if( !$error )
@@ -1338,7 +1332,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$avatar_images = array();
 				while( $file = @readdir($dir) )
 				{
-					if( $file != "." && $file != ".." && !is_file($file) && !is_link($file) )
+					if( $file != "." && $file != ".." && !is_file($board_config['avatar_gallery_path'] . "/" . $file) && !is_link($board_config['avatar_gallery_path'] . "/" . $file) )
 					{
 						$sub_dir = @opendir($board_config['avatar_gallery_path'] . "/" . $file);
 
@@ -1909,7 +1903,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$user_email = $row['user_email']; 
 			$user_lang = $row['user_lang'];
 
-			if( $row['user_viewemail'] )
+			if( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
 			{
 				if( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
 				{
