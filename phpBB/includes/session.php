@@ -56,9 +56,9 @@ class session
 
 		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 		{
-			if (preg_match('/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $_SERVER['HTTP_X_FORWARDED_FOR'], $ip_list))
+			if (preg_match('#^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)#', $_SERVER['HTTP_X_FORWARDED_FOR'], $ip_list))
 			{
-				$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10\..*/', '/^224\..*/', '/^240\..*/');
+				$private_ip = array('#^0\.#', '#^127\.0\.0\.1#', '#^192\.168\.#', '#^172\.16\.#', '#^10\.#', '#^224\.#', '#^240\.#');
 				$this->ip = preg_replace($private_ip, $this->ip, $ip_list[1]);
 			}
 		}
@@ -307,18 +307,22 @@ class session
 
 		$del_user_id = '';
 		$del_sessions = 0;
-		while ($row = $db->sql_fetchrow($result))
+		if ($row = $db->sql_fetchrow($result))
 		{
-			if ($row['session_user_id'])
+			do
 			{
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_lastvisit = " . $row['recent_time'] . "
-					WHERE user_id = " . $row['session_user_id'];
-				$db->sql_query($sql);
-			}
+				if (intval($row['session_user_id']) != ANONYMOUS)
+				{
+					$sql = "UPDATE " . USERS_TABLE . "
+						SET user_lastvisit = " . $row['recent_time'] . "
+						WHERE user_id = " . $row['session_user_id'];
+					$db->sql_query($sql);
+				}
 
-			$del_user_id .= (($del_user_id != '') ? ', ' : '') . " '" . $row['session_user_id'] . "'";
-			$del_sessions++;
+				$del_user_id .= (($del_user_id != '') ? ', ' : '') . " '" . $row['session_user_id'] . "'";
+				$del_sessions++;
+			}
+			while ($row = $db->sql_fetchrow($result));
 		}
 
 		if ($del_user_id != '')
@@ -697,6 +701,21 @@ class auth
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 		}
+
+		return;
+	}
+
+	// Clear one or all users cached permission settings
+	function acl_clear_prefetch($user_id = false)
+	{
+		global $db;
+
+		$where_sql = ($user_id) ? "WHERE user_id = $user_id" : '';
+
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_permissions = ''
+			$where_sql";
+		$db->sql_query($sql);
 
 		return;
 	}
