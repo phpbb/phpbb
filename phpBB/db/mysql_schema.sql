@@ -11,12 +11,12 @@
 #
 
 CREATE TABLE phpbb_banlist (
-   ban_id int(11) NOT NULL auto_increment,
-   ban_userid int(11),
+   ban_id int(10) NOT NULL auto_increment,
+   ban_userid int(10),
    ban_ip char(8),
-   ban_start char(8),
-   ban_end char(8),
-   ban_time_type tinyint(4),
+   ban_start int(10),
+   ban_end int(10),
+   ban_time_type int(10),
    PRIMARY KEY (ban_id)
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE phpbb_banlist (
 #
 
 CREATE TABLE phpbb_categories (
-   cat_id int(11) NOT NULL auto_increment,
+   cat_id int(10) NOT NULL auto_increment,
    cat_title varchar(100),
    cat_order varchar(10),
    PRIMARY KEY (cat_id)
@@ -40,23 +40,23 @@ CREATE TABLE phpbb_categories (
 #
 
 CREATE TABLE phpbb_config (
-   config_id int(11) NOT NULL auto_increment,
-   sitename varchar(100),
-   allow_html tinyint(3),
-   allow_bbcode tinyint(3),
-   allow_sig tinyint(3),
-   allow_namechange tinyint(3),
+   config_id int(10) NOT NULL auto_increment,
    selected int(2) DEFAULT '0' NOT NULL,
-   posts_per_page int(11),
-   hot_threshold int(11),
-   topics_per_page int(11),
-   allow_theme_create int(11),
+   sitename varchar(100),
+   allow_html tinyint(1),
+   allow_bbcode tinyint(1),
+   allow_sig tinyint(1),
+   allow_namechange tinyint(1),
+   allow_theme_create int(10),
    override_themes tinyint(3),
+   posts_per_page int(10),
+   topics_per_page int(10),
+   hot_threshold int(10),
    email_sig varchar(255),
    email_from varchar(100),
    default_theme int(11) DEFAULT '1' NOT NULL,
    default_lang varchar(255),
-   default_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
+   default_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    system_timezone int(11) DEFAULT '0' NOT NULL,
    sys_template varchar(100) DEFAULT 'Default' NOT NULL,
    PRIMARY KEY (config_id),
@@ -70,7 +70,7 @@ CREATE TABLE phpbb_config (
 #
 
 CREATE TABLE phpbb_disallow (
-   disallow_id int(11) NOT NULL auto_increment,
+   disallow_id int(10) NOT NULL auto_increment,
    disallow_username varchar(50),
    PRIMARY KEY (disallow_id)
 );
@@ -82,9 +82,9 @@ CREATE TABLE phpbb_disallow (
 #
 
 CREATE TABLE phpbb_forum_access (
-   forum_id int(11) NOT NULL,
-   user_id int(11) NOT NULL,
-   can_post tinyint(1) NOT NULL,
+   forum_id int(10) DEFAULT '0' NOT NULL,
+   user_id int(10) DEFAULT '0' NOT NULL,
+   can_post tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id, user_id)
 );
 
@@ -95,8 +95,8 @@ CREATE TABLE phpbb_forum_access (
 #
 
 CREATE TABLE phpbb_forum_mods (
-   forum_id int(11) NOT NULL,
-   user_id int(11) NOT NULL,
+   forum_id int(10) DEFAULT '0' NOT NULL,
+   user_id int(10) DEFAULT '0' NOT NULL,
    mod_notify tinyint(3)
 );
 
@@ -107,21 +107,22 @@ CREATE TABLE phpbb_forum_mods (
 #
 
 CREATE TABLE phpbb_forums (
-   forum_id int(11) NOT NULL auto_increment,
+   forum_id int(10) NOT NULL auto_increment,
+   cat_id int(10),
    forum_name varchar(150),
    forum_desc text,
    forum_access tinyint(3),
-   cat_id int(11),
    forum_order int(11) DEFAULT '1' NOT NULL,
    forum_type tinyint(4),
-   forum_posts int(11) NOT NULL,
-   forum_topics tinyint(4) NOT NULL,
-   forum_last_post_id int(11) NOT NULL,
+   forum_posts int(11) DEFAULT '0' NOT NULL,
+   forum_topics tinyint(4) DEFAULT '0' NOT NULL,
+   forum_last_post_id int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),
    KEY cat_id (cat_id)
 );
+
 
 
 # --------------------------------------------------------
@@ -130,12 +131,12 @@ CREATE TABLE phpbb_forums (
 #
 
 CREATE TABLE phpbb_posts (
-   post_id int(11) NOT NULL auto_increment,
-   topic_id int(11) NOT NULL,
-   forum_id int(11) NOT NULL,
-   poster_id int(11) NOT NULL,
-   post_time int(11) NOT NULL,
-   poster_ip char(8) NOT NULL,
+   post_id int(10) NOT NULL auto_increment,
+   topic_id int(10) DEFAULT '0' NOT NULL,
+   forum_id int(10) DEFAULT '0' NOT NULL,
+   poster_id int(10) DEFAULT '0' NOT NULL,
+   post_time int(10) DEFAULT '0' NOT NULL,
+   poster_ip varchar(8) NOT NULL,
    bbcode_uid varchar(10) NOT NULL,
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
@@ -150,7 +151,7 @@ CREATE TABLE phpbb_posts (
 #
 
 CREATE TABLE phpbb_posts_text (
-   post_id int(11) NOT NULL,
+   post_id int(10) DEFAULT '0' NOT NULL,
    post_text text,
    PRIMARY KEY (post_id)
 );
@@ -162,14 +163,14 @@ CREATE TABLE phpbb_posts_text (
 #
 
 CREATE TABLE phpbb_privmsgs (
-   msg_id int(11) NOT NULL auto_increment,
-   from_userid int(11) NOT NULL,
-   to_userid int(11) NOT NULL,
-   msg_time int(11) NOT NULL,
-   poster_ip char(8) NOT NULL,
-   msg_status int(11) NOT NULL,
+   msg_id int(10) NOT NULL auto_increment,
+   from_userid int(10) DEFAULT '0' NOT NULL,
+   to_userid int(10) DEFAULT '0' NOT NULL,
+   msg_time int(10) DEFAULT '0' NOT NULL,
+   poster_ip varchar(8),
+   msg_status int(10) DEFAULT '0' NOT NULL,
    msg_text text NOT NULL,
-   newmsg tinyint(4) NOT NULL,
+   newmsg tinyint(4) DEFAULT '0' NOT NULL,
    PRIMARY KEY (msg_id),
    KEY to_userid (to_userid)
 );
@@ -183,9 +184,9 @@ CREATE TABLE phpbb_privmsgs (
 CREATE TABLE phpbb_ranks (
    rank_id int(11) NOT NULL auto_increment,
    rank_title varchar(50) NOT NULL,
-   rank_min int(11) NOT NULL,
-   rank_max int(11) NOT NULL,
-   rank_special tinyint(1),
+   rank_min int(11) DEFAULT '0' NOT NULL,
+   rank_max int(11) DEFAULT '0' NOT NULL,
+   rank_special tinyint(1) DEFAULT '0',
    rank_image varchar(255),
    PRIMARY KEY (rank_id),
    KEY rank_min (rank_min),
@@ -200,16 +201,30 @@ CREATE TABLE phpbb_ranks (
 #
 
 CREATE TABLE phpbb_session (
-   session_id int(11) NOT NULL,
-   session_user_id int(11) NOT NULL,
-   session_start int(11) NOT NULL,
-   session_time int(11) NOT NULL,
-   session_ip char(8) NOT NULL,
-   session_page int(11),
-   session_logged_in tinyint(1) NOT NULL,
+   session_id int(11) DEFAULT '0' NOT NULL,
+   session_user_id int(11) DEFAULT '0' NOT NULL,
+   session_start int(11) DEFAULT '0' NOT NULL,
+   session_time int(11) DEFAULT '0' NOT NULL,
+   session_ip char(8) DEFAULT '0' NOT NULL,
+   session_page int(11) DEFAULT '0' NOT NULL,
+   session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
-   KEY session_ip (session_ip),
-   KEY session_user_id (session_user_id)
+   KEY session_user_id (session_user_id),
+   KEY session_ip (session_ip)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_session_keys'
+#
+
+CREATE TABLE phpbb_session_keys (
+   key_user_id int(11) DEFAULT '0' NOT NULL,
+   key_ip varchar(8) NOT NULL,
+   key_login varchar(32) NOT NULL,
+   PRIMARY KEY (key_user_id),
+   KEY key_ip (key_ip)
 );
 
 
@@ -276,7 +291,7 @@ CREATE TABLE phpbb_themes (
 #
 
 CREATE TABLE phpbb_themes_name (
-   themes_id int(11) NOT NULL,
+   themes_id int(11) DEFAULT '0' NOT NULL,
    tr_color1_name varchar(25),
    tr_color2_name varchar(25),
    tr_color3_name varchar(25),
@@ -309,16 +324,16 @@ CREATE TABLE phpbb_themes_name (
 #
 
 CREATE TABLE phpbb_topics (
-   topic_id int(11) NOT NULL auto_increment,
+   topic_id int(10) NOT NULL auto_increment,
+   forum_id int(10) DEFAULT '0' NOT NULL,
    topic_title varchar(100) NOT NULL,
-   topic_poster int(11) NOT NULL,
-   topic_time int(11) NOT NULL,
-   topic_views int(11) NOT NULL,
-   topic_replies int(11) NOT NULL,
-   forum_id int(11) NOT NULL,
-   topic_status tinyint(3) NOT NULL,
-   topic_notify tinyint(3),
-   topic_last_post_id int(11) NOT NULL,
+   topic_poster int(10) DEFAULT '0' NOT NULL,
+   topic_time int(10) DEFAULT '0' NOT NULL,
+   topic_views int(10) DEFAULT '0' NOT NULL,
+   topic_replies int(11) DEFAULT '0' NOT NULL,
+   topic_status tinyint(3) DEFAULT '0' NOT NULL,
+   topic_notify tinyint(3) DEFAULT '0',
+   topic_last_post_id int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id)
@@ -332,11 +347,18 @@ CREATE TABLE phpbb_topics (
 
 CREATE TABLE phpbb_users (
    user_id int(11) NOT NULL auto_increment,
+   user_active tinyint(4),
    username varchar(40) NOT NULL,
-   user_regdate varchar(20) NOT NULL,
+   user_regdate int(11) DEFAULT '0' NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
-   user_hint varchar(25) NOT NULL,
+   user_template varchar(50),
+   user_lang varchar(255),
+   user_timezone int(11) DEFAULT '0' NOT NULL,
+   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
+   user_rank int(11) DEFAULT '0',
+   user_avatar varchar(100),
+   user_level int(11) DEFAULT '1',
    user_email varchar(255),
    user_icq varchar(15),
    user_website varchar(100),
@@ -354,17 +376,9 @@ CREATE TABLE phpbb_users (
    user_desmile tinyint(3),
    user_html tinyint(3),
    user_bbcode tinyint(3),
-   user_rank int(11) DEFAULT '0',
-   user_avatar varchar(100),
-   user_level int(11) DEFAULT '1',
-   user_lang varchar(255),
-   user_timezone int(11) DEFAULT '0' NOT NULL,
-   user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
    user_notify tinyint(3),
-   user_active tinyint(4),
-   user_template varchar(50),
    PRIMARY KEY (user_id),
    KEY user_id (user_id)
 );
@@ -376,9 +390,8 @@ CREATE TABLE phpbb_users (
 #
 
 CREATE TABLE phpbb_words (
-   word_id int(11) NOT NULL auto_increment,
+   word_id int(10) NOT NULL auto_increment,
    word varchar(100) NOT NULL,
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
-
