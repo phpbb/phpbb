@@ -380,6 +380,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		rawurlencode($website);
 	}
 
+	$avatar_sql = '';
+
 	if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
 	{
 		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
@@ -415,10 +417,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
 		}
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
-	}
-	else
-	{
-		$avatar_sql = '';
 	}
 
 	if ( !$error )
