@@ -1,58 +1,5 @@
 <!-- $Id$ -->
 
-<script language="JavaScript" type="text/javascript">
-<!--
-
-function insert_quote(text) {
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) 
-	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
-		document.forms[form_name].elements[text_name].focus();
-	} else {
-		document.forms[form_name].elements[text_name].value += text;
-		document.forms[form_name].elements[text_name].focus();
-	}
-}
-
-function addquote(post_id, username) {
-
-	var message_name = 'message_' + post_id;
-	var theSelection = '';
-	
-	// Get text selection - not only the post content :(
-	if ((clientVer >= 4) && is_ie && is_win)
-	{
-		theSelection = document.selection.createRange().text;
-	}
-	else if (window.getSelection)
-	{
-		theSelection = window.getSelection();
-	}
-
-	if (theSelection == '')
-	{
-		if (document.all)
-		{
-			eval("theSelection = document.all." + message_name + ".innerText;");
-		}
-		else
-		{
-			eval("theSelection = document.getElementById('" + message_name + "').firstChild.nodeValue;");
-		}
-	}
-
-	if (theSelection != '')
-	{
-		insert_quote('[quote="' + username + '"]' + theSelection + '[/quote]');
-	}
-
-	return;
-}
-
-//-->
-</script>
-
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th align="center">{L_TOPIC_REVIEW} - {TOPIC_TITLE}</th>
@@ -101,7 +48,7 @@ function addquote(post_id, username) {
 						<tr>
 							<td valign="top"><table width="100%" cellspacing="0" cellpadding="2">
 								<tr>
-									<td><div id="message_{topic_review_row.U_POST_ID}" class="postbody">{topic_review_row.MESSAGE}</div></td>
+									<td><div id="message_{topic_review_row.U_POST_ID}"><div class="postbody">{topic_review_row.MESSAGE}</div></div></td>
 								</tr>
 							</table></td>
 						</tr>

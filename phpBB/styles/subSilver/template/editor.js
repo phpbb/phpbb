@@ -102,6 +102,59 @@ function attach_inline() {
 	insert_text('[attachment=' + document.forms[form_name].elements['attachments'].value + ']' + document.forms[form_name].elements['attachments'].options[document.forms[form_name].elements['attachments'].selectedIndex].text + '[/attachment]');
 }
 
+function addquote(post_id, username) {
+
+	var message_name = 'message_' + post_id;
+	var theSelection = '';
+	var divarea = false;
+
+	if (document.all)
+	{
+		eval("divarea = document.all." + message_name + ";");
+	}
+	else
+	{
+		eval("divarea = document.getElementById('" + message_name + "');");
+	}
+
+	// Get text selection - not only the post content :(
+	if (window.getSelection)
+	{
+		theSelection = window.getSelection().toString();
+	}
+	else if (document.getSelection)
+	{
+		theSelection = document.getSelection();
+	}
+	else if (document.selection)
+	{
+		theSelection = document.selection.createRange().text;
+	}
+
+	if (theSelection == '')
+	{
+		if (document.all)
+		{
+			theSelection = divarea.innerText;
+		}
+		else if (divarea.textContent)
+		{
+			theSelection = divarea.textContent;
+		}
+		else if (divarea.firstChild.nodeValue)
+		{
+			theSelection = divarea.firstChild.nodeValue;
+		}
+	}
+	
+	if (theSelection)
+	{
+		insert_text('[quote="' + username + '"]' + theSelection + '[/quote]');
+	}
+
+	return;
+}
+
 function bbstyle(bbnumber) {
 
 	donotinsert = false;

@@ -1472,7 +1472,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
-			'U_QUOTE'		=> ($quote_status) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
+			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
 
 			'S_ROW_COUNT'	=> $i)
 		);
