@@ -158,27 +158,19 @@ class Template {
 		$this->_tpldata = array();
 	}
 
-	function security()
-	{
-		return true;
-	}
 
-	/**
-	 * Load the file for the handle, compile the file,
-	 * and run the compiled code. This will print out
-	 * the results of executing the template.
-	 */
+	//
+	// Methods for loading and evaluating the templates
+	//
 	function display($handle)
 	{
-		$_str = '';
-
-		if (!$this->compile_load($_str, $handle, true))
+		if (!$this->compile_load($handle, true))
 		{
 			global $user, $phpEx;
 
 			if (!$this->loadfile($handle))
 			{
-				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
+				trigger_error("Template->display(): Couldn't load template file for handle $handle", E_USER_ERROR);
 			}
 
 			// Actually compile the code now.
@@ -191,61 +183,25 @@ class Template {
 		return true;
 	}
 
-	/**
-	 * Inserts the uncompiled code for $handle as the
-	 * value of $varname in the root-level. This can be used
-	 * to effectively include a template in the middle of another
-	 * template.
-	 * Note that all desired assignments to the variables in $handle should be done
-	 * BEFORE calling this function.
-	 */
-	function assign_var_from_handle($varname, $handle)
+	function compile_load(&$handle, $include = true)
 	{
-		$_str = '';
+		global $phpEx, $user;
 
-		if (!($this->compile_load($_str, $handle, false)))
+		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
+
+		// Recompile page if the original template is newer, otherwise load the compiled version
+		if (file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]))
 		{
-			if (!$this->loadfile($handle))
+			if ($include)
 			{
-				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
+				include($filename);
 			}
 
-			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
-			$this->compile_write($handle, $code);
-
-			// evaluate the variable assignment.
-			eval($code);
+			return true;
 		}
-
-		// assign the value of the generated variable to the given varname.
-		$this->assign_var($varname, $_str);
-
-		return true;
+		return false;
 	}
 
-	function assign_from_include($filename)
-	{
-		$handle = 'include_' . $this->include_counter++;
-
-		$this->filename[$handle] = $filename;
-		$this->files[$handle] = $this->make_filename($filename);
-		$_str = '';
-
-		if (!($this->compile_load($_str, $handle, false)))
-		{
-			global $user, $phpEx;
-
-			if (!$this->loadfile($handle))
-			{
-				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
-			}
-
-			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
-			$this->compile_write($handle, $this->compiled_code[$handle]);
-
-			return $handle;
-		}
-	}
 
 	/**
 	 * Root-level variable assignment. Adds to current assignments, overriding
@@ -307,6 +263,33 @@ class Template {
 
 		return true;
 	}
+	
+
+	// Additional methods
+	function _tpl_include($filename, $include = true)
+	{
+		$handle = $filename;
+
+		$this->filename[$handle] = $filename;
+		$this->files[$handle] = $this->make_filename($filename);
+ 
+		if (!($this->compile_load($handle, $include)))
+		{
+			global $user, $phpEx;
+
+			if (!$this->loadfile($handle))
+			{
+				trigger_error("Template->_tpl_include(): Couldn't load template file for handle $handle", E_USER_ERROR);
+			}
+
+			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
+			$this->compile_write($handle, $this->compiled_code[$handle]);
+		}
+	}
+
+
+
+
 
 	/**
 	 * Compiles the given string of code, and returns
@@ -368,8 +351,8 @@ class Template {
 				case 'INCLUDE':
 					$temp = '';
 					list(, $temp) = each($include_blocks);
-					$compile_blocks[] = "// INCLUDE $temp\ninclude('" . $this->cachedir . $temp . ".' . \$phpEx);\n";
-					$this->assign_from_include($temp);
+					$compile_blocks[] = "// INCLUDE $temp\n\$this->_tpl_include('$temp');\n";
+					$this->_tpl_include($temp, false);
 					break;
 /*				case 'INCLUDEPHP':
 					$compile_blocks[] = '// INCLUDEPHP ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_include_php($blocks[2][$curr_tb]);
@@ -435,7 +418,7 @@ class Template {
 			// Block is not nested.
 			$tag_template_php = '$_' . $tag_args . '_count = (isset($this->_tpldata[\'' . $tag_args . '.\'])) ?  sizeof($this->_tpldata[\'' . $tag_args . '.\']) : 0;' . "\n";
 			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
-			$tag_template_php .= 'for ($_' . $tag_args . '_i = 0; $_' . $tag_args . '_i < $_' . $tag_args . '_count; $_' . $tag_args . '_i++)';
+			$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++)';
 		}
 		else
 		{
@@ -451,7 +434,7 @@ class Template {
 			// Create the for loop code to iterate over this block.
 			$tag_template_php = '$_' . $tag_args . '_count = (isset(' . $varref . ')) ? sizeof(' . $varref . ') : 0;' . "\n";
 			$tag_template_php .= 'if ($_' . $tag_args . '_count) {' . "\n";
-			$tag_template_php .= 'for ($_' . $tag_args . '_i = 0; $_' . $tag_args . '_i < $_' . $tag_args . '_count; $_' . $tag_args . '_i++)';
+			$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++)';
 		}
 
 		$tag_template_php .= "\n{\n";
@@ -644,9 +627,8 @@ class Template {
 		// Prepend the necessary code to stick this in an echo line.
 
 		// Append the variable reference.
-		$varref .= '[\'' . $varname . '\']';
-
-		$varref = '\' . ((isset(' . $varref . ')) ? ' . $varref . ' : \'\') . \'';
+		$varref .= "['$varname']";
+		$varref = "' . $varref . '";
 
 		return $varref;
 
@@ -670,43 +652,19 @@ class Template {
 		// Build up the string with everything but the last child.
 		for ($i = 0; $i < $blockcount; $i++)
 		{
-			$varref .= '[\'' . $blocks[$i] . '.\'][$_' . $blocks[$i] . '_i]';
+			$varref .= "['" . $blocks[$i] . ".'][\$this->_" . $blocks[$i] . '_i]';
 		}
 
 		// Add the block reference for the last child.
-		$varref .= '[\'' . $blocks[$blockcount] . '.\']';
+		$varref .= "['" . $blocks[$blockcount] . ".']";
 
 		// Add the iterator for the last child if requried.
 		if ($include_last_iterator)
 		{
-			$varref .= '[$_' . $blocks[$blockcount] . '_i]';
+			$varref .= '[$this->_' . $blocks[$blockcount] . '_i]';
 		}
 
 		return $varref;
-	}
-
-	// Compilation stuff
-	function compile_load(&$_str, &$handle, $do_echo)
-	{
-		global $phpEx, $user;
-
-		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
-
-		// Recompile page if the original template is newer, otherwise load the compiled version
-		if (file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]))
-		{
-			$_str = '';
-
-			include($filename);
-
-			if ($do_echo && $_str != '')
-			{
-				echo $_str;
-			}
-
-			return true;
-		}
-		return false;
 	}
 
 	function compile_write(&$handle, $data)
@@ -715,7 +673,7 @@ class Template {
 
 		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
 
-		$data = '<?php' . "\nif (\$this->security()) {\n" . $data . "\n}\n?" . '>';
+		$data = "<?php\n$data\n?>";
 
 		if ($fp = @fopen($filename, 'w+'))
 		{
