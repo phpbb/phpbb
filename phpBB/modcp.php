@@ -223,42 +223,8 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete moved topics!", "Error", __LINE__, __FILE__, $moved_topics);
 			}
 
-			if(SQL_LAYER != "mysql")
-			{
-				$update_index = "UPDATE ".FORUMS_TABLE."
-									 SET forum_topics = forum_topics - $topics_removed,
-									 forum_posts = forum_posts - $posts_removed,
-									 forum_last_post_id = (select max(post_id) FROM ".POSTS_TABLE."
-									 WHERE forum_id = $forum_id) WHERE forum_id = $forum_id";
+			sync("forum",$forum_id);
 
-				if(!$result = $db->sql_query($update_index, END_TRANSACTION))
-				{
-					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $delete_topics);
-				}
-			}
-			else
-			{
-				$sql = "select max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $forum_id";
-				if(!$result = $db->sql_query($sql))
-				{
-					message_die(GENERAL_ERROR, "Could not get last post id", "Error", __LINE__, __FILE__, $sql);
-				}
-				$last_post_row = $db->sql_fetchrowset($result);
-				$last_post = $last_post_row[0]['last_post'];
-				if($last_post == "")
-				{
-					$last_post = 'NULL';
-				}
-				$update_index = "UPDATE ".FORUMS_TABLE."
-									 SET forum_topics = forum_topics - $topics_removed,
-									 forum_posts = forum_posts - $posts_removed,
-									 forum_last_post_id = $last_post 
-									 WHERE forum_id = $forum_id";
-				if(!$result = $db->sql_query($update_index, END_TRANSACTION))
-				{
-					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $update_index);
-				}
-			}
 			if($quick_op)
 			{
 				$next_page = "viewforum.$phpEx?".POST_FORUM_URL."=$forum_id";
