@@ -86,7 +86,3 @@ select { color: black; background-color: white; font-family: Verdana, serif; fon
 .syntaxkeyword { color: #007700; }
 .syntaxstring { color: #DD0000; }
 
-/*
-	DIV
-*/
-div.postreview { overflow: auto; width: 100%; height: 300px; border: 1px; }
