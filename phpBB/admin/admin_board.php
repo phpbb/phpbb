@@ -152,6 +152,7 @@ $template->assign_vars(array(
 	"L_ADMIN" => $lang['Acc_Admin'], 
 	"L_COOKIE_SETTINGS" => $lang['Cookie_settings'], 
 	"L_COOKIE_SETTINGS_EXPLAIN" => $lang['Cookie_settings_explain'], 
+	"L_COOKIE_DOMAIN" => $lang['Cookie_domain'],
 	"L_COOKIE_NAME" => $lang['Cookie_name'], 
 	"L_COOKIE_PATH" => $lang['Cookie_path'], 
 	"L_COOKIE_SECURE" => $lang['Cookie_secure'], 
