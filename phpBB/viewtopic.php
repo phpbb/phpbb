@@ -132,7 +132,7 @@ else
 	}
 }
 $extra_fields = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
-$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
+$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
 if ($user->data['user_id'] != ANONYMOUS)
 {
@@ -144,8 +144,8 @@ if ($user->data['user_id'] != ANONYMOUS)
 
 		default:
 			$extra_fields .= ', tw.notify_status';
-			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON tw.user_id = ' . $user->data['user_id'] . ' 
-				AND t.topic_id = tw.topic_id';
+			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . ' 
+				AND t.topic_id = tw.topic_id)';
 	}
 }
 
@@ -160,7 +160,7 @@ if (!$forum_id)
 {
 	$forum_id = 2;
 }
-$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
+$sql = "SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, " . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ", t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -453,10 +453,52 @@ if (!empty($poll_start))
 			AND vote_user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
-	$voted_id = ($row = $db->sql_fetchrow($result)) ? $row['poll_option_id'] : false;
+	$voted_id = array();
+	if ($row = $db->sql_fetchrow($result))
+	{
+		do
+		{
+			$voted_id[] = $row['poll_option_id'];
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
 	$db->sql_freeresult($result);
 
-	$display_results = ($voted_id || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_get('f_vote', 'a_', $forum_id) || $topic_status == ITEM_LOCKED || $forum_status == ITEM_LOCKED) ? true : false;
+	if (isset($_POST['castvote']))
+	{
+		if (sizeof($voted_id) == $poll_max_options && !$auth->acl_get('f_votechg', $forum_id))
+		{
+			trigger_error($user->lang['ALREADY_VOTED']);
+		}
+
+		$voted_id = array_map('intval', $_POST['vote_id']);
+
+		if (!sizeof($voted_id) || sizeof($voted_id) > $poll_max_options)
+		{
+			$message = (!sizeof($option_voted)) ? 'NO_VOTE_OPTION' : 'TOO_MANY_VOTE_OPTIONS';
+			trigger_error($user->lang[$message]);
+		}
+
+		foreach ($voted_id as $option)
+		{
+			$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . " (topic_id, poll_option_id, vote_user_id, vote_user_ip) 
+				VALUES ($topic_id, $option, " . $user->data['user_id'] . ", '$user->ip')";
+			$db->sql_query($sql);
+
+			$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+				SET poll_option_total = poll_option_total + 1 
+				WHERE poll_option_id = $option 
+					AND topic_id = $topic_id";
+			$db->sql_query($sql);
+		}
+
+		$sql = "UPDATE " . TOPICS_TABLE . " 
+			SET poll_last_vote = " . time() . " 
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
+	}
+
+	$display_results = (sizeof($voted_id) || ($poll_length != 0 && $poll_start + $poll_length < time()) || $_GET['vote'] == 'viewresult' || !$auth->acl_get('f_vote', $forum_id) || $topic_status == ITEM_LOCKED || $forum_status == ITEM_LOCKED) ? true : false;
 
 	$poll_total = 0;
 	foreach ($poll_info as $poll_option)
@@ -475,25 +517,23 @@ if (!empty($poll_start))
 			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $vote_percent,
-			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * $user->theme['poll_length']), true))
+			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * $user->theme['poll_length']), true), 
+			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $voted_id)) ? true : false)
 		);
 	}
 
-	$poll_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_title) : $poll_title;
-
 	$template->assign_vars(array(
-		'POLL_QUESTION'		=> $poll_title,
+		'POLL_QUESTION'		=> (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_title) : $poll_title,
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
-		'S_HAS_POLL_OPTIONS'=> !$display_results,
-		'S_HAS_POLL_DISPLAY'=> $display_results,
-		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sk=$sort_key&amp;sd=$sort_dir",
+		'L_MAX_VOTES'	=> ($poll_max_options == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $poll_max_options), 
 
-		'L_SUBMIT_VOTE'	=> $user->lang['Submit_vote'],
-		'L_VIEW_RESULTS'=> $user->lang['View_results'],
-		'L_TOTAL_VOTES' => $user->lang['Total_votes'],
+		'S_HAS_POLL_OPTIONS'=> !$display_results,
+		'S_HAS_POLL_DISPLAY'=> $display_results, 
+		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false, 
+		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sk=$sort_key&amp;sd=$sort_dir",
 
 		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;vote=viewresult")
 	);
@@ -504,8 +544,7 @@ if (!empty($poll_start))
 $user_cache = $attachments = $attach_list = $rowset = $update_count = array();
 $has_attachments = FALSE;
 $force_encoding = '';
-$bbcode_bitfield = 0;
-$i = 0;
+$bbcode_bitfield = $i = 0;
 
 // Go ahead and pull all data for this topic
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
@@ -766,18 +805,27 @@ if (count($attach_list))
 
 			if (!$db->sql_fetchrow($result))
 			{
-				$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+				$sql = 'UPDATE ' . TOPICS_TABLE . " 
+					SET topic_attachment = 0 
+					WHERE topic_id = $topic_id";
+				$db->sql_query($sql);
 			}
 		}
 		else
 		{
-			$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+			$sql = 'UPDATE ' . TOPICS_TABLE . " 
+				SET topic_attachment = 0 
+				WHERE topic_id = $topic_id";
+			$db->sql_query($sql);
 		}
 	}
 	elseif ($has_attachments && !$topic_data['topic_attachment'])
 	{
 		// Topic has approved attachments but its flag is wrong
-		$db->sql_query("UPDATE " . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
+		$sql = 'UPDATE ' . TOPICS_TABLE . " 
+			SET topic_attachment = 1 
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 	}
 }
 
@@ -962,8 +1010,8 @@ foreach ($rowset as $key => $row)
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
-		'POST_DATE' 	=> $user->format_date($row['post_time']),
 
+		'POST_DATE' 	=> $user->format_date($row['post_time']),
 		'POST_SUBJECT' 	=> $row['post_subject'],
 		'MESSAGE' 		=> $message,
 		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
@@ -1001,20 +1049,18 @@ foreach ($rowset as $key => $row)
 		'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 		'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-		'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
-		'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
-		'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-
 		'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 		'L_MINI_POST_ALT'	=> $mini_post_alt,
 
-		'S_ROW_COUNT'	=> $i++,
-
+		'S_ROW_COUNT'		=> $i++,
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
-		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
+		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 
+		'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
+		'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
+		'U_MCP_APPROVE'	=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 		'U_MINI_POST'	=> $mini_post_url,
 		'U_POST_ID' 	=> $u_post_id)
 	);

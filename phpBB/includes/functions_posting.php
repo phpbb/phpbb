@@ -949,7 +949,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		{
 			$topic_sql = array_merge($topic_sql, array(
 				'poll_title'			=> stripslashes($poll['poll_title']),
-				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
+				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
+				'poll_max_options'		=> $poll['poll_max_options'], 
 				'poll_length'			=> $poll['poll_length'] * 3600)
 			);
 		}
@@ -1181,7 +1182,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 		
 	// Mark this topic as read and posted to.
-	$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
+	$mark_mode = ($mode == 'post' || $mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
 	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
 
 	$db->sql_transaction('commit');

@@ -79,7 +79,7 @@ $post_validate = false;
 // Easier validation
 $forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_postable' => 'i', 'enable_icons' => 'i');
 
-$topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_length' => 'i');
+$topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_max_options' => 'i', 'poll_length' => 'i');
 
 $post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i', 'post_edit_locked' => 'i');
 
@@ -530,6 +530,7 @@ if (($submit) || ($preview) || ($refresh))
 	}
 	
 	$message_parser->message = (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
+	
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : '';
 	$topic_type			= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
 	$icon_id			= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
@@ -557,10 +558,11 @@ if (($submit) || ($preview) || ($refresh))
 		$db->sql_query($sql);
 
 		$topic_sql = array(
-			'poll_title'	=> '',
-			'poll_start' 	=> 0,
-			'poll_length'	=> 0,
-			'poll_last_vote' => 0
+			'poll_title'		=> '',
+			'poll_start' 		=> 0,
+			'poll_length'		=> 0,
+			'poll_last_vote'	=> 0, 
+			'poll_max_options'	=> 0
 		);
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $topic_id;
@@ -569,12 +571,14 @@ if (($submit) || ($preview) || ($refresh))
 		$poll_title = '';
 		$poll_length = '';
 		$poll_option_text = '';
+		$poll_max_options = '';
 	}
 	else
 	{
 		$poll_title			= (!empty($_POST['poll_title'])) ? trim($_POST['poll_title']) : '';
 		$poll_length		= (!empty($_POST['poll_length'])) ? $_POST['poll_length'] : '';
 		$poll_option_text	= (!empty($_POST['poll_option_text'])) ? $_POST['poll_option_text'] : '';
+		$poll_max_options	= (!empty($_POST['poll_max_options'])) ? $_POST['poll_max_options'] : 1;
 	}
 
 	$err_msg = '';
@@ -714,6 +718,7 @@ if (($submit) || ($preview) || ($refresh))
 	$poll_data = array(
 		'poll_title'		=> $poll_title,
 		'poll_length'		=> $poll_length,
+		'poll_max_options'	=> $poll_max_options,
 		'poll_option_text'	=> $poll_option_text,
 		'poll_start'		=> $poll_start,
 		'poll_last_vote'	=> $poll_last_vote,
@@ -1074,9 +1079,10 @@ if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_pos
 
 		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 
-		'POLL_TITLE' 	=> $poll_title,
-		'POLL_OPTIONS'	=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
-		'POLL_LENGTH' 	=> $poll_length)
+		'POLL_TITLE' 		=> $poll_title,
+		'POLL_OPTIONS'		=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
+		'POLL_MAX_OPTIONS'	=> (!empty($poll_max_options)) ? $poll_max_options : 1, 
+		'POLL_LENGTH' 		=> $poll_length)
 	);
 }
 

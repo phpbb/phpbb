@@ -652,7 +652,9 @@ class parse_message
 		$err_msg = '';
 
 		// Process poll options
-		if (!empty($poll_data['poll_option_text']) && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_get('m_edit', $forum_id)))
+		if (!empty($poll_data['poll_option_text']) && 
+			(($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || 
+			$auth->acl_get('m_edit', $forum_id)))
 		{
 			if (($result = $this->parse($poll_data['poll_option_text'], $poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
 			{
@@ -678,9 +680,11 @@ class parse_message
 			$poll['poll_title'] = (!empty($poll_data['poll_title'])) ? trim(htmlspecialchars(strip_tags($poll_data['poll_title']))) : '';
 			$poll['poll_length'] = (!empty($poll_data['poll_length'])) ? intval($poll_data['poll_length']) : 0;
 		}
-		$poll['poll_start'] = $poll_data['poll_start'];
 
-		return ($err_msg);
+		$poll['poll_start'] = $poll_data['poll_start'];
+		$poll['poll_max_options'] = ($poll_data['poll_max_options'] < 1) ? 1 : (($poll_data['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll_data['poll_max_options']);
+
+		return $err_msg;
 	}
 }
 

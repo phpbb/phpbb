@@ -31,13 +31,13 @@
 	<tr>
 		<td class="row2" colspan="2"><br clear="all" /><form method="post" action="{S_POLL_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
 			<tr>
-				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span></td>
+				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_MAX_VOTES}</span></td>
 			</tr>
 			<tr>
 				<td align="center"><table cellspacing="0" cellpadding="2" border="0">
 					<!-- BEGIN poll_option -->
 					<tr>
-						<td><input type="radio" name="vote_id" value="{poll_option.POLL_OPTION_ID}" />&nbsp;</td>
+						<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" /><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" /><!-- ENDIF -->&nbsp;</td>
 						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 					</tr>
 					<!-- END poll_option -->
@@ -69,14 +69,17 @@
 								<td>{POLL_RIGHT_CAP_IMG}</td>
 							</tr>
 						</table></td>
-						<td align="center"><b><span class="gen">&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</span></b></td>
-						<td align="center"><span class="gen">[ {poll_option.POLL_OPTION_RESULT} ]</span></td>
+						<td class="gen" align="center"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
+						<td class="gen" align="center">[ {poll_option.POLL_OPTION_RESULT} ]</td>
+						<!-- IF poll_option.POLL_OPTION_VOTED -->
+						<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
+						<!-- ENDIF -->
 					</tr>
 					<!-- END poll_option -->
 				</table></td>
 			</tr>
 			<tr>
-				<td colspan="4" align="center"><span class="gen"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></span></td>
+				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></td>
 			</tr>
 		</table><br clear="all" /></td>
 	</tr>
