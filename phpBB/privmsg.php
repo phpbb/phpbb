@@ -437,7 +437,7 @@ else if ( $mode == 'read' )
 		$l_box_name = $lang['Sent'];
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
+	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
 	$page_title = $lang['Read_pm'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
