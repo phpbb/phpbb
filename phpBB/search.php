@@ -115,11 +115,7 @@ else
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-//
-// Define some globally used data
-//
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
-$sort_by_sql = array('p.post_time', 'pt.post_subject', 't.topic_title', 'u.username', 'f.forum_id');
 
 //
 // Begin core code
@@ -446,8 +442,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 			else if ( $search_author != '' || $search_time || $auth_sql != '' )
 			{
-				$where_sql = ( $search_author == '' && $auth_sql == '' ) ? "post_id IN (" . implode(', ', $search_ids) . ")" : "p.post_id IN (" . implode(", ", $search_ids) . ")";
-				$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . " p";
+				$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_ids) . ')' : 'p.post_id IN (' . implode(', ', $search_ids) . ')';
+				$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
 
 				if ( $search_time )
 				{
@@ -640,10 +636,29 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					AND p2.post_id = t.topic_last_post_id
 					AND u2.user_id = p2.poster_id";
 		}
-		
+
 		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
-		$sql .= " ORDER BY " . $sort_by_sql[$sort_by] . " $sort_dir LIMIT $start, " . $per_page;
+		$sql .= " ORDER BY ";
+		switch ( $sort_by )
+		{
+			case 1:
+				$sql .= ( $show_results == 'posts' ) ? 'pt.post_subject' : 't.topic_title';
+				break;
+			case 2:
+				$sql .= 't.topic_title';
+				break;
+			case 3:
+				$sql .= 'u.username';
+				break;
+			case 4:
+				$sql .= 'f.forum_id';
+				break;
+			default:
+				$sql .= ( $show_results == 'posts' ) ? 'p.post_time' : 'p2.post_time';
+				break;
+		}
+		$sql .= " $sort_dir LIMIT $start, " . $per_page;
 
 		if ( !$result = $db->sql_query($sql) )
 		{
