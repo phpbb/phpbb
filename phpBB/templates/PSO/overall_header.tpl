@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 {META}
-<title>{PAGE_TITLE}</title>
+<title>{SITENAME} -+- {PAGE_TITLE}</title>
 <style type="text/css">
 <!--
 
@@ -27,6 +27,8 @@ SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
 SPAN.courier	{font-family:{T_FONTFACE3};font-size:10pt}
 SPAN.courier	{font-family:{T_FONTFACE3};font-size:8pt}
 
+SELECT {font-family:Verdana;font-size:8pt} 
+INPUT {font-family:Verdana;font-size:8pt}
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
 INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
