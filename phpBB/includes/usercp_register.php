@@ -27,11 +27,11 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-//
+// ---------------------------------------
 // Load agreement template since user has not yet
 // agreed to registration conditions/coppa
 //
-function show_coppa(&$coppa)
+function show_coppa()
 {
 	global $template, $lang, $phpbb_root_path, $phpEx;
 
@@ -40,7 +40,6 @@ function show_coppa(&$coppa)
 	);
 
 	$template->assign_vars(array(
-		'COPPA' => $coppa,
 		'REGISTRATION' => $lang['Registration'], 
 		'AGREEMENT' => $lang['Reg_agreement'], 
 		"AGREE_OVER_13" => $lang['Agree_over_13'], 
@@ -55,8 +54,7 @@ function show_coppa(&$coppa)
 
 }
 //
-//
-//
+// ---------------------------------------
 
 $error = FALSE;
 $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
@@ -65,12 +63,12 @@ if ( $mode == 'register' && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GE
 {
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-	show_coppa($coppa);
+	show_coppa();
 
 	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 }
 
-$coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == 'register' ) ? 0 : TRUE;
+$coppa = ( empty($HTTP_POST_VARS['coppa']) && empty($HTTP_GET_VARS['coppa']) ) ? 0 : TRUE;
 
 //
 // Check and initialize some variables if needed
@@ -223,14 +221,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 	else if ( $mode == 'register' )
 	{
-		$coppa = (!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa']) ? 0 : TRUE;
-
 		if ( empty($username) || empty($password) || empty($password_confirm) || empty($email) )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Fields_empty'];
 		}
-		
+	
 	}
 
 	$passwd_sql = '';
@@ -789,7 +785,7 @@ else
 	// us from doing file uploads....
 	//
 	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-	$form_enctype = ( @$ini_val('file_uploads') == 0 || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 	
 	$template->assign_vars(array(
 		'USERNAME' => $username,
