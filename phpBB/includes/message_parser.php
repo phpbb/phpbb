@@ -70,8 +70,9 @@ class parse_message
 
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
-		$match = array('#sid=[a-z0-9]*?&?#', "#([\r\n][\s]+){3,}#");
-		$replace = array('', "\n\n");
+		// Transform \r\n and \r into \n
+		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&?#', "#([\n][\s]+){3,}#");
+		$replace = array("\n", '', "\n\n");
 
 		$this->message = trim(preg_replace($match, $replace, $this->message));
 
@@ -210,14 +211,14 @@ class parse_message
 			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\\0')")),
 			'b'		=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']')),
 			'i'		=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']\1[/i:' . $this->bbcode_uid . ']')),
-			'url'	=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\\1', '\\2')")),
+			'url'	=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\\1', '\\2')")),
 			'img'	=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i' => '[img:' . $this->bbcode_uid . ']\1\2[/img:' . $this->bbcode_uid . ']')),
 			'size'	=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=\1:' . $this->bbcode_uid . ']\2[/size:' . $this->bbcode_uid . ']')),
 			'color'	=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=\1:' . $this->bbcode_uid . ']\2[/color:' . $this->bbcode_uid . ']')),
 			'u'		=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']')),
 			'list'	=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_list('\\0')")),
-			'email'	=>	array('bbcode_id' => 10, 'regexp' => array('#\[email(=.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\\1', '\\2')")),
-			'flash'	=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash\](.*?)\[/flash\]#i' => '[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'))
+			'email'	=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\\1', '\\2')")),
+			'flash'	=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => '[flash=\1,\2:' . $this->bbcode_uid . ']\3[/flash:' . $this->bbcode_uid . ']'))
 		);
 
 /**************
@@ -371,7 +372,7 @@ class parse_message
 					if (count($item_end_tags))
 					{
 						// current li tag has not been closed
-						$out .= array_pop($item_end_tags) . '][';
+						$out = preg_replace('/(\n)?\[$/', '[', $out) . array_pop($item_end_tags) . '][';
 					}
 
 					$out .= array_pop($list_end_tags) . ']';
@@ -389,11 +390,18 @@ class parse_message
 					if ($buffer == '*' && count($list_end_tags))
 					{
 						// the buffer holds a bullet tag and we have a [list] tag open
-
 						if (count($item_end_tags) >= count($list_end_tags))
 						{
 							// current li tag has not been closed
-							$buffer = array_pop($item_end_tags) . '][*:' . $this->bbcode_uid;
+							if (preg_match('/\n\[$/', $out, $m))
+							{
+								$out = preg_replace('/\n\[$/', '[', $out);
+								$buffer = array_pop($item_end_tags) . "]\n[*:" . $this->bbcode_uid;
+							}
+							else
+							{
+								$buffer = array_pop($item_end_tags) . '][*:' . $this->bbcode_uid;
+							}
 						}
 						else
 						{
@@ -492,8 +500,40 @@ class parse_message
 
 					if (!empty($m[1]))
 					{
-						// TODO: here we can check for valid bbcode pairs or whatever
-						$username = $m[1];
+						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;\1', $m[1]);
+						$end_tags = array();
+						$error = FALSE;
+
+						preg_match_all('#\[((?:/)?(?:[a-z]+))#i', $username, $tags);
+						foreach ($tags[1] as $tag)
+						{
+							if ($tag{0} != '/')
+							{
+								$end_tags[] = '/' . $tag;
+							}
+							else
+							{
+								while ($end_tag = array_pop($end_tags))
+								{
+									if ($end_tag != $tag)
+									{
+//										echo "$end_tag != $tag<br />";
+										$error = TRUE;
+									}
+									else
+									{
+										$error = FALSE;
+									}
+								}
+							}
+						}
+						if ($error)
+						{
+							// TODO: return error? it would prevent from using usernames like "Foo[u]bar"
+							// altough this kind of usernames aren't likely to be seen a lot
+							$username = str_replace('[', '&#91;', str_replace(']', '&#93;', $m[1]));
+						}
+
 						$out .= 'quote="' . $username . '":' . $this->bbcode_uid . ']';
 					}
 					else
