@@ -789,6 +789,21 @@ $lang['Remove'] = "Remove";
 $lang['Action'] = "Action";
 $lang['Update_order'] = "Update Order";
 
+// Smiley Management
+$lang['smile_remove_err'] = "Error Deleting Smiley!";
+$lang['smiley_return'] = "Return to smiley listing";
+$lang['smiley_del_success'] = "The smiley was successfully removed!";
+$lang['smile_edit_err'] = "Error processing smiley edits";
+$lang['smiley_title'] = "Smiles Editing Utility";
+$lang['smiley_code'] = "Smiley Code";
+$lang['smiley_url'] = "Smiley Image File";
+$lang['smiley_emot'] = "Smiley Emotion";
+$lang['smiley_add_success'] = "The smiley was successfully added!";
+$lang['smiley_edit_success'] = "The smiley was successfully updated!";
+$lang['smile_load_err'] = "There was an error retrieving the smilies!";
+$lang['smile_add'] = "Add a new Smiley";
+$lang['smile_desc'] = "Some wonderful text describing the smiley administration here :)";
+$lang['smile_instr'] = "There should be some text here with instructions on what the admin should fill in for the smiley fields when editing or adding a smiley.";
 //
 // End
 // -------------------------------------------------
