@@ -343,7 +343,7 @@ switch( $mode )
 				$topics = $HTTP_POST_VARS['topic_id_list'];
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . $topics[$i] . '" />';
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '" />';
 				}
 			}
 			else
@@ -391,7 +391,7 @@ switch( $mode )
 				$topic_list = '';
 				for($i = 0; $i < count($topics); $i++)
 				{
-					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . $topics[$i];
+					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . intval($topics[$i]);
 				}
 
 				$sql = "SELECT * 
@@ -624,7 +624,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
 			}
 
-			$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
+			$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
 			$topic_time = time();
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)

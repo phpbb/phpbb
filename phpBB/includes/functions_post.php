@@ -22,7 +22,7 @@
 
 if ( !defined('IN_PHPBB') )
 {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 $html_entities_match = array('#&#', '#<#', '#>#');
@@ -380,7 +380,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 {
 	global $db;
 
-	$sign = ( $mode == 'delete' ) ? "- 1" : "+ 1";
+	$sign = ( $mode == 'delete' ) ? '- 1' : '+ 1';
 	$forum_update_sql = "forum_posts = forum_posts $sign";
 	$topic_update_sql = '';
 
@@ -395,7 +395,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 			else
 			{
 
-				$topic_update_sql = "topic_replies = topic_replies - 1";
+				$topic_update_sql .= "topic_replies = topic_replies - 1";
 
 				$sql = "SELECT MAX(post_id) AS post_id
 					FROM " . POSTS_TABLE . " 
@@ -439,8 +439,12 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$topic_update_sql = 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['post_id'];
+				$topic_update_sql .= 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['post_id'];
 			}
+		}
+		else
+		{
+			$topic_update_sql .= 'topic_replies = topic_replies - 1';
 		}
 	}
 	else if ( $mode != 'poll_delete' )

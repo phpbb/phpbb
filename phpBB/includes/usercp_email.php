@@ -27,12 +27,6 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( !$userdata['session_logged_in'] )
-{
-	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
-	exit;
-}
-
 if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 {
 	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
@@ -40,6 +34,12 @@ if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS
 else
 {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
+}
+
+if ( !$userdata['session_logged_in'] )
+{
+	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
+	exit;
 }
 
 $sql = "SELECT username, user_email, user_viewemail, user_lang  

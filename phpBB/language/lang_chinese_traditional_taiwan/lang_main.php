@@ -6,21 +6,21 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_main.php,v 1.82 2002/02/03 18:17:08 thefinn Exp $
+ *     $Id: lang_main.php,v 1.85 2002/03/25 19:22:42 dougk_ff7 Exp $
  *
  ****************************************************************************/
 
 /***************************************************************************
- *                            Traditional Chinese[繁體中文語系] Translation
+ *                            Traditional Chinese Translation [繁體中文語系] 
  *                              -------------------
  *     begin                : Thu Nov 26 2001
  *     by                   : 小竹子, OOHOO, 皇家騎士, 思
  *     email                : kyo.yoshika@msa.hinet.net
- *                            mchiang@bigpond.net.au
+ *                            webdev@hotmail.com
  *                            sjwu1@ms12.hinet.net
  *                            f8806077@mail.dyu.edu.tw
  *
- *     last modify          : Wed Mar 4 2002
+ *     last modify          : Fri Apr 5 2002
  *
  ***************************************************************************/
 
@@ -46,7 +46,7 @@
 //
 
 // Translator credit
-$lang['TRANSLATION_INFO'] = '繁體中文化由&nbsp;<a href="http://heaven.wusdsl.net/phpbb/viewtopic.php?p=2811#2811"><font color="#FF6633">竹貓星球PBB2中文強化開發小組</font></a>&nbsp;製作';
+$lang['TRANSLATION_INFO'] = '繁體中文強化版由&nbsp;<a href="http://heaven.wusdsl.net/phpbb/viewtopic.php?p=2811#2811"><font color="#FF6633">竹貓星球PBB2中文強化開發小組</font></a>&nbsp;製作';
 
 //setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "big5";
@@ -70,7 +70,7 @@ $lang['Posts'] = "文章";
 $lang['Posted'] = "發表於";
 $lang['Username'] = "會員名稱";
 $lang['Password'] = "登入密碼";
-$lang['Email'] = "電子郵件信箱";
+$lang['Email'] = "電子郵件";
 $lang['Poster'] = "回覆人";
 $lang['Author'] = "發表人";
 $lang['Time'] = "時間";
@@ -150,7 +150,7 @@ $lang['Hidden_users_total'] = "%d 位隱形及 ";
 $lang['Guest_users_zero_total'] = "0 位訪客";
 $lang['Guest_users_total'] = "%d 位訪客";
 $lang['Guest_user_total'] = "%d 位訪客";
-$lang['Record_online_users'] = "最高線上人數記錄 <b>%s</b> 在 %s 創下"; // first %s = number of users, second %s is the date.
+$lang['Record_online_users'] = "最高線上人數記錄為 <font color=\"#FF6633\"><b>%s</b></font> 人 (<font color=\"#FF6633\"><b>%s</b></font> 創下)"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%s系統管理員%s";
 $lang['Mod_online_color'] = "%s版面管理員%s";
@@ -184,7 +184,7 @@ $lang['Posted_article_total'] = "目前總共發表了 <b>%d</b> 篇文章"; // Number of 
 $lang['Registered_users_zero_total'] = "目前沒有註冊會員"; // # registered users
 $lang['Registered_users_total'] = "目前總共有 <b>%d</b> 位註冊會員"; // # registered users
 $lang['Registered_user_total'] = "目前有 <b>%d</b> 位註冊會員"; // # registered users
-$lang['Newest_user'] = "最新註冊的會員: <b>%s%s%s</b>"; // a href, username, /a
+$lang['Newest_user'] = "最新註冊的會員: <b>%s%s%s</b>"; // a href, username, /a 
 
 $lang['No_new_posts_last_visit'] = "從您上次光臨後沒有新文章";
 $lang['No_new_posts'] = "沒有新文章";
@@ -255,7 +255,7 @@ $lang['Rules_delete_can'] = "您 <b>可以</b> 在這個版面刪除文章";
 $lang['Rules_delete_cannot'] = "您 <b>無法</b> 在這個版面刪除文章";
 $lang['Rules_vote_can'] = "您 <b>可以</b> 在這個版面進行投票";
 $lang['Rules_vote_cannot'] = "您 <b>無法</b> 在這個版面進行投票";
-$lang['Rules_moderate'] = "您 <b>可以</b> %s執行版面管理功能%s"; // %s replaced by a href links, do not remove!
+$lang['Rules_moderate'] = "您 <b>可以</b> %s執行版面管理功能%s"; // %s replaced by a href links, do not remove! 
 
 $lang['No_topics_post_one'] = "這個版面目前沒有文章<br />請按下<b>發表新主題</b>的按鈕發表新的文章主題";
 
@@ -284,7 +284,7 @@ $lang['Oldest_First'] = "最舊的";
 
 $lang['Back_to_top'] = "回頂端";
 
-$lang['Read_profile'] = "檢視會員個人資料";
+$lang['Read_profile'] = "檢視會員個人資料"; 
 $lang['Send_email'] = "發送電子郵件";
 $lang['Visit_website'] = "參觀發表人的個人網站";
 $lang['ICQ_status'] = "ICQ 狀態";
@@ -459,7 +459,7 @@ $lang['Sent'] = "發送";
 $lang['Saved'] = "儲存";
 $lang['Delete_marked'] = "刪除選取";
 $lang['Delete_all'] = "刪除全部";
-$lang['Save_marked'] = "儲存選取";
+$lang['Save_marked'] = "儲存選取"; 
 $lang['Save_message'] = "儲存訊息";
 $lang['Delete_message'] = "刪除訊息";
 
@@ -503,8 +503,8 @@ $lang['Confirm_delete_pm'] = "您確定要刪除這篇私人訊息嗎?";
 $lang['Confirm_delete_pms'] = "您確定要刪除這些私人訊息嗎?";
 
 $lang['Inbox_size'] = "您的收件夾已經使用了 %d%% "; // eg. Your Inbox is 50% full
-$lang['Sentbox_size'] = "您的寄件夾已經使用了 %d%% ";
-$lang['Savebox_size'] = "您的儲存夾已經使用了 %d%% ";
+$lang['Sentbox_size'] = "您的寄件夾已經使用了 %d%% "; 
+$lang['Savebox_size'] = "您的儲存夾已經使用了 %d%% "; 
 
 $lang['Click_view_privmsg'] = "點選 %s這裡%s 進入私人訊息收件夾";
 
@@ -512,7 +512,7 @@ $lang['Click_view_privmsg'] = "點選 %s這裡%s 進入私人訊息收件夾";
 //
 // Profiles/Registration
 //
-$lang['Viewing_user_profile'] = "檢視 :: %s 的個人資料"; // %s is username
+$lang['Viewing_user_profile'] = "檢視 :: %s 的個人資料"; // %s is username 
 $lang['About_user'] = "關於 %s"; // %s is username
 
 $lang['Preferences'] = "偏好設定";
@@ -532,7 +532,7 @@ $lang['Send_private_message'] = "發送私人訊息";
 $lang['Hidden_email'] = "[ 隱形 ]";
 $lang['Search_user_posts'] = "查詢 %s 發表的所有文章";
 $lang['Interests'] = "興趣";
-$lang['Occupation'] = "職業";
+$lang['Occupation'] = "職業"; 
 $lang['Poster_rank'] = "等級";
 
 $lang['Total_posts'] = "總發表數";
@@ -577,7 +577,7 @@ $lang['password_confirm_if_changed'] = "請再輸入一次您要替換的密碼";
 $lang['Avatar'] = "個人頭像";
 $lang['Avatar_explain'] = "您的個人頭像將會顯示在您所發表的文章旁邊. 一次只能只用一個圖檔, 寬度不可超過  %d 像素, 高度不可超過  %d 像素而且檔案大小不可超過 %dkB";
 $lang['Upload_Avatar_URL'] = "從連結複製圖檔";
-$lang['Upload_Avatar_URL_explain'] = "輸入頭像連結, 系統將會把圖檔複製到系統裡面";
+$lang['Upload_Avatar_URL_explain'] = "輸入頭像連結, 系統將會把圖檔複製至系統裡";
 $lang['Pick_local_Avatar'] = "由相簿中選取圖檔";
 $lang['Link_remote_Avatar'] = "由網址連結頭像圖檔";
 $lang['Link_remote_Avatar_explain'] = "輸入頭像圖檔連結網址, 系統將會自動連結到您想要的網址";
@@ -593,8 +593,8 @@ $lang['Delete_Image'] = "刪除圖檔";
 $lang['Current_Image'] = "目前使用的圖檔";
 
 $lang['Notify_on_privmsg'] = "當有新的私人訊息時以電子郵件通知";
-$lang['Popup_on_privmsg'] = "當有新的私人訊息時跳出小視窗通知";
-$lang['Popup_on_privmsg_explain'] = "當有人發送私人訊息給您時會跳出一個小視窗通知";
+$lang['Popup_on_privmsg'] = "當有新的私人訊息時跳出小視窗通知"; 
+$lang['Popup_on_privmsg_explain'] = "當有人發送私人訊息給您時會跳出一個小視窗通知"; 
 $lang['Hide_user'] = "隱藏您的上線狀態";
 
 $lang['Profile_updated'] = "您的個人資料已經完成更新";
@@ -613,7 +613,7 @@ $lang['Signature_too_long'] = "您的個性簽名太長";
 $lang['Fields_empty'] = "您必須確實填寫標示有*的項目";
 $lang['Avatar_filetype'] = "頭像圖檔格式必須為 .jpg, .gif 或是 .png";
 $lang['Avatar_filesize'] = "頭像檔案大小必須大於 0 kB 並且小於"; // The avatar image file size must be less than 6 kB
-$lang['Avatar_imagesize'] = "頭像圖檔尺寸必須小於  pixels(像素)寬 和  pixels(像素)高";
+$lang['Avatar_imagesize'] = "頭像圖檔尺寸必須小於  pixels(像素)寬 和  pixels(像素)高"; 
 
 $lang['Welcome_subject'] = "歡迎來到 %s 討論區"; // Welcome to my.com forums
 $lang['New_account_subject'] = "新的會員帳號";
@@ -635,7 +635,7 @@ $lang['Agree_over_13'] = "我同意以上條文(而且我<b>已滿13歲</b>)";
 $lang['Agree_not'] = "我不同意以上條文";
 
 $lang['Wrong_activation'] = "您所輸入的帳號啟用序號與資料庫不符";
-$lang['Send_password'] = "發送新的密碼給我";
+$lang['Send_password'] = "發送新的密碼給我"; 
 $lang['Password_updated'] = "新的密碼已建立, 請檢查您的電子郵件信箱以取得帳號啟用的相關資訊";
 $lang['No_email_match'] = "您所提供的電子郵件位址與使用者名稱不符";
 $lang['New_password_activation'] = "新的密碼啟用";
@@ -667,8 +667,8 @@ $lang['Sort_Location'] = "來自地區";
 $lang['Sort_Posts'] = "文章總數";
 $lang['Sort_Email'] = "電子郵件";
 $lang['Sort_Website'] = "個人網站";
-$lang['Sort_Ascending'] = "由小而大";
-$lang['Sort_Descending'] = "由大而小";
+$lang['Sort_Ascending'] = "依序遞增";
+$lang['Sort_Descending'] = "依序遞減";
 $lang['Order'] = "順序";
 
 
@@ -706,7 +706,7 @@ $lang['No_pending_group_members'] = "這個群組沒有審核中的會員";
 $lang["Group_joined"] = "您已經同意申請加入這個會員群組<br />這個群組的組長將會通知您是否准許加入";
 $lang['Group_request'] = "有一個會員申請加入您的群組";
 $lang['Group_approved'] = "您的請求已經獲得批准";
-$lang['Group_added'] = "您已經被加入這個會員群組";
+$lang['Group_added'] = "您已經被加入這個會員群組"; 
 $lang['Already_member_group'] = "您已經是這個群組的成員";
 $lang['User_is_member_group'] = "該會員已經是這個群組的成員";
 $lang['Group_type_updated'] = "群組形態已經完成更新";
@@ -784,13 +784,13 @@ $lang['Close_window'] = "關閉視窗";
 //
 // Note the %s will be replaced with one of the following 'user' arrays
 $lang['Sorry_auth_announce'] = "抱歉! 只有 %s 可以在這個版面發表公告";
-$lang['Sorry_auth_sticky'] = "抱歉! 只有 %s 可以在這個版面發表置頂文章";
-$lang['Sorry_auth_read'] = "抱歉! 只有 %s 可以閱讀這個版面的主題";
-$lang['Sorry_auth_post'] = "抱歉! 只有 %s 可以在這個版面發表新主題";
-$lang['Sorry_auth_reply'] = "抱歉! 只有 %s 可以回覆這個版面的文章";
-$lang['Sorry_auth_edit'] = "抱歉! 只有 %s 可以編輯這個版面的文章";
-$lang['Sorry_auth_delete'] = "抱歉! 只有 %s 可以刪除這個版面的文章";
-$lang['Sorry_auth_vote'] = "抱歉! 只有 %s 可以在這個版面發起投票";
+$lang['Sorry_auth_sticky'] = "抱歉! 只有 %s 可以在這個版面發表置頂文章"; 
+$lang['Sorry_auth_read'] = "抱歉! 只有 %s 可以閱讀這個版面的主題"; 
+$lang['Sorry_auth_post'] = "抱歉! 只有 %s 可以在這個版面發表新主題"; 
+$lang['Sorry_auth_reply'] = "抱歉! 只有 %s 可以回覆這個版面的文章"; 
+$lang['Sorry_auth_edit'] = "抱歉! 只有 %s 可以編輯這個版面的文章"; 
+$lang['Sorry_auth_delete'] = "抱歉! 只有 %s 可以刪除這個版面的文章"; 
+$lang['Sorry_auth_vote'] = "抱歉! 只有 %s 可以在這個版面發起投票"; 
 
 // These replace the %s in the above strings
 $lang['Auth_Anonymous_Users'] = "<b>匿名訪客</b>";
@@ -909,6 +909,7 @@ $lang['4.5'] = "GMT + 4.5 小時";
 $lang['5'] = "GMT + 5 小時";
 $lang['5.5'] = "GMT + 5.5 小時";
 $lang['6'] = "GMT + 6 小時";
+$lang['6.5'] = "GMT + 6.5 小時";
 $lang['7'] = "GMT + 7 小時";
 $lang['8'] = "台北時間 (GMT + 8 小時)";
 $lang['9'] = "GMT + 9 小時";
