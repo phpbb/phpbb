@@ -521,11 +521,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	// Finish building query (for all combinations)
 	// and run it ...
 	//
-	if( !$total_match_count )
-	{
-		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
-	}
-	else if( $total_match_count )
+	if( $total_match_count )
 	{
 		//
 		// Clean up search results table
@@ -632,6 +628,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 		{
 			header("Location: " . append_sid("search.$phpEx", true));
 		}
+	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
 
 	if( $search_results != "" )
