@@ -267,7 +267,7 @@ switch ($mode)
 		}
 
 		define('IN_LOGIN', true);
-		login_box("ucp.$phpEx$SID&amp;mode=login");
+		login_box("ucp.$phpEx$SID&amp;mode=login", '', '', true);
 
 		$redirect = request_var('redirect', "index.$phpEx$SID");
 		meta_refresh(3, $redirect);

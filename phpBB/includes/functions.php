@@ -884,10 +884,10 @@ function obtain_attach_extensions(&$extensions)
 			$extension = strtolower(trim($row['extension']));
 
 			$extensions['_allowed_'][] = $extension;
-			$extensions[$extension]['display_cat'] = intval($row['cat_id']);
-			$extensions[$extension]['download_mode'] = intval($row['download_mode']);
-			$extensions[$extension]['upload_icon'] = trim($row['upload_icon']);
-			$extensions[$extension]['max_filesize'] = intval($row['max_filesize']);
+			$extensions[$extension]['display_cat']		= (int) $row['cat_id'];
+			$extensions[$extension]['download_mode']	= (int) $row['download_mode'];
+			$extensions[$extension]['upload_icon']		= trim($row['upload_icon']);
+			$extensions[$extension]['max_filesize']		= (int) $row['max_filesize'];
 		}
 		$db->sql_freeresult($result);
 
@@ -949,7 +949,7 @@ function meta_refresh($time, $url)
 
 
 // Generate login box or verify password
-function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
+function login_box($s_action, $s_hidden_fields = '', $login_explain = '', $ucp_login = false)
 {
 	global $SID, $db, $user, $template, $auth, $phpEx;
 
@@ -980,7 +980,7 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
 	}
 
-	$s_hidden_fields = (!empty($_SERVER['HTTP_REFERER'])) ? '<input type="hidden" name="redirect" value="' . htmlspecialchars($_SERVER['HTTP_REFERER']) . '" />' : '';
+	$s_hidden_fields .= ($ucp_login && !empty($_SERVER['HTTP_REFERER'])) ? '<input type="hidden" name="redirect" value="' . htmlspecialchars($_SERVER['HTTP_REFERER']) . '" />' : '<input type="hidden" name="redirect" value="' . $s_action . '" />';
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err, 
@@ -990,7 +990,7 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		'U_TERMS_USE'		=> "ucp.$phpEx$SID&amp;mode=terms", 
 		'U_PRIVACY'			=> "ucp.$phpEx$SID&amp;mode=privacy", 
 
-		'S_LOGIN_ACTION'	=> $s_action, 
+		'S_LOGIN_ACTION'	=> "ucp.$phpEx$SID&amp;mode=login",
 		'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
 	);
 
