@@ -60,12 +60,12 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 //
 // Set default email variables
 //
-$script_name = preg_replace("/^(\/)(.*?)(\/)$/", "\\2", $board_config['script_path']) . '/profile.'.$phpEx;
+$script_name = preg_replace("/^(\/)(.*?)(\/)$/", "\\2", $board_config['script_path']) . '/groupcp.'.$phpEx;
 $server_name = $board_config['server_name'];
 $server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
 $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] . '/' : '/';
 
-$server_url = $server_protocol . $script_name . $server_name . $server_port;
+$server_url = $server_protocol . $server_name . $server_port . $script_name;
 
 //
 // Default var values
