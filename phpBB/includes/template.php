@@ -20,13 +20,13 @@
  ***************************************************************************/
 
 /*
-	Template class. 
-	
+	Template class.
+
 	Nathan Codding - Original version design and implementation
 	Crimsonbane - Initial caching proposal and work
-	psoTFX - Completion of file caching, decompilation routines and implementation of 
+	psoTFX - Completion of file caching, decompilation routines and implementation of
 	conditionals/keywords and associated changes
-	
+
 	The interface was inspired by PHPLib templates,  and the template file (formats are
 	quite similar)
 
@@ -62,14 +62,9 @@ class Template {
 	var $include_counter = 1;
 	var $block_nesting_level = 0;
 
-	/**
-	 * Constructor. Simply sets the root dir.
-	 *
-	 */
-	function Template($template = '')
+	function set_template($template = '')
 	{
 		global $phpbb_root_path;
-
 		$this->root = $phpbb_root_path . 'templates/' . $template;
         $this->cachedir = $phpbb_root_path . 'templates/cache/' . $template . '/';
 
@@ -154,7 +149,7 @@ class Template {
 
 		return true;
 	}
-	
+
 	/**
 	 * Destroys this template object. Should be called when you're done with it, in order
 	 * to clear out the template data so you can load/parse a new template set.
@@ -178,7 +173,7 @@ class Template {
 	{
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, true)) ) 
+		if ( !($this->compile_load($_str, $handle, true)) )
 		{
 			if ( !$this->loadfile($handle) )
 			{
@@ -209,7 +204,7 @@ class Template {
 	{
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, false)) ) 
+		if ( !($this->compile_load($_str, $handle, false)) )
 		{
 			if ( !$this->loadfile($handle) )
 			{
@@ -237,7 +232,7 @@ class Template {
 		$this->files[$handle] = $this->make_filename($filename);
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, false)) ) 
+		if ( !($this->compile_load($_str, $handle, false)) )
 		{
 			if ( !$this->loadfile($handle) )
 			{
@@ -275,7 +270,7 @@ class Template {
 
 		return true;
 	}
-	
+
 	/**
 	 * Block-level variable assignment. Adds a new block iteration with the given
 	 * variable assignments. Note that this should only be called once per block
@@ -355,7 +350,7 @@ class Template {
 					$compile_blocks[] = "// BEGINELSE\n}} else {\n";
 					break;
 				case 'END':
-					$compile_blocks[] = ( ( array_pop($this->block_else_level) ) ? "}\n" : "}}\n" ) . '// END ' . array_pop($this->block_names) . "\n"; 
+					$compile_blocks[] = ( ( array_pop($this->block_else_level) ) ? "}\n" : "}}\n" ) . '// END ' . array_pop($this->block_names) . "\n";
 					break;
 				case 'IF':
 					$compile_blocks[] = '// IF ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_if($blocks[2][$curr_tb], false);
@@ -378,7 +373,7 @@ class Template {
 				case 'PHP':
 					$temp = '';
 					list(, $temp) = each($php_blocks);
-					$compile_blocks[] = "// PHP START\n" . $temp . "\n// PHP END\n"; 
+					$compile_blocks[] = "// PHP START\n" . $temp . "\n// PHP END\n";
 					break;
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
@@ -467,9 +462,9 @@ class Template {
 	{
         /* Tokenize args for 'if' tag. */
         preg_match_all('/(?:
-                         "[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         | 
-                         \'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     | 
-                         [(),]                                  | 
+                         "[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
+                         \'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
+                         [(),]                                  |
                          [^\s(),]+)/x', $tag_args, $match);
 
         $tokens = $match[0];
@@ -546,7 +541,7 @@ class Template {
 					break;
             }
         }
-		
+
 		return ( ( $elseif ) ? '} elseif (' : 'if (' ) . ( implode(' ', $tokens) . ') { ' . "\n" );
 	}
 
@@ -562,7 +557,7 @@ class Template {
 
 	//
 	// This is from Smarty
-	// 
+	//
 	function _parse_is_expr($is_arg, $tokens)
 	{
 		$expr_end =	0;
@@ -755,7 +750,7 @@ class Template {
 			}
 			closedir($dp);
 		}
-		
+
 		return;
 	}
 
@@ -774,7 +769,7 @@ class Template {
 			}
 		}
 		closedir($dp);
-		
+
 		return;
 	}
 
@@ -783,12 +778,12 @@ class Template {
 
 		$match_tags = array(
 			"#(<\?php\nif \( .?this\->security\(\) \) \{\n)|(\n\}\n\?".">)#",
-			"#echo '(.*?)';#s", 
-			"#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\('.*?'\);\n#s", 
-			"#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\('.*?'\);\n#s", 
+			"#echo '(.*?)';#s",
+			"#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\('.*?'\);\n#s",
+			"#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\('.*?'\);\n#s",
 			"#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#",
 			"#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#",
-			"#\/\/ (ELSE)\n\} else \{\n#", 
+			"#\/\/ (ELSE)\n\} else \{\n#",
 			"#\/\/ (ENDIF)\n}\n#",
 			"#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#",
 			"#\}\}?\n\/\/ (END .*?)\n#",
@@ -800,9 +795,9 @@ class Template {
 		);
 
 		$replace_tags = array(
-			'', 
-			"\\1", 
-			"\\1", 
+			'',
+			"\\1",
+			"\\1",
 			"<!-- \\1 -->",
 			"<!-- \\1 -->",
 			"<!-- \\1 -->",
@@ -811,7 +806,7 @@ class Template {
 			"<!-- \\1 -->",
 			"<!-- \\1 -->",
 			"<!-- \\1 -->",
-			"{\\1}", 
+			"{\\1}",
 			"{\\1\\2}",
 			"{\\1\\2\\3}",
 			"{\\1\\2\\3\\4}"

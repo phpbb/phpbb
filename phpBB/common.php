@@ -143,6 +143,7 @@ require($phpbb_root_path . 'includes/functions.'.$phpEx);
 require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
 
 $session = new session();
+$template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 //
