@@ -683,7 +683,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 		for($i = 0; $i < count($mark_list); $i++)
 		{
-			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . $mark_list[$i] . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . intval($mark_list[$i]) . '" />';
 		}
 
 		//
@@ -755,7 +755,11 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 		if ( count($mark_list) )
 		{
-			$delete_sql_id = implode(', ', $mark_list);
+			$delete_sql_id = '';
+			for ($i = 0; $i < sizeof($mark_list); $i++)
+			{
+				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
+			}
 
 			if ($folder == 'inbox' || $folder == 'outbox')
 			{
@@ -948,7 +952,11 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 			}
 		}
 	
-		$saved_sql_id = implode(', ', $mark_list);
+		$saved_sql_id = '';
+		for ($i = 0; $i < sizeof($mark_list); $i++)
+		{
+			$saved_sql_id .= (($saved_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
+		}
 
 		// Process request
 		$saved_sql = "UPDATE " . PRIVMSGS_TABLE;
