@@ -1,4 +1,5 @@
 Subject: Benachrichtigen bei Antworten - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Hallo {USERNAME}!
 

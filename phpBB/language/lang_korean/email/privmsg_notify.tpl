@@ -1,4 +1,5 @@
 Subject: 새 쪽지가 도착했습니다.
+Charset: euc-kr
 
 안녕하세요.. {USERNAME} 님..!
 

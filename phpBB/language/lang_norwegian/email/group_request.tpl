@@ -1,4 +1,5 @@
 Subject: En søknad om deltagelse i din gruppe er levert
+Charset: iso-8859-1
 
 Hei {GROUP_MODERATOR},
 

@@ -1,4 +1,5 @@
 Subject: 멤버 승인이 되었음을 알려드립니다.
+Charset: euc-kr
 
 축하드립니다..
 

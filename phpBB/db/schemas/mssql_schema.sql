@@ -89,7 +89,7 @@ CREATE TABLE [phpbb_forums] (
 GO
 
 CREATE TABLE [phpbb_groups] (
-	[group_id] [int] NOT NULL ,
+	[group_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_type] [smallint] NULL ,
 	[group_name] [varchar] (50) NOT NULL ,
 	[group_description] [varchar] (255) NOT NULL ,
@@ -318,7 +318,7 @@ CREATE TABLE [phpbb_users] (
 	[user_regdate] [int] NOT NULL ,
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
-	[user_timezone] [real] NOT NULL ,
+	[user_timezone] [decimal] (4,2) NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
 	[user_dateformat] [varchar] (14) NOT NULL ,

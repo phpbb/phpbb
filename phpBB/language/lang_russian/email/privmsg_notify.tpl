@@ -1,4 +1,5 @@
 Subject: Вам пришло новое личное сообщение
+Charset: windows-1251
 
 Здравствуйте, {USERNAME}!
 

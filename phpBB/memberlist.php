@@ -33,7 +33,7 @@ init_userprefs($userdata);
 // End session management
 //
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if(isset($HTTP_POST_VARS['order']))
 {
@@ -58,7 +58,7 @@ $select_sort_mode = '<select name="mode">';
 for($i = 0; $i < count($mode_types_text); $i++)
 {
 	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
-	$select_sort_mode .= "<option value=\"" . $mode_types[$i] . "\"$selected>" . $mode_types_text[$i] . "</option>";
+	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
 }
 $select_sort_mode .= '</select>';
 
@@ -110,7 +110,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 	switch( $mode )
 	{
-		case 'joined':
+		case 'joindate':
 			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
 			break;
 		case 'username':

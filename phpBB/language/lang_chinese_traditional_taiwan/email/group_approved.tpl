@@ -1,4 +1,4 @@
-Subject: 您的請求已經獲得批准
+Charset: big5
 
 恭喜您,
 

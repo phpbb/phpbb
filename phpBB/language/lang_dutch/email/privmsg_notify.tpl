@@ -1,4 +1,5 @@
 Subject: Er is een nieuw bericht
+Charset: iso-8859-1
 
 Hallo {USERNAME},
 

@@ -67,6 +67,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
 				header($header_location . append_sid("index.$phpEx", true));
+				exit;
 			}
 			else
 			{
@@ -81,10 +82,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 						if( !empty($HTTP_POST_VARS['redirect']) )
 						{
 							header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+							exit;
 						}
 						else
 						{
 							header($header_location . append_sid("index.$phpEx", true));
+							exit;
 						}
 					}
 					else
@@ -95,7 +98,8 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				else
 				{
 					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
-
+					$redirect = str_replace("?", "&", $redirect);
+					
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
 					);
@@ -109,6 +113,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		else
 		{
 			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+			$redirect = str_replace("?", "&", $redirect);
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
@@ -129,10 +134,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
 			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			exit;
 		}
 		else
 		{
 			header($header_location . append_sid("index.$phpEx", true));
+			exit;
 		}
 	}
 	else
@@ -140,10 +147,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
 			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			exit;
 		}
 		else
 		{
 			header($header_location . append_sid("index.$phpEx", true));
+			exit;
 		}
 	}
 }
@@ -169,7 +178,6 @@ else
 			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
-
 				$forward_match = explode('&', $forward_to);
 
 				if(count($forward_match) > 1)
@@ -187,7 +195,6 @@ else
 							$forward_page .= $forward_match[$i];
 						}
 					}
-
 					$forward_page = $forward_match[0] . '?' . $forward_page;
 				}
 				else
@@ -224,6 +231,7 @@ else
 	else
 	{
 		header($header_location . append_sid("index.$phpEx", true));
+		exit;
 	}
 
 }

@@ -1,4 +1,5 @@
 Subject: Activation du nouveau mot de passe
+Charset: ISO-8859-1
 
 Bonjour {USERNAME}
 

@@ -1,4 +1,5 @@
 Subject: 您已经被加入这个团队
+Charset: gb2312
 
 恭喜,
 

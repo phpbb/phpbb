@@ -1,4 +1,5 @@
 Subject: Llogaria u aktivizia
+Charset: iso-8859-1
 
 Përshëndetje {USERNAME},
 

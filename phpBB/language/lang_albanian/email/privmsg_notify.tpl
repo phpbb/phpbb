@@ -1,4 +1,5 @@
 Subject: Sapo keni marrë mesazh privat të ri
+Charset: iso-8859-1
 
 Përshëndetje {USERNAME},
 

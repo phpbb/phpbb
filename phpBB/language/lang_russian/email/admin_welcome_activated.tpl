@@ -1,4 +1,5 @@
 Subject: Учётная запись активизирована
+Charset: windows-1251
 
 Здравствуйте, {USERNAME}!
 

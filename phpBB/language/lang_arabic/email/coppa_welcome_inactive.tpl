@@ -1,4 +1,5 @@
 Subject: √Â·« Ê”Â·« »ﬂ„ ›Ì „‰ œÏ {SITENAME}
+Charset: windows-1256
 
 {WELCOME_MSG}
 

@@ -1,4 +1,5 @@
 Subject: Notification de réponse au sujet - {TOPIC_TITLE}
+Charset: ISO-8859-1
 
 Bonjour {USERNAME},
 

@@ -28,27 +28,16 @@ if ( !defined('IN_PHPBB') )
 //
 // Show the overall footer.
 //
-$current_time = time();
-
 $template->set_filenames(array(
-	"page_footer" => "admin/page_footer.tpl")
+	'page_footer' => 'admin/page_footer.tpl')
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0 " . $board_config['version'], 
-	"TRANSLATION_INFO" => $lang['TRANSLATION_INFO'])
+	'PHPBB_VERSION' => '2' . $board_config['version'], 
+	'TRANSLATION_INFO' => $lang['TRANSLATION_INFO'])
 );
 
-$template->pparse("page_footer");
-
-//
-// Output page creation time
-//
-$mtime = microtime();
-$mtime = explode(" ",$mtime);
-$mtime = $mtime[1] + $mtime[0];
-$endtime = $mtime;
-$totaltime = ($endtime - $starttime);
+$template->pparse('page_footer');
 
 //
 // Close our DB connection.
@@ -75,8 +64,8 @@ if( $do_gzip_compress )
 
 	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;
-	echo pack("V", $gzip_crc);
-	echo pack("V", $gzip_size);
+	echo pack('V', $gzip_crc);
+	echo pack('V', $gzip_size);
 }
 
 exit;

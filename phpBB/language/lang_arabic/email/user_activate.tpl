@@ -1,4 +1,5 @@
 Subject: v
+Charset: windows-1256
 
 „—Õ»« {USERNAME},
 

@@ -20,18 +20,27 @@
  *
  ***************************************************************************/
 
-// 
+//  *************************************
 //  Swedish Translation by:
 //	
 //	Marcus Svensson
-//  xsvennemanx@hotmail.com
-//	
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//	-------------------------------------
 // 	Janåke Rönnblom
 //	jan-ake.ronnblom@skeria.skelleftea.se
-//	
+//	-------------------------------------
 //	Bruce
 //	bruce@webway.se
-// 
+//  *************************************
+
+//  *************************************
+//  Maintained and kept up-to-date by:
+//  
+//  Marcus Svensson
+//  admin@world-of-war.com
+//  http://www.world-of-war.com
+//  *************************************
 
 //
 // Format is same as lang_main
@@ -215,7 +224,6 @@ $lang['Select_ip'] = "Välj en IP adress";
 $lang['Select_email'] = "Välj en epost adress";
 
 $lang['Ban_username'] = "Bannlys en eller flera användare";
-$lang['Ban_username_explain'] = "Du kan bannlysa flera användare samtidigt genom att använda den ändamålsenliga kombinationen av mus och tangenbord för din dator och webläsare.";
 
 $lang['Ban_IP'] = "Bannlys en eller flera IP adresser eller värdnamn";
 $lang['IP_hostname'] = "IP adresser eller värdnamn";
@@ -452,6 +460,7 @@ $lang['User_special_explain'] = "Dessa fält kan inte ändras av användarna.  Här 
 //
 // Group Management
 //
+$lang['No_group_action'] = 'Inget alternativ angavs'; 
 $lang['Group_administration'] = "Grupp administration";
 $lang['Group_admin_explain'] = "Via denna panel kan du administrera alla dina användaregrupper, du kan; radera, skapa nya och redigera existerande grupper. Du kan välja moderatorer, ändra öppen/stängd status och sätta gruppnamn och beskrivning";
 $lang['Error_updating_groups'] = "Det uppstod ett fel när grupperna skulle uppdateras";

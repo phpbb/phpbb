@@ -1,9 +1,9 @@
 Subject: ようこそ{SITENAME}の掲示板へ
+Charset: shift_jis
 
 {WELCOME_MSG}
 
 このメールは大切に保管してください。あなたのアカウント情報は以下の通りです：
-
 
 ----------------------------
 名前: {USERNAME}

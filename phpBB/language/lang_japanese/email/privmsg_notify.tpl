@@ -1,4 +1,5 @@
 Subject: 新しいメッセージが届きました
+Charset: shift_jis
 
 {USERNAME}さんへ
 

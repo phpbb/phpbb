@@ -1,4 +1,5 @@
 Subject: Du har mottatt en Privat Melding
+Charset: iso-8859-1
 
 Hei {USERNAME},
 

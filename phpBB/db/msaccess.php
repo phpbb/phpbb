@@ -137,7 +137,7 @@ class sql_db
 					$row_outer_max = ( isset($num_rows) ) ? $row_offset + $num_rows + 1 : 1E9;
 					$row_inner = 0;
 
-					while( odbc_fetch_row($this->result, $row_outer) && $row_outer < $row_outer_max )
+					while( odbc_fetch_row($this->result) && $row_outer < $row_outer_max )
 					{
 						for($j = 0; $j < count($this->field_names[$this->result]); $j++)
 						{

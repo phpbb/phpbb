@@ -1,4 +1,5 @@
 Subject: Új felhasználói azonosító
+Charset: iso-8859-2
 
 Helló,
 

@@ -1,4 +1,5 @@
 Subject: Reactivate your account!
+Charset: shift_jis
 
 {USERNAME}‚³‚ñ‚Ö
 

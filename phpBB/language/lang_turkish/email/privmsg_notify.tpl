@@ -1,4 +1,5 @@
 Subject: Yeni bir özel mesaj geldi
+Charset: iso-8859-9
 
 Merhaba {USERNAME},
 

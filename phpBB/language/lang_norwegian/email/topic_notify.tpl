@@ -1,4 +1,5 @@
 Subject: Varsel om svar på Tema - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Hei {USERNAME},
 

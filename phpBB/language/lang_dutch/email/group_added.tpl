@@ -1,4 +1,5 @@
 Subject: Je bent toegevoegd aan deze groep
+Charset: iso-8859-1
 
 Hallo,
 

@@ -453,7 +453,7 @@ CREATE TABLE phpbb_topics_watch (
 # Table structure for table 'phpbb_users'
 #
 CREATE TABLE phpbb_users (
-   user_id mediumint(8) NOT NULL auto_increment,
+   user_id mediumint(8) NOT NULL,
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
@@ -463,7 +463,7 @@ CREATE TABLE phpbb_users (
    user_regdate int(11) DEFAULT '0' NOT NULL, 
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   user_timezone float DEFAULT '0' NOT NULL,
+   user_timezone decimal(4,2) DEFAULT '0' NOT NULL,
    user_style tinyint(4),
    user_lang varchar(255),
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,

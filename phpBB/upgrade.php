@@ -37,7 +37,8 @@ if ( !defined('INSTALLING') )
 
 	if( defined("PHPBB_INSTALLED") )
 	{
-		header("Location: index.$phpEx");
+		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+		header($header_location . " index.$phpEx");
 		exit;
 	}
 }
@@ -161,7 +162,7 @@ function query($sql, $errormsg)
 	}
 }
 
-function smiley_replace($text = "")
+function smiley_replace($text = '')
 {
 	global $db;
 
@@ -186,7 +187,7 @@ function smiley_replace($text = "")
 		}
 	}
 
-	return ( $text != "" ) ? preg_replace($search, $replace, $text) : "";
+	return ( $text != '' ) ? preg_replace($search, $replace, $text) : '';
 	
 }
 
@@ -201,22 +202,22 @@ function get_schema()
 	{
 		$line = $schemafile[$i];
 
-		if ( preg_match("/^CREATE TABLE (\w+)/i", $line, $matches) )
+		if ( preg_match('/^CREATE TABLE (\w+)/i', $line, $matches) )
 		{
 			// Start of a new table definition, set some variables and go to the next line.
 			$tabledata = 1;
 			// Replace the 'phpbb_' prefix by the user defined prefix.
-			$table = str_replace("phpbb_", $table_prefix, $matches[1]);
+			$table = str_replace('phpbb_', $table_prefix, $matches[1]);
 			$table_def[$table] = "CREATE TABLE $table (\n";
 			continue;
 		}
 
-		if ( preg_match("/^\);/", $line) )
+		if ( preg_match('/^\);/', $line) )
 		{
 			// End of the table definition
 			// After this we will skip everything until the next 'CREATE' line
 			$tabledata = 0;
-			$table_def[$table] .= ")"; // We don't need the closing semicolon
+			$table_def[$table] .= ')'; // We don't need the closing semicolon
 		}
 
 		if ( $tabledata == 1 )
@@ -224,18 +225,18 @@ function get_schema()
 			// We are inside a table definition, parse this line.
 			// Add the current line to the complete table definition:
 			$table_def[$table] .= $line;
-			if ( preg_match("/^\s*(\w+)\s+(\w+)\((\d+)\)(.*)$/", $line, $matches) )
+			if ( preg_match('/^\s*(\w+)\s+(\w+)\(([\d,]+)\)(.*)$/', $line, $matches) )
 			{
 				// This is a column definition
 				$field = $matches[1];
 				$type = $matches[2];
 				$size = $matches[3];
 
-				preg_match("/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i", $matches[4], $match);
+				preg_match('/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i', $matches[4], $match);
 				$default = $match[1];
 
-				$notnull = ( preg_match("/NOT NULL/i", $matches[4]) ) ? 1 : 0;
-				$auto_increment = ( preg_match("/auto_increment/i", $matches[4]) ) ? 1 : 0;
+				$notnull = ( preg_match('/NOT NULL/i', $matches[4]) ) ? 1 : 0;
+				$auto_increment = ( preg_match('/auto_increment/i', $matches[4]) ) ? 1 : 0;
 
 				$field_def[$table][$field] = array(
 					'type' => $type,
@@ -246,17 +247,17 @@ function get_schema()
 				);
 			}
 			
-			if ( preg_match("/\s*PRIMARY\s+KEY\s*\((.*)\).*/", $line, $matches) )
+			if ( preg_match('/\s*PRIMARY\s+KEY\s*\((.*)\).*/', $line, $matches) )
 			{
 				// Primary key
 				$key_def[$table]['PRIMARY'] = $matches[1];
 			}
-			else if ( preg_match("/\s*KEY\s+(\w+)\s*\((.*)\)/", $line, $matches) )
+			else if ( preg_match('/\s*KEY\s+(\w+)\s*\((.*)\)/', $line, $matches) )
 			{
 				// Normal key
 				$key_def[$table][$matches[1]] = $matches[2];
 			}
-			else if ( preg_match("/^\s*(\w+)\s*(.*?),?\s*$/", $line, $matches) )
+			else if ( preg_match('/^\s*(\w+)\s*(.*?),?\s*$/', $line, $matches) )
 			{
 				// Column definition
 				$create_def[$table][$matches[1]] = $matches[2];
@@ -280,11 +281,11 @@ function get_inserts()
 {
 	global $table_prefix;
 
-	$insertfile = file("db/schemas/mysql_basic.sql");
+	$insertfile = file('db/schemas/mysql_basic.sql');
 
 	for($i = 0; $i < count($insertfile); $i++)
 	{
-		if ( preg_match("/(INSERT INTO (\w+)\s.*);/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches) )
+		if ( preg_match('/(INSERT INTO (\w+)\s.*);/i', str_replace('phpbb_', $table_prefix, $insertfile[$i]), $matches) )
 		{
 			$returnvalue[$matches[2]][] = $matches[1];
 		}
@@ -323,16 +324,16 @@ function output_table_content($content)
 function bbdecode($message)
 {
 	// Undo [code]
-	$code_start_html = "<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>";
-	$code_end_html = "</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->";
-	$message = str_replace($code_start_html, "[code]", $message);
-	$message = str_replace($code_end_html, "[/code]", $message);
+	$code_start_html = '<!-- BBCode Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Code:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><PRE>';
+	$code_end_html = '</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode End -->';
+	$message = str_replace($code_start_html, '[code]', $message);
+	$message = str_replace($code_end_html, '[/code]', $message);
 
 	// Undo [quote]
-	$quote_start_html = "<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>";
-	$quote_end_html = "</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->";
-	$message = str_replace($quote_start_html, "[quote]", $message);
-	$message = str_replace($quote_end_html, "[/quote]", $message);
+	$quote_start_html = '<!-- BBCode Quote Start --><TABLE BORDER=0 ALIGN=CENTER WIDTH=85%><TR><TD><font size=-1>Quote:</font><HR></TD></TR><TR><TD><FONT SIZE=-1><BLOCKQUOTE>';
+	$quote_end_html = '</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE><!-- BBCode Quote End -->';
+	$message = str_replace($quote_start_html, '[quote]', $message);
+	$message = str_replace($quote_end_html, '[/quote]', $message);
 
 	// Undo [b] and [i]
 	$message = preg_replace("#<!-- BBCode Start --><B>(.*?)</B><!-- BBCode End -->#s", "[b]\\1[/b]", $message);
@@ -353,17 +354,17 @@ function bbdecode($message)
 	// Undo lists (unordered/ordered)
 
 	// <li> tags:
-	$message = str_replace("<!-- BBCode --><LI>", "[*]", $message);
+	$message = str_replace('<!-- BBCode --><LI>', '[*]', $message);
 
 	// [list] tags:
-	$message = str_replace("<!-- BBCode ulist Start --><UL>", "[list]", $message);
+	$message = str_replace('<!-- BBCode ulist Start --><UL>', '[list]', $message);
 
 	// [list=x] tags:
-	$message = preg_replace("#<!-- BBCode olist Start --><OL TYPE=([A1])>#si", "[list=\\1]", $message);
+	$message = preg_replace('#<!-- BBCode olist Start --><OL TYPE=([A1])>#si', "[list=\\1]", $message);
 
 	// [/list] tags:
-	$message = str_replace("</UL><!-- BBCode ulist End -->", "[/list]", $message);
-	$message = str_replace("</OL><!-- BBCode olist End -->", "[/list]", $message);
+	$message = str_replace('</UL><!-- BBCode ulist End -->', '[/list]', $message);
+	$message = str_replace('</OL><!-- BBCode olist End -->', '[/list]', $message);
 
 	return $message;
 }
@@ -811,30 +812,24 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
+				$group_id = 1;
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user) 
-						VALUES ('" . addslashes($row['username']) . "', 'Personal User', 1)";
+					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user) 
+						VALUES ($group_id, '" . addslashes($row['username']) . "', 'Personal User', 1)";
 					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".GROUPS_TABLE);
 
-					$group_id = $db->sql_nextid();
-
-					if ( $group_id != 0 )
-					{
-						$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
-							VALUES ($group_id, " . $row['user_id'] . ", 0)";
-						query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".USER_GROUP_TABLE);
-					}
-					else
-					{
-						print "Couldn't get insert ID for " . GROUPS_TABLE . " table<br>\n";
-					}
+					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
+						VALUES ($group_id, " . $row['user_id'] . ", 0)";
+					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".USER_GROUP_TABLE);
 
 					if ( is_int($row['user_regdate']) )
 					{
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
 					}
+
+					$group_id++;
 
 					//
 					// Nathan's bbcode2 conversion
@@ -1075,7 +1070,7 @@ if ( !empty($next) )
 					// undo 1.2.x encoding..
 					$row['post_text'] = bbdecode(stripslashes($row['post_text']));
 					$row['post_text'] = undo_make_clickable($row['post_text']);
-					$row['post_text'] = str_replace("<BR>", "\n", $row['post_text']);
+					$row['post_text'] = str_replace('<BR>', "\n", $row['post_text']);
 
 					// make a uid
 					$uid = make_bbcode_uid();
@@ -1086,14 +1081,14 @@ if ( !empty($next) )
 					$row['post_text'] = addslashes($row['post_text']);
 
 					$edited_sql = "";
-					if ( preg_match("/^(.*?)([\n]+<font size=\-1>\[ This message was .*?)$/s", $row['post_text'], $matches) )
+					if ( preg_match('/^(.*?)([\n]+<font size=\-1>\[ This message was .*?)$/s', $row['post_text'], $matches) )
 					{
 						$row['post_text'] = $matches[1];
 						$edit_info = $matches[2];
 
-						$edit_times = count(explode(" message ", $edit_info)) - 1; // Taken from example for substr_count in annotated PHP manual
+						$edit_times = count(explode(' message ', $edit_info)) - 1; // Taken from example for substr_count in annotated PHP manual
 
-						if ( preg_match("/^.* by: (.*?) on (....)-(..)-(..) (..):(..) \]<\/font>/s", $edit_info, $matches) )
+						if ( preg_match('/^.* by: (.*?) on (....)-(..)-(..) (..):(..) \]<\/font>/s', $edit_info, $matches) )
 						{
 							$edited_user = $matches[1];
 							$edited_time = gmmktime($matches[5], $matches[6], 0, $matches[3], $matches[4], $matches[2]);
@@ -1130,7 +1125,7 @@ if ( !empty($next) )
 					$inc++;
 					if ( $inc == $per_pct )
 					{
-						print ".";
+						print '.';
 						flush();
 						$inc = 0;
 					}
@@ -1259,7 +1254,7 @@ if ( !empty($next) )
 					$inc++;
 					if ( $inc == $per_pct )
 					{
-						print ".";
+						print '.';
 						flush();
 						$inc = 0;
 					}
@@ -1279,7 +1274,7 @@ if ( !empty($next) )
 			while( $row = $db->sql_fetchrow($result) )
 			{
 				// Check if this moderator and this forum still exist
-				$sql = "SELECT NULL 
+				$sql = "SELECT user_id  
 					FROM " . USERS_TABLE . ", " . FORUMS_TABLE . " 
 					WHERE user_id = " . $row['user_id'] . " 
 						AND forum_id = " . $row['forum_id'];
@@ -1309,6 +1304,35 @@ if ( !empty($next) )
 
 				print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			}
+
+			print " * Setting correct user_level for moderators ::";
+			flush();
+
+			$sql = "SELECT DISTINCT u.user_id 
+				FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
+				WHERE aa.auth_mod = 1 
+					AND ug.group_id = aa.group_id 
+					AND u.user_id = ug.user_id 
+					AND u.user_level <> " . ADMIN;
+			$result = query($sql, "Couldn't obtain list of moderators");
+
+			if ( $row = $db->sql_fetchrow($result) )
+			{
+				$ug_sql = '';
+
+				do
+				{
+					$ug_sql .= ( ( $ug_sql != '' ) ? ', ' : '' ) . $row['user_id'];
+				}
+				while ( $row = $db->sql_fetchrow($result) );
+
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_level = " . MOD . " 
+					WHERE user_id IN ($ug_sql)";
+				query($sql, "Couldn't set moderator status for users");
+			}
+
+			print "<span class=\"ok\"><b>OK</b></span><br />\n";
 			
 			end_step('convert_privforums');
 
@@ -1600,77 +1624,6 @@ if ( !empty($next) )
 			}
 
 			print " <span class=\"ok\"><b>OK</b></span><br />\n";
-			end_step('fulltext_search_indexing');
-
-		case 'fulltext_search_indexing':
-			//
-			// Generate search word list
-			//
-			// Fetch a batch of posts_text entries
-			//
-			$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
-				FROM " . POSTS_TEXT_TABLE;
-			$result = query($sql, "Couldn't get post count totals");
-
-			$max_post_id = $db->sql_fetchrow($result);
-
-			$totalposts = $max_post_id['total'];
-			$max_post_id = $max_post_id['max_post_id'];
-			$per_percent = round(( $totalposts / 500 ) * 10);
-
-			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
-
-			$batchsize = 150; // Process this many posts per loop
-			$batchcount = 0;
-			$total_percent = 0;
-
-			for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
-			{
-				$batchstart = $postcounter + 1;
-				$batchend = $postcounter + $batchsize;
-				$batchcount++;
-
-				print " * Fulltext Indexing ( $batchstart to $batchend ) :: ";
-				flush();
-				
-				$sql = "SELECT *
-					FROM " . POSTS_TEXT_TABLE ."
-					WHERE post_id 
-						BETWEEN $batchstart 
-							AND $batchend";
-				$posts_result = query($sql, "Couldn't obtain post_text");
-
-				$per_pct = ceil( $db->sql_numrows($posts_result) / 40 );
-				$inc = 0;
-
-				if ( $row = $db->sql_fetchrow($posts_result) )
-				{ 
-					do
-					{
-						add_search_words($row['post_id'], $row['post_text'], $row['post_subject']);
-
-						$inc++;
-						if ( $inc == $per_pct )
-						{
-							print ".";
-							flush();
-							$inc = 0;
-						}
-					}
-					while( $row = $db->sql_fetchrow($posts_result) );
-				}
-
-				$db->sql_freeresult($posts_result);
-				
-				// Remove common words after the first 2 batches and after every 4th batch after that.
-				if ( $batchcount % 4 == 3 )
-				{
-					remove_common('global', 0.4);
-				}
-
-				print " <span class=\"ok\"><b>OK</b></span><br />\n";
-			}
-
 			end_step('update_topics');
 
 		case 'update_topics':
@@ -1836,7 +1789,7 @@ if ( !empty($next) )
 			$sql = "UPDATE " . $table_prefix . "config 
 				SET config_value = '" . $script_path . "'
 				WHERE config_name = 'script_path'";
-			query($sql, "Couldn't insert Board admin email");
+			query($sql, "Couldn't insert Board script path");
 			
 			//
 			// Change session table to HEAP if MySQL version matches
@@ -1851,7 +1804,7 @@ if ( !empty($next) )
 			if ( preg_match("/^(3\.23)|(4\.)/", $version) )
 			{
 				$sql = "ALTER TABLE " . $table_prefix . "sessions 
-					TYPE=HEAP";
+					TYPE=HEAP MAX_ROWS=500";
 				$db->sql_query($sql);
 			}
 
@@ -1898,6 +1851,77 @@ if ( !empty($next) )
 				query($sql, "Couldn't drop table :: " . $drop_tables[$i]);
 
 				print "<span class=\"ok\"><b>OK</b></span><br />\n";
+			}
+
+			end_step('fulltext_search_indexing');
+
+		case 'fulltext_search_indexing':
+			//
+			// Generate search word list
+			//
+			// Fetch a batch of posts_text entries
+			//
+			$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
+				FROM " . POSTS_TEXT_TABLE;
+			$result = query($sql, "Couldn't get post count totals");
+
+			$max_post_id = $db->sql_fetchrow($result);
+
+			$totalposts = $max_post_id['total'];
+			$max_post_id = $max_post_id['max_post_id'];
+			$per_percent = round(( $totalposts / 500 ) * 10);
+
+			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
+
+			$batchsize = 150; // Process this many posts per loop
+			$batchcount = 0;
+			$total_percent = 0;
+
+			for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
+			{
+				$batchstart = $postcounter + 1;
+				$batchend = $postcounter + $batchsize;
+				$batchcount++;
+
+				print " * Fulltext Indexing ( $batchstart to $batchend ) :: ";
+				flush();
+				
+				$sql = "SELECT *
+					FROM " . POSTS_TEXT_TABLE ."
+					WHERE post_id 
+						BETWEEN $batchstart 
+							AND $batchend";
+				$posts_result = query($sql, "Couldn't obtain post_text");
+
+				$per_pct = ceil( $db->sql_numrows($posts_result) / 40 );
+				$inc = 0;
+
+				if ( $row = $db->sql_fetchrow($posts_result) )
+				{ 
+					do
+					{
+						add_search_words($row['post_id'], $row['post_text'], $row['post_subject']);
+
+						$inc++;
+						if ( $inc == $per_pct )
+						{
+							print ".";
+							flush();
+							$inc = 0;
+						}
+					}
+					while( $row = $db->sql_fetchrow($posts_result) );
+				}
+
+				$db->sql_freeresult($posts_result);
+				
+				// Remove common words after the first 2 batches and after every 4th batch after that.
+				if ( $batchcount % 4 == 3 )
+				{
+					remove_common('global', 0.4);
+				}
+
+				print " <span class=\"ok\"><b>OK</b></span><br />\n";
 			}
 
 			echo "\n<br /><br />\n\n<font size=\"+3\"><b>UPGRADE COMPLETED</b></font><br />\n";

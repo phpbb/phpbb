@@ -1,4 +1,5 @@
 Subject: Un nouveau message privé vient d'arriver
+Charset: ISO-8859-1
 
 Hello {USERNAME},
 

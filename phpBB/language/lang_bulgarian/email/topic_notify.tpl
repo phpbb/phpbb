@@ -1,4 +1,5 @@
-Subject: Уведемояване за отговори по темата - {TOPIC_TITLE}
+Subject: Уведемояване за отговори по темата: {TOPIC_TITLE}
+Charset: windows-1251
 
 Здравейте {USERNAME}!
 

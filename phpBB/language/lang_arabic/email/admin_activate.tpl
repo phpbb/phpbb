@@ -1,4 +1,5 @@
 Subject: ãÔÊÑß ÌÏíÏ
+Charset: windows-1256
 
 ãÑÍÈÇ,
 

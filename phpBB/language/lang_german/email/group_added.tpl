@@ -1,4 +1,5 @@
 Subject: Du bist dieser Gruppe beigetreten
+Charset: iso-8859-1
 
 Gratulation,
 

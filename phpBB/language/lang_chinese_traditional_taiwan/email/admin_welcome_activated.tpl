@@ -1,4 +1,4 @@
-Subject: 帳號已經啟用
+Charset: big5
 
 親愛的 {USERNAME} 您好,
 

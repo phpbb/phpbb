@@ -108,7 +108,7 @@ $lang['Click_return_group'] = "Kliknij %sTutaj%s aby powróciæ do informacji o gr
 $lang['Admin_panel'] = "Panel Administracyjny";
 
 $lang['Board_disable'] = "Przepraszamy, ale to forum jest obecnie niedostêpne. Zapraszamy pó¼niej";
-
+$lang['Board_unavailable'] = 'Przepraszamy, ale forum jest obecnie niedostêpne. Spróbuj za kilka minut';
 
 //
 // Global Header strings
@@ -129,8 +129,10 @@ $lang['Guest_users_total'] = "%d Go¶ci";
 $lang['Guest_user_total'] = "%d Go¶æ";
 $lang['Record_online_users'] = "Najwiêcej u¿ytkowników <b>%s</b> by³o obecnych %s"; // first %s = number of users, second %s is the date.
 
-$lang['Admin_online_color'] = "%sAdministrator%s"; 
-$lang['Mod_online_color'] = "%sModerator%s"; 
+$lang['Legend'] = 'Legenda';
+$lang['Admin_online_color'] = "%sAdministrator%s";
+$lang['Mod_online_color'] = "%sModerator%s";
+$lang['User_online_color'] = '%sU¿ytkownik%s';
 
 $lang['You_last_visit'] = "Ostatnio odwiedzi³e¶ nas %s"; // %s replaced by date/time
 $lang['Current_time'] = "Obecny czas to %s"; // %s replaced by time
@@ -236,6 +238,11 @@ $lang['Rules_moderate'] = "<b>Mo¿esz</b> %smoderowaæ to forum%s"; // %s replaced
 
 $lang['No_topics_post_one'] = "Nie ma ¿adnych postów na tym forum<br />Kliknij na przycisk <b>Nowy Temat</b> aby co¶ napisaæ";
 
+$lang['Stop_watching_forum'] = 'Przestañ ¶ledziæ to forum';
+$lang['Start_watching_forum'] = 'Powiadom mnie o nowych postach na tym forum';
+$lang['No_longer_watching_forum'] = 'Przesta³e¶ ¶ledziæ to forum';
+$lang['You_are_watching_forum'] = 'Rozpocz±³e¶ ¶ledzenie tego forum';
+
 
 //
 // Viewtopic
@@ -327,6 +334,8 @@ $lang['Empty_poll_title'] = "Musisz wpisaæ tytu³ dla ankiety";
 $lang['To_few_poll_options'] = "Musisz wpisaæ przynajmniej dwie opcje ankiety";
 $lang['To_many_poll_options'] = "Poda³e¶ zbyt wiele opcji dla ankiety";
 $lang['Post_has_no_poll'] = "Ten post nie ma ankiety";
+$lang['Already_voted'] = 'Odda³e¶ ju¿ g³os w tej ankiecie';
+$lang['No_vote_option'] = 'Musisz wybraæ opcjê podczas g³osowania';
 
 $lang['Add_poll'] = "Dodaj Ankietê";
 $lang['Add_poll_explain'] = "Je¿eli nie chcesz dodawaæ ankiety do tego tematu, pozostaw pola puste";
@@ -421,6 +430,14 @@ $lang['No_unread_pm'] = "Nie masz nieprzeczytanych wiadomo¶ci";
 $lang['You_new_pm'] = "Nowa prywatna wiadomo¶æ czeka na Ciebie w Skrzynce";
 $lang['You_new_pms'] = "Nowe prywatne wiadomo¶ci czekaj± na Ciebie w Skrzynce";
 $lang['You_no_new_pm'] = "Nie ma dla Ciebie ¿adnych nowych prywatnych wiadomo¶ci";
+$lang['Unread_message'] = 'Nowa wiadomo¶æ';
+$lang['Read_message'] = 'Przeczytana wiadomo¶æ';
+
+$lang['Read_pm'] = 'Odczytaj wiadomo¶æ';
+$lang['Post_new_pm'] = 'Napisz wiadomo¶æ';
+$lang['Post_reply_pm'] = 'Odpowiedz na wiadomo¶æ';
+$lang['Post_quote_pm'] = 'Cytuj wiadomo¶æ';
+$lang['Edit_pm'] = 'Zmieñ wiadomo¶æ';
 
 $lang['Inbox'] = "Skrzynka";
 $lang['Outbox'] = "Do Wys³ania";
@@ -603,6 +620,7 @@ $lang['Account_inactive_admin'] = "Twoje konto zosta³o utworzone. To Forum jedna
 $lang['Account_active'] = "Twoje konto zosta³o niniejszym aktywowane. Dziêkujemy za rejestracjê";
 $lang['Account_active_admin'] = "Konto zosta³o aktywowane";
 $lang['Reactivate'] = "Reaktywuj soje konto!";
+$lang['Already_activated'] = 'Twoje konto zosta³o ju¿ aktywowane';
 $lang['COPPA'] = "Twoje konto zosta³o utworzone ale musi jeszcze zostaæ zaakceptowane. Otrzymasz specjalny email z instrukcjami.";
 
 $lang['Registration'] = "Warunki Rejestracji";
@@ -887,6 +905,7 @@ $lang['4.5'] = "GMT + 4.5 Godziny";
 $lang['5'] = "GMT + 5 Godzin";
 $lang['5.5'] = "GMT + 5.5 Godzin";
 $lang['6'] = "GMT + 6 Godzin";
+$lang['6.5'] = 'GMT + 6.5 Godziny';
 $lang['7'] = "GMT + 7 Godzin";
 $lang['8'] = "WST (Australia)";
 $lang['9'] = "GMT + 9 Godzin";

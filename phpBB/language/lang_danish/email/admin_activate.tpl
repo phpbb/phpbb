@@ -1,4 +1,5 @@
 Subject: Genaktiver venligst din konto!
+Charset: iso-8859-1
 
 Hej,
 

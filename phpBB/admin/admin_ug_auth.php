@@ -36,9 +36,9 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 $params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv');
 
@@ -787,7 +787,9 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		$t_usergroup_list = '';
 		for($i = 0; $i < count($ug_info); $i++)
 		{
-			$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode&amp;" . POST_GROUPS_URL . "=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			$ug = ( $mode == 'user' ) ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
+
+			$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
 		}
 	}
 	else
@@ -819,7 +821,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	//
 	// Dump in the page header ...
 	//
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => 'admin/auth_ug_body.tpl')
@@ -856,14 +858,14 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 	$template->assign_vars(array(
 		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
-		'L_USER_OR_GROUP' => ( $mode == 'user' ) ? $lang['User'] : $lang['Group'],
 
 		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
 		'L_AUTH_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
 		'L_MODERATOR_STATUS' => $lang['Moderator_status'],
 		'L_PERMISSIONS' => $lang['Permissions'],
 		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
+		'L_RESET' => $lang['Reset'], 
+		'L_FORUM' => $lang['Forum'], 
 
 		'U_USER_OR_GROUP' => append_sid("admin_ug_auth.$phpEx"),
 		'U_SWITCH_MODE' => $u_switch_mode,
@@ -878,7 +880,7 @@ else
 	//
 	// Select a user/group
 	//
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		'body' => ( $mode == 'user' ) ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl')
@@ -920,7 +922,7 @@ else
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-	$l_type = ( $mode == 'user' ) ? "USER" : "AUTH";
+	$l_type = ( $mode == 'user' ) ? 'USER' : 'AUTH';
 
 	$template->assign_vars(array(
 		'L_' . $l_type . '_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
@@ -936,6 +938,6 @@ else
 
 $template->pparse('body');
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

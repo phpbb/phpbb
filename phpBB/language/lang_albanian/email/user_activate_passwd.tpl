@@ -1,4 +1,5 @@
 Subject: Aktivizoni fjalëkalimin e ri
+Charset: iso-8859-1
 
 Përshëndetje {USERNAME}
 

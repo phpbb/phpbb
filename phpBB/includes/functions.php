@@ -94,6 +94,8 @@ function make_jumpbox($action, $match_forum_id = 0)
 {
 	global $template, $lang, $db, $SID, $nav_links, $phpEx;
 
+//	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
 		WHERE f.cat_id = c.cat_id
@@ -137,6 +139,9 @@ function make_jumpbox($action, $match_forum_id = 0)
 				{
 					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
 					{
+
+//					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					{
 						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 
@@ -491,7 +496,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '', $sql = '')
 {
-	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links;
+	global $db, $template, $board_config, $theme, $lang, $phpEx, $phpbb_root_path, $nav_links, $gen_simple_header;
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
@@ -594,6 +599,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			{
 				$msg_title = $lang['General_Error'];
 			}
+			break;
 
 		case CRITICAL_ERROR:
 			//
@@ -669,5 +675,4 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 
 	exit;
 }
-
 ?>

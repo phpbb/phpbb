@@ -1,4 +1,5 @@
 Subject: Verzoek om lid te worden van een groep
+Charset: iso-8859-1
 
 Hallo {GROUP_MODERATOR},
 

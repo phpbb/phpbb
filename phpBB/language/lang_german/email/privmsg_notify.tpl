@@ -1,4 +1,5 @@
 Subject: Eine neue Private Nachricht ist eingetroffen
+Charset: iso-8859-1
 
 Hallo {USERNAME}!
 

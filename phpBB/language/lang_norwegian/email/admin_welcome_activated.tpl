@@ -1,4 +1,5 @@
 Subject: Medlemskapet er aktivert
+Charset: iso-8859-1
 
 Hei {USERNAME},
 

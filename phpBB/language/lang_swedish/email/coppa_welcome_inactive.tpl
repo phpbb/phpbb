@@ -1,4 +1,5 @@
 Subject: Välkommen till {SITENAME} Forum
+Charset: iso-8859-1
 
 {WELCOME_MSG}
 

@@ -1,4 +1,5 @@
 Subject: En bruger ønsker at tilmelde sig til din gruppe
+Charset: iso-8859-1
 
 Kære {GROUP_MODERATOR},
 

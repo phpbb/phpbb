@@ -1,4 +1,5 @@
 Subject: Sinut on lis‰tty t‰h‰n k‰ytt‰j‰ryhm‰‰n
+Charset: iso-8859-1
 
 Onneksi olkoon,
 

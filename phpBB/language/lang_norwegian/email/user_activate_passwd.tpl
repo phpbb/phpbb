@@ -1,4 +1,5 @@
 Subject: Aktiver nytt passord
+Charset: iso-8859-1
 
 Hei {USERNAME}
 

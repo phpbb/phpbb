@@ -21,9 +21,8 @@
 
 function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 {
-	// Weird, $init_match doesn't work with static when double quotes (") are used...
 	static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!');
-	static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ');
+	static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ');
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
@@ -42,12 +41,9 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	}
 	else if ( $mode == 'search' ) 
 	{
-		$entry = str_replace('+', ' and ', $entry);
-		$entry = str_replace('-', ' not ', $entry);
+		$entry = str_replace(' +', ' and ', $entry);
+		$entry = str_replace(' -', ' not ', $entry);
 	}
-
-	// Replace numbers on their own
-	$entry = preg_replace('/\b[0-9]+\b/', ' ', $entry); 
 
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
@@ -61,8 +57,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	{
 		$entry = str_replace('*', ' ', $entry);
 
-		// 'words' that consist of <=3 or >=25 characters are removed.
-		$entry = preg_replace('/\b([a-z0-9]{1,3}|[a-z0-9]{20,})\b/',' ', $entry); 
+		// 'words' that consist of <3 or >20 characters are removed.
+		$entry = preg_replace('/\b([a-z0-9]{1,2}|[a-z0-9]{21,})\b/',' ', $entry); 
 	}
 
 	if ( !empty($stopword_list) )
@@ -95,14 +91,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 function split_words(&$entry, $mode = 'post')
 {
-	if ( $mode == 'post' )
-	{
-		preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
-	}
-	else
-	{
-		preg_match_all('/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/', $entry, $split_entries);
-	}
+	$rex = ( $mode == 'post' ) ? "/\b(\w[\w']*\w+|\w+?)\b/" : '/(\*?[à-ÿa-z0-9]+\*?)|\b([à-ÿa-z0-9]+)\b/';
+	preg_match_all($rex, $entry, $split_entries);
 
 	return $split_entries[1];
 }
@@ -198,14 +188,14 @@ function add_search_words($post_id, $post_text, $post_title = '')
 				{
 					case 'mysql':
 					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\')';
+						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
 						break;
 					case 'mssql':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
+						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
 						break;
 					default:
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-							VALUES ('" . $word[$i] . "')"; 
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
+							VALUES ('" . $word[$i] . "', 0)"; 
 						if( !$db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
@@ -221,11 +211,11 @@ function add_search_words($post_id, $post_text, $post_title = '')
 			{
 				case 'mysql':
 				case 'mysql4':
-					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
+					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						VALUES $value_sql"; 
 					break;
 				case 'mssql':
-					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						$value_sql"; 
 					break;
 			}
@@ -428,7 +418,9 @@ function remove_search_post($post_id_sql)
 function username_search($search_match)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
-	global $starttime;
+	global $starttime, $gen_simple_header;
+	
+	$gen_simple_header = TRUE;
 
 	$username_list = '';
 	if ( !empty($search_match) )
@@ -459,7 +451,6 @@ function username_search($search_match)
 		$db->sql_freeresult($result);
 	}
 
-	$gen_simple_header = TRUE;
 	$page_title = $lang['Search'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

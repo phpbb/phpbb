@@ -1,4 +1,5 @@
 Subject: Το {SITENAME} σας καλωσορίζει στην δημόσια συζήτηση του
+Charset: iso-8859-7
 
 {WELCOME_MSG}
 

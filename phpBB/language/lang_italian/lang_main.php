@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [English]
+ *                            lang_main.php [Italian]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -25,12 +25,24 @@
 //
 
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
+
 //setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
 $lang['RIGHT'] = "right";
-$lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
+$lang['DATE_FORMAT'] = "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
 // Common, these terms are used
@@ -115,25 +127,27 @@ $lang['Board_disable'] = "Spiacenti ma questo forum non è al momento disponibile
 //
 $lang['Registered_users'] = "Utenti registrati:";
 $lang['Browsing_forum'] = "Utenti che stanno navigando nel forum:";
+$lang['Online_users_zero_total'] = "In totale ci sono <b>0</b> utenti in linea ::";
 $lang['Online_users_total'] = "In totale ci sono <b>%d</b> utenti in linea :: ";
 $lang['Online_user_total'] = "In totale c'è <b>%d</b> utente in linea :: ";
+$lang['Reg_users_zero_total'] = "0 Registrati";
 $lang['Reg_users_total'] = "%d Registrati, ";
 $lang['Reg_user_total'] = "%d Registrato, ";
-$lang['Hidden_users_total'] = "%d Nascosti e ";
+$lang['Hidden_users_zero_total'] = "0 Nascosti e";
 $lang['Hidden_user_total'] = "%d Nascosto e ";
+$lang['Hidden_users_total'] = "%d Nascosti e ";
+$lang['Guest_users_zero_total'] = "0 Ospiti";
 $lang['Guest_users_total'] = "%d Ospiti";
 $lang['Guest_user_total'] = "%d Ospite";
 $lang['Record_online_users'] = "Il massimo numero di utenti in linea è stato <b>%s</b> il %s"; // first %s = number of users, second %s is the date.
 
-$lang['Admin_online_color'] = "%sAmministratore%s"; 
+$lang['Admin_online_color'] = "%sAmministratore%s";
 $lang['Mod_online_color'] = "%sModeratore%s";
 
 $lang['You_last_visit'] = "La tua ultima visita è stata %s"; // %s replaced by date/time
 $lang['Current_time'] = "La data di oggi è %s"; // %s replaced by time
 
 $lang['Search_new'] = "Guarda i messaggi dall'ultima visita";
-$lang['Admin_online_color'] = "%sAmministratore%s"; 
-$lang['Mod_online_color'] = "%sModeratore%s"; 
 $lang['Search_your_posts'] = "Guarda i tuoi messaggi";
 $lang['Search_unanswered'] = "Guarda i messaggi senza risposta";
 
@@ -153,10 +167,12 @@ $lang['Moderators'] = "Moderatori";
 //
 // Stats block text
 //
-$lang['Posted_article_total'] = "I nostri utenti hanno inviato un totale di <b>%d</b> messaggio"; // Number of posts
+$lang['Posted_articles_zero_total'] = "I nostri utenti hanno inviato un totale di <b>0</b> messaggi"; // Number of posts
 $lang['Posted_articles_total'] = "I nostri utenti hanno inviato un totale di <b>%d</b> messaggi"; // Number of posts
-$lang['Registered_user_total'] = "Abbiamo <b>%d</b> utente registrato"; // # registered users
+$lang['Posted_article_total'] = "I nostri utenti hanno inviato un totale di <b>%d</b> messaggio"; // Number of posts
+$lang['Registered_users_zero_total'] = "Abbiamo <b>0</b> utenti registrati"; // # registered users
 $lang['Registered_users_total'] = "Abbiamo <b>%d</b> utenti registrati"; // # registered users
+$lang['Registered_user_total'] = "Abbiamo <b>%d</b> utente registrato"; // # registered users
 $lang['Newest_user'] = "L'ultimo utente registrato è <b>%s%s%s</b>"; // a href, username, /a 
 
 $lang['No_new_posts_last_visit'] = "Nessun nuovo messaggio dalla tua ultima visita";
@@ -211,7 +227,7 @@ $lang['Display_topics'] = "Mostra prima gli argomenti di";
 $lang['All_Topics'] = "Tutti gli argomenti";
 
 $lang['Topic_Announcement'] = "<b>Annuncio:</b>";
-$lang['Topic_Sticky'] = "<b>Importante:</b>";
+$lang['Topic_Sticky'] = "<b>Stiloso:</b>";
 $lang['Topic_Moved'] = "<b>Spostato:</b>";
 $lang['Topic_Poll'] = "<b>[ Sondaggio ]</b>";
 
@@ -238,7 +254,7 @@ $lang['No_topics_post_one'] = "Non ci sono argomenti in questo forum<br />Clicca
 //
 $lang['View_topic'] = "Guarda l'argomento";
 
-$lang['Guest'] = 'Ospite';
+$lang['Guest'] = 'Guest';
 $lang['Post_subject'] = "Soggetto";
 $lang['View_next_topic'] = "Argomento successivo";
 $lang['View_previous_topic'] = "Argomento precedente";
@@ -258,7 +274,7 @@ $lang['Oldest_First'] = "Prima i vecchi";
 $lang['Back_to_top'] = "Torna in cima";
 
 $lang['Read_profile'] = "Guarda il profilo dell'utente"; 
-$lang['Send_email'] = "Manda una e-mail all'utente";
+$lang['Send_email'] = "Invia email";
 $lang['Visit_website'] = "Visita il sito dell'autore del messaggio";
 $lang['ICQ_status'] = "Stato ICQ";
 $lang['Edit_delete_post'] = "Modifica/Cancella questo messaggio";
@@ -300,7 +316,7 @@ $lang['Edit_Post'] = "Modifica il messaggio";
 $lang['Options'] = "Opzioni";
 
 $lang['Post_Announcement'] = "Annuncio";
-$lang['Post_Sticky'] = "Importante";
+$lang['Post_Sticky'] = "Stiloso";
 $lang['Post_Normal'] = "Normale";
 
 $lang['Confirm_delete'] = "Sei sicuro di voler cancellare questo messaggio?";
@@ -311,7 +327,7 @@ $lang['Empty_subject'] = "Devi specificare un soggetto quando inserisci un nuovo
 $lang['Empty_message'] = "Devi scrivere un messaggio per inserirlo";
 $lang['Forum_locked'] = "Questo forum è bloccato. Non puoi inserire, rispondere o modificare gli argomenti";
 $lang['Topic_locked'] = "Questo argomento è bloccato. Non puoi modificare i messaggi o inserire una risposta";
-$lang['No_post_id'] = "Devi selezionare un messaggio da modificare";
+$lang['No_post_id'] = "Non è stato specificato nessun ID";
 $lang['No_topic_id'] = "Devi selezionare un argomento a cui rispondere";
 $lang['No_valid_mode'] = "Puoi solo inviare, rispondere, modificare o citare messaggi, per favore torna indietro e prova di nuovo";
 $lang['No_such_post'] = "Questo messaggio non esiste, per favore torna indietro e prova di nuovo";
@@ -335,6 +351,9 @@ $lang['Poll_for'] = "Attiva il sondaggio per";
 $lang['Days'] = "Giorni"; // This is used for the Run poll for ... Days + in admin_forums for pruning
 $lang['Poll_for_explain'] = "[ Scrivi 0 o lascia vuoto per un sondaggio senza fine ]";
 $lang['Delete_poll'] = "Cancella il sondaggio";
+
+$lang['Already_voted'] = 'You have already voted in this poll'; 
+$lang['No_vote_option'] = 'You must specify an option when voting'; 
 
 $lang['Disable_HTML_post'] = "Disabilita HTML in questo messaggio";
 $lang['Disable_BBCode_post'] = "Disabilita il BBCode in questo messaggio";
@@ -476,10 +495,19 @@ $lang['Confirm_delete_pm'] = "Sei sicuro di voler cancellare questo messaggio?";
 $lang['Confirm_delete_pms'] = "Sei sicuro di voler cancellare questi messaggi?";
 
 $lang['Inbox_size'] = "Cartella di Posta in Arrivo piena per il %d%%"; // eg. Your Inbox is 50% full
-$lang['Sentbox_size'] = "Cartella di Posta in Uscita piena per il %d%%";
+$lang['Sentbox_size'] = "Cartella di Posta in Uscita piena per il %d%%"; 
 $lang['Savebox_size'] = "Cartella di Posta Salvata piena per il %d%%"; 
 
 $lang['Click_view_privmsg'] = "Clicca %squi%s per andare alla cartella di Posta in Arrivo";
+
+$lang['Read_pm'] = 'Read message'; 
+$lang['Post_new_pm'] = 'Post message'; 
+$lang['Post_reply_pm'] = 'Reply to message'; 
+$lang['Post_quote_pm'] = 'Quote message'; 
+$lang['Edit_pm'] = 'Edit message'; 
+
+$lang['Unread_message'] = 'Unread message'; 
+$lang['Read_message'] = 'Read message';
 
 
 //
@@ -497,13 +525,13 @@ $lang['Avatar_panel'] = "Pannello di controllo Avatar";
 $lang['Avatar_gallery'] = "Galleria Avatar";
 
 $lang['Website'] = "Sito web";
-$lang['Location'] = "Località";
-$lang['Contact'] = "Contatto";
+$lang['Location'] = "Residenza";
+$lang['Contact'] = "Contatta";
 $lang['Email_address'] = "Indirizzo Email";
 $lang['Email'] = "Email";
 $lang['Send_private_message'] = "Manda un messaggio privato";
 $lang['Hidden_email'] = "[ Nascosto ]";
-$lang['Search_user_posts'] = "Cerca i messaggi di questo utente";
+$lang['Search_user_posts'] = "Trova tutti i messaggi di %s";
 $lang['Interests'] = "Interessi";
 $lang['Occupation'] = "Occupazione"; 
 $lang['Poster_rank'] = "Graduatoria Utente";
@@ -515,6 +543,7 @@ $lang['Search_user_posts'] = "Trova tutti i messaggi di %s"; // Find all posts b
 
 $lang['No_user_id_specified'] = "Spiacenti, ma questo utente non esiste";
 $lang['Wrong_Profile'] = "Non puoi modificare un profilo che non è il tuo";
+
 $lang['Only_one_avatar'] = "Può essere specificato un solo tipo di avatar";
 $lang['File_no_data'] = "Il file all'URL che hai fornito non contiene dati";
 $lang['No_connection_URL'] = "Non è possibile connettersi all'URL che hai fornito";
@@ -548,7 +577,6 @@ $lang['password_confirm_if_changed'] = "Devi confermare la tua password solo se 
 
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Mostra una piccola immagine grafica sotto i tuoi dettagli nel messaggio. Può essere mostrata una sola immagine alla volta, la sua larghezza massima è di %d pixels, l'altezza di %d pixels e il file deve essere più piccolo di %dkB.";
-$lang['Upload_Avatar_file'] = "Carica l'Avatar dal tuo computer";
 $lang['Upload_Avatar_URL'] = "Carica l'Avatar da un URL";
 $lang['Upload_Avatar_URL_explain'] = "Inserisci l'URL dell'Avatar, verrà copiato in questo sito.";
 $lang['Pick_local_Avatar'] = "Seleziona l'Avatar dalla gallery";
@@ -566,8 +594,8 @@ $lang['Delete_Image'] = "Cancella l'immagine";
 $lang['Current_Image'] = "Immagine attuale";
 
 $lang['Notify_on_privmsg'] = "Notifica sui nuovi Messaggi Privati";
-$lang['Popup_on_privmsg'] = "Finestra di Popup sul nuovo Messaggio Privato";
-$lang['Popup_on_privmsg_explain'] = "Alcuni modelli possono aprire una nuova finestra per informarti quando un nuovo messaggio arriva";
+$lang['Popup_on_privmsg'] = "Finestra di Popup sul nuovo Messaggio Privato"; 
+$lang['Popup_on_privmsg_explain'] = "Alcuni modelli possono aprire una nuova finestra per informarti quando un nuovo messaggio arriva"; 
 $lang['Hide_user'] = "Nascondi il tuo stato online";
 
 $lang['Profile_updated'] = "Il tuo profilo è stato aggiornato";
@@ -587,6 +615,7 @@ $lang['Fields_empty'] = "Devi riempire i campi richiesti";
 $lang['Avatar_filetype'] = "Il file dell'avatar deve essere .jpg, .gif o .png";
 $lang['Avatar_filesize'] = "La grandezza del file dell'avatar deve essere inferiore a %d kB"; // The avatar image file size must be less than 6 kB
 $lang['Avatar_imagesize'] = "L'avatar deve essere più piccolo di %d pixels di larghezza e di %d pixels di altezza"; 
+
 $lang['Welcome_subject'] = "Benvenuto nel forum di %s"; // Welcome to my.com forums
 $lang['New_account_subject'] = "Account Nuovo Utente";
 $lang['Account_activated_subject'] = "Account Attivato";
@@ -596,6 +625,7 @@ $lang['Account_inactive'] = "Il tuo account è stato creato. Comunque, questo for
 $lang['Account_inactive_admin'] = "Il tuo account è stato creato. Comunque questo forum richiede l'attivazione dell'account da parte dell'amministratore. Una email è stata spedita all'amministratore e sarai informato quando il tuo account sarà attivato";
 $lang['Account_active'] = "Il tuo account è stato attivato. Grazie per esserti registrato.";
 $lang['Account_active_admin'] = "L'account è stato attivato.";
+$lang['Already_activated'] = 'You have already activated your account'; 
 $lang['Reactivate'] = "Riattiva il tuo account!";
 $lang['COPPA'] = "Il tuo account è stato creato, ma deve essere approvato. Per favore controlla la tua email per ulteriori dettagli.";
 
@@ -675,15 +705,16 @@ $lang['Join_group'] = "Iscriviti ad un Gruppo";
 $lang['No_group_members'] = "Questo gruppo non ha membri";
 $lang['Group_hidden_members'] = "Questo gruppo è nascosto, non puoi vedere i suoi membri";
 $lang['No_pending_group_members'] = "Questo gruppo non ha membri in attesa";
-$lang["Group_joined"] = "Ti sei iscritto a questo gruppo con succeso.<br />Sarai avvisato quando la tua iscrizione verrà approvata dal moderatore del gruppo.";
+$lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notified when your subscription is approved by the group moderator";
 $lang['Group_request'] = "C'è una richiesta di iscrizione al tuo gruppo";
 $lang['Group_approved'] = "La tua richiesta è stata approvata";
-$lang['Group_added'] = "Sei stato aggiunto a questa gruppo utenti";
+$lang['Group_added'] = "Sei stato aggiunto a questa gruppo utenti"; 
 $lang['Already_member_group'] = "Sei già un membro di questo gruppo";
 $lang['User_is_member_group'] = "L'utente è già un membro di questo gruppo";
 $lang['Group_type_updated'] = "Tipo di Gruppo aggiornato con successo";
 
 $lang['Could_not_add_user'] = "L'utente che hai selezionato non esiste";
+$lang['Could_not_anon_user'] = "Non puoi fare membro di un gruppo un utente Anonimo";
 
 $lang['Confirm_unsub'] = "Sei sicuro di volerti cancellare da questo gruppo?";
 $lang['Confirm_unsub_pending'] = "La tua iscrizione a questo gruppo non è ancora stata approvata, sei sicuro di volerti cancellare?";
@@ -704,7 +735,7 @@ $lang['This_hidden_group'] = "Questo è un gruppo nascosto, non è permesso aggiun
 $lang['Member_this_group'] = "Sei un membro di questo gruppo";
 $lang['Pending_this_group'] = "La tua iscrizione a questo gruppo è in attesa";
 $lang['Are_group_moderator'] = "Sei il moderatore di questo gruppo";
-$lang['None'] = "Niente";
+$lang['None'] = "Nessuno";
 
 $lang['Subscribe'] = "Iscriviti";
 $lang['Unsubscribe'] = "Cancella";
@@ -724,9 +755,9 @@ $lang['Search_author_explain'] = "Usa * come abbreviazione per parole parziali";
 
 $lang['Search_for_any'] = "Cerca per ogni parola oppure usa la frase esatta";
 $lang['Search_for_all'] = "Cerca tutti i termini";
+$lang['Search_title_msg'] = "Cerca nel titolo dell'argomento e nel testo del messaggio";
+$lang['Search_msg_only'] = "Cerca solo nel testo del messaggio";
 
-$lang['Search_title_msg'] = "Cerca nel titolo e nel testo"; 
-$lang['Search_msg_only'] = "Cerca solo nel testo"; 
 $lang['Return_first'] = "Dai i primi"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "caratteri del messaggio";
 
@@ -734,8 +765,6 @@ $lang['Search_previous'] = "Cerca i messaggi di"; // followed by days, weeks, mo
 
 $lang['Sort_by'] = "Ordina per";
 $lang['Sort_Time'] = "Data messaggio";
-$lang['Search_title_msg'] = "Cerca nel titolo dell'argomento e nel testo del messaggio"; 
-$lang['Search_msg_only'] = "Cerca solo nel testo del messaggio"; 
 $lang['Sort_Post_Subject'] = "Soggetto messaggio";
 $lang['Sort_Topic_Title'] = "Titolo argomento";
 $lang['Sort_Author'] = "Autore";
@@ -757,13 +786,13 @@ $lang['Close_window'] = "Chiudi finestra";
 //
 // Note the %s will be replaced with one of the following 'user' arrays
 $lang['Sorry_auth_announce'] = "Spiacenti, ma solo %s possono inviare annunci in questo forum";
-$lang['Sorry_auth_sticky'] = "Spiacenti, ma solo %s possono inviare messaggi importanti in questo forum";
-$lang['Sorry_auth_read'] = "Spiacenti, ma solo %s possono leggere gli argomenti in questo forum";
+$lang['Sorry_auth_sticky'] = "Spiacenti, ma solo %s possono inviare messaggi importanti in questo forum"; 
+$lang['Sorry_auth_read'] = "Spiacenti, ma solo %s possono leggere gli argomenti in questo forum"; 
 $lang['Sorry_auth_post'] = "Spiacenti, ma solo %s possono inserire argomenti in questo forum"; 
 $lang['Sorry_auth_reply'] = "Spiacenti, ma solo %s possono rispondere ai messaggi in questo forum"; 
-$lang['Sorry_auth_edit'] = "Spiacenti, ma solo %s possono modificare i messaggi in questo forum";
-$lang['Sorry_auth_delete'] = "Spiacenti, ma solo %s possono cancellare i messaggi in questo forum";
-$lang['Sorry_auth_vote'] = "Spiacenti, ma solo %s possono votare nei sondaggi in questo forum";
+$lang['Sorry_auth_edit'] = "Spiacenti, ma solo %s possono modificare i messaggi in questo forum"; 
+$lang['Sorry_auth_delete'] = "Spiacenti, ma solo %s possono cancellare i messaggi in questo forum"; 
+$lang['Sorry_auth_vote'] = "Spiacenti, ma solo %s possono votare nei sondaggi in questo forum"; 
 
 // These replace the %s in the above strings
 $lang['Auth_Anonymous_Users'] = "<b>gli utenti anonimi</b>";
@@ -781,11 +810,14 @@ $lang['You_been_banned'] = "Sei stato escluso da questo forum<br />per favore co
 //
 // Viewonline
 //
-$lang['Reg_user_online'] = "C'è %d Utente Registrato e "; // There ae 5 Registered and
+$lang['Reg_users_zero_online'] = "Ci sono 0 utenti Registrati e"; // There ae 5 Registered and
 $lang['Reg_users_online'] = "Ci sono %d Utenti Registrati e "; // There ae 5 Registered and
-$lang['Hidden_user_online'] = "%d Utente Nascosto in linea"; // 6 Hidden users online
+$lang['Reg_user_online'] = "C'è %d Utente Registrato e "; // There ae 5 Registered and
+$lang['Hidden_users_zero_online'] = "0 utenti Nascosti in linea"; // 6 Hidden users online
 $lang['Hidden_users_online'] = "%d Utenti Nascosti in linea"; // 6 Hidden users online
+$lang['Hidden_user_online'] = "%d Utente Nascosto in linea"; // 6 Hidden users online
 $lang['Guest_users_online'] = "Ci sono %d Ospiti in linea"; // There are 10 Guest users online
+$lang['Guest_users_zero_online'] = "Ci sono 0 Ospiti in linea"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "C'è %d Ospite in linea"; // There is 1 Guest user online
 $lang['No_users_browsing'] = "Al momento non ci sono utenti nel forum";
 
@@ -795,14 +827,14 @@ $lang['Forum_Location'] = "Località del Forum";
 $lang['Last_updated'] = "Ultimo aggiornamento";
 
 $lang['Forum_index'] = "Indice Forum";
-$lang['Logging_on'] = "Sta entrando";
-$lang['Posting_message'] = "Sta inviando un messaggio";
-$lang['Searching_forums'] = "Sta cercando nei forum";
-$lang['Viewing_profile'] = "Sta guardando il profilo";
-$lang['Viewing_online'] = "Sta guardando chi c'è in linea";
-$lang['Viewing_member_list'] = "Sta guardando la lista degli utenti";
-$lang['Viewing_priv_msgs'] = "Sta guardando i messaggi privati";
-$lang['Viewing_FAQ'] = "Sta guardando le FAQ";
+$lang['Logging_on'] = "Entra";
+$lang['Posting_message'] = "Invia un messaggio";
+$lang['Searching_forums'] = "Cerca nei forum";
+$lang['Viewing_profile'] = "Guarda il profilo";
+$lang['Viewing_online'] = "Guarda chi c'è in linea";
+$lang['Viewing_member_list'] = "Guarda la lista degli utenti";
+$lang['Viewing_priv_msgs'] = "Guarda i messaggi privati";
+$lang['Viewing_FAQ'] = "Guarda le FAQ";
 
 
 //
@@ -857,68 +889,132 @@ $lang['Lookup_IP'] = "Cerca l'indirizzo IP";
 $lang['All_times'] = "Tutti i fusi orari sono %s"; // eg. All times are GMT - 12 Hours (times from next block)
 
 $lang['-12'] = "GMT - 12 Ore";
-$lang['-11'] = "GMT - 11 ore";
-$lang['-10'] = "HST (Hawaii)";
+$lang['-11'] = "GMT - 11 Ore";
+$lang['-10'] = "GMT - 10 Ore";
 $lang['-9'] = "GMT - 9 Ore";
-$lang['-8'] = "PST (U.S./Canada)";
-$lang['-7'] = "MST (U.S./Canada)";
-$lang['-6'] = "CST (U.S./Canada)";
-$lang['-5'] = "EST (U.S./Canada)";
+$lang['-8'] = "GMT - 8 Ore";
+$lang['-7'] = "GMT - 7 Ore";
+$lang['-6'] = "GMT - 6 Ore";
+$lang['-5'] = "GMT - 5 Ore";
 $lang['-4'] = "GMT - 4 Ore";
-$lang['-3.5'] = "GMT - 3.5 Ore";
+$lang['-3.5'] = "GMT - 3.5 Hours";
 $lang['-3'] = "GMT - 3 Ore";
-$lang['-2'] = "Mid-Atlantic";
+$lang['-2'] = "GMT - 2 Ore";
 $lang['-1'] = "GMT - 1 Ora";
 $lang['0'] = "GMT";
-$lang['1'] = "CET (Europa)";
-$lang['2'] = "EET (Europa)";
+$lang['1'] = "GMT + 1 Ora";
+$lang['2'] = "GMT + 2 Ore";
 $lang['3'] = "GMT + 3 Ore";
-$lang['3.5'] = "GMT + 3.5 Ore";
+$lang['3.5'] = "GMT + 3.5 Hours";
 $lang['4'] = "GMT + 4 Ore";
-$lang['4.5'] = "GMT + 4.5 Ore";
+$lang['4.5'] = "GMT + 4.5 Hours";
 $lang['5'] = "GMT + 5 Ore";
-$lang['5.5'] = "GMT + 5.5 Ore";
+$lang['5.5'] = "GMT + 5.5 Hours";
 $lang['6'] = "GMT + 6 Ore";
+$lang['6.5'] = "GMT + 6.5 Hours";
 $lang['7'] = "GMT + 7 Ore";
-$lang['8'] = "WST (Australia)";
+$lang['8'] = "GMT + 8 Ore";
 $lang['9'] = "GMT + 9 Ore";
 $lang['9.5'] = "CST (Australia)";
-$lang['10'] = "EST (Australia)";
+$lang['10'] = "GMT + 10 Ore";
 $lang['11'] = "GMT + 11 Ore";
 $lang['12'] = "GMT + 12 Ore";
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = "(GMT -12:00 ore) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 ore) Midway Island, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 ore) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 ore) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 ore) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-7'] = "(GMT -7:00 ore) Mountain Time (US &amp; Canada), Arizona";
-$lang['tz']['-6'] = "(GMT -6:00 ore) Central Time (US &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 ore) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
-$lang['tz']['-4'] = "(GMT -4:00 ore) Atlantic Time (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 ore) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 ore) Brassila, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 ore) Mid-Atlantic, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 ora) Azores, Cape Verde Islands";
+$lang['tz']['-12'] = "GMT -12:00 ore";
+$lang['tz']['-11'] = "GMT -11:00 ore";
+$lang['tz']['-10'] = "GMT -10:00 ore";
+$lang['tz']['-9'] = "GMT -9:00 ore";
+$lang['tz']['-8'] = "GMT -8:00 ore";
+$lang['tz']['-7'] = "GMT -7:00 ore";
+$lang['tz']['-6'] = "GMT -6:00 ore";
+$lang['tz']['-5'] = "GMT -5:00 ore";
+$lang['tz']['-4'] = "GMT -4:00 ore";
+$lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
+$lang['tz']['-3'] = "GMT -3:00 ore";
+$lang['tz']['-2'] = "GMT -2:00 ore";
+$lang['tz']['-1'] = "GMT -1:00 ora";
 $lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 ora) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 ore) Cairo, Helsinki, Kaliningrad, South Africa";
-$lang['tz']['3'] = "(GMT +3:00 ore) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 ore) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 ore) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 ore) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 ore) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 ore) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 ore) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 ore) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 ore) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 ore) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 ore) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 ore) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 ore) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 ore) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 ore) Auckland, Wellington, Fiji, Marshall Island";
+$lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
+$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa";
+$lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
+$lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
+$lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
+$lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
+$lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
+$lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
+$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk";
+$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
+$lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
+$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
+$lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
+$lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
+$lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok";
+$lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
+$lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";$lang['-12'] = 'GMT - 12 Hours'; 
+$lang['-11'] = 'GMT - 11 Hours'; 
+$lang['-10'] = 'GMT - 10 Hours'; 
+$lang['-9'] = 'GMT - 9 Hours'; 
+$lang['-8'] = 'GMT - 8 Hours'; 
+$lang['-7'] = 'GMT - 7 Hours'; 
+$lang['-6'] = 'GMT - 6 Hours'; 
+$lang['-5'] = 'GMT - 5 Hours'; 
+$lang['-4'] = 'GMT - 4 Hours'; 
+$lang['-3.5'] = 'GMT - 3.5 Hours'; 
+$lang['-3'] = 'GMT - 3 Hours'; 
+$lang['-2'] = 'GMT - 2 Hours'; 
+$lang['-1'] = 'GMT - 1 Hours'; 
+$lang['0'] = 'GMT'; 
+$lang['1'] = 'GMT + 1 Hour'; 
+$lang['2'] = 'GMT + 2 Hours'; 
+$lang['3'] = 'GMT + 3 Hours'; 
+$lang['3.5'] = 'GMT + 3.5 Hours'; 
+$lang['4'] = 'GMT + 4 Hours'; 
+$lang['4.5'] = 'GMT + 4.5 Hours'; 
+$lang['5'] = 'GMT + 5 Hours'; 
+$lang['5.5'] = 'GMT + 5.5 Hours'; 
+$lang['6'] = 'GMT + 6 Hours'; 
+$lang['6.5'] = 'GMT + 6.5 Hours'; 
+$lang['7'] = 'GMT + 7 Hours'; 
+$lang['8'] = 'GMT + 8 Hours'; 
+$lang['9'] = 'GMT + 9 Hours'; 
+$lang['9.5'] = 'GMT + 9.5 Hours'; 
+$lang['10'] = 'GMT + 10 Hours'; 
+$lang['11'] = 'GMT + 11 Hours'; 
+$lang['12'] = 'GMT + 12 Hours'; 
+
+// These are displayed in the timezone select box 
+$lang['tz']['-12'] = 'GMT - 12 Hours'; 
+$lang['tz']['-11'] = 'GMT - 11 Hours'; 
+$lang['tz']['-10'] = 'GMT - 10 Hours'; 
+$lang['tz']['-9'] = 'GMT - 9 Hours'; 
+$lang['tz']['-8'] = 'GMT - 8 Hours'; 
+$lang['tz']['-7'] = 'GMT - 7 Hours'; 
+$lang['tz']['-6'] = 'GMT - 6 Hours'; 
+$lang['tz']['-5'] = 'GMT - 5 Hours'; 
+$lang['tz']['-4'] = 'GMT - 4 Hours'; 
+$lang['tz']['-3.5'] = 'GMT - 3.5 Hours'; 
+$lang['tz']['-3'] = 'GMT - 3 Hours'; 
+$lang['tz']['-2'] = 'GMT - 2 Hours'; 
+$lang['tz']['-1'] = 'GMT - 1 Hours'; 
+$lang['tz']['0'] = 'GMT'; 
+$lang['tz']['1'] = 'GMT + 1 Hour'; 
+$lang['tz']['2'] = 'GMT + 2 Hours'; 
+$lang['tz']['3'] = 'GMT + 3 Hours'; 
+$lang['tz']['3.5'] = 'GMT + 3.5 Hours'; 
+$lang['tz']['4'] = 'GMT + 4 Hours'; 
+$lang['tz']['4.5'] = 'GMT + 4.5 Hours'; 
+$lang['tz']['5'] = 'GMT + 5 Hours'; 
+$lang['tz']['5.5'] = 'GMT + 5.5 Hours'; 
+$lang['tz']['6'] = 'GMT + 6 Hours'; 
+$lang['tz']['6.5'] = 'GMT + 6.5 Hours'; 
+$lang['tz']['7'] = 'GMT + 7 Hours'; 
+$lang['tz']['8'] = 'GMT + 8 Hours'; 
+$lang['tz']['9'] = 'GMT + 9 Hours'; 
+$lang['tz']['9.5'] = 'GMT + 9.5 Hours'; 
+$lang['tz']['10'] = 'GMT + 10 Hours'; 
+$lang['tz']['11'] = 'GMT + 11 Hours'; 
+$lang['tz']['12'] = 'GMT + 12 Hours';
 
 $lang['datetime']['Sunday'] = "Domenica";
 $lang['datetime']['Monday'] = "Lunedì";
@@ -938,7 +1034,7 @@ $lang['datetime']['January'] = "Gennaio";
 $lang['datetime']['February'] = "Febbraio";
 $lang['datetime']['March'] = "Marzo";
 $lang['datetime']['April'] = "Aprile";
-$lang['datetime']['May'] = "Maggio";
+$lang['datetime']['May'] = "Mag";
 $lang['datetime']['June'] = "Giugno";
 $lang['datetime']['July'] = "Luglio";
 $lang['datetime']['August'] = "Agosto";

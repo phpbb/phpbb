@@ -1,4 +1,5 @@
 Subject: 답변글이 등록되었습니다. - {TOPIC_TITLE}
+Charset: euc-kr
 
 안녕하세요.. {USERNAME}님.!
 

@@ -63,7 +63,7 @@ function validate_username($username)
 	{
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			if ( preg_match("#\b(" . str_replace("\*", "\w*?", preg_quote($row['disallow_username'])) . ")\b#i", $username) )
+			if ( preg_match("#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($row['disallow_username'], '#')) . ")\b#i", $username) )
 			{
 				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 			}
@@ -76,7 +76,7 @@ function validate_username($username)
 	{
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			if ( preg_match("#\b(" . str_replace("\*", "\w*?", preg_quote($row['word'])) . ")\b#i", $username) )
+			if ( preg_match("#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($row['word'], '#')) . ")\b#i", $username) )
 			{
 				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 			}
@@ -102,7 +102,7 @@ function validate_email($email)
 
 	if ( $email != '' )
 	{
-		if ( preg_match('/^[a-z0-9\.\-_]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email) )
+		if ( preg_match('/^[a-z0-9\.\-_\+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email) )
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
@@ -110,7 +110,7 @@ function validate_email($email)
 			{
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$match_email = str_replace('*', '.*', $row['ban_email']);
+					$match_email = str_replace('*', '.*?', $row['ban_email']);
 					if ( preg_match('/^' . $match_email . '$/is', $email) )
 					{
 						return array('error' => true, 'error_msg' => $lang['Email_banned']);

@@ -29,7 +29,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$joined, &$poster_avatar, &$profile_img, &$profile, &$search_img, &$search, &$pm_img, &$pm, &$email_img, &$email, &$www_img, &$www, &$icq_status_img, &$icq_img, &$icq, &$aim_img, &$aim, &$msn_img, &$msn, &$yim_img, &$yim)
 {
-	global $lang, $images, $board_config;
+	global $lang, $images, $board_config, $phpEx;
 
 	$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
 	$joined = create_date($date_format, $row['user_regdate'], $board_config['board_timezone']);
@@ -159,6 +159,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	if ( !$userdata['session_logged_in'] )
 	{
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	$sql = "SELECT group_moderator 
@@ -207,7 +208,8 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	//
 	if ( !$userdata['session_logged_in'] )
 	{
-		header($header_location . ppend_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -275,7 +277,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 	$emailer = new emailer($board_config['smtp_delivery']);
 
-	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+	$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 	$emailer->use_template('group_request', $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
@@ -308,11 +310,13 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	//
 	if ( $cancel )
 	{
-		header($header_location . ppend_sid("groupcp.$phpEx", true));
+		header($header_location . append_sid("groupcp.$phpEx", true));
+		exit;
 	}
 	elseif ( !$userdata['session_logged_in'] )
 	{
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	if ( $confirm )
@@ -396,6 +400,7 @@ else if ( $group_id )
 		if ( !$userdata['session_logged_in'] )
 		{
 			header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			exit;
 		}
 	}
 
@@ -457,6 +462,7 @@ else if ( $group_id )
 			if ( !$userdata['session_logged_in'] )
 			{
 				header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+				exit;
 			}
 
 			if ( !$is_moderator )
@@ -553,7 +559,7 @@ else if ( $group_id )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+					$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 					$emailer->use_template('group_added', $row['user_lang']);
 					$emailer->email_address($row['user_email']);
@@ -708,7 +714,7 @@ else if ( $group_id )
 						include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 						$emailer = new emailer($board_config['smtp_delivery']);
 
-						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\r\n";
+						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\n";
 
 						$emailer->use_template('group_approved');
 						$emailer->email_address($userdata['user_email']);
@@ -912,7 +918,8 @@ else if ( $group_id )
 		'L_PENDING_MEMBERS' => $lang['Pending_members'], 
 		'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'], 
 		'L_PM' => $lang['Private_Message'], 
-		'L_EMAIL' => $lang['Email'],
+		'L_EMAIL' => $lang['Email'], 
+		'L_POSTS' => $lang['Posts'], 
 		'L_WEBSITE' => $lang['Website'],
 		'L_FROM' => $lang['Location'],
 		'L_ORDER' => $lang['Order'],

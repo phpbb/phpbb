@@ -1,4 +1,6 @@
-Subject: Você foi adicionado a este Grupo de utilizadores
+Charset: iso-8859-1
+
+Assunto: Utilizador Adicionado a Grupo 
 
 Parabéns,
 

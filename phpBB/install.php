@@ -25,7 +25,7 @@ set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 define('IN_PHPBB', true);
 $phpbb_root_path='./';
 include($phpbb_root_path.'extension.inc');
-include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 
 $userdata = array();
 $lang = array();
@@ -344,6 +344,7 @@ else
 	else
 	{
 		header("Location: " . append_sid("index.$phpEx", true));
+		exit;
 	}
 }
 
@@ -875,7 +876,7 @@ else
 					if( preg_match("/^(3\.23)|(4\.)/", $version) )
 					{
 						$sql = "ALTER TABLE " . $table_prefix . "sessions 
-							TYPE=HEAP";
+							TYPE=HEAP MAX_ROWS=500";
 						$db->sql_query($sql);
 					}
 				}
@@ -905,12 +906,12 @@ else
 			//
 			$config_data = '<?php'."\n\n";
 			$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
-			$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
-			$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
-			$config_data .= '$dbname = "' . $dbname . '";' . "\n";
-			$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
-			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
-			$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
+			$config_data .= '$dbms = \'' . $dbms . '\';' . "\n\n";
+			$config_data .= '$dbhost = \'' . $dbhost . '\';' . "\n";
+			$config_data .= '$dbname = \'' . $dbname . '\';' . "\n";
+			$config_data .= '$dbuser = \'' . $dbuser . '\';' . "\n";
+			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
+			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 

@@ -1,4 +1,5 @@
 Subject: Account Nuovo Utente
+Charset: iso-8859-1
 
 Ciao,
 

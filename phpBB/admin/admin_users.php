@@ -30,9 +30,9 @@ if( !empty($setmodules) )
 	return;
 }
 
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
@@ -159,10 +159,12 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		if( stripslashes($username) != $this_userdata['username'] )
 		{
 			unset($rename_user);
-			if( !validate_username($username) )
+
+			$result = validate_username($username);
+			if ( $result['error'] )
 			{
 				$error = TRUE;
-				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Invalid_username'];
+				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
 			}
 			else
 			{
@@ -199,17 +201,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		}
 
-		if( $user_status == 0 )
-		{
-			// User is (made) inactive. Delete all their sessions.
-			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-				WHERE session_user_id = $user_id";
-			if( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete this users sessions', '', __LINE__, __FILE__, $sql);
-			}
-		}
-
 		if( $signature != "" )
 		{
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
@@ -217,7 +208,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			{
 				$sig_length_check = preg_replace('/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is', '\\1\\3\\4', $sig_length_check);
 			}
-			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
 
 			// Only create a new bbcode_uid when there was no uid yet.
 			if ( $signature_bbcode_uid == '' )
@@ -233,9 +223,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			}
 		}
 
-		//
-		// Avatar stuff
-		//
 		//
 		// Avatar stuff
 		//
@@ -523,7 +510,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				$row = $db->sql_fetchrow($result);
 				
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET poster_id = " . ANONYMOUS . ", post_username = '$username' 
+					SET poster_id = " . DELETED . ", post_username = '$username' 
 					WHERE poster_id = $user_id";
 				if( !$db->sql_query($sql) )
 				{
@@ -531,11 +518,45 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				}
 
 				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_poster = " . ANONYMOUS . " 
+					SET topic_poster = " . DELETED . " 
 					WHERE topic_poster = $user_id";
 				if( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$sql = "UPDATE " . VOTE_USERS_TABLE . "
+					SET vote_user_id = " . DELETED . "
+					WHERE vote_user_id = $user_id";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$sql = "SELECT group_id
+					FROM " . GROUPS_TABLE . "
+					WHERE group_moderator = $user_id";
+				if( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not select groups where user was moderator', '', __LINE__, __FILE__, $sql);
+				}
+				
+				while ( $row_group = $db->sql_fetchrow($result) )
+				{
+					$group_moderator[] = $row_group['group_id'];
+				}
+				
+				if ( count($group_moderator) )
+				{
+					$update_moderator_id = implode(', ', $group_moderator);
+					
+					$sql = "UPDATE " . GROUPS_TABLE . "
+						SET group_moderator = " . $userdata['user_id'] . "
+						WHERE group_moderator IN ($update_moderator_id)";
+					if( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
+					}
 				}
 
 				$sql = "DELETE FROM " . USERS_TABLE . "
@@ -571,6 +592,80 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "SELECT privmsgs_id
+					FROM " . PRIVMSGS_TABLE . "
+					WHERE ( ( privmsgs_from_userid = $user_id 
+							AND privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )
+						OR ( privmsgs_from_userid = $user_id
+							AND privmsgs_type = " . PRIVMSGS_SENT_MAIL . " )
+						OR ( privmsgs_to_userid = $user_id
+							AND privmsgs_type = " . PRIVMSGS_READ_MAIL . " )
+						OR ( privmsgs_to_userid = $user_id
+							AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
+						OR ( privmsgs_from_userid = $user_id
+							AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) )";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not select all user\'s private messages', '', __LINE__, __FILE__, $sql);
+				}
+				
+				//
+				// This little bit of code directly from the private messaging section.
+				// Thanks Paul!
+				//
+				
+				while ( $row_privmsgs = $db->sql_fetchrow($result) )
+				{
+					$mark_list[] = $row_privmsgs['privmsgs_id'];
+				}
+				
+				if ( count($mark_list) )
+				{
+					$delete_sql_id = implode(', ', $mark_list);
+					
+					//
+					// We shouldn't need to worry about updating conters here...
+					// They are already gone!
+					//
+					
+					$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
+						WHERE privmsgs_text_id IN ($delete_sql_id)";
+					$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
+						WHERE privmsgs_id IN ($delete_sql_id)";
+					
+					//
+					// Shouldn't need the switch statement here, either, as we just want
+					// to take out all of the private messages.  This will not affect
+					// the other messages we want to keep; the ids are unique.
+					//
+					
+					if ( !$db->sql_query($delete_sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
+					}
+					
+					if ( !$db->sql_query($delete_text_sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
+					}
+				}
+				
+				$sql = "UPDATE " . PRIVMSGS_TABLE . "
+					SET privmsgs_to_userid = " . DELETED . "
+					WHERE privmsgs_to_userid = $user_id";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update private messages saved to the user', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$sql = "UPDATE " . PRIVMSGS_TABLE . "
+					SET privmsgs_from_userid = " . DELETED . "
+					WHERE privmsgs_from_userid = $user_id";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update private messages saved from the user', '', __LINE__, __FILE__, $sql);
 				}
 
 				$message = $lang['User_deleted'];
@@ -941,6 +1036,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'USER_ACTIVE_NO' => (!$user_status) ? 'checked="checked"' : '', 
 			'RANK_SELECT_BOX' => $rank_select_box,
 
+			'L_USERNAME' => $lang['Username'],
 			'L_USER_TITLE' => $lang['User_admin'],
 			'L_USER_EXPLAIN' => $lang['User_admin_explain'],
 			'L_NEW_PASSWORD' => $lang['New_password'], 
@@ -954,7 +1050,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_YAHOO' => $lang['YIM'],
 			'L_WEBSITE' => $lang['Website'],
 			'L_AIM' => $lang['AIM'],
-			'L_LOCATION' => $lang['From'],
+			'L_LOCATION' => $lang['Location'],
 			'L_OCCUPATION' => $lang['Occupation'],
 			'L_BOARD_LANGUAGE' => $lang['Board_lang'],
 			'L_BOARD_STYLE' => $lang['Board_style'],
@@ -971,7 +1067,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_ALWAYS_ADD_SIGNATURE' => $lang['Always_add_sig'],
 			
 			'L_SPECIAL' => $lang['User_special'],
-			'L_SPECIAL_EXPLAIN' => $lang['User_specail_explain'],
+			'L_SPECIAL_EXPLAIN' => $lang['User_special_explain'],
 			'L_USER_ACTIVE' => $lang['User_status'],
 			'L_ALLOW_PM' => $lang['User_allowpm'],
 			'L_ALLOW_AVATAR' => $lang['User_allowavatar'],
@@ -1012,7 +1108,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'S_PROFILE_ACTION' => append_sid("admin_users.$phpEx"))
 		);
 
-		if( file_exists('./../' . $board_config['avatar_path'] ) )
+		if( file_exists('./../' . $board_config['avatar_path'] ) && ($board_config['allow_avatar_upload'] == TRUE) )
 		{
 			if ( $form_enctype != '' )
 			{
@@ -1021,33 +1117,24 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$template->assign_block_vars('avatar_remote_upload', array() );
 		}
 
-		if( file_exists('./../' . $board_config['avatar_gallery_path'] ) )
+		if( file_exists('./../' . $board_config['avatar_gallery_path'] ) && ($board_config['allow_avatar_local'] == TRUE) )
 		{
 			$template->assign_block_vars('avatar_local_gallery', array() );
+		}
+		
+		if( $board_config['allow_avatar_remote'] == TRUE )
+		{
+			$template->assign_block_vars('avatar_remote_link', array() );
 		}
 	}
 
 	$template->pparse('body');
-
 }
 else
 {
 	//
 	// Default user selection box
 	//
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS ."
-		ORDER BY username";
-	$result = $db->sql_query($sql);
-
-	$select_list = '<select name="' . POST_USERS_URL . '">';
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$select_list .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
-	}
-	$select_list .= '</select>';
-
 	$template->set_filenames(array(
 		'body' => 'admin/user_select_body.tpl')
 	);
@@ -1059,7 +1146,7 @@ else
 		'L_LOOK_UP' => $lang['Look_up_user'],
 		'L_FIND_USERNAME' => $lang['Find_username'],
 
-		'U_SEARCH_USER' => append_sid("../search.$phpEx?mode=searchuser"), 
+		'U_SEARCH_USER' => append_sid("./../search.$phpEx?mode=searchuser"), 
 
 		'S_USER_ACTION' => append_sid("admin_users.$phpEx"),
 		'S_USER_SELECT' => $select_list)
@@ -1068,6 +1155,6 @@ else
 
 }
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

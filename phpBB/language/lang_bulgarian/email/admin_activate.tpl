@@ -1,4 +1,5 @@
 Subject: Нов потребител
+Charset: windows-1251
 
 Здравейте!
 

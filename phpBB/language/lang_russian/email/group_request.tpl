@@ -1,4 +1,5 @@
 Subject: Было подана просьба о вступлении в группу.
+Charset: windows-1251
 
 Уважаемый(ая) {GROUP_MODERATOR}!
 

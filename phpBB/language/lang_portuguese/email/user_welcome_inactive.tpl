@@ -1,8 +1,10 @@
-Subject: Bem-vindo ao Fórum {SITENAME}
+Charset: iso-8859-1
+
+Assunto: Benvido a {SITENAME}
 
 {WELCOME_MSG}
 
-Por favor guardar este email para seu arquivo. A informação da sua conta é a seguinte:
+Por favor guardar este email para seu arquivo. A informação da sua conta/registo é a seguinte:
 
 ----------------------------
 Nome de Utilizador: {USERNAME}

@@ -1,4 +1,5 @@
 Subject: Du har fått ett Privat Meddelande
+Charset: iso-8859-1
 
 Hej {USERNAME},
 

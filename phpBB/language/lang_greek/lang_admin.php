@@ -1,6 +1,7 @@
 <?php
+
 /***************************************************************************
- *                            lang_admin.php [Greek]
+ *                            lang_admin.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -21,63 +22,63 @@
 
 //
 // Translation by Alexandros Topalidis (arttor)
-// Email : arttor@eexi.gr
+// Email : arttor@mailbox.gr
 //
 
 //
 // Modules, this replaces the keys used
 // in the modules[][] arrays in each module file
 //
-$lang['General'] = "General Admin";
-$lang['Users'] = "User Admin";
-$lang['Groups'] = "Group Admin";
-$lang['Forums'] = "Forum Admin";
-$lang['Styles'] = "Styles Admin";
+$lang['General'] = "Γενική Διαχείριση";
+$lang['Users'] = "Διαχείριση Μελών";
+$lang['Groups'] = "Διαχείριση Ομάδων";
+$lang['Forums'] = "Διαχείριση Forum";
+$lang['Styles'] = "Διαχείριση Styles";
 
-$lang['Configuration'] = "Configuration";
-$lang['Permissions'] = "Permissions";
-$lang['Manage'] = "Management";
-$lang['Disallow'] = "Disallow names";
-$lang['Prune'] = "Pruning";
-$lang['Mass_Email'] = "Mass Email";
-$lang['Ranks'] = "Ranks";
+$lang['Configuration'] = "Ρυθμίσεις";
+$lang['Permissions'] = "Άδειες";
+$lang['Manage'] = "Διαχείριση";
+$lang['Disallow'] = "Απαγόρευση ονομάτων";
+$lang['Prune'] = "Εκκαθάριση";
+$lang['Mass_Email'] = "Μαζικό Email";
+$lang['Ranks'] = "Βαθμοί";
 $lang['Smilies'] = "Smilies";
-$lang['Ban_Management'] = "Ban Control";
-$lang['Word_Censor'] = "Word Censors";
-$lang['Export'] = "Export";
-$lang['Create_new'] = "Create";
+$lang['Ban_Management'] = "Έλεγχος Αποκλεισμών";
+$lang['Word_Censor'] = "Ανίχνευση Λέξεων";
+$lang['Export'] = "Εξαγωγή";
+$lang['Create_new'] = "Δημιουργία";
 $lang['Add_new'] = "Add";
-$lang['Backup_DB'] = "Backup Database";
-$lang['Restore_DB'] = "Restore Database";
+$lang['Backup_DB'] = "Backup Βάσης";
+$lang['Restore_DB'] = "Restore Βάσης";
 
 
 //
 // Index
 //
-$lang['Admin'] = "Administration";
-$lang['Not_admin'] = "You are not authorised to administer this board";
-$lang['Welcome_phpBB'] = "Welcome to phpBB";
-$lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
-$lang['Main_index'] = "Forum Index";
-$lang['Forum_stats'] = "Forum Statistics";
-$lang['Admin_Index'] = "Admin Index";
-$lang['Preview_forum'] = "Preview Forum";
+$lang['Admin'] = "Διαχείριση";
+$lang['Not_admin'] = "Δεν έχετε τα δικαιώματα διαχείρισης του συστήματος";
+$lang['Welcome_phpBB'] = "Καλώς Ήλθατε στο phpBB";
+$lang['Admin_intro'] = "Σας ευχαριστούμε που επιλέξατε το phpBB ως το σύστημα σας για Δ. Συζήτηση. H οθόνη αυτή σας δίνει μια γρήγορη επισκόπηση διάφορων στατιστικών στοιχείων του Forum. Μπορείτε να επιστρέψετε σ' αυτήν την σελίδα πατώντας την παραπομπή  <u>Αρχική Διαχείρισης</u> στο αριστερό παράθυρο. Για να επιστρέψετε στην αρχική της Δ. Συζήτησης, πατήστε το εικονίδιο phpBB το οποίο επίσης βρίσκετε στην αριστερή οθόνη. Οι υπόλοιποι σύνδεσμοι στα αριστερά σας επιτρέπουν να διαχειριστείτε όλες τις δυνατές παραμέτρους του συστήματος. Κάθε οθόνη έχει οδηγίες για το πώς μπορείτε να χειρισθείτε τα αντίστοιχα εργαλεία.";
+$lang['Main_index'] = "Αρχική Forum";
+$lang['Forum_stats'] = "Στατιστικά Forum";
+$lang['Admin_Index'] = "Αρχική Διαχείρισης";
+$lang['Preview_forum'] = "Προεπισκόπηση Forum";
 
-$lang['Click_return_admin_index'] = "Click %sHere%s to return to the Admin Index";
+$lang['Click_return_admin_index'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Αρχική της Διαχείρισης";
 
-$lang['Statistic'] = "Statistic";
-$lang['Value'] = "Value";
-$lang['Number_posts'] = "Number of posts";
-$lang['Posts_per_day'] = "Posts per day";
-$lang['Number_topics'] = "Number of topics";
-$lang['Topics_per_day'] = "Topics per day";
-$lang['Number_users'] = "Number of users";
-$lang['Users_per_day'] = "Users per day";
-$lang['Board_started'] = "Board started";
-$lang['Avatar_dir_size'] = "Avatar directory size";
-$lang['Database_size'] = "Database size";
-$lang['Gzip_compression'] ="Gzip compression";
-$lang['Not_available'] = "Not available";
+$lang['Statistic'] = "Στατιστικά";
+$lang['Value'] = "Τιμή";
+$lang['Number_posts'] = "Αριθμός μηνυμάτων";
+$lang['Posts_per_day'] = "Μηνύματα ανά ημέρα";
+$lang['Number_topics'] = "Αριθμός Θ.Ενοτήτων";
+$lang['Topics_per_day'] = "Θ.Ενότητες ανά ημέρα";
+$lang['Number_users'] = "Αριθμός μελών";
+$lang['Users_per_day'] = "Μέλη ανά ημέρα";
+$lang['Board_started'] = "Έναρξη Δ.Συζήτησης";
+$lang['Avatar_dir_size'] = "Μέγεθος φακέλου Avatar";
+$lang['Database_size'] = "Μέγεθος Β.Δεδομένων";
+$lang['Gzip_compression'] ="Gzip συμπίεση";
+$lang['Not_available'] = "Δεν διατίθεται";
 
 $lang['ON'] = "ON"; // This is for GZip compression
 $lang['OFF'] = "OFF"; 
@@ -86,527 +87,554 @@ $lang['OFF'] = "OFF";
 //
 // DB Utils
 //
-$lang['Database_Utilities'] = "Database Utilities";
+$lang['Database_Utilities'] = "Εργαλεία Β.Δεδομένων";
 
-$lang['Restore'] = "Restore";
-$lang['Backup'] = "Backup";
-$lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.";
-$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
+$lang['Restore'] = "Επανόρθωση";
+$lang['Backup'] = "Αντίγραφο";
+$lang['Restore_explain'] = "Αυτή η λειτουργία θα πραγματοποιήσει πλήρη επανόρθωση όλων των πινάκων της  phpBB από ένα αρχείο -αντίγραφο ασφαλείας-. Εάν ο διακομιστής σας το υποστηρίζει, μπορείτε να το μεταφορτώσετε σε συμπιεσμένη μορφή gzip, η αποσυμπίεση του θα πραγματοποιηθεί αυτόματα. <b>ΠΡΟΣΟΧΗ</b> Η λειτουργία αυτή θα επικαλύψει όλα τα τρέχοντα δεδομένα σας. Η επανόρθωση μπορεί να διαρκέσει αρκετό χρόνο, γι' αυτό μην μετακινηθείτε από αυτήν την σελίδα έως ότου ολοκληρωθεί η διαδικασία ";
+$lang['Backup_explain'] = "Σ' αυτό το τμήμα μπορείτε να κάνετε μια πλήρη εφεδρεία  της Β. Δεδομένων σας. Εάν έχετε επιπλέον δικούς σας πίνακες στην βάση και θέλετε να τους αντιγράψετε και αυτούς, εισαγάγετε τα ονόματα αυτών των επιπλέον πινάκων διαχωρισμένα με κόμμα, στο αντίστοιχο πλαίσιο παρακάτω. Επίσης εφόσον υποστηρίζετε από τον διακομιστή σας μπορείτε να ενεργοποιήσετε την gzip συμπίεση, για να έχετε μικρότερο τελικό αρχείο προς μεταφόρτωση.";
 
-$lang['Backup_options'] = "Backup options";
-$lang['Start_backup'] = "Start Backup";
-$lang['Full_backup'] = "Full backup";
-$lang['Structure_backup'] = "Structure Only backup";
-$lang['Data_backup'] = "Data only backup";
-$lang['Additional_tables'] = "Additional tables";
-$lang['Gzip_compress'] = "Gzip compress file";
-$lang['Select_file'] = "Select a file";
-$lang['Start_Restore'] = "Start Restore";
+$lang['Backup_options'] = "Επιλογές Backup";
+$lang['Start_backup'] = "Έναρξη Backup";
+$lang['Full_backup'] = "Πλήρες backup";
+$lang['Structure_backup'] = "Μόνο την Δομή";
+$lang['Data_backup'] = "Μόνο τα Δεδομένα";
+$lang['Additional_tables'] = "Επιπλέον Πίνακες";
+$lang['Gzip_compress'] = "Gzip συμπίεση";
+$lang['Select_file'] = "Επιλογή αρχείου";
+$lang['Start_Restore'] = "Εναρξη Restore";
 
-$lang['Restore_success'] = "The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.";
-$lang['Backup_download'] = "Your download will start shortly please wait till it begins";
-$lang['Backups_not_supported'] = "Sorry but database backups are not currently supported for your database system";
+$lang['Restore_success'] = "Η Β. Δεδομένων επανορθώθη με επιτυχία.<br /><br />Η Δ. Συζήτηση επανήλθε στην μορφή που είχε πριν το τελευταίο backup.";
+$lang['Backup_download'] = "Η μεταφόρτωση θα ξεκινήσει σύντομα  παρακαλώ περιμένετε";
+$lang['Backups_not_supported'] = "Συγνώμη αλλά η λειτουργία αντιγράφου ασφαλείας για το δικό σας σύστημα Β. Δεδομένων δεν υποστηρίζετε προσωρινά";
 
-$lang['Restore_Error_uploading'] = "Error in uploading the backup file";
-$lang['Restore_Error_filename'] = "Filename problem, please try an alternative file";
-$lang['Restore_Error_decompress'] = "Cannot decompress a gzip file, please upload a plain text version";
-$lang['Restore_Error_no_file'] = "No file was uploaded";
+$lang['Restore_Error_uploading'] = "Λάθος κατά την μεταφόρτωση του αρχείου ασφαλείας";
+$lang['Restore_Error_filename'] = "Πρόβλημα ονομασίας αρχείου, δοκιμάστε ένα εναλλακτικό αρχείο";
+$lang['Restore_Error_decompress'] = "Δεν είναι δυνατή η αποσυμπίεση του αρχείου, παρακαλώ δοκιμάστε ένα ασυμπίεστο αρχείο";
+$lang['Restore_Error_no_file'] = "Δεν μεταφέρθηκε κανένα αρχείο";
 
 
 //
 // Auth pages
 //
-$lang['Select_a_User'] = "Select a User";
-$lang['Select_a_Group'] = "Select a Group";
-$lang['Select_a_Forum'] = "Select a Forum";
-$lang['Auth_Control_User'] = "User Permissions Control"; 
-$lang['Auth_Control_Group'] = "Group Permissions Control"; 
-$lang['Auth_Control_Forum'] = "Forum Permissions Control"; 
-$lang['Look_up_User'] = "Look up User"; 
-$lang['Look_up_Group'] = "Look up Group"; 
-$lang['Look_up_Forum'] = "Look up Forum"; 
+$lang['Select_a_User'] = "Επιλογή Μέλους";
+$lang['Select_a_Group'] = "Επιλογή Ομάδας";
+$lang['Select_a_Forum'] = "Επιλογή Forum";
+$lang['Auth_Control_User'] = "Δικαιώματα πρόσβασης Μελών"; 
+$lang['Auth_Control_Group'] = "Δικαιώματα πρόσβασης Ομάδων"; 
+$lang['Auth_Control_Forum'] = "Δικαιώματα πρόσβασης Forum"; 
+$lang['Look_up_User'] = "Επισκόπηση Μέλους"; 
+$lang['Look_up_Group'] = "Επισκόπηση Ομάδας"; 
+$lang['Look_up_Forum'] = "Επισκόπηση Forum"; 
 
-$lang['Group_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['User_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['Forum_auth_explain'] = "Here you can alter the authorisation levels of each forum. You will have both a simple and advanced method for doing this, advanced offers greater control of each forum operation. Remember that changing the permission level of forums will affect which users can carry out the various operations within them.";
+$lang['Group_auth_explain'] = "Εδώ μπορείτε να τροποποιήσετε τα δικαιώματα πρόσβασης και τις ιδιότητες του συντονιστή για κάθε ομάδα μελών. Μην ξεχνάτε πως αλλάζοντας τις ιδιότητες πρόσβασης μιας Ομάδας Μελών, οι ιδιότητες πρόσβασης ενός μεμονωμένου μέλους μπορούν να του δίνουν διαφορετικά δικαιώματα κλπ. σ' αυτήν την περίπτωση δα ειδοποιηθείτε.";
+$lang['User_auth_explain'] = "Εδώ μπορείτε να τροποποιήσετε τα δικαιώματα πρόσβασης και τις ιδιότητες Συντονιστή για κάθε μέλος ξεχωριστά. Να μην ξεχνάτε πως όταν αλλάζετε τα δικαιώματα πρόσβασης ενός χρήστη, τα δικαιώματα που έχει ως μέλος μιας ομάδας μπορούν να υπερκαλύψουν τα δικαιώματα που του δίνετε εδώ κλπ. Σ' αυτήν την περίπτωση θα ενημερωθείτε από το σύστημα.";
+$lang['Forum_auth_explain'] = "Εδώ μπορείτε να τροποποιήσετε τα επίπεδα εξουσιοδότησης για κάθε Δ. Συζήτηση ξεχωριστά. Θα έχετε στην διάθεση σας δύο μεθόδους έναν απλό και έναν σύνθετο. Η  σύνθετη μέθοδος σας προσφέρει μεγαλύτερο έλεγχο στην απόδοση εξουσιοδότησης για κάθε Δ. Συζήτηση. Να θυμάστε πως αλλάζοντας τις εξουσιοδοτήσεις μιας Δ. Συζήτησης επηρεάζονται όλα τα μέλη τα οποία σχετίζονται με τις διάφορες λειτουργίες αυτής.";
 
-$lang['Simple_mode'] = "Simple Mode";
-$lang['Advanced_mode'] = "Advanced Mode";
-$lang['Moderator_status'] = "Moderator status";
+$lang['Simple_mode'] = "Απλή Μέθοδος";
+$lang['Advanced_mode'] = "Σύνθετη Μέθοδος";
+$lang['Moderator_status'] = "Τάξη Συντονιστή";
 
-$lang['Allowed_Access'] = "Allowed Access";
-$lang['Disallowed_Access'] = "Disallowed Access";
-$lang['Is_Moderator'] = "Is Moderator";
-$lang['Not_Moderator'] = "Not Moderator";
+$lang['Allowed_Access'] = "Επιτρέπετε η πρόσβαση";
+$lang['Disallowed_Access'] = "Απαγόρευση πρόσβασης";
+$lang['Is_Moderator'] = "Είναι Συντονιστής";
+$lang['Not_Moderator'] = "Δεν είναι Συντονιστής";
 
-$lang['Conflict_warning'] = "Authorisation Conflict Warning";
-$lang['Conflict_access_userauth'] = "This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_userauth'] = "This user still has moderator rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having moderator rights. The groups granting rights (and the forums involved) are noted below.";
+$lang['Conflict_warning'] = "Σύγκρουση Δικαιωμάτων Πρόσβασης";
+$lang['Conflict_access_userauth'] = "Αυτός ο χρήστης έχει δικαιώματα πρόσβασης σ' αυτήν την Δ. Συζήτηση μέσω των δικαιωμάτων που έχει η ομάδα μελών στην οποία ανήκει. Ίσως χρειαστεί να αλλάξετε τα δικαιώματα πρόσβασης της ομάδας ή να διαγράψετε τον χρήστη από αυτήν την ομάδα για να αποτρέψετε μη επιθυμητά δικαιώματα πρόσβασης αυτού του χρήστη. Οι ομάδες που του δίνουν τα δικαιώματα (και οι εμπλεκόμενες Δ. Συζητήσεις) εμφανίζονται παρακάτω.";
+$lang['Conflict_mod_userauth'] = "Αυτός ο χρήστης εξακολουθεί να έχει δικαιώματα Συντονιστή σε αυτή την Δ. Συζήτηση δια μέσου της ομάδας μελών στην οποία ανήκει. Ίσως χρειαστεί να αλλάξετε τα δικαιώματα πρόσβασης της ομάδας ή να διαγράψετε τον χρήστη από αυτήν την ομάδα για να αποτρέψετε τα δικαιώματα πρόσβασης Συντονιστή αυτού του χρήστη. Οι ομάδες που του δίνουν τα δικαιώματα (και οι εμπλεκόμενες Δ. Συζητήσεις) εμφανίζονται παρακάτω.";
 
-$lang['Conflict_access_groupauth'] = "The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_groupauth'] = "The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.";
+$lang['Conflict_access_groupauth'] = "Οι ακόλουθοι χρήστες εξακολουθούν να έχουν δικαιώματα πρόσβασης σ' αυτήν την Δ. Συζήτηση μέσω των δικαιωμάτων πρόσβασης που έχουν. Ίσως χρειαστεί να αλλάξετε τα δικαιώματα τους για να τους αποτραπεί η πρόσβαση. Οι χρήστες που έχουν τα δικαιώματα (και οι εμπλεκόμενες Δ. Συζητήσεις) εμφανίζονται παρακάτω..";
+$lang['Conflict_mod_groupauth'] = "Οι ακόλουθοι χρήστες εξακολουθούν να έχουν δικαιώματα πρόσβασης Συντονιστή σ' αυτήν την Δ. Συζήτηση μέσω των δικαιωμάτων πρόσβασης που έχουν. Ίσως χρειαστεί να αλλάξετε τα δικαιώματα πρόσβασης τους για να τους αποτραπεί το δικαίωμα του Συντονιστή. Οι χρήστες που έχουν τα δικαιώματα (και οι εμπλεκόμενες Δ. Συζητήσεις) εμφανίζονται παρακάτω.";
 
-$lang['Public'] = "Public";
-$lang['Private'] = "Private";
-$lang['Registered'] = "Registered";
-$lang['Administrators'] = "Administrators";
-$lang['Hidden'] = "Hidden";
+$lang['Public'] = "Ανοικτή";
+$lang['Private'] = "Ομάδες";
+$lang['Registered'] = "Εγγεγραμμένοι";
+$lang['Administrators'] = "Διαχειριστές";
+$lang['Hidden'] = "Κρυφή";
 
-$lang['View'] = "View";
-$lang['Read'] = "Read";
-$lang['Post'] = "Post";
-$lang['Reply'] = "Reply";
-$lang['Edit'] = "Edit";
-$lang['Delete'] = "Delete";
-$lang['Sticky'] = "Sticky";
-$lang['Announce'] = "Announce"; 
-$lang['Vote'] = "Vote";
-$lang['Pollcreate'] = "Poll create";
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "ΟΛΟΙ";
+$lang['Forum_REG'] = "ΕΓΓΕΓΡ";
+$lang['Forum_PRIVATE'] = "ΟΜΑΔΕΣ";
+$lang['Forum_MOD'] = "ΣΥΝΤΟΝ";
+$lang['Forum_ADMIN'] = "ΔΙΑΧΕΙΡ";
 
-$lang['Permissions'] = "Permissions";
-$lang['Simple_Permission'] = "Simple Permission";
+$lang['View'] = "Ορατό";
+$lang['Read'] = "Ανάγνωση";
+$lang['Post'] = "Δημοσίευση";
+$lang['Reply'] = "Απάντηση";
+$lang['Edit'] = "Επεξεργασία";
+$lang['Delete'] = "Διαγραφή";
+$lang['Sticky'] = "Επικόλληση";
+$lang['Announce'] = "Ανακοίνωση"; 
+$lang['Vote'] = "Ψηφοφορία";
+$lang['Pollcreate'] = "Δημιουργία Ψηφ/ριας";
 
-$lang['User_Level'] = "User Level"; 
-$lang['Auth_User'] = "User";
-$lang['Auth_Admin'] = "Administrator";
-$lang['Group_memberships'] = "Usergroup memberships";
-$lang['Usergroup_members'] = "This group has the following members";
+$lang['Permissions'] = "Προσβάσεις";
+$lang['Simple_Permission'] = "Απλή Πρόσβαση";
 
-$lang['Forum_auth_updated'] = "Forum permissions updated";
-$lang['User_auth_updated'] = "User permissions updated";
-$lang['Group_auth_updated'] = "Group permissions updated";
+$lang['User_Level'] = "Επίπεδο Μέλους"; 
+$lang['Auth_User'] = "Μέλος";
+$lang['Auth_Admin'] = "Διαχειριστής";
+$lang['Group_memberships'] = "Μέλη σε Ομάδες Μελών";
+$lang['Usergroup_members'] = "Η Ομάδα έχει τα ακόλουθα μέλη";
 
-$lang['Auth_updated'] = "Permissions have been updated";
-$lang['Click_return_userauth'] = "Click %sHere%s to return to User Permissions";
-$lang['Click_return_groupauth'] = "Click %sHere%s to return to Group Permissions";
-$lang['Click_return_forumauth'] = "Click %sHere%s to return to Forum Permissions";
+$lang['Forum_auth_updated'] = "Τα Δικ.πρόσβασης της Δ.Συζήτησης Ανανεώθηκαν";
+$lang['User_auth_updated'] = "Τα Δικ.πρόσβασης του Μέλους Ανανεώθηκαν";
+$lang['Group_auth_updated'] = "Τα Δικ.πρόσβασης της Ομάδας Ανανεώθηκαν";
+
+$lang['Auth_updated'] = "Τα Δικαιώματα πρόσβασης Ανανεώθηκαν";
+$lang['Click_return_userauth'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Πρόσβαση Μελών";
+$lang['Click_return_groupauth'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Πρόσβαση Ομάδων";
+$lang['Click_return_forumauth'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Πρόσβαση Δ.Συζήτησης";
 
 
 //
 // Banning
 //
-$lang['Ban_control'] = "Ban Control";
-$lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
-$lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
+$lang['Ban_control'] = "Έλεγχος Αποκλεισμών";
+$lang['Ban_explain'] = "Εδώ μπορείτε να διαχειριστείτε τον αποκλεισμό των Μελών. Μπορείτε να το πετύχετε αυτό αποκλείοντας  συγκεκριμένο Μέλος ή ένα φάσμα από ΙΡ διευθύνσεις ή  και hostnames. Με αυτόν τον τρόπο αποτρέπουμε σε έναν χρήστη να προσπελάσει ακόμα και την αρχική σελίδα της Δ. Συζήτησης. Για να αποτρέψουμε την εγγραφή του χρήστη με διαφορετικό όνομα μπορείτε να απαγορεύσετε μια συγκεκριμένη email διεύθυνση. Έχετε υπόψη πως απαγορεύοντας μια email διεύθυνση δεν αποτρέπουμε την συμμετοχή του κακόβουλου χρήστη στην Δ. Συζήτηση, αυτό το επιτυγχάνετε με τις δύο πρώτες μεθόδους.";
+$lang['Ban_explain_warn'] = "Παρακαλώ προσέξτε, εισάγοντας ένα φάσμα από ΙΡ διευθύνσεις σημαίνει την αποτροπή και όλων των ενδιάμεσων διευθύνσεων που περικλείονται σε αυτές. Υπάρχει η δυνατότητα για να συμπιεστή ο όγκος της λίστας, να γίνετε η χρήση χαρακτήρων μπαλαντέρ όπου αυτό είναι εφικτό. Εάν όντως είναι απαραίτητος ο αποκλεισμός ενός φάσματος κρατήστε τον όσων το δυνατό μικρότερο ή ακόμα καλύτερα εισάγετε συγκεκριμένες διευθύνσεις.";
 
-$lang['Select_username'] = "Select a Username";
-$lang['Select_ip'] = "Select an IP";
-$lang['Select_email'] = "Select an Email address";
+$lang['Select_username'] = "Επιλέξτε Όνομα Μέλους";
+$lang['Select_ip'] = "Επιλέξτε μία IP";
+$lang['Select_email'] = "Επιλέξτε μία Email διεύθυνση";
 
-$lang['Ban_username'] = "Ban one or more specific users";
-$lang['Ban_username_explain'] = "You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Ban_username'] = "Αποκλεισμός ενός ή περισσότερων χρηστών";
+//$lang['Ban_username_explain'] = "Μπορείτε να επιλέξετε έναν ή περισσότερους χρήστες με την βοήθεια των οικείων λειτουργιών του πληκτρολογίου και του ποντικιού στο σύστημα σας";
 
-$lang['Ban_IP'] = "Ban one or more IP addresses or hostnames";
-$lang['IP_hostname'] = "IP addresses or hostnames";
-$lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *";
+$lang['Ban_IP'] = "Αποκλεισμός μίας ή περισσότερων IP διευθύνσεων ή hostnames";
+$lang['IP_hostname'] = "IP διευθύνσεις ή hostnames";
+$lang['Ban_IP_explain'] = "Για να ορίσετε πολλαπλές διαφορετικές IP ή hostnames διαχωρίστε της με κόμμα. Για να ορίσετε ένα φάσμα από IP διευθύνσεις διαχωρίστε της με (-), για μπαλαντέρ χρησιμοποιήστε το *";
 
-$lang['Ban_email'] = "Ban one or more email addresses";
-$lang['Ban_email_explain'] = "To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com";
+$lang['Ban_email'] = "Αποκλεισμός ενός ή περισσότερων email";
+$lang['Ban_email_explain'] = "Για να ορίσετε περισσότερες από μία διευθύνσεις email διαχωρίστε της με κόμμα. Για να ορίσετε όνομα με μπαλαντέρ χρησιμοποιήστε το *, για παράδειγμα *@hotmail.com";
 
-$lang['Unban_username'] = "Un-ban one more specific users";
-$lang['Unban_username_explain'] = "You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_username'] = "Ακύρωση Αποκλεισμού ενός ή περισσοτέρων χρηστών";
+$lang['Unban_username_explain'] = "Μπορείτε να ακυρώσετε πολλαπλούς χρήστες με μία κίνηση κάνοντας χρήση των ιδιαίτερων λειτουργιών του πληκτρολογίου και του ποντικιού στο σύστημα σας";
 
-$lang['Unban_IP'] = "Un-ban one or more IP addresses";
-$lang['Unban_IP_explain'] = "You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_IP'] = "Ακύρωση Αποκλεισμού μίας ή περισσοτέρων IP διευθύνσεων";
+$lang['Unban_IP_explain'] = "Μπορείτε να ακυρώσετε πολλαπλές ΙΡ με μία κίνηση κάνοντας χρήση των ιδιαίτερων λειτουργιών του πληκτρολογίου και του ποντικιού στο σύστημα σας";
 
-$lang['Unban_email'] = "Un-ban one or more email addresses";
-$lang['Unban_email_explain'] = "You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_email'] = "Ακύρωση Αποκλεισμού μίας ή περισσοτέρων email διευθύνσεων";
+$lang['Unban_email_explain'] = "Μπορείτε να ακυρώσετε πολλαπλά email με μία κίνηση κάνοντας χρήση των ιδιαίτερων λειτουργιών του πληκτρολογίου και του ποντικιού στο σύστημα σας";
 
-$lang['No_banned_users'] = "No banned usernames";
-$lang['No_banned_ip'] = "No banned IP addresses";
-$lang['No_banned_email'] = "No banned email addresses";
+$lang['No_banned_users'] = "Δεν υπάρχουν αποκλεισμένα μέλη";
+$lang['No_banned_ip'] = "Δεν υπάρχουν αποκλεισμένα ΙΡ";
+$lang['No_banned_email'] = "Δεν υπάρχουν αποκλεισμένα email";
 
-$lang['Ban_update_sucessful'] = "The banlist has been updated successfully";
-$lang['Click_return_banadmin'] = "Click %sHere%s to return to Ban Control";
+$lang['Ban_update_sucessful'] = "Η Λίστα αποκλεισμένων ενημερώθηκε επιτυχώς";
+$lang['Click_return_banadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στον έλεγχο των διαγραφών";
 
 
 //
 // Configuration
 //
-$lang['General_Config'] = "General Configuration";
-$lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
+$lang['General_Config'] = "Γενικές Ρυθμίσεις";
+$lang['Config_explain'] = "Η παρακάτω φόρμα σας επιτρέπει να προσαρμόσετε όλα τα γενικά χαρακτηριστικά του συστήματος. Για τις ρυθμίσεις των μελών και των Δ. Συζητήσεων μεταβείτε στα αντίστοιχα τμήματα.";
 
-$lang['Click_return_config'] = "Click %sHere%s to return to General Configuration";
+$lang['Click_return_config'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στίς Γενικές Ρυθμίσεις";
 
-$lang['General_settings'] = "General Board Settings";
-$lang['Site_name'] = "Site name";
-$lang['Site_desc'] = "Site description";
-$lang['Board_disable'] = "Disable board";
-$lang['Board_disable_explain'] = "This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!";
-$lang['Acct_activation'] = "Enable account activation";
+$lang['General_settings'] = "Γενικές Ρυθμίσεις Συστήματος";
+$lang['Server_name'] = "Domain Name";
+$lang['Server_name_explain'] = "Το domain name κάτω από το οποίο λειτουργεί το forum";
+$lang['Script_path'] = "Διαδρομή του κώδικα";
+$lang['Script_path_explain'] = "Η διαδρομή όπου το phpBB2 είναι τοποθετημένο κάτω από το domain name";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "Η Θύρα στην οποία λειτουργεί ο server, συνήθως η 80, αλλάξτε το μόνο εάν είναι διαφορετική";
+$lang['Site_name'] = "Ονομασία  Τοποθεσίας";
+$lang['Site_desc'] = "Περιγραφή Τοποθεσίας";
+$lang['Board_disable'] = "Ακύρωση της λειτουργίας του συστήματος";
+$lang['Board_disable_explain'] = "Αυτό καθιστά το σύστημα μη προσπελάσιμο στους χρήστες. Προσοχή μην αποσυνδέεστε από το σύστημα όταν το ενεργοποιείτε αυτό, δεν θα είναι δυνατό να συνδεθείτε ξανά!";
+$lang['Acct_activation'] = "Ενεργοποίηση του -ενεργοποίση λογαριασμού-";
+$lang['Acc_None'] = "Κανένας"; // These three entries are the type of activation
+$lang['Acc_User'] = "Μέλος";
+$lang['Acc_Admin'] = "Διαχειριστής";
 
-$lang['Abilities_settings'] = "User and Forum Basic Settings";
-$lang['Max_poll_options'] = "Max number of poll options";
-$lang['Flood_Interval'] = "Flood Interval";
-$lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts"; 
-$lang['Board_email_form'] = "User email via board";
-$lang['Board_email_form_explain'] = "Users send email to each other via this board";
-$lang['Topics_per_page'] = "Topics Per Page";
-$lang['Posts_per_page'] = "Posts Per Page";
-$lang['Hot_threshold'] = "Posts for Popular Threshold";
-$lang['Default_style'] = "Default Style";
-$lang['Override_style'] = "Override user style";
-$lang['Override_style_explain'] = "Replaces users style with the default";
-$lang['Default_language'] = "Default Language";
-$lang['Date_format'] = "Date Format";
-$lang['System_timezone'] = "System Timezone";
-$lang['Enable_gzip'] = "Enable GZip Compression";
-$lang['Enable_prune'] = "Enable Forum Pruning";
-$lang['Allow_HTML'] = "Allow HTML";
-$lang['Allow_BBCode'] = "Allow BBCode";
-$lang['Allowed_tags'] = "Allowed HTML tags";
-$lang['Allowed_tags_explain'] = "Separate tags with commas";
-$lang['Allow_smilies'] = "Allow Smilies";
-$lang['Smilies_path'] = "Smilies Storage Path";
-$lang['Smilies_path_explain'] = "Path under your phpBB root dir, e.g. images/smilies";
-$lang['Allow_sig'] = "Allow Signatures";
-$lang['Max_sig_length'] = "Maximum signature length";
-$lang['Max_sig_length_explain'] = "Maximum number of characters in user signatures";
-$lang['Allow_name_change'] = "Allow Username changes";
+$lang['Abilities_settings'] = "Βασικές ρυθμίσεις Μελών και Forum";
+$lang['Max_poll_options'] = "Μέγιστος αριθμός επιλογών ψηφοφορίας";
+$lang['Flood_Interval'] = "Διάστημα Υπερφόρτωσης";
+$lang['Flood_Interval_explain'] = "Διάρκεια σε δευτερόλεπτα κατά την οποία ο χρήστης μπορεί να επαναλάβει μία δημοσίευση"; 
+$lang['Board_email_form'] = "Email μελών μέσω του συστήματος";
+$lang['Board_email_form_explain'] = "Αποστολή email των μελών μεταξύ τους μέσω του συστήματος";
+$lang['Topics_per_page'] = "Θ.Ενότητες Ανά Σελίδα";
+$lang['Posts_per_page'] = "Δημοσιεύσεις Ανά Σελίδα";
+$lang['Hot_threshold'] = "Δημοσιεύσεις για Χαρακτηρισμό Δημοφιλής";
+$lang['Default_style'] = "Προεπιλεγμένο Στύλ";
+$lang['Override_style'] = "Υπερκάλυψη Στύλ Μελών";
+$lang['Override_style_explain'] = "Αντικαθιστά το επιλεγμένο στύλ των Μελών";
+$lang['Default_language'] = "Προεπιλεγμένη Γλώσσα";
+$lang['Date_format'] = "Μορφή Ημερομηνίας";
+$lang['System_timezone'] = "Ζώνη Ώρας Διακομιστή";
+$lang['Enable_gzip'] = "Ενεργοποίηση GZip Συμπίεσης";
+$lang['Enable_prune'] = "Ενεργοποίηση Εκκαθάρισης Forum";
+$lang['Allow_HTML'] = "Επιτρέπετε η HTML";
+$lang['Allow_BBCode'] = "Επιτρέπετε το BBCode";
+$lang['Allowed_tags'] = "Επιτρεπόμενες HTML εντολές";
+$lang['Allowed_tags_explain'] = "Διαχωρίστε τις εντολές με κόμμα";
+$lang['Allow_smilies'] = "Επιτρέπονται τα Smilies";
+$lang['Smilies_path'] = "Διαδρομή αποθήκευσης Smilies";
+$lang['Smilies_path_explain'] = "Η διαδρομή κάτω απο την ρίζα του phpBB, π.χ. images/smilies";
+$lang['Allow_sig'] = "Επιτρέπονται οι Υπογραφές";
+$lang['Max_sig_length'] = "Μέγιστο μήκος υπογραφής";
+$lang['Max_sig_length_explain'] = "Μέγιστος αριθμός χαρακτήρων στις υπογραφές των μελών";
+$lang['Allow_name_change'] = "Επιτρέπετε η Αλλαγή Ονόματος Μέλους";
 
-$lang['Avatar_settings'] = "Avatar Settings";
-$lang['Allow_local'] = "Enable gallery avatars";
-$lang['Allow_remote'] = "Enable remote avatars";
-$lang['Allow_remote_explain'] = "Avatars linked to from another website";
-$lang['Allow_upload'] = "Enable avatar uploading";
-$lang['Max_filesize'] = "Maximum Avatar File Size";
-$lang['Max_filesize_explain'] = "For uploaded avatar files";
-$lang['Max_avatar_size'] = "Maximum Avatar Dimensions";
-$lang['Max_avatar_size_explain'] = "(Height x Width in pixels)";
-$lang['Avatar_storage_path'] = "Avatar Storage Path";
-$lang['Avatar_storage_path_explain'] = "Path under your phpBB root dir, e.g. images/avatars";
-$lang['Avatar_gallery_path'] = "Avatar Gallery Path";
-$lang['Avatar_gallery_path_explain'] = "Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery";
+$lang['Avatar_settings'] = "Ρυθμίσεις Άβαταρ";
+$lang['Allow_local'] = "Ενεργοποίηση εικονοθήκης Άβαταρ";
+$lang['Allow_remote'] = "Ενεργοποίηση απομακρυσμένων άβαταρ";
+$lang['Allow_remote_explain'] = "Άβαταρ τα οποία ορίζονται μέσω συνδέσμων και τα οποία βρίσκονται σε απομακρυσμένους διακομιστές";
+$lang['Allow_upload'] = "Ενεργοποίηση μεταφόρτωσης Άβαταρ";
+$lang['Max_filesize'] = "Μέγιστο μέγεθος αρχείου Άβαταρ";
+$lang['Max_filesize_explain'] = "Για τα Άβαταρ τα οποία θα μεταφορτωθούνε";
+$lang['Max_avatar_size'] = "Μέγιστες Διαστάσεις Άβαταρ";
+$lang['Max_avatar_size_explain'] = "(Ύψος x Πλάτος σε εικονοστοιχεία)";
+$lang['Avatar_storage_path'] = "Διαδρομή Αποθήκευσης Άβαταρ";
+$lang['Avatar_storage_path_explain'] = "Διαδρομή κάτω απο την ρίζα  του phpBB, π.χ. images/avatars";
+$lang['Avatar_gallery_path'] = "Διαδρομή Εικονοθήκης Άβαταρ";
+$lang['Avatar_gallery_path_explain'] = "Διαδρομή κάτω απο την ρίζα  του phpBB για προφορτωμένες, π.χ. images/avatars/gallery";
 
-$lang['COPPA_settings'] = "COPPA Settings";
-$lang['COPPA_fax'] = "COPPA Fax Number";
-$lang['COPPA_mail'] = "COPPA Mailing Address";
-$lang['COPPA_mail_explain'] = "This is the mailing address where parents will send COPPA registration forms";
+$lang['COPPA_settings'] = "COPPA Ρυθμίσεις";
+$lang['COPPA_fax'] = "COPPA Fax Αριθμός";
+$lang['COPPA_mail'] = "COPPA E-mail Διεύθυνση";
+$lang['COPPA_mail_explain'] = "Αυτή είναι η email διεύθυνση στην οποία οι γονείς θα αποστέλλουν την COPPA φόρμα εγγραφής";
 
-$lang['Email_settings'] = "Email Settings";
-$lang['Admin_email'] = "Admin Email Address";
-$lang['Email_sig'] = "Email Signature";
-$lang['Email_sig_explain'] = "This text will be attached to all emails the board sends";
-$lang['Use_SMTP'] = "Use SMTP Server for email";
-$lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a named server instead of the local mail function";
-$lang['SMTP_server'] = "SMTP Server Address";
+$lang['Email_settings'] = "Ρυθμίσεις Email";
+$lang['Admin_email'] = "Email Διεύθυνση Διαχειριστή";
+$lang['Email_sig'] = "Υπογραφή Email";
+$lang['Email_sig_explain'] = "Αυτό το κείμενο θα προσαρτάτε σ' όλα τα μηνύματα τα οποία θα αποστέλλονται από το σύστημα";
+$lang['Use_SMTP'] = "Χρήση SMTP Διακομιστή για τα email";
+$lang['Use_SMTP_explain'] = "Απαντήστε με Ναι εάν θέλετε τα μηνύματα σας να αποστέλλονται μέσω Διακομιστή, σε αντίθεση με την ενσωματωμένη email λειτουργία";
+$lang['SMTP_server'] = "SMTP Server Διεύθυνση";
+$lang['SMTP_username'] = "SMTP Όνομα χρήστη";
+$lang['SMTP_username_explain'] = "Εισάγετε όνομα χρήστη μόνο εάν ο smtp διακομιστής το απαιτεί";
+$lang['SMTP_password'] = "SMTP Κωδικός";
+$lang['SMTP_password_explain'] = "Εισάγετε κωδικό μόνο εάν ο smtp διακομιστής το απαιτεί";
 
-$lang['Disable_privmsg'] = "Private Messaging";
-$lang['Inbox_limits'] = "Max posts in Inbox";
-$lang['Sentbox_limits'] = "Max posts in Sentbox";
-$lang['Savebox_limits'] = "Max posts in Savebox";
+$lang['Disable_privmsg'] = "Προσωπικά Μηνύματα";
+$lang['Inbox_limits'] = "Μέγιστος αρ. μηνυμάτων στα Εισερχόμενα";
+$lang['Sentbox_limits'] = "Μέγιστος αρ. μηνυμάτων στα Απεσταλμένα";
+$lang['Savebox_limits'] = "Μέγιστος αρ. μηνυμάτων στα Προς Φύλαξη";
 
-$lang['Cookie_settings'] = "Cookie settings"; 
-$lang['Cookie_settings_explain'] = "These control how the cookie sent to browsers is defined. In most cases the default should be sufficient. If you need to change these do so with care, incorrect settings can prevent users logging in.";
-$lang['Cookie_name'] = "Cookie name";
+$lang['Cookie_settings'] = "Ρυθμίσεις Cookie"; 
+$lang['Cookie_settings_explain'] = "Αυτές οι λεπτομέρειες περιγράφουν για το πώς τα cookies θα αποστέλλονται στους φυλλομετρητές των χρηστών. Στις περισσότερες περιπτώσεις οι εξ ορισμού ρυθμίσεις θα καλύψουν όλες τις περιπτώσεις, να είστε προσεκτικοί εάν χρειάζεται να αλλάξουν αυτές οι ρυθμίσεις, μια λάθος ρύθμιση μπορεί να αποκλείσει την δυνατότητα στα μέλη να συνδέονται στο σύστημα.";
 $lang['Cookie_domain'] = "Cookie domain";
+$lang['Cookie_name'] = "Cookie name";
 $lang['Cookie_path'] = "Cookie path";
-$lang['Session_length'] = "Session length [ seconds ]";
-$lang['Cookie_secure'] = "Cookie secure [ https ]";
+$lang['Cookie_secure'] = "Cookie secure";
+$lang['Cookie_secure_explain'] = "Εάν ο διακομιστής σας λειτουργεί μέσω SSL ενεργοποιήστε το, ειδάλλως αφήστε το ως έχει";
+$lang['Session_length'] = "Διάρκεια Session [ δευτερόλεπτα ]";
 
 
 //
 // Forum Management
 //
-$lang['Forum_admin'] = "Forum Administration";
-$lang['Forum_admin_explain'] = "From this panel you can add, delete, edit, re-order and re-synchronise categories and forums";
-$lang['Edit_forum'] = "Edit forum";
-$lang['Create_forum'] = "Create new forum";
-$lang['Create_category'] = "Create new category";
-$lang['Remove'] = "Remove";
-$lang['Action'] = "Action";
-$lang['Update_order'] = "Update Order";
-$lang['Config_updated'] = "Forum Configuration Updated Successfully";
-$lang['Edit'] = "Edit";
-$lang['Delete'] = "Delete";
-$lang['Move_up'] = "Move up";
-$lang['Move_down'] = "Move down";
-$lang['Resync'] = "Resync";
-$lang['No_mode'] = "No mode was set";
-$lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
+$lang['Forum_admin'] = "Διαχείριση Forum";
+$lang['Forum_admin_explain'] = "Σε αυτή την σελίδα μπορείτε να προσθέσετε, να διαγράψετε, να επεξεργασθείτε, να ανακατατάξετε και να συνχρονίσετε τις Δ. Συζητήσεις";
+$lang['Edit_forum'] = "Επεξεργασία Δ.Συζήτησης";
+$lang['Create_forum'] = "Δημιουργία νέας Δ.Συζήτησης";
+$lang['Create_category'] = "Δημιουργία νέας κατηγορίας";
+$lang['Remove'] = "Απομάκρυνση";
+$lang['Action'] = "Ενέργεια";
+$lang['Update_order'] = "Αναδιάρθρωση Σειράς";
+$lang['Config_updated'] = "Οι ρυθμίσεις της Δ.Συζήτησης ενημερώθηκαν με επιτυχία";
+$lang['Edit'] = "Επεξεργασία";
+$lang['Delete'] = "Διαγραφή";
+$lang['Move_up'] = "Μετακίνηση Πάνω";
+$lang['Move_down'] = "Μετακίνηση Κάτω";
+$lang['Resync'] = "Συνχρονισμός";
+$lang['No_mode'] = "Δεν επιλέξατε μέθοδο";
+$lang['Forum_edit_delete_explain'] = "Η παρακάτω φόρμα σας επιτρέπει να προσαρμόσετε όλες τις γενικές επιλογές του συστήματος. Για τα Μέλη και τις Δ. Συζητήσεις χρησιμοποιήστε τους ανάλογους συνδέσμους στο αριστερό τμήμα του παραθύρου";
 
-$lang['Move_contents'] = "Move all contents";
-$lang['Forum_delete'] = "Delete Forum";
-$lang['Forum_delete_explain'] = "The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.";
+$lang['Move_contents'] = "Μετακίνηση όλου του περιεχομένου";
+$lang['Forum_delete'] = "Διαγραφή Δ.Συζήτησης";
+$lang['Forum_delete_explain'] = "Η παρακάτω φόρμα σας επιτρέπει να διαγράψετε μια Δ.Συζήτηση ( ή κατηγορία ) και να ορίσετε που να φιλοξενηθούν οι Θ. Ενότητες της ( ή οι Δ. Συζητήσεις ) που περιέχει";
 
-$lang['Forum_settings'] = "General Forum Settings";
-$lang['Forum_name'] = "Forum name";
-$lang['Forum_desc'] = "Description";
-$lang['Forum_status'] = "Forum status";
-$lang['Forum_pruning'] = "Auto-pruning";
+$lang['Forum_settings'] = "Γενικές Επιλογές Δ.Συζήτησης";
+$lang['Forum_name'] = "Όνομασία Δ.Συζήτησης";
+$lang['Forum_desc'] = "Περιγραφή";
+$lang['Forum_status'] = "Κατάσταση Δ.Συζήτησης";
+$lang['Forum_pruning'] = "Αυτοεκκαθάριση";
 
-$lang['prune_freq'] = 'Check for topic age every';
-$lang['prune_days'] = "Remove topics that have not been posted to in";
-$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+$lang['prune_freq'] = "Έλεγχος ηλικίας Θ.Ενότητας κάθε";
+$lang['prune_days'] = "Απομάκρυνση Θ.Ενότητας χωρίς μηνύματα σ΄ αυτήν για";
+$lang['Set_prune_data'] = "Έχετε ενεργοποιήσει την αυτοεκκαθάριση για αυτήν την Δ.Συζήτηση αλλά δεν ορίσατε την περιοδικότητα σε ημέρες. Παρακαλώ επιστρέψτε και διορθώστε το";
 
-$lang['Move_and_Delete'] = "Move and Delete";
+$lang['Move_and_Delete'] = "Μετακίνηση και Διαγραφή";
 
-$lang['Delete_all_posts'] = "Delete all posts";
-$lang['Nowhere_to_move'] = "Nowhere to move too";
+$lang['Delete_all_posts'] = "Διαγραφή όλων των μηνυμάτων";
+$lang['Nowhere_to_move'] = "Κενός προορισμός";
 
-$lang['Edit_Category'] = "Edit Category";
-$lang['Edit_Category_explain'] = "Use this form to modify a categories name.";
+$lang['Edit_Category'] = "Επεξεργασία Κατηγορίας";
+$lang['Edit_Category_explain'] = "Χρησιμοποιήστε αυτήν την φόρμα για να επεξεργασθείτε το όνομα της κατηγορίας.";
 
-$lang['Forums_updated'] = "Forum and Category information updated successfully";
+$lang['Forums_updated'] = "Οι πληροφορίες της Δ.Συζήτησης και της Κατηγορίας ενημερώθηκαν επιτυχώς";
 
-$lang['Must_delete_forums'] = "You need to delete all forums before you can delete this category";
+$lang['Must_delete_forums'] = "Πρέπει να διαγράψετε όλες τις Δ.Συζητήσεις προτού μπορέσετε να διαγράψετε αυτήν την Κατηγορία";
 
-$lang['Click_return_forumadmin'] = "Click %sHere%s to return to Forum Administration";
+$lang['Click_return_forumadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στίς Ρυθμίσεις Δ.Συζήτησης";
 
 
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Smiles Editing Utility";
-$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
+$lang['smiley_title'] = "Εργαλείο επεξεργασίας Smiles";
+$lang['smile_desc'] = "Από εδώ μπορείτε να προσθέσετε, να διαγράψετε και να επεξεργασθείτε τα emoticons ή smileys τα οποία μπορούν να χρησιμοποιούν τα μέλη σας στις αναρτήσεις τους και στα προσωπικά τους μηνύματα.";
 
-$lang['smiley_config'] = "Smiley Configuration";
-$lang['smiley_code'] = "Smiley Code";
-$lang['smiley_url'] = "Smiley Image File";
-$lang['smiley_emot'] = "Smiley Emotion";
-$lang['smile_add'] = "Add a new Smiley";
+$lang['smiley_config'] = "Ρυθμίσεις Smiley";
+$lang['smiley_code'] = "Κώδικας Smiley";
+$lang['smiley_url'] = "Αρχείο Εικόνας Smiley";
+$lang['smiley_emot'] = "Έκφραση Smiley";
+$lang['smile_add'] = "Προσθήκη νέου Smiley";
 $lang['Smile'] = "Smile";
-$lang['Emotion'] = "Emotion";
+$lang['Emotion'] = "Έκφραση";
 
-$lang['Select_pak'] = "Select Pack (.pak) File";
-$lang['replace_existing'] = "Replace Existing Smiley";
-$lang['keep_existing'] = "Keep Existing Smiley";
-$lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
-$lang['smiley_import'] = "Smiley Pack Import";
-$lang['choose_smile_pak'] = "Choose a Smile Pack .pak file";
-$lang['import'] = "Import Smileys";
-$lang['smile_conflicts'] = "What should be done in case of conflicts";
-$lang['del_existing_smileys'] = "Delete existing smileys before import";
-$lang['import_smile_pack'] = "Import Smiley Pack";
-$lang['export_smile_pack'] = "Create Smiley Pack";
-$lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
+$lang['Select_pak'] = "Επιλογή αρχείου (.pak)";
+$lang['replace_existing'] = "Αντικατάσταση Smiley";
+$lang['keep_existing'] = "Διατήρηση Υπάρχοντος Smiley";
+$lang['smiley_import_inst'] = "Πρέπει να αποσυμπιέσετε το πακέτο smiley και να αντιγράψετε όλα τα αρχεία στο ορισμένο από την εγκατάσταση σας φάκελο. Κατόπιν δώστε τις ανάλογες πληροφορίες σ' αυτήν την φόρμα για να εισάγετε το πακέτο smiley.";
+$lang['smiley_import'] = "Εισαγωγή Πακέτου Smiley";
+$lang['choose_smile_pak'] = "Επιλέξτε ένα Smile Πακέτο .pak";
+$lang['import'] = "Εισαγωγή Smileys";
+$lang['smile_conflicts'] = "Τι πρέπει να κάνω σε περίπτωση διενέξεων";
+$lang['del_existing_smileys'] = "Διαγραφή υπαρχόντων smileys πριν την εισαγωγή";
+$lang['import_smile_pack'] = "Εισαγωγή Πακέτου Smiley";
+$lang['export_smile_pack'] = "Δημιουργία Πακέτου Smiley";
+$lang['export_smiles'] = "Για να δημιουργήσετε ένα smiley πακέτο από τα ήδη υπάρχοντα εικονίδια, πατήστε %sΕδώ%s για να το μεταφορτώσετε στον υπολογιστή σας ως smiles.pak αρχείο. Δώστε του ένα όνομα διατηρώντας την κατάληξη .pak. Κατόπιν δημιουργήστε ένα zip αρχείο με όλες τις εικόνες συν το .pak αρχείο που δημιουργήσατε παραπάνω.";
 
-$lang['smiley_add_success'] = "The Smiley was successfully added";
-$lang['smiley_edit_success'] = "The Smiley was successfully updated";
-$lang['smiley_import_success'] = "The Smiley Pack was imported successfully!";
-$lang['smiley_del_success'] = "The Smiley was successfully removed";
-$lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administration";
+$lang['smiley_add_success'] = "Τα Smiley προστέθηκαν με επιτυχία";
+$lang['smiley_edit_success'] = "Τα Smiley ενημερώθηκαν με επιτυχία";
+$lang['smiley_import_success'] = "Το Πακέτο Smiley  εισήχθη με επιτυχία!";
+$lang['smiley_del_success'] = "Η απομάκρυνση των Smiley ήταν επιτυχής";
+$lang['Click_return_smileadmin'] = "Πατήστε %sΕδώ%s για την επιστροφή σας στην Διαχείριση των Smiley";
 
 
 //
 // User Management
 //
-$lang['User_admin'] = "User Administration";
-$lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
+$lang['User_admin'] = "Διαχείριση Μελών";
+$lang['User_admin_explain'] = "Εδώ μπορείτε να τροποποιήσετε τις πληροφορίες Μέλους και κάποιες ιδικές επιλογές τους. Για να τροποποιήσετε τα δικαιώματα πρόσβασης μελών παρακαλώ χρησιμοποιήστε την σελίδα των δικαιωμάτων πρόσβασης Μελών και Ομάδων.";
 
-$lang['Look_up_user'] = "Look up user";
+$lang['Look_up_user'] = "Ανάκτηση μέλους";
 
-$lang['Admin_user_fail'] = "Couldn't update the users profile.";
-$lang['Admin_user_updated'] = "The user's profile was successfully updated.";
-$lang['Click_return_useradmin'] = "Click %sHere%s to return to User Administration";
+$lang['Admin_user_fail'] = "Δεν δύναται η ανανέωση του προφίλ μέλους.";
+$lang['Admin_user_updated'] = "Το προφίλ Μέλους ανανεώθηκε με επιτυχία.";
+$lang['Click_return_useradmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στη Διαχείριση Μελών";
 
-$lang['User_delete'] = "Delete this user";
-$lang['User_delete_explain'] = "Click here to delete this user, this cannot be undone.";
-$lang['User_deleted'] = "User was successfully deleted.";
+$lang['User_delete'] = "Διαγραφή Μέλους";
+$lang['User_delete_explain'] = "Πατήστε εδώ για να διαγράψετε αυτό το Μέλος, η λειτουργία αυτή είναι μη αναστρέψιμη.";
+$lang['User_deleted'] = "Το Μέλος διαγράφηκε με επιτυχία.";
 
-$lang['User_status'] = "User is active";
-$lang['User_allowpm'] = "Can send Private Messages";
-$lang['User_allowavatar'] = "Can display avatar";
+$lang['User_status'] = "Το Μέλος είναι ενεργό";
+$lang['User_allowpm'] = "Δεν μπορεί να αποστέλλει Πρ. Μηνύματα";
+$lang['User_allowavatar'] = "Δεν μπορεί να απεικονίζει άβαταρ";
 
-$lang['Admin_avatar_explain'] = "Here you can see and delete the user's current avatar.";
+$lang['Admin_avatar_explain'] = "Εδώ μπορείτε να δείτε και να διαγράψετε τα τρέχοντα άβαταρ των Μελών.";
 
-$lang['User_special'] = "Special admin-only fields";
-$lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
+$lang['User_special'] = "Ιδικά πεδία μόνο για διαχειριστές";
+$lang['User_special_explain'] = "Τα πεδία αυτά δεν είναι τροποποιήσιμα από τα μέλη. Περιλαμβάνουν στοιχεία ελέγξιμα μόνο από τους διαχειριστές.";
 
 
 //
 // Group Management
 //
-$lang['Group_administration'] = "Group Administration";
-$lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
-$lang['Error_updating_groups'] = "There was an error while updating the groups";
-$lang['Updated_group'] = "The group was successfully updated";
-$lang['Added_new_group'] = "The new group was successfully created";
-$lang['Deleted_group'] = "The group was successfully deleted";
-$lang['New_group'] = "Create new group";
-$lang['Edit_group'] = "Edit group";
-$lang['group_name'] = "Group name";
-$lang['group_description'] = "Group description";
-$lang['group_moderator'] = "Group moderator";
-$lang['group_status'] = "Group status";
-$lang['group_open'] = "Open group";
-$lang['group_closed'] = "Closed group";
-$lang['group_hidden'] = "Hidden group";
-$lang['group_delete'] = "Delete group";
-$lang['group_delete_check'] = "Delete this group";
-$lang['submit_group_changes'] = "Submit Changes";
-$lang['reset_group_changes'] = "Reset Changes";
-$lang['No_group_name'] = "You must specify a name for this group";
-$lang['No_group_moderator'] = "You must specify a moderator for this group";
-$lang['No_group_mode'] = "You must specify a mode for this group, open or closed";
-$lang['delete_group_moderator'] = "Delete the old group moderator?";
-$lang['delete_moderator_explain'] = "If you're changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.";
-$lang['Click_return_groupsadmin'] = "Click %sHere%s to return to Group Administration.";
-$lang['Select_group'] = "Select a group";
-$lang['Look_up_group'] = "Look up group";
+$lang['Group_administration'] = "Διαχείριση Ομάδων";
+$lang['Group_admin_explain'] = "Σ' αυτόν τον πίνακα μπορείτε να διαχειρισθείτε τις ομάδες Μελών, μπορείτε να διαγράψετε να δημιουργήσετε και να επεξεργασθείτε  αυτές τις Ομάδες. Μπορείτε να επιλέξετε τον Συντονιστή να ορίσετε εάν είναι ανοικτή ή κλειστή για νέα Μέλη αυτή η ομάδα και να ορίσετε το όνομα της";
+$lang['Error_updating_groups'] = "Παρουσιάστηκε σφάλμα κατά την ενημέρωση των Ομάδων";
+$lang['Updated_group'] = "Η Ομάδα ενημερώθηκε με επιτυχία";
+$lang['Added_new_group'] = "Η νέα Ομάδα δημιουργήθηκε με επιτυχία";
+$lang['Deleted_group'] = "Η νέα Ομάδα διαγράφηκε με επιτυχία";
+$lang['New_group'] = "Δημιουργία νέας Ομάδας";
+$lang['Edit_group'] = "Επεξεργασία Ομάδας";
+$lang['group_name'] = "Ονομα Ομάδας";
+$lang['group_description'] = "Περιγραφή Ομάδας";
+$lang['group_moderator'] = "Συντονιστής Ομάδας";
+$lang['group_status'] = "Κατάσταση Ομάδας";
+$lang['group_open'] = "Ανοικτή Ομάδα";
+$lang['group_closed'] = "Κλειστή Ομάδα";
+$lang['group_hidden'] = "Κρυφή Ομάδα";
+$lang['group_delete'] = "Διαγραφή Ομάδας";
+$lang['group_delete_check'] = "Διαγραφή αυτής της Ομάδας";
+$lang['submit_group_changes'] = "Υποβολή Αλλαγών";
+$lang['reset_group_changes'] = "Μηδενισμός Αλλαγών";
+$lang['No_group_name'] = "Πρέπει να δώσετε ένα όνομα σ' αυτήν την Ομάδα";
+$lang['No_group_moderator'] = "Πρέπει να ορίσετε έναν Συντονιστή για αυτήν την Ομάδα";
+$lang['No_group_mode'] = "Πρέπει να ορίσετε εαν αυτή η Ομάδα είναι ανοικτή ή κλειστή";
+$lang['No_group_action'] = 'Δεν ορίσατε καμία ενέργεια';
+$lang['delete_group_moderator'] = "Να Διαγραφεί ο παλαιός Συντονιστής Ομάδας;";
+$lang['delete_moderator_explain'] = "Εάν θέλετε να διαγράψετε τον παλαιό Συντονιστή Ομάδας, επιλέξτε αυτό το κουτάκι για να απομακρυνθεί και από την Ομάδα. Σε αντίθετη περίπτωση θα υποβιβασθεί σε απλό μέλος αυτής της Ομάδας.";
+$lang['Click_return_groupsadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Διαχείριση Ομάδων.";
+$lang['Select_group'] = "Επιλέξτε Ομάδα";
+$lang['Look_up_group'] = "Αναζήτηση Ομάδας";
 
 
 //
 // Prune Administration
 //
-$lang['Forum_Prune'] = "Forum Prune";
-$lang['Forum_Prune_explain'] = "This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.";
-$lang['Do_Prune'] = "Do Prune";
-$lang['All_Forums'] = "All Forums";
-$lang['Prune_topics_not_posted'] = "Prune topics with no replies in this many days";
-$lang['Topics_pruned'] = "Topics pruned";
-$lang['Posts_pruned'] = "Posts pruned";
-$lang['Prune_success'] = "Pruning of forums was successful";
+$lang['Forum_Prune'] = "Εκκαθάριση Forum";
+$lang['Forum_Prune_explain'] = "Αυτή η λειτουργία θα διαγράψει όλες τις Θ. Ενότητες οι οποίες δεν δέχθηκαν μηνύματα για περίοδο ημερών που ορίζετε εσείς. Εάν δεν δώσετε αριθμό περιόδου θα εκκαθαριστούν όλες οι Θ. Ενότητες. Δεν θα διαγραφούν Θ. Ενότητες οι οποίες περιέχουν ψηφοφορίες εν ενεργεία όπως και τα μηνύματα χαρακτηρισμένα ως Ανακοίνωση. Αυτά τα μηνύματα πρέπει να τα διαγράψετε με μη αυτόματο τρόπο.";
+$lang['Do_Prune'] = "Εκκίνηση Εκκαθάρισης";
+$lang['All_Forums'] = "Όλα τα Φόρουμ";
+$lang['Prune_topics_not_posted'] = "Εκκαθάριση Θ. Ενοτήτων χωρίς απάντηση για περίοδο ημερών";
+$lang['Topics_pruned'] = "Οι Θ.Ενότητες Εκκαθαρίστηκαν";
+$lang['Posts_pruned'] = "Τα Μηνύματα Εκκαθαρίστηκαν";
+$lang['Prune_success'] = "Η Εκκαθάριση όλων των Θ.Ενοτήτων έγινε με επιτυχία";
 
 
 //
 // Word censor
 //
-$lang['Words_title'] = "Word Censoring";
-$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.";
-$lang['Word'] = "Word";
-$lang['Edit_word_censor'] = "Edit word censor";
-$lang['Replacement'] = "Replacement";
-$lang['Add_new_word'] = "Add new word";
-$lang['Update_word'] = "Update word censor";
+$lang['Words_title'] = "Ανίχνευση Λέξεων";
+$lang['Words_explain'] = "Σ' αυτόν τον πίνακα μπορείτε να προσθέσετε να επεξεργασθείτε ή να απομακρύνετε τις λέξεις, οι οποίες θα ανιχνεύονται αυτόματα στα Φόρουμ, ως επιπλέων λειτουργία της ανίχνευσης λέξεων που δεν μπορούν να χρησιμοποιηθούν κατά την επιλογή ονόματος μέλους κατά την εγγραφή νέου χρήστη. Οι χαρακτήρες μπαλαντέρ (*) επιτρέπονται.";
+$lang['Word'] = "Λέξη";
+$lang['Edit_word_censor'] = "Επεξεργασία  ανίχνευσης λέξεως";
+$lang['Replacement'] = "Υποκατάστατο";
+$lang['Add_new_word'] = "Προσθήκη λέξεως";
+$lang['Update_word'] = "Ενημέρωση ανίχνευσης λέξεως";
 
-$lang['Must_enter_word'] = "You must enter a word and its replacement";
-$lang['No_word_selected'] = "No word selected for editing";
+$lang['Must_enter_word'] = "Πρέπει να εισαγάγετε λέξη και το υποκατάστατο της";
+$lang['No_word_selected'] = "Δεν επιλέξατε λέξη για επεξεργασία";
 
-$lang['Word_updated'] = "The selected word censor has been successfully updated";
-$lang['Word_added'] = "The word censor has been successfully added";
-$lang['Word_removed'] = "The selected word censor has been successfully removed";
+$lang['Word_updated'] = "Η επιλεγμένη ανίχνευση λέξεως ενημερώθηκε με επιτυχία";
+$lang['Word_added'] = "Η ανίχνευση λέξεως προστέθηκε με επιτυχία";
+$lang['Word_removed'] = "Η επιλεγμένη ανίχνευση λέξεως απομακρύνθηκε με επιτυχία";
 
-$lang['Click_return_wordadmin'] = "Click %sHere%s to return to Word Censor Administration";
+$lang['Click_return_wordadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Ανίχνευση Λέξεων";
 
 
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
-$lang['Compose'] = "Compose"; 
+$lang['Mass_email_explain'] = "Από εδώ μπορείτε να στείλετε μαζικό email σ' όλα τα μέλη είτε στα μέλη μιας ομάδας. Αυτό θα γίνει με την αποστολή αντιγράφων μηνύματος με τον λογαριασμό διαχειριστή που έχετε ορίσει προς όλους τους παραλήπτες. Εάν ο αριθμός των αποδεκτών είναι πολύ μεγάλος θα χρειασθεί αρκετός χρόνος μέχρι να ολοκληρωθεί η διαδικασία, σε καμία περίπτωση μην σταματήσετε την σελίδα στα μισά της διαδικασίας. Είναι φυσιολογικό οι μαζικές αποστολές να καθυστερούν, μόλις ολοκληρωθεί η διαδικασία θα ενημερωθείτε για αυτό.";
+$lang['Compose'] = "Σύνθεση"; 
 
-$lang['Recipients'] = "Recipients"; 
-$lang['All_users'] = "All Users";
+$lang['Recipients'] = "Παραλήπτες"; 
+$lang['All_users'] = "Όλα τα Μέλη";
 
-$lang['Email_successfull'] = "Your message has been sent";
-$lang['Click_return_massemail'] = "Click %sHere%s to return to the Mass Email form";
+$lang['Email_successfull'] = "Το μήνυμα σας έχει αποσταλεί";
+$lang['Click_return_massemail'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην φόρμα του Μαζικού email";
 
 
 //
 // Ranks admin
 //
-$lang['Ranks_title'] = "Rank Administration";
-$lang['Ranks_explain'] = "Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility";
+$lang['Ranks_title'] = "Διαχείριση Βαθμών";
+$lang['Ranks_explain'] = "Με αυτήν την φόρμα μπορείτε να προσθέσετε να δείτε να επεξεργασθείτε 'η να διαγράψετε τους Βαθμούς. Μπορείτε επίσης να δημιουργήσετε τους δικούς σας βαθμούς οι οποίοι εφαρμόζονται μέσω της διαχείρισης μελών.";
 
-$lang['Add_new_rank'] = "Add new rank";
+$lang['Add_new_rank'] = "Προσθήκη νέου Βαθμού";
 
-$lang['Rank_title'] = "Rank Title";
-$lang['Rank_special'] = "Set as Special Rank";
-$lang['Rank_minimum'] = "Minimum Posts";
-$lang['Rank_maximum'] = "Maximum Posts";
-$lang['Rank_image'] = "Rank Image";
-$lang['Rank_image_explain'] = "Use this to define a small image associated with the rank";
+$lang['Rank_title'] = "Τίτλος Βαθμού";
+$lang['Rank_special'] = "Ως Ιδικός Βαθμός";
+$lang['Rank_minimum'] = "Ελάχιστο μηνυμάτων";
+$lang['Rank_maximum'] = "Μέγιστο μηνυμάτων";
+$lang['Rank_image'] = "Εικονίδιο Βαθμού (Αναφορικά μετην ρίζα καταλόγου phpBB2)";
+$lang['Rank_image_explain'] = "Χρησιμοποιήστε το για να ορίσετε ένα μικρό εικονίδιο σχετικό με τον βαθμό";
 
-$lang['Must_select_rank'] = "You must select a rank";
-$lang['No_assigned_rank'] = "No special rank assigned";
+$lang['Must_select_rank'] = "Πρέπει να επιλέξετε βαθμό";
+$lang['No_assigned_rank'] = "Δεν συσχετίσθηκε κάποιος βαθμός";
 
-$lang['Rank_updated'] = "The rank was successfully updated";
-$lang['Rank_added'] = "The rank was successfully added";
-$lang['Rank_removed'] = "The rank was successfully deleted";
+$lang['Rank_updated'] = "Ο βαθμός ανανεώθηκε με επιτυχία";
+$lang['Rank_added'] = "Ο βαθμός προστέθηκε με επιτυχία";
+$lang['Rank_removed'] = "Ο βαθμός διαγράφηκε με επιτυχία";
+$lang['No_update_ranks'] = "Ο βαθμός διαγράφηκε με επιτυχία παρ' όλα αυτά οι λογαριασμοί των μελών που χρησιμοποιούσαν αυτόν τον βαθμό δεν ενημερώθηκαν. Θα χρειαστεί να το αλάξετε αυτό με χειροκίνητο τρόπο";
 
-$lang['Click_return_rankadmin'] = "Click %sHere%s to return to Rank Administration";
+$lang['Click_return_rankadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Διαχείριση Βαθμών";
 
 
 //
 // Disallow Username Admin
 //
-$lang['Disallow_control'] = "Username Disallow Control";
-$lang['Disallow_explain'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it";
+$lang['Disallow_control'] = "Έλεγχος Ονομάτων Μελών";
+$lang['Disallow_explain'] = "Εδώ μπορείτε να ορίσετε ονόματα μελών τα οποία δεν θα επιτρέπονται να χρησιμοποιηθούν. Τα απαγορευμένα ονόματα μπορούν να οριστούν και με χρήση χαρακτήρα μπαλαντέρ *.  Προσοχή όνομα το οποίο έχει ήδη επιλεγεί δεν μπορείτε να το αποκλείσετε, πρέπει πρώτα να διαγραφή ο χρήστης και κατόπιν να εισαχθεί στα απαγορευμένα";
 
-$lang['Delete_disallow'] = "Delete";
-$lang['Delete_disallow_title'] = "Remove a Disallowed Username";
-$lang['Delete_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
+$lang['Delete_disallow'] = "Διαγραφή";
+$lang['Delete_disallow_title'] = "Απομάκρυνση Αποκλεισμένου Ονόματος";
+$lang['Delete_disallow_explain'] = "Μπορείτε να απομακρύνετε ένα απαγορευμένο όνομα, επιλέγοντας το και κατόπιν πατώντας την υποβολή";
 
-$lang['Add_disallow'] = "Add";
-$lang['Add_disallow_title'] = "Add a disallowed username";
-$lang['Add_disallow_explain'] = "You can disallow a username using the wildcard character * to match any character";
+$lang['Add_disallow'] = "Προσθήκη";
+$lang['Add_disallow_title'] = "Προσθήκη ονόματος προς απαγόρευση";
+$lang['Add_disallow_explain'] = "Μπορείτε να χρησιμοποιήσετε τον χαρακτήρα * ως μπαλαντέρ για οποιοδήποτε γράμμα";
 
-$lang['No_disallowed'] = "No Disallowed Usernames";
+$lang['No_disallowed'] = "Δεν Υπάρχουν Απαγορευμένα Ονόματα";
 
-$lang['Disallowed_deleted'] = "The disallowed username has been successfully removed";
-$lang['Disallow_successful'] = "The disallowed username has ben successfully added";
-$lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list or a matching username is present";
+$lang['Disallowed_deleted'] = "Το απαγορευμένο όνομα διαγράφηκε με επιτυχία";
+$lang['Disallow_successful'] = "Το απαγορευμένο όνομα προσετέθη με επιτυχία";
+$lang['Disallowed_already'] = "Το όνομα που εισαγάγατε δεν μπορεί να προστεθεί. Υπάρχει ήδη στην λίστα ή υπάρχει στην ανίχνευση λέξεων ή υπάρχει ήδη ένα εγγεγραμμένο μέλος με αυτό το όνομα";
 
-$lang['Click_return_disallowadmin'] = "Click %sHere%s to return to Disallow Username Administration";
+$lang['Click_return_disallowadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε  στον Έλεγχο Ονομάτων Μελών";
 
 
 //
 // Styles Admin
 //
-$lang['Styles_admin'] = "Styles Administration";
-$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users";
-$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list have not yet been installed into the phpBB database. To install a theme simply click the install link beside an entry";
+$lang['Styles_admin'] = "Διαχείριση Παρουσιαστικού";
+$lang['Styles_explain'] = "Μέσα από αυτόν τον πίνακα μπορείτε να προσθέσετε, να διαγράψετε, και να διαχειρισθείτε  παρουσιαστικά  (templates and themes) τα οποία προσφέρονται στα μέλη";
+$lang['Styles_addnew_explain'] = "Η ακόλουθη λίστα είναι όλα τα διαθέσιμα παρουσιαστικά που ήδη διαθέτετε. Τα παρουσιαστικά αυτά δεν έχουν εγκατασταθεί ακόμα στο phpBB. Για να τα εγκαταστήσετε απλά πατήστε το κουμπί -εγκατάσταση- δίπλα στο θέμα που σας ενδιαφέρει";
 
-$lang['Select_template'] = "Select a Template";
+$lang['Select_template'] = "Επιλογή Παρουσιαστικού";
 
-$lang['Style'] = "Style";
-$lang['Template'] = "Template";
-$lang['Install'] = "Install";
-$lang['Download'] = "Download";
+$lang['Style'] = "Στίλ";
+$lang['Template'] = "Πρότυπο";
+$lang['Install'] = "Εγκατάσταση";
+$lang['Download'] = "Μεταφόρτωση";
 
-$lang['Edit_theme'] = "Edit Theme";
-$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme";
+$lang['Edit_theme'] = "Επεξεργασία Θέματος";
+$lang['Edit_theme_explain'] = "Στην παρακάτω φόρμα μπορείτε να επεξεργαστείτε τις παραμέτρους του επιλεγμένου θέματος";
 
-$lang['Create_theme'] = "Create Theme";
-$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not";
+$lang['Create_theme'] = "Δημιουργία Θέματος";
+$lang['Create_theme_explain'] = "Δημιουργήστε με αυτήν την φόρμα ένα νέο θέμα για το επιλεγμένο πρότυπο. Κατά την εισαγωγή χρώματος ( σε δεκαεξαδική μορφή ) παραλείψτε το αρχικό #, π.χ... CCCCCC και όχι #CCCCCC";
 
-$lang['Export_themes'] = "Export Themes";
-$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
+$lang['Export_themes'] = "Εξαγωγή Θέματος";
+$lang['Export_explain'] = "Εδώ θα μπορέσετε να εξαγάγετε τα στοιχεία του θέματος του επιλεγμένου προτύπου. Επιλέξτε το πρότυπο από την παρακάτω λίστα και το σύστημα θα δημιουργήσει και θα αποθηκεύσει ένα αρχείο ρυθμίσεων για αυτό το θέμα στον φάκελο των προτύπων (template). Εάν δεν θα μπορεί να το αποθηκεύσει θα σας προτείνει να το μεταφορτώσετε. Για να μπορεί να το αποθηκεύει στο διακομιστή πρέπει να δώσετε άδεια εγγραφής στον φάκελο template. Για περισσότερες πληροφορίες ανατρέξτε στο αρχείο του phpBB 2 users guide.";
 
-$lang['Theme_installed'] = "The selected theme has been installed successfully";
-$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.";
-$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only";
-$lang['Theme_updated'] = "The selected theme has been updated. You should now export the new theme settings";
-$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere";
+$lang['Theme_installed'] = "Το επιλεγμένο θέμα εγκαταστάθηκε με επιτυχία";
+$lang['Style_removed'] = "Το επιλεγμένο παρουσιαστικό απομακρύνθηκε από την Βάση Δεδομένων. Για ολική απομάκρυνση από το σύστημα πρέπει να διαγράψετε το αντίστοιχο αρχείο από τον φάκελο στον οποίο βρίσκετε.";
+$lang['Theme_info_saved'] = "Οι πληροφορίες παρουσιαστικού για το επιλεγμένο πρότυπο αποθηκεύτηκαν. Επαναφέρετε τα δικαιώματα πρόσβασης στο αρχείο theme_info.cfg (και εάν είναι δυνατό και στο φάκελο template) σε ανάγνωση-μόνο";
+$lang['Theme_updated'] = "Το επιλεγμένο θέμα ενημερώθηκε. Πρέπει να εξαγάγετε τις νέες ρυθμίσεις θέματος";
+$lang['Theme_created'] = "Το θέμα δημιουργήθηκε. Πρέπει να εξαγάγετε το νέο θέμα στο αρχείο ρυθμίσεων θέματος για αποθήκευση του ή για μεταφορά του όπου αλλού χρειασθεί ";
 
-$lang['Confirm_delete_style'] = "Are you sure you want to delete this style";
+$lang['Confirm_delete_style'] = "Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το παρουσιαστικό";
 
-$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transfer it to the directory containing the template files. You can then package the files for distribution or use elsewhere if you desire";
-$lang['No_themes'] = "The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel";
-$lang['No_template_dir'] = "Could not open the template directory. It may be unreadable by the webserver or may not exist";
-$lang['Cannot_remove_style'] = "You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.";
+$lang['Download_theme_cfg'] = "Το σύστημα δεν μπορεί να γράψει στο αρχείο ρυθμίσεων θέματος. Πατήστε το παρακάτω κουμπί για να το μεταφορτώσετε στο σύστημα σας. Όταν ολοκληρωθεί η διαδικασία μπορείτε να το μεταφέρετε στον φάκελο που περιέχει τα αρχεία προτύπων. Κατόπιν αυτού μπορείτε να το κάνετε πακέτο για διανομή ή να το χρησιμοποιήσετε κάπου αλλού.";
+$lang['No_themes'] = "Το πρότυπο που επιλέξατε δεν περιέχει θέματα. Για να δημιουργήσετε νέο θέμα πατήστε τη Δημιουργία Θέματος στο αριστερό παράθυρο.";
+$lang['No_template_dir'] = "Δεν μπορεί να ανοίξει ο φάκελος template. Ίσως δεν είναι αναγνώσιμος από τον διακομιστή ή δεν υπάρχει καθόλου";
+$lang['Cannot_remove_style'] = "Δεν μπορείτε να διαγράψετε το επιλεγμένο πρότυπο διότι είναι τα προεπιλεγμένο συστήματος. Αλλάξτε το προεπιλεγμένο πρότυπο και ξαναδοκιμάστε.";
+$lang['Style_exists'] = "Το όνομα προτύπου υπάρχει ήδη. Παρακαλώ επιστρέψτε και επιλέξτε διαφορετικό όνομα.";
 
-$lang['Click_return_styleadmin'] = "Click %sHere%s to return to Style Administration";
+$lang['Click_return_styleadmin'] = "Πατήστε %sΕδώ%s για να επιστρέψετε στην Διαχείριση Παρουσιαστικού";
 
-$lang['Theme_settings'] = "Theme Settings";
-$lang['Theme_element'] = "Theme Element";
-$lang['Simple_name'] = "Simple Name";
-$lang['Value'] = "Value";
+$lang['Theme_settings'] = "Ρυθμίσεις Θέματος";
+$lang['Theme_element'] = "Στοιχείο Θέματος";
+$lang['Simple_name'] = "Απλό Όνομα";
+$lang['Value'] = "Τιμή";
+$lang['Save_Settings'] = "Αποθήκευση Ρυθμίσεων";
 
 $lang['Stylesheet'] = "CSS Stylesheet";
-$lang['Background_image'] = "Background Image";
-$lang['Background_color'] = "Background Colour";
-$lang['Theme_name'] = "Theme Name";
-$lang['Link_color'] = "Link Colour";
-$lang['VLink_color'] = "Visited Link Colour";
-$lang['ALink_color'] = "Active Link Colour";
-$lang['HLink_color'] = "Hover Link Colour";
-$lang['Tr_color1'] = "Table Row Colour 1";
-$lang['Tr_color2'] = "Table Row Colour 2";
-$lang['Tr_color3'] = "Table Row Colour 3";
+$lang['Background_image'] = "Εικόνα Φόντου";
+$lang['Background_color'] = "Χρώμα Φόντου";
+$lang['Theme_name'] = "Όνομα Θέματος";
+$lang['Link_color'] = "Χρώμα Link";
+$lang['Text_color'] = "Χρώμα Text";
+$lang['VLink_color'] = "Χρώμα Visited Link";
+$lang['ALink_color'] = "Χρώμα Active Link";
+$lang['HLink_color'] = "Χρώμα Hover Link";
+$lang['Tr_color1'] = "Table Row Χρώμα 1";
+$lang['Tr_color2'] = "Table Row Χρώμα 2";
+$lang['Tr_color3'] = "Table Row Χρώμα 3";
 $lang['Tr_class1'] = "Table Row Class 1";
 $lang['Tr_class2'] = "Table Row Class 2";
 $lang['Tr_class3'] = "Table Row Class 3";
-$lang['Th_color1'] = "Table Header Colour 1";
-$lang['Th_color2'] = "Table Header Colour 2";
-$lang['Th_color3'] = "Table Header Colour 3";
+$lang['Th_color1'] = "Table Header Χρώμα 1";
+$lang['Th_color2'] = "Table Header Χρώμα 2";
+$lang['Th_color3'] = "Table Header Χρώμα 3";
 $lang['Th_class1'] = "Table Header Class 1";
 $lang['Th_class2'] = "Table Header Class 2";
 $lang['Th_class3'] = "Table Header Class 3";
-$lang['Td_color1'] = "Table Cell Colour 1";
-$lang['Td_color2'] = "Table Cell Colour 2";
-$lang['Td_color3'] = "Table Cell Colour 3";
+$lang['Td_color1'] = "Table Cell Χρώμα 1";
+$lang['Td_color2'] = "Table Cell Χρώμα 2";
+$lang['Td_color3'] = "Table Cell Χρώμα 3";
 $lang['Td_class1'] = "Table Cell Class 1";
 $lang['Td_class2'] = "Table Cell Class 2";
 $lang['Td_class3'] = "Table Cell Class 3";
@@ -616,66 +644,76 @@ $lang['fontface3'] = "Font Face 3";
 $lang['fontsize1'] = "Font Size 1";
 $lang['fontsize2'] = "Font Size 2";
 $lang['fontsize3'] = "Font Size 3";
-$lang['fontcolor1'] = "Font Colour 1";
-$lang['fontcolor2'] = "Font Colour 2";
-$lang['fontcolor3'] = "Font Colour 3";
+$lang['fontcolor1'] = "Font Χρώμα1";
+$lang['fontcolor2'] = "Font Χρώμα 2";
+$lang['fontcolor3'] = "Font Χρώμα 3";
 $lang['span_class1'] = "Span Class 1";
 $lang['span_class2'] = "Span Class 2";
 $lang['span_class3'] = "Span Class 3";
-$lang['img_poll_size'] = "Polling Image Size [px]";
-$lang['img_pm_size'] = "Private Message Status size [px]";
+$lang['img_poll_size'] = "Μέγεθος Εικόνας Polling [px]";
+$lang['img_pm_size'] = "Μέγεθος Private Message Status [px]";
 
 
 //
 // Install Process
 //
-$lang['Welcome_install'] = "Welcome to phpBB 2 Installation";
-$lang['Initial_config'] = "Basic Configuration";
-$lang['DB_config'] = "Database Configuration";
-$lang['Admin_config'] = "Admin Configuration";
+$lang['Welcome_install'] = "Καλώς Ήλθατε στην Εγκατάσταση του phpBB 2";
+$lang['Initial_config'] = "Βασικές Ρυθμίσεις";
+$lang['DB_config'] = "Ρυθμίσεις Βάσης Δεδομένων";
+$lang['Admin_config'] = "Ρυθμίσεις Admin";
+$lang['continue_upgrade'] = "Από την στιγμή που μεταφορτώσατε το αρχείο config στον τοπικό σας υπολογιστή μπορείτε να πατήσετε το\"Συνέχεια Αναβάθμισης\" κουμπί για να προχωρήσετε στην διαδικασία αναβάθμισης. Παρακαλώ περιμένετε μέχρι να μεταφερθεί το αρχείο config και να ολοκληρωθεί η διαδικασία αναβάθμισης.";
+$lang['upgrade_submit'] = "Συνέχεια Αναβάθμισης";
 
-$lang['Installer_Error'] = "An error has occurred during installation";
-$lang['Previous_Install'] = "A previous installation has been detected";
-$lang['Install_db_error'] = "An error occurred trying to update the database";
+$lang['Installer_Error'] = "Παρουσιάστηκε σφάλμα κατά την εγκατάσταση";
+$lang['Previous_Install'] = "Εντοπίστηκε προηγούμενη εγκατάσταση";
+$lang['Install_db_error'] = "Παρουσιάστηκε σφάλμα κατά την ενημέρωση της Βάσης Δεδομένων";
 
-$lang['Re_install'] = "Your previous installation is still active. <br /><br />If you would like to re-install phpBB 2 you should click the Yes button below. Please be aware that doing so will destroy all existing data, no backups will be made! The administrator username and password you have used to login in to the board will be re-created after the re-installation, no other settings will be retained. <br /><br />Think carefully before pressing Yes!";
+$lang['Re_install'] = "Η προηγούμενη εγκατάσταση είναι ενεργή. <br /><br />Εάν θέλετε να επανα-εγκαταστήσετε το phpBB 2 πατήστε Ναι στο παρακάτω κουμπί. Έχετε υπόψη σας ότι συνεχίζοντας θα καταστραφούν όλα τα υπάρχοντα δεδομένα σας, δεν πρόκιτε να γίνουν αντίγραφα ασφαλείας! Το όνομα και ο κωδικός διαχειριστή που χρησιμοποιούσατε θα δημιουργηθούν εκ νέου, καμία απολύτως ρύθμιση δεν θα διατηρηθεί. <br /><br />Σκεφθείτε το πολύ προσεκτικά προτού πατήσετε το Ναι!";
 
-$lang['Inst_Step_0'] = "Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist. If you are installing to a database that uses ODBC, e.g. MS Access you should first create a DSN for it before proceeding.";
+$lang['Inst_Step_0'] = "Σας ευχαριστούμε που επιλέξατε το phpBB 2. Για να ολοκληρώσετε την εγκατάσταση παρακαλώ συμπληρώστε τις παρακάτω πληροφορίες. Έχετε υπόψη ότι η βάση δεδομένων πρέπει να υπάρχει ήδη. Εάν χρησιμοποιείτε βάση δεδομένων η οποία χρησιμοποιεί ODBC, π.χ. MS Access πρέπει πρώτα να δημιουργήσετε μία DSN εγγραφή προτού προχωρήσετε.";
 
-$lang['Start_Install'] = "Start Install";
-$lang['Finish_Install'] = "Finish Installation";
+$lang['Start_Install'] = "Έναρξη Εγκατάστασης";
+$lang['Finish_Install'] = "Τέλος Εγκατάστασης";
 
-$lang['Default_lang'] = "Default board language";
-$lang['DB_Host'] = "Database Server Hostname / DSN";
-$lang['DB_Name'] = "Your Database Name";
-$lang['Database'] = "Your Database";
-$lang['Install_lang'] = "Choose Language for Installation";
-$lang['dbms'] = "Database Type";
-$lang['Table_Prefix'] = "Prefix for tables in database";
-$lang['Admin_Username'] = "Administrator Username";
-$lang['Admin_Password'] = "Administrator Password";
-$lang['Admin_Password_confirm'] = "Administrator Password [ Confirm ]";
+$lang['Default_lang'] = "Η εξ ορισμού γλώσσα συστήματος";
+$lang['DB_Host'] = "Διακομιστής Β.Δεδομένων Hostname / DSN";
+$lang['DB_Name'] = "Όνομα Β.Δεδομένων";
+$lang['DB_Username'] = "Όνομα χρήστη Β.Δεδομένων";
+$lang['DB_Password'] = "Κωδικός Β.Δεδομένων";
+$lang['Database'] = "Η Β.Δεδομένων σας";
+$lang['Install_lang'] = "Επιλογή Γλώσσας για την Εγκατάσταση";
+$lang['dbms'] = "Τύπος Β.Δεδομένων";
+$lang['Table_Prefix'] = "Πρόθεμα για τους πίνακες της Β.Δ.";
+$lang['Admin_Username'] = "Όνομα Διαχειριστή";
+$lang['Admin_Password'] = "Κωδικός Διαχειριστή";
+$lang['Admin_Password_confirm'] = "Κωδικός Διαχειριστή [ Επιβεβαίωση ]";
 
-$lang['Inst_Step_2'] = "Your admin username has been created.  At this point your basic installation is complete. You will now be taken to a screen which will allow you to administer your new installation. Please be sure to check the General Configuration details and make any required changes. Thank you for choosing phpBB 2.";
+$lang['Inst_Step_2'] = "Το όνομα διαχειριστή δημιουργήθηκε. Σε αυτό το σημείο η βασική εγκατάσταση ολοκληρώθηκε. Αμέσως μετά θα μεταφερθείτε σε πίνακα όπου μπορείτε να διαχειρισθείτε την νέα σας εγκατάσταση. Παρακαλώ ελέγξτε τις Γενικές Ρυθμίσεις και κάντε οποιεσδήποτε αλλαγές κρίνονται απαραίτητες. Σας ευχαριστούμε που επιλέξατε το phpBB 2.";
 
-$lang['Unwriteable_config'] = "Your config file is un-writeable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
-$lang['Download_config'] = "Download Config";
+$lang['Unwriteable_config'] = "Αυτήν την στιγμή το αρχείο config είναι μη εγγράψιμο. Εφόσον πατήσετε το παρακάτω κουμπί ένα αντίγραφο αυτού του αρχείου θα μεταφορτωθεί στον τοπικό σας υπολογιστή. Πρέπει να μεταφορτώσετε αυτό το αρχείο στον ίδιο φάκελο με το phpBB 2. Μετά το πέρας αυτής της διαδικασίας μπορείτε να συνδεθείτε χρησιμοποιώντας το όνομα διαχειριστή που επιλέξατε στην προηγούμενη φόρμα και να επισκεφθείτε την σελίδα διαχείρισης του συστήματος (υπάρχει μία παραπομπή στο κάτω τμήμα κάθε οθόνης από την στιγμή πού συνδέεστε ως διαχειριστής) και να ελέγξετε τις γενικές ρυθμίσεις. Σας ευχαριστούμε που επιλέξατε το phpBB 2.";
+$lang['Download_config'] = "Μεταφόρτωση Config";
 
-$lang['ftp_choose'] = "Choose Download Method";
-$lang['ftp_option'] = "<br />Since FTP extensions are enabled in this version of PHP you may also be given the option of first trying to automatically ftp the config file into place.";
-$lang['ftp_instructs'] = "You have chosen to ftp the file to the account containing phpBB 2 automatically.  Please enter the information below to facilitate this process. Note that the FTP path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it using any normal client.";
-$lang['ftp_info'] = "Enter Your FTP Information";
-$lang['Attempt_ftp'] = "Attempt to ftp config file into place";
-$lang['Send_file'] = "Just send the file to me and I'll ftp it manually";
-$lang['ftp_path'] = "FTP path to phpBB 2";
-$lang['ftp_username'] = "Your FTP Username";
-$lang['ftp_password'] = "Your FTP Password";
-$lang['Transfer_config'] = "Start Transfer";
+$lang['ftp_choose'] = "Επιλέξτε Μέθοδο Μεταφόρτωσης";
+$lang['ftp_option'] = "<br />Από την στιγμή που είναι ενεργά τα FTP extensions της  PHP μπορείτε να εκμεταλλευθείτε την δυνατότητα που σας δύναται, αυτόματα να μεταφορτώσετε το αρχείο config στην σωστή θέση του.";
+$lang['ftp_instructs'] = "Έχετε επιλέξει το ftp για αυτόματη μεταφόρτωση του αρχείου στο phpBB 2.  Εισάγετε τις παρακάτω πληροφορίες για να για να διευκολύνετε την διαδικασία. Προσέξτε η FTP διαδρομή πρέπει να συνταχθεί ακριβός όπως θα την συντάσσατε και με ένα ftp πρόγραμμα πελάτη και θα οδηγεί στο phpBB2.";
+$lang['ftp_info'] = "Εισάγετε τις FTP πληροφορίες";
+$lang['Attempt_ftp'] = "Προσπάθεια τοποθέτησης αρχείου config στην θέση του";
+$lang['Send_file'] = "Αποστολή σε μένα του αρχείου για χειροκίνητο ftp";
+$lang['ftp_path'] = "FTP διαδρομή για το phpBB 2";
+$lang['ftp_username'] = "Όνομα χρήστη FTP ";
+$lang['ftp_password'] = "Κωδικός χρήστη FTP";
+$lang['Transfer_config'] = "Έναρξη Αποστολής";
+$lang['NoFTP_config'] = "Η προσπάθεια τοποθέτησης του αρχείου config στην θέση του απέτυχε. Παρακαλώ μεταφορτώστε το και τοποθετήστε το μέσω ftp χειροκίνητα.";
 
-$lang['Install'] = "Install";
-$lang['Upgrade'] = "Upgrade";
+$lang['Install'] = "Εγκατάσταση";
+$lang['Upgrade'] = "Αναβάθμηση";
 
-$lang['Install_Method'] = "Choose your installation method";
+
+$lang['Install_Method'] = "Επιλογή μεθόδου εγκατάστασης";
+
+$lang['Install_No_Ext'] = "Οι ρυθμίσεις της php στον διακομιστή σας δεν υποστηρίζουν το τύπο Β.Δεδομένων που επιλέξατε";
+
+$lang['Install_No_PCRE'] = "Το phpBB2 Απαιτεί Perl-Compatible Regular Expressions Module για την php το οποίο δεν φαίνεται να είναι ενεργό, από τις ρυθμίσεις σας τις php!";
 
 //
 // That's all Folks!

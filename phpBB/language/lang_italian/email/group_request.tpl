@@ -1,4 +1,5 @@
 Subject: C'è una richiesta di iscrizione al tuo gruppo
+Charset: iso-8859-1
 
 Caro {GROUP_MODERATOR},
 

@@ -49,6 +49,7 @@ $preview = ( isset($HTTP_POST_VARS['preview']) ) ? TRUE : 0;
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 $delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : 0;
 $delete_all = ( isset($HTTP_POST_VARS['deleteall']) ) ? TRUE : 0;
+$save = ( isset($HTTP_POST_VARS['save']) ) ? TRUE : 0;
 
 $refresh = $preview || $submit_search;
 
@@ -69,6 +70,15 @@ else
 }
 
 //
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
 // Cancel 
 //
 if ( $cancel )
@@ -77,15 +87,6 @@ if ( $cancel )
 	header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
 	exit;
 }
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
-init_userprefs($userdata);
-//
-// End session management
-//
 
 //
 // Var definitions
@@ -99,11 +100,11 @@ else
 	$mode = '';
 }
 
-$start = ( !empty($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( !empty($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if ( isset($HTTP_POST_VARS[POST_POST_URL]) || isset($HTTP_GET_VARS[POST_POST_URL]) )
 {
-	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? $HTTP_POST_VARS[POST_POST_URL] : $HTTP_GET_VARS[POST_POST_URL];
+	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
 }
 else
 {
@@ -173,7 +174,7 @@ else if ( $mode == 'read' )
 {
 	if ( !empty($HTTP_GET_VARS[POST_POST_URL]) )
 	{
-		$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL];
+		$privmsgs_id = intval($HTTP_GET_VARS[POST_POST_URL]);
 	}
 	else
 	{
@@ -184,6 +185,7 @@ else if ( $mode == 'read' )
 	{
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
+		exit;
 	}
 
 	//
@@ -245,6 +247,7 @@ else if ( $mode == 'read' )
 	{
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
+		exit;
 	}
 
 	$privmsg_id = $privmsg['privmsgs_id'];
@@ -407,7 +410,7 @@ else if ( $mode == 'read' )
 
 	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
-	$page_title = $lang['Read_private_message'];
+	$page_title = $lang['Read_pm'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	//
@@ -440,6 +443,7 @@ else if ( $mode == 'read' )
 
 		'BOX_NAME' => $l_box_name, 
 
+		'L_MESSAGE' => $lang['Message'], 
 		'L_INBOX' => $lang['Inbox'],
 		'L_OUTBOX' => $lang['Outbox'],
 		'L_SENTBOX' => $lang['Sent'],
@@ -472,9 +476,9 @@ else if ( $mode == 'read' )
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if ( !empty($privmsg['user_viewemail']) || $is_auth['auth_mod'] )
+	if ( !empty($privmsg['user_viewemail']) || $userdata['user_level'] == ADMIN )
 	{
-		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $privmsg['user_email'];
+		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -568,6 +572,10 @@ else if ( $mode == 'read' )
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
+	$orig_word = array();
+	$replacement_word = array();
+	obtain_word_list($orig_word, $replacement_word);
+
 	if ( count($orig_word) )
 	{
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
@@ -626,6 +634,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 	{
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+		exit;
 	}
 	if ( isset($mark_list) && !is_array($mark_list) )
 	{
@@ -824,6 +833,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 	{
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+		exit;
 	}
 
 	//
@@ -910,9 +920,10 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( !$userdata['session_logged_in'] )
 	{
-		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . $HTTP_GET_VARS[POST_USERS_URL] : '';
+		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($HTTP_GET_VARS[POST_USERS_URL]) : '';
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 		header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
+		exit;
 	}
 
 	//
@@ -1037,7 +1048,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		$msg_time = time();
 
-		if ( $mode != "edit" )
+		if ( $mode != 'edit' )
 		{
 			//
 			// See if recipient is at their inbox limit
@@ -1087,7 +1098,7 @@ else if ( $submit || $refresh || $mode != '' )
 			message_die(GENERAL_ERROR, "Could not insert/update private message sent info.", "", __LINE__, __FILE__, $sql_info);
 		}
 
-		if ( $mode != "edit" )
+		if ( $mode != 'edit' )
 		{
 			$privmsg_sent_id = $db->sql_nextid();
 
@@ -1121,7 +1132,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] )
 			{
-				$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+				$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\n";
 
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
 				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.'.$phpEx : 'privmsg.'.$phpEx;
@@ -1180,21 +1191,21 @@ else if ( $submit || $refresh || $mode != '' )
 		//
 		if ( $mode == 'post' )
 		{
-			$page_title = $lang['Send_new_privmsg'];
+			$page_title = $lang['Post_new_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'reply' )
 		{
-			$page_title = $lang['Reply_privmsg'];
+			$page_title = $lang['Post_reply_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'edit' )
 		{
-			$page_title = $lang['Edit_privmsg'];
+			$page_title = $lang['Edit_pm'];
 
 			$sql = "SELECT u.user_id, u.user_sig 
 				FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u 
@@ -1209,7 +1220,7 @@ else if ( $submit || $refresh || $mode != '' )
 			{
 				if ( $userdata['user_id'] != $postrow['user_id'] )
 				{
-					message_die(GENERAL_MESSAGE, $lang['Sorry_edit_own_posts']);
+					message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
 				}
 
 				$user_sig = ( $postrow['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow['user_sig'] : '';
@@ -1225,7 +1236,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) )
 		{
-			$user_id = $HTTP_GET_VARS[POST_USERS_URL];
+			$user_id = intval($HTTP_GET_VARS[POST_USERS_URL]);
 
 			$sql = "SELECT username
 				FROM " . USERS_TABLE . "
@@ -1262,6 +1273,7 @@ else if ( $submit || $refresh || $mode != '' )
 			{
 				$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 				header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
+				exit;
 			}
 
 			$privmsg_subject = $privmsg['privmsgs_subject'];
@@ -1301,6 +1313,7 @@ else if ( $submit || $refresh || $mode != '' )
 			{
 				$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 				header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
+				exit;
 			}
 
 			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg['privmsgs_subject']) ) ? 'Re: ' : '' ) . $privmsg['privmsgs_subject'];
@@ -1632,6 +1645,7 @@ if ( !$userdata['session_logged_in'] )
 {
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 	header($header_location . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
+	exit;
 }
 
 //
@@ -1673,6 +1687,10 @@ $template->set_filenames(array(
 	'body' => 'privmsgs_body.tpl')
 );
 make_jumpbox('viewforum.'.$phpEx);
+
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
 
 //
 // New message
@@ -1745,7 +1763,7 @@ switch( $folder )
 //
 if ( $submit_msgdays && ( !empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET_VARS['msgdays']) ) )
 {
-	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? $HTTP_POST_VARS['msgdays'] : $HTTP_GET_VARS['msgdays'];
+	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? intval($HTTP_POST_VARS['msgdays']) : intval($HTTP_GET_VARS['msgdays']);
 	$min_msg_time = time() - ($msg_days * 86400);
 
 	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
@@ -1799,72 +1817,33 @@ for($i = 0; $i < count($previous_days); $i++)
 //
 // Define correct icons
 //
-if ( $folder == 'inbox' )
+switch ( $folder )
 {
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0"></a>';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Inbox'];
+	case 'inbox':
+		$l_box_name = $lang['Inbox'];
+		break;
+	case 'outbox':
+		$l_box_name = $lang['Outbox'];
+		break;
+	case 'savebox':
+		$l_box_name = $lang['Savebox'];
+		break;
+	case 'sentbox':
+		$l_box_name = $lang['Sentbox'];
+		break;
 }
-else if ( $folder == 'outbox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '';
-	$quote_pm_img = '';
-	$edit_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=edit&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_editmsg'] . '" alt="' . $lang['Edit_pm'] . '" border="0"></a>';
-
-	$l_box_name = $lang['Outbox'];
-}
-else if ( $folder == 'savebox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0"></a>';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Savedbox'];
-}
-else if ( $folder == 'sentbox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Sentbox'];
-}
+$post_pm = append_sid("privmsg.$phpEx?mode=post");
+$post_pm_img = '<a href="' . $post_pm . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
+$post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 
 //
 // Output data for inbox status
 //
 if ( $folder != 'outbox' )
 {
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_pct = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100);
-	}
-	else
-	{
-		$inbox_limit_pct = 100;
-	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_img_length = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']);
-	}
-	else
-	{
-		$inbox_limit_img_length = $board_config['privmsg_graphic_length'];
-	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total;
-	}
-	else
-	{
-		$inbox_limit_remain = 0;
-	}
+	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
+	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
+	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
 	$template->assign_block_vars('switch_box_size_notice', array());
 
@@ -1900,6 +1879,7 @@ $template->assign_vars(array(
 	'SAVEBOX' => $savebox_url, 
 
 	'POST_PM_IMG' => $post_pm_img, 
+	'POST_PM' => $post_pm, 
 
 	'INBOX_LIMIT_IMG_WIDTH' => $inbox_limit_img_length, 
 	'INBOX_LIMIT_PERCENT' => $inbox_limit_pct, 

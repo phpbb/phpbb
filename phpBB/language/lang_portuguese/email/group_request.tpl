@@ -1,4 +1,6 @@
-Subject: Foi feito um pedido para se juntar ao seu Grupo
+Charset: iso-8859-1
+
+Assunto: Pedido para pertencer ao seu Grupo
 
 Estimado {GROUP_MODERATOR},
 

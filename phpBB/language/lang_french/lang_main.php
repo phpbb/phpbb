@@ -142,8 +142,10 @@ $lang['Guest_users_total'] = "%d Invités";
 $lang['Guest_user_total'] = "%d Invité";
 $lang['Record_online_users'] = "Le record du nombre d'utilisateurs en ligne est de <b>%s</b> le %s"; // first %s = number of users, second %s is the date.
 
+$lang['Legend'] = 'Légende';
 $lang['Admin_online_color'] = "%sAdministrateur%s";
 $lang['Mod_online_color'] = "%sModérateur%s";
+$lang['User_online_color'] = '%sUtilisateur%s';
 
 $lang['You_last_visit'] = "Dernière visite le %s"; // %s replaced by date/time
 $lang['Current_time'] = "La date/heure actuelle est %s"; // %s replaced by date/time
@@ -247,6 +249,11 @@ $lang['Rules_moderate'] = "Vous <b>pouvez</b> %smodérer ce forum%s"; // %s repla
 
 $lang['No_topics_post_one'] = "Il n'y a pas de messages dans ce forum<br />Cliquez sur le lien <b>Poster un Nouveau Sujet</b> sur cette page pour en poster un";
 
+$lang['Stop_watching_forum'] = 'Arrêter de surveiller ce forum';
+$lang['Start_watching_forum'] = 'Surveiller les nouveaux messages de ce forum';
+$lang['No_longer_watching_forum'] = 'Vous ne surveillez plus ce forum';
+$lang['You_are_watching_forum'] = 'Vous surveillez actuellement ce forum';
+
 //
 // Viewtopic
 //
@@ -337,6 +344,8 @@ $lang['Empty_poll_title'] = "Vous devez entrer un titre pour le sondage";
 $lang['To_few_poll_options'] = "Vous devez au moins entrer deux options pour le sondage";
 $lang['To_many_poll_options'] = "Vous avez entré trop d'options pour le sondage";
 $lang['Post_has_no_poll'] = "Ce sujet n'a pas de sondage";
+$lang['Already_voted'] = 'Vous avez déjà participé à ce sondage'; 
+$lang['No_vote_option'] = 'Vous devez choisir une option avant de voter';
 
 $lang['Add_poll'] = "Ajouter un sondage";
 $lang['Add_poll_explain'] = "Si vous ne voulez pas ajouter de sondage à votre sujet, laissez ces champs vides";
@@ -385,8 +394,8 @@ $lang['bbcode_a_help'] = "Fermer toutes les balises BBCode ouvertes";
 $lang['bbcode_s_help'] = "Couleur du texte: [color=red]texte[/color] Astuce: #FF0000 fonctionne aussi";
 $lang['bbcode_f_help'] = "Taille du texte: [size=x-small]texte en petit[/size]";
 
-$lang['Emoticons'] = "Emoticons";
-$lang['More_emoticons'] = "Voir plus d'Emoticons";
+$lang['Emoticons'] = "Smilies";
+$lang['More_emoticons'] = "Voir plus de Smilies";
 
 $lang['Font_color'] = "Couleur";
 $lang['color_default'] = "Défaut";
@@ -431,6 +440,15 @@ $lang['No_unread_pm'] = "Vous n'avez pas de messages non lus";
 $lang['You_new_pm'] = "Un nouveau message privé vous attend dans votre Boîte de réception";
 $lang['You_new_pms'] = "De nouveaux messages privés vous attendent dans votre Boîte de réception";
 $lang['You_no_new_pm'] = "No new private messages are waiting for you";
+
+$lang['Read_pm'] = 'Lire le message'; 
+$lang['Post_new_pm'] = 'Poster le message'; 
+$lang['Post_reply_pm'] = 'Répondre au message'; 
+$lang['Post_quote_pm'] = 'Citer le message'; 
+$lang['Edit_pm'] = 'Editer le message'; 
+
+$lang['Unread_message'] = 'Message Non-lu'; 
+$lang['Read_message'] = 'Message déjà lu';
 
 $lang['Inbox'] = "Boîte de réception";
 $lang['Outbox'] = "Boîte d'envoi";
@@ -874,20 +892,20 @@ $lang['All_times'] = "Toutes les heures sont au format %s"; // eg. All times are
 
 $lang['-12'] = "GMT - 12 Heures";
 $lang['-11'] = "GMT - 11 Heures";
-$lang['-10'] = "HST (Hawaii)";
+$lang['-10'] = "GMT - 10 Heures";
 $lang['-9'] = "GMT - 9 Heures";
-$lang['-8'] = "PST (U.S./Canada)";
-$lang['-7'] = "MST (U.S./Canada)";
-$lang['-6'] = "CST (U.S./Canada)";
-$lang['-5'] = "EST (U.S./Canada)";
+$lang['-8'] = "GMT - 8 Heures";
+$lang['-7'] = "GMT - 7 Heures";
+$lang['-6'] = "GMT - 6 Heures";
+$lang['-5'] = "GMT - 5 Heures";
 $lang['-4'] = "GMT - 4 Heures";
 $lang['-3.5'] = "GMT - 3,5 Heures";
 $lang['-3'] = "GMT - 3 Heures";
-$lang['-2'] = "Mid-Atlantic";
+$lang['-2'] = "GMT - 2 Heures";
 $lang['-1'] = "GMT - 1 Heure";
 $lang['0'] = "GMT";
-$lang['1'] = "CET (Europe)";
-$lang['2'] = "EET (Europe)";
+$lang['1'] = "GMT + 1 Heure";
+$lang['2'] = "GMT + 2 Heures";
 $lang['3'] = "GMT + 3 Heures";
 $lang['3.5'] = "GMT + 3,5 Heures";
 $lang['4'] = "GMT + 4 Heures";
@@ -897,45 +915,45 @@ $lang['5.5'] = "GMT + 5,5 Heures";
 $lang['6'] = "GMT + 6 Heures";
 $lang['6.5'] = "GMT + 6.5 Heures";
 $lang['7'] = "GMT + 7 Heures";
-$lang['8'] = "WST (Australie)";
+$lang['8'] = "GMT + 8 Heures";
 $lang['9'] = "GMT + 9 Heures";
-$lang['9.5'] = "CST (Australie)";
-$lang['10'] = "EST (Australie)";
+$lang['9.5'] = "GMT + 9,5 Heures";
+$lang['10'] = "GMT + 10 Heures";
 $lang['11'] = "GMT + 11 Heures";
 $lang['12'] = "GMT + 12 Heures";
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = "(GMT -12:00 Heures) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 Heures) Iles Midway, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 Heures) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 Heures) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 Heures) Pacifique (USA &amp; Canada), Tijuana";
-$lang['tz']['-7'] = "(GMT -7:00 Heures) Montagnes (USA &amp; Canada), Arizona";
-$lang['tz']['-6'] = "(GMT -6:00 Heures) Central (USA &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 Heures) Est (USA &amp; Canada), Bogota, Lima, Quito";
-$lang['tz']['-4'] = "(GMT -4:00 Heures) Heure Atlantique (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 Heures) Terre-Neuve";
-$lang['tz']['-3'] = "(GMT -3:00 Heures) Brasilia, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 Heures) Centre-Atlantique, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 Heure) Les Açores, Iles du Cap Vert";
-$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, Londres, Lisbonne, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 Heure) Amsterdam, Berlin, Bruxelles, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 Heures) Le Caire, Helsinki, Kaliningrad, Afrique du Sud";
-$lang['tz']['3'] = "(GMT +3:00 Heures) Bagdad, Riyah, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 Heures) Téhéran";
-$lang['tz']['4'] = "(GMT +4:00 Heures) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 Heures) Kaboul";
-$lang['tz']['5'] = "(GMT +5:00 Heures) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 Heures) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 Heures) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 Heures) Bangkok, Hanoï, Djakarta";
-$lang['tz']['8'] = "(GMT +8:00 Heures) Pékin, Hong Kong, Perth, Singapour, Taïpei";
-$lang['tz']['9'] = "(GMT +9:00 Heures) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 Heures) Adélaïde, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 Heures) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 Heures) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 Heures) Auckland, Wellington, Fiji, Marshall Island";
+$lang['tz']['-12'] = "GMT -12:00 Heures";
+$lang['tz']['-11'] = "GMT -11:00 Heures";
+$lang['tz']['-10'] = "GMT -10:00 Heures";
+$lang['tz']['-9'] = "GMT -9:00 Heures";
+$lang['tz']['-8'] = "GMT -8:00 Heures";
+$lang['tz']['-7'] = "GMT -7:00 Heures";
+$lang['tz']['-6'] = "GMT -6:00 Heures";
+$lang['tz']['-5'] = "GMT -5:00 Heures";
+$lang['tz']['-4'] = "GMT -4:00 Heures";
+$lang['tz']['-3.5'] = "GMT -3:30 Heures";
+$lang['tz']['-3'] = "GMT -3:00 Heures";
+$lang['tz']['-2'] = "GMT -2:00 Heures";
+$lang['tz']['-1'] = "GMT -1:00 Heure";
+$lang['tz']['0'] = "GMT";
+$lang['tz']['1'] = "GMT +1:00 Heure";
+$lang['tz']['2'] = "GMT +2:00 Heures";
+$lang['tz']['3'] = "GMT +3:00 Heures";
+$lang['tz']['3.5'] = "GMT +3:30 Heures";
+$lang['tz']['4'] = "GMT +4:00 Heures";
+$lang['tz']['4.5'] = "GMT +4:30 Heures";
+$lang['tz']['5'] = "GMT +5:00 Heures";
+$lang['tz']['5.5'] = "GMT +5:30 Heures";
+$lang['tz']['6'] = "GMT +6:00 Heures";
+$lang['tz']['6.5'] = "GMT +6:30 Heures";
+$lang['tz']['7'] = "GMT +7:00 Heures";
+$lang['tz']['8'] = "GMT +8:00 Heures";
+$lang['tz']['9'] = "GMT +9:00 Heures";
+$lang['tz']['9.5'] = "GMT +9:30 Heures";
+$lang['tz']['10'] = "GMT +10:00 Heures";
+$lang['tz']['11'] = "GMT +11:00 Heures";
+$lang['tz']['12'] = "GMT +12:00 Heures";
 
 $lang['datetime']['Sunday'] = "Dimanche";
 $lang['datetime']['Monday'] = "Lundi";

@@ -35,7 +35,7 @@ if ( $board_config['gzip_compress'] )
 {
 	$phpver = phpversion();
 
-	if ( $phpver >= '4.0.4pl1' )
+	if ( $phpver >= '4.0.4pl1' && strstr($HTTP_USER_AGENT,'compatible') )
 	{
 		if ( extension_loaded('zlib') )
 		{
@@ -85,13 +85,11 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
-$user_forum_sql = ( !empty($forum_id) ) ? "AND ( u.user_session_page = $forum_id 
-	OR s.session_page = $forum_id)" : '';
+$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page = $forum_id" : '';
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
-		AND ( s.session_time >= ".( time() - 300 ) . " 
-			OR u.user_session_time >= " . ( time() - 300 ) . " )
+		AND s.session_time >= ".( time() - 300 ) . "
 		$user_forum_sql 
 	ORDER BY u.username ASC, s.session_ip ASC";
 if( !($result = $db->sql_query($sql)) )
@@ -386,7 +384,7 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING' => $lang['ENCODING'], 
 	'S_CONTENT_DIR_LEFT' => $lang['LEFT'], 
 	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'], 
-	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
+	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[number_format($board_config['board_timezone'])]),
 	'S_LOGIN_ACTION' => append_sid('login.'.$phpEx),
 
 	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],

@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Die folgende Email erhältst du von einem Administrator von {SITENAME}. Wenn diese E-Mail unerwünschten Inhalt (Spam) enthält, dann kontaktiere bitte den Webmaster unter:
 
 {BOARD_EMAIL}

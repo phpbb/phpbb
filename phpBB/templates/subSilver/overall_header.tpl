@@ -220,7 +220,7 @@ input.liteoption {
 </script>
 <!-- END switch_enable_pm_popup -->
 </head>
-<body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">
+<body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}" />
 
 <a name="top"></a>
 

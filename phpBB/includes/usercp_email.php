@@ -27,19 +27,19 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( !$userdata['session_logged_in'] )
-{
-	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
-	exit;
-}
-
 if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 {
-	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
+	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? intval($HTTP_GET_VARS[POST_USERS_URL]) : intval($HTTP_POST_VARS[POST_USERS_URL]);
 }
 else
 {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
+}
+
+if ( !$userdata['session_logged_in'] )
+{
+	header('Location: ' . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
+	exit;
 }
 
 $sql = "SELECT username, user_email, user_viewemail, user_lang  
@@ -94,16 +94,11 @@ if ( $result = $db->sql_query($sql) )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = 'From: ' . $userdata['user_email'] . "\n";
-					if ( !empty($HTTP_POST_VARS['cc_email']) )
-					{
-						$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
-					}
-					$email_headers .= 'Return-Path: ' . $userdata['user_email'] . "\n";
+					$email_headers = 'Return-Path: ' . $userdata['user_email'] . "\nFrom: " . $userdata['user_email'] . "\n";
 					$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 					$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
 					$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-					$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\r\n";
+					$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
 					$emailer->use_template('profile_send_email', $user_lang);
 					$emailer->email_address($user_email);
@@ -119,6 +114,25 @@ if ( $result = $db->sql_query($sql) )
 					);
 					$emailer->send();
 					$emailer->reset();
+
+					if ( !empty($HTTP_POST_VARS['cc_email']) )
+					{
+						$email_headers = 'Return-Path: ' . $userdata['user_email'] . "\nFrom: " . $userdata['user_email'] . "\n";
+						$emailer->use_template('profile_send_email');
+						$emailer->email_address($userdata['user_email']);
+						$emailer->set_subject($subject);
+						$emailer->extra_headers($email_headers);
+
+						$emailer->assign_vars(array(
+							'SITENAME' => $board_config['sitename'], 
+							'BOARD_EMAIL' => $board_config['board_email'], 
+							'FROM_USERNAME' => $userdata['username'], 
+							'TO_USERNAME' => $username, 
+							'MESSAGE' => $message)
+						);
+						$emailer->send();
+						$emailer->reset();
+					}
 
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')

@@ -1,4 +1,5 @@
 Subject: Nytt medlemskap
+Charset: iso-8859-1
 
 Hei,
 

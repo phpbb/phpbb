@@ -1,4 +1,5 @@
 Subject: Käyttäjätunnus aktivoitu
+Charset: iso-8859-1
 
 Tervehdys {USERNAME},
 

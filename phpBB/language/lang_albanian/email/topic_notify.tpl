@@ -1,4 +1,5 @@
 Subject: Përgjigje tek tema - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 Përshëndetje {USERNAME},
 

@@ -1,4 +1,5 @@
 Subject: Eine Anfrage zum Beitritt in diese Gruppe wurde erstellt
+Charset: iso-8859-1
 
 Hallo {GROUP_MODERATOR}!
 

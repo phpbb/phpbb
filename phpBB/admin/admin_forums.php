@@ -1,13 +1,12 @@
 <?php
 /***************************************************************************
- *										admin_forums.php
+ *                             admin_forums.php
  *                            -------------------
  *   begin                : Thursday, Jul 12, 2001
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
- *
  *
  ***************************************************************************/
 
@@ -32,9 +31,9 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 $forum_auth_ary = array(
@@ -302,8 +301,9 @@ if( !empty($mode) )
 			$catlist = get_list('category', $cat_id, TRUE);
 
 			$forumstatus == ( FORUM_LOCKED ) ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
-			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>Unlocked</option>\n";
-			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>Locked</option>\n";
+			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
+			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n"; 
+
 
 			$template->set_filenames(array(
 				"body" => "admin/forum_edit_body.tpl")
@@ -493,7 +493,7 @@ if( !empty($mode) )
 			// There is no problem having duplicate forum names so we won't check for it.
 			//
 			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
-				VALUES ('" . $HTTP_POST_VARS['categoryname'] . "', $next_order)";
+				VALUES ('" . str_replace("\'", "''", $HTTP_POST_VARS['categoryname']) . "', $next_order)";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
@@ -826,7 +826,7 @@ if( !empty($mode) )
 
 	if ($show_index != TRUE)
 	{
-		include('page_footer_admin.'.$phpEx);
+		include('./page_footer_admin.'.$phpEx);
 		exit;
 	}
 }
@@ -931,6 +931,6 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

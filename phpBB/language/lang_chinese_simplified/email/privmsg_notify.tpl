@@ -1,4 +1,5 @@
 Subject: 新的站内信件
+Charset: gb2312
 
 {USERNAME} 您好,
 

@@ -208,7 +208,6 @@ $lang['Select_ip'] = "Sélectionner une IP";
 $lang['Select_email'] = "Sélectionner une adresse Email";
 
 $lang['Ban_username'] = "Bannir un ou plusieurs utilisateurs spécifiques";
-$lang['Ban_username_explain'] = "Vous pouvez bannir plusieurs utilisateurs en une fois en utilisant la combinaison appropriée de souris et clavier pour votre ordinateur et navigateur internet";
 
 $lang['Ban_IP'] = "Bannir une ou plusieurs adresses IP ou noms de serveurs";
 $lang['IP_hostname'] = "Adresses IP ou noms de serveurs";
@@ -468,6 +467,7 @@ $lang['reset_group_changes'] = "Remettre à zero";
 $lang['No_group_name'] = "Vous devez spécifier un nom pour ce groupe";
 $lang['No_group_moderator'] = "Vous devez spécifier un modérateur pour ce groupe";
 $lang['No_group_mode'] = "Vous devez spécifier un mode pour ce groupe, ouvert ou fermé";
+$lang['No_group_action'] = "Aucune action n'a été spécifiée";
 $lang['delete_group_moderator'] = "Supprimer l'ancien modérateur du groupe ?";
 $lang['delete_moderator_explain'] = "Si vous changez le modérateur du groupe, cochez cette case pour enlever l'ancien modérateur de ce groupe. Sinon, vous pouvez ne pas la cocher, et l'utilisateur deviendra un membre régulier de ce groupe.";
 $lang['Click_return_groupsadmin'] = "Cliquez %sici%s pour revenir à l'Administration des Groupes.";

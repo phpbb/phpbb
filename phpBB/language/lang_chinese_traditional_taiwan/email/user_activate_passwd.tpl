@@ -1,4 +1,4 @@
-Subject: 新的密碼啟用
+Charset: big5
 
 親愛的 {USERNAME} 您好,
 

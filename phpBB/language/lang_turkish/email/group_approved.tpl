@@ -1,4 +1,5 @@
 Subject: Baþvurunuz onaylanmýþtýr
+Charset: iso-8859-9
 
 Tebrikler,
 

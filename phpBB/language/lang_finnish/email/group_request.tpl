@@ -1,4 +1,5 @@
 Subject: Ryhmään on tehty jäseneksi liittymispyyntö
+Charset: iso-8859-1
 
 Arvoisa {GROUP_MODERATOR},
 

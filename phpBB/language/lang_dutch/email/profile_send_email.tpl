@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Hallo {TO_USERNAME},
 
 Dit bericht bevalt een email die de gebruiker "{FROM_USERNAME}" naar jou

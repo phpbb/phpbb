@@ -1,4 +1,5 @@
 Subject: Din tilmelding er blevet godkendt
+Charset: iso-8859-1
 
 Tillykke,
 

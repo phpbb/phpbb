@@ -1,4 +1,4 @@
-Subject: "您有新的私人訊息
+Charset: big5
 
 親愛的 {USERNAME} 您好,
 

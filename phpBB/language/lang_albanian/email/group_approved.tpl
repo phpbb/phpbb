@@ -1,4 +1,5 @@
 Subject: Kërkesa juaj u aprovua
+Charset: iso-8859-1
 
 Urime,
 

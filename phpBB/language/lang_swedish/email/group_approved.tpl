@@ -1,4 +1,5 @@
 Subject: Din förfrågan har blivit godkänd
+Charset: iso-8859-1
 
 Gratulera,
 

@@ -1,4 +1,6 @@
-Subject: O seu pedido foi aceite
+Charset: iso-8859-1
+
+Assunto: Pedido foi aceite.
 
 Parabéns,
 

@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Përshëndetje {TO_USERNAME},
 
 Mesazhi i mëposhtëm u dërgua për ju nga {FROM_USERNAME} nëpërmjet llogarisë tuaj tek {SITENAME}. Nqs ky mesazh është i padëshirueshëm, abuzues apo përmban material të pahijshëm ju lutem kontaktoni webmasterin tek adresa:

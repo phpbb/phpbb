@@ -328,8 +328,6 @@ $lang['Savebox_limits'] = "Maximális üzenetek száma az Elmentett Üzenetek mappáb
 
 $lang['Cookie_settings'] = "Cookie Beállítások"; 
 $lang['Cookie_settings_explain'] = "Beállíthatja a böngészõknek küldött cookie-kat. A legtöbb esetben az alapbeállítások megfelelõek. Legyen körültekintõ, mert egy helytelen beállítás megakadályozhatja a felhasználók belépését.";
-
-
 $lang['Cookie_domain'] = "Cookie domain";
 $lang['Cookie_name'] = "Cookie neve";
 $lang['Cookie_path'] = "Cookie elérési út";
@@ -472,6 +470,7 @@ $lang['reset_group_changes'] = "Változtatások visszavonása";
 $lang['No_group_name'] = "Meg kell adnia egy csoportnevet";
 $lang['No_group_moderator'] = "Meg kell adnia egy moderátort ennek a csoportnak";
 $lang['No_group_mode'] = "Meg kell adnia a csoport módját";
+$lang['No_group_action'] = 'Meg kell adnia a tevékenységet';
 $lang['delete_group_moderator'] = "Régi csoport moderátor törlése?";
 $lang['delete_moderator_explain'] = "Ha megváltoztatja a csoport moderátorát, válassza ezt a lehetõséget a régi moderátor csoporttagságának megszûntetéséhez. Egyébként a régi moderátor tagja marad a csoportnak.";
 $lang['Click_return_groupsadmin'] = "Kattintson %side%s a Csoport Adminisztrációhoz való visszatéréshez.";
@@ -547,6 +546,7 @@ $lang['No_assigned_rank'] = "Nincs rang hozzárendelve";
 $lang['Rank_updated'] = "Rang sikeresen frissítve";
 $lang['Rank_added'] = "Rang sikeresen hozzáadva";
 $lang['Rank_removed'] = "Rang sikeresen törölve";
+$lang['No_update_ranks'] = 'A rang sikeresen törölve. Az érintett felhasználók beállításai nem lettek frissítve, így azokat kézzel be kell állítania';
 
 $lang['Click_return_rankadmin'] = "Kattintson %side%s a Rang Adminisztrációhoz való visszatéréshez";
 

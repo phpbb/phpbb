@@ -1,4 +1,5 @@
 Subject: Nytt användarkonto
+Charset: iso-8859-1
 
 Hej,
 
