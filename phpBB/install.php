@@ -906,12 +906,12 @@ else
 			//
 			$config_data = '<?php'."\n\n";
 			$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
-			$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
-			$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
-			$config_data .= '$dbname = "' . $dbname . '";' . "\n";
-			$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
-			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
-			$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
+			$config_data .= '$dbms = \'' . $dbms . '\';' . "\n\n";
+			$config_data .= '$dbhost = \'' . $dbhost . '\';' . "\n";
+			$config_data .= '$dbname = \'' . $dbname . '\';' . "\n";
+			$config_data .= '$dbuser = \'' . $dbuser . '\';' . "\n";
+			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
+			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
