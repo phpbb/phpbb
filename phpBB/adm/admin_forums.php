@@ -221,6 +221,7 @@ switch ($mode)
 
 					$sql['forum_posts'] = 0;
 					$sql['forum_topics'] = 0;
+					$sql['forum_topics_real'] = 0;
 				}
 
 				if ($row['parent_id'] != $parent_id)
