@@ -850,6 +850,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		$db->sql_query($sql);
 
 		// Update user post count ... if appropriate
+		// TODO: alter to use the ACL
 		if (!empty($post_data['enable_post_count']) && $user->data['user_id'] != ANONYMOUS)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
