@@ -53,6 +53,13 @@ h2 {
 	color: #006699;
 }
 
+.syntaxbg { color: #FFFFFF; }
+.syntaxcomment { color: #FF8000; }
+.syntaxdefault { color: #0000BB; }
+.syntaxhtml { color: #000000; }
+.syntaxkeyword { color: #007700; }
+.syntaxstring { color: #DD0000; }
+
 /*
 	Anchors
 */
@@ -145,6 +152,20 @@ td.cat {
 .row3 {
 	background-color:	#D1D7DC;
 }
+
+.sourcenum {
+	color:			gray;
+	font-family:	'Courier New', monospace;
+	font-size:		9pt;
+	font-weight:	bold;
+	line-height:	160%;
+}
+.source {
+	font-family:	'Courier New', monospace;
+	font-size:		9pt;
+	line-height:	160%;
+}
+
 
 /*
 	Misc

@@ -590,6 +590,8 @@ switch ($mode)
 			'login'		=> array(
 				'login_body.html', 'login_forum.html', 
 			), 
+			'bbcode'	=> array(
+				'b', 'u', 'i', 'color', 'size', 'flash', 'img', 'url', 'email', 'code', 'quote', 'quote_username', 'listitem', 'olist', 'ulist'), 
 			'custom'	=> array(), 
 		);
 
@@ -597,7 +599,6 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'cache':
-
 				$sql = 'SELECT * 
 					FROM ' . STYLES_TPL_TABLE . "
 					WHERE template_id = $template_id";
@@ -633,6 +634,87 @@ switch ($mode)
 					trigger_error($user->lang['TEMPLATE_CACHE_CLEARED']);
 				}
 
+				if (!empty($_GET['source']) && file_exists($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx))
+				{
+					adm_page_header($user->lang['TEMPLATE_CACHE']);
+
+?>
+
+<h1><?php echo $_GET['source']; ?></h1>
+
+<?php
+
+					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
+					foreach ($conf as $ini_var)
+					{
+						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
+					}
+
+					$marker = time();
+					$code = implode("$marker", file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $_GET['source'] . '.html.' . $phpEx));
+
+					ob_start();
+					highlight_string($code);
+					$code = ob_get_contents();
+					ob_end_clean();
+
+					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.');
+					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;');
+
+					if ($remove_tags)
+					{
+						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;</span>';
+						$str_to[] = '';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
+						$str_to[] = '<span class="syntaxdefault">';
+						$str_from[] = '<span class="syntaxdefault">?&gt;</span>';
+						$str_to[] = '';
+					}
+
+					$code = str_replace($str_from, $str_to, $code);
+					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '\1\2\3', $code);
+					$code = explode("$marker", $code);
+
+?>
+
+<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
+<?php 
+	
+					$i = $j = 1;
+					$length = strlen(sizeof($code));
+					$indent = str_repeat('&nbsp;', $length);
+					foreach ($code as $key => $line)
+					{
+
+?>
+	<tr valign="top">
+		<td class="sourcenum"><?php echo $i; ?>&nbsp;</td>
+		<td class="source"><?php
+
+						echo $indent . $line;
+						$i++;
+						if (strlen($i) > $j)
+						{
+							$indent = substr($indent, 0, -6);
+							$j++;
+						}
+						unset($code[$key]);
+
+?></td>
+	</tr>
+<?php
+
+					}
+
+?>
+</table>
+
+<br clear="all" />
+
+<?php
+
+					adm_page_footer();
+				}
 
 				$tplcache_ary = array();
 				while ($file = readdir($dp))
@@ -663,6 +745,13 @@ function marklist(match, status)
 		eval('document.' + match + '.elements[i].checked = ' + status);
 	}
 }
+
+function viewsource(url)
+{
+	window.open(url, '_source', 'HEIGHT=550,resizable=yes,scrollbars=yes,WIDTH=750');
+	return false;
+}
+
 //-->
 </script>
 
@@ -688,7 +777,7 @@ function marklist(match, status)
 
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $filename; ?></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$template_id&amp;source=$filename"; ?>" onclick="viewsource('<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$template_id&amp;source=$filename"; ?>');return false"><?php echo $filename; ?></a></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo sprintf('%.1f KB', $times_ary['size'] / 1024); ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($times_ary['cache']); ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($times_ary['src']); ?></td>
