@@ -329,8 +329,12 @@ if($mode == "newtopic" || $mode == "reply")
 					if($db->sql_query($sql))
 					{
 						$sql = "UPDATE " . FORUMS_TABLE . " 
-							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 
-							WHERE forum_id = $forum_id";
+							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
+						if($mode == "newtopic")
+						{
+							$sql .= ", forum_topics = forum_topics + 1";
+						}
+						$sql .= " WHERE forum_id = $forum_id";
 
 						if($db->sql_query($sql))
 						{

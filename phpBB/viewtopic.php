@@ -455,7 +455,7 @@ if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 
 	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
-	if($forum_row[0]['topic_status'] == UNLOCKED)
+	if($forum_row[0]['topic_status'] == TOPIC_UNLOCKED)
 	{
 		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
