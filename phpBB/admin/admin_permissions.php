@@ -52,6 +52,7 @@ if (isset($_REQUEST['f']))
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $username = (isset($_REQUEST['username'])) ? $_REQUEST['username'] : '';
 $group_id = (isset($_REQUEST['g'])) ? intval($_REQUEST['g']) : '';
+$entries = (isset($_POST['entries'])) ? $_POST['entries'] : '';
 
 
 
