@@ -242,6 +242,12 @@ $lang['Config_explain'] = "Il modulo qui sotto ti permette di personalizzare tut
 $lang['Click_return_config'] = "Clicca %squi%s per tornare al pannello Configurazione Generale";
 
 $lang['General_settings'] = "Impostazioni Generali Forum";
+$lang['Server_name'] = "Nome Dominio";
+$lang['Server_name_explain'] = "Il nome del dominio da cui lanci il forum";
+$lang['Script_path'] = "Percorso Script";
+$lang['Script_path_explain'] = "Il percorso dove è situato phpBB2 relativo al nome di dominio";
+$lang['Server_port'] = "Porta del Server";
+$lang['Server_port_explain'] = "La porta del tuo server, di solito 80, cambia solo se è diversa";
 $lang['Site_name'] = "Nome del Sito";
 $lang['Site_desc'] = "Descrizione del Sito";
 $lang['Board_disable'] = "Disabilita il Forum";
