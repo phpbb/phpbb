@@ -25,17 +25,17 @@
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_PASSWORD}: *</span><br />
+	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" name="password" size="35" maxlength="100" value="{PASSWORD}" />
+		<input type="password" name="password" size="35" maxlength="100" value="" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_CONFIRM} {L_PASSWORD}: * </span><br />
+	  <td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}: * </span><br />
 		<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" name="password_confirm" size="35" maxlength="100" value="{PASSWORD_CONFIRM}" />
+		<input type="password" name="password_confirm" size="35" maxlength="100" value="" />
 	  </td>
 	</tr>
 	<tr> 
