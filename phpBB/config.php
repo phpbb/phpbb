@@ -64,6 +64,11 @@ define(NO_TOPICS, 5);
 define(GENERAL_ERROR, 6);
 define(LOGIN_FAILED, 7);
 
+// URL PARAMETERS
+define(POST_TOPIC_URL, 't');
+define(POST_FORUM_URL, 'f');
+define(POST_USERS_URL, 'u');
+
 // Session data
 $session_cookie = "phpBBsession";
 $session_cookie_time = 3600; 
@@ -76,7 +81,7 @@ $dbuser = "";
 $dbpasswd = "";
 
 // Date format (needs to go into DB)
-$date_format = "M d, Y h:i:s a";
+$date_format = "M d Y h:i:s a";
 
 // DB table config
 $table_prefix = "phpbb_";
