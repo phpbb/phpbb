@@ -422,7 +422,7 @@ if ($submit && $mode == 'orphan')
 	<h2><?php echo $user->lang['UPLOADING_FILES']; ?></h2>
 <?php
 		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
-		$message_parser = new parse_message(0);
+		$message_parser = new parse_message();
 
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE;

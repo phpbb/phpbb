@@ -833,9 +833,7 @@ if ($submit || $preview || $deleteall || $deletemark)
 			{
 				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
-				$message_parser = new parse_message();
-
-				$message_parser->message = $signature;
+				$message_parser = new parse_message($signature);
 				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
 
 				$sql_ary = array(
@@ -1545,8 +1543,7 @@ function marklist(match, status)
 				// Fudge-o-rama ...
 				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
-				$message_parser = new parse_message();
-				$message_parser->message = $signature_preview;
+				$message_parser = new parse_message($signature_preview);
 				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
 				$signature_preview = $message_parser->message;
 

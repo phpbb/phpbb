@@ -36,7 +36,6 @@ if (!function_exists('stripos'))
 // and parses it for attachments, html, bbcode and smilies
 class parse_message
 {
-	var $message_mode = 0; // MSG_POST/MSG_PM
 	var $message = '';
 	var $warn_msg = array();
 
@@ -49,10 +48,15 @@ class parse_message
 
 	var $smilies = '';
 
-	function parse_message($message_type)
+	function parse_message($message = '')
 	{
-		$this->message_mode = $message_type;
+		// Init BBCode UID
 		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
+
+		if ($message)
+		{
+			$this->message = $message;
+		}
 	}
 
 	function parse($html, $bbcode, $url, $smilies, $allow_img = true, $allow_flash = true, $allow_quote = true)
@@ -64,16 +68,19 @@ class parse_message
 		// Transform \r\n and \r into \n
 		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
 		$replace = array("\n", '', "\n\n");
-		$this->message = trim(preg_replace($match, $replace, $this->message));
+		$this->message = preg_replace($match, $replace, $this->message);
 
 		// Message length check
-		if (!strlen($this->message) || (intval($config['max_post_chars']) && strlen($this->message) > intval($config['max_post_chars'])))
+		if (!strlen($this->message) || ($config['max_post_chars'] && strlen($this->message) > $config['max_post_chars']))
 		{
 			$this->warn_msg[] = (!strlen($this->message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 			return $this->warn_msg;
 		}
 
+		// Parse HTML
 		$this->html($html);
+
+		// Parse BBCode
 		if ($bbcode && strpos($this->message, '[') !== false)
 		{
 			$this->bbcode_init();
@@ -87,24 +94,27 @@ class parse_message
 			}
 			$this->bbcode();
 		}
+
+		// Parse Emoticons
 		$this->emoticons($smilies);
+
+		// Parse URL's
 		$this->magic_url($url);
 
 		return implode('<br />', $this->warn_msg);
 	}
 
+	// Parse HTML
 	function html($html)
 	{
 		global $config;
-
-		$this->message = str_replace(array('<', '>'), array('&lt;', '&gt;'), $this->message);
 
 		if ($html && $config['allow_html_tags'])
 		{
 			// If $html is true then "allowed_tags" are converted back from entity
 			// form, others remain
 			$allowed_tags = split(',', $config['allow_html_tags']);
-
+			
 			if (sizeof($allowed_tags))
 			{
 				$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
@@ -112,6 +122,86 @@ class parse_message
 		}
 	}
 
+	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
+	// Cuts down displayed size of link if over 50 chars, turns absolute links
+	// into relative versions when the server/script path matches the link
+	function magic_url($url)
+	{
+		global $config;
+
+		if ($url)
+		{
+			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
+			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
+
+			$match = array();
+			$replace = array();
+
+			// relative urls for this board
+			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r<"\']+)#i';
+			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
+
+			// matches a xxxx://aaaaa.bbb.cccc. ...
+			$match[] = '#(^|[\n ])([\w]+?://.*?[^ \t\n\r<"\']*)#ie';
+			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
+
+			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#ie';
+			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
+
+			// matches an email@domain type address at the start of a line, or after a space.
+			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
+			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+
+			$this->message = preg_replace($match, $replace, $this->message);
+		}
+	}
+
+	function emoticons($smilie)
+	{
+		global $db, $user, $phpbb_root_path, $config;
+
+		if (!$smilie)
+		{
+			return;
+		}
+
+		$sql = 'SELECT * 
+			FROM ' . SMILIES_TABLE;
+		$result = $db->sql_query($sql);
+
+		// TEMP - maybe easier regular expression processing... at the moment two newlines prevents smilie substitution.
+		$this->message = str_replace("\n", "\\n", $this->message);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$match = $replace = array();
+
+			do
+			{
+				$match[] = "#(?<=.\W|\W.|\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			if ($config['max_post_smilies'])
+			{
+				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+
+				if ($num_matches !== false && $num_matches > intval($config['max_post_smilies']))
+				{
+					$this->message = str_replace("\\n", "\n", $this->message);
+					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
+					return;
+				}
+			}
+
+			$this->message = trim(preg_replace($match, $replace, ' ' . $this->message . ' '));
+			$this->message = str_replace("\\n", "\n", $this->message);
+		}
+	}
+
+	// Parse BBCode
 	function bbcode()
 	{
 		if (!$this->bbcodes)
@@ -584,100 +674,36 @@ class parse_message
 
 	function validate_url($var1, $var2)
 	{
-		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
+		global $config;
 
-		// Put validation regexps here
+		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
 		$valid = false;
-		if (preg_match('#^http(s?)://#i', $url))
+
+		$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
+		$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
+
+		// relative urls for this board
+		if (preg_match('#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r<"\']+)#i', $url) ||
+			preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
+			preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
 		{
 			$valid = true;
 		}
+
 		if ($valid)
 		{
-			return (!$url) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']';
+			if (!preg_match('#^[\w]+?://.*?#i', $url))
+			{
+				$url = 'http://' . $url;
+			}
+
+			return ($var1) ? '[url=' . $url . ':' . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']'; 
 		}
+
 		return '[url' . (($var1) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
 	}
 
-	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
-	// Cuts down displayed size of link if over 50 chars, turns absolute links
-	// into relative versions when the server/script path matches the link
-	function magic_url($url)
-	{
-		global $config;
-
-		if ($url)
-		{
-			$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
-			$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
-
-			$match = array();
-			$replace = array();
-
-			// relative urls for this board
-			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r <"\']+)#i';
-			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
-
-			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ])([\w]+?://.*?[^ \t\n\r<"]*)#ie';
-			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
-
-			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"]*)?)#ie';
-			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
-
-			// matches an email@domain type address at the start of a line, or after a space.
-			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
-
-			$this->message = preg_replace($match, $replace, $this->message);
-		}
-	}
-
-	function emoticons($smilie)
-	{
-		global $db, $user, $phpbb_root_path, $config;
-
-		if (!$smilie)
-		{
-			return;
-		}
-
-		$sql = 'SELECT * 
-			FROM ' . SMILIES_TABLE;
-		$result = $db->sql_query($sql);
-
-		// TEMP - maybe easier regular expression processing... at the moment two newlines prevents smilie substitution.
-		$this->message = str_replace("\n", "\\n", $this->message);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$match = $replace = array();
-
-			do
-			{
-				$match[] = "#(?<=.\W|\W.|\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			if ($config['max_post_smilies'])
-			{
-				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
-
-				if ($num_matches !== false && $num_matches > intval($config['max_post_smilies']))
-				{
-					$this->message = str_replace("\\n", "\n", $this->message);
-					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
-					return;
-				}
-			}
-
-			$this->message = trim(preg_replace($match, $replace, ' ' . $this->message . ' '));
-			$this->message = str_replace("\\n", "\n", $this->message);
-		}
-	}
-
+	// Parse Attachments
 	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
 	{
 		global $config, $auth, $user;

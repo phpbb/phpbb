@@ -533,6 +533,7 @@ function decode_text(&$message, $bbcode_uid)
 		":o:$bbcode_uid",
 		":$bbcode_uid"
 	);
+
 	$replace = array(
 		"\n",
 		'',
@@ -543,6 +544,19 @@ function decode_text(&$message, $bbcode_uid)
 
 	$message = ($bbcode_uid) ? str_replace($search, $replace, $message) : str_replace('<br />', "\n", $message);
 
+	// HTML
+	if ($config['allow_html_tags'])
+	{
+		// If $html is true then "allowed_tags" are converted back from entity
+		// form, others remain
+		$allowed_tags = split(',', $config['allow_html_tags']);
+			
+		if (sizeof($allowed_tags))
+		{
+			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
+		}
+	}
+
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
@@ -551,6 +565,7 @@ function decode_text(&$message, $bbcode_uid)
 		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 		'#<.*?>#s'
 	);
+	
 	$replace = array(
 		'\1',
 		'\1',
@@ -559,6 +574,7 @@ function decode_text(&$message, $bbcode_uid)
 		'\1',
 		''
 	);
+	
 	$message = preg_replace($match, $replace, $message);
 
 	return;

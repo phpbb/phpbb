@@ -160,7 +160,7 @@ if ($sql)
 		$db->sql_freeresult($result);
 	}
 
-	$message_parser = new parse_message(0);
+	$message_parser = new parse_message();
 
 
 	$message_parser->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
@@ -489,7 +489,7 @@ if ($submit || $preview || $refresh)
 	$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
 
 	
-	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
 	$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
 
 	$username			= ($_POST['username']) ? request_var('username', '') : $username;
