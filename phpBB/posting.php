@@ -293,7 +293,7 @@ if (isset($post))
 				'topic_time' 	=> $current_time,
 				'topic_type' 	=> intval($topic_type),
 				'topic_icon'	=> intval($icon),
-				'topic_approved'=> (empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
+				'topic_approved'=> (!empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
 			);
 			if (!empty($poll_options))
 			{
@@ -317,7 +317,7 @@ if (isset($post))
 			'post_username'		=> ($username != '') ? $username : '',
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
-			'post_approved' 	=> (empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
+			'post_approved' 	=> (!empty($forum_moderated) && !$auth->acl_gets('m_', 'a_', intval($forum_id))) ? 0 : 1,
 			'post_edit_time' 	=> ($mode == 'edit' && $poster_id == $user->data['user_id']) ? $current_time : 0,
 			'enable_sig' 		=> $enable_html,
 			'enable_bbcode' 	=> $enable_bbcode,
