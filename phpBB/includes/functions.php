@@ -766,6 +766,13 @@ function obtain_icons(&$icons)
 	return;
 }
 
+function generate_board_url()
+{
+	global $config;
+
+	return (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
+}
+
 // Redirects the user to another page then exits the script nicely
 function redirect($url)
 {
