@@ -101,7 +101,7 @@ function split_words(&$entry, $mode = 'post')
 	}
 	else
 	{
-		preg_match_all('/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/', $entry, $split_entries);
+		preg_match_all('/(\*?[à-ÿa-z0-9]+\*?)|\b([à-ÿa-z0-9]+)\b/', $entry, $split_entries);
 	}
 
 	return $split_entries[1];
