@@ -101,7 +101,7 @@ while( $row = $db->sql_fetchrow($result) )
 				$logged_hidden_online++;
 			}
 
-			if ( $row['user_allow_viewonline'] || $acl->get_admin_acl() )
+			if ( $row['user_allow_viewonline'] || $acl->get_acl_admin() )
 			{
 				$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 			}
