@@ -186,7 +186,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 			WHERE t.forum_id = f.forum_id
 				AND p.post_id = t.topic_last_post_id
 				AND p.post_time > " . $userdata['session_last_visit'] . " 
-				AND t.topic_moved_id IS NULL";
+				AND t.topic_moved_id = 0";
 		if(!$new_topic_ids = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
