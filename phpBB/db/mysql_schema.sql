@@ -54,7 +54,9 @@ CREATE TABLE phpbb_config (
    override_themes tinyint(3),
    email_sig varchar(255),
    email_from varchar(100),
+   default_dateformat varchar(20),
    default_lang varchar(255),
+   system_timezone smallint(6),
    PRIMARY KEY (config_id),
    UNIQUE selected (selected)
 );
@@ -123,6 +125,8 @@ CREATE TABLE phpbb_forums (
 # --------------------------------------------------------
 #
 # Table structure for table 'phpbb_headermetafooter'
+#
+# Do we really need this anymore with templating?
 #
 
 CREATE TABLE phpbb_headermetafooter (
