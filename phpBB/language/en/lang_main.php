@@ -288,7 +288,12 @@ $lang = array(
 	'DELETE_POST' => 'Delete',
 	'DELETE_POST_WARN' => 'Once deleted the post cannot be recovered',
 	'REPORT_TO_ADMIN' => 'Report this post',
-	'POST_BEEN_REPORTED' => 'This post has already been reported.',
+
+	'POST_BEEN_REPORTED' => 'This post has been reported',
+	'POST_NOT_BEEN_APPROVED' => 'This post has not been approved',
+	'TOPIC_BEEN_REPORTED' => 'This topic has been reported',
+	'TOPIC_NOT_BEEN_APPROVED' => 'This topic has not been approved',
+
 	'wrote' => 'wrote',
 	'Quote' => 'Quote',
 	'Code' => 'Code',
