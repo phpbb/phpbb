@@ -40,14 +40,12 @@ $redirect = (!empty($redirect)) ? $_SERVER['QUERY_STRING'] : '';
 // Do the login/logout/form/whatever
 if (isset($login) || isset($logout))
 {
-	if (isset($login) && !$user->data['user_id'])
+	if (isset($login) && $user->data['user_id'] == ANONYMOUS)
 	{
 		$autologin = (!empty($autologin)) ? true : false;
 
-		//
 		// Is the board disabled? Are we an admin? No, then back to the index we go
-		//
-		if ($config['board_disable'] && !$auth->acl_get('a_'))
+		if (!empty($config['board_disable']) && !$auth->acl_get('a_'))
 		{
 			redirect("index.$phpEx$SID");
 		}
@@ -59,7 +57,7 @@ if (isset($login) || isset($logout))
 			);
 
 			$message = $user->lang['Error_login'] . '<br /><br />' . sprintf($user->lang['Click_return_login'], '<a href="' . "login.$phpEx$SID&amp;redirect=$redirect" . '">', '</a>') . '<br /><br />' .  sprintf($user->lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a>');
-			message_die(MESSAGE, $message);
+			trigger_error($message);
 		}
 	}
 	else if ($user->data['user_id'] != ANONYMOUS)
@@ -74,7 +72,7 @@ if (isset($login) || isset($logout))
 	redirect($redirect_url);
 }
 
-if ( !$user->data['user_id'] )
+if ($user->data['user_id'] == ANONYMOUS)
 {
 	$template->assign_vars(array(
 		'L_ENTER_PASSWORD'	=> $user->lang['Enter_password'],
