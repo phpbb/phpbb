@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_main.php,v 1.75 2002/01/03 22:53:04 the_systech Exp $
+ *     $Id: lang_main.php,v 1.82 2002/02/03 18:17:08 thefinn Exp $
  *
  ****************************************************************************/
 
@@ -19,14 +19,14 @@
  *
  ***************************************************************************/
 
-/*************************************************************************** 
-*                     Bulgarian translation (Български превод)
-*                              ------------------- 
+/***************************************************************************
+*                     Bulgarian translation
+*                              -------------------
 *     begin                : Thu Dec 06 2001
-*     last update          : Fri Jan 28 2001  
-*     by                   : Boby Dimitrov (Боби Димитров) 
-*     email                : boby@azholding.com 
-****************************************************************************/ 
+*     last update          : Wed Feb 27 2002
+*     by                   : Boby Dimitrov
+*     email                : boby@azholding.com
+****************************************************************************/
 
 //
 // The format of this file is:
@@ -150,8 +150,8 @@ $lang['Guest_users_total'] = "%d Гости";
 $lang['Guest_user_total'] = "%d Гост";
 $lang['Record_online_users'] = "Най-много потребители онлайн: <b>%s</b>, на %s"; // first %s = number of users, second %s is the date.
 
-$lang['Admin_online_color'] = "%sАдминистратор%s"; 
-$lang['Mod_online_color'] = "%sМодератор%s"; 
+$lang['Admin_online_color'] = "%sАдминистратор%s";
+$lang['Mod_online_color'] = "%sМодератор%s";
 
 $lang['You_last_visit'] = "Последното ви посещение: %s"; // %s replaced by date/time
 $lang['Current_time'] = "В момента е: %s"; // %s replaced by time
@@ -169,8 +169,8 @@ $lang['FAQ'] = "Въпроси/Отговори";
 $lang['BBCode_guide'] = "Упътване за BBCode";
 $lang['Usergroups'] = "Потребителски групи";
 $lang['Last_Post'] = "Последно мнение";
-$lang['Moderator'] = "Модератор"; 
-$lang['Moderators'] = "Модератори"; 
+$lang['Moderator'] = "Модератор";
+$lang['Moderators'] = "Модератори";
 
 
 //
@@ -182,7 +182,7 @@ $lang['Posted_article_total'] = "Нашите потребители са написали <b>%d</b> мнение
 $lang['Registered_users_zero_total'] = "Имаме <b>0</b> регистрирани потребители"; // # registered users
 $lang['Registered_users_total'] = "Имаме <b>%d</b> регистрирани потребители"; // # registered users
 $lang['Registered_user_total'] = "Имаме <b>%d</b> регистриран потребител"; // # registered users
-$lang['Newest_user'] = "Най-новият потребител е <b>%s%s%s</b>"; // a href, username, /a 
+$lang['Newest_user'] = "Най-новият потребител е <b>%s%s%s</b>"; // a href, username, /a
 
 $lang['No_new_posts_last_visit'] = "Няма нови мнения след последното ви посещение.";
 $lang['No_new_posts'] = "Няма нови мнения";
@@ -251,7 +251,7 @@ $lang['Rules_delete_can'] = "<b>Можете</b> да изтривате съобщенията си";
 $lang['Rules_delete_cannot'] = "<b>Не Можете</b> да изтривате съобщенията си";
 $lang['Rules_vote_can'] = "<b>Можете</b> да гласувате в анкети";
 $lang['Rules_vote_cannot'] = "<b>Не Можете</b> да гласувате в анкети";
-$lang['Rules_moderate'] = "<b>Можете</b> да %sмодерирате този форум%s"; // %s replaced by a href links, do not remove! 
+$lang['Rules_moderate'] = "<b>Можете</b> да %sмодерирате този форум%s"; // %s replaced by a href links, do not remove!
 
 $lang['No_topics_post_one'] = "В този форум няма теми<br />Кликни на <b>Нова Тема</b>, за да напишеш първата!";
 
@@ -280,7 +280,7 @@ $lang['Oldest_First'] = "Първо най-старите";
 
 $lang['Back_to_top'] = "Върнете се в началото";
 
-$lang['Read_profile'] = "Вижте профила на потребителя"; 
+$lang['Read_profile'] = "Вижте профила на потребителя";
 $lang['Send_email'] = "Пратете мейл на потребителя";
 $lang['Visit_website'] = "Посетете сайта на потребителя";
 $lang['ICQ_status'] = "ICQ Статус";
@@ -306,6 +306,7 @@ $lang['Start_watching_topic'] = "Наблюдавайте тази тема за отговори";
 $lang['No_longer_watching'] = "Вече не наблюдавате темата за отговори";
 $lang['You_are_watching'] = "Вече наблюдавате темата за отговори. Ще получите мейл, когато някой отговори на темата.";
 
+$lang['Total_votes'] = "Общо гласове";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -365,7 +366,7 @@ $lang['Disable_Smilies_post'] = "Изключи Smilies в това мнение";
 
 $lang['HTML_is_ON'] = "HTML е <u>Включен</u>";
 $lang['HTML_is_OFF'] = "HTML е <u>Изключен</u>";
-$lang['BBCode_is_ON'] = "%sBBCode%s е <u>Включен</u>"; // %s are replaced with URI pointing to FAQ 
+$lang['BBCode_is_ON'] = "%sBBCode%s е <u>Включен</u>"; // %s are replaced with URI pointing to FAQ
 $lang['BBCode_is_OFF'] = "%sBBCode%s е <u>Изключен</u>";
 $lang['Smilies_are_ON'] = "Smilies са <u>Включени</u>";
 $lang['Smilies_are_OFF'] = "Smilies са <u>Изключени</u>";
@@ -381,47 +382,47 @@ $lang['Vote_cast'] = "Вашия глас е записан успешно";
 
 $lang['Topic_reply_notification'] = "Уведемояване за отговори по темата";
 
-$lang['bbcode_b_help'] = "Чер текст: [b]текст[/b] (alt+b)"; 
-$lang['bbcode_i_help'] = "Курсив текс: [i]текст[/i] (alt+i)"; 
-$lang['bbcode_u_help'] = "Подчертан текст: [u]текст[/u] (alt+u)"; 
-$lang['bbcode_q_help'] = "Цитат: [quote]текст[/quote] (alt+q)"; 
-$lang['bbcode_c_help'] = "Програмен код: [code]код[/code] (alt+c)"; 
-$lang['bbcode_l_help'] = "Списък: [list]текст[/list] (alt+l)"; 
-$lang['bbcode_o_help'] = "Подреден списък: [list=]текст[/list] (alt+o)"; 
-$lang['bbcode_p_help'] = "Изображение: [img]http://адреса.на.изображението[/img] (alt+p)"; 
-$lang['bbcode_w_help'] = "Връзка: [url]http://url[/url] or [url=http://url]Описание[/url] (alt+w)"; 
-$lang['bbcode_a_help'] = "Затвори всички BBCode тагове"; 
-$lang['bbcode_s_help'] = "Цвят на текста: [color=red]text[/color] Mожете да ползвате и color=#FF0000"; 
-$lang['bbcode_f_help'] = "Размер на текста: [size=x-small]малък текст[/size]"; 
- 
-$lang['Emoticons'] = "Emoticons"; 
-$lang['More_emoticons'] = "Виж всички Emoticons"; 
- 
-$lang['Font_color'] = "Цвят"; 
-$lang['color_default'] = "Основен"; 
-$lang['color_dark_red'] = "Тъмно червен"; 
-$lang['color_red'] = "Червен"; 
-$lang['color_orange'] = "Оранжев"; 
-$lang['color_brown'] = "Кафяв"; 
-$lang['color_yellow'] = "Жълт"; 
-$lang['color_green'] = "Зелен"; 
-$lang['color_olive'] = "Маслинов"; 
-$lang['color_cyan'] = "Цианов"; 
-$lang['color_blue'] = "Син"; 
-$lang['color_dark_blue'] = "Тъмно син"; 
-$lang['color_indigo'] = "Индигов"; 
-$lang['color_violet'] = "Виолетов"; 
-$lang['color_white'] = "Бял"; 
-$lang['color_black'] = "Черен"; 
- 
-$lang['Font_size'] = "Размер"; 
-$lang['font_tiny'] = "Много малък"; 
-$lang['font_small'] = "Малък"; 
-$lang['font_normal'] = "Нормален"; 
-$lang['font_large'] = "Голям"; 
-$lang['font_huge'] = "Огромен"; 
- 
-$lang['Close_Tags'] = "Затвори таговете"; 
+$lang['bbcode_b_help'] = "Чер текст: [b]текст[/b] (alt+b)";
+$lang['bbcode_i_help'] = "Курсив текс: [i]текст[/i] (alt+i)";
+$lang['bbcode_u_help'] = "Подчертан текст: [u]текст[/u] (alt+u)";
+$lang['bbcode_q_help'] = "Цитат: [quote]текст[/quote] (alt+q)";
+$lang['bbcode_c_help'] = "Програмен код: [code]код[/code] (alt+c)";
+$lang['bbcode_l_help'] = "Списък: [list]текст[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Подреден списък: [list=]текст[/list] (alt+o)";
+$lang['bbcode_p_help'] = "Изображение: [img]http://адреса.на.изображението[/img] (alt+p)";
+$lang['bbcode_w_help'] = "Връзка: [url]http://url[/url] or [url=http://url]Описание[/url] (alt+w)";
+$lang['bbcode_a_help'] = "Затвори всички BBCode тагове";
+$lang['bbcode_s_help'] = "Цвят на текста: [color=red]text[/color] Mожете да ползвате и color=#FF0000";
+$lang['bbcode_f_help'] = "Размер на текста: [size=x-small]малък текст[/size]";
+
+$lang['Emoticons'] = "Emoticons";
+$lang['More_emoticons'] = "Виж всички Emoticons";
+
+$lang['Font_color'] = "Цвят";
+$lang['color_default'] = "Основен";
+$lang['color_dark_red'] = "Тъмно червен";
+$lang['color_red'] = "Червен";
+$lang['color_orange'] = "Оранжев";
+$lang['color_brown'] = "Кафяв";
+$lang['color_yellow'] = "Жълт";
+$lang['color_green'] = "Зелен";
+$lang['color_olive'] = "Маслинов";
+$lang['color_cyan'] = "Цианов";
+$lang['color_blue'] = "Син";
+$lang['color_dark_blue'] = "Тъмно син";
+$lang['color_indigo'] = "Индигов";
+$lang['color_violet'] = "Виолетов";
+$lang['color_white'] = "Бял";
+$lang['color_black'] = "Черен";
+
+$lang['Font_size'] = "Размер";
+$lang['font_tiny'] = "Много малък";
+$lang['font_small'] = "Малък";
+$lang['font_normal'] = "Нормален";
+$lang['font_large'] = "Голям";
+$lang['font_huge'] = "Огромен";
+
+$lang['Close_Tags'] = "Затвори таговете";
 $lang['Styles_tip'] = "Идея: Стиловете могат да бъдат прилагани на селектиран текст";
 
 //
@@ -454,7 +455,7 @@ $lang['Sent'] = "Изпратено";
 $lang['Saved'] = "Съхранено";
 $lang['Delete_marked'] = "Изтрийте маркираните";
 $lang['Delete_all'] = "Изтрийте всички";
-$lang['Save_marked'] = "Съхранете маркираните"; 
+$lang['Save_marked'] = "Съхранете маркираните";
 $lang['Save_message'] = "Съхранете съобщението";
 $lang['Delete_message'] = "Изтрийте съобщението";
 
@@ -468,9 +469,9 @@ $lang['Cannot_send_privmsg'] = "Администраторите са забранили изпращането на лич
 $lang['No_to_user'] = "Трябва да въведете потребителско име, за да изпратите това съобщение";
 $lang['No_such_user'] = "Няма такъв потребител";
 
-$lang['Disable_HTML_pm'] = "Изключете HTML в това съобщение"; 
-$lang['Disable_BBCode_pm'] = "Изключете BBCode в това съобщение"; 
-$lang['Disable_Smilies_pm'] = "Изключете Smilies в това съобщение"; 
+$lang['Disable_HTML_pm'] = "Изключете HTML в това съобщение";
+$lang['Disable_BBCode_pm'] = "Изключете BBCode в това съобщение";
+$lang['Disable_Smilies_pm'] = "Изключете Smilies в това съобщение";
 
 $lang['Message_sent'] = "Съобщението беше изпратено";
 
@@ -498,8 +499,8 @@ $lang['Confirm_delete_pm'] = "Сигурни ли се, че искате да изтриете това съобщени
 $lang['Confirm_delete_pms'] = "Сигурни ли се, че искате да изтриете тези съобщения?";
 
 $lang['Inbox_size'] = "Папката ви Входящи е %d%% пълна"; // eg. Your Inbox is 50% full
-$lang['Sentbox_size'] = "Папката ви Получени е %d%% пълна"; 
-$lang['Savebox_size'] = "Папката ви Съхранени е %d%% пълна"; 
+$lang['Sentbox_size'] = "Папката ви Получени е %d%% пълна";
+$lang['Savebox_size'] = "Папката ви Съхранени е %d%% пълна";
 
 $lang['Click_view_privmsg'] = "Кликнете %sтук%s, за да видите папката Входящи";
 
@@ -507,7 +508,7 @@ $lang['Click_view_privmsg'] = "Кликнете %sтук%s, за да видите папката Входящи";
 //
 // Profiles/Registration
 //
-$lang['Viewing_user_profile'] = "Профил на %s"; // %s is username 
+$lang['Viewing_user_profile'] = "Профил на %s"; // %s is username
 $lang['About_user'] = "Информация за %s"; // %s is username
 
 $lang['Preferences'] = "Преференции";
@@ -527,7 +528,7 @@ $lang['Send_private_message'] = "Изпратете лично съобщение";
 $lang['Hidden_email'] = "[ Скрит мейл ]";
 $lang['Search_user_posts'] = "Вижте всички мнения на потребителя";
 $lang['Interests'] = "Интереси";
-$lang['Occupation'] = "Професия"; 
+$lang['Occupation'] = "Професия";
 $lang['Poster_rank'] = "Ранк във Форума";
 
 $lang['Total_posts'] = "Общо мнения";
@@ -549,7 +550,7 @@ $lang['Always_html'] = "Винаги разрешавай HTML";
 $lang['Always_bbcode'] = "Винаги разрешавай BBCode";
 $lang['Always_add_sig'] = "Винаги прилагай подписа ми";
 $lang['Always_notify'] = "Винаги ме уведомявай за отговори";
-$lang['Always_notify_explain'] = "Изпраща мейл, когато някой отговори на тема, която сте пуснали. Тази опция може да бъде променена при всяко ваше мнение"; 
+$lang['Always_notify_explain'] = "Изпраща мейл, когато някой отговори на тема, която сте пуснали. Тази опция може да бъде променена при всяко ваше мнение";
 
 $lang['Board_style'] = "Стил на Борда";
 $lang['Board_lang'] = "Език на Борда";
@@ -588,8 +589,8 @@ $lang['Delete_Image'] = "Изтрите Аватара";
 $lang['Current_Image'] = "Текущ Аватар";
 
 $lang['Notify_on_privmsg'] = "Уведомяване при ново лично съобщение";
-$lang['Popup_on_privmsg'] = "Отвори прозорец при ново лично съобщение"; 
-$lang['Popup_on_privmsg_explain'] = "Някой форум-теми могат да отварят нов прозорец, за да ви информират когато пристигне ново лично съобщение."; 
+$lang['Popup_on_privmsg'] = "Отвори прозорец при ново лично съобщение";
+$lang['Popup_on_privmsg_explain'] = "Някой форум-теми могат да отварят нов прозорец, за да ви информират когато пристигне ново лично съобщение.";
 $lang['Hide_user'] = "Скриване на вашия онлайн статус";
 
 $lang['Profile_updated'] = "Профилът ви е обновен";
@@ -597,18 +598,18 @@ $lang['Profile_updated_inactive'] = "Профилът ви е обновен, но тъй като сте пром
 
 $lang['Password_mismatch'] = "Паролите, които сте въвели не съвпадат";
 $lang['Current_password_mismatch'] = "Паролата, която сте въвели не съвпада с тази в базата";
-$lang['Password_long'] = "Паролата ви неможе да е по-дълга от 32 символа!"; 
-$lang['Username_taken'] = "Потребителското име, което сте въвели е заето!"; 
-$lang['Username_invalid'] = "Потребителското име, което сте въвели е заето, забранено, или съдържа невалидни символи, като например \" !"; 
-$lang['Username_disallowed'] = "Потребителското име, което сте въвели е забранено!"; 
-$lang['Email_taken'] = "Мейл адреса, който сте въвели, е вече използван от друг потребител!"; 
-$lang['Email_banned'] = "Мейл адреса, който сте въвели, е баннат!"; 
-$lang['Email_invalid'] = "Мейл адреса, който сте въвели, е невалиден!"; 
+$lang['Password_long'] = "Паролата ви неможе да е по-дълга от 32 символа!";
+$lang['Username_taken'] = "Потребителското име, което сте въвели е заето!";
+$lang['Username_invalid'] = "Потребителското име, което сте въвели е заето, забранено, или съдържа невалидни символи, като например \" !";
+$lang['Username_disallowed'] = "Потребителското име, което сте въвели е забранено!";
+$lang['Email_taken'] = "Мейл адреса, който сте въвели, е вече използван от друг потребител!";
+$lang['Email_banned'] = "Мейл адреса, който сте въвели, е баннат!";
+$lang['Email_invalid'] = "Мейл адреса, който сте въвели, е невалиден!";
 $lang['Signature_too_long'] = "Подписът ви е прекалено дълъг";
 $lang['Fields_empty'] = "Трябва да попълните задължителните полета";
 $lang['Avatar_filetype'] = "Аватара трябва да е .jpg, .gif или .png";
 $lang['Avatar_filesize'] = "Размера на файла на Аватара трябва да е по-малко от %dkB"; // The avatar image file size must be less than 6 kB
-$lang['Avatar_imagesize'] = "Аватара трябва да има основа по-малка от %d пиксела и височина по-малка от %d пиксела"; 
+$lang['Avatar_imagesize'] = "Аватара трябва да има основа по-малка от %d пиксела и височина по-малка от %d пиксела";
 
 $lang['Welcome_subject'] = "Добре дошли на %s Форумите"; // Welcome to my.com forums
 $lang['New_account_subject'] = "Нов потребител";
@@ -622,15 +623,15 @@ $lang['Account_active_admin'] = "Потребителят ви е активиран.";
 $lang['Reactivate'] = "Ре-активирайте потребителя си!";
 $lang['COPPA'] = "Потребителя ви създаден, но трябва да бъде одобрен. Моля проверете мейла си за повече информация.";
 
-$lang['Registration'] = "Условия за регистрация"; 
-$lang['Reg_agreement'] = "Въпреки, че администраторите и модераторите на този форум ще се опитат да премахнат или да променят възмжно най-бързо всеки материал, носещ вреда, невъзможно е да бъдат прегледани всички съобщения. Вие разбирате, че всички съобщения на тези форуми изразяват личното мнение на съответните им автори, а не на администраторите, модераторите или уебмастъра (като изключим съобщенията, пуснати от тези хора), и следователно те не носят никаква отговорност.<br /><br />Приемате се да не пишете никакъв груб, неприличен, вулгарен, заплашителен, сексуално-ориентиран или всякакъв друг материал, който нарушава законите. Такова поведение може да доведе до моменталното и постоянното ви изгонване от форумите (както и уведомяването на вашия доставчик). IP адресите, от които са направени всички съобщения се записват и могат да бъдат използвани в такива случаи. Приемате, че уебмастъра, администратора и модераторите на този форум  имат правото да премахват, променят или заключват всяка тема по всяко време, ако намерят за уместно. Като потребител одобрявате записването на всяка информация, която въведете, във база данни. Въпреки, че тази информация няма да бъде предоставяна на трети страни без вашето одобрение, уебмастъра, администратора и модераторите на този форум не могат да бъдат отговорни за всякакви хакерски атаки, които могат да доведат до разкриване на данните.<br /><br />Тази форум система използва cookies, за да записва информация на вашия компютър. Тези cookies не съдържат никаква информация за вас; използват се само за да подобрят функционалността на форумите. Мейл адреса ви се използва само за потвърждение на детайлите по регистрацията и паролата ви (и за изпращане на нови пароли, ако случайно забравите текущата си).<br /><br />Избирайки <b>Съгласен съм...</b> вие приемате горепосочените условия"; 
-    
-$lang['Agree_under_13'] = "Съгласен съм със тези условия и възрастта ми е <b>под</b> 13 години"; 
-$lang['Agree_over_13'] = "Съгласен съм със тези условия и възрастта ми е <b>над</b> 13 години"; 
-$lang['Agree_not'] = "Не съм съгласен с тези условия"; 
+$lang['Registration'] = "Условия за регистрация";
+$lang['Reg_agreement'] = "Въпреки, че администраторите и модераторите на този форум ще се опитат да премахнат или да променят възмжно най-бързо всеки материал, носещ вреда, невъзможно е да бъдат прегледани всички съобщения. Вие разбирате, че всички съобщения на тези форуми изразяват личното мнение на съответните им автори, а не на администраторите, модераторите или уебмастъра (като изключим съобщенията, пуснати от тези хора), и следователно те не носят никаква отговорност.<br /><br />Приемате се да не пишете никакъв груб, неприличен, вулгарен, заплашителен, сексуално-ориентиран или всякакъв друг материал, който нарушава законите. Такова поведение може да доведе до моменталното и постоянното ви изгонване от форумите (както и уведомяването на вашия доставчик). IP адресите, от които са направени всички съобщения се записват и могат да бъдат използвани в такива случаи. Приемате, че уебмастъра, администратора и модераторите на този форум  имат правото да премахват, променят или заключват всяка тема по всяко време, ако намерят за уместно. Като потребител одобрявате записването на всяка информация, която въведете, във база данни. Въпреки, че тази информация няма да бъде предоставяна на трети страни без вашето одобрение, уебмастъра, администратора и модераторите на този форум не могат да бъдат отговорни за всякакви хакерски атаки, които могат да доведат до разкриване на данните.<br /><br />Тази форум система използва cookies, за да записва информация на вашия компютър. Тези cookies не съдържат никаква информация за вас; използват се само за да подобрят функционалността на форумите. Мейл адреса ви се използва само за потвърждение на детайлите по регистрацията и паролата ви (и за изпращане на нови пароли, ако случайно забравите текущата си).<br /><br />Избирайки <b>Съгласен съм...</b> вие приемате горепосочените условия";
+
+$lang['Agree_under_13'] = "Съгласен съм със тези условия и възрастта ми е <b>под</b> 13 години";
+$lang['Agree_over_13'] = "Съгласен съм със тези условия и възрастта ми е <b>над</b> 13 години";
+$lang['Agree_not'] = "Не съм съгласен с тези условия";
 
 $lang['Wrong_activation'] = "Ключът за активация, който сте въвели не съвпада с базата данни!";
-$lang['Send_password'] = "Изпратете ми нова парола!"; 
+$lang['Send_password'] = "Изпратете ми нова парола!";
 $lang['Password_updated'] = "Зададена ви е нова парола. Моля проверете мейла си за иформация как да я активирате!";
 $lang['No_email_match'] = "Мейл адреса, който сте въвели, не съвпада със записания мейл за това потребителско име";
 $lang['New_password_activation'] = "Активиране на нова парола";
@@ -701,7 +702,7 @@ $lang['No_pending_group_members'] = "Тази група няма чакащи кандидатури";
 $lang["Group_joined"] = "Заявката ви за приемане в групата е изпратена успешно<br />Ще бъдете уведомени, когато кандидатурата ви бъде одобрена от модератора на групата";
 $lang['Group_request'] = "Получена е заявка за приемане в групата ви";
 $lang['Group_approved'] = "Вашата кандидатура е одобрена";
-$lang['Group_added'] = "Приет сте за член на тази група"; 
+$lang['Group_added'] = "Приет сте за член на тази група";
 $lang['Already_member_group'] = "Вече сте член на тази група";
 $lang['User_is_member_group'] = "Потребителя вече е член на тази група";
 $lang['Group_type_updated'] = "Типа на групата е променен успешно";
@@ -749,8 +750,8 @@ $lang['Search_author_explain'] = "Можете да ползвайте * като маска.";
 $lang['Search_for_any'] = "Търси за коя да е от въведените думи";
 $lang['Search_for_all'] = "Търси за всички въведени думи";
 
-$lang['Search_title_msg'] = "Търси в заглавието и съдържанието на мненията"; 
-$lang['Search_msg_only'] = "Търси само в съдържанието на мненията"; 
+$lang['Search_title_msg'] = "Търси в заглавието и съдържанието на мненията";
+$lang['Search_msg_only'] = "Търси само в съдържанието на мненията";
 
 $lang['Return_first'] = "Покажи първите"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "символа от мнението";
@@ -780,13 +781,13 @@ $lang['Close_window'] = "Затворете прозореца";
 //
 // Note the %s will be replaced with one of the following 'user' arrays
 $lang['Sorry_auth_announce'] = "Само %s могат да пускат СЪОБЩЕНИЯ в този форум";
-$lang['Sorry_auth_sticky'] = "Само %s могат да пускат Важни теми в този форум"; 
-$lang['Sorry_auth_read'] = "Само %s могат да четат теми в този форум"; 
-$lang['Sorry_auth_post'] = "Само %s могат да пускат теми в този форум"; 
-$lang['Sorry_auth_reply'] = "Само %s могат да отговарят в този форум"; 
-$lang['Sorry_auth_edit'] = "Само %s могат да променят мнения в този форум"; 
-$lang['Sorry_auth_delete'] = "Само %s могат да изтриват мнения в този форум"; 
-$lang['Sorry_auth_vote'] = "Само %s canмогат да гласуват на анкети в този форум"; 
+$lang['Sorry_auth_sticky'] = "Само %s могат да пускат Важни теми в този форум";
+$lang['Sorry_auth_read'] = "Само %s могат да четат теми в този форум";
+$lang['Sorry_auth_post'] = "Само %s могат да пускат теми в този форум";
+$lang['Sorry_auth_reply'] = "Само %s могат да отговарят в този форум";
+$lang['Sorry_auth_edit'] = "Само %s могат да променят мнения в този форум";
+$lang['Sorry_auth_delete'] = "Само %s могат да изтриват мнения в този форум";
+$lang['Sorry_auth_vote'] = "Само %s canмогат да гласуват на анкети в този форум";
 
 // These replace the %s in the above strings
 $lang['Auth_Anonymous_Users'] = "<b>Анонимни потребители</b>";
@@ -805,11 +806,11 @@ $lang['You_been_banned'] = "Вие сте изгонен от този форум!<br />Моля свържете се
 // Viewonline
 //
 $lang['Reg_users_zero_online'] = "Има 0 Регистрирани и "; // There ae 5 Registered and
-$lang['Reg_users_online'] = "Има %d Регистрирани и "; // There ae 5 Registered and 
-$lang['Reg_user_online'] = "Има %d Регистриран и "; // There ae 5 Registered and 
+$lang['Reg_users_online'] = "Има %d Регистрирани и "; // There ae 5 Registered and
+$lang['Reg_user_online'] = "Има %d Регистриран и "; // There ae 5 Registered and
 $lang['Hidden_users_zero_online'] = "0 Скрити потребители онлайн"; // 6 Hidden users online
 $lang['Hidden_users_online'] = "%d Скрити потребители онлайн"; // 6 Hidden users online
-$lang['Hidden_user_online'] = "%d Скрит потребител онлайн"; // 6 Hidden users online 
+$lang['Hidden_user_online'] = "%d Скрит потребител онлайн"; // 6 Hidden users online
 $lang['Guest_users_online'] = "Има %d Гости онлайн"; // There are 10 Guest users online
 $lang['Guest_users_zero_online'] = "Има 0 Гости онлайн"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "Има %d Гост онлайн"; // There is 1 Guest user online
@@ -883,7 +884,7 @@ $lang['All_times'] = "All times are %s"; // eg. All times are GMT - 12 Hours (ti
 
 $lang['-12'] = "GMT - 12 Часа";
 $lang['-11'] = "GMT - 11 Часа";
-$lang['-10'] = "HST (Хаваи)";
+$lang['-10'] = "HST (Хавай)";
 $lang['-9'] = "GMT - 9 Часа";
 $lang['-8'] = "PST (САЩ/Канада)";
 $lang['-7'] = "MST (САЩ/Канада)";
@@ -913,38 +914,37 @@ $lang['11'] = "GMT + 11 Часа";
 $lang['12'] = "GMT + 12 Часа";
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = "(GMT -12:00 hours) Eniwetok, Kwajalein";
-$lang['tz']['-11'] = "(GMT -11:00 hours) Midway Island, Samoa";
-$lang['tz']['-10'] = "(GMT -10:00 hours) Hawaii";
-$lang['tz']['-9'] = "(GMT -9:00 hours) Alaska";
-$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-8'] = "(GMT -8:00 hours) Pacific Time (US &amp; Canada), Tijuana";
-$lang['tz']['-6'] = "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City";
-$lang['tz']['-5'] = "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito";
-$lang['tz']['-4'] = "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz";
-$lang['tz']['-3.5'] = "(GMT -3:30 hours) Newfoundland";
-$lang['tz']['-3'] = "(GMT -3:00 hours) Brassila, Buenos Aires, Georgetown, Falkland Is";
-$lang['tz']['-2'] = "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena";
-$lang['tz']['-1'] = "(GMT -1:00 hours) Azores, Cape Verde Islands";
-$lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
-$lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa";
-$lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
-$lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
-$lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
-$lang['tz']['4.5'] = "(GMT +4:30 hours) Kabul";
-$lang['tz']['5'] = "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent";
-$lang['tz']['5.5'] = "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi";
-$lang['tz']['6'] = "(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk";
-$lang['tz']['6.5'] = "(GMT +6:30 hours) Rangoon";
-$lang['tz']['7'] = "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta";
-$lang['tz']['8'] = "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei";
-$lang['tz']['9'] = "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk";
-$lang['tz']['9.5'] = "(GMT +9:30 hours) Adelaide, Darwin";
-$lang['tz']['10'] = "(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok";
-$lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
-$lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
-
+$lang['tz']['-12'] = "(GMT -12:00 hours) Ениветок, Квадвалейн";
+$lang['tz']['-11'] = "(GMT -11:00 hours) о-в Мидуей, Самоа";
+$lang['tz']['-10'] = "(GMT -10:00 hours) Хавай";
+$lang['tz']['-9'] = "(GMT -9:00 hours) Аляска";
+$lang['tz']['-8'] = "(GMT -8:00 hours) Тихоокеанско време (САЩ / Канада), Тихуана";
+$lang['tz']['-8'] = "(GMT -8:00 hours) Тихоокеанско време (САЩ / Канада), Тихуана";
+$lang['tz']['-6'] = "(GMT -6:00 hours) Централно време (САЩ / Канада), Мексико Сити";
+$lang['tz']['-5'] = "(GMT -5:00 hours) Източно време (САЩ / Канада), Богота, Лима, Кито";
+$lang['tz']['-4'] = "(GMT -4:00 hours) Атлантическо време (Канада), Каракас, Ла Паз";
+$lang['tz']['-3.5'] = "(GMT -3:30 hours) Нюфаундленд";
+$lang['tz']['-3'] = "(GMT -3:00 hours) Бразилия, Буенос Айрес, Джорджтаун, о-в Фалкланд";
+$lang['tz']['-2'] = "(GMT -2:00 hours) Среден Атлантик, о-в Възнесение, Св. Елена";
+$lang['tz']['-1'] = "(GMT -1:00 hours) Азорски о-ви, о-ви Кабо Верде";
+$lang['tz']['0'] = "(GMT) Казабланка, Дъблин, Единбърг, Лондон, Лисабон, Monrovia";
+$lang['tz']['1'] = "(GMT +1:00 hours) Амстердам, Берлин, Брюксел, Мадрид, Париж, Рим";
+$lang['tz']['2'] = "(GMT +2:00 hours) Кайро, Хелзинки, Калининград, Южна Африка";
+$lang['tz']['3'] = "(GMT +3:00 hours) Багдат, Рияд, Москва, Найроби";
+$lang['tz']['3.5'] = "(GMT +3:30 hours) Техеран";
+$lang['tz']['4'] = "(GMT +4:00 hours) Абу Даби, Баку, Мускат, Тбилиси";
+$lang['tz']['4.5'] = "(GMT +4:30 hours) Кабул";
+$lang['tz']['5'] = "(GMT +5:00 hours) Екатерининбург, Исламабад, Карачи, Ташкент";
+$lang['tz']['5.5'] = "(GMT +5:30 hours) Бомбай, Калкута, Мадрас, Ню Делхи";
+$lang['tz']['6'] = "(GMT +6:00 hours) Алмати, Коломбо, Дака, Новосибирск";
+$lang['tz']['6.5'] = "(GMT +6:30 hours) Алмати";
+$lang['tz']['7'] = "(GMT +7:00 hours) Бангкок, Ханой, Джакарта";
+$lang['tz']['8'] = "(GMT +8:00 hours) Пекин, Хонг Конг, Пърт, Сингапур, Тайпей";
+$lang['tz']['9'] = "(GMT +9:00 hours) Осака, Сапоро, Сеул, Токио, Якутск";
+$lang['tz']['9.5'] = "(GMT +9:30 hours) Аделайд, Дарвин";
+$lang['tz']['10'] = "(GMT +10:00 hours) Канбера, Гуам, Мелбърн, Сидни, Владивосток";
+$lang['tz']['11'] = "(GMT +11:00 hours) Магадан, Нова Каледония, Соломонови острови";
+$lang['tz']['12'] = "(GMT +12:00 hours) Окланд, Уелингтън, Фиджи, Маршалови острови
 $lang['days_long'][0] = "Неделя";
 $lang['days_long'][1] = "Понеделник";
 $lang['days_long'][2] = "Вторник";

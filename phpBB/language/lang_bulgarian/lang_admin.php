@@ -7,7 +7,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_admin.php,v 1.27 2001/12/30 13:49:37 psotfx Exp $
+ *     $Id: lang_admin.php,v 1.33 2002/02/15 15:36:35 psotfx Exp $
  *
  ****************************************************************************/
 
@@ -20,14 +20,15 @@
  *
  ***************************************************************************/
 
-/*************************************************************************** 
-*                     Bulgarian translation (Български превод)
-*                              ------------------- 
+/***************************************************************************
+*                     Bulgarian translation
+*                              -------------------
 *     begin                : Thu Dec 06 2001
-*     last update          : Fri Jan 28 2001  
-*     by                   : Boby Dimitrov (Боби Димитров) 
-*     email                : boby@azholding.com 
-****************************************************************************/ 
+*     last update          : Wed Feb 28 2002
+*     by                   : Boby Dimitrov
+*     email                : boby@azholding.com
+*     not translated lines : 598
+****************************************************************************/
 //
 // Format is same as lang_main
 //
@@ -88,7 +89,7 @@ $lang['Gzip_compression'] ="Gzip компресия";
 $lang['Not_available'] = "Няма данни";
 
 $lang['ON'] = "Включена"; // This is for GZip compression
-$lang['OFF'] = "Изключена"; 
+$lang['OFF'] = "Изключена";
 
 
 //
@@ -127,12 +128,12 @@ $lang['Restore_Error_no_file'] = "Няма такъв качен файл";
 $lang['Select_a_User'] = "Изберете Потребител";
 $lang['Select_a_Group'] = "Изберете Група";
 $lang['Select_a_Forum'] = "Изберете Форум";
-$lang['Auth_Control_User'] = "Контрол на правата на Потребителите"; 
-$lang['Auth_Control_Group'] = "Контрол на правата на Групите"; 
-$lang['Auth_Control_Forum'] = "Контрол на правата във Форумите"; 
-$lang['Look_up_User'] = "Вижте Потребителя"; 
-$lang['Look_up_Group'] = "Вижте Групата"; 
-$lang['Look_up_Forum'] = "Вижте Форума"; 
+$lang['Auth_Control_User'] = "Контрол на правата на Потребителите";
+$lang['Auth_Control_Group'] = "Контрол на правата на Групите";
+$lang['Auth_Control_Forum'] = "Контрол на правата във Форумите";
+$lang['Look_up_User'] = "Вижте Потребителя";
+$lang['Look_up_Group'] = "Вижте Групата";
+$lang['Look_up_Forum'] = "Вижте Форума";
 
 $lang['Group_auth_explain'] = "Тук можете да промените правата и модераторския статут на всяка група. Когато сменяте правата на дадена група, не забравяйте, че личните потребителски настройки могат все пак да дадат на потребителя права, които са му били отнети с промяната на правата на групата. Ще бъдете предупредени, ако това е случая.";
 $lang['User_auth_explain'] = "Тук можете да промените правата и модераторския статут на всеки потребител. Когато сменяте правата на даден потребител, не забравяйте, че груповите права могат все пак да дадат на потребителя права, които са му били отнети с промяната на личните му права. Ще бъдете предупредени, ако това е случая.";
@@ -160,13 +161,13 @@ $lang['Registered'] = "Регистриран";
 $lang['Administrators'] = "Администратори";
 $lang['Hidden'] = "Скрит";
 
-// These are displayed in the drop down boxes for advanced 
-// mode forum auth, try and keep them short! 
-$lang['Forum_ALL'] = "Всички"; 
-$lang['Forum_REG'] = "Регнати"; 
-$lang['Forum_PRIVATE'] = "Частни"; 
-$lang['Forum_MOD'] = "Модове"; 
-$lang['Forum_ADMIN'] = "Админи"; 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "Всички";
+$lang['Forum_REG'] = "Регнати";
+$lang['Forum_PRIVATE'] = "Частни";
+$lang['Forum_MOD'] = "Модове";
+$lang['Forum_ADMIN'] = "Админи";
 
 
 $lang['View'] = "Виждане";
@@ -176,14 +177,14 @@ $lang['Reply'] = "Отговаряне";
 $lang['Edit'] = "Промяна";
 $lang['Delete'] = "Изтриване";
 $lang['Sticky'] = "Важна тема";
-$lang['Announce'] = "СЪОБЩЕНИЕ"; 
+$lang['Announce'] = "СЪОБЩЕНИЕ";
 $lang['Vote'] = "Гласуване";
 $lang['Pollcreate'] = "Анкета";
 
 $lang['Permissions'] = "Права";
 $lang['Simple_Permission'] = "Прости Права";
 
-$lang['User_Level'] = "Потребителско ниво"; 
+$lang['User_Level'] = "Потребителско ниво";
 $lang['Auth_User'] = "Потребител";
 $lang['Auth_Admin'] = "Администратор";
 $lang['Group_memberships'] = "Членство в потребителски групи";
@@ -202,39 +203,39 @@ $lang['Click_return_forumauth'] = "Кликнете %sтук%s за да се върнете в Контрол н
 //
 // Banning
 //
-$lang['Ban_control'] = "Бан Контрол";
-$lang['Ban_explain'] = "От тук можете да изгоните потребител от форумите. Можете да изгоните потребител по потребителско име, по IP адрес или набор от IP адреси или домейн. Тези методи няма да позволят на потребителя да достигне дори до началната страница на форумите. За да попречите на изгоген потребител да се регистрира отново, но с друго име, можете да баннете определен мейл адрес. Обърнете внимание, че забраната на мейл адрес няма да попречи на потребителя да влиза и да пише във форумите ви. Ще трябва да изберете един от първите методи, за да постигнете това.";
-$lang['Ban_explain_warn'] = "Обърнете внимание, че като банвате набор от IP адреси, на практика можете неумишлено да изгоните много потребители от една и съща подмрежа. Това става, защото всички адреси между началния и крайния адрес, които сте задали, се считат за изгонени. Затова ползвайте малки набори от IP адреси или най-добре избройте няколко конкретни IP адреса.";
+$lang['Ban_control'] = "Ban Контрол";
+$lang['Ban_explain'] = "От тук можете да поставите ban на потребител от форумите. Можете да поставите ban на потребител по потребителско име, по IP адрес или набор от IP адреси или домейн. Тези методи няма да позволят на потребителя да достигне дори до началната страница на форумите. За да попречите на изгоген потребител да се регистрира отново, но с друго име, можете да баннете определен мейл адрес. Обърнете внимание, че забраната на мейл адрес няма да попречи на потребителя да влиза и да пише във форумите ви. Ще трябва да изберете един от първите методи, за да постигнете това.";
+$lang['Ban_explain_warn'] = "Обърнете внимание, че като поставите ban на набор от IP адреси, на практика можете неумишлено да изгоните много потребители от една и съща подмрежа. Това става, защото всички адреси между началния и крайния адрес, които сте задали, се считат за изгонени. Затова ползвайте малки набори от IP адреси или най-добре избройте няколко конкретни IP адреса.";
 
 $lang['Select_username'] = "Изберете Потребител";
 $lang['Select_ip'] = "Изберете IP";
 $lang['Select_email'] = "Изберете мейл адрес";
 
-$lang['Ban_username'] = "Бан по потребителско име";
+$lang['Ban_username'] = "Ban по потребителско име";
 $lang['Ban_username_explain'] = "Можете да изгоните няколко потребителя едновременно като ги селектирате от списъка.";
 
-$lang['Ban_IP'] = "Бан по IP адрес или домейн";
+$lang['Ban_IP'] = "Ban по IP адрес или домейн";
 $lang['IP_hostname'] = "IP адрес или домейн";
 $lang['Ban_IP_explain'] = "За да изберете няколко различни IPта или домейна, разделете ги с запетаи. За да изберете набор от IPта, разделете началния и крайния с тире (-). Можете да ползвате и * за избор на цяла подмрежа.";
 
-$lang['Ban_email'] = "Бан по мейл адрес";
+$lang['Ban_email'] = "Ban по мейл адрес";
 $lang['Ban_email_explain'] = "За да изберете повече от един мейл адрес, разделете ги с запетаи. Използвайте *, за да изберете набор от адреси, например *@hotmail.com или johnsmith@*.com";
 
-$lang['Unban_username'] = "Ън-бан по потребителско име";
-$lang['Unban_username_explain'] = "Можете да ън-баннете няколко потребителя едновременно като ги селектирате от списъка.";
+$lang['Unban_username'] = "Unban по потребителско име";
+$lang['Unban_username_explain'] = "Можете да премахнете поставения ban на няколко потребителя едновременно като ги селектирате от списъка.";
 
-$lang['Unban_IP'] = "Ън-бан по IP адрес или домейн";
-$lang['Unban_IP_explain'] = "Можете да ън-баннете няколко потребителя едновременно като ги селектирате от списъка.";
+$lang['Unban_IP'] = "Unban по IP адрес или домейн";
+$lang['Unban_IP_explain'] = "Можете да премахнете поставения ban на няколко потребителя едновременно като ги селектирате от списъка.";
 
-$lang['Unban_email'] = "Ън-бан по мейл адрес";
-$lang['Unban_email_explain'] = "Можете ън-баннете няколко потребителя едновременно като ги селектирате от списъка.";
+$lang['Unban_email'] = "Unban по мейл адрес";
+$lang['Unban_email_explain'] = "Можете премахнете поставения ban на няколко потребителя едновременно като ги селектирате от списъка.";
 
 $lang['No_banned_users'] = "Няма изгонени Потребители";
 $lang['No_banned_ip'] = "Няма забранени IPта";
 $lang['No_banned_email'] = "Няма забранени мейл адреси";
 
 $lang['Ban_update_sucessful'] = "Списъка с изгонените е обновен успешно";
-$lang['Click_return_banadmin'] = "Кликнете %sтук%s за да се върнете в Бан Контрола";
+$lang['Click_return_banadmin'] = "Кликнете %sтук%s за да се върнете в Ban Контрола";
 
 
 //
@@ -246,7 +247,14 @@ $lang['Config_explain'] = "Формата долу позволява настройка на всички общи опции
 $lang['Click_return_config'] = "Кликнете %sтук%s за да се върнете в Общата Конфигурация";
 
 $lang['General_settings'] = "Общи настройки на Форумите";
+$lang['Server_name'] = "Домейн";
+$lang['Server_name_explain'] = "Домейна, на който вървят тези форуми";
+$lang['Script_path'] = "Път към форумите";
+$lang['Script_path_explain'] = "Пътя към phpBB2 спрямо домейна";
+$lang['Server_port'] = "Порт на сървъра";
+$lang['Server_port_explain'] = "Порта, на който съвръра приема заявки. Обиковено е 80, променете само ако сте сигурни, че е различен!";
 $lang['Site_name'] = "Име на сайта";
+//$lang['Site_name_explain'] = "Не са разрешени HTML-тагове!";
 $lang['Site_desc'] = "Описание на сайта";
 $lang['Board_disable'] = "Изключете Форумите";
 $lang['Board_disable_explain'] = "Това ще направи Форумите недостъпни за потребителите. Не излизайта от Форумите след като сте ги изключили, няма да можете да влезете обратно!";
@@ -258,7 +266,7 @@ $lang['Acc_Admin'] = "От Администратор";
 $lang['Abilities_settings'] = "Основни настройки на Потребител и Форум";
 $lang['Max_poll_options'] = "Максимум възможни отговори за анкета";
 $lang['Flood_Interval'] = "Интервал за flood";
-$lang['Flood_Interval_explain'] = "Брой секунди, които потребителя трябва да изчака между отделните мнения."; 
+$lang['Flood_Interval_explain'] = "Брой секунди, които потребителя трябва да изчака между отделните мнения.";
 $lang['Board_email_form'] = "Пращане на мейл чрез Форумите";
 $lang['Board_email_form_explain'] = "Потребителите могат да си пращат мейл чрез Форумите";
 $lang['Topics_per_page'] = "Теми на страница";
@@ -309,19 +317,25 @@ $lang['Email_sig_explain'] = "Този подпис ще бъде прикачен към всички мейли, изп
 $lang['Use_SMTP'] = "Използване на SMTP-сървър";
 $lang['Use_SMTP_explain'] = "Ако искате да пращате мейла през избран SMTP-сървър, а не през локалната мейл-функция.";
 $lang['SMTP_server'] = "Адрес на SMTP-сървъра";
+$lang['SMTP_username'] = "SMTP Потребителко име";
+$lang['SMTP_username_explain'] = "Въведете потребителко име само ако вашия smtp сървър го изисква";
+$lang['SMTP_password'] = "SMTP Парола";
+$lang['SMTP_password_explain'] = "Въведете парола само ако вашия smtp сървър го изисква";
 
 $lang['Disable_privmsg'] = "Система за Лични съобщения";
 $lang['Inbox_limits'] = "Максимум съобщения във Входящи";
 $lang['Sentbox_limits'] = "Максимум съобщения в Получени";
 $lang['Savebox_limits'] = "Максимум съобщения в Съхранени";
 
-$lang['Cookie_settings'] = "Настройки на Cookies"; 
-$lang['Cookie_settings_explain'] = "Тук можете да настроите cookie-тата, които форумите изпращат. В повечето случаи текущата конфигурация е достатъчна. Внимавайте много при промяна на настройките, защото грешни стойности могат да попречат на потребителите да влизат във форумите.";
-$lang['Cookie_name'] = "Име на Cookie";
+$lang['Cookie_settings'] = "Настройки на Cookies";
+$lang['Cookie_settings_explain'] = "Тук можете да настроите cookie-тата, които форумите изпращат към браузърите на потребителите ви. В повечето случаи текущата конфигурация е достатъчна. Внимавайте много при промяна на настройките, защото грешни стойности могат да попречат на потребителите да влизат във форумите.";
 $lang['Cookie_domain'] = "Домейн на Cookie";
+$lang['Cookie_name'] = "Име на Cookie";
 $lang['Cookie_path'] = "Път на Cookie";
-$lang['Session_length'] = "Дължина на сесията (в секунди)";
 $lang['Cookie_secure'] = "Secure Cookie (по https)";
+$lang['Cookie_secure_explain'] = "Ако сървърът ви поддържа SSL, можете да включите тази опция; в противен случай я оставете изключена.";
+$lang['Session_length'] = "Дължина на сесията (в секунди)";
+
 
 
 //
@@ -342,11 +356,11 @@ $lang['Move_up'] = "Нагоре";
 $lang['Move_down'] = "Надолу";
 $lang['Resync'] = "Синхронизация";
 $lang['No_mode'] = "Не е избран режим";
-$lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
+$lang['Forum_edit_delete_explain'] = "Тук можете да настроите всички общи функции на форумите. За настройки по потребителите или конкретен форум, кликнете съответните връзки в ляво.";
 
 $lang['Move_contents'] = "Преместване на съдържанието";
 $lang['Forum_delete'] = "Изтриване на Форум";
-$lang['Forum_delete_explain'] = "The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.";
+$lang['Forum_delete_explain'] = "Тук можете да изтриете форум (или категория) и да изберете къде да бъдат преместени всички теми (или форумите), които съдържа.";
 
 $lang['Forum_settings'] = "Общи настойки за Форум";
 $lang['Forum_name'] = "Име на Форума";
@@ -376,42 +390,42 @@ $lang['Click_return_forumadmin'] = "Кликнете %sтук%s за да се върнете в Админист
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Smiles Editing Utility";
-$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
+$lang['smiley_title'] = "Администриране на Smilies";
+$lang['smile_desc'] = "Тук можете да добавяте, редактирате и премахвате Smilies, които потребителите могат да ползват в съобщенията си.";
 
-$lang['smiley_config'] = "Smiley Configuration";
-$lang['smiley_code'] = "Smiley Code";
-$lang['smiley_url'] = "Smiley Image File";
-$lang['smiley_emot'] = "Smiley Emotion";
-$lang['smile_add'] = "Add a new Smiley";
-$lang['Smile'] = "Smile";
-$lang['Emotion'] = "Emotion";
+$lang['smiley_config'] = "Конфигурация";
+$lang['smiley_code'] = "Код";
+$lang['smiley_url'] = "Изображение";
+$lang['smiley_emot'] = "Емоция";
+$lang['smile_add'] = "Добавяне на ново Smiley";
+$lang['Smile'] = "Изображение";
+$lang['Emotion'] = "Емоция";
 
-$lang['Select_pak'] = "Select Pack (.pak) File";
-$lang['replace_existing'] = "Replace Existing Smiley";
-$lang['keep_existing'] = "Keep Existing Smiley";
-$lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
-$lang['smiley_import'] = "Smiley Pack Import";
-$lang['choose_smile_pak'] = "Choose a Smile Pack .pak file";
-$lang['import'] = "Import Smileys";
-$lang['smile_conflicts'] = "What should be done in case of conflicts";
-$lang['del_existing_smileys'] = "Delete existing smileys before import";
-$lang['import_smile_pack'] = "Import Smiley Pack";
-$lang['export_smile_pack'] = "Create Smiley Pack";
-$lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
+$lang['Select_pak'] = "Изберете пакет (.pak)";
+$lang['replace_existing'] = "Замести съществуващатото Smiley";
+$lang['keep_existing'] = "Запази съществуващатото Smiley";
+$lang['smiley_import_inst'] = "Трябва да разархивирате пакета със Smilies и да качите всички файлове в съответната директория. Тогава изберете нужните настройки в тази форма, за да импортирате пакета.";
+$lang['smiley_import'] = "Импортиране на пакет Smilies";
+$lang['choose_smile_pak'] = "Изберете .pak файл";
+$lang['import'] = "Импортирай пакета";
+$lang['smile_conflicts'] = "Реакция в случай на конфликт:";
+$lang['del_existing_smileys'] = "Изтриване на текущите smileys преди импортирането";
+$lang['import_smile_pack'] = "Импортиране на пакет Smilies";
+$lang['export_smile_pack'] = "Създаване на пакет Smilies";
+$lang['export_smiles'] = "За да създадете пакет Smilies от текущо инсталираните ви Smilies, кликнете %sтук%s за да свалите файла smiles.pak. Именовайте този файл по желание, но запазете разширението .pak. След това създайте един ZIP-файл, съдържащ всички изображения на Smilies и .pak-файла.";
 
-$lang['smiley_add_success'] = "The Smiley was successfully added";
-$lang['smiley_edit_success'] = "The Smiley was successfully updated";
-$lang['smiley_import_success'] = "The Smiley Pack was imported successfully!";
-$lang['smiley_del_success'] = "The Smiley was successfully removed";
-$lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administration";
+$lang['smiley_add_success'] = "Smiley-то е добавено успешно";
+$lang['smiley_edit_success'] = "Smiley-то е обновено успешно";
+$lang['smiley_import_success'] = "Пакета Smilies е импортиран успешно";
+$lang['smiley_del_success'] = "Smiley-то е премахнато успешно";
+$lang['Click_return_smileadmin'] = "Кликнете %sтук%s за да се върнете в Администриране на Smilies";
 
 
 //
 // User Management
 //
 $lang['User_admin'] = "Администриране на Потребителите";
-$lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
+$lang['User_admin_explain'] = "Тук можете да променяте всички данни и настройки на избран потребител. За да промените правата на потребител, ползвайте системата за определяне на права на потребител или потребителска група.";
 
 $lang['Look_up_user'] = "Вижте потребителя";
 
@@ -430,15 +444,15 @@ $lang['User_allowavatar'] = "Може да има Аватар";
 $lang['Admin_avatar_explain'] = "Тук можете да видите и изтриете Аватара на потребителя.";
 
 $lang['User_special'] = "Специални полета, досъпни само на Администратора";
-$lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
+$lang['User_special_explain'] = "Тези полета не могат да бъдат променяни от потребителите. Тук можете да настроите някой достъпни само за администраторите опции.";
 
 
 //
 // Group Management
 //
 $lang['Group_administration'] = "Администриране на Групите";
-$lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
-$lang['Error_updating_groups'] = "There was an error while updating the groups";
+$lang['Group_admin_explain'] = "Тук можете да администрирате потребителските групи. Можете да ги създавате, променята и изтривате. Можете също да избирате модератори за групите, да задавате статус, име и описание.";
+$lang['Error_updating_groups'] = "Грешка при обновяването на групата";
 $lang['Updated_group'] = "Групата е обновена успешно";
 $lang['Added_new_group'] = "Новата група е създадена успешно";
 $lang['Deleted_group'] = "Групата е изтрита успешно";
@@ -459,7 +473,7 @@ $lang['No_group_name'] = "Трябва да въведете име за групата";
 $lang['No_group_moderator'] = "Трябва да изберете модератор за групата";
 $lang['No_group_mode'] = "Трябва да изберете статус за групата";
 $lang['delete_group_moderator'] = "Изтриване на модератора";
-$lang['delete_moderator_explain'] = "If you're changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.";
+$lang['delete_moderator_explain'] = "Ако сменяте модератора на групата, изберете тази опция, за да премахнете стария модератор от групата. В противен случай, не избирайте опцията и потребителя ще остане член на групата.";
 $lang['Click_return_groupsadmin'] = "Кликнете %sтук%s за да се върнете в Администриране на Групите";
 $lang['Select_group'] = "Изберете група";
 $lang['Look_up_group'] = "Виж групата";
@@ -469,7 +483,7 @@ $lang['Look_up_group'] = "Виж групата";
 // Prune Administration
 //
 $lang['Forum_Prune'] = "Зачистване на Форум";
-$lang['Forum_Prune_explain'] = "This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.";
+$lang['Forum_Prune_explain'] = "Тук можете да изтиете всяка тема, която не е била активна за посочения от вас брой дни. Ако не въведете дни, всички теми ще бъдат изтрити. Няма да бъдат изтрити само СЪОБЩЕНИЯ, както и теми с активни анкети. Тях се налага да изтриете ръчно.";
 $lang['Do_Prune'] = "Зачисти";
 $lang['All_Forums'] = "Всички Форуми";
 $lang['Prune_topics_not_posted'] = "Зачисти теми без отговор за последните";
@@ -482,7 +496,7 @@ $lang['Prune_success'] = "Зачистванено на форумите е успешно";
 // Word censor
 //
 $lang['Words_title'] = "Цензурирани Думи";
-$lang['Words_explain'] = "From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.";
+$lang['Words_explain'] = "Тук можете да добавяте, променяте и изтривате думи, които ще бъдат автоматично цензурирани на форумите. Освен това, цензурираните думи немогат да бъдат използвани в потребителските имена. Можете да използвате маска (*) в полето с цензурираната дума. Така например *test* ще цензурира detestable, test* ще цензурира testing, *test ще цензурира detest.";
 $lang['Word'] = "Дума";
 $lang['Edit_word_censor'] = "Промяна на цензурираната дума";
 $lang['Replacement'] = "Заместител";
@@ -502,10 +516,10 @@ $lang['Click_return_wordadmin'] = "Кликнете %sтук%s за да се върнете в Цензурира
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for amass emailing to take a long time, you will be notified when the script has completed";
-$lang['Compose'] = "Писане на мейла"; 
+$lang['Mass_email_explain'] = "Тук можете да изпратите мейл до всички потребители на форума или до членовете на определена група. Масовия мейл се разпраща като съобщението, което сте въвели бива изпратено на административния мейл, който сте въвели в конфигурацията, като мейлите на получателите са прикачени като BCC (blind carbon copy). Ако пращате мейл на голяма група хора, това може да отнеме значително време. Моля не прекъсвайте скрипта по средата на изпълнението му, а изчакайте да приключи. Ще бъдете уведомен, когато това стане.";
+$lang['Compose'] = "Писане на мейла";
 
-$lang['Recipients'] = "Получатели"; 
+$lang['Recipients'] = "Получатели";
 $lang['All_users'] = "Всички потребители";
 
 $lang['Email_successfull'] = "Съобщенитето ви е изпратено успешно";
@@ -516,7 +530,7 @@ $lang['Click_return_massemail'] = "Кликнете %sтук%s за да се върнете в Масовия М
 // Ranks admin
 //
 $lang['Ranks_title'] = "Администриране на Ранговете";
-$lang['Ranks_explain'] = "Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility";
+$lang['Ranks_explain'] = "Тук можете да добавяте, променяте и изтривате рангове. Можете също да създавате специални рангове, който да прикачите на потребител през Настройки на Потребители";
 
 $lang['Add_new_rank'] = "Добавяне на нов ранг";
 
@@ -541,7 +555,7 @@ $lang['Click_return_rankadmin'] = "Кликнете %sтук%s за да се върнете в Администр
 // Disallow Username Admin
 //
 $lang['Disallow_control'] = "Забрана на Потребителски имена";
-$lang['Disallow_explain'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it";
+$lang['Disallow_explain'] = "Тук контролирате кои имена не са разрешени за употреба от потребителите. Можете да използвате маска (*). Обърнете внимание, че неможете да забраните вече регистрирано име; трябва първо да го изтриете, за да можете да въведете забрана.";
 
 $lang['Delete_disallow'] = "Изтрий";
 $lang['Delete_disallow_title'] = "Премахване на забранено потребителско име";
@@ -563,41 +577,41 @@ $lang['Click_return_disallowadmin'] = "Кликнете %sтук%s за да се върнете в Забра
 //
 // Styles Admin
 //
-$lang['Styles_admin'] = "Styles Administration";
-$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users";
-$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list have not yet been installed into the phpBB database. To install a theme simply click the install link beside an entry";
+$lang['Styles_admin'] = "Администриране на Стиловете;
+$lang['Styles_explain'] = "Тук можете да добавяте, променяте и изтривате стилове за форумите. Стил е комбинацията от темплейт и тема.";
+$lang['Styles_addnew_explain'] = "Този списък показва всички теми, които са достъпни за темплейтите, които имате. Тези теми още не са инсталирани в базата данни. За да ги инсталирате, просто кликнете на съответната връзка до всяка тема.";
 
-$lang['Select_template'] = "Select a Template";
+$lang['Select_template'] = "Изберете темплейт";
 
-$lang['Style'] = "Style";
-$lang['Template'] = "Template";
-$lang['Install'] = "Install";
-$lang['Download'] = "Download";
+$lang['Style'] = "Стил";
+$lang['Template'] = "Темплейт";
+$lang['Install'] = "Инсталирай";
+$lang['Download'] = "Свали";
 
-$lang['Edit_theme'] = "Edit Theme";
-$lang['Edit_theme_explain'] = "In the form below you can edit the settings for the selected theme";
+$lang['Edit_theme'] = "Промяна на Тема";
+$lang['Edit_theme_explain'] = "Тук можете да промените настроките на избраната тема";
 
-$lang['Create_theme'] = "Create Theme";
-$lang['Create_theme_explain'] = "Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not";
+$lang['Create_theme'] = "Създаване на Тема";
+$lang['Create_theme_explain'] = "Тук можете да създадете нова тема за избрания темплейт. Когато въвеждате цветове, моля ползвайте шестнадесетичните им еквиваленти. Освен това не трябва да включвате символа #, напр. CCCCCC е вярно, а #CCCCCC не е.";
 
-$lang['Export_themes'] = "Export Themes";
-$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
+$lang['Export_themes'] = "Експортиране на Тема";
+$lang['Export_explain'] = "Тук можете да експортирате конфигурация за темата на избрания темплейт. Изберете темплейт от списъка по-долу и скрипта ще създаде конфигурационен файл за темата, както и ще опита да го съхрани в директорията на избрания темплейт. Ако съхраняването не е възможно, ще ву бъде дадена опция да свалите файла на диска си. За да може файла да бъде съхранен успешно, форумите трябва да имат права за писане в папката на темйплейта на уеб сървъра. За повече информация вижте документацията на phpBB 2.";
 
-$lang['Theme_installed'] = "The selected theme has been installed successfully";
-$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.";
-$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only";
-$lang['Theme_updated'] = "The selected theme has been updated. You should now export the new theme settings";
-$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere";
+$lang['Theme_installed'] = "Избраната тема е инсталирана успешно";
+$lang['Style_removed'] = "Избрания стил е премахнат от базата данни. За да премахнете този стил напълно, трябва да го изтриете от папката със темплейтите";
+$lang['Theme_info_saved'] = "Информацията за темата за избрания темплейт е съхранена. Сега трябва да върнете правата на theme_info.cfg на read-only";
+$lang['Theme_updated'] = "Избраната тема е онновена. Можете да експортирате новите настройки на темата";
+$lang['Theme_created'] = "Темата е създадена. Можете да експортирате темата към конфигурационния й файл, който да запазите на сигурно място или да използвате на други форуми.";
 
-$lang['Confirm_delete_style'] = "Are you sure you want to delete this style";
+$lang['Confirm_delete_style'] = "Сигурни ли сте, че искате да изтриете този стил?";
 
-$lang['Download_theme_cfg'] = "The exporter could not write the theme information file. Click the button below to download this file with your browser. Once you have downloaded it you can transfer it to the directory containing the template files. You can then package the files for distribution or use elsewhere if you desire";
-$lang['No_themes'] = "The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel";
-$lang['No_template_dir'] = "Could not open the template directory. It may be unreadable by the webserver or may not exist";
-$lang['Cannot_remove_style'] = "You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.";
-$lang['Style_exists'] = "The style name to selected already exists, please go back and choose a different name.";
+$lang['Download_theme_cfg'] = "Конфигурационния файл не беше създаден поради грешка при опита за запис. Кликнете бутона по-долу, за да свалите този файл през браузъра ви. След като го свалите, можете да го поставите ръчно в папката, съдържаща файловете на темплейта на темата. След това можете да комплектовате всички файлове за разпространение или употреба на други форуми.";
+$lang['No_themes'] = "Темплейта, който сте избрали, няма прикачени теми. За да създадете нова тема кликнете на съответната връзка.";
+$lang['No_template_dir'] = "Директорията с темплейтите не е достъпна. Вероятно има проблем с правата за четене от сървъра или директорията не съществува.";
+$lang['Cannot_remove_style'] = "Не можете да премахнете стил, който е основен за Форумите. Моля променете основния стил и опитайте отново.";
+$lang['Style_exists'] = "Името на стила, което сте избрали, вече съществува. Моля върнете се и изберете различно име!";
 
-$lang['Click_return_styleadmin'] = "Click %sHere%s to return to Style Administration";
+$lang['Click_return_styleadmin'] = "Кликнете %sтук%s за да се върнете в Администриране на Стиловете";
 
 $lang['Theme_settings'] = "Настройки на Темата";
 $lang['Theme_element'] = "Елемент от Темата";
@@ -655,16 +669,16 @@ $lang['Welcome_install'] = "Добре дошли в инсталацията на phpBB 2";
 $lang['Initial_config'] = "Обща конфигурация";
 $lang['DB_config'] = "Конфигурация на базата данни";
 $lang['Admin_config'] = "Конфигурация на администратора";
-$lang['continue_upgrade'] = "Once you have downloaded your config file to your local machine you may\"Continue Upgrade\" button below to move forward with the upgrade process.  Please wait to upload the config file until the upgrade process is complete.";
+$lang['continue_upgrade'] = "Once you have downloaded your config file to your local machine you may\"Continue Upgrade\" button below to move forward with the upgrade process. Please wait to upload the config file until the upgrade process is complete.";
 $lang['upgrade_submit'] = "Продължи Ъпгрейда";
 
-$lang['Installer_Error'] = "An error has occurred during installation";
-$lang['Previous_Install'] = "A previous installation has been detected";
-$lang['Install_db_error'] = "An error occurred trying to update the database";
+$lang['Installer_Error'] = "Грешка при инсталацията";
+$lang['Previous_Install'] = "Открита е предишна инсталация";
+$lang['Install_db_error'] = "Грешка при опит за обновяване на базата данни";
 
-$lang['Re_install'] = "Your previous installation is still active. <br /><br />If you would like to re-install phpBB 2 you should click the Yes button below. Please be aware that doing so will destroy all existing data, no backups will be made! The administrator username and password you have used to login in to the board will be re-created after the re-installation, no other settings will be retained. <br /><br />Think carefully before pressing Yes!";
+$lang['Re_install'] = "Предишната ви инсталация е все още активна.<br /><br />Ако искате да преинсталирате phpBB 2, трябва да кликнете бутона Да по-долу. Обърнете внимание, че това ще унищожи всички текущи данни! Ще се запазят само потребителското име и паролата на администратора, всички останали данни ще бъдат изтрити!<br /><br />Помислете преди да кликнете Да!";
 
-$lang['Inst_Step_0'] = "Thank you for choosing phpBB 2. In order to complete this install please fill out the details requested below. Please note that the database you install into should already exist. If you are installing to a database that uses ODBC, e.g. MS Access you should first create a DSN for it before proceeding.";
+$lang['Inst_Step_0'] = "Благодарим ви, че избрахте phpBB 2. За да извършите инсталацията, моля попълнете детайлите, описани по-долу. Обърнете внимание, че базата данни, в която инсталирате, трябва да съществува. Ако инсталирате в база данни, която използва ODBC, като например MS Access, трябва да създадете DSN за нея преди да продължите.";
 
 $lang['Start_Install'] = "Започни Инсталирането";
 $lang['Finish_Install'] = "Завърши Инсталирането";
@@ -672,8 +686,8 @@ $lang['Finish_Install'] = "Завърши Инсталирането";
 $lang['Default_lang'] = "Основен език на Форумие";
 $lang['DB_Host'] = "Сървър на базата данни / DSN";
 $lang['DB_Name'] = "Име на базата данни";
-$lang['DB_Username'] = "Потребителско име за базата данни"; 
-$lang['DB_Password'] = "Парола за базата данни"; 
+$lang['DB_Username'] = "Потребителско име за базата данни";
+$lang['DB_Password'] = "Парола за базата данни";
 $lang['Database'] = "Вашата база данни";
 $lang['Install_lang'] = "Изберете език за инсталацията";
 $lang['dbms'] = "Вид на базата данни";
@@ -684,25 +698,29 @@ $lang['Admin_Password_confirm'] = "Парола на Администратора (Потвърдете)";
 
 $lang['Inst_Step_2'] = "Потребителя Администратор е създаден. До тук основната инсталация е завършена. Сега ще трябва да настроите новоинсталираните си Форуми. Моля не забравяйте да погледнете в Обща Конфигурация и да нанесете необходимите промени. Благодарим ви, че избрахте phpBB 2.";
 
-$lang['Unwriteable_config'] = "Config-файла ви е недостъпен за писане. Копие на config-файла ще бъде свален на вашата машина, след като кликнете бутона долу. Трябва да качите този файл в папката на phpBB 2. След като направите това, трябва да влезете с администраторското име и парола, които въведохте на предишния екран и да посетите Администраторския Панел (линк натам има в дъното на всички страници на Форумите), за да настроите инсталацията. Благодарим ви, че избрахте phpBB 2.";
+$lang['Unwriteable_config'] = "Config-файла ви е недостъпен за писане. Копие на config-файла ще бъде свален на вашата машина, след като кликнете бутона долу. Трябва да качите този файл в папката на phpBB 2. (Можете да го направите достъпен, като дадете права за писане на всички; не забравяйте да върнете правате обратно след инсталацията!) След като направите това, трябва да влезете с администраторското име и парола, които въведохте на предишния екран и да посетите Администраторския Панел (линк натам има в дъното на всички страници на Форумите), за да настроите инсталацията. Благодарим ви, че избрахте phpBB 2.";
 $lang['Download_config'] = "Свалете Config-файл";
 
 $lang['ftp_choose'] = "Изберете метод за сваляне";
-$lang['ftp_option'] = "<br />Since FTP extensions are enabled in this version of PHP you may also be given the option of first trying to automatically ftp the config file into place.";
-$lang['ftp_instructs'] = "You have chosen to ftp the file to the account containing phpBB 2 automatically.  Please enter the information below to facilitate this process. Note that the FTP path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it using any normal client.";
+$lang['ftp_option'] = "<br />Тъй като FTP-функциите са включени в тази версия на PHP, можете да пробвате да вземете config-файла по FTP.";
+$lang['ftp_instructs'] = "Избрали сте да качите config-файла към акаунта, който съдържа phpBB 2 автоматично. Моля въведете исканата по-долу информация. Обърнете внимание, че FTP-пътя трябва да е същия, какъвто е и за вашата phpBB 2 инсталация.";
 $lang['ftp_info'] = "Въведете вашата FTP информация";
-$lang['Attempt_ftp'] = "Attempt to ftp config file into place";
-$lang['Send_file'] = "Just send the file to me and I'll ftp it manually";
-$lang['ftp_path'] = "FTP path to phpBB 2";
-$lang['ftp_username'] = "Your FTP Username";
-$lang['ftp_password'] = "Your FTP Password";
-$lang['Transfer_config'] = "Start Transfer";
-$lang['NoFTP_config'] = "The attempt to ftp the config file into place failed.  Please download the config file and ftp it into place manually.";
+$lang['Attempt_ftp'] = "Опит за качване на config-файла по FTP";
+$lang['Send_file'] = "Просто ми пратете файла, аз ще го кача ръчно.";
+$lang['ftp_path'] = "FTP-път към phpBB 2";
+$lang['ftp_username'] = "Вашето FTP Име";
+$lang['ftp_password'] = "Вашата FTP Парола";
+$lang['Transfer_config'] = "Започни трансфера";
+$lang['NoFTP_config'] = "Опита за автоматично качване на config-файла по FTP се провали.Моля свалете файла и го качете ръчно.";
 
 $lang['Install'] = "Инталиране";
 $lang['Upgrade'] = "Ъпгрейд";
 
 $lang['Install_Method'] = "Изберете метода на инсталиране";
+
+$lang['Install_No_Ext'] = "Конфигурацията на PHP на вашия сървър не поддържа типа база данни, която сте избрали!";
+
+$lang['Install_No_PCRE'] = "phpBB2 изисква Perl-съвместим Regular Expressions Module за PHP, който вашата PHP конфигурация очевидно не поддържа!";
 
 //
 // That's all Folks!
