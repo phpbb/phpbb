@@ -56,7 +56,7 @@
 	</td>
   </tr>
   <tr> 
-	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE} &nbsp; {L_WHOSONLINE_ADMIN} &nbsp; {L_WHOSONLINE_MOD}<br />{LOGGED_IN_USER_LIST}</span></td>
+	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE} &nbsp; [ {L_WHOSONLINE_ADMIN} ] &nbsp; [ {L_WHOSONLINE_MOD} ]<br />{LOGGED_IN_USER_LIST}</span></td>
   </tr>
 </table>
 
