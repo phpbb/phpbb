@@ -286,7 +286,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 					{
 						$last_poster = stripslashes($forum_rows[$j]['username']);
 					}
-					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
+					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['board_timezone']);
 
 					$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";

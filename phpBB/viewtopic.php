@@ -606,13 +606,13 @@ for($i = 0; $i < $total_posts; $i++)
 	$poster_id = $postrow[$i]['user_id'];
 	$poster = $postrow[$i]['username'];
 
-	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['default_timezone']);
+	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
 
 	$poster_posts = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Posts'] . ": " . $postrow[$i]['user_posts'] : "";
 
 	$poster_from = ($postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS) ? $lang['From'] . ": " . $postrow[$i]['user_from'] : "";
 
-	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['default_timezone']) : "";
+	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
 
 	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
 	{
@@ -797,7 +797,7 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$l_edit_total = ($postrow[$i]['post_edit_count'] == 1) ? $lang['time_in_total'] : $lang['times_in_total'];
 
-		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['default_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " $l_edit_total</font>";
+		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['board_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " $l_edit_total</font>";
 	}
 
 	//

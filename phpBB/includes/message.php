@@ -78,7 +78,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 
 		if( empty($template) )
 		{
-			$template = new Template($phpbb_root_path . "templates/" . $board_config['default_template']);
+			$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
 		}
 
 		if( empty($theme) )

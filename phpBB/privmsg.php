@@ -215,7 +215,7 @@ if($mode == "read")
 	$poster = stripslashes($privmsg['username']);
 	$poster_id = $privmsg['user_id'];
 
-	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']);
+	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']);
 
 	$poster_avatar = ($privmsg['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"" . $board_config['avatar_path'] . "/" . $privmsg['user_avatar'] . "\">" : "";
 
@@ -442,7 +442,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 		if(isset($HTTP_GET_VARS['quote']))
 		{
-			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
+			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
 			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text']));
 			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
@@ -673,7 +673,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				{
 					if($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']))
 					{
-						$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+						$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 						$emailer->use_template("privmsg_notify");
 						$emailer->email_address($to_userdata['user_email']);
 						$emailer->set_subject($lang['Notification_subject']);
@@ -681,7 +681,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 						$emailer->assign_vars(array("SITENAME" => $board_config['sitename'],
 															 "U_INBOX" => "http://".$SERVER_NAME . $PHP_SELF . "?folder=inbox",
-															 "EMAIL_SIG" => $board_config['board_email']));
+															 "EMAIL_SIG" => $board_config['email_sig']));
 						$emailer->send();
 						$emailer->reset();
 					}
@@ -746,7 +746,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			"POST_SUBJECT" => $subject,
 			"ROW_COLOR" => "#" . $theme['td_color1'],
 			"POSTER_NAME" => $to_username,
-			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
+			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 			"MESSAGE" => stripslashes(nl2br($preview_message)),
 
 			"S_HIDDEN_FIELDS" => $s_hidden_fields,
@@ -1250,7 +1250,7 @@ if($pm_count)
 		$msg_subject = stripslashes($pm_list[$i]['privmsgs_subject']);
 		$u_subject = append_sid("privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id");
 
-		$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['default_timezone']);
+		$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['board_timezone']);
 
 		if($flag == PRIVMSGS_NEW_MAIL && $folder == "inbox")
 		{

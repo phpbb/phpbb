@@ -34,7 +34,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Hot Threshold</td>
-				<td class="row2"><input type="text" name="hot_topic" size="3" maxlength="4" value="{HOT_TOPIC}"></td>
+				<td class="row2"><input type="text" name="hot_threshold" size="3" maxlength="4" value="{HOT_TOPIC}"></td>
 			</tr>
 			<tr>
 				<td class="row1">Default Template:</td>
@@ -50,7 +50,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Date Format:<br /><span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
-				<td class="row2"><input type="text" maxlength="16" name="date_format" value="{DATE_FORMAT}"></td>
+				<td class="row2"><input type="text" maxlength="16" name="default_dateformat" value="{DEFAULT_DATEFORMAT}"></td>
 			</tr>
 			<tr>
 				<td class="row1">System Timezone:</td>
@@ -58,7 +58,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Enable GZip Compression:</td>
-				<td class="row2"><input type="radio" name="gzip" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip" value="0" {GZIP_NO}> No</td>
+				<td class="row2"><input type="radio" name="gzip_compress" value="1" {GZIP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" {GZIP_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2"><span class="cattitle">User/Forum Ability Settings</span></td>
@@ -73,7 +73,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Allow Smilies</td>
-				<td class="row2"><input type="radio" name="allow_smile" value="1" {SMILE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_smile" value="0" {SMILE_NO}> No</td>
+				<td class="row2"><input type="radio" name="allow_smilies" value="1" {SMILE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" {SMILE_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="row1">Allow Signatures</td>
@@ -88,15 +88,15 @@
 			</tr>
 			<tr>
 				<td class="row1">Allow local gallery avatars</td>
-				<td class="row2"><input type="radio" name="allow_avatars_local" value="1" {AVATARS_LOCAL_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatars_local" value="0" {AVATARS_LOCAL_NO}> No</td>
+				<td class="row2"><input type="radio" name="allow_avatar_local" value="1" {AVATARS_LOCAL_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0" {AVATARS_LOCAL_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="row1">Allow remote avatars <br /><span class="gensmall">Avatars linked from another website</span></td>
-				<td class="row2"><input type="radio" name="allow_avatars_remote" value="1" {AVATARS_REMOTE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatars_remote" value="0" {AVATARS_REMOTE_NO}> No</td>
+				<td class="row2"><input type="radio" name="allow_avatar_remote" value="1" {AVATARS_REMOTE_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_remote" value="0" {AVATARS_REMOTE_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="row1">Allow avatar uploading</td>
-				<td class="row2"><input type="radio" name="allow_avatars_upload" value="1" {AVATARS_UPLOAD_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatars_upload" value="0" {AVATARS_UPLOAD_NO}> No</td>
+				<td class="row2"><input type="radio" name="allow_avatar_upload" value="1" {AVATARS_UPLOAD_YES}> Yes&nbsp;&nbsp;<input type="radio" name="allow_avatar_upload" value="0" {AVATARS_UPLOAD_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="row1">Max. Avatar File Size<br /><span class="gensmall">For uploaded avatar files</span></td>
@@ -106,7 +106,7 @@
 				<td class="row1">Max. Avatar Size <br />
 					<span class="gensmall">(height x width)</span>
 				</td>
-				<td class="row2"><input type="text" size="3" maxlength="4" name="avatar_height" value="{AVATAR_HEIGHT}"> x <input type="text" size="3" maxlength="4" name="avatar_width" value="{AVATAR_WIDTH}"></td>
+				<td class="row2"><input type="text" size="3" maxlength="4" name="avatar_max_height" value="{AVATAR_MAX_HEIGHT}"> x <input type="text" size="3" maxlength="4" name="avatar_max_width" value="{AVATAR_MAX_WIDTH}"></td>
 			</tr>
 			<tr>
 				<td class="row1">Avatar Storage Path <br /><span class="gensmall">Path under your phpBB root dir, e.g. images/avatars</span></td>
@@ -117,7 +117,7 @@
 			</tr>
 			<tr>
 				<td class="row1">Admin Email Address</td>
-				<td class="row2"><input type="text" size="25" maxlength="100" name="admin_email" value="{ADMIN_EMAIL}"></td>
+				<td class="row2"><input type="text" size="25" maxlength="100" name="email_from" value="{EMAIL_FROM}"></td>
 			</tr>
 			<tr>
 				<td class="row1">Email Signature<br /><span class="gensmall">This text will be attached to all emails the board sends</span></td>
@@ -125,11 +125,11 @@
 			</tr>
 			<tr>
 				<td class="row1">Use SMTP for delivery<br /><span class="gensmall">Say yes if you want or have to send email via a server instead of the local mail function</span></td>
-				<td class="row2"><input type="radio" name="use_smtp" value="1" {SMTP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="use_smtp" value="0" {SMTP_NO}> No</td>
+				<td class="row2"><input type="radio" name="smtp_delivery" value="1" {SMTP_YES}> Yes&nbsp;&nbsp;<input type="radio" name="smtp_delivery" value="0" {SMTP_NO}> No</td>
 			</tr>
 			<tr>
 				<td class="row1">SMTP Server</td>
-				<td class="row2"><input type="text" name="smtp_server" value="{SMTP_SERVER}" size="25" maxlength="50"></td>
+				<td class="row2"><input type="text" name="smtp_host" value="{SMTP_HOST}" size="25" maxlength="50"></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2" align="center">

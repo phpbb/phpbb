@@ -503,7 +503,7 @@ if($total_topics)
 		$topic_poster = $topic_rowset[$i]['username'];
 		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['default_timezone']);
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
 
 		if($topic_rowset[$i]['id2'] == ANONYMOUS && $topic_rowset[$i]['post_username'] != '')
 		{

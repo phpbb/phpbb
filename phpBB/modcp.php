@@ -688,7 +688,7 @@ switch($mode)
 					$poster_id = $postrow[$i]['user_id'];
 					$poster = stripslashes($postrow[$i]['username']);
 
-					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['default_timezone']);
+					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
 
 					if($poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '')
 					{
@@ -919,7 +919,7 @@ switch($mode)
 			$u_view_topic = append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id");
 			$topic_replies = $topics[$x]['topic_replies'];
 
-			$last_post_time = create_date($board_config['default_dateformat'], $topics[$x]['post_time'], $board_config['default_timezone']);
+			$last_post_time = create_date($board_config['default_dateformat'], $topics[$x]['post_time'], $board_config['board_timezone']);
 
 
 			$template->assign_block_vars("topicrow", array(

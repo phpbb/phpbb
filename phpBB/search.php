@@ -412,7 +412,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 					$poster_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $searchset[$i]['user_id']);
 					$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=".$searchset[$i]['post_id']."#".$searchset[$i]['post_id']);
 
-					$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['default_timezone']);
+					$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
 					$message = stripslashes($searchset[$i]['post_text']);
 

@@ -139,7 +139,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$template->assign_vars(array(
 			"USERNAME" => stripslashes($profiledata['username']),
-			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['default_timezone']),
+			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['board_timezone']),
 			"POSTS_PER_DAY" => $posts_per_day,
 			"POSTS" => $profiledata['user_posts'],
 			"PERCENTAGE" => $percentage . "%",
@@ -283,8 +283,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
-			$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
-			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
+			$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['board_timezone'];
+			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['board_template'];
 			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
 			$user_avatar_remoteurl = (!empty($HTTP_POST_VARS['avatarremoteurl'])) ? $HTTP_POST_VARS['avatarremoteurl'] : "";
@@ -702,7 +702,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							//
 							// The users account has been deactivated, send them an email with a new activation key
 							//
-							$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+							$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
 							$emailer->use_template("activate");
 							$emailer->email_address($email);
@@ -712,7 +712,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$emailer->assign_vars(array(
 								"SITENAME" => $board_config['sitename'],
 								"U_ACTIVATE" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$user_actkey",
-								"EMAIL_SIG" => $board_config['board_email'])
+								"EMAIL_SIG" => $board_config['email_sig'])
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -772,7 +772,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 								if(!$coppa)
 								{
-									$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+									$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
 									$emailer->use_template($email_msg);
 									$emailer->email_address($email);
@@ -784,7 +784,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
 										"ACTIVATE_URL" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$act_key",
-										"EMAIL_SIG" => $board_config['board_email'])
+										"EMAIL_SIG" => $board_config['email_sig'])
 									);
 									$emailer->send();
 									$emailer->reset();
@@ -863,7 +863,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		if(!isset($user_template))
 		{
-			$selected_template = $board_config['default_template'];
+			$selected_template = $board_config['system_template'];
 		}
 
 		$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
@@ -935,11 +935,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 			"AVATAR" => $avatar_img,
 			"AVATAR_SIZE" => $board_config['avatar_filesize'],
-			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang)),
-			"THEME_SELECT" => theme_select($user_theme),
-			"TIMEZONE_SELECT" => tz_select($user_timezone),
+			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang), 'language'),
+			"THEME_SELECT" => theme_select($user_theme, 'theme'),
+			"TIMEZONE_SELECT" => tz_select($user_timezone, 'timezone'),
 			"DATE_FORMAT" => stripslashes($user_dateformat),
-			"TEMPLATE_SELECT" => template_select(stripslashes($user_template)),
+			"TEMPLATE_SELECT" => template_select(stripslashes($user_template), 'template'),
 			"HTML_STATUS" => $html_status,
 			"BBCODE_STATUS" => $bbcode_status,
 			"SMILIES_STATUS" => $smilies_status,

@@ -141,7 +141,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	$total_users = get_db_stat('usercount');
 	$total_topics = get_db_stat('topiccount');
 
-	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['default_timezone']);
+	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
 	$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
 
@@ -397,7 +397,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 				"ROW_CLASS" => $row_class,
 				"USERNAME" => $username,
 				"LOGGED_ON" => $logged_on,
-				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default_timezone']),
+				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['board_timezone']),
 				"LOCATION" => $location,
 				"IP_ADDRESS" => $ip_address,
 				"U_USER_PROFILE" => append_sid("admin_users.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']))

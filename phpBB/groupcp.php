@@ -67,7 +67,7 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 
 	$moderator = $db->sql_fetchrowset($result);
 
-	$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
 	$emailer->use_template("group_request");
 	$emailer->email_address($moderator[0]['user_email']);
@@ -78,7 +78,7 @@ if( isset($HTTP_POST_VARS['joingroup']) )
 				"SITENAME" => $board_config['sitename'],
 				"GROUP_MODERATOR" => $moderator[0]['username'],
 				"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=".$HTTP_POST_VARS[POST_GROUPS_URL],
-				"EMAIL_SIG" => $board_config['board_email'])
+				"EMAIL_SIG" => $board_config['email_sig'])
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -213,7 +213,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 			$group_name_row = $db->sql_fetchrow($result);
 			$group_name = $group_name_row['group_name'];
 
-			$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+			$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 			$emailer->use_template("group_approved");
 			$emailer->extra_headers($email_headers);
 			$emailer->set_subject($lang['Group_approved']);
@@ -231,7 +231,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 						"SITENAME" => $board_config['sitename'],
 						"U_GROUPCP" => "http://".$SERVER_NAME.$PHP_SELF."?".POST_GROUPS_URL."=$group_id",
 						"GROUP_NAME" => $group_name,
-						"EMAIL_SIG" => $board_config['board_email'])
+						"EMAIL_SIG" => $board_config['email_sig'])
 			);
 			$emailer->send();
 			$emailer->reset();
@@ -386,7 +386,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 			$from = stripslashes($group_members[$i]['user_from']);
 
-			$joined = create_date($board_config['default_dateformat'], $group_members[$i]['user_regdate'], $board_config['default_timezone']);
+			$joined = create_date($board_config['default_dateformat'], $group_members[$i]['user_regdate'], $board_config['board_timezone']);
 
 			$posts = ($group_members[$i]['user_posts']) ? $group_members[$i]['user_posts'] : 0;
 
@@ -542,7 +542,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 
 			$from = stripslashes($modgroup_pending_list[$i]['user_from']);
 
-			$joined = create_date($board_config['default_dateformat'], $modgroup_pending_list[$i]['user_regdate'], $board_config['default_timezone']);
+			$joined = create_date($board_config['default_dateformat'], $modgroup_pending_list[$i]['user_regdate'], $board_config['board_timezone']);
 
 			$posts = ($modgroup_pending_list[$i]['user_posts']) ? $modgroup_pending_list[$i]['user_posts'] : 0;
 

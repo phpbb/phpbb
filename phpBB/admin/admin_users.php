@@ -109,7 +109,7 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 	
 	if(!isset($user_template))
 	{
-		$selected_template = $board_config['default_template'];
+		$selected_template = $board_config['board_template'];
 	}
 
 	$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
@@ -276,8 +276,8 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 
 	$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 	$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
-	$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
-	$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
+	$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['board_timezone'];
+	$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['board_template'];
 	$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
 	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? $HTTP_POST_VARS['user_status'] : 0;

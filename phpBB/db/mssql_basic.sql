@@ -11,7 +11,48 @@ BEGIN TRANSACTION;
 /*
   -- Config
 */
-INSERT INTO phpbb_config (config_id, board_disable, board_startdate, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_html_tags, allow_bbcode, allow_smilies, allow_sig, allow_namechange, allow_theme_create, allow_avatar_local, allow_avatar_remote, allow_avatar_upload, override_themes, posts_per_page, topics_per_page, hot_threshold, email_sig, email_from, smtp_delivery, smtp_host, require_activation, flood_interval, max_poll_options, avatar_filesize, avatar_max_width, avatar_max_height, avatar_path, smilies_path, default_theme, default_lang, default_dateformat, system_timezone, sys_template, prune_enable, gzip_compress) VALUES (1, '', '', 'yourdomain.com', 'phpbb2mssql', '/', '', '', 600, '', 'b, u, i, pre, font color', 1, 1, 1, '', '', '', '', '', '', 10, 25, 10, '', '', '', '', '', 10, 10, 6144, 70, 70, 'images/avatars', 'images/smiles', 2, 'english', 'd M Y H:i', '', 'PSO', 1, '');
+INSERT INTO phpbb_config VALUES ('config_id','1');
+INSERT INTO phpbb_config VALUES ('board_disable','0');
+INSERT INTO phpbb_config VALUES ('board_startdate','994190324');
+INSERT INTO phpbb_config VALUES ('sitename','yourdomain.com');
+INSERT INTO phpbb_config VALUES ('cookie_name','phpbb2mysql');
+INSERT INTO phpbb_config VALUES ('cookie_path','/');
+INSERT INTO phpbb_config VALUES ('cookie_domain','');
+INSERT INTO phpbb_config VALUES ('cookie_secure','0');
+INSERT INTO phpbb_config VALUES ('session_length','900');
+INSERT INTO phpbb_config VALUES ('allow_html','0');
+INSERT INTO phpbb_config VALUES ('allow_html_tags','b,i,u,pre');
+INSERT INTO phpbb_config VALUES ('allow_bbcode','1');
+INSERT INTO phpbb_config VALUES ('allow_smilies','1');
+INSERT INTO phpbb_config VALUES ('allow_sig','1');
+INSERT INTO phpbb_config VALUES ('allow_namechange','0');
+INSERT INTO phpbb_config VALUES ('allow_theme_create','0');
+INSERT INTO phpbb_config VALUES ('allow_avatar_local','0');
+INSERT INTO phpbb_config VALUES ('allow_avatar_remote','1');
+INSERT INTO phpbb_config VALUES ('allow_avatar_upload','1');
+INSERT INTO phpbb_config VALUES ('override_themes','0');
+INSERT INTO phpbb_config VALUES ('posts_per_page','15');
+INSERT INTO phpbb_config VALUES ('topics_per_page','50');
+INSERT INTO phpbb_config VALUES ('hot_threshold','25');
+INSERT INTO phpbb_config VALUES ('max_poll_options','10');
+INSERT INTO phpbb_config VALUES ('email_sig','Thanks, The Management');
+INSERT INTO phpbb_config VALUES ('email_from','youraddress@yourdomain.com');
+INSERT INTO phpbb_config VALUES ('smtp_delivery','0');
+INSERT INTO phpbb_config VALUES ('smtp_host','');
+INSERT INTO phpbb_config VALUES ('require_activation','0');
+INSERT INTO phpbb_config VALUES ('flood_interval','15');
+INSERT INTO phpbb_config VALUES ('avatar_filesize','6144');
+INSERT INTO phpbb_config VALUES ('avatar_max_width','80');
+INSERT INTO phpbb_config VALUES ('avatar_max_height','80');
+INSERT INTO phpbb_config VALUES ('avatar_path','images/avatars');
+INSERT INTO phpbb_config VALUES ('smilies_path','images/smiles');
+INSERT INTO phpbb_config VALUES ('default_theme','2');
+INSERT INTO phpbb_config VALUES ('default_lang','english');
+INSERT INTO phpbb_config VALUES ('default_dateformat','D M d, Y g:i a');
+INSERT INTO phpbb_config VALUES ('board_timezone','-8');
+INSERT INTO phpbb_config VALUES ('board_template','PSO');
+INSERT INTO phpbb_config VALUES ('prune_enable','1');
+INSERT INTO phpbb_config VALUES ('gzip_compress','1');
 
 /*
   -- Categories

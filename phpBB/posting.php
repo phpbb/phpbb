@@ -751,7 +751,7 @@ if( ( $submit || $confirm ) && !$error )
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											$email_headers = "From: " . $board_config['board_email_from'] . "\nReturn-Path: " . $board_config['board_email_from'] . "\r\n";
+											$email_headers = "From: " . $board_config['email_sig'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
 											$emailer->use_template("topic_notify");
 											$emailer->email_address($email_set[$i]['user_email']);
@@ -766,7 +766,7 @@ if( ( $submit || $confirm ) && !$error )
 												"TOPIC_TITLE" => $email_set[$i]['topic_title'],
 												"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
 												"UN_WATCH_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic",
-												"EMAIL_SIG" => $board_config['board_email'])
+												"EMAIL_SIG" => $board_config['email_sig'])
 											);
 
 											$emailer->send();
@@ -1676,7 +1676,7 @@ else
 			{
 				$page_title = $lang['Post_a_reply'];
 
-				$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['default_timezone']);
+				$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
 				$post_message = $poster . " " . $lang['wrote'] . ":\n\n[quote]\n" . $post_message . "\n[/quote]";
 
@@ -1847,7 +1847,7 @@ if( $preview && !$error )
 		"TOPIC_TITLE" => $preview_subject,
 		"POST_SUBJECT" => $preview_subject,
 		"POSTER_NAME" => $username,
-		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
+		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 		"MESSAGE" => $preview_message,
 
 		"L_PREVIEW" => $lang['Preview'],

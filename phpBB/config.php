@@ -26,16 +26,14 @@
 // and fill in the required details
 //
 
-/*
 //
 // MySQL
 //
 $dbms = "mysql";
-$dbhost = "";
-$dbname = "";
-$dbuser = "";
-$dbpasswd = "";
-*/
+$dbhost = "localhost";
+$dbname = "bartvb";
+$dbuser = "bartvb";
+$dbpasswd = "bvbdb=";
 
 /*
 //

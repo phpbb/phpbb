@@ -74,7 +74,7 @@ else
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['default_timezone']);
+$s_last_visit = create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['board_timezone']);
 
 //
 // Get basic (usernames + totals) online
@@ -233,10 +233,10 @@ $template->assign_vars(array(
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
 
-	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['default_timezone']],
+	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['board_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
-	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
+	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],

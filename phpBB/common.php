@@ -141,13 +141,16 @@ if(!$result = $db->sql_query($sql))
 }
 else
 {
-/*
 	while($row = $db->sql_fetchrow($result))
 	{
-		$board_config[$row['config_var_name']] = stripslashes($row['config_var_value']);
+		$board_config[$row['config_name']] = $row['config_value'];
 	}
-*/
-
+	$board_config['allow_html_tags'] = split(",", $board_config['allow_html_tags']);
+	$board_config['board_email'] = str_replace("<br />", "\n", $board_config['email_sig']);
+	$board_config['default_template'] = stripslashes($board_config['sys_template']);
+	$board_config['board_timezone'] = $board_config['system_timezone'];
+	
+/*
 	$config = $db->sql_fetchrow($result);
 
 	$board_config['board_disable'] = $config['board_disable'];
@@ -171,7 +174,7 @@ else
 	$board_config['default_theme'] = $config['default_theme'];
 	$board_config['default_dateformat'] = stripslashes($config['default_dateformat']);
 	$board_config['default_template'] = stripslashes($config['sys_template']);
-	$board_config['default_timezone'] = $config['system_timezone'];
+	$board_config['board_timezone'] = $config['system_timezone'];
 	$board_config['default_lang'] = stripslashes($config['default_lang']);
 	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
@@ -191,6 +194,7 @@ else
 	$board_config['gzip_compress'] = $config['gzip_compress'];
 	$board_config['smtp_delivery'] = $config['smtp_delivery'];
 	$board_config['smtp_host'] = stripslashes($config['smtp_host']);
+*/
 }
 
 if($board_config['board_disable'] && !defined("IN_ADMIN"))

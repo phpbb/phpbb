@@ -90,7 +90,7 @@ if(isset($HTTP_POST_VARS['submit']))
 	}
 	$g_list = $db->sql_fetchrowset($g_result);
 	
-	$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 	$msg = stripslashes($HTTP_POST_VARS["$f_msg"]);
 	
 	$email_headers .= 'bcc: ';
@@ -102,7 +102,7 @@ if(isset($HTTP_POST_VARS['submit']))
 		}
 		$email_headers .= $g_list[$i]['user_email'];
 	}
-	mail($board_config['board_email_from'],$HTTP_POST_VARS["$f_title"],$HTTP_POST_VARS["$f_msg"],$email_headers);
+	mail($board_config['board_email'],$HTTP_POST_VARS["$f_title"],$HTTP_POST_VARS["$f_msg"],$email_headers);
 	$notice = $lang['Messages'].' '.$lang['Sent'].'!';
 }	
 //Else, or if they already sent a message

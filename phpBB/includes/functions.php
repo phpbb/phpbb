@@ -259,24 +259,24 @@ function init_userprefs($userdata)
 
 		if(isset($userdata['user_timezone']))
 		{
-			$board_config['default_timezone'] = $userdata['user_timezone'];
+			$board_config['board_timezone'] = $userdata['user_timezone'];
 		}
 
 		if(!empty($userdata['user_template']))
 		{
-			$board_config['default_template'] = $userdata['user_template'];
+			$board_config['board_template'] = $userdata['user_template'];
 		}
 	}
 
-	$template = new Template($phpbb_root_path . "templates/" . $board_config['default_template']);
+	$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
 
 	if($template)
 	{
-		@include($phpbb_root_path . "templates/" . $board_config['default_template'] . "/" . $board_config['default_template'] . ".cfg");
+		@include($phpbb_root_path . "templates/" . $board_config['board_template'] . "/" . $board_config['board_template'] . ".cfg");
 
 		if( !defined("TEMPLATE_CONFIG") )
 		{
-			message_die(CRITICAL_ERROR, "Couldn't open " . $board_config['default_template'] . " template config file");
+			message_die(CRITICAL_ERROR, "Couldn't open " . $board_config['board_template'] . " template config file");
 		}
 
 	}
@@ -713,13 +713,13 @@ function sync($type, $id)
 
 }
 
-function language_select($default, $dirname="language/")
+function language_select($default, $select_name, $dirname="language/")
 {
 	global $phpEx;
 
 	$dir = opendir($dirname);
 
-	$lang_select = "<select name=\"language\">\n";
+	$lang_select = "<select name=\"$select_name\">\n";
 	while ($file = readdir($dir))
 	{
 		if (ereg("^lang_", $file))
@@ -737,14 +737,15 @@ function language_select($default, $dirname="language/")
 
 	return $lang_select;
 }
+
 // NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
 // system so its not currently implemented that way
 // - James
-function template_select($default, $dirname = "templates")
+function template_select($default, $select_name, $dirname = "templates")
 {
 	$dir = opendir($dirname);
 
-	$template_select = "<select name=\"template\">\n";
+	$template_select = "<select name=\"$select_name\">\n";
 	while($file = readdir($dir))
 	{
 		unset($selected);
@@ -764,13 +765,14 @@ function template_select($default, $dirname = "templates")
 
 	return($template_select);
 }
-function theme_select($default)
+
+function theme_select($default, $select_name)
 {
 	global $db, $board_config, $lang;
 
 	$sql = "SELECT themes_id, themes_name
 	  			FROM " . THEMES_TABLE . "
-				WHERE themes_name LIKE '" . $board_config['default_template'] . "-%'
+				WHERE themes_name LIKE '" . $board_config['board_template'] . "-%'
 	  			ORDER BY themes_name";
 	if($result = $db->sql_query($sql))
 	{
@@ -779,7 +781,7 @@ function theme_select($default)
 
 		if($num)
 		{
-			$theme_select = "<select name=\"theme\">\n";
+			$theme_select = "<select name=\"$select_name\">\n";
 			for($i = 0; $i < $num; $i++)
 			{
 				if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
@@ -796,7 +798,7 @@ function theme_select($default)
 		}
 		else
 		{
-			$theme_select = "<select name=\"theme\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>";
+			$theme_select = "<select name=\"$select_name\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>";
 		}
 	}
 	else
@@ -805,7 +807,7 @@ function theme_select($default)
 	}
 	return($theme_select);
 }
-function tz_select($default)
+function tz_select($default, $select_name)
 {
 	global $sys_timezone;
 
@@ -813,38 +815,38 @@ function tz_select($default)
 	{
 		$default == $sys_timezone;
 	}
-	$tz_select = "<select name=\"timezone\">";
+	$tz_select = "<select name=\"$select_name\">";
 	$tz_array = array(
-			"-12" => "(GMT -12:00 hours) Eniwetok, Kwajalein",
-			"-11" => "(GMT -11:00 hours) Midway Island, Samoa",
-			"-10" => "(GMT -10:00 hours) Hawaii",
-			"-9" => "(GMT -9:00 hours) Alaska",
-			"-8" => "(GMT -8:00 hours) Pacific Time (US &amp; Canada)",
-			"-7" => "(GMT -7:00 hours) Mountain Time (US &amp; Canada)",
-			"-6" => "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City",
-			"-5" => "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito",
-			"-4" => "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
-			"-3.5" => "(GMT -3:30 hours) Newfoundland",
-			"-3" => "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
-			"-2" => "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena, ",
-			"-1" => "(GMT -1:00 hours) Azores, Cape Verde Islands",
-			"0"  => "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
-			"+1" => "(GMT +1:00 hours) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome",
-			"+2" => "(GMT +2:00 hours) Kaliningrad, South Africa, Warsaw",
-			"+3" => "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi",
-			"+3.5" => "(GMT +3:30 hours) Tehran",
-			"+4" => "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi",
-			"+4.5" => "(GMT +4:30 hours) Kabul",
-			"+5" => "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent",
-			"+5.5" => "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
-			"+6" => "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
-			"+7" => "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
-			"+8" => "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei",
-			"+9" => "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk",
-			"+9.5" => "(GMT +9:30 hours) Adelaide, Darwin",
-			"+10" => "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok",
-			"+11" => "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands",
-			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island");
+			"-12"		=> "(GMT -12:00 hours) Eniwetok, Kwajalein",
+			"-11"		=> "(GMT -11:00 hours) Midway Island, Samoa",
+			"-10"		=> "(GMT -10:00 hours) Hawaii",
+			"-9"		=> "(GMT -9:00 hours) Alaska",
+			"-8"		=> "(GMT -8:00 hours) Pacific Time (US &amp; Canada)",
+			"-7"		=> "(GMT -7:00 hours) Mountain Time (US &amp; Canada)",
+			"-6"		=> "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City",
+			"-5"		=> "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito",
+			"-4"		=> "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
+			"-3.5"	=> "(GMT -3:30 hours) Newfoundland",
+			"-3"		=> "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
+			"-2"		=> "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena, ",
+			"-1"		=> "(GMT -1:00 hours) Azores, Cape Verde Islands",
+			"0"		=> "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
+			"+1"		=> "(GMT +1:00 hours) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome",
+			"+2"		=> "(GMT +2:00 hours) Kaliningrad, South Africa, Warsaw",
+			"+3"		=> "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi",
+			"+3.5"	=> "(GMT +3:30 hours) Tehran",
+			"+4"		=> "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi",
+			"+4.5"	=> "(GMT +4:30 hours) Kabul",
+			"+5"		=> "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent",
+			"+5.5"	=> "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
+			"+6"		=> "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
+			"+7"		=> "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
+			"+8"		=> "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei",
+			"+9"		=> "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk",
+			"+9.5"	=> "(GMT +9:30 hours) Adelaide, Darwin",
+			"+10"		=> "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok",
+			"+11"		=> "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands",
+			"+12"		=> "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island");
 
 	while(list($offset, $zone) = each($tz_array))
 	{

@@ -152,7 +152,7 @@ define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('PRUNE_TABLE', $table_prefix.'forum_prune');
 define('RANKS_TABLE', $table_prefix.'ranks');
-define('SESSIONS_TABLE', $table_prefix.'session');
+define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');
 define('TOPICS_TABLE', $table_prefix.'topics');
