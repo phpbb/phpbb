@@ -1,57 +1,79 @@
 <!-- INCLUDE overall_header.html -->
 
-<form action="{S_SEARCH_ACTION}" method="POST"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<form method="post" action="{S_SEARCH_ACTION}"><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-		<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+		<td align="left"><a class="nav" href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
 	</tr>
 </table>
 
-<table class="forumline" width="100%" cellpadding="4" cellspacing="1" border="0">
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr> 
-		<th class="thHead" colspan="4" height="25">{L_SEARCH_QUERY}</th>
+		<th colspan="4">{L_SEARCH_QUERY}</th>
 	</tr>
 	<tr> 
-		<td class="row1" colspan="2" width="50%"><span class="gen">{L_SEARCH_KEYWORDS}:</span><br /><span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
-		<td class="row2" colspan="2" valign="top"><span class="genmed"><input type="text" style="width: 300px" class="post" name="search_keywords" size="30" /><br /><input type="radio" name="search_terms" value="any" checked="checked" /> {L_SEARCH_ANY_TERMS}<br /><input type="radio" name="search_terms" value="all" /> {L_SEARCH_ALL_TERMS}</span></td>
+		<td class="row1" colspan="2" width="50%"><b class="genmed">{L_SEARCH_KEYWORDS}: </b><br /><span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
+		<td class="row2" colspan="2" valign="top"><input type="text" style="width: 300px" class="post" name="search_keywords" size="30" /><br /><input type="radio" name="search_terms" value="all" checked="checked" /> <span class="genmed">{L_SEARCH_ALL_TERMS}</span><br /><input type="radio" name="search_terms" value="any" /> <span class="genmed">{L_SEARCH_ANY_TERMS}</span></td>
 	</tr>
 	<tr> 
-		<td class="row1" colspan="2"><span class="gen">{L_SEARCH_AUTHOR}:</span><br /><span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
-		<td class="row2" colspan="2" valign="middle"><span class="genmed"><input type="text" style="width: 300px" class="post" name="search_author" size="30" /></span></td>
+		<td class="row1" colspan="2"><b class="genmed">{L_SEARCH_AUTHOR}:</b><br /><span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
+		<td class="row2" colspan="2" valign="middle"><input type="text" style="width: 300px" class="post" name="search_author" size="30" /></td>
 	</tr>
 	<tr> 
-		<th class="thHead" colspan="4" height="25">{L_SEARCH_OPTIONS}</th>
+		<td class="row1" colspan="2"><b class="genmed">{L_SEARCH_FORUMS}: </b><br /><span class="gensmall">{L_SEARCH_FORUMS_EXPLAIN}</span></td>
+		<td class="row2" colspan="2"><select name="search_forum" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></td>
 	</tr>
 	<tr> 
-		<td class="row1" align="right"><span class="gen">{L_FORUM}:&nbsp;</span></td>
-		<td class="row2"><span class="genmed"><select class="post" name="search_forum">{S_FORUM_OPTIONS}</select></span></td>
-		<td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
-		<td class="row2" valign="middle"><span class="genmed"><select class="post" name="search_time">{S_TIME_OPTIONS}</select><br /><input type="radio" name="search_fields" value="all" checked="checked" /> {L_SEARCH_MESSAGE_TITLE}<br /><input type="radio" name="search_fields" value="msgonly" /> {L_SEARCH_MESSAGE_ONLY}</span></td>
+		<th colspan="4">{L_SEARCH_OPTIONS}</th>
 	</tr>
 	<tr> 
-		<td class="row1" align="right"><span class="gen">{L_CATEGORY}:&nbsp;</span></td>
-		<td class="row2"><span class="genmed"><select class="post" name="search_cat">{S_CATEGORY_OPTIONS}
-		</select></span></td>
-		<td class="row1" align="right"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
-		<td class="row2" valign="middle" nowrap="nowrap"><span class="genmed"><select class="post" name="sort_by">{S_SORT_OPTIONS}</select><br /><input type="radio" name="sort_dir" value="ASC" /> {L_SORT_ASCENDING}<br /><input type="radio" name="sort_dir" value="DESC" checked /> {L_SORT_DESCENDING}</span>&nbsp;</td>
+		<td class="row1" width="25%" nowrap="nowrap"><b class="genmed">{L_SEARCH_CHILD}: </b><br /><span class="gensmall">{L_SEARCH_CHILD_EXPLAIN}</span></td>
+		<td class="row2" width="25%" nowrap="nowrap"><input type="radio" name="search_subforum" value="1" /> <span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="search_subforum" value="0" checked="checked" /> <span class="genmed">{L_NO}</td>
+		<td class="row1" width="25%" nowrap="nowrap"><b class="genmed">{L_SEARCH_WITHIN}: </b></td>
+		<td class="row2" width="25%" nowrap="nowrap"><input type="radio" name="search_fields" value="all" checked="checked" /> <span class="genmed">{L_SEARCH_TITLE_MSG}</span><br /><input type="radio" name="search_fields" value="msgonly" /> <span class="genmed">{L_SEARCH_MSG_ONLY}</span> <br /><input type="radio" name="search_fields" value="titleonly" /> <span class="genmed">{L_SEARCH_TITLE_ONLY}</span></td>
 	</tr>
 	<tr> 
-		<td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_DISPLAY_RESULTS}:&nbsp;</span></td>
-		<td class="row2" nowrap="nowrap"><input type="radio" name="show_results" value="posts" /><span class="genmed">{L_POSTS}<input type="radio" name="show_results" value="topics" checked="checked" />{L_TOPICS}</span></td>
-		<td class="row1" align="right"><span class="gen">{L_RETURN_FIRST}</span></td>
-		<td class="row2"><span class="genmed"><select class="post" name="return_chars">{S_CHARACTER_OPTIONS}</select> {L_CHARACTERS}</span></td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_SORT_BY}: </b></td>
+		<td class="row2" valign="middle" nowrap="nowrap"><select name="sort_by">{S_SORT_OPTIONS}</select><br /><input type="radio" name="sort_dir" value="a" /> <span class="genmed">{L_SORT_ASCENDING}</span><br /><input type="radio" name="sort_dir" value="d" checked /> <span class="genmed">{L_SORT_DESCENDING}</span> </td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_RETURN_FIRST}: </b></td>
+		<td class="row2" nowrap="nowrap"><select name="return_chars">{S_CHARACTER_OPTIONS}</select> <span class="genmed">{L_POST_CHARACTERS}</span></td>
 	</tr>
 	<tr> 
-		<td class="catBottom" colspan="4" align="center" height="28">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" value="{L_SEARCH}" /></td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_SEARCH_PREVIOUS}: </b></td>
+		<td class="row2" valign="middle"><select name="search_time">{S_TIME_OPTIONS}</select></td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_DISPLAY_RESULTS}: </b></td>
+		<td class="row2" nowrap="nowrap"><input type="radio" name="show_results" value="posts" /> <span class="genmed">{L_POSTS}</span>&nbsp;&nbsp;<input type="radio" name="show_results" value="topics" checked="checked" /> <span class="genmed">{L_TOPICS}</td>
+	</tr>
+	<tr> 
+		<td class="cat" colspan="4" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 	</tr>
 </table>
 
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<br clear="all" />
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<th colspan="3">{L_RECENT_SEARCHES}</th>
+	</tr>
+	<!-- BEGIN recentsearch -->
+	<!-- IF recentsearch.S_ROW_COUNT is even -->
+	<tr class="row2">
+	<!-- ELSE -->
+	<tr class="row1">
+	<!-- ENDIF -->
+		<td class="gen"><a href="{recentsearch.U_KEYWORDS}">{recentsearch.KEYWORDS}</a></td>
+		<td class="gen" align="center">{recentsearch.RESULTS}</td>
+		<td class="gen" align="center">{recentsearch.TIME}</td>
+	</tr>
+	<!-- END recentsearch -->
+</table>
+
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 		<td align="right" valign="middle"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
 </table></form>
 
-<table width="100%" border="0">
+<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
 		<td align="right" valign="top"><!-- INCLUDE jumpbox.html --></td>
 	</tr>

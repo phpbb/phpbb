@@ -33,10 +33,11 @@ function im_popup(url, width, height)
 function goto()
 {
 	var page = prompt('{L_JUMP_PAGE}:', '{ON_PAGE}');
+	var perpage = '{PER_PAGE}';
 
 	if (page !== null && !isNaN(page) && page > 0)
 	{
-		document.location.href = "{BASE_URL}&amp;start=" + ((page * {PER_PAGE}) - 1);
+		document.location.href = "{BASE_URL}&amp;start=" + ((page * perpage) - 1);
 	}
 }
 //-->
