@@ -1,10 +1,10 @@
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
   <tr> 
-	<th class="thRight">{L_FAQ}</th>
+	<th class="thHead">{L_FAQ}</th>
   </tr>
   <!-- BEGIN faqrow -->  
   <tr> 
-	<td width="22%" align="left" valign="top" class="{faqrow.ROW_CLASS}"><span class="name"><b>{faqrow.FAQ_QUESTION}</b></span><br />
+	<td width="22%" align="left" valign="top" class="row1"><span class="name"><b>{faqrow.FAQ_QUESTION}</b></span><br />
 	  <br />
 	  <span class="postbody">{faqrow.FAQ_ANSWER}</span>
 	</td>

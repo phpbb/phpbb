@@ -24,6 +24,12 @@ body { 	background-color:{T_BODY_BGCOLOR};
 		scrollbar-shadow-color: #95AFC4; scrollbar-3dlight-color: #D6DDE2;
 		scrollbar-arrow-color:  #006699; scrollbar-track-color: #EFEFEF;
 		scrollbar-darkshadow-color: #7294AF;
+		margin-bottom:0px; 
+		margin-left:0px; 
+		margin-right:0px; 
+		margin-top:0px; 
+} 
+
 }
 
 font	{ font-family: Verdana, Arial, Helvetica, sans-serif }
@@ -208,6 +214,4 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 </head>
 
 <body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">
-<span class="gen"><a name="top"></a></span><table width="100%" border="0" cellspacing="0" cellpadding="10" align="center"> 
-<tr> 
-	<td class="bodyline"> 
+<span class="gen"><a name="top"></a></span>

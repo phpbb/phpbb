@@ -68,7 +68,7 @@
 	<td class="gensmall">Old topic</td>
 	<td>&nbsp;&nbsp;</td>
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="No new posts" width="19" height="18" /></td>
-	<td class="gensmall">Announement</td>
+	<td class="gensmall">Announcement</td>
 	<td class="gensmall">&nbsp;</td>
 	<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
 	<td class="gensmall">Topic is locked</td>

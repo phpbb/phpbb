@@ -17,9 +17,6 @@
 // -->
 <div align="center"> <span class="copyright"><br />Powered by phpBB {PHPBB_VERSION} &copy; 2001 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB 
   Group</a></span></div>
-	</td>
-  </tr>
-</table>
 &nbsp;
 </body>
 </html>
