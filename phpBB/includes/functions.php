@@ -131,7 +131,7 @@ function generate_forum_rules(&$forum_data)
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$bbcode = new bbcode($forum_data['forum_rules_bbcode_bitfield']);
-		
+
 		$bbcode->bbcode_second_pass($forum_data['forum_rules'], $forum_data['forum_rules_bbcode_uid']);
 
 		$forum_data['forum_rules'] = smilie_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
@@ -807,7 +807,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	$template->assign_vars(array(
 		$tpl_prefix . 'BASE_URL'	=> $base_url,
 		$tpl_prefix . 'PER_PAGE'	=> $per_page,
-		
+
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . '&amp;start=' . (($on_page - 2) * $per_page),
 		$tpl_prefix . 'NEXT_PAGE'	=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page))
 	);
@@ -1734,6 +1734,7 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
+		'S_GLOBALSEARCH_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID",
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
@@ -1780,8 +1781,8 @@ function page_footer()
 					global $base_memory_usage;
 					$memory_usage -= $base_memory_usage;
 					$memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' ' . $user->lang['MB'] : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' ' . $user->lang['KB'] : $memory_usage . ' ' . $user->lang['BYTES']);
-			
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;	
+
+					$debug_output .= ' | Memory Usage: ' . $memory_usage;
 				}
 			}
 
