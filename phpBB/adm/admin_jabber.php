@@ -63,7 +63,7 @@ $jabber->resource	= $jab_resource;
 // try to create account if it doesn't exist
 if ($jab_enable)
 {
-	if($jab_host != $config['jab_host'] || $jab_username != $config['jab_username']))
+	if ($jab_host != $config['jab_host'] || $jab_username != $config['jab_username'])
 	{
 		if (!$jabber->Connect())
 		{
