@@ -90,7 +90,6 @@ function make_jumpbox()
 		ORDER BY c.cat_order";
 	if(!$q_categories = $db->sql_query($sql))
 	{
-		$db_error = $db->sql_error();
 		error_die(SQL_QUERY, "Couldn't obtain category list.", __LINE__, __FILE__);
 	}
 

@@ -4,7 +4,7 @@
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
+ *   email                : supportphpbb.com
  *
  *   $Id$
  *
@@ -64,8 +64,8 @@ class sql_db
 				if(!$dbselect)
 				{
 					@mssql_close($this->db_connect_id);
+					return false;
 				}
-				$this->db_connect_id = $dbselect;
 			}
 		}
 		return $this->db_connect_id;
@@ -78,10 +78,6 @@ class sql_db
 	{
 		if($this->db_connect_id)
 		{
-			if($this->query_result)
-			{
-				@mssql_free_result($this->query_result);
-			}
 			$result = @mssql_close($this->db_connect_id);
 			return $result;
 		}
@@ -111,9 +107,20 @@ class sql_db
 			// you do will potentially impact performance
 			// compared to an 'in-built' limit
 			//
+			// Another issue is the 'lack' of a returned true
+			// value when a query is valid but has no result
+			// set (as with all the other DB interfaces).
+			// It seems though that it's 'fair' to say that if
+			// a query returns a false result (ie. no resource id)
+			// then the SQL was valid but had no result set. If the
+			// query returns nothing but the rowcount returns
+			// something then there's a problem. This
+			// may well be a false assumption though ... needs
+			// checking under Windows itself.
+			//
 			if(eregi("LIMIT", $query))
 			{
-
+				 "HERE";
 				preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
 
 				$query = $limits[1];
@@ -127,7 +134,8 @@ class sql_db
 					$row_offset = 0;
 					$num_rows = $limits[2];
 				}
-
+	
+				 "<br>".$query."<br>";
 				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
 				@mssql_query("SET ROWCOUNT 0");
@@ -136,7 +144,7 @@ class sql_db
 
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = $num_rows;
-				if($this->query_result && $row_offset>0)
+				if($this->query_result && $row_offset > 0)
 				{
 					$result = @mssql_data_seek($this->query_result, $row_offset);
 					if(!$result)
@@ -150,21 +158,46 @@ class sql_db
 			{
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
 
-				$next_id_query = @mssql_query("SELECT @@IDENTITY AS this_id");
-				$this->next_id[$this->query_result] = $this->sql_fetchfield("this_id", -1, $next_id_query);
-
+				if($this->query_result)
+				{
+					$next_id_query = @mssql_query("SELECT @@IDENTITY AS this_id");
+					$this->next_id[$this->query_result] = $this->sql_fetchfield("this_id", -1, $next_id_query);
+				}
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = -1;
 			}
 			else 
 			{
-				$this->query_result = @mssql_query($query, $this->db_connect_id);
-
-				$next_id_query = @mssql_query("SELECT @@ROWCOUNT AS this_count");
-				$this->affected_rows[$this->query_result] = $this->sql_fetchfield("this_count", -1, $next_id_query);
-
-				$this->query_limit_offset[$this->query_result] = -1;
-				$this->query_limit_numrows[$this->query_result] = -1;
+				//
+				// This needs a little more work
+				// before we take it public. SELECT needs
+				// separating out, with other queries
+				// (UPDATE, DELETE, etc.) having a uniqid
+				// $this-
+				// 
+				if(eregi("SELECT", $query))
+				{
+					$this->query_result = @@mssql_query($query, $this->db_connect_id);
+				}
+				else
+				{
+					$this->query_result = @@mssql_query($query, $this->db_connect_id);
+					if($this->query_result)
+					{
+						$this->query_result = uniqid(rand());
+					}
+				}
+				if($this->query_result)
+				{
+					$affected_query = @mssql_query("SELECT @@ROWCOUNT AS this_count");
+					$this->affected_rows[$this->query_result] = $this->sql_fetchfield("this_count", -1, $affected_query);
+					$this->query_limit_offset[$this->query_result] = -1;
+					$this->query_limit_numrows[$this->query_result] = -1;
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			return $this->query_result;
@@ -209,7 +242,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			return $affected_rows[$query_id];
+			return $this->affected_rows[$query_id];
 		}
 		else
 		{
