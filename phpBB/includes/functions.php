@@ -92,7 +92,7 @@ function get_userdata($user)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $lang, $db, $SID, $nav_links, $phpEx;
+	global $template, $userdata, $lang, $db, $nav_links, $phpEx;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -174,9 +174,9 @@ function make_jumpbox($action, $match_forum_id = 0)
 		$boxstring .= '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
-	if ( isset($SID) )
+	if ( !empty($SID) )
 	{
-		$boxstring .= '<input type="hidden" name="sid" value="' . substr($SID, 4) . '" />';
+		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 	}
 
 	$template->set_filenames(array(
@@ -288,7 +288,7 @@ function setup_style($style)
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
-		$img_lang = ( file_exists(@realpath($current_template_path . '/images/lang_' . $board_config['default_lang'])) ) ? $board_config['default_lang'] : 'english';
+		$img_lang = ( file_exists(@realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ) ? $board_config['default_lang'] : 'english';
 
 		while( list($key, $value) = @each($images) )
 		{

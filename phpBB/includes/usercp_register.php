@@ -101,7 +101,7 @@ if (
 	{
 		if ( !empty($HTTP_POST_VARS[$param]) )
 		{
-			$$var = trim(strip_tags($HTTP_POST_VARS[$param]));
+			$$var = trim(htmlspecialchars(strip_tags($HTTP_POST_VARS[$param])));
 		}
 	}
 
@@ -115,8 +115,6 @@ if (
 		}
 	}
 
-	$username = str_replace('&nbsp;', '', $username);
-	$email = htmlspecialchars($email);
 	$signature = str_replace('<br />', "\n", $signature);
 
 	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to
@@ -152,7 +150,7 @@ if (
 	{
 		if ( preg_match('/^[a-z_]+$/i', $HTTP_POST_VARS['language']) )
 		{
-			$user_lang = $HTTP_POST_VARS['language'];
+			$user_lang = htmlspecialchars($HTTP_POST_VARS['language']);
 		}
 		else
 		{
@@ -166,7 +164,7 @@ if (
 	}
 
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
-	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
+	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
 
 	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
 
@@ -188,29 +186,23 @@ if (
 		$password_confirm = stripslashes($password_confirm);
 
 		$icq = stripslashes($icq);
-		$aim = htmlspecialchars(stripslashes($aim));
-		$msn = htmlspecialchars(stripslashes($msn));
-		$yim = htmlspecialchars(stripslashes($yim));
+		$aim = stripslashes($aim);
+		$msn = stripslashes($msn);
+		$yim = stripslashes($yim);
 
-		$website = htmlspecialchars(stripslashes($website));
-		$location = htmlspecialchars(stripslashes($location));
-		$occupation = htmlspecialchars(stripslashes($occupation));
-		$interests = htmlspecialchars(stripslashes($interests));
-		$signature = htmlspecialchars(stripslashes($signature));
+		$website = stripslashes($website);
+		$location = stripslashes($location);
+		$occupation = stripslashes($occupation);
+		$interests = stripslashes($interests);
+		$signature = stripslashes($signature);
 
 		$user_lang = stripslashes($user_lang);
-		$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
+		$user_dateformat = stripslashes($user_dateformat);
 
 		if ( !isset($HTTP_POST_VARS['cancelavatar']))
 		{
 			$user_avatar = $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
-
-			if ( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && @file_exists(@realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
-			{
-				@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
-			}
-
 		}
 	}
 }
@@ -344,13 +336,17 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		}
 		else if ( $username != $userdata['username'] || $mode == 'register' )
 		{
-			$result = validate_username($username);
-			if ( $result['error'] )
+			if (strtolower($username) != strtolower($userdata['username']))
 			{
-				$error = TRUE;
-				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
+				$result = validate_username($username);
+				if ( $result['error'] )
+				{
+					$error = TRUE;
+					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
+				}
 			}
-			else
+
+			if (!$error)
 			{
 				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
 			}
@@ -372,6 +368,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
+	//??
 	if ( $website != '' )
 	{
 		rawurlencode($website);
@@ -398,10 +395,18 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 	else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] )
 	{
+		if ( @file_exists(@realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
+		{
+			@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+		}
 		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
 	}
 	else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] )
 	{
+		if ( @file_exists(@realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
+		{
+			@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+		}
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
 	}
 	else
@@ -644,38 +649,38 @@ if ( $error )
 	$password_confirm = '';
 
 	$icq = stripslashes($icq);
-	$aim = htmlspecialchars(str_replace('+', ' ', stripslashes($aim)));
-	$msn = htmlspecialchars(stripslashes($msn));
-	$yim = htmlspecialchars(stripslashes($yim));
+	$aim = str_replace('+', ' ', stripslashes($aim));
+	$msn = stripslashes($msn);
+	$yim = stripslashes($yim);
 
-	$website = htmlspecialchars(stripslashes($website));
-	$location = htmlspecialchars(stripslashes($location));
-	$occupation = htmlspecialchars(stripslashes($occupation));
-	$interests = htmlspecialchars(stripslashes($interests));
+	$website = stripslashes($website);
+	$location = stripslashes($location);
+	$occupation = stripslashes($occupation);
+	$interests = stripslashes($interests);
 	$signature = stripslashes($signature);
 	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
-	$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
+	$user_dateformat = stripslashes($user_dateformat);
 
 }
 else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && !isset($HTTP_POST_VARS['submitavatar']) && !isset($HTTP_POST_VARS['cancelavatar']) )
 {
 	$user_id = $userdata['user_id'];
-	$username = htmlspecialchars($userdata['username']);
+	$username = $userdata['username'];
 	$email = $userdata['user_email'];
 	$new_password = '';
 	$password_confirm = '';
 
 	$icq = $userdata['user_icq'];
-	$aim = htmlspecialchars(str_replace('+', ' ', $userdata['user_aim']));
-	$msn = htmlspecialchars($userdata['user_msnm']);
-	$yim = htmlspecialchars($userdata['user_yim']);
+	$aim = str_replace('+', ' ', $userdata['user_aim']);
+	$msn = $userdata['user_msnm'];
+	$yim = $userdata['user_yim'];
 
-	$website = htmlspecialchars($userdata['user_website']);
-	$location = htmlspecialchars($userdata['user_from']);
-	$occupation = htmlspecialchars($userdata['user_occ']);
-	$interests = htmlspecialchars($userdata['user_interests']);
+	$website = $userdata['user_website'];
+	$location = $userdata['user_from'];
+	$occupation = $userdata['user_occ'];
+	$interests = $userdata['user_interests'];
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
 	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $userdata['user_sig']) : $userdata['user_sig'];
 
@@ -695,7 +700,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$user_style = $userdata['user_style'];
 	$user_lang = $userdata['user_lang'];
 	$user_timezone = $userdata['user_timezone'];
-	$user_dateformat = htmlspecialchars($userdata['user_dateformat']);
+	$user_dateformat = $userdata['user_dateformat'];
 }
 
 //

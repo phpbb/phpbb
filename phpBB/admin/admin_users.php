@@ -68,6 +68,184 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 		}
 
+		if( $HTTP_POST_VARS['deleteuser'] )
+		{
+			$sql = "SELECT g.group_id 
+				FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
+				WHERE ug.user_id = $user_id 
+					AND g.group_id = ug.group_id 
+					AND g.group_single_user = 1";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not obtain group information for this user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$row = $db->sql_fetchrow($result);
+			
+			$sql = "UPDATE " . POSTS_TABLE . "
+				SET poster_id = " . DELETED . ", post_username = '$username' 
+				WHERE poster_id = $user_id";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update posts for this user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_poster = " . DELETED . " 
+				WHERE topic_poster = $user_id";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$sql = "UPDATE " . VOTE_USERS_TABLE . "
+				SET vote_user_id = " . DELETED . "
+				WHERE vote_user_id = $user_id";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$sql = "SELECT group_id
+				FROM " . GROUPS_TABLE . "
+				WHERE group_moderator = $user_id";
+			if( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not select groups where user was moderator', '', __LINE__, __FILE__, $sql);
+			}
+			
+			while ( $row_group = $db->sql_fetchrow($result) )
+			{
+				$group_moderator[] = $row_group['group_id'];
+			}
+			
+			if ( count($group_moderator) )
+			{
+				$update_moderator_id = implode(', ', $group_moderator);
+				
+				$sql = "UPDATE " . GROUPS_TABLE . "
+					SET group_moderator = " . $userdata['user_id'] . "
+					WHERE group_moderator IN ($update_moderator_id)";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
+				}
+			}
+
+			$sql = "DELETE FROM " . USERS_TABLE . "
+				WHERE user_id = $user_id";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+				WHERE user_id = $user_id";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete user from user_group table', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . GROUPS_TABLE . "
+				WHERE group_id = " . $row['group_id'];
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+				WHERE group_id = " . $row['group_id'];
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+				WHERE user_id = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "SELECT privmsgs_id
+				FROM " . PRIVMSGS_TABLE . "
+				WHERE ( ( privmsgs_from_userid = $user_id 
+						AND privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )
+					OR ( privmsgs_from_userid = $user_id
+						AND privmsgs_type = " . PRIVMSGS_SENT_MAIL . " )
+					OR ( privmsgs_to_userid = $user_id
+						AND privmsgs_type = " . PRIVMSGS_READ_MAIL . " )
+					OR ( privmsgs_to_userid = $user_id
+						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
+					OR ( privmsgs_from_userid = $user_id
+						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) )";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not select all user\'s private messages', '', __LINE__, __FILE__, $sql);
+			}
+			
+			//
+			// This little bit of code directly from the private messaging section.
+			// Thanks Paul!
+			//
+			
+			while ( $row_privmsgs = $db->sql_fetchrow($result) )
+			{
+				$mark_list[] = $row_privmsgs['privmsgs_id'];
+			}
+			
+			if ( count($mark_list) )
+			{
+				$delete_sql_id = implode(', ', $mark_list);
+				
+				//
+				// We shouldn't need to worry about updating conters here...
+				// They are already gone!
+				//
+				
+				$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
+					WHERE privmsgs_text_id IN ($delete_sql_id)";
+				$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
+					WHERE privmsgs_id IN ($delete_sql_id)";
+				
+				//
+				// Shouldn't need the switch statement here, either, as we just want
+				// to take out all of the private messages.  This will not affect
+				// the other messages we want to keep; the ids are unique.
+				//
+				
+				if ( !$db->sql_query($delete_sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
+				}
+				
+				if ( !$db->sql_query($delete_text_sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
+				}
+			}
+			
+			$sql = "UPDATE " . PRIVMSGS_TABLE . "
+				SET privmsgs_to_userid = " . DELETED . "
+				WHERE privmsgs_to_userid = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update private messages saved to the user', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$sql = "UPDATE " . PRIVMSGS_TABLE . "
+				SET privmsgs_from_userid = " . DELETED . "
+				WHERE privmsgs_from_userid = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update private messages saved from the user', '', __LINE__, __FILE__, $sql);
+			}
+
+			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+
+			message_die(GENERAL_MESSAGE, $message);
+		}
+
 		$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags( $HTTP_POST_VARS['username'] ) ) : '';
 		$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars( $HTTP_POST_VARS['email'] ) )) : '';
 
@@ -495,187 +673,10 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		//
 		if( !$error )
 		{
-			if( $HTTP_POST_VARS['deleteuser'] )
-			{
-				$sql = "SELECT g.group_id 
-					FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
-					WHERE ug.user_id = $user_id 
-						AND g.group_id = ug.group_id 
-						AND g.group_single_user = 1";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not obtain group information for this user', '', __LINE__, __FILE__, $sql);
-				}
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
+				WHERE user_id = $user_id";
 
-				$row = $db->sql_fetchrow($result);
-				
-				$sql = "UPDATE " . POSTS_TABLE . "
-					SET poster_id = " . DELETED . ", post_username = '$username' 
-					WHERE poster_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update posts for this user', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_poster = " . DELETED . " 
-					WHERE topic_poster = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
-				}
-				
-				$sql = "UPDATE " . VOTE_USERS_TABLE . "
-					SET vote_user_id = " . DELETED . "
-					WHERE vote_user_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
-				}
-				
-				$sql = "SELECT group_id
-					FROM " . GROUPS_TABLE . "
-					WHERE group_moderator = $user_id";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not select groups where user was moderator', '', __LINE__, __FILE__, $sql);
-				}
-				
-				while ( $row_group = $db->sql_fetchrow($result) )
-				{
-					$group_moderator[] = $row_group['group_id'];
-				}
-				
-				if ( count($group_moderator) )
-				{
-					$update_moderator_id = implode(', ', $group_moderator);
-					
-					$sql = "UPDATE " . GROUPS_TABLE . "
-						SET group_moderator = " . $userdata['user_id'] . "
-						WHERE group_moderator IN ($update_moderator_id)";
-					if( !$db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
-					}
-				}
-
-				$sql = "DELETE FROM " . USERS_TABLE . "
-					WHERE user_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-					WHERE user_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user from user_group table', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE FROM " . GROUPS_TABLE . "
-					WHERE group_id = " . $row['group_id'];
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-					WHERE group_id = " . $row['group_id'];
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-					WHERE user_id = $user_id";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "SELECT privmsgs_id
-					FROM " . PRIVMSGS_TABLE . "
-					WHERE ( ( privmsgs_from_userid = $user_id 
-							AND privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )
-						OR ( privmsgs_from_userid = $user_id
-							AND privmsgs_type = " . PRIVMSGS_SENT_MAIL . " )
-						OR ( privmsgs_to_userid = $user_id
-							AND privmsgs_type = " . PRIVMSGS_READ_MAIL . " )
-						OR ( privmsgs_to_userid = $user_id
-							AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-						OR ( privmsgs_from_userid = $user_id
-							AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) )";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not select all user\'s private messages', '', __LINE__, __FILE__, $sql);
-				}
-				
-				//
-				// This little bit of code directly from the private messaging section.
-				// Thanks Paul!
-				//
-				
-				while ( $row_privmsgs = $db->sql_fetchrow($result) )
-				{
-					$mark_list[] = $row_privmsgs['privmsgs_id'];
-				}
-				
-				if ( count($mark_list) )
-				{
-					$delete_sql_id = implode(', ', $mark_list);
-					
-					//
-					// We shouldn't need to worry about updating conters here...
-					// They are already gone!
-					//
-					
-					$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-						WHERE privmsgs_text_id IN ($delete_sql_id)";
-					$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-						WHERE privmsgs_id IN ($delete_sql_id)";
-					
-					//
-					// Shouldn't need the switch statement here, either, as we just want
-					// to take out all of the private messages.  This will not affect
-					// the other messages we want to keep; the ids are unique.
-					//
-					
-					if ( !$db->sql_query($delete_sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
-					}
-					
-					if ( !$db->sql_query($delete_text_sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
-					}
-				}
-				
-				$sql = "UPDATE " . PRIVMSGS_TABLE . "
-					SET privmsgs_to_userid = " . DELETED . "
-					WHERE privmsgs_to_userid = $user_id";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update private messages saved to the user', '', __LINE__, __FILE__, $sql);
-				}
-				
-				$sql = "UPDATE " . PRIVMSGS_TABLE . "
-					SET privmsgs_from_userid = " . DELETED . "
-					WHERE privmsgs_from_userid = $user_id";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update private messages saved from the user', '', __LINE__, __FILE__, $sql);
-				}
-
-				$message = $lang['User_deleted'];
-
-			}
-			else
-			{
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
-					WHERE user_id = $user_id";
 				if( $result = $db->sql_query($sql) )
 				{
 					if( isset($rename_user) )

@@ -22,15 +22,6 @@
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
-define('IN_PHPBB', true);
-$phpbb_root_path='./';
-include($phpbb_root_path.'extension.inc');
-include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
-
-$userdata = array();
-$lang = array();
-$reinstall = false;
-
 if( !get_magic_quotes_gpc() )
 {
 	if( is_array($HTTP_GET_VARS) )
@@ -93,6 +84,15 @@ if( !get_magic_quotes_gpc() )
 		@reset($HTTP_COOKIE_VARS);
 	}
 }
+
+define('IN_PHPBB', true);
+$phpbb_root_path='./';
+include($phpbb_root_path.'extension.inc');
+include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
+
+$userdata = array();
+$lang = array();
+$reinstall = false;
 
 /***************************************************************************
  *				Install Customization Section
@@ -720,25 +720,25 @@ else
 				$sql_query = $remove_remarks($sql_query);
 				$sql_query = split_sql_file($sql_query, $delimiter);
 
-				$sql_count = count($sql_query);
-
-				for($i = 0; $i < $sql_count; $i++)
+				for ($i = 0; $i < sizeof($sql_query); $i++)
 				{
-					$result = $db->sql_query($sql_query[$i]);
-					if( !$result )
+					if (trim($sql_query[$i]) != '')
 					{
-						$error = $db->sql_error();
-		
-						$template->assign_block_vars("switch_error_install", array());
+						if (!($result = $db->sql_query($sql_query[$i])))
+						{
+							$error = $db->sql_error();
+			
+							$template->assign_block_vars("switch_error_install", array());
 
-						$template->assign_vars(array(
-							"L_ERROR_TITLE" => $lang['Installer_Error'],
-							"L_ERROR" => $lang['Install_db_error'] . '<br />' . $error['message'])
-						);
+							$template->assign_vars(array(
+								"L_ERROR_TITLE" => $lang['Installer_Error'],
+								"L_ERROR" => $lang['Install_db_error'] . '<br />' . $error['message'])
+							);
 
-						$template->pparse('body');
+							$template->pparse('body');
 
-						exit;
+							exit;
+						}
 					}
 				}
 		
@@ -751,25 +751,25 @@ else
 				$sql_query = $remove_remarks($sql_query);
 				$sql_query = split_sql_file($sql_query, $delimiter_basic);
 
-				$sql_count = count($sql_query);
-
-				for($i = 0; $i < $sql_count; $i++)
+				for($i = 0; $i < sizeof($sql_query); $i++)
 				{
-					$result = $db->sql_query($sql_query[$i]);
-					if( !$result )
+					if (trim($sql_query[$i]) != '')
 					{
-						$error = $db->sql_error();
-		
-						$template->assign_block_vars("switch_error_install", array());
+						if (!($result = $db->sql_query($sql_query[$i])))
+						{
+							$error = $db->sql_error();
+			
+							$template->assign_block_vars("switch_error_install", array());
 
-						$template->assign_vars(array(
-							"L_ERROR_TITLE" => $lang['Installer_Error'],
-							"L_ERROR" => $lang['Install_db_error'] . "<br />" . $error["message"])
-						);
+							$template->assign_vars(array(
+								"L_ERROR_TITLE" => $lang['Installer_Error'],
+								"L_ERROR" => $lang['Install_db_error'] . "<br />" . $error["message"])
+							);
 
-						$template->pparse('body');
+							$template->pparse('body');
 
-						exit;
+							exit;
+						}
 					}
 				}
 			}
@@ -781,7 +781,7 @@ else
 			// this we are going to pass them over to the admin_forum.php script
 			// to set up their forum defaults.
 			//
-			$error = "";
+			$error = '';
 
 			//
 			// Update the default admin user with their information.
@@ -862,6 +862,8 @@ else
 				$error .= "Could not update user_regdate :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
 
+			/*
+			// Disabled in 2.0.4 ... too many issues with MAX ROWS
 			//
 			// Change session table to HEAP if MySQL version matches
 			//
@@ -881,6 +883,7 @@ else
 					}
 				}
 			}
+			*/
 
 			if( $error != "" )
 			{

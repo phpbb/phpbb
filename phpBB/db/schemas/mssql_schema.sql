@@ -1,6 +1,6 @@
 /*
 
-  mssql_schema.sql for phpBB2 (c) 2001, phpBB Group 
+  mssql_schema.sql for phpBB2 (c) 2001, phpBB Group
 
  $Id$
 
@@ -23,7 +23,7 @@ CREATE TABLE [phpbb_auth_access] (
 	[auth_vote] [smallint] NOT NULL ,
 	[auth_pollcreate] [smallint] NOT NULL ,
 	[auth_attachments] [smallint] NOT NULL ,
-	[auth_mod] [smallint] NOT NULL 
+	[auth_mod] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -31,26 +31,26 @@ CREATE TABLE [phpbb_banlist] (
 	[ban_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[ban_userid] [int] NULL ,
 	[ban_ip] [char] (8) NULL ,
-	[ban_email] [varchar] (50) NULL 
+	[ban_email] [varchar] (50) NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_categories] (
 	[cat_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[cat_title] [varchar] (50) NOT NULL ,
-	[cat_order] [int] NOT NULL 
+	[cat_order] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_config] (
 	[config_name] [varchar] (255) NULL ,
-	[config_value] [varchar] (255) NULL 
+	[config_value] [varchar] (255) NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_disallow] (
 	[disallow_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[disallow_username] [varchar] (100) NULL 
+	[disallow_username] [varchar] (100) NULL
 ) ON [PRIMARY]
 GO
 
@@ -58,7 +58,7 @@ CREATE TABLE [phpbb_forum_prune] (
 	[prune_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[prune_days] [int] NOT NULL ,
-	[prune_freq] [int] NOT NULL 
+	[prune_freq] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -84,7 +84,7 @@ CREATE TABLE [phpbb_forums] (
 	[auth_announce] [smallint] NOT NULL ,
 	[auth_vote] [smallint] NOT NULL ,
 	[auth_pollcreate] [smallint] NOT NULL ,
-	[auth_attachments] [smallint] NOT NULL 
+	[auth_attachments] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -94,7 +94,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_name] [varchar] (50) NOT NULL ,
 	[group_description] [varchar] (255) NOT NULL ,
 	[group_moderator] [int] NULL ,
-	[group_single_user] [smallint] NOT NULL 
+	[group_single_user] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -111,7 +111,7 @@ CREATE TABLE [phpbb_posts] (
 	[enable_smilies] [smallint] NULL ,
 	[enable_sig] [smallint] NULL ,
 	[post_edit_time] [int] NULL ,
-	[post_edit_count] [smallint] NULL 
+	[post_edit_count] [smallint] NULL
 ) ON [PRIMARY]
 GO
 
@@ -119,7 +119,7 @@ CREATE TABLE [phpbb_posts_text] (
 	[post_id] [int] NOT NULL ,
 	[bbcode_uid] [char] (10) NULL ,
 	[post_subject] [char] (60) NULL ,
-	[post_text] [text] NULL 
+	[post_text] [text] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -134,14 +134,14 @@ CREATE TABLE [phpbb_privmsgs] (
 	[privmsgs_enable_bbcode] [smallint] NULL ,
 	[privmsgs_enable_html] [smallint] NULL ,
 	[privmsgs_enable_smilies] [smallint] NULL ,
-	[privmsgs_attach_sig] [smallint] NULL 
+	[privmsgs_attach_sig] [smallint] NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_privmsgs_text] (
 	[privmsgs_text_id] [int] NOT NULL ,
 	[privmsgs_bbcode_uid] [char] (10) NULL ,
-	[privmsgs_text] [text] NULL 
+	[privmsgs_text] [text] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -150,28 +150,28 @@ CREATE TABLE [phpbb_ranks] (
 	[rank_title] [varchar] (50) NOT NULL ,
 	[rank_min] [int] NULL ,
 	[rank_special] [smallint] NULL ,
-	[rank_image] [varchar] (50) NULL 
+	[rank_image] [varchar] (50) NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_search_results] (
 	[search_id] [int] NOT NULL ,
 	[session_id] [char] (32) NOT NULL ,
-	[search_array] [text] NOT NULL 
+	[search_array] [text] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_search_wordlist] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word_text] [varchar] (50) NOT NULL ,
-	[word_common] [tinyint] NOT NULL 
+	[word_common] [tinyint] NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_search_wordmatch] (
 	[post_id] [int] NOT NULL ,
 	[word_id] [int] NOT NULL ,
-	[title_match] [smallint] NOT NULL 
+	[title_match] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -182,7 +182,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_time] [int] NULL ,
 	[session_ip] [char] (8) NOT NULL ,
 	[session_page] [int] NULL ,
-	[session_logged_in] [smallint] NULL 
+	[session_logged_in] [smallint] NULL
 ) ON [PRIMARY]
 GO
 
@@ -190,7 +190,7 @@ CREATE TABLE [phpbb_smilies] (
 	[smilies_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (10) NOT NULL ,
 	[smile_url] [varchar] (50) NOT NULL ,
-	[emoticon] [varchar] (50) NULL 
+	[emoticon] [varchar] (50) NULL
 ) ON [PRIMARY]
 GO
 
@@ -237,7 +237,7 @@ CREATE TABLE [phpbb_themes] (
 	[span_class2] [varchar] (25) NULL ,
 	[span_class3] [varchar] (25) NULL ,
 	[img_size_poll] [smallint] NULL ,
-	[img_size_privmsg] [smallint] NULL 
+	[img_size_privmsg] [smallint] NULL
 ) ON [PRIMARY]
 GO
 
@@ -289,21 +289,21 @@ CREATE TABLE [phpbb_topics] (
 	[topic_vote] [smallint] NOT NULL ,
 	[topic_first_post_id] [int] NULL ,
 	[topic_last_post_id] [int] NULL ,
-	[topic_moved_id] [int] NULL 
+	[topic_moved_id] [int] NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_topics_watch] (
 	[topic_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
-	[notify_status] [smallint] NOT NULL 
+	[notify_status] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_user_group] (
 	[group_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
-	[user_pending] [smallint] NULL 
+	[user_pending] [smallint] NULL
 ) ON [PRIMARY]
 GO
 
@@ -352,7 +352,7 @@ CREATE TABLE [phpbb_users] (
 	[user_interests] [varchar] (255) NULL ,
 	[user_actkey] [varchar] (32) NULL ,
 	[user_newpasswd] [varchar] (32) NULL ,
-	[user_notify] [smallint] NOT NULL 
+	[user_notify] [smallint] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -361,7 +361,7 @@ CREATE TABLE [phpbb_vote_desc] (
 	[topic_id] [int] NOT NULL ,
 	[vote_text] [varchar] (255) NOT NULL ,
 	[vote_start] [int] NOT NULL ,
-	[vote_length] [int] NOT NULL 
+	[vote_length] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -369,158 +369,158 @@ CREATE TABLE [phpbb_vote_results] (
 	[vote_id] [int] NOT NULL ,
 	[vote_option_id] [int] NOT NULL ,
 	[vote_option_text] [varchar] (255) NOT NULL ,
-	[vote_result] [int] NOT NULL 
+	[vote_result] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_vote_voters] (
 	[vote_id] [int] NOT NULL ,
 	[vote_user_id] [int] NOT NULL ,
-	[vote_user_ip] [char] (8) NOT NULL 
+	[vote_user_ip] [char] (8) NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_words] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word] [varchar] (255) NOT NULL ,
-	[replacement] [varchar] (255) NOT NULL 
+	[replacement] [varchar] (255) NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_banlist] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_banlist] PRIMARY KEY  CLUSTERED
 	(
 		[ban_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_categories] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_categories] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_categories] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_categories] PRIMARY KEY  CLUSTERED
 	(
 		[cat_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_disallow] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_disallow] PRIMARY KEY  CLUSTERED
 	(
 		[disallow_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_forum_prune] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_forum_prune] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_forum_prune] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_forum_prune] PRIMARY KEY  CLUSTERED
 	(
 		[prune_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_forums] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_forums] PRIMARY KEY  CLUSTERED
 	(
 		[forum_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_groups] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_groups] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_groups] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_groups] PRIMARY KEY  CLUSTERED
 	(
 		[group_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_posts] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_posts] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_posts] PRIMARY KEY  CLUSTERED
 	(
 		[post_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_privmsgs] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_privmsgs] PRIMARY KEY  CLUSTERED
 	(
 		[privmsgs_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_privmsgs_text] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_privmsgs_text] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_privmsgs_text] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_privmsgs_text] PRIMARY KEY  CLUSTERED
 	(
 		[privmsgs_text_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_ranks] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_ranks] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_ranks] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_ranks] PRIMARY KEY  CLUSTERED
 	(
 		[rank_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_search_results] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_search_results] PRIMARY KEY  CLUSTERED
 	(
 		[search_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_search_wordlist] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_search_wordlist] PRIMARY KEY  CLUSTERED
 	(
 		[word_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_smilies] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_smilies] PRIMARY KEY  CLUSTERED
 	(
 		[smilies_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_themes] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_themes] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_themes] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_themes] PRIMARY KEY  CLUSTERED
 	(
 		[themes_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_themes_name] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_themes_name] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_themes_name] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_themes_name] PRIMARY KEY  CLUSTERED
 	(
 		[themes_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_topics] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_topics] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_topics] PRIMARY KEY  CLUSTERED
 	(
 		[topic_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_users] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED
 	(
 		[user_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_vote_desc] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_vote_desc] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_vote_desc] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_vote_desc] PRIMARY KEY  CLUSTERED
 	(
 		[vote_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_words] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_words] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_words] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_words] PRIMARY KEY  CLUSTERED
 	(
 		[word_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_view] DEFAULT (0) FOR [auth_view],
 	CONSTRAINT [DF_phpbb_auth_access_auth_read] DEFAULT (0) FOR [auth_read],
 	CONSTRAINT [DF_phpbb_auth_access_auth_post] DEFAULT (0) FOR [auth_post],
@@ -535,7 +535,7 @@ ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_mod] DEFAULT (0) FOR [auth_mod]
 GO
 
-ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_forum_posts] DEFAULT (0) FOR [forum_posts],
 	CONSTRAINT [DF_phpbb_forums_forum_topics] DEFAULT (0) FOR [forum_topics],
 	CONSTRAINT [DF_phpbb_forums_forum_last_post_id] DEFAULT (0) FOR [forum_last_post_id],
@@ -553,20 +553,20 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]
 GO
 
-ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_search_wordlist_word_common] DEFAULT (0) FOR [word_common]
 GO
 
-ALTER TABLE [phpbb_topics] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_views] DEFAULT (0) FOR [topic_views],
 	CONSTRAINT [DF_phpbb_topics_topic_replies] DEFAULT (0) FOR [topic_replies],
 	CONSTRAINT [DF_phpbb_topics_topic_status] DEFAULT (0) FOR [topic_status],
 	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type],
-	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote], 
+	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote],
 	CONSTRAINT [DF_phpbb_topics_topic_moved_id] DEFAULT (0) FOR topic_moved_id
 GO
 
-ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_level] DEFAULT (0) FOR [user_level],
 	CONSTRAINT [DF_phpbb_users_user_posts] DEFAULT (0) FOR [user_posts],
 	CONSTRAINT [DF_phpbb_users_user_session_time] DEFAULT (0) FOR [user_session_time],

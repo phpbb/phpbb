@@ -403,13 +403,13 @@ else
 	$smilies_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_smilies'] : $userdata['user_allowsmile'] );
 }
 
-if ( $submit || $refresh )
+if ( ($submit || $refresh) && $is_auth['auth_read'])
 {
 	$notify_user = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;
 }
 else
 {
-	if ( $mode != 'newtopic' && $userdata['session_logged_in'] )
+	if ( $mode != 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read'] )
 	{
 		$sql = "SELECT topic_id 
 			FROM " . TOPICS_WATCH_TABLE . "
@@ -424,7 +424,7 @@ else
 	}
 	else
 	{
-		$notify_user = ( $userdata['session_logged_in'] ) ? $userdata['user_notify'] : 0;
+		$notify_user = ( $userdata['session_logged_in'] && $is_auth['auth_read'] ) ? $userdata['user_notify'] : 0;
 	}
 }
 
@@ -879,7 +879,7 @@ if( !$userdata['session_logged_in'] || ( $mode == 'editpost' && $post_info['post
 //
 // Notify checkbox - only show if user is logged in
 //
-if ( $userdata['session_logged_in'] )
+if ( $userdata['session_logged_in'] && $is_auth['auth_read'] )
 {
 	if ( $mode != 'editpost' || ( $mode == 'editpost' && $post_info['poster_id'] != ANONYMOUS ) )
 	{
@@ -1104,7 +1104,7 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] )
 //
 // Topic review
 //
-if( $mode == 'reply' )
+if( $mode == 'reply' && $is_auth['auth_read'] )
 {
 	require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
 	topic_review($topic_id, true);

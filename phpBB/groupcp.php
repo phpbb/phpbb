@@ -127,7 +127,7 @@ $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
 if ( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
-	$group_id = ( isset($HTTP_GET_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_GET_VARS[POST_GROUPS_URL]) : intval($HTTP_POST_VARS[POST_GROUPS_URL]);
+	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_POST_VARS[POST_GROUPS_URL]) : intval($HTTP_GET_VARS[POST_GROUPS_URL]);
 }
 else
 {
@@ -1243,7 +1243,11 @@ else
 			$template->assign_block_vars('switch_groups_remaining', array() );
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		$s_hidden_fields = '';
+		if ( !empty($SID) )
+		{
+			$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		}
 
 		$template->assign_vars(array(
 			'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],

@@ -35,6 +35,15 @@ init_userprefs($userdata);
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
+if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = 'joined';
+}
+
 if(isset($HTTP_POST_VARS['order']))
 {
 	$sort_order = ($HTTP_POST_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
@@ -104,41 +113,32 @@ $template->assign_vars(array(
 	'S_MODE_ACTION' => append_sid("memberlist.$phpEx"))
 );
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+switch( $mode )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
-
-	switch( $mode )
-	{
-		case 'joined':
-			$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'username':
-			$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'location':
-			$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'posts':
-			$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'email':
-			$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'website':
-			$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-		case 'topten':
-			$order_by = "user_posts DESC LIMIT 10";
-			break;
-		default:
-			$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-			break;
-	}
-}
-else
-{
-	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+	case 'joined':
+		$order_by = "user_regdate ASC LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'username':
+		$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'location':
+		$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'posts':
+		$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'email':
+		$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'website':
+		$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
+	case 'topten':
+		$order_by = "user_posts $sort_order LIMIT 10";
+		break;
+	default:
+		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
+		break;
 }
 
 $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar 
