@@ -328,7 +328,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, p.enable_bbcode, p.enable_html, p.enable_smilies, pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, p.enable_bbcode, p.enable_html, p.enable_smilies, pt.post_text, pt.post_subject
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -480,7 +480,6 @@ if(!$update_result = $db->sql_query($sql))
 //
 for($i = 0; $i < $total_posts; $i++)
 {
-
 	$poster_id = $postrow[$i]['user_id'];
 	$poster = stripslashes($postrow[$i]['username']);
 
@@ -494,7 +493,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
 	{
-		$poster_avatar = (strstr("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . stripslashes($postrow[$i]['user_avatar']) . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($postrow[$i]['user_avatar']) . "\" alt=\"\" /><br />";
+		$poster_avatar = (eregi("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . stripslashes($postrow[$i]['user_avatar']) . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($postrow[$i]['user_avatar']) . "\" alt=\"\" /><br />";
 	}
 	else
 	{
@@ -547,7 +546,8 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
-		$email_img = ($postrow[$i]['user_viewemail'] == 1) ? "<a href=\"mailto:" . stripslashes($postrow[$i]['user_email']) . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+		$email_addr = str_replace("@", " at ", stripslashes($postrow[$i]['user_email']));
+		$email_img = ($postrow[$i]['user_viewemail']) ? "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
 
 		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . stripslashes($postrow[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
