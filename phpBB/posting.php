@@ -30,7 +30,6 @@ include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
 
 
 // Grab only parameters needed here
@@ -504,7 +503,7 @@ if ($submit || $preview || $refresh)
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message_parser->message = (!empty($_POST['message'])) ? trim(stripslashes($_POST['message'])) : '';
+	$message_parser->message = (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
 	
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : ((!empty($username)) ? $username : '');
 	$topic_type			= (!empty($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
@@ -1755,7 +1754,7 @@ function topic_review($topic_id, $forum_id, $is_inline_review = false)
 	}
 
 	// Get topic info ...
-	$sql = 'SELECT t.topic_title, f.forum_id
+	$sql = 'SELECT t.topic_title, f.forum_id, f.forum_style 
 		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 		WHERE t.topic_id = $topic_id
 			AND f.forum_id IN (t.forum_id, $forum_id)";
@@ -1768,6 +1767,8 @@ function topic_review($topic_id, $forum_id, $is_inline_review = false)
 
 	$forum_id = $row['forum_id'];
 	$topic_title = $row['topic_title'];
+
+	$user->setup(false, $row['forum_style']);
 
 	if (!$auth->acl_get('f_read', $forum_id))
 	{
