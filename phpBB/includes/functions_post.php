@@ -74,7 +74,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 					$match_tag = trim($allowed_html_tags[$i]);
 					if (preg_match('#^<\/?' . $match_tag . '[> ]#i', $hold_string))
 					{
-						$tagallowed = (preg_match('#^<\/?' . $match_tag . ' .*?(style[ ]*?=|on[\w]+[ ]*?=)#i', $hold_string)) ? false : true;
+						$tagallowed = (preg_match('#^<\/?' . $match_tag . ' .*?(style[\t ]*?=|on[\w]+[\t ]*?=)#i', $hold_string)) ? false : true;
 					}
 				}
 
@@ -91,7 +91,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 			}
 		}
 
-		if ($end_html != strlen($message) && $tmp_message != '')
+		if (!$end_html || ($end_html != strlen($message) && $tmp_message != ''))
 		{
 			$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $end_html + 1));
 		}
