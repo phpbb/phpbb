@@ -274,14 +274,16 @@ if ($forum_password)
 // Redirect to login or to the correct post upon emailed notification links
 if (isset($_GET['e']))
 {
-	$jump_to = (int) $_GET['e'];
+	$jump_to = request_var('e', 0);
+
 	$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id";
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		login_box($redirect_url . "&p=$post_id&e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
-	else if ($jump_to > 0)
+
+	if ($jump_to > 0)
 	{
 		// We direct the already logged in user to the correct post...
 		redirect($redirect_url . ((!$post_id) ? "&p=$jump_to" : "&p=$post_id") . "#$jump_to");
@@ -390,6 +392,7 @@ if ($config['allow_bookmarks'] && $user->data['user_id'] != ANONYMOUS && request
 	$db->sql_query($sql);
 
 	meta_refresh(3, $viewtopic_url);
+
 	$message = (($bookmarked) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
 	trigger_error($message);
 }
@@ -515,7 +518,7 @@ if (!empty($poll_start))
 {
 	$sql = 'SELECT o.*, p.bbcode_bitfield, p.bbcode_uid
 		FROM ' . POLL_OPTIONS_TABLE . ' o, ' . POSTS_TABLE . " p
-		WHERE o.topic_id = $topic_id 
+		WHERE o.topic_id = $topic_id
 			AND p.post_id = $topic_first_post_id
 			AND p.topic_id = o.topic_id
 		ORDER BY o.poll_option_id";
@@ -527,7 +530,7 @@ if (!empty($poll_start))
 		$poll_info[] = $row;
 	}
 	$db->sql_freeresult($result);
-	
+
 	$cur_voted_id = array();
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -559,7 +562,9 @@ if (!empty($poll_start))
 		(($poll_length != 0 && $poll_start + $poll_length > time()) || $poll_length == 0) &&
 		$topic_status != ITEM_LOCKED &&
 		$forum_status != ITEM_LOCKED) ? true : false;
-	$s_display_results = (!$s_can_vote || ($s_can_vote && $voted_id) || $view == 'viewpoll') ? true : false;
+	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
+
+	echo ">$s_can_vote :: >$s_display_results :: >$voted_id";
 
 	if ($update && $s_can_vote)
 	{
@@ -619,10 +624,10 @@ if (!empty($poll_start))
 			$user->set_cookie('poll_' . $topic_id, implode(',', $voted_id), time() + 31536000);
 		}
 
-//, topic_last_post_time = ' . time() . "
 		$sql = 'UPDATE ' . TOPICS_TABLE . '
 			SET poll_last_vote = ' . time() . "
 			WHERE topic_id = $topic_id";
+		//, topic_last_post_time = ' . time() . " -- for bumping topics with new votes, ignore for now
 		$db->sql_query($sql);
 
 		meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
@@ -655,7 +660,7 @@ if (!empty($poll_start))
 
 		unset($poll_bbcode);
 	}
-	
+
 	foreach ($poll_info as $poll_option)
 	{
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
@@ -1162,7 +1167,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		// Remove Comments from post content?
 		$message = preg_replace('#<!\-\-(.*?)\-\->#is', '', $message);
 	}
-	
+
 	// Replace naughty words such as farty pants
 	$row['post_subject'] = censor_text($row['post_subject']);
 	$message = str_replace("\n", '<br />', censor_text($message));
@@ -1192,7 +1197,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			unset($post_storage_list);
 		}
-		
+
 		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
 
 		if ($row['post_edit_reason'])
