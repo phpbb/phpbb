@@ -458,8 +458,8 @@ if( isset($HTTP_GET_VARS['highlight']) )
 	{
 		if( trim($words[$i]) != "" )
 		{
-			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])(?!.*?<\/span>)\b#i";
-			$highlight_replace[] = '<span style="color:#' . $theme['fontcolor3'] . '"><b>\\1</b></span>';
+			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", $words[$i]) . ")(?!(.*?".">.*?<)|(.*?\">))\b#i";
+			$highlight_replace[] = '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>';
 		}
 	}
 
@@ -999,15 +999,6 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 
 	//
-	// Highlight active words (primarily for search)
-	//
-	if( $highlight_active )
-	{
-		$message = preg_replace($highlight_match, $highlight_replace, $message);
-	}
-
-
-	//
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
@@ -1045,6 +1036,14 @@ for($i = 0; $i < $total_posts; $i++)
 		$user_sig = make_clickable($user_sig);
 	}
 	$message = make_clickable($message);
+
+	//
+	// Highlight active words (primarily for search)
+	//
+	if( $highlight_active )
+	{
+		$message = preg_replace($highlight_match, $highlight_replace, $message);
+	}
 
 	//
 	// Replace naughty words
