@@ -186,6 +186,8 @@ if ($mode != '')
 		}
 		$db->sql_query($sql);
 
+		$cache->destroy('ranks');
+
 		trigger_error($message);
 
 	}
@@ -205,8 +207,9 @@ if ($mode != '')
 				WHERE user_rank = $rank_id";
 			$db->sql_query($sql);
 
-			trigger_error($user->lang['RANK_REMOVED']);
+			$cache->destroy('ranks');
 
+			trigger_error($user->lang['RANK_REMOVED']);
 		}
 		else
 		{
