@@ -634,7 +634,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 
 			if ( !defined('IN_ADMIN') )
 			{
-				include($phpbb_root_path . 'includes/page_footer.' . $phpEx);
+				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 			}
 			else
 			{
