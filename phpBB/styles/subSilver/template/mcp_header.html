@@ -47,7 +47,7 @@ function marklist(form_name, status)
 
 						<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 						<!-- BEGIN mcp_subsection -->
-						<li>&#187; <!-- IF mcp_section.mcp_subsection.S_SELECTED --><b>{mcp_section.mcp_subsection.L_TITLE}</b><!-- ELSE --><a href="{mcp_section.mcp_subsection.U_TITLE}">{mcp_section.mcp_subsection.L_TITLE}</a><!-- ENDIF --></li>
+						<li>&#187; <!-- IF mcp_section.mcp_subsection.S_SELECTED --><b>{mcp_section.mcp_subsection.L_TITLE}<!-- IF mcp_section.mcp_subsection.ADD_ITEM --> ({mcp_section.mcp_subsection.ADD_ITEM})<!-- ENDIF --></b><!-- ELSE --><a href="{mcp_section.mcp_subsection.U_TITLE}">{mcp_section.mcp_subsection.L_TITLE}<!-- IF mcp_section.mcp_subsection.ADD_ITEM --> ({mcp_section.mcp_subsection.ADD_ITEM})<!-- ENDIF --></a><!-- ENDIF --></li>
 						<!-- END mcp_subsection -->
 						</ul>
 

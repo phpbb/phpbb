@@ -1,6 +1,6 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{S_APPROVE_ACTION}"{S_FORM_ENCTYPE}>
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp" action="{S_APPROVE_ACTION}">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 	</tr>
@@ -38,6 +38,35 @@
 	</tr>
 	<!-- ENDIF -->
 </form></table>
+
+<!-- IF S_SHOW_REPORTS -->
+<br /><a name="reports"></a>
+
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{L_REPORTS}</th>
+	</tr>
+	<!-- BEGIN reports -->
+	<tr>
+		<td class="row1"><b class="genmed">{reports.REPORT_TIME}</b></td>
+		<td class="row2"><span class="gen">{reports.REASON_TITLE} &#187; {reports.REASON_DESC}</span></td>
+	</tr>
+	<tr>
+		<td class="row1"><b class="genmed">{L_REPORTER}: </b></td>
+		<td class="row2"><span class="gen"><!-- IF reports.U_REPORTER --><a href="{reports.U_REPORTER}">{reports.REPORTER}</a><!-- ELSE -->{reports.REPORTER}<!-- ENDIF --></span></td>
+	</tr>
+	<!-- IF reports.REPORT_TEXT -->
+	<tr>
+		<td class="row1" valign="top"><b class="genmed">{L_MORE_INFO}: </b></td>
+		<td class="row2"><span class="gen">{reports.REPORT_TEXT}</span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td colspan="2" class="spacer"></td>
+	</tr>
+	<!-- END reports -->
+</table>
+<!-- ENDIF -->
 
 <!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
 <br /><a name="mod"></a>

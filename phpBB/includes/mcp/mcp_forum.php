@@ -33,6 +33,21 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 	$post_id_list = request_var('post_id_list', 0);
 	$topic_id = request_var('t', 0);
 
+	// Resync Topics
+	if ($action == 'resync')
+	{
+		$topic_ids = get_array('topic_id_list', 0);
+
+		if (!$topic_ids)
+		{
+			$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		}
+		else
+		{
+			mcp_resync_topics($topic_ids);
+		}
+	}
+
 	$selected_ids = '';
 	if ($post_id_list)
 	{
@@ -166,7 +181,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . '&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=' . $row['topic_id'] . $selected_ids,
 			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve&amp;t=' . $row['topic_id'],
-			'U_MCP_REPORT'		=> $url . '&amp;mode=reports&amp;t=' . $row['topic_id'],
+			'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
 
 			'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
 			'TOPIC_FOLDER_IMG'	=>	$folder_img,
@@ -182,6 +197,43 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		);
 	}
 	unset($topic_rows);
+}
+
+function mcp_resync_topics($topic_ids)
+{
+	global $auth, $db, $template, $phpEx, $user, $SID, $phpbb_root_path;
+
+	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
+	{
+		return;
+	}
+
+	if (!sizeof($topic_ids))
+	{
+		$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		return;
+	}
+	
+	// Sync everything and perform extra checks separately
+	sync('topic_reported', 'topic_id', $topic_ids, false, true);
+	sync('topic_attachment', 'topic_id', $topic_ids, false, true);
+	sync('topic', 'topic_id', $topic_ids, true, false);
+
+	$sql = 'SELECT topic_id, forum_id, topic_title
+		FROM ' . TOPICS_TABLE . '
+		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+	$result = $db->sql_query($sql);
+
+	// Log this action
+	while ($row = $db->sql_fetchrow($result))
+	{
+		add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_TOPIC_RESYNC', $row['topic_title']);
+	}
+
+	$msg = (sizeof($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
+	$template->assign_var('MESSAGE', $msg);
+
+	return;
 }
 
 ?>

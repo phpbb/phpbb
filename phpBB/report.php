@@ -256,7 +256,7 @@ if ($post_id)
 }
 
 // Start output of page
-page_header($user->lang['REPORT_TO_ADMIN']);
+page_header($user->lang['REPORT_POST']);
 
 $template->set_filenames(array(
 	'body' => 'report_body.html')

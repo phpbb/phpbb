@@ -258,7 +258,7 @@ switch ($mode)
 		$sql_forums = array();
 		foreach ($f_postcount_ary as $forum_id => $allow)
 		{
-			if ($allow['f_fread'] && $allow['f_postcount'])
+			if ($allow['f_postcount'])
 			{
 				$sql_forums[] = $forum_id;
 			}

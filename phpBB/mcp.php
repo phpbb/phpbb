@@ -142,7 +142,8 @@ class module
 
 						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
 							'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($module_lang))),
-							'S_SELECTED'	=> $selected, 
+							'S_SELECTED'	=> $selected,
+							'ADD_ITEM'		=> $this->add_menu_item($row['module_filename'], $submodule_title),
 							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title . $suffix)
 						);
 
@@ -222,6 +223,47 @@ class module
 		page_footer();
 	}
 
+	// Add Item to Submodule Title
+	function add_menu_item($module_name, $mode)
+	{
+		global $db, $user;
+
+		if ($module_name != 'queue')
+		{
+			return '';
+		}
+
+		$forum_list = get_forum_list('m_approve');
+
+		switch ($mode)
+		{
+			case 'unapproved_topics':
+
+				$sql = 'SELECT COUNT(*) AS total
+					FROM ' . TOPICS_TABLE . '
+					WHERE forum_id IN (' . implode(', ', $forum_list) . ')
+						AND topic_approved = 0';
+				$result = $db->sql_query($sql);
+				$total_topics = $db->sql_fetchfield('total', 0, $result);
+
+				return ($total_topics) ? $total_topics : $user->lang['NONE'];
+				break;
+
+			case 'unapproved_posts':
+
+				$sql = 'SELECT COUNT(*) AS total
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t 
+						WHERE p.forum_id IN (' . implode(', ', $forum_list) . ')
+							AND p.post_approved = 0
+							AND t.topic_id = p.topic_id
+							AND t.topic_first_post_id <> p.post_id';
+				$result = $db->sql_query($sql);
+				$total_posts = $db->sql_fetchfield('total', 0, $result);
+
+				return ($total_posts) ? $total_posts : $user->lang['NONE'];
+				break;
+		}
+	}
 
 	// Public methods to be overwritten by modules
 	function module()
@@ -297,11 +339,20 @@ if ($action == 'merge_select')
 	$mode = 'forum_view';
 }
 
+// Topic view modes
 if (in_array($mode, array('split', 'split_all', 'split_beyond', 'merge', 'merge_posts')))
 {
 	$_REQUEST['action'] = $action = $mode;
 	$mode = 'topic_view';
-	$quickmod = 0;
+	$quickmod = false;
+}
+
+// Forum view modes
+if (in_array($mode, array('resync')))
+{
+	$_REQUEST['action'] = $action = $mode;
+	$mode = 'forum_view';
+	$quickmod = false;
 }
 
 if (!$quickmod)
@@ -314,7 +365,7 @@ if (!$quickmod)
 	$mcp->create('mcp', "mcp.$phpEx$SID", $post_id, $topic_id, $forum_id, $module, $mode);
 
 	// Load and execute the relevant module
-	$mcp->load('mcp', 'main', $mode);
+	$mcp->load();
 	exit;
 }
 
@@ -332,17 +383,370 @@ switch ($mode)
 	case 'make_normal':
 		$mcp->load('mcp', 'main', $mode);
 		break;
+	case 'fork':
 	case 'move':
 		$mcp->load('mcp', 'main', $mode);
 		break;
-	case 'delete_topic':
-		$mcp->load('mcp', 'main', $mode);
-		break;
 	case 'delete_post':
+	case 'delete_topic':
 		$mcp->load('mcp', 'main', $mode);
 		break;
 	default:
 		trigger_error("$mode not allowed as quickmod");
 }
+
+
+
+//
+// LITTLE HELPER
+
+// request_var, the array way
+function get_array($var, $default_value)
+{
+	$ids = request_var($var, $default_value);
+	
+	if (!is_array($ids))
+	{
+		if (!$ids)
+		{
+			return $default_value;
+		}
+
+		$ids = array($ids);
+	}
+
+	$ids = array_unique($ids);
+
+	if (sizeof($ids) == 1 && !$ids[0])
+	{
+		return $default_value;
+	}
+
+	return $ids;
+}
+
+// Build simple hidden fields from array
+function build_hidden_fields($field_ary)
+{
+	$s_hidden_fields = '';
+
+	foreach ($field_ary as $name => $vars)
+	{
+		if (is_array($vars))
+		{
+			foreach ($vars as $key => $value)
+			{
+				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
+			}
+		}
+		else
+		{
+			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
+		}
+	}
+
+	return $s_hidden_fields;
+}
+
+// Get simple topic data
+function get_topic_data($topic_ids, $acl_list = false)
+{
+	global $auth, $db;
+	$rowset = array();
+
+	if (implode(', ', $topic_ids) == '')
+	{
+		return array();
+	}
+
+	$sql = 'SELECT f.*, t.*
+		FROM ' . TOPICS_TABLE . ' t
+			LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
+		WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
+	$result = $db->sql_query($sql);
+		
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		{
+			continue;
+		}
+
+		$rowset[$row['topic_id']] = $row;
+	}
+
+	return $rowset;
+}
+
+// Get simple post data
+function get_post_data($post_ids, $acl_list = false)
+{
+	global $db, $auth;
+	$rowset = array();
+
+	$sql = 'SELECT p.*, u.*, t.*, f.*
+		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u, ' . TOPICS_TABLE . ' t
+			LEFT JOIN ' . FORUMS_TABLE . ' f ON f.forum_id = p.forum_id
+		WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
+			AND u.user_id = p.poster_id
+			AND t.topic_id = p.topic_id';
+	$result = $db->sql_query($sql);
+		
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		{
+			continue;
+		}
+
+		if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		{
+			// Moderators without the permission to approve post should at least not see them. ;)
+			continue;
+		}
+
+		$rowset[$row['post_id']] = $row;
+	}
+
+	return $rowset;
+}
+
+function get_forum_data($forum_id, $acl_list = 'f_list')
+{
+	global $auth, $db;
+	$rowset = array();
+
+	$sql = 'SELECT *
+		FROM ' . FORUMS_TABLE . '
+		WHERE forum_id ' . ((is_array($forum_id)) ? 'IN (' . implode(', ', $forum_id) . ')' : "= $forum_id");
+	$result = $db->sql_query($sql);
+		
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		{
+			continue;
+		}
+		if ($auth->acl_get('m_approve', $row['forum_id']))
+		{
+			$row['forum_topics'] = $row['forum_topics_real'];
+		}
+
+		$rowset[$row['forum_id']] = $row;
+	}
+
+	return $rowset;
+}
+
+function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
+{
+	global $db, $user, $auth, $template;
+
+	$sort_days = request_var('sort_days', 0);
+	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
+
+	switch ($mode)
+	{
+		case 'viewforum':
+			$type = 'topics';
+			$default_key = 't';
+			$default_dir = 'd';
+			$sql = 'SELECT COUNT(topic_id) AS total
+				FROM ' . TOPICS_TABLE . "
+				$where_sql forum_id = $forum_id
+					AND topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
+					AND topic_last_post_time >= $min_time";
+
+			if (!$auth->acl_get('m_approve', $forum_id))
+			{
+				$sql .= 'AND topic_approved = 1';
+			}
+			break;
+
+		case 'viewtopic':
+			$type = 'posts';
+			$default_key = 't';
+			$default_dir = 'a';
+			$sql = 'SELECT COUNT(post_id) AS total
+				FROM ' . POSTS_TABLE . "
+				$where_sql topic_id = $topic_id
+					AND post_time >= $min_time";
+			if (!$auth->acl_get('m_approve', $forum_id))
+			{
+				$sql .= 'AND post_approved = 1';
+			}
+			break;
+
+		case 'unapproved_posts':
+			$type = 'posts';
+			$default_key = 't';
+			$default_dir = 'd';
+			$sql = 'SELECT COUNT(post_id) AS total
+				FROM ' . POSTS_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+					AND post_approved = 0
+					AND post_time >= ' . $min_time;
+			break;
+
+		case 'unapproved_topics':
+			$type = 'topics';
+			$default_key = 't';
+			$default_dir = 'd';
+			$sql = 'SELECT COUNT(topic_id) AS total
+				FROM ' . TOPICS_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+					AND topic_approved = 0
+					AND topic_time >= ' . $min_time;
+			break;
+
+		case 'reports':
+			$type = 'reports';
+			$default_key = 'p';
+			$default_dir = 'd';
+			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
+
+			if ($topic_id)
+			{
+				$where_sql .= ' p.topic_id = ' . $topic_id;
+			}
+			else if ($forum_id)
+			{
+				$where_sql .= ' p.forum_id = ' . $forum_id;
+			}
+			else
+			{
+				$where_sql .= ' p.forum_id IN (' . implode(', ', get_forum_list('m_')) . ')';
+			}
+			$sql = 'SELECT COUNT(r.report_id) AS total
+				FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
+				$where_sql
+					AND p.post_id = r.post_id
+					$limit_time_sql";
+			break;
+
+		case 'viewlogs':
+			$type = 'logs';
+			$default_key = 't';
+			$default_dir = 'd';
+			$sql = 'SELECT COUNT(log_id) AS total
+				FROM ' . LOG_TABLE . "
+				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
+					AND log_time >= ' . $min_time . ' 
+					AND log_type = ' . LOG_MOD;
+			break;
+	}
+
+	$sort_key = request_var('sk', $default_key);
+	$sort_dir = request_var('sd', $default_dir);
+	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+	switch ($type)
+	{
+		case 'topics':
+			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
+			break;
+
+		case 'posts':
+			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
+			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
+			break;
+
+		case 'reports':
+			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('p' => $user->lang['REPORT_PRIORITY'], 'r' => $user->lang['REPORTER'], 't' => $user->lang['REPORT_TIME']);
+			$sort_by_sql = array('p' => 'rr.reason_priority', 'r' => 'u.username', 't' => 'r.report_time');
+			break;
+
+		case 'logs':
+			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+
+			$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
+			break;
+	}
+
+	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
+	$s_limit_days = $s_sort_key = $s_sort_dir = $sort_url = '';
+	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $sort_url);
+
+	$template->assign_vars(array(
+		'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
+		'S_SELECT_SORT_KEY' =>	$s_sort_key,
+		'S_SELECT_SORT_DAYS'=>	$s_limit_days)
+	);
+
+	if (($sort_days && $mode != 'viewlogs') || $mode == 'reports' || $where_sql != 'WHERE')
+	{
+		$result = $db->sql_query($sql);
+		$total = ($row = $db->sql_fetchrow($result)) ? $row['total'] : 0;
+	}
+	else
+	{
+		$total = -1;
+	}
+}
+
+//
+function check_ids(&$ids, $table, $sql_id, $acl_list = false)
+{
+	global $db, $auth;
+
+	if (!is_array($ids) || !$ids)
+	{
+		return 0;
+	}
+
+	// a small logical error, since global announcement are assigned to forum_id == 0
+	// If the first topic id is a global announcement, we can force the forum. Though only global announcements can be
+	// tricked... i really do not know how to prevent this atm.
+
+	// With those two queries we make sure all ids are within one forum...
+	$sql = "SELECT forum_id FROM $table
+		WHERE $sql_id = {$ids[0]}";
+	$result = $db->sql_query($sql);
+	$forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+	$db->sql_freeresult($result);
+
+	if (!$forum_id)
+	{
+		// Global Announcement?
+		$forum_id = request_var('f', 0);
+	}
+
+	if ($acl_list && !$auth->acl_get($acl_list, $forum_id))
+	{
+		trigger_error('NOT_AUTHORIZED');
+	}
+
+	if (!$forum_id)
+	{
+		trigger_error('Missing forum_id, has to be in url if global announcement...');
+	}
+
+	$sql = "SELECT $sql_id FROM $table
+		WHERE $sql_id IN (" . implode(', ', $ids) . ")
+			AND (forum_id = $forum_id OR forum_id = 0)";
+	$result = $db->sql_query($sql);
+
+	$ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$ids[] = $row[$sql_id];
+	}
+	$db->sql_freeresult($result);
+
+	return $forum_id;
+}
+
+// LITTLE HELPER
+//
 
 ?>

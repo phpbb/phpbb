@@ -11,12 +11,6 @@
 // 
 // -------------------------------------------------------------
 
-//
-// TODO:
-//	- change poster
-//	- delete post
-//
-
 function mcp_post_details($id, $mode, $action, $url)
 {
 	global $SID, $phpEx, $phpbb_root_path, $config;
@@ -133,7 +127,7 @@ function mcp_post_details($id, $mode, $action, $url)
 	$template->assign_vars(array(
 		'S_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1",
 		'S_CHGPOSTER_ACTION'	=> "$url&amp;i=$id&amp;mode=post_details",
-		'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;quickmod=1&amp;p=$post_id",
+		'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id",
 
 		'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
 		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_', $post_info['forum_id']),
@@ -163,6 +157,39 @@ function mcp_post_details($id, $mode, $action, $url)
 		'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']))
 	);
 
+	// Get Reports
+	if ($auth->acl_get('m_', $post_info['forum_id']))
+	{
+		$sql = 'SELECT r.*, re.*, u.user_id, u.username 
+			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . REASONS_TABLE . " re
+			WHERE r.post_id = $post_id
+				AND r.reason_id = re.reason_id
+				AND u.user_id = r.user_id
+			ORDER BY r.report_time DESC";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_var('S_SHOW_REPORTS', true);
+
+			do
+			{
+				$template->assign_block_vars('reports', array(
+					'REPORT_ID'		=> $row['report_id'],
+					'REASON_TITLE'	=> $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_name'])],
+					'REASON_DESC'	=> $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_name'])],
+					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
+					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}" : '',
+					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
+					'REPORT_TIME'	=> $user->format_date($row['report_time']),
+					'REPORT_TEXT'	=> str_replace("\n", '<br />', trim($row['report_text'])))
+				);
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
+	}
+	
 	// Get IP
 	if ($auth->acl_get('m_ip', $post_info['forum_id']))
 	{

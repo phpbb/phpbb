@@ -45,12 +45,14 @@ function mcp_topic_view($id, $mode, $action, $url)
 	if ($action == 'split_all' || $action == 'split_beyond')
 	{
 		split_topic($action, $topic_id, $to_forum_id, $subject);
+		$action = 'split';
 	}
 
 	// Merge Posts?
 	if ($action == 'merge_posts')
 	{
 		merge_posts($topic_id, $to_topic_id);
+		$action = 'merge';
 	}
 	
 	$topics_per_page = ($topic_info['forum_topics_per_page']) ? $topic_info['forum_topics_per_page'] : $config['topics_per_page'];
@@ -62,7 +64,8 @@ function mcp_topic_view($id, $mode, $action, $url)
 
 	// Jumpbox, sort selects and that kind of things
 	make_jumpbox($url . '&amp;mode=forum_view', $topic_info['forum_id'], false, 'm_');
-	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id);
+	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
+	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
 	$forum_topics = ($total == -1) ? $topic_info['forum_topics'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -74,8 +77,9 @@ function mcp_topic_view($id, $mode, $action, $url)
 	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
 
 	$sql = 'SELECT u.username, u.user_colour, p.*
-		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-		WHERE p.topic_id = {$topic_id}
+		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . "
+			p.topic_id = {$topic_id}
 			AND p.poster_id = u.user_id
 		ORDER BY $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
@@ -140,7 +144,7 @@ function mcp_topic_view($id, $mode, $action, $url)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 						
 			'U_POST_DETAILS'	=> "$url&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_APPROVE'			=> "$url&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'])
+			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id'])
 		);
 
 		unset($rowset[$i]);
@@ -190,13 +194,14 @@ function mcp_topic_view($id, $mode, $action, $url)
 		'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED', false, true),
 		'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED', false, true),
 
-		'S_MCP_ACTION'		=> "$url&amp;mode=$mode&amp;start=$start",
+		'S_MCP_ACTION'		=> "$url&amp;mode=$mode&amp;action=$action&amp;start=$start",
 		'S_FORUM_SELECT'	=> '<select name="to_forum_id">' . (($to_forum_id) ? make_forum_select($to_forum_id) : make_forum_select($topic_info['forum_id'])) . '</select>',
 		'S_CAN_SPLIT'		=> ($auth->acl_get('m_split', $topic_info['forum_id']) && $action != 'merge') ? true : false,
 		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id']) && $action != 'split') ? true : false,
 		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
+		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 
 		'S_SHOW_TOPIC_ICONS'=> $s_topic_icons,
 		'S_TOPIC_ICON'		=> $icon_id,
@@ -408,7 +413,7 @@ function merge_posts($topic_id, $to_topic_id)
 	if (!$post_id_list)
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
-		$this->main('merge');
+		return;
 	}
 	
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_merge')))
