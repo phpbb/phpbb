@@ -708,7 +708,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			$sql = 'SELECT user_id AS id, username AS name 
 				FROM ' . USERS_TABLE . ' 
 				WHERE ';
-			$sql .= ($submit == 'add_options') ? ' username IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#', "'\\1'", explode("\n", $ug_data[0]))) . ')' : ' user_id ' . ((is_array($ug_data)) ? 'IN (' . implode(', ', $ug_data) . ')' : '= ' . $ug_data);
+			$sql .= ($submit == 'add_options') ? ' username IN (' . implode(', ', array_unique(preg_replace('#^[\s]*?(.*?)[\s]*?$#', "'\\1'", explode("\n", $ug_data[0])))) . ')' : ' user_id ' . ((is_array($ug_data)) ? 'IN (' . implode(', ', $ug_data) . ')' : '= ' . $ug_data);
 			break;
 
 		case 'group':
