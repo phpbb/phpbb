@@ -30,6 +30,7 @@ class acm
 
 	function acm()
 	{
+		global $phpbb_root_path;
 		//$this->load_cache();
 		$this->cache_dir = $phpbb_root_path . 'cache/';
 	}
