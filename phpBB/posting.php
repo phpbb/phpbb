@@ -483,7 +483,6 @@ if ($submit || $preview || $refresh)
 
 	$current_time = time();
 
-
 	// If replying/quoting and last post id has changed
 	// give user option to continue submit or return to post
 	// notify and show user the post made between his request and the final submit
@@ -769,7 +768,7 @@ if (!sizeof($error) && $preview)
 
 	$preview_message = $message_parser->message;
 	format_display($preview_message, $preview_signature, $message_parser->bbcode_uid, $preview_signature_uid, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $enable_sig);
-
+	
 	// Poll Preview
 	if (($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && ($auth->acl_get('f_poll', $forum_id) || $auth->acl_get('m_edit', $forum_id)))
 	{
@@ -1468,7 +1467,7 @@ function topic_review($topic_id, $forum_id, $is_inline_review = false)
 
 		if ($row['bbcode_bitfield'])
 		{
-			$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
 		if (count($censors['match']))

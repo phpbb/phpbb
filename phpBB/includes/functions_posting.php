@@ -83,7 +83,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 	global $auth, $forum_id, $config, $censors, $user, $bbcode, $phpbb_root_path;
 
 	// Second parse bbcode here
-	$message = $bbcode->bbcode_second_pass($message, $uid);
+	$bbcode->bbcode_second_pass($message, $uid);
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
@@ -102,7 +102,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 	{
 		$signature = trim($signature);
 
-		$signature = $bbcode->bbcode_second_pass($signature, $siguid);
+		$bbcode->bbcode_second_pass($signature, $siguid);
 
 		$signature = (!$config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature);
 
