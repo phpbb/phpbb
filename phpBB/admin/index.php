@@ -142,13 +142,13 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	$total_users = get_db_stat('usercount');
 	$total_topics = get_db_stat('topiccount');
 
-	$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
-	$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
-	$users_per_day = sprintf("%.2f", $total_users / $boarddays);
-
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['default_timezone']);
 
 	$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
+
+	$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
+	$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
+	$users_per_day = sprintf("%.2f", $total_users / $boarddays);
 
 	$avatar_dir_size = 0;
 
