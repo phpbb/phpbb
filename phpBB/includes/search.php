@@ -115,8 +115,10 @@ function add_search_words($post_id, $post_text, $post_title = "")
 	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $synonym_array));
 
 	$word = array();
+	$word_insert_sql = array();
 	while( list($word_in, $search_matches) = @each($search_raw_words) )
 	{
+		$word_insert_sql[$word_in] = "";
 		if( !empty($search_matches) )
 		{
 			for ($i = 0; $i < count($search_matches); $i++)
@@ -125,7 +127,11 @@ function add_search_words($post_id, $post_text, $post_title = "")
 
 				if( $search_matches[$i] != "" ) 
 				{
-					$word[] = $search_matches[$i]; 
+					$word[] = $search_matches[$i];
+					if ( !strstr($word_insert_sql[$word_in], "'" . $search_matches[$i] . "'") )
+					{
+						$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != "" ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
+					}
 				} 
 			}
 		}
@@ -156,7 +162,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 			case 'msaccess':
 			case 'oracle':
 			case 'db2':
-				$sql = "SELECT word_id, word_text, word_common    
+				$sql = "SELECT word_id, word_text     
 					FROM " . SEARCH_WORD_TABLE . " 
 					WHERE word_text IN ($word_text_sql)";
 				if( !($result = $db->sql_query($sql)) )
@@ -166,7 +172,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$check_words[$row['word_text']] = $row['word_common'];
+					$check_words[$row['word_text']] = $row['word_id'];
 				}
 				break;
 		}
@@ -228,17 +234,20 @@ function add_search_words($post_id, $post_text, $post_title = "")
 		}
 	}
 
-	while( list($word_in, $match_sql) = @each($word_text_sql) )
+	while( list($word_in, $match_sql) = @each($word_insert_sql) )
 	{
 		$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
-		$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
-			SELECT $post_id, word_id, $title_match  
-				FROM " . SEARCH_WORD_TABLE . " 
-				WHERE word_text IN ($match_sql)"; 
-		if( !($result = $db->sql_query($sql)) )
+		if ( $match_sql != "" )
 		{
-			message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
+			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+				SELECT $post_id, word_id, $title_match  
+					FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_text IN ($match_sql)"; 
+			if( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't insert new word matches", "", __LINE__, __FILE__, $sql);
+			}
 		}
 	}
 
