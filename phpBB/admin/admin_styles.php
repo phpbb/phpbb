@@ -41,14 +41,15 @@ $phpbb_root_dir = "./../";
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
+if( !$HTTP_POST_VARS['send_file'] )
+{
+	$no_page_header = ( $cancel ) ? TRUE : FALSE;
+	require('pagestart.inc');
+}
+
 if( $cancel )
 {
 	header("Location: " . append_sid("admin_styles.$phpEx"));
-}
-
-if( !$HTTP_POST_VARS['send_file'] )
-{
-	require('pagestart.inc');
 }
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
