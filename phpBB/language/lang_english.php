@@ -214,6 +214,8 @@ $lang['Send_a_new_message'] = "Send a new private message";
 $lang['Send_a_reply'] = "Reply to a private message";
 $lang['Edit_message'] = "Edit private message";
 
+$lang['Notification_email'] = "Hello " . $username . "\n\n, You have received a new private message on your account at " . $forum_title . ". To view it immediately click the following link " . $pm_url . ", you may of course visit the site later your message will be stored in your Inbox.\n\n" . $board_config['email_from'] . "\n\n-------------------\n" . $board_config['email_sig'];
+
 //
 // Profiles/Registration
 //
@@ -230,6 +232,7 @@ $lang['Upload_Image'] = "Upload Image";
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
 
+$lang['Notify_on_privmsg'] = "Notify on Private Message";
 
 
 //

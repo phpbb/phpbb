@@ -452,6 +452,7 @@ CREATE TABLE phpbb_user_groups (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_users (
    user_id int4 DEFAULT nextval('phpbb_users_id_seq'::text) NOT NULL,
+   user_active int2,
    username varchar(40) DEFAULT '' NOT NULL,
    user_regdate int4 DEFAULT '0' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
@@ -473,17 +474,18 @@ CREATE TABLE phpbb_users (
    user_allowhtml int2,
    user_allowbbcode int2,
    user_allowsmile int2,
+   user_allow_pm int2 DEFAULT '1' NOT NULL,
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_level int4 DEFAULT '1',
    user_lang varchar(255),
+   user_template varchar(50),
    user_timezone int4 DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
+   user_notify_pm int2 DEFAULT '1' NOT NULL,
+   user_notify int2,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
-   user_notify int2,
-   user_active int2,
-   user_template varchar(50),
    CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
 );
 

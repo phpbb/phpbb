@@ -73,6 +73,10 @@
 				<td bgcolor="{T_TD_COLOR2}"><input type="radio" name="viewemail" value="1" {VIEW_EMAIL_YES}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_YES}</font>&nbsp;&nbsp;<input type="radio" name="viewemail" value="0" {VIEW_EMAIL_NO}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_NO}</font></td>
 			</tr>
 			<tr>
+				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_NOTIFY_ON_PRIVMSG}:</font></td>
+				<td bgcolor="{T_TD_COLOR2}"><input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_YES}</font>&nbsp;&nbsp;<input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_NO}</font></td>
+			</tr>
+			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_ALWAYS_ADD_SIGNATURE}:</font></td>
 				<td bgcolor="{T_TD_COLOR2}"><input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_YES}</font>&nbsp;&nbsp;<input type="radio" name="attachsig" value="0" {ALWAYS_ADD_SIGNATURE_NO}> <font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_NO}</font></td>
 			</tr>

@@ -336,6 +336,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
 				$viewemail = $HTTP_POST_VARS['viewemail'];
+				$notifypm = $HTTP_POST_VARS['notifypm'];
 				$attachsig = $HTTP_POST_VARS['attachsig'];
 				$allowhtml = $HTTP_POST_VARS['allowhtml'];
 				$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
@@ -474,7 +475,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$sql = "UPDATE ".USERS_TABLE."
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
@@ -542,6 +543,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$signature = $userdata['user_sig'];
 
 				$viewemail = $userdata['user_viewemail'];
+				$notifypm = $userdata['user_notify_pm'];
 				$attachsig = $userdata['user_attachsig'];
 				$allowhtml = $userdata['user_allowhtml'];
 				$allowbbcode = $userdata['user_allowbbcode'];
@@ -581,7 +583,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"WEBSITE" => stripslashes($website),
 				"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
 				"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
-				"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
+				"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "", 
+				"NOTIFY_PM_YES" => ($notifypm) ? "CHECKED" : "", 
+				"NOTIFY_PM_NO" => (!$notifypm) ? "CHECKED" : "", 
 				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
 				"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "CHECKED" : "",
 				"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "CHECKED" : "",
@@ -629,7 +633,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_DELETE_IMAGE" => $lang['Delete_Image'],
 				"L_CURRENT_IMAGE" => $lang['Current_Image'],
 				"L_SIGNATURE" => $l_signature,
-				"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
+				"L_SIGNATURE_EXPLAIN" => $l_sigexplain, 
+				"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'], 
 				"L_PREFERENCES" => $l_preferences,
 				"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
 				"L_ITEMS_REQUIRED" => $l_itemsreq,
@@ -666,6 +671,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim($HTTP_POST_VARS['signature']) : "";
 
 			$viewemail = (!empty($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
+			$notifypm = (!empty($HTTP_POST_VARS['notifypm'])) ? $HTTP_POST_VARS['notifypm'] : 1;
 			$attachsig = (!empty($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
 			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
 			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
@@ -870,8 +876,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$md_pass = md5($password);
-					$sql = "INSERT INTO ".USERS_TABLE."	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
-						VALUES ($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
+					$sql = "INSERT INTO ".USERS_TABLE."	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
+						VALUES ($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
 					if($require_activation || $coppa == 1)
 					{
 						$act_key = generate_activation_key();
@@ -1015,6 +1021,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"SIGNATURE" => stripslashes($signature),
 					"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
 					"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
+					"NOTIFY_PM_YES" => ($notifypm) ? "CHECKED" : "", 
+					"NOTIFY_PM_NO" => (!$notifypm) ? "CHECKED" : "", 
 					"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
 					"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "CHECKED" : "",
 					"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "CHECKED" : "",
@@ -1058,6 +1066,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_CURRENT_IMAGE" => $lang['Current_Image'],
 					"L_SIGNATURE" => $l_signature,
 					"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
+					"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'], 
 					"L_PREFERENCES" => $l_preferences,
 					"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
 					"L_ITEMS_REQUIRED" => $l_itemsreq,
