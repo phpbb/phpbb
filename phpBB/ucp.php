@@ -71,15 +71,6 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-// Set default email variables
-$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
-$script_name = ( $script_name != '' ) ? $script_name . '/ucp.'.$phpEx : 'ucp.'.$phpEx;
-$server_name = trim($config['server_name']);
-$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
-$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
-
-$server_url = $server_protocol . $server_name . $server_port . $script_name;
-
 // -----------------------
 // Page specific functions
 //
