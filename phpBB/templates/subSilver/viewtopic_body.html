@@ -2,7 +2,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></span><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span></td>
+		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span></td>
 		<td class="gensmall" align="right" valign="bottom">{MCP}</td>
 	</tr>
 	<tr>
@@ -19,14 +19,6 @@
 </table>
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
-	<tr align="right">
-		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td><span class="nav">&nbsp;<a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a></span></td>
-				<td align="right"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</span></td>
-			</tr>
-		</table></td>
-	</tr>
 	<!-- IF S_HAS_POLL_OPTIONS -->
 	<tr>
 		<td class="row2" colspan="2"><br clear="all" /><form method="post" action="{S_POLL_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
@@ -120,7 +112,7 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 		<td class="nav" width="150" align="center" valign="middle"><a href="#top">{L_BACK_TO_TOP}</a></td>
-		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0" height="18" width="18">
+		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}<script language="JavaScript" type="text/javascript"><!--
 
@@ -136,13 +128,12 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<!-- END postrow -->
 	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
-		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
+		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></td>
 	</form></tr>
-	</tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
@@ -154,12 +145,25 @@
 	<tr>
 		<td align="left" colspan="3"><span class="nav">{PAGE_NUMBER}</span></td>
 	</tr>
+	<tr>
+		<td class="gensmall" colspan="2">{S_WATCH_TOPIC}</td>
+	</tr>
 </table>
+
+<br clear="all" />
 
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}</span></td>
-		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --></span><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+		<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_AUTH_LIST}</span></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tr>
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>
 
