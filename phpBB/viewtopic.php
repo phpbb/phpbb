@@ -495,6 +495,7 @@ if (isset($HTTP_GET_VARS['highlight']))
 	unset($words);
 
 	$highlight = urlencode($HTTP_GET_VARS['highlight']);
+	$highlight_match = phpbb_rtrim($highlight_match, "\\");
 }
 
 //

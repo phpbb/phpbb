@@ -77,11 +77,37 @@ function get_db_stat($mode)
 // added at phpBB 2.0.11 to properly format the username
 function phpbb_clean_username($username)
 {
-	$username = htmlspecialchars(rtrim(trim($username), "\\"));
-	$username = substr(str_replace("\\'", "'", $username), 0, 25);
-	$username = str_replace("'", "\\'", $username);
+	$username = substr(htmlspecialchars(str_replace("\'", "'", trim($username))), 0, 25);
+	$username = phpbb_rtrim($username, "\\");	
+	$username = str_replace("'", "\'", $username);
 
 	return $username;
+}
+
+// added at phpBB 2.0.12 to fix a bug in PHP 4.3.10 (only supporting charlist in php >= 4.1.0)
+function phpbb_rtrim($str, $charlist = false)
+{
+	if ($charlist === false)
+	{
+		return rtrim($str);
+	}
+	
+	$php_version = explode('.', PHP_VERSION);
+
+	// php version < 4.1.0
+	if ((int) $php_version[0] < 4 || ((int) $php_version[0] == 4 && (int) $php_version[1] < 1))
+	{
+		while ($str{strlen($str)-1} == $charlist)
+		{
+			$str = substr($str, 0, strlen($str)-1);
+		}
+	}
+	else
+	{
+		$str = rtrim($str, $charlist);
+	}
+
+	return $str;
 }
 
 //
@@ -579,7 +605,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 
 		if ( $err_line != '' && $err_file != '' )
 		{
-			$debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
+			$debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
 		}
 	}
 

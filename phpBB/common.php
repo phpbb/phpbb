@@ -50,6 +50,7 @@ if (!isset($HTTP_POST_VARS) && isset($_POST))
 if (@phpversion() < '4.0.0')
 {
 	// PHP3 path; in PHP3, globals are _always_ registered
+	$not_unset = array('HTTP_GET_VARS', 'HTTP_POST_VARS', 'HTTP_COOKIE_VARS', 'HTTP_SERVER_VARS', 'HTTP_ENV_VARS', 'HTTP_POST_FILES', 'phpEx', 'phpbb_root_path');
 	
 	// We 'flip' the array of variables to test like this so that
 	// we can validate later with isset($test[$var]) (no in_array())
@@ -62,7 +63,7 @@ if (@phpversion() < '4.0.0')
 		while (list($var,) = @each($$input))
 		{
 			// Validate the variable to be unset
-			if (!isset($test[$var]) && $var != 'test' && $var != 'input')
+			if (!isset($test[$var]) && $var != 'test' && $var != 'input' && $var != 'not_unset' && !in_array($var, $not_unset))
 			{
 				unset($$var);
 			}
@@ -72,7 +73,8 @@ if (@phpversion() < '4.0.0')
 else if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
 {
 	// PHP4+ path
-	
+	$not_unset = array('HTTP_GET_VARS', 'HTTP_POST_VARS', 'HTTP_COOKIE_VARS', 'HTTP_SERVER_VARS', 'HTTP_SESSION_VARS', 'HTTP_ENV_VARS', 'HTTP_POST_FILES', 'phpEx', 'phpbb_root_path');
+
 	// Not only will array_merge give a warning if a parameter
 	// is not an array, it will actually fail. So we check if
 	// HTTP_SESSION_VARS has been initialised.
@@ -86,10 +88,14 @@ else if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_gl
 	$input = array_merge($HTTP_GET_VARS, $HTTP_POST_VARS, $HTTP_COOKIE_VARS, $HTTP_SERVER_VARS, $HTTP_SESSION_VARS, $HTTP_ENV_VARS, $HTTP_POST_FILES);
 
 	unset($input['input']);
-	
+	unset($input['not_unset']);
+
 	while (list($var,) = @each($input))
 	{
-		unset($$var);
+		if (!in_array($var, $not_unset))
+		{
+			unset($$var);
+		}
 	}
    
 	unset($input);
@@ -199,7 +205,7 @@ include($phpbb_root_path . 'includes/db.'.$phpEx);
 // even bother complaining ... go scream and shout at the idiots out there who feel
 // "clever" is doing harm rather than good ... karma is a great thing ... :)
 //
-$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
+$client_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : getenv('REMOTE_ADDR') );
 $user_ip = encode_ip($client_ip);
 
 //

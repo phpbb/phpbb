@@ -459,7 +459,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		if ( !empty($user_avatar_upload) )
 		{
-			$avatar_mode = ( !empty($user_avatar_name) ) ? 'local' : 'remote';
+			$avatar_mode = (empty($user_avatar_name)) ? 'remote' : 'local';
 			$avatar_sql = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
 		}
 		else if ( !empty($user_avatar_name) )

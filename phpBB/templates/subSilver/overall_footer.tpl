@@ -10,7 +10,7 @@
 
 	The phpBB Group : 2002
 // -->
-Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2004 phpBB Group<br />{TRANSLATION_INFO}</span></div>
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br />{TRANSLATION_INFO}</span></div>
 		</td>
 	</tr>
 </table>
