@@ -14,7 +14,7 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['POST']['ATTACHMENTS'] = ($auth->acl_get('a_attach')) ? $filename . $SID . '&amp;mode=manage' : '';
+	$module['POST']['ATTACHMENTS'] = ($auth->acl_get('a_attach')) ? "$filename$SID&amp;mode=manage" : '';
 
 	return;
 }
@@ -30,13 +30,12 @@ if (!$auth->acl_get('a_attach'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-$mode = (isset($_REQUEST['mode'])) ? trim(htmlspecialchars($_REQUEST['mode'])) : '';
-
+$mode = request_var('mode', '');
 $config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
 
 foreach ($config_sizes as $cfg_key => $var)
 {
-	$$var = (isset($_REQUEST[$var])) ? trim(htmlspecialchars($_REQUEST[$var])) : '';
+	$$var = request_var($var, '');
 }
 
 $submit = (isset($_POST['submit'])) ? TRUE : FALSE;
@@ -55,7 +54,7 @@ while ($row = $db->sql_fetchrow($result))
 	$config_value = $row['config_value'];
 
 	$default_config[$config_name] = $config_value;
-	$new[$config_name] = (isset($_POST[$config_name])) ? $_POST[$config_name] : $default_config[$config_name];
+	$new[$config_name] = request_var($config_name, $default_config[$config_name]);
 
 	foreach ($config_sizes as $cfg_key => $var)
 	{
@@ -81,8 +80,8 @@ while ($row = $db->sql_fetchrow($result))
 		// Update Extension Group Filesizes
 		if ($config_name == 'max_filesize')
 		{
-			$old_size = intval($default_config[$config_name]);
-			$new_size = intval($new[$config_name]);
+			$old_size = (int) $default_config[$config_name];
+			$new_size = (int) $new[$config_name];
 
 			if ($old_size != $new_size)
 			{
@@ -94,7 +93,7 @@ while ($row = $db->sql_fetchrow($result))
 			}
 		}
 
-		set_config($config_name, str_replace('\\\\', '\\', addslashes($new[$config_name])));
+		set_config($config_name, $new[$config_name]);
 	
 		if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
 		{
@@ -109,7 +108,7 @@ if ($submit && ($mode == 'manage' || $mode == 'cats'))
 	$notify[] = $user->lang['ATTACH_CONFIG_UPDATED'];
 }
 
-// Adjust the Upload Directory - relative or absolute, this is the question here.
+// Adjust the Upload Directory. Relative or absolute, this is the question here.
 $upload_dir = ($new['upload_dir'][0] == '/' || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':')) ? $new['upload_dir'] : $phpbb_root_path . $new['upload_dir'];
 
 switch ($mode)
@@ -175,7 +174,7 @@ if ($submit && $mode == 'extensions')
 {
 	// Change Extensions ?
 	$extension_change_list	= (isset($_POST['extension_change_list'])) ? array_map('intval', $_POST['extension_change_list']) : array();
-	$extension_explain_list	= (isset($_POST['extension_explain_list'])) ? array_map('trim', $_POST['extension_explain_list']) : array();
+	$extension_explain_list	= request_var('extension_explain_list', ''); //(isset($_POST['extension_explain_list'])) ? array_map('trim', $_POST['extension_explain_list']) : array();
 	$group_select_list		= (isset($_POST['group_select'])) ? array_map('intval', $_POST['group_select']) : array();
 
 	// Generate correct Change List
@@ -183,7 +182,7 @@ if ($submit && $mode == 'extensions')
 
 	for ($i = 0; $i < count($extension_change_list); $i++)
 	{
-		$extensions[$extension_change_list[$i]]['comment'] = stripslashes(htmlspecialchars($extension_explain_list[$i]));
+		$extensions[$extension_change_list[$i]]['comment'] = $extension_explain_list[$i];
 		$extensions[$extension_change_list[$i]]['group_id'] = $group_select_list[$i];
 	}
 
@@ -197,9 +196,9 @@ if ($submit && $mode == 'extensions')
 		if ($row['comment'] != $extensions[$row['extension_id']]['comment'] || $row['group_id'] != $extensions[$row['extension_id']]['group_id'])
 		{
 			$sql = "UPDATE " . EXTENSIONS_TABLE . " 
-				SET comment = '" . $extensions[$row['extension_id']]['comment'] . "', group_id = " . $extensions[$row['extension_id']]['group_id'] . "
+				SET comment = '" . $db->sql_escape($extensions[$row['extension_id']]['comment']) . "', group_id = " . (int) $extensions[$row['extension_id']]['group_id'] . "
 				WHERE extension_id = " . $row['extension_id'];
-			$db->sql_query($sql);				
+			$db->sql_query($sql);		
 			add_log('admin', 'LOG_ATTACH_EXT_UPDATE', $row['extension']);
 		}
 	}
@@ -208,16 +207,16 @@ if ($submit && $mode == 'extensions')
 	// Delete Extension ?
 	$extension_id_list = (isset($_POST['extension_id_list'])) ? array_map('intval', $_POST['extension_id_list']) : array();
 
-	if (count($extension_id_list))
+	if (sizeof($extension_id_list))
 	{
-		$sql = "DELETE 
-			FROM " . EXTENSIONS_TABLE . "
-			WHERE extension_id IN (" . implode(', ', $extension_id_list) . ")";
+		$sql = 'DELETE 
+			FROM ' . EXTENSIONS_TABLE . '
+			WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
 		$db->sql_query($sql);
 
-		$sql = "SELECT extension 
-			FROM " . EXTENSIONS_TABLE . "
-			WHERE extension_id IN (" . implode(', ', $extension_id_list) . ")";
+		$sql = 'SELECT extension 
+			FROM ' . EXTENSIONS_TABLE . '
+			WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
 		$result = $db->sql_query($sql);
 		
 		$extension_list = '';
@@ -231,14 +230,14 @@ if ($submit && $mode == 'extensions')
 	}
 		
 	// Add Extension ?
-	$add_extension			= (isset($_POST['add_extension'])) ? strtolower(trim(strip_tags($_POST['add_extension']))) : '';
-	$add_extension_explain	= (isset($_POST['add_extension_explain'])) ?  trim(strip_tags($_POST['add_extension_explain'])) : '';
-	$add_extension_group	= (isset($_POST['add_group_select'])) ?  intval($_POST['add_group_select']) : '';
+	$add_extension			= strtolower(request_var('add_extension', '')); //(isset($_POST['add_extension'])) ? strtolower(trim(strip_tags($_POST['add_extension']))) : '';
+	$add_extension_explain	= request_var('add_extension_explain', ''); //(isset($_POST['add_extension_explain'])) ?  trim(strip_tags($_POST['add_extension_explain'])) : '';
+	$add_extension_group	= request_var('add_group_select', 0);
 	$add					= (isset($_POST['add_extension_check'])) ? TRUE : FALSE;
 
 	if ($add_extension != '' && $add)
 	{
-		if (!count($error))
+		if (!sizeof($error))
 		{
 			$sql = 'SELECT extension_id
 				FROM ' . EXTENSIONS_TABLE . "
@@ -251,17 +250,17 @@ if ($submit && $mode == 'extensions')
 			}
 			$db->sql_freeresult($result);
 
-			if (!count($error))
+			if (!sizeof($error))
 			{
 				$sql = 'INSERT INTO ' . EXTENSIONS_TABLE . " (group_id, extension, comment) 
-					VALUES ($add_extension_group, '" . $add_extension . "', '" . $add_extension_explain . "')";
+					VALUES ($add_extension_group, '" . $db->sql_escape($add_extension) . "', '" . $db->sql_escape($add_extension_explain) . "')";
 				$db->sql_query($sql);
 				add_log('admin', 'LOG_ATTACH_EXT_ADD', $add_extension);
 			}
 		}
 	}
 
-	if (!count($error))
+	if (!sizeof($error))
 	{
 		$notify[] = $user->lang['EXTENSIONS_UPDATED'];
 	}
@@ -271,58 +270,43 @@ if ($submit && $mode == 'ext_groups')
 {
 	// Change Extension Groups ?
 	$group_change_list		= (isset($_POST['group_change_list'])) ? array_map('intval', $_POST['group_change_list']) : array();
-	$extension_group_list	= (isset($_POST['extension_group_list'])) ? $_POST['extension_group_list'] : array();
-	$group_allowed_list		= (isset($_POST['allowed_list'])) ? array_map('intval', $_POST['allowed_list']) : array();
-	$download_mode_list		= (isset($_POST['download_mode_list'])) ? $_POST['download_mode_list'] : array();
+	$extension_group_list	= request_var('extension_group_list', ''); //(isset($_POST['extension_group_list'])) ? $_POST['extension_group_list'] : array();
+	$group_allowed_list		= (isset($_POST['allowed_list'])) ? array_flip(array_map('intval', $_POST['allowed_list'])) : array();
+	$download_mode_list		= (isset($_POST['download_mode_list'])) ? array_map('intval', $_POST['download_mode_list']) : array();
 	$category_list			= (isset($_POST['category_list'])) ? array_map('intval', $_POST['category_list']) : array();
-	$upload_icon_list		= (isset($_POST['upload_icon_list'])) ? $_POST['upload_icon_list'] : array();
-	$filesize_list			= (isset($_POST['max_filesize_list'])) ? $_POST['max_filesize_list'] : array();
-	$size_select_list		= (isset($_POST['size_select_list'])) ? $_POST['size_select_list'] : array();
+	$upload_icon_list		= request_var('upload_icon_list', ''); //(isset($_POST['upload_icon_list'])) ? $_POST['upload_icon_list'] : array();
+	$filesize_list			= (isset($_POST['max_filesize_list'])) ? array_map('intval', $_POST['max_filesize_list']) : array();
+	$size_select_list		= request_var('size_select_list', 'b'); //(isset($_POST['size_select_list'])) ? $_POST['size_select_list'] : array();
 
-	$allowed_list = array();
-
-	for ($i = 0; $i < count($group_allowed_list); $i++)
+	foreach ($group_change_list as $group_id => $var)
 	{
-		for ($j = 0; $j < count($group_change_list); $j++)
-		{
-			if ($group_allowed_list[$i] == $group_change_list[$j])
-			{
-				$allowed_list[$j] = '1';
-			}
-		}
-	}
-
-	for ($i = 0; $i < count($group_change_list); $i++)
-	{
-		$allowed = (isset($allowed_list[$i])) ? 1 : 0;
-		
-		$filesize_list[$i] = ($size_select_list[$i] == 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] == 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
+		$filesize_list[$group_id] = ($size_select_list[$group_id] == 'kb') ? round($filesize_list[$group_id] * 1024) : (($size_select_list[$group_id] == 'mb') ? round($filesize_list[$group_id] * 1048576) : $filesize_list[$group_id]);
 
 		$group_sql = array(
-			'group_name'	=> trim(htmlspecialchars($extension_group_list[$i])),
-			'cat_id'		=> $category_list[$i],
-			'allow_group'	=> $allowed,
-			'download_mode'	=> $download_mode_list[$i],
-			'upload_icon'	=> ($upload_icon_list[$i] == 'no_image') ? '' : $upload_icon_list[$i],
-			'max_filesize'	=> $filesize_list[$i]
+			'group_name'	=> $extension_group_list[$group_id],
+			'cat_id'		=> $category_list[$group_id],
+			'allow_group'	=> (isset($group_allowed_list[$group_id])) ? 1 : 0,
+			'download_mode'	=> $download_mode_list[$group_id],
+			'upload_icon'	=> ($upload_icon_list[$group_id] == 'no_image') ? '' : $upload_icon_list[$group_id],
+			'max_filesize'	=> $filesize_list[$group_id]
 		);
 		
-		$sql = "UPDATE " . EXTENSION_GROUPS_TABLE . " 
-			SET " . $db->sql_build_array('UPDATE', $group_sql) . " 
-			WHERE group_id = " . $group_change_list[$i];
+		$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $group_sql) . ' 
+			WHERE group_id = ' . $group_id;
 		$db->sql_query($sql);
 	}
 	
 	// Delete Extension Groups
-	$group_id_list = (isset($_POST['group_id_list'])) ? array_map('intval', $_POST['group_id_list']) : array();
+	$group_delete_list = (isset($_POST['group_delete_list'])) ? array_keys(array_map('intval', $_POST['group_delete_list'])) : array();
 
-	if (count($group_id_list))
+	if (sizeof($group_delete_list))
 	{
 		$l_group_list = '';
 
 		$sql = 'SELECT group_name 
 			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE group_id IN (' . implode(', ', $group_id_list) . ')';
+			WHERE group_id IN (' . implode(', ', $group_delete_list) . ')';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -333,25 +317,25 @@ if ($submit && $mode == 'ext_groups')
 		
 		$sql = 'DELETE 
 			FROM ' . EXTENSION_GROUPS_TABLE . ' 
-			WHERE group_id IN (' . implode(', ', $group_id_list) . ')';
+			WHERE group_id IN (' . implode(', ', $group_delete_list) . ')';
 		$db->sql_query($sql);
 
 		// Set corresponding Extensions to a pending Group
 		$sql = "UPDATE " . EXTENSIONS_TABLE . "
 			SET group_id = 0
-			WHERE group_id IN (" . implode(', ', $group_id_list) . ")";
+			WHERE group_id IN (" . implode(', ', $group_delete_list) . ")";
 		$db->sql_query($sql);
 	
 		add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $l_group_list);
 	}
 		
 	// Add Extensions Group ?
-	$extension_group	= (isset($_POST['add_extension_group'])) ?  trim(strip_tags($_POST['add_extension_group'])) : '';
-	$download_mode		= (isset($_POST['add_download_mode'])) ?  $_POST['add_download_mode'] : '';
-	$cat_id				= (isset($_POST['add_category'])) ?  (int) $_POST['add_category'] : 0;
-	$upload_icon		= (isset($_POST['add_upload_icon'])) ?  htmlspecialchars($_POST['add_upload_icon']) : '';
-	$filesize			= (isset($_POST['add_max_filesize'])) ?  $_POST['add_max_filesize'] : '';
-	$size_select		= (isset($_POST['add_size_select'])) ?  htmlspecialchars($_POST['add_size_select']) : '';
+	$extension_group	= request_var('add_extension_group', '');
+	$download_mode		= request_var('add_download_mode', INLINE_LINK);
+	$cat_id				= request_var('add_category', 0);
+	$upload_icon		= request_var('add_upload_icon', '');
+	$filesize			= request_var('add_max_filesize', 0);
+	$size_select		= request_var('add_size_select', 'b');
 	$is_allowed			= (isset($_POST['add_allowed'])) ? TRUE : FALSE;
 	$add				= (isset($_POST['add_extension_group_check'])) ? TRUE : FALSE;
 
@@ -371,7 +355,7 @@ if ($submit && $mode == 'ext_groups')
 		}
 		$db->sql_freeresult($result);
 		
-		if (!count($error))
+		if (!sizeof($error))
 		{
 			$filesize = ($size_select == 'kb') ? round($filesize * 1024) : (($size_select == 'mb') ? round($filesize * 1048576) : $filesize);
 		
@@ -404,17 +388,17 @@ if ($submit && $mode == 'ext_groups')
 		$extension = $row['extension'];
 
 		$extensions['_allowed_'][]				= $extension;
-		$extensions[$extension]['display_cat']	= intval($row['cat_id']);
-		$extensions[$extension]['download_mode']= intval($row['download_mode']);
-		$extensions[$extension]['upload_icon']	= trim($row['upload_icon']);
-		$extensions[$extension]['max_filesize']	= intval($row['max_filesize']);
+		$extensions[$extension]['display_cat']	= (int) $row['cat_id'];
+		$extensions[$extension]['download_mode']= (int) $row['download_mode'];
+		$extensions[$extension]['upload_icon']	= (string) $row['upload_icon'];
+		$extensions[$extension]['max_filesize']	= (int) $row['max_filesize'];
 	}
 	$db->sql_freeresult($result);
 
 	$cache->destroy('extensions');
 	$cache->put('extensions', $extensions);
 
-	if (!count($error))
+	if (!sizeof($error))
 	{
 		$notify[] = $user->lang['EXTENSION_GROUPS_UPDATED'];
 	}
@@ -427,7 +411,7 @@ if ($submit && $mode == 'ext_groups')
 <p><?php echo $user->lang[$l_title . '_EXPLAIN']; ?></p>
 
 <?php 
-if (count($error))
+if (sizeof($error))
 {
 ?>
 
@@ -438,7 +422,7 @@ if (count($error))
 <?php
 }
 
-if (count($notify))
+if (sizeof($notify))
 {
 ?>
 
@@ -456,7 +440,7 @@ $select_quota_size_mode = size_select('quota_size', $quota_size);
 $select_pm_size_mode = size_select('pm_size', $pm_size);
 
 ?>
-<form action="admin_attachments.<?php echo $phpEx . $SID . "&amp;mode=$mode"; ?>" method="post">
+<form action="admin_attachments.<?php echo "$phpEx$SID&amp;mode=$mode"; ?>" method="post">
 	<table cellspacing="1" cellpadding="0" border="0" align="center" width="99%">
 	<tr>
 		<td align="right"> &nbsp;&nbsp; 
@@ -470,7 +454,7 @@ $select_pm_size_mode = size_select('pm_size', $pm_size);
 
 		if ($mode != $modes[$i])
 		{
-			?><a href="admin_attachments.<?php echo $phpEx . $SID . '&amp;mode=' . $modes[$i]; ?>"><?php
+			?><a href="admin_attachments.<?php echo "$phpEx$SID&amp;mode=" . $modes[$i]; ?>"><?php
 		}
 		
 		echo $user->lang['ATTACH_' . strtoupper($modes[$i]) . '_URL'];
@@ -636,20 +620,16 @@ if ($mode == 'cats')
 
 if ($mode == 'ext_groups')
 {
-//	SELFNOTE: DO NOT FORGET TO TALK ABOUT IT!
-//	$img_path = $config['upload_icons_path'];
-	$img_path = 'images/upload_icons';
+	$img_path = $config['upload_icons_path'];
 
-	$imglist = filelist($phpbb_root_path . $img_path, '');
+	$imglist = filelist($phpbb_root_path . $img_path);
+	$imglist = array_values($imglist);
+	$imglist = $imglist[0];
 
 	$filename_list = '';
-	foreach ($imglist as $path => $img_ary)
+	foreach ($imglist as $key => $img)
 	{
-		foreach ($img_ary as $img)
-		{
-			$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
-			$filename_list .= '<option value="' . htmlspecialchars($img) . '">' . $img . '</option>';
-		}
+		$filename_list .= '<option value="' . htmlspecialchars($img) . '">' . $img . '</option>';
 	}
 	
 	$size = isset($_REQUEST['size']) ? intval($_REQUEST['size']) : 0;
@@ -662,7 +642,7 @@ if ($mode == 'ext_groups')
 
 	$max_add_filesize = ($max_add_filesize >= 1048576) ? round($max_add_filesize / 1048576 * 100) / 100 : (($max_add_filesize >= 1024) ? round($max_add_filesize / 1024 * 100) / 100 : $max_add_filesize);
 
-	$viewgroup = (!empty($_REQUEST['g'])) ? $_REQUEST['g'] : -1;
+	$viewgroup = request_var('g', 0);
 ?>
 	
 	<script language="javascript" type="text/javascript" defer="defer">
@@ -723,7 +703,14 @@ if ($mode == 'ext_groups')
 		<td class="row1" align="center" valign="middle"><?php echo category_select('add_category'); ?></td>
 		<td class="row1" align="center" valign="middle"><input type="checkbox" name="add_allowed" /></td>
 		<td class="row1" align="center" valign="middle"><?php echo download_select('add_download_mode'); ?></td>
-		<td class="row1" align="center" valign="middle"><select name="add_upload_icon" onChange="update_add_image(this.options[selectedIndex].value);"><option value="no_image" selected="selected"><?php echo $user->lang['NO_IMAGE']; ?></option><?php echo $filename_list ?></select> &nbsp; <img src="<?php echo $phpbb_root_path . 'images/spacer.gif' ?>"  name="add_image" border="0" alt="" title="" /> &nbsp;</td>
+		<td class="row1" align="center" valign="middle">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td align="center"><select name="add_upload_icon" onChange="update_add_image(this.options[selectedIndex].value);"><option value="no_image" selected="selected"><?php echo $user->lang['NO_IMAGE']; ?></option><?php echo $filename_list ?></select></td>
+				<td width="50" align="center" valign="middle">&nbsp;<img src="<?php echo $phpbb_root_path . 'images/spacer.gif' ?>"  name="add_image" border="0" alt="" title="" />&nbsp;</td>
+			</tr>
+			</table>
+		</td>
 		<td class="row1" align="center" valign="middle"><input type="text" size="3" maxlength="15" name="add_max_filesize" class="post" value="<?php echo $max_add_filesize; ?>" /> <?php echo size_select('add_size_select', $size); ?></td>
 		<td class="row1" align="center" valign="middle"><input type="checkbox" name="add_extension_group_check" /></td>
 	</tr>
@@ -762,10 +749,8 @@ if ($mode == 'ext_groups')
 
 		$filename_list = '';
 		$no_image_select = false;
-		foreach ($imglist as $img)
+		foreach ($imglist as $key => $img)
 		{
-			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
-
 			if ($edit_img == '')
 			{
 				$no_image_select = true;
@@ -780,29 +765,36 @@ if ($mode == 'ext_groups')
 		}
 ?>
 	<tr> 
-		<input type="hidden" name="group_change_list[]" value="<?php echo $row['group_id']; ?>" />
+		<input type="hidden" name="group_change_list[<?php echo $row['group_id']; ?>]" value="1" />
 		<td class="row1" align="center" valign="middle">
 			<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
 			<tr>
 				<td class="row1" align="center" valign="middle" width="10%" wrap="nowrap"><b><a href="<?php echo (($viewgroup == $row['group_id']) ? "admin_attachments.$phpEx$SID&mode=ext_groups" : "admin_attachments.$phpEx$SID&mode=ext_groups&g=" . $row['group_id']); ?>" class="gen"><?php echo (($viewgroup == $row['group_id']) ? '-' : '+'); ?></a></span></b></td>
-				<td class="row1" align="left" valign="middle"><input type="text" size="20" maxlength="100" name="extension_group_list[]" class="post" value="<?php echo $row['group_name']; ?>" /></td>
+				<td class="row1" align="left" valign="middle"><input type="text" size="20" maxlength="100" name="extension_group_list[<?php echo $row['group_id']; ?>]" class="post" value="<?php echo $row['group_name']; ?>" /></td>
 			</tr>
 			</table>
 		</td>
-		<td class="row2" align="center" valign="middle"><?php echo category_select('category_list[]', $row['group_id']); ?></td>
-		<td class="row1" align="center" valign="middle"><input type="checkbox" name="allowed_list[]" value="<?php echo $row['group_id']; ?>" <?php echo $s_allowed; ?> /></td>
-		<td class="row2" align="center" valign="middle"><?php echo download_select('download_mode_list[]', $row['group_id']); ?></td>
-		<td class="row1" align="center" valign="middle"><select name="upload_icon_list[]" onChange="update_image(this.options[selectedIndex].value, <?php echo $row['group_id']; ?>);"><option value="no_image"<?php echo (($no_image_select) ? ' selected="selected"' : ''); ?>><?php echo $user->lang['NO_IMAGE']; ?></option><?php echo $filename_list ?></select> &nbsp; <img src="<?php echo (($no_image_select) ? $phpbb_root_path . 'images/spacer.gif' : $phpbb_root_path . $img_path . '/' . $edit_img) ?>" name="image_<?php echo $row['group_id']; ?>" border="0" alt="" title="" /> &nbsp;</td>
-		<td class="row2" align="center" valign="middle"><input type="text" size="3" maxlength="15" name="max_filesize_list[]" class="post" value="<?php echo $row['max_filesize']; ?>" /> <?php echo size_select('size_select_list[]', $size_format); ?></td>
-		<td class="row2" align="center" valign="middle"><input type="checkbox" name="group_id_list[]" value="<?php echo $row['group_id']; ?>" /></td>
+		<td class="row2" align="center" valign="middle"><?php echo category_select('category_list[' . $row['group_id'] . ']', $row['group_id']); ?></td>
+		<td class="row1" align="center" valign="middle"><input type="checkbox" name="allowed_list[<?php echo $row['group_id']; ?>]" value="<?php echo $row['group_id']; ?>" <?php echo $s_allowed; ?> /></td>
+		<td class="row2" align="center" valign="middle"><?php echo download_select('download_mode_list[' . $row['group_id'] . ']', $row['group_id']); ?></td>
+		<td class="row1" align="center" valign="middle">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td align="center"><select name="upload_icon_list[<?php echo $row['group_id']; ?>]" onChange="update_image(this.options[selectedIndex].value, <?php echo $row['group_id']; ?>);"><option value="no_image"<?php echo (($no_image_select) ? ' selected="selected"' : ''); ?>><?php echo $user->lang['NO_IMAGE']; ?></option><?php echo $filename_list ?></select></td>
+				<td width="50" align="center" valign="middle">&nbsp;<img src="<?php echo (($no_image_select) ? $phpbb_root_path . 'images/spacer.gif' : $phpbb_root_path . $img_path . '/' . $edit_img) ?>" name="image_<?php echo $row['group_id']; ?>" border="0" alt="" title="" />&nbsp;</td>
+			</tr>
+			</table>
+		</td>
+		<td class="row2" align="center" valign="middle"><input type="text" size="3" maxlength="15" name="max_filesize_list[<?php echo $row['group_id']; ?>]" class="post" value="<?php echo $row['max_filesize']; ?>" /> <?php echo size_select('size_select_list[' . $row['group_id'] . ']', $size_format); ?></td>
+		<td class="row2" align="center" valign="middle"><input type="checkbox" name="group_delete_list[<?php echo $row['group_id']; ?>]" value="1" /></td>
 	</tr>
 <?
 
-		if ($viewgroup != -1 && $viewgroup == $row['group_id'])
+		if ($viewgroup && $viewgroup == $row['group_id'])
 		{
 			$sql = 'SELECT comment, extension 
 				FROM ' . EXTENSIONS_TABLE . '
-				WHERE group_id = ' . intval($viewgroup);
+				WHERE group_id = ' . (int) $viewgroup;
 			$e_result = $db->sql_query($sql);
 
 			while ($e_row = $db->sql_fetchrow($e_result))
