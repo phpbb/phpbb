@@ -32,7 +32,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0-alpha")
+	"PHPBB_VERSION" => "2.0 beta-1")
 );
 
 $template->pparse("page_footer");

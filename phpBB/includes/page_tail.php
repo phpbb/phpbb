@@ -40,7 +40,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0a",
+	"PHPBB_VERSION" => "2.0 beta-1",
 	"ADMIN_LINK" => $admin_link));
 
 $template->pparse("overall_footer");
