@@ -1481,7 +1481,7 @@ function remove_comments(&$output)
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
 function remove_remarks(&$sql)
 {
-	preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
+	$sql = preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
 }
 
 // split_sql_file will split an uploaded sql file into single sql statements.
