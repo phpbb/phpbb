@@ -19,9 +19,6 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
-$lang_set = array(
-	'file'	=> array('posting')
-);
 
 // Start session management
 $user->start();

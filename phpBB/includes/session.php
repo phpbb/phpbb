@@ -468,7 +468,7 @@ class user extends session
 
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $lang, $help;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
