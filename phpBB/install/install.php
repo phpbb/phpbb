@@ -584,7 +584,7 @@ else if (!empty($HTTP_POST_VARS['ftp_file']))
 		// section.
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.'.$phpEx.'" />';
+		$s_hidden_fields .= '<input type="hidden" name="redirect" value="../admin/index.'.$phpEx.'" />';
 		$s_hidden_fields .= '<input type="hidden" name="submit" value="' . $lang['Login'] . '" />';
 
 		page_header($lang['Inst_Step_2']);

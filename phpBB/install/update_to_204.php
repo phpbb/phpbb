@@ -883,7 +883,7 @@ switch ($row['config_value'])
 }
 
 echo "<h2>Update completed</h2>\n";
-echo "\n<p>You should now visit the General Configuration settings page in the <a href=\"admin/\">Administration Panel</a> and check the General Configuration of the board. If you updated from versions prior to RC-3 you <b>must</b> update some entries. If you do not do this emails sent from the board will contain incorrect information. Don't forget to delete this file!</p>\n";
+echo "\n<p>You should now visit the General Configuration settings page in the <a href=\"../admin/\">Administration Panel</a> and check the General Configuration of the board. If you updated from versions prior to RC-3 you <b>must</b> update some entries. If you do not do this emails sent from the board will contain incorrect information. Don't forget to delete this file!</p>\n";
 
 ?>
 
