@@ -56,7 +56,19 @@ $refresh = $preview || $submit_search;
 
 $mark_list = ( !empty($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : 0;
 
-$folder = ( !empty($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : ( (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : "inbox" );
+if( isset($HTTP_POST_VARS['folder']) || isset($HTTP_GET_VARS['folder']) )
+{
+	$folder = ( isset($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : $HTTP_GET_VARS['folder'];
+
+	if( $folder != "inbox" && $folder != "outbox" && $folder != "sentbox" && $folder != "savebox" )
+	{
+		$folder = "inbox";
+	}
+}
+else
+{
+	$folder = "inbox";
+}
 
 //
 // Cancel 
@@ -290,7 +302,7 @@ else if( $mode == "read" )
 			{
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
-						AND privmsgs_date <= " . $sent_info['oldest_post_time'] . " 
+						AND privmsgs_date = " . $sent_info['oldest_post_time'] . " 
 						AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -747,9 +759,9 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 		{
 			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 				WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-					OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") ) 
+							AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
+						OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
+							AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") ) 
 					AND privmsgs_date = " . $saved_info['oldest_post_time'];
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -967,7 +979,7 @@ else if( $submit || $refresh || $mode != "" )
 				FROM " . PRIVMSGS_TABLE . " 
 				WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
 						OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " ) 
-					AND privmsgs_from_userid = " . $to_userdata['user_id'];
+					AND privmsgs_to_userid = " . $to_userdata['user_id'];
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['No_such_user']);
@@ -982,7 +994,8 @@ else if( $submit || $refresh || $mode != "" )
 				if( $inbox_info['inbox_items'] > $board_config['max_inbox_privmsgs'] )
 				{
 					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
-						WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+								OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " ) 
 							AND privmsgs_date = " . $inbox_info['oldest_post_time'] . " 
 							AND privmsgs_to_userid = " . $to_userdata['user_id'];
 					if( !$result = $db->sql_query($sql) )
