@@ -594,6 +594,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			{
 				$msg_title = $lang['General_Error'];
 			}
+			break;
 
 		case CRITICAL_ERROR:
 			//

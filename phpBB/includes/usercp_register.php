@@ -100,7 +100,7 @@ if (
 		}
 	}
 
-	$trim_var_list = array('password_current' => 'cur_password', 'password' => 'new_password', 'password_confirm' => 'password_confirm', 'signature' => 'signature');
+	$trim_var_list = array('cur_password' => 'cur_password', 'new_password' => 'new_password', 'password_confirm' => 'password_confirm', 'signature' => 'signature');
 
 	while( list($var, $param) = @each($trim_var_list) )
 	{
@@ -178,8 +178,9 @@ if (
 	{
 		$username = stripslashes($username);
 		$email = stripslashes($email);
-		$password = '';
-		$password_confirm = '';
+		$cur_password = stripslashes($cur_password);
+		$new_password = stripslashes($new_password);
+		$password_confirm = stripslashes($password_confirm);
 
 		$icq = stripslashes($icq);
 		$aim = stripslashes($aim);
@@ -221,7 +222,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 	else if ( $mode == 'register' )
 	{
-		if ( empty($username) || empty($password) || empty($password_confirm) || empty($email) )
+		if ( empty($username) || empty($new_password) || empty($password_confirm) || empty($email) )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Fields_empty'];
@@ -230,14 +231,14 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 
 	$passwd_sql = '';
-	if ( !empty($password) && !empty($password_confirm) )
+	if ( !empty($new_password) && !empty($password_confirm) )
 	{
-		if ( $password != $password_confirm )
+		if ( $new_password != $password_confirm )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		}
-		else if ( strlen($password) > 32 )
+		else if ( strlen($new_password) > 32 )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_long'];
@@ -256,7 +257,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 				$row = $db->sql_fetchrow($result);
 
-				if ( $row['user_password'] != md5($password_current) )
+				if ( $row['user_password'] != md5($cur_password) )
 				{
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
@@ -265,12 +266,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			
 			if ( !$error )
 			{
-				$password = md5($password);
-				$passwd_sql = "user_password = '$password', ";
+				$new_password = md5($new_password);
+				$passwd_sql = "user_password = '$new_password', ";
 			}
 		}
 	}
-	else if ( ( empty($password) && !empty($password_confirm) ) || ( !empty($password) && empty($password_confirm) ) )
+	else if ( ( empty($new_password) && !empty($password_confirm) ) || ( !empty($new_password) && empty($password_confirm) ) )
 	{
 		$error = TRUE;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
@@ -302,7 +303,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			$row = $db->sql_fetchrow($result);
 
-			if ( $row['user_password'] != md5($password_current) )
+			if ( $row['user_password'] != md5($cur_password) )
 			{
 				$email = $userdata['user_email'];
 
@@ -484,7 +485,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			// Get current date
 			//
 			$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_avatar_type, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-				VALUES ($user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', $avatar_sql, $viewemail, '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
+				VALUES ($user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $new_password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', $avatar_sql, $viewemail, '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
 			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa )
 			{
 				$user_actkey = gen_rand_string(true);
@@ -620,7 +621,7 @@ if ( $error )
 	// 
 	$username = stripslashes($username);
 	$email = stripslashes($email);
-	$password = '';
+	$new_password = '';
 	$password_confirm = '';
 
 	$icq = stripslashes($icq);
@@ -643,7 +644,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$user_id = $userdata['user_id'];
 	$username = htmlspecialchars($userdata['username']);
 	$email = $userdata['user_email'];
-	$password = '';
+	$new_password = '';
 	$password_confirm = '';
 
 	$icq = $userdata['user_icq'];
@@ -656,7 +657,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$occupation = htmlspecialchars($userdata['user_occ']);
 	$interests = htmlspecialchars($userdata['user_interests']);
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
-	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/\:(([a-z0-9]:)?)$signature_bbcode_uid/si", '', $userdata['user_sig']) : $userdata['user_sig'];
+	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $userdata['user_sig']) : $userdata['user_sig'];
 
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
@@ -705,7 +706,7 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 
 	$allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, &$new_password, &$cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat);
 }
 else
 {
@@ -720,8 +721,6 @@ else
 	{
 		$selected_template = $board_config['system_template'];
 	}
-
-	$signature = preg_replace('/\:[0-9a-z\:]*?\]/si', ']', $signature);
 
 	$avatar_img = '';
 	if ( $user_avatar_type )
@@ -788,7 +787,10 @@ else
 	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 	
 	$template->assign_vars(array(
-		'USERNAME' => $username,
+		'USERNAME' => $username, 
+		'CUR_PASSWORD' => $cur_password,
+		'NEW_PASSWORD' => $new_password,
+		'PASSWORD_CONFIRM' => $password_confirm,
 		'EMAIL' => $email,
 		'YIM' => $yim,
 		'ICQ' => $icq,

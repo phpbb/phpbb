@@ -42,6 +42,7 @@ if( !empty($setmodules) )
 	{
 		$file_uploads = @get_cfg_var('file_uploads');
 	}
+
 	if( ($file_uploads != 0 || empty($file_uploads)) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
 	{
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
@@ -54,9 +55,9 @@ if( !empty($setmodules) )
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
 
 //
@@ -695,7 +696,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 						break;
 				}
 
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -740,7 +741,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			if( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']))
 			{
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
@@ -782,11 +783,11 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->pparse("body");
 
-				include('page_footer_admin.'.$phpEx);
+				include('./page_footer_admin.'.$phpEx);
 
 			}
 			header("Pragma: no-cache");
@@ -873,7 +874,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				// Define Template files...
 				//
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_restore_body.tpl")
@@ -907,7 +908,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				if($backup_file_tmpname == "" || $backup_file_name == "")
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
@@ -943,7 +943,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 							}
 							else
 							{
-								include('page_header_admin.'.$phpEx);
 								message_die(GENERAL_ERROR, $lang['Restore_Error_decompress']);
 							}
 						}
@@ -958,13 +957,11 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					}
 					else
 					{
-						include('page_header_admin.'.$phpEx);
 						message_die(GENERAL_ERROR, $lang['Restore_Error_filename'] ." $backup_file_type $backup_file_name");
 					}
 				}
 				else
 				{
-					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
@@ -991,15 +988,13 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 							if(!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) )
 							{
-								//include('page_header_admin.'.$phpEx);
-								// echo "~~$sql~~";
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}
 					}
 				}
 
-				include('page_header_admin.'.$phpEx);
+				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -1019,6 +1014,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	}
 }
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

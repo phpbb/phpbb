@@ -170,16 +170,14 @@ $user_ip = encode_ip($client_ip);
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
-if(!$result = $db->sql_query($sql))
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
-else
+
+while ( $row = $db->sql_fetchrow($result) )
 {
-	while($row = $db->sql_fetchrow($result))
-	{
-		$board_config[$row['config_name']] = $row['config_value'];
-	}
+	$board_config[$row['config_name']] = $row['config_value'];
 }
 
 //

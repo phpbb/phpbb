@@ -26,9 +26,9 @@ define('IN_PHPBB', 1);
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 // ---------------
 // Begin functions
@@ -68,7 +68,7 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	unset($setmodules);
 
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/index_navigate.tpl")
@@ -116,12 +116,12 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	$template->pparse("body");
 
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 }
 elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 {
 
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/index_body.tpl")
@@ -561,7 +561,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 	$template->pparse("body");
 
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 
 }
 else

@@ -35,7 +35,7 @@ if ( $board_config['gzip_compress'] )
 {
 	$phpver = phpversion();
 
-	if ( $phpver >= '4.0.4pl1' )
+	if ( $phpver >= '4.0.4pl1' && strstr($HTTP_USER_AGENT,'compatible') )
 	{
 		if ( extension_loaded('zlib') )
 		{

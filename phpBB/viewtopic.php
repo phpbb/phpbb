@@ -321,10 +321,11 @@ if( !empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']) )
 	$post_days = ( !empty($HTTP_POST_VARS['postdays']) ) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
-	$sql = "SELECT COUNT(post_id) AS num_posts
-		FROM " . POSTS_TABLE . "
-		WHERE topic_id = $topic_id
-			AND post_time >= $min_post_time";
+	$sql = "SELECT COUNT(p.post_id) AS num_posts
+		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+		WHERE t.topic_id = $topic_id 
+			AND p.topic_id = t.topic_id 
+			AND p.post_time >= $min_post_time";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Could not obtain limited topics count information", '', __LINE__, __FILE__, $sql);

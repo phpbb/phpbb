@@ -38,7 +38,7 @@ if( !empty($setmodules) )
 //
 // Check if the user has cancled a confirmation message.
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
@@ -47,7 +47,7 @@ if( empty($HTTP_POST_VARS['send_file']) )
 {
 	$no_page_header = ( $cancel ) ? TRUE : FALSE;
 	require($phpbb_root_path . 'extension.inc');
-	require('pagestart.' . $phpEx);
+	require('./pagestart.' . $phpEx);
 }
 
 if( $cancel )
@@ -932,7 +932,7 @@ switch( $mode )
 
 if( !$HTTP_POST_VARS['send_file'] )
 {
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 }
 
 ?>

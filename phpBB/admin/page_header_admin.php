@@ -74,7 +74,7 @@ $template->assign_vars(array(
 	'L_ADMIN' => $lang['Admin'], 
 	'L_USERNAME' => $lang['Username'],
 	'L_PASSWORD' => $lang['Password'],
-	'L_INDEX' => $lang['Forum_Index'],
+	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
 	'L_REGISTER' => $lang['Register'],
 	'L_PROFILE' => $lang['Profile'],
 	'L_SEARCH' => $lang['Search'],

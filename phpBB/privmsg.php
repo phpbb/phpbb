@@ -1799,72 +1799,33 @@ for($i = 0; $i < count($previous_days); $i++)
 //
 // Define correct icons
 //
-if ( $folder == 'inbox' )
+switch ( $folder )
 {
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0"></a>';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Inbox'];
+	case 'inbox':
+		$l_box_name = $lang['Inbox'];
+		break;
+	case 'outbox':
+		$l_box_name = $lang['Outbox'];
+		break;
+	case 'savebox':
+		$l_box_name = $lang['Savedbox'];
+		break;
+	case 'sentbox':
+		$l_box_name = $lang['Sentbox'];
+		break;
 }
-else if ( $folder == 'outbox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '';
-	$quote_pm_img = '';
-	$edit_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=edit&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_editmsg'] . '" alt="' . $lang['Edit_pm'] . '" border="0"></a>';
-
-	$l_box_name = $lang['Outbox'];
-}
-else if ( $folder == 'savebox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0"></a>';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Savedbox'];
-}
-else if ( $folder == 'sentbox' )
-{
-	$post_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
-	$reply_pm_img = '';
-	$quote_pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id") . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0"></a>';
-	$edit_pm_img = '';
-
-	$l_box_name = $lang['Sentbox'];
-}
+$post_pm = append_sid("privmsg.$phpEx?mode=post");
+$post_pm_img = '<a href="' . $post_pm . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0"></a>';
+$post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 
 //
 // Output data for inbox status
 //
 if ( $folder != 'outbox' )
 {
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_pct = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100);
-	}
-	else
-	{
-		$inbox_limit_pct = 100;
-	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_img_length = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']);
-	}
-	else
-	{
-		$inbox_limit_img_length = $board_config['privmsg_graphic_length'];
-	}
-	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
-	{
-		$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total;
-	}
-	else
-	{
-		$inbox_limit_remain = 0;
-	}
+	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
+	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
+	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
 	$template->assign_block_vars('switch_box_size_notice', array());
 
@@ -1900,6 +1861,7 @@ $template->assign_vars(array(
 	'SAVEBOX' => $savebox_url, 
 
 	'POST_PM_IMG' => $post_pm_img, 
+	'POST_PM' => $post_pm, 
 
 	'INBOX_LIMIT_IMG_WIDTH' => $inbox_limit_img_length, 
 	'INBOX_LIMIT_PERCENT' => $inbox_limit_pct, 

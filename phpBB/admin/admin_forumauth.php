@@ -34,9 +34,9 @@ if( !empty($setmodules) )
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 //
 // Start program - define vars
@@ -342,10 +342,10 @@ else
 
 }
 
-include('page_header_admin.'.$phpEx);
+include('./page_header_admin.'.$phpEx);
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

@@ -324,21 +324,21 @@ function storeCaret(textEl) {
 				<tr> 
 				  <td><span class="genmed"> &nbsp;{L_FONT_COLOR}: 
 					<select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')">
-					  <option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">{L_COLOR_DEFAULT}</option>
-					  <option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">{L_COLOR_DARK_RED}</option>
-					  <option style="color:red; background-color: #DEE3E7" value="red" class="genmed">{L_COLOR_RED}</option>
-					  <option style="color:orange; background-color: #DEE3E7" value="orange" class="genmed">{L_COLOR_ORANGE}</option>
-					  <option style="color:brown; background-color: #DEE3E7" value="brown" class="genmed">{L_COLOR_BROWN}</option>
-					  <option style="color:yellow; background-color: #DEE3E7" value="yellow" class="genmed">{L_COLOR_YELLOW}</option>
-					  <option style="color:green; background-color: #DEE3E7" value="green" class="genmed">{L_COLOR_GREEN}</option>
-					  <option style="color:olive; background-color: #DEE3E7" value="olive" class="genmed">{L_COLOR_OLIVE}</option>
-					  <option style="color:cyan; background-color: #DEE3E7" value="cyan" class="genmed">{L_COLOR_CYAN}</option>
-					  <option style="color:blue; background-color: #DEE3E7" value="blue" class="genmed">{L_COLOR_BLUE}</option>
-					  <option style="color:darkblue; background-color: #DEE3E7" value="darkblue" class="genmed">{L_COLOR_DARK_BLUE}</option>
-					  <option style="color:indigo; background-color: #DEE3E7" value="indigo" class="genmed">{L_COLOR_INDIGO}</option>
-					  <option style="color:violet; background-color: #DEE3E7" value="violet" class="genmed">{L_COLOR_VIOLET}</option>
-					  <option style="color:white; background-color: #DEE3E7" value="white" class="genmed">{L_COLOR_WHITE}</option>
-					  <option style="color:black; background-color: #DEE3E7" value="black" class="genmed">{L_COLOR_BLACK}</option>
+					  <option style="color:black; background-color: {T_TD_COLOR1}" value="{T_FONTCOLOR1}" class="genmed">{L_COLOR_DEFAULT}</option>
+					  <option style="color:darkred; background-color: {T_TD_COLOR1}" value="darkred" class="genmed">{L_COLOR_DARK_RED}</option>
+					  <option style="color:red; background-color: {T_TD_COLOR1}" value="red" class="genmed">{L_COLOR_RED}</option>
+					  <option style="color:orange; background-color: {T_TD_COLOR1}" value="orange" class="genmed">{L_COLOR_ORANGE}</option>
+					  <option style="color:brown; background-color: {T_TD_COLOR1}" value="brown" class="genmed">{L_COLOR_BROWN}</option>
+					  <option style="color:yellow; background-color: {T_TD_COLOR1}" value="yellow" class="genmed">{L_COLOR_YELLOW}</option>
+					  <option style="color:green; background-color: {T_TD_COLOR1}" value="green" class="genmed">{L_COLOR_GREEN}</option>
+					  <option style="color:olive; background-color: {T_TD_COLOR1}" value="olive" class="genmed">{L_COLOR_OLIVE}</option>
+					  <option style="color:cyan; background-color: {T_TD_COLOR1}" value="cyan" class="genmed">{L_COLOR_CYAN}</option>
+					  <option style="color:blue; background-color: {T_TD_COLOR1}" value="blue" class="genmed">{L_COLOR_BLUE}</option>
+					  <option style="color:darkblue; background-color: {T_TD_COLOR1}" value="darkblue" class="genmed">{L_COLOR_DARK_BLUE}</option>
+					  <option style="color:indigo; background-color: {T_TD_COLOR1}" value="indigo" class="genmed">{L_COLOR_INDIGO}</option>
+					  <option style="color:violet; background-color: {T_TD_COLOR1}" value="violet" class="genmed">{L_COLOR_VIOLET}</option>
+					  <option style="color:white; background-color: {T_TD_COLOR1}" value="white" class="genmed">{L_COLOR_WHITE}</option>
+					  <option style="color:black; background-color: {T_TD_COLOR1}" value="black" class="genmed">{L_COLOR_BLACK}</option>
 					</select> &nbsp;{L_FONT_SIZE}:<select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
 					  <option value="7" class="genmed">{L_FONT_TINY}</option>
 					  <option value="9" class="genmed">{L_FONT_SMALL}</option>

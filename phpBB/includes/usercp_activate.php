@@ -85,7 +85,7 @@ if ( $result = $db->sql_query($sql) )
 	}
 	else
 	{
-		message_die(GENERAL_ERROR, $lang['Wrong_activation']); //wrongactiv
+		message_die(GENERAL_MESSAGE, $lang['Wrong_activation']); //wrongactiv
 	}
 }
 else

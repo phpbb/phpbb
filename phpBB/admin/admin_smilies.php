@@ -47,9 +47,9 @@ if( isset($HTTP_GET_VARS['export_pack']) )
 	}
 }
 
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 //
 // Check to see what mode we should operate in.
@@ -536,6 +536,6 @@ else
 //
 // Page Footer
 //
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

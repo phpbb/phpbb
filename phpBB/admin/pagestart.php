@@ -50,7 +50,7 @@ if ( empty($no_page_header) )
 {
 	// Not including the pageheader can be neccesarry if META tags are
 	// needed in the calling script.
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 }
 
 ?>
