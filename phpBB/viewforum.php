@@ -538,7 +538,7 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 	));
 
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	display_forums($forum_data, FALSE);
+	display_forums($forum_data);
 }
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
