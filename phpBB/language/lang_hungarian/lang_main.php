@@ -132,6 +132,7 @@ $lang['Board_disable'] = "Pardon, ez a fórum most nem hozzáférhetõ, próbálja kés
 // Global Header strings
 //
 $lang['Registered_users'] = "Regisztrált felhasználók:";
+$lang['Browsing_forum'] = "A fórumot éppen böngészõ felhasználó:";
 $lang['Online_users_zero_total'] = "Összesen <b>0</b> felhasználó van online :: ";
 $lang['Online_users_total'] = "Összesen <b>%d</b> felhasználó van online - ";
 $lang['Online_user_total'] = "Összesen <b>%d</b> felhasználó van online - ";
@@ -144,6 +145,7 @@ $lang['Hidden_users_total'] = "%d Rejtett, ";
 $lang['Guest_users_zero_total'] = "0 Vendég";
 $lang['Guest_users_total'] = "%d Vendég";
 $lang['Guest_user_total'] = "%d Vendég";
+$lang['Record_online_users'] = "A legtöbb felhasználó egyszerre <b>%s</b> volt (%s)";
 
 $lang['Admin_online_color'] = "%sAdminisztrátor%s";
 $lang['Mod_online_color'] = "%sModerátor%s";
@@ -464,6 +466,10 @@ $lang['PM_disabled'] = "Privát üzenetek letiltva ezen a fórumon";
 $lang['Cannot_send_privmsg'] = "Pardon, az adminisztrátor letiltotta a privát üzenetküldés lehetõségét";
 $lang['No_to_user'] = "Meg kell adnia a címzett felhasználó azonosítóját";
 $lang['No_such_user'] = "Pardon, ilyen felhasználó nem létezik";
+
+$lang['Disable_HTML_pm'] = "HTML letiltása ebben az üzenetben";
+$lang['Disable_BBCode_pm'] = "BBCode letiltása ebben az üzenetben";
+$lang['Disable_Smilies_pm'] = "Emotikonok letiltása ebben az üzenetben";
 
 $lang['Message_sent'] = "Az üzenet elküldve.";
 

@@ -162,6 +162,14 @@ $lang['Registered'] = "Regisztrált";
 $lang['Administrators'] = "Adminisztrátorok";
 $lang['Hidden'] = "Rejtett";
 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "MIND";
+$lang['Forum_REG'] = "REG";
+$lang['Forum_PRIVATE'] = "PRIVÁT";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "ADMIN";
+
 $lang['View'] = "Megtekintés";
 $lang['Read'] = "Olvasás";
 $lang['Post'] = "Hozzászólás";
@@ -521,8 +529,8 @@ $lang['Rank_maximum'] = "Maximum Hozzászólások";
 $lang['Rank_image'] = "Rangjelzõ kép (Elérési út a phpBB fõkönyvtára alatt)";
 $lang['Rank_image_explain'] = "Képet társíthat a ranghoz";
 
-$lang['Must_select_rank'] = "You must select a rank";
-$lang['No_assigned_rank'] = "No special rank assigned";
+$lang['Must_select_rank'] = "Ki kell választania egy rangot";
+$lang['No_assigned_rank'] = "Nincs rang hozzárendelve";
 
 $lang['Rank_updated'] = "Rang sikeresen frissítve";
 $lang['Rank_added'] = "Rang sikeresen hozzáadva";
