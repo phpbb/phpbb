@@ -675,7 +675,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	
 	if ($smtp->save_session)
 	{
-		$smtp->fp = fopen('cache/session.txt', 'w');
+		$smtp->fp = fopen('cache/session.txt', 'a');
 		fwrite($smtp->fp, 'Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port'] . "\r\n");
 	}
 	
@@ -701,7 +701,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM: <' . $config['board_email'] . ">\r\n");
+	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . ">\r\n");
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		return false;
@@ -712,6 +712,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	$cc_header = implode(', ', $mail_cc);
 
 	// Now tell the MTA to send the Message to the following people... [TO, BCC, CC]
+	$rcpt = false;
 	foreach ($mail_rcpt as $type => $mail_to_addresses)
 	{
 		foreach ($mail_to_addresses as $mail_to_address)
@@ -719,13 +720,27 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 			// Add an additional bit of error checking to the To field.
 			if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
 			{
-				$smtp->server_send("RCPT TO: $mail_to_address\r\n");
+				$smtp->server_send("RCPT TO:$mail_to_address\r\n");
 				if ($err_msg = $smtp->server_parse('250', __LINE__))
 				{
-					return false;
+					// We continue... if users are not resolved we do not care
+					if ($smtp->numeric_response_code != 550)
+					{
+						return false;
+					}
+				}
+				else
+				{
+					$rcpt = true;
 				}
 			}
 		}
+	}
+
+	// We try to send messages even if a few people do not seem to have valid email addresses, but if no one has, we have to exit here.
+	if (!$rcpt)
+	{
+		return false;
 	}
 
 	// Ok now we tell the server we are ready to start sending data
@@ -862,7 +877,7 @@ class smtp_class
 			$response_code = $response[0];
 			unset($response[0]);
 			$this->commands[$response_code] = implode(' ', $response);
-        }
+		}
 
 		// If we are not authenticated yet, something might be wrong if no username and passwd passed
 		if (!$username || !$password)
@@ -876,7 +891,7 @@ class smtp_class
 		}
 
 		// Get best authentication method
-        $available_methods = explode(' ', $this->commands['AUTH']);
+		$available_methods = explode(' ', $this->commands['AUTH']);
 
 		// Define the auth ordering if the default auth method was not found
 		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5');
@@ -901,7 +916,7 @@ class smtp_class
 					break;
 				}
 			}
-        }
+		}
 
 		if (!$method)
 		{
@@ -1047,8 +1062,8 @@ class smtp_class
 				}
 				else
 				{
-                    $tokens[$matches[1]] = array($tokens[$matches[1]], preg_replace('/^"(.*)"$/', '\\1', $matches[2]));
-                }
+					$tokens[$matches[1]] = array($tokens[$matches[1]], preg_replace('/^"(.*)"$/', '\\1', $matches[2]));
+				}
 			} 
 			else if (!empty($tokens[$matches[1]])) // Any other multiple instance = failure
 			{
@@ -1076,38 +1091,36 @@ class smtp_class
 		{
 			$tokens['maxbuf'] = 65536;
 		}
-        
+
 		// Required: nonce, algorithm
 		if (empty($tokens['nonce']) || empty($tokens['algorithm']))
 		{
-            $tokens = array();
-        }
-        
-        $md5_challenge = $tokens;
+			$tokens = array();
+		}
+		$md5_challenge = $tokens;
 
 		if (!empty($md5_challenge))
 		{
 			$str = '';
-			mt_srand((double)microtime()*10000000);
+			mt_srand( (double) microtime() * 10000000);
 			for ($i = 0; $i < 32; $i++)
 			{
 				$str .= chr(mt_rand(0, 255));
-            }
-            $cnonce = base64_encode($str);
+			}
+			$cnonce = base64_encode($str);
 
-			$digest_uri		= 'smtp/' . $config['smtp_host'];
+			$digest_uri = 'smtp/' . $config['smtp_host'];
 
 			$auth_1 = sprintf('%s:%s:%s', pack('H32', md5(sprintf('%s:%s:%s', $username, $md5_challenge['realm'], $password))), $md5_challenge['nonce'], $cnonce);
 			$auth_2 = 'AUTHENTICATE:' . $digest_uri;
-
 			$response_value = md5(sprintf('%s:%s:00000001:%s:auth:%s', md5($auth_1), $md5_challenge['nonce'], $cnonce, md5($auth_2)));
 
 			$input_string = sprintf('username="%s",realm="%s",nonce="%s",cnonce="%s",nc="00000001",qop=auth,digest-uri="%s",response=%s,%d', $username, $md5_challenge['realm'], $md5_challenge['nonce'], $cnonce, $digest_uri, $response_value, $md5_challenge['maxbuf']);
-        }
+		}
 		else
 		{
 			return 'Invalid digest challenge';
-        }
+		}
 		
 		$base64_method_digest_md5 = base64_encode($input_string);
 		$this->server_send($base64_method_digest_md5 . "\r\n");
