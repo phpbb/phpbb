@@ -76,7 +76,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				{
 					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
-					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, FALSE, $autologin);
+					$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin);
 
 					if( $session_id )
 					{
