@@ -81,7 +81,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			unset($right_id);
 		}
 
-		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
+		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 		{
 			// Non-postable forum with no subforums: don't display
 			continue;
@@ -103,7 +103,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$forum_rows[$forum_id] = $row;
 			$forum_ids[] = $forum_id;
 
-			if (!$row['forum_postable'] && $row['parent_id'] == $root_data['forum_id'])
+			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
 			{
 				$branch_root_id = $forum_id;
 			}
@@ -122,11 +122,30 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
 			}
 		}
-		elseif ($row['forum_postable'])
+		elseif ($row['forum_type'] != FORUM_CAT)
 		{
 			$subforums[$parent_id]['display'] = ($row['display_on_index']) ? true : false;;
 			$subforums[$parent_id]['name'][$forum_id] = $row['forum_name'];
+
+			// Include subforum topic/post counts in parent counts
+			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
+			$forum_rows[$parent_id]['forum_posts'] += $row['forum_posts'];
+
+			// Show most recent last post info on parent if we're a subforum
+			if (isset($forum_rows[$parent_id]) && $row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
+			{
+				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
+				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
+				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
+				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+			}
+			else
+			{
+				$forum_rows[$forum_id]['forum_id_last_post'] = $row['forum_id'];
+			}
 		}
+
 /*
 		if (!empty($forum_unread[$forum_id]))
 		{
@@ -186,7 +205,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	{
 		if ($row['parent_id'] == $root_id)
 		{
-			if (!$row['forum_postable'])
+			if ($row['forum_type'] == FORUM_CAT)
 			{
 				$hold = $row;
 				continue;
@@ -243,7 +262,16 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		}
 		else
 		{
-			$folder_image = ($forum_unread[$forum_id]) ? 'forum_new' : 'forum';
+			switch ($row['forum_type'])
+			{
+				case FORUM_POST:
+					$folder_image = ($forum_unread[$forum_id]) ? 'forum_new' : 'forum';
+					break;
+
+				case FORUM_LINK:
+					$folder_image = 'forum_link';
+					break;
+			}
 
 			$subforums_list = '';
 			$l_subforums = '';
@@ -286,8 +314,12 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 		}
 
+		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
+		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_link_track']) ? $row['forum_posts'] : '';
+
 		$template->assign_block_vars('forumrow', array(
-			'S_IS_CAT'			=>	FALSE,
+			'S_IS_CAT'			=>	false, 
+			'S_IS_LINK'			=>	($row['forum_type'] != FORUM_LINK) ? false : true, 
 
 			'FORUM_IMG'			=>	$row['forum_image'], 
 			'LAST_POST_IMG'		=>	$user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
@@ -295,7 +327,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'FORUM_FOLDER_IMG'	=>	$user->img($folder_image, $folder_alt),
 			'FORUM_NAME'		=>	$row['forum_name'],
 			'FORUM_DESC'		=>	$row['forum_desc'], 
-			'POSTS'				=>	$row['forum_posts'],
+			$l_post_click_count	=>	$post_click_count,
 			'TOPICS'			=>	$row['forum_topics'],
 			'LAST_POST_TIME'	=>	$last_post_time,
 			'LAST_POSTER'		=>	$last_poster,
@@ -305,15 +337,15 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'L_SUBFORUM_STR'	=>	$l_subforums,
 			'L_MODERATOR_STR'	=>	$l_moderator,
 			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
-
+			
 			'U_LAST_POSTER'		=>	$last_poster_url, 
 			'U_LAST_POST'		=>	$last_post_url, 
-			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
+			'U_VIEWFORUM'		=>	($row['forum_type'] != FORUM_LINK || $row['forum_link_track']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : $row['forum_link'])
 		);
 	}
 
 	$template->assign_vars(array(
-		'S_HAS_SUBFORUM'	=>	($visible_forums) ? TRUE : FALSE,
+		'S_HAS_SUBFORUM'	=>	($visible_forums) ? true : false,
 		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'])
 	);
 }

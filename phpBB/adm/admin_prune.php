@@ -74,7 +74,7 @@ if (isset($_POST['doprune']))
 	// NOTE: this query will conceal all forum names, even those the user isn't authed for
 	$sql = 'SELECT forum_id, forum_name 
 		FROM ' . FORUMS_TABLE . '
-		WHERE forum_postable = 1' . (($forum_id) ? ' AND forum_id = ' . $forum_id : '') . '
+		WHERE forum_type = ' . FORUM_POST . ' ' . (($forum_id) ? ' AND forum_id = ' . $forum_id : '') . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 

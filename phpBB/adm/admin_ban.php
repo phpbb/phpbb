@@ -272,7 +272,7 @@ if (isset($_REQUEST['bansubmit']))
 		{
 			$sql = "INSERT INTO " . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
 				VALUES $sql";
-			$result = $db->sql_query($sql);
+			$db->sql_query($sql);
 		}
 
 		if (!$ban_exclude)

@@ -28,21 +28,9 @@ if (!$auth->acl_get('a_styles'))
 	trigger_error($user->lang['No_admin']);
 }
 
-/*
-$dp = opendir($phpbb_root_path . 'templates/cache/');
-while ($file = readdir($dp))
-{
-	if (!is_file($phpbb_root_path . 'templates/cache/' . $file) && !is_link($phpbb_root_path . 'templates/cache/' . $file) && $file != '.' && $file != '..')
-	{
-		$selected = ($tplroot == $file) ? ' selected="selected"' : '';
-		$tplroot_options .= '<option name="' . $file . '"' . $selected . '>' . $file . '</option>';
-	}
-}
-closedir($dp);
-*/
-
 //
 $mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+
 
 switch ($mode)
 {
@@ -157,7 +145,7 @@ switch ($mode)
 		{
 			$str = "<?php\n" . $template->compile(stripslashes($_POST['decompile'])) . "\n?".">";
 
-			$fp = fopen($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'w+');
+			$fp = fopen($phpbb_root_path . 'cache/templates/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'w+');
 			fwrite ($fp, $str);
 			fclose($fp);
 
@@ -169,14 +157,32 @@ switch ($mode)
 		}
 		else if (!empty($tplname) && isset($_POST['tpl_name']))
 		{
-			$fp = fopen($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'r');
+			$fp = fopen($phpbb_root_path . 'cache/templates/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'r');
 			while (!feof($fp))
 			{
 				$str .= fread($fp, 4096);
 			}
 			@fclose($fp);
 
-			$template->decompile($str);
+			$match_preg = array(
+				'#\$this\->_tpl_include\(\'(.*?)\'\);#',
+				'#echo \$this->_tpldata\[\'\.\'\]\[0\]\[\'(.*?)\'\];#', 
+				'#echo \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(.*?)\'\]\)\).*?;#', 
+				'#if \(.*?\[\'\.\'\]\[0\]\[\'(.*?)\'\]\) \{ #', 
+				'#\$_(.*?)_count.*?;if \(.*?\)\{#', 
+			);
+
+			$replace_preg = array(
+				'<!-- INCLUDE $1 -->', 
+				'{$1}', 
+				'{$1}', 
+				'<!-- IF \1 -->',
+				'<!-- BEGIN \1 -->', 
+			);
+
+			$str = preg_replace($match_preg, $replace_preg, $str);
+			$str = str_replace('<?php ', '', $str);
+			$str = str_replace(' ?>', '', $str);
 		}
 		else
 		{
@@ -195,10 +201,10 @@ switch ($mode)
 		$tplroot_options = get_templates($tplroot);
 
 		$tplname_options = '';
-		$dp = @opendir($phpbb_root_path . 'templates/cache/' . $tplroot . '/');
+		$dp = @opendir($phpbb_root_path . 'cache/templates/' . $tplroot . '/');
 		while ($file = readdir($dp))
 		{
-			if (strstr($file, '.html.' . $phpEx) && is_file($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $file))
+			if (strstr($file, '.html.' . $phpEx) && is_file($phpbb_root_path . 'cache/templates/' . $tplroot . '/' . $file))
 			{
 				$tpl = substr($file, 0, strpos($file, '.'));
 				$selected = ($tplname == $tpl) ? ' selected="selected"' : '';

@@ -37,11 +37,6 @@
 	to this source
 */
 
-// Changes for 2.2:
-//
-// * Allow use of Smarty plug-ins?
-// * Reduce number of methods and variables
-
 class Template
 {
 

@@ -89,15 +89,39 @@ else
 }
 $result = $db->sql_query($sql);
 
-if (!$forum_data = $db->sql_fetchrow($result))
+if (!($forum_data = $db->sql_fetchrow($result)))
 {
 	trigger_error('NO_FORUM');
 }
 $db->sql_freeresult($result);
 
 
+// Is this forum a link? ... User got here either because the 
+// number of clicks is being tracked or they guessed the id
+if ($forum_data['forum_link'])
+{
+	// Does it have click tracking enabled?
+	if ($forum_data['forum_link_track'])
+	{
+		$sql = 'UPDATE ' . FORUMS_TABLE . '
+			SET forum_posts = forum_posts + 1';
+		$db->sql_query($sql);
+	}
+
+	redirect($forum_data['forum_link']);
+}
+
+
 // Configure style, language, etc.
 $user->setup(false, $forum_data['forum_style']);
+
+
+// Does a password exist for this forum? If so do the necessary
+if ($forum_data['forum_password'])
+{
+
+
+}
 
 
 // Permissions check
@@ -105,7 +129,7 @@ if (!$auth->acl_gets('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		trigger_error('SORRY_AUTH_READ');
+		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
@@ -132,7 +156,7 @@ else
 
 
 // Output forum listing if it is postable
-if ($forum_data['forum_postable'])
+if ($forum_data['forum_type'] == FORUM_POST)
 {
 	// Handle marking posts
 	if ($mark_read == 'topics')
@@ -215,6 +239,13 @@ if ($forum_data['forum_postable'])
 	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 
+	// Is a forum specific topic count required?
+	if ($forum_data['forum_topics_per_page'])
+	{
+		$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
+	}
+
+
 	// Basic pagewide vars
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'POST_NEW_TOPIC';
 
@@ -242,10 +273,10 @@ if ($forum_data['forum_postable'])
 
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
-		'S_IS_POSTABLE'			=>	TRUE,
-		'S_SELECT_SORT_DIR'		=>	$s_sort_dir,
-		'S_SELECT_SORT_KEY'		=>	$s_sort_key,
-		'S_SELECT_SORT_DAYS'	=>	$s_limit_days,
+		'S_IS_POSTABLE'			=> TRUE,
+		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+		'S_SELECT_SORT_KEY'		=> $s_sort_key,
+		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($forum_data['enable_icons']) ? true : false, 
 		'S_WATCH_FORUM' 		=> $s_watching_forum,
 		'S_FORUM_ACTION' 		=> "viewforum.$phpExx$SIDx&amp;f=$forum_id&amp;start=$start",
@@ -266,6 +297,7 @@ if ($forum_data['forum_postable'])
 	$total_topics = 0;
 	$row_ary = array();
 
+	// TODO - Oracle support
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_tracking = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')' : '';
 	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
@@ -378,6 +410,7 @@ if ($forum_data['forum_postable'])
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
 
+				// Posted image?
 				if (!empty($row['mark_type']))
 				{
 					$folder_img .= '_posted';
@@ -466,7 +499,7 @@ if ($forum_data['forum_postable'])
 				'S_ROW_COUNT'			=> $i, 
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 
 				'S_TOPIC_TYPE'			=> $row['topic_type'], 
-				'S_USER_POSTED'			=> ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
+				'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false, 
 
 				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
@@ -514,13 +547,13 @@ if ($forum_data['forum_postable'])
 	}
 }
 
-
+/*
 // Mozilla navigation links
 $nav_links['up'] = array(
 	'url' 	=> 'index.' . $phpEx . $SID,
 	'title' => sprintf($user->lang['FORUM_INDEX'], $config['sitename'])
 );
-
+*/
 
 // Dump out the page header and load viewforum template
 $page_title = $user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name'];

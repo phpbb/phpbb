@@ -114,7 +114,7 @@ page_header($l_title);
 if ($mode == 'mod')
 {
 
-	$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id, false, false);
+	$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
 
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
@@ -130,7 +130,7 @@ if ($mode == 'mod')
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?> <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></span></td>
+		<td class="cat" colspan="5" height="28" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
 	</tr>
 	<tr>
 		<th width="15%" height="25" nowrap="nowrap"><?php echo $user->lang['USERNAME']; ?></th>
@@ -193,19 +193,17 @@ else
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></span></td>
-		<td align="right" valign="top" nowrap="nowrap"><?php
+		<td align="right" valign="top" nowrap="nowrap"><span class="nav"><?php
 
 	if ($auth->acl_get('a_clearlogs'))
 	{
 
 
-?><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></span></b>&nbsp;<br /><br /><?php
+?><b><a href="javascript:marklist(true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist(false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
 
 	}
 
-	$pagination = generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir", $log_count, $config['topics_per_page'], $start);
-
-		?><span class="nav"><?php echo $pagination; ?></span></td>
+	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $log_count, $config['topics_per_page'], $start); ?></span></td>
 	</tr>
 </table></form>
 

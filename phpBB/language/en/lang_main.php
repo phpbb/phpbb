@@ -115,10 +115,9 @@ $lang = array(
 	'RETURN_MCP'	=> 'Click %sHere%s to return to the Moderator Control Panel',
 	'RETURN_GROUP'	=> 'Click %sHere%s to return to the Group Control Panel',
 	'VIEW_MESSAGE'	=> 'Click %sHere%s to view your message',
+	'URL_REDIRECT'	=> 'If your browser does not support meta redirection please click %sHERE%s to be redirected.', 
 
-
-	'INFORMATION' => 'Information',
-
+	'INFORMATION'	=> 'Information',
 
 	'BOARD_DISABLE'		=> 'Sorry but this board is currently unavailable',
 	'BOARD_UNAVAILABLE' => 'Sorry but the board is temporarily unavailable, please try again in a few minutes',
@@ -197,14 +196,14 @@ $lang = array(
 	'Registered_user_total'			=> 'We have <b>%d</b> registered user',
 	'Newest_user'	=> 'The newest registered user is <b>%s%s%s</b>',
 
-	'NO_NEW_POSTS' => 'No new posts',
-	'NEW_POSTS' => 'New posts',
-	'NEW_POST' => 'New post',
-	'NO_NEW_POSTS_HOT' => 'No new posts [ Popular ]',
-	'NEW_POSTS_HOT' => 'New posts [ Popular ]',
+	'NO_NEW_POSTS'		=> 'No new posts',
+	'NEW_POSTS'			=> 'New posts',
+	'NEW_POST'			=> 'New post',
+	'NO_NEW_POSTS_HOT'	=> 'No new posts [ Popular ]',
+	'NEW_POSTS_HOT'		=> 'New posts [ Popular ]',
 	'NO_NEW_POSTS_LOCKED' => 'No new posts [ Locked ]',
-	'NEW_POSTS_LOCKED' => 'New posts [ Locked ]',
-	'FORUM_LOCKED'	=> 'Forum Locked', 
+	'NEW_POSTS_LOCKED'	=> 'New posts [ Locked ]',
+	'FORUM_LOCKED'		=> 'Forum Locked', 
 
 	'POST_STICKY' 		=> 'Sticky',
 	'POST_ANNOUNCEMENT' => 'Announcement',
@@ -214,9 +213,10 @@ $lang = array(
 
 
 	'LIST_USER'	=> '1 User',
-	'LIST_USERS'	=> '%d Users',
+	'LIST_USERS'=> '%d Users',
 
 
+	'REDIRECTS'		=> 'Total redirects', 
 	'LOGIN'			=> 'Login',
 	'TERMS_USE'		=> 'Terms of Use', 
 	'PRIVACY'		=> 'Privacy Policy', 
@@ -273,7 +273,7 @@ $lang = array(
 	'NO_FORUM'	=> 'The forum you selected does not exist',
 	'NO_TOPICS'	=> 'There are no topics or posts in this forum.', 
 	'NO_TOPIC'	=> 'The requested topic does not exist.', 
-	'NO_POSTS'	=> 'No Posts were found.',
+	'NO_POSTS'	=> 'No Posts',
 	'NO_POST'	=> 'The requested post does not exist.', 
 	'NO_USER'	=> 'The requested user does not exist.', 
 	'NO_GROUP'	=> 'The requested usergroup does not exist.', 
@@ -295,7 +295,7 @@ $lang = array(
 	'EMAIL_TOPIC'			=> 'Email to friend', 
 	'VIEW_NEXT_TOPIC'		=> 'View next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'View previous topic',
-	'VIEW_UNREAD_POST'		=> 'View first unread topic', 
+	'VIEW_UNREAD_POST'		=> 'View first unread post', 
 
 	'NO_NEWER_TOPICS'	=> 'There are no newer topics in this forum',
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 

@@ -794,7 +794,8 @@ class fulltext_search
 			}
 		}
 
-		preg_match_all('/\b([\w]+)\b/', $text, $split_entries);
+		preg_match_all('#\b([\w]+)\b#', $text, $split_entries);
+
 		return array_unique($split_entries[1]);
 	}
 
@@ -824,6 +825,7 @@ class fulltext_search
 				WHERE m.post_id = " . intval($post_id) . "
 					AND w.word_id = m.word_id";
 			$result = $db->sql_query($sql);
+
 			$cur_words = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -908,25 +910,33 @@ class fulltext_search
 		{
 			$title_match = ($word_in == 'title') ? 1 : 0;
 
-			$sql = '';
 			if (sizeof($word_ary))
 			{
+				$sql_in = array();
 				foreach ($word_ary as $word)
 				{
-					$sql .= (($sql != '') ? ', ' : '') . $cur_words[$word_in][$word];
+					$sql_in[] = $cur_words[$word_in][$word];
 				}
-				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " WHERE word_id IN ($sql) AND post_id = " . intval($post_id) . " AND title_match = $title_match";
+
+				$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . ' 
+					WHERE word_id IN (' . implode(', ', $sql_in) . ') 
+						AND post_id = ' . intval($post_id) . " 
+						AND title_match = $title_match";
 				$db->sql_query($sql);
+				unset($sql_in);
 			}
 		}
 
 		foreach ($words['add'] as $word_in => $word_ary)
 		{
-			$title_match = ( $word_in == 'title' ) ? 1 : 0;
+			$title_match = ($word_in == 'title') ? 1 : 0;
 
 			if (sizeof($word_ary))
 			{
-				$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) SELECT $post_id, word_id, $title_match FROM " . SEARCH_WORD_TABLE . " WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $word_ary)) . ")";
+				$sql = 'INSERT INTO ' . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+					SELECT $post_id, word_id, $title_match 
+					FROM " . SEARCH_WORD_TABLE . ' 
+					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $word_ary)) . ')';
 				$db->sql_query($sql);
 			}
 		}
@@ -957,58 +967,66 @@ class fulltext_search
 		}
 
 		// Remove common (> 60% of posts ) words
-		$result = $db->sql_query("SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE);
+		$sql = "SELECT SUM(forum_posts) AS total_posts 
+			FROM " . FORUMS_TABLE;
+		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		if ($row['total_posts'] >= 100)
 		{
-			$sql = "SELECT word_id
-				FROM " . SEARCH_MATCH_TABLE . "
+			$sql = 'SELECT word_id
+				FROM ' . SEARCH_MATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > " . floor($row['total_posts'] * 0.6);
+				HAVING COUNT(word_id) > ' . floor($row['total_posts'] * 0.6);
 			$result = $db->sql_query($sql);
 
-			$in_sql = '';
-			while ($row = $db->sql_fetchrow($result))
+			if ($row = $db->sql_fetchrow($result))
 			{
-				$in_sql .= (( $in_sql != '') ? ', ' : '') . $row['word_id'];
+				$sql_in = array();
+				do
+				{
+					$sql_in[] = $row['word_id'];
+				}
+				while ($row = $db->sql_fetchrow($result));
+
+				$sql_in = implode(', ', $sql_in);
+
+				$sql = 'UPDATE ' . SEARCH_WORD_TABLE . "
+					SET word_common = 1
+					WHERE word_id IN ($sql_in)";
+				$db->sql_query($sql);
+
+				$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . "
+					WHERE word_id IN ($sql_in)";
+				$db->sql_query($sql);
+				unset($sql_in);
 			}
 			$db->sql_freeresult($result);
-
-			if ($in_sql)
-			{
-				$sql = "UPDATE " . SEARCH_WORD_TABLE . "
-					SET word_common = " . TRUE . "
-					WHERE word_id IN ($in_sql)";
-				$db->sql_query($sql);
-
-				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
-					WHERE word_id IN ($in_sql)";
-				$db->sql_query($sql);
-			}
 		}
 
 		// Remove words with no matches ... this is a potentially nasty query
-		$sql = "SELECT w.word_id
-			FROM ( " . SEARCH_WORD_TABLE . " w
-			LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON w.word_id = m.word_id
+		$sql = 'SELECT w.word_id
+			FROM ( ' . SEARCH_WORD_TABLE . ' w
+			LEFT JOIN ' . SEARCH_MATCH_TABLE . ' m ON w.word_id = m.word_id
 				AND m.word_id IS NULL
-			GROUP BY m.word_id";
+			GROUP BY m.word_id';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$in_sql = '';
+			$sql_in = array();
 			do
 			{
-				$in_sql .= ', ' . $row['word_id'];
+				$sql_in[] = $row['word_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			$sql = 'DELETE FROM ' . SEARCH_WORD_TABLE . '
-				WHERE word_id IN (' . substr($in_sql, 2) . ')';
+				WHERE word_id IN (' . implode(', ', $sql_in) . ')';
 			$db->sql_query($sql);
+			unset($sql_in);
 		}
 		$db->sql_freeresult($result);
 	}

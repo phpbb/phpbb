@@ -77,7 +77,7 @@ $topic_validate = false;
 $post_validate = false;
 
 // Easier validation
-$forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_postable' => 'i', 'enable_icons' => 'i');
+$forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' => 's', 'forum_status' => 'i', 'forum_type' => 'i', 'enable_icons' => 'i');
 
 $topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_max_options' => 'i', 'poll_length' => 'i');
 
@@ -237,8 +237,8 @@ if ($sql != '')
 
 	// Get Attachment Data
 	$message_parser->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
-
-	if (($post_attachment) && (!$submit) && (!$refresh) && (!$preview) && ($mode == 'edit'))
+	
+	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
 	{
 		$sql = 'SELECT d.*
 			FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
@@ -252,7 +252,7 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 	
-	if (($poster_id == ANONYMOUS) || (!$poster_id))
+	if ($poster_id == ANONYMOUS || !$poster_id)
 	{
 		$username = ($post_validate) ? trim($post_username) : '';
 	}
@@ -289,47 +289,47 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 
 // Collect general Permissions to be used within the complete page
 $perm = array(
-	'm_lock' => $auth->acl_get('m_lock', $forum_id),
-	'm_edit' => $auth->acl_get('m_edit', $forum_id),
-	'm_delete' => $auth->acl_get('m_delete', $forum_id),
+	'm_lock'		=> $auth->acl_get('m_lock', $forum_id),
+	'm_edit'		=> $auth->acl_get('m_edit', $forum_id),
+	'm_delete'		=> $auth->acl_get('m_delete', $forum_id),
 
-	'u_delete' => $auth->acl_get('f_delete', $forum_id),
+	'u_delete'		=> $auth->acl_get('f_delete', $forum_id),
 
-	'f_attach' => $auth->acl_get('f_attach', $forum_id),
-	'f_news' => $auth->acl_get('f_news', $forum_id),
-	'f_announce' => $auth->acl_get('f_announce', $forum_id),
-	'f_sticky' => $auth->acl_get('f_sticky', $forum_id),
+	'f_attach'		=> $auth->acl_get('f_attach', $forum_id),
+	'f_news'		=> $auth->acl_get('f_news', $forum_id),
+	'f_announce'	=> $auth->acl_get('f_announce', $forum_id),
+	'f_sticky'		=> $auth->acl_get('f_sticky', $forum_id),
 	'f_ignoreflood' => $auth->acl_get('f_ignoreflood', $forum_id),
-	'f_sigs' => $auth->acl_get('f_sigs', $forum_id),
-	'f_save' => $auth->acl_get('f_save', $forum_id)
+	'f_sigs'		=> $auth->acl_get('f_sigs', $forum_id),
+	'f_save'		=> $auth->acl_get('f_save', $forum_id)
 );
 
-if ( (!$auth->acl_get('f_' . $mode, $forum_id)) && ($forum_postable) )
+if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 {
 	trigger_error($user->lang['USER_CANNOT_' . strtoupper($mode)]);
 }
 
 // Forum/Topic locked?
-if ( ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$perm['m_edit'])
+if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$perm['m_edit'])
 {
 	$message = ($forum_status == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED';
 	trigger_error($user->lang[$message]);
 }
 
 // Can we edit this post?
-if ( ($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$perm['m_edit'])
+if (($mode == 'edit' || $mode == 'delete') && !$perm['m_edit'] && $config['edit_time'] && $post_time > time() - $config['edit_time'])
 {
 	trigger_error($user->lang['CANNOT_EDIT_TIME']);
 }
 
 // Do we want to edit our post ?
-if ( ($mode == 'edit') && (!$perm['m_edit']) && ($user->data['user_id'] != $poster_id))
+if ($mode == 'edit' && !$perm['m_edit'] && $user->data['user_id'] != $poster_id)
 {
 	trigger_error($user->lang['USER_CANNOT_EDIT']);
 }
 
 // Is edit posting locked ?
-if ( ($mode == 'edit') && ($post_edit_locked) && (!$auth->acl_gets('m_', 'a_', $forum_id)) )
+if ($mode == 'edit' && $post_edit_locked && !$auth->acl_get('m_', $forum_id))
 {
 	trigger_error($user->lang['CANNOT_EDIT_POST_LOCKED']);
 }
@@ -340,7 +340,7 @@ if ($mode == 'edit')
 }
 
 // Delete triggered ?
-if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->data['user_id'] != ANONYMOUS) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
+if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['user_id'] != ANONYMOUS && $perm['u_delete'] && $post_id == $topic_last_post_id) || $perm['m_delete']))
 {
 	// Do we need to confirm ?
 	if ($confirm)
@@ -374,8 +374,9 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 			$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
 		}
 
-		// TODO: delete common words... maybe just call search_tidy ?
-//			$search->del_words($post_id);
+		// TODO: delete common words... maybe just call search_tidy ? <- No, search tidy is intensive and should be
+		// called irregularly (at present).
+//		$search->del_words($post_id);
 
 		// Sync last post informations
 		$db->sql_transaction();
@@ -399,11 +400,11 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 		$db->sql_freeresult($result);
 
 		// If Post is first post, but not the only post... make next post the topic starter one. ;)
-		if (($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && ($post_id == $post_data['topic_first_post_id']))
+		if ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id'] && $post_id == $post_data['topic_first_post_id'])
 		{
 			$topic_sql = array(
-				'topic_first_post_id' => intval($row['post_id']),
-				'topic_first_poster_name' => ( intval($row['poster_id']) == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
+				'topic_first_post_id'		=> intval($row['post_id']),
+				'topic_first_poster_name'	=> ($row['poster_id'] == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
 			);
 		}
 
@@ -446,18 +447,17 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
 		{
 			$meta_info = '<meta http-equiv="refresh" content="5; url=viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">';
+
 			$message = $user->lang['DELETED'];
 		}
 		else
 		{
 			$meta_info = '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">';
+
 			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">', '</a>');
 		}
 
-		$template->assign_vars(array(
-			'META' => $meta_info)
-		);
-
+		meta_refresh(4, $meta_info);
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
 		trigger_error($message);
@@ -474,23 +474,23 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 		);
 
 		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $user->lang['DELETE_MESSAGE'],
-			'MESSAGE_TEXT' => $user->lang['CONFIRM_DELETE'],
+			'MESSAGE_TITLE'		=> $user->lang['DELETE_MESSAGE'],
+			'MESSAGE_TEXT'		=> $user->lang['CONFIRM_DELETE'],
 
-			'S_CONFIRM_ACTION' => $phpbb_root_path . 'posting.' . $phpEx . $SID,
-			'S_HIDDEN_FIELDS' => $s_hidden_fields)
+			'S_CONFIRM_ACTION'	=> $phpbb_root_path . 'posting.' . $phpEx . $SID,
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 		);
 		
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
 
-if ( ($mode == 'delete') && ( ($poster_id != $user->data['user_id']) && (!$perm['u_delete'])) )
+if ($mode == 'delete' && $poster_id != $user->data['user_id'] && !$perm['u_delete'])
 {
 	trigger_error($user->lang['DELETE_OWN_POSTS']);
 }
 
-if ( ($mode == 'delete') && ( ($poster_id == $user->data['user_id']) && ($perm['u_delete'])) && ($post_id != $topic_last_post_id))
+if ($mode == 'delete' && $poster_id == $user->data['user_id'] && $perm['u_delete'] && $post_id != $topic_last_post_id)
 {
 	trigger_error($user->lang['CANNOT_DELETE_REPLIED']);
 }
@@ -500,7 +500,7 @@ if ($mode == 'delete')
 	trigger_error('USER_CANNOT_DELETE');
 }
 
-if (($submit) || ($preview) || ($refresh))
+if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
 	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(strip_tags($_POST['subject']))) : '';
@@ -534,7 +534,7 @@ if (($submit) || ($preview) || ($refresh))
 
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
 
-	if ( ($poll_delete) && ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete'])) )
+	if ($poll_delete && (($mode == 'edit' && !empty($poll_options) && empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete']))
 	{
 		// Delete Poll
 		$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
@@ -553,7 +553,9 @@ if (($submit) || ($preview) || ($refresh))
 			'poll_max_options'	=> 0
 		);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $topic_id;
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' 
+			WHERE topic_id = ' . $topic_id;
 		$db->sql_query($sql);
 
 		$poll_title = '';
@@ -575,7 +577,7 @@ if (($submit) || ($preview) || ($refresh))
 	// If replying/quoting and last post id has changed
 	// give user option of continuing submit or return to post
 	// notify and show user the post made between his request and the final submit
-	if ( ($mode == 'reply' || $mode == 'quote') && ($topic_cur_post_id != $topic_last_post_id) )
+	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
 	{
 		$template->assign_vars(array(
 			'S_POST_REVIEW' => true)
@@ -662,7 +664,7 @@ if (($submit) || ($preview) || ($refresh))
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 	}
 
-	if (($mode != 'edit') && (!$preview) && (!$refresh) && (!$perm['f_ignoreflood']))
+	if ($mode != 'edit' && !$preview && !$refresh && !$perm['f_ignoreflood'])
 	{
 		// Flood check
 		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
@@ -693,7 +695,7 @@ if (($submit) || ($preview) || ($refresh))
 	}
 
 	// Parse subject
-	if ( ($subject == '') && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
+	if ($subject == '' && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
 	{
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['EMPTY_SUBJECT'];
 	}

@@ -46,7 +46,7 @@ require('pagestart.' . $phpEx);
 $mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 $submode	= (isset($_REQUEST['submode'])) ? htmlspecialchars($_REQUEST['submode']) : '';
 $which_mode = (!empty($submode) && $submode != $mode) ? $submode : $mode;
-$submit		= array_values(preg_grep('#^submit_(.*)$#i', array_keys($_POST)));
+$submit		= array_values(preg_grep('#^submit_(.*)$#i', array_keys($_REQUEST)));
 $submit		= (sizeof($submit)) ? substr($submit[0], strpos($submit[0], '_') + 1) : '';
 
 

@@ -241,8 +241,8 @@ $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
 $sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
-$s_limit_days = $s_sort_key = $s_sort_dir = '';
-gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 // Obtain correct post count and ordering SQL if user has
 // requested anything different
@@ -356,7 +356,7 @@ $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && ($topic_type != POST_A
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
+$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 
@@ -406,7 +406,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : $pagination,
 	'PAGE_NUMBER' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
-	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
+	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 		=> $post_img,
@@ -430,12 +430,12 @@ $template->assign_vars(array(
 
 	'U_TOPIC'				=> $server_path . "viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
-
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;hilit=$highlight",
+	'U_VIEW_UNREAD_POST'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread", 
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;hilit=$highlight",
 	'U_VIEW_FORUM' 			=> $view_forum_url,
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url, 
-	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;view=print",
+	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print",
 	'U_EMAIL_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=email", 
 
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
@@ -577,10 +577,13 @@ if (!empty($poll_start))
 		'S_CAN_VOTE'		=> $s_can_vote, 
 		'S_DISPLAY_RESULTS'	=> $s_display_results,
 		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false, 
-		'S_POLL_ACTION'		=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sk=$sort_key&amp;sd=$sort_dir",
+		'S_POLL_ACTION'		=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param",
 
-		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir&amp;vote=viewresult")
+		'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param&amp;vote=viewresult")
 	);
+
+	unset($poll_info);
+	unset($voted_id);
 }
 
 
@@ -814,6 +817,10 @@ while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
 
 
+// Store the last post time for this page ... for use in marking
+$last_post_time = $row['post_time'];
+
+
 // Pull attachment data
 if (count($attach_list))
 {
@@ -944,7 +951,7 @@ foreach ($rowset as $key => $row)
 	$quote_img = '<a href="' . $temp_url . '">' . $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
 	$quote = '<a href="' . $temp_url . '">' . $user->lang['REPLY_WITH_QUOTE'] . '</a>';
 
-	if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id)) || $auth->acl_get('m_edit', $forum_id))
+	if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($post_time > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id))
 	{
 		$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
 		$edit_img = '<a href="' . $temp_url . '">' . $user->img('btn_edit', $user->lang['EDIT_DELETE_POST']) . '</a>';
@@ -1005,7 +1012,7 @@ foreach ($rowset as $key => $row)
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
-	$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	$message = (empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 
 	// Highlight active words (primarily for search)
@@ -1156,8 +1163,9 @@ foreach ($rowset as $key => $row)
 				$denied = true;
 
 				$template->assign_block_vars('postrow.attachment', array(
-					'IS_DENIED' => true,	
-					'L_DENIED' => sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
+					'IS_DENIED'		=> true,	
+
+					'L_DENIED'		=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
 				);
 			} 
 
@@ -1202,18 +1210,15 @@ foreach ($rowset as $key => $row)
 						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
 						// Section between BEGIN and END with (Without the // of course):
 						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						// 
-						// BEGIN
 						if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
 						{
-							$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+							$img_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
 						}
 						else
 						{
 							$img_source = $filename;
 							$update_count[] = $attachment['attach_id'];
 						}
-						// END
 
 						$l_downloaded_viewed = $user->lang['VIEWED'];
 						$download_link = $img_source;
@@ -1224,23 +1229,20 @@ foreach ($rowset as $key => $row)
 						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
 						// Section between BEGIN and END with (Without the // of course):
 						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
-						//
-						// BEGIN
 						if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
 						{
-							$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
+							$thumb_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] . '&thumb=1';
 						}
 						else
 						{
 							$thumb_source = $thumbnail_filename;
 						}
-						// END	
 
 						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						$download_link = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
 
 						$additional_array = array(
-							'IMG_THUMB_SRC' => $thumb_source
+							'IMG_THUMB_SRC' => $thumb_source // should be THUMB_IMG or similar
 						);
 						break;
 
@@ -1250,10 +1252,7 @@ foreach ($rowset as $key => $row)
 						$download_link = $filename;
 
 						// Viewed/Heared File ... update the download count (download.php is not called here)
-						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
-						{
-							$update_count[] = $attachment['attach_id'];
-						}
+						$update_count[] = $attachment['attach_id'];
 						break;
 
 					case RM_CAT:
@@ -1262,15 +1261,12 @@ foreach ($rowset as $key => $row)
 						$download_link = $filename;
 
 						$additional_array = array(
-							'FORUM_URL' => generate_board_url(),
+							'FORUM_URL' => generate_board_url(), // should be U_FORUM or similar
 							'ATTACH_ID' => $attachment['attach_id']
 						);
 
 						// Viewed/Heared File ... update the download count (download.php is not called here)
-						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
-						{
-							$update_count[] = $attachment['attach_id'];
-						}
+						$update_count[] = $attachment['attach_id'];
 						break;
 /*			
 					case SWF_CAT:
@@ -1329,26 +1325,29 @@ unset($rowset);
 unset($user_cache);
 
 
-// Udate the attachment download counts
-if (count($update_count))
-{
-	$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
-		SET download_count = download_count + 1 
-		WHERE attach_id IN (" . implode(', ', array_unique($update_count)) . ")";
-	$db->sql_query($sql);
-}
 
-// Update the topic view counter, excepted when the user was already reading it
+// Update topic view and if necessary attachment view counters ... but only
+// if this is the first 'page view'
 if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 {
 	$sql = "UPDATE " . TOPICS_TABLE . "
 		SET topic_views = topic_views + 1
 		WHERE topic_id = $topic_id";
 	$db->sql_query($sql);
+
+	// Update the attachment download counts
+	if (count($update_count))
+	{
+		$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
+			SET download_count = download_count + 1 
+			WHERE attach_id IN (" . implode(', ', array_unique($update_count)) . ")";
+		$db->sql_query($sql);
+	}
 }
 
 
 // Mozilla navigation bar
+/*
 $nav_links['prev'] = array(
 	'url' => $view_prev_topic_url,
 	'title' => $user->lang['View_previous_topic']
@@ -1361,10 +1360,10 @@ $nav_links['up'] = array(
 	'url' => $view_forum_url,
 	'title' => $forum_name
 );
-
+*/
 
 // Mark topics read
-markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
+markread('topic', $forum_id, $topic_id, $last_post_time);
 
 
 // Change encoding if appropriate
@@ -1375,7 +1374,7 @@ if ($force_encoding != '')
 
 
 // Output the page
-$page_title = $user->lang['View_topic'] .' - ' . $topic_title;
+$page_title = $user->lang['VIEW_TOPIC'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(

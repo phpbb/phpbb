@@ -114,6 +114,11 @@ function page_footer($copyright_html = true)
 	// Close our DB connection.
 	$db->sql_close();
 
+	if (!empty($cache))
+	{
+		$cache->unload();
+	}
+
 ?>
 
 		</td>
@@ -126,7 +131,7 @@ function page_footer($copyright_html = true)
 
 ?>
 
-<div align="center"><span class="copyright">Powered by phpBB <?php echo $config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
+<div class="copyright" align="center">Powered by phpBB <?php echo $config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb">phpBB Group</a></div>
 
 <br clear="all" />
 
@@ -134,11 +139,6 @@ function page_footer($copyright_html = true)
 </html>
 <?php
 
-	}
-
-	if (!empty($cache))
-	{
-		$cache->unload();
 	}
 
 	exit;

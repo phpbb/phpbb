@@ -438,8 +438,12 @@ class userdata extends user
 	{
 		global $db, $user;
 	
+		// Clean up username ... convert any entities into normal
+		// text, remove excess spaces, then escape it
+		$username = strtr(trim($username), array_flip(get_html_translation_table(HTML_ENTITIES)));
+		$username = preg_replace('#[\s]{2,}#', '', $username);
 		$username = $db->sql_escape($username);
-	
+
 		$sql = "SELECT username
 			FROM " . USERS_TABLE . "
 			WHERE LOWER(username) = '" . strtolower($username) . "'";
@@ -500,7 +504,7 @@ class userdata extends user
 	
 		if ($email != '')
 		{
-			if (preg_match('/^[a-z0-9\.\-_\+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email))
+			if (preg_match('#^[a-z0-9\.\-_\+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$#is', $email))
 			{
 				$sql = "SELECT ban_email
 					FROM " . BANLIST_TABLE;

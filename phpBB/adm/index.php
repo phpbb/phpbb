@@ -411,7 +411,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 	}
 	else
 	{
-		$dbsize = $user->lang['Not_available'];
+		$dbsize = $user->lang['NOT_AVAILABLE'];
 	}
 
 	if (is_int($dbsize))

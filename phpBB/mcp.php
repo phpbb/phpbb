@@ -49,15 +49,14 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
+
 // Start session management
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
 
-//
+
 // Obtain initial var settings
-//
 $forum_id = (isset($_REQUEST['f'])) ? max(0, intval($_REQUEST['f'])) : 0;
 $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : 0;
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
@@ -75,10 +74,9 @@ $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $action = (!empty($_GET['action'])) ? $_GET['action'] : '';
 $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
 
-//
+
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
-//
 if (isset($_POST['cancel']))
 {
 	$redirect = '';
@@ -161,17 +159,17 @@ switch ($mode)
 	case 'make_global':
 	case 'make_announce':
 		$acl_src = 'f_announce';
-	break;
+		break;
 
 	case 'make_sticky':
 		$acl_src = 'f_sticky';
-	break;
+		break;
 
 	case 'approve':
 	case 'unapprove':
 	case 'disapprove':
 		$acl_src = 'm_approve';
-	break;
+		break;
 
 	case 'split':
 	case 'split_all':
@@ -180,7 +178,7 @@ switch ($mode)
 		$acl_trg = 'f_post';
 
 		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
-	break;
+		break;
 
 	case 'merge':
 	case 'merge_posts':
@@ -188,16 +186,16 @@ switch ($mode)
 		$acl_trg = 'm_merge';
 
 		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
-	break;
+		break;
 
 	case 'move':
 		$acl_src = 'm_move';
 		$acl_trg = 'f_post';
-	break;
+		break;
 
 	case 'viewlogs':
-		$acl_src = array('m_', 'a_general');
-	break;
+		$acl_src = array('m_', 'a_');
+		break;
 
 	case 'fork':
 		$acl_trg = 'f_post';
@@ -206,12 +204,17 @@ switch ($mode)
 // Check destination forum or topic if applicable
 if ($to_topic_id > 0)
 {
-	$result = $db->sql_query('SELECT * FROM ' . TOPICS_TABLE . ' WHERE topic_id = ' . $to_topic_id);
+	$sql = 'SELECT * 
+		FROM ' . TOPICS_TABLE . ' 
+		WHERE topic_id = ' . $to_topic_id;
+	$result = $db->sql_query($sql);
 
 	if (!$row = $db->sql_fetchrow($result))
 	{
 		trigger_error($user->lang['Topic_not_exist'] . $return_mode);
 	}
+	$db->sql_freeresult($result);
+
 	if (!isset($topic_data[$to_topic_id]))
 	{
 		$topic_data[$to_topic_id] = $row;
@@ -224,12 +227,16 @@ if ($to_forum_id > 0)
 {
 	if (!isset($forum_data[$to_forum_id]))
 	{
-		$result = $db->sql_query('SELECT * FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $to_forum_id);
+		$sql = 'SELECT * 
+			FROM ' . FORUMS_TABLE . ' 
+			WHERE forum_id = ' . $to_forum_id;
+		$result = $db->sql_query($sql);
 
 		if (!$row = $db->sql_fetchrow($result))
 		{
 			trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mode);
 		}
+		$db->sql_freeresult($result);
 
 		$forum_data[$to_forum_id] = $row;
 	}
@@ -333,10 +340,12 @@ if (count($forum_id_list))
 		// Using isset() rather than !empty() because of the jumpbox having f="0" for "All forums"
 		list($void, $forum_id) = each($forum_id_list);
 	}
+
 	if (!$topic_id && count($topic_id_list) == 1)
 	{
 		list($void, $topic_id) = each($topic_id_list);
 	}
+
 	if (!$post_id && count($post_id_list) == 1)
 	{
 		list($void, $post_id) = each($post_id_list);
@@ -409,7 +418,7 @@ $tabs[] = array(
 	'url'	=>	$mcp_url . '&amp;mode=viewlogs'
 );
 
-if ($forum_id && $forum_data[$forum_id]['forum_postable'] && $auth->acl_get('m_', $forum_id))
+if ($forum_id && $forum_data[$forum_id]['forum_type'] == FORUM_POST && $auth->acl_get('m_', $forum_id))
 {
 	$tabs[] = array(
 		'mode'	=>	'forum_view',
@@ -455,7 +464,7 @@ if (!$mode)
 	{
 		$mode = 'topic_view';
 	}
-	elseif ($forum_id && $forum_data[$forum_id]['forum_postable'])
+	elseif ($forum_id && $forum_data[$forum_id]['forum_type'] == FORUM_POST)
 	{
 		$mode = 'forum_view';
 	}
@@ -493,8 +502,8 @@ foreach ($tabs as $tab)
 	$template->assign_block_vars('tab', array(
 		'S_IS_SELECTED'	=>	($tab['mode'] == $mode) ? TRUE : FALSE,
 		'NAME'			=>	$tab['title'],
-		'U_LINK'		=>	$tab['url']
-	));
+		'U_LINK'		=>	$tab['url'])
+	);
 }
 
 //
@@ -611,7 +620,7 @@ switch ($mode)
 		}
 		else
 		{
-			if (!$forum_data[$to_forum_id]['forum_postable'])
+			if ($forum_data[$to_forum_id]['forum_type'] == FORUM_CAT)
 			{
 				trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_mcp);
 			}
@@ -760,7 +769,7 @@ switch ($mode)
 		}
 		else
 		{
-			if (!$forum_data[$to_forum_id]['forum_postable'])
+			if ($forum_data[$to_forum_id]['forum_type'] == FORUM_CAT)
 			{
 				trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_mcp);
 			}
@@ -861,22 +870,18 @@ switch ($mode)
 			}
 		}
 
-		$return_forum = sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
-		$return_topic = sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start\">", '</a>');
-
-		$template->assign_vars(array(
-			'META' => "<meta http-equiv=\"refresh\" content=\"3;url=viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start\">"
-		));
-
 		add_log('mod', $forum_id, $topic_id, 'logm_' . $mode);
 
-		trigger_error($user->lang['TOPIC_TYPE_CHANGED'] . '<br /><br />' . $return_topic . '<br /><br />' . $return_forum);
-	break;
+		meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start");
+
+		$message = $user->lang['TOPIC_TYPE_CHANGED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start\">", '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
+		trigger_error($message);
+		break;
 
 	case 'disapprove':
-	// NOTE: what happens if the user disapproves the first post of the topic? Answer: the topic is deleted
+		// NOTE: what happens if the user disapproves the first post of the topic? Answer: the topic is deleted
 		$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-		$l_redirect = sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+		$l_redirect = sprintf($user->lang['RETURN_MCP'], "<a href=\"mcp.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 
 		if (!count($post_id_list))
 		{
@@ -897,6 +902,7 @@ switch ($mode)
 					$post_ids[] = $p_id;
 				}
 			}
+
 			foreach ($post_id_list as $p_id)
 			{
 				if (!in_array($topic_ids, $post_data[$p_id]['topic_id']))
@@ -904,20 +910,20 @@ switch ($mode)
 					$post_ids[] = $p_id;
 				}
 			}
+
 			if (count($topic_ids))
 			{
 				delete_topics('topic_id', $topic_ids);
 			}
+
 			if (count($post_ids))
 			{
 				delete_posts('post_id', $post_ids);
 			}
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
-
 			// TODO: warn the user when post is disapproved
+
+			meta_refresh(3, $redirect_page);
 
 			$msg = (count($post_id_list) == 1) ? $user->lang['POST_REMOVED'] : $user->lang['POSTS_REMOVED'];
 			trigger_error($msg . '<br /><br />' . $l_redirect);
@@ -934,13 +940,13 @@ switch ($mode)
 		mcp_header('confirm_body.html');
 
 		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $user->lang['CONFIRM'],
-			'MESSAGE_TEXT' => (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE_POST'] : $user->lang['CONFIRM_DELETE_POSTS'],
+			'MESSAGE_TITLE'		=> $user->lang['CONFIRM'],
+			'MESSAGE_TEXT'		=> (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE_POST'] : $user->lang['CONFIRM_DELETE_POSTS'],
 
-			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=disapprove",
-			'S_HIDDEN_FIELDS' => $hidden_fields
-		));
-	break;
+			'S_CONFIRM_ACTION'	=> "mcp.$phpEx$SID&amp;mode=disapprove",
+			'S_HIDDEN_FIELDS'	=> $hidden_fields)
+		);
+		break;
 
 	case 'approve':
 	case 'unapprove':
@@ -979,7 +985,7 @@ switch ($mode)
 
 				add_log('mod', $forum_id, $post_data[$post_id]['topic_id'], $logm_mode, $post_id);
 
-//NOTE: hey, who removed the enable_post_count field?! lol ^ ^
+				//NOTE: hey, who removed the enable_post_count field?! lol ^ ^
 				$forum_data[$post_data[$post_id]['forum_id']]['enable_post_count'] = 1;
 				if ($forum_data[$post_data[$post_id]['forum_id']]['enable_post_count'])
 				{
@@ -1042,6 +1048,7 @@ switch ($mode)
 				$resync_count[$post_count] = array($user_id);
 			}
 		}
+
 		foreach ($resync_count as $post_count => $user_list)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . "
@@ -1580,7 +1587,7 @@ switch ($mode)
 		{
 			trigger_error($user->lang['SELECT_DESTINATION_FORUM'] . $return_split);
 		}
-		if (!$forum_data[$to_forum_id]['forum_postable'])
+		if ($forum_data[$to_forum_id]['forum_type'] == FORUM_CAT)
 		{
 			trigger_error($user->lang['FORUM_NOT_POSTABLE'] . $return_split);
 		}
@@ -2013,7 +2020,7 @@ function mcp_jumpbox($action, $acl_list = 'f_list', $forum_id = false, $enable_s
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
 
-	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
+	$sql = 'SELECT forum_id, forum_name, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 120);
@@ -2022,18 +2029,18 @@ function mcp_jumpbox($action, $acl_list = 'f_list', $forum_id = false, $enable_s
 	$padding = $forum_list = $holding = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
+		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 		{
 			// Non-postable forum with no subforums, don't display
 			continue;
 		}
 
-		if (!$auth->acl_gets('f_list', $row['forum_id']))
+		if (!$auth->acl_get('f_list', $row['forum_id']))
 		{
 			// if the user does not have permissions to list this forum skip
 			continue;
 		}
-		if (!$row['forum_postable'] || !$auth->acl_gets($acl_list, $row['forum_id']))
+		if ($row['forum_type'] == FORUM_CAT || !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			$row['forum_id'] = -1;
 		}

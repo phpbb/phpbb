@@ -439,16 +439,16 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['ADMIN_EMAIL']; ?>: </td>
+		<td class="row1" width="50%"><?php echo $user->lang['CONTACT_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['ADMIN_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ADMIN_EMAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="25" maxlength="100" name="board_email" value="<?php echo $new['board_email']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['EMAIL_SIG']; ?>: <br /><span class="gensmall"><?php echo $user->lang['EMAIL_SIG_EXPLAIN']; ?></span></td>
 		<td class="row2"><textarea name="board_email_sig" rows="5" cols="30"><?php echo $new['board_email_sig']; ?></textarea></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['CONTACT_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['USE_SMTP']; ?>: <br /><span class="gensmall"><?php echo $user->lang['USE_SMTP_EXPLAIN']; ?></span></td>

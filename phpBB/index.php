@@ -27,11 +27,12 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Get posted/get info
 $mark_read = (isset($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
 
+
 // Start session management
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
+
 
 // Handle marking posts
 if ($mark_read == 'forums')
@@ -130,9 +131,13 @@ $template->assign_vars(array(
 $page_title = $user->lang['Index'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+//page_header($user->lang['INDEX']);
+
 $template->set_filenames(array(
-	'body' => 'index_body.html'
-));
+	'body' => 'index_body.html')
+);
+
+//page_footer();
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

@@ -49,35 +49,21 @@ p {
 */
 a:link, a:active, a:visited {
 	color:	#006699;
-}
-a.gen, a.genmed, a.gensmall {
-	color:				#006699;
 	text-decoration:	none;
-}
-a.nav {
-	color:				#006699;
-	text-decoration:	none;
-}
-a.copyright {
-	color:				#444444;
-	text-decoration:	none;
-}
-
-a.gen:hover, a.genmed:hover, a.gensmall:hover {
-	color:				#DD6900;
-	text-decoration:	underline;
 }
 a:hover {
 	color:				#DD6900;
 	text-decoration:	underline;
 }
+
+a.nav {
+	color:				#006699;
+	text-decoration:	none;
+}
 a.nav:hover {
 	text-decoration:	underline;
 }
-a.copyright:hover {
-	color:				#DD6900;
-	text-decoration:	underline;
-}
+
 
 /*
 	Non-tag specific
@@ -94,6 +80,9 @@ a.copyright:hover {
 .nav {
 	color:	black;
 	font:	bold 11px;
+}
+.forumlink {
+	font:	bold 120% Verdana, Arial, Helvetica, sans-serif;
 }
 .name {
 	color:		black;

@@ -8,7 +8,19 @@
 	<!-- BEGIN forumrow -->
 	<!-- IF forumrow.S_IS_CAT -->
 	<tr>
-		<td class="cat" colspan="5" height="28"><a class="cattitle" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></td>
+		<td class="cat" colspan="2" height="28"><a class="cattitle"  href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></td>
+		<td class="rowpic" colspan="3" align="right">&nbsp;</td>
+	</tr>
+	<!-- ELSEIF forumrow.S_IS_LINK -->
+	<tr>
+		<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td class="row1" height="50"><a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br />
+			<table cellspacing="5" cellpadding="0" border="0">
+				<tr>
+					<td><span class="gensmall">{forumrow.FORUM_DESC}</span></td>
+				</tr>
+			</table></td>
+		<td class="row2" colspan="3" align="center" valign="middle" height="50"><!-- IF forumrow.CLICKS neq '' --><span class="gensmall">{L_REDIRECTS}: {forumrow.CLICKS}</span><!-- ENDIF --></td>
 	</tr>
 	<!-- ELSE -->
 	<tr>
@@ -21,7 +33,7 @@
 			</table><span class="gensmall"><!-- IF forumrow.MODERATORS --><b>{forumrow.L_MODERATOR_STR}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><br /><b>{forumrow.L_SUBFORUM_STR}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
 		<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
-		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME --><span class="gensmall">{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POSTER --><a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a><!-- ELSE -->{forumrow.LAST_POSTER}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a></span><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+		<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"><span class="gensmall"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POSTER --><a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a><!-- ELSE -->{forumrow.LAST_POSTER}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></span></td>
 	</tr>
 	<!-- ENDIF -->
 	<!-- END forumrow -->

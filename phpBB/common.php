@@ -88,6 +88,9 @@ define('GROUP_SPECIAL', 3);
 define('GROUP_FREE', 4);
 
 // Forum/Topic states
+define('FORUM_CAT', 0);
+define('FORUM_POST', 1);
+define('FORUM_LINK', 2);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
