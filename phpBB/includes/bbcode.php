@@ -454,6 +454,7 @@ class bbcode
 				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
 				$code = str_replace('  ', '&nbsp; ', $code);
 				$code = str_replace('  ', ' &nbsp;', $code);
+				$code = preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $code);
 		}
 
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
