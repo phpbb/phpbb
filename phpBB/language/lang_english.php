@@ -686,6 +686,11 @@ $lang['Restore_success'] = "The Database has been successfully restored.<br /><b
 $lang['Backup_download'] = "Your download will start shortly please wait till it begins";
 $lang['Backups_not_supported'] = "Sorry but database backups are not currently supported for your database system";
 
+$lang['Restore_Error_uploading'] = "Error in uploading the backup file";
+$lang['Restore_Error_filename'] = "Filename problem, please try an alternative file";
+$lang['Restore_Error_decompress'] = "Cannot decompress a gzip file, please upload a plain text version";
+$lang['Restore_Error_no_file'] = "No file was uploaded";
+
 // Auth pages
 $lang['Administrator'] = "Administrator";
 $lang['User'] = "User";

@@ -942,7 +942,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"body" => "admin/db_utils_restore_body.tpl")
 				);
 
-				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\"><input type=\"hidden\" name=\"perform\" value=\"$perform\">";
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
 					"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'], 
@@ -964,10 +964,14 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// Handle the file upload ....
 				// If no file was uploaded report an error...
 				//
-				if($backup_file == "none")
+				$backup_file_name = (!empty($HTTP_POST_FILES['backup_file']['name'])) ? $HTTP_POST_FILES['backup_file']['name'] : "";
+				$backup_file_tmpname = ($HTTP_POST_FILES['backup_file']['tmp_name'] != "none") ? $HTTP_POST_FILES['backup_file']['tmp_name'] : "";
+				$backup_file_type = (!empty($HTTP_POST_FILES['backup_file']['type'])) ? $HTTP_POST_FILES['backup_file']['type'] : "";
+
+				if($backup_file_tmpname == "" || $backup_file_name == "")
 				{
 					include('page_header_admin.'.$phpEx);
-					message_die(GENERAL_ERROR, "Backup file upload failed");
+					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
 				// If I file was actually uploaded, check to make sure that we 
@@ -975,18 +979,51 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if(ereg("^php[0-9A-Za-z_.-]+$", basename($backup_file)))
+				if( file_exists($backup_file_tmpname) )
 				{
-					$sql_query = fread(fopen($backup_file, 'r'), filesize($backup_file));
-					//
-					// Comment this line out to see if this fixes the stuff...
-					//
-					//$sql_query = stripslashes($sql_query);
+					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip\-compressed)$/is", $backup_file_type) )
+					{
+						if( preg_match("/\.gz$/is",$backup_file_name) )
+						{
+							$do_gzip_compress = FALSE;
+							$phpver = phpversion();
+							if($phpver >= "4.0")
+							{
+								if(extension_loaded("zlib"))
+								{
+									$do_gzip_compress = TRUE;
+								}
+							}
+
+							if($do_gzip_compress)
+							{
+								$sql_query = gzread(gzopen($backup_file_tmpname, 'rb'), filesize($backup_file_tmpname));
+							}
+							else
+							{
+								include('page_header_admin.'.$phpEx);
+								message_die(GENERAL_ERROR, $lang['Restore_Error_decompress']);
+							}
+						}
+						else
+						{
+							$sql_query = fread(fopen($backup_file_tmpname, 'r'), filesize($backup_file_tmpname));
+						}
+						//
+						// Comment this line out to see if this fixes the stuff...
+						//
+						//$sql_query = stripslashes($sql_query);
+					}
+					else
+					{
+						include('page_header_admin.'.$phpEx);
+						message_die(GENERAL_ERROR, $lang['Restore_Error_filename']);
+					}
 				}
 				else
 				{
 					include('page_header_admin.'.$phpEx);
-					message_die(GENERAL_ERROR, "Trouble Accessing uploaded file");
+					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
 				$sql_query = trim($sql_query);
