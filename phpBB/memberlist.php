@@ -111,12 +111,12 @@ switch ($mode)
 		}
 
 		// We left join on the session table to see if the user is currently online
-		$sql = "SELECT username, user_id, user_permissions, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
+		$sql = "SELECT username, user_id, user_colour, user_permissions, user_sig, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
 			FROM " . USERS_TABLE . " 
 			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
 			WHERE user_id = $user_id
 				AND user_active = 1
-			GROUP BY username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
+			GROUP BY username, user_id, user_colour, user_permissions, user_sig, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -160,7 +160,6 @@ switch ($mode)
 			GROUP BY f.forum_id, f.forum_name  
 			ORDER BY num_posts DESC"; 
 		$result = $db->sql_query_limit($sql, 1);
-//		AND f.forum_id NOT IN ()
 
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -206,8 +205,6 @@ switch ($mode)
 		$template->assign_vars(show_profile($row));
 
 		$template->assign_vars(array(
-			'USER_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $row['username']), 
-
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
 			'ACTIVE_FORUM'		=> $active_f_name, 
@@ -254,6 +251,7 @@ switch ($mode)
 		{
 			trigger_error($$user->lang['NO_USER']);
 		}
+		$db->sql_freeresult($result);
 
 		// Can we send email to this user?
 		if (empty($row['user_viewemail']) && !$auth->acl_get('a_user'))
@@ -267,16 +265,12 @@ switch ($mode)
 			trigger_error($lang['FLOOD_EMAIL_LIMIT']);
 		}
 
-		$username = $row['username'];
-		$user_email = $row['user_email'];
-		$user_lang = $row['user_lang'];
-
 		// User has submitted a message, handle it
 		if (isset($_POST['submit']))
 		{
 			$error = FALSE;
 
-			if (!empty($_POST['subject']))
+			if (isset($_POST['subject']) && trim($_POST['subject']) != '')
 			{
 				$subject = trim(stripslashes($_POST['subject']));
 			}
@@ -286,7 +280,7 @@ switch ($mode)
 				$error_msg = (!empty($error_msg)) ? $error_msg . '<br />' . $lang['EMPTY_SUBJECT_EMAIL'] : $lang['EMPTY_SUBJECT_EMAIL'];
 			}
 
-			if (!empty($_POST['message']))
+			if (isset($_POST['message']) && trim($_POST['message']) != '')
 			{
 				$message = trim(stripslashes($_POST['message']));
 			}
@@ -304,31 +298,31 @@ switch ($mode)
 				$result = $db->sql_query($sql);
 
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-				$emailer = new emailer($config['smtp_delivery']);
+				$emailer = new emailer();
 
-				$email_headers = 'From: ' . $user->data['user_email'] . "\n";
+				$emailer->use_template('profile_send_email', $row['user_lang']);
+				$emailer->email_address($row['user_email']);
+				$emailer->set_subject($subject);
+
+				$email_headers = '';
 				if (!empty($_POST['cc_email']))
 				{
-					$email_headers .= "Cc: " . $user->data['user_email'] . "\n";
+					$email_headers = "Cc: " . $user->data['user_email'] . "\n";
 				}
-				$email_headers .= 'Return-Path: ' . $user->data['user_email'] . "\n";
 				$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 				$email_headers .= 'X-AntiAbuse: User_id - ' . $user->data['user_id'] . "\n";
 				$email_headers .= 'X-AntiAbuse: Username - ' . $user->data['username'] . "\n";
-				$email_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\r\n";
-
-				$emailer->use_template('profile_send_email', $user_lang);
-				$emailer->email_address($user_email);
-				$emailer->set_subject($subject);
+				$email_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\n";
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
-					'BOARD_EMAIL'	=> $config['board_email'],
-					'FROM_USERNAME' => $userdata['username'],
-					'TO_USERNAME'	=> $username,
+					'BOARD_EMAIL'	=> $config['board_contact'],
+					'FROM_USERNAME' => $user->data['username'],
+					'TO_USERNAME'	=> $row['username'],
 					'MESSAGE'		=> $message)
 				);
+
 				$emailer->send();
 				$emailer->reset();
 
@@ -515,7 +509,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Do the SQL thang
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+		$sql = "SELECT username, user_id, user_colour, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_sig, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
 				$where_sql 
@@ -680,15 +674,17 @@ function show_profile($data)
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
 	$template_vars = array(
-		'USERNAME'		=> $username,
-		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? '' : '', 
-
-		'AVATAR_IMG'	=> $poster_avatar,
+		'USERNAME'		=> $username, 
+		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
+		'SIGNATURE'		=> (!empty($data['user_sig'])) ? $data['user_sig'] : '', 
+
+		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? $user->img('icon_online', $user->lang['USER_ONLINE']) : $user->img('icon_offline', $user->lang['USER_ONLINE']), 
+		'AVATAR_IMG'	=> $poster_avatar,
 		'RANK_IMG'		=> $rank_img,
 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
-		'VISITED'		=> $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
+		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
 		'PM_IMG'		=> $pm_img,
