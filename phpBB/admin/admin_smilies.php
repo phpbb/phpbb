@@ -26,7 +26,7 @@
 //
 // First we do the setmodules stuff for the admin cp.
 //
-if($setmodules == 1)
+if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Smilies'] = $filename;

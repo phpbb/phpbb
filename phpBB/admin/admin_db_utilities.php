@@ -28,7 +28,7 @@
 *	adapted from the unoficial phpMyAdmin 2.2.0.
 ***************************************************************************/
 
-if($setmodules == 1)
+if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";

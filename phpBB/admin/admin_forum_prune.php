@@ -32,7 +32,7 @@
 //First we through in the modules stuff :)
 //
 
-if( $setmodules == 1 )
+if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['Forums']['Prune'] = $filename;

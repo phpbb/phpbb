@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if($setmodules == 1)
+if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename;

@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if($setmodules == 1)
+if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
 	$module['Styles']['Add_new'] = "$file?mode=addnew";

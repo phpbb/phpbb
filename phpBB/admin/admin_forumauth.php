@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if($setmodules == 1)
+if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename;
