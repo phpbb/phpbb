@@ -97,7 +97,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 				AND (session_ip = '$int_ip')";
 		$result = $db->sql_query($sql_update);
 
-//		$affected = $db->sql_affectedrows();
+		$affected = $db->sql_affectedrows();
 
 		if(!$result || !$db->sql_affectedrows())
 		{
@@ -133,10 +133,10 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		{
 			$autologin_key = md5(uniqid(mt_rand()));
 
-			$sql_update = "UPDATE ".USERS_TABLE."
+			$sql_auto = "UPDATE ".USERS_TABLE."
 				SET user_autologin_key = '$autologin_key'
 				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql_update);
+			$result = $db->sql_query($sql_auto);
 			if(!$result)
 			{
 				if(DEBUG)
@@ -155,7 +155,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$sessiondata['sessionstart'] = $current_time;
 		$sessiondata['sessiontime'] = $current_time;
 		$serialised_cookiedata = serialize($sessiondata);
-		setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
+//		header("Set-Cookie: $cookiename=$serialised_cookiedata 
+		setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
@@ -210,7 +211,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			error_die(SESSION_CREATE);
 		}
 	}
-	
+
 	//
 	// Does a session exist?
 	//
@@ -308,7 +309,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					//
 					$sessiondata['sessiontime'] = $current_time;
 					$serialised_cookiedata = serialize($sessiondata);
-					setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 					return $userdata;
 				}
@@ -459,7 +460,7 @@ function session_end($session_id, $user_id)
 	$sessiondata['sessionend'] = $current_time;
 
 	$serialised_cookiedata = serialize($sessiondata);
-	setcookie($cookiename, $serialised_cookiedata, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($cookiename, $serialised_cookiedata, (time()+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
