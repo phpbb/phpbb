@@ -1743,6 +1743,8 @@ switch($folder)
 				AND pm.privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . "
 				AND u.user_id = pm.privmsgs_from_userid ) )";
 		break;
+	default:
+		message_die(GENERAL_ERROR, "Could not query private message information. No folder specified.", "", __LINE__, __FILE__, $sql);
 }
 
 //
