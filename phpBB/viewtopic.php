@@ -725,6 +725,7 @@ do
 		'post_edit_count'	=> $row['post_edit_count'],
 		'post_edit_time'	=> $row['post_edit_time'],
 		'icon_id'			=> $row['icon_id'],
+		'post_attachment'	=> $row['post_attachment'],
 		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
 		'post_text'			=> $row['post_text'],
@@ -1134,7 +1135,7 @@ foreach ($rowset as $i => $row)
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
-		'S_DISPLAY_NOTICE'	=> $display_notice)
+		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'])
 	);
 
 	// Process Attachments for this post
