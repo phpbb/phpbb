@@ -33,13 +33,16 @@ if ($mode == 'register' && $config['require_activation'] == USER_ACTIVATION_DISA
 	trigger_error($user->lang['Cannot_register']);
 }
 
-//
-$error = FALSE;
 
-$page_title = $user->lang['Register'];
+// Load the userdata manipulation methods
+require($phpbb_root_path . 'includes/functions_user.'.$phpEx);
 
 // Class for handling the manipulation of user data
 $userdata = new userdata();
+
+$error = FALSE;
+
+$page_title = $user->lang['Register'];
 
 if ($mode == 'register')
 {
