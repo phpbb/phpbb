@@ -127,4 +127,35 @@ function make_jumpbox($db, $phpEx)
    return($boxstring);
 }
 
+function get_moderators($db, $forum_id)
+{
+   $sql = "SELECT u.username, u.user_id FROM " . FORUM_MODS_TABLE ." f, " . USERS_TABLE . " u
+           WHERE f.forum_id = '$forum_id' AND u.user_id = f.user_id";
+   if($result = $db->sql_query($sql))
+     {
+	if($total_mods = $db->sql_numrows($result))
+	  {
+	     $rowset = $db->sql_fetchrowset($result);
+	     for($x = 0; $x < $total_mods; $x++)
+	       {
+		  $modArray[] = array("id" => $rowset[$x]["user_id"],
+				      "name" => $rowset[$x]["username"]);
+	       }
+	  }
+	else 
+	  {
+	     $modArray[] = array("id" => "-1",
+				 "name" => "ERROR");
+	  }
+
+     }
+   else
+     {
+	$modArray[] = array("id" => "-1",
+			    "name" => "ERROR");
+     }
+   
+   return($modArray);
+}
+
 ?>

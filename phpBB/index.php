@@ -69,40 +69,54 @@ if($total_categories)
 		{
 			if($forum_rows[$j]["cat_id"] == $category_rows[$i]["cat_id"])
 			{
-				$folder_image = "<img src=\"images/folder.gif\">";
-				$posts = $forum_rows[$j]["forum_posts"];
-				$topics = $forum_rows[$j]["forum_topics"];
-				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0){
-					$last_post_user = $forum_rows[$j]["username"];
-					$last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
-					$last_post = $last_post_time." by ".$last_post_user;
-				}
-				else
-				{
-					$last_post = "No Posts";
-				}
-
-				$moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";
-				if($row_color == "#DDDDDD")
-				{
-					$row_color = "#CCCCCC";
-				}
-				else
-				{
-					$row_color = "#DDDDDD";
-				}
-				$template->set_var(array("FOLDER" => $folder_image,
-					"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
-					"FORUM_ID" => $forum_rows[$j]["forum_id"],
-					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
-					"ROW_COLOR" => $row_color,
-					"PHPEX" => $phpEx,
-					"POSTS" => $posts,
-					"TOPICS" => $topics,
-					"LAST_POST" => $last_post,
-					"MODERATORS" => $moderators));
-
-				$template->parse("forums", "forumrow", true);
+			   $folder_image = "<img src=\"images/folder.gif\">";
+			   $posts = $forum_rows[$j]["forum_posts"];
+			   $topics = $forum_rows[$j]["forum_topics"];
+			   if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0){
+			      $last_post_user = $forum_rows[$j]["username"];
+			      $last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
+			      $last_post = $last_post_time." by ".$last_post_user;
+			   }
+			   else
+			     {
+				$last_post = "No Posts";
+			     }
+			   
+			   $moderators = get_moderators($db, $forum_rows[$j]["forum_id"]);
+			   unset($moderators_links);
+			   for($mods = 0; $mods < count($moderators); $mods++)
+			     {
+				if(isset($moderators_links))
+				   {
+				      $moderators_links .= ", ";
+				   }
+				if(!($mods % 2) && $mods != 0)
+				  {
+				     $moderators_links .= "<br>";
+				  }
+				$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$moderators[$mods]["id"]."\">".$moderators[$mods]["name"]."</a>";
+			     }
+			       
+			   if($row_color == "#DDDDDD")
+			     {
+				$row_color = "#CCCCCC";
+			     }
+			   else
+			     {
+				$row_color = "#DDDDDD";
+			     }
+			   $template->set_var(array("FOLDER" => $folder_image,
+						    "FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
+						    "FORUM_ID" => $forum_rows[$j]["forum_id"],
+						    "FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
+						    "ROW_COLOR" => $row_color,
+						    "PHPEX" => $phpEx,
+						    "POSTS" => $posts,
+						    "TOPICS" => $topics,
+						    "LAST_POST" => $last_post,
+						    "MODERATORS" => $moderators_links));
+			   
+			   $template->parse("forums", "forumrow", true);
 			} // if ... then
 		} // for total forums
 		$template->parse("cats", "forums", true);
