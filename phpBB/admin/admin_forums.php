@@ -52,6 +52,15 @@ function get_info($mode, $id)
 			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
 			break;
 	}
+	$sql = "SELECT count(*) as total
+		FROM $table";
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
+	}
+	$count = $db->sql_fetchrow($result);
+	$count = $count['total'];
+
 
 	$sql = "SELECT *
 		FROM $table
@@ -66,7 +75,9 @@ function get_info($mode, $id)
 		message_die(GENERAL_ERROR, "Forum/Category doesn't exist or multiple forums/categories with ID $id", "", __LINE__, __FILE__);
 	}
 
-	return $db->sql_fetchrow($result);
+	$return = $db->sql_fetchrow($result);
+	$return['number'] = $count;
+	return $return;
 }
 
 function get_list($mode, $id, $select)
@@ -432,8 +443,10 @@ if(isset($mode))  // Are we supposed to do something?
 		case 'deleteforum':
 			// Show form to delete a forum
 			$forum_id = $HTTP_GET_VARS['forum_id'];
-			$to_ids = "<option value=\"-1\"$s>Delete all posts</option>\n";
-			$to_ids .= get_list('forum', $forum_id, 0);
+			$select_to = '<select name="to_id">';
+			$select_to .= "<option value=\"-1\"$s>Delete all posts</option>\n";
+			$select_to .= get_list('forum', $forum_id, 0);
+			$select_to .= '</select>';
 			$buttonvalue = "Move&Delete";
 			$newmode = 'movedelforum';
 			$foruminfo = get_info('forum', $forum_id);
@@ -446,7 +459,7 @@ if(isset($mode))  // Are we supposed to do something?
 				'NAME' => $name,
 				'S_FORUM_ACTION' => $PHP_SELF,
 				'S_FROM_ID' => $forum_id,
-				'S_TO_IDS' => $to_ids,
+				'S_SELECT_TO' => $select_to,
 				'S_NEWMODE' => $newmode,
 				'BUTTONVALUE' => $buttonvalue)
 			);
@@ -509,11 +522,37 @@ if(isset($mode))  // Are we supposed to do something?
 		case 'deletecat':
 			// Show form to delete a category
 			$cat_id = $HTTP_GET_VARS['cat_id'];
-			$to_ids = get_list('category', $cat_id, 0);
 			$buttonvalue = "Move&Delete";
 			$newmode = 'movedelcat';
 			$catinfo = get_info('category', $cat_id);
 			$name = $catinfo['cat_title'];
+
+			if ($catinfo['number'] == 1)
+			{
+				$sql = "SELECT count(*) as total
+					FROM ". FORUMS_TABLE;
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't get Forum count", "", __LINE__, __FILE__, $sql);
+				}
+				$count = $db->sql_fetchrow($result);
+				$count = $count['total'];
+				print "count = $count";
+				if ($count > 0)
+				{
+					message_die(GENERAL_ERROR, "You need to delete all forums before you can delete this category");
+				}
+				else
+				{
+					$select_to = 'Nowhere to move';
+				}
+			}
+			else
+			{
+				$select_to = '<select name="to_id">';
+				$select_to .= get_list('category', $cat_id, 0);
+				$select_to .= '</select>';
+			}
 
 			$template->set_filenames(array(
 				"body" => "admin/forum_delete_body.tpl")
@@ -522,7 +561,7 @@ if(isset($mode))  // Are we supposed to do something?
 				'NAME' => $name,
 				'S_FORUM_ACTION' => $PHP_SELF,
 				'S_FROM_ID' => $cat_id,
-				'S_TO_IDS' => $to_ids,
+				'S_SELECT_TO' => $select_to,
 				'S_NEWMODE' => $newmode,
 				'BUTTONVALUE' => $buttonvalue)
 			);
@@ -534,24 +573,27 @@ if(isset($mode))  // Are we supposed to do something?
 			$from_id = $HTTP_POST_VARS['from_id'];
 			$to_id = $HTTP_POST_VARS['to_id'];
 
-			$sql = "SELECT *
-				FROM " . CATEGORIES_TABLE . "
-				WHERE cat_id IN ($from_id, $to_id)";
-			if( !$result = $db->sql_query($sql) )
+			if (isset($to_id))
 			{
-				message_die(GENERAL_ERROR, "Couldn't verify existence of categories", "", __LINE__, __FILE__, $sql);
-			}
-			if($db->sql_numrows($result) != 2)
-			{
-				message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
-			}
+				$sql = "SELECT *
+					FROM " . CATEGORIES_TABLE . "
+					WHERE cat_id IN ($from_id, $to_id)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't verify existence of categories", "", __LINE__, __FILE__, $sql);
+				}
+				if($db->sql_numrows($result) != 2)
+				{
+					message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
+				}
 
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET cat_id = $to_id
-				WHERE cat_id = $from_id";
-			if( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
+				$sql = "UPDATE " . FORUMS_TABLE . "
+					SET cat_id = $to_id
+					WHERE cat_id = $from_id";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
+				}
 			}
 
 			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
@@ -643,7 +685,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 	if( !$total_forums = $db->sql_numrows($q_forums) )
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_forums']);
+		// We don't have any forums
+		
 	}
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
@@ -656,13 +699,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 	for($i = 0; $i < $total_categories; $i++)
 	{
 		$cat_id = $category_rows[$i]['cat_id'];
-
-		for($j = 0; $j < $total_forums; $j++)
-		{
-			$forum_id = $forum_rows[$j]['forum_id'];
-
-			if(!$gen_cat[$cat_id])
-			{
 				$template->assign_block_vars("catrow", array(
 					"CAT_ID" => $cat_id,
 					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
@@ -674,13 +710,11 @@ if($total_categories = $db->sql_numrows($q_categories))
 					"U_ADDFORUM" => append_sid("$PHP_SELF?mode=addforum&cat_id=$cat_id"),
 					"ADDFORUM" => "Add Forum")
 				);
-				$gen_cat[$cat_id] = 1;
-			}
-			if( $forum_rows[$j]['cat_id'] != $cat_id)
-			{
-				continue;
-			}
 
+		for($j = 0; $j < $total_forums; $j++)
+		{
+			$forum_id = $forum_rows[$j]['forum_id'];
+			
 			//
 			// This should end up in the template using IF...ELSE...ENDIF
 			//
@@ -709,20 +743,15 @@ if($total_categories = $db->sql_numrows($q_categories))
 			"S_ADDFORUM_ENDFORM" => "</FORM>")
 		);
 	} // for ... categories
-	// Extra 'category' to create new categories at the end of the list.
-	$template->assign_block_vars("catrow", array(
-		"S_ADDCAT" => '<FORM METHOD="POST" ACTION="'.append_sid($PHP_SELF).'">
-				<INPUT TYPE="text" NAME="catname">
-				<INPUT TYPE="hidden" NAME="mode" VALUE="addcat">
-				<INPUT TYPE="submit" NAME="submit" VALUE="Create new category">',
-		"S_ADDCAT_ENDFORM" => "</FORM>")
-	);
-
 }// if ... total_categories
-else
-{
-	message_die(GENERAL_MESSAGE, "There are no Categories or Forums on this board", "", __LINE__, __FILE__, $sql);
-}
+$template->assign_block_vars("catrow", array(
+	"S_ADDCAT" => '<FORM METHOD="POST" ACTION="'.append_sid($PHP_SELF).'">
+			<INPUT TYPE="text" NAME="catname">
+			<INPUT TYPE="hidden" NAME="mode" VALUE="addcat">
+			<INPUT TYPE="submit" NAME="submit" VALUE="Create new category">',
+	"S_ADDCAT_ENDFORM" => "</FORM>")
+);
+
 
 //
 // Generate the page
