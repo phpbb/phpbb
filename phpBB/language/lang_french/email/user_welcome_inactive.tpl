@@ -1,5 +1,3 @@
-Subject: Bienvenue sur les Forums {SITENAME}
-
 {WELCOME_MSG}
 
 Veuillez conserver cet email dans vos archives. Les informations concernant votre compte:

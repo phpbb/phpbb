@@ -1,4 +1,4 @@
-Subject: Activation d'un nouveau mot de passe
+Subject: Activation du nouveau mot de passe
 
 Bonjour {USERNAME}
 

@@ -47,7 +47,7 @@ $lang['Disallow'] = "Interdire un nom d'utilisateur";
 $lang['Prune'] = "Délester";
 $lang['Mass_Email'] = "Email de Masse";
 $lang['Ranks'] = "Rangs";
-$lang['Smilies'] = "Emoticons";
+$lang['Smilies'] = "Smilies";
 $lang['Ban_Management'] = "Contrôle du bannissement";
 $lang['Word_Censor'] = "Censure";
 $lang['Export'] = "Exporter";
@@ -543,6 +543,7 @@ $lang['No_assigned_rank'] = "Aucun rang spécial assigné";
 $lang['Rank_updated'] = "Le rang a été mis à jour avec succès";
 $lang['Rank_added'] = "Le rang a été ajouté avec succès";
 $lang['Rank_removed'] = "Le rang a été supprimé avec succès";
+$lang['No_update_ranks'] = "Le rang a été supprimé avec succès, toutefois, les comptes des utilisateurs n'ont pas été mis à jour. Vous devrez remettre à zéro manuellement leur rang.";
 
 $lang['Click_return_rankadmin'] = "Cliquez %sici%s pour revenir à l'Administration des Rangs";
 

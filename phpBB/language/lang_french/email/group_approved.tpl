@@ -1,4 +1,4 @@
-Subject: Votre requête a été approuvée
+Subject: Votre demande a été approuvée
 
 Félicitations,
 

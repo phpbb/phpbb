@@ -1,4 +1,4 @@
-Subject: Un Nouveau Message Privé vient d'arriver
+Subject: Un nouveau message privé vient d'arriver
 
 Hello {USERNAME},
 

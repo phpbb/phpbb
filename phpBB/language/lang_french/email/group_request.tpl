@@ -1,4 +1,4 @@
-Subject: Une requête d'adhésion à votre groupe a été faites
+Subject: Une demande pour rejoindre votre groupe a été formulée
 
 Cher {GROUP_MODERATOR},
 

@@ -25,11 +25,23 @@
 //
 
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
+
 // setlocale(LC_ALL, "fr");
 $lang['ENCODING'] = "ISO-8859-1";
-$lang['DIRECTION'] = "ltr"; // do not translate this, it's the Left to Right direction of text
-$lang['LEFT'] = "left"; // do not translate this, it's the normal 'left' direction of text
-$lang['RIGHT'] = "right"; // do not translate this, it's the normal 'right' direction of text
+$lang['DIRECTION'] = "LTR";
+$lang['LEFT'] = "GAUCHE";
+$lang['RIGHT'] = "DROITE";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 
@@ -275,7 +287,7 @@ $lang['Edited_time_total'] = "Dernière édition par %s le %s, édité %d fois"; // 
 $lang['Edited_times_total'] = "Dernière édition par %s le %s, édité %d fois"; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
 $lang['Lock_topic'] = "Verrouiller le sujet";
-$lang['Unlock_topic'] = "Dévérouiller le sujet";
+$lang['Unlock_topic'] = "Déverrouiller le sujet";
 $lang['Move_topic'] = "Déplacer le sujet";
 $lang['Delete_topic'] = "Supprimer le sujet";
 $lang['Split_topic'] = "Diviser le sujet";
@@ -346,8 +358,8 @@ $lang['HTML_is_ON'] = "Le HTML est <u>Activé</u>";
 $lang['HTML_is_OFF'] = "Le HTML est <u>Désactivé</u>";
 $lang['BBCode_is_ON'] = "Le %sBBCode%s est <u>Activé</u>"; // %s are replaced with URI pointing to FAQ
 $lang['BBCode_is_OFF'] = "Le %sBBCode%s est <u>Désactivé</u>";
-$lang['Smilies_are_ON'] = "Les Smilies sont <u>Activé</u>";
-$lang['Smilies_are_OFF'] = "Les Smilies sont <u>Désactivé</u>";
+$lang['Smilies_are_ON'] = "Les Smilies sont <u>Activés</u>";
+$lang['Smilies_are_OFF'] = "Les Smilies sont <u>Désactivés</u>";
 
 $lang['Attach_signature'] = "Attacher sa signature (les signatures peuvent être modifiées dans le profil)";
 $lang['Notify'] = "M'avertir lorsqu'une réponse est postée";
@@ -539,7 +551,7 @@ $lang['Date_format'] = "Format de la date";
 $lang['Date_format_explain'] = "La syntaxe utilisée est identique à la fonction <a href=\"http://www.php.net/manual/fr/function.date.php\" target=\"_other\">date()</a> du PHP";
 $lang['Signature'] = "Signature";
 $lang['Signature_explain'] = "Ceci est un bloc de texte qui peut être ajouté aux messages que vous postez. Il y a une limite de %d caractères";
-$lang['Public_view_email'] = "Toujours montrer mon Adresse Email";
+$lang['Public_view_email'] = "Toujours montrer son Adresse email";
 
 $lang['Current_password'] = "Mot de passe actuel";
 $lang['New_password'] = "Nouveau mot de passe";
@@ -552,12 +564,12 @@ $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Affiche une petite image au-dessous de vos détails dans vos messages. Seule une image peut être affichée à la fois, sa largeur ne peut pas dépasser %d pixels, sa hauteur %d pixels et la taille du fichier, pas plus de %dKo."; $lang['Upload_Avatar_file'] = "Envoyer l'Avatar depuis votre ordinateur";
 $lang['Upload_Avatar_URL'] = "Envoyer l'Avatar à partir d'une URL";
 $lang['Upload_Avatar_URL_explain'] = "Entrez l'URL de l'image Avatar, elle sera copiée sur ce site.";
-$lang['Pick_local_Avatar'] = "Sélectionner un Avatar de la Gallerie";
+$lang['Pick_local_Avatar'] = "Sélectionner un Avatar de la Galerie";
 $lang['Link_remote_Avatar'] = "Lier l'Avatar à partir d'un autre site";
 $lang['Link_remote_Avatar_explain'] = "Entrez l'URL de l'image Avatar que vous voulez lier.";
 $lang['Avatar_URL'] = "URL de l'Image Avatar";
-$lang['Select_from_gallery'] = "Sélectionner un Avatar à partir de la Gallerie";
-$lang['View_avatar_gallery'] = "Montrer la Gallerie";
+$lang['Select_from_gallery'] = "Sélectionner un Avatar à partir de la Galerie";
+$lang['View_avatar_gallery'] = "Montrer la Galerie";
 
 $lang['Select_avatar'] = "Sélectionner l'avatar";
 $lang['Return_profile'] = "Annuler l'avatar";
@@ -602,10 +614,10 @@ $lang['Reactivate'] = "Réactivez votre compte !";
 $lang['COPPA'] = "Votre compte a été créé, mais il doit être approuvé, veuillez vérifier votre boîte email pour plus de détails.";
 
 $lang['Registration'] = "Enregistrement - Règlement";
-$lang['Reg_agreement'] = "Les administrateurs et modérateurs de ce forum s'efforceront de supprimer ou éditer tous les messages à caractère répréhensible aussi rapidement que possible, toutefois, il leur est impossible de passer en revue tous les messages. Vous admettez donc que tous les messages postés sur ces forums expriment la vue et opinion de leurs auteurs respectifs, et non pas des administrateurs, ou modérateurs, ou webmestres (excepté les messages postés par ceux-ci) et par conséquent ne peuvent pas être tenus pour responsables.<br /><br />Vous consentez à ne pas poster de messages injurieux, obscènes, vulgaires, diffamatoires, menaçants, sexuels ou tout autre message qui violerait les lois applicables. Le faire peut vous conduire à être banni immédiatement de façon permanente (et votre fournisseur d'accès à internet en sera informé). L'adresse IP de chaque message est enregistrée afin d'aider à faire respecter ces conditions. Vous êtes d'accord sur le fait que le webmestre, l'administrateur et les modérateurs ce de forum ont le droit de supprimer, éditer, déplacer ou verrouiller n'importe quel sujet de discussion à tout moment. En tant qu'utilisateur, vous êtes d'accord sur le fait que toutes les informations que vous donnerez ci-après seront stockées dans une base de données. Cependant, ces informations ne seront divulguées à aucune tierce personne ou société sans votre accord. Le webmestre, l'administrateur, et les modérateurs ne peuvent pas être tenus pour responsables si une tentative de piratage informatique conduit à l'accès de ces données.<br /><br />Ce forum utilise les cookies pour stocker des informations sur votre ordinateur. Ces cookies ne contiendront aucune information que vous aurez entré ci-après, ils servent uniquement à améliorer le confort d'utilisation. L'adresse email est uniquement utilisée afin de confirmer les détails de votre enregistrement ainsi que votre mot de passe (et aussi pour vous envoyer un nouveau mot de passe dans la cas où vous l'oubliriez).<br /><br />En vous enregistrant, vous vous portez garant du fait d'être en accord avec le règlement ci-dessus.";
+$lang['Reg_agreement'] = "Les administrateurs et modérateurs de ce forum s'efforceront de supprimer ou éditer tous les messages à caractère répréhensible aussi rapidement que possible. Toutefois, il leur est impossible de passer en revue tous les messages. Vous admettez donc que tous les messages postés sur ces forums expriment la vue et opinion de leurs auteurs respectifs, et non pas des administrateurs, ou modérateurs, ou webmestres (excepté les messages postés par eux-même) et par conséquent ne peuvent pas être tenus pour responsables.<br /><br />Vous consentez à ne pas poster de messages injurieux, obscènes, vulgaires, diffamatoires, menaçants, sexuels ou tout autre message qui violerait les lois applicables. Le faire peut vous conduire à être banni immédiatement de façon permanente (et votre fournisseur d'accès à internet en sera informé). L'adresse IP de chaque message est enregistrée afin d'aider à faire respecter ces conditions. Vous êtes d'accord sur le fait que le webmestre, l'administrateur et les modérateurs de ce forum ont le droit de supprimer, éditer, déplacer ou verrouiller n'importe quel sujet de discussion à tout moment. En tant qu'utilisateur, vous êtes d'accord sur le fait que toutes les informations que vous donnerez ci-après seront stockées dans une base de données. Cependant, ces informations ne seront divulguées à aucune tierce personne ou société sans votre accord. Le webmestre, l'administrateur, et les modérateurs ne peuvent pas être tenus pour responsables si une tentative de piratage informatique conduit à l'accès de ces données.<br /><br />Ce forum utilise les cookies pour stocker des informations sur votre ordinateur. Ces cookies ne contiendront aucune information que vous aurez entré ci-après, ils servent uniquement à améliorer le confort d'utilisation. L'adresse email est uniquement utilisée afin de confirmer les détails de votre enregistrement ainsi que votre mot de passe (et aussi pour vous envoyer un nouveau mot de passe dans la cas où vous l'oublieriez).<br /><br />En vous enregistrant, vous vous portez garant du fait d'être en accord avec le règlement ci-dessus.";
 
 $lang['Agree_under_13'] = "J'accepte le règlement et j'ai <b>moins</b> de 13 ans";
-$lang['Agree_over_13'] = "J'accepte le règlement et j'ai <b>plus</b> 13 ans";
+$lang['Agree_over_13'] = "J'accepte le règlement et j'ai <b>plus</b> de 13 ans";
 $lang['Agree_not'] = "Je n'accepte pas le règlement";
 
 $lang['Wrong_activation'] = "La clef d'activation que vous avez fournie ne correspond pas à celle de la base de données";
@@ -619,8 +631,8 @@ $lang['Send_email_msg'] = "Envoyer un message email";
 $lang['No_user_specified'] = "Aucun utilisateur spécifié";
 $lang['User_prevent_email'] = "Cet utilisateur ne souhaite pas recevoir d'email. Essayez de lui envoyer un message privé";
 $lang['User_not_exist'] = "Cet utilisateur n'existe pas";
-$lang['CC_email'] = "Envoyer une copie de cet email à vous-même";
-$lang['Email_message_desc'] = "Ce message sera envoyé en texte plein, n'insérez aucun code HTML ou BBCode. L'adresse de retour pour ce message sera dirigée vers votre adresse email.";
+$lang['CC_email'] = "Envoyer une copie de cet email à soi-même";
+$lang['Email_message_desc'] = "Ce message sera envoyé en texte plein, n'insérez aucun code HTML ou BBCode. L'adresse de réponse pour ce message sera celle de votre email.";
 $lang['Flood_email_limit'] = "Vous ne pouvez pas envoyer un autre email pour le moment, essayez plus tard";
 $lang['Recipient'] = "Destinataire";
 $lang['Email_sent'] = "L'email a été envoyé";
@@ -693,10 +705,10 @@ $lang['Confirm_unsub_pending'] = "Votre inscription à ce groupe n'a pas encore é
 
 $lang['Unsub_success'] = "Vous avez été désinscrit de ce groupe.";
 
-$lang['Approve_selected'] = "Approuver la Sélection";
-$lang['Deny_selected'] = "Refusé la Sélection";
+$lang['Approve_selected'] = "Approuver la sélection";
+$lang['Deny_selected'] = "Refuser la sélection";
 $lang['Not_logged_in'] = "Vous devez être connecté pour joindre un groupe.";
-$lang['Remove_selected'] = "Enlever la Sélection";
+$lang['Remove_selected'] = "Supprimer la sélection";
 $lang['Add_member'] = "Ajouter le Membre";
 $lang['Not_group_moderator'] = "Vous n'êtes pas le modérateur de ce groupe, vous ne pouvez donc pas accomplir cette action.";
 
@@ -813,13 +825,13 @@ $lang['Viewing_FAQ'] = "Regarde la FAQ";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Panneau de Contrôle de Modération";
-$lang['Mod_CP_explain'] = "En utilisant le formulaire ci-dessous, vous pouvez accomplir des opérations de modération de masse sur ce forum. Vous pouvez vérouiller, dévérouiller, déplacer ou supprimer n'importe quel nombre de sujets.";
+$lang['Mod_CP_explain'] = "En utilisant le formulaire ci-dessous, vous pouvez accomplir des opérations de modération de masse sur ce forum. Vous pouvez verrouiller, déverrouiller, déplacer ou supprimer n'importe quel nombre de sujets.";
 
 $lang['Select'] = "Sélectionner";
 $lang['Delete'] = "Supprimer";
 $lang['Move'] = "Déplacer";
-$lang['Lock'] = "Vérouiller";
-$lang['Unlock'] = "Dévérouiller";
+$lang['Lock'] = "Verrouiller";
+$lang['Unlock'] = "Déverrouiller";
 
 $lang['Topics_Removed'] = "Les sujets sélectionnés ont été retirés de la base de données avec succès.";
 $lang['Topics_Locked'] = "Les sujets sélectionnés ont été verrouillés";
@@ -828,8 +840,8 @@ $lang['Topics_Unlocked'] = "Les sujets sélectionnés ont été déverrouillés";
 $lang['No_Topics_Moved'] = "Aucun sujet n'a été déplacé";
 
 $lang['Confirm_delete_topic'] = "Etes-vous sûr de vouloir supprimer le(s) sujet(s) sélectionné(s) ?";
-$lang['Confirm_lock_topic'] = "Etes-vous sûr de vouloir vérouiller le(s) sujet(s) sélectionné(s) ?";
-$lang['Confirm_unlock_topic'] = "Etes-vous sûr de vouloir dévérouiller le(s) sujet(s) sélectionné(s) ?";
+$lang['Confirm_lock_topic'] = "Etes-vous sûr de vouloir verrouiller le(s) sujet(s) sélectionné(s) ?";
+$lang['Confirm_unlock_topic'] = "Etes-vous sûr de vouloir déverrouiller le(s) sujet(s) sélectionné(s) ?";
 $lang['Confirm_move_topic'] = "Etes-vous sûr de vouloir déplacer le(s) sujet(s) sélectionné(s) ?";
 
 $lang['Move_to_forum'] = "Déplacer vers le forum";
@@ -869,7 +881,7 @@ $lang['-7'] = "MST (U.S./Canada)";
 $lang['-6'] = "CST (U.S./Canada)";
 $lang['-5'] = "EST (U.S./Canada)";
 $lang['-4'] = "GMT - 4 Heures";
-$lang['-3.5'] = "GMT - 3.5 Heures";
+$lang['-3.5'] = "GMT - 3,5 Heures";
 $lang['-3'] = "GMT - 3 Heures";
 $lang['-2'] = "Mid-Atlantic";
 $lang['-1'] = "GMT - 1 Heure";
@@ -877,12 +889,13 @@ $lang['0'] = "GMT";
 $lang['1'] = "CET (Europe)";
 $lang['2'] = "EET (Europe)";
 $lang['3'] = "GMT + 3 Heures";
-$lang['3.5'] = "GMT + 3.5 Heures";
+$lang['3.5'] = "GMT + 3,5 Heures";
 $lang['4'] = "GMT + 4 Heures";
-$lang['4.5'] = "GMT + 4.5 Heures";
+$lang['4.5'] = "GMT + 4,5 Heures";
 $lang['5'] = "GMT + 5 Heures";
-$lang['5.5'] = "GMT + 5.5 Heures";
+$lang['5.5'] = "GMT + 5,5 Heures";
 $lang['6'] = "GMT + 6 Heures";
+$lang['6.5'] = "GMT + 6.5 Heures";
 $lang['7'] = "GMT + 7 Heures";
 $lang['8'] = "WST (Australie)";
 $lang['9'] = "GMT + 9 Heures";
@@ -938,7 +951,7 @@ $lang['datetime']['Wed'] = "Mer";
 $lang['datetime']['Thu'] = "Jeu";
 $lang['datetime']['Fri'] = "Ven";
 $lang['datetime']['Sat'] = "Sam";
-$lang['datetime']['January'] = "Janiver";
+$lang['datetime']['January'] = "Janvier";
 $lang['datetime']['February'] = "Février";
 $lang['datetime']['March'] = "Mars";
 $lang['datetime']['April'] = "Avril";
@@ -957,7 +970,7 @@ $lang['datetime']['Apr'] = "Avr";
 $lang['datetime']['May'] = "Mai";
 $lang['datetime']['Jun'] = "Juin";
 $lang['datetime']['Jul'] = "Juil";
-$lang['datetime']['Aug'] = "Auo";
+$lang['datetime']['Aug'] = "Aôu";
 $lang['datetime']['Sep'] = "Sep";
 $lang['datetime']['Oct'] = "Oct";
 $lang['datetime']['Nov'] = "Nov";
@@ -977,7 +990,7 @@ $lang['A_critical_error'] = "Une Erreur Critique est Survenue";
 
 
 // Translator credit 
-$lang['TRANSLATION_INFO'] = "Traduction par : <a href=\"http://www.phpbb-fr.com/\" target=\"_blank\">Helix</a>";
+$lang['TRANSLATION_INFO'] = "Traduction par : <a href=\"http://www.phpbb-fr.com/\" target=\"_blank\">phpBB-fr.com</a>";
 
 //
 // That's all Folks!

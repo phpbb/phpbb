@@ -1,4 +1,4 @@
-Subject: Vous avez été rajouté à ce groupe d'utilisateurs
+Subject: Vous avez été ajouté à un groupe
 
 Félicitations,
 

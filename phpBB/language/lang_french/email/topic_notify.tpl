@@ -1,4 +1,4 @@
-Subject: Notification de Réponse au Sujet - {TOPIC_TITLE}
+Subject: Notification de réponse au sujet - {TOPIC_TITLE}
 
 Bonjour {USERNAME},
 

@@ -1,4 +1,4 @@
-Subject: Réactivez votre compte !
+Subject: Réactivez votre compte
 
 Bonjour {USERNAME},
 
