@@ -38,12 +38,14 @@
 //
 // CRITICAL_MESSAGE -> Only currently used to announce a user
 // has been banned, can be used where session results cannot
-// be relied upon to exist
+// be relied upon to exist but we can and do assume that basic
+// board configuration data is available
 //
 // CRITICAL_ERROR -> Used whenever a DB connection cannot be
-// guaranteed and/or sessions have failed. Shouldn't be used
-// in general pages/functions (it results in a simple echo'd
-// statement, no templates are used)
+// guaranteed and/or we've been unable to obtain basic board 
+// configuration data. Shouldn't be used in general
+// pages/functions (it results in a simple echo'd statement, 
+// no templates are used)
 //
 function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "") 
 {
@@ -64,23 +66,26 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 	//
 	if( !defined("HEADER_INC") && $msg_code != CRITICAL_ERROR )
 	{
-		if( !empty($board_config['default_lang']) )
+		if( empty($lang) )
 		{
-			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
-		}
-		else
-		{
-			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+			if( !empty($board_config['default_lang']) )
+			{
+				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+			}
+			else
+			{
+				include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+			}
 		}
 
 		if( empty($template) )
 		{
-			$template = new Template($phpbb_root_path . "templates/Default");
+			$template = new Template($phpbb_root_path . "templates/" . $board_config['default_template']);
 		}
 
 		if( empty($theme) )
 		{
-			$theme = setuptheme(1);
+			$theme = setuptheme($board_config['default_theme']);
 		}
 
 		//
