@@ -31,88 +31,89 @@
  * TRUE if the user authorized
  * FALSE if the user is not
  */
-function auth($type, 
-	      $db,
-	      $user_id = "", 
-	      $user_name = "", 
-	      $user_pass = "", 
-	      $user_level = "", 
-	      $session_id = "", 
-	      $user_ip = "", 
-	      $forum_id = "", 
-	      $topic_id = "", 
-	      $post_id = "") 
+function auth($type, $db, $id = "", $user_ip = "")
 {
+   global $userdata;
    switch($type) 
      {
       case 'ip ban':
-			$sql = "DELETE FROM ".BANLIST_TABLE." 
-				 WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).") 
-				 AND (ban_end > 0)";
-			$db->sql_query($sql);
-			$sql = "SELECT ban_ip FROM ".BANLIST_TABLE;
-			if($result = $db->sql_query($sql)) 
-			  {
-				  if($totalrows = $db->sql_numrows()) 
-					 {
-				  $iprow = $db->sql_fetchrowset($result);
-				  for($x = 0; $x < $totalrows; $x++)
-					 {
-						 $ip = $iprow[$x]["ban_ip"];
-						 if($ip[strlen($ip) - 1] == ".") 
-					 {
-						 $db_ip = explode(".", $ip);
-						 $this_ip = explode(".", $user_ip);
-						 
-						 for($x = 0; $x < count($db_ip) - 1; $x++)
-							{
-						 $my_ip .= $this_ip[$x] . ".";
-							}
-						 
-						 if($my_ip == $ip)
-							{
-						 return(FALSE);
-							}
-					 }
-						 else 
-					 {
-						 if($ipuser == $ip)
-							{
-						 return(FALSE);
-							}
-					 }
-					 }
-				  return(TRUE);
-					 }
-				  else
-					 {
-				  return(TRUE);
-					 }
-			  }
-			return(TRUE);
-			break;
+	$sql = "DELETE FROM ".BANLIST_TABLE." 
+	        WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).") 
+		AND (ban_end > 0)";
+	$db->sql_query($sql);
+	$sql = "SELECT ban_ip FROM ".BANLIST_TABLE;
+	if($result = $db->sql_query($sql)) 
+	  {
+	     if($totalrows = $db->sql_numrows($result))
+	       {
+		  $iprow = $db->sql_fetchrowset($result);
+		  for($x = 0; $x < $totalrows; $x++)
+		    {
+		       $ip = $iprow[$x]["ban_ip"];
+		       if($ip[strlen($ip) - 1] == ".") 
+			 {
+			    $db_ip = explode(".", $ip);
+			    $this_ip = explode(".", $user_ip);
+			    
+			    for($x = 0; $x < count($db_ip) - 1; $x++)
+			      {
+				 $my_ip .= $this_ip[$x] . ".";
+			      }
+			    
+			    if($my_ip == $ip)
+			      {
+				 return(FALSE);
+			      }
+			 }
+		       else 
+			 {
+			    if($ipuser == $ip)
+			      {
+				 return(FALSE);
+			      }
+			 }
+		    }
+		  return(TRUE);
+	       }
+	     else
+	       {
+		  return(TRUE);
+	       }
+	  }
+	return(TRUE);
+	break;
       case 'username ban':
-			$sql = "DELETE FROM ".BANLIST_TABLE."
-				WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).")
-				AND (ban_end > 0)";
-			$db->sql_query($sql);
-			$sql = "SELECT ban_userid FROM ".BANLIST_TABLE." WHERE ban_userid = '$user_id'";
-			if($result = $db->sql_query($sql)) 
-			  {
-				if($db->sql_numrows())
-					 {
-				  return(FALSE);
-					 }
-				  else
-					 {
-				  return(TRUE);
-					 }
-			  }
-			else
-			  {
-				  return(TRUE);
-			  }
-			break;
+	$sql = "DELETE FROM ".BANLIST_TABLE."
+		WHERE (ban_end < ". mktime(date("H"), date("i"), date("s"), date("m"), date("d"), date("Y")).")
+		AND (ban_end > 0)";
+	$db->sql_query($sql);
+	$sql = "SELECT ban_userid FROM ".BANLIST_TABLE." WHERE ban_userid = '$user_id'";
+	if($result = $db->sql_query($sql)) 
+	  {
+	     if($db->sql_numrows($result))
+	       {
+		  return(FALSE);
+	       }
+	     else
+	       {
+		  return(TRUE);
+	       }
+	  }
+	else
+	  {
+	     return(TRUE);
+	  }
+	break;
+      case 'login':
+	global $password;
+	if($userdata["user_password"] != md5($password))
+	  {
+	     return(FALSE);
+	  }
+	else
+	  {
+	     return(TRUE);
+	  }
      }
 }
 

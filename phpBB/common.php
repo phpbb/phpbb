@@ -70,7 +70,7 @@ else
 }
 
 // Check if user is banned
-if(!auth("ip ban", $db, "", "", "", "", "", USER_IP, "", "", "")) 
+if(!auth("ip ban", $db, "", USER_IP))
 {
 	error_die($db, BANNED);
 }
@@ -85,7 +85,7 @@ if(isset($HTTP_COOKIE_VARS[$session_cookie]))
 		$user_logged_in = 1;
 		update_session_time($sessid, $db);
 	
-		if(!auth("username ban", $db, $userid, "", "", "", "", "", "", "", ""))
+		if(!auth("username ban", $db, $userid))
 		{
 			error_die($db, BANNED);
 		}

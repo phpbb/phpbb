@@ -56,6 +56,10 @@ function error_die($db, $error_code = "", $error_msg = "")
 	   break;
 	 case NO_POSTS:
 	   $error_msg = "There are no posts in this forum. Click on the 'Post New Topic' link on this page to post one.";
+	   break;
+	 case LOGIN_FAILED:
+	   $error_msg = "Login Failed. You have specified an incorrect username or password, please go back and try again.";
+	   break;
 	}
    }
    if(DEBUG)
