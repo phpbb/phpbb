@@ -43,6 +43,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize','
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width','80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height','80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path','images/avatars');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path','images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_admin_style','1');
