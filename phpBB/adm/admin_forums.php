@@ -100,6 +100,7 @@ if (isset($_POST['update']))
 				'enable_icons'			=>	request_var('enable_icons', FALSE),
 				'enable_prune'			=>	request_var('enable_prune', FALSE),
 				'prune_days'			=>	request_var('prune_days', 7),
+				'prune_viewed'			=>	request_var('prune_viewed', 7),
 				'prune_freq'			=>	request_var('prune_freq', 1),
 				'prune_old_polls'		=>	request_var('prune_old_polls', FALSE),
 				'prune_announce'		=>	request_var('prune_announce', FALSE),
@@ -396,6 +397,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_DAYS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_DAYS_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['AUTO_PRUNE_VIEWED'] ?>: <br /><span class="gensmall"><?php echo $user->lang['AUTO_PRUNE_VIEWED_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" name="prune_viewed" value="<?php echo $prune_viewed ?>" size="5" /> <?php echo $user->lang['DAYS']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
@@ -852,9 +857,9 @@ function update_forum_data(&$forum_data)
 		}
 	}
 
-	if ($forum_data['prune_days'] < 0 || $forum_data['prune_freq'] < 0)
+	if ($forum_data['prune_days'] < 0 || $forum_data['prune_viewed'] < 0 || $forum_data['prune_freq'] < 0)
 	{
-		$forum_data['prune_days'] = $forum_data['prune_freq'] = 0;
+		$forum_data['prune_days'] = $forum_data['prune_viewed'] = $forum_data['prune_freq'] = 0;
 		$errors[] = $user->lang['FORUM_DATA_NEGATIVE'];
 	}
 
