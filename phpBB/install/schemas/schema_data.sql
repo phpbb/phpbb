@@ -238,7 +238,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
 # MSSQL IDENTITY phpbb_styles ON #
 
 # -- phpbb_styles
-INSERT INTO phpbb_styles (style_id, style_name, style_copyright, template_id, theme_id, imageset_id) VALUES (1, 1, 1, 1, 'subSilver', '&copy; phpBB Group');
+INSERT INTO phpbb_styles (style_id, style_name, style_copyright, template_id, theme_id, imageset_id) VALUES (1, 'subSilver', '&copy; phpBB Group', 1, 1, 1);
 
 # MSSQL IDENTITY phpbb_styles OFF #
 
