@@ -951,7 +951,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			{
 				if($mode == "editprofile")
 				{
-					if($email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) )
+					if($email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN)
 					{
 						$user_active = 0;
 						$user_actkey = generate_activation_key();
@@ -1008,12 +1008,19 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$act_key")
+								"U_ACTIVATE" => "http://" . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
+							
+							$message = $lang['Profile_updated_inactive'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+					
+							// Log the user out as their account is no longer active
+							if( $userdata['session_logged_in'] )
+							{
+								session_end($userdata['session_id'], $userdata['user_id']);
+							}
 
-							$message = $lang['Profile_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
 
 						}
 						else
@@ -1022,7 +1029,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						}
 
 						$template->assign_vars(array(
-							"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
+							"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
 						);
 
 						message_die(GENERAL_MESSAGE, $message);

@@ -503,6 +503,8 @@ $lang['Notify_on_privmsg'] = "Notify on Private Message";
 $lang['Hide_user'] = "Hide your online status";
 
 $lang['Profile_updated'] = "Your profile has been updated";
+$lang['Profile_updated_inactive'] = "Your profile has been updated, however you have changed vital details thus your account is now inactive. Check your email to find out how to reactivate your account, or if admin activation is require wait for the administrator to reactivate your account";
+
 $lang['to_return_index'] = "to return to the index";
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
@@ -1114,6 +1116,15 @@ $lang['del_disallow_explain'] = "You can remove a disallowed username by selecti
 $lang['add_disallow'] = "Add a disallowed username";
 $lang['add_disallow_explain'] = "You can disallow a username using the wildcard character '*' to match any character";
 $lang['no_disallowed'] = "No Disallowed Usernames";
+
+//
+// Styles Admin
+//
+$lang['Styles_admin'] = "Styles Administration";
+$lang['Styles_explain'] = "In this panel you can edit or remove styles from your forum. To import a new styles click on 'Add New' in the left hand panel, to create a new styles click on 'Create New'";
+$lang['Style'] = "Style";
+$lang['Template'] = "Template";
+
 
 //
 // That's all Folks!
