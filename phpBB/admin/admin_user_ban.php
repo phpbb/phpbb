@@ -233,7 +233,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	// initialisation resulting in an instant
 	// ban
 	//
-	if($kill_session_sql != "")
+	if( $kill_session_sql != "" )
 	{
 		$sql = "DELETE FROM " . SESSIONS_TABLE . "
 			WHERE $kill_session_sql";
@@ -248,16 +248,16 @@ if( isset($HTTP_POST_VARS['submit']) )
 		$in_banlist = false;
 		for($j = 0; $j < count($current_banlist); $j++)
 		{
-			if($email_list[$i] == $current_banlist[$j]['ban_email'])
+			if( $email_list[$i] == $current_banlist[$j]['ban_email'] )
 			{
 				$in_banlist = true;
 			}
 		}
 
-		if(!$in_banlist)
+		if( !$in_banlist )
 		{
 			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_email)
-				VALUES ('" . $email_list[$i] . "')";
+				VALUES ('" . str_replace("\'", "''", $email_list[$i]) . "')";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert ban_email info into database", "", __LINE__, __FILE__, $sql);
@@ -277,14 +277,14 @@ if( isset($HTTP_POST_VARS['submit']) )
 			{
 				if($where_sql != "")
 				{
-					$where_sql .= " OR ";
+					$where_sql .= ", ";
 				}
-				$where_sql .= "ban_id = " . $user_list[$i];
+				$where_sql .= $user_list[$i];
 			}
 		}
 	}
 
-	if(isset($HTTP_POST_VARS['unban_ip']))
+	if( isset($HTTP_POST_VARS['unban_ip']) )
 	{
 		$ip_list = $HTTP_POST_VARS['unban_ip'];
 
@@ -294,14 +294,14 @@ if( isset($HTTP_POST_VARS['submit']) )
 			{
 				if($where_sql != "")
 				{
-					$where_sql .= " OR ";
+					$where_sql .= ", ";
 				}
-				$where_sql .= "ban_id = " . $ip_list[$i];
+				$where_sql .= $ip_list[$i];
 			}
 		}
 	}
 
-	if(isset($HTTP_POST_VARS['unban_email']))
+	if( isset($HTTP_POST_VARS['unban_email']) )
 	{
 		$email_list = $HTTP_POST_VARS['unban_email'];
 
@@ -311,17 +311,17 @@ if( isset($HTTP_POST_VARS['submit']) )
 			{
 				if($where_sql != "")
 				{
-					$where_sql .= " OR ";
+					$where_sql .= ", ";
 				}
-				$where_sql .= "ban_id = " . $email_list[$i];
+				$where_sql .= $email_list[$i];
 			}
 		}
 	}
 
-	if($where_sql != "")
+	if( $where_sql != "" )
 	{
 		$sql = "DELETE FROM " . BANLIST_TABLE . "
-			WHERE $where_sql";
+			WHERE ban_id IN ($where_sql)";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't delete ban info from database", "", __LINE__, __FILE__, $sql);
@@ -367,7 +367,6 @@ else
 		$select_userlist .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
 		$userban_count++;
 	}
-	$select_size = ( $userban_count < 5 || $userban_c) ? 5 : 
 	$select_userlist = "<select name=\"ban_user[]\" multiple=\"multiple\" size=\"5\">" . $select_userlist . "</select>";
 
 	$template->assign_vars(array(
