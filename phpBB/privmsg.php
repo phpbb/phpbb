@@ -1058,23 +1058,9 @@ $savebox_url .= ($folder != "savebox") ? "<a href=\"" . append_sid("privmsg.$php
 
 $post_new_mesg_url = "<a href=\"privmsg.$phpEx?mode=post\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
 
-$template->assign_vars(array(
-	"INBOX" => $inbox_url, 
-	"SENTBOX" => $sentbox_url, 
-	"OUTBOX" => $outbox_url, 
-	"SAVEBOX" => $savebox_url, 
-
-	"L_MARK" => $lang['Mark'],
-	"L_FLAG" => $lang['Flag'],
-	"L_SUBJECT" => $lang['Subject'],
-	"L_DATE" => $lang['Date'], 
-	"L_FROM_OR_TO" => (($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To']),
-
-	"S_HIDDEN_FIELDS" => "", 
-	"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
-	"S_POST_NEW_MSG" => $post_new_mesg_url)
-);
-
+//
+// General SQL to obtain messages
+//
 $sql_tot = "SELECT COUNT(privmsgs_id) AS total FROM " . PRIVMSGS_TABLE . " ";
 $sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, u.user_id, u.username FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u ";
 
@@ -1088,7 +1074,7 @@ switch($folder)
 		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
 			AND u.user_id = pm.privmsgs_from_userid 
 			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . " 
-				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
+				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )"; 
 		break;
 
 	case 'outbox':
@@ -1119,8 +1105,73 @@ switch($folder)
 		break;
 }
 
-$sql .= " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
+//
+// Show messages over previous x days/months
+//
+if(!empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET_VARS['msgdays']))
+{
+	$msg_days = (!empty($HTTP_POST_VARS['msgdays'])) ? $HTTP_POST_VARS['msgdays'] : $HTTP_GET_VARS['msgdays'];
+	$min_msg_time = time() - ($msg_days * 86400);
 
+	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
+	$limit_msg_time = " AND pm.privmsgs_date > $min_msg_time ";
+
+	if(!empty($HTTP_POST_VARS['msgdays']))
+	{
+		$start = 0;
+	}
+}
+else
+{
+	$limit_msg_time = "";
+	$post_days = 0;
+}
+
+$sql .= $limit_msg_time . " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
+$sql_tot .= $limit_msg_time_total;
+
+//
+// Build select box
+//
+$previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
+$previous_days_text = array($lang['All_Messages'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
+
+$select_msg_days = "<select name=\"msgdays\">";
+for($i = 0; $i < count($previous_days); $i++)
+{
+	$selected = ($msg_days == $previous_days[$i]) ? " selected" : "";
+	$select_msg_days .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
+}
+$select_msg_days .= "</select>";
+
+//
+// Dump vars to template
+//
+$template->assign_vars(array(
+	"INBOX" => $inbox_url, 
+	"SENTBOX" => $sentbox_url, 
+	"OUTBOX" => $outbox_url, 
+	"SAVEBOX" => $savebox_url, 
+
+	"L_MARK" => $lang['Mark'],
+	"L_FLAG" => $lang['Flag'],
+	"L_SUBJECT" => $lang['Subject'],
+	"L_DATE" => $lang['Date'], 
+	"L_DISPLAY_MESSAGES" => $lang['Display_messages'], 
+	"L_FROM_OR_TO" => (($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To']),
+
+	"S_HIDDEN_FIELDS" => "", 
+	"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
+	"S_POST_NEW_MSG" => $post_new_mesg_url,
+	"S_SELECT_MSG_DAYS" => $select_msg_days,
+	"S_MSG_DAYS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder&start=$start"),
+
+	"U_POST_NEW_TOPIC" => $post_new_topic_url)
+);
+
+//
+// Get messages
+//
 if(!$pm_tot_status = $db->sql_query($sql_tot))
 {
 	message_die(GENERAL_ERROR, "Could not query private message information.", "", __LINE__, __FILE__, $sql_tot);
@@ -1135,7 +1186,6 @@ $pm_list = $db->sql_fetchrowset($pm_status);
 //
 // Okay, let's build the correct folder
 //
-
 for($i = 0; $i < count($pm_list); $i++)
 {
 	$privmsg_id = $pm_list[$i]['privmsgs_id'];

@@ -213,9 +213,10 @@ $lang['From'] = "From";
 $lang['To'] = "To";
 $lang['Date'] = "Date"; 
 $lang['Mark'] = "Mark"; 
+$lang['Display_messages'] = "Display messages from previous"; // Followed by number of days/weeks/months
+$lang['All_Messages'] = "All Messages";
 
 $lang['Cannot_send_privmsg'] = "Sorry but you are not currently allowed to send private messages.";
-
 $lang['No_to_user'] = "You must specify a username to send this message";
 $lang['No_such_user'] = "Sorry but no such user exists";
 
@@ -257,12 +258,10 @@ $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
 $lang['Always_bbcode'] = "Always allow BBCode";
 $lang['Always_add_sig'] = "Always attach my signature";
-
-$l_boardtheme	= "Board Theme";
-$l_boardlang    = "Board Language";
-$l_nothemes	= "No Themes In database";
-$l_saveprefs	= "Save $l_preferences";
-$l_timezone		= "Timezone";
+$lang['Board_theme'] = "Board Theme";
+$lang['Board_lang'] = "Board Language";
+$lang['No_themes'] = "No Themes In database";
+$lang['Timezone'] = "Timezone";
 
 $lang['Avatar_panel'] = "Avatar control panel";
 $lang['Avatar'] = "Avatar";
@@ -291,12 +290,12 @@ $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";
 $lang['Avatar_filesize'] = "The avatar image file size must more than 0 kB and less than " . round($board_config['avatar_filesize'] / 1024) . " kB";
 $lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['avatar_max_width'] . " pixels wide and " . $board_config['avatar_max_height'] . " pixels high";
 
+$lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
+$lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
+
 $lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
 
-$lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
-
-$lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
-$lang['Welcome_email_activate'] = $lang['Welcome_subject'] . "
+$lang['Welcome_email_activate'] = $lang['Welcome_subject'] . ",
 
 Please keep this email for your records.
 
@@ -316,7 +315,24 @@ However, should you forget your password you can request a new one which will be
 
 Thank you for registering.
 
-";
+"; // END
+$lang['Welcome_email'] = $lang['Welcome_subject'] .  ",
+
+Please keep this email for your records.
+
+Your account information is as follows:
+
+----------------------------
+Username: $username
+Password: $password
+----------------------------
+
+Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
+However, should you forget your password we provide an easy to use script to generate and mail a new, random, password.
+
+Thank you for registering.
+
+"; // END
 
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
 $lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>" . $lang['Mailing_address'] . "<br>Or fax it to: <br>" . $lang['Fax_info'] . "<br> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
