@@ -54,8 +54,8 @@ class parse_message
 		$this->message_mode = $message_type;
 		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
 	}
-	
-	function parse($html, $bbcode, $url, $smilies, $bbcode_img = TRUE, $bbcode_flash = TRUE)
+
+	function parse($html, $bbcode, $url, $smilies, $allow_img = TRUE, $allow_flash = TRUE, $allow_quote = TRUE)
 	{
 		global $config, $db, $user;
 
@@ -78,13 +78,17 @@ class parse_message
 		if ($bbcode)
 		{
 			$this->bbcode_init();
-			if (!$bbcode_img)
+			if (!$allow_img)
 			{
 				$this->bbcodes['img']['disabled'] = TRUE;
 			}
-			if (!$bbcode_flash)
+			if (!$allow_flash)
 			{
 				$this->bbcodes['flash']['disabled'] = TRUE;
+			}
+			if (!$allow_quote)
+			{
+				$this->bbcodes['quote']['disabled'] = TRUE;
 			}
 			$this->bbcode();
 		}
@@ -100,7 +104,7 @@ class parse_message
 
 		$this->message = str_replace(array('<', '>'), array('&lt;', '&gt;'), $this->message);
 
-		if ($html)
+		if ($html && $config['allow_html_tags'])
 		{
 			// If $html is true then "allowed_tags" are converted back from entity
 			// form, others remain
@@ -145,7 +149,8 @@ class parse_message
 				}
 			}
 
-			// Since we add bbcode_uid to all tags, the message length will increase whenever a tag is found
+			// Because we add bbcode_uid to all tags, the message length
+			// will increase whenever a tag is found
 			$new_size = strlen($this->message);
 			if ($size != $new_size)
 			{
@@ -159,21 +164,22 @@ class parse_message
 	{
 		static $rowset;
 
-		// This array holds all bbcode data. BBCodes will be processed in this order, so it is important to
-		// keep [code] in first position and [quote] in second position.
+		// This array holds all bbcode data. BBCodes will be processed in this
+		// order, so it is important to keep [code] in first position and
+		// [quote] in second position.
 		$this->bbcodes = array(
-			'code'	=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
-			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
+			'code'		=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
+			'quote'		=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
 			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']$1[/b:' . $this->bbcode_uid . ']')),
 			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']$1[/i:' . $this->bbcode_uid . ']')),
 			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
 			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i' => '[img:' . $this->bbcode_uid . ']$1$2[/img:' . $this->bbcode_uid . ']')),
-			'size'	 	=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=$1:' . $this->bbcode_uid . ']$2[/size:' . $this->bbcode_uid . ']')),
-			'color'	=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
+			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=$1:' . $this->bbcode_uid . ']$2[/size:' . $this->bbcode_uid . ']')),
+			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
 			'u'			=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']$1[/u:' . $this->bbcode_uid . ']')),
 			'list'		=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_list('\$0')")),
-			'email'	=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
-			'flash'	=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => '[flash=$1,$2:' . $this->bbcode_uid . ']$3[/flash:' . $this->bbcode_uid . ']'))
+			'email'		=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
+			'flash'		=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => '[flash=$1,$2:' . $this->bbcode_uid . ']$3[/flash:' . $this->bbcode_uid . ']'))
 		);
 
 		if (!isset($rowset))
@@ -194,7 +200,7 @@ class parse_message
 		{
 			$this->bbcodes[$row['bbcode_tag']] = array(
 				'bbcode_id'	=>	intval($row['bbcode_id']),
-				'regexp'			=>	array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
+				'regexp'	=>	array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
 	}
