@@ -422,7 +422,7 @@ $topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_GL
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = generate_pagination($viewtopic_url, $total_posts, $config['posts_per_page'], $start);
+$pagination = generate_pagination("{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''), $total_posts, $config['posts_per_page'], $start);
 
 // Navigation links
 generate_forum_nav($topic_data);
