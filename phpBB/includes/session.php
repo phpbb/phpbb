@@ -538,9 +538,13 @@ class user extends session
 			}
 		}
 
+		// We include common language file here to not load it every time a custom language file is included
+		$lang = &$this->lang;
+		require($this->lang_path . "common.$phpEx");
+
 		$this->add_lang($lang_set);
 		unset($lang_set);
-
+		
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
 			global $SID;
@@ -644,11 +648,7 @@ class user extends session
 	// $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
 	function add_lang($lang_set, $use_db = false, $use_help = false)
 	{
-		global $lang, $help, $phpEx;
-
-		$lang = array();
-
-		require($this->lang_path . "common.$phpEx");
+		global $phpEx;
 
 		if (is_array($lang_set))
 		{
@@ -668,7 +668,7 @@ class user extends session
 				}
 				else if (!is_array($lang_file))
 				{
-					$this->set_lang($lang_file, $use_db, $use_help);
+					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help);
 				}
 				else
 				{
@@ -679,30 +679,21 @@ class user extends session
 		}
 		else if ($lang_set)
 		{
-			$this->set_lang($lang_set, $use_db, $use_help);
-		}
-
-		if ($use_help || sizeof($help))
-		{
-			$this->help += $help;
-			unset($help);
-		}
-
-		if (sizeof($lang))
-		{
-			$this->lang += $lang;
-			// Yes, we unset $lang here, this variable is in use elsewhere
-			unset($lang);
+			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help);
 		}
 	}
 
-	function set_lang($lang_file, $use_db = false, $use_help = false)
+	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
-		global $lang, $help, $phpEx;
+		global $phpEx;
 
+		// $lang == $this->lang
+		// $help == $this->help
+		// - add appropiate variables here, name them as they are used within the language file...
+		
 		if (!$use_db)
 		{
-			require ($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
+			require($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
 		}
 		else if ($use_db)
 		{
