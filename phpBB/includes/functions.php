@@ -36,7 +36,7 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 			WHERE config_name = "' . $config_name . '"');
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
-			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "'";
+			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "')";
 		$db->sql_query($sql);
 	}
 

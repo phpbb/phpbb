@@ -96,15 +96,15 @@ class emailer
 			$template_lang = $config['default_lang'];
 		}
 
-		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.txt';
+		$this->tpl_file = $phpbb_root_path . 'language/' . $template_lang . '/email/' . $template_file . '.txt';
 		if ( !file_exists($this->tpl_file) )
 		{
-			message_die(ERROR, 'Could not find email template file ' . $template_file);
+			trigger_error('Could not find email template file ' . $template_file);
 		}
 
 		if ( !$this->load_msg() )
 		{
-			message_die(ERROR, 'Could not load email template file ' . $template_file);
+			trigger_error('Could not load email template file ' . $template_file);
 		}
 
 		return true;
@@ -117,12 +117,12 @@ class emailer
 	{
 		if ( $this->tpl_file == NULL )
 		{
-			message_die(ERROR, 'No template file set');
+			trigger_error('No template file set');
 		}
 
 		if ( !($fd = fopen($this->tpl_file, 'r')) )
 		{
-			message_die(ERROR, 'Failed opening template file');
+			trigger_error('Failed opening template file');
 		}
 
 		$this->msg .= fread($fd, filesize($this->tpl_file));
@@ -173,7 +173,7 @@ class emailer
 
 		if ( $this->address == NULL )
 		{
-			message_die(ERROR, 'No email address set');
+			trigger_error('No email address set');
 		}
 
 		if ( !$this->parse_email() )
@@ -191,7 +191,7 @@ class emailer
 
 		if ( !$result )
 		{
-			message_die(ERROR, 'Failed sending email');
+			trigger_error('Failed sending email');
 		}
 
 		return true;
@@ -312,13 +312,13 @@ function server_parse($socket, $response)
    {
       if( !( $server_response = fgets($socket, 256) ) )
       {
-         message_die(ERROR, 'Could not get mail server response codes');
+         trigger_error('Could not get mail server response codes');
       }
    }
 
    if( !( substr($server_response, 0, 3) == $response ) )
    {
-      message_die(ERROR, "Ran into problems sending Mail. Response: $server_response");
+      trigger_error("Ran into problems sending Mail. Response: $server_response");
    }
 }
 
@@ -388,15 +388,15 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	}
 	if(trim($mail_to) == '')
 	{
-		message_die(ERROR, 'No email address specified');
+		trigger_error('No email address specified');
 	}
 	if(trim($subject) == '')
 	{
-		message_die(ERROR, 'No email Subject specified');
+		trigger_error('No email Subject specified');
 	}
 	if(trim($message) == '')
 	{
-		message_die(ERROR, 'Email message was blank');
+		trigger_error('Email message was blank');
 	}
 	$mail_to_array = explode(",", $mail_to);
 
@@ -406,7 +406,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	//
 	if( !$socket = fsockopen($config['smtp_host'], 25, $errno, $errstr, 20) )
 	{
-		message_die(ERROR, "Could not connect to smtp host : $errno : $errstr");
+		trigger_error("Could not connect to smtp host : $errno : $errstr");
 	}
 	server_parse($socket, "220");
 
