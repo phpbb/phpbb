@@ -21,7 +21,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
-	  <td class="row2" colspan="2"><span class="courier">{FORUM_INPUT}</span></td>
+	  <td class="row2" colspan="2"><span class="courier">{S_FORUM_SELECT}</span></td>
 	</tr>
 	<tr> 
 	  <td class="cat" colspan="3" height="28"> 
@@ -48,19 +48,17 @@
 	  <td width="100%" valign="top" class="{postrow.ROW_CLASS}"> 
 		<table width="100%" cellspacing="0" cellpadding="3" border="0">
 		  <tr> 
-			<td valign="middle"><img src="images/icon_minipost.gif" alt="Post image icon"><span class="postdetails">{L_POSTED}: 
+			<td valign="middle"><img src="templates/subSilver/images/icon_minipost.gif" alt="Post image icon"><span class="postdetails">{L_POSTED}: 
 			  {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 		  </tr>
 		  <tr> 
 			<td valign="top"> 
 			  <hr size="1" />
-			  <span class="postbody">{postrow.MESSAGE}</span></td>
+			  <span class="postbody">{postrow.MESSAGE}</span></td> 
 		  </tr>
 		</table>
 	  </td>
-	  <td width="5%" align="center" class="{postrow.ROW_CLASS}">&nbsp; 
-		<input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" />
-		&nbsp;</td>
+	  <td width="5%" align="center" class="{postrow.ROW_CLASS}"><input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" /></td>
 	</tr>
 	<tr> 
 	  <td colspan="3" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>

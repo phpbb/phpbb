@@ -200,7 +200,7 @@ function make_jumpbox($match_forum_id = 0)
 //
 // Simple version of jumpbox, just lists authed forums
 //
-function make_forum_select($box_name)
+function make_forum_select($box_name, $ignore_forum = false)
 {
 	global $db, $userdata;
 
@@ -217,7 +217,7 @@ function make_forum_select($box_name)
 	$forum_list = "";
 	while( $row = $db->sql_fetchrow($q_forums) )
 	{
-		if( $is_auth_ary[$row['forum_id']]['auth_read'] )
+		if( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
 		{
 			$forum_list .= "<option value=\"" . $row['forum_id'] . "\">" . $row['forum_name'] . "</option>";
 		}

@@ -489,85 +489,94 @@ switch($mode)
 		{
 			$new_forum_id = $HTTP_POST_VARS['new_forum'];
 			$old_forum_id = $forum_id;
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
-			$topic_list = "";
-			for($i = 0; $i < count($topics); $i++)
+			if( $new_forum_id != $old_forum_id )
 			{
-				if( $topic_list != "" )
+				$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+
+				$topic_list = "";
+				for($i = 0; $i < count($topics); $i++)
 				{
-					$topic_list .= ", ";
+					if( $topic_list != "" )
+					{
+						$topic_list .= ", ";
+					}
+					$topic_list .= $topics[$i];
 				}
-				$topic_list .= $topics[$i];
-			}
 
-			$sql_select = "SELECT * 
-				FROM " . TOPICS_TABLE . " 
-				WHERE topic_id IN ($topic_list)";
+				$sql_select = "SELECT * 
+					FROM " . TOPICS_TABLE . " 
+					WHERE topic_id IN ($topic_list)";
 
-			if( !$result = $db->sql_query($sql_select, BEGIN_TRANSACTION) )
-			{
-				message_die(GENERAL_ERROR, "Could not select from topic table!", "Error", __LINE__, __FILE__, $sql_select);
-			}
-
-			$row = $db->sql_fetchrowset($result);
-
-			for($i = 0; $i < count($row); $i++)
-			{
-				$topic_id = $row[$i]['topic_id'];
-				
-				if( isset($HTTP_POST_VARS['move_leave_shadow']) )
+				if( !$result = $db->sql_query($sql_select, BEGIN_TRANSACTION) )
 				{
-					// Insert topic in the old forum that indicates that the forum has moved.
-					$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
-						VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+					message_die(GENERAL_ERROR, "Could not select from topic table!", "Error", __LINE__, __FILE__, $sql_select);
+				}
+
+				$row = $db->sql_fetchrowset($result);
+
+				for($i = 0; $i < count($row); $i++)
+				{
+					$topic_id = $row[$i]['topic_id'];
+					
+					if( isset($HTTP_POST_VARS['move_leave_shadow']) )
+					{
+						// Insert topic in the old forum that indicates that the forum has moved.
+						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_last_post_id, topic_moved_id)
+							VALUES ($old_forum_id, '" . addslashes($row[$i]['topic_title']) . "', '" . $row[$i]['topic_poster'] . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+						if( !$result = $db->sql_query($sql) )
+						{
+							message_die(GENERAL_ERROR, "Could not insert shadow topic", "Error", __LINE__, __FILE__, $sql);
+						}
+					}
+
+					$sql = "UPDATE " . TOPICS_TABLE . " 
+						SET forum_id = $new_forum_id  
+						WHERE topic_id = $topic_id";
 					if( !$result = $db->sql_query($sql) )
 					{
-						message_die(GENERAL_ERROR, "Could not insert shadow topic", "Error", __LINE__, __FILE__, $sql);
+						message_die(GENERAL_ERROR, "Could not update old topic", "Error", __LINE__, __FILE__, $sql);
+					}
+
+					$sql = "UPDATE " . POSTS_TABLE . " 
+						SET forum_id = $new_forum_id 
+						WHERE topic_id = $topic_id";
+					if( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, "Could not update post topic ids", "Error", __LINE__, __FILE__, $sql);
 					}
 				}
 
-				$sql = "UPDATE " . TOPICS_TABLE . " 
-					SET forum_id = $new_forum_id  
-					WHERE topic_id = $topic_id";
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Could not update old topic", "Error", __LINE__, __FILE__, $sql);
-				}
+				// Sync the forum indexes
+				sync("forum", $new_forum_id);
+				sync("forum", $old_forum_id);
 
-				$sql = "UPDATE " . POSTS_TABLE . " 
-					SET forum_id = $new_forum_id 
-					WHERE topic_id = $topic_id";
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Could not update post topic ids", "Error", __LINE__, __FILE__, $sql);
-				}
+				$message = $lang['Topics_Moved'] . "<br /><br />";
+
 			}
-
-			// Sync the forum indexes
-			sync("forum", $new_forum_id);
-			sync("forum", $old_forum_id);
+			else
+			{
+				$message = $lang['No_Topics_Moved'] . "<br /><br />";
+			}
 
 			if( !empty($topic_id) )
 			{
 				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-				$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
+				$message .= sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
 			}
 			else
 			{
 				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
+				$message .= sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
 			}
-			$return_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id");
-			$returnforum = sprintf($lang['Click_return_forum'], "<a href=\"$return_forum_url\">", "</a>");
 
-			$message = $message . "<br \><br \>$returnforum";
+			$message = $message . "<br \><br \>" . sprintf($lang['Click_return_forum'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id") . "\">", "</a>");
 
 			$template->assign_vars(array(
 				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 			);
 
-			message_die(GENERAL_MESSAGE, $lang['Topics_Moved'] . "<br /><br />" . $message);
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
@@ -608,7 +617,7 @@ switch($mode)
 				"L_YES" => $lang['Yes'],
 				"L_NO" => $lang['No'],
 
-				"S_FORUM_BOX" => make_forum_select("new_forum"), 
+				"S_FORUM_BOX" => make_forum_select("new_forum", $forum_id), 
 				"S_MODCP_ACTION" => append_sid("modcp.$phpEx"),
 				"S_HIDDEN_FIELDS" => $hidden_fields)
 			);
@@ -739,7 +748,7 @@ switch($mode)
 
 			$new_topic_id = $db->sql_nextid();
 
-			if($HTTP_POST_VARS['split_type_all'])
+			if( $HTTP_POST_VARS['split_type_all'] )
 			{
 				$post_id_sql = "";
 				for($i = 0; $i < count($posts); $i++)
@@ -755,7 +764,7 @@ switch($mode)
 					SET topic_id = $new_topic_id
 					WHERE post_id IN ($post_id_sql)";
 			}
-			else if($HTTP_POST_VARS['split_type_beyond'])
+			else if( $HTTP_POST_VARS['split_type_beyond'] )
 			{
 				$sql = "UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id
@@ -818,11 +827,16 @@ switch($mode)
 					"L_SUBMIT" => $lang['Submit'],
 					"L_SPLIT_AFTER" => $lang['Split_after'], 
 					"L_POST_SUBJECT" => $lang['Post_subject'], 
+					"L_MARK_ALL" => $lang['Mark_all'], 
+					"L_UNMARK_ALL" => $lang['Unmark_all'], 
+
+					"FORUM_NAME" => $forum_name, 
+
+					"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
 
 					"S_SPLIT_ACTION" => append_sid("modcp.$phpEx"),
 					"S_HIDDEN_FIELDS" => $s_hidden_fields,
-
-					"FORUM_INPUT" => make_forum_select("new_forum_id", $forum_id))
+					"S_FORUM_SELECT" => make_forum_select("new_forum_id"))
 				);
 
 				for($i = 0; $i < $total_posts; $i++)
@@ -869,7 +883,7 @@ switch($mode)
 
 					$message = make_clickable($message);
 
-					if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
+					if( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
 					{
 						$message = smilies_pass($message);
 					}

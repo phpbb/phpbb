@@ -46,7 +46,6 @@ $lang['Forum'] = "Forum";
 $lang['Category'] = "Category";
 $lang['Topic'] = "Topic";
 $lang['Topics'] = "Topics";
-$lang['Reply'] = "Reply";
 $lang['Replies'] = "Replies";
 $lang['Views'] = "Views";
 $lang['Post'] = "Post";
@@ -82,7 +81,6 @@ $lang['No'] = "No";
 $lang['Enabled'] = "Enabled";
 $lang['Disabled'] = "Disabled";
 $lang['Error'] = "Error";
-$lang['Success'] = "Success";
 
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
@@ -305,7 +303,6 @@ $lang['Confirm_delete_poll'] = "Are you sure you want to delete this poll?";
 $lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while";
 $lang['Empty_subject'] = "You must specify a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
-$lang['Announce_and_sticky'] = "You cannot post a topic that is both an announcement and a sticky topic";
 $lang['Forum_locked'] = "This forum is locked you cannot post, reply to or edit topics";
 $lang['Topic_locked'] = "This topic is locked you cannot edit posts or make replies";
 $lang['No_post_id'] = "You must select a post to edit";
@@ -715,7 +712,6 @@ $lang['You_been_banned'] = "You have been banned from this forum<br />Please con
 //
 // Viewonline
 //
-$lang['Who_is_online'] = "Who is online";
 $lang['Reg_users_online'] = "There are %d Registered and "; // There ae 5 Registered and
 $lang['Hidden_users_online'] = "%d Hidden users online"; // 6 Hidden users online
 $lang['Guest_users_online'] = "There are %d Guest users online"; // There are 10 Guest users online
@@ -754,6 +750,7 @@ $lang['Topics_Removed'] = "The selected topics have been successfully removed fr
 $lang['Topics_Locked'] = "The selected topics have been locked";
 $lang['Topics_Moved'] = "The selected topics have been moved";
 $lang['Topics_Unlocked'] = "The selected topics have been unlocked";
+$lang['No_Topics_Moved'] = "No topics were moved";
 
 $lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected topic/s?";
 $lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic/s?";
