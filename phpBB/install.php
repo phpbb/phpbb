@@ -90,11 +90,11 @@ if( !get_magic_quotes_gpc() )
 }
 
 /***************************************************************************
- *								Install Customization Section
+ *				Install Customization Section
  *
- *		This section can be modified to set up some basic default information
+ *	This section can be modified to set up some basic default information
  * 	used by the install script.  Specifically the default theme data
- *		and the default template.
+ *	and the default template.
  *
  **************************************************************************/
 
@@ -207,6 +207,8 @@ else
 }
 
 $upgrade = ( !empty($HTTP_POST_VARS['upgrade']) ) ? $HTTP_POST_VARS['upgrade']: '';
+$upgrade_now = ( !empty($HTTP_POST_VARS['upgrade_now']) ) ? $HTTP_POST_VARS['upgrade_now']:'';
+
 $dbms = isset($HTTP_POST_VARS['dbms']) ? $HTTP_POST_VARS['dbms'] : "";
 $language = ( !empty($HTTP_POST_VARS['language']) ) ? $HTTP_POST_VARS['language'] : $default_language;
 
@@ -246,12 +248,18 @@ if( !defined("PHPBB_INSTALLED") )
 
 	$template = new Template($phpbb_root_path . "templates/" . $default_template);
 
+	//
+	// Ok for the time being I'm commenting this out whilst I'm working on
+	// better integration of the install with upgrade as per Bart's request
+	// JLH
+	//
+	
 	if( $upgrade == 1 )
 	{
-		require('upgrade.'.$phpEx);
+		// require('upgrade.'.$phpEx);
 		$install_step = 1;
 	}
-
+	
 	//
 	// Load default template for install
 	// 
@@ -332,7 +340,7 @@ else
 //
 //
 //
-if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  && !defined("PHPBB_INSTALLED") )
+if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  && !defined("PHPBB_INSTALLED") && empty($HTTP_POST_VARS['upgrade_now']) )
 {
 	header("Content-Type: text/x-delimtext; name=\"config.php\"");
 	header("Content-disposition: attachment; filename=config.php");
@@ -361,7 +369,10 @@ else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 
 	$template->assign_block_vars("switch_ftp_file", array());
 	$template->assign_block_vars("switch_common_install", array());
-
+	if( $upgrade == 1 )
+	{
+		$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
+	}
 	$template->assign_vars(array(
 		"L_INSTRUCTION_TEXT" => $lang['ftp_instructs'],
 		"L_FTP_INFO" => $lang['ftp_info'],
@@ -396,9 +407,25 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		//
 		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
-
+		if( $upgrade == 1 )
+		{
+			$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
+			$s_hidden_fields .= '<input type="hidden" name="dbms" value="'.$dmbs.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="dbhost" value="'.$dbhost.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="dbname" value="'.$dbname.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="dbuser" value="'.$dbuser.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="dbpasswd" value="'.$dbpasswd.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
+			$s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
+			$s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+			$template->assign_block_vars("switch_upgrade_install", array());
+			$template->assign_vars(array(
+				"L_UPGRADE_INST" => $lang['continue_upgrade'],
+				"L_UPGRADE_SUBMIT" => $lang['upgrade_submit'])
+			);
+		}
 		$template->assign_block_vars("switch_common_install", array());
-
+		
 		$template->assign_vars(array(
 			"L_INSTRUCTION_TEXT" => $lang['NoFTP_config'],
 			"L_SUBMIT" => $lang['Download_config'],
@@ -436,7 +463,11 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		@ftp_quit($conn_id);
 
 		unlink($tmpfname);
-		
+		if( $upgrade == 1 )	
+		{
+			require('upgrade.'.$phpEx);
+			exit;
+		}
 		//
 		// Ok we are basically done with the install process let's go on 
 		// and let the user configure their board now.
@@ -576,8 +607,10 @@ else
 		$admin_pass1 = $userdata['user_password'];
 		$language = $userdata['user_lang'];
 	}
-	else if( isset($dbms) ) 
+	else if( isset($dbms) )
 	{
+		echo $dbms;
+		exit;
 		include($phpbb_root_path.'includes/db.'.$phpEx);
 	}
 
@@ -745,7 +778,7 @@ else
 			}
 		}
 
-		if( !$reinstall )
+		if( !$reinstall && ! $upgrade_now )
 		{
 			$template->assign_block_vars("switch_common_install", array());
 
@@ -791,6 +824,24 @@ else
 				{
 					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 				}
+				if( $upgrade == 1 )
+				{
+					$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
+					$s_hidden_fields .= '<input type="hidden" name="dbms" value="'.$dbms.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="dbhost" value="'.$dbhost.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="dbname" value="'.$dbname.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="dbuser" value="'.$dbuser.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="dbpasswd" value="'.$dbpasswd.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
+					$s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
+					$s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+
+					$template->assign_block_vars("switch_upgrade_install", array());
+					$template->assign_vars(array(
+						"L_UPGRADE_INST" => $lang['continue_upgrade'],
+						"L_UPGRADE_SUBMIT" => $lang['upgrade_submit'])
+					);
+				}
 
 				$template->assign_vars(array(
 					"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
@@ -808,12 +859,21 @@ else
 			$result = @fputs($fp, $config_data, strlen($config_data));
 
 			@fclose($fp);
+			$upgrade_now = $lang['upgrade_submit'];
 		}
 		else
 		{
 			$template->assign_block_vars("switch_common_install", array());
 		}
 
+		// 
+		// First off let's check and see if we are supposed to be doing an upgrade.
+		//
+		if ( $upgrade == 1 && $upgrade_now == $lang['upgrade_submit'] )
+		{
+			require('upgrade.'.$phpEx);
+			exit;
+		}
 		//
 		// Ok we are basically done with the install process let's go on 
 		// and let the user configure their board now.

@@ -219,6 +219,14 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 					  <td class="cat" align="center" colspan="2">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
 					</tr>
 					<!-- END switch_common_install -->
+					<!-- BEGIN switch_upgrade_install -->
+					<tr>
+						<td class="cat" align="center" colspan="2">{L_UPGRADE_INST}</td>
+					</tr>
+					<tr>
+						<td class="cat" align="center" colspan="2"><input type="submit" name="upgrade_now" value="{L_UPGRADE_SUBMIT}" /></td>
+					</tr>
+					<!-- END switch_upgrade_install -->
 				</table></form></td>
 			</tr>
 		</table></td>

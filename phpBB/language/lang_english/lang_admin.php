@@ -633,6 +633,8 @@ $lang['Welcome_install'] = "Welcome to phpBB 2 Installation";
 $lang['Initial_config'] = "Basic Configuration";
 $lang['DB_config'] = "Database Configuration";
 $lang['Admin_config'] = "Admin Configuration";
+$lang['continue_upgrade'] = "Once you have downloaded your config file to your local machine you may\"Continue Upgrade\" button below to move forward with the upgrade process.  Please wait to upload the config file until the upgrade process is complete.";
+$lang['upgrade_submit'] = "Continue Upgrade";
 
 $lang['Installer_Error'] = "An error has occurred during installation";
 $lang['Previous_Install'] = "A previous installation has been detected";
