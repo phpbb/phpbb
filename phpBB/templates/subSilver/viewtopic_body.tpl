@@ -1,11 +1,19 @@
 
 <script language="Javascript" type="text/javascript">
 <!--
+
+	var icq_add_img_src = new Image();
+	
 function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 {
+	while( !icq_add_img_src.src )
+	{
+		icq_add_img_src.src = icq_add_img;
+	}
+
 	if( icq_user_addr.length && icq_user_addr.indexOf("&nbsp;") == -1 )
 	{
-		document.write('<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" style=" background-image: url(\'' + icq_add_img + '\'); background-repeat: no-repeat"><img src="images/spacer.gif" width="3" height="18" alt = "">' + icq_status_img + '<a href="http://wwp.icq.com/scripts/search.dll?to=' + icq_user_addr + '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="{L_ICQ_NUMBER}" /></a></td></tr></table>');
+		document.write('<table border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" style=" background-image: url(\'' + icq_add_img + '\'); background-repeat: no-repeat"><img src="images/spacer.gif" width="3" height="18" alt = "">' + icq_status_img + '<a href="http://wwp.icq.com/scripts/search.dll?to=' + icq_user_addr + '"><img src="images/spacer.gif" width="' + icq_add_img_src.width + '" height="' + icq_add_img_src.height + '" border="0" alt="{L_ICQ_NUMBER}" /></a></td></tr></table>');
 	}
 }
 //-->
@@ -13,18 +21,20 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{REQUEST_URI}">{TOPIC_TITLE}</a><br />
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{U_TOPIC}">{TOPIC_TITLE}</a><br />
 	  <span class="gensmall"><b>{PAGINATION}</b><br />
 	  &nbsp; </span></td>
   </tr>
 </table>
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" width="82" height="25" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" width="82" height="25" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
 	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
 	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
   </tr>
 </table>
+
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
   <tr align="right"> 
 	<td class="catHead" colspan="2" height="28"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}" class="nav">{L_VIEW_PREVIOUS_TOPIC}</a> 
@@ -98,9 +108,10 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 	</td>
   </tr>
 </table>
+
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
-	<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" width="82" height="25" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" width="82" height="25" /></a><span class="nav"></span></td>
+	<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
 	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
 	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
 	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span> 
