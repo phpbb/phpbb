@@ -24,7 +24,6 @@
 *	smtp mail instead of standard sendmail.  It includes a function smtpmail
 * 	which is identical to the standard built in mail function in usage.
 ****************************************************************************/
-include("../common.php");
 
 /****************************************************************************
 *	Function: 		server_parse
@@ -38,11 +37,11 @@ function server_parse($socket, $response)
 {
 	if(!($server_response = fgets($socket, 100)))
 	{
-		error_die(GENERAL_ERROR, "Couldn't get mail server response codes");
+		message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__);
 	}
 	if(!(substr($server_response, 0, 3) == $response))
 	{
-		error_die(GENERAL_ERROR, "Ran into problems sending Mail");
+		message_die(GENERAL_ERROR, "Ran into problems sending Mail", "", __LINE__, __FILE__);
 	}
 }
 
@@ -59,12 +58,13 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	// info, but it should probably change to $board_config...
 	// then the relevant info would be $board_config['smtp_host'] and 
 	// $board_config['smtp_port'].
-	global $smtp_vars;
-	var $errno;
-	var $errstr;
+	global $board_config;
 	
+	//
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
+	//
 	$message = ereg_replace("[^\r]\n", "\r\n", $message);
+
 	if ($headers != "")
 	{
 		if(is_array($headers))
@@ -85,26 +85,30 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	}
 	if(trim($mail_to) == "")
 	{
-		error_die(GENERAL_ERROR, "No email address specified");
-		exit;
+		message_die(GENERAL_ERROR, "No email address specified", "", __LINE__, __FILE__);
 	}
 	if(trim($subject) == "")
 	{
-		error_die(GENERAL_ERROR, "No email Subject specified");
+		message_die(GENERAL_ERROR, "No email Subject specified", "", __LINE__, __FILE__);
 	}
 	if(trim($message) == "")
 	{
-		error_die(GENERAL_ERROR, "Email message was blank!");
+		message_die(GENERAL_ERROR, "Email message was blank", "", __LINE__, __FILE__);
 	}
 	$mail_to_array = explode(",", $mail_to);
+
+	//
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
-	$socket = fsockopen($smtp_vars['host'], $smtp_vars['port'], &$errno, @$errstr, 30) or 
-		error_die(GENERAL_ERROR, "Could not connect to smtp host!");
+	//
+	if( !$socket = fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
+	{
+		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", "", __LINE__, __FILE__);
+	}
 	server_parse($socket, "220");
 	
 	// Send the RFC821 specified HELO.
-	fputs($socket, "HELO " . $stmp_vars['host'] . "\r\n");
+	fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
 
 	// From this point onward most server response codes should be 250
 	server_parse($socket, "250");
@@ -117,7 +121,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	$to_header = "To: ";
 	foreach($mail_to_array as $mail_to_address)
 	{
-		fputs($socket, "RCPT TO: $mail_to_address\r\n";
+		fputs($socket, "RCPT TO: $mail_to_address\r\n");
 		server_parse($socket, "250");
 		$to_header .= "<$mail_to_address>, ";
 	}
@@ -130,12 +134,16 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 
 	// Send the Subject Line...
 	fputs($socket, "Subject: $subject\r\n");
+
 	// Now the To Header.
 	fputs($socket, "$to_header\r\n");
+
 	// Now any custom headers....
 	fputs($socket, "$headers\r\n\r\n");
+	
 	// Ok now we are ready for the message...
 	fputs($socket, "$message\r\n");
+
 	// Ok the all the ingredients are mixed in let's cook this puppy...
 	fputs($socket, ".\r\n");
 	server_parse($socket, "250");
@@ -143,12 +151,8 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	// Now tell the server we are done and close the socket...
 	fputs($socket, "quit\r\n");
 	fclose($socket);
-	return(1);
+
+	return TRUE;
 }
-
-
-
-
-
 
 ?>
