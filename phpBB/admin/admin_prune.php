@@ -44,9 +44,7 @@ if (!$auth->acl_get('a_prune'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-//
 // Get the forum ID for pruning
-//
 if (isset($_REQUEST['f']))
 {
 	$forum_id = intval($_REQUEST['f']);
@@ -57,24 +55,9 @@ else
 	$forum_id = '';
 	$forum_sql = '';
 }
-//
-// Get a list of forum's or the data for the forum that we are pruning.
-//
-$sql = "SELECT forum_id, forum_name, left_id, right_id
-	FROM " . FORUMS_TABLE . "
-	ORDER BY left_id ASC";
-$result = $db->sql_query($sql);
 
-$forum_rows = array();
-while($row = $db->sql_fetchrow($result))
-{
-	$forum_rows[] = $row;
-}
-$db->sql_freeresult($result);
 
-//
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
-//
 if (isset($_POST['doprune']))
 {
 	$prunedays = (isset($_POST['prunedays'])) ? intval($_POST['prunedays']) : 0;
@@ -82,122 +65,138 @@ if (isset($_POST['doprune']))
 	// Convert days to seconds for timestamp functions...
 	$prunedate = time() - ($prunedays * 86400);
 
-	$template->set_filenames(array(
-		'body' => 'admin/forum_prune_result_body.tpl')
-	);
-
-	$log_data = '';
-	for($i = 0; $i < count($forum_rows); $i++)
-	{
-		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
-		sync('forum', $forum_rows[$i]['forum_id']);
-
-		$template->assign_block_vars('prune_results', array(
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
-			'FORUM_NAME' => $forum_rows[$i]['forum_name'],
-			'FORUM_TOPICS' => $p_result['topics'],
-			'FORUM_POSTS' => $p_result['posts'])
-		);
-
-		$log_data .= (($log_data != '') ? ', ' : '') . $forum_rows[$i]['forum_name'];
-	}
-
-	$template->assign_vars(array(
-		'L_FORUM_PRUNE' => $user->lang['Forum_Prune'],
-		'L_FORUM' => $user->lang['Forum'],
-		'L_TOPICS_PRUNED' => $user->lang['Topics_pruned'],
-		'L_POSTS_PRUNED' => $user->lang['Posts_pruned'],
-		'L_PRUNE_RESULT' => $user->lang['Prune_success'])
-	);
-
-	add_admin_log('log_prune', $log_data);
-
-}
-else
-{
-	page_header($user->lang['Prune']);
-
-	//
-	// If they haven't selected a forum for pruning yet then
-	// display a select box to use for pruning.
-	//
-	if (empty($forum_id))
-	{
-		//
-		// Output a selection table if no forum id has been specified.
-		//
-		$select_list = '<option value="-1">' . $user->lang['All_Forums'] . '</option>';
-
-		$right = 0;
-		$subforum = '';
-		$forum_list = '';
-		foreach ($forum_rows as $row)
-		{
-			if ($row['left_id'] < $right )
-			{
-				$subforum .= '&nbsp;&nbsp;&nbsp;';
-			}
-			else if ($row['left_id'] > $right + 1)
-			{
-				$subforum = substr($subforum, 0, -18 * ($row['left_id'] - $right + 1));
-			}
-
-			$select_list .= '<option value="' . $row['forum_id'] . '">' . $subforum . $row['forum_name'] . '</option>';
-
-			$right = $row['right_id'];
-		}
+	page_header($user->lang['PRUNE']);
 
 ?>
 
-<h1><?php echo $user->lang['Prune']; ?></h1>
+<h1><?php echo $user->lang['PRUNE']; ?></h1>
 
-<p><?php echo $user->lang['Forum_Prune_explain']; ?></p>
+<p><?php echo $user->lang['PRUNE_SUCCESS']; ?></p>
 
-<form method="post" action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th align="center"><?php echo $user->lang['Select_a_Forum']; ?></th>
+		<th><?php echo $user->lang['FORUM']; ?></th>
+		<th><?php echo $user->lang['TOPICS_PRUNED']; ?></th>
+		<th><?php echo $user->lang['POSTS_PRUNED']; ?></th>
 	</tr>
-	<tr>
-		<td class="row1" align="center"><?php echo $s_hidden_fields; ?>&nbsp;<select name="f"><?php echo $select_list; ?></select>&nbsp;&nbsp;<input type="submit" value="<?php echo $user->lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
-	</tr>
-</table></form>
-
 <?php
+
+	// Get a list of forum's or the data for the forum that we are pruning.
+	$sql = "SELECT forum_id, forum_name 
+		FROM " . FORUMS_TABLE . "
+		ORDER BY left_id ASC";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$log_data = '';
+		do
+		{
+			$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
+			sync('forum', $forum_rows[$i]['forum_id']);
+
+			$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['forum_name']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $p_result['topics']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $p_result['posts']; ?></td>
+	</tr>
+<?php
+	
+			$log_data .= (($log_data != '') ? ', ' : '') . $forum_rows[$i]['forum_name'];
+		}
+		while($row = $db->sql_fetchrow($result));
+
+		add_admin_log('log_prune', $log_data);
 
 	}
 	else
 	{
-		$forum_name = ($forum_id == -1) ? $user->lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
-		$prune_data = $user->lang['Prune_topics_not_posted'] . " ";
-		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $user->lang['Days'];
+?>
+	<tr>
+		<td class="row1" align="center"><?php echo $user->lang['NO_PRUNE']; ?></td>
+	</tr>
+<?php
 
-		$s_hidden_fields = '<input type="hidden" name="f" value="' . $forum_id . '">';
+	}
+	$db->sql_freeresult($result);
+
+?>
+</table>
+
+<br clear="all" />
+
+<?php
+
+	page_footer();
+
+}
+
+page_header($user->lang['PRUNE']);
 
 ?>
 
-<h1><?php echo $user->lang['Prune']; ?></h1>
+<h1><?php echo $user->lang['PRUNE']; ?></h1>
 
-<p><?php echo $user->lang['Forum_Prune_explain']; ?></p>
+<p><?php echo $user->lang['FORUM_PRUNE_EXPLAIN']; ?></p>
 
-<h2><?php echo $user->lang['Forum'] . ': ' . $forum_name; ?></h2>
+<?php
 
-<form method="post"	action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+// If they haven't selected a forum for pruning yet then
+// display a select box to use for pruning.
+if (empty($forum_id))
+{
+
+	// Output a selection table if no forum id has been specified.
+	$select_list = '<option value="-1">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select(false, false, false);
+
+?>
+
+<form method="post" action="admin_prune.<?php echo $phpEx . $SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="th"><?php echo $user->lang['Forum_Prune']; ?></th>
+		<th align="center"><?php echo $user->lang['SELECT_FORUM']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $prune_data; ?></td>
-	</tr>
-	<tr>
-		<td class="cat" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="doprune" value="<?php echo $user->lang['Do_Prune']; ?>" class="mainoption"></td>
+		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select>&nbsp;&nbsp;<input type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 
 <?php
 
-	}
+}
+else
+{
+	$sql = "SELECT forum_name 
+		FROM " . FORUMS_TABLE . " 
+		WHERE forum_id = $forum_id";
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$forum_name = ($forum_id == -1) ? $user->lang['ALL_FORUMS'] : $row['forum_name'];
+
+?>
+
+<h2><?php echo $user->lang['FORUM'] . ': <i>' . $forum_name; ?></i></h2>
+
+<form method="post"	action="admin_prune.<?php echo $phpEx . $SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th class="th"><?php echo $user->lang['FORUM_PRUNE']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo sprintf($user->lang['PRUNE_NOT_POSTED'], '<input type="text" name="prunedays" size="4" />'); ?></td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="submit" name="doprune" value="<?php echo $user->lang['DO_PRUNE']; ?>" class="mainoption"></td>
+	</tr>
+</table></form>
+
+<?php
+
 }
 
 page_footer();

@@ -78,7 +78,7 @@ if ($mode != '')
 			{
 				if (!$word_id)
 				{
-					trigger_error($user->lang['No_word_selected']);
+					trigger_error($user->lang['NO_WORD']);
 				}
 
 				$sql = "SELECT *
@@ -87,27 +87,29 @@ if ($mode != '')
 				$result = $db->sql_query($sql);
 
 				$word_info = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			}
 
-			page_header($user->lang['Words_title']);
+			page_header($user->lang['WORDS_TITLE']);
 
 ?>
 
-<h1><?php echo $user->lang['Words_title']; ?></h1>
+<h1><?php echo $user->lang['WORDS_TITLE']; ?></h1>
 
-<p><?php echo $user->lang['Words_explain']; ?></p>
+<p><?php echo $user->lang['WORDS_EXPLAIN']; ?></p>
 
 <form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $user->lang['Edit_word_censor']; ?></th>
+		<th colspan="2"><?php echo $user->lang['EDIT_WORD']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Word']; ?></td>
+		<td class="row1"><?php echo $user->lang['WORD']; ?></td>
 		<td class="row2"><input type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Replacement']; ?></td>
+		<td class="row1"><?php echo $user->lang['REPLACEMENT']; ?></td>
 		<td class="row2"><input type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
@@ -127,17 +129,18 @@ if ($mode != '')
 
 			if ($word == '' || $replacement == '')
 			{
-				trigger_error($user->lang['Must_enter_word']);
+				trigger_error($user->lang['ENTER_WORD']);
 			}
 
-			$sql = ($word_id) ? "UPDATE " . WORDS_TABLE . " SET word = '" . sql_quote($word) . "', replacement = '" . sql_quote($replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . sql_quote($word) . "', '" . sql_quote($replacement) . "')";
+			$sql = ($word_id) ? "UPDATE " . WORDS_TABLE . " SET word = '" . $db->sql_escape($word) . "', replacement = '" . $db->sql_escape($replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . $db->sql_escape($word) . "', '" . $db->sql_escape($replacement) . "')";
 			$db->sql_query($sql);
+
 			$cache->destroy('word_censors');
 
 			$log_action = ($word_id) ? 'log_edit_word' : 'log_add_word';
 			add_admin_log($log_action, stripslashes($word));
 
-			$message = ($word_id) ? $user->lang['Word_updated'] : $user->lang['Word_added'];
+			$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
 			break;
 
 		case 'delete':
@@ -148,17 +151,18 @@ if ($mode != '')
 			}
 			else
 			{
-				trigger_error($user->lang['Must_specify_word']);
+				trigger_error($user->lang['NO_WORD']);
 			}
 
 			$sql = "DELETE FROM " . WORDS_TABLE . "
 				WHERE word_id = $word_id";
 			$db->sql_query($sql);
+
 			$cache->destroy('word_censors');
 
 			add_admin_log('log_delete_word');
 
-			$message = $user->lang['Word_remove'];
+			$message = $user->lang['WORD_REMOVE'];
 			break;
 
 	}
@@ -168,41 +172,39 @@ if ($mode != '')
 		ORDER BY word";
 	$result = $db->sql_query($sql);
 
-	$cache_str = "\$word_censors = array(\n";
-	$cache_str_match = $cache_str_replace = '';
 	if ($row = $db->sql_fetchrow($result))
 	{
+		$censors = array();
 		do
 		{
-			$cache_str_match .= "\t\t'" . addslashes('#\b' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . '\b#i') . "',\n";
-			$cache_str_replace .= "\t\t'" . addslashes($row['replacement']) . "',\n";
+			$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+			$censors['replace'][] = $row['replacement'];
 		}
 		while ($row = $db->sql_fetchrow($result));
 
-		$cache_str .= "\t'match' => array(\n$cache_str_match\t),\n\t'replace' => array(\n$cache_str_replace\t)\n);";
+		$cache->put('word_censors', $censors);
 	}
 	$db->sql_freeresult($result);
 
-	config_cache_write('\$word_censors = array\(.*?\);', $cache_str);
 	trigger_error($message);
 
 }
 else
 {
 
-	page_header($user->lang['Words_title']);
+	page_header($user->lang['WORDS_TITLE']);
 
 ?>
 
-<h1><?php echo $user->lang['Words_title']; ?></h1>
+<h1><?php echo $user->lang['WORDS_TITLE']; ?></h1>
 
-<p><?php echo $user->lang['Words_explain']; ?></p>
+<p><?php echo $user->lang['WORDS_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_words.<?php echo $phpEx . $SID; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th><?php echo $user->lang['Word']; ?></th>
-		<th><?php echo $user->lang['Replacement']; ?></th>
-		<th colspan="2"><?php echo $user->lang['Action']; ?></th>
+		<th><?php echo $user->lang['WORD']; ?></th>
+		<th><?php echo $user->lang['REPLACEMENT']; ?></th>
+		<th colspan="2"><?php echo $user->lang['ACTION']; ?></th>
 	</tr>
 
 <?php
@@ -222,7 +224,7 @@ else
 	<tr>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['word']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['replacement']; ?></td>
-		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['Edit']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['EDIT']; ?></a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['DELETE']; ?></a>&nbsp;</td>
 	</tr>
 <?php
@@ -234,7 +236,7 @@ else
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['Add_new_word']; ?>" /></td>
+		<td class="cat" colspan="5" height="28" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="add" value="<?php echo $user->lang['ADD_WORD']; ?>" /></td>
 	</tr>
 </table></form>
 

@@ -319,7 +319,6 @@ function update_image_dimensions()
 				SET ' . $db->sql_build_array('UPDATE', $img_sql) . " 
 				WHERE " . $fields . "_id = $image_id");
 			$cache->destroy('icons');
-			$cache->put('icons');
 
 			trigger_error($user->lang[$lang . '_EDITED']);
 		}
@@ -327,7 +326,6 @@ function update_image_dimensions()
 		{
 			$db->sql_query('INSERT INTO ' . $table . ' ' . $db->sql_build_array('INSERT', $img_sql));
 			$cache->destroy('icons');
-			$cache->put('icons');
 
 			trigger_error($user->lang[$lang . '_ADDED']);
 		}
