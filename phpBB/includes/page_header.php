@@ -206,7 +206,7 @@ $template->assign_vars(array(
 	"L_REGISTER" => $lang['Register'],
 	"L_PROFILE" => $lang['Profile'],
 	"L_SEARCH" => $lang['Search'],
-	"L_PRIVATEMSGS" => $lang['Private_msgs'],
+	"L_PRIVATEMSGS" => $lang['Private_messages'],
 	"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
 	"L_MEMBERLIST" => $lang['Memberlist'],
 	"L_FAQ" => $lang['FAQ'],

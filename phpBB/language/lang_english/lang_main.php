@@ -130,7 +130,6 @@ $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";
 $lang['Edit_profile'] = "Edit your profile";
 $lang['Search'] = "Search";
-$lang['Private_msgs'] = "Private Messages";
 $lang['Memberlist'] = "Memberlist";
 $lang['FAQ'] = "FAQ";
 $lang['Usergroups'] = "Usergroups";
@@ -161,9 +160,12 @@ $lang['Forum_is_locked'] = "Forum is locked";
 //
 // Login
 //
+$lang['Enter_password'] = "Please enter your username and password to login";
 $lang['Login'] = "Login";
 $lang['Logout'] = "Logout";
+
 $lang['Forgotten_password'] = "I forgot my password";
+
 $lang['Log_me_in'] = "Log me on automatically each visit";
 
 
