@@ -453,8 +453,9 @@ $lang['Descending'] = "Descending";
 $lang['Order'] = "Order";
 
 //
-// Usergroups
+// Group control panel
 //
+$lang['Group_Control_Panel'] = "Group Control Panel";
 $lang['Group_member_details'] = "Group Membership Details";
 $lang['Group_member_join'] = "Join a Group";
 
@@ -470,6 +471,12 @@ $lang['Memberships_pending'] = "Memberships pending";
 $lang['Join_group'] = "Join Group";
 $lang['No_group_members'] = "This group has no members";
 
+$lang["Group_joined"] = "You have successfully subscribed to this group, you will be notifed when your subscription is approved by the group moderator.";
+$lang['Group_request'] = "A request to join your group has been made";
+
+$lang['Approve_selected'] = "Approve Selected";
+$lang['Deny_selected'] = "Deny Selected";
+
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
 $lang['Member_this_group'] = "You are a member of this group";
@@ -481,7 +488,7 @@ $lang['Unsubscribe'] = "Unsubscribe";
 $lang['View_Information'] = "View Information";
 
 //
-// Search <= Should be blank for now
+// Search
 //
 $lang['Search_for_any'] = "Search for any terms or use query as entered";
 $lang['Search_for_all'] = "Search for all terms";
@@ -585,6 +592,8 @@ $lang['Split_after'] = "Split from selected post";
 $lang['Topic_split'] = "The selected topic has been split successfully";
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
 $lang['New_forum'] = "New forum";
+
+
 
 //
 // Timezones ... for display on each page
