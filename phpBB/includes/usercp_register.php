@@ -799,6 +799,15 @@ else
 		$template->assign_block_vars('switch_edit_profile', array());
 	}
 
+	if ( ($mode == 'register') || ($board_config['allow_namechange']) )
+	{
+		$template->assign_block_vars('switch_namechange_allowed', array());
+	}
+	else
+	{
+		$template->assign_block_vars('switch_namechange_disallowed', array());
+	}
+
 	//
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....

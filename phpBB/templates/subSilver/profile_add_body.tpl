@@ -16,10 +16,18 @@
 	<tr> 
 		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
+	<!-- BEGIN switch_namechange_disallowed -->
+	<tr> 
+		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
+		<td class="row2"><input type="hidden" name="username" value="{USERNAME}" /><span class="gen"><b>{USERNAME}</b></span></td>
+	</tr>
+	<!-- END switch_namechange_disallowed -->
+	<!-- BEGIN switch_namechange_allowed -->
 	<tr> 
 		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
 		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
 	</tr>
+	<!-- END switch_namechange_allowed -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
 		<td class="row2"><input type="text" class="post" style="width:200px" name="email" size="25" maxlength="255" value="{EMAIL}" /></td>

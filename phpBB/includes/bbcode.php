@@ -576,6 +576,9 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 		// Replace tabs with "&nbsp; &nbsp;" so tabbed code indents sorta right without making huge long lines.
 		$after_replace = str_replace("\t", "&nbsp; &nbsp;", $after_replace);
 
+		// now Replace space occurring at the beginning of a line
+		$after_replace = preg_replace("/^ {1}/m", '&nbsp;', $after_replace);
+
 		$str_to_match = "[code:1:$uid]" . $before_replace . "[/code:1:$uid]";
 
 		$replacement = $code_start_html;

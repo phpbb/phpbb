@@ -99,7 +99,7 @@ function validate_username($username)
 	$db->sql_freeresult($result);
 
 	// Don't allow " in username.
-	if (strstr($username, '"'))
+	if (strstr($username, '"') || strstr($username, '&quot;'))
 	{
 		return array('error' => true, 'error_msg' => $lang['Username_invalid']);
 	}
