@@ -40,11 +40,11 @@ function prune($forum_id, $prune_date)
 		FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 		WHERE t.forum_id = $forum_id
 			AND p.post_id = t.topic_last_post_id
-			AND t.topic_type != " . POST_ANNOUNCE . "
+			AND t.topic_type = " . POST_NORMAL . "
 			AND p.post_time < $prune_date";
 	if(!$result = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Couldn't obtain list of topics to prune.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Couldn't obtain list of topics to prune.", __LINE__, __FILE__);
 	} // End if(!$result...
 	$pruned_topics = $db->sql_numrows($result);
 	if($pruned_topics > 0) 
@@ -66,14 +66,31 @@ function prune($forum_id, $prune_date)
 		$prune_topic_sql .= ')';
 		if(!$result = $db->sql_query($prune_posts_sql))
 		{
-			error_die(SQL_QUERY, "While Pruning: Couldn't remove affected posts.<br>$prune_posts_sql", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "While Pruning: Couldn't remove affected posts.<br>$prune_posts_sql", __LINE__, __FILE__);
 		} // end if(!$result...
+		$pruned_posts = $db->sql_affectedrows();
 		if(!$result = $db->sql_query($prune_topic_sql))
 		{
-			error_die(SQL_QUERY, "While Pruning: Couldn't remove affected topics.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "While Pruning: Couldn't remove affected topics.", __LINE__, __FILE__);
 		} // end if(!$result...
+		
+		//
+		// Update forum info to reflect proper topic and post counts...
+		//
+		
+		$sql = "UPDATE " . FORUMS_TABLE . " 
+			SET forum_posts = (forum_posts - $pruned_posts), forum_topics = (forum_topics - $pruned_topics) 
+			WHERE forum_id = $forum_id";
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "While Pruning: Couldn't update topic/post counts<br>" .mysql_error() , __LINE__, __FILE__);
+		}
+		
 	} // End if $prune_topics
-	return $pruned_topics;
+	$returnval = array (
+		"topics" => $pruned_topics,
+		"posts" => $pruned_posts);
+	return $returnval;
 } // End function prune.
 
 /***************************************************************************\
@@ -92,7 +109,7 @@ function auto_prune($forum_id = 0)
 	
 	if(!$result = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
 	} // End if(!$result...
 	while($row = $db->sql_fetchrow($result))
 	{
@@ -105,7 +122,7 @@ function auto_prune($forum_id = 0)
 			WHERE forum_id = '$forum_id'";
 		if(!$db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Auto-Prune: Couldn't update forum table.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Auto-Prune: Couldn't update forum table.", __LINE__, __FILE__);
 		} // End if(!$db->sql..
 	} // End While Loop.
 } // End auto_prune function.
