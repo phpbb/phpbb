@@ -776,7 +776,7 @@ else
 					{
 						$optionlist_acl_adv[$forum_id][$j] = "<select name=\"" . $field_name . "[$forum_id]\">";
 
-						if( isset($auth_field_acl[$forum_id][$field_name]) && !$auth_group['auth_mod'] )
+						if( isset($auth_field_acl[$forum_id][$field_name]) && !$group_ary['auth_mod'] )
 						{
 							if(!$auth_field_acl[$forum_id][$field_name])
 							{
@@ -789,7 +789,7 @@ else
 						}
 						else
 						{
-							if( $auth_group['auth_mod'] )
+							if( $group_ary['auth_mod'] )
 							{
 								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option>";
 							}
