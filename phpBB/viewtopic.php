@@ -398,7 +398,7 @@ if(!$result = $db->sql_query($sql))
 
 if(!$total_posts = $db->sql_numrows($result))
 {
-	message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
 }
 $postrow = $db->sql_fetchrowset($result);
 
