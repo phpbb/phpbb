@@ -166,7 +166,6 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 // a number of problems which will probably end up in this
 // solution being practically as fast and certainly simpler!
 //
-
 if($userdata['user_id'] != ANONYMOUS)
 {
 	$can_watch_topic = TRUE;
@@ -181,9 +180,9 @@ if($userdata['user_id'] != ANONYMOUS)
 	}
 	else if( $db->sql_numrows($result) )
 	{
-		if( isset($HTTP_GET_VARS['watch']) )
+		if( isset($HTTP_GET_VARS['unwatch']) )
 		{
-			if( !$HTTP_GET_VARS['watch'] )
+			if( $HTTP_GET_VARS['unwatch'] == "topic" )
 			{
 				$is_watching_topic = 0;
 
@@ -221,7 +220,7 @@ if($userdata['user_id'] != ANONYMOUS)
 	{
 		if( isset($HTTP_GET_VARS['watch']) )
 		{
-			if( $HTTP_GET_VARS['watch'] )
+			if( $HTTP_GET_VARS['watch'] == "topic" )
 			{
 				$is_watching_topic = TRUE;
 
@@ -242,8 +241,18 @@ if($userdata['user_id'] != ANONYMOUS)
 }
 else
 {
-	$can_watch_topic = 0;
-	$is_watching_topic = 0;
+	if( isset($HTTP_GET_VARS['unwatch']) )
+	{
+		if( $HTTP_GET_VARS['unwatch'] == "topic" )
+		{
+			header("Location: login.$phpEx?forward_page=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic");
+		}
+	}
+	else
+	{
+		$can_watch_topic = 0;
+		$is_watching_topic = 0;
+	}
 }
 
 //
@@ -699,13 +708,13 @@ if($can_watch_topic)
 {
 	if($is_watching_topic)
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=0\">" . $lang['Stop_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=0\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic\">" . $lang['Stop_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=1\">" . $lang['Start_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=1\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic\">" . $lang['Start_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
 	}
 }
 else
