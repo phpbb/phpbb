@@ -21,12 +21,6 @@ if ( !defined('IN_PHPBB') )
 //
 $phpEx = "php";
 
-//
-// For debug timing
-// 
-$mtime = microtime();
-$mtime = explode(" ",$mtime);
-$mtime = $mtime[1] + $mtime[0];
-$starttime = $mtime;
+$starttime = 0;
 
 ?>
