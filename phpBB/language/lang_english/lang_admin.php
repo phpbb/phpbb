@@ -32,6 +32,9 @@ $lang['Database_size'] = "Database size";
 $lang['Gzip_compression'] ="Gzip compression";
 $lang['Not_available'] = "Not available";
 
+$lang['ON'] = "ON"; // This is for GZip compression
+$lang['OFF'] = "OFF"; 
+
 
 //
 // DB Utils
@@ -185,6 +188,7 @@ $lang['Board_disable_explain'] = "This will make the board unavailable to users.
 $lang['Acct_activation'] = "Enable account activation";
 
 $lang['Abilities_settings'] = "User and Forum Basic Settings";
+$lang['Max_poll_options'] = "Max number of poll options";
 $lang['Flood_Interval'] = "Flood Interval";
 $lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts"; 
 $lang['Board_email_form'] = "User email via board";
