@@ -1481,30 +1481,7 @@ function remove_comments(&$output)
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
 function remove_remarks($sql)
 {
-	// NOTE: isn't this function actually doing
-//	return preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
-	// ?
-	
-	$lines = explode("\n", $sql);
-
-	// try to keep mem. use down
-	$sql = '';
-
-	$linecount = count($lines);
-	$output = '';
-
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if ($i != $linecount - 1 || strlen($lines[$i]) > 0)
-		{
-			$output .= ($lines[$i]{0} != '#') ? $lines[$i] . "\n" : "\n";
-			// Trading a bit of speed for lower mem. use here.
-			$lines[$i] = '';
-		}
-	}
-
-	return $output;
-
+	return preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
 }
 
 // split_sql_file will split an uploaded sql file into single sql statements.
@@ -2044,6 +2021,7 @@ if (class_exists('auth'))
 			$this->acl_clear_prefetch();
 		}
 
+		// NOTE: this function is not in use atm
 		// Add a new option to the list ... $options is a hash of form ->
 		// $options = array(
 		//	'local'		=> array('option1', 'option2', ...),
@@ -2051,9 +2029,9 @@ if (class_exists('auth'))
 		//);
 		function acl_add_option($options)
 		{
-			global $db;
+			global $db, $cache;
 
-			if (!is_array($new_options))
+			if (!is_array($options))
 			{
 				trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
 			}
@@ -2079,15 +2057,10 @@ if (class_exists('auth'))
 			}
 			$db->sql_freeresult($result);
 
-			if (!is_array($options))
-			{
-				trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
-			}
-
 			// Here we need to insert new options ... this requires discovering whether
 			// an options is global, local or both and whether we need to add an option
 			// type flag (x_)
-			$new_options = array();
+			$new_options = array('local' => array(), 'global' => array());
 			foreach ($options as $type => $option_ary)
 			{
 				$option_ary = array_unique($option_ary);

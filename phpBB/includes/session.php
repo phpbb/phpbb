@@ -34,6 +34,12 @@ class session
 		$split_page = array();
 		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', $this->page, $split_page, PREG_SET_ORDER);
 
+		// Take care of SID
+		if (!isset($split_page[0][1]))
+		{
+			$split_page[0][1] = substr(strrchr($this->page, '/'), 1);
+		}
+
 		// Page for session_page value
 		$this->page = $split_page[0][1] . ((isset($split_page[0][2])) ? $split_page[0][2] : '');
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
@@ -784,7 +790,8 @@ class user extends session
 
 	function img($img, $alt = '', $width = false, $suffix = '')
 	{
-		static $imgs, $phpbb_root_path;
+		static $imgs;
+		global $phpbb_root_path;
 
 		if (empty($imgs[$img . $suffix]) || $width)
 		{

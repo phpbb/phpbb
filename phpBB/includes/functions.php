@@ -371,6 +371,10 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	$display_jumpbox = false;
 	$iteration = 0;
 
+	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
+	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
+	// If this happens, the padding could be "broken"
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
@@ -1085,12 +1089,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	{
 		$user_id = request_var('user_id', 0);
 		$session_id = request_var('sess', '');
+		$confirm_key = request_var('confirm_key', '');
 
-		// The session page is already updated, but the user array holds the data before the update took place, therefore it is working here...
-		if ($user_id != $user->data['user_id'] || 
-			$session_id != $user->session_id || 
-			substr(basename(str_replace('&amp;', '&', $user->data['session_page'])), 0, 199) != substr(basename(str_replace('&amp;', '&', $user->cur_page)), 0, 199) ||
-			!preg_match('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', str_replace('&amp;', '&', $user->cur_page)))
+		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || $confirm_key != $user->data['user_last_confirm_key'])
 		{
 			return false;
 		}
@@ -1105,7 +1106,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" /><input type="hidden" name="sid" value="' . $SID . '" />';
 
 	// generate activation key
-	$act_key = gen_rand_string(10);
+	$confirm_key = gen_rand_string(10);
 
 	page_header($user->lang[$title]);
 
@@ -1114,26 +1115,24 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	);
 
 	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
-	if (request_var('act_key', ''))
+	if (request_var('confirm_key', ''))
 	{
-		$user->cur_page = preg_replace('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', '\1\2', str_replace('&amp;', '&', $user->cur_page));
+//		$user->cur_page = preg_replace('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', '\1\2', str_replace('&amp;', '&', $user->cur_page));
+		// Need to adjust...
+		trigger_error('Hacking attempt');
 	}
-	$user_page = $user->cur_page . ((strpos($user->cur_page, '?') !== false) ? '&' : '?') . 'act_key=' . $act_key;
-	$user_page = str_replace('&amp;', '&', $user_page);
 
 	$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> $user->lang[$title],
 		'MESSAGE_TEXT'		=> $user->lang[$title . '_CONFIRM'],
 
 		'YES_VALUE'			=> $user->lang['YES'],
-		'S_CONFIRM_ACTION'	=> $user_page,
+		'S_CONFIRM_ACTION'	=> $user->cur_page . ((strpos($user->cur_page, '?') !== false) ? '&' : '?') . 'confirm_key=' . $confirm_key,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 	);
 	
-	// Here we update the lastpage of the user, only here
-	$sql = 'UPDATE ' . SESSIONS_TABLE . "
-		SET session_page = '" . $db->sql_escape($user_page) . "'
-		WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
+	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
+		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
 
 	page_footer();
@@ -1368,7 +1367,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_WARNING:
 			if (defined('DEBUG_EXTRA'))
 			{
-				if (!strstr($errfile, '/cache/'))
+				if (!strstr($errfile, '/cache/') && !strstr($errfile, 'mysql.php') && !strstr($errfile, 'template.php'))
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
 				}
