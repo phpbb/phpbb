@@ -479,7 +479,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( !($row = $db->sql_fetchrow($result) )
+			if ( !($row = $db->sql_fetchrow($result)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
@@ -487,7 +487,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			$sql = "SELECT MAX(group_id) AS total
 				FROM " . GROUPS_TABLE;
-			if ( !($result = $db->sql_query($sql) ) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
