@@ -97,7 +97,10 @@ class session
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
-				if ($u_ip == $s_ip)
+				$s_browser = ($config['browser_check']) ? $this->data['session_browser'] : '';
+				$u_browser = ($config['browser_check']) ? $this->browser : '';
+
+				if ($u_ip == $s_ip && $s_browser == $u_browser)
 				{
 					// Only update session DB a minute or so after last update or if page changes
 					if (($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page) && $update)
