@@ -92,40 +92,6 @@ class sql_db
 	//
 	// Other base methods
 	//
-	function sql_setdb($database)
-	{
-		if($this->db_connect_id)
-		{
-			if($this->query_result)
-			{
-				@pg_freeresult($this->query_result);
-				unset($this->query_result);
-				unset($this->row);
-			}
-			$result = @pg_close($this->db_connect_id);
-			if($result)
-			{
-				$this->dbname = $database;
-				$make_connect = $this->connect_string . "dbname=$database";
-				if($this->persistency)
-				{
-					$this->db_connect_id = @pg_pconnect($make_connect);
-				}
-				else
-				{
-					$this->db_connect_id = @pg_connect($make_connect);
-				}
-			}
-		}
-		if($this->db_connect_id)
-		{
-			return $this->db_connect_id;
-		}
-		else
-		{
-			return false;
-		}
-	}
 	function sql_close()
 	{
 		if($this->db_connect_id)
@@ -185,6 +151,22 @@ class sql_db
 		if($query_id)
 		{
 			$result = @pg_numrows($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	function sql_affectedrows($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = @pg_cmdtuples($query_id);
 			return $result;
 		}
 		else

@@ -96,10 +96,6 @@ class sql_db
 	//
 	// Other base methods
 	//
-	function sql_setdb($database)
-	{
-		return false;
-	}
 	function sql_close()
 	{
 		if($this->db_connect_id)
@@ -251,6 +247,21 @@ class sql_db
 		if($query_id)
 		{
 			return $this->result_numrows[$query_id];
+		}
+		else
+		{
+			return false;
+		}
+	}
+	function sql_affectedrows($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			return $this->@odbc_num_rows[$query_id];
 		}
 		else
 		{

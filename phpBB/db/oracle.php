@@ -64,11 +64,6 @@ class sql_db
 	//
 	// Other base methods
 	//
-	function sql_setdb($database)
-	{
-		// This method does not exist in Oracle.
-		return true;
-	}
 	function sql_close()
 	{
 		if($this->db_connect_id)
@@ -142,6 +137,22 @@ class sql_db
 			// OCIFetchStatment kills our query result so we have to execute the statment again
 			// if we ever want to use the query_id again.
 			OCIExecute($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	function sql_affectedrows($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = @OCIRowCount($query_id);
 			return $result;
 		}
 		else

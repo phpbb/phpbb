@@ -70,20 +70,10 @@ class sql_db
 		}
 		return $this->db_connect_id;
 	}
+
 	//
 	// Other base methods
 	//
-	function sql_setdb($database)
-	{
-		$this->dbname = $database;
-		$dbselect = @mssql_select_db($this->dbname);
-		if(!$dbselect)
-		{
-			sql_close();
-			$this->db_connect_id = $dbselect;
-		}
-		return $this->db_connect_id;
-	}
 	function sql_close()
 	{
 		if($this->db_connect_id)
@@ -170,6 +160,9 @@ class sql_db
 			{
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
 
+				$next_id_query = @mssql_query("SELECT @@ROWCOUNT AS this_count");
+				$this->affected_rows[$this->query_result] = $this->sql_fetchfield("this_count", -1, $next_id_query);
+
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = -1;
 			}
@@ -202,6 +195,21 @@ class sql_db
 				$result = @mssql_num_rows($query_id);
 			}
 			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	function sql_affectedrows($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			return $affected_rows[$query_id];
 		}
 		else
 		{
