@@ -1,47 +1,48 @@
 <div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
 	<tr>
-		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
 </table></div>
 
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr>
-		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
 			<tr>
-				<td bgcolor="{T_TH_COLOR3}">&nbsp;</td>
-				<td bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_FORUM}</b>&nbsp;</font></td>
-				<td bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_TOPICS}</b>&nbsp;</font></td>
-				<td bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_POSTS}</b>&nbsp;</font></td>
-				<td bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_LASTPOST}</b>&nbsp;</font></td>
-				<td bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_MODERATOR}</b>&nbsp;</font></td>
+				<th>&nbsp;</td>
+				<th>&nbsp;{L_FORUM}&nbsp;</td>
+				<th>&nbsp;{L_TOPICS}&nbsp;</td>
+				<th>&nbsp;{L_POSTS}&nbsp;</td>
+				<th>&nbsp;{L_LASTPOST}&nbsp;</td>
+				<th>&nbsp;{L_MODERATOR}&nbsp;</td>
 			</tr>
 			<!-- BEGIN catrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b>&nbsp;</font></td>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b>&nbsp;</span></td>
 			</tr>
 			<!-- BEGIN forumrow -->
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle" width="7%">{catrow.forumrow.FOLDER}</td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{catrow.forumrow.U_VIEWFORUM}">{catrow.forumrow.FORUM_NAME}</a></font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{catrow.forumrow.FORUM_DESC}</font></td>
-				<td bgcolor="{T_TD_COLOR1}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{catrow.forumrow.TOPICS}</font></td>
-				<td bgcolor="{T_TD_COLOR2}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{catrow.forumrow.POSTS}</font></td>
-				<td bgcolor="{T_TD_COLOR1}" width="15%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{catrow.forumrow.LAST_POST}</font></td>
-				<td bgcolor="{T_TD_COLOR2}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{catrow.forumrow.MODERATORS}</td></tr>
+				<td class="row_1" align="center" valign="middle" width="7%">{catrow.forumrow.FOLDER}</td>
+				<td class="row_2"><span class="gen"><a href="{catrow.forumrow.U_VIEWFORUM}">{catrow.forumrow.FORUM_NAME}</a></span><br><span class="gensmall">{catrow.forumrow.FORUM_DESC}</span></td>
+				<td class="row_1" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.TOPICS}</span></td>
+				<td class="row_2" width="5%" align="center" valign="middle"><span class="gen">{catrow.forumrow.POSTS}</span></td>
+				<td class="row_1" width="15%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+				<td class="row_2" width="5%" align="center" valign="middle"><span class="gensmall">{catrow.forumrow.MODERATORS}</span></td></tr>
 			</tr>
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b>&nbsp;</font></td>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
-				<td colspan="5" bgcolor="{T_TD_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_PRIVATE_MESSAGE_INFO}</font></td>
+				<td class="row_1" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
+				<td class="row_2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
 			</tr>
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{U_VIEWONLINE}">Who is Online</a></b>&nbsp;</font></td>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
 			</tr>
 			<tr>
-				<td colspan="6" bgcolor="{T_TD_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
+				<td class="row_1" align="center" valign="middle" width="7%"><img src="images/whosonline.gif"></td>
+				<td class="row_2" colspan="5" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -50,12 +51,12 @@
 <div align="center"><table align="center" border="0" width="98%">
 	<tr>
 		<td width="30" align="center"><img src="images/red_folder.gif"></td>
-		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NEWPOSTS}</font></td>
-		<td align="right" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td><span class="gensmall">{L_NEWPOSTS}</span></td>
+		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 	</tr>
 	<tr>
 		<td align="center"><img src="images/folder.gif"></td>
-		<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_NONEWPOSTS}</font></td>
+		<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
 	</tr>
 </table>
 
