@@ -10,7 +10,7 @@ var text_name = 'message';
 
 // Define the bbCode tags
 bbcode = new Array();
-bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[flash]','[/flash]','[url]','[/url]');
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
 imageTag = false;
 
 // Helpline messages
@@ -169,11 +169,10 @@ function checkForm()
 				<td><input type="button" class="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
 				<td><input type="button" class="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
 				<td><input type="button" class="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
-				<td><input type="button" class="button" accesskey="f" name="addbbcode16" value="Flash" style="width: 40px"  onclick="bbstyle(16)" onmouseover="helpline('p')" /></td>
 				<td><input type="button" class="button" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
 			</tr>
 			<tr>
-				<td colspan="10"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
 							<option value="7">{L_FONT_TINY}</option>
@@ -187,11 +186,11 @@ function checkForm()
 				</table></td>
 			</tr>
 			<tr>
-				<td colspan="10" width="450"><input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" /></td>
+				<td colspan="9" width="450"><input type="text" name="helpbox" size="45" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
 				<td class="genmed" align="center">{L_FONT_COLOR}</td>
 			</tr>
 			<tr>
-				<td colspan="10"><textarea style="width:450px" name="message" rows="15" cols="35" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
+				<td colspan="9"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
 				<td width="100%" align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--

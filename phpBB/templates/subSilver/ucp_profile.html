@@ -122,15 +122,13 @@
 						<td><input type="button" class="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" /></td>
 						<td><input type="button" class="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /></td>
 						<td><input type="button" class="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" /></td>
-
 						<td><input type="button" class="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
 						<td><input type="button" class="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
 						<td><input type="button" class="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
-						<td><input type="button" class="button" accesskey="f" name="addbbcode16" value="Flash" style="width: 40px"  onclick="bbstyle(16)" onmouseover="helpline('p')" /></td>
 						<td><input type="button" class="button" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
 					</tr>
 					<tr>
-						<td colspan="10"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+						<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
 									<option value="7">{L_FONT_TINY}</option>
@@ -144,10 +142,10 @@
 						</table></td>
 					</tr>
 					<tr>
-						<td colspan="10" width="450"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" style="width:450px;font-size:10px" value="{L_STYLES_TIP}" /></td>
+						<td colspan="9" width="450"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="{L_STYLES_TIP}" /></td>
 					</tr>
 					<tr>
-						<td colspan="10" align="center"><textarea class="post" name="signature" rows="6" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
+						<td colspan="9"><textarea class="post" name="signature" rows="6" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
 					</tr>
 				</table></td>
 			</tr>
