@@ -59,6 +59,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	{
 		error_die(SQL_QUERY, "Couldn't obtain ban information.", __LINE__, __FILE__);
 	}
+
 	$ban_info = $db->sql_fetchrow($result);
 
 	//
@@ -244,9 +245,9 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				error_die(SESSION_CREATE);
 			}
 		}
-
+		
 		$userdata = $db->sql_fetchrow($result);
-
+		
 		//
 		// Did the session exist in the DB?
 		// 
@@ -327,6 +328,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				error_die(SESSION_CREATE);
 			}
 		}
+		
 		$userdata = $db->sql_fetchrow($result);
 
 		if($userdata['user_autologin_key'])

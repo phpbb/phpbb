@@ -86,11 +86,15 @@ if(!$result)
 
 $logged_online = 0;
 $guests_online = 0;
-while($row = $db->sql_fetchrow($result))
+
+$row = $db->sql_fetchrowset($result);
+$num_rows = $db->sql_numrows($result);
+for($x = 0; $x < $num_rows; $x++)
 {
-	if($row['session_logged_in'])
+	
+	if($row[$x]['session_logged_in'])
 	{
-		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row[$x]['user_id']) . "\">" . $row[$x]['username'] . "</a>";
 		$logged_online++;
 	}
 	else
@@ -98,6 +102,7 @@ while($row = $db->sql_fetchrow($result))
 		$guests_online++;
 	}
 }
+
 $userlist = "";
 for($i = 0; $i < $logged_online; $i++)
 {

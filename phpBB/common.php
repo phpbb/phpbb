@@ -96,7 +96,7 @@ if(!$result = $db->sql_query($sql))
 else
 {
 	$config = $db->sql_fetchrow($result);
-
+	
 	$board_config['sitename'] = stripslashes($config['sitename']);
 	$board_config['allow_html'] = $config['allow_html'];
 	$board_config['allow_bbcode'] = $config['allow_bbcode'];
