@@ -620,47 +620,41 @@ class auth
 	{
 		global $db;
 
-		$acl_db = array();
-
-		$sql = "SELECT a.forum_id, a.auth_setting, ao.auth_option
-			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = " . $userdata['user_id'] . "
-				AND a.group_id = ug.group_id
-				AND ao.auth_option_id = a.auth_option_id";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$acl_db[] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		$sql = "SELECT a.forum_id, a.auth_setting, ao.auth_option_id, ao.auth_option
-			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
+		// First grab user settings ... each user has only one setting for each
+		// option ... so we shouldn't need any ACL_NO checks ... he says ...
+		$sql = "SELECT ao.auth_option, a.forum_id, a.auth_setting
+			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
 			WHERE a.user_id = " . $userdata['user_id'] . "
 				AND ao.auth_option_id = a.auth_option_id";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$acl_db[] = $row;
+			$this->acl[$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
 		}
 		$db->sql_freeresult($result);
 
-		if (is_array($acl_db))
+		// Now grab group settings ... users can belong to multiple groups so we grab
+		// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
+		$sql = "SELECT ao.auth_option, a.forum_id, MIN(a.auth_setting) as min_setting
+			FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
+			WHERE ug.user_id = " . $userdata['user_id'] . "
+				AND a.group_id = ug.group_id
+				AND ao.auth_option_id = a.auth_option_id 
+			GROUP BY ao.auth_option, a.forum_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
 		{
-			sort($acl_db);
-
-			foreach ($acl_db as $row)
+			if ($this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
 			{
-				if ($row['auth_setting'] != ACL_UNSET &&
-					$this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
-				{
-					$this->acl[$row['forum_id']][$row['auth_option']] = intval($row['auth_setting']);
-				}
+				$this->acl[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 			}
-			unset($acl_db);
+		}
+		$db->sql_freeresult($result);
 
+		if (is_array($this->acl))
+		{
 			$global_bits = 8 * ceil(sizeof($this->acl_options['global']) / 8);
 			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8);
 			$local_hold = $global_hold = '';
@@ -737,7 +731,7 @@ class auth
 	{
 		global $db;
 
-		$where_sql = ($user_id) ? "WHERE user_id = $user_id" : '';
+		$where_sql = ($user_id) ? ' WHERE user_id = ' . intval($user_id) : '';
 
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_permissions = ''
