@@ -249,6 +249,7 @@ if ($forum_data['forum_postable'])
 		'L_NO_TOPICS' 			=> ( $forum_data['forum_status'] == ITEM_LOCKED ) ? $user->lang['Forum_locked'] : $user->lang['No_topics_post_one'],
 		'L_GOTO_PAGE' 			=> $user->lang['Goto_page'],
 
+		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_SELECT_SORT_DIR' => $select_sort_dir,
 		'S_SELECT_SORT_KEY' => $select_sort,
 		'S_SELECT_SORT_DAYS'=> $select_sort_days,
