@@ -222,6 +222,7 @@ CREATE TABLE phpbb_forums (
    forum_postable tinyint(4) DEFAULT '0' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_topics_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_poster_id mediumint(8) DEFAULT '0' NOT NULL,
@@ -265,7 +266,6 @@ CREATE TABLE phpbb_groups (
    group_avatar_type tinyint(4),
    group_rank int(11) DEFAULT '0',
    group_colour varchar(6) DEFAULT '' NOT NULL,
-   group_display tinyint(1) DEFAULT '1' NOT NULL,
    group_description varchar(255) NOT NULL,
    PRIMARY KEY (group_id)
 );
@@ -663,6 +663,7 @@ CREATE TABLE phpbb_styles_imageset (
   icon_quote varchar(200) default NULL,
   icon_search varchar(200) default NULL,
   icon_edit varchar(200) default NULL,
+  icon_report varchar(200) default NULL,
   icon_email varchar(200) default NULL,
   icon_www varchar(200) default NULL,
   icon_icq varchar(200) default NULL,
@@ -735,6 +736,7 @@ CREATE TABLE phpbb_topics (
    topic_rating tinyint(4) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_replies_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
    topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
