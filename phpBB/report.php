@@ -34,7 +34,7 @@ $user->setup();
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
 $reason_id = (!empty($_REQUEST['reason_id'])) ? intval($_REQUEST['reason_id']) : 0;
-$notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE;
+$user_notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE;
 $report_text = (!empty($_REQUEST['report_text'])) ? htmlspecialchars(stripslashes($_REQUEST['report_text'])) : '';
 
 // Has the report been cancelled?
@@ -72,18 +72,33 @@ foreach ($acl_check_ary as $acl => $error)
 }
 unset($acl_check_ary);
 
-// Check if the post has already been reported
-$result = $db->sql_query('SELECT * FROM ' . REPORTS_TABLE . " WHERE post_id = $post_id");
+// Check if the post has already been reported by this user
+$sql = 'SELECT *
+	FROM ' . REPORTS_TABLE . "
+	WHERE post_id = $post_id
+		AND user_id = " . $user->data['user_id'];
+$result = $db->sql_query($sql);
 
 if ($row = $db->sql_fetchrow($result))
 {
-	if ($user->data['user_id'] == $row['user_id'] && $user->data['user_id'] != ANONYMOUS)
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		extract($row);
+		// A report exists, extract $row if we're going to display the form
+
+		if (!empty($_POST['reason_id']))
+		{
+			$report_id = intval($row['report_id']);
+		}
+		else
+		{
+			// Overwrite set variables
+			extract($row);
+		}
 	}
 	else
 	{
 		$return_topic = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>');
+
 		trigger_error($user->lang['ALREADY_REPORTED'] . $return_topic);
 	}
 }
@@ -95,12 +110,12 @@ else
 // Has the report been confirmed?
 if (!empty($_POST['reason_id']))
 {
-	$sql = 'SELECT reason_name 
+	$sql = 'SELECT reason_title 
 		FROM ' . REASONS_TABLE . " 
 		WHERE reason_id = $reason_id";
 	$result = $db->sql_query($sql);
 
-	if (!($row = $db->sql_fetchrow($result)) || (!$report_text && $row['reason_name'] == 'other'))
+	if (!($row = $db->sql_fetchrow($result)) || (!$report_text && $row['reason_title'] == 'other'))
 	{
 		trigger_error('EMPTY_REPORT');
 	}
@@ -110,7 +125,7 @@ if (!empty($_POST['reason_id']))
 		'reason_id'	=>	(int) $reason_id,
 		'post_id'		=>	(int) $post_id,
 		'user_id'		=>	(int) $user->data['user_id'],
-		'user_notify'	=>	(int) $notify,
+		'user_notify'	=>	(int) $user_notify,
 		'report_time'	=>	(int) time(),
 		'report_text'	=>	(string) $report_text
 	);
@@ -162,16 +177,16 @@ $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$row['reason_name'] = strtoupper($row['reason_name']);
+	$row['reason_title'] = strtoupper($row['reason_title']);
 
-	$reason_name = (!empty($user->lang['REPORT_REASONS']['TITLE'][$row['reason_name']])) ? $user->lang['REPORT_REASONS']['TITLE'][$row['reason_name']] : ucwords(str_replace('_', ' ', $row['reason_name']));
+	$reason_title = (!empty($user->lang['report_reasons']['TITLE'][$row['reason_title']])) ? $user->lang['report_reasons']['TITLE'][$row['reason_title']] : ucwords(str_replace('_', ' ', $row['reason_title']));
 
-	$reason_description = (!empty($user->lang['REPORT_REASONS']['DESCRIPTION'][$row['reason_name']])) ? $user->lang['REPORT_REASONS']['DESCRIPTION'][$row['reason_name']] : $row['reason_description'];
+	$reason_desc = (!empty($user->lang['report_reasons']['DESCRIPTION'][$row['reason_title']])) ? $user->lang['report_reasons']['DESCRIPTION'][$row['reason_title']] : $row['reason_desc'];
 
 	$template->assign_block_vars('reason', array(
 		'ID'			=>	$row['reason_id'],
-		'NAME'			=>	htmlspecialchars($reason_name),
-		'DESCRIPTION'	=>	htmlspecialchars($reason_description),
+		'NAME'			=>	htmlspecialchars($reason_title),
+		'DESCRIPTION'	=>	htmlspecialchars($reason_desc),
 		'S_SELECTED'	=>	($row['reason_id'] == $reason_id) ? TRUE : FALSE
 	));
 }
@@ -179,6 +194,8 @@ while ($row = $db->sql_fetchrow($result))
 $template->assign_vars(array(
 	'REPORT_TEXT'		=>	$report_text,
 	'S_REPORT_ACTION'	=>	"report.$phpEx$SID&amp;p=$post_id" . (($report_id) ? "&amp;report_id=$report_id" : ''),
+
+	'S_NOTIFY'				=>	(!empty($user_notify)) ? TRUE : FALSE,
 	'S_CAN_NOTIFY'		=>	($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE
 ));
 
