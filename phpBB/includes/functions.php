@@ -741,7 +741,7 @@ function redirect($url)
 	}
 	if (isset($cache))
 	{
-		$cache->save_cache();
+		$cache->unload();
 	}
 
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';

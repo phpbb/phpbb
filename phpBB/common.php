@@ -145,9 +145,11 @@ $user = new user();
 $auth = new auth();
 
 // Need these here so instantiate them now
-$cache = new acm();// Experimental cache manager
+$cache = new acm();
 $template = new template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+// 20030218 Ashe: $dbport is not set by the installer
 
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))

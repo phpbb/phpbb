@@ -131,7 +131,7 @@ function page_footer($copyright_html = true)
 
 	if (!empty($cache))
 	{
-		$cache->save_cache();
+		$cache->unload();
 	}
 
 	exit;

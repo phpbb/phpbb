@@ -22,6 +22,12 @@
 // Close our DB connection.
 $db->sql_close();
 
+// Unload cache
+if (!empty($cache))
+{
+	$cache->unload();
+}
+
 // Output page creation time
 if (defined('DEBUG'))
 {
@@ -52,10 +58,6 @@ $template->assign_vars(array(
 ));
 
 
-if (!empty($cache))
-{
-	$cache->save_cache();
-}
 $template->display('body');
 
 exit;

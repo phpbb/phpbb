@@ -34,6 +34,39 @@ class acm
 		$this->cache_dir = $phpbb_root_path . 'cache/';
 	}
 
+	function load()
+	{
+		global $phpEx;
+		@include($this->cache_dir . 'global.' . $phpEx);
+	}
+
+	function unload()
+	{
+		$this->save();
+		unset($this->vars);
+		unset($this->vars_ts);
+		unset($this->sql_rowset);
+	}
+
+	function save() 
+	{
+		if (!$this->modified)
+		{
+			return;
+		}
+
+		global $phpEx;
+		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->vars_ts=" . $this->format_array($this->vars_ts) . ' ?>';
+
+		if ($fp = @fopen($this->cache_dir . 'global.' . $phpEx, 'wb'))
+		{
+			@flock($fp, LOCK_EX);
+			fwrite($fp, $file);
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+		}
+	}
+
 	function tidy($expire_time = 0)
 	{
 		global $phpEx;
@@ -41,11 +74,11 @@ class acm
 		$dir = opendir($this->cache_dir);
 		while ($entry = readdir($dir))
 		{
-			if ($entry{0} == '.')
+			if ($entry{0} == '.' || is_dir($this->cache_dir . $entry))
 			{
 				continue;
 			}
-			if (!$expire_time || time() - $expire_time >= filemtime($this->cache_dir . $entry))
+			if (time() - $expire_time >= filemtime($this->cache_dir . $entry))
 			{
 				unlink($this->cache_dir . $entry);
 			}
@@ -67,6 +100,11 @@ class acm
 		}
 	}
 
+	function get($varname, $expire_time = 0)
+	{
+		return ($this->exists($varname, $expire_time)) ? $this->vars[$varname] : NULL;
+	}
+
 	function put($varname, $var)
 	{
 		$this->vars[$varname] = $var;
@@ -84,16 +122,11 @@ class acm
 		}
 	}
 
-	function get($varname, $expire_time = 0)
-	{
-		return ($this->exists($varname, $expire_time)) ? $this->vars[$varname] : null;
-	}
-
 	function exists($varname, $expire_time = 0)
 	{
 		if (!is_array($this->vars))
 		{
-			$this->load_cache();
+			$this->load();
 		}
 
 		if ($expire_time > 0)
@@ -106,33 +139,6 @@ class acm
 		}
 
 		return isset($this->vars[$varname]);
-	}
-
-	function load_cache()
-	{
-		global $phpEx;
-
-		$this->vars = array();
-		@include($this->cache_dir . 'global.' . $phpEx);
-	}
-
-	function save_cache()
-	{
-		if (!$this->modified)
-		{
-			return;
-		}
-
-		global $phpEx;
-		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->vars_ts=" . $this->format_array($this->vars_ts) . ' ?>';
-
-		if ($fp = @fopen($this->cache_dir . 'global.' . $phpEx, 'wb'))
-		{
-			@flock($fp, LOCK_EX);
-			fwrite($fp, $file);
-			@flock($fp, LOCK_UN);
-			fclose($fp);
-		}
 	}
 
 	function format_array($array)
@@ -163,24 +169,23 @@ class acm
 	function sql_load($query)
 	{
 		global $db, $phpEx;
-		if (!file_exists($this->cache_dir . md5($query) . '.' . $phpEx))
-		{
-			return false;
-		}
+		@include($this->cache_dir . md5($query) . '.' . $phpEx);
 
-		include($this->cache_dir . md5($query) . '.' . $phpEx);
+		if (!isset($rowset))
+		{
+			return FALSE;
+		}
 
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 		$this->sql_rowset[$query_id] = $rowset;
 		$db->query_result = $query_id;
-
-		return true;
+		return TRUE;
 	}
 
 	function sql_save($query, $result)
 	{
 		global $db, $phpEx;
-		if (@$fp = fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb'))
+		if ($fp = @fopen($this->cache_dir . md5($query) . '.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 
