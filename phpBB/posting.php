@@ -676,9 +676,9 @@ if ($submit || $preview || $refresh)
 	if (($username != '' && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username != ''))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		$userdata = new userdata();
+		$ucp = new ucp();
 		$username = strip_tags(htmlspecialchars($username));
-		if (($result = $userdata->validate_username($username)) != false)
+		if (($result = $ucp->validate_username($username)) != false)
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
