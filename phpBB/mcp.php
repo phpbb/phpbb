@@ -760,6 +760,7 @@ switch ($mode)
 				'S_MCP_ACTION'		=>	"mcp.$phpEx$SID&amp;mode=move&amp;start=$start",
 				'S_HIDDEN_FIELDS'	=>	$s_hidden_fields,
 				'S_FORUM_SELECT'	=>	make_forum_select(),
+				'S_LEAVE_SHADOW'	=>	TRUE,
 
 				'L_MODE_TITLE'		=>	$user->lang['MOVE'],
 				'L_MODE_EXPLAIN'	=>	''
