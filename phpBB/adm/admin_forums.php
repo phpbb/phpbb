@@ -227,7 +227,7 @@ switch ($mode)
 			include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
 			// Split text rules (we saved the status and bbcode codes here)
-			if (!strstr($forum_rules_flags, ':') && is_numeric($forum_rules_flags))
+			if (strpos($forum_rules_flags, ':') === false && is_numeric($forum_rules_flags))
 			{
 				// text not parsed yet... a hard time for us...
 				$forum_rules_flags = 0;

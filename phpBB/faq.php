@@ -90,14 +90,12 @@ for ($i = 0; $i < count($help_block); $i++)
 				'FAQ_QUESTION' => $help_block[$i][$j]['question'],
 				'FAQ_ANSWER' => $help_block[$i][$j]['answer'],
 
-				'S_ROW_COUNT' => $j,
 				'U_FAQ_ID' => $help_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
 				'FAQ_LINK' => $help_block[$i][$j]['question'],
 
-				'S_ROW_COUNT' => $j,
 				'U_FAQ_LINK' => '#' . $help_block[$i][$j]['id'])
 			);
 		}

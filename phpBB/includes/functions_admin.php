@@ -207,7 +207,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 }
 
 // Posts and topics manipulation
-function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
+function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
 	global $db;
 
@@ -218,16 +218,6 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 		WHERE topic_moved_id $sql_where
 			AND forum_id = " . $forum_id;
 	$db->sql_query($sql);
-
-	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE);
-	foreach ($table_ary as $table)
-	{
-		$sql = "UPDATE $table
-			SET forum_id = $forum_id
-			WHERE topic_id " . $sql_where;
-		$db->sql_query($sql);
-	}
-	unset($table_ary);
 
 	if ($auto_sync)
 	{
@@ -241,8 +231,21 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 			$forum_ids[] = $row['forum_id'];
 		}
 		$db->sql_freeresult($result);
+	}
+	
+	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE);
+	foreach ($table_ary as $table)
+	{
+		$sql = "UPDATE $table
+			SET forum_id = $forum_id
+			WHERE topic_id " . $sql_where;
+		$db->sql_query($sql);
+	}
+	unset($table_ary);
 
-		sync('forum', 'forum_id', $forum_ids, TRUE);
+	if ($auto_sync)
+	{
+		sync('forum', 'forum_id', $forum_ids, true);
 		unset($forum_ids);
 	}
 }
@@ -318,11 +321,11 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 
 	if (!count($where_ids))
 	{
-		return array('topics' => 0, 'posts' => '0');
+		return array('topics' => 0, 'posts' => 0);
 	}
 
 	$return = array(
-		'posts'	=>	delete_posts($where_type, $where_ids, FALSE)
+		'posts'	=>	delete_posts($where_type, $where_ids, false)
 	);
 
 	$sql = 'SELECT topic_id, forum_id
@@ -337,9 +340,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 	}
 	$db->sql_freeresult();
 
-	$return['topics'] = count($topic_ids);
+	$return['topics'] = sizeof($topic_ids);
 
-	if (!count($topic_ids))
+	if (!sizeof($topic_ids))
 	{
 		return $return;
 	}
@@ -367,29 +370,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 
 	if ($auto_sync)
 	{
-		sync('forum', 'forum_id', $forum_ids, TRUE);
+		sync('forum', 'forum_id', $forum_ids, true);
 		sync('topic_reported', $where_type, $where_ids);
 	}
-
-	// Not an option here, deleting one post takes > 200 seconds for me (only this query)
-/*
-	// Optimize/vacuum tables
-	switch (SQL_LAYER)
-	{
-		case 'mysql':
-		case 'mysql4':
-			$table_ary = array(TOPICS_TRACK_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
-			$sql = 'OPTIMIZE TABLE ' . implode(', ', $table_ary);
-			$db->sql_query($sql);
-			unset($table_ary);
-
-			break;
-
-		case 'postgresql':
-			$db->sql_query('VACUUM');
-			break;
-	}
-*/
 
 	return $return;
 }
@@ -439,38 +422,18 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	}
 	unset($table_ary);
 
-	delete_attachments('post', $post_ids, FALSE);
+	delete_attachments('post', $post_ids, false);
 
 	$db->sql_transaction('commit');
 
 	if ($auto_sync)
 	{
 		sync('reported', 'topic_id', $topic_ids);
-		sync('topic', 'topic_id', $topic_ids, TRUE);
-		sync('forum', 'forum_id', $forum_ids, TRUE);
+		sync('topic', 'topic_id', $topic_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true);
 	}
 
-	// Not an option here, deleting one post takes > 200 seconds for me (only this query)
-/*
-	// Optimize/vacuum tables
-	switch (SQL_LAYER)
-	{
-		case 'mysql':
-		case 'mysql4':
-			$table_ary = array(POSTS_TABLE, RATINGS_TABLE, REPORTS_TABLE, SEARCH_MATCH_TABLE);
-			$sql = 'OPTIMIZE TABLE ' . implode(', ', $table_ary);
-			$db->sql_query($sql);
-			unset($table_ary);
-
-			break;
-
-		case 'postgresql':
-			$db->sql_query('VACUUM');
-			break;
-	}
-*/
-
-	return count($post_ids);
+	return sizeof($post_ids);
 }
 
 // Delete Attachments
@@ -1841,6 +1804,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$log[$i]['time'] = $row['log_time'];
 		$log[$i]['forum_id'] = $row['forum_id'];
 		$log[$i]['topic_id'] = $row['topic_id'];
+		$log[$i]['viewforum'] = ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '';
 
 		$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
 
@@ -1896,7 +1860,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		foreach ($log as $key => $row)
 		{
 			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewtopic.$phpEx$SID&amp;f=" . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id'] : '';
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "mcp.$phpEx$SID&amp;mode=viewlogs&amp;t=" . $row['topic_id'] : '';
+			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "mcp.$phpEx$SID&amp;mode=topic_view&amp;action=viewlogs&amp;t=" . $row['topic_id'] : '';
 		}
 	}
 

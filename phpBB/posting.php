@@ -721,7 +721,7 @@ if ($submit || $preview || $refresh)
 			
 				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster) ? 'USER_' : '';
 
-				add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK')], '<a href="' . generate_board_url() . "/viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id" . '" class="gen" target="_blank">' . $topic_title . '</a>'));
+				add_log('mod', $forum_id, $topic_id, 'LOG_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK'), $topic_title);
 			}
 
 			// Lock/Unlock Post Edit
@@ -909,6 +909,8 @@ switch ($mode)
 
 $forum_data = array(
 	'parent_id'		=> $parent_id,
+	'left_id'		=> $left_id,
+	'right_id'		=> $right_id,
 	'forum_parents'	=> $forum_parents,
 	'forum_name'	=> $forum_name,
 	'forum_id'		=> $forum_id,
@@ -1341,9 +1343,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
-			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
-
-			'S_ROW_COUNT'	=> $i)
+			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '')
 		);
 		unset($rowset[$i]);
 	}
@@ -1497,7 +1497,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 // Submit Post
 function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data)
 {
-	global $db, $auth, $user, $config, $phpEx, $SID, $template;
+	global $db, $auth, $user, $config, $phpEx, $SID, $template, $phpbb_root_path;
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -2003,10 +2003,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		user_notification($mode, stripslashes($subject), stripslashes($data['topic_title']), stripslashes($data['forum_name']), $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id']);
+	$url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}";
 
-	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
-	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'] . '#' . $data['post_id'] . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
+	meta_refresh(3, $url);
+
+	$message = ($auth->acl_get('f_moderate', $data['forum_id'])) ? (($mode == 'edit') ? 'POST_EDITED_MOD' : 'POST_STORED_MOD') : (($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED');
+	$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $url . '">', '</a>') : '') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
 	trigger_error($message);
 }
 

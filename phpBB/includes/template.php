@@ -255,7 +255,7 @@ class template
 	// Assign key variable pairs from an array to a specified block
 	function assign_block_vars($blockname, $vararray)
 	{
-		if (strstr($blockname, '.'))
+		if (strpos($blockname, '.') !== false)
 		{
 			// Nested block.
 			$blocks = explode('.', $blockname);
@@ -271,6 +271,7 @@ class template
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
+			$vararray['S_ROW_COUNT'] = sizeof($str[$blocks[$blockcount]]);
 			$str[$blocks[$blockcount]][] = &$vararray;
 		}
 		else
@@ -278,6 +279,7 @@ class template
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
+			$vararray['S_ROW_COUNT'] = sizeof($this->_tpldata[$blockname]);
 			$this->_tpldata[$blockname][] = &$vararray;
 		}
 

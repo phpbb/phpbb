@@ -118,7 +118,6 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			unset($recipient_list, $address);
 		}
 
-		$i = 0;
 		$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id";
 
 		foreach ($folder_info['pm_list'] as $message_id)
@@ -160,7 +159,6 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 				'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['pm_attachments'] && $config['auth_download_pm']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['message_attachment'])) : '',
 
-				'S_ROW_COUNT'		=> $i, 
 				'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
 
 				'U_VIEW_PM'			=> $view_message_url,

@@ -481,6 +481,9 @@ if ($mode == 'attach')
 		$new['img_imagick'] = search_imagemagick();
 	}
 
+	// We strip eventually manual added convert program, we only want the patch
+	$new['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $new['img_imagick']);
+
 	$select_size_mode = size_select('size', $size);
 	$select_quota_size_mode = size_select('quota_size', $quota_size);
 	$select_pm_size_mode = size_select('pm_size', $pm_size);
@@ -1467,7 +1470,7 @@ function search_imagemagick()
 
 		foreach ($locations as $location)
 		{
-			if (file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 80000)
+			if (file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 10000)
 			{
 				$imagick = str_replace('\\', '/', $location);
 				continue;

@@ -57,7 +57,6 @@ class ucp_main extends module
 
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
-				$i = 0;
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
 				$folder_new = $folder . '_new';
@@ -137,13 +136,10 @@ class ucp_main extends module
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
-						'S_ROW_COUNT'		=> $i, 
 						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 
 
 						'U_VIEW_TOPIC'	=> $view_topic_url)
 					);
-
-					$i++;
 				}
 				$db->sql_freeresult($result);
 
@@ -328,7 +324,6 @@ class ucp_main extends module
 					ORDER BY left_id';
 				$result = $db->sql_query($sql);
 
-				$i = 0;
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = $row['forum_id'];
@@ -378,9 +373,7 @@ class ucp_main extends module
 						
 						'U_LAST_POST_AUTHOR'=> $last_poster_url, 
 						'U_LAST_POST'		=> $last_post_url, 
-						'U_VIEWFORUM'		=> "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'], 
-
-						'S_ROW_COUNT'		=> $i++)
+						'U_VIEWFORUM'		=> "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'])
 					);
 				}
 				$db->sql_freeresult($result);
@@ -400,7 +393,6 @@ class ucp_main extends module
 					ORDER BY t.topic_last_post_time DESC';
 				$result = $db->sql_query_limit($sql, $config['topics_per_page']);
 
-				$i = 0;
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = $row['forum_id'];
@@ -515,7 +507,6 @@ class ucp_main extends module
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
-						'S_ROW_COUNT'		=> $i++, 
 						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 
 
 						'U_VIEW_TOPIC'		=> $view_topic_url)
@@ -620,7 +611,6 @@ class ucp_main extends module
 					ORDER BY b.order_id ASC';
 				$result = $db->sql_query($sql);
 				
-				$i = 0;
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = $row['forum_id'];
@@ -678,9 +668,7 @@ class ucp_main extends module
 						'U_VIEW_TOPIC'		=> $view_topic_url,
 						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$row['forum_id']}",
 						'U_MOVE_UP'			=> ($row['order_id'] != 1) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_up={$row['order_id']}" : '',
-						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_down={$row['order_id']}" : '',
-							
-						'S_ROW_COUNT'		=> $i++)
+						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_down={$row['order_id']}" : '')
 					);
 				}
 
@@ -839,12 +827,12 @@ class ucp_main extends module
 						'U_VIEW_EDIT'	=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
 						'U_INSERT'		=> $insert_url,
 
-						'S_ROW_COUNT'		=> $row_count++,
 						'S_LINK_TOPIC'		=> $link_topic,
 						'S_LINK_FORUM'		=> $link_forum,
 						'S_LINK_PM'			=> $link_pm,
 						'S_HIDDEN_FIELDS'	=> $s_hidden_fields
 					);
+					$row_count++;
 						
 					($edit) ? $template->assign_vars($template_row) : $template->assign_block_vars('draftrow', $template_row);
 				}

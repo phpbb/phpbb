@@ -224,8 +224,6 @@ while ($row = $db->sql_fetchrow($result))
 			'FORUM_LOCATION'=> $location, 
 			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '', 
 
-			'S_ROW_COUNT'	=> $$which_counter,
-
 			'U_USER_PROFILE'	=> ($row['user_type'] <> USER_IGNORE) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
 			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;mode=lookup&amp;s=' . $row['session_id'] : ''), 
 			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;s=" . $row['session_id'], 

@@ -355,7 +355,8 @@ function place_pm_into_folder($global_privmsgs_rules, $release = false)
 			{
 				case ACTION_PLACE_INTO_FOLDER:
 					$folder_action = true;
-					$move_into_folder[$rule_ary['folder_id']][] = $msg_id;
+					$_folder_id = (int) $rule_ary['folder_id'];
+					$move_into_folder[$_folder_id][] = $msg_id;
 					$num_new++;
 					break;
 

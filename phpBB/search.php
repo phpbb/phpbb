@@ -914,10 +914,10 @@ while ($row = $db->sql_fetchrow($result))
 		'KEYWORDS'	=> $split_words,
 		'TIME'		=> $user->format_date($row['search_time']), 
 
-		'U_KEYWORDS'	=> "search.$phpEx$SID&amp;search_keywords=" . urlencode($split_words), 
-		
-		'S_ROW_COUNT'	=> $i++)
+		'U_KEYWORDS'	=> "search.$phpEx$SID&amp;search_keywords=" . urlencode($split_words))
 	);
+
+	$i++;
 }
 $db->sql_freeresult($result);
 

@@ -50,7 +50,7 @@ if ($post_id)
 			AND p.topic_id = t.topic_id
 			AND p.forum_id = f.forum_id";
 }
-else
+else if ($msg_id)
 {
 	// Only the user itself is able to report his Private Messages
 	$sql = 'SELECT p.*, t.*
@@ -59,6 +59,11 @@ else
 			AND t.user_id = " . $user->data['user_id'] . '
 			AND t.msg_id = p.msg_id';
 }
+else
+{
+	trigger_error('INVALID_MODE');
+}
+
 $result = $db->sql_query($sql);
 
 if (!($report_data = $db->sql_fetchrow($result)))

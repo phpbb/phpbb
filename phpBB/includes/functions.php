@@ -117,6 +117,49 @@ function get_userdata($user)
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
+// prepare text to be displayed/previewed...
+// This function is here to save memory (this function is used by viewforum/viewtopic/posting... and to include another huge file is pure memory waste)
+function parse_text_display($text, $text_rules)
+{
+	global $bbcode, $user;
+
+	$text_flags = explode(':', $text_rules);
+
+	$allow_bbcode = (int) $text_flags[0] & 1;
+	$allow_smilies = (int) $text_flags[0] & 2;
+	$allow_magic_url = (int) $text_flags[0] & 4;
+
+	$bbcode_uid = trim($text_flags[1]);
+	$bbcode_bitfield = (int) $text_flags[2];
+
+	// Really, really process bbcode only if we have something to process...
+	if (!$bbcode && $allow_bbcode && strpos($text, '[') !== false)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		$bbcode = new bbcode();
+	}
+
+	// Second parse bbcode here
+	if ($allow_bbcode)
+	{
+		$bbcode->bbcode_second_pass($text, $bbcode_uid, $bbcode_bitfield);
+	}
+
+	// If we allow users to disable display of emoticons we'll need an appropriate 
+	// check and preg_replace here
+	if ($allow_smilies)
+	{
+		$text = smilie_text($text, !$allow_smilies);
+	}
+
+	// Replace naughty words such as farty pants
+	$text = str_replace("\n", '<br />', censor_text($text));
+
+	return $text;
+}
+
 // Create forum rules for given forum 
 function generate_forum_rules($forum_data)
 {
@@ -129,7 +172,6 @@ function generate_forum_rules($forum_data)
 
 	if ($forum_data['forum_rules'])
 	{
-		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		$text_flags = explode(':', $forum_data['forum_rules_flags']);
 	}
 
@@ -155,22 +197,22 @@ function generate_forum_nav(&$forum_data)
 		list($parent_name, $parent_type) = array_values($parent_data);
 
 		$template->assign_block_vars('navlinks', array(
-			'S_IS_CAT'		=>	($parent_type == FORUM_CAT) ? true : false,
-			'S_IS_LINK'		=>	($parent_type == FORUM_LINK) ? true : false,
-			'S_IS_POST'		=>	($parent_type == FORUM_POST) ? true : false,
-			'FORUM_NAME'	=>	$parent_name,
-			'FORUM_ID'		=>	$parent_forum_id,
-			'U_VIEW_FORUM'	=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
+			'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
+			'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
+			'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
+			'FORUM_NAME'	=> $parent_name,
+			'FORUM_ID'		=> $parent_forum_id,
+			'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
 		);
 	}
 
 	$template->assign_block_vars('navlinks', array(
-		'S_IS_CAT'		=>	($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-		'S_IS_LINK'		=>	($forum_data['forum_type'] == FORUM_LINK) ? true : false,
-		'S_IS_POST'		=>	($forum_data['forum_type'] == FORUM_POST) ? true : false,
-		'FORUM_NAME'	=>	$forum_data['forum_name'],
-		'FORUM_ID'		=>  $forum_data['forum_id'],
-		'U_VIEW_FORUM'	=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
+		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
+		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
+		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+		'FORUM_NAME'	=> $forum_data['forum_name'],
+		'FORUM_ID'		=> $forum_data['forum_id'],
+		'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
 	);
 
 	$template->assign_vars(array(
@@ -188,6 +230,7 @@ function get_forum_parents(&$forum_data)
 	global $db;
 
 	$forum_parents = array();
+
 	if ($forum_data['parent_id'] > 0)
 	{
 		if ($forum_data['forum_parents'] == '')
@@ -309,7 +352,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	return;
 }
 
-function make_jumpbox($action, $forum_id = false, $select_all = false)
+function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false)
 {
 	global $config, $auth, $template, $user, $db, $phpEx, $SID;
 
@@ -326,7 +369,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 	$right = $cat_right = $padding = 0;
 	$padding_store = array('0' => 0);
 	$display_jumpbox = false;
-	$iteration = 1;
+	$iteration = 0;
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -341,7 +384,12 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 			// if the user does not have permissions to list this forum skip
 			continue;
 		}
-		
+
+		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		{
+			continue;
+		}
+
 		if (!$display_jumpbox)
 		{
 			$template->assign_block_vars('jumpbox_forums', array(
@@ -984,6 +1032,9 @@ function redirect($url)
 		$cache->unload();
 	}
 
+	// Make sure no &amp;'s are in, this will break the redirect
+	$url = str_replace('&amp;', '&', $url);
+
 	// Local redirect? If not, prepend the boards url
 	$url = (!strstr($url, '://')) ? (generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url))) : $url;
 
@@ -1011,7 +1062,7 @@ function meta_refresh($time, $url)
 }
 
 // Build Confirm box
-function confirm_box($check, $title = '', $hidden = '')
+function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html')
 {
 	global $user, $template, $_POST, $SID, $db;
 
@@ -1059,7 +1110,7 @@ function confirm_box($check, $title = '', $hidden = '')
 	page_header($user->lang[$title]);
 
 	$template->set_filenames(array(
-		'body' => 'confirm_body.html')
+		'body' => $html_body)
 	);
 
 	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
@@ -1067,7 +1118,7 @@ function confirm_box($check, $title = '', $hidden = '')
 	{
 		$user->cur_page = preg_replace('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', '\1\2', str_replace('&amp;', '&', $user->cur_page));
 	}
-	$user_page = $user->cur_page . ((strstr($user->cur_page, '?')) ? '&' : '?') . 'act_key=' . $act_key;
+	$user_page = $user->cur_page . ((strpos($user->cur_page, '?') !== false) ? '&' : '?') . 'act_key=' . $act_key;
 	$user_page = str_replace('&amp;', '&', $user_page);
 
 	$template->assign_vars(array(
@@ -1623,6 +1674,7 @@ function page_header($page_title = '')
 		'RECORD_USERS' 					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO' 			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD' 	=> $l_privmsgs_text_unread,
+		'SID'							=> $SID,
 
 		'L_LOGIN_LOGOUT' 	=> $l_login_logout,
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'], 
@@ -1708,7 +1760,7 @@ function page_footer()
 		'PHPBB_VERSION'	=> $config['version'],
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '', 
 
-		'U_ACP' => ($auth->acl_get('a_')) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['user_id'] != ANONYMOUS) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
 	);
 
 	$template->display('body');

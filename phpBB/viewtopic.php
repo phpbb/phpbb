@@ -478,7 +478,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start",
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1", 
+	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;f=$forum_id&amp;quickmod=1", 
 
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
@@ -809,6 +809,7 @@ while ($row = $db->sql_fetchrow($result))
 				'sig_bbcode_uid'		=> '',
 				'sig_bbcode_bitfield'	=> '',
 
+				'online'		=> false,
 				'avatar'		=> '',
 				'rank_title'	=> '',
 				'rank_image'	=> '',
@@ -852,6 +853,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				'avatar'		=> '',
 
+				'online'		=> false,
 				'profile'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
 				'www'			=> $row['user_website'],
 				'aim'			=> ($row['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id" : '',
@@ -881,12 +883,12 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_rank']))
 			{
-				$user_cache[$poster_id]['rank_title'] = $ranks['special'][$row['user_rank']]['rank_title'];
+				$user_cache[$poster_id]['rank_title'] = (isset($ranks['special'][$row['user_rank']])) ? $ranks['special'][$row['user_rank']]['rank_title'] : '';
 				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
 			}
 			else
 			{
-				if (sizeof($ranks['normal']))
+				if (isset($ranks['normal']) && sizeof($ranks['normal']))
 				{
 					foreach ($ranks['normal'] as $rank)
 					{
@@ -957,7 +959,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 unset($id_cache);
 
 // Pull attachment data
-if (count($attach_list))
+if (sizeof($attach_list))
 {
 	if ($auth->acl_gets('f_download', 'u_download', $forum_id))
 	{
@@ -977,7 +979,7 @@ if (count($attach_list))
 		$db->sql_freeresult($result);
 
 		// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
-		if (!count($attachments))
+		if (!sizeof($attachments))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . ' 
 				SET post_attachment = 0 
@@ -985,7 +987,7 @@ if (count($attach_list))
 			$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
-			if (count($rowset) != $total_posts)
+			if (sizeof($rowset) != $total_posts)
 			{
 				// Not all posts are displayed so we query the db to find if there's any attachment for this topic
 				$sql = 'SELECT a.post_msg_id as post_id
@@ -1039,12 +1041,12 @@ $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
 
 $template->assign_vars(array(
-	'S_NUM_POSTS' => count($post_list))
+	'S_NUM_POSTS' => sizeof($post_list))
 );
 
 // Output the posts
 //foreach ($rowset as $i => $row)
-for ($i = 0; $i < count($post_list); ++$i)
+for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 {
 	$row =& $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
@@ -1057,8 +1059,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true, 
-			'S_ROW_COUNT'	=> $i,
-
 			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
 		);
 
@@ -1074,8 +1074,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		{
 			$template->assign_block_vars('postrow', array(
 				'S_IGNORE_POST'	=> true, 
-				'S_ROW_COUNT'	=> $i,
-
 				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
 			);
 
@@ -1177,7 +1175,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		$l_bumped_by = '';
 	}
 
-	// Assign inline attachments, only one preg_replace... yeah baby, you got it. :D
 	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
 	{
 		$tpl = &$attachments[$row['post_id']];
@@ -1186,23 +1183,29 @@ for ($i = 0; $i < count($post_list); ++$i)
 
 		$unset_tpl = array();
 
-		$message = preg_replace_callback('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', create_function('$matches', '
-			global $tpl, $user, $config, $tpl_size, $unset_tpl;
-			
+		preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches);
+
+		$replace = array();
+		foreach ($matches[0] as $num => $capture)
+		{
 			// Flip index if we are displaying the reverse way
-			$index = ($config["display_order"]) ? ($tpl_size-($matches[1] + 1)) : $matches[1];
-			$return = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang["MISSING_INLINE_ATTACHMENT"], $matches[0]);
+			$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
 		
+			$replace['from'][] = $matches[0][$index];
+			$replace['to'][] = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][$num]);
+
 			$unset_tpl[] = $index;
-
-			return $return;
-		'), $message);
-
+		}
 		unset($tpl, $tpl_size);
 
-		foreach (array_unique($unset_tpl) as $index)
+		if (isset($replace['from']))
 		{
-			unset($attachments[$row['post_id']][$index]);
+			$message = str_replace($replace['from'], $replace['to'], $message);
+		
+			foreach (array_unique($unset_tpl) as $index)
+			{
+				unset($attachments[$row['post_id']][$index]);
+			}
 		}
 	}
 
@@ -1237,7 +1240,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
-		'U_IP' 				=> ($auth->acl_get('m_ip', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip" : '',
+		'U_IP' 				=> ($auth->acl_get('m_ip', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "#ip" : '',
 		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],
@@ -1263,7 +1266,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '', 
 		'U_PREV_POST_ID'	=> $prev_post_id, 
 
-		'S_ROW_COUNT'		=> $i,
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
@@ -1284,7 +1286,7 @@ for ($i = 0; $i < count($post_list); ++$i)
 		foreach ($attachments[$row['post_id']] as $attachment)
 		{
 			$template->assign_block_vars('postrow.attachment', array(
-				'DISPLAY_ATTACHMENT' => $attachment)
+				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
 		}
 	}

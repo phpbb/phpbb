@@ -403,7 +403,7 @@ if ($stage == 0)
 
 		foreach ($locations as $location)
 		{
-			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 30000)
+			if (@file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 10000)
 			{
 				print $location;
 				$img_imagick = str_replace('\\', '/', $location);

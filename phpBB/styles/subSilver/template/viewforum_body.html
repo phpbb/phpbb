@@ -53,13 +53,8 @@
 			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 			<td class="row1" width="120" align="center">
 				<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
-				<p class="topicdetails">
-				<!-- IF topicrow.U_LAST_POST_AUTHOR -->
-					<a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
-				<!-- ELSE -->
-					{topicrow.LAST_POST_AUTHOR}
-				<!-- ENDIF -->
-				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+					<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 				</p>
 			</td>
 		</tr>
@@ -173,13 +168,8 @@
 				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 				<td class="row1" width="120" align="center">
 					<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
-					<p class="topicdetails">
-					<!-- IF topicrow.U_LAST_POSTER -->
-						<a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
-					<!-- ELSE -->
-						{topicrow.LAST_POST_AUTHOR}
-					<!-- ENDIF -->
-					<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+					<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+						<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 					</p>
 				</td>
 			</tr>
@@ -197,11 +187,11 @@
 
 			<tr align="center">
 				<!-- IF S_TOPIC_ICONS -->
-					<td class="cat" colspan="8"><form method="post" action="{S_TOPIC_ACTION}">
+					<td class="cat" colspan="8">
 				<!-- ELSE -->
 					<td class="cat" colspan="7" >
 				<!-- ENDIF -->
-				<span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></form></td>
+				<form method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></form></td>
 			</tr>
 		</table>
 

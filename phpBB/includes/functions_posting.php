@@ -173,47 +173,6 @@ function parse_text_insert($text, $allow_bbcode, $allow_smilies, $allow_magic_ur
 	return $message_parser->message;
 }
 
-// prepare text to be displayed/previewed...
-function parse_text_display($text, $text_rules)
-{
-	global $bbcode, $user;
-
-	$text_flags = explode(':', $text_rules);
-
-	$allow_bbcode = (int) $text_flags[0] & 1;
-	$allow_smilies = (int) $text_flags[0] & 2;
-	$allow_magic_url = (int) $text_flags[0] & 4;
-
-	$bbcode_uid = trim($text_flags[1]);
-	$bbcode_bitfield = (int) $text_flags[2];
-
-	if (!$bbcode && $allow_bbcode)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode();
-	}
-
-	// Second parse bbcode here
-	if ($allow_bbcode)
-	{
-		$bbcode->bbcode_second_pass($text, $bbcode_uid, $bbcode_bitfield);
-	}
-
-	// If we allow users to disable display of emoticons we'll need an appropriate 
-	// check and preg_replace here
-	if ($allow_smilies)
-	{
-		$text = smilie_text($text, !$allow_smilies);
-	}
-
-	// Replace naughty words such as farty pants
-	$text = str_replace("\n", '<br />', censor_text($text));
-
-	return $text;
-}
-
 // prepare text to be displayed within a form (fetched from db)
 function parse_text_form_display($text, $text_rules)
 {
@@ -285,7 +244,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
 		
 	// Opera adds the name to the mime type
-	$filedata['mimetype']	= ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
+	$filedata['mimetype']	= (strstr($filedata['mimetype'], '; name')) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
 	$filedata['extension']	= array_pop(explode('.', strtolower($filename)));
 	$filedata['filesize']	= (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
 
@@ -451,9 +410,9 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 		$source = $config['upload_dir'] . '/' . $destination_filename;
 		$destination = $config['upload_dir'] . '/thumb_' . $destination_filename;
 
-		if (!create_thumbnail($source_filename, $destination_filename, $filedata['mimetype']))
+		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
 		{
-			if (!create_thumbnail($source, $destination, $filedata['mimetype']))
+			if (!create_thumbnail($source_filename, 'thumb_' . $destination_filename, $filedata['mimetype']))
 			{
 				$filedata['thumbnail'] = 0;
 			}
@@ -464,67 +423,63 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 }
 
 // Calculate the needed size for Thumbnail
-// I am sure i had this grabbed from some site... source: unknown
 function get_img_size_format($width, $height)
 {
-	// Change these two values to define the Thumbnail Size
+	// Maximum Width the Image can take
 	$max_width = 400;
-	$max_height = 200;
-	
-	if ($height > $max_height) 
-	{
-		$new_width = ($max_height / $height) * $width;
-		$new_height = $max_height;
 
-		if ($new_width > $max_width) 
-		{
-			$new_height = ($max_width / $new_width) * $new_height;
-			$new_width = $max_width;
-		}
-	} 
-	else if ($width > $max_width)
+	if ($width > $height)
 	{
-		$new_height = ($max_width / $width) * $height;
-		$new_width = $max_width;
-		
-		if ($new_height > $max_height) 
-		{
-			$new_width = ($max_height / $new_height) * $new_width;
-			$new_height = $max_height;
-		}
+		return array(
+			round($width * ($max_width / $width)),
+			round($height * ($max_width / $width))
+		);
 	} 
-	else	
+	else 
 	{
-		$new_width = $width;
-		$new_height = $height;
+		return array(
+			round($width * ($max_width / $height)),
+			round($height * ($max_width / $height))
+		);
 	}
-
-	return array(
-		round($new_width),
-		round($new_height)
-	);
 }
 
-function get_supported_image_types()
+function get_supported_image_types($type)
 {
-	$types = array();
-
 	if (@extension_loaded('gd'))
 	{
-		if (@function_exists('imagegif'))
+		$format = imagetypes();
+		$new_type = 0;
+
+		switch ($type)
 		{
-			$types[] = '1';
+			case 1:
+				$new_type = ($format & IMG_GIF) ? IMG_GIF : 0;
+				break;
+			case 2:
+			case 9:
+			case 10:
+			case 11:
+			case 12:
+				$new_type = ($format & IMG_JPG) ? IMG_JPG : 0;
+				break;
+			case 3:
+				$new_type = ($format & IMG_PNG) ? IMG_PNG : 0;
+				break;
+			case 6:
+			case 15:
+				$new_type = ($format & IMG_WBMP) ? IMG_WBMP : 0;
+				break;
 		}
-		if (@function_exists('imagejpeg'))
-		{
-			$types[] = '2';
-		}
-		if (@function_exists('imagepng'))
-		{
-			$types[] = '3';
-		}
-    }
-	return $types;
+		
+		return array(
+			'gd'		=> ($new_type) ? true : false,
+			'format'	=> $new_type,
+			'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1
+		);
+	}
+
+	return array('gd' => false);
 }
 
 // Create Thumbnail
@@ -542,61 +497,76 @@ function create_thumbnail($source, $new_file, $mimetype)
 		return false;
 	}
     
-	$size = getimagesize($source);
+	list($width, $height, $type, ) = getimagesize($source);
 
-	if ($size[0] == 0 && $size[1] == 0)
+	if (!$width || !$height)
 	{
 		return false;
 	}
 
-	$new_size = get_img_size_format($size[0], $size[1]);
-
-	$tmp_path = $old_file = '';
+	list($new_width, $new_height) = get_img_size_format($width, $height);
 
 	$used_imagick = false;
 
 	if ($config['img_imagick']) 
 	{
-		if (is_array($size) && count($size) > 0) 
+		passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $new_file) . '"');
+		if (file_exists($new_file))
 		{
-			passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $new_file) . '"');
-			if (file_exists($new_file))
-			{
-				$used_imagick = true;
-			}
+			$used_imagick = true;
 		}
 	} 
 
 	if (!$used_imagick) 
 	{
-		$type = $size[2];
-		$supported_types = get_supported_image_types();
+		$type = get_supported_image_types($type);
 		
-		if (in_array($type, $supported_types))
+		if ($type['gd'])
 		{
-			switch ($type) 
+			switch ($type['format']) 
 			{
-				case '1' :
+				case IMG_GIF:
 					$image = imagecreatefromgif($source);
-					$new_image = imagecreate($new_size[0], $new_size[1]);
-					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
-					imagegif($new_image, $new_file);
 					break;
-
-				case '2' :
+				case IMG_JPG:
 					$image = imagecreatefromjpeg($source);
-					$new_image = imagecreate($new_size[0], $new_size[1]);
-					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
-					imagejpeg($new_image, $new_file, 90);
 					break;
-
-				case '3' :
+				case IMG_PNG:
 					$image = imagecreatefrompng($source);
-					$new_image = imagecreate($new_size[0], $new_size[1]);
-					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_size[0], $new_size[1], $size[0], $size[1]);
-					imagepng($new_image, $new_file);
+					break;
+				case IMG_WBMP:
+					$image = imagecreatefromwbmp($source);
 					break;
 			}
+
+			if ($type['version'] == 1)
+			{
+				$new_image = imagecreate($new_width, $new_height);
+				imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+			}
+			else
+			{
+				$new_image = imagecreatetruecolor($new_width, $new_height);
+				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+			}
+			
+			switch ($type['format'])
+			{
+				case IMG_GIF:
+					imagegif($new_image, $new_file);
+					break;
+				case IMG_JPG:
+					imagejpeg($new_image, $new_file, 90);
+					break;
+				case IMG_PNG:
+					imagepng($new_image, $new_file);
+					break;
+				case IMG_WBMP:
+					imagewbmp($new_image, $new_file);
+					break;
+			}
+
+			imagedestroy($new_image);
 		}
 	}
 
@@ -605,7 +575,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 		return false;
 	}
 
-	
 	@chmod($new_file, 0666);
 
 	return true;
@@ -702,6 +671,11 @@ function posting_gen_topic_icons($mode, $icon_id)
 	$icons = array();
 	obtain_icons($icons);
 
+	if (!$icon_id)
+	{
+		$template->assign_var('S_NO_ICON_CHECKED', ' checked="checked"');
+	}
+	
 	if (sizeof($icons))
 	{
 		foreach ($icons as $id => $data)
@@ -714,6 +688,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT' 	=> $data['height'],
 	
+					'S_CHECKED'		=> ($id == $icon_id) ? true : false,
 					'S_ICON_CHECKED' => ($id == $icon_id) ? ' checked="checked"' : '')
 				);
 			}
@@ -907,7 +882,6 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	
 	if (sizeof($draftrows))
 	{
-		$row_count = 0;
 		$template->assign_var('S_SHOW_DRAFTS', true);
 
 		foreach ($draftrows as $draft)
@@ -946,7 +920,6 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 				'U_VIEW'		=> $view_url,
 				'U_INSERT'		=> $insert_url,
 
-				'S_ROW_COUNT'	=> $row_count++,
 				'S_LINK_PM'		=> $link_pm,
 				'S_LINK_TOPIC'	=> $link_topic,
 				'S_LINK_FORUM'	=> $link_forum)

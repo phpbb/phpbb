@@ -122,12 +122,13 @@ class ucp_attachments extends module
 					'POST_ID'			=> $row['post_msg_id'],
 					'TOPIC_ID'			=> $row['topic_id'],
 				
-					'S_ROW_COUNT'		=> $row_count++,
 					'S_IN_MESSAGE'		=> $row['in_message'],
 
 					'U_VIEW_ATTACHMENT'	=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
 					'U_VIEW_TOPIC'		=> $view_topic)
 				);
+
+				$row_count++;
 			} 
 			while ($row = $db->sql_fetchrow($result));
 		}

@@ -263,6 +263,7 @@ $lang += array(
 	'POSTS'				=> 'Posts',
 	'POST_BY_FOE'		=> 'This post was made by <b>%1$s</b> who is currently on your ignore list. To display this post click %2$sHERE%3$s.',
 	'POST_DAY'			=> '%.2f posts per day',
+	'POST_DETAILS'		=> 'Post Details',
 	'POST_PCT'			=> '%.2f%% of all posts',
 	'POST_REPORTED'		=> 'Click to view reports',
 	'POST_SUBJECT'		=> 'Post Subject',

@@ -152,13 +152,31 @@ if ($log_count)
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
 		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
-
+		
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $log_data[$i]['username']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $log_data[$i]['ip']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($log_data[$i]['time']); ?></td>
-		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['action']; ?></td>
+		<td class="<?php echo $row_class; ?>"><?php 
+			echo $log_data[$i]['action']; 
+
+			$data = array();
+				
+			foreach (array('viewtopic', 'viewlogs', 'viewforum') as $check)
+			{
+				if ($log_data[$i][$check])
+				{
+					$data[] = '<a href="' . $log_data[$i][$check] . '">' . $user->lang['LOGVIEW_' . strtoupper($check)] . '</a>';
+				}
+			}
+
+			if (sizeof($data))
+			{
+				echo '<br />&#187; <span class="gensmall">[ ' . implode(' | ', $data) . ' ]</span>';
+			}
+?>
+		</td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><input type="checkbox" name="mark[]" value="<?php echo $log_data[$i]['id']; ?>" /></td>
 	</tr>
 <?php

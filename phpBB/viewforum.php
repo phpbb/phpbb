@@ -393,7 +393,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 		$mark_forum_read = true;
 
-		$i = $s_type_switch = 0;
+		$s_type_switch = 0;
 		foreach ($topic_list as $topic_id)
 		{
 			$row =& $rowset[$topic_id];
@@ -531,13 +531,9 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			// Generate all the URIs ...
 			$view_topic_url = "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id";
 
-			$last_post_img = "<a href=\"$view_topic_url&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
-
 			$topic_author = ($row['topic_poster'] != ANONYMOUS) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['topic_poster'] . '">' : '';
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? $row['topic_first_poster_name'] : (($row['topic_first_poster_name'] != '') ? $row['topic_first_poster_name'] : $user->lang['GUEST']);
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
-
-			$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
 
 			// This will allow the style designer to output a different header 
 			// or even seperate the list of announcements from sticky and normal
@@ -552,20 +548,19 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time'], $config['board_timezone']),
 				'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 				'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-				'LAST_POST_AUTHOR' 	=> $last_post_author,
+				'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
 				'GOTO_PAGE' 		=> $goto_page, 
 				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
 				'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 				'TOPIC_TYPE' 		=> $topic_type,
 
-				'LAST_POST_IMG' 	=> $last_post_img,
+				'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 				'NEWEST_POST_IMG' 	=> $newest_post_img,
 				'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 				'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 				'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
 
-				'S_ROW_COUNT'			=> $i, 
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 
 				'S_TOPIC_TYPE'			=> $row['topic_type'], 
 				'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false, 
@@ -573,14 +568,14 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
-				'U_LAST_POSTER'		=> '',	
+				'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+				'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_MCP_REPORT'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=reports&amp;t=$topic_id",
 				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
 			);
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
-			$i++;
 
 			if ($config['load_db_lastread'])
 			{

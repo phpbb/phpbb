@@ -193,10 +193,8 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Now the tricky part... let's dance
 	// TODO: needs a little bit more testing... seems to break on some configurations (incomplete files)
-	@ob_end_clean();
-	@ini_set('zlib.output_compression', 'Off');
 	header('Pragma: public');
-	header('Content-Transfer-Encoding: none');
+//	header('Content-Transfer-Encoding: none');
 
 	// Send out the Headers
 	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');

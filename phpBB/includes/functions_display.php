@@ -172,7 +172,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$redirect = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#^(.*?)&(amp;)?mark=.*$#', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])) : "index.$phpEx$SID";
 		meta_refresh(3, $redirect);
 
-		$message = (strstr('viewforum', $redirect)) ? 'RETURN_FORUM' : 'RETURN_INDEX';
+		$message = (strstr($redirect, 'viewforum')) ? 'RETURN_FORUM' : 'RETURN_INDEX';
 		$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . sprintf($user->lang[$message], '<a href="' . $redirect . '">', '</a> ');
 		trigger_error($message);
 	}
@@ -185,6 +185,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 	// Loop through the forums
 	$root_id = $root_data['forum_id'];
+
 	foreach ($forum_rows as $row)
 	{
 		if ($row['parent_id'] == $root_id && !$row['parent_id'])
@@ -317,7 +318,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'LAST_POSTER'		=> $last_poster,
 			'MODERATORS'		=> $moderators_list,
 			'SUBFORUMS'			=> $subforums_list,
-
+			
 			'L_SUBFORUM_STR'	=> $l_subforums,
 			'L_MODERATOR_STR'	=> $l_moderator,
 			'L_FORUM_FOLDER_ALT'=> $folder_alt,

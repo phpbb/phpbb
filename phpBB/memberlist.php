@@ -336,7 +336,7 @@ switch ($mode)
 			$active_f_name = $active_f_row['forum_name'];
 			$active_f_id = $active_f_row['forum_id'];
 			$active_f_count = $active_f_row['num_posts'];
-			$active_f_pct = ($active_f_count / $member['user_posts']) * 100;
+			$active_f_pct = ($member['user_posts']) ? ($active_f_count / $member['user_posts']) * 100 : 0;
 		}
 		unset($active_f_row);
 
@@ -346,7 +346,7 @@ switch ($mode)
 			$active_t_name = $active_t_row['topic_title'];
 			$active_t_id = $active_t_row['topic_id'];
 			$active_t_count = $active_t_row['num_posts'];
-			$active_t_pct = ($active_t_count / $member['user_posts']) * 100;
+			$active_t_pct = ($member['user_posts']) ? ($active_t_count / $member['user_posts']) * 100 : 0;
 		}
 		unset($active_t_row);
 
@@ -807,9 +807,6 @@ switch ($mode)
 
 				$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
 					'ROW_NUMBER'	=> $i + ($start + 1),
-
-					'S_ROW_COUNT'	=> $i,
-
 					'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']))
 				);
 
