@@ -178,6 +178,7 @@ $lang = array_merge($lang, array(
 	'LOG_EDIT_THEME_DETAILS'=> '<b>Edited theme details</b><br />&#187; %s', 
 	'LOG_ADD_THEME_FS'		=> '<b>Add new theme on filesystem</b><br />&#187; %s', 
 	'LOG_ADD_THEME_DB'		=> '<b>Added new theme to database</b><br />&#187; %s', 
+	'LOG_EXPORT_THEME'		=> '<b>Theme exported</b><br />&#187; %s', 
 
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
@@ -921,7 +922,7 @@ $lang = array_merge($lang, array(
 	'STYLE_ERR_NAME_EXIST'	=> 'A style with that name already exists', 
 	'STYLE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
 	'STYLE_ERR_NO_IDS'		=> 'You must select a template, theme and imageset for this style', 
-
+	'STYLE_ERR_NAME_CHARS'	=> 'The style name can only contain alphanumeric characters, -, +, _ and space',  
 
 	'MANAGE_TEMPLATE_EXPLAIN'	=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
 	'EDIT_TEMPLATE'			=> 'Edit Template',
@@ -940,7 +941,9 @@ $lang = array_merge($lang, array(
 
 
 	'THEMES'				=> 'Themes', 
-	'THEMES_EXPLAIN'		=> 'From here you can add, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. To manage templates, imagesets or styles please see the navigation menu.', 
+	'THEMES_EXPLAIN'		=> 'From here you can create, install, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. The range of options open to you depends on the configuration of your server and phpBB installation, see the Manual for further details. Please note that when creating new themes the use of an existing theme as a basis is optional.', 
+	'SELECT_THEME_BASIS'	=> 'Select optional basis', 
+
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
 	'SELECT_CLASS'			=> 'Select class', 
@@ -1015,6 +1018,7 @@ $lang = array_merge($lang, array(
 	'STYLE_ANCHOR_HOVER'	=> 'Hover',
 
 	'THEME_ERR_STYLE_NAME'	=> 'You must supply a name for this theme', 
+	'THEME_ERR_NAME_CHARS'	=> 'The theme name can only contain alphanumeric characters, -, +, _ and space',  
 	'THEME_ERR_NAME_LONG'	=> 'The theme name can be no longer than 30 characters', 
 	'THEME_ERR_NAME_EXIST'	=> 'A theme with that name already exists', 
 	'THEME_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
@@ -1023,6 +1027,7 @@ $lang = array_merge($lang, array(
 	'THEME_DB_ADDED'		=> 'New theme added to database', 
 	'THEME_FS_ADDED'		=> 'New theme added on filesystem', 
 	'THEME_DETAILS_UPDATE'	=> 'Theme details updated', 
+	'THEME_EXPORTED'		=> 'Theme exported succesfully and stored in %s', 
 
 
 	'MANAGE_IMAGESET_EXPLAIN'=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
