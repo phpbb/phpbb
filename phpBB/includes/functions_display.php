@@ -28,34 +28,35 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	if (!$root_data)
 	{
 		$root_data = array('forum_id' => 0);
-		$where_sql = '';
+		$sql_where = '';
 	}
 	else
 	{
-		$where_sql = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
+		$sql_where = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
 	}
 
-/*	if ($user->data['user_id'] != ANONYMOUS)
+	if ($config['load_db_lastread'] && $user->data['user_id'] != ANONYMOUS)
 	{
-		$lastread_select = ", lr.lastread_time";
-		$lastread_sql = "
-			LEFT JOIN " . LASTREAD_TABLE . " lr ON (
-				lr.user_id = " . $user->data['user_id'] . " 
-				AND (f.forum_id = lr.forum_id OR f.forum_id = -lr.forum_id)
-				AND lr.lastread_time >= f.forum_last_post_time)";
-		// Temp fix for index
-		//$where_sql .= ' GROUP BY f.forum_id';
+		$lastread_select = ", lr.lastread_time ";
+/*		$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' 
+				AND ft.forum_id = f.forum_id)';*/
+		$sql_lastread = 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . ' 
+				AND tt.forum_id IN (f.forum_id, -f.forum_id)
+				AND tt.lastread_time >= f.forum_last_post_time)';
+		$sql_where .= ' GROUP BY f.forum_id';
 	}
 	else
-	{*/
+	{
 		$lastread_select = '';
 		$lastread_sql = '';
-//	}
+
+		// Cookie based tracking
+	}
 
 	$sql = "SELECT f.* $lastread_select 
-		FROM " . FORUMS_TABLE . " f 
-		$lastread_sql 
-		$where_sql 
+		FROM (" . FORUMS_TABLE . " f 
+		$sql_lastread)
+		$sql_where 
 		ORDER BY left_id";
 	$result = $db->sql_query($sql);
 
@@ -111,9 +112,17 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		{
 			if ($row['display_on_index'])
 			{
-				// Subforum
-				$subforums[$parent_id][$row['forum_id']] = $row['forum_name'];
+				$subforums[$parent_id][$row['forum_id']]['forum_name'] = $row['forum_name'];
 			}
+
+			$subforums[$parent_id][$row['forum_id']]['unread_count'] = $row['unread_count'];
+			$subforums[$parent_id][$row['forum_id']]['forum_last_post_time'] = $row['forum_last_post_time'];
+
+			$subforums[$parent_id][$row['forum_id']]['forum_id'] = $row['forum_id'];
+			$subforums[$parent_id][$row['forum_id']]['forum_last_post_id'] = $row['forum_last_post_id'];
+			$subforums[$parent_id][$row['forum_id']]['forum_last_post_time'] = $row['forum_last_post_time'];
+			$subforums[$parent_id][$row['forum_id']]['forum_last_poster_name'] = $row['forum_last_poster_name'];
+			$subforums[$parent_id][$row['forum_id']]['forum_last_poster_id'] = $row['forum_last_poster_id'];
 		}
 	}
 	$db->sql_freeresult();
@@ -145,71 +154,94 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				'FORUM_ID'			=>	$hold['forum_id'],
 				'FORUM_NAME'		=>	$hold['forum_name'],
 				'FORUM_DESC'		=>	$hold['forum_desc'],
-				'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $hold['forum_id']
-			));
+				'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $hold['forum_id'])
+			);
 			unset($hold);
 		}
 
-		++$visible_forums;
+		$visible_forums++;
+
 		$forum_id = $row['forum_id'];
 
-		$unread_topics = ($user->data['user_id'] && $row['lastread_time'] < $row['forum_last_post_time'] ) ? TRUE : FALSE;
-		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
-		$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
+		//
+		$unread_topics = ($user->data['user_id'] != ANONYMOUS && $row['unread_count'] < $row['forum_last_post_time']) ? 1 : 0;
 
-		if ($row['left_id'] + 1 < $row['right_id'])
+		//
+		if (isset($subforums[$forum_id]))
 		{
+
+			$alist = array();
+			foreach ($subforums[$forum_id] as $sub_forum_id => $subforum_row)
+			{
+				$unread_topics += ($user->data['user_id'] != ANONYMOUS && $subforum_row['unread_count'] < $subforum_row['forum_last_post_time']) ? 1 : 0;
+
+				if (!empty($subforum_row['forum_name']))
+				{
+					$alist[$sub_forum_id] = $subforum_row['forum_name'];
+				}
+
+				if ($subforum_row['forum_last_post_time'] > $row['forum_last_post_time'])
+				{
+					$row['forum_last_post_time'] = $subforum_row['forum_last_post_time'];
+					$row['forum_last_post_id'] = $subforum_row['forum_last_post_id'];
+					$row['forum_last_poster_name'] = $subforum_row['forum_last_poster_name'];
+					$row['forum_last_poster_id'] = $subforum_row['forum_last_poster_id'];
+					$row['forum_id_last_post'] = $subforum_row['forum_id'];
+				}
+			}
+
+			if (sizeof($alist))
+			{
+				@natsort($alist);
+
+				$links = array();
+				foreach ($alist as $subforum_id => $subforum_name)
+				{
+					$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . $subforum_name . '</a>';
+				}
+				$subforums_list = implode(', ', $links);
+
+				$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
+			}
+
 			$folder_image = ($unread_topics) ? 'sub_forum_new' : 'sub_forum';
-			$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
-		elseif ($row['forum_status'] == ITEM_LOCKED)
+		else
+		{
+			$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
+			$row['forum_id_last_post'] = $row['forum_id'];
+
+			$subforums_list = '';
+			$l_subforums = '';
+		}
+
+		//
+		if ($row['forum_status'] == ITEM_LOCKED)
 		{
 			$folder_image = 'forum_locked';
 			$folder_alt = 'FORUM_LOCKED';
 		}
 		else
 		{
-			$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
 			$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 		}
 
+		//
 		if ($row['forum_last_post_id'])
 		{
-			$last_post = $user->format_date($row['forum_last_post_time']) . '<br />';
+			$last_post_time = $user->format_date($row['forum_last_post_time']);
 
-			$last_post .= ($row['forum_last_poster_id'] == ANONYMOUS) ? (($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['forum_last_poster_id'] . '">' . $row['forum_last_poster_name'] . '</a> ';
+			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
+			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['forum_last_poster_id'];
 
-			$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+			$last_post_url = "viewtopic.$phpEx$SID&amp;f=" . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'];
 		}
 		else
 		{
-			$last_post = $user->lang['No_Posts'];
+			$last_post = $user->lang['NO_POSTS'];
 		}
 
-		if (isset($subforums[$forum_id]))
-		{
-			$alist = array();
-			foreach ($subforums[$forum_id] as $sub_forum_id => $forum_name)
-			{
-				$alist[$sub_forum_id] = $forum_name;
-			}
-			natsort($alist);
-
-			$links = array();
-			foreach ($alist as $subforum_id => $subforum_name)
-			{
-				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $subforum_id . '">' . $subforum_name . '</a>';
-			}
-			$subforums_list = implode(', ', $links);
-
-			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
-		}
-		else
-		{
-			$subforums_list = '';
-			$l_subforums = '';
-		}
-
+		//
 		$l_moderator = $moderators_list = '';
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
@@ -220,13 +252,16 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=>	FALSE,
 
+			'FORUM_IMG'			=>	$row['forum_image'], 
+			'LAST_POST_IMG'		=>	$user->img('icon_post_latest', 'VIEW_LATEST_POST'), 
+
 			'FORUM_FOLDER_IMG'	=>	$user->img($folder_image, $folder_alt),
 			'FORUM_NAME'		=>	$row['forum_name'],
 			'FORUM_DESC'		=>	$row['forum_desc'], 
-			'FORUM_IMG'			=>	$row['forum_image'], 
-
 			'POSTS'				=>	$row['forum_posts'],
 			'TOPICS'			=>	$row['forum_topics'],
+			'LAST_POST_TIME'	=>	$last_post_time,
+			'LAST_POSTER'		=>	$last_poster,
 			'LAST_POST'			=>	$last_post,
 			'MODERATORS'		=>	$moderators_list,
 			'SUBFORUMS'			=>	$subforums_list,
@@ -235,6 +270,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'L_MODERATOR_STR'	=>	$l_moderator,
 			'L_FORUM_FOLDER_ALT'=>	$folder_alt,
 
+			'U_LAST_POSTER'		=>	$last_poster_url, 
+			'U_LAST_POST'		=>	$last_post_url, 
 			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
 		);
 	}
@@ -244,4 +281,5 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'])
 	);
 }
+
 ?>

@@ -518,7 +518,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	return;
 }
 
-// Marks a topic or form as read in the 'lastread' table.
+// Marks a topic or form as read
 function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 {
 	global $config, $db, $user;
@@ -534,7 +534,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			// Mark one forum as read.
 			// Do this by inserting a record with -$forum_id in the 'forum_id' field.
 			$sql = "SELECT forum_id 
-				FROM " . LASTREAD_TABLE . "
+				FROM " . TOPICS_TRACK_TABLE . "
 				WHERE user_id = " . $user->data['user_id'] . " 
 					AND forum_id = -$forum_id";
 			$result = $db->sql_query($sql);
@@ -542,8 +542,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			if ($db->sql_fetchrow($result))
 			{
 				// User has marked this topic as read before: Update the record
-				$sql = "UPDATE " . LASTREAD_TABLE . "
-					SET lastread_time = " . time() . "
+				$sql = "UPDATE " . TOPICS_TRACK_TABLE . "
+					SET mark_time = " . time() . "
 					WHERE user_id = " . $user->data['user_id'] . "
 						AND forum_id = -$forum_id";
 				$db->sql_query($sql);
@@ -553,8 +553,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 				// User is marking this forum for the first time.
 				// Insert dummy topic_id to satisfy PRIMARY KEY (user_id, topic_id)
 				// dummy id = -forum_id
-				$sql = "INSERT INTO " . LASTREAD_TABLE . "
-					(user_id, forum_id, topic_id, lastread_time)
+				$sql = "INSERT INTO " . TOPICS_TRACK_TABLE . "
+					(user_id, forum_id, topic_id, mark_time)
 					VALUES
 					(" . $user->data['user_id'] . ", -$forum_id, -$forum_id, " . time() . ")";
 				$db->sql_query($sql);
@@ -566,7 +566,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			// Select all forum_id's that are not yet in the lastread table
 			$sql = "SELECT f.forum_id
 				FROM " . FORUMS_TABLE . " f
-				LEFT JOIN (" . LASTREAD_TABLE . " lr ON (
+				LEFT JOIN (" . TOPICS_TRACK_TABLE . " lr ON (
 					lr.user_id = " . $user->data['user_id'] . "
 					AND f.forum_id = -lr.forum_id))
 				WHERE lr.forum_id IS NULL";
@@ -576,9 +576,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			{
 				// Some forum_id's are missing. We are not taking into account
 				// the auth data, even forums the user can't see are marked as read.
-				$sql = "INSERT INTO " . LASTREAD_TABLE . "
+				$sql = "INSERT INTO " . TOPICS_TRACK_TABLE . "
 					(user_id, forum_id, topic_id, lastread_time)
-					VALUES\n";
+					VALUES";
 				$forum_insert = array();
 
 				do 				
@@ -596,8 +596,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			}
 
 			// Mark all forums as read
-			$sql = "UPDATE " . LASTREAD_TABLE . "
-				SET lastread_time = " . time() . "
+			$sql = "UPDATE " . TOPICS_TRACK_TABLE . "
+				SET mark_time = " . time() . "
 				WHERE user_id = " . $user->data['user_id'] . "
 					AND forum_id < 0";
 			$db->sql_query($sql);
@@ -613,9 +613,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 			// Type:
 			// 0 = Normal topic
 			// 1 = user made a post in this topic
-			$type_update = (isset($type) && $type = 1) ? 'lastread_type = 1,' : '';
-			$sql = "UPDATE " . LASTREAD_TABLE . "
-				SET $type_update forum_id = $forum_id, lastread_time = " . time() . "
+			$type_update = (isset($type) && $type = 1) ? 'mark_type = 1,' : '';
+			$sql = "UPDATE " . TOPICS_TRACK_TABLE . "
+				SET $type_update forum_id = $forum_id, mark_time = " . time() . "
 				WHERE topic_id = $topic_id
 					AND user_id = " . $user->data['user_id'];
 			$db->sql_query($sql);
@@ -625,7 +625,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 				// Couldn't update. Row probably doesn't exist. Insert one.
 				if(isset($type) && $type = 1)
 				{
-					$type_name = 'lastread_type, ';
+					$type_name = 'mark_type, ';
 					$type_value = '1, ';
 				}
 				else
@@ -634,8 +634,8 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 					$type_value = '';
 				}
 
-				$sql = "INSERT INTO " . LASTREAD_TABLE . "
-					(user_id, topic_id, forum_id, $type_name lastread_time)
+				$sql = "INSERT INTO " . TOPICS_TRACK_TABLE . "
+					(user_id, topic_id, forum_id, $type_name mark_time)
 					VALUES
 					(" . $user->data['user_id'] . ", $topic_id, $forum_id, $type_value " . time() . ")";
 				$db->sql_query($sql);
