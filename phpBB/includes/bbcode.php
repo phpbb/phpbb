@@ -26,6 +26,9 @@ class bbcode
 	var $bbcode_cache = array();
 	var $bbcode_template = array();
 
+	var $template_bitfield = 0;
+	var $template_filename = '';
+
 	function bbcode($bitfield = 0)
 	{
 		if ($bitfield)
@@ -55,7 +58,7 @@ class bbcode
 		{
 			$this->bbcode_cache_init();
 		}
-
+//echo'<pre>';print_r($this);
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());
 
@@ -96,10 +99,26 @@ class bbcode
 	//
 	function bbcode_cache_init()
 	{
-		global $user;
+		if (empty($this->template_filename))
+		{
+			global $user, $phpbb_root_path;
+
+			$style = 'primary';
+			if (!empty($user->theme['secondary']))
+			{
+				$merged_bitfield = $user->theme['primary']['bbcode_bitfield'] | $user->theme['secondary']['bbcode_bitfield'];
+
+				if ($this->bbcode_bitfield & $merged_bitfield)
+				{
+					$style = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? 'primary' : 'secondary';
+				}
+			}
+
+			$this->template_bitfield = $user->theme[$style]['bbcode_bitfield'];
+			$this->template_filename = $phpbb_root_path . 'styles/templates/' . $user->theme[$style]['template_path'] . '/bbcode.html';
+		}
 
 		$sql = '';
-
 		$bbcode_ids = array();
 		$bitlen = strlen(decbin($this->bbcode_bitfield));
 
@@ -257,8 +276,6 @@ class bbcode
 
 	function bbcode_tpl($tpl_name, $bbcode_id = -1)
 	{
-		global $template, $user;
-
 		if (empty($bbcode_hardtpl))
 		{
 			static $bbcode_hardtpl = array(
@@ -276,7 +293,7 @@ class bbcode
 			);
 		}
 
-		if ($bbcode_id != -1 && !($user->theme['primary']['bbcode_bitfield'] & (1 << $bbcode_id)))
+		if ($bbcode_id != -1 && !($this->template_bitfield & (1 << $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
 		}
@@ -291,7 +308,7 @@ class bbcode
 			{
 				trigger_error('Could not load bbcode template');
 			}
-			$tpl = fread($fp, filesize($tpl_filename));
+			$tpl = fread($fp, filesize($this->template_filename));
 			@fclose($fp);
 
 			// replace \ with \\ and then ' with \'.
