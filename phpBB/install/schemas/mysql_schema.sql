@@ -757,6 +757,16 @@ CREATE TABLE phpbb_users (
    KEY user_birthday (user_birthday(6))
 );
 
+# Table: 'phpbb_users_notes'
+CREATE TABLE phpbb_users_notes (
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  reporter_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  report_date int(11) DEFAULT '0' NOT NULL,
+  report_log varchar(255) DEFAULT '' NOT NULL,
+  report_text text DEFAULT '' NOT NULL,
+  KEY user_id (user_id,reporter_id)
+);
+
 # Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
    word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
