@@ -92,7 +92,7 @@
 <!-- END img -->
 
 <!-- BEGIN url -->
-<a href="{URL}" target="_blank">{DESCRIPTION}</a>
+<a href="{URL}" target="_blank" class="postbody">{DESCRIPTION}</a>
 <!-- END url -->
 
 <!-- BEGIN email -->
