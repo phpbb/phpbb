@@ -403,7 +403,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 		{
 			$db->sql_freeresult($result);
 
-			echo "2 >> " . $sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name, group_type FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+			$sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name, group_type FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -426,7 +426,6 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 			}
 		}
 		$db->sql_freeresult($result);
-echo htmlspecialchars($ug_hidden);
 
 		// Now we'll build a list of preset options ...
 		$preset_options = $preset_js = $preset_update_options = '';
