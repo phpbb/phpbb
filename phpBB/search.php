@@ -158,10 +158,6 @@ else
 if( isset($HTTP_POST_VARS['charsreqd']) || isset($HTTP_GET_VARS['charsreqd']) )
 {
 	$return_chars = ( isset($HTTP_POST_VARS['charsreqd']) ) ? intval($HTTP_POST_VARS['charsreqd']) : intval($HTTP_GET_VARS['charsreqd']);
-	if( $return_chars == "all" )
-	{
-		$return_chars = -1;
-	}
 }
 else
 {
@@ -174,7 +170,7 @@ if( isset($HTTP_POST_VARS['searchcat']) || isset($HTTP_GET_VARS['searchcat']) )
 }
 else
 {
-	$search_cat = "all";
+	$search_cat = -1;
 }
 
 if( isset($HTTP_POST_VARS['searchforum']) || isset($HTTP_GET_VARS['searchforum']) )
@@ -183,7 +179,7 @@ if( isset($HTTP_POST_VARS['searchforum']) || isset($HTTP_GET_VARS['searchforum']
 }
 else
 {
-	$search_forum = "all";
+	$search_forum = -1;
 }
 
 if( isset($HTTP_POST_VARS['sortby']) || isset($HTTP_GET_VARS['sortby']) )
@@ -215,14 +211,14 @@ else
 
 if(!empty($HTTP_POST_VARS['resultdays']) )
 {
-	$search_time = time() - ( $HTTP_POST_VARS['resultdays'] * 86400 );
+	$search_time = time() - ( intval($HTTP_POST_VARS['resultdays']) * 86400 );
 }
 else
 {
 	$search_time = 0;
 }
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 //
 // Define some globally used data
@@ -276,6 +272,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			{
 				message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 			}
+
+			$show_results = "topics";
+			$sortby = 0;
+			$sortby_dir = "DESC";
 		}
 		else if( $search_id == "egosearch" )
 		{
@@ -283,6 +283,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				FROM " . POSTS_TABLE . " 
 				WHERE poster_id = " . $userdata['user_id'] . " 
 				ORDER BY post_time DESC";
+
+			$show_results = "topics";
+			$sortby = 0;
+			$sortby_dir = "DESC";
 		}
 		else
 		{
@@ -315,6 +319,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				WHERE poster_id IN ($matching_userids) 
 				ORDER BY post_time DESC";
 		}
+
 		$result = $db->sql_query($sql); 
 		if( !$result )
 		{
@@ -335,37 +340,51 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 		if( $sql_post_id_in != "" )
 		{
-			$sql = "SELECT topic_id 
-				FROM " . POSTS_TABLE . " 
-				WHERE post_id IN ($sql_post_id_in) 
-				GROUP BY topic_id";
-			$result = $db->sql_query($sql); 
-			if( !$result )
+			if( $show_results == "posts" )
 			{
-				message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
-			}
+				$search_sql .= "p.post_id IN ($sql_post_id_in)";
 
-			$sql_post_id_in = "";
-			while( $row = $db->sql_fetchrow($result) )
-			{
-				if( $sql_post_id_in != "" )
+				if( $search_time )
 				{
-					$sql_post_id_in .= ", ";
+					$search_sql .= " AND p.post_time >= $search_time ";
 				}
-				$sql_post_id_in .= $row['topic_id'];
 			}
+			else
+			{
+				$search_time_sql = "";
+				if( $search_time )
+				{
+					$search_time_sql = "AND post_time >= $search_time";
+				}
 
-			$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+				$sql = "SELECT topic_id 
+					FROM " . POSTS_TABLE . " 
+					WHERE post_id IN ($sql_post_id_in) 
+						$search_time_sql 
+					GROUP BY topic_id";
+				$result = $db->sql_query($sql); 
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't matched posts", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql_post_id_in = "";
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					if( $sql_post_id_in != "" )
+					{
+						$sql_post_id_in .= ", ";
+					}
+					$sql_post_id_in .= $row['topic_id'];
+				}
+
+				$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
+			}
 		}
 		else
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 		}
-
-		$show_results = "topics";
-		$sortby = 0;
-		$sortby_dir = "DESC";
-
 	}
 	else if( $search_id == "unanswered" )
 	{
@@ -549,29 +568,6 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				}
 
 				$search_sql .= "t.topic_id IN ($sql_post_id_in) ";
-/*
-						if( $query_author == "" )
-						{
-							$search_sql .= "t.topic_id IN ( 
-								SELECT topic_id 
-								FROM " . POSTS_TABLE . " 
-								WHERE post_id IN ($sql_post_id_in) 
-									$search_time_sql
-								GROUP BY topic_id )";
-						}
-						else
-						{
-							$search_sql .= "t.topic_id IN ( 
-								SELECT p.topic_id 
-								FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
-								WHERE p.post_id IN ($sql_post_id_in) 
-									AND u.username LIKE '$query_author' 
-									AND p.poster_id = u.user_id 
-									$search_time_sql
-								GROUP BY p.topic_id )";
-						}
-*/
-
 			}		
 		}
 		else
@@ -604,7 +600,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	// If not logged in we explicitly prevent searching of private forums
 	//
 	$auth_sql = "";
-	if( $search_forum != "all" )
+	if( $search_forum != -1 )
 	{
 		$is_auth = auth(AUTH_READ, $search_forum, $userdata);
 
@@ -621,7 +617,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	{
 		$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata); 
 
-		if( $search_cat != "all" )
+		if( $search_cat != -1 )
 		{
 			$auth_sql = "f.cat_id = $search_cat";
 		}
@@ -907,7 +903,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 			if( $showresults == "posts" )
 			{
-				if( $return_chars )
+				if( isset($return_chars) )
 				{
 					$bbcode_uid = $searchset[$i]['bbcode_uid'];
 
@@ -1239,7 +1235,7 @@ $sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
 	WHERE f.cat_id = c.cat_id 
 	ORDER BY c.cat_id, f.forum_order";
 $result = $db->sql_query($sql);
-if(!$result)
+if( !$result )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forum_name/forum_id", "", __LINE__, __FILE__, $sql);
 }
@@ -1247,7 +1243,7 @@ if(!$result)
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = "";
-while($row = $db->sql_fetchrow($result))
+while( $row = $db->sql_fetchrow($result) )
 {
 	if( $is_auth_ary[$row['forum_id']]['auth_read'] )
 	{
@@ -1261,12 +1257,12 @@ while($row = $db->sql_fetchrow($result))
 
 if( $s_forums != "" )
 {
-	$s_forums = "<option value=\"all\">" . $lang['All_available'] . "</option>" . $s_forums;
+	$s_forums = "<option value=\"-1\">" . $lang['All_available'] . "</option>" . $s_forums;
 
 	//
 	// Category to search
 	//
-	$s_categories = "<option value=\"all\">" . $lang['All_available'] . "</option>";
+	$s_categories = "<option value=\"-1\">" . $lang['All_available'] . "</option>";
 	while( list($cat_id, $cat_title) = @each($list_cat))
 	{
 		$s_categories .= "<option value=\"$cat_id\">$cat_title</option>";
@@ -1280,14 +1276,14 @@ else
 //
 // Number of chars returned
 //
-$s_characters = "<option value=\"all\">" . $lang['All_available'] . "</option>";
+$s_characters = "<option value=\"-1\">" . $lang['All_available'] . "</option>";
 $s_characters .= "<option value=\"0\">0</option>";
 $s_characters .= "<option value=\"25\">25</option>";
 $s_characters .= "<option value=\"50\">50</option>";
 
 for($i = 100; $i < 1100 ; $i += 100)
 {
-	$selected = ($i == 200) ? "selected=\"selected\"" : "";
+	$selected = ( $i == 200 ) ? "selected=\"selected\"" : "";
 	$s_characters .= "<option value=\"$i\"$selected>$i</option>";
 }
 
@@ -1309,7 +1305,7 @@ $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'],
 $s_time = "";
 for($i = 0; $i < count($previous_days); $i++)
 {
-	$selected = ($topic_days == $previous_days[$i]) ? " selected=\"selected\"" : "";
+	$selected = ( $topic_days == $previous_days[$i] ) ? " selected=\"selected\"" : "";
 	$s_time .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
 }
 
