@@ -199,6 +199,7 @@ define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('DISALLOW_TABLE', $table_prefix.'disallow');
 define('FORUMS_TABLE', $table_prefix.'forums');
+define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');

@@ -611,7 +611,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 	}
 	else 
 	{
-		if ( $mode == 'reply' )
+		if ( $mode == 'reply' || $mode == 'newtopic' )
 		{
 			$sql = "SELECT ban_userid 
 				FROM " . BANLIST_TABLE;
@@ -629,16 +629,16 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 				}
 			}
 
-			$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title 
-				FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u 
-				WHERE tw.topic_id = $topic_id 
-					AND tw.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
-					AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
-					AND t.topic_id = tw.topic_id 
-					AND u.user_id = tw.user_id";
+			$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
+				FROM " . FORUMS_WATCH_TABLE . " w, " . FORUMS_TABLE . " f, " . USERS_TABLE . " u 
+				WHERE w.forum_id = $forum_id 
+					AND w.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
+					AND w.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
+					AND f.forum_id = w.forum_id 
+					AND u.user_id = w.user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain list of forum watchers', '', __LINE__, __FILE__, $sql);
 			}
 
 			$orig_word = array();
@@ -649,7 +649,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$emailer = new emailer($board_config['smtp_delivery']);
 
 			$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-			$script_name = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
+			$script_name = ( $script_name != '' ) ? $script_name . '/viewforum.'.$phpEx : 'viewforum.'.$phpEx;
 			$server_name = trim($board_config['server_name']);
 			$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 			$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -659,13 +659,13 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$update_watched_sql = '';
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$topic_title = preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title']));
+				$forum_name = unprepare_message($row['forum_name']);
 
 				do
 				{
 					if ( $row['user_email'] != '' )
 					{
-						$emailer->use_template('topic_notify', $row['user_lang']);
+						$emailer->use_template('forum_notify', $row['user_lang']);
 						$emailer->email_address($row['user_email']);
 						$emailer->set_subject();//$lang['Topic_reply_notification']
 						$emailer->extra_headers($email_headers);
@@ -674,10 +674,10 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 							'USERNAME' => $row['username'],
 							'SITENAME' => $board_config['sitename'],
-							'TOPIC_TITLE' => $topic_title, 
+							'FORUM_NAME' => $forum_name, 
 
-							'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-							'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+							'U_FORUM' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_FORUM_URL . "=$forum_id",
+							'U_STOP_WATCHING_FORUM' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_FORUM_URL . "=$forum_id&unwatch=forum")
 						);
 
 						$emailer->send();
@@ -691,12 +691,73 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 
 			if ( $update_watched_sql != '' )
 			{
-				$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
+				$sql = "UPDATE " . FORUMS_WATCH_TABLE . "
 					SET notify_status = " . TOPIC_WATCH_NOTIFIED . "
-					WHERE topic_id = $topic_id
+					WHERE forum_id = $forum_id
 						AND user_id IN ($update_watched_sql)";
 				$db->sql_query($sql);
 			}
+
+			if ( $mode == 'reply' )
+			{
+				$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title 
+					FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u 
+					WHERE tw.topic_id = $topic_id 
+						AND tw.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
+						AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
+						AND t.topic_id = tw.topic_id 
+						AND u.user_id = tw.user_id";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
+				}
+
+				$script_name = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
+				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+
+				$update_watched_sql = '';
+				if ( $row = $db->sql_fetchrow($result) )
+				{
+					$topic_title = preg_replace($orig_word, $replacement_word, unprepare_message($row['topic_title']));
+
+					do
+					{
+						if ( $row['user_email'] != '' )
+						{
+							$emailer->use_template('topic_notify', $row['user_lang']);
+							$emailer->email_address($row['user_email']);
+							$emailer->set_subject();//$lang['Topic_reply_notification']
+							$emailer->extra_headers($email_headers);
+
+							$emailer->assign_vars(array(
+								'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+								'USERNAME' => $row['username'],
+								'SITENAME' => $board_config['sitename'],
+								'TOPIC_TITLE' => $topic_title, 
+
+								'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
+								'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+							);
+
+							$emailer->send();
+							$emailer->reset();
+
+							$update_watched_sql .= ( $update_watched_sql != '' ) ? ', ' . $row['user_id'] : $row['user_id'];
+						}
+					}
+					while ( $row = $db->sql_fetchrow($result) );
+				}
+
+				if ( $update_watched_sql != '' )
+				{
+					$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
+						SET notify_status = " . TOPIC_WATCH_NOTIFIED . "
+						WHERE topic_id = $topic_id
+							AND user_id IN ($update_watched_sql)";
+					$db->sql_query($sql);
+				}
+			}
+
 		}
 
 		$sql = "SELECT topic_id 

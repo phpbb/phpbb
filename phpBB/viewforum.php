@@ -118,6 +118,112 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 //
 
 //
+// Is user watching this thread? 
+//
+if( $userdata['session_logged_in'] )
+{
+	$can_watch_forum = TRUE;
+
+	$sql = "SELECT notify_status
+		FROM " . FORUMS_WATCH_TABLE . "
+		WHERE forum_id = $forum_id
+			AND user_id = " . $userdata['user_id'];
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, "Could not obtain forum watch information", '', __LINE__, __FILE__, $sql);
+	}
+
+	if ( $row = $db->sql_fetchrow($result) )
+	{
+		if ( isset($HTTP_GET_VARS['unwatch']) )
+		{
+			if ( $HTTP_GET_VARS['unwatch'] == 'forum' )
+			{
+				$is_watching_forum = 0;
+
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
+				$sql = "DELETE $sql_priority FROM " . FORUMS_WATCH_TABLE . "
+					WHERE forum_id = $forum_id 
+						AND user_id = " . $userdata['user_id'];
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Could not delete forum watch information", '', __LINE__, __FILE__, $sql);
+				}
+			}
+			
+			$template->assign_vars(array(
+				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=$start") . '">')
+			);
+
+			$message = $lang['No_longer_watching_forum'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=$start") . '">', '</a>');
+			message_die(GENERAL_MESSAGE, $message);
+		}
+		else
+		{
+			$is_watching_forum = TRUE;
+
+			if ( $row['notify_status'] )
+			{
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
+				$sql = "UPDATE $sql_priority " . FORUM_WATCH_TABLE . "
+					SET notify_status = 0
+					WHERE forum_id = $forum_id
+						AND user_id = " . $userdata['user_id'];
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Could not update forum watch information", '', __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+	}
+	else
+	{
+		if ( isset($HTTP_GET_VARS['watch']) )
+		{
+			if ( $HTTP_GET_VARS['watch'] == 'forum' )
+			{
+				$is_watching_forum = TRUE;
+
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
+				$sql = "INSERT $sql_priority INTO " . FORUMS_WATCH_TABLE . " (user_id, forum_id, notify_status)
+					VALUES (" . $userdata['user_id'] . ", $forum_id, 0)";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Could not insert forum watch information", '', __LINE__, __FILE__, $sql);
+				}
+			}
+
+			$template->assign_vars(array(
+				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=$start") . '">')
+			);
+
+			$message = $lang['You_are_watching_forum'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=$start") . '">', '</a>');
+			message_die(GENERAL_MESSAGE, $message);
+		}
+		else
+		{
+			$is_watching_forum = 0;
+		}
+	}
+}
+else
+{
+	if ( isset($HTTP_GET_VARS['unwatch']) )
+	{
+		if ( $HTTP_GET_VARS['unwatch'] == 'forum' )
+		{
+			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+			header($header_location . append_sid("login.$phpEx?redirect=viewforum.$phpEx&" . POST_FORUM_URL . "=$forum_id&unwatch=forum", true));
+		}
+	}
+	else
+	{
+		$can_watch_forum = 0;
+		$is_watching_forum = 0;
+	}
+}
+
+//
 // Handle marking posts
 //
 if ( $mark_read == 'topics' )
@@ -375,6 +481,23 @@ if ( $is_auth['auth_mod'] )
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="' . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 }
 
+$s_watching_forum = '';
+if ( $can_watch_forum )
+{
+	if ( $is_watching_forum )
+	{
+		$watch_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;unwatch=forum&amp;start=$start");
+		$s_watching_forum = '<a href="' . $watch_url . '">' . $lang['Stop_watching_forum'] . '</a>';
+		$s_watching_forum_img = ( isset($images['Forum_un_watch']) ) ? '<a href="' . $watch_url . '"><img src="' . $images['Forum_un_watch'] . '" alt="' . $lang['Stop_watching_forum'] . '" title="' . $lang['Stop_watching_forum'] . '" border="0"></a>' : '';
+	}
+	else
+	{
+		$watch_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;watch=forum&amp;start=$start");
+		$s_watching_forum = '<a href="' . $watch_url . '">' . $lang['Start_watching_forum'] . '</a>';
+		$s_watching_forum_img = ( isset($images['Forum_watch']) ) ? '<a href="' . $watch_url . '"><img src="' . $images['Forum_watch'] . '" alt="' . $lang['Stop_watching_forum'] . '" title="' . $lang['Start_watching_forum'] . '" border="0"></a>' : '';
+	}
+}
+
 //
 // Mozilla navigation bar
 //
@@ -432,6 +555,7 @@ $template->assign_vars(array(
 	'L_AUTHOR' => $lang['Author'],
 
 	'S_AUTH_LIST' => $s_auth_can, 
+	'S_WATCH_FORUM' => $s_watching_forum,
 
 	'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL ."=$forum_id"),
 

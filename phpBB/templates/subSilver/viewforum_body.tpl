@@ -53,6 +53,9 @@
 	<tr>
 	  <td align="left" colspan="3"><span class="nav">{PAGE_NUMBER}</span></td>
 	</tr>
+	<tr>
+		<td colspan="3"><span class="gensmall">{S_WATCH_FORUM}</span></td>
+	</tr>
   </table>
 </form>
 
