@@ -113,7 +113,7 @@ INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('mod', 'split');
 INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('mod', 'merge');
 INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('mod', 'approve');
 INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('mod', 'unrate');
-INSERT INTO phpbb_auth_options auth_type, (auth_option) VALUES ('mod', 'auth');
+INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('mod', 'auth');
 
 INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('admin', 'general');
 INSERT INTO phpbb_auth_options (auth_type, auth_option) VALUES ('admin', 'user');
