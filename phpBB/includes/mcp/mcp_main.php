@@ -441,7 +441,7 @@ class mcp_main extends mcp
 
 						'S_SELECT_TOPIC'	=>	($mode == 'merge_select' && $row['topic_id'] != $this->topic_id) ? TRUE : FALSE,
 						'U_SELECT_TOPIC'	=>	$this->url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $this->selected_ids,
-						'U_MCP_QUEUE'		=>	$this->url . '&amp;mode=approve&amp;t=' . $row['topic_id'],
+						'U_MCP_QUEUE'		=>	$this->url . '&amp;i=queue&amp;mode=approve&amp;t=' . $row['topic_id'],
 						'U_MCP_REPORT'		=>	$this->url . '&amp;mode=reports&amp;t=' . $row['topic_id'],
 
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
@@ -860,7 +860,7 @@ class mcp_main extends mcp
 						'S_POST_UNAPPROVED'	=>	($row['post_approved']) ? FALSE : TRUE,
 						
 						'U_POST_DETAILS'	=>	"mcp.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details',
-						'U_APPROVE'			=>	"mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id']
+						'U_APPROVE'			=>	"mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;p=" . $row['post_id']
 					));
 
 					unset($rowset[$i]);

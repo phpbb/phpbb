@@ -132,7 +132,8 @@ class mcp_queue extends mcp
 				$db->sql_query($sql);
 
 				// Now resync everything
-				sync('topic', 'topic_id', $topic_id_list, TRUE, TRUE);
+				sync('topic', 'topic_id', $topic_id_list, true, true);
+				sync('forum', 'forum_id', $this->forum_id, true, true);
 
 				// Back to... whatever
 				if ($this->quickmod)
@@ -178,26 +179,33 @@ class mcp_queue extends mcp
 						$row_num[$row['post_id']] = $i++;
 					}
 
-					$sql = 'SELECT f.forum_id, f.forum_name, t.topic_id, t.topic_title, p.post_id, p.post_username, p.poster_id, p.post_time, u.username
-						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
-						WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
-							AND t.topic_id = p.topic_id
-							AND f.forum_id = p.forum_id
-							AND u.user_id = p.poster_id";
-
-					$result = $db->sql_query($sql);
-					$post_data = $rowset = array();
-					while ($row = $db->sql_fetchrow($result))
+					if (sizeof($post_ids))
 					{
-						$post_data[$row['post_id']] = $row;
-					}
-					$db->sql_freeresult($result);
+						$sql = 'SELECT f.forum_id, f.forum_name, t.topic_id, t.topic_title, p.post_id, p.post_username, p.poster_id, p.post_time, u.username
+							FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
+							WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
+								AND t.topic_id = p.topic_id
+								AND f.forum_id = p.forum_id
+								AND u.user_id = p.poster_id";
 
-					foreach ($post_ids as $post_id)
-					{
-						$rowset[] = $post_data[$post_id];
+						$result = $db->sql_query($sql);
+						$post_data = $rowset = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$post_data[$row['post_id']] = $row;
+						}
+						$db->sql_freeresult($result);
+
+						foreach ($post_ids as $post_id)
+						{
+							$rowset[] = $post_data[$post_id];
+						}
+						unset($post_data, $post_ids);
 					}
-					unset($post_data, $post_ids);
+					else
+					{
+						$rowset = array();
+					}
 				}
 				else
 				{
