@@ -1,4 +1,5 @@
-Efni   : Spjallþráða tilkynning - {TOPIC_TITLE}
+Subject: Spjallþráða tilkynning - {TOPIC_TITLE}
+Charset: iso-8859-1
 
 
 Halló {USERNAME},

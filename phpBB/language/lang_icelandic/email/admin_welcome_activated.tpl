@@ -1,4 +1,5 @@
-Efni   : Reikningur gerður virkur
+Subject: Reikningur gerður virkur
+Charset: iso-8859-1
 
 
 Halló {USERNAME},

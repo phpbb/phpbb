@@ -1,4 +1,4 @@
-Efni   : Nýtt aðgangsorð
+Subject: Nýtt aðgangsorð
 Charset: iso-8859-1
 
 Halló {USERNAME}

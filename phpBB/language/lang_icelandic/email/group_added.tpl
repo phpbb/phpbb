@@ -1,4 +1,5 @@
-Efni   : Þér hefur verið bætt við þennan notendahóp
+Subject: Þér hefur verið bætt við þennan notendahóp
+Charset: iso-8859-1
 
 
 Til hamingju,

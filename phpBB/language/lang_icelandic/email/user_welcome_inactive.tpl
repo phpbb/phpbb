@@ -1,4 +1,5 @@
-Efni   : Velkomin til umræðuborðs á {SITENAME} 
+Subject: Velkomin til umræðuborðs á {SITENAME} 
+Charset: iso-8859-1
 
 
 {WELCOME_MSG}

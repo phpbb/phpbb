@@ -1,4 +1,5 @@
-Efni   : Gera aðgang þinn virkan aftur
+Subject: Gera aðgang þinn virkan aftur
+Charset: iso-8859-1
 
 
 Halló {USERNAME},

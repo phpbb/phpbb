@@ -1,4 +1,5 @@
-Efni   : Velkomin til {SITENAME} umræðuhóps
+Subject: Velkomin til {SITENAME} umræðuhóps
+Charset: iso-8859-1
 
 
 {WELCOME_MSG}
