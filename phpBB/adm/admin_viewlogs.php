@@ -147,9 +147,11 @@ $log_data = array();
 $log_count = 0;
 view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
 
+$row_class = '';
+
 if ($log_count)
 {
-	for($i = 0; $i < sizeof($log_data); $i++)
+	for ($i = 0; $i < sizeof($log_data); $i++)
 	{
 		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 		
@@ -165,7 +167,7 @@ if ($log_count)
 				
 			foreach (array('viewtopic', 'viewlogs', 'viewforum') as $check)
 			{
-				if ($log_data[$i][$check])
+				if (isset($log_data[$i][$check]) && $log_data[$i][$check])
 				{
 					$data[] = '<a href="' . $log_data[$i][$check] . '">' . $user->lang['LOGVIEW_' . strtoupper($check)] . '</a>';
 				}

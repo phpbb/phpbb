@@ -500,11 +500,17 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$attachment_tpl = array();
 
 			// Generate Template
-			// TODO: secondary template
-			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/attachment.html';
+			$style = 'primary';
+
+			if (!empty($user->theme['secondary']))
+			{
+				$style = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/attachment.html')) ? 'primary' : 'secondary';
+			}
+
+			$template_filename = $phpbb_root_path . 'styles/' . $user->theme[$style]['template_path'] . '/template/attachment.html';
 			if (!($fp = @fopen($template_filename, 'rb')))
 			{
-				trigger_error('Could not load attachment template');
+				trigger_error('Could not load template file "' . $template_filename . '"');
 			}
 			$attachment_template = fread($fp, filesize($template_filename));
 			@fclose($fp);

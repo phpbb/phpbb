@@ -157,7 +157,7 @@ class template
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		if (!file_exists($this->files[$handle]))
+		if (!file_exists($this->files[$handle]) && !empty($user->theme['secondary']))
 		{
 			$this->tpl = 'secondary';
 			$this->files[$handle] = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/' . $this->filename[$handle];

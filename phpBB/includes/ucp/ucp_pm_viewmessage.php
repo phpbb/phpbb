@@ -15,7 +15,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
 
-	$user->add_lang('viewtopic');
+	$user->add_lang(array('viewtopic', 'memberlist'));
 
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
@@ -412,6 +412,8 @@ function get_user_informations($user_id, $user_row)
 		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" border="0" alt="" />';
 	}
 
+	$user_row['rank_title'] = $user_row['rank_image'] = '';
+	
 	if (!empty($user_row['user_rank']))
 	{
 		$user_row['rank_title'] = $ranks['special'][$user_row['user_rank']]['rank_title'];

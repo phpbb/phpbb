@@ -45,6 +45,7 @@ class bbcode
 		if ($bbcode_bitfield !== false)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
+
 			// Init those added with a new bbcode_bitfield (already stored codes will not get parsed again)
 			$this->bbcode_cache_init();
 		}
@@ -112,7 +113,7 @@ class bbcode
 
 				if ($this->bbcode_bitfield & $user->theme['primary']['bbcode_bitfield'])
 				{
-					$style = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? 'primary' : 'secondary';
+					$style = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html')) ? 'primary' : 'secondary';
 				}
 			}
 

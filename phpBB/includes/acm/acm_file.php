@@ -13,7 +13,7 @@
 
 class acm
 {
-	var $vars = '';
+	var $vars = array();
 	var $var_expires = array();
 	var $is_modified = FALSE;
 
@@ -90,7 +90,7 @@ class acm
 
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
-			if (!is_array($this->vars))
+			if (!sizeof($this->vars))
 			{
 				$this->load();
 			}
@@ -190,7 +190,7 @@ class acm
 		}
 		else
 		{
-			if (!is_array($this->vars))
+			if (!sizeof($this->vars))
 			{
 				$this->load();
 			}

@@ -11,13 +11,6 @@
 // 
 // -------------------------------------------------------------
 
-/*
-	TODO list for M-3:
-	- add other languages to syntax highlighter
-	- better (and unified, wrt other pages such as registration) validation for urls, emails, etc...
-	- need size limit checks on img/flash tags ... probably warrants some discussion
-*/
-
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -718,6 +711,7 @@ class parse_message extends bbcode_firstpass
 		if ($config['max_' . $mode . '_urls'] && $num_urls > $config['max_' . $mode . '_urls'])
 		{
 			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_URLS'], $config['max_' . $mode . '_urls']);
+			return $this->warn_msg;
 		}
 
 		if (!$update_this_message)
@@ -729,7 +723,6 @@ class parse_message extends bbcode_firstpass
 
 		$this->message_status = 'parsed';
 		return;
-		//return implode('<br />', $this->warn_msg);
 	}
 
 	// Formatting text for display
