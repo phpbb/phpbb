@@ -304,7 +304,7 @@ CREATE TABLE phpbb_smilies (
 CREATE TABLE phpbb_themes (
    themes_id int4 DEFAULT nextval('phpbb_themes_id_seq'::text) NOT NULL,
    style_name varchar(30),
-   template_name varchar(30) NOT NULL default '',
+   template_name varchar(30) NOT NULL DEFAULT '',
    head_stylesheet varchar(100),
    body_background varchar(100),
    body_bgcolor char(6),
@@ -402,7 +402,7 @@ CREATE TABLE phpbb_topics (
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
-   topic_moved_id DEFAULT '0' NOT NULL int4,
+   topic_moved_id int4 DEFAULT '0' NOT NULL,
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
