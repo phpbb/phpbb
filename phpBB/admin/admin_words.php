@@ -223,7 +223,7 @@ else
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['word']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['replacement']; ?></td>
 		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['Edit']; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['Delete']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $user->lang['DELETE']; ?></a>&nbsp;</td>
 	</tr>
 <?php
 
