@@ -133,7 +133,7 @@ if( $mode == 'searchuser' )
 	// handled by the script itself, this is only for the
 	// windowed version
 	//
-	if( isset($HTTP_POST_VARS['search']) )
+	if( isset($HTTP_POST_VARS['search_author']) )
 	{
 		username_search($HTTP_POST_VARS['search_author'], false);
 	}
