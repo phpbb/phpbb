@@ -31,7 +31,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start($update);
-$acl = new acl('admin', $userdata);
+$acl = new acl($userdata);
 //
 // End session management
 //
@@ -94,7 +94,7 @@ function page_header($sub_title, $meta = '', $table_html = true)
 <?php
 
 	echo $meta;
-	
+
 ?>
 <style type="text/css">
 <!--
@@ -234,10 +234,10 @@ function add_admin_log()
 
 	$arguments = func_get_args();
 
-	$action = array_shift($arguments); 
+	$action = array_shift($arguments);
 	$data = ( !sizeof($arguments) ) ? '' : addslashes(serialize($arguments));
 
-	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data) 
+	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data)
 		VALUES (" . $userdata['user_id'] . ", '$user_ip', " . time() . ", '$action', '$data')";
 	$db->sql_query($sql);
 
@@ -252,12 +252,12 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$forum_sql = ( $mode == 'mod' && $forum_id ) ? "AND l.forum_id = $forum_id" : '';
 	$limit_sql = ( $limit ) ? ( ( $offset ) ? "LIMIT $offset, $limit" : "LIMIT $limit" ) : '';
 
-	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username 
-		FROM $table_sql l, " . USERS_TABLE . " u 
-		WHERE u.user_id = l.user_id 
-			AND l.log_time >= $limit_days 
-			$forum_sql 
-		ORDER BY $sort_by 
+	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username
+		FROM $table_sql l, " . USERS_TABLE . " u
+		WHERE u.user_id = l.user_id
+			AND l.log_time >= $limit_days
+			$forum_sql
+		ORDER BY $sort_by
 		$limit_sql";
 	$result = $db->sql_query($sql);
 
@@ -291,8 +291,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT COUNT(*) AS total_entries 
-		FROM $table_sql l 
+	$sql = "SELECT COUNT(*) AS total_entries
+		FROM $table_sql l
 		WHERE l.log_time >= $limit_days
 			$forum_sql";
 	$result = $db->sql_query($sql);
