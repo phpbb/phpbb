@@ -222,8 +222,8 @@
 		</table>
 	  </td>
 	</tr>
-	<!-- BEGIN avatarupload -->
-	<!-- BEGIN fileuploads -->
+
+	<!-- BEGIN avatar_local_upload -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}</span></td>
 	  <td class="row2"> 
@@ -231,28 +231,30 @@
 		<input type="file" name="avatar" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
-	<!-- END fileuploads -->
+	<!-- END avatar_local_upload -->
+	<!-- BEGIN avatar_remote_upload -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="avatarurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
-	<!-- END avatarupload -->
+	<!-- END avatar_remote_upload -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="avatarremoteurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
-	<!-- BEGIN avatargallery -->
+	<!-- BEGIN avatar_local_gallery -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}</span></td>
 	  <td class="row2"> 
 		<input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" />
 	  </td>
 	</tr>
-	<!-- END avatargallery -->
+	<!-- END avatar_local_gallery -->
+
 	<tr> 
 	  <td class="catSides" colspan="2">&nbsp;</td>
 	</tr>
@@ -297,7 +299,7 @@
 		{L_DELETE_USER_EXPLAIN}</td>
 	</tr>
 	<tr> 
-	  <td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS} 
+	  <td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS} 
 		<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />
 		&nbsp;&nbsp; 
 		<input type="reset" value="{L_RESET}" class="liteoption" />
