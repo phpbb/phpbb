@@ -212,7 +212,7 @@ else if ( $mode == 'read' )
 			break;
 		case 'savebox':
 			$l_box_name = $lang['Savebox'];
-			$pm_sql_user .= "AND ( ( pm.privmsgs_to_userid = " . $userdata['user_id'] . "
+			$pm_sql_user = "AND ( ( pm.privmsgs_to_userid = " . $userdata['user_id'] . "
 					AND pm.privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) 
 				OR ( pm.privmsgs_from_userid = " . $userdata['user_id'] . "
 					AND pm.privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
