@@ -22,6 +22,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 	$right = $cat_right = 0;
 	$forum_list = $padding = $holding = '';
 	$padding_store = array('0' => '');
+
 	foreach ($rowset as $row)
 	{
 		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || 
@@ -105,6 +106,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 			FROM ' . FORUMS_TABLE . '
 			ORDER BY left_id ASC';
 		$result = $db->sql_query($sql, $expire_time);
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_rows[] = $row;
@@ -202,49 +204,6 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	closedir($dh);
 
 	return $matches;
-}
-
-// Whois facility
-function ipwhois($ip)
-{
-	$ipwhois = '';
-
-	$match = array(
-		'#RIPE\.NET#is' => 'whois.ripe.net',
-		'#whois\.apnic\.net#is' => 'whois.apnic.net',
-		'#nic\.ad\.jp#is' => 'whois.nic.ad.jp',
-		'#whois\.registro\.br#is' => 'whois.registro.br'
-	);
-
-	if (($fsk = @fsockopen('whois.arin.net', 43)))
-	{
-		fputs($fsk, "$ip\n");
-		while (!feof($fsk))
-		{
-			$ipwhois .= fgets($fsk, 1024);
-		}
-		@fclose($fsk);
-	}
-
-	foreach (array_keys($match) as $server)
-	{
-		if (preg_match($server, $ipwhois))
-		{
-			$ipwhois = '';
-			if (($fsk = @fsockopen($match[$server], 43)))
-			{
-				fputs($fsk, "$ip\n");
-				while (!feof($fsk))
-				{
-					$ipwhois .= fgets($fsk, 1024);
-				}
-				@fclose($fsk);
-			}
-			break;
-		}
-	}
-
-	return $ipwhois;
 }
 
 // Posts and topics manipulation
@@ -451,8 +410,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	$sql = 'SELECT post_id, topic_id, forum_id
 		FROM ' . POSTS_TABLE . "
 		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
-
 	$result = $db->sql_query($sql);
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$post_ids[] = $row['post_id'];
@@ -470,6 +429,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	$db->sql_transaction('begin');
 
 	$table_ary = array(POSTS_TABLE, RATINGS_TABLE, REPORTS_TABLE, SEARCH_MATCH_TABLE);
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table 
