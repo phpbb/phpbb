@@ -19,6 +19,7 @@ if (!empty($setmodules))
 define('IN_PHPBB', 1);
 // Include files
 $phpbb_root_path = '../';
+//$phpEx = substr(strrchr(basename($_SERVER['PATH_TRANSLATED']), '.'), 1);
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
@@ -53,6 +54,8 @@ else
 }
 
 $error = array();
+
+$safe_mode = (@ini_get('safe_mode') && @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 
 
 // What shall we do today then?
@@ -102,6 +105,11 @@ switch ($mode)
 					if (strlen($style_name) > 30)
 					{
 						$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
+					}
+
+					if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $style_name))
+					{
+						$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
 					}
 
 					if (strlen($style_copyright) > 60)
@@ -1051,7 +1059,6 @@ function viewsource(url)
 <?php
 
 		adm_page_footer();
-
 		break;
 
 
@@ -1066,13 +1073,17 @@ function viewsource(url)
 	// THEMES
 	// ------
 	case 'themes':
-
 		$theme_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : false;
 
 		switch ($action)
 		{
 			case 'preview':
 				break;
+
+
+			case 'install':
+				break;
+
 
 			case 'add':
 			case 'details':
@@ -1098,10 +1109,13 @@ function viewsource(url)
 				{
 					$theme_name = (!empty($_POST['theme_name'])) ? htmlspecialchars(stripslashes($_POST['theme_name'])) : '';
 					$theme_copyright = (!empty($_POST['theme_copyright'])) ? htmlspecialchars(stripslashes($_POST['theme_copyright'])) : '';
+					$css_storedb = (!empty($_POST['css_storedb'])) ? 1 : (($safe_mode) ? 1 : 0);
+
 					$s_hidden_fields = (!empty($_POST['theme_basis'])) ? '<input type="hidden" name="theme_basis" value="' . intval($_POST['theme_basis']) . '" />' : '';
 				}
 
 
+				// Do the update thang
 				if (isset($_POST['update']))
 				{
 					$sql_where = ($action == 'add') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
@@ -1116,13 +1130,31 @@ function viewsource(url)
 					}
 					$db->sql_freeresult($result);
 
+					if (empty($theme_name))
+					{
+						$error[] = $user->lang['THEME_ERR_STYLE_NAME'];
+					}
+
+					if (strlen($theme_name) > 30)
+					{
+						$error[] = $user->lang['THEME_ERR_NAME_LONG'];
+					}
+
+					if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $theme_name))
+					{
+						$error[] = $user->lang['THEME_ERR_NAME_CHARS'];
+					}
+
+					if (strlen($theme_copyright) > 60)
+					{
+						$error[] = $user->lang['THEME_ERR_COPY_LONG'];
+					}
 
 					if (!sizeof($error))
 					{
 						// Replace any chars which may cause us problems with _
-						$bad_chars = array(' ', '/', ':', '*', '?', '"', '<', '>', '|');
+						$theme_path = str_replace(' ', '_', $theme_name);
 
-						$theme_path = str_replace($bad_chars, '_', $theme_name);
 						if (file_exists($phpbb_root_path . 'styles/themes/' . $theme_path))
 						{
 							for ($i = 1; $i < 100; $i++)
@@ -1136,33 +1168,55 @@ function viewsource(url)
 						}
 
 						$css_storedb = 1;
-						if (!@ini_get('safe_mode') && @strtolower(ini_get('safe_mode')) != 'on' && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
+						$css_data = '';
+						if (!$safe_mode && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
 						{
 							umask(0);
-							if (mkdir($phpbb_root_path . 'styles/themes/' . $theme_path, 0777))
+							if (@mkdir($phpbb_root_path . 'styles/themes/' . $theme_path, 0777))
 							{
 								$css_storedb = 0;
-								chmod($phpbb_root_path . 'styles/themes/' . $theme_path, 0777);
+								@chmod($phpbb_root_path . 'styles/themes/' . $theme_path, 0777);
 							}
-						}
 
-						$css_data = '';
-						if (!empty($_POST['theme_basis']) && $action == 'add')
-						{
-							$sql = 'SELECT theme_name, theme_path, css_storedb, css_data  
-								FROM ' . STYLES_CSS_TABLE . ' 
-								WHERE theme_id = ' . intval($_POST['theme_basis']);
-							$result = $db->sql_query($sql);
-
-							if ($row = $db->sql_fetchrow($result))
+							if (!empty($_POST['theme_basis']) && !$css_storedb)
 							{
-								$css_data = ($row['css_storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/themes/' . $row['theme_path'] . '/' . $row['theme_path'] . '.css'));
+								$sql = 'SELECT theme_name, theme_path, css_storedb, css_data  
+									FROM ' . STYLES_CSS_TABLE . ' 
+									WHERE theme_id = ' . intval($_POST['theme_basis']);
+								$result = $db->sql_query($sql);
 
-								if (!$css_storedb)
+								if ($row = $db->sql_fetchrow($result))
 								{
-									if ($fp = @fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb'))
+									$css_data = ($row['css_storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/themes/' . $row['theme_path'] . '/' . $row['theme_path'] . '.css'));
+
+									if (!$css_storedb && ($fp = @fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb')))
 									{
 										$css_storedb = (fwrite($fp, $css_data)) ? 0 : 1;
+
+										if (!$css_storedb)
+										{
+											// Get a list of all files and folders in the basis themes folder
+											$filelist = filelist($phpbb_root_path . 'styles/themes/' . $row['theme_path'], '', '*');
+
+											// Copy every file, bar CVS and the original stylesheet
+											foreach ($filelist as $file_ary)
+											{
+												$path = $file_ary['path'];
+												$file = $file_ary['file'];
+
+												if (strstr($path, 'CVS') || $file == $row['theme_path'] . '.css')
+												{
+													continue;
+												}
+
+												if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/$path"))
+												{
+													@mkdir("{$phpbb_root_path}styles/themes/$theme_path/$path");
+												}
+												@copy("{$phpbb_root_path}styles/themes/" . $row['theme_path'] . "/$path/$file", "{$phpbb_root_path}styles/themes/$theme_path/$path/$file");
+											}
+											unset($filelist);
+										}
 									}
 									else
 									{
@@ -1170,8 +1224,8 @@ function viewsource(url)
 									}
 									@fclose($fp);
 								}
+								$db->sql_freeresult($result);
 							}
-							$db->sql_freeresult($result);
 						}
 
 						$sql_ary = array(
@@ -1190,13 +1244,17 @@ function viewsource(url)
 						$sql = ($action == 'add') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
 						$db->sql_query($sql);
 
-						$message = ($action == 'add') ? (($storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
-						$log = ($action == 'add') ? (($storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
+						$message = ($action == 'add') ? (($css_storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
+						$log = ($action == 'add') ? (($css_storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
 
 						add_log('admin', $log, $theme_name);
 						trigger_error($user->lang[$message]);
 					}
 				}
+
+
+				$css_storedb_no = (!$css_storedb) ? ' checked="checked"' : '';
+				$css_storedb_yes = ($css_storedb) ? ' checked="checked"' : '';
 
 
 				// Output the page
@@ -1235,20 +1293,35 @@ function viewsource(url)
 		<td class="row1" width="40%"><b>Copyright:</b></td>
 		<td class="row2"><?php
 	
-				if ($action == 'add')
+				echo ($action == 'add') ? '<input class="post" type="text" name="theme_copyright" value="' . $theme_copyright . '" maxlength="30" size="25" />' : "<b>$theme_copyright</b>";
+
+?></td>
+	</tr>
+<?php
+
+				if ($safe_mode || !is_writeable("{$phpbb_root_path}styles/themes"))
 				{
-					
-?><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /><?php
-	
+					$message = ($safe_mode) ? 'Because PHP is running in safe mode your stylesheet will be stored in the database.' : 'Because your themes directory is not writeable your stylesheet will be stored in the database.';
+
+?>
+	</tr>
+		<td class="row3" colspan="2" align="center"><?php echo $message; ?></td>
+	</tr>
+<?php
+
 				}
 				else
 				{
-
-?><b><?php echo $theme_copyright; ?></b><?php
+?>
+	<tr>
+		<td class="row1" width="40%"><b>Store location:</b><br /><span class="gensmall">Location of stylesheet, images are always stored on the filesystem.</span></td>
+		<td class="row2"><input type="radio" name="css_storedb" value="0"<?php echo $css_storedb_no; ?> /> Filesystem&nbsp;&nbsp;<input type="radio" name="css_storedb" value="1"<?php echo $css_storedb_yes; ?> />Database</td>
+	</tr>
+<?php
 
 				}
-?></td>
-	</tr>
+
+?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /><?php echo $s_hidden_fields; ?></td>
 	</tr>
@@ -1258,8 +1331,8 @@ function viewsource(url)
 				adm_page_footer();
 				break;
 
-			case 'edit':
 
+			case 'edit':
 				// General parameters
 				$class = (isset($_POST['classname'])) ? htmlspecialchars($_POST['classname']) : '';
 
@@ -1327,14 +1400,14 @@ function viewsource(url)
 					{
 						$stylesheet = &$css_data;
 					}
-					else if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"))
+					else if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"))
 					{
 						// Grab template data
-						if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css", 'rb')))
+						if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'rb')))
 						{
 							trigger_error($user->lang['NO_THEME']);
 						}
-						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_name.css"));
+						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"));
 						fclose($fp);
 					}
 					else
@@ -1417,15 +1490,31 @@ function viewsource(url)
 							$stylesheet .= '';
 						}
 
-						if (!($fp = fopen($phpbb_root_path . 'styles/themes/' . $css_external, 'wb')))
+
+						// Where is the CSS stored?
+						if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css") && !$css_storedb)
 						{
-							die("ERROR");
+							// Grab template data
+							if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb')))
+							{
+								trigger_error($user->lang['NO_THEME']);
+							}
+							$stylesheet = fwrite($fp, $stylesheet);
+							fclose($fp);
 						}
-						$stylesheet = fwrite($fp, $stylesheet);
-						fclose($fp);
+						else
+						{
+							$sql_ary = array(
+								'css_storedb'	=> 1,
+								'css_data'		=> $stylesheet,
+							);
+							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' 
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+								WHERE theme_id = ' . $theme_id;
+							$db->sql_query($sql);
+						}
 
 						$error[] = $user->lang['THEME_UPDATED'];
-
 						add_log('admin', 'LOG_EDIT_THEME', $theme_name);
 					}
 
@@ -1594,9 +1683,6 @@ function csspreview()
 				{
 
 ?>
-			<!-- tr>
-				<td class="cat" colspan="2">Columns: <input class="post" type="text" name="txtcols" size="3" maxlength="3" value="<?php echo $txtcols; ?>" /> &nbsp;Rows: <input class="post" type="text" name="txtrows" size="3" maxlength="3" value="<?php echo $txtrows; ?>" />&nbsp; <input class="btnlite" type="submit" value="Update" /></td>
-			</tr -->
 			<tr>
 				<th colspan="2">Raw CSS</th>
 			</tr>
@@ -1632,7 +1718,7 @@ function csspreview()
 
 ?>
 			<tr>
-				<td class="cat" colspan="2"><b>Background</b></td>
+				<td class="row3" colspan="2"><b>Background</b></td>
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('background_color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
@@ -1656,7 +1742,7 @@ function csspreview()
 
 
 			<tr>
-				<td class="cat" colspan="2"><b>Foreground</b></td>
+				<td class="row3" colspan="2"><b>Foreground</b></td>
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
@@ -1758,6 +1844,41 @@ function csspreview()
 				break;
 
 			case 'export':
+
+				// TODO
+				// Note, this won't cope with stylesheets stored in the db at present, it'll
+				// jump dump out the existing version stored on the filesystem
+
+				if ($theme_id)
+				{
+					include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
+
+					$sql = 'SELECT * 
+						FROM ' . STYLES_CSS_TABLE . "
+						WHERE theme_id = $theme_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_THEME']);
+					}
+					$db->sql_freeresult($result);
+					
+
+					// Where is the CSS stored?
+					if ($css_storedb)
+					{
+//						$stylesheet = &$css_data;
+					}
+
+					$zip = new archive_zip('w', $phpbb_root_path . 'store/theme_' . $theme_path . '.zip');
+					$zip->add_file('styles/themes/' . $theme_path . '/', 'styles/themes/');
+					$zip->close();
+
+					add_log('admin', 'LOG_EXPORT_THEME', $theme_name);
+					trigger_error(sprintf($user->lang['THEME_EXPORTED'], 'store/theme_' . $theme_path . '.zip'));
+				}
+
 				break;
 		}
 
@@ -1861,15 +1982,40 @@ function csspreview()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> from <select name="theme_basis"><option value="0">------</option><?php echo $basis_options; ?></select> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="5" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /><?php
+	
+		if (!$safe_mode)
+		{
+
+?> using <select name="theme_basis"><option class="sep" value="0"><?php echo $user->lang['SELECT_THEME_BASIS']; ?></option><?php echo $basis_options; ?></select><?php
+	
+		}
+		
+?> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
 <?php
 
 		adm_page_footer();
-
 		break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
