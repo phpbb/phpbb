@@ -216,7 +216,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 
-		$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags( $HTTP_POST_VARS['username'] ) ) : '';
+		$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : '';
 		$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars( $HTTP_POST_VARS['email'] ) )) : '';
 
 		$password = ( !empty($HTTP_POST_VARS['password']) ) ? trim(strip_tags(htmlspecialchars( $HTTP_POST_VARS['password'] ) )) : '';
@@ -736,7 +736,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		// Now parse and display it as a template
 		//
 		$user_id = $this_userdata['user_id'];
-		$username = htmlspecialchars($this_userdata['username']);
+		$username = $this_userdata['username'];
 		$email = $this_userdata['user_email'];
 		$password = '';
 		$password_confirm = '';

@@ -923,6 +923,7 @@ $lang['9.5'] = 'GMT + 9.5 Hours';
 $lang['10'] = 'GMT + 10 Hours';
 $lang['11'] = 'GMT + 11 Hours';
 $lang['12'] = 'GMT + 12 Hours';
+$lang['13'] = 'GMT + 13 Hours';
 
 // These are displayed in the timezone select box
 $lang['tz']['-12'] = 'GMT - 12 Hours';
