@@ -18,7 +18,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1">{L_CATEGORY}</td>
-	  <td class="row2"><select name="cat_id">{S_CAT_LIST}</select></td>
+	  <td class="row2"><select name="c">{S_CAT_LIST}</select></td>
 	</tr>
 	<tr> 
 	  <td class="row1">{L_FORUM_STATUS}</td>
