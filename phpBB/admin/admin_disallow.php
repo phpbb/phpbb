@@ -23,27 +23,41 @@ define('IN_PHPBB', 1);
 
 if( !empty($setmodules) )
 {
+	if ( !$acl->get_acl_admin('user') )
+	{
+		return;
+	}
+
 	$filename = basename(__FILE__);
 	$module['Users']['Disallow'] = $filename . $SID;
 
 	return;
 }
 
+define('IN_PHPBB', 1);
 //
-// Include required files, get $phpEx and check permissions
+// Include files
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+
+//
+// Do we have user admin permissions?
+//
+if ( !$acl->get_acl_admin('user') )
+{
+	return;
+}
 
 if( isset($HTTP_POST_VARS['add_name']) )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 
 	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? $HTTP_POST_VARS['disallowed_user'] : $HTTP_GET_VARS['disallowed_user'];
-	$disallowed_user = preg_replace( '/\*/', '%', $disallowed_user );
+	$disallowed_user = str_replace('*', '%', $disallowed_user);
 
-	if( !validate_username($disallowed_user) )
+	if ( !validate_username($disallowed_user) )
 	{
 		$message = $lang['Disallowed_already'];
 	}
@@ -52,16 +66,15 @@ if( isset($HTTP_POST_VARS['add_name']) )
 		$sql = "INSERT INTO " . DISALLOW_TABLE . " (disallow_username) 
 			VALUES('" . str_replace("\'", "''", $disallowed_user) . "')";
 		$result = $db->sql_query( $sql );
-		if ( !$result )
-		{
-			message_die(GENERAL_ERROR, "Could not add disallowed user.", "",__LINE__, __FILE__, $sql);
-		}
+
 		$message = $lang['Disallow_successful'];
 	}
 
-	$message .= "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
-	message_die(GENERAL_MESSAGE, $message);
+	add_admin_log('log_disallow_add', str_replace('%', '*', $disallowed_user));
+
+	message_die(MESSAGE, $message);
 }
 else if( isset($HTTP_POST_VARS['delete_name']) )
 {
@@ -69,15 +82,13 @@ else if( isset($HTTP_POST_VARS['delete_name']) )
 	
 	$sql = "DELETE FROM " . DISALLOW_TABLE . " 
 		WHERE disallow_id = $disallowed_id";
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		message_die(GENERAL_ERROR, "Couldn't removed disallowed user.", "",__LINE__, __FILE__, $sql);
-	}
+	$db->sql_query($sql);
 
-	$message .= $lang['Disallowed_deleted'] . "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
-	message_die(GENERAL_MESSAGE, $message);
+	add_admin_log('log_disallow_delete');
+
+	message_die(MESSAGE, $message);
 
 }
 
@@ -87,56 +98,51 @@ else if( isset($HTTP_POST_VARS['delete_name']) )
 $sql = "SELECT * 
 	FROM " . DISALLOW_TABLE;
 $result = $db->sql_query($sql);
-if( !$result )
-{
-	message_die(GENERAL_ERROR, "Couldn't get disallowed users.", "", __LINE__, __FILE__, $sql );
-}
 
-$disallowed = $db->sql_fetchrowset($result);
-
-//
-// Ok now generate the info for the template, which will be put out no matter
-// what mode we are in.
-//
-$disallow_select = '<select name="disallowed_id">';
-
-if( trim($disallowed) == "" )
+if ( $row = $db->sql_fetchrow($result) )
 {
-	$disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
-}
-else 
-{
-	$user = array();
-	for( $i = 0; $i < count($disallowed); $i++ )
+	$disallow_select = '';
+	do
 	{
-		$disallowed[$i]['disallow_username'] = preg_replace('/%/', '*', $disallowed[$i]['disallow_username']);
-
-		$disallow_select .= '<option value="' . $disallowed[$i]['disallow_id'] . '">' . $disallowed[$i]['disallow_username'] . '</option>';
+		$disallow_select .= '<option value="' . $row['disallow_id'] . '">' . str_replace('%', '*', $row['disallow_username']) . '</option>';
 	}
+	while ( $row = $db->sql_fetchrow($result) );
+}
+else
+{
+	$disallow_select = '<option value="">' . $lang['No_disallowed'] . '</option>';
 }
 
-$disallow_select .= '</select>';
+//
+// Output page
+//
+page_header($lang['Users']);
 
-$template->set_filenames(array(
-	"body" => "admin/disallow_body.tpl")
-);
+?>
 
-$template->assign_vars(array(
-	"S_DISALLOW_SELECT" => $disallow_select,
-	"S_FORM_ACTION" => append_sid("admin_disallow.$phpEx"),
+<h1><?php echo $lang['Disallow_control']; ?></h1>
 
-	"L_INFO" => $output_info,
-	"L_DISALLOW_TITLE" => $lang['Disallow_control'],
-	"L_DISALLOW_EXPLAIN" => $lang['Disallow_explain'],
-	"L_DELETE" => $lang['Delete_disallow'],
-	"L_DELETE_DISALLOW" => $lang['Delete_disallow_title'],
-	"L_DELETE_EXPLAIN" => $lang['Delete_disallow_explain'],
-	"L_ADD" => $lang['Add_disallow'],
-	"L_ADD_DISALLOW" => $lang['Add_disallow_title'],
-	"L_ADD_EXPLAIN" => $lang['Add_disallow_explain'],
-	"L_USERNAME" => $lang['Username'])
-);
+<p><?php echo $lang['Disallow_explain']; ?></p>
 
-$template->pparse("body");
+<form method="post" action="<?php echo "admin_disallow.$phpEx$SID"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<th colspan="2"><?php echo $lang['Add_disallow_title']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1"><?php echo $lang['Username']; ?><br /><span class="gensmall"><?php echo $lang['Add_disallow_explain']; ?></span></td>
+		<td class="row2"><input type="text" name="disallowed_user" size="30" />&nbsp;<input type="submit" name="add_name" value="<?php echo $lang['Add_disallow']; ?>" class="mainoption" /></td>
+	</tr>
+	<tr> 
+		<th colspan="2"><?php echo $lang['Delete_disallow_title']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1"><?php echo $lang['Username']; ?><br /><span class="gensmall"><?php echo $lang['Delete_disallow_explain']; ?></span></td>
+		<td class="row2"><select name="disallowed_id"><?php echo $disallow_select; ?></select>&nbsp;<input type="submit" name="delete_name" value="<?php echo $lang['Delete']; ?>" class="liteoption" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+page_footer();
 
 ?>
