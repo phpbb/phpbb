@@ -475,30 +475,22 @@ class acl
 									break;
 							}
 						}
+
+						//
+						// Store max result for type ... used later ... saves time
+						//
+						$this->acl[$forum_id][$type][0] = max($this->acl[$forum_id][$type]);
 					}
 				}
 			}
 		}
-
-//		print_r($this->acl);
 
 		return;
 	}
 
 	function get_acl($forum_id, $auth_main, $auth_type = false)
 	{
-		if ( $this->founder )
-		{
-			return true;
-		}
-		else if ( $auth_main && $auth_type )
-		{
-			return $this->acl[$forum_id][$auth_main][$auth_type];
-		}
-		else if ( !$auth_type && is_array($this->acl[$forum_id][$auth_main]) )
-		{
-			return array_sum($this->acl[$forum_id][$auth_main]);
-		}
+		return ( $auth_main && $auth_type ) ? ( ( $this->founder || $this->acl[0]['admin'][0] ) ? true : $this->acl[$forum_id][$auth_main][$auth_type] ) : $this->acl[$forum_id][$auth_main][0];
 	}
 
 	function get_acl_admin($auth_type = false)
@@ -506,7 +498,7 @@ class acl
 		return ( $this->founder ) ? true : $this->get_acl(0, 'admin', $auth_type);
 	}
 
-	function set_acl_user(&$forum_id, &$user_id, &$auth, $dependencies = array())
+	function set_acl_user(&$forum_id, &$user_id, &$auth, $dependencies = false)
 	{
 		global $db;
 
@@ -550,11 +542,11 @@ class acl
 		unset($sql_ary);
 	}
 
-	function set_acl_group(&$forum_id, &$group_id, &$auth, $dependencies = array())
+	function set_acl_group(&$forum_id, &$group_id, &$auth, $dependencies = false)
 	{
 		global $db;
 
-		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
+		$forum_sql = "AND a.forum_id IN ($forum_id, 0)";
 
 		$sql = "SELECT o.auth_option_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id";
 		$result = $db->sql_query($sql);
@@ -594,15 +586,24 @@ class acl
 		unset($sql_ary);
 	}
 
-	function delete_acl_user($forum_id, $user_id, $auth_type = false)
+	function delete_acl_user($forum_id, $user_id, $auth_ids = false)
 	{
 		global $db;
 
-		$auth_sql = ( $auth_type != '' ) ? " AND auth_option_id IN ()" : "";
+		$auth_sql = '';
+		if ( $auth_ids )
+		{
+			for($i = 0; $i < count($auth_ids); $i++)
+			{
+				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
+			}
+			$auth_sql = " AND auth_option_id IN ($auth_sql)";
+		}
 
 		$sql = "DELETE FROM " . ACL_USERS_TABLE . "
 			WHERE user_id = $user_id
-				AND forum_id = $forum_id";
+				AND forum_id = $forum_id
+				$auth_sql";
 		$db->sql_query($sql);
 	}
 
@@ -610,11 +611,20 @@ class acl
 	{
 		global $db;
 
-		$auth_sql = ( $auth_type != '' ) ? " AND auth_option_id IN ()" : "";
+		$auth_sql = '';
+		if ( $auth_ids )
+		{
+			for($i = 0; $i < count($auth_ids); $i++)
+			{
+				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
+			}
+			$auth_sql = " AND auth_option_id IN ($auth_sql)";
+		}
 
 		$sql = "DELETE FROM " . ACL_GROUPS_TABLE . "
 			WHERE group_id = $group_id
-				AND forum_id = $forum_id";
+				AND forum_id = $forum_id
+				$auth_sql";
 		$db->sql_query($sql);
 	}
 }

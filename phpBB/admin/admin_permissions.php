@@ -134,9 +134,29 @@ else if ( isset($HTTP_POST_VARS['delete']) )
 			break;
 	}
 
+	$option_ids = false;
+	if ( !empty($HTTP_POST_VARS['option']) )
+	{
+		$sql = "SELECT auth_option_id
+			FROM " . ACL_OPTIONS_TABLE . "
+			WHERE auth_value LIKE '" . $HTTP_POST_VARS['option'] . "_%'";
+		$result = $db->sql_query($sql);
+
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			$option_ids = array();
+			do
+			{
+				$option_ids[] = $row['auth_option_id'];
+			}
+			while( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+	}
+
 	foreach ( $HTTP_POST_VARS['entries'] as $id )
 	{
-		$acl->$set($forum_id, $id, $HTTP_POST_VARS['option']);
+		$acl->$set($forum_id, $id, $option_ids);
 	}
 
 	message_die(MESSAGE, 'Permissions updated successfully');
@@ -253,7 +273,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 				<td class="row1" align="center"><select style="width:280px" name="entries[]" multiple="multiple" size="5"><?php echo $users; ?></select></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="user" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="user" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
 			</tr>
 		</table></form></td>
 
@@ -284,7 +304,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			<td class="row1" align="center"><select style="width:280px" name="entries[]" multiple="multiple" size="5"><?php echo $groups; ?></select></td>
 		</tr>
 		<tr>
-			<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="group" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+			<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="group" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
 		</tr>
 	</table></form></td>
 
