@@ -460,7 +460,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
-			$password = (!empty($HTTP_POST_VARS['password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password']))) : "";
+			$password_current = (!empty($HTTP_POST_VARS['cur_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['cur_password']))) : "";
+			$password = (!empty($HTTP_POST_VARS['new_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['new_password']))) : "";
 			$password_confirm = (!empty($HTTP_POST_VARS['password_confirm'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['password_confirm']))) : "";
 
 			$icq = (!empty($HTTP_POST_VARS['icq'])) ? trim(strip_tags($HTTP_POST_VARS['icq'])) : "";
@@ -549,7 +550,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						{
 							$row = $db->sql_fetchrow($result);
 
-							if( $row['user_password'] != $password )
+							if( $row['user_password'] != $password_current )
 							{
 								$error = TRUE;
 								$error_msg = $lang['Current_password_mismatch'];
@@ -1451,6 +1452,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
+					"SITENAME" => $board_config['sitename'], 
 					"USERNAME" => $username,
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
@@ -1552,6 +1554,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$emailer->extra_headers($email_headers);
 
 							$emailer->assign_vars(array(
+								"SITENAME" => $board_config['sitename'], 
 								"USERNAME" => $username,
 								"PASSWORD" => $password_confirm,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']))
@@ -1559,10 +1562,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$emailer->send();
 							$emailer->reset();
 
+							$template->assign_vars(array(
+								"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+							);
+
 							message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 						}
 						else
 						{
+							$template->assign_vars(array(
+								"META" => '<meta http-equiv="refresh" content="5;url=index.' . $phpEx . '">')
+							);
+
 							$message = ( $sql_update_pass == "" ) ? $lang['Account_active'] : $lang['Password_activated']; 
 							message_die(GENERAL_MESSAGE, $message);
 						}

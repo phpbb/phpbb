@@ -29,7 +29,7 @@
 	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="password" size="25" maxlength="100" value="{PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{PASSWORD}" />
 	  </td>
 	</tr>
 	<!-- END edit_profile -->
@@ -37,7 +37,7 @@
 	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="password" size="25" maxlength="100" value="{PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="100" value="{PASSWORD}" />
 	  </td>
 	</tr>
 	<tr> 
