@@ -322,27 +322,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			//
 			// Do a ban check on this email address
 			//
-			$sql = "SELECT ban_email
-				FROM " . BANLIST_TABLE;
-			if(!$result = $db->sql_query($sql))
-			{
-				message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
-			}
-			$ban_email_list = $db->sql_fetchrowset($result);
-			for($i = 0; $i < count($ban_email_list); $i++)
-			{
-				$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
-				if( preg_match("/^" . $match_email . "$/is", $email) )
-				{
-					$error = TRUE;
-					if(isset($error_msg))
-					{
-						$error_msg .= "<br />";
-					}
-					$error_msg .= $lang['Sorry_banned_email'];
-				}
-			}
-
 			if(!empty($password) && !empty($password_confirm))
 			{
 				// Awww, the user wants to change their password, isn't that cute..
@@ -361,6 +340,19 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			{
 				$error = TRUE;
 				$error_msg = $lang['Password_mismatch'];
+			}
+
+			if($email != $userdata['user_email'] || $mode == "register")
+			{
+				if(!validate_email($email))
+				{
+					$error = TRUE;
+					if(isset($error_msg))
+					{
+						$error_msg .= "<br />";
+					}
+					$error_msg .= $lang['Sorry_banned_or_taken_email'];
+				}
 			}
 
 			if($board_config['allow_namechange'] || $mode == "register")

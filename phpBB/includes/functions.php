@@ -455,6 +455,52 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 }
 
 //
+// Check to see if email address is banned
+// or already present in the DB
+//
+function validate_email($email)
+{
+	global $db;
+			
+	if($email != "")
+	{
+		$sql = "SELECT ban_email
+			FROM " . BANLIST_TABLE;
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
+		}
+		$ban_email_list = $db->sql_fetchrowset($result);
+		for($i = 0; $i < count($ban_email_list); $i++)
+		{
+			$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
+			if( preg_match("/^" . $match_email . "$/is", $email) )
+			{
+				return(0);
+			}
+		}
+		$sql = "SELECT user_email
+			FROM " . USERS_TABLE . " 
+			WHERE user_email = '" . $email . "'";
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
+		}
+		$email_taken = $db->sql_fetchrow($result);
+		if($email_taken['user_email'] != "")
+		{
+			return(0);
+		}
+
+		return(1);
+	}
+	else
+	{
+		return(0);
+	}
+}
+
+//
 // Check to see if the username has been taken, or if it is disallowed.
 // Used for registering, changing names, and posting anonymously with a username
 //
