@@ -195,6 +195,28 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? intval($HTTP_POST_VARS['user_allowpm']) : 0;
 		$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : 0;
 		$user_allowavatar = (!empty($HTTP_POST_VARS['user_allowavatar'])) ? intval($HTTP_POST_VARS['user_allowavatar']) : 0;
+
+		if( isset($HTTP_POST_VARS['avatargallery']) || isset($HTTP_POST_VARS['submitavatar']) || isset($HTTP_POST_VARS['cancelavatar']) )
+		{
+			$username = stripslashes($username);
+			$email = stripslashes($email);
+			$password = "";
+			$password_confirm = "";
+
+			$icq = stripslashes($icq);
+			$aim = stripslashes($aim);
+			$msn = stripslashes($msn);
+			$yim = stripslashes($yim);
+
+			$website = stripslashes($website);
+			$location = stripslashes($location);
+			$occupation = stripslashes($occupation);
+			$interests = stripslashes($interests);
+			$signature = stripslashes($signature);
+
+			$user_lang = stripslashes($user_lang);
+			$user_dateformat = stripslashes($user_dateformat);
+		}
 	}
 
 	if( isset($HTTP_POST_VARS['submit']) )
@@ -214,7 +236,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			}
 			else
 			{
-				$username_sql = "username = '$username', ";
+				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
 			}
 		}
 
@@ -260,23 +282,46 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 		if( $signature != "" )
 		{
-			$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+			$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
+			if( $allowhtml )
+			{
+				$sig_length_check = preg_replace("/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is", "\\1\\3\\4", $sig_length_check);
+			}
+
+			// Only create a new bbcode_uid when there was no uid yet.
+			if($signature_bbcode_uid == '')
+			{
+				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+			}
 			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
+
+			if( strlen($sig_length_check) > $board_config['max_sig_chars'] )
+			{
+				$error = TRUE;
+				if( isset($error_msg) )
+				{
+					$error_msg .= "<br />";
+				}
+				$error_msg .= $lang['Signature_too_long'];
+			}
 		}
 
+		//
+		// Avatar stuff
+		//
 		$avatar_sql = "";
 		if( isset($HTTP_POST_VARS['avatardel']) )
 		{
 			if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 			{
-				if( @file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+				if( @file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
 				{
-					@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+					@unlink("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 				}
 			}
 			$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
 		}
-		else if( !$error && ( $user_avatar_loc != "" || !empty($user_avatar_url) ) )
+		else if( ( $user_avatar_loc != "" || !empty($user_avatar_url) ) && !$error )
 		{
 			//
 			// Only allow one type of upload, either a
@@ -292,7 +337,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 				$error_msg .= $lang['Only_one_avatar'];
 			}
 
-			if( $user_avatar_loc != ""  )
+			if( $user_avatar_loc != "" )
 			{
 				if( file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
 				{
@@ -336,12 +381,12 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 								if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 								{
-									if( @file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+									if( @file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
 									{
-										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
+										@unlink("./" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
 									}
 								}
-								@copy($user_avatar_loc, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
+								@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
 
 								$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
 							}
@@ -427,7 +472,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 							{
 								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
 
-								$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
+								$tmp_filename = tempnam ("/tmp", $this_userdata['user_id'] . "-");
 								$fptr = @fopen($tmp_filename, "wb");
 								$bytes_written = @fwrite($fptr, $avatar_data, $file_size);
 								@fclose($fptr);
@@ -444,12 +489,12 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 
 										if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "")
 										{
-											if( file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+											if( file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
 											{
-												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+												@unlink("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 											}
 										}
-										@copy($tmp_filename, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
+										@copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
 										@unlink($tmp_filename);
 
 										$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
@@ -511,9 +556,9 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 				$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 			}
 
-			if( preg_match("#^http:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$#is", $user_avatar_remoteurl) )
+			if( preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) )
 			{
-				$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
+				$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
 			}
 			else
 			{
@@ -521,11 +566,14 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 				$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 			}
 		}
-		else if( !$error && $user_avatar_local != "" && $avatar_sql == "" )
+		else if( $user_avatar_local != "" && $avatar_sql == "" && !$error )
 		{
-			$avatar_sql = ", user_avatar = '$user_avatar_local', user_avatar_type = " . USER_AVATAR_GALLERY;
+			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_local) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 		}
 
+		//
+		// Update entry in DB
+		//
 		if( !$error )
 		{
 			if( $HTTP_POST_VARS['deleteuser'] )
@@ -607,7 +655,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			else
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
-					SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '$user_lang', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
+					SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
 					WHERE user_id = $user_id";
 				if( $result = $db->sql_query($sql) )
 				{
@@ -741,7 +789,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			$avatar_images = array();
 			while( $file = @readdir($dir) )
 			{
-				if( $file != "." && $file != ".." && !is_file($file) && !is_link($file) )
+				if( $file != "." && $file != ".." && !is_file("./../" . $board_config['avatar_gallery_path'] . "/" . $file) && !is_link("./../" . $board_config['avatar_gallery_path'] . "/" . $file) )
 				{
 					$sub_dir = @opendir("../" . $board_config['avatar_gallery_path'] . "/" . $file);
 
@@ -811,17 +859,17 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $user_id . '" />';
 
-			$s_hidden_fields .= '<input type="hidden" name="username" value="' . addslashes($username) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="email" value="' . addslashes($email) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="icq" value="' . addslashes($icq) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="aim" value="' . addslashes($aim) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="msn" value="' . addslashes($msn) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="yim" value="' . addslashes($yim) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="website" value="' . addslashes($website) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="location" value="' . addslashes($location) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . addslashes($occupation) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="interests" value="' . addslashes($interests) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="signature" value="' . addslashes($signature) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace("\"", "&quot;", $username) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="email" value="' . str_replace("\"", "&quot;", $email) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="icq" value="' . str_replace("\"", "&quot;", $icq) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="aim" value="' . str_replace("\"", "&quot;", $aim) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="msn" value="' . str_replace("\"", "&quot;", $msn) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="yim" value="' . str_replace("\"", "&quot;", $yim) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="website" value="' . str_replace("\"", "&quot;", $website) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="location" value="' . str_replace("\"", "&quot;", $location) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . str_replace("\"", "&quot;", $occupation) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="interests" value="' . str_replace("\"", "&quot;", $interests) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="signature" value="' . str_replace("\"", "&quot;", $signature) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
@@ -834,7 +882,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			$s_hidden_fields .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
 			$s_hidden_fields .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . addslashes($user_dateformat) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . str_replace("\"", "&quot;", $user_dateformat) . '" />';
 
 			$s_hidden_fields .= '<input type="hidden" name="user_status" value="' . $user_status . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="user_allowpm" value="' . $user_allowpm . '" />';
@@ -1028,22 +1076,14 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx"))
 		);
 
-		if( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] )
+		if( file_exists("./../" . $board_config['avatar_path']) )
 		{
-			$template->assign_block_vars("avatarblock", array() );
+			$template->assign_block_vars("avatarupload", array() );
+		}
 
-			if($board_config['allow_avatar_upload'])
-			{
-				$template->assign_block_vars("avatarblock.avatarupload", array() );
-			}
-			if($board_config['allow_avatar_remote'])
-			{
-				$template->assign_block_vars("avatarblock.avatarremote", array() );
-			}
-			if($board_config['allow_avatar_local'])
-			{
-				$template->assign_block_vars("avatarblock.avatargallery", array() );
-			}
+		if( file_exists("./../" . $board_config['avatar_gallery_path']) )
+		{
+			$template->assign_block_vars("avatargallery", array() );
 		}
 	}
 
