@@ -434,7 +434,7 @@ switch($mode)
 		
 					$posts = $HTTP_POST_VARS['preform_op'];
 					
-					$sql = "SELECT poster_id FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
+					$sql = "SELECT poster_id, topic_id FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
 					if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 					{
 						message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
@@ -442,7 +442,8 @@ switch($mode)
 					
 					$post_rowset = $db->sql_fetchrowset($result);
 					$first_poster = $post_rowset[0]['poster_id'];
-						
+					$topic_id = $post_rowset[0]['topic_id'];
+					
 					$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
 					if(empty($subject))
 					{
@@ -488,11 +489,11 @@ switch($mode)
 						else
 						{
 							sync("topic", $topic_id);
-							if(!$result = $db->sql_query($sql
-
-						$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
-						$return_message = $lang['to_return_topic'];
-						message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
+							sync("forum", $forum_id);
+							$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
+							$return_message = $lang['to_return_topic'];
+							message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
+						}
 					}
 			}
 		}

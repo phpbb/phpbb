@@ -110,6 +110,8 @@ $lang['AIM'] = "AIM Address";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
+$lang['Error'] = "Error";
+
 //
 // Global Header strings
 //
@@ -498,6 +500,8 @@ $lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected to
 $lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic(s)?";
 $lang['Split_posts'] = "Split Posts";
 $lang['Split_after'] = "Split Posts Beyond Selected";
+$lang['Topic_split'] = "The selected topic has been split successfully";
+
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!

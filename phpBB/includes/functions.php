@@ -503,4 +503,110 @@ function validate_username($username)
 	return(TRUE);
 }
 
+
+function sync($type, $id) 
+{
+	global $db;
+	
+   switch($type) 
+   {
+   	case 'forum':
+   		$sql = "SELECT max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
+   		}
+   		if($rowset = $db->sql_fetchrowset($result))
+   		{
+   			$last_post = $rowset[0]['last_post'];
+   		}
+   		
+   		$sql = "SELECT count(post_id) AS total FROM ".POSTS_TABLE." WHERE forum_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
+   		}
+   		if($rowset = $db->sql_fetchrowset($result))
+   		{
+   			$total_posts = $rowset[0]['total'];
+   		}
+   		
+   		$sql = "SELECT count(topic_id) AS total FROM ".TOPICS_TABLE." WHERE forum_id = $id";
+   		if(!$result = $db->sql_query($sql, $db))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get topic count", "Error", __LINE__, __FILE__, $sql);
+   		}
+   		if($rowset = $db->sql_fetchrowset($result))
+   		{
+   			$total_topics = $rowset[0]['total'];
+   		}
+   		
+   		$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = '$last_post', forum_posts = $total_posts, forum_topics = $total_topics WHERE forum_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not update forum $id", "Error", __LINE__, __FILE__, $sql);
+   		}
+   	break;
+
+   	case 'topic':
+   		$sql = "SELECT max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE topic_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
+   		}
+   		if($row = $db->sql_fetchrowset($result))
+   		{
+   			$last_post = $row[0]["last_post"];
+   		}
+   		
+   		$sql = "SELECT count(post_id) AS total FROM ".POSTS_TABLE." WHERE topic_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
+   		}
+   		if($row = $db->sql_fetchrowset($result))
+   		{
+   			$total_posts = $row[0]["total"];
+   		}
+   		$total_posts -= 1;
+   		$sql = "UPDATE ".TOPICS_TABLE." SET topic_replies = $total_posts, topic_last_post_id = $last_post WHERE topic_id = $id";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not update topic $id", "Error", __LINE__, __FILE__, $sql);
+   		}
+   	break;
+
+   	case 'all forums':
+   		$sql = "SELECT forum_id FROM ".FORUMS_TABLE;
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get forum IDs", "Error", __LINE__, __FILE__, $sql);
+   		}
+     		$rowset = $db->sql_fetchrowset($result);
+     		$count = $db->sql_numrows($result);
+   		for($i = 0; $i < $count; $i++)
+   		{
+   			$id = $row[$i]['forum_id'];
+   			sync($db, $id, "forum");
+   		}
+   	break;
+   	case 'all topics':
+   		$sql = "SELECT topic_id FROM topics";
+   		if(!$result = $db->sql_query($sql))
+   		{
+   			message_die(GENERAL_ERROR, "Could not get topic ID's", "Error", __LINE__, __FILE__, $sql);
+     		}
+     		$rowset = $db->sql_fetchrowset($result);
+     		$count = $db->sql_numrows($result);
+   		for($i = 0; $i < $count; $i++)
+   		{
+   			$id = $row[$i]['topic_id'];
+   			sync($db, $id, "topic");
+   		}
+   	break;
+   }
+   return(TRUE);
+}
+
+
 ?>

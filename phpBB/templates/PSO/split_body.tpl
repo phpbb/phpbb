@@ -32,7 +32,7 @@
 				</table></td>
 				<td class="row2" width="80%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
 					<tr>
-						<td><img src="images/posticon.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {postrow.POST_SUBJECT}</font><hr></td>
+						<td><img src="images/icon_minipost.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {postrow.POST_SUBJECT}</font><hr></td>
 					</tr>
 					<tr>
 						<td height="100%" valign="top"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{postrow.MESSAGE}</font></td>
