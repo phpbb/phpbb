@@ -1060,6 +1060,30 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
 
+		//
+		// This is another cheat using the block_var capability
+		// of the templates to 'fake' an IF...ELSE...ENDIF solution
+		// it works well :)
+		//
+		if( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] )
+		{
+			$template->assign_block_vars("avatarblock", array() );
+
+			if($board_config['allow_avatar_upload'])
+			{
+				$template->assign_block_vars("avatarblock.avatarupload", array() );
+			}
+			if($board_config['allow_avatar_remote'])
+			{
+				$template->assign_block_vars("avatarblock.avatarremote", array() );
+			}
+			if($board_config['allow_avatar_local'])
+			{
+				$template->assign_block_vars("avatarblock.avatargallery", array() );
+			}
+
+		}
+
 		$template->pparse("body");
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);

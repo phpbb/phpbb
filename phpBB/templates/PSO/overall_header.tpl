@@ -53,7 +53,11 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 						<td align="center"><span class="gensmall">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</span></td>
 						<td align="right"><span class="gensmall"><a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_CP}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></span></td>
 					</tr>
-{S_LOGINBOX}
+					<!-- BEGIN loginbox -->
+					<tr><form method="post" action="{S_LOGIN_ACTION}">
+						<td colspan="3" align="right" valign="bottom"><span class="gensmall">{L_USERNAME}: <input class="text" type="text" name="username">&nbsp;&nbsp;&nbsp;{L_PASSWORD}: <input type="password" name="password">&nbsp;&nbsp;&nbsp;{L_AUTO_LOGIN}</font>:&nbsp;<input class="text" type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}">&nbsp;</span></td>
+					</form></tr>
+					<!-- END loginbox -->
 				</table></td>
 			</tr>
 		</table></td>

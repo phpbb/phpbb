@@ -259,10 +259,7 @@ $template->assign_vars(array(
 //
 if(!$userdata['session_logged_in'])
 {
-	$template->set_filenames(array(
-		"loginbox" => "loginbox.tpl")
-	);
-	$template->assign_var_from_handle("S_LOGINBOX", "loginbox");
+	$template->assign_block_vars("loginbox", array());
 }
 
 header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
