@@ -671,7 +671,7 @@ if( !empty($mode) )
 
 				if ($count > 0)
 				{
-					message_die(GENERAL_ERROR, "You need to delete all forums before you can delete this category");
+					message_die(GENERAL_ERROR, $lang['Must_delete_forums']);
 				}
 				else
 				{
@@ -698,7 +698,8 @@ if( !empty($mode) )
 				'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'], 
 				'L_MOVE_CONTENTS' => $lang['Move_contents'], 
 				'L_FORUM_NAME' => $lang['Forum_name'], 
-
+				
+				'S_HIDDEN_FIELDS' => $s_hidden_fields,
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"), 
 				'S_SELECT_TO' => $select_to,
 				'S_SUBMIT_VALUE' => $buttonvalue)
@@ -739,6 +740,8 @@ if( !empty($mode) )
 
 			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
 				WHERE cat_id = $from_id";
+				
+			echo $sql;
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete category", "", __LINE__, __FILE__, $sql);
