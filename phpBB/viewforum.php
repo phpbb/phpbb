@@ -453,7 +453,7 @@ if($total_topics)
 
 		$replies = $topic_rowset[$i]['topic_replies'];
 
-		if($replies > $board_config['posts_per_page'])
+		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
 		{
 			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\" alt=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
 
