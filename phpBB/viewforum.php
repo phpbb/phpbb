@@ -428,6 +428,8 @@ $template->assign_vars(array(
 
 	"S_AUTH_LIST" => $s_auth_can, 
 
+	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL ."=$forum_id"),
+
 	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"))
 );
 //
