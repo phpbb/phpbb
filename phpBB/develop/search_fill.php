@@ -1,7 +1,7 @@
 <?php 
 
 set_time_limit(0);
-$common_percent = 40; // Percentage of posts in which a word has to appear to be marked as common
+$common_percent = 0.4; // Percentage of posts in which a word has to appear to be marked as common
 
 $phpbb_root_path = "../";
 
@@ -21,28 +21,21 @@ print "<html>\n<body>\n";
 //$synonym_array = file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
 // This needs fixing! Shouldn't be hardcoded to English files!
-$stopword_array = file($phpbb_root_path . "language/lang_english/search_stopwords.txt"); 
+//$stopword_array = file($phpbb_root_path . "language/lang_english/search_stopwords.txt"); 
 $synonym_array = file($phpbb_root_path . "language/lang_english/search_synonyms.txt"); 
-
+/*
 for ($j = 0; $j < count($stopword_array); $j++)
 { 
 	$filter_word = trim(strtolower($stopword_array[$j])); 
 	$search[] = "/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is";
 	$replace[] = '';
 } 
-
-for ($j = 0; $j < count($synonym_list); $j++)
-{ 
-	list($replace_synonym, $match_synonym) = split(" ", trim(strtolower($synonym_list[$j]))); 
-	$search[] = "/\b" . phpbb_preg_quote(trim($match_synonym), "/") . "\b/is";
-	$replace[] = " " . trim($replace_synonym) . " ";
-} 
+*/
 
 //
 // Fetch a batch of posts_text entries
 //
-$sql = "
-	SELECT count(*) as total, max(post_id) as max_post_id 
+$sql = "SELECT count(*) as total, max(post_id) as max_post_id 
 	FROM ". POSTS_TEXT_TABLE;
 if(!$result = $db->sql_query($sql)) 
 {
@@ -63,8 +56,8 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchend = $postcounter + $batchsize;
 	$batchcount++;
 	
-	$sql = "SELECT *
-		FROM " . POSTS_TEXT_TABLE ."
+	$sql = "SELECT * 
+		FROM " . POSTS_TEXT_TABLE . " 
 		WHERE post_id 
 			BETWEEN $batchstart 
 				AND $batchend";
@@ -92,105 +85,93 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 			$matches = array();
 
 			$post_id = $rowset[$post_nr]['post_id']; 
-			$data = $rowset[$post_nr]['post_text'];  // Raw data
+			$text = clean_words("post", $rowset[$post_nr]['post_text'], $synonym_array); // Cleaned up post
+			$text_title = clean_words("post", $rowset[$post_nr]['post_subject'], $synonym_array);
 
-			$text = clean_words($data, $search, $replace); // Cleaned up post
-			$matches = split_words($text);
-			$num_matches = count($matches);
-			if($num_matches < 1)
+			$matches = array();
+			$matches['text'] = split_words($text);
+			$matches['title'] = split_words($text_title);
+
+			while( list($match_type, $match_ary) = @each($matches) )
 			{
-				// Skip this post if no words where found
-				continue;
-			}
+				$title_match = ( $match_type == 'title' ) ? 1 : 0;
 
-			$word = array();
-			$word_count = array();
-			$sql_in = "";
-			$phrase_string = $text;
+				$num_matches = count($match_ary);
 
-			// For all words in the posting
-			$sql_insert = '';
-			$sql_select = '';
-			for($j = 0; $j < $num_matches; $j++)
-			{
-				$this_word = strtolower(trim($matches[$j]));
-				if($this_word != '')
+				if ( $num_matches < 1 )
 				{
-					$word_count[$this_word]++;
-					$comma = ($sql_insert != '')? ', ': '';
-				
-					$sql_insert .= "$comma('" .$this_word. "')";
-					$sql_select .= "$comma'" .$this_word. "'";
+					// Skip this post if no words where found
+					continue;
 				}
-			}
-			if($sql_insert == '')
-			{
-				die("no words found");
-			}
-				
-			$sql = 'INSERT IGNORE INTO '.SEARCH_WORD_TABLE."
-				(word_text)
-				VALUES $sql_insert";
-			if( !$result = $db->sql_query($sql) )
-			{
-				$error = $db->sql_error();
-				die("Couldn't INSERT words :: " . $sql . " :: " . $error['message']);
-			}
 
-			// Get the word_id's out of the DB (to see if they are already there)
-			$sql = "SELECT word_id, word_text
-				FROM ".SEARCH_WORD_TABLE." 
-				WHERE word_text IN ($sql_select)
-				GROUP BY word_text";
-			$result = $db->sql_query($sql);
-			if( !$result )
-			{
-				$error = $db->sql_error();
-				die("Couldn't select words :: " . $sql . " :: " . $error['message']);
-			}
-			if( $word_check_count = $db->sql_numrows($result) )
-			{
-				$selected_words = $db->sql_fetchrowset($result);
-			}
-			else
-			{
-				print "Couldn't do sql_numrows<br>\n";
-			}
-			$db->sql_freeresult($result);
-			
-			$sql_insert = '';
-			while(list($junk, $row) = each($selected_words))
-			{
-				$comma = ($sql_insert != '')? ', ': '';
-				$sql_insert .= "$comma($post_id, ".$row['word_id'].", 0)";
-			}
-			
-			$sql = "INSERT INTO ".SEARCH_MATCH_TABLE."
-				(post_id, word_id, title_match)
-				VALUES
-				$sql_insert
-				";
-			$result = $db->sql_query($sql); 
-			if( !$result )
-			{
-				$error = $db->sql_error();
-				die("Couldn't insert new word match :: " . $sql . " :: " . $error['message']);
-			}
+				// For all words in the posting
+				$sql_in = "";
 
-/*
-			//$phrase_string = preg_replace("/\b" . phpbb_preg_quote($word[$j], "/") . "\b/is", $word_id, $phrase_string);
-			$phrase_string = trim(preg_replace("/ {2,}/s", " ", str_replace(array("*", "'"), " ", $phrase_string)));
+				$sql_insert = '';
+				$sql_select = '';
 
-			$sql = "INSERT INTO phpbb_search_phrasematch (post_id, phrase_list) 
-				VALUES ($post_id, '$phrase_string')"; 
-			$result = $db->sql_query($sql); 
-			if( !$result )
-			{
-				$error = $db->sql_error();
-				die("Couldn't insert new phrase match :: " . $sql . " :: " . $error['message']);
-			}
-*/
-		} // All posts
+				$word = array();
+				$word_count = array();
+
+				for($j = 0; $j < $num_matches; $j++)
+				{
+					$this_word = strtolower(trim($match_ary[$j]));
+					if ( $this_word != '' )
+					{
+						$word_count[$this_word] = ( isset($word_count[$this_word]) ) ? $word_count[$this_word] + 1 : 0;
+						$comma = ($sql_insert != '')? ', ': '';
+					
+						$sql_insert .= "$comma('" . $this_word . "')";
+						$sql_select .= "$comma'" . $this_word . "'";
+					}
+				}
+
+				if ( $sql_insert == '' )
+				{
+					die("no words found");
+				}
+					
+				$sql = 'INSERT IGNORE INTO ' . SEARCH_WORD_TABLE . "
+					(word_text)
+					VALUES $sql_insert";
+				if ( !$result = $db->sql_query($sql) )
+				{
+					$error = $db->sql_error();
+					die("Couldn't INSERT words :: " . $sql . " :: " . $error['message']);
+				}
+
+				// Get the word_id's out of the DB (to see if they are already there)
+				$sql = "SELECT word_id, word_text
+					FROM " . SEARCH_WORD_TABLE . " 
+					WHERE word_text IN ($sql_select)
+					GROUP BY word_text";
+				$result = $db->sql_query($sql);
+				if ( !$result )
+				{
+					$error = $db->sql_error();
+					die("Couldn't select words :: " . $sql . " :: " . $error['message']);
+				}
+
+				$sql_insert = array();
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					$sql_insert[] = "($post_id, " . $row['word_id'] . ", $title_match)";
+				}
+
+				$db->sql_freeresult($result);
+
+				$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . "
+					(post_id, word_id, title_match)
+					VALUES " . implode(", ", $sql_insert);
+				$result = $db->sql_query($sql); 
+				if ( !$result )
+				{
+					$error = $db->sql_error();
+					die("Couldn't insert new word match :: " . $sql . " :: " . $error['message']);
+				}
+
+			} // All posts
+		}
 
 	//	$sql = "UNLOCK TABLES";
 	//	$result = $db->sql_query($sql); 
@@ -208,9 +189,8 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	{
 		print "<br>Removing common words (words that appear in more than $common_percent of the posts)<br>\n";
 		flush();
-		print "Removed ". remove_common_global($common_percent, 1) ." words that where too common.<br>";
+		print "Removed ". remove_common("global", $common_percent) ." words that where too common.<br>";
 	}
-	
 }
 
 echo "<br>Done";
