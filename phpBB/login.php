@@ -33,7 +33,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Set page ID for session management
 //
-$userdata = session_pagestart($user_ip, PAGE_LOGIN, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_LOGIN);
 init_userprefs($userdata);
 //
 // End session management
@@ -157,6 +157,7 @@ else
 	//
 	if( !$userdata['session_logged_in'] )
 	{
+		$page_title = $lang['Login'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
@@ -169,7 +170,7 @@ else
 
 			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
 			{
-				$forward_to = ($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
+				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
 
 				$forward_match = explode("&", $forward_to);
 
