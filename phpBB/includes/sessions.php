@@ -223,13 +223,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		// session_id exists so go ahead and attempt
 		// to grab all data in preparation
 		//
-		$sql = "SELECT u.*, s.*, b.ban_ip, b.ban_userid
-			FROM ".SESSIONS_TABLE." s
-			LEFT JOIN ".BANLIST_TABLE." b ON b.ban_ip = '$int_ip' OR b.ban_userid = u.user_id
-			LEFT JOIN ".USERS_TABLE." u ON u.user_id = s.session_user_id
+		$sql = "SELECT u.*, s.*
+			FROM ".SESSIONS_TABLE." s, ".USERS_TABLE." u
 			WHERE s.session_id = '".$sessiondata['sessionid']."'
 				AND s.session_ip = '$int_ip'
-				AND b.ban_start < $current_time AND b.ban_end > $current_time";
+				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
@@ -251,11 +249,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		if(isset($userdata['user_id']))
 		{
 
-			if($userdata['ban_ip'] || $userdata['ban_userid'])
+/*			if($userdata['ban_ip'] || $userdata['ban_userid'])
 			{
 				error_die(BANNED);
 			}
-
+*/
 			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
 			//
