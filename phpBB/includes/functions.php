@@ -833,15 +833,23 @@ function smilies_pass($message)
 	global $db, $board_config;
 	static $smilies;
 
-	if(empty($smilies))
+	if( empty($smilies) )
 	{
 		$sql = "SELECT code, smile_url
 			FROM " . SMILIES_TABLE;
-		if($result = $db->sql_query($sql))
+		if( !$result = $db->sql_query($sql) )
 		{
-			$smilies = $db->sql_fetchrowset($result);
+			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
 		}
+
+		if( !$db->sql_numrows($result) )
+		{
+			return $message;
+		}
+
+		$smilies = $db->sql_fetchrowset($result);
 	}
+
 	usort($smilies, 'smiley_sort');
 	for($i = 0; $i < count($smilies); $i++)
 	{
@@ -849,20 +857,22 @@ function smilies_pass($message)
 		$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0">';
 	}
 
-	if($i > 0)
+	if( $i > 0 )
 	{
 		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
 		$message = substr($message, 1, -1);
 	}
-	return($message);
+
+	return $message;
 }
 function smiley_sort($a, $b)
 {
-	if (strlen($a['code']) == strlen($b['code']))
+	if ( strlen($a['code']) == strlen($b['code']) )
 	{
 		return 0;
 	}
-	return (strlen($a['code']) > strlen($b['code'])) ? -1 : 1;
+
+	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
 }
 
 
