@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +17,6 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- *
  ***************************************************************************/
 
 if ( !defined('IN_PHPBB') )
@@ -27,28 +25,28 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
+if ( !empty($HTTP_GET_VARS['u']) || !empty($HTTP_POST_VARS['u']) )
 {
-	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
+	$user_id = ( !empty($HTTP_GET_VARS['u']) ) ? intval($HTTP_GET_VARS['u']) : intval($HTTP_POST_VARS['u']);
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
+	message_die(MESSAGE, $lang['No_user_specified']);
 }
 
 if ( $userdata['user_id'] == ANONYMOUS )
 {
-	header('Location: ' . "login.$phpEx$SID&redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id");
+	header('Location: ' . "login.$phpEx$SID&redirect=profile.$phpEx&mode=email&u=$user_id");
 	exit;
 }
 
 $sql = "SELECT username, user_email, user_viewemail, user_lang  
 	FROM " . USERS_TABLE . " 
 	WHERE user_id = $user_id";
-if ( $result = $db->sql_query($sql) )
-{
-	$row = $db->sql_fetchrow($result);
+$result = $db->sql_query($sql);
 
+if ( $row = $db->sql_fetchrow($result) )
+{
 	$username = $row['username'];
 	$user_email = $row['user_email']; 
 	$user_lang = $row['user_lang'];
@@ -57,7 +55,7 @@ if ( $result = $db->sql_query($sql) )
 	{
 		if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
 		{
-			message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
+			message_die(MESSAGE, $lang['Flood_email_limit']);
 		}
 
 		if ( isset($HTTP_POST_VARS['submit']) )
@@ -89,63 +87,58 @@ if ( $result = $db->sql_query($sql) )
 				$sql = "UPDATE " . USERS_TABLE . " 
 					SET user_emailtime = " . time() . " 
 					WHERE user_id = " . $userdata['user_id'];
-				if ( $result = $db->sql_query($sql) )
+				$result = $db->sql_query($sql);
+				
+				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+				$emailer = new emailer($board_config['smtp_delivery']);
+
+				$email_headers = 'From: ' . $userdata['user_email'] . "\n";
+				if ( !empty($HTTP_POST_VARS['cc_email']) )
 				{
-					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer($board_config['smtp_delivery']);
-
-					$email_headers = 'From: ' . $userdata['user_email'] . "\n";
-					if ( !empty($HTTP_POST_VARS['cc_email']) )
-					{
-						$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
-					}
-					$email_headers .= 'Return-Path: ' . $userdata['user_email'] . "\n";
-					$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-					$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-					$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-					$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\r\n";
-
-					$emailer->use_template('profile_send_email', $user_lang);
-					$emailer->email_address($user_email);
-					$emailer->set_subject($subject);
-					$emailer->extra_headers($email_headers);
-
-					$emailer->assign_vars(array(
-						'SITENAME' => $board_config['sitename'], 
-						'BOARD_EMAIL' => $board_config['board_email'], 
-						'FROM_USERNAME' => $userdata['username'], 
-						'TO_USERNAME' => $username, 
-						'MESSAGE' => $message)
-					);
-					$emailer->send();
-					$emailer->reset();
-
-					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="5;url=' . "index.$phpEx$SID" . '">')
-					);
-
-					$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
-
-					message_die(GENERAL_MESSAGE, $message);
+					$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
 				}
-				else
-				{
-					message_die(GENERAL_ERROR, 'Could not update last email time', '', __LINE__, __FILE__, $sql);
-				}
+				$email_headers .= 'Return-Path: ' . $userdata['user_email'] . "\n";
+				$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
+				$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
+				$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
+				$email_headers .= 'X-AntiAbuse: User IP - ' . $user_ip . "\r\n";
+
+				$emailer->use_template('profile_send_email', $user_lang);
+				$emailer->email_address($user_email);
+				$emailer->set_subject($subject);
+				$emailer->extra_headers($email_headers);
+
+				$emailer->assign_vars(array(
+					'SITENAME' => $board_config['sitename'], 
+					'BOARD_EMAIL' => $board_config['board_email'], 
+					'FROM_USERNAME' => $userdata['username'], 
+					'TO_USERNAME' => $username, 
+					'MESSAGE' => $message)
+				);
+				$emailer->send();
+				$emailer->reset();
+
+				$template->assign_vars(array(
+					'META' => '<meta http-equiv="refresh" content="5;url=' . "index.$phpEx$SID" . '">')
+				);
+
+				$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+
+				message_die(MESSAGE, $message);
 			}
 		}
 
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
-			'body' => 'profile_send_email.tpl')
+			'body' => 'profile_send_email.html')
 		);
 		make_jumpbox('viewforum.'.$phpEx);
 
 		if ( $error )
 		{
 			$template->set_filenames(array(
-				'reg_header' => 'error_body.tpl')
+				'reg_header' => 'error_body.html')
 			);
 			$template->assign_vars(array(
 				'ERROR_MESSAGE' => $error_msg)
@@ -156,7 +149,7 @@ if ( $result = $db->sql_query($sql) )
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id", 
+			'S_POST_ACTION' => "profile.$phpEx$SID&amp;mode=email&amp;u=$user_id", 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 
 			'L_RECIPIENT' => $lang['Recipient'], 
@@ -171,18 +164,16 @@ if ( $result = $db->sql_query($sql) )
 			'L_SEND_EMAIL' => $lang['Send_email'])
 		);
 
-		$template->pparse('body');
-
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
+		message_die(MESSAGE, $lang['User_prevent_email']);
 	}
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
+	message_die(MESSAGE, $lang['User_not_exist']);
 }
 
 ?>

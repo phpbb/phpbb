@@ -115,7 +115,7 @@ else
 
 if ( $profiledata['user_viewemail'] || $acl->get_acl_admin() )
 {
-	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $profiledata['user_email'];
+	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
 	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
