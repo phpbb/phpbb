@@ -398,6 +398,9 @@ $lang = array_merge($lang, array(
 	'Site_desc' => 'Site description',
 	'Board_disable' => 'Disable board',
 	'Board_disable_explain' => 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.',
+	'VISUAL_CONFIRM' => 'Enable visual confirmation',
+	'VISUAL_CONFIRM_EXPLAIN' => 'Requires new users enter a random code matching an image to help prevent mass registrations.',
+	
 	'IP_valid' => 'Session IP validation',
 	'IP_valid_explain' => 'Determines how much of the users IP is used to validate a session; All compares the complete address, A.B.C the first x.x.x, A.B the first x.x, None disables checking.',
 	'All' => 'All',
