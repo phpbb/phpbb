@@ -75,7 +75,7 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	return $rows;
 }
 
-function forum_nav_links(&$forum_id, &$forum_name)
+function forum_nav_links(&$forum_id, &$forum_data)
 {
 	global $SID, $template, $phpEx, $auth;
 
@@ -104,8 +104,6 @@ function forum_nav_links(&$forum_id, &$forum_name)
 				$branch_root_id = 0;
 				$forum_data = $row;
 				$type = 'child';
-
-				$forum_name = $row['forum_name'];
 			}
 		}
 		else
@@ -813,7 +811,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	global $db, $auth, $template, $config, $user, $nav_links;
 	global $phpEx, $phpbb_root_path, $starttime;
 
-	switch ( $errno )
+	switch ($errno)
 	{
 		case E_WARNING:
 //			if (defined('DEBUG'))
@@ -830,7 +828,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_USER_ERROR:
-			if ( isset($db) )
+			if (isset($db))
 			{
 				$db->sql_close();
 			}
@@ -845,11 +843,20 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_USER_NOTICE:
-			$msg_text = ( !empty($user->lang[$msg_text]) ) ? $user->lang[$msg_text] : $msg_text;
-
-			if ( !defined('HEADER_INC') )
+			if (empty($user->session_id))
 			{
-				if ( defined('IN_ADMIN') )
+				$user->start();
+			}
+			if (empty($user->lang))
+			{
+				$user->setup();
+			}
+
+			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+
+			if (!defined('HEADER_INC'))
+			{
+				if (defined('IN_ADMIN'))
 				{
 					page_header('', '', false);
 				}
@@ -859,7 +866,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
-			if ( defined('IN_ADMIN') )
+			if (defined('IN_ADMIN'))
 			{
 				page_message($msg_title, $msg_text, $display_header);
 				page_footer();
@@ -871,8 +878,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				);
 
 				$template->assign_vars(array(
-					'MESSAGE_TITLE' => $msg_title,
-					'MESSAGE_TEXT' => $msg_text)
+					'MESSAGE_TITLE'	=> $msg_title,
+					'MESSAGE_TEXT'	=> $msg_text)
 				);
 
 				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);

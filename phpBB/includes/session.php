@@ -34,11 +34,11 @@ class session
 		global $SID, $db, $config;
 
 		$current_time = time();
-		$this->browser = ( !empty($_SERVER['HTTP_USER_AGENT']) ) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
-		$this->page = ( !empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-		$this->page .= '&' . ( ( !empty($_SERVER['QUERY_STRING']) ) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING'] );
+		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
+		$this->page = (!empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+		$this->page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
 
-		if ( isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']) )
+		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
 			$sessiondata = ( isset($_COOKIE[$config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
 			$this->session_id = ( isset($_COOKIE[$config['cookie_name'] . '_sid']) ) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
@@ -52,11 +52,11 @@ class session
 		}
 
 		// Obtain users IP
-		$this->ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : $REMOTE_ADDR;
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : $REMOTE_ADDR;
 
 		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 		{
-			if ( preg_match('/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $_SERVER['HTTP_X_FORWARDED_FOR'], $ip_list) )
+			if (preg_match('/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $_SERVER['HTTP_X_FORWARDED_FOR'], $ip_list))
 			{
 				$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10\..*/', '/^224\..*/', '/^240\..*/');
 				$this->ip = preg_replace($private_ip, $this->ip, $ip_list[1]);
@@ -64,13 +64,13 @@ class session
 		}
 
 		// Load limit check (if applicable)
-		if ( doubleval($config['limit_load']) && file_exists('/proc/loadavg') )
+		if (doubleval($config['limit_load']) && file_exists('/proc/loadavg'))
 		{
-			if ( $load = @file('/proc/loadavg') )
+			if ($load = @file('/proc/loadavg'))
 			{
 				list($this->load) = explode(' ', $load[0]);
 
-				if ( $this->load > doubleval($config['limit_load']) )
+				if ($this->load > doubleval($config['limit_load']))
 				{
 					trigger_error('Board_unavailable');
 				}
@@ -78,7 +78,7 @@ class session
 		}
 
 		// session_id exists so go ahead and attempt to grab all data in preparation
-		if ( !empty($this->session_id) )
+		if (!empty($this->session_id))
 		{
 			$sql = "SELECT u.*, s.*
 				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
@@ -90,16 +90,16 @@ class session
 			$db->sql_freeresult($result);
 
 			// Did the session exist in the DB?
-			if ( isset($this->data['user_id']) )
+			if (isset($this->data['user_id']))
 			{
 				// Validate IP length according to admin ... has no effect on IPv6
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
-				if ( $u_ip == $s_ip )
+				if ($u_ip == $s_ip)
 				{
 					// Only update session DB a minute or so after last update or if page changes
-					if ( ( $current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $user_page ) && $update )
+					if (($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $user_page) && $update)
 					{
 						$sql = "UPDATE " . SESSIONS_TABLE . "
 							SET session_time = $current_time, session_page = '$this->page'
@@ -114,8 +114,8 @@ class session
 
 		// If we reach here then no (valid) session exists. So we'll create a new one,
 		// using the cookie user_id if available to pull basic user prefs.
-		$autologin = ( isset($sessiondata['autologinid']) ) ? $sessiondata['autologinid'] : '';
-		$user_id = ( isset($sessiondata['userid']) ) ? intval($sessiondata['userid']) : ANONYMOUS;
+		$autologin = (isset($sessiondata['autologinid'])) ? $sessiondata['autologinid'] : '';
+		$user_id = (isset($sessiondata['userid'])) ? intval($sessiondata['userid']) : ANONYMOUS;
 
 		return $this->create($user_id, $autologin);
 	}
@@ -128,26 +128,26 @@ class session
 		$sessiondata = array();
 		$current_time = time();
 
-		if ( intval($config['active_sessions']) )
+		if (intval($config['active_sessions']))
 		{
 			// Limit sessions in 1 minute period
 			$sql = "SELECT COUNT(*) AS sessions
 				FROM " . SESSIONS_TABLE . "
-				WHERE session_time >= " . ( $current_time - 60 );
+				WHERE session_time >= " . ($current_time - 60);
 			$result = $db->sql_query($sql);
 
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			if ( intval($row['sessions']) > intval($config['active_sessions']) )
+			if (intval($row['sessions']) > intval($config['active_sessions']))
 			{
 				trigger_error('Board_unavailable');
 			}
 		}
 
 		// Garbage collection ... remove old sessions updating user information
-		// if necessary. It means (potentially) 22 queries but only infrequently
-		if ( $current_time - $config['session_gc'] > $config['session_last_gc'] )
+		// if necessary. It means (potentially) 11 queries but only infrequently
+		if ($current_time - $config['session_gc'] > $config['session_last_gc'])
 		{
 			$this->gc($current_time);
 		}
@@ -164,7 +164,7 @@ class session
 		$db->sql_freeresult($result);
 
 		// Check autologin request, is it valid?
-		if ( $this->data['user_password'] != $autologin || !$this->data['user_active'] || !$user_id )
+		if ($this->data['user_password'] != $autologin || !$this->data['user_active'] || !$user_id)
 		{
 			$autologin = '';
 			$this->data['user_id'] = $user_id = ANONYMOUS;
@@ -176,12 +176,12 @@ class session
 				OR ban_end = 0";
 		$result = $db->sql_query($sql);
 
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if ( ( $row['user_id'] == $this->data['user_id'] ||
-				( $row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip) ) ||
-				( $row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email']) ) )
-				&& !$this->data['user_founder'] )
+			if (( $row['user_id'] == $this->data['user_id'] ||
+				($row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
+				($row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
+				&& !$this->data['user_founder'])
 			{
 				trigger_error('You_been_banned');
 			}
@@ -189,7 +189,7 @@ class session
 		$db->sql_freeresult($result);
 
 		// Is there an existing session? If so, grab last visit time from that
-		$this->data['session_last_visit'] = ( $this->data['session_time'] ) ? $this->data['session_time'] : ( ( $this->data['user_lastvisit'] ) ? $this->data['user_lastvisit'] : time() );
+		$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 
 		// Create or update the session
 		$db->sql_return_on_error(true);
@@ -197,7 +197,7 @@ class session
 		$sql = "UPDATE " . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page'
 			WHERE session_id = '" . $this->session_id . "'";
-		if ( !$db->sql_query($sql) || !$db->sql_affectedrows() )
+		if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($user_ip));
@@ -211,14 +211,14 @@ class session
 
 		$this->data['session_id'] = $this->session_id;
 
-		$sessiondata['autologinid'] = ( $autologin && $user_id ) ? $autologin : '';
+		$sessiondata['autologinid'] = ($autologin && $user_id) ? $autologin : '';
 		$sessiondata['userid'] = $user_id;
 
 		$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
 		$this->set_cookie('sid', $this->session_id, 0);
 		$SID = '?sid=' . $this->session_id;
 
-		if ( $this->data['user_id'] )
+		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			// Events ... ?
 //			do_events('days');
@@ -275,9 +275,9 @@ class session
 
 		$del_user_id = '';
 		$del_sessions = 0;
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if ( $row['session_user_id'] )
+			if ($row['session_user_id'])
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_lastvisit = " . $row['recent_time'] . "
@@ -285,11 +285,11 @@ class session
 				$db->sql_query($sql);
 			}
 
-			$del_user_id .= ( ( $del_user_id != '' ) ? ', ' : '' ) . ' \'' . $row['session_user_id'] . '\'';
+			$del_user_id .= (($del_user_id != '') ? ', ' : '') . ' \'' . $row['session_user_id'] . '\'';
 			$del_sessions++;
 		}
 
-		if ( $del_user_id != '' )
+		if ($del_user_id != '')
 		{
 			// Delete expired sessions
 			$sql = "DELETE FROM " . SESSIONS_TABLE . "
@@ -298,7 +298,7 @@ class session
 			$db->sql_query($sql);
 		}
 
-		if ( $del_sessions < 5 )
+		if ($del_sessions < 5)
 		{
 			// Less than 5 sessions, update gc timer ... else we want gc
 			// called again to delete other sessions
@@ -338,9 +338,9 @@ class user extends session
 	{
 		global $db, $template, $config, $phpEx, $phpbb_root_path;
 
-		if ( $this->data['user_id'] != ANONYMOUS )
+		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = ( file_exists($phpbb_root_path . 'language/' . $this->data['user_lang']) ) ? $this->data['user_lang'] : $config['default_lang'];
+			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'])) ? $this->data['user_lang'] : $config['default_lang'];
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
@@ -355,14 +355,14 @@ class user extends session
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = 0;
 
-			if ( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) )
+			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
 				$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-				foreach ( $accept_lang_ary as $accept_lang )
+				foreach ($accept_lang_ary as $accept_lang)
 				{
 					// Set correct format ... guess full xx_YY form
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
-					if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
+					if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 					{
 						$this->lang_name = $accept_lang;
 						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
@@ -372,7 +372,7 @@ class user extends session
 					{
 						// No match on xx_YY so try xx
 						$accept_lang = substr($accept_lang, 0, 2);
-						if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
+						if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 						{
 							$this->lang_name = $accept_lang;
 							$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
@@ -384,7 +384,7 @@ class user extends session
 		}
 
 		include($this->lang_path . 'lang_main.' . $phpEx);
-		if ( defined('IN_ADMIN') )
+		if (defined('IN_ADMIN'))
 		{
 			include($this->lang_path . 'lang_admin.' . $phpEx);
 		}
@@ -409,7 +409,7 @@ class user extends session
 		}
 */
 		// Set up style
-		$style = ( $style ) ? $style : ( ( !$config['override_user_style'] && $this->data['user_id'] ) ? $this->data['user_style'] : $config['default_style'] );
+		$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 
 		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
 			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
@@ -419,14 +419,14 @@ class user extends session
 				AND i.imageset_id = s.imageset_id";
 		$result = $db->sql_query($sql);
 
-		if ( !($this->theme = $db->sql_fetchrow($result)) )
+		if (!($this->theme = $db->sql_fetchrow($result)))
 		{
 			message_die(ERROR, 'Could not get style data');
 		}
 
 		$template->set_template($this->theme['template_path']);
 
-		$this->img_lang = ( file_exists($phpbb_root_path . 'imagesets/' . $this->theme['imageset_path'] . '/' . $this->lang_name) ) ? $this->lang_name : $config['default_lang'];
+		$this->img_lang = (file_exists($phpbb_root_path . 'imagesets/' . $this->theme['imageset_path'] . '/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		return;
 	}
@@ -435,15 +435,14 @@ class user extends session
 	{
 		static $lang_dates;
 
-		if ( empty($lang_dates) )
+		if (empty($lang_dates))
 		{
-			foreach ( $this->lang['datetime'] as $match => $replace )
+			foreach ($this->lang['datetime'] as $match => $replace)
 			{
 				$lang_dates[$match] = $replace;
 			}
 		}
-
-		$format = ( !$format ) ? $this->date_format : $format;
+		$format = (!$format) ? $this->date_format : $format;
 		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 
@@ -453,10 +452,9 @@ class user extends session
 
 		if (empty($imgs[$img]) || $no_cache)
 		{
-			$width = ( $width ) ? 'width="' . $width . '" ' : '';
+			$width = ($width) ? 'width="' . $width . '" ' : '';
 			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" ' . $width . 'alt="' . $this->lang[$alt] . '" title="' . $this->lang[$alt] . '" />';
 		}
-
 		return $imgs[$img];
 	}
 }
@@ -469,7 +467,7 @@ class auth
 	var $acl = array();
 	var $acl_options = array();
 
-	function acl(&$userdata, $forum_id = false)
+	function acl(&$userdata)
 	{
 		global $db, $acl_options;
 
@@ -477,15 +475,11 @@ class auth
 
 		if (!$this->founder = $userdata['user_founder'])
 		{
-//			$mtime = explode(' ', microtime());
-//			$starttime = $mtime[1] + $mtime[0];
-
-			if ( empty($userdata['user_permissions']) )
+			if (empty($userdata['user_permissions']))
 			{
 				$this->acl_cache($userdata);
 			}
 
-			// This is preliminary and can no doubt be improved
 			$global_chars = ceil(sizeof($this->acl_options['global']) / 8);
 			$local_chars = ceil(sizeof($this->acl_options['local']) / 8) + 2;
 			$globals = substr($userdata['user_permissions'], 0, $global_chars);
@@ -498,7 +492,7 @@ class auth
 
 			$forums = explode("\r\n", chunk_split($locals, $local_chars));
 			array_pop($forums);
-			foreach ( $forums as $forum )
+			foreach ($forums as $forum)
 			{
 				$forum_id = bindec(decbin(ord(substr($forum, 0, 1))) . str_pad(decbin(ord(substr($forum, 1, 1))), 8, 0, STR_PAD_LEFT));
 
@@ -510,9 +504,6 @@ class auth
 			unset($forums);
 		}
 
-//		$mtime = explode(' ', microtime());
-//		echo $mtime[1] + $mtime[0] - $starttime . " :: ";
-
 		return;
 	}
 
@@ -521,19 +512,43 @@ class auth
 	{
 		static $acl_cache;
 
-		if ( !isset($acl_cache[$forum_id][$option]) && !$this->founder )
+		if (!isset($acl_cache[$forum_id][$option]) && !$this->founder)
 		{
-			if ( isset($this->acl_options['global'][$option]) )
+			if (isset($this->acl_options['global'][$option]) )
 			{
 				$acl_cache[$forum_id][$option] = substr($this->acl['global'], $this->acl_options['global'][$option], 1);
 			}
-			if ( isset($this->acl_options['local'][$option]) )
+			if (isset($this->acl_options['local'][$option]))
 			{
 				$acl_cache[$forum_id][$option] |= substr($this->acl['local'][$forum_id], $this->acl_options['local'][$option], 1);
 			}
 		}
+		return  ($this->founder) ? true : $acl_cache[$forum_id][$option];
+	}
 
-		return ( $this->founder ) ? true : $acl_cache[$forum_id][$option];
+	function acl_gets()
+	{
+		if ($this->founder)
+		{
+			return true;
+		}
+
+		$arguments = func_get_args();
+		$forum_id = array_pop($arguments);
+
+		if (!is_int($forum_id))
+		{
+			$arguments[] = $forum_id;
+			$forum_id = false;
+		}
+
+		$acl = 0;
+		foreach ($arguments as $option)
+		{
+			$acl |= $this->acl_get($option, $forum_id);
+		}
+
+		return $acl;
 	}
 
 	// Cache data
@@ -550,7 +565,7 @@ class auth
 				AND ao.auth_option_id = a.auth_option_id";
 		$result = $db->sql_query($sql);
 
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$acl_db[] = $row;
 		}
@@ -562,19 +577,19 @@ class auth
 				AND ao.auth_option_id = a.auth_option_id";
 		$result = $db->sql_query($sql);
 
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$acl_db[] = $row;
 		}
 		$db->sql_freeresult($result);
 
-		if ( is_array($acl_db) )
+		if (is_array($acl_db))
 		{
 			sort($acl_db);
 
-			foreach ( $acl_db as $row )
+			foreach ($acl_db as $row)
 			{
-				if ( $row['auth_allow_deny'] != ACL_INHERIT && $this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY )
+				if ($row['auth_allow_deny'] != ACL_INHERIT && $this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY)
 				{
 					$this->acl[$row['forum_id']][$row['auth_value']] = intval($row['auth_allow_deny']);
 				}
@@ -586,12 +601,12 @@ class auth
 			$local_hold = '';
 			$global_hold = '';
 
-			foreach ( $this->acl as $forum_id => $auth_ary )
+			foreach ($this->acl as $forum_id => $auth_ary)
 			{
 				$holding = array();
 				$option_set = array();
 
-				if ( !$forum_id )
+				if (!$forum_id)
 				{
 					$fill = $global_bits;
 					$ary_key = 'global';
@@ -609,32 +624,32 @@ class auth
 					$holding[$i] = 0;
 				}
 
-				foreach ( $auth_ary as $option => $allow )
+				foreach ($auth_ary as $option => $allow)
 				{
-					if ( $allow )
+					if ($allow)
 					{
 						$holding[$this->acl_options[$ary_key][$option]] = 1;
 
 						$option_key = substr($option, 0, strpos($option, '_') + 1);
-						if ( empty($holding[$this->acl_options[$ary_key][$option_key]]) )
+						if (empty($holding[$this->acl_options[$ary_key][$option_key]]))
 						{
 							$holding[$this->acl_options[$ary_key][$option_key]] = 1;
 						}
 					}
 				}
 
-				$forum_id = ( $forum_id ) ? str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) : '';
+				$forum_id = ($forum_id) ? str_pad(decbin($forum_id), 16, 0, STR_PAD_LEFT) : '';
 				$bitstring = explode("\r\n", chunk_split($forum_id . implode('', $holding), 8));
 				array_pop($bitstring);
 
-				foreach ( $bitstring as $byte )
+				foreach ($bitstring as $byte)
 				{
 					$$hold_str .= chr(bindec($byte));
 				}
 			}
 			unset($holding);
 
-			if ( $global_hold == '' )
+			if ($global_hold == '')
 			{
 				for($i = 0; $i < $global_bits; $i++)
 				{
@@ -662,20 +677,20 @@ class auth
 
 		$method = trim($config['auth_method']);
 
-		if ( file_exists('includes/auth/auth_' . $method . '.' . $phpEx) )
+		if (file_exists('includes/auth/auth_' . $method . '.' . $phpEx))
 		{
 			include_once('includes/auth/auth_' . $method . '.' . $phpEx);
 
 			$method = 'login_' . $method;
-			if ( function_exists($method) )
+			if (function_exists($method))
 			{
-				if ( !($login = $method($username, $password)) )
+				if (!($login = $method($username, $password)))
 				{
 					return false;
 				}
 
-				$autologin = ( isset($autologin) ) ? md5($password) : '';
-				return ( $login['user_active'] ) ? $user->create($login['user_id'], $autologin) : false;
+				$autologin = (isset($autologin)) ? md5($password) : '';
+				return ($login['user_active']) ? $user->create($login['user_id'], $autologin) : false;
 			}
 		}
 

@@ -30,9 +30,9 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 //
 // Is PM disabled?
 //
-if ( !empty($config['privmsg_disable']) )
+if (!empty($config['privmsg_disable']))
 {
-	message_die(MESSAGE, 'PM_disabled');
+	trigger_error('PM_disabled');
 }
 
 $html_entities_match = array('#&#', '#<#', '#>#');

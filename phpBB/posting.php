@@ -58,7 +58,7 @@ switch ($mode)
 			trigger_error($user->lang['No_forum_id']);
 		}
 
-		$sql = 'SELECT forum_id, post_count_inc
+		$sql = 'SELECT forum_id, forum_status, post_count_inc
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . intval($f);
 		break;
@@ -69,7 +69,7 @@ switch ($mode)
 			trigger_error($user->lang['No_topic_id']);
 		}
 
-		$sql = 'SELECT t.*, f.post_count_inc
+		$sql = 'SELECT t.*, f.forum_status, f.post_count_inc
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE t.topic_id = ' . intval($t) . '
 				AND f.forum_id = t.forum_id';
@@ -83,7 +83,7 @@ switch ($mode)
 			trigger_error($user->lang['No_post_id']);
 		}
 
-		$sql = 'SELECT t.*, p.*, pt.*, f.post_count_inc
+		$sql = 'SELECT t.*, p.*, pt.*, f.forum_status, f.post_count_inc
 			FROM ' . POSTS_TABLE . ' p, ' . POSTS_TEXT_TABLE . ' pt, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . intval($p) . '
 				AND t.topic_id = p.topic_id
@@ -142,17 +142,21 @@ if ($mode == 'edit' && !empty($poll_start))
 // POST INFO
 // ---------
 
-
-
-
 // Basic mode related permission check
 if (!$auth->acl_get('f_' . $mode, $forum_id))
 {
 	trigger_error($user->lang['User_cannot_' . $mode]);
 }
 
+// Forum/Topic locked?
+if ((intval($forum_status) == ITEM_LOCKED || intval($topic_status) == ITEM_LOCKED) && !$auth->acl_gets('m_', 'a_', $forum_id))
+{
+	$message = (intval($forum_status) == FORUM_LOCKED) ? 'Forum_locked' : 'Topic_locked';
+	trigger_error($user->lang[$message]);
+}
+
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - $config['edit_time'] && !$auth->acl_get('m_', $forum_id) && !$auth->acl_get('a_'))
+if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - $config['edit_time'] && !$auth->acl_gets('m_', 'a_', $forum_id))
 {
 	trigger_error($user->lang['Cannot_edit_time']);
 }
@@ -556,29 +560,29 @@ if ($row = $db->sql_fetchrow($result))
 $topic_type_toggle = '';
 if ($mode == 'post' || $mode == 'edit')
 {
-	if ( $auth->acl_get('f_sticky', $forum_id) )
+	if ($auth->acl_gets('f_sticky', 'm_sticky', 'a_', intval($forum_id)))
 	{
 		$topic_type_toggle .= '<input type="radio" name="type" value="' . POST_STICKY . '"';
-		if ($topic_type == POST_STICKY)
+		if (intval($topic_type) == POST_STICKY)
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
 		$topic_type_toggle .= ' /> ' . $user->lang['Post_Sticky'] . '&nbsp;&nbsp;';
 	}
 
-	if ( $auth->acl_get('f_announce', $forum_id) )
+	if ($auth->acl_gets('f_announce', 'm_announce', 'a_', intval($forum_id)))
 	{
 		$topic_type_toggle .= '<input type="radio" name="type" value="' . POST_ANNOUNCE . '"';
-		if ($topic_type == POST_ANNOUNCE)
+		if (intval($topic_type) == POST_ANNOUNCE)
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
 		$topic_type_toggle .= ' /> ' . $user->lang['Post_Announcement'] . '&nbsp;&nbsp;';
 	}
 
-	if ( $topic_type_toggle != '' )
+	if ($topic_type_toggle != '')
 	{
-		$topic_type_toggle = $user->lang['Post_topic_as'] . ': <input type="radio" name="type" value="' . POST_NORMAL .'"' . ( ($topic_type == POST_NORMAL) ? ' checked="checked"' : '' ) . ' /> ' . $user->lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = $user->lang['Post_topic_as'] . ': <input type="radio" name="type" value="' . POST_NORMAL .'"' . ((intval($topic_type) == POST_NORMAL) ? ' checked="checked"' : '') . ' /> ' . $user->lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 
@@ -616,11 +620,11 @@ switch ($mode)
 }
 
 // Nav links for forum
-forum_nav_links($forum_id, $forum_name);
+forum_nav_links($forum_id, $forum_data);
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
-	'FORUM_NAME' 		=> $forum_name,
+	'FORUM_NAME' 		=> $forum_data['forum_name'],
 	'TOPIC_TITLE' 		=> ($mode != 'post') ? $topic_title : '',
 	'USERNAME' 			=> $post_username,
 	'SUBJECT' 			=> (!empty($topic_title)) ? $topic_title : $post_subject,
@@ -677,9 +681,9 @@ $template->assign_vars(array(
 	'L_FONT_LARGE' 			=> $user->lang['font_large'],
 	'L_FONT_HUGE' 			=> $user->lang['font_huge'],
 
-	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=$forum_id",
-	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=$topic_id" : '',
-	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mmode=topicreview&amp;t=$topic_id" : '',
+	'U_VIEW_FORUM' 		=> "viewforum.$phpEx$SID&amp;f=" . intval($forum_id),
+	'U_VIEWTOPIC' 		=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;t=" . intval($topic_id) : '',
+	'U_REVIEW_TOPIC' 	=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mmode=topicreview&amp;t=" . intval($topic_id) : '',
 	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . intval($forum_id),
 
 	'S_SHOW_TOPIC_ICONS' 	=> $s_topic_icons,
@@ -697,7 +701,7 @@ $template->assign_vars(array(
 	'S_SMILIES_ALLOWED' => $smilies_status,
 	'S_SIG_ALLOWED' 	=> ($auth->acl_get('f_sigs', $forum_id)) ? true : false,
 	'S_NOTIFY_ALLOWED' 	=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-	'S_DELETE_ALLOWED' 	=> ($mode = 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_get('m_delete', intval($forum_id)) || $auth->acl_get('a_'))) ? true : false,
+	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
 
 	'S_TOPIC_ID' 		=> intval($topic_id),
@@ -705,11 +709,11 @@ $template->assign_vars(array(
 );
 
 // Poll entry
-if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_first_post_id) && empty($poll_last_vote))) && $auth->acl_get('f_poll', intval($forum_id))) || $auth->acl_get('a_'))
+if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_first_post_id) && empty($poll_last_vote))) && $auth->acl_get('f_poll', intval($forum_id))) || $auth->acl_gets('m_edit', 'a_', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
-		'S_POLL_DELETE' 	=> ($mode = 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_get('m_delete', intval($forum_id)) || $auth->acl_get('a_'))) ? true : false,
+		'S_POLL_DELETE' 	=> ($mode = 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 
 		'L_ADD_A_POLL' 			=> $user->lang['Add_poll'],
 		'L_ADD_POLL_EXPLAIN' 	=> $user->lang['Add_poll_explain'],
@@ -731,7 +735,7 @@ if ((($mode == 'post' || ($mode == 'edit' && intval($post_id) == intval($topic_f
 }
 
 // Attachment entry
-if ( $auth->acl_get('f_attach', $forum_id) )
+if ($auth->acl_gets('f_attach', 'm_edit', 'a_', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX' 		=> true,

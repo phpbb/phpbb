@@ -434,7 +434,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// We have an opening tag.
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
 				$match = array("pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index);
-				bbcode_array_push($stack, $match);
+				array_push($stack, $match);
 				//
             // Rather than just increment $curr_pos
             // Set it to the ending of the tag we just found
@@ -456,7 +456,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// There exists a starting tag.
 						$curr_nesting_depth = sizeof($stack);
 						// We need to do 2 replacements now.
-						$match = bbcode_array_pop($stack);
+						$match = array_pop($stack);
 						$start_index = $match['pos'];
 						$start_tag = $match['tag'];
 						$start_length = strlen($start_tag);
@@ -522,9 +522,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// otherwise, we go back to the start.
 						if (sizeof($stack) > 0)
 						{
-							$match = bbcode_array_pop($stack);
+							$match = array_pop($stack);
 							$curr_pos = $match['pos'];
-							bbcode_array_push($stack, $match);
+							array_push($stack, $match);
 							++$curr_pos;
 						}
 						else
@@ -643,21 +643,6 @@ function make_clickable($text)
 }
 
 /**
- * Nathan Codding - Feb 6, 2001
- * Reverses the effects of make_clickable(), for use in editpost.
- * - Does not distinguish between "www.xxxx.yyyy" and "http://aaaa.bbbb" type URLs.
- *
- */
-function undo_make_clickable($text)
-{
-	$text = preg_replace("#<!-- BBCode auto-link start --><a href=\"(.*?)\" target=\"_blank\">.*?</a><!-- BBCode auto-link end -->#i", "\\1", $text);
-	$text = preg_replace("#<!-- BBcode auto-mailto start --><a href=\"mailto:(.*?)\">.*?</a><!-- BBCode auto-mailto end -->#i", "\\1", $text);
-
-	return $text;
-
-}
-
-/**
  * Nathan Codding - August 24, 2000.
  * Takes a string, and does the reverse of the PHP standard function
  * htmlspecialchars().
@@ -694,44 +679,6 @@ function escape_slashes($input)
 {
 	$output = str_replace('/', '\/', $input);
 	return $output;
-}
-
-/**
- * This function does exactly what the PHP4 function array_push() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with our own
- * method of doing it.
- */
-function bbcode_array_push(&$stack, $value)
-{
-   $stack[] = $value;
-   return(sizeof($stack));
-}
-
-/**
- * This function does exactly what the PHP4 function array_pop() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with our own
- * method of doing it.
- */
-function bbcode_array_pop(&$stack)
-{
-   $arrSize = count($stack);
-   $x = 1;
-
-   while(list($key, $val) = each($stack))
-   {
-      if($x < count($stack))
-      {
-	 		$tmpArr[] = $val;
-      }
-      else
-      {
-	 		$return_val = $val;
-      }
-      $x++;
-   }
-   $stack = $tmpArr;
-
-   return($return_val);
 }
 
 //

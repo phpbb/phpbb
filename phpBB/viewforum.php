@@ -33,25 +33,25 @@ if (preg_match('/^c([0-9]+)$/', $_POST['f'], $m))
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start initial var setup
-if ( isset($_GET['f']) || isset($_POST['f']) )
+if (isset($_GET['f']) || isset($_POST['f']))
 {
-	$forum_id = ( isset($_GET['f']) ) ? intval($_GET['f']) : intval($_POST['f']);
+	$forum_id = (isset($_GET['f'])) ? intval($_GET['f']) : intval($_POST['f']);
 }
 else
 {
 	$forum_id = '';
 }
 
-if ( isset($_GET['mark']) || isset($_POST['mark']) )
+if (isset($_GET['mark']) || isset($_POST['mark']))
 {
-	$mark_read = ( isset($_POST['mark']) ) ? $_POST['mark'] : $_GET['mark'];
+	$mark_read = (isset($_POST['mark'])) ? $_POST['mark'] : $_GET['mark'];
 }
 else
 {
 	$mark_read = '';
 }
 
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
+$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 // End initial var setup
 
 // Start session
@@ -61,12 +61,12 @@ $user->start();
 // If not give them a nice error page.
 if (empty($forum_id))
 {
-	message_die(MESSAGE, 'Forum_not_exist');
+	trigger_error('Forum_not_exist');
 }
 
 if (!$forum_branch = get_forum_branch($forum_id))
 {
-	message_die(MESSAGE, 'Forum_not_exist');
+	trigger_error('Forum_not_exist');
 }
 
 // Configure style, language, etc.
@@ -74,22 +74,23 @@ $user->setup(false, $forum_branch['forum_style']);
 $auth->acl($user->data, $forum_id);
 
 // Auth check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 {
-	if ( !$user->data['user_id'] )
+	if (!$user->data['user_id'] != ANONYMOUS)
 	{
 		redirect("login.$phpEx$SID&redirect=viewforum.$phpEx&f=$forum_id" . ((isset($start)) ? "&start=$start" : ''));
 	}
 
-	trigger_error( $user->lang['Sorry_auth_read']);
+	trigger_error($user->lang['Sorry_auth_read']);
 }
 // End of auth check
 
 // Build subforums list if applicable
+//$forum_data = array();
+//$s_has_subforums = forum_nav_links($forum_id, $forum_data);
 $type = 'parent';
 $forum_rows = array();
 
-$s_has_subforums = FALSE;
 foreach ($forum_branch as $row)
 {
 	if ($type == 'parent')
@@ -155,13 +156,13 @@ foreach ($forum_branch as $row)
 }
 
 // Topic read tracking cookie info
-$mark_topics = ( isset($_COOKIE[$config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
-$mark_forums = ( isset($_COOKIE[$config['cookie_name'] . '_f']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
+$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
+$mark_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
 
 // Handle marking posts
-if ( $mark_read == 'topics' )
+if ($mark_read == 'topics')
 {
-	if ( $user->data['user_id'] )
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$mark_forums[$forum_id] = time();
 
@@ -178,9 +179,9 @@ if ( $mark_read == 'topics' )
 // End handle marking posts
 
 // Do the forum Prune
-if ( $auth->acl_get('m_prune', $forum_id) && $config['prune_enable'] )
+if ($auth->acl_gets('m_prune', 'a_', $forum_id) && $config['prune_enable'])
 {
-	if ( $forum_data['prune_next'] < time() && $forum_data['prune_enable'] )
+	if ($forum_data['prune_next'] < time() && $forum_data['prune_enable'])
 	{
 		require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		auto_prune($forum_id);
@@ -205,11 +206,11 @@ $previous_days = array(0 => $user->lang['All_Topics'], 1 => $user->lang['1_Day']
 $sort_by_text = array('a' => $user->lang['Author'], 't' => $user->lang['Post_time'], 'r' => $user->lang['Replies'], 's' => $user->lang['Subject'], 'v' => $user->lang['Views']);
 $sort_by = array('a' => 'u.username', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-if ( isset($_POST['sort']) )
+if (isset($_POST['sort']))
 {
-	if ( !empty($_POST['sort_days']) )
+	if (!empty($_POST['sort_days']))
 	{
-		$sort_days = ( !empty($_POST['sort_days']) ) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
+		$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
 		$min_topic_time = time() - ( $sort_days * 86400 );
 
 		//
@@ -222,20 +223,20 @@ if ( isset($_POST['sort']) )
 		$result = $db->sql_query($sql);
 
 		$start = 0;
-		$topics_count = ( $row = $db->sql_fetchrow($result) ) ? $row['forum_topics'] : 0;
+		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['forum_topics'] : 0;
 		$limit_topics_time = "AND t.topic_last_post_time >= $min_topic_time";
 	}
 	else
 	{
-		$topics_count = ( $forum_data['forum_topics'] ) ? $forum_data['forum_topics'] : 1;
+		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 	}
 
-	$sort_key = ( isset($_POST['sort_key']) ) ? $_POST['sort_key'] : $_GET['sort_key'];
-	$sort_dir = ( isset($_POST['sort_dir']) ) ? $_POST['sort_dir'] : $_GET['sort_dir'];
+	$sort_key = (isset($_POST['sort_key'])) ? $_POST['sort_key'] : $_GET['sort_key'];
+	$sort_dir = (isset($_POST['sort_dir'])) ? $_POST['sort_dir'] : $_GET['sort_dir'];
 }
 else
 {
-	$topics_count = ( $forum_data['forum_topics'] ) ? $forum_data['forum_topics'] : 1;
+	$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
 	$limit_topics_time = '';
 
 	$sort_days = 0;
@@ -243,38 +244,38 @@ else
 	$sort_dir = 'd';
 }
 
-$sort_order = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
+$sort_order = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 $select_sort_days = '<select name="sort_days">';
-foreach ( $previous_days as $day => $text )
+foreach ($previous_days as $day => $text)
 {
-	$selected = ( $sort_days == $day ) ? ' selected="selected"' : '';
+	$selected = ($sort_days == $day) ? ' selected="selected"' : '';
 	$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
 }
 $select_sort_days .= '</select>';
 
 $select_sort = '<select name="sort_key">';
-foreach ( $sort_by_text as $key => $text )
+foreach ($sort_by_text as $key => $text)
 {
-	$selected = ( $sort_key == $key ) ? ' selected="selected"' : '';
+	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
 	$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 }
 $select_sort .= '</select>';
 
 $select_sort_dir = '<select name="sort_dir">';
-$select_sort_dir .= ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Ascending'] . '</option><option value="d">' . $user->lang['Descending'] . '</option>' : '<option value="a">' . $user->lang['Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Descending'] . '</option>';
+$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['Ascending'] . '</option><option value="d">' . $user->lang['Descending'] . '</option>' : '<option value="a">' . $user->lang['Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Descending'] . '</option>';
 $select_sort_dir .= '</select>';
 
-$post_alt = ( $forum_data['forum_status'] == FORUM_LOCKED ) ? 'Forum_locked' : 'Post_new_topic';
+$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'Forum_locked' : 'Post_new_topic';
 
 // Basic pagewide vars
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME'	=> $forum_data['forum_name'],
-	'POST_IMG' 		=> ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
+	'POST_IMG' 		=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 	'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
-	'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], ( floor( $start / $config['topics_per_page'] ) + 1 ), ceil( $topics_count / $config['topics_per_page'] )),
-	'MOD_CP' => ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) ) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+	'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
+	'MOD_CP' => ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 
 	'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
 	'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'New_posts'),
@@ -397,7 +398,7 @@ while( $row = $db->sql_fetchrow($result) )
 $db->sql_freeresult($result);
 
 // Okay, lets dump out the page ...
-if ( $total_topics )
+if ($total_topics)
 {
 	for($i = 0; $i < $total_topics; $i++)
 	{
@@ -405,7 +406,7 @@ if ( $total_topics )
 
 		// Type and folder
 		$topic_type = '';
-		if ( $topic_rowset[$i]['topic_status'] == TOPIC_MOVED )
+		if ($topic_rowset[$i]['topic_status'] == TOPIC_MOVED)
 		{
 			$topic_type = $user->lang['Topic_Moved'] . ' ';
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
@@ -416,7 +417,7 @@ if ( $total_topics )
 		}
 		else
 		{
-			switch ( $topic_rowset[$i]['topic_type'] )
+			switch ($topic_rowset[$i]['topic_type'])
 			{
 				case POST_ANNOUNCE:
 					$topic_type = $user->lang['Topic_Announcement'] . ' ';
@@ -428,12 +429,12 @@ if ( $total_topics )
 					$folder = 'folder_sticky';
 					$folder_new = 'folder_sticky_new';
 					break;
-				case TOPIC_LOCKED:
+				case ITEM_LOCKED:
 					$folder = 'folder_locked';
 					$folder_new = 'folder_locked_new';
 					break;
 				default:
-					if ( $replies >= $config['hot_threshold'] )
+					if ($replies >= intval($config['hot_threshold']))
 					{
 						$folder = 'folder_hot';
 						$folder_new = 'folder_hot_new';
@@ -447,39 +448,41 @@ if ( $total_topics )
 			}
 
 			$unread_topic = false;
-			if ( $user->data['user_id'] && $topic_rowset[$i]['topic_last_post_time'] > $user->data['user_lastvisit'] )
+			if ($user->data['user_id'] && $topic_rowset[$i]['topic_last_post_time'] > $user->data['session_last_visit'])
 			{
 				$unread_topic = true;
 			}
 
-			$newest_post_img = ( $unread_topic ) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
-			$folder_img = ( $unread_topic ) ? $folder_new : $folder;
-			$folder_alt = ( $unread_topic ) ? 'New_posts' : ( ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? 'Topic_locked' : 'No_new_posts' );
+			$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
+			$folder_img = ($unread_topic) ? $folder_new : $folder;
+			$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_rowset[$i]['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
 		}
 
-		if ( $topic_rowset[$i]['topic_vote'] )
+		if (intval($topic_rowset[$i]['poll_start']))
 		{
 			$topic_type .= $user->lang['Topic_Poll'] . ' ';
 		}
 
+		$replies = $topic_rowset[$i]['topic_replies'];
+
 		// Goto message
-		if ( ( $replies + 1 ) > $config['posts_per_page'] )
+		if (($replies + 1 ) > intval($config['posts_per_page']))
 		{
-			$total_pages = ceil( ( $replies + 1 ) / $config['posts_per_page'] );
-			$goto_page = ' [ <img src=' . $theme['goto_post'] . ' alt="' . $user->lang['Goto_page'] . '" title="' . $user->lang['Goto_page'] . '" />' . $user->lang['Goto_page'] . ': ';
+			$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));
+			$goto_page = ' [ ' . $user->img('goto_post', 'Goto_page') . $user->lang['Goto_page'] . ': ';
 
 			$times = 1;
-			for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
+			for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
 			{
 				$goto_page .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;start=' . $j . '">' . $times . '</a>';
-				if ( $times == 1 && $total_pages > 4 )
+				if ($times == 1 && $total_pages > 4)
 				{
 					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
-					$j += ( $total_pages - 4 ) * $config['posts_per_page'];
+					$j += ($total_pages - 4) * intval($config['posts_per_page']);
 				}
-				else if ( $times < $total_pages )
+				else if ($times < $total_pages)
 				{
 					$goto_page .= ', ';
 				}
@@ -495,22 +498,20 @@ if ( $total_topics )
 		// Generate all the URIs ...
 		$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
-		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
-		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['topic_first_poster_name'] != '' ) ? $topic_rowset[$i]['topic_first_poster_name'] : $user->lang['Guest'] );
+		$topic_author = ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
+		$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? $topic_rowset[$i]['username'] : (($topic_rowset[$i]['topic_first_poster_name'] != '') ? $topic_rowset[$i]['topic_first_poster_name'] : $user->lang['Guest']);
 
-		$topic_author .= ( $topic_rowset[$i]['user_id'] ) ? '</a>' : '';
+		$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '</a>' : '';
 
 		$first_post_time = $user->format_date($topic_rowset[$i]['topic_time'], $config['board_timezone']);
 
 		$last_post_time = $user->format_date($topic_rowset[$i]['topic_last_post_time']);
 
-		$last_post_author = ( !$topic_rowset[$i]['id2'] ) ? ( ( $topic_rowset[$i]['topic_last_poster_name'] != '' ) ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $user->lang['Guest'] . ' ' ) : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
+		$last_post_author = ($topic_rowset[$i]['id2'] == ANONYMOUS) ? (($topic_rowset[$i]['topic_last_poster_name'] != '') ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $user->lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
 
 		$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 
-		//
 		// Send vars to template
-		//
 		$template->assign_block_vars('topicrow', array(
 			'FORUM_ID' 			=> $forum_id,
 			'TOPIC_ID' 			=> $topic_id,
@@ -524,10 +525,12 @@ if ( $total_topics )
 			'GOTO_PAGE' 		=> $goto_page,
 			'REPLIES' 			=> $topic_rowset[$i]['topic_replies'],
 			'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
-			'TOPIC_TITLE' 		=> ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'],
+			'TOPIC_TITLE' 		=> (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'],
 			'TOPIC_TYPE' 		=> $topic_type,
-			'TOPIC_ICON' 		=> ( !empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $topic_icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
-			'TOPIC_RATING' 		=> ( !empty($topic_rowset[$i]['topic_rating']) ) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '',
+			'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $topic_icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
+
+
+			'TOPIC_RATING' 		=> (!empty($topic_rowset[$i]['topic_rating'])) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '',
 
 			'S_ROW_COUNT'	=> $i,
 
@@ -545,7 +548,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 $page_title = $user->lang['View_forum'] . ' - ' . $forum_data['forum_name'];
 
 $nav_links['up'] = array(
-	'url' => 'index.' . $phpEx . $SID,
+	'url' 	=> 'index.' . $phpEx . $SID,
 	'title' => sprintf($user->lang['Forum_Index'], $config['sitename'])
 );
 
