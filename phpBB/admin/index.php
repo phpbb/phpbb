@@ -53,7 +53,7 @@ if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><a href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td><a href="../" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
@@ -119,7 +119,7 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 			</tr>
 <?php
 
-		ksort($action_ary);
+		@ksort($action_ary);
 
 		foreach ( $action_ary as $action => $file ) 
 		{
@@ -167,10 +167,13 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 				$sql = ( isset($HTTP_POST_VARS['activate']) ) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
 				$db->sql_query($sql);
 
-				$sql = "UPDATE " . CONFIG_TABLE . " 
-					SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . " 
-					WHERE config_name = 'num_users'";
-				$db->sql_query($sql);
+				if ( isset($HTTP_POST_VARS['delete']) )
+				{
+					$sql = "UPDATE " . CONFIG_TABLE . " 
+						SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . " 
+						WHERE config_name = 'num_users'";
+					$db->sql_query($sql);
+				}
 
 				$log_action = ( isset($HTTP_POST_VARS['activate']) ) ? 'log_index_activate' : 'log_index_delete'; 
 				add_admin_log($log_action, sizeof($HTTP_POST_VARS['mark']));
@@ -178,6 +181,10 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		}
 	}
 	else if ( isset($HTTP_POST_VARS['remind']) )
+	{
+
+	}
+	else if ( isset($HTTP_POST_VARS['resonline']) )
 	{
 
 	}
