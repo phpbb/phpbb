@@ -580,6 +580,11 @@ else if( ( $delete && $mark_list ) || $delete_all )
 	{
 		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
+	if( isset($mark_list) && !is_array($mark_list) )
+	{
+		// Set to empty array instead of '0' if nothing is selected.
+		$mark_list = array();
+	}
 
 	if( !$confirm )
 	{
@@ -601,7 +606,7 @@ else if( ( $delete && $mark_list ) || $delete_all )
 		);
 		$template->assign_vars(array(
 			"MESSAGE_TITLE" => $lang['Information'],
-			"MESSAGE_TEXT" => ( count($mark_list) == 1 ) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'], 
+			"MESSAGE_TEXT" => ( count($mark_list) == 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'], 
 
 			"L_YES" => $lang['Yes'],
 			"L_NO" => $lang['No'],
