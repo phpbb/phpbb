@@ -165,7 +165,7 @@ if ( !(extract($db->sql_fetchrow($result))) )
 $userdata['user_style'] = ( $default_style ) ? $default_style : $userdata['user_style'];
 $session->configure($userdata);
 
-$acl = new auth('forum', $userdata, $forum_id);
+$acl = new acl('forum', $userdata, $forum_id);
 
 //
 // Start auth check

@@ -155,10 +155,6 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 <p><?php echo $l_title_explain; ?></p>
 
-<p><?php echo $lang['Permissions_extra_explain']; ?></p>
-
-<p><?php echo $lang['Permissions_extra2_explain']; ?></p>
-
 <?php
 
 	switch ( $mode )
@@ -175,7 +171,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 		case 'supermoderators':
 			$type_sql = 'mod';
-			$forum_sql = "AND a.forum_id = $forum_id";
+			$forum_sql = '';
 			break;
 
 		case 'administrators':
@@ -340,7 +336,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 			case 'user':
 				$l_type = 'User';
 
-				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, u.user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, u.user_founder, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 				break;
 		}
 
@@ -362,6 +358,10 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		$db->sql_freeresult($result);
 
 ?>
+
+<p><?php echo $lang['Permissions_extra_explain']; ?></p>
+
+<p><?php echo $lang['Permissions_extra2_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
@@ -415,15 +415,17 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 }
 else
 {
-	$sql = "SELECT forum_id, forum_name
+	$sql = "SELECT left_id, right_id, forum_id, forum_name
 		FROM " . FORUMS_TABLE . "
-		ORDER BY cat_id ASC, forum_order ASC";
+		ORDER BY forum_id ASC";
 	$result = $db->sql_query($sql);
 
 	$select_list = '';
+	$sub_forum = '';
 	while ( $row = $db->sql_fetchrow($result) )
 	{
-		$select_list .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
+		$select_list .= '<option value="' . $row['forum_id'] . '">' . $sub_forum . $row['forum_name'] . '</option>';
+		$sub_forum .= ( $row['right_id'] - $row['left_id'] > 1 ) ? '&nbsp;&nbsp;' : '';
 	}
 	$db->sql_freeresult($result);
 
@@ -434,8 +436,6 @@ else
 <h1><?php echo $l_title; ?></h1>
 
 <p><?php echo $l_title_explain ?></p>
-
-<p><?php echo $lang['Permissions_extra_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>

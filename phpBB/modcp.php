@@ -124,7 +124,7 @@ else
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('forum', $userdata, $forum_id);
+$acl = new acl('forum', $userdata, $forum_id);
 //
 // End session management
 //
@@ -193,8 +193,8 @@ switch( $mode )
 				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . intval($topics[$i]);
 			}
 
-			$sql = "SELECT post_id 
-				FROM " . POSTS_TABLE . " 
+			$sql = "SELECT post_id
+				FROM " . POSTS_TABLE . "
 				WHERE topic_id IN ($topic_id_sql)";
 			$result = $db->sql_query($sql);
 
@@ -205,8 +205,8 @@ switch( $mode )
 			}
 			$db->sql_freeresult($result);
 
-			$sql = "SELECT vote_id 
-				FROM " . VOTE_DESC_TABLE . " 
+			$sql = "SELECT vote_id
+				FROM " . VOTE_DESC_TABLE . "
 				WHERE topic_id IN ($topic_id_sql)";
 			$result = $db->sql_query($sql);
 
@@ -220,9 +220,9 @@ switch( $mode )
 			//
 			// Got all required info so go ahead and start deleting everything
 			//
-			$sql = "DELETE 
-				FROM " . TOPICS_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql) 
+			$sql = "DELETE
+				FROM " . TOPICS_TABLE . "
+				WHERE topic_id IN ($topic_id_sql)
 					OR topic_moved_id IN ($topic_id_sql)";
 			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
@@ -231,13 +231,13 @@ switch( $mode )
 
 			if ( $post_id_sql != '' )
 			{
-				$sql = "DELETE 
-					FROM " . POSTS_TABLE . " 
+				$sql = "DELETE
+					FROM " . POSTS_TABLE . "
 					WHERE post_id IN ($post_id_sql)";
 				$db->sql_query($sql);
 
-				$sql = "DELETE 
-					FROM " . POSTS_TEXT_TABLE . " 
+				$sql = "DELETE
+					FROM " . POSTS_TEXT_TABLE . "
 					WHERE post_id IN ($post_id_sql)";
 				$db->sql_query($sql);
 
@@ -246,24 +246,24 @@ switch( $mode )
 
 			if ( $vote_id_sql != '' )
 			{
-				$sql = "DELETE 
-					FROM " . VOTE_DESC_TABLE . " 
+				$sql = "DELETE
+					FROM " . VOTE_DESC_TABLE . "
 					WHERE vote_id IN ($vote_id_sql)";
 				$db->sql_query($sql);
 
-				$sql = "DELETE 
-					FROM " . VOTE_RESULTS_TABLE . " 
+				$sql = "DELETE
+					FROM " . VOTE_RESULTS_TABLE . "
 					WHERE vote_id IN ($vote_id_sql)";
 				$db->sql_query($sql);
 
-				$sql = "DELETE 
-					FROM " . VOTE_USERS_TABLE . " 
+				$sql = "DELETE
+					FROM " . VOTE_USERS_TABLE . "
 					WHERE vote_id IN ($vote_id_sql)";
 				$db->sql_query($sql);
 			}
 
-			$sql = "DELETE 
-				FROM " . TOPICS_WATCH_TABLE . " 
+			$sql = "DELETE
+				FROM " . TOPICS_WATCH_TABLE . "
 				WHERE topic_id IN ($topic_id_sql)";
 			if ( !$db->sql_query($sql, END_TRANSACTION) )
 			{
@@ -292,7 +292,7 @@ switch( $mode )
 		else
 		{
 			// Not confirmed, show confirmation message
-		
+
 			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
@@ -356,9 +356,9 @@ switch( $mode )
 					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . intval($topics[$i]);
 				}
 
-				$sql = "SELECT * 
-					FROM " . TOPICS_TABLE . " 
-					WHERE topic_id IN ($topic_list) 
+				$sql = "SELECT *
+					FROM " . TOPICS_TABLE . "
+					WHERE topic_id IN ($topic_list)
 						AND topic_status <> " . TOPIC_MOVED;
 				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
 				{
@@ -371,7 +371,7 @@ switch( $mode )
 				for($i = 0; $i < count($row); $i++)
 				{
 					$topic_id = $row[$i]['topic_id'];
-					
+
 					if ( isset($HTTP_POST_VARS['move_leave_shadow']) )
 					{
 						// Insert topic in the old forum that indicates that the forum has moved.
@@ -383,16 +383,16 @@ switch( $mode )
 						}
 					}
 
-					$sql = "UPDATE " . TOPICS_TABLE . " 
-						SET forum_id = $new_forum_id  
+					$sql = "UPDATE " . TOPICS_TABLE . "
+						SET forum_id = $new_forum_id
 						WHERE topic_id = $topic_id";
 					if ( !$db->sql_query($sql) )
 					{
 						message_die(GENERAL_ERROR, 'Could not update old topic', '', __LINE__, __FILE__, $sql);
 					}
 
-					$sql = "UPDATE " . POSTS_TABLE . " 
-						SET forum_id = $new_forum_id 
+					$sql = "UPDATE " . POSTS_TABLE . "
+						SET forum_id = $new_forum_id
 						WHERE topic_id = $topic_id";
 					if ( !$db->sql_query($sql) )
 					{
@@ -465,12 +465,12 @@ switch( $mode )
 				'MESSAGE_TITLE' => $lang['Confirm'],
 				'MESSAGE_TEXT' => $lang['Confirm_move_topic'],
 
-				'L_MOVE_TO_FORUM' => $lang['Move_to_forum'], 
-				'L_LEAVESHADOW' => $lang['Leave_shadow_topic'], 
+				'L_MOVE_TO_FORUM' => $lang['Move_to_forum'],
+				'L_LEAVESHADOW' => $lang['Leave_shadow_topic'],
 				'L_YES' => $lang['Yes'],
 				'L_NO' => $lang['No'],
 
-				'S_FORUM_SELECT' => make_forum_select('new_forum', $forum_id), 
+				'S_FORUM_SELECT' => make_forum_select('new_forum', $forum_id),
 				'S_MODCP_ACTION' => append_sid("modcp.$phpEx"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
@@ -490,9 +490,9 @@ switch( $mode )
 			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . $topics[$i];
 		}
 
-		$sql = "UPDATE " . TOPICS_TABLE . " 
-			SET topic_status = " . TOPIC_LOCKED . " 
-			WHERE topic_id IN ($topic_id_sql) 
+		$sql = "UPDATE " . TOPICS_TABLE . "
+			SET topic_status = " . TOPIC_LOCKED . "
+			WHERE topic_id IN ($topic_id_sql)
 				AND topic_moved_id = 0";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -529,9 +529,9 @@ switch( $mode )
 			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . $topics[$i];
 		}
 
-		$sql = "UPDATE " . TOPICS_TABLE . " 
-			SET topic_status = " . TOPIC_UNLOCKED . " 
-			WHERE topic_id IN ($topic_id_sql) 
+		$sql = "UPDATE " . TOPICS_TABLE . "
+			SET topic_status = " . TOPIC_UNLOCKED . "
+			WHERE topic_id IN ($topic_id_sql)
 				AND topic_moved_id = 0";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -607,7 +607,7 @@ switch( $mode )
 				}
 
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
+					SET topic_id = $new_topic_id, forum_id = $new_forum_id
 					WHERE post_id IN ($post_id_sql)";
 			}
 			else if( !empty($HTTP_POST_VARS['split_type_beyond']) )
@@ -672,15 +672,15 @@ switch( $mode )
 					'L_POSTED' => $lang['Posted'],
 					'L_SPLIT_POSTS' => $lang['Split_posts'],
 					'L_SUBMIT' => $lang['Submit'],
-					'L_SPLIT_AFTER' => $lang['Split_after'], 
-					'L_POST_SUBJECT' => $lang['Post_subject'], 
-					'L_MARK_ALL' => $lang['Mark_all'], 
-					'L_UNMARK_ALL' => $lang['Unmark_all'], 
-					'L_POST' => $lang['Post'], 
+					'L_SPLIT_AFTER' => $lang['Split_after'],
+					'L_POST_SUBJECT' => $lang['Post_subject'],
+					'L_MARK_ALL' => $lang['Mark_all'],
+					'L_UNMARK_ALL' => $lang['Unmark_all'],
+					'L_POST' => $lang['Post'],
 
-					'FORUM_NAME' => $forum_name, 
+					'FORUM_NAME' => $forum_name,
 
-					'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
+					'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
 
 					'S_SPLIT_ACTION' => append_sid("modcp.$phpEx"),
 					'S_HIDDEN_FIELDS' => $s_hidden_fields,
@@ -737,12 +737,12 @@ switch( $mode )
 					}
 
 					$message = str_replace("\n", '<br />', $message);
-					
+
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
-					
+
 					$template->assign_block_vars('postrow', array(
 						'ROW_COLOR' => '#' . $row_color,
 						'ROW_CLASS' => $row_class,
@@ -751,7 +751,7 @@ switch( $mode )
 						'POST_SUBJECT' => $post_subject,
 						'MESSAGE' => $message,
 						'POST_ID' => $post_id,
-						
+
 						'S_SPLIT_CHECKBOX' => $checkbox)
 					);
 				}
@@ -780,14 +780,14 @@ switch( $mode )
 		);
 
 		// Look up relevent data for this post
-		$sql = "SELECT poster_ip, poster_id 
-			FROM " . POSTS_TABLE . " 
+		$sql = "SELECT poster_ip, poster_id
+			FROM " . POSTS_TABLE . "
 			WHERE post_id = $post_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Could not get poster IP information', '', __LINE__, __FILE__, $sql);
 		}
-		
+
 		if ( !($post_row = $db->sql_fetchrow($result)) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
@@ -803,23 +803,23 @@ switch( $mode )
 			'L_THIS_POST_IP' => $lang['This_posts_IP'],
 			'L_OTHER_IPS' => $lang['Other_IP_this_user'],
 			'L_OTHER_USERS' => $lang['Users_this_IP'],
-			'L_LOOKUP_IP' => $lang['Lookup_IP'], 
+			'L_LOOKUP_IP' => $lang['Lookup_IP'],
 			'L_SEARCH' => $lang['Search'],
 
-			'SEARCH_IMG' => $images['icon_search'], 
+			'SEARCH_IMG' => $images['icon_search'],
 
-			'IP' => $ip_this_post, 
-				
+			'IP' => $ip_this_post,
+
 			'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip_this_post))
 		);
 
 		//
 		// Get other IP's this user has posted under
 		//
-		$sql = "SELECT poster_ip, COUNT(*) AS postings 
-			FROM " . POSTS_TABLE . " 
-			WHERE poster_id = $poster_id 
-			GROUP BY poster_ip 
+		$sql = "SELECT poster_ip, COUNT(*) AS postings
+			FROM " . POSTS_TABLE . "
+			WHERE poster_id = $poster_id
+			GROUP BY poster_ip
 			ORDER BY postings DESC";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -846,15 +846,15 @@ switch( $mode )
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$template->assign_block_vars('iprow', array(
-					'ROW_COLOR' => '#' . $row_color, 
-					'ROW_CLASS' => $row_class, 
+					'ROW_COLOR' => '#' . $row_color,
+					'ROW_CLASS' => $row_class,
 					'IP' => $ip,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
 
 					'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip']))
 				);
 
-				$i++; 
+				$i++;
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -862,9 +862,9 @@ switch( $mode )
 		//
 		// Get other users who've posted under this IP
 		//
-		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings 
-			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p 
-			WHERE p.poster_id = u.user_id 
+		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings
+			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p
+			WHERE p.poster_id = u.user_id
 				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
 			GROUP BY u.user_id, u.username
 			ORDER BY postings DESC";
@@ -885,17 +885,17 @@ switch( $mode )
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$template->assign_block_vars('userrow', array(
-					'ROW_COLOR' => '#' . $row_color, 
-					'ROW_CLASS' => $row_class, 
+					'ROW_COLOR' => '#' . $row_color,
+					'ROW_CLASS' => $row_class,
 					'USERNAME' => $username,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
-					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username), 
+					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
 					'U_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
 					'U_SEARCHPOSTS' => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
 				);
 
-				$i++; 
+				$i++;
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -923,12 +923,12 @@ switch( $mode )
 			'L_MOVE' => $lang['Move'],
 			'L_LOCK' => $lang['Lock'],
 			'L_UNLOCK' => $lang['Unlock'],
-			'L_TOPICS' => $lang['Topics'], 
-			'L_REPLIES' => $lang['Replies'], 
-			'L_LASTPOST' => $lang['Last_Post'], 
-			'L_SELECT' => $lang['Select'], 
+			'L_TOPICS' => $lang['Topics'],
+			'L_REPLIES' => $lang['Replies'],
+			'L_LASTPOST' => $lang['Last_Post'],
+			'L_SELECT' => $lang['Select'],
 
-			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id", 
+			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
 			'S_HIDDEN_FIELDS' => '<input type="hidden" name="f" value="' . $forum_id . '">',
 			'S_MODCP_ACTION' => "modcp.$phpEx$SID")
 		);
@@ -970,7 +970,7 @@ switch( $mode )
 					$folder_img = $images['folder_sticky'];
 					$folder_alt = $lang['Sticky'];
 				}
-				else 
+				else
 				{
 					$folder_img = $images['folder'];
 					$folder_alt = $lang['No_new_posts'];
@@ -980,7 +980,7 @@ switch( $mode )
 			$topic_id = $row['topic_id'];
 			$topic_type = $row['topic_type'];
 			$topic_status = $row['topic_status'];
-			
+
 			if ( $topic_type == POST_ANNOUNCE )
 			{
 				$topic_type = $lang['Topic_Announcement'] . ' ';
@@ -995,14 +995,14 @@ switch( $mode )
 			}
 			else
 			{
-				$topic_type = '';		
+				$topic_type = '';
 			}
-	
+
 			if ( $row['topic_vote'] )
 			{
 				$topic_type .= $lang['Topic_Poll'] . ' ';
 			}
-	
+
 			$topic_title = $row['topic_title'];
 			if ( count($orig_word) )
 			{
@@ -1017,13 +1017,13 @@ switch( $mode )
 			$template->assign_block_vars('topicrow', array(
 				'U_VIEW_TOPIC' => $u_view_topic,
 
-				'TOPIC_FOLDER_IMG' => $folder_img, 
-				'TOPIC_TYPE' => $topic_type, 
+				'TOPIC_FOLDER_IMG' => $folder_img,
+				'TOPIC_TYPE' => $topic_type,
 				'TOPIC_TITLE' => $topic_title,
 				'REPLIES' => $topic_replies,
 				'LAST_POST_TIME' => $last_post_time,
 				'TOPIC_ID' => $topic_id,
-					
+
 				'L_TOPIC_FOLDER_ALT' => $folder_alt)
 			);
 		}
@@ -1031,7 +1031,7 @@ switch( $mode )
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("modcp.$phpEx$SID&amp;f=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
-			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
+			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )),
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
 

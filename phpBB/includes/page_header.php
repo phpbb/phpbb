@@ -29,31 +29,11 @@ define('HEADER_INC', TRUE);
 //
 // gzip_compression
 //
-$do_gzip_compress = FALSE;
 if ( $board_config['gzip_compress'] )
 {
-	$phpver = phpversion();
-
-	if ( $phpver >= '4.0.4pl1' && strstr($HTTP_USER_AGENT,'compatible') )
+	if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
 	{
-		if ( extension_loaded('zlib') )
-		{
-			ob_start('ob_gzhandler');
-		}
-	}
-	else if ( $phpver > '4.0' )
-	{
-		if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
-		{
-			if ( extension_loaded('zlib') )
-			{
-				$do_gzip_compress = TRUE;
-				ob_start();
-				ob_implicit_flush(0);
-
-				header("Content-Encoding: gzip");
-			}
-		}
+		ob_start('ob_gzhandler');
 	}
 }
 
@@ -82,7 +62,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".( time() - 300 ) . "
-		$user_forum_sql 
+		$user_forum_sql
 	ORDER BY u.username ASC, s.session_ip ASC";
 $result = $db->sql_query($sql);
 
@@ -120,7 +100,7 @@ while( $row = $db->sql_fetchrow($result) )
 				$user_online_link = '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
 				$logged_hidden_online++;
 			}
-			
+
 			if ( $row['user_allow_viewonline'] || $acl->get_admin_acl() )
 			{
 				$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
@@ -145,7 +125,16 @@ if ( empty($online_userlist) )
 {
 	$online_userlist = $lang['None'];
 }
-$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
+
+if ( empty($forum_id) )
+{
+	$online_userlist = $lang['Registered_users'] . ' ' . $online_userlist;
+}
+else
+{
+	$l_online = ( $guests_online == 1 ) ? $lang['Browsing_forum_guest'] : $lang['Browsing_forum_guests'];
+	$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
+}
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
@@ -218,9 +207,9 @@ else
 }
 
 $l_online_users = sprintf($l_t_user_s, $total_online_users);
-$l_online_users .= sprintf($l_r_user_s, $logged_visible_online); 
-$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online); 
-$l_online_users .= sprintf($l_g_user_s, $guests_online); 
+$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
+$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
+$l_online_users .= sprintf($l_g_user_s, $guests_online);
 
 //
 // Obtain number of new private messages
@@ -230,13 +219,13 @@ if ( $userdata['user_id'] != ANONYMOUS )
 {
 	if ( $userdata['user_new_privmsg'] )
 	{
-		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms']; 
-		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']); 
+		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
+		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
 		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_last_privmsg = " . $userdata['user_lastvisit'] . " 
+				SET user_last_privmsg = " . $userdata['user_lastvisit'] . "
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 
@@ -259,8 +248,8 @@ if ( $userdata['user_id'] != ANONYMOUS )
 
 	if ( $userdata['user_unread_privmsg'] )
 	{
-		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms']; 
-		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']); 
+		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
+		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']);
 	}
 	else
 	{
@@ -291,49 +280,49 @@ foreach ( $nav_links as $nav_item => $nav_array )
 	{
 		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
 		foreach ( $nav_array as $key => $nested_array )
-		{  
+		{
 			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
 		}
 	}
-}	
+}
 */
 //
 // The following assigns all _common_ variables that may be used at any point
 // in a template.
 //
 $template->assign_vars(array(
-	'SITENAME' => $board_config['sitename'], 
-	'SITE_DESCRIPTION' => $board_config['site_desc'], 
+	'SITENAME' => $board_config['sitename'],
+	'SITE_DESCRIPTION' => $board_config['site_desc'],
 	'PAGE_TITLE' => $page_title,
-	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit), 
-	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
+	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit),
+	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),
 	'TOTAL_USERS_ONLINE' => $l_online_users,
-	'LOGGED_IN_USER_LIST' => $online_userlist, 
+	'LOGGED_IN_USER_LIST' => $online_userlist,
 	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
 	'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
 	'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
-	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new, 
+	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new,
 
 	'PRIVMSG_IMG' => $icon_pm,
 
-	'L_USERNAME' => $lang['Username'], 
-	'L_PASSWORD' => $lang['Password'], 
-	'L_LOGIN_LOGOUT' => $l_login_logout, 
-	'L_LOGIN' => $lang['Login'], 
-	'L_LOG_ME_IN' => $lang['Log_me_in'], 
-	'L_AUTO_LOGIN' => $lang['Log_me_in'], 
-	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']), 
-	'L_REGISTER' => $lang['Register'], 
-	'L_PROFILE' => $lang['Profile'], 
-	'L_SEARCH' => $lang['Search'], 
-	'L_PRIVATEMSGS' => $lang['Private_Messages'], 
-	'L_WHO_IS_ONLINE' => $lang['Who_is_Online'], 
-	'L_MEMBERLIST' => $lang['Memberlist'], 
-	'L_FAQ' => $lang['FAQ'], 
-	'L_USERGROUPS' => $lang['Usergroups'], 
-	'L_SEARCH_NEW' => $lang['Search_new'], 
-	'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'], 
-	'L_SEARCH_SELF' => $lang['Search_your_posts'], 
+	'L_USERNAME' => $lang['Username'],
+	'L_PASSWORD' => $lang['Password'],
+	'L_LOGIN_LOGOUT' => $l_login_logout,
+	'L_LOGIN' => $lang['Login'],
+	'L_LOG_ME_IN' => $lang['Log_me_in'],
+	'L_AUTO_LOGIN' => $lang['Log_me_in'],
+	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
+	'L_REGISTER' => $lang['Register'],
+	'L_PROFILE' => $lang['Profile'],
+	'L_SEARCH' => $lang['Search'],
+	'L_PRIVATEMSGS' => $lang['Private_Messages'],
+	'L_WHO_IS_ONLINE' => $lang['Who_is_Online'],
+	'L_MEMBERLIST' => $lang['Memberlist'],
+	'L_FAQ' => $lang['FAQ'],
+	'L_USERGROUPS' => $lang['Usergroups'],
+	'L_SEARCH_NEW' => $lang['Search_new'],
+	'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'],
+	'L_SEARCH_SELF' => $lang['Search_your_posts'],
 
 	'U_SEARCH_UNANSWERED' => 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 	'U_SEARCH_SELF' => 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
@@ -344,26 +333,26 @@ $template->assign_vars(array(
 	'U_PRIVATEMSGS' => 'privmsg.'.$phpEx.$SID.'&amp;folder=inbox',
 	'U_PRIVATEMSGS_POPUP' => 'privmsg.'.$phpEx.$SID.'&amp;mode=newpm',
 	'U_SEARCH' => 'search.'.$phpEx.$SID,
-	'U_MEMBERLIST' => 'memberlist.'.$phpEx.$SID, 
-	'U_MODCP' => 'modcp.'.$phpEx.$SID, 
+	'U_MEMBERLIST' => 'memberlist.'.$phpEx.$SID,
+	'U_MODCP' => 'modcp.'.$phpEx.$SID,
 	'U_FAQ' => 'faq.'.$phpEx.$SID,
 	'U_VIEWONLINE' => 'viewonline.'.$phpEx.$SID,
 	'U_LOGIN_LOGOUT' => $u_login_logout,
 	'U_MEMBERSLIST' => 'memberlist.'.$phpEx.$SID,
 	'U_GROUP_CP' => 'groupcp.'.$phpEx.$SID,
 
-	'S_USER_LOGGED_IN' => ( $userdata['user_id'] == ANONYMOUS ) ? false : true, 
+	'S_USER_LOGGED_IN' => ( $userdata['user_id'] == ANONYMOUS ) ? false : true,
 	'S_USER_PM_POPUP' => ( !empty($userdata['user_popup_pm']) ) ? true : false,
-	'S_USER_BROWSER' => $userdata['session_browser'], 
-	'S_CONTENT_DIRECTION' => $lang['DIRECTION'], 
-	'S_CONTENT_ENCODING' => $lang['ENCODING'], 
-	'S_CONTENT_DIR_LEFT' => $lang['LEFT'], 
-	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'], 
+	'S_USER_BROWSER' => $userdata['session_browser'],
+	'S_CONTENT_DIRECTION' => $lang['DIRECTION'],
+	'S_CONTENT_ENCODING' => $lang['ENCODING'],
+	'S_CONTENT_DIR_LEFT' => $lang['LEFT'],
+	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'],
 	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
 	'S_LOGIN_ACTION' => 'login.'.$phpEx.$SID,
 
-	'T_STYLESHEET_DATA' => $theme['css_data'], 
-	'T_STYLESHEET_LINK' => 'templates/' . $theme['css_external'], 
+	'T_STYLESHEET_DATA' => $theme['css_data'],
+	'T_STYLESHEET_LINK' => 'templates/' . $theme['css_external'],
 
 	'NAV_LINKS' => $nav_links_html)
 );

@@ -112,7 +112,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 //
 // End session management
 //
@@ -161,8 +161,8 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
-	$sql = "SELECT group_moderator 
-		FROM " . GROUPS_TABLE . "  
+	$sql = "SELECT group_moderator
+		FROM " . GROUPS_TABLE . "
 		WHERE group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -182,7 +182,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 		message_die(MESSAGE, $message);
 	}
 
-	$sql = "UPDATE " . GROUPS_TABLE . " 
+	$sql = "UPDATE " . GROUPS_TABLE . "
 		SET group_type = " . intval($HTTP_POST_VARS['group_type']) . "
 		WHERE group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
@@ -211,9 +211,9 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
-		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-		WHERE g.group_id = $group_id 
-			AND g.group_type <> " . GROUP_HIDDEN . " 
+		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g
+		WHERE g.group_id = $group_id
+			AND g.group_type <> " . GROUP_HIDDEN . "
 			AND ug.group_id = g.group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -251,19 +251,19 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	}
 	else
 	{
-		message_die(MESSAGE, $lang['No_groups_exist']); 
+		message_die(MESSAGE, $lang['No_groups_exist']);
 	}
 
-	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending) 
+	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 		VALUES ($group_id, " . $userdata['user_id'] . ", 1)";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
 	}
 
-	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name 
-		FROM ".USERS_TABLE . " u, " . GROUPS_TABLE . " g 
-		WHERE u.user_id = g.group_moderator 
+	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name
+		FROM ".USERS_TABLE . " u, " . GROUPS_TABLE . " g
+		WHERE u.user_id = g.group_moderator
 			AND g.group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -283,9 +283,9 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	$emailer->extra_headers($email_headers);
 
 	$emailer->assign_vars(array(
-		'SITENAME' => $board_config['sitename'], 
+		'SITENAME' => $board_config['sitename'],
 		'GROUP_MODERATOR' => $moderator['username'],
-		'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+		'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
 		'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
@@ -317,8 +317,8 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 
 	if ( $confirm )
 	{
-		$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
-			WHERE user_id = " . $userdata['user_id'] . " 
+		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+			WHERE user_id = " . $userdata['user_id'] . "
 				AND group_id = $group_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -327,10 +327,10 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 
 		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD )
 		{
-			$sql = "SELECT COUNT(auth_mod) AS is_auth_mod 
-				FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-				WHERE ug.user_id = " . $userdata['user_id'] . " 
-					AND aa.group_id = ug.group_id 
+			$sql = "SELECT COUNT(auth_mod) AS is_auth_mod
+				FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug
+				WHERE ug.user_id = " . $userdata['user_id'] . "
+					AND aa.group_id = ug.group_id
 					AND aa.auth_mod = 1";
 			if ( !($result = $db->sql_query($sql)) )
 			{
@@ -339,8 +339,8 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 
 			if ( !($row = $db->sql_fetchrow($result)) )
 			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_level = " . USER . " 
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_level = " . USER . "
 					WHERE user_id = " . $userdata['user_id'];
 				if ( !($result = $db->sql_query($sql)) )
 				{
@@ -405,32 +405,32 @@ else if ( $group_id )
 	switch(SQL_LAYER)
 	{
 		case 'postgresql':
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa
 				WHERE g.group_id = $group_id
-					AND aa.group_id = g.group_id 
+					AND aa.group_id = g.group_id
 					UNION (
-						SELECT g.group_moderator, g.group_type, NULL 
+						SELECT g.group_moderator, g.group_type, NULL
 						FROM " . GROUPS_TABLE . " g
 						WHERE g.group_id = $group_id
 							AND NOT EXISTS (
-							SELECT aa.group_id 
-							FROM " . AUTH_ACCESS_TABLE . " aa 
-							WHERE aa.group_id = g.group_id  
+							SELECT aa.group_id
+							FROM " . AUTH_ACCESS_TABLE . " aa
+							WHERE aa.group_id = g.group_id
 						)
 					)";
 			break;
 
 		case 'oracle':
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa
 				WHERE g.group_id = $group_id
 					AND aa.group_id = g.group_id(+)";
 			break;
 
 		default:
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM ( " . GROUPS_TABLE . " g 
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+				FROM ( " . GROUPS_TABLE . " g
 				LEFT JOIN " . AUTH_ACCESS_TABLE . " aa ON aa.group_id = g.group_id )
 				WHERE g.group_id = $group_id";
 			break;
@@ -443,12 +443,12 @@ else if ( $group_id )
 	if ( $group_info = $db->sql_fetchrow($result) )
 	{
 		$group_moderator = $group_info['group_moderator'];
-	
+
 		if ( $group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN )
 		{
 			$is_moderator = TRUE;
 		}
-			
+
 		//
 		// Handle Additions, removals, approvals and denials
 		//
@@ -473,9 +473,9 @@ else if ( $group_id )
 			if ( isset($HTTP_POST_VARS['add']) )
 			{
 				$username = ( isset($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : "";
-				
-				$sql = "SELECT user_id, user_email, user_lang, user_level  
-					FROM " . USERS_TABLE . " 
+
+				$sql = "SELECT user_id, user_email, user_lang, user_level
+					FROM " . USERS_TABLE . "
 					WHERE username = '" . str_replace("\'", "''", $username) . "'";
 				if ( !($result = $db->sql_query($sql)) )
 				{
@@ -503,11 +503,11 @@ else if ( $group_id )
 
 					message_die(MESSAGE, $message);
 				}
-				
-				$sql = "SELECT ug.user_id, u.user_level 
-					FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
-					WHERE u.user_id = " . $row['user_id'] . " 
-						AND ug.user_id = u.user_id 
+
+				$sql = "SELECT ug.user_id, u.user_level
+					FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u
+					WHERE u.user_id = " . $row['user_id'] . "
+						AND ug.user_id = u.user_id
 						AND ug.group_id = $group_id";
 				if ( !($result = $db->sql_query($sql)) )
 				{
@@ -516,17 +516,17 @@ else if ( $group_id )
 
 				if ( !($db->sql_fetchrow($result)) )
 				{
-					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
+					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 						VALUES (" . $row['user_id'] . ", $group_id, 0)";
 					if ( !$db->sql_query($sql) )
 					{
 						message_die(ERROR, 'Could not add user to group', '', __LINE__, __FILE__, $sql);
 					}
-					
+
 					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] )
 					{
-						$sql = "UPDATE " . USERS_TABLE . " 
-							SET user_level = " . MOD . " 
+						$sql = "UPDATE " . USERS_TABLE . "
+							SET user_level = " . MOD . "
 							WHERE user_id = " . $row['user_id'];
 						if ( !$db->sql_query($sql) )
 						{
@@ -538,8 +538,8 @@ else if ( $group_id )
 					// Get the group name
 					// Email the user and tell them they're in the group
 					//
-					$group_sql = "SELECT group_name 
-						FROM " . GROUPS_TABLE . " 
+					$group_sql = "SELECT group_name
+						FROM " . GROUPS_TABLE . "
 						WHERE group_id = $group_id";
 					if ( !($result = $db->sql_query($group_sql)) )
 					{
@@ -561,9 +561,9 @@ else if ( $group_id )
 					$emailer->extra_headers($email_headers);
 
 					$emailer->assign_vars(array(
-						'SITENAME' => $board_config['sitename'], 
+						'SITENAME' => $board_config['sitename'],
 						'GROUP_NAME' => $group_name,
-						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
 						'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 					);
@@ -581,7 +581,7 @@ else if ( $group_id )
 					message_die(MESSAGE, $message);
 				}
 			}
-			else 
+			else
 			{
 				if ( ( ( isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) ) && isset($HTTP_POST_VARS['pending_members']) ) || ( isset($HTTP_POST_VARS['remove']) && isset($HTTP_POST_VARS['members']) ) )
 				{
@@ -598,9 +598,9 @@ else if ( $group_id )
 					{
 						if ( $group_info['auth_mod'] )
 						{
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET user_level = " . MOD . " 
-								WHERE user_id IN ($sql_in) 
+							$sql = "UPDATE " . USERS_TABLE . "
+								SET user_level = " . MOD . "
+								WHERE user_id IN ($sql_in)
 									AND user_level NOT IN (" . MOD . ", " . ADMIN . ")";
 							if ( !$db->sql_query($sql) )
 							{
@@ -608,24 +608,24 @@ else if ( $group_id )
 							}
 						}
 
-						$sql = "UPDATE " . USER_GROUP_TABLE . " 
-							SET user_pending = 0 
-							WHERE user_id IN ($sql_in) 
+						$sql = "UPDATE " . USER_GROUP_TABLE . "
+							SET user_pending = 0
+							WHERE user_id IN ($sql_in)
 								AND group_id = $group_id";
-						$sql_select = "SELECT user_email 
-							FROM ". USERS_TABLE . " 
-							WHERE user_id IN ($sql_in)"; 
+						$sql_select = "SELECT user_email
+							FROM ". USERS_TABLE . "
+							WHERE user_id IN ($sql_in)";
 					}
 					else if ( isset($HTTP_POST_VARS['deny']) || isset($HTTP_POST_VARS['remove']) )
 					{
 						if ( $group_info['auth_mod'] )
 						{
-							$sql = "SELECT ug.user_id, ug.group_id 
-								FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-								WHERE ug.user_id IN  ($sql_in) 
-									AND aa.group_id = ug.group_id 
-									AND aa.auth_mod = 1 
-								GROUP BY ug.user_id, ug.group_id 
+							$sql = "SELECT ug.user_id, ug.group_id
+								FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug
+								WHERE ug.user_id IN  ($sql_in)
+									AND aa.group_id = ug.group_id
+									AND aa.auth_mod = 1
+								GROUP BY ug.user_id, ug.group_id
 								ORDER BY ug.user_id, ug.group_id";
 							if ( !($result = $db->sql_query($sql)) )
 							{
@@ -653,9 +653,9 @@ else if ( $group_id )
 
 								if ( $remove_mod_sql != '' )
 								{
-									$sql = "UPDATE " . USERS_TABLE . " 
-										SET user_level = " . USER . " 
-										WHERE user_id IN ($remove_mod_sql) 
+									$sql = "UPDATE " . USERS_TABLE . "
+										SET user_level = " . USER . "
+										WHERE user_id IN ($remove_mod_sql)
 											AND user_level NOT IN (" . ADMIN . ")";
 									if ( !$db->sql_query($sql) )
 									{
@@ -665,8 +665,8 @@ else if ( $group_id )
 							}
 						}
 
-						$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
-							WHERE user_id IN ($sql_in) 
+						$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+							WHERE user_id IN ($sql_in)
 								AND group_id = $group_id";
 					}
 
@@ -694,8 +694,8 @@ else if ( $group_id )
 						//
 						// Get the group name
 						//
-						$group_sql = "SELECT group_name 
-							FROM " . GROUPS_TABLE . " 
+						$group_sql = "SELECT group_name
+							FROM " . GROUPS_TABLE . "
 							WHERE group_id = $group_id";
 						if ( !($result = $db->sql_query($group_sql)) )
 						{
@@ -716,9 +716,9 @@ else if ( $group_id )
 						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
-							'SITENAME' => $board_config['sitename'], 
+							'SITENAME' => $board_config['sitename'],
 							'GROUP_NAME' => $group_name,
-							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
+							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
 							'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id")
 						);
@@ -751,38 +751,38 @@ else if ( $group_id )
 
 	if ( !($group_info = $db->sql_fetchrow($result)) )
 	{
-		message_die(MESSAGE, $lang['Group_not_exist']); 
+		message_die(MESSAGE, $lang['Group_not_exist']);
 	}
 
 	//
 	// Get moderator details for this group
 	//
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm  
-		FROM " . USERS_TABLE . " 
+	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm
+		FROM " . USERS_TABLE . "
 		WHERE user_id = " . $group_info['group_moderator'];
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
 	}
 
-	$group_moderator = $db->sql_fetchrow($result); 
+	$group_moderator = $db->sql_fetchrow($result);
 
 	//
 	// Get user information for this group
 	//
-	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, ug.user_pending 
+	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, ug.user_pending
 		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
 		WHERE ug.group_id = $group_id
 			AND u.user_id = ug.user_id
-			AND ug.user_pending = 0 
-			AND ug.user_id <> " . $group_moderator['user_id'] . " 
-		ORDER BY u.username"; 
+			AND ug.user_pending = 0
+			AND ug.user_id <> " . $group_moderator['user_id'] . "
+		ORDER BY u.username";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
 	}
 
-	$group_members = $db->sql_fetchrowset($result); 
+	$group_members = $db->sql_fetchrowset($result);
 	$members_count = count($group_members);
 	$db->sql_freeresult($result);
 
@@ -792,7 +792,7 @@ else if ( $group_id )
 			AND g.group_id = ug.group_id
 			AND ug.user_pending = 1
 			AND u.user_id = ug.user_id
-		ORDER BY u.username"; 
+		ORDER BY u.username";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(ERROR, 'Error getting user pending information', '', __LINE__, __FILE__, $sql);
@@ -809,7 +809,7 @@ else if ( $group_id )
 		{
 			if ( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
 			{
-				$is_group_member = TRUE; 
+				$is_group_member = TRUE;
 			}
 		}
 	}
@@ -880,7 +880,7 @@ else if ( $group_id )
 	// Load templates
 	//
 	$template->set_filenames(array(
-		'info' => 'groupcp_info_body.tpl', 
+		'info' => 'groupcp_info_body.tpl',
 		'pendinginfo' => 'groupcp_pending_info.tpl')
 	);
 	make_jumpbox('viewforum.'.$phpEx);
@@ -901,19 +901,19 @@ else if ( $group_id )
 		'L_GROUP_MEMBERSHIP' => $lang['Group_membership'],
 		'L_SUBSCRIBE' => $lang['Subscribe'],
 		'L_UNSUBSCRIBE' => $lang['Unsubscribe'],
-		'L_JOIN_GROUP' => $lang['Join_group'], 
-		'L_UNSUBSCRIBE_GROUP' => $lang['Unsubscribe'], 
+		'L_JOIN_GROUP' => $lang['Join_group'],
+		'L_UNSUBSCRIBE_GROUP' => $lang['Unsubscribe'],
 		'L_GROUP_OPEN' => $lang['Group_open'],
 		'L_GROUP_CLOSED' => $lang['Group_closed'],
-		'L_GROUP_HIDDEN' => $lang['Group_hidden'], 
-		'L_UPDATE' => $lang['Update'], 
-		'L_GROUP_MODERATOR' => $lang['Group_Moderator'], 
-		'L_GROUP_MEMBERS' => $lang['Group_Members'], 
-		'L_PENDING_MEMBERS' => $lang['Pending_members'], 
-		'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'], 
-		'L_PM' => $lang['Private_Message'], 
-		'L_EMAIL' => $lang['Email'], 
-		'L_POSTS' => $lang['Posts'], 
+		'L_GROUP_HIDDEN' => $lang['Group_hidden'],
+		'L_UPDATE' => $lang['Update'],
+		'L_GROUP_MODERATOR' => $lang['Group_Moderator'],
+		'L_GROUP_MEMBERS' => $lang['Group_Members'],
+		'L_PENDING_MEMBERS' => $lang['Pending_members'],
+		'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
+		'L_PM' => $lang['Private_Message'],
+		'L_EMAIL' => $lang['Email'],
+		'L_POSTS' => $lang['Posts'],
 		'L_WEBSITE' => $lang['Website'],
 		'L_FROM' => $lang['Location'],
 		'L_ORDER' => $lang['Order'],
@@ -938,8 +938,8 @@ else if ( $group_id )
 		'MOD_JOINED' => $joined,
 		'MOD_POSTS' => $posts,
 		'MOD_AVATAR_IMG' => $poster_avatar,
-		'MOD_PROFILE_IMG' => $profile_img, 
-		'MOD_PROFILE' => $profile, 
+		'MOD_PROFILE_IMG' => $profile_img,
+		'MOD_PROFILE' => $profile,
 		'MOD_SEARCH_IMG' => $search_img,
 		'MOD_SEARCH' => $search,
 		'MOD_PM_IMG' => $pm_img,
@@ -949,8 +949,8 @@ else if ( $group_id )
 		'MOD_WWW_IMG' => $www_img,
 		'MOD_WWW' => $www,
 		'MOD_ICQ_STATUS_IMG' => $icq_status_img,
-		'MOD_ICQ_IMG' => $icq_img, 
-		'MOD_ICQ' => $icq, 
+		'MOD_ICQ_IMG' => $icq_img,
+		'MOD_ICQ' => $icq,
 		'MOD_AIM_IMG' => $aim_img,
 		'MOD_AIM' => $aim,
 		'MOD_MSN_IMG' => $msn_img,
@@ -958,8 +958,8 @@ else if ( $group_id )
 		'MOD_YIM_IMG' => $yim_img,
 		'MOD_YIM' => $yim,
 
-		'U_MOD_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"), 
-		'U_SEARCH_USER' => append_sid("search.$phpEx?mode=searchuser"), 
+		'U_MOD_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"),
+		'U_SEARCH_USER' => append_sid("search.$phpEx?mode=searchuser"),
 
 		'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
 		'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
@@ -967,7 +967,7 @@ else if ( $group_id )
 		'S_GROUP_OPEN_CHECKED' => ( $group_info['group_type'] == GROUP_OPEN ) ? ' checked="checked"' : '',
 		'S_GROUP_CLOSED_CHECKED' => ( $group_info['group_type'] == GROUP_CLOSED ) ? ' checked="checked"' : '',
 		'S_GROUP_HIDDEN_CHECKED' => ( $group_info['group_type'] == GROUP_HIDDEN ) ? ' checked="checked"' : '',
-		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
+		'S_HIDDEN_FIELDS' => $s_hidden_fields,
 		'S_MODE_SELECT' => $select_sort_mode,
 		'S_ORDER_SELECT' => $select_sort_order,
 		'S_GROUPCP_ACTION' => append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id"))
@@ -995,10 +995,10 @@ else if ( $group_id )
 				'FROM' => $from,
 				'JOINED' => $joined,
 				'POSTS' => $posts,
-				'USER_ID' => $user_id, 
+				'USER_ID' => $user_id,
 				'AVATAR_IMG' => $poster_avatar,
-				'PROFILE_IMG' => $profile_img, 
-				'PROFILE' => $profile, 
+				'PROFILE_IMG' => $profile_img,
+				'PROFILE' => $profile,
 				'SEARCH_IMG' => $search_img,
 				'SEARCH' => $search,
 				'PM_IMG' => $pm_img,
@@ -1008,15 +1008,15 @@ else if ( $group_id )
 				'WWW_IMG' => $www_img,
 				'WWW' => $www,
 				'ICQ_STATUS_IMG' => $icq_status_img,
-				'ICQ_IMG' => $icq_img, 
-				'ICQ' => $icq, 
+				'ICQ_IMG' => $icq_img,
+				'ICQ' => $icq,
 				'AIM_IMG' => $aim_img,
 				'AIM' => $aim,
 				'MSN_IMG' => $msn_img,
 				'MSN' => $msn,
 				'YIM_IMG' => $yim_img,
 				'YIM' => $yim,
-				
+
 				'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
 			);
 
@@ -1042,7 +1042,7 @@ else if ( $group_id )
 
 	$template->assign_vars(array(
 		'PAGINATION' => generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), $current_page ), 
+		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), $current_page ),
 
 		'L_GOTO_PAGE' => $lang['Goto_page'])
 	);
@@ -1059,8 +1059,8 @@ else if ( $group_id )
 	}
 
 	//
-	// We've displayed the members who belong to the group, now we 
-	// do that pending memebers... 
+	// We've displayed the members who belong to the group, now we
+	// do that pending memebers...
 	//
 	if ( $is_moderator )
 	{
@@ -1083,15 +1083,15 @@ else if ( $group_id )
 
 				$template->assign_block_vars('pending_members_row', array(
 					'ROW_CLASS' => $row_class,
-					'ROW_COLOR' => '#' . $row_color, 
+					'ROW_COLOR' => '#' . $row_color,
 					'USERNAME' => $username,
 					'FROM' => $from,
 					'JOINED' => $joined,
 					'POSTS' => $posts,
-					'USER_ID' => $user_id, 
+					'USER_ID' => $user_id,
 					'AVATAR_IMG' => $poster_avatar,
-					'PROFILE_IMG' => $profile_img, 
-					'PROFILE' => $profile, 
+					'PROFILE_IMG' => $profile_img,
+					'PROFILE' => $profile,
 					'SEARCH_IMG' => $search_img,
 					'SEARCH' => $search,
 					'PM_IMG' => $pm_img,
@@ -1101,15 +1101,15 @@ else if ( $group_id )
 					'WWW_IMG' => $www_img,
 					'WWW' => $www,
 					'ICQ_STATUS_IMG' => $icq_status_img,
-					'ICQ_IMG' => $icq_img, 
-					'ICQ' => $icq, 
+					'ICQ_IMG' => $icq_img,
+					'ICQ' => $icq,
 					'AIM_IMG' => $aim_img,
 					'AIM' => $aim,
 					'MSN_IMG' => $msn_img,
 					'MSN' => $msn,
 					'YIM_IMG' => $yim_img,
 					'YIM' => $yim,
-					
+
 					'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
 				);
 			}
@@ -1123,7 +1123,7 @@ else if ( $group_id )
 			);
 
 			$template->assign_var_from_handle('PENDING_USER_BOX', 'pendinginfo');
-		
+
 		}
 	}
 
@@ -1143,11 +1143,11 @@ else
 	// Select all group that the user is a member of or where the user has
 	// a pending membership.
 	//
-	if ( $userdata['session_logged_in'] ) 
+	if ( $userdata['session_logged_in'] )
 	{
-		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 
+		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending
 			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = " . $userdata['user_id'] . "  
+			WHERE ug.user_id = " . $userdata['user_id'] . "
 				AND ug.group_id = g.group_id
 				AND g.group_single_user <> " . TRUE . "
 			ORDER BY g.group_name, ug.user_id";
@@ -1184,11 +1184,11 @@ else
 	//
 	// Select all other groups i.e. groups that this user is not a member of
 	//
-	$ignore_group_sql =	( count($in_group) ) ? "AND group_id NOT IN (" . implode(', ', $in_group) . ")" : ''; 
-	$sql = "SELECT group_id, group_name, group_type 
-		FROM " . GROUPS_TABLE . " g 
-		WHERE group_single_user <> " . TRUE . " 
-			$ignore_group_sql 
+	$ignore_group_sql =	( count($in_group) ) ? "AND group_id NOT IN (" . implode(', ', $in_group) . ")" : '';
+	$sql = "SELECT group_id, group_name, group_type
+		FROM " . GROUPS_TABLE . " g
+		WHERE group_single_user <> " . TRUE . "
+			$ignore_group_sql
 		ORDER BY g.group_name";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -1247,10 +1247,10 @@ else
 			'L_PENDING_GROUPS' => $lang['Memberships_pending'],
 			'L_SUBSCRIBE' => $lang['Subscribe'],
 			'L_UNSUBSCRIBE' => $lang['Unsubscribe'],
-			'L_VIEW_INFORMATION' => $lang['View_Information'], 
+			'L_VIEW_INFORMATION' => $lang['View_Information'],
 
-			'S_USERGROUP_ACTION' => append_sid("groupcp.$phpEx"), 
-			'S_HIDDEN_FIELDS' => $s_hidden_fields, 
+			'S_USERGROUP_ACTION' => append_sid("groupcp.$phpEx"),
+			'S_HIDDEN_FIELDS' => $s_hidden_fields,
 
 			'GROUP_LIST_SELECT' => $s_group_list,
 			'GROUP_PENDING_SELECT' => $s_pending_groups,

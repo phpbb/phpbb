@@ -124,7 +124,8 @@ $lang['GUESTS'] = 'GUESTS';
 // Global Header strings
 //
 $lang['Registered_users'] = 'Registered Users:';
-$lang['Browsing_forum'] = 'Users browsing this forum:';
+$lang['Browsing_forum_guest'] = 'Users browsing this forum: %s and %d guest';
+$lang['Browsing_forum_guests'] = 'Users browsing this forum: %s and %d guests';
 $lang['Online_users_zero_total'] = 'In total there are <b>0</b> users online :: ';
 $lang['Online_users_total'] = 'In total there are <b>%d</b> users online :: ';
 $lang['Online_user_total'] = 'In total there is <b>%d</b> user online :: ';

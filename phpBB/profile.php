@@ -29,7 +29,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 //
 // End session management
 //
@@ -56,10 +56,10 @@ $server_url = $server_protocol . $server_name . $server_port . $script_name;
 function gen_rand_string($hash)
 {
 	$chars = array( 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J',  'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O', 'p', 'P', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'T',  'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
-	
+
 	$max_chars = count($chars) - 1;
 	srand( (double) microtime()*1000000);
-	
+
 	$rand_str = '';
 	for($i = 0; $i < 8; $i++)
 	{

@@ -28,25 +28,45 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
+
+$session->configure($userdata);
 //
 // End session management
 //
 
-//
-// Configure style, language, etc.
-//
-$session->configure($userdata);
-
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$form = ( !empty($HTTP_GET_VARS['form']) ) ? $HTTP_GET_VARS['form'] : 0;
+$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
+
+$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : ( ( !empty($HTTP_GET_VARS['sort_by']) ) ? $HTTP_GET_VARS['sort_by'] : '4' );
+$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
+
+$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : ( ( !empty($HTTP_GET_VARS['username']) ) ? $HTTP_GET_VARS['username'] : '' );
+$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : ( ( !empty($HTTP_GET_VARS['email']) ) ? $HTTP_GET_VARS['email'] : '' );
+$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? intval($HTTP_POST_VARS['icq']) : ( ( !empty($HTTP_GET_VARS['icq']) ) ? $HTTP_GET_VARS['icq'] : '' );
+$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : ( ( !empty($HTTP_GET_VARS['aim']) ) ? $HTTP_GET_VARS['aim'] : '' );
+$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : ( ( !empty($HTTP_GET_VARS['yahoo']) ) ? $HTTP_GET_VARS['yahoo'] : '' );
+$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : ( ( !empty($HTTP_GET_VARS['msn']) ) ? $HTTP_GET_VARS['msn'] : '' );
+
+$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
+$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
+$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
+$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : ( ( !empty($HTTP_GET_VARS['joined']) ) ? explode('-', $HTTP_GET_VARS['joined']) : array() );
+$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : ( ( !empty($HTTP_GET_VARS['active']) ) ? explode('-', $HTTP_GET_VARS['active']) : array() );
+$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : ( ( !empty($HTTP_GET_VARS['count']) ) ? $HTTP_GET_VARS['count'] : '' );
+
+
+
+
 
 if ( isset($HTTP_POST_VARS['order']) )
 {
-	$sort_order = ($HTTP_POST_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
+	$sort_order = ($HTTP_POST_VARS['order'] == 'a') ? 'ASC' : 'DESC';
 }
 else if ( isset($HTTP_GET_VARS['order']) )
 {
-	$sort_order = ($HTTP_GET_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
+	$sort_order = ($HTTP_GET_VARS['order'] == 'a') ? 'ASC' : 'DESC';
 }
 else
 {
@@ -68,12 +88,12 @@ for($i = 0; $i < count($mode_types_text); $i++)
 $select_sort_mode .= '</select>';
 
 $select_sort_order = '<select name="order">';
-$select_sort_order .= ( $sort_order == 'ASC' ) ? '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>' : '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+$select_sort_order .= ( $sort_order == 'a' ) ? '<option value="a" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="d">' . $lang['Sort_Descending'] . '</option>' : '<option value="a">' . $lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $lang['Sort_Descending'] . '</option>';
 $select_sort_order .= '</select>';
 
 if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
 {
-	$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $board_config['num_users'], $board_config['topics_per_page'], $start). '&nbsp;';
+	$pagination = generate_pagination("memberlist.$phpEx$SID&amp;mode=$mode&amp;order=$sort_order", $board_config['num_users'], $board_config['topics_per_page'], $start). '&nbsp;';
 	$total_members = $board_config['num_users'];
 }
 else
@@ -87,7 +107,7 @@ else
 //
 $template->assign_vars(array(
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
+	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )),
 
 	'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
 	'L_EMAIL' => $lang['Email'],
@@ -99,10 +119,10 @@ $template->assign_vars(array(
 	'L_AIM' => $lang['AIM'],
 	'L_YIM' => $lang['YIM'],
 	'L_MSNM' => $lang['MSNM'],
-	'L_ICQ' => $lang['ICQ'], 
-	'L_JOINED' => $lang['Joined'], 
-	'L_POSTS' => $lang['Posts'], 
-	'L_GOTO_PAGE' => $lang['Goto_page'], 
+	'L_ICQ' => $lang['ICQ'],
+	'L_JOINED' => $lang['Joined'],
+	'L_POSTS' => $lang['Posts'],
+	'L_GOTO_PAGE' => $lang['Goto_page'],
 
 	'S_MODE_SELECT' => $select_sort_mode,
 	'S_ORDER_SELECT' => $select_sort_order,
@@ -146,7 +166,7 @@ else
 	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 }
 
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar 
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
@@ -233,14 +253,14 @@ if ( $row = $db->sql_fetchrow($result) )
 		$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
 
 		$template->assign_block_vars('memberrow', array(
-			'ROW_NUMBER' => $i + ( $start + 1 ), 
+			'ROW_NUMBER' => $i + ( $start + 1 ),
 			'USERNAME' => $username,
 			'FROM' => $from,
 			'JOINED' => $joined,
 			'POSTS' => $posts,
 			'AVATAR_IMG' => $poster_avatar,
-			'PROFILE_IMG' => $profile_img, 
-			'PROFILE' => $profile, 
+			'PROFILE_IMG' => $profile_img,
+			'PROFILE' => $profile,
 			'SEARCH_IMG' => $search_img,
 			'SEARCH' => $search,
 			'PM_IMG' => $pm_img,
@@ -250,8 +270,8 @@ if ( $row = $db->sql_fetchrow($result) )
 			'WWW_IMG' => $www_img,
 			'WWW' => $www,
 			'ICQ_STATUS_IMG' => $icq_status_img,
-			'ICQ_IMG' => $icq_img, 
-			'ICQ' => $icq, 
+			'ICQ_IMG' => $icq_img,
+			'ICQ' => $icq,
 			'AIM_IMG' => $aim_img,
 			'AIM' => $aim,
 			'MSN_IMG' => $msn_img,
@@ -259,8 +279,8 @@ if ( $row = $db->sql_fetchrow($result) )
 			'YIM_IMG' => $yim_img,
 			'YIM' => $yim,
 
-			'S_ROW_COUNT' => $i, 
-			
+			'S_ROW_COUNT' => $i,
+
 			'U_VIEWPROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
 		);
 
@@ -273,7 +293,7 @@ $page_title = $lang['Memberlist'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'memberlist_body.html')
+	'body' => ( $mode == 'searchuser') ? 'search_username.html' : 'memberlist_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx);
 

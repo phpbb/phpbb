@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -1236,7 +1235,7 @@ function generate_smilies($mode, $page_id)
 		$row = 0;
 		$col = 0;
 
-		while ( list($smile_url, $data) = @each($rowset) )
+		foreach( $rowset as $smile_url => $data )
 		{
 			if ( !$col )
 			{
@@ -1289,6 +1288,88 @@ function generate_smilies($mode, $page_id)
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
+}
+
+//
+//
+//
+define('BBCODE_UID_LEN', 10);
+
+//
+//
+//
+class parse_message
+{
+	var $message;
+	var $bbcode_tpl = null;
+
+	function parse_message($message, $html, $bbcode, $emoticons)
+	{
+		global $board_config;
+
+		$this->message = $message;
+		unset($message);
+
+		$this->html($html);
+		$this->bbcode($bbcode);
+		$this->emoticons($emoticons);
+
+		return $this->message;
+	}
+
+	function html($html)
+	{
+		global $board_config;
+
+	}
+
+	function bbcode($bbcode)
+	{
+		global $board_config;
+
+	}
+
+	function emoticons($emoticons)
+	{
+		global $board_config;
+
+	}
+
+	function attachments()
+	{
+
+	}
+}
+
+class parse_poll
+{
+
+	function parse_poll()
+	{
+		global $board_config;
+
+	}
+
+}
+
+class parse_search
+{
+
+	function parse_search()
+	{
+
+	}
+
+	function add()
+	{
+
+	}
+
+	function delete()
+	{
+
+	}
+
 }
 
 ?>

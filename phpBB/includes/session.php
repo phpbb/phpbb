@@ -84,7 +84,7 @@ class session {
 			{
 				//
 				// Do not check IP assuming equivalence, if IPv4 we'll check only first 24
-				// bits ... I've been told (by vHiker) this should alleviate problems with 
+				// bits ... I've been told (by vHiker) this should alleviate problems with
 				// load balanced et al proxies while retaining some reliance on IP security.
 				//
 				$ip_check_s = explode('.', $userdata['session_ip']);
@@ -97,8 +97,8 @@ class session {
 					//
 					if ( ( $current_time - $userdata['session_time'] > 60 || $userdata['session_page'] != $user_page ) && $update )
 					{
-						$sql = "UPDATE " . SESSIONS_TABLE . " 
-							SET session_time = $current_time, session_page = '$user_page' 
+						$sql = "UPDATE " . SESSIONS_TABLE . "
+							SET session_time = $current_time, session_page = '$user_page'
 							WHERE session_id = '" . $this->session_id . "'";
 						$db->sql_query($sql);
 
@@ -140,8 +140,8 @@ class session {
 		//
 		// Limit sessions in 1 minute period
 		//
-		$sql = "SELECT COUNT(*) AS sessions 
-			FROM " . SESSIONS_TABLE . " 
+		$sql = "SELECT COUNT(*) AS sessions
+			FROM " . SESSIONS_TABLE . "
 			WHERE session_time >= " . ( $current_time - 60 );
 		$result = $db->sql_query($sql);
 
@@ -156,8 +156,8 @@ class session {
 		//
 		// Grab user data
 		//
-		$sql = "SELECT * 
-			FROM " . USERS_TABLE . " 
+		$sql = "SELECT *
+			FROM " . USERS_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
 
@@ -170,12 +170,12 @@ class session {
 		if ( $userdata['user_password'] != $autologin || !$userdata['user_active'] || $user_id == ANONYMOUS )
 		{
 			$autologin = '';
-			$userdata['user_id'] = $user_id = ANONYMOUS; 
+			$userdata['user_id'] = $user_id = ANONYMOUS;
 		}
 
-		$sql = "SELECT ban_ip, ban_userid, ban_email 
-			FROM " . BANLIST_TABLE . " 
-			WHERE ban_end >= $current_time 
+		$sql = "SELECT ban_ip, ban_userid, ban_email
+			FROM " . BANLIST_TABLE . "
+			WHERE ban_end >= $current_time
 				OR ban_end = 0";
 		$result = $db->sql_query($sql);
 
@@ -183,9 +183,9 @@ class session {
 		{
 			do
 			{
-				if ( ( $row['user_id'] == $userdata['user_id'] || 
+				if ( ( $row['user_id'] == $userdata['user_id'] ||
 					( $row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip) ) ||
-					( $row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $userdata['user_email']) ) ) 
+					( $row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $userdata['user_email']) ) )
 					&& !$userdata['user_founder'] )
 				{
 					message_die(MESSAGE, 'You_been_banned');
@@ -243,13 +243,13 @@ class session {
 		//
 		// Delete existing session, update last visit info first!
 		//
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_lastvisit = " . $userdata['session_time'] . ", user_session_page = '" . $userdata['session_page'] . "' 
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_lastvisit = " . $userdata['session_time'] . ", user_session_page = '" . $userdata['session_page'] . "'
 			WHERE user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
 
-		$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-			WHERE session_id = '" . $this->session_id . "' 
+		$sql = "DELETE FROM " . SESSIONS_TABLE . "
+			WHERE session_id = '" . $this->session_id . "'
 				AND session_user_id = " . $userdata['user_id'];
 		$db->sql_query($sql);
 
@@ -266,9 +266,10 @@ class session {
 	{
 		global $db, $board_config, $user_ip;
 
-		$sql = "SELECT * 
-			FROM " . SESSIONS_TABLE . " 
-			WHERE session_time < " . ( $current_time - $board_config['session_length'] );
+		$sql = "SELECT *
+			FROM " . SESSIONS_TABLE . "
+			WHERE session_time < " . ( $current_time - $board_config['session_length'] ) . "
+			LIMIT 10";
 		$result = $db->sql_query($sql);
 
 		$del_session_id = '';
@@ -276,8 +277,8 @@ class session {
 		{
 			if ( $row['user_id'] != ANONYMOUS )
 			{
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_lastvisit = " . $row['session_time'] . ", user_session_page = '" . $row['session_page'] . "' 
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_lastvisit = " . $row['session_time'] . ", user_session_page = '" . $row['session_page'] . "'
 					WHERE user_id = " . $row['session_user_id'];
 				$db->sql_query($sql);
 			}
@@ -290,13 +291,13 @@ class session {
 			//
 			// Delete expired sessions
 			//
-			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+			$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_id IN ($del_session_id)";
 			$db->sql_query($sql);
 		}
 
-		$sql = "UPDATE " . CONFIG_TABLE . " 
-			SET config_value = '$current_time' 
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = '$current_time'
 			WHERE config_name = 'session_last_gc'";
 		$db->sql_query($sql);
 
@@ -341,11 +342,11 @@ class session {
 		//
 		$style = ( !$board_config['override_user_style'] && $userdata['user_id'] != ANONYMOUS ) ? $userdata['user_style'] : $board_config['default_style'];
 
-		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.* 
-			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i 
-			WHERE s.style_id = $style 
-				AND t.template_id = s.template_id 
-				AND c.theme_id = s.style_id 
+		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
+			FROM " . STYLES_TABLE . " s, " . STYLES_TPL_TABLE . " t, " . STYLES_CSS_TABLE . " c, " . STYLES_IMAGE_TABLE . " i
+			WHERE s.style_id = $style
+				AND t.template_id = s.template_id
+				AND c.theme_id = s.style_id
 				AND i.imageset_id = s.imageset_id";
 		$result = $db->sql_query($sql);
 
@@ -371,47 +372,57 @@ class session {
 }
 
 //
-// Note this doesn't use the prefetch at present and is very
-// incomplete ... purely for testing ... will be keeping my
-// eye of 'other products' to ensure these things don't
+// Will be keeping my eye of 'other products' to ensure these things don't
 // mysteriously appear elsewhere, think up your own solutions!
 //
-class auth {
-
-	var $acl;
-	var $where_sql = '';
-
-	function auth($mode, $userdata, $forum_id = false)
+class acl
+{
+	function acl($mode, $userdata, $forum_id = false)
 	{
 		global $db;
 
 		switch( $mode )
 		{
+			case 'admin':
+				$and_sql =  "ao.auth_type LIKE 'admin'";
+				break;
 			case 'list':
-				$and_sql =  "AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'admin' )";
+				$and_sql =  "ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'admin'";
 				break;
 			case 'read':
-				$and_sql =  "AND ( ao.auth_option LIKE 'read' OR ao.auth_type LIKE 'admin' )";
+				$and_sql =  "ao.auth_option LIKE 'read' OR ao.auth_type LIKE 'admin'";
 				break;
 			case 'forum':
-				$and_sql =  "AND ( ( au.forum_id = $forum_id ) OR ( au.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin' ) ) )";
-				break;
-			case 'admin':
-				$and_sql =  "AND ( ao.auth_type LIKE 'admin' )";
+				$and_sql =  "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin' ) )";
 				break;
 			case 'listmod':
-				$and_sql =  "AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin' )";
-				break;
-			case 'all':
-				$and_sql =  '';
+				$and_sql =  "ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' OR ao.auth_type LIKE 'admin'";
 				break;
 		}
 
-		$sql = "SELECT au.forum_id, au.auth_allow_deny, ao.auth_type, ao.auth_option  
-			FROM " . ACL_PREFETCH_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao  
-			WHERE au.user_id = " . $userdata['user_id'] . " 
-				AND ao.auth_option_id = au.auth_option_id 
-				$and_sql";
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
+			WHERE ug.user_id = " . $userdata['user_id'] . "
+				AND a.group_id = ug.group_id
+				AND ao.auth_option_id = a.auth_option_id
+				AND ($and_sql)";
+		$result = $db->sql_query($sql);
+
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
+			WHERE a.user_id = " . $userdata['user_id'] . "
+				AND ao.auth_option_id = a.auth_option_id
+				AND ($and_sql)";
 		$result = $db->sql_query($sql);
 
 		if ( $row = $db->sql_fetchrow($result) )
@@ -446,14 +457,6 @@ class auth {
 		return $this->get_acl(0, 'admin', $auth_type);
 	}
 
-	function get_acl_user($forum_id, $user_id, $acl = false)
-	{
-	}
-
-	function get_acl_group($forum_id, $group_id, $acl = false)
-	{
-	}
-
 	function set_acl($forum_id, $user_id = false, $group_id = false, $auth = false, $dependencies = array())
 	{
 		global $db;
@@ -463,75 +466,6 @@ class auth {
 			return;
 		}
 
-		$dependencies = array_merge_recursive($dependencies, array(
-			'mod' => array(
-				'forum' => array(
-					'list' => 1, 
-					'read' => 1, 
-					'post' => 1, 
-					'reply' => 1, 
-					'edit' => 1, 
-					'delete' => 1, 
-					'poll' => 1, 
-					'vote' => 1, 
-					'announce' => 1, 
-					'sticky' => 1, 
-					'attach' => 1, 
-					'download' => 1, 
-					'html' => 1, 
-					'bbcode' => 1, 
-					'smilies' => 1, 
-					'img' => 1, 
-					'flash' => 1, 
-					'sigs' => 1, 
-					'search' => 1, 
-					'email' => 1, 
-					'rate' => 1, 
-					'print' => 1, 
-					'ignoreflood' => 1, 
-					'ignorequeue' => 1
-				), 
-			), 
-			'admin' => array(
-				'forum' => array(
-					'list' => 1, 
-					'read' => 1, 
-					'post' => 1, 
-					'reply' => 1, 
-					'edit' => 1, 
-					'delete' => 1, 
-					'poll' => 1, 
-					'vote' => 1, 
-					'announce' => 1, 
-					'sticky' => 1, 
-					'attach' => 1, 
-					'download' => 1, 
-					'html' => 1, 
-					'bbcode' => 1, 
-					'smilies' => 1, 
-					'img' => 1, 
-					'flash' => 1, 
-					'sigs' => 1, 
-					'search' => 1, 
-					'email' => 1, 
-					'rate' => 1, 
-					'print' => 1, 
-					'ignoreflood' => 1, 
-					'ignorequeue' => 1
-				), 
-				'mod' => array(
-					'edit' => 1, 
-					'delete' => 1, 
-					'move' => 1, 
-					'lock' => 1, 
-					'split' => 1, 
-					'merge' => 1, 
-					'approve' => 1, 
-					'unrate' => 1
-				)
-			)
-		));
-
 		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
 
 		//
@@ -540,12 +474,12 @@ class auth {
 		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o, " . USERS_TABLE . " u WHERE a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND a.user_id = ug.user_id AND ug.group_id = $group_id";
 		$result = $db->sql_query($sql);
 
-		$current_user_auth = array();
+		$user_auth = array();
 		if ( $row = $db->sql_fetchrow($result) )
 		{
 			do
 			{
-				$current_user_auth[$row['user_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
+				$user_auth[$row['user_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -554,95 +488,70 @@ class auth {
 		$sql = ( $group_id !== false ) ? "SELECT a.group_id, o.auth_type, o.auth_option_id, o.auth_option, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $group_id" : "SELECT ug.group_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = ug.group_id AND ug.user_id = $user_id";
 		$result = $db->sql_query($sql);
 
-		$current_group_auth = array();
+		$group_auth = array();
 		if ( $row = $db->sql_fetchrow($result) )
 		{
 			do
 			{
-				$current_group_auth[$row['group_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
+				$group_auth[$row['group_id']][$row['auth_type']][$row['auth_option_id']] = $row['auth_allow_deny'];
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
 		$db->sql_freeresult($result);
 
-		print_r($current_user_auth);
-		
 		foreach ( $auth as $auth_type => $auth_option_ary )
 		{
 			foreach ( $auth_option_ary as $auth_option => $allow )
 			{
 				if ( $user_id !== false )
 				{
-					if ( !empty($current_user_auth) )
+					if ( !empty($user_auth) )
 					{
-						foreach ( $current_user_auth as $user => $user_auth_ary )
+						foreach ( $user_auth as $user => $user_auth_ary )
 						{
+							$user_auth[$user][$auth_type][$auth_option] = $allow;
 							$sql_ary[] = ( !isset($user_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)" : ( ( $user_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 						}
 					}
 					else
 					{
+						$user_auth[$user_id][$auth_type][$auth_option] = $allow;
 						$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option, $allow)";
 					}
 				}
 
 				if ( $group_id !== false )
 				{
-					if ( !empty($current_group_auth) )
+					if ( !empty($group_auth) )
 					{
-						foreach ( $current_group_auth as $group => $group_auth_ary )
+						foreach ( $group_auth as $group => $group_auth_ary )
 						{
+							$group_auth[$group][$auth_type][$auth_option] = $allow;
 							$sql_ary[] = ( !isset($group_auth_ary[$auth_type][$auth_option]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)" : ( ( $group_auth_ary[$auth_type][$auth_option] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option" : '' );
 						}
 					}
 					else
 					{
+						$group_auth[$group_id][$auth_type][$auth_option] = $allow;
 						$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option, $allow)";
 					}
 				}
 			}
 		}
 
-		print_r($sql_ary);
-
-		//
-		// Need to update prefetch table ... the fun bit
-		//
-		$sql = ( $user_id !== false ) ? "SELECT a.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . ACL_PREFETCH_TABLE . " a, " . ACL_OPTIONS_TABLE . " o  WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $user_id" : "SELECT ug.user_id, o.auth_type, o.auth_option, a.auth_allow_deny FROM " . USER_GROUP_TABLE . " ug, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = ug.user_id AND ug.group_id = $group_id";
-		$result = $db->sql_query($sql);
-
-		$prefetch_auth = array();
-		if ( $row = $db->sql_fetchrow($result) )
+		foreach ( $sql_ary as $sql )
 		{
-			do
-			{
-				$prefetch_auth[$row['user_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
-
-		print_r($prefetch_auth);
-
-		foreach ( $auth as $auth_type => $auth_option_ary )
-		{
-			foreach ( $dependencies[$auth_type] as $dep_sub_type => $dep_sub_type_ary  )
-			{
-				foreach ( $dep_sub_type_ary as $dep_sub_option => $dep_sub_allow )
-				{
-					$auth[$dep_sub_type][$dep_sub_option] = $dep_sub_allow;
-				}
-			}
+			$db->sql_query($sql);
 		}
 
-		unset($current_group_auth);
-		unset($current_user_auth);
+		unset($group_auth);
+		unset($user_auth);
 	}
 }
 
 //
 // Authentication plug-ins is largely down to
-// Sergey Kanareykin, our thanks to him. 
+// Sergey Kanareykin, our thanks to him.
 //
 class login
 {

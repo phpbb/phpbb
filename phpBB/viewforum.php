@@ -82,7 +82,7 @@ if ( !($forum_data = $db->sql_fetchrow($result)) )
 //
 // Configure style, language, etc.
 //
-$acl = new auth('forum', $userdata, $forum_id);
+$acl = new acl('forum', $userdata, $forum_id);
 $userdata['user_style'] = ( $forum_data['forum_style'] ) ? $forum_data['user_style'] : $userdata['user_style'];
 $session->configure($userdata);
 

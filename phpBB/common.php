@@ -41,9 +41,6 @@ if ( !defined('PHPBB_INSTALLED') )
 
 // User Levels <- Do not change the values of USER or ADMIN
 define('ANONYMOUS', -1);
-define('USER', 0);
-define('ADMIN', 1);
-define('MOD', 2);
 
 // User related
 define('USER_ACTIVATION_NONE', 0);
@@ -56,19 +53,21 @@ define('USER_AVATAR_UPLOAD', 1);
 define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
+// ACL
+define('ACL_PREVENT', 0);
+define('ACL_DENY', 1);
+define('ACL_ALLOW', 2);
+define('ACL_PERMIT', 3);
+
 // Group settings
 define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
 define('GROUP_HIDDEN', 2);
 
-// Forum state
-define('FORUM_UNLOCKED', 0);
-define('FORUM_LOCKED', 1);
-
-// Topic status
-define('TOPIC_UNLOCKED', 0);
-define('TOPIC_LOCKED', 1);
-define('TOPIC_MOVED', 2);
+// Forum/Topic states
+define('ITEM_UNLOCKED', 0);
+define('ITEM_LOCKED', 1);
+define('ITEM_MOVED', 2);
 
 // Topic types
 define('POST_NORMAL', 0);
@@ -82,14 +81,7 @@ define('ERROR', 201);
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);
 define('PRIVMSGS_NEW_MAIL', 1);
-define('PRIVMSGS_SENT_MAIL', 2);
-define('PRIVMSGS_SAVED_IN_MAIL', 3);
-define('PRIVMSGS_SAVED_OUT_MAIL', 4);
 define('PRIVMSGS_UNREAD_MAIL', 5);
-
-// Session parameters
-define('SESSION_METHOD_COOKIE', 100);
-define('SESSION_METHOD_GET', 101);
 
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
@@ -97,7 +89,7 @@ define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
 define('ACL_PREFETCH_TABLE', $table_prefix.'auth_prefetch');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('BANLIST_TABLE', $table_prefix.'banlist');
-define('CATEGORIES_TABLE', $table_prefix.'categories'); // 
+define('CATEGORIES_TABLE', $table_prefix.'categories'); //
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIG_USER_TABLE', $table_prefix.'config_defaults');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //

@@ -28,7 +28,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 //
 // End session management
 //
@@ -41,7 +41,7 @@ $session->configure($userdata);
 //
 // Forum info
 //
-$sql = "SELECT forum_id, forum_name 
+$sql = "SELECT forum_id, forum_name
 	FROM " . FORUMS_TABLE;
 $result = $db->sql_query($sql);
 
@@ -73,7 +73,7 @@ while ( $row = $db->sql_fetchrow($result) )
 {
 	$view_online = false;
 
-	if ( $row['user_id'] != ANONYMOUS ) 
+	if ( $row['user_id'] != ANONYMOUS )
 	{
 		$user_id = $row['user_id'];
 
@@ -111,7 +111,7 @@ while ( $row = $db->sql_fetchrow($result) )
 			$username = $lang['Guest'];
 			$view_online = true;
 			$guest_users++;
-	
+
 			$which_counter = 'guest_counter';
 			$which_row = 'guest_user_row';
 		}
@@ -196,7 +196,7 @@ while ( $row = $db->sql_fetchrow($result) )
 			'LASTUPDATE' => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
 			'FORUM_LOCATION' => $location,
 
-			'S_ROW_COUNT' => $$which_counter, 
+			'S_ROW_COUNT' => $$which_counter,
 
 			'U_USER_PROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $user_id,
 			'U_FORUM_LOCATION' => $location_url)
@@ -246,14 +246,14 @@ else
 }
 
 $template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
+	'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
 	'TOTAL_GUEST_USERS_ONLINE' => sprintf($l_g_user_s, $guest_users),
 
 	'L_WHOSONLINE' => $lang['Who_is_online'],
 	'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
 	'L_USERNAME' => $lang['Username'],
 	'L_FORUM_LOCATION' => $lang['Forum_Location'],
-	'L_LAST_UPDATE' => $lang['Last_updated'], 
+	'L_LAST_UPDATE' => $lang['Last_updated'],
 	'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'],
 	'L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing'])
 );

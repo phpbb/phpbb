@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +28,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 //
 // End session management
 //
@@ -97,7 +96,7 @@ for($i = 0; $i < count($faq); $i++)
 // Lets build a page ...
 //
 $template->assign_vars(array(
-	'L_FAQ_TITLE' => $l_title, 
+	'L_FAQ_TITLE' => $l_title,
 	'L_BACK_TO_TOP' => $lang['Back_to_top'])
 );
 
@@ -108,7 +107,7 @@ for($i = 0; $i < count($faq_block); $i++)
 		$template->assign_block_vars('faq_block', array(
 			'BLOCK_TITLE' => $faq_block_titles[$i])
 		);
-		$template->assign_block_vars('faq_block_link', array( 
+		$template->assign_block_vars('faq_block_link', array(
 			'BLOCK_TITLE' => $faq_block_titles[$i])
 		);
 
@@ -118,20 +117,20 @@ for($i = 0; $i < count($faq_block); $i++)
 			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars('faq_block.faq_row', array(
-				'ROW_COUNT' => $j, 
+				'ROW_COUNT' => $j,
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
-				'FAQ_QUESTION' => $faq_block[$i][$j]['question'], 
-				'FAQ_ANSWER' => $faq_block[$i][$j]['answer'], 
+				'FAQ_QUESTION' => $faq_block[$i][$j]['question'],
+				'FAQ_ANSWER' => $faq_block[$i][$j]['answer'],
 
 				'U_FAQ_ID' => $faq_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
-				'ROW_COUNT' => $j, 
+				'ROW_COUNT' => $j,
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
-				'FAQ_LINK' => $faq_block[$i][$j]['question'], 
+				'FAQ_LINK' => $faq_block[$i][$j]['question'],
 
 				'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id'])
 			);

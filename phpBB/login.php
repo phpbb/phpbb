@@ -30,7 +30,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Set page ID for session management
 //
 $userdata = $session->start();
-$acl = new auth('list', $userdata);
+$acl = new acl('list', $userdata);
 
 $session->configure($userdata);
 //
@@ -76,7 +76,7 @@ if ( isset($login) || isset($logout)  )
 			message_die(MESSAGE, $message);
 		}
 	}
-	else if ( $userdata['user_id'] != ANONYMOUS ) 
+	else if ( $userdata['user_id'] != ANONYMOUS )
 	{
 		$session->destroy($userdata);
 	}
@@ -92,11 +92,11 @@ if ( isset($login) || isset($logout)  )
 if ( $userdata['user_id'] == ANONYMOUS )
 {
 	$template->assign_vars(array(
-		'L_ENTER_PASSWORD' => $lang['Enter_password'], 
+		'L_ENTER_PASSWORD' => $lang['Enter_password'],
 		'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
-		'U_SEND_PASSWORD' => "profile.$phpEx$SID&amp;mode=sendpassword", 
-		
+		'U_SEND_PASSWORD' => "profile.$phpEx$SID&amp;mode=sendpassword",
+
 		'S_HIDDEN_FIELDS' => '<input type="hidden" name="redirect" value="' . $redirect . '" />')
 	);
 
