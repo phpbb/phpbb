@@ -186,7 +186,7 @@ function make_jumpbox($action, $forum_id = false)
 {
 	global $auth, $template, $lang, $db, $nav_links, $phpEx;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }">';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_status, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -209,7 +209,7 @@ function make_jumpbox($action, $forum_id = false)
 
 		$right = $row['right_id'];
 
-		$linefeed = FALSE;
+		$linefeed = TRUE;
 		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ))
 		{
 			if ($row['forum_status'] == ITEM_CATEGORY)
@@ -256,7 +256,6 @@ function make_jumpbox($action, $forum_id = false)
 	$template->assign_vars(array(
 		'L_GO' => $lang['Go'],
 		'L_JUMP_TO' => $lang['Jump_to'],
-		'L_SELECT_FORUM' => $lang['Select_forum'],
 
 		'S_JUMPBOX_SELECT' => $boxstring,
 		'S_JUMPBOX_ACTION' => $action)

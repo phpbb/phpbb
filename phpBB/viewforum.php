@@ -96,6 +96,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 $type = 'parent';
 $forum_rows = array();
 
+$s_has_subforums = FALSE;
 foreach ($forum_branch as $row)
 {
 	if ($type == 'parent')
@@ -133,12 +134,21 @@ foreach ($forum_branch as $row)
 			{
 				$branch_root_id = $row['forum_id'];
 			}
+			else
+			{
+				$s_has_subforums = TRUE;
+			}
 		}
 		elseif ($row['parent_id'] == $branch_root_id)
 		{
 			// Forum directly under a category
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
+
+			if ($row['forum_status'] != ITEM_CATEGORY)
+			{
+				$s_has_subforums = TRUE;
+			}
 		}
 		elseif ($row['forum_status'] != ITEM_CATEGORY)
 		{
@@ -337,7 +347,7 @@ $template->assign_vars(array(
 //
 // Do we have subforums? if so, let's include this harmless file
 //
-if (count($forum_rows))
+if ($s_has_subforums)
 {
 	$template->assign_vars(array(
 		'S_HAS_SUBFORUM'	=>	TRUE,
