@@ -660,10 +660,13 @@ if ($mode == 'ext_groups')
 	$imglist = filelist($phpbb_root_path . $img_path, '');
 
 	$filename_list = '';
-	foreach ($imglist as $img)
+	foreach ($imglist as $path => $img_ary)
 	{
-		$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
-		$filename_list .= '<option value="' . htmlspecialchars($img) . '">' . $img . '</option>';
+		foreach ($img_ary as $img)
+		{
+			$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
+			$filename_list .= '<option value="' . htmlspecialchars($img) . '">' . $img . '</option>';
+		}
 	}
 	
 	$size = isset($_REQUEST['size']) ? intval($_REQUEST['size']) : 0;

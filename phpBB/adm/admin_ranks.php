@@ -94,23 +94,26 @@ switch ($mode)
 		$imglist = filelist($phpbb_root_path . $config['ranks_path'], '');
 
 		$edit_img = $filename_list = '';
-		foreach ($imglist as $img)
+		foreach ($imglist as $path => $img_ary)
 		{
-			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
-
-			if (!in_array($img, $existing_imgs) || $mode == 'edit')
+			foreach ($img_ary as $img)
 			{
-				if ($ranks && $img == $ranks['rank_image'])
-				{
-					$selected = ' selected="selected"';
-					$edit_img = $img;
-				}
-				else
-				{
-					$selected = '';
-				}
+				$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
 
-				$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+				if (!in_array($img, $existing_imgs) || $mode == 'edit')
+				{
+					if ($ranks && $img == $ranks['rank_image'])
+					{
+						$selected = ' selected="selected"';
+						$edit_img = $img;
+					}
+					else
+					{
+						$selected = '';
+					}
+
+					$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+				}
 			}
 		}
 		$filename_list = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>----------</option>' . $filename_list;

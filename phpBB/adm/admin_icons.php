@@ -165,24 +165,27 @@ switch ($action)
 		$imglist = filelist($phpbb_root_path . $img_path, '');
 
 		$filename_list = '';
-		foreach ($imglist as $img)
+		foreach ($imglist as $path => $img_ary)
 		{
-			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
-
-			if (!in_array($img, $existing_imgs) || $action == 'edit')
+			foreach ($img_ary as $img)
 			{
-				if ((isset($data) && $img == $data[$fields . '_url']) || 
-					(!isset($data) && !isset($edit_img)))
-				{
-					$selected = ' selected="selected"';
-					$edit_img = $img;
-				}
-				else
-				{
-					$selected = '';
-				}
+				$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
 
-				$filename_list .= '<option value="' . $img . '"' . htmlspecialchars($img) . $selected . '>' . $img . '</option>';
+				if (!in_array($img, $existing_imgs) || $action == 'edit')
+				{
+					if ((isset($data) && $img == $data[$fields . '_url']) || 
+						(!isset($data) && !isset($edit_img)))
+					{
+						$selected = ' selected="selected"';
+						$edit_img = $img;
+					}
+					else
+					{
+						$selected = '';
+					}
+
+					$filename_list .= '<option value="' . $img . '"' . htmlspecialchars($img) . $selected . '>' . $img . '</option>';
+				}
 			}
 		}
 		unset($existing_imgs);
