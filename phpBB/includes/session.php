@@ -590,6 +590,10 @@ class user extends session
 		{
 			foreach ($lang_set as $key => $lang_file)
 			{
+				// Please do not delete this line. 
+				// We have to force the type here, else [array] language inclusion will not work
+				$key = (string) $key;
+
 				if ($key == 'db')
 				{
 					$this->add_lang($lang_file, true, $use_help);

@@ -696,7 +696,7 @@ else
 
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
-$has_attachments = $display_notice = FALSE;
+$has_attachments = $display_notice = false;
 $force_encoding = '';
 $bbcode_bitfield = $i = $i_total = 0;
 
@@ -1015,7 +1015,7 @@ if (count($attach_list))
 	}
 	else
 	{
-		$display_notice = TRUE;
+		$display_notice = true;
 	}
 }
 
@@ -1090,11 +1090,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 		}
 
 		$user_cache[$poster_id]['sig'] = smilie_text($user_cache[$poster_id]['sig']);
-
-		/*if (count($censors))
-		{
-			$user_cache[$poster_id]['sig'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_cache[$poster_id]['sig'] . '<'), 1, -1));
-		}*/
 		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', censor_text($user_cache[$poster_id]['sig']));
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
@@ -1129,11 +1124,6 @@ for ($i = 0; $i < count($post_list); ++$i)
 	}
 
 	// Replace naughty words such as farty pants
-/*	if (sizeof($censors))
-	{
-		$row['post_subject'] = preg_replace($censors['match'], $censors['replace'], $row['post_subject']);
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
-	}*/
 	$row['post_subject'] = censor_text($row['post_subject']);
 	$message = str_replace("\n", '<br />', censor_text($message));
 
@@ -1192,19 +1182,26 @@ for ($i = 0; $i < count($post_list); ++$i)
 		$tpl = display_attachments(NULL, $tpl, $update_count, false, true);
 		$tpl_size = sizeof($tpl);
 
+		$unset_tpl = array();
+
 		$message = preg_replace_callback('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', create_function('$matches', '
-			global $tpl, $user, $config, $tpl_size;
+			global $tpl, $user, $config, $tpl_size, $unset_tpl;
 			
 			// Flip index if we are displaying the reverse way
 			$index = ($config["display_order"]) ? ($tpl_size-($matches[1] + 1)) : $matches[1];
 			$return = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang["MISSING_INLINE_ATTACHMENT"], $matches[0]);
 		
-			unset($tpl[$index]);
+			$unset_tpl[] = $index;
 
 			return $return;
 		'), $message);
 
 		unset($tpl, $tpl_size);
+
+		foreach (array_unique($unset_tpl) as $index)
+		{
+			unset($attachments[$row['post_id']][$index]);
+		}
 	}
 
 	// Dump vars into template

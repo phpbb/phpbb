@@ -138,7 +138,7 @@ class parse_message
 			$replace = array();
 
 			// relative urls for this board
-			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r<"\']+)#i';
+			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '(?:/[^ \t\n\r<"\']*)?)#i';
 			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
