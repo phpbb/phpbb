@@ -30,39 +30,48 @@
 			</tr>
 			<!-- END forumrow -->
 			<!-- END catrow -->
-			<tr>
-				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" align="center" valign="middle" width="7%"><img src="images/mailbox.gif"></td>
-				<td class="row2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
-			</tr>
-			<tr>
-				<td class="row1" align="center" valign="middle" width="7%"><img src="images/whosonline.gif"></td>
-				<td class="row2" colspan="5" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
-			</tr>
 		</table></td>
 	</tr>
 </table>
 
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="top"><table cellspacing="4" border="0">
+		<td align="left" valign="top"><table cellspacing="0" border="0">
 			<tr>
 				<td width="30" align="center"><img src="images/folder_new.gif"></td>
 				<td><span class="gensmall">{L_NEWPOSTS}</span></td>
-				<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="30" align="center"><img src="images/folder.gif"></td>
+				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+			</tr>
+		</table></td>
+		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+	</tr>
+</table>
+
+<br clear="all">
+
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
+	<tr>
+		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
+			<tr>
+				<td class="cat" colspan="2"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
 			</tr>
 			<tr>
-				<td align="center"><img src="images/folder.gif"></td>
-				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+				<td class="row1" width="7%" align="center" valign="middle"><img src="images/mailbox.gif"></td>
+				<td class="row2" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="2"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
+			</tr>
+			<tr>
+				<td class="row1" width="7%" align="center" valign="middle"><img src="images/whosonline.gif"></td>
+				<td class="row2" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
 			</tr>
 		</table></td>
 	</tr>
 </table>
+
 
 <!-- div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr>
