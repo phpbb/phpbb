@@ -72,7 +72,7 @@ function addquote(post_id, username) {
 		<td height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td width="100%">{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
-				<td valign="top" align="right" nowrap="nowrap"><input type="button" class="button" name="addquote" value="{L_QUOTE}" style="width: 50px" onClick="addquote({postrow.POST_ID}, '{postrow.POSTER_NAME}');" /></td>
+				<td valign="top" align="right" nowrap="nowrap"><!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td colspan="2"><hr /></td>

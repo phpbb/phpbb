@@ -25,18 +25,16 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 
-// Start initial var setup
-$forum_id = (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
-$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
-$mark_read = (!empty($_GET['mark'])) ? $_GET['mark'] : '';
-
-
 // Start session
 $user->start();
 $auth->acl($user->data);
 
 
-// Put these here so we can use user defaults if set
+// Start initial var setup
+$forum_id = (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
+$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
+$mark_read = (!empty($_GET['mark'])) ? htmlspecialchars($_GET['mark']) : '';
+
 $sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd');
@@ -171,7 +169,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		meta_refresh(3, "viewforum.$phpEx$SID&amp;f=$forum_id");
 
-		$message = $user->lang['TOPICS_MARKED_READ'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">', '</a> ');
+		$message = $user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . "viewforum.$phpEx$SID&amp;f=$forum_id" . '">', '</a> ');
 		trigger_error($message);
 	}
 
@@ -415,7 +413,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				}
 
 
-				$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
+				$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 

@@ -1157,7 +1157,7 @@ function topic_review($topic_id, $is_inline_review = false)
 		trigger_error($user->lang['NO_TOPIC']);
 	}
 
-	$forum_id = intval($row['forum_id']);
+	$forum_id = $row['forum_id'];
 	$topic_title = $row['topic_title'];
 
 	if (!$auth->acl_get('f_read', $forum_id))
@@ -1234,18 +1234,24 @@ function topic_review($topic_id, $is_inline_review = false)
 		}
 
 		$template->assign_block_vars('postrow', array(
-			'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
-			'POSTER_NAME' 		=> $poster,
-			'POST_DATE' 		=> $user->format_date($row['post_time']),
-			'POST_SUBJECT' 		=> $post_subject,
-			'POST_ID'			=> $row['post_id'],
-			'MESSAGE' 			=> nl2br($message),
+			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
+			'POSTER_NAME' 	=> $poster,
+			'POST_DATE' 	=> $user->format_date($row['post_time']),
+			'POST_SUBJECT' 	=> $post_subject,
+			'POST_ID'		=> $row['post_id'],
+			'MESSAGE' 		=> str_replace("\n", '<br />', $message), 
+
+			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? "javascript:addquote(" . $row['post_id'] . ", '$poster')" : '', 
 
 			'S_ROW_COUNT'	=> $i)
 		);
 		unset($rowset[$i]);
 	}
 
+	//
+	$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['QUOTE_POST']));
+
+	//
 	page_header($page_title);
 
 	$template->set_filenames(array(
