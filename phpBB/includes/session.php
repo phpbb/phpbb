@@ -36,7 +36,7 @@ class session
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
-		$this->page = preg_replace('#^.*?/?([a-z]+?)\.' . $phpEx . '\?sid=.*?(&.*)?$#', '\1\2', $this->page);
+		$this->page = preg_replace('#^.*?/?([a-z]+)\.' . $phpEx . '\?sid=.*?(&.*)?$#', '\1\2', $this->page);
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
@@ -106,7 +106,7 @@ class session
 					if (($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page) && $update)
 					{
 						$sql = "UPDATE " . SESSIONS_TABLE . "
-							SET session_time = $current_time, session_page = '$this->page'
+							SET session_time = $current_time, session_page = '" . $db->sql_escape($this->page) . "'
 							WHERE session_id = '" . $this->session_id . "'";
 						$db->sql_query($sql);
 					}
@@ -726,7 +726,7 @@ class auth
 			unset($local_hold);
 
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "'
+				SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 		}
