@@ -69,7 +69,6 @@ $months = array(
 	'Dec' => 12
 );
 
-
 // ---------------
 // Begin functions
 //
@@ -1349,8 +1348,8 @@ if ( !empty($next) )
 					print " * Creating auth_access group for forum $forum_id :: ";
 					flush();
 
-					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete)
-						VALUES ($group_id, $forum_id, 1, 1, 1, 1, 1, 1)";
+					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_sticky, auth_announce, auth_vote, auth_pollcreate)
+						VALUES ($group_id, $forum_id, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1)";
 					$result = query($sql, "Unable to set group auth access.");
 
 					if ( $db->sql_affectedrows($result) <= 0 )
@@ -1487,22 +1486,6 @@ if ( !empty($next) )
 				print " * Converting forum '" . $row['forum_name'] . "' :: ";
 				flush();
 
-				// Old auth structure:
-				// forum_type: (only concerns viewing)
-				//		0 = Public
-				//		1 = Private
-				switch( $row['forum_type'] )
-				{
-					case 0:
-						$auth_view			= AUTH_ALL;
-						$auth_read			= AUTH_ALL;
-						break;
-					default:
-						$auth_view			= AUTH_ALL;
-						$auth_read			= AUTH_ALL;
-						break;
-				}
-			
 				// forum_access: (only concerns posting)
 				//		1 = Registered users only
 				//		2 = Anonymous Posting
@@ -1511,6 +1494,8 @@ if ( !empty($next) )
 				{
 					case 1:
 						// Public forum, no anonymous posting
+						$auth_view			= AUTH_ALL;
+						$auth_read			= AUTH_ALL;
 						$auth_post			= AUTH_REG;
 						$auth_reply			= AUTH_REG;
 						$auth_edit			= AUTH_REG;
@@ -1523,8 +1508,8 @@ if ( !empty($next) )
 					case 2:
 						$auth_post			= AUTH_ALL;
 						$auth_reply			= AUTH_ALL;
-						$auth_edit			= AUTH_ALL;
-						$auth_delete		= AUTH_ALL;
+						$auth_edit			= AUTH_REG;
+						$auth_delete		= AUTH_REG;
 						$auth_vote			= AUTH_ALL;
 						$auth_pollcreate	= AUTH_ALL;
 						$auth_sticky		= AUTH_MOD;
@@ -1542,6 +1527,33 @@ if ( !empty($next) )
 						break;
 				}
 				
+				// Old auth structure:
+				// forum_type: (only concerns viewing)
+				//		0 = Public
+				//		1 = Private
+				switch( $row['forum_type'] )
+				{
+					case 0:
+						$auth_view			= AUTH_ALL;
+						$auth_read			= AUTH_ALL;
+						break;
+					default:
+						//
+						// Make it really private ... 
+						//
+						$auth_view			= AUTH_ACL;
+						$auth_read			= AUTH_ACL;
+						$auth_post			= AUTH_ACL;
+						$auth_reply			= AUTH_ACL;
+						$auth_edit			= AUTH_ACL;
+						$auth_delete		= AUTH_ACL;
+						$auth_vote			= AUTH_ACL;
+						$auth_pollcreate	= AUTH_ACL;
+						$auth_sticky		= AUTH_ACL;
+						$auth_announce		= AUTH_MOD;
+						break;
+				}
+
 				$sql = "UPDATE " . FORUMS_TABLE . " SET
 					auth_view = $auth_view,
 					auth_read = $auth_read,
