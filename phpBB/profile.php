@@ -213,8 +213,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			include('includes/page_header.'.$phpEx);
 
 			$template->set_filenames(array(
-				"body" => "profile_view_body.tpl")
+				"body" => "profile_view_body.tpl",
+				"jumpbox" => "jumpbox.tpl")
 			);
+			$jumpbox = make_jumpbox();
+			$template->assign_vars(array(
+				"JUMPBOX_LIST" => $jumpbox,
+				"SELECT_NAME" => POST_FORUM_URL)
+			);
+			$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 			//
 			// End header
 			//
@@ -449,7 +456,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			}
 
 			$template->set_filenames(array(
-				"body" => "profile_add_body.tpl"));
+				"body" => "profile_add_body.tpl",
+				"jumpbox" => "jumpbox.tpl")
+			);
+			$jumpbox = make_jumpbox();
+			$template->assign_vars(array(
+				"JUMPBOX_LIST" => $jumpbox,
+				"SELECT_NAME" => POST_FORUM_URL)
+			);
+			$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 			$template->assign_vars(array(
 				"COPPA" => 0,
 				"MODE" => $mode,
@@ -579,8 +594,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				// conditions/coppa
 				//
 				$template->set_filenames(array(
-					"body" => "agreement.tpl")
+					"body" => "agreement.tpl",
+					"jumpbox" => "jumpbox.tpl")
 				);
+				$jumpbox = make_jumpbox();
+				$template->assign_vars(array(
+					"JUMPBOX_LIST" => $jumpbox,
+					"SELECT_NAME" => POST_FORUM_URL)
+				);
+				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 				$template->assign_vars(array(
 					"COPPA" => $coppa,
 				
@@ -729,9 +751,15 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				// new user reg details
 				//
 				$template->set_filenames(array(
-					"body" => "profile_add_body.tpl")
+					"body" => "profile_add_body.tpl",
+					"jumpbox" => "jumpbox.tpl")
 				);
-
+				$jumpbox = make_jumpbox();
+				$template->assign_vars(array(
+					"JUMPBOX_LIST" => $jumpbox,
+					"SELECT_NAME" => POST_FORUM_URL)
+				);
+				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 				$template->assign_vars(array(
 					"MODE" => $mode,
 					"USERNAME" => $username,
