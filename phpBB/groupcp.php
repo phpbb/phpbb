@@ -171,7 +171,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" ) : "http://";
 
 	$emailer->use_template("group_request");
 	$emailer->email_address($moderator['user_email']);
@@ -364,7 +364,7 @@ else if( $group_id )
 
 				$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 				$emailer->use_template("group_added");
 				$emailer->email_address($row['user_email']);
@@ -477,7 +477,7 @@ else if( $group_id )
 
 					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 					$emailer->use_template("group_approved");
 					$emailer->email_address($email_addresses);

@@ -999,7 +999,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-							$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+							$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 							{
@@ -1106,7 +1106,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 								$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-								$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+								$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 								$emailer->use_template($email_template);
 								$emailer->email_address($email);
@@ -1663,7 +1663,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 				$emailer->use_template("user_activate_passwd");
 				$emailer->email_address($row['user_email']);

@@ -1388,7 +1388,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 									$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
 									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? "https://" : "http://";
+									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 									for($i = 0; $i < count($email_set); $i++)
 									{
