@@ -81,7 +81,7 @@ function generate_forum_nav(&$forum_data)
 }
 
 // Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
-function get_forum_parents($forum_data)
+function get_forum_parents(&$forum_data)
 {
 	global $db;
 
@@ -103,8 +103,10 @@ function get_forum_parents($forum_data)
 			}
 			$db->sql_freeresult($result);
 
+			$forum_data['forum_parents'] = serialize($forum_parents);
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
+				SET forum_parents = '" . $db->sql_escape($forum_data['forum_parents']) . "'
 				WHERE parent_id = " . $forum_data['parent_id'];
 			$db->sql_query($sql);
 		}
@@ -967,7 +969,7 @@ function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
-	$sql = 'SELECT * 
+	$sql = 'SELECT forum_id
 		FROM phpbb_forum_access 
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
 			AND user_id = ' . $user->data['user_id'] . "
@@ -1357,7 +1359,6 @@ function page_header($page_title = '')
 	return;
 }
 
-//
 function page_footer()
 {
 	global $db, $config, $template, $SID, $user, $auth, $cache, $starttime, $phpEx;
@@ -1368,12 +1369,9 @@ function page_footer()
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_'))
+		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_') && method_exists($db, 'sql_report'))
 		{
-			echo $db->sql_report;
-			echo "<pre><b>Page generated in $totaltime seconds with " . $db->num_queries . " queries,\nspending " . $db->sql_time . ' doing SQL queries and ' . ($totaltime - $db->sql_time) . ' doing PHP things.</b></pre>';
-
-			exit;
+			$db->sql_report('display');
 		}
 
 		$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
