@@ -461,7 +461,7 @@ $force_encoding = '';
 $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
@@ -526,10 +526,9 @@ if ($row = $db->sql_fetchrow($result))
 			$user_cache[$poster_id]['joined'] = ($row['user_id']) ? $user->lang['JOINED'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '';
 		}
 
-
-		if (isset($user_cache[$poster_id]['avatar']))
+		if (!isset($user_cache[$poster_id]['avatar']))
 		{
-			if ($row['user_avatar_type'] && $poster_id && $row['user_allowavatar'])
+			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar'))
 			{
 				switch ($row['user_avatar_type'])
 				{
