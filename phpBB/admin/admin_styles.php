@@ -41,7 +41,7 @@ $phpbb_root_dir = "./../";
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
-if( !$HTTP_POST_VARS['send_file'] )
+if( empty($HTTP_POST_VARS['send_file']) )
 {
 	$no_page_header = ( $cancel ) ? TRUE : FALSE;
 	require('pagestart.inc');
@@ -798,7 +798,7 @@ switch( $mode )
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
 				}
-				$s_template_select = '</select>';
+				$s_template_select .= '</select>';
 			}
 			else
 			{
