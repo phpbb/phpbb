@@ -96,6 +96,10 @@ class sql_db
 	{
 		// Remove any pre-existing queries
 		unset($this->query_result);
+
+		// Put us in transaction mode because with Oracle as soon as you make a query you're in a transaction
+		$this->in_transaction = TRUE;
+
 		if($query != "")
 		{
 			$this->last_query = $query;
