@@ -157,7 +157,7 @@ class ucp_profile extends module
 							);
 						}
 
-						echo $sql = 'UPDATE ' . USERS_TABLE . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
