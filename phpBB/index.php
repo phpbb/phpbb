@@ -25,9 +25,6 @@ $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-$pagetype = "index";
-$page_title = "Forum Index";
-
 //
 // Start session management
 //
@@ -135,13 +132,29 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Obtain list of moderators of each forum
 	//
-	$sql = "SELECT f.forum_id, g.group_name, g.group_id, g.group_single_user, ug.user_id
-		FROM " . FORUMS_TABLE . " f, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
+	$sql = "SELECT aa.forum_id, g.group_name, g.group_id, g.group_single_user, u.user_id, u.username 
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u 
+		WHERE aa.auth_mod = " . TRUE . " 
+			AND ug.group_id = aa.group_id 
+			AND g.group_id = aa.group_id 
+			AND u.user_id = ug.user_id 
+		ORDER BY aa.forum_id, g.group_id, u.user_id";
+			
+/*	$sql = "SELECT f.forum_id, g.group_name, g.group_id, u.user_id, u.username 
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . FORUMS_TABLE . " f, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u, " . GROUPS_TABLE . " g 
 		WHERE aa.forum_id = f.forum_id 
 			AND aa.auth_mod = " . TRUE . " 
-			AND g.group_id = aa.group_id 
-			AND ug.group_id = g.group_id 
-		ORDER BY f.forum_id, g.group_id";
+			AND ( 
+				( ug.user_id = aa.user_id 
+					AND u.user_id = ug.user_id 
+					AND g.group_id = 0 ) 
+				OR 
+				( ug.group_id = aa.group_id 
+					AND u.user_id = ug.user_id 
+					AND g.group_id <> 0 ) 
+				)
+			AND g.group_id = ug.group_id 
+		ORDER BY f.forum_id, g.group_id, u.user_id";*/
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
@@ -150,15 +163,18 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 	for($i = 0; $i < count($forum_mods_list); $i++)
 	{
-		$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_name'];
-		$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_single_user'];
-
-		if($forum_mods_list[$i]['group_single_user'])
+		if($forum_mods_list[$i]['group_single_user'] || !$forum_mods_list[$i]['group_id'])
 		{
+			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 1;
+
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['username'];
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
 		}
 		else
 		{
+			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 0;
+
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_name'];
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_id'];
 		}
 	}
@@ -171,6 +187,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Output page header and open the index body template
 	//
+	$page_title = "Forum Index";
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(
@@ -213,13 +230,18 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$gen_cat[$cat_id] = 1;
 				}
 
-				if($userdata['session_start'] >= $userdata['session_time'] - 300)
+				if($forum_rows[$j]['forum_status'] == FORUM_LOCKED)
 				{
-					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = "<img src=\"" . $images['folder_locked'] . "\">";
+
+				}
+				else if($userdata['session_start'] == $userdata['session_time'])
+				{
+					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 				}
 				else
 				{
-					$folder_image = ($forum_rows[$j]['post_time'] >= $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = ($forum_rows[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
@@ -249,12 +271,12 @@ if($total_categories = $db->sql_numrows($q_categories))
 				}
 
 				$mod_count = 0;
-				unset($moderators_links);
+				$moderators_links = "";
 				for($mods = 0; $mods < count($forum_mods_name[$forum_id]); $mods++)
 				{
 					if( !strstr($moderators_links, $forum_mods_name[$forum_id][$mods]) )
 					{
-						if(isset($moderators_links))
+						if($mods > 0)
 						{
 							$moderators_links .= ", ";
 						}
@@ -275,6 +297,10 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 						$mod_count++;
 					}
+				}
+				if($moderators_links == "")
+				{
+					$moderators_links = "&nbsp;";
 				}
 
 				//
@@ -320,7 +346,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 }// if ... total_categories
 else
 {
-	message_die(GENERAL_MESSAGE, "There are no Categories or Forums on this board", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_MESSAGE, $lang['No_forums']);
 }
 
 //

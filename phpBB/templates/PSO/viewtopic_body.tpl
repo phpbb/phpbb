@@ -12,7 +12,7 @@
 		        <td class="cat" colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
 	                <tr>
                			<td><span class="cattitle"><b>{TOPIC_TITLE}</b></span></td> 
-               			<td align="right" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a>&nbsp;</td>  
+               			<td align="right" valign="middle"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="1"></a></td>  
 	               </tr>
       			</table></td>
 			</tr>
@@ -62,7 +62,7 @@
 			<tr>
 				<td class="cat" colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td width="140" align="left" valign="middle" nowrap><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td width="140" align="left" valign="middle" nowrap><a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a></td>
 						<td align="left" valign="middle">&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
 						<td align="right" valign="middle"><span class="gen">{PAGINATION}</span></td>
 					</tr>

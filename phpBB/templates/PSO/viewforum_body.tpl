@@ -36,13 +36,13 @@
 			<!-- END topicrow -->
 			<!-- BEGIN notopicsrow -->
 			<tr>
-				<td class="row1" colspan="6" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}{topicrow.REPLIES}</span></td>
+				<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
 			</tr>
 			<!-- END notopicsrow -->
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td width="5" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td width="5" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a></td>
 						<td align="left" valign="middle">&nbsp;&nbsp;&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
 						<td align="right" valign="middle"><span class="gen">{PAGINATION}&nbsp;</span></td>
 					</tr>

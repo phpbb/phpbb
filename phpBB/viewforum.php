@@ -25,9 +25,6 @@ $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-$pagetype = "viewforum";
-$page_title = "View Forum - $forum_name";
-
 //
 // Start initial var setup
 //
@@ -60,7 +57,7 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT forum_name, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
+	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
 		FROM " . FORUMS_TABLE . " 
 		WHERE forum_id = $forum_id";
 	if(!$result = $db->sql_query($sql))
@@ -269,6 +266,7 @@ if( $is_auth['auth_mod'] )
 //
 // Dump out the page header and load viewforum template
 //
+$page_title = $lang['View_forum'] . " - $forum_name";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
@@ -288,7 +286,7 @@ $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"MODERATORS" => $forum_moderators,
 	
-	"IMG_POST" => $images['topic_new'],
+	"IMG_POST" => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
 	"S_AUTH_LIST" => $s_auth_can)
 );
@@ -380,13 +378,20 @@ if($total_topics)
 				$folder_new = $images['folder_new'];
 			}
 
-			if($userdata['session_start'] >= $userdata['session_time'] - 300)
+			if(empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'])
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+				$folder_image = "<img src=\"$folder_new\">";
 			}
 			else
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+				{
+					$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+				}
+				else
+				{
+					$folder_image = "<img src=\"$folder\">";
+				}
 			}
 
 		}
@@ -448,8 +453,9 @@ else
 	//
 	// No topics
 	//
+	$no_topics_msg = ($forum_row['forum_status'] == FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
 	$template->assign_vars(array( 
-		"L_NO_TOPICS" => $lang['No_topics_post_one'], 
+		"L_NO_TOPICS" => $no_topics_msg, 
 
 		"S_NO_TOPICS" => TRUE)
 	);

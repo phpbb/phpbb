@@ -25,6 +25,37 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
+
+//
+//
+//
+function smilies_pass($message)
+{
+	global $db, $smilies_url;
+	static $smilies;
+
+	if(empty($smilies))
+	{
+		$sql = "SELECT code, smile_url 
+			FROM " . SMILIES_TABLE;
+		if($result = $db->sql_query($sql))
+		{
+			$smilies = $db->sql_fetchrowset($result);
+		}
+	}
+
+	for($i = 0; $i < count($smilies); $i++)
+	{
+		$message = preg_replace("'([\n\\ \\.])" . preg_quote($smilies[$i]['code']) . "'s", '\1<img src="' . $smilies_url . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">', ' ' . $message);
+	}
+	return($message);
+}
+//
+//
+//
+
+
+
 //
 // Start initial var setup
 //
@@ -104,7 +135,7 @@ $count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 
 $order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
 	FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
@@ -194,11 +225,7 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Dump out the page header and load viewtopic body template
 //
-// This is wrong ... more like index is needed
-//if($topic_time > $userdata['session_last_visit'])
-//{
-//	setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $cookiepath, $cookiedomain, $cookiesecure); 
-//}
+setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $cookiepath, $cookiedomain, $cookiesecure); 
 $page_title = $lang['View_topic'] ." - $topic_title";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -238,6 +265,9 @@ $view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"
 $view_prev_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&view=previous");
 $view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&view=next");
 
+$reply_img = ($forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED) ? $images['reply_locked'] : $images['reply_new'];
+$post_img = ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'];
+
 $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
@@ -247,8 +277,8 @@ $template->assign_vars(array(
 	"L_VIEW_NEXT_TOPIC" => $lang['View_next_topic'],
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
 
-	"IMG_POST" => $images['topic_new'], 
-	"IMG_REPLY" => ( ($forum_row['topic_status'] == TOPIC_LOCKED) ? $images['topic_locked'] : $images['topic_reply'] ), 
+	"IMG_POST" => $post_img, 
+	"IMG_REPLY" => $reply_img, 
 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
@@ -423,6 +453,11 @@ for($i = 0; $i < $total_posts; $i++)
 	if($user_sig != "")
 	{
 		$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
+	}
+
+	if($board_config['allow_smilies'])
+	{
+//		$message = smilies_pass($message);
 	}
 
 	//
