@@ -245,7 +245,7 @@ $lang = array(
 	'G_INACTIVE' 		=> 'Unapproved Users',
 	'G_INACTIVE_COPPA'	=> 'Unapproved COPPA Users',
 	'G_GUESTS' 			=> 'Guests',
-	'G_BANNED'			=> 'Banned Users', 
+	'G_BOTS'			=> 'Bots', 
 
 	'NO_NEW_POSTS'		=> 'No new posts',
 	'NEW_POSTS'			=> 'New posts',
@@ -684,7 +684,7 @@ $lang += array(
 	'DOWNLOAD_COUNTS'		=> '%d Times',	// replace %d with count
 );
 
-// ucp
+// ucp_main
 $lang += array(
 	'UCP'				=> 'User Control Panel',
 	'UCP_OPTIONS'		=> 'Options', 
@@ -733,8 +733,10 @@ $lang += array(
 	'EMPTY_DRAFT_TITLE' => 'You must enter a draft title',
 	'EMPTY_DRAFT'		=> 'You must enter a message to submit your changes',
 	'BACK_TO_DRAFTS'	=> 'Back to saved drafts',
+);
 
-
+// ucp_profile
+$lang += array(
 	'UCP_PROFILE'		=> 'Profile', 
 
 	'UCP_REG_DETAILS'				=> 'Registration details', 
@@ -763,6 +765,9 @@ $lang += array(
 	'UCP_JABBER'	=> 'Jabber Address', 
 	'BIRTHDAY'			=> 'Birthday', 
 	'BIRTHDAY_EXPLAIN'	=> 'Setting a year will list your age when it is your birthday.', 
+	'DAY'			=> 'Day',
+	'MONTH'			=> 'Month', 
+	'YEAR'			=> 'Year', 
 
 	'UCP_SIGNATURE'		=> 'Your signature', 
 	'SIGNATURE_NOTICE'	=> 'Please note that some forums limit the size and content of your signature. Be sure to read any forum or board rules to ensure you comply with them.', 
@@ -784,7 +789,8 @@ $lang += array(
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions', 
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.', 
 	'BY'						=> 'by', // Width by Height 
-	'AVATAR_GALLERY'			=> 'Select from gallery',
+	'AVATAR_GALLERY'			=> 'Local gallery',
+	'DISPLAY_GALLERY'			=> 'Display gallery',
 	'AVATAR_CATEGORY'			=> 'Category', 
 	'AVATAR_PAGE'				=> 'Page', 
 
@@ -795,8 +801,10 @@ $lang += array(
 	'AVATAR_NO_SIZE'		=> 'Could not obtain width or height of linked avatar, please enter them manually.', 
 
 	'PROFILE_UPDATED'	=> 'Your profile has been updated.', 
+);
 
-
+// ucp_register
+$lang += array(
 	'REGISTRATION'	=> 'Registration',
 	'COPPA_BIRTHDAY'	=> 'To continue with the registration procedure please tell us when you were born.', 
 	'UCP_COPPA_BEFORE'	=> 'Before %s', 
@@ -821,61 +829,24 @@ $lang += array(
 	'COPPA_COMPLIANCE'		=> 'COPPA Compliance', 
 	'COPPA_EXPLAIN'			=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.', 
 
-
-
-	'No_user_id_specified' => 'Sorry but that user does not exist',
-	'Wrong_Profile' => 'You cannot modify a profile that is not your own.',
-	'Only_one_avatar' => 'Only one type of avatar can be specified',
-	'File_no_data' => 'The file at the URL you gave contains no data',
-	'No_connection_URL' => 'A connection could not be made to the URL you gave',
-	'Incomplete_URL' => 'The URL you entered is incomplete',
-	'Wrong_remote_avatar_format' => 'The URL of the remote avatar is not valid',
-	'No_send_account_inactive' => 'Sorry, but your password cannot be retrieved because your account is currently inactive. Please contact the forum administrator for more information',
-
-
-	'Profile_updated' => 'Your profile has been updated',
-	'Profile_updated_inactive' => 'Your profile has been updated, however you have changed vital details thus your account is now inactive. Check your email to find out how to reactivate your account, or if admin activation is require wait for the administrator to reactivate your account',
-
-	'Fields_empty' => 'You must fill in the required fields',
-	'Avatar_filetype' => 'The avatar filetype must be .jpg, .gif or .png',
-	'Avatar_filesize' => 'The avatar image file size must be less than %d kB',
-	'Welcome_subject' => 'Welcome to %s Forums',
-	'New_account_subject' => 'New user account',
-	'Account_activated_subject' => 'Account Activated',
-
-
-
-
-
-	'PASSWORD_MISMATCH' => 'The passwords you entered did not match',
+	'PASSWORD_MISMATCH'		=> 'The passwords you entered did not match',
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.', 
 	'TOO_MANY_REGISTERS'	=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
-
-
-
 
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
 	'ACCOUNT_INACTIVE_ADMIN'=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
 	'ACCOUNT_COPPA'			=> 'Your account has been created but has to be approved, please check your email for details.',
-
-	'Send_password'				=> 'Send me a new password',
-	'Password_updated'			=> 'A new password has been created, please check your email for details on how to activate it',
-	'No_email_match'			=> 'The email address you supplied does not match the one listed for that username',
-	'New_password_activation'	=> 'New password activation',
-	'Password_activated'		=> 'Your account has been re-activated. To logon please use the password supplied in the email you received',
-
-
-	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
 );
 
 // ucp_activate
 $lang += array(
-	'Account_active' => 'Your account has now been activated. Thank you for registering',
-	'Account_active_admin' => 'The account has now been activated',
-	'Reactivate' => 'Reactivate your account!',
-	'Already_activated' => 'You have already activated your account',
-	'Wrong_activation'			=> 'The activation key you supplied does not match any in the database',
+	'ACCOUNT_ACTIVE'		=> 'Your account has now been activated. Thank you for registering',
+	'ACCOUNT_ACTIVE_ADMIN'	=> 'The account has now been activated',
+	'PASSWORD_ACTIVATED'	=> 'Your new password has been activated',
+
+	'ALREADY_ACTIVATED'		=> 'You have already activated your account',
+	'WRONG_ACTIVATION'		=> 'The activation key you supplied does not match any in the database',
 );
 
 // ucp_remind

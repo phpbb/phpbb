@@ -312,20 +312,18 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, p
 # MSSQL IDENTITY phpbb_users ON #
 
 # -- Users
-INSERT INTO phpbb_users (user_id, user_founder, group_id, username, user_regdate, user_password, user_email, user_lang, user_style) VALUES (1, 0, 1, 'Anonymous', 0, '', '', 'en', 1);
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style) VALUES (1, 2, 1, 'Anonymous', 0, '', '', 'en', 1);
 
 # -- username: Admin    password: admin (change this or remove it ON #ce everything is working!)
-INSERT INTO phpbb_users (user_id, user_founder, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour) VALUES (2, 1, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000');
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour) VALUES (2, 3, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000');
+
+# -- bots
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour) VALUES (3, 2, 8, 'Googlebot', 0, '', 'en', 1, 1, '9E8DA7');
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour) VALUES (4, 2, 8, 'Fastcrawler', 0, '', 'en', 1, 1, '9E8DA7');
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour) VALUES (5, 2, 8, 'Alexa', 0, '', 'en', 1, 1, '9E8DA7');
+INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour) VALUES (6, 2, 8, 'Inktomi', 0, '', 'en', 1, 1, '9E8DA7');
 
 # MSSQL IDENTITY phpbb_users OFF #
-
-
-# MSSQL IDENTITY phpbb_ranks ON #
-
-# -- Ranks
-INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image) VALUES (1, 'Site Admin', -1, 1, NULL);
-
-# MSSQL IDENTITY phpbb_ranks OFF #
 
 
 # MSSQL IDENTITY phpbb_groups ON #
@@ -338,7 +336,7 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (4, 'REGISTER
 INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (5, 'REGISTERED_COPPA', 3);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00');
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000');
-INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (8, 'BANNED', 3);
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (8, 'BOTS', 3, '9E8DA7');
 
 # MSSQL IDENTITY phpbb_groups OFF #
 
@@ -347,12 +345,34 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (8, 'BANNED',
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (1, 1, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (4, 2, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (7, 2, 0, 1);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 3, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 4, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 5, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 6, 0, 0);
 
 
-# -- Modules
+# MSSQL IDENTITY phpbb_ranks ON #
+
+# -- Ranks
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image) VALUES (1, 'Site Admin', -1, 1, NULL);
+
+# MSSQL IDENTITY phpbb_ranks OFF #
+
+
+# MSSQL IDENTITY phpbb_bots ON #
+
+# -- Bots
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 1, 'Googebot', 3, 'Googlebot/2.1 (+http://www.googlebot.com/bot.html)', '216.239.46.,64.68.8.');
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (2, 1, 'Fastcrawler', 4, 'FAST-WebCrawler', '66.77.73.');
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (3, 1, 'Alexa ia_archiver', 5, 'ia_archiver', '66.28.250.,209.237.238.');
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (4, 1, 'Inktomi', 6, 'Slurp', '216.35.116.');
+
+# MSSQL IDENTITY phpbb_bots OFF #
+
 
 # MSSQL IDENTITY phpbb_modules OFF #
 
+# -- Modules
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'MAIN', 'main', 1, 1, '', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'MAIN', 'main', 1, 1, 'front\r\nsubscribed\r\ndrafts', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 2, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
@@ -363,7 +383,6 @@ INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_or
 
 
 # Permissions
-
 # Default user - admin rights
 INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
 INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
@@ -399,6 +418,10 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+
+# BOTS - read/view only
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 8, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 8, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read');
 
 
 # -- Moderator cache
@@ -460,14 +483,6 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/exclaim.gif', 19, 19, 7, 1);
 
     
-# -- ucp modules
-INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (1, 'MAIN', 'main', 1);
-INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (2, 'PROFILE', 'profile', 2);
-INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (3, 'PREFERENCES', 'prefs', 3);
-INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (4, 'MESSAGING', 'pm', 4);
-INSERT INTO phpbb_ucp_modules (module_id, module_title, module_filename, module_order) VALUES (5, 'LISTS', 'zebra', 5);
-
-
 # MSSQL IDENTITY phpbb_search_wordlist ON #
 
 # -- wordlist

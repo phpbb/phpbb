@@ -152,11 +152,11 @@ class ucp_register extends module
 					$key_len = 54 - (strlen($server_url));
 					$key_len = ($key_len > 6) ? $key_len : 6;
 					$user_actkey = substr($user_actkey, 0, $key_len);
-					$user_active = 0;
+					$user_type = USER_INACTIVE;
 				}
 				else
 				{
-					$user_active = 1;
+					$user_type = USER_NORMAL;
 					$user_actkey = '';
 				}
 		
@@ -170,7 +170,7 @@ class ucp_register extends module
 					'user_timezone' => (float) $tz,
 					'user_lang'		=> $lang,
 					'user_allow_pm'	=> 1,
-					'user_active'	=> $user_active,
+					'user_type'		=> $user_type,
 					'user_actkey'	=> $user_actkey, 
 					'user_ip'		=> $user->ip, 
 					'user_regdate'	=> time(),

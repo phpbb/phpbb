@@ -238,8 +238,8 @@ $user->setup();
 $ucp = new module();
 
 // Basic parameter data
-$mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : false;
-$module = (!empty($_REQUEST['i'])) ? htmlspecialchars($_REQUEST['i']) : false;
+$mode	= request_var('mode', '');
+$module = request_var('i', '');
 
 // Basic "global" modes
 switch ($mode)
@@ -247,6 +247,7 @@ switch ($mode)
 	case 'activate':
 		$ucp->load('ucp', 'activate');
 		$ucp->module->ucp_activate();
+		redirect("index.$phpEx$SID");
 		break;
 
 	case 'sendpassword':
@@ -292,7 +293,7 @@ switch ($mode)
 
 
 // Only registered users can go beyond this point
-if ($user->data['user_id'] == ANONYMOUS)
+if ($user->data['user_type'] == USER_INACTIVE || $user->data['user_type'] == USER_IGNORE)
 {
 	redirect("index.$phpEx");
 }

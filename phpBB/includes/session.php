@@ -137,8 +137,72 @@ class session
 
 		$sessiondata = array();
 		$current_time = time();
+		$bot = false;
 
-		if ($config['active_sessions'])
+		// Pull bot information from DB and loop through it
+		$sql = 'SELECT user_id, bot_agent, bot_ip 
+			FROM phpbb_bots 
+			WHERE bot_active = 1';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['bot_agent'] && $row['bot_agent'] == $this->browser)
+			{
+				$bot = $row['user_id'];
+			}
+			if ($row['bot_ip'] && (!$row['bot_agent'] || $bot))
+			{
+				foreach (explode(',', $row['bot_ip']) as $bot_ip)
+				{
+					if (strpos($this->ip, $bot_ip) === 0)
+					{
+						$bot = $row['user_id'];
+						break;
+					}
+				}
+			}
+
+			if ($bot)
+			{
+				$user_id = $bot;
+				break;
+			}
+		}
+		$db->sql_freeresult($result);
+
+		// Garbage collection ... remove old sessions updating user information
+		// if necessary. It means (potentially) 11 queries but only infrequently
+		if ($current_time - $config['session_gc'] > $config['session_last_gc'])
+		{
+			$this->gc($current_time);
+		}
+
+		// Grab user data ... join on session if it exists for session time
+		$sql = 'SELECT u.*, s.session_time, s.session_id 
+			FROM (' . USERS_TABLE . ' u
+			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
+			WHERE u.user_id = $user_id
+			ORDER BY s.session_time DESC";
+		$result = $db->sql_query($sql);
+
+		$this->data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Check autologin request, is it valid?
+		if (empty($this->data) || ($this->data['user_password'] != $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
+		{
+			$autologin = '';
+			$this->data['user_id'] = $user_id = ANONYMOUS;
+		}
+
+		// If we're a bot then we'll re-use an existing id if available
+		if ($bot && $this->data['session_id'])
+		{
+			$this->session_id = $this->data['session_id'];
+		}
+
+		if (!$this->data['session_time'] && $config['active_sessions'])
 		{
 			// Limit sessions in 1 minute period
 			$sql = 'SELECT COUNT(*) AS sessions
@@ -155,33 +219,8 @@ class session
 			}
 		}
 
-		// Garbage collection ... remove old sessions updating user information
-		// if necessary. It means (potentially) 11 queries but only infrequently
-		if ($current_time - $config['session_gc'] > $config['session_last_gc'])
-		{
-			$this->gc($current_time);
-		}
-
-		// Grab user data ... join on session if it exists for session time
-		$sql = 'SELECT u.*, s.session_time
-			FROM (' . USERS_TABLE . ' u
-			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
-			WHERE u.user_id = $user_id
-			ORDER BY s.session_time DESC";
-		$result = $db->sql_query($sql);
-
-		$this->data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		// Check autologin request, is it valid?
-		if (empty($this->data) || ($this->data['user_password'] != $autologin && !$set_autologin) || !$this->data['user_active'])
-		{
-			$autologin = '';
-			$this->data['user_id'] = $user_id = ANONYMOUS;
-		}
-
 		// Is user banned? Are they excluded?
-		if (!$this->data['user_founder'])
+		if (!$this->data['user_type'] != USER_FOUNDER && !$bot)
 		{
 			$banned = false;
 
@@ -259,18 +298,25 @@ class session
 		}
 		$db->sql_return_on_error(false);
 
-		$this->data['session_id'] = $this->session_id;
-
-		$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
-		$sessiondata['userid'] = $user_id;
-
-		$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
-		$this->set_cookie('sid', $this->session_id, 0);
-		$SID = '?sid=' . $this->session_id;
-
-		if ($this->data['user_id'] != ANONYMOUS)
+		if (!$bot)
 		{
-			// Trigger EVT_NEW_SESSION
+			$this->data['session_id'] = $this->session_id;
+
+			$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
+			$sessiondata['userid'] = $user_id;
+
+			$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
+			$this->set_cookie('sid', $this->session_id, 0);
+			$SID = '?sid=' . $this->session_id;
+
+			if ($this->data['user_id'] != ANONYMOUS)
+			{
+				// Trigger EVT_NEW_SESSION
+			}
+		}
+		else
+		{
+			$SID = '?sid=';
 		}
 
 		return true;
@@ -729,7 +775,7 @@ class auth
 		$db->sql_freeresult($result);
 
 		// If this user is founder we're going to force fill the admin options ...
-		if ($userdata['user_founder'])
+		if ($userdata['user_type'] == USER_FOUNDER)
 		{
 			foreach ($this->acl_options['global'] as $opt => $id)
 			{
@@ -833,15 +879,8 @@ class auth
 
 				$autologin = (!empty($autologin)) ? md5($password) : '';
 
-				if ($login['user_active'])
-				{
-					// Trigger EVENT_LOGIN
-					return $user->create($login['user_id'], $autologin, true, $viewonline);
-				}
-				else
-				{
-					return false;
-				}
+				// Trigger EVENT_LOGIN
+				return $user->create($login['user_id'], $autologin, true, $viewonline);
 			}
 		}
 

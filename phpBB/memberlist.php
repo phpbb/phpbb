@@ -410,7 +410,7 @@ switch ($mode)
 			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_method 
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
-					AND user_active = 1";
+					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 
 			if (!($row = $db->sql_fetchrow($result)))
@@ -676,7 +676,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT COUNT(user_id) AS total_users
 				FROM ' . USERS_TABLE . '
-				WHERE user_id <> ' . ANONYMOUS . "
+				WHERE user_type <> ' . USER_IGNORE . "
 				$where_sql";
 			$result = $db->sql_query($sql);
 
@@ -728,6 +728,8 @@ switch ($mode)
 			);
 		}
 
+		// TODO
+		// ?????????
 		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time 
 			FROM ' . SESSIONS_TABLE . ' 
 			WHERE session_time >= ' . (time() - 300) . '
@@ -745,7 +747,7 @@ switch ($mode)
 		// Do the SQL thang
 		$sql = 'SELECT username, user_id, user_colour, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . ' 
-			WHERE user_id <> ' . ANONYMOUS . " 
+			WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$where_sql 
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);

@@ -101,6 +101,18 @@ CREATE TABLE phpbb_bbcodes (
   PRIMARY KEY  (bbcode_id)
 );
 
+# Table: 'phpbb_bots'
+CREATE TABLE phpbb_bots (
+  bot_id tinyint(3) unsigned NOT NULL auto_increment,
+  bot_active tinyint(1) DEFAULT '1' NOT NULL,
+  bot_name varchar(255) DEFAULT '' NOT NULL,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  bot_agent varchar(255)  DEFAULT '' NOT NULL,
+  bot_ip varchar(255) DEFAULT '' NOT NULL,
+  PRIMARY KEY  (bot_id),
+  KEY bot_active (bot_active)
+)
+
 # Table: 'phpbb_cache'
 CREATE TABLE phpbb_cache (
   var_name varchar(255) DEFAULT '' NOT NULL,
@@ -683,8 +695,7 @@ CREATE TABLE phpbb_user_group (
 # Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   user_active tinyint(1) DEFAULT '1' NOT NULL,
-   user_founder tinyint(1) DEFAULT '0' NOT NULL,
+   user_type tinyint(1) DEFAULT '0' NOT NULL, 
    group_id mediumint(8) DEFAULT '3' NOT NULL,
    user_permissions text DEFAULT '' NOT NULL,
    user_ip varchar(40) DEFAULT '' NOT NULL,
@@ -737,10 +748,10 @@ CREATE TABLE phpbb_users (
    user_msnm varchar(255) DEFAULT '' NOT NULL,
    user_jabber varchar(255) DEFAULT '' NOT NULL,
    user_website varchar(100) DEFAULT '' NOT NULL,
-   user_actkey varchar(32) DEFAULT '' NOT NULL,
-   user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    user_occ varchar(255) DEFAULT '' NOT NULL,
    user_interests varchar(255) DEFAULT '' NOT NULL,
+   user_actkey varchar(32) DEFAULT '' NOT NULL,
+   user_newpasswd varchar(32) DEFAULT '' NOT NULL,
    PRIMARY KEY (user_id),
    KEY user_birthday (user_birthday(6))
 );

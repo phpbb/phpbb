@@ -24,7 +24,7 @@ class ucp_remind extends module
 			$username	= request_var('username', '');
 			$email		= request_var('email', '');
 
-			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_active, user_lang
+			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_type, user_lang
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username = '" . $db->sql_escape($username) . "'";
@@ -39,13 +39,14 @@ class ucp_remind extends module
 			}
 			$db->sql_freeresult($result);
 
-			if (!$row['user_active'])
+			if ($row['user_type'] == USER_INACTIVE)
 			{
 				trigger_error($lang['ACCOUNT_INACTIVE']);
 			}
 
 			$server_url = generate_board_url();
 			$username = $row['username'];
+			$user_id = $row['user_id'];
 
 			$key_len = 54 - strlen($server_url);
 			$key_len = ($str_len > 6) ? $key_len : 6;
@@ -74,7 +75,7 @@ class ucp_remind extends module
 				'PASSWORD'	=> $user_password,
 				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
-				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 			);
 
 			$messenger->send($row['user_notify_type']);

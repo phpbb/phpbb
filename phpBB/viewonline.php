@@ -22,10 +22,9 @@ $auth->acl($user->data);
 $user->setup();
 
 // Get and set some variables
-$start	= (isset($_GET['start'])) ? intval($_GET['start']) : 0;
-
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'b';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
+$start	= request_var('start', 0);
+$sort_key = request_var('sk', 'b');
+$sort_dir = request_var('sd', 'd');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
 $sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_page');
@@ -48,7 +47,7 @@ $db->sql_freeresult($result);
 
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
+$sql = 'SELECT u.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . ' 
@@ -187,7 +186,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
-			'U_USER_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
+			'U_USER_PROFILE'	=> ($row['user_type'] <> USER_IGNORE) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 

@@ -47,10 +47,6 @@ $lang += array(
 	'PHP_INFO'			=> 'PHP Information', 
 	'IM'				=> 'Jabber Settings', 
 
-	'GROUP_CAT'		=> 'Usergroups',
-	'CREATE'		=> 'Create',
-	'GROUP_PREFS'	=> 'Preferences', 
-
 	'LOG_CAT'		=> 'Logging',
 	'ADMIN_LOGS'	=> 'Admin Log',
 	'MOD_LOGS'		=> 'Moderator Log',
@@ -67,13 +63,18 @@ $lang += array(
 	'MANAGE_THEME'		=> 'Themes', 
 	'MANAGE_IMAGESET'	=> 'Imagesets', 
 
-	'USER_CAT'		=> 'Users', 
+	'USER_CAT'		=> 'Users / Groups', 
 	'BAN_EMAILS'	=> 'Ban Emails',
 	'BAN_IPS'		=> 'Ban IPs',
 	'BAN_USERS'		=> 'Ban Usernames',
 	'DISALLOW'		=> 'Disallow names',
 	'RANKS'			=> 'Ranks',
 	'PRUNE_USERS'	=> 'Prune users', 
+	'BOTS'			=> 'Bots', 
+	'GROUP_MANAGE'	=> 'Manage groups',
+	'GROUP_PREFS'	=> 'Group prefs', 
+	'USER_PERMS'	=> 'User permissions', 
+	'GROUP_PERMS'	=> 'Group permissions', 
 
 	'ADMINISTRATORS'	=> 'Administrators',
 	'USERNAMES_EXPLAIN'	=> 'Place each username on a seperate line', 
@@ -221,6 +222,10 @@ $lang += array(
 
 	'LOG_EMAIL_ERROR'	=> '%s', 
 	'LOG_JABBER_ERROR'	=> '%s', 
+
+	'LOG_BOT_ADDED'		=> '<b>New bot added</b><br />&#187; %s',
+	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
+	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s', 
 );
 
 // Index page
@@ -1777,6 +1782,40 @@ $lang += array(
 	'INST_ERR_FATAL_DB'			=> 'A fatal and unrecoverable database error has occured. This may be because the specified user does not have appropriate rights to CREATE TABLES or INSERT data, etc. Further information may be given below. Please contact your hosting provider in the first instance or the support forums of phpBB for further assistance.', 
 	'INST_ERR_FTP_PATH'			=> 'Could not change to the given directory, please check the path.', 
 	'INST_ERR_FTP_LOGIN'		=> 'Could not login to ftp server, check your username and password', 
+);
+
+// Bots
+$lang += array(
+	'BOTS_EXPLAIN'	=> 'Bots or crawlers are automated agents most commonly used by search engines to update their databases. Since they rarely make proper use of sessions they can distort visitor counts, increase load and sometimes fail to index sites correctly. Here you can define a special type of user to overcome these problems.',
+	
+	'BOT_NAME'			=> 'Bot name', 
+	'BOT_LAST_VISIT'	=> 'Last visit', 
+	'BOT_NEVER'			=> 'Never', 
+	'BOT_ACTIVATE'		=> 'Activate', 
+	'BOT_DEACTIVATE'	=> 'Deactivate', 
+	'BOT_ADD'			=> 'Add bot',
+
+	'BOT_EDIT'			=> 'Edit bots', 
+	'BOT_EDIT_EXPLAIN'	=> 'Here you can add or edit an existing bot entry. You may define an agent string and/or one or more IP addresses (or range of addresses) to match. Be careful when defining matching agent strings or addresses. You may also specify a style and language that the bot will view the board using. This may allow you to reduce bandwidth use by setting a simple style for bots. Remember to set appropriate permissions for the special Bot usergroup.', 
+	'BOT_NAME'			=> 'Bot name',
+	'BOT_NAME_EXPLAIN'	=> 'Used only for your own information.',
+	'BOT_LANG'			=> 'Bot language', 
+	'BOT_LANG_EXPLAIN'	=> 'The language presented to the bot as it browses', 
+	'BOT_STYLE'			=> 'Bot style', 
+	'BOT_STYLE_EXPLAIN'	=> 'The style used for the board by the bot', 
+	'BOT_ACTIVE'		=> 'Bot active', 
+	'BOT_AGENT'			=> 'Agent match', 
+	'BOT_AGENT_EXPLAIN'	=> 'A string matching the bots browser agent.', 
+	'BOT_IP'			=> 'Bot IP address',
+	'BOT_IP_EXPLAIN'	=> 'Partial matches are allowed, seperate addresses with an apostrophe. A single hostname may be entered instead of an IP.',
+
+	'BOT_ADDED'		=> 'New bot successfully added', 
+	'BOT_UPDATED'	=> 'Existing bot updated successfully', 
+	'BOT_DELETED'	=> 'Bot deleted successfully', 
+
+	'NO_BOT'	=> 'Found no bot with the specified ID', 
+	'ERR_BOT_NO_MATCHES'	=> 'You must supply at least one of an agent or IP for this bot match.', 
+	'ERR_BOT_NO_IP'			=> 'The IP addresses you supplied were invalid or the hostname could not be resolved.', 
 );
 
 ?>

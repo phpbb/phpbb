@@ -32,15 +32,6 @@ if (@ini_get('register_globals'))
 	}
 }
 
-// If magic quotes is off, addslashes
-/*if (!get_magic_quotes_gpc())
-{
-	$_GET = slash_input_data($_GET);
-	$_POST = slash_input_data($_POST);
-	$_REQUEST = slash_input_data($_REQUEST);
-	$_COOKIE = slash_input_data($_COOKIE);
-}*/
-
 require($phpbb_root_path . 'config.'.$phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
@@ -85,6 +76,11 @@ define('USER_ACTIVATION_SELF_ADMIN', 4);
 define('AVATAR_UPLOAD', 1);
 define('AVATAR_REMOTE', 2);
 define('AVATAR_GALLERY', 3);
+
+define('USER_NORMAL', 0);
+define('USER_INACTIVE', 1);
+define('USER_IGNORE', 2);
+define('USER_FOUNDER', 3);
 
 // ACL
 define('ACL_NO', 0);
@@ -156,6 +152,7 @@ define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
 define('ATTACHMENTS_DESC_TABLE', $table_prefix.'attach_desc');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('BBCODES_TABLE', $table_prefix.'bbcodes');
+define('BOTS_TABLE', $table_prefix.'bots');
 define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');

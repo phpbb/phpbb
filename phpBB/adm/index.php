@@ -145,7 +145,7 @@ elseif ($pane == 'right')
 			trigger_error($user->lang['NO_ADMIN']);
 		}
 
-		$sql = ($activate) ? 'UPDATE ' . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+		$sql = ($activate) ? 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
 		$db->sql_query($sql);
 
 		if (!$delete)
@@ -253,7 +253,7 @@ elseif ($pane == 'right')
 
 		$sql = 'SELECT COUNT(user_id) AS stat
 			FROM ' . USERS_TABLE . '
-			WHERE user_active = 1';
+			WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
@@ -516,9 +516,8 @@ elseif ($pane == 'right')
 <?php
 
 		$sql = 'SELECT user_id, username, user_regdate
-			FROM ' . USERS_TABLE . '
-			WHERE user_active = 0
-				AND user_id <> ' . ANONYMOUS . '
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_type = ' . USER_INACTIVE . ' 
 			ORDER BY user_regdate ASC';
 		$result = $db->sql_query($sql);
 

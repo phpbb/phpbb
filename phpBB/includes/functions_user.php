@@ -357,7 +357,7 @@ function avatar_upload($data, &$error)
 		}
 		unset($url_ary);
 
-		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache/tmp';
+		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache';
 		$filename = tempnam($tmp_path, uniqid(rand()) . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
@@ -389,7 +389,7 @@ function avatar_upload($data, &$error)
 	// Replace any chars which may cause us problems with _
 	$bad_chars = array(' ', '/', ':', '*', '?', '"', '<', '>', '|');
 
-	$data['filename'] = $user->data['user_id'] . '_' . str_replace($bad_chars, '_', $realname) . '.' . $filetype;
+	$data['filename'] = $data['user_id'] . '_' . str_replace($bad_chars, '_', $realname) . '.' . $filetype;
 	$data['width'] = $width;
 	$data['height'] = $height;
 
@@ -411,6 +411,48 @@ function avatar_upload($data, &$error)
 
 	// Set type
 	$data['type'] = AVATAR_UPLOAD;
+
+	return $data;
+}
+
+function avatar_gallery($category, &$error)
+{
+	global $config;
+
+	$path = $phpbb_root_path . $config['avatar_gallery_path'];
+
+	// To be replaced with SQL ... before M3 completion
+	$dp = @opendir($path);
+
+	$data = array();
+	$avatar_row_count = $avatar_col_count = 0;
+	while ($file = readdir($dp))
+	{
+		if ($file{0} != '.' && is_dir("$path/$file"))
+		{
+			$dp2 = @opendir("$path/$file");
+
+			while ($sub_file = readdir($dp2))
+			{
+				if (preg_match('#\.(gif$|png$|jpg|jpeg)$#i', $sub_file))
+				{
+					$data[$file][$avatar_row_count][$avatar_col_count]['file'] = "$file/$sub_file"; 
+					$data[$file][$avatar_row_count][$avatar_col_count]['name'] = ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file)));
+
+					$avatar_col_count++;
+					if ($avatar_col_count == 4)
+					{
+						$avatar_row_count++;
+						$avatar_col_count = 0;
+					}
+				}
+			}
+			closedir($dp2);
+		}
+	}
+	closedir($dp);
+
+	@ksort($data);
 
 	return $data;
 }
@@ -444,7 +486,7 @@ function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, 
 
 	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
 
-	if ($$which_ary  && !is_array($$which_ary ))
+	if ($$which_ary  && !is_array($$which_ary))
 	{
 		$user_id_ary = array($user_id_ary);
 	}

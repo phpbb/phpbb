@@ -3,7 +3,7 @@
 //
 // $Id$
 //
-// FILENAME  : viewtopic.php 
+// FILENAME  : admin_jabber.php 
 // STARTED   : Sat Feb 13, 2001
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/

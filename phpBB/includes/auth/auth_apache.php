@@ -20,7 +20,7 @@ function login_apache(&$username, &$password)
 
 	if ($php_auth_user && $php_auth_pw)
 	{
-		$sql = ' user_id, username, user_password, user_passchg, user_email, user_active
+		$sql = ' user_id, username, user_password, user_passchg, user_email, user_type 
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);
@@ -28,7 +28,7 @@ function login_apache(&$username, &$password)
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$db->sql_freeresult($result);
-			return (empty($row['user_active'])) ? 0 : $row;
+			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? 0 : $row;
 		}
 	}
 

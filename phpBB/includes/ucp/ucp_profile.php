@@ -91,6 +91,9 @@ class ucp_profile extends module
 							update_username($user->data['username'], $username);
 						}
 
+						// TODO
+						// If email changed and email activation enabled, deactivate and notify
+
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 						trigger_error($message);
@@ -358,6 +361,9 @@ class ucp_profile extends module
 
 			case 'avatar':
 
+				$display_gallery = (isset($_POST['displaygallery'])) ? true : false;
+				$avatar_category = request_var('category', '');
+
 				// Can we upload? 
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
@@ -386,6 +392,8 @@ class ucp_profile extends module
 
 					if (!sizeof($error))
 					{
+						$data['user_id'] = $user->data['user_id'];
+
 						if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
 						{
 							$data = avatar_upload($data, $error);
@@ -444,10 +452,10 @@ class ucp_profile extends module
 					switch ($user->data['user_avatar_type'])
 					{
 						case AVATAR_UPLOAD:
-							$avatar_img = $config['avatar_path'] . '/';
+							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
 							break;
 						case AVATAR_GALLERY:
-							$avatar_img = $config['avatar_gallery_path'] . '/';
+							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 							break;
 					}
 					$avatar_img .= $user->data['user_avatar'];
@@ -457,24 +465,64 @@ class ucp_profile extends module
 
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '', 
-
 					'AVATAR'		=> $avatar_img, 
 					'AVATAR_SIZE'	=> $config['avatar_filesize'], 
-					'AVATAR_URL'	=> (isset($uploadurl)) ? $uploadurl : '', 
-					'AVATAR_REMOTE'	=> (isset($remotelink)) ? $remotelink : (($user->data['user_avatar_type'] == AVATAR_REMOTE) ? $user->data['user_avatar'] : ''), 
-					'WIDTH'			=> (isset($width)) ? $width : $user->data['user_avatar_width'], 
-					'HEIGHT'		=> (isset($height)) ? $height : $user->data['user_avatar_height'], 
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)), 
+					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '', 
 
-					'S_FORM_ENCTYPE'		=> ($can_upload) ? ' enctype="multipart/form-data"' : '', 
-					'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
-					'S_UPLOAD_AVATAR_URL'	=> $can_upload, 
-					'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false, 
-					'S_GALLERY_AVATAR'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false,
-					'S_AVATAR_CAT_OPTIONS'	=> $s_categories, 
-					'S_AVATAR_PAGE_OPTIONS'	=> $s_pages,)
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),)
 				);
+
+				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
+				{
+					$avatar_list = avatar_gallery($category, $error);
+
+					$category = (!$category) ? key($avatar_list) : $category;
+
+					$s_category_options = '';
+					foreach (array_keys($avatar_list) as $cat)
+					{
+						$s_category_options .= '<option value="' . $cat . '">' . $cat . '</option>';
+					}
+
+					$template->assign_vars(array(
+						'S_DISPLAY_GALLERY'	=> true,
+						'S_CAT_OPTIONS'		=> $s_category_options)
+					);
+
+					foreach ($avatar_list[$category] as $avatar_row_ary)
+					{
+						$template->assign_block_vars('avatar_row', array());
+
+						foreach ($avatar_row_ary as $avatar_col_ary)
+						{
+							$template->assign_block_vars('avatar_row.avatar_column', array(
+								'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+								'AVATAR_NAME'	=> $avatar_col_ary['name'])
+							);
+
+							$template->assign_block_vars('avatar_row.avatar_option_column', array(
+								'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],)
+							);
+						}
+					}
+				}
+				else
+				{
+					$template->assign_vars(array(
+						'AVATAR'		=> $avatar_img, 
+						'AVATAR_SIZE'	=> $config['avatar_filesize'], 
+						'WIDTH'			=> (isset($width)) ? $width : $user->data['user_avatar_width'], 
+						'HEIGHT'		=> (isset($height)) ? $height : $user->data['user_avatar_height'], 
+
+						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
+						'S_UPLOAD_AVATAR_URL'	=> $can_upload, 
+						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false, 
+						'S_GALLERY_AVATAR'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false,
+						'S_AVATAR_CAT_OPTIONS'	=> $s_categories, 
+						'S_AVATAR_PAGE_OPTIONS'	=> $s_pages,)
+					);
+				}
 
 				break;
 		}
@@ -482,12 +530,11 @@ class ucp_profile extends module
 		$template->assign_vars(array(
 			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($mode)],
 
-			'S_DISPLAY_' . strtoupper($mode)	=> true, 
-			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile.html');
+		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile_' . $mode . '.html');
 	}
 }
 

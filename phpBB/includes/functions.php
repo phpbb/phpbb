@@ -1236,16 +1236,15 @@ function page_header($page_title = '')
 	if (!empty($config['load_online']) && !empty($config['load_online_time']))
 	{
 		$userlist_ary = $userlist_visible = array();
-		$logged_visible_online = $logged_hidden_online = $guests_online = 0;
-
-		$prev_user_id = 0;
+		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
 		$prev_user_ip = $reading_sql = '';
+
 		if (!empty($_REQUEST['f']))
 		{
 			$reading_sql = "AND s.session_page LIKE '%f=" . intval($_REQUEST['f']) . "%'";
 		}
 
-		$sql = 'SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
+		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . "
 				$reading_sql
@@ -1279,7 +1278,7 @@ function page_header($page_title = '')
 
 					if ($row['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
+						$user_online_link = ($row['user_type'] <> USER_IGNORE) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>' : $user_online_link;
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}
