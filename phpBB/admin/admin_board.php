@@ -27,13 +27,12 @@ if ( !empty($setmodules) )
 	}
 
 	$file = basename(__FILE__);
-	$module['General']['Avatar_settings'] = "$file$SID&mode=avatar";
-	$module['General']['Cookie_settings'] = "$file$SID&mode=cookie";
-	$module['General']['Board_defaults'] = "$file$SID&mode=default";
-	$module['General']['Board_settings'] = "$file$SID&mode=setting";
-	$module['General']['Email_settings'] = "$file$SID&mode=email";
-	$module['General']['Server_settings'] = "$file$SID&mode=server";
-	$module['Users']['Defaults'] = "$file$SID&mode=userdefs";
+	$module['General']['Avatar_settings'] = "$file$SID&amp;mode=avatar";
+	$module['General']['Cookie_settings'] = "$file$SID&amp;mode=cookie";
+	$module['General']['Board_defaults'] = "$file$SID&amp;mode=default";
+	$module['General']['Board_settings'] = "$file$SID&amp;mode=setting";
+	$module['General']['Email_settings'] = "$file$SID&amp;mode=email";
+	$module['General']['Server_settings'] = "$file$SID&amp;mode=server";
 	return;
 }
 
