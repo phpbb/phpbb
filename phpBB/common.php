@@ -70,35 +70,15 @@ include('includes/db.'.$phpEx);
 //
 if(!empty($HTTP_CLIENT_IP))
 {
-	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP))
-	{
-		$client_ip = $HTTP_CLIENT_IP; 
-	}
+	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP)) ? $HTTP_CLIENT_IP : $REMOTE_ADDR; 
 }
 else if(!empty($HTTP_X_FORWARDED_FOR))
 {
-	if(ereg(",", $HTTP_X_FORWARDED_FOR))
-	{
-		list($client_ip) = explode(",", $HTTP_X_FORWARDED_FOR);
-	}
-	else
-	{
-		$client_ip = $HTTP_X_FORWARDED_FOR;
-	}
-}
-else if(!empty($HTTP_VIA))
-{
-	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_VIA))
-	{
-		$client_ip = $HTTP_VIA;
-	}
+	$client_ip = (ereg("([0-9]+\.[0-9]+\.[0-9]+\.[0-9])+", $HTTP_X_FORWARDED_FOR, $ip_list)) ? $ip_list[0] : $REMOTE_ADDR;
 }
 else if(!empty($HTTP_PROXY_USER))
 {
-	if(ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
-	{
-		$client_ip = $HTTP_PROXY_USER;
-	}
+	$client_ip = (ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER)) ? $HTTP_PROXY_USER : $REMOTE_ADDR;
 }
 else
 {
