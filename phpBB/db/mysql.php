@@ -216,7 +216,7 @@ class sql_db
 			$this->query_result = false;
 			$this->num_queries++;
 
-			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+			$query .= ' LIMIT ' . ((!empty($offset)) ? $total . ', ' . $offset : $total);
 
 			return $this->sql_query($query, $expire_time);
 		}
