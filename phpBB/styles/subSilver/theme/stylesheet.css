@@ -128,11 +128,11 @@ select { color: black; background-color: white; font-family: Verdana, serif; fon
 /* 
 	BBCODE 
 */
-.quotetitle { margin: 0px; padding: 4px; border-width: 1px 1px 0px 1px; border-style: solid; border-color: #A9B8C2; color: black; background-color: #A9B8C2; font-size: 8pt; }
-.quotecontent { margin: 0px; padding: 5px; border-color: #A9B8C2; border-width: 0px 1px 1px 1px; border-style: solid; color: black; font-weight: normal; font-size: 8pt; font-family: Verdana, sans-serif; background-color: #FAFAFA; }
+.quotetitle { margin: 10px 5px 0px 5px; padding: 4px; border-width: 1px 1px 0px 1px; border-style: solid; border-color: #A9B8C2; color: black; background-color: #A9B8C2; font-size: 8pt; }
+.quotecontent { margin: 0px 5px 10px 5px; padding: 5px; border-color: #A9B8C2; border-width: 0px 1px 1px 1px; border-style: solid; color: black; font-weight: normal; font-size: 8pt; font-family: Verdana, sans-serif; background-color: #FAFAFA; }
 
-.codetitle { margin: 0px; padding: 4px; border-width: 1px 1px 0px 1px; border-style: solid; border-color: #A9B8C2; color: black; background-color: #A9B8C2; font-size: 8pt; }
-.codecontent { margin: 0px; padding: 5px; border-color: #A9B8C2; border-width: 0px 1px 1px 1px; border-style: solid; color: black; font-weight: normal; color: #006600; font-weight: normal; font-size: 8pt; font-family: 'Courier New', monospace; background-color: #FAFAFA; }
+.codetitle { margin: 10px 5px 0px 5px; padding: 4px; border-width: 1px 1px 0px 1px; border-style: solid; border-color: #A9B8C2; color: black; background-color: #A9B8C2; font-size: 8pt; }
+.codecontent { margin: 0px 5px 10px 5px; padding: 5px; border-color: #A9B8C2; border-width: 0px 1px 1px 1px; border-style: solid; color: black; font-weight: normal; color: #006600; font-weight: normal; font-size: 8pt; font-family: 'Courier New', monospace; background-color: #FAFAFA; }
 
 .syntaxbg { color: #FFFFFF; }
 .syntaxcomment { color: #FF8000; }
