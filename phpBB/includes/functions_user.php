@@ -96,6 +96,343 @@ function user_update_name($old_name, $new_name)
 	$db->sql_query($sql);
 }
 
+function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason)
+{
+	global $db, $user, $auth;
+
+	// Delete stable bans
+	$sql = "DELETE FROM " . BANLIST_TABLE . "
+		WHERE ban_end < " . time() . "
+			AND ban_end <> 0";
+	$db->sql_query($sql);
+
+	$ban_list = (!is_array($ban)) ? array_unique(explode("\n", $ban)) : $ban;
+	$ban_list_log = implode(', ', $ban_list);
+
+	$current_time = time();
+
+	if ($ban_len)
+	{
+		if ($ban_len != -1 || !$ban_len_other)
+		{
+			$ban_end = max($current_time, $current_time + ($ban_len) * 60);
+		}
+		else
+		{
+			$ban_other = explode('-', $ban_len_other);
+			$ban_end = max($current_time, gmmktime(0, 0, 0, $ban_other[1], $ban_other[2], $ban_other[0]));
+		}
+	}
+	else
+	{
+		$ban_end = 0;
+	}
+
+	$banlist = array();
+
+	switch ($mode)
+	{
+		case 'user':
+			$type = 'ban_userid';
+
+			if (in_array('*', $ban_list))
+			{
+				$banlist[] = '*';
+			}
+			else
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE username IN (' . implode(', ', array_diff(preg_replace('#^[\s]*(.*?)[\s]*$#', "'\\1'", $ban_list), array("''"))) . ')';
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					do
+					{
+						$banlist[] = $row['user_id'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+				}
+			}
+			break;
+
+		case 'ip':
+			$type = 'ban_ip';
+
+			foreach ($ban_list as $ban_item)
+			{
+				if (preg_match('#^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$#', trim($ban_item), $ip_range_explode))
+				{
+					// Don't ask about all this, just don't ask ... !
+					$ip_1_counter = $ip_range_explode[1];
+					$ip_1_end = $ip_range_explode[5];
+
+					while ($ip_1_counter <= $ip_1_end)
+					{
+						$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
+						$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
+
+						if($ip_2_counter == 0 && $ip_2_end == 254)
+						{
+							$ip_2_counter = 256;
+							$ip_2_fragment = 256;
+
+							$banlist[] = "'$ip_1_counter.*'";
+						}
+
+						while ($ip_2_counter <= $ip_2_end)
+						{
+							$ip_3_counter = ($ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[3] : 0;
+							$ip_3_end = ($ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[7];
+
+							if ($ip_3_counter == 0 && $ip_3_end == 254)
+							{
+								$ip_3_counter = 256;
+								$ip_3_fragment = 256;
+
+								$banlist[] = "'$ip_1_counter.$ip_2_counter.*'";
+							}
+
+							while ($ip_3_counter <= $ip_3_end)
+							{
+								$ip_4_counter = ($ip_3_counter == $ip_range_explode[3] && $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[4] : 0;
+								$ip_4_end = ($ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end) ? 254 : $ip_range_explode[8];
+
+								if ($ip_4_counter == 0 && $ip_4_end == 254)
+								{
+									$ip_4_counter = 256;
+									$ip_4_fragment = 256;
+
+									$banlist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.*'";
+								}
+
+								while ($ip_4_counter <= $ip_4_end)
+								{
+									$banlist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter'";
+									$ip_4_counter++;
+								}
+								$ip_3_counter++;
+							}
+							$ip_2_counter++;
+						}
+						$ip_1_counter++;
+					}
+				}
+				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
+				{
+					$ip_ary = gethostbynamel(trim($ban_item));
+
+					foreach ($ip_ary as $ip)
+					{
+						if (!empty($ip))
+						{
+							$banlist[] = "'" . $ip . "'";
+						}
+					}
+				}
+				else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($ban_item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($ban_item)))
+				{
+					$banlist[] = "'" . trim($ban_item) . "'";
+				}
+				else if (preg_match('#^\*$#', trim($ban_item)))
+				{
+					$banlist[] = "'*'";
+				}
+			}
+			break;
+
+		case 'email':
+			$type = 'ban_email';
+
+			foreach ($ban_list as $ban_item)
+			{
+				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', trim($ban_item)))
+				{
+					$banlist[] = "'" . trim($ban_item) . "'";
+				}
+			}
+			break;
+	}
+
+	$sql = "SELECT $type
+		FROM " . BANLIST_TABLE . "
+		WHERE $type <> '' 
+			AND ban_exclude = $ban_exclude";
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		$banlist_tmp = array();
+		do
+		{
+			switch ($mode)
+			{
+				case 'user':
+					$banlist_tmp[] = $row['ban_userid'];
+					break;
+
+				case 'ip':
+					$banlist_tmp[] = "'" . $row['ban_ip'] . "'";
+					break;
+
+				case 'email':
+					$banlist_tmp[] = "'" . $row['ban_email'] . "'";
+					break;
+			}
+		}
+		while ($row = $db->sql_fetchrow($result));
+
+		$banlist = array_unique(array_diff($banlist, $banlist_tmp));
+		unset($banlist_tmp);
+	}
+
+	if (sizeof($banlist))
+	{
+		$sql = '';
+		foreach ($banlist as $ban_entry)
+		{
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+					$sql .= (($sql != '') ? ', ' : '') . "($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+					break;
+
+				case 'mssql':
+				case 'sqlite':
+					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
+					break;
+
+				default:
+					$sql = 'INSERT INTO ' . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
+						VALUES ($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+					$db->sql_query($sql);
+			}
+		}
+
+		if ($sql)
+		{
+			$sql = 'INSERT INTO ' . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
+				VALUES $sql";
+			$db->sql_query($sql);
+		}
+
+		if (!$ban_exclude)
+		{
+			$sql = '';
+			switch ($mode)
+			{
+				case 'user':
+					$sql = 'WHERE session_user_id IN (' . implode(', ', $banlist) . ')';
+					break;
+
+				case 'ip':
+					$sql = 'WHERE session_ip IN (' . implode(', ', $banlist) . ')';
+					break;
+
+				case 'email':
+					$sql = 'SELECT user_id
+						FROM ' . USERS_TABLE . '
+						WHERE user_email IN (' . implode(', ', $banlist) . ')';
+					$result = $db->sql_query($sql);
+
+					$sql_in = array();
+					if ($row = $db->sql_fetchrow($result))
+					{
+						do
+						{
+							$sql_in[] = $row['user_id'];
+						}
+						while ($row = $db->sql_fetchrow($result));
+
+						$sql = 'WHERE session_user_id IN (' . str_replace('*', '%', implode(', ', $sql_in)) . ")";
+					}
+					break;
+			}
+
+			if ($sql)
+			{
+				$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+					$sql";
+				$db->sql_query($sql);
+			}
+		}
+
+		if (!function_exists('add_log'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+		}
+
+		// Update log
+		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
+		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+	}
+
+	return false;
+}
+
+function user_unban($mode, $ban)
+{
+	global $db, $user, $auth;
+
+	// Delete stable bans
+	$sql = "DELETE FROM " . BANLIST_TABLE . "
+		WHERE ban_end < " . time() . "
+			AND ban_end <> 0";
+	$db->sql_query($sql);
+
+	$unban_sql = implode(', ', $ban);
+
+	if ($unban_sql)
+	{
+		$l_unban_list = '';
+		// Grab details of bans for logging information later
+		switch ($mode)
+		{
+			case 'user':
+				$sql = 'SELECT u.username AS unban_info
+					FROM ' . USERS_TABLE . ' u, ' . BANLIST_TABLE . " b 
+					WHERE b.ban_id IN ($unban_sql) 
+						AND u.user_id = b.ban_userid";
+				break;
+
+			case 'email':
+				$sql = 'SELECT ban_email AS unban_info 
+					FROM ' . BANLIST_TABLE . "
+					WHERE ban_id IN ($unban_sql)";
+				break;
+
+			case 'ip':
+				$sql = 'SELECT ban_ip AS unban_info 
+					FROM ' . BANLIST_TABLE . "
+					WHERE ban_id IN ($unban_sql)";
+				break;
+		}
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
+		}
+
+		$sql = 'DELETE FROM ' . BANLIST_TABLE . "
+			WHERE ban_id IN ($unban_sql)";
+		$db->sql_query($sql);
+
+		if (!function_exists('add_log'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+		}
+
+		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+	}
+
+	return false;
+
+}
 //
 // Data validation ... used primarily but not exclusively by
 // ucp modules
