@@ -148,7 +148,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		{
 			$total = $db->sql_fetchrowset($count_result);
 			$total_members = $total[0]['total'];
-			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode", $total_members, $board_config['posts_per_page'], $start, TRUE);
+			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode", $total_members, $board_config['topics_per_page'], $start, TRUE)."&nbsp;";
 		}
 	}
 	else
