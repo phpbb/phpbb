@@ -634,7 +634,7 @@ GO
  CREATE  INDEX [IX_phpbb_sessions] ON [phpbb_sessions]([session_id], [session_user_id], [session_ip], [session_logged_in]) ON [PRIMARY]
 GO
 
- CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_last_post_id]) ON [PRIMARY]
+ CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_topics_watch] ON [phpbb_topics_watch]([topic_id], [user_id]) ON [PRIMARY]
