@@ -29,6 +29,7 @@ if (!empty($setmodules))
 	$module['GENERAL']['EMAIL_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
 	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
 	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
+	$module['GENERAL']['LOAD_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=load" : '';
 	return;
 }
 
@@ -66,6 +67,10 @@ switch ($mode)
 		break;
 	case 'server':
 		$l_title = 'SERVER_SETTINGS';
+		$which_auth = 'a_server';
+		break;
+	case 'load':
+		$l_title = 'LOAD_SETTINGS';
 		$which_auth = 'a_server';
 		break;
 	case 'auth':
@@ -503,7 +508,35 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="browser_check" value="1" <?php echo $browser_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="browser_check" value="0" <?php echo $browser_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['LIMIT_LOAD']; ?>: <br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['ENABLE_GZIP']; ?>: </td>
+		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['SMILIES_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMILIES_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['ICONS_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ICONS_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
+	</tr>
+<?php
+
+	case 'load':
+
+		$load_online_yes = ($new['load_online']) ? 'checked="checked"' : '';
+		$load_online_no = (!$new['load_online']) ? 'checked="checked"' : '';
+		$moderators_yes = ($new['load_moderators']) ? 'checked="checked"' : '';
+		$moderators_no = (!$new['load_moderators']) ? 'checked="checked"' : '';
+		$search_yes = ($new['load_search']) ? 'checked="checked"' : '';
+		$search_no = (!$new['load_search']) ? 'checked="checked"' : '';
+		$search_update_yes = ($new['load_search_upd']) ? 'checked="checked"' : '';
+		$search_update_no = (!$new['load_search_upd']) ? 'checked="checked"' : '';
+		$search_phrase_yes = ($new['load_search_phr']) ? 'checked="checked"' : '';
+		$search_phrase_no = (!$new['load_search_phr']) ? 'checked="checked"' : '';
+
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['LIMIT_LOAD']; ?>: <br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
 	</tr>
 	<tr>
@@ -515,16 +548,28 @@ switch ($mode)
 		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['ENABLE_GZIP']; ?>: </td>
-		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row1"><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: <br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['SMILIES_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['SMILIES_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
+		<td class="row1"><?php echo $user->lang['YES_ONLINE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_online" value="1"<?php echo $load_online_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_online" value="0" <?php echo $load_online_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['ICONS_PATH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ICONS_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
+		<td class="row1"><?php echo $user->lang['YES_MODERATORS']; ?>: </td>
+		<td class="row2"><input type="radio" name="load_moderators" value="1"<?php echo $moderators_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_moderators" value="0" <?php echo $moderators_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_SEARCH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_search" value="1"<?php echo $search_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search" value="0" <?php echo $search_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_SEARCH_UPDATE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_UPDATE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_search_upd" value="1"<?php echo $search_update_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_upd" value="0" <?php echo $search_update_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['YES_SEARCH_PHRASE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_PHRASE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="load_search_phr" value="1"<?php echo $search_phrase_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_phr" value="0" <?php echo $search_phrase_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
