@@ -38,11 +38,16 @@ if(isset($HTTP_GET_VARS[POST_POST_URL]))
 }
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+
+$mode = (isset($HTTP_GET_VARS['mode'])) ? addslashes($HTTP_GET_VARS['mode']) : "";
+
+$forum_id = (isset($HTTP_GET_VARS['f'])) ? intval($HTTP_GET_VARS['f']) : "";
+
 //
 // End initial var setup
 //
 
-if( !isset($topic_id) && !isset($post_id) )
+if( !isset($topic_id) && !isset($post_id) && ($mode != "viewannounce") )
 {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
@@ -130,6 +135,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 	}
 }
 
+
 //
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
@@ -141,11 +147,24 @@ $count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 
 $order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
-	FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
-	WHERE $join_sql
-		AND f.forum_id = t.forum_id
-		$order_sql";
+if( $mode=="viewannounce" )
+{
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+		FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+		WHERE $join_sql AND
+			t.topic_type = " . POST_ANNOUNCE . " AND
+			(f.forum_id = " . $forum_id . "
+			OR f.forum_id = -1)
+			$order_sql";
+}
+else
+{
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+		FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+		WHERE $join_sql
+			AND f.forum_id = t.forum_id
+			$order_sql";
+}
 
 if(!$result = $db->sql_query($sql))
 {

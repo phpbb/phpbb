@@ -330,10 +330,21 @@ if( !empty($mode) )
 
 			$max_order = $row['max_order'];
 			$next_order = $max_order + 1;
+			
+			$sql = "SELECT MAX(forum_id) AS max_id
+				FROM " . FORUMS_TABLE;
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
+			}
+			$row = $db->sql_fetchrow($result);
+
+			$max_id = $row['max_id'];
+			$next_id = $max_id + 1;
 
 			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable)
-				VALUES ('" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . ")";
+			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable)
+				VALUES ('" . $next_id . "', '" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . ")";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
