@@ -20,6 +20,14 @@
  ***************************************************************************/
 
 //
+// NOTE NOTE NOTE  NOTE NOTE NOTE  NOTE NOTE NOTE 
+//
+// Bug fixes in 2.0.x should be ported to this, particularly the header changes
+//
+// NOTE NOTE NOTE  NOTE NOTE NOTE  NOTE NOTE NOTE 
+//
+
+//
 // The emailer class has support for attaching files, that isn't implemented
 // in the 2.0 release but we can probable find some way of using it in a future
 // release
