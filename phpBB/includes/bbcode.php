@@ -225,6 +225,7 @@ mt_srand( (double) microtime() * 1000000);
 function make_bbcode_uid()
 {
 	// Unique ID for this message..
+
 	$uid = md5(mt_rand());
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 
@@ -537,11 +538,10 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 
 		$after_replace = preg_replace($html_entities_match, $html_entities_replace, $after_replace);
 		
-		// Replace all spaces with non-breaking spaces.
-		$after_replace = str_replace(" ", "&nbsp;", $after_replace);
-		
-		// Replace 3 nbsp's with "&nbsp; &nbsp;" so non-tabbed code indents without making huge long lines.
-		$after_replace = str_replace("&nbsp;&nbsp;&nbsp;", "&nbsp; &nbsp;", $after_replace);
+		// Replace 2 spaces with "&nbsp; " so non-tabbed code indents without making huge long lines.
+		$after_replace = str_replace("  ", "&nbsp; ", $after_replace);
+		// now Replace 2 spaces with " &nbsp;" to catch odd #s of spaces.
+		$after_replace = str_replace("  ", " &nbsp;", $after_replace);
 		
 		// Replace tabs with "&nbsp; &nbsp;" so tabbed code indents sorta right without making huge long lines.
 		$after_replace = str_replace("\t", "&nbsp; &nbsp;", $after_replace);
