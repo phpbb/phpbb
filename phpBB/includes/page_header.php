@@ -25,6 +25,29 @@
 define(HEADER_INC, TRUE);
 
 //
+// gzip_compression
+//
+if($board_config['gzip_compress'])
+{
+	$phpver = phpversion();
+
+	if($phpver >= "4.0.4pl1")
+	{
+		if(extension_loaded("zlib"))
+		{
+			ob_start("ob_gzhandler");
+		}
+	}
+	else if($phpver > "4.0")
+	{
+		// It would be nice if we
+		// used output buffering here 
+		// to allow compression for
+		// versions < 4.0.4pl1
+	}
+}
+
+//
 // Parse and show the overall header.
 //
 $template->set_filenames(array(
@@ -86,15 +109,11 @@ if(!$result)
 
 $logged_online = 0;
 $guests_online = 0;
-
-$row = $db->sql_fetchrowset($result);
-$num_rows = $db->sql_numrows($result);
-for($x = 0; $x < $num_rows; $x++)
+while($row = $db->sql_fetchrow($result))
 {
-	
-	if($row[$x]['session_logged_in'])
+	if($row['session_logged_in'])
 	{
-		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row[$x]['user_id']) . "\">" . $row[$x]['username'] . "</a>";
+		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
 		$logged_online++;
 	}
 	else
@@ -102,7 +121,6 @@ for($x = 0; $x < $num_rows; $x++)
 		$guests_online++;
 	}
 }
-
 $userlist = "";
 for($i = 0; $i < $logged_online; $i++)
 {

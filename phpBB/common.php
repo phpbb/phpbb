@@ -40,6 +40,7 @@ $url_images = "images";
 $images['quote'] = "$url_images/quote.gif";
 $images['edit'] = "$url_images/edit.gif";
 $images['profile'] = "$url_images/profile.gif";
+$images['privmsg'] = "$url_images/icon_pm.gif";
 $images['email'] = "$url_images/email.gif";
 $images['pmsg'] = "$url_images/pm.gif";
 $images['delpost'] = "$url_images/edit.gif";
@@ -86,6 +87,7 @@ if(!$result = $db->sql_query($sql))
 	$board_config['default_dateformat'] = "d M Y H:i";
 	$board_config['default_theme'] = 1;
 	$board_config['default_lang'] = "english";
+	$board_config['gzip_compress'] = 0;
 
 	// Our template class hasn't been instantiated
 	// so we do it here.
@@ -96,7 +98,7 @@ if(!$result = $db->sql_query($sql))
 else
 {
 	$config = $db->sql_fetchrow($result);
-	
+
 	$board_config['sitename'] = stripslashes($config['sitename']);
 	$board_config['allow_html'] = $config['allow_html'];
 	$board_config['allow_bbcode'] = $config['allow_bbcode'];
@@ -122,6 +124,9 @@ else
 	$board_config['avatar_max_height'] = $config['avatar_max_height'];
 	$board_config['avatar_path'] = $config['avatar_path'];
 	$board_config['prune_enable'] = $config['prune_enable'];
+	$board_config['gzip_compress'] = $config['gzip_compress'];
 }
+
 include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
+
 ?>

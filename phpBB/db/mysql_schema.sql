@@ -115,7 +115,8 @@ CREATE TABLE phpbb_config (
    default_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    system_timezone int(11) DEFAULT '0' NOT NULL,
    sys_template varchar(100) DEFAULT 'Default' NOT NULL,
-   prune_enable tinyint(1) DEFAULT '1' NOT NULL,
+   prune_enable tinyint(1) DEFAULT '1' NOT NULL, 
+   gzip_compress tinyint(1) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (config_id),
    UNIQUE selected (selected)
 );
