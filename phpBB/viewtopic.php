@@ -686,8 +686,18 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Generate ranks
 	//
+	
+	//
+	// Set them to empty string initially, in case we don't find a rank for this dude.
+	//
+	$poster_rank = "";
+	$rank_image = "";
+	
 	if( $postrow[$i]['user_id'] == ANONYMOUS )
 	{
+		//
+		// This is redundant, but some day we might wanna stick in a rank for anon. posts.
+		//
 		$poster_rank = "";
 		$rank_image = "";
 	}
