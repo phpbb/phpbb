@@ -22,7 +22,7 @@
 // ---------
 // FUNCTIONS
 //
-function page_header($text)
+function page_header($text, $form_action = false)
 {
 	global $phpEx, $lang;
 
@@ -73,7 +73,7 @@ td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: u
 				<td><br /><br /></td>
 			</tr>
 			<tr>
-				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="install.<?php echo $phpEx; ?>" name="install" method="post">
+				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="<?php echo ($form_action) ? $form_action : 'install.'.$phpEx; ?>" name="install" method="post">
 <?php
 
 }
@@ -134,10 +134,9 @@ function page_error($error_title, $error)
 
 }
 
-// Guess an initial language ... borrowed from phpBB 2.2
-// it's not perfect, really it should do a straight match
-// first pass and then try a "fuzzy" match on a second pass
-// instead of a straight fuzzy match.
+// Guess an initial language ... borrowed from phpBB 2.2 it's not perfect, 
+// really it should do a straight match first pass and then try a "fuzzy"
+// match on a second pass instead of a straight "fuzzy" match.
 function guess_lang()
 {
 	global $phpbb_root_path, $HTTP_SERVER_VARS;
@@ -300,6 +299,7 @@ include($phpbb_root_path.'extension.inc');
 // Initialise some basic arrays
 $userdata = array();
 $lang = array();
+$error = false;
 
 // Include some required functions
 include($phpbb_root_path.'includes/constants.'.$phpEx);
@@ -440,34 +440,27 @@ if (@file_exists(@realpath('config.'.$phpEx)))
 	include($phpbb_root_path.'config.'.$phpEx);
 }
 
-// Is phpBB already installed? No, include necessary
-// files and continue, else redirect to the index
-if (!defined("PHPBB_INSTALLED"))
-{
-	include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
-
-	// Import language file, setup template ...
-	include($phpbb_root_path.'language/lang_' . $language . '/lang_main.'.$phpEx);
-	include($phpbb_root_path.'language/lang_' . $language . '/lang_admin.'.$phpEx);
-
-	// Ok for the time being I'm commenting this out whilst I'm working on
-	// better integration of the install with upgrade as per Bart's request
-	// JLH
-	if ($upgrade == 1)
-	{
-		// require('upgrade.'.$phpEx);
-		$install_step = 1;
-	}
-}
-else
+// Is phpBB already installed? Yes? Redirect to the index
+if (defined("PHPBB_INSTALLED"))
 {
 	redirect('index.'.$phpEx);
 }
 
-//
-//
-//
-if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  && !defined("PHPBB_INSTALLED") && empty($HTTP_POST_VARS['upgrade_now']))
+// Import language file, setup template ...
+include($phpbb_root_path.'language/lang_' . $language . '/lang_main.'.$phpEx);
+include($phpbb_root_path.'language/lang_' . $language . '/lang_admin.'.$phpEx);
+
+// Ok for the time being I'm commenting this out whilst I'm working on
+// better integration of the install with upgrade as per Bart's request
+// JLH
+if ($upgrade == 1)
+{
+	// require('upgrade.'.$phpEx);
+	$install_step = 1;
+}
+
+// What do we need to do?
+if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1 && empty($HTTP_POST_VARS['upgrade_now']))
 {
 	header('Content-Type: text/x-delimtext; name="config.' . $phpEx . '"');
 	header('Content-disposition: attachment; filename=config.' . $phpEx . '"');
@@ -479,7 +472,7 @@ if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  &
 
 	exit;
 }
-else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 2 && !defined("PHPBB_INSTALLED") )
+else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 2)
 {
 	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($HTTP_POST_VARS['config_data'])) . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
@@ -514,7 +507,7 @@ else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	exit;
 
 }
-else if (!empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED") )
+else if (!empty($HTTP_POST_VARS['ftp_file']))
 {
 	// Try to connect ...
 	$conn_id = @ftp_connect('localhost');
@@ -600,7 +593,7 @@ else if (!empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED") )
 		exit();
 	}
 }
-else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || $dbhost == '')  && !defined("PHPBB_INSTALLED"))
+else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost)))
 {
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
@@ -610,9 +603,13 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
 	$instruction_text = $lang['Inst_Step_0'];
 
-	if ((($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) && $install_step != '0') || (empty($HTTP_POST_VARS['admin_pass1']) && !empty($dbhost)))
+	if (!empty($install_step))
 	{
-		$instruction_text = $lang['Password_mismatch'] . '<br />' . $instruction_text;
+		if ((($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'])) ||
+			(empty($HTTP_POST_VARS['admin_pass1']) || empty($dbhost)) && $HTTP_POST_VARS['cur_lang'] == $language)
+		{
+			$error = $lang['Password_mismatch'];
+		}
 	}
 
 	$dir = opendir($phpbb_root_path . 'language');
@@ -642,7 +639,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 	}
 	$lang_select .= '</select>';
 
-	$dbms_select = '<select name="dbms" onchange="if (document.install_form.upgrade.options[upgrade.selectedIndex].value == 1) { document.install.dbms.selectedIndex=0}">';
+	$dbms_select = '<select name="dbms" onchange="if(this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
 	while (list($dbms_name, $details) = @each($available_dbms))
 	{
 		$selected = ($dbms_name == $dbms) ? 'selected="selected"' : '';
@@ -651,11 +648,11 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 	$dbms_select .= '</select>';
 
 	$upgrade_option = '<select name="upgrade"';
-	$upgrade_option .= 'onchange="if (this.options[this.selectedIndex].value == 1) { document.install.dbms.selectedIndex=0; }">';
+	$upgrade_option .= 'onchange="if (this.options[this.selectedIndex].value == 1) { this.form.dbms.selectedIndex = 0; }">';
 	$upgrade_option .= '<option value="0">' . $lang['Install'] . '</option>';
 	$upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option></select>';
 	
-	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" /><input type="hidden" name="language" value="' . $language . '" />';
+	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" /><input type="hidden" name="cur_lang" value="' . $language . '" />';
 
 	page_header($instruction_text);
 
@@ -701,6 +698,18 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 					<tr>
 						<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
 					</tr>
+<?php
+
+	if ($error)
+	{
+?>
+					<tr>
+						<td class="row1" colspan="2" align="center"><span class="gen" style="color:red"><?php echo $error; ?></span></td>
+					</tr>
+<?php
+
+	}
+?>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_email']; ?>: </span></td>
 						<td class="row2"><input type="text" name="board_email" value="<?php echo ($board_email != '') ? $board_email : ''; ?>" /></td>
@@ -793,6 +802,9 @@ else
 		{
 			if ($dbms != 'msaccess')
 			{
+				// Load in the sql parser
+				include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
+
 				// Ok we have the db info go ahead and read in the relevant schema
 				// and work on building the table.. probably ought to provide some
 				// kind of feedback to the user as we are working here in order
@@ -928,7 +940,7 @@ else
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...
-			if (!($fp = @fopen('config.'.$phpEx, 'w')))
+			if (!($fp = @fopen($phpbb_root_path . 'config.'.$phpEx, 'w')))
 			{
 				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 
@@ -949,6 +961,7 @@ else
 						<td class="row2"><input type="radio" name="send_file" value="1"></td>
 					</tr>
 <?php 
+
 				}
 				else
 				{
@@ -1008,7 +1021,7 @@ else
 		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.' . $phpEx . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="login" value="true" />';
 
-		page_header($lang['Inst_Step_2']);
+		page_header($lang['Inst_Step_2'], '../login.'.$phpEx);
 		page_common_form($s_hidden_fields, $lang['Finish_Install']);
 		page_footer();
 		exit;
