@@ -84,7 +84,7 @@ $s_last_visit = create_date($board_config['default_dateformat'], $userdata['sess
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".(time() - 300);
+		AND s.session_time >= ".( time() - 300 );
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -101,7 +101,6 @@ while($row = $db->sql_fetchrow($result))
 		if($row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN)
 		{
 			$userlist_ary[] = "<a href=\"" . append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
-			$logged_visible_online++;
 		}
 		else
 		{
@@ -113,14 +112,16 @@ while($row = $db->sql_fetchrow($result))
 		$guests_online++;
 	}
 }
-$userlist = "";
-for($i = 0; $i < $logged_visible_online; $i++)
-{
-	$userlist .= ($i ==  $logged_visible_online - 1 && $logged_visible_online > 1) ? " " . $lang['and'] . " " : "";
-	$userlist .= $userlist_ary[$i];
-	$userlist .= ($i < $logged_visible_online - 2) ? ", " : "";
-}
 
+$userlist = "";
+for($i = 0; $i < count($userlist_ary); $i++)
+{
+	if( !strstr($userlist, $userlist_ary[$i]) )
+	{
+		$userlist .= ($userlist != "") ? ", " . $userlist_ary[$i] : $userlist_ary[$i];
+		$logged_visible_online++;
+	}
+}
 $l_g_user_s = ($guests_online == 1) ? $lang['User'] : $lang['Users'];
 $l_h_user_s = ($logged_hidden_online == 1) ? $lang['User'] : $lang['Users'];
 $l_r_user_s = ($logged_visible_online == 1) ? $lang['User'] : $lang['Users'];
@@ -181,6 +182,7 @@ $template->assign_vars(array(
 	"L_PROFILE" => $lang['Profile'],
 	"L_SEARCH" => $lang['Search'],
 	"L_PRIVATEMSGS" => $lang['Private_msgs'],
+	"L_WHO_IS_ONLINE" => $lang['Who_is_Online'], 
 	"L_MEMBERLIST" => $lang['Memberlist'],
 	"L_FAQ" => $lang['FAQ'],
 	"L_USERGROUPS" => $lang['Usergroups'],
