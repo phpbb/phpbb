@@ -126,8 +126,8 @@ $template->set_filenames(array(
 // Escape any quotes in the site description for proper display in the text
 // box on the admin page 
 //
-$new['site_desc'] = htmlspecialchars($new['site_desc']);
-$new['sitename'] = htmlspecialchars($new['sitename']);
+$new['site_desc'] = str_replace('"', '&quot;', $new['site_desc']);
+$new['sitename'] = str_replace('"', '&quot;', strip_tags($new['sitename']));
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 
@@ -143,6 +143,7 @@ $template->assign_vars(array(
 	"L_SCRIPT_PATH" => $lang['Script_path'], 
 	"L_SCRIPT_PATH_EXPLAIN" => $lang['Script_path_explain'], 
 	"L_SITE_NAME" => $lang['Site_name'],
+	"L_SITE_NAME_EXPLAIN" => $lang['Site_name_explain'],
 	"L_SITE_DESCRIPTION" => $lang['Site_desc'],
 	"L_DISABLE_BOARD" => $lang['Board_disable'], 
 	"L_DISABLE_BOARD_EXPLAIN" => $lang['Board_disable_explain'], 
