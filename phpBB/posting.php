@@ -2717,7 +2717,7 @@ $template->assign_vars(array(
 	"L_MESSAGE_BODY" => $lang['Message_body'],
 	"L_OPTIONS" => $lang['Options'],
 	"L_PREVIEW" => $lang['Preview'],
-	"L_SPELLCHECK" => $lang['Specllcheck'],
+	"L_SPELLCHECK" => $lang['Spellcheck'],
 	"L_SUBMIT" => $lang['Submit_post'],
 	"L_CANCEL" => $lang['Cancel_post'],
 	"L_CONFIRM_DELETE" => $lang['Confirm_delete'],
