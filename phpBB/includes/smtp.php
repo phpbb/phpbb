@@ -86,7 +86,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
 			}
-			$headers .= $header . "\r\n";
+			$headers .= ($header != '') ? $header . "\r\n" : '';
 		}
 
 		$headers = chop($headers);
