@@ -572,6 +572,8 @@ switch($mode)
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
+		$message = $message . "<br \><br \>" . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+
 		$template->assign_vars(array(
 			"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 		);
@@ -612,6 +614,8 @@ switch($mode)
 			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
+
+		$message = $message . "<br \><br \>" . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 
 		$template->assign_vars(array(
 			"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
