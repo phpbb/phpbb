@@ -55,7 +55,7 @@ else
 //
 if($sys_timezone < 0)
 {
-	$s_timezone = "$l_all_times GMT - $sys_timezone $l_hours";
+	$s_timezone = "$l_all_times GMT - ".(-$sys_timezone)." $l_hours";
 }
 else if($sys_timezone == 0)
 {
