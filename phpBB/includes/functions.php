@@ -1497,17 +1497,6 @@ function page_footer()
 
 	$template->display('body');
 
-	// Handle email/cron queue.
-	if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
-	{
-		if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
-		{
-			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-			$queue = new queue();
-			$queue->process();
-		}
-	}
-
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
 	{

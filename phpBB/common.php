@@ -67,6 +67,12 @@ require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 
+// Warn about install/ directory
+if (file_exists('install'))
+{
+//	trigger_error('REMOVE_INSTALL');
+}
+
 // User related
 define('ANONYMOUS', 1);
 
@@ -254,10 +260,15 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 }
 */
 
-// Warn about install/ directory
-if (file_exists('install'))
+// Handle email/cron queue.
+if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
 {
-//	trigger_error('REMOVE_INSTALL');
+	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+	{
+		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+		$queue = new queue();
+		$queue->process();
+	}
 }
 
 // Show 'Board is disabled' message
