@@ -171,7 +171,7 @@ include($phpbb_root_path.'includes/sessions.'.$phpEx);
 // Import language file, setup template ...
 //
 include($phpbb_root_path.'language/lang_' . $language . '/lang_main.'.$phpEx);
-include($phpbb_root_path.'langauge/lang_' . $language . '/lang_admin.'.$phpEx);
+include($phpbb_root_path.'language/lang_' . $language . '/lang_admin.'.$phpEx);
 
 $template = new Template($phpbb_root_path . "templates/" . $default_template);
 
