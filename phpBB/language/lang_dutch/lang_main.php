@@ -89,6 +89,7 @@ $lang['IP_Address'] = "IP Adres";
 
 $lang['Select_forum'] = "Kies Forum";
 $lang['View_latest_post'] = "Bekijk laatste bericht";
+$lang['Browsing_forum'] = "Gebruikers momenteel in dit forum:";
 $lang['Page_of'] = "Pagina <b>%d</b> van <b>%d</b>"; // Replaces with: Page 1 of 2 for example
 
 $lang['ICQ'] = "ICQ Nummer";
@@ -130,12 +131,11 @@ $lang['Hidden_user_total'] = "%d Verborgen en ";
 $lang['Guest_users_zero_total'] = "0 Gasten";
 $lang['Guest_users_total'] = "%d Gasten";
 $lang['Guest_user_total'] = "%d Gast";
-
-$lang['Admin_online_color'] = "%sBeheerder%s";
-$lang['Mod_online_color'] = "%sModerator%s";
+$lang['Record_online_users'] = "Grootst aantal gebruikers online was <b>%s</b> op %s"; // first %s = number of users, second %s is the date.
 
 $lang['You_last_visit'] = "Je laatste bezoek was op %s"; // %s replaced by date/time
-$lang['Current_time'] = "Het is nu %s";
+$lang['Current_time'] = "Het is nu %s"; // %s replaced by time
+
 $lang['Search_new'] = "Berichten sinds laatste bezoek";
 $lang['Search_your_posts'] = "Bekijk je berichten";
 $lang['Search_unanswered'] = "Bekijk onbeantwoorde berichten";
@@ -490,8 +490,8 @@ $lang['Items_required'] = "Onderdelen met een * zijn verplicht";
 $lang['Registration_info'] = "Registratie informatie";
 $lang['Profile_info'] = "Profiel Informatie";
 $lang['Profile_info_warn'] = "Deze informatie is zichtbaar voor de andere gebruikers";
-$lang['Avatar_panel'] = "Avatar control panel";
-$lang['Avatar_gallery'] = "Avatar gallery"; //BVB
+$lang['Avatar_panel'] = "Avatar paneel";
+$lang['Avatar_gallery'] = "Avatar gallery";
 
 $lang['Website'] = "Website";
 $lang['Location'] = "Woonplaats";
@@ -512,7 +512,7 @@ $lang['Search_user_posts'] = "Zoek naar alle berichten van %s"; // Find all post
 
 $lang['No_user_id_specified'] = "Sorry maar deze gebruiker bestaat niet";
 $lang['Wrong_Profile'] = "Je kan alleen je eigen profiel bewerken";
-$lang['Sorry_banned_or_taken_email'] = "Sorry maar dit email adres is gebanned, is al gebruikt door een andere gebruiker of is ongeldig. Probeer een ander mail adres, is deze ook gebanned, neem dan contact op met de beheerder van dit forum voor advies.";
+$lang['Confirm_password_explain'] = "Je moet je huidige wachtwoord bevestigen indien je het wil wijzigen of je email adres aanpassen";
 $lang['Only_one_avatar'] = "Je kan maar één soort Avatar gebruiken";
 $lang['File_no_data'] = "Het bestand dat je opgaf lijkt leeg te zijn.";
 $lang['No_connection_URL'] = "Er kan geen verbinding gemaakt worden met de server die je hebt opgegeven";
@@ -572,7 +572,14 @@ $lang['Profile_updated_inactive'] = "Je profiel is bijgewerkt, al heb je wel bel
 
 $lang['Password_mismatch'] = "De wachtwoorden die je hebt opgegeven komen niet overeen.";
 $lang['Current_password_mismatch'] = "Het huidige wachtwoord wat je hebt opgegeven komt niet overeen met het opgeslagen wachtwoord in de database.";
-$lang['Invalid_username'] = "De gebruikersnaam bestaat al of er staan ongeldige tekens de naam zoals het \" teken";
+$lang['Password_long'] = "Uw wachtwoord mag maximaal uit 32 tekens bestaan"; 
+$lang['Username_taken'] = "Sorry, maar deze gebruikersnaam is reeds in gebruik"; 
+$lang['Username_invalid'] = "Sorry, maar deze gebruikersnaam bevat een ongeldig teken zoals \""; 
+$lang['Username_disallowed'] = "Sorry, maar deze gebruikersnaam is niet toegelaten"; 
+$lang['Email_taken'] = "Sorry, maar dit email adres is al gebruikt door een gebruiker"; 
+$lang['Email_banned'] = "Sorry, maar dit email adres is gebanned"; 
+$lang['Email_invalid'] = "Sorry, maar dit email adres is ongeldig"; 
+
 $lang['Signature_too_long'] = "Je onderschrift is te lang";
 $lang['Fields_empty'] = "Je moet alle verplichte velden invullen";
 $lang['Avatar_filetype'] = "De Avatar moet een .jpg, .gif of .png zijn";
@@ -716,11 +723,11 @@ $lang['Search_author_explain'] = "Gebruik een * (wildcard) om op een deel van ee
 
 $lang['Search_for_any'] = "Zoek voor <i>een</i> van de woorden of gebruik AND, OR en NOT";
 $lang['Search_for_all'] = "Zoek naar <i>alle</i> woorden";
-$lang['Search_title_msg'] = "Zoek in bericht titel en tekst";
-$lang['Search_msg_only'] = "Zoek alleen in bericht tekst";
-
 
 $lang['Search_author'] = "Zoek op Auteur";
+$lang['Search_title_msg'] = "Zoek in bericht titel en tekst";
+$lang['Search_msg_only'] = "Zoek alleen in tekst bericht";
+
 
 $lang['Return_first'] = "Bekijk eerste"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "tekens van het bericht";
@@ -968,6 +975,9 @@ $lang['Critical_Error'] = "Fatale Fout";
 $lang['An_error_occured'] = "Er is een fout opgetreden";
 $lang['A_critical_error'] = "Er is een fatale fout opgetreden";
 
+$lang['Admin_online_color'] = "%sBeheerder%s";
+$lang['Mod_online_color'] = "%sModerator%s";
+//$lang['TRANSLATION_INFO'] = "";
 //
 // That's all Folks!
 // -------------------------------------------------
