@@ -455,7 +455,7 @@ if (isset($HTTP_GET_VARS['highlight']))
 	{
 		if (trim($words[$i]) != '')
 		{
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($words[$i], '#'));
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', phpbb_preg_quote($words[$i], '#'));
 		}
 	}
 	unset($words);
