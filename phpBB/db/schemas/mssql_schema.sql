@@ -181,7 +181,6 @@ CREATE TABLE [phpbb_sessions] (
 	[session_user_id] [int] NOT NULL ,
 	[session_start] [int] NULL ,
 	[session_time] [int] NULL ,
-	[session_last_visit] [int] NULL ,
 	[session_ip] [char] (8) NOT NULL ,
 	[session_page] [int] NULL ,
 	[session_logged_in] [smallint] NULL 

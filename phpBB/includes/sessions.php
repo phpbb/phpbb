@@ -152,7 +152,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 	// Create or update the session
 	//
 	$sql = "UPDATE " . SESSIONS_TABLE . "
-		SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_page = $page_id, session_logged_in = $login
+		SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
 		WHERE session_id = '" . $session_id . "' 
 			AND session_ip = '$user_ip'";
 	$result = $db->sql_query($sql);
@@ -162,8 +162,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		$session_id = md5(uniqid($user_ip));
 
 		$sql = "INSERT INTO " . SESSIONS_TABLE . "
-			(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
-			VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
+			(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
+			VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login)";
 		$result = $db->sql_query($sql);
 		if(!$result)
 		{
@@ -182,9 +182,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 		}
 
 		$sessiondata['autologinid'] = ( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE ) ? $auto_login_key : "";
+		$sessiondata['userid'] = $user_id;
 	}
-
-	$sessiondata['userid'] = $user_id;
 
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
@@ -392,19 +391,9 @@ function session_end($session_id, $user_id)
 		{
 			unset($sessiondata['autologinid']);
 		}
-
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_lastvisit = " . time() . " 
-			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql);
-		if (!$result)
-		{
-			message_die(CRITICAL_ERROR, "Couldn't reset user autologin key : session_end", "", __LINE__, __FILE__, $sql);
-		}
-
 	}
 
-	$sessiondata['userid'] = ANONYMOUS;
+	unset($sessiondata['userid']);
 
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);

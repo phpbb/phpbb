@@ -276,7 +276,6 @@ CREATE TABLE phpbb_sessions (
    session_user_id int4 DEFAULT '0' NOT NULL,
    session_start int4 DEFAULT '0' NOT NULL,
    session_time int4 DEFAULT '0' NOT NULL,
-   session_last_visit int4 DEFAULT '0' NOT NULL,
    session_ip char(8) DEFAULT '0' NOT NULL,
    session_page int4 DEFAULT '0' NOT NULL,
    session_logged_in int2 DEFAULT '0' NOT NULL,

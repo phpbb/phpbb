@@ -185,7 +185,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
 			WHERE t.forum_id = f.forum_id
 				AND p.post_id = t.topic_last_post_id
-				AND p.post_time > " . $userdata['session_last_visit'] . " 
+				AND p.post_time > " . $userdata['user_lastvisit'] . " 
 				AND t.topic_moved_id = 0";
 		if(!$new_topic_ids = $db->sql_query($sql))
 		{
