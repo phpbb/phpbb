@@ -1063,20 +1063,48 @@ else if( $submit || $refresh || $mode != "" )
 
 				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
 				{
-					if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
+					if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
 					{
-						$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
+						$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
 					}
-					else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
+					else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
 					{
-						$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+						$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
+					}
+					else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
+					{
+						$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
 					}
 					else
 					{
-						$path = '';
+						$script_name = "privmsg.$phpEx";
 					}
-					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+
+					if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
+					{
+						$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+					}
+					else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
+					{
+						$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+					}
+					else
+					{
+						$server_name = "";
+					}
+
+					if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
+					{
+						$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+					}
+					else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
+					{
+						$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+					}
+					else
+					{
+						$protocol = "http://";
+					}
 
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
@@ -1087,7 +1115,6 @@ else if( $submit || $refresh || $mode != "" )
 					// Attempt to use language setting for recipient
 					//
 					$emailer->use_template("privmsg_notify", $to_userdata['user_lang']);
-
 					$emailer->extra_headers($email_headers);
 					$emailer->email_address($to_userdata['user_email']);
 					$emailer->set_subject($lang['Notification_subject']);
@@ -1097,7 +1124,7 @@ else if( $submit || $refresh || $mode != "" )
 						"SITENAME" => $board_config['sitename'],
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_INBOX" => $protocol . $server_name . $path . "/privmsg.$phpEx?folder=inbox")
+						"U_INBOX" => $protocol . $server_name . $script_name . "?folder=inbox")
 					);
 
 					$emailer->send();
@@ -1584,9 +1611,9 @@ else if( $submit || $refresh || $mode != "" )
 		"L_POST_A" => $post_a,
 		"L_FIND_USERNAME" => $lang['Find_username'],
 		"L_FIND" => $lang['Find'],
-		"L_DISABLE_HTML" => $lang['Disable_HTML_post'], 
-		"L_DISABLE_BBCODE" => $lang['Disable_BBCode_post'], 
-		"L_DISABLE_SMILIES" => $lang['Disable_Smilies_post'], 
+		"L_DISABLE_HTML" => $lang['Disable_HTML_pm'], 
+		"L_DISABLE_BBCODE" => $lang['Disable_BBCode_pm'], 
+		"L_DISABLE_SMILIES" => $lang['Disable_Smilies_pm'], 
 		"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
 
 		"L_BBCODE_B_HELP" => $lang['bbcode_b_help'], 

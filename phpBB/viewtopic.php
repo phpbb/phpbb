@@ -412,6 +412,7 @@ if(!$total_posts = $db->sql_numrows($result))
 	message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
 }
 $postrow = $db->sql_fetchrowset($result);
+$db->sql_freeresult($result);
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "

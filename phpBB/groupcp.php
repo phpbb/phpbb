@@ -57,6 +57,52 @@ $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
+//
+// Set default email variables
+//
+if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+}
+else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
+}
+else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
+}
+else
+{
+	$script_name = "groupcp.$phpEx";
+}
+
+if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
+{
+	$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+}
+else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
+{
+	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+}
+else
+{
+	$server_name = "";
+}
+
+if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
+{
+	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+}
+else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
+{
+	$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+}
+else
+{
+	$protocol = "http://";
+}
+
 $is_moderator = FALSE;
 
 if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
@@ -69,7 +115,6 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	$sql = "SELECT group_moderator 
 		FROM " . GROUPS_TABLE . "  
 		WHERE group_id = $group_id";
-		
 	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain user and group information", "", __LINE__, __FILE__, $sql);
@@ -128,33 +173,38 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		message_die(GENERAL_ERROR, "Couldn't obtain user and group information", "", __LINE__, __FILE__, $sql);
 	}
 
-	$rowset = $db->sql_fetchrowset($result);
-
-	if( $rowset[0]['group_type'] == GROUP_OPEN )
+	if(	$row = $db->sql_fetchrow($result) )
 	{
-		for($i = 0; $i < count($rowset); $i++ )
+		if( $row['group_type'] == GROUP_OPEN )
 		{
-			if( $userdata['user_id'] == $rowset[$i]['user_id'] )
+			do
 			{
-				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
-				);
+				if( $userdata['user_id'] == $row['user_id'] )
+				{
+					$template->assign_vars(array(
+						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
+					);
 
-				$message = $lang["Already_member_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+					$message = $lang["Already_member_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
 
-				message_die(GENERAL_MESSAGE, $message);
-			}
+					message_die(GENERAL_MESSAGE, $message);
+				}
+			} while ( $row = $db->sql_fetchrow($result) );
+		}
+		else
+		{
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
+			);
+
+			$message = $lang["This_closed_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+
+			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
 	else
 	{
-		$template->assign_vars(array(
-			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
-		);
-
-		$message = $lang["This_closed_group"] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
-
-		message_die(GENERAL_MESSAGE, $message);
+		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
 	}
 
 	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending) 
@@ -180,21 +230,6 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-	if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-	{
-		$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-	}
-	else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-	{
-		$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-	}
-	else
-	{
-		$path = '';
-	}
-	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" ) : "http://";
-
 	$emailer->use_template("group_request", $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
 	$emailer->set_subject($lang['Group_request']);
@@ -205,7 +240,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id&validate=true")
+		"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -401,21 +436,6 @@ else if( $group_id )
 
 				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-				if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-				{
-					$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-				}
-				else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-				{
-					$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-				}
-				else
-				{
-					$path = '';
-				}
-				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-
 				$emailer->use_template("group_added", $row['user_lang']);
 				$emailer->email_address($row['user_email']);
 				$emailer->set_subject($lang['Group_added']);
@@ -426,7 +446,7 @@ else if( $group_id )
 					"GROUP_NAME" => $group_name,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+					"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -470,7 +490,7 @@ else if( $group_id )
 						FROM ". USERS_TABLE . " 
 						WHERE user_id IN ($sql_in)";
 				}
-				else if( isset($HTTP_POST_VARS['deny']) || isset($HTTP_POST_VARS['remove']) )
+				else if ( isset($HTTP_POST_VARS['deny']) || isset($HTTP_POST_VARS['remove']) )
 				{
 					$sql = "DELETE FROM 
 						" . USER_GROUP_TABLE . " 
@@ -478,7 +498,7 @@ else if( $group_id )
 							AND group_id = $group_id";
 				}
 
-				if( !$result = $db->sql_query($sql) )
+				if ( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not update user group table.", "Error", __LINE__, __FILE__, $sql);
 				}
@@ -486,59 +506,41 @@ else if( $group_id )
 				//
 				// Email users when they are approved
 				//
-				if( isset($HTTP_POST_VARS['approve']) )
+				if ( isset($HTTP_POST_VARS['approve']) )
 				{
-					if( !$result = $db->sql_query($sql_select) )
+					if ( !$result = $db->sql_query($sql_select) )
 					{
 						message_die(GENERAL_ERROR, "Could not get user email information", "Error", __LINE__, __FILE__, $sql);
 					}
-					$email_rowset = $db->sql_fetchrowset($result);
 
-					$members_count = $db->sql_numrows($result);
-		
+					$email_addresses = "";
+					while( $row = $db->sql_fetchrow($result) )
+					{
+						if( $i > 0 )
+						{
+							$email_addresses .= ", ";
+						}
+						$email_addresses .= $row['user_email'];
+					}
+
 					//
 					// Get the group name
 					//
 					$group_sql = "SELECT group_name 
 						FROM " . GROUPS_TABLE . " 
 						WHERE group_id = $group_id";
-					if(!$result = $db->sql_query($group_sql))
+					if ( !($result = $db->sql_query($group_sql)) )
 					{
 						message_die(GENERAL_ERROR, "Could not get group information", "Error", __LINE__, __FILE__, $group_sql);
 					}
+
 					$group_name_row = $db->sql_fetchrow($result);
-
 					$group_name = $group_name_row['group_name'];
-
-					$email_addresses = "";
-					for($i = 0; $i < $members_count; $i++)
-					{
-						if($i > 0)
-						{
-							$email_addresses .= ", ";
-						}
-						$email_addresses .= $email_rowset[$i]['user_email'];
-					}
 
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
-
-					if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-					{
-						$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-					}
-					else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-					{
-						$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-					}
-					else
-					{
-						$path = '';
-					}
-					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
 					$emailer->use_template("group_approved");
 					$emailer->email_address($email_addresses);
@@ -550,7 +552,7 @@ else if( $group_id )
 						"GROUP_NAME" => $group_name,
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+						"U_GROUPCP" => $protocol . $server_name . $script_name . "?" . POST_GROUPS_URL . "=$group_id")
 					);
 					$emailer->send();
 					$emailer->reset();
@@ -615,15 +617,14 @@ else if( $group_id )
 			AND ug.user_pending = 0 
 			AND ug.user_id <> " . $group_moderator['user_id'] . " 
 		ORDER BY u.username"; 
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Error getting user list for group", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( $members_count = $db->sql_numrows($result) )
-	{
-		$group_members = $db->sql_fetchrowset($result); 
-	}
+	$group_members = $db->sql_fetchrowset($result); 
+	$modgroup_pending_count = count($group_members);
+	$db->sql_freeresult($result);
 
 	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm
 		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u
@@ -632,22 +633,21 @@ else if( $group_id )
 			AND ug.user_pending = 1
 			AND u.user_id = ug.user_id
 		ORDER BY u.username"; 
-	if(!$result = $db->sql_query($sql))
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Error getting user pending information", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( $modgroup_pending_count = $db->sql_numrows($result) )
-	{
-		$modgroup_pending_list = $db->sql_fetchrowset($result);
-	}
+	$modgroup_pending_list = $db->sql_fetchrowset($result);
+	$modgroup_pending_count = count($modgroup_pending_list);
+	$db->sql_freeresult($result);
 
 	$is_group_member = 0;
-	if( $members_count )
+	if ( $members_count )
 	{
 		for($i = 0; $i < $members_count; $i++)
 		{
-			if( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
+			if ( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
 			{
 				$is_group_member = TRUE; 
 			}
@@ -655,23 +655,23 @@ else if( $group_id )
 	}
 
 	$is_group_pending_member = 0;
-	if( $modgroup_pending_count )
+	if ( $modgroup_pending_count )
 	{
 		for($i = 0; $i < $modgroup_pending_count; $i++)
 		{
-			if( $modgroup_pending_list[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
+			if ( $modgroup_pending_list[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
 			{
 				$is_group_pending_member = TRUE;
 			}
 		}
 	}
 
-	if( $userdata['user_level'] == ADMIN )
+	if ( $userdata['user_level'] == ADMIN )
 	{
 		$is_moderator = TRUE;
 	}
 
-	if( $userdata['user_id'] == $group_info['group_moderator'] )
+	if ( $userdata['user_id'] == $group_info['group_moderator'] )
 	{
 		$is_moderator = TRUE;
 
@@ -679,7 +679,7 @@ else if( $group_id )
 
 		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 	}
-	else if( $is_group_member || $is_group_pending_member )
+	else if ( $is_group_member || $is_group_pending_member )
 	{
 		$template->assign_block_vars("switch_unsubscribe_group_input", array());
 
@@ -687,26 +687,26 @@ else if( $group_id )
 
 		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 	}
-	else if( $userdata['user_id'] == ANONYMOUS )
+	else if ( $userdata['user_id'] == ANONYMOUS )
 	{
 		$group_details =  $lang['Login_to_join'];
 		$s_hidden_fields = "";
 	}
 	else
 	{
-		if( $group_info['group_type'] == GROUP_OPEN )
+		if ( $group_info['group_type'] == GROUP_OPEN )
 		{
 			$template->assign_block_vars("switch_subscribe_group_input", array());
 
 			$group_details =  $lang['This_open_group'];
 			$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\" />";
 		}
-		else if( $group_info['group_type'] == GROUP_CLOSED )
+		else if ( $group_info['group_type'] == GROUP_CLOSED )
 		{
 			$group_details =  $lang['This_closed_group'];
 			$s_hidden_fields = "";
 		}
-		else if( $group_info['group_type'] == GROUP_HIDDEN )
+		else if ( $group_info['group_type'] == GROUP_HIDDEN )
 		{
 			$group_details =  $lang['This_hidden_group'];
 			$s_hidden_fields = "";
@@ -751,7 +751,7 @@ else if( $group_id )
 
 	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
-	if( !empty($group_moderator['user_viewemail']) )
+	if ( !empty($group_moderator['user_viewemail']) )
 	{
 		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_moderator['user_id']) : "mailto:" . $group_moderator['user_email'];
 
@@ -764,7 +764,7 @@ else if( $group_id )
 
 	$www_img = ( $group_moderator['user_website'] ) ? "<a href=\"" . $group_moderator['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
 
-	if( !empty($group_moderator['user_icq']) )
+	if ( !empty($group_moderator['user_icq']) )
 	{
 		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_moderator['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_moderator['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_moderator['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
@@ -877,7 +877,7 @@ else if( $group_id )
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
-		if( !empty($group_members[$i]['user_viewemail']) )
+		if ( !empty($group_members[$i]['user_viewemail']) )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_members[$i]['user_id']) : "mailto:" . $group_members[$i]['user_email'];
 
@@ -890,8 +890,8 @@ else if( $group_id )
 
 		$www_img = ( $group_members[$i]['user_website'] ) ? "<a href=\"" . $group_members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
 
-		if( !empty($group_members[$i]['user_icq']) )
-		{
+		if ( !empty($group_members[$i]['user_icq']) )
+		{ 
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_members[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $group_members[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_members[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
@@ -909,7 +909,7 @@ else if( $group_id )
 
 		$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($group_members[$i]['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
 			
-		if( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
+		if ( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator )
 		{
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -937,14 +937,14 @@ else if( $group_id )
 				"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id))
 			);
 
-			if( $is_moderator )
+			if ( $is_moderator )
 			{
 				$template->assign_block_vars("member_row.switch_mod_option", array());
 			}
 		}
 	}
 
-	if( !$members_count )
+	if ( !$members_count )
 	{
 		//
 		// No group members
@@ -963,7 +963,7 @@ else if( $group_id )
 		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
 
-	if( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member && !$is_moderator )
+	if ( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member && !$is_moderator )
 	{
 		//
 		// No group members
@@ -979,12 +979,12 @@ else if( $group_id )
 	// We've displayed the members who belong to the group, now we 
 	// do that pending memebers... 
 	//
-	if( $is_moderator )
+	if ( $is_moderator )
 	{
 		//
 		// Users pending in ONLY THIS GROUP (which is moderated by this user)
 		//
-		if( $modgroup_pending_count )
+		if ( $modgroup_pending_count )
 		{
 			for($i = 0; $i < $modgroup_pending_count; $i++)
 			{
@@ -1001,7 +1001,7 @@ else if( $group_id )
 
 				$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
-				if( !empty($modgroup_pending_list[$i]['user_viewemail']) )
+				if ( !empty($modgroup_pending_list[$i]['user_viewemail']) )
 				{
 					$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $modgroup_pending_list[$i]['user_id']) : "mailto:" . $modgroup_pending_list[$i]['user_email'];
 
@@ -1014,7 +1014,7 @@ else if( $group_id )
 
 				$www_img = ( $modgroup_pending_list[$i]['user_website'] ) ? "<a href=\"" . $modgroup_pending_list[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
-				if( !empty($modgroup_pending_list[$i]['user_icq']) )
+				if ( !empty($modgroup_pending_list[$i]['user_icq']) )
 				{
 					$icq_status_img = "<a href=\"http://wwp.icq.com/" . $modgroup_pending_list[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $modgroup_pending_list[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 					$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $modgroup_pending_list[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
@@ -1075,7 +1075,7 @@ else if( $group_id )
 		}
 	}
 
-	if( $is_moderator )
+	if ( $is_moderator )
 	{
 		$template->assign_block_vars("switch_mod_option", array());
 		$template->assign_block_vars("switch_add_member", array());
@@ -1089,68 +1089,50 @@ else if( $group_id )
 }
 else
 {
-	$sql = "SELECT group_id, group_name
-		FROM " . GROUPS_TABLE . "
-		WHERE group_single_user <> " . TRUE . "
-		ORDER BY group_name";
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if( !$db->sql_numrows($result) )
-	{
-		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
-	}
-	$group_list = $db->sql_fetchrowset($result);
-
-	$sql = "SELECT g.group_id, g.group_name, ug.user_pending
+	$sql = "SELECT g.group_id, g.group_name, ug.user_pending 
 		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-		WHERE ug.user_id = " . $userdata['user_id'] . "
-			AND g.group_id = ug.group_id
+		WHERE ug.user_id = " . $userdata['user_id'] . "  
+			AND ug.group_id = g.group_id
 			AND g.group_single_user <> " . TRUE . "
-		ORDER BY g.group_name";
-	if(!$result = $db->sql_query($sql))
+		ORDER BY g.group_name, ug.user_id";
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
 	}
 
-	if($db->sql_numrows($result))
-	{
-		$membergroup_list = $db->sql_fetchrowset($result);
-	}
-
-	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">';
 	$s_member_groups_opt = "";
-	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">';
 	$s_pending_groups_opt = "";
-
-	for($i = 0; $i < count($membergroup_list); $i++)
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		if( $membergroup_list[$i]['user_pending'] )
+		if ( $row['user_pending'] )
 		{
-			$s_pending_groups_opt .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+			$s_pending_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		else
 		{
-			$s_member_groups_opt .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+			$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 	}
-	$s_pending_groups .= $s_pending_groups_opt . "</select>";
-	$s_member_groups .= $s_member_groups_opt . "</select>";
+	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
+	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 
-	//
-	// Remaining groups
-	//
-	$s_group_list = '<select name="' . POST_GROUPS_URL . '">';
-	for($i = 0; $i < count($group_list); $i++)
+	$sql = "SELECT DISTINCT g.group_id, g.group_name  
+		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+		WHERE ug.user_id <> " . $userdata['user_id'] . "  
+			AND ug.group_id = g.group_id
+			AND g.group_single_user <> " . TRUE . " 
+		ORDER BY g.group_name";
+	if ( !($result = $db->sql_query($sql)) )
 	{
-		if( !strstr($s_pending_groups, $group_list[$i]['group_name']) && !strstr($s_member_groups, $group_list[$i]['group_name']) )
-		{
-			$s_group_list_opt .= '<option value="' . $group_list[$i]['group_id'] . '">' . $group_list[$i]['group_name'] . '</option>';
-		}
+		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
 	}
-	$s_group_list .= $s_group_list_opt . "</select>";
+
+	$s_group_list_opt = "";
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$s_group_list_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+	}
+	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . "</select>";
 
 	//
 	// Load and process templates
@@ -1173,22 +1155,22 @@ else
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-	if($s_pending_groups_opt != "" || $s_member_groups_opt != "")
+	if ( $s_pending_groups_opt != "" || $s_member_groups_opt != "" )
 	{
 		$template->assign_block_vars("groups_joined", array() );
 	}
 
-	if( $s_member_groups_opt != "" )
+	if ( $s_member_groups_opt != "" )
 	{
 		$template->assign_block_vars("groups_joined.groups_member", array() );
 	}
 
-	if( $s_pending_groups_opt != "" )
+	if ( $s_pending_groups_opt != "" )
 	{
 		$template->assign_block_vars("groups_joined.groups_pending", array() );
 	}
 
-	if( $s_group_list_opt != "")
+	if ( $s_group_list_opt != "")
 	{
 		$template->assign_block_vars("groups_remaining", array() );
 	}

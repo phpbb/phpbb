@@ -35,6 +35,51 @@ init_userprefs($userdata);
 // End session management
 //
 
+//
+// Set default email variables
+//
+if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+}
+else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
+}
+else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
+{
+	$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
+}
+else
+{
+	$script_name = "profile.$phpEx";
+}
+
+if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
+{
+	$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+}
+else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
+{
+	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+}
+else
+{
+	$server_name = "";
+}
+
+if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
+{
+	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+}
+else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
+{
+	$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+}
+else
+{
+	$protocol = "http://";
+}
 
 // -----------------------
 // Page specific functions
@@ -187,10 +232,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	//
 	// Begin page proper
 	//
-	if( $mode == "viewprofile" )
+	if ( $mode == "viewprofile" )
 	{
 
-		if( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
+		if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 		}
@@ -199,11 +244,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$sql = "SELECT *
 			FROM " . RANKS_TABLE . "
 			ORDER BY rank_special, rank_min";
-		if(!$ranks_result = $db->sql_query($sql))
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
 		}
-		$ranksrow = $db->sql_fetchrowset($ranksresult);
+
+		$ranksrow = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
 		
 		//
 		// Output page header and
@@ -238,7 +285,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$posts_per_day = $profiledata['user_posts'] / $memberdays;
 
 		// Get the users percentage of total posts
-		if( $profiledata['user_posts'] != 0  )
+		if ( $profiledata['user_posts'] != 0  )
 		{
 			$total_posts = get_db_stat("postcount");
 			$percentage = ( $total_posts ) ? min(100, ($profiledata['user_posts'] / $total_posts) * 100) : 0;
@@ -248,7 +295,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$percentage = 0;
 		}
 
-		if( !empty($profiledata['user_viewemail']) || $userdata['user_level'] == ADMIN )
+		if ( !empty($profiledata['user_viewemail']) || $userdata['user_level'] == ADMIN )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $profiledata['user_id']) : "mailto:" . $profiledata['user_email'];
 
@@ -262,7 +309,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		}
 
 		$avatar_img = "";
-		if( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
+		if ( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
 		{
 			switch( $profiledata['user_avatar_type'] )
 			{
@@ -280,11 +327,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		$poster_rank = "";
 		$rank_image = "";
-		if( $profiledata['user_rank'] )
+		if ( $profiledata['user_rank'] )
 		{
 			for($i = 0; $i < count($ranksrow); $i++)
 			{
-				if( $profiledata['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] )
+				if ( $profiledata['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] )
 				{
 					$poster_rank = $ranksrow[$i]['rank_title'];
 					$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
@@ -295,7 +342,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			for($i = 0; $i < count($ranksrow); $i++)
 			{
-				if( $profiledata['user_posts'] > $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] )
+				if ( $profiledata['user_posts'] > $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] )
 				{
 					$poster_rank = $ranksrow[$i]['rank_title'];
 					$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
@@ -303,7 +350,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			}
 		}
 
-		if( !empty($profiledata['user_icq']) )
+		if ( !empty($profiledata['user_icq']) )
 		{
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $profiledata['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profiledata['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
 			$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" border="0" /></a>';
@@ -391,10 +438,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	}
-	else if( $mode == "editprofile" || $mode == "register" )
+	else if ( $mode == "editprofile" || $mode == "register" )
 	{
 
-		if( !$userdata['session_logged_in'] && $mode == "editprofile" )
+		if ( !$userdata['session_logged_in'] && $mode == "editprofile" )
 		{
 			header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
@@ -404,7 +451,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		//
 		// Start processing for output
 		//
-		if( $mode == "register" && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
+		if ( $mode == "register" && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
 		{
 			if( !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
 			{
@@ -1047,21 +1094,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-							if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-							{
-								$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-							}
-							else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-							{
-								$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-							}
-							else
-							{
-								$path = '';
-							}
-							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-							$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-
 							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 							{
 								$emailer->use_template("user_activate", stripslashes($user_lang));
@@ -1080,7 +1112,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+								"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -1165,21 +1197,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-								if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-								{
-									$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-								}
-								else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-								{
-									$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-								}
-								else
-								{
-									$path = '';
-								}
-								$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-								$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-
 								$emailer->use_template($email_template, stripslashes($user_lang));
 								$emailer->email_address($email);
 								$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
@@ -1193,7 +1210,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey",
+										"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey",
 										"FAX_INFO" => $board_config['coppa_fax'],
 										"MAIL_INFO" => $board_config['coppa_mail'],
 										"EMAIL_ADDRESS" => $email,
@@ -1737,21 +1754,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-				if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
-				{
-					$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
-				}
-				else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
-				{
-					$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
-				}
-				else
-				{
-					$path = '';
-				}
-				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-
 				$emailer->use_template("user_activate_passwd", $row['user_lang']);
 				$emailer->email_address($row['user_email']);
 				$emailer->set_subject($lang['New_password_activation']);
@@ -1763,7 +1765,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 					
-					"U_ACTIVATE" => $protocol . $server_name . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
+					"U_ACTIVATE" => $protocol . $server_name . $script_name . "?mode=activate&act_key=$user_actkey")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -1957,8 +1959,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							WHERE user_id = " . $userdata['user_id'];
 						if( $result = $db->sql_query($sql) )
 						{
-							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-
 							include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 							$emailer = new emailer($board_config['smtp_delivery']);
 
@@ -1971,7 +1971,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
 							$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
 							$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
-							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\n";
 
 							$emailer->use_template("profile_send_email", $user_lang);
 							$emailer->email_address($user_email);

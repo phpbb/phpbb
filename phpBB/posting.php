@@ -80,27 +80,6 @@ function topic_review($topic_id, $is_inline_review)
 	}
 
 	//
-	// Go ahead and pull all data for this topic
-	//
-	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
-		WHERE p.topic_id = $topic_id
-			AND p.poster_id = u.user_id
-			AND p.post_id = pt.post_id
-		ORDER BY p.post_time DESC
-		LIMIT " . $board_config['posts_per_page'];
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain post/user information.", "", __LINE__, __FILE__, $sql);
-	}
-
-	if(!$total_posts = $db->sql_numrows($result))
-	{
-		message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__, $sql);
-	}
-	$postrow = $db->sql_fetchrowset($result);
-
-	//
 	// Define censored word matches
 	//
 	if( empty($orig_word) && empty($replacement_word) )
@@ -109,6 +88,7 @@ function topic_review($topic_id, $is_inline_review)
 		$replacement_word = array();
 		obtain_word_list($orig_word, $replacement_word);
 	}
+
 
 	//
 	// Dump out the page header and load viewtopic body template
@@ -126,81 +106,104 @@ function topic_review($topic_id, $is_inline_review)
 	}
 
 	//
+	// Go ahead and pull all data for this topic
+	//
+	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+		WHERE p.topic_id = $topic_id
+			AND p.poster_id = u.user_id
+			AND p.post_id = pt.post_id
+		ORDER BY p.post_time DESC
+		LIMIT " . $board_config['posts_per_page'];
+	if( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain post/user information.", "", __LINE__, __FILE__, $sql);
+	}
+
+	//
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
 	//
-	for($i = 0; $i < $total_posts; $i++)
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		$poster_id = $postrow[$i]['user_id'];
-		$poster = $postrow[$i]['username'];
-
-		$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
-
-		$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" />';
-
-		//
-		// Handle anon users posting with usernames
-		//
-		if( $poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '' )
+		do
 		{
-			$poster = $postrow[$i]['post_username'];
-			$poster_rank = $lang['Guest'];
-		}
+			$poster_id = $row['user_id'];
+			$poster = $row['username'];
 
-		$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : "";
+			$post_date = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
 
-		$message = $postrow[$i]['post_text'];
-		$bbcode_uid = $postrow[$i]['bbcode_uid'];
+			$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" />';
 
-		//
-		// If the board has HTML off but the post has HTML
-		// on then we process it, else leave it alone
-		//
-		if( !$board_config['allow_html'] )
-		{
-			if( $postrow[$i]['enable_html'] )
+			//
+			// Handle anon users posting with usernames
+			//
+			if( $poster_id == ANONYMOUS && $row['post_username'] != '' )
 			{
-				$message = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $message);
+				$poster = $row['post_username'];
+				$poster_rank = $lang['Guest'];
 			}
+
+			$post_subject = ( $row['post_subject'] != "" ) ? $row['post_subject'] : "";
+
+			$message = $row['post_text'];
+			$bbcode_uid = $row['bbcode_uid'];
+
+			//
+			// If the board has HTML off but the post has HTML
+			// on then we process it, else leave it alone
+			//
+			if( !$board_config['allow_html'] )
+			{
+				if( $row['enable_html'] )
+				{
+					$message = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $message);
+				}
+			}
+
+			if( $bbcode_uid != "" )
+			{
+				$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+			}
+
+			$message = make_clickable($message);
+
+			if( count($orig_word) )
+			{
+				$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
+				$message = preg_replace($orig_word, $replacement_word, $message);
+			}
+
+			if( $board_config['allow_smilies'] && $row['enable_smilies'] )
+			{
+				$message = smilies_pass($message);
+			}
+
+			$message = str_replace("\n", "<br />", $message);
+
+			//
+			// Again this will be handled by the templating
+			// code at some point
+			//
+			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+			$template->assign_block_vars("postrow", array(
+				"ROW_COLOR" => "#" . $row_color, 
+				"ROW_CLASS" => $row_class, 
+
+				"MINI_POST_IMG" => $mini_post_img, 
+				"POSTER_NAME" => $poster, 
+				"POST_DATE" => $post_date, 
+				"POST_SUBJECT" => $post_subject, 
+				"MESSAGE" => $message)
+			);
 		}
-
-		if( $bbcode_uid != "" )
-		{
-			$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
-		}
-
-		$message = make_clickable($message);
-
-		if( count($orig_word) )
-		{
-			$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-			$message = preg_replace($orig_word, $replacement_word, $message);
-		}
-
-		if( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
-		{
-			$message = smilies_pass($message);
-		}
-
-		$message = str_replace("\n", "<br />", $message);
-
-		//
-		// Again this will be handled by the templating
-		// code at some point
-		//
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-		$template->assign_block_vars("postrow", array(
-			"ROW_COLOR" => "#" . $row_color, 
-			"ROW_CLASS" => $row_class, 
-
-			"MINI_POST_IMG" => $mini_post_img, 
-			"POSTER_NAME" => $poster, 
-			"POST_DATE" => $post_date, 
-			"POST_SUBJECT" => $post_subject, 
-			"MESSAGE" => $message)
-		);
+		while( $row = $db->sql_fetchrow($result) );
+	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', "", __LINE__, __FILE__, $sql);
 	}
 
 	$template->assign_vars(array(
@@ -456,29 +459,23 @@ if( $mode != "newtopic" )
 
 			if( $is_first_post_topic && $post_has_poll )
 			{
-				$sql = "SELECT vd.vote_id, vr.vote_result 
+				$sql = "SELECT vd.vote_id, SUM(vr.vote_result) AS vote_sum 
 					FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr 
 					WHERE vd.topic_id = $topic_id 
-						AND vr.vote_id = vd.vote_id";
-				if( !$result = $db->sql_query($sql) )
+						AND vr.vote_id = vd.vote_id 
+					GROUP BY vd.vote_id";
+				if( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtain vote data for this topic", "", __LINE__, __FILE__, $sql);
 				}
 
-				if( $vote_rows = $db->sql_numrows($result) )
+				$vote_results_sum = 0;
+				if( $row = $db->sql_fetchrow($result) )
 				{
-					$rowset = $db->sql_fetchrowset($result);
-
-					$vote_id = $rowset[0]['vote_id'];
-			
-					$vote_results_sum = 0;
-					for($i = 0; $i < $vote_rows; $i++ )
-					{
-						$vote_results_sum += $rowset[$i]['vote_result'];
-					}
-
-					$can_edit_poll = ( !$vote_results_sum ) ? TRUE : 0;
+					$vote_id = $row['vote_id'];
+					$vote_results_sum = $row['vote_sum']; 
 				}
+				$can_edit_poll = ( !$vote_results_sum ) ? TRUE : 0;
 			}
 			else
 			{
@@ -979,53 +976,81 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 										AND u.user_id = tw.user_id";
 								if( $result = $db->sql_query($sql) )
 								{
-									$email_set = $db->sql_fetchrowset($result);
-									$update_watched_sql = "";
-
 									include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 									$emailer = new emailer($board_config['smtp_delivery']);
 
-									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
-
-									if( isset($HTTP_SERVER_VARS['PATH_INFO']) && dirname($HTTP_SERVER_VARS['PATH_INFO']) != '/')
+									if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
 									{
-										$path = dirname($HTTP_SERVER_VARS['PATH_INFO']);
+										$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
 									}
-									else if( dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) != '/')
+									else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
 									{
-										$path = dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+										$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
+									}
+									else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
+									{
+										$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
 									}
 									else
 									{
-										$path = '';
+										$script_name = "viewtopic.$phpEx";
+									}
+
+									if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
+									{
+										$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+									}
+									else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
+									{
+										$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+									}
+									else
+									{
+										$server_name = "";
+									}
+
+									if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
+									{
+										$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+									}
+									else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
+									{
+										$protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+									}
+									else
+									{
+										$protocol = "http://";
 									}
 
 									$orig_word = array();
 									$replacement_word = array();
 									obtain_word_list($orig_word, $replacement_word);
 
-									$topic_title = preg_replace($orig_word, $replacement_word, $email_set[0]['topic_title']);
-												
-									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
-									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
+									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-									for($i = 0; $i < count($email_set); $i++)
+									$update_watched_sql = "";
+									while( $row = $db->sql_fetchrow($result) )
 									{
-										if( $email_set[$i]['user_email'] != "")
+										if( empty($topic_title) )
 										{
-											$emailer->use_template("topic_notify", $email_set[$i]['user_lang']);
-											$emailer->email_address($email_set[$i]['user_email']);
+											$topic_title = preg_replace($orig_word, $replacement_word, $row['topic_title']);
+										}
+
+										if( $row['user_email'] != "")
+										{
+											$emailer->use_template("topic_notify", $row['user_lang']);
+											$emailer->email_address($row['user_email']);
 											$emailer->set_subject($lang['Topic_reply_notification']);
 											$emailer->extra_headers($email_headers);
 
 											$emailer->assign_vars(array(
 												"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
-												"USERNAME" => $email_set[$i]['username'],
+												"USERNAME" => $row['username'],
 												"SITENAME" => $board_config['sitename'],
 												"TOPIC_TITLE" => $topic_title,
 
-												"U_TOPIC" => $protocol . $server_name . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
-												"U_STOP_WATCHING_TOPIC" => $protocol . $server_name . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
+												"U_TOPIC" => $protocol . $server_name . $script_name . "?" . POST_POST_URL . "=$new_post_id#$new_post_id",
+												"U_STOP_WATCHING_TOPIC" => $protocol . $server_name . $script_name . "?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
 											);
 
 											$emailer->send();
@@ -1035,7 +1060,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 											{
 												$update_watched_sql .= ", ";
 											}
-											$update_watched_sql .= $email_set[$i]['user_id'];
+											$update_watched_sql .= $row['user_id'];
 										}
 									}
 
