@@ -66,7 +66,7 @@ else
 	$search_author = '';
 }
 
-$search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? intval($HTTP_GET_VARS['search_id']) : '';
+$search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? $HTTP_GET_VARS['search_id'] : '';
 
 $show_results = ( isset($HTTP_POST_VARS['show_results']) ) ? $HTTP_POST_VARS['show_results'] : 'posts';
 
@@ -592,21 +592,24 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	}
 	else
 	{
-		$sql = "SELECT search_array 
-			FROM " . SEARCH_TABLE . " 
-			WHERE search_id = $search_id  
-				AND session_id = '". $userdata['session_id'] . "'";
-		if ( !($result = $db->sql_query($sql)) )
+		if ( is_int($search_id) )
 		{
-			message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			$search_data = unserialize($row['search_array']);
-			for($i = 0; $i < count($store_vars); $i++)
+			$sql = "SELECT search_array 
+				FROM " . SEARCH_TABLE . " 
+				WHERE search_id = $search_id  
+					AND session_id = '". $userdata['session_id'] . "'";
+			if ( !($result = $db->sql_query($sql)) )
 			{
-				$$store_vars[$i] = $search_data[$store_vars[$i]];
+				message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
+			}
+
+			if ( $row = $db->sql_fetchrow($result) )
+			{
+				$search_data = unserialize($row['search_array']);
+				for($i = 0; $i < count($store_vars); $i++)
+				{
+					$$store_vars[$i] = $search_data[$store_vars[$i]];
+				}
 			}
 		}
 	}
