@@ -1270,19 +1270,20 @@ else if( $submit || $refresh || $mode != "" )
 			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
 			$privmsg_subject = ( (strstr("Re:", $privmsg['privmsgs_subject'])) ? $lang['Re'] . ":" : "" ) . $privmsg['privmsgs_subject'];
-			$privmsg_message = $privmsg['privmsgs_text'];
-			$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
-			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
-			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
-			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
-
 			if( $mode == "quote" )
 			{
-				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
+				$privmsg_message = $privmsg['privmsgs_text'];
+				$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+
+				$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
+				$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
+				$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
+				
+				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
 
 				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]";
 

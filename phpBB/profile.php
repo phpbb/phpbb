@@ -251,7 +251,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		if( $profiledata['user_posts'] != 0  )
 		{
 			$total_posts = get_db_stat("postcount");
-			$percentage = ( $total_posts ) ? sprintf("%.2f", max(100, ($profiledata['user_posts'] / $total_posts) * 100)) : 0;
+			$percentage = ( $total_posts ) ? sprintf("%.2f", min(100, ($profiledata['user_posts'] / $total_posts) * 100)) : 0;
 		}
 		else
 		{
