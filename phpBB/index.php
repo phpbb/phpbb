@@ -105,10 +105,12 @@ if($total_categories)
 
 	for($i = 0; $i < $total_categories; $i++)
 	{
+
 		$template->assign_block_vars("catrow",
 			array(
 				"CAT_ID" => $category_rows[$i]["cat_id"],
-				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])
+				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"]),
+				"U_VIEWCAT" => "index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']
 			)
 		);
 
@@ -159,16 +161,19 @@ if($total_categories)
 					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
 				}
 
-				$template->assign_block_vars("catrow.forumrow", array("FOLDER" => $folder_image,
-					"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
-					"FORUM_ID" => $forum_rows[$j]["forum_id"],
-					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
-					"ROW_COLOR" => $row_color,
-					"POSTS" => $forum_rows[$j]["forum_posts"],
-					"TOPICS" => $forum_rows[$j]["forum_topics"],
-					"LAST_POST" => $last_post,
-					"MODERATORS" => $moderators_links));
-
+				$template->assign_block_vars("catrow.forumrow", 
+					array(
+						"FOLDER" => $folder_image,
+						"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
+						"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
+						"ROW_COLOR" => $row_color,
+						"POSTS" => $forum_rows[$j]["forum_posts"],
+						"TOPICS" => $forum_rows[$j]["forum_topics"],
+						"LAST_POST" => $last_post,
+						"MODERATORS" => $moderators_links,
+					
+						"U_VIEWFORUM" => "viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts'])
+					);
 			}
 		}
 

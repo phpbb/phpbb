@@ -42,6 +42,16 @@ $l_emailaddress	= "Email Address";
 $l_preferences	= "Preferences";
 $l_welcometo    = "Welcome to";
 
+$l_There = "There";
+$l_is = "is";
+$l_are = "are";
+$l_Registered = "Registered";
+$l_online = "online";
+$l_users = "users";
+$l_user = "user";
+$l_and = "and";
+$l_None = "None";
+
 $l_log_me_in = "Log me in automatically";
 
 $l_all_times = "All times are";
