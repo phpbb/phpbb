@@ -331,15 +331,12 @@ $lang['Stored'] = "Your message has been entered successfully";
 $lang['Deleted'] = "Your message has been deleted successfully";
 $lang['Poll_delete'] = "Your poll has been deleted successfully";
 $lang['Vote_cast'] = "Your vote has been cast";
-$lang['Click'] = "Click"; // Followed by here and then either return to topic or view message
-$lang['Here'] = "Here";
-$lang['to_return_forum'] = "to return to the forum";
-$lang['to_view_message'] = "to view your message";
-$lang['to_return_topic'] = "to return to the topic";
 
 $lang['Click_return_topic'] = "Click %sHere%s to return to the topic";
+$lang['Click_return_login'] = "Click %sHere%s to try again";
 $lang['Click_return_forum'] = "Click %sHere%s to return to the forum";
 $lang['Click_view_message'] = "Click %sHere%s to view your message";
+$lang['Click_return_modcp'] = "Click %sHere%s to return to the Moderator Control Panel";
 
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
 
@@ -678,7 +675,7 @@ $lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occured";
 $lang['A_critical_error'] = "A Critical Error Occured";
 
-$lang['Error_login'] = "Login Failed<br /><br />You have specified an incorrect or inactive username or an invalid password";
+$lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
 
 $lang['Not_Moderator'] = "You are not a moderator of this forum";
 $lang['Not_Authorised'] = "Not Authorised";

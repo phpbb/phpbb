@@ -1065,9 +1065,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id") . '#' . $new_post_id . '">')
 							);
 
-							$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id") . "#$new_post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+							$message = $lang['Stored'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id") . "#$new_post_id\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_forum'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 
-							message_die(GENERAL_MESSAGE, $msg_die);
+							message_die(GENERAL_MESSAGE, $message);
 						}
 						else
 						{
@@ -1117,7 +1117,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			if( $userdata['user_id'] != $row['poster_id'] && !$is_auth['auth_mod'])
 			{
 				$message = ( $delete || $mode == "delete" ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
-				$message .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['HERE'] . "</a> ". $lang['to_return_topic'];
+				$message .="<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		}
@@ -1131,7 +1132,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		//
 		if( ( $delete || $mode == "delete" ) && ( ( $is_auth['auth_delete'] && !$is_last_post_topic && !$is_auth['auth_mod'] ) ) )
 		{
-			$message = $lang['Cannot_delete_replied'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['HERE'] . "</a> ". $lang['to_return_topic'];
+			$message = $lang['Cannot_delete_replied'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else if( ( $delete || $poll_delete || $mode == "delete" ) && ( ( $is_auth['auth_delete'] && $is_last_post_topic ) || $is_auth['auth_mod'] ) )
@@ -1205,9 +1207,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 											"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 										);
 
-										$msg_die = $lang['Poll_delete'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
+										$message = $lang['Poll_delete'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
-										message_die(GENERAL_MESSAGE, $msg_die);
+										message_die(GENERAL_MESSAGE, $message);
 									}
 									else
 									{
@@ -1232,12 +1234,14 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				}
 				else if( $post_has_poll && !$can_edit_poll && $poll_delete )
 				{
-					$message = $lang['Cannot_delete_poll'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
+					$message = $lang['Cannot_delete_poll'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+
 					message_die(GENERAL_MESSAGE, $message);
 				}
 				else if( !$is_first_post_topic && $poll_delete )
 				{
-					$message = $lang['Post_has_no_poll'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
+					$message = $lang['Post_has_no_poll'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
@@ -1380,7 +1384,8 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 											"META" => '<meta http-equiv="refresh" content="3;url= ' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 										);
 
-										$msg_die .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+										$message .= "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+
 									}
 									else
 									{
@@ -1388,9 +1393,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 											"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
 										);
 									}
-									$msg_die .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+									$message .= "<br /><br />" . sprintf($lang['Click_return_forum'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 
-									message_die(GENERAL_MESSAGE, $msg_die);
+									message_die(GENERAL_MESSAGE, $message);
 								}
 								else
 								{
@@ -1590,9 +1595,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . '#' . $post_id . '">')
 							);
 
-							$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+							$message = $lang['Stored'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 
-							message_die(GENERAL_MESSAGE, $msg_die);
+							message_die(GENERAL_MESSAGE, $message);
 						}
 						else
 						{
@@ -1615,9 +1620,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 							"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . '#' . $post_id . '">')
 						);
 
-						$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+						$message = $lang['Stored'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 
-						message_die(GENERAL_MESSAGE, $msg_die);
+						message_die(GENERAL_MESSAGE, $message);
 					}
 					else
 					{
@@ -1661,7 +1666,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "= $topic_id") . '">')
 					);
 
-					$message = $lang['No_vote_option'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+					$message = $lang['No_vote_option'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -1696,7 +1701,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 							);
 
-							$message = $lang['Vote_cast'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+							$message = $lang['Vote_cast'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
 							message_die(GENERAL_MESSAGE, $message);
 						}
@@ -1725,7 +1730,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 					);
 
-					$message = $lang['Already_voted'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+					$message = $lang['Already_voted'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -1733,7 +1738,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		}
 		else
 		{
-			$message = $lang['No_vote_option'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+			$message = $lang['No_vote_option'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
