@@ -707,6 +707,8 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 		'body' => 'profile_avatar_gallery.tpl')
 	);
 
+	$allowviewonline = !$allowviewonline;
+
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat);
 }
 else
