@@ -80,7 +80,7 @@ if ($mode != '')
 		{
 			if (empty($rank_id))
 			{
-				message_die(MESSAGE, $user->lang['Must_select_rank']);
+				trigger_error($user->lang['Must_select_rank']);
 			}
 
 			$sql = "SELECT * FROM " . RANKS_TABLE . "
@@ -96,11 +96,11 @@ if ($mode != '')
 			$rank_info['rank_special'] = 0;
 		}
 
-		page_header($user->lang['Ranks']);
+		page_header($user->lang['RANKS']);
 
 ?>
 
-<h1><?php echo $user->lang['Ranks']; ?></h1>
+<h1><?php echo $user->lang['RANKS']; ?></h1>
 
 <p><?php echo $user->lang['Ranks_explain']; ?></p>
 
@@ -114,7 +114,7 @@ if ($mode != '')
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><?php echo $user->lang['Rank_special']; ?>: </td>
-		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ($rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /><?php echo $user->lang['Yes']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo (!$rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ($rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /><?php echo $user->lang['YES']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo (!$rank_info['rank_special']) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><?php echo $user->lang['Rank_minimum']; ?>: </td>
@@ -125,7 +125,7 @@ if ($mode != '')
 		<td class="row2"><input type="text" name="rank_image" size="40" maxlength="255" value="<?php echo ($rank_info['rank_image'] != '') ? $rank_info['rank_image'] : ''; ?>" /><br /><?php echo ($rank_info['rank_image'] != '') ? '<img src="../' . $rank_info['rank_image'] . '" />' : ''; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
 	</tr>
 </table></form>
 
@@ -148,7 +148,7 @@ if ($mode != '')
 
 		if ($rank_title == '')
 		{
-			message_die(MESSAGE, $user->lang['Must_select_rank']);
+			trigger_error($user->lang['Must_select_rank']);
 		}
 
 		if ($special_rank == 1)
@@ -187,7 +187,7 @@ if ($mode != '')
 
 		$message .= '<br /><br />' . sprintf($user->lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
-		message_die(MESSAGE, $message);
+		trigger_error($message);
 
 	}
 	else if ($mode == 'delete')
@@ -218,31 +218,31 @@ if ($mode != '')
 
 			$message = $user->lang['Rank_removed'] . '<br /><br />' . sprintf($user->lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
-			message_die(MESSAGE, $message);
+			trigger_error($message);
 
 		}
 		else
 		{
-			message_die(MESSAGE, $user->lang['Must_select_rank']);
+			trigger_error($user->lang['Must_select_rank']);
 		}
 	}
 }
 
-page_header($user->lang['Ranks']);
+page_header($user->lang['RANKS']);
 
 ?>
 
-<h1><?php echo $user->lang['Ranks']; ?></h1>
+<h1><?php echo $user->lang['RANKS']; ?></h1>
 
 <p><?php echo $user->lang['Ranks_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
+		<th><?php echo $user->lang['Rank_image']; ?></th>
 		<th><?php echo $user->lang['Rank_title']; ?></th>
         <th><?php echo $user->lang['Rank_minimum']; ?></th>
-		<th><?php echo $user->lang['Rank_special']; ?></th>
 		<th><?php echo $user->lang['Edit']; ?></th>
-		<th><?php echo $user->lang['Delete']; ?></th>
+		<th><?php echo $user->lang['DELETE']; ?></th>
 	</tr>
 <?php
 
@@ -260,11 +260,11 @@ if ($row = $db->sql_fetchrow($result))
 		$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 ?>
 	<tr>
+		<td class="<?php echo $row_class; ?>" align="center"><img src="../<?php echo $row['rank_image']; ?>"" border="0" alt="<?php echo $row['rank_title']; ?>" title="<?php echo $row['rank_title']; ?>" /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['rank_title']; ?></td>
         <td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['rank_special']) ? '-' : $row['rank_min']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['rank_special']) ? $user->lang['Yes'] : $user->lang['No']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['Edit']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['Delete']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['DELETE']; ?></a></td>
 	</tr>
 <?php
 
