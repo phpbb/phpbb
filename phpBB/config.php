@@ -22,55 +22,81 @@
  * 
  ***************************************************************************/ 
 
-//putenv('SYBASE=/usr/freetds');
-//dl('sybase_ct.so');
-
 // DB connection config
+// 
+// Uncomment the relevant entry
+// and fill in the required details
+//
 
 /*
 //
-// ODBC - Access (remote)
+// MySQL
 //
-$dbms = "odbc";
-$dbhost = "msaccess:odbctest";
+$dbms = "mysql";
+$dbhost = "";
 $dbname = "";
 $dbuser = "";
-$dbpasswd = "efx2KarizonaD";
+$dbpasswd = "";
 */
 
+/*
+//
+// PostgreSQL
+//
+$dbms = "postgres";
+$dbhost = "";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
+*/
 
+/*
 //
 // MSSQL 
 //
 $dbms = "mssql";
-$dbhost = "Typhoon";
-$dbname = "dev_starstreak_net";
-$dbuser = "devhttp";
-$dbpasswd = "efx2KarizonaD";
-
-
-//
-// MySQL (local)
-//
-$dbms = "mysql";
-$dbhost = "localhost";
-$dbname = "dev_starstreak_net";
-$dbuser = "devhttp";
-$dbpasswd = "efx2KarizonaD";
-
+$dbhost = "";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
+*/
 
 /*
 //
-// PostgreSQL (local)
+// ODBC - Access
 //
-$dbms = "postgres";
-$dbhost = "";
-$dbname = "dev_starstreak_net";
-$dbuser = "devhttp";
-$dbpasswd = "efx2KarizonaD";
+$dbms = "odbc";
+$dbhost = "msaccess:<HOST HERE>";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
 */
 
+/*
+//
+// ODBC - DB2
+//
+$dbms = "odbc";
+$dbhost = "db2:<HOST HERE>";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
+*/
+
+/*
+//
+// Oracle
+//
+$dbms = "oracle";
+$dbhost = "";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
+*/
+
+//
 // DB table prefix
+//
 $table_prefix = "phpbb_";
 
 ?>
