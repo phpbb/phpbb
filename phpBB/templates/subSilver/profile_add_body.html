@@ -1,3 +1,4 @@
+<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
 <form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post">
@@ -6,13 +7,13 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-		<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>
 </table>
 
-<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr> 
-		<th class="thHead" colspan="2" height="25" valign="middle">{L_REGISTRATION_INFO}</th>
+		<th colspan="2" height="25" valign="middle">{L_REGISTRATION_INFO}</th>
 	</tr>
 	<tr> 
 		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
@@ -58,10 +59,10 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr> 
-	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
+	  <td class="cat" colspan="2" height="28">&nbsp;</td>
 	</tr>
 	<tr> 
-	  <th class="thSides" colspan="2" height="25" valign="middle">{L_PREFERENCES}</th>
+	  <th colspan="2" height="25" valign="middle">{L_PREFERENCES}</th>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_PUBLIC_VIEW_EMAIL}:</span></td>
@@ -138,15 +139,15 @@
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_BOARD_LANGUAGE}:</span></td>
-	  <td class="row2"><span class="gensmall">{LANGUAGE_SELECT}</span></td>
+	  <td class="row2"><select name="language">{LANGUAGE_SELECT}</select></td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_BOARD_STYLE}:</span></td>
-	  <td class="row2"><span class="gensmall">{STYLE_SELECT}</span></td>
+	  <td class="row2"><select name="style">{STYLE_SELECT}</select></td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_TIMEZONE}:</span></td>
-	  <td class="row2"><span class="gensmall">{TIMEZONE_SELECT}</span></td>
+	  <td class="row2"><select name="timezone">{TIMEZONE_SELECT}</select></td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_DATE_FORMAT}:</span><br />
@@ -156,11 +157,11 @@
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
+	  <td class="cat" colspan="2" height="28">&nbsp;</td>
 	</tr>
 	<!-- IF S_DISPLAY_AVATAR_BLOCK -->
 	<tr> 
-	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
+	  <th colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>
 	<tr> 
 		<td class="row1" colspan="2"><table width="70%" cellspacing="2" cellpadding="0" border="0" align="center">
@@ -196,10 +197,8 @@
 	<!-- ENDIF -->
 	<!-- ENDIF -->
 	<tr>
-		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" name="reset" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" name="reset" /></td>
 	</tr>
-</table>
-
-</form>
+</table></form>
 
 <!-- INCLUDE overall_footer.html -->
