@@ -926,7 +926,16 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					{
 						$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 					}
-					$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
+
+					if( preg_match("/^http\:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$/is", $user_avatar_remoteurl) )
+					{
+						$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
+					}
+					else
+					{
+						$error = true;
+						$error_msg = (!empty($error_msg)) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
+					}
 				}
 			}
 
