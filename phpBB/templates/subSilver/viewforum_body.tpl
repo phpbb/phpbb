@@ -86,10 +86,10 @@
 				<td class="gensmall">{L_STICKY}</td>
 			</tr>
 			<tr>
-				<td class="gensmall"><img src="{FOLDER_LOCKED_NEW_IMG}" alt="{L_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
+				<td class="gensmall"><img src="{FOLDER_LOCKED_NEW_IMG}" alt="{L_NEW_POSTS_LOCKED}" width="19" height="18" /></td>
 				<td class="gensmall">{L_NEW_POSTS_LOCKED}</td>
 				<td>&nbsp;&nbsp;</td>
-				<td class="gensmall"><img src="{FOLDER_LOCKED_IMG}" alt="{L_NO_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
+				<td class="gensmall"><img src="{FOLDER_LOCKED_IMG}" alt="{L_NO_NEW_POSTS_LOCKED}" width="19" height="18" /></td>
 				<td class="gensmall">{L_NO_NEW_POSTS_LOCKED}</td>
 			</tr>
 		</table></td>

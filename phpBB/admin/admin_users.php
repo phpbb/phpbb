@@ -662,7 +662,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 				{
 					$sql = "UPDATE " . GROUPS_TABLE . "
 						SET group_name = '".str_replace("\'", "''", $rename_user)."'
-						WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'] )."'";
+						WHERE group_name = '".str_replace("'", "''", $this_userdata['username'] )."'";
 					if( !$result = $db->sql_query($sql) )
 					{
 						message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
