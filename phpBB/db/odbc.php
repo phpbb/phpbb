@@ -128,7 +128,7 @@ class sql_db
 		{
 			if($this->db_type == "msaccess")
 			{
-				$query = preg_replace("/LOWER\(/", "LCASE(", $query);
+				$query = str_replace("LOWER(", "LCASE(", $query);
 			}
 
 			if(!eregi("^INSERT ",$query))
