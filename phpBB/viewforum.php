@@ -111,6 +111,12 @@ if ($forum_data['forum_password'])
 	login_forum_box($forum_data);
 }
 
+// Redirect to login upon emailed notification links
+if (isset($_GET['e']) && (int) $_GET['e'] && $user->data['user_id'] == ANONYMOUS)
+{
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_FORUM']);
+}
+
 // Permissions check
 if (!$auth->acl_get('f_read', $forum_id))
 {
@@ -165,12 +171,18 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$start	= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 
 	// Do the forum Prune thang - cron type job ...
-	// TODO
-	// Include viewed too... new row necessary for auto pruning...
 	if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 	{
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		auto_prune($forum_id, 'posted', $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
+
+		if ($forum_data['prune_days'])
+		{
+			auto_prune($forum_id, 'posted', $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
+		}
+		if ($forum_data['prune_viewed'])
+		{
+			auto_prune($forum_id, 'viewed', $forum_data['forum_flags'], $forum_data['prune_viewed'], $forum_data['prune_freq']);
+		}
 	}
 
 	// Forum rules, subscription info and word censors
