@@ -268,6 +268,10 @@ else if (isset($_POST['dldone']))
 	// simple task ... well ... uhm
 	if (filesize($phpbb_root_path . 'config.'.$phpEx) < 10)
 	{
+		$stage = 2;
+	}
+	else
+	{
 		$stage = 3;
 	}
 }

@@ -57,6 +57,11 @@ class sql_db
 			return false;
 		}
 
+		if ($this->transaction)
+		{
+			@mysqli_commit($this->db_connect_id);
+		}
+
 		return @mysqli_close($this->db_connect_id);
 	}
 
@@ -81,11 +86,13 @@ class sql_db
 
 			case 'commit':
 				$result = @mysqli_commit($this->db_connect_id);
+				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
 				break;
 
 			case 'rollback':
 				$result = @mysqli_rollback($this->db_connect_id);
+				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
 				break;
 
@@ -244,7 +251,7 @@ class sql_db
 		return ($this->db_connect_id) ? @mysqli_affected_rows($this->db_connect_id) : false;
 	}
 
-	function sql_fetchrow($query_id = 0)
+	function sql_fetchrow($query_id = false)
 	{
 		global $cache;
 
@@ -261,7 +268,7 @@ class sql_db
 		return ($query_id) ? @mysqli_fetch_assoc($query_id) : false;
 	}
 
-	function sql_fetchrowset($query_id = 0)
+	function sql_fetchrowset($query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -280,7 +287,7 @@ class sql_db
 		return false;
 	}
 
-	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
+	function sql_fetchfield($field, $rownum = -1, $query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -320,7 +327,7 @@ class sql_db
 		return false;
 	}
 
-	function sql_rowseek($rownum, $query_id = 0)
+	function sql_rowseek($rownum, $query_id = false)
 	{
 		if (!$query_id)
 		{

@@ -497,7 +497,7 @@ CREATE TABLE [phpbb_search_results] (
 GO
 
 CREATE TABLE [phpbb_search_wordlist] (
-	[word_text] [varbinary] (50) NOT NULL ,
+	[word_text] [nvarchar] (50) NOT NULL ,
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word_common] [int] NOT NULL 
 ) ON [PRIMARY]
