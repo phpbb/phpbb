@@ -108,18 +108,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_port','5222');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_aim_enable','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_aim_user','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_aim_pass','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_icq_enable','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_icq_user','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_icq_pass','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_msn_enable','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_msn_user','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_msn_pass','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_yim_enable','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_yim_user','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_yim_pass','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval','10h');
@@ -351,7 +339,7 @@ INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (3, 'INACTIVE_COPPA', 3, 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (4, 'REGISTERED', 3, 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_legend) VALUES (5, 'REGISTERED_COPPA', 3, 0);
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00', 0);
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00', 0);
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000');
 INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour) VALUES (8, 'BOTS', 3, '9E8DA7');
 
