@@ -16,7 +16,7 @@
 	<!-- BEGIN avatar_row -->
 	<tr> 
 	<!-- BEGIN avatar_column -->
-		<td class="row1" align="center"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" /></td>
+		<td class="row1" align="center"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
 	<!-- END avatar_column -->
 	</tr>
 	<tr>
