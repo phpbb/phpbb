@@ -35,7 +35,7 @@
 	<td class="{postrow.ROW_CLASS}" height="28" valign="top"> 
 	  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr> 
-		  <td width="100%"><a href="{U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: 
+		  <td width="100%"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: 
 			{postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
 			{postrow.POST_SUBJECT}</span></td>
 		  <td nowrap="nowrap" valign="top" align="right">{postrow.QUOTE_IMG} 
