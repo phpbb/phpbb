@@ -33,7 +33,7 @@ function marklist(status)
 
 <form method="post" action="{S_MODE_ACTION}" name="search"><table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
-		<th colspan="2" height="25">{L_FIND_USERNAME}</th>
+		<th colspan="2" height="28">{L_FIND_USERNAME}</th>
 	</tr>
 	<tr>
 		<td class="row3" colspan="2"><span class="gensmall">{L_FIND_USERNAME_EXPLAIN}</span></td>
@@ -83,7 +83,7 @@ function marklist(status)
 		<td class="row2" valign="middle" nowrap="nowrap"><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 	</tr>
 </table></form>
 <!-- ENDIF -->
@@ -97,7 +97,7 @@ function marklist(status)
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
-		<th height="25" nowrap="nowrap">#</th>
+		<th height="28" nowrap="nowrap">#</th>
 		<th nowrap="nowrap" width="25%"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
 		<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_JOINED}">{L_JOINED}</a></th>
 		<th nowrap="nowrap" width="10%"><a class="th" href="{U_SORT_POSTS}">{L_POSTS}</a></th>
@@ -138,7 +138,7 @@ function marklist(status)
 	<tr>
 		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
+				<td align="center"><!-- IF S_SEARCH_USER --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>

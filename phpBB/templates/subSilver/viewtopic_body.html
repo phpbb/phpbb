@@ -70,7 +70,7 @@
 			</tr>
 			<!-- IF S_CAN_VOTE -->
 			<tr>
-				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="castvote" value="{L_SUBMIT_VOTE}" class="liteoption" /></td>
+				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="castvote" value="{L_SUBMIT_VOTE}" class="btnlite" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_DISPLAY_RESULTS -->
@@ -86,7 +86,7 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<th width="150" height="26" nowrap="nowrap">{L_AUTHOR}</th>
+		<th width="150" height="28" nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
 	</tr>
 
@@ -220,7 +220,7 @@
 	<!-- END postrow -->
 
 	<tr align="center"><form method="post" action="{S_TOPIC_ACTION}">
-		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></td>
+		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
 	</form></tr>
 </table>
 
@@ -258,7 +258,7 @@
 
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+		<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
 		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 	</tr>
 </table>

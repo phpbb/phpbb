@@ -9,16 +9,16 @@
 
 <table class="tablebg" width="50%" cellspacing="1" cellpadding="2" border="0" align="center">
 	<tr> 
-		<th height="25">{L_LOGIN}</th>
+		<th height="28">{L_LOGIN}</th>
 	</tr>
-	<!-- IF LOGIN_EXPLAIN neq '' -->
+	<!-- IF LOGIN_EXPLAIN -->
 	<tr>
 		<td class="row3" align="center"><span class="gensmall">{LOGIN_EXPLAIN}</td>
 	</tr>
 	<!-- ENDIF -->
 	<tr> 
 		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
-			<!-- IF LOGIN_ERROR neq '' -->
+			<!-- IF LOGIN_ERROR -->
 			<tr>
 				<td class="gensmall" colspan="2" align="center"><span style="color:red">{LOGIN_ERROR}</span></td>
 			</tr>
@@ -45,7 +45,7 @@
 		</table></td>
 	</tr>
 	<tr> 
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" tabindex="3" /></td>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="3" /></td>
 	</tr>
 </table></form>
 

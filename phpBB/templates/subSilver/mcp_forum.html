@@ -1,17 +1,16 @@
 <!-- $ Id: $ -->
 <!-- INCLUDE mcp_header.html -->
 
-<form method="post" name="main" action="{S_MCP_ACTION}">
-<table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0">
+<form method="post" name="main" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr>
-		<th height="25" colspan="6" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+		<th colspan="6" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
 		<td colspan="2" class="cat" height="28" align="left" nowrap="nowrap"><!-- INCLUDE mcp_jumpbox.html --></td>
-		<td colspan="4" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
+		<td colspan="4" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
 	<tr>
-		<th width="4%" nowrap="nowrap">&nbsp;</th>
+		<th width="4%" height="28" nowrap="nowrap">&nbsp;</th>
 		<th colspan="2" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
 		<th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
 		<th width="17%" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
@@ -32,11 +31,11 @@
 	<!-- END topicrow -->
 	<tr align="right">
 		<td class="cat" colspan="6" height="28">
-			<!-- IF S_CAN_DELETE --><input type="submit" name="delete_topics" class="liteoption" value="{L_DELETE}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_MOVE --><input type="submit" name="move" class="liteoption" value="{L_MOVE}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_FORK --><input type="submit" name="fork" class="liteoption" value="{L_FORK}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_LOCK --><input type="submit" name="lock" class="liteoption" value="{L_LOCK}" /> &nbsp;<input type="submit" name="unlock" class="liteoption" value="{L_UNLOCK}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_SYNC --><input type="submit" name="resync" class="liteoption" value="{L_RESYNC}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_DELETE --><input type="submit" name="delete_topics" class="btnlite" value="{L_DELETE}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_MOVE --><input type="submit" name="move" class="btnlite" value="{L_MOVE}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_FORK --><input type="submit" name="fork" class="btnlite" value="{L_FORK}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_LOCK --><input type="submit" name="lock" class="btnlite" value="{L_LOCK}" /> &nbsp;<input type="submit" name="unlock" class="btnlite" value="{L_UNLOCK}" /> &nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_SYNC --><input type="submit" name="resync" class="btnlite" value="{L_RESYNC}" />&nbsp;<!-- ENDIF -->
 		</td>
 	</tr>
 </table>

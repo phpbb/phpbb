@@ -1,7 +1,7 @@
 <!-- $Id$ -->
 
 	<tr>
-		<th colspan="2">{L_ADD_ATTACHMENT}</th>
+		<th colspan="2" height="28">{L_ADD_ATTACHMENT}</th>
 	</tr>
 	<tr>
 		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
@@ -14,12 +14,12 @@
 	<tr> 
 		<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
 	    <td class="row2"><textarea class="post" name="filecomment" rows="3" cols="35" wrap="virtual" size="40">{FILE_COMMENT}</textarea>&nbsp;
-		<input class="liteoption" type="submit" name="add_file" value="{L_ADD_FILE}" /></td> 
+		<input class="btnlite" type="submit" name="add_file" value="{L_ADD_FILE}" /></td> 
 	</tr> 
 
 	<!-- IF S_HAS_ATTACHMENTS -->
 	<tr>
-		<th colspan="2">{L_POSTED_ATTACHMENTS}</th>
+		<th colspan="2" height="28">{L_POSTED_ATTACHMENTS}</th>
 	</tr>
 
 		<!-- BEGIN attach_row -->
@@ -30,8 +30,8 @@
    		<tr> 
 			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
 			<td class="row2"><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size=40>{attach_row.FILE_COMMENT}</textarea> &nbsp;
-			<input class="liteoption" type="submit" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /> &nbsp;
-			<input class="liteoption" type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
+			<input class="btnlite" type="submit" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /> &nbsp;
+			<input class="btnlite" type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
 		</tr>
 		{attach_row.S_HIDDEN}	
 		<!-- END attach_row -->

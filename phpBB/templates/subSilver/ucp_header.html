@@ -4,13 +4,12 @@
 <script language="javascript" type="text/javascript">
 <!--
 
-
 var form_name = 'ucp';
 var text_name = 'signature';
 
 // Define the bbCode tags
 bbcode = new Array();
-bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[flash]','[/flash]','[url]','[/url]');
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
 imageTag = false;
 
 // Helpline messages
@@ -46,19 +45,32 @@ function marklist(form_name, status)
 	</tr>
 </table>
 
-<table class="tablebg" cellspacing="1" cellpadding="6" border="0" align="left">
+<table class="tablebg" width="20%" cellspacing="1" cellpadding="4" border="0" align="left">
 	<tr>
-		<!-- BEGIN ucp_sections -->
-		<!-- IF ucp_sections.S_IS_TAB -->
-		<td class="row1" nowrap="nowrap"><span class="nav"><b>{ucp_sections.SECTION}</b>
+		<th height="25">{L_OPTIONS}</th>
+	</tr>
+	<!-- BEGIN ucp_section -->
+	<tr>
+		<!-- IF ucp_section.S_SELECTED -->
+		<td class="row1" height="25"><b class="nav">{ucp_section.L_TITLE}</b>
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<!-- BEGIN ucp_subsection -->
+				<tr>
+					<td class="nav">&#187;</td>
+					<td class="nav" height="20"><!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{ucp_section.ucp_subsection.L_TITLE}</b><!-- ELSE --><a href="{ucp_section.ucp_subsection.U_TITLE}">{ucp_section.ucp_subsection.L_TITLE}</a><!-- ENDIF --></td>
+				</tr>
+			<!-- END ucp_subsection -->
+			</table>
 		<!-- ELSE -->
-		<td class="row2" nowrap="nowrap"><a class="nav" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a>
+		<td class="row2" height="25" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'"><a class="nav" href="{ucp_section.U_TITLE}">{ucp_section.L_TITLE}</a>
 		<!-- ENDIF -->
 		</td>
-		<!-- END ucp_sections -->
 	</tr>
+	<!-- END ucp_section -->
 </table>
 
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="0" cellpadding="0" border="0">
+<table cellspacing="0" cellpadding="0" border="0" align="left">
+	<tr>
+		<td><img src="images/spacer.gif" width="2" alt="" /></td>
+	</tr>
+</table>

@@ -3,7 +3,7 @@
 <form method="post" name="main" action="{S_MCP_ACTION}">
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<th colspan="2" align="center">{L_POST_DETAILS}</th>
+		<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 	</th>
 	<tr>
 		<td class="row1"><b class="gen">{L_POSTER}</b></td>
@@ -36,7 +36,7 @@
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<th colspan="2" align="center">{L_REPORTS}</th>
+		<th colspan="2" height="28" align="center">{L_REPORTS}</th>
 	</tr>
 	<tr>
 		<td class="row1"><b class="gen">{L_REPORTER}</b></td>
@@ -55,7 +55,7 @@
 		<td class="row2"><span class="gen">{REASON_DESCRIPTION}</span></td>
 	</tr>
 	<tr>
-		<td class="cat" align="center" colspan="2"><input name="delete_report" class="liteoption" type="submit" value="{L_DISCARD_REPORT}" /><!-- IF S_CAN_DELETE --> &nbsp; <input name="delete_post" class="mainoption" type="submit" value="{L_DISCARD_POST}" /><!-- ENDIF --></td>
+		<td class="cat" align="center" colspan="2"><input name="delete_report" class="btnlite" type="submit" value="{L_DISCARD_REPORT}" /><!-- IF S_CAN_DELETE --> &nbsp; <input name="delete_post" class="btnmain" type="submit" value="{L_DISCARD_POST}" /><!-- ENDIF --></td>
 	</tr>
 </table>
 <!-- ENDIF -->
@@ -65,7 +65,7 @@
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<th colspan="2" align="center">{L_MOD_OPTIONS}</th>
+		<th colspan="2" height="28" align="center">{L_MOD_OPTIONS}</th>
 	</tr>
 	<!-- IF S_CAN_CHANGE_POSTER -->
 	<tr>
@@ -78,7 +78,7 @@
 		<td class="row2"><!-- IF S_CAN_LOCK_POST --><input type="checkbox" name="lock_post" {S_LOCK_POST_CHECKED}/><span class="genmed">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]<br /></span><!-- ENDIF --></td>
 	</tr>
 	<tr>
-		<td class="cat" align="center" colspan="2"><input class="mainoption" type="submit" value="{L_UPDATE}" /></td>
+		<td class="cat" align="center" colspan="2"><input class="btnmain" type="submit" value="{L_UPDATE}" /></td>
 	</tr>
 </table>
 <!-- ENDIF -->
@@ -88,7 +88,7 @@
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<th colspan="2" align="center">{L_IP_INFO}</th>
+		<th colspan="2" height="28" align="center">{L_IP_INFO}</th>
 	</tr>
 	<tr>
 		<td colspan="2" height="28" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>

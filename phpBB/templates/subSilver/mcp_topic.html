@@ -3,7 +3,7 @@
 <form name="main" method="post" action="{S_FORM_ACTION}"><table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
 	<!-- IF S_CAN_SPLIT -->
 	<tr>
-		<th height="25" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
+		<th colspan="3" height="28" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
@@ -29,28 +29,28 @@
 	<!-- ENDIF -->
 	<!-- IF S_CAN_MERGE -->
 	<tr>
-		<th height="25" colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
+		<th colspan="3" height="28" nowrap="nowrap">{L_MERGE_TOPIC}</th>
 	</tr>
 	<tr>
 		<td class="row3" colspan="3"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
-		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="liteoption" type="submit" name="select_topic" value="{L_SELECT_TOPIC}" /><!-- IF TO_TOPIC_INFO --><br /><span class="gensmall">{TO_TOPIC_INFO}</span><!-- ENDIF --></td>
+		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="btnlite" type="submit" name="select_topic" value="{L_SELECT_TOPIC}" /><!-- IF TO_TOPIC_INFO --><br /><span class="gensmall">{TO_TOPIC_INFO}</span><!-- ENDIF --></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<th height="25" colspan="3" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+		<th colspan="3" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span</td>
 		<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
+		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
 	<tr>
-		<th nowrap="nowrap">{L_AUTHOR}</th>
+		<th height="28" nowrap="nowrap">{L_AUTHOR}</th>
 		<th nowrap="nowrap">{L_MESSAGE}</th>
 		<th nowrap="nowrap">{L_SELECT}</th>
 	</tr>
@@ -58,10 +58,10 @@
 	<!-- IF postrow.S_DISPLAY_MODES -->
 	<tr>
 		<td class="cat" colspan="3" height="28" align="center">
-			<!-- IF S_CAN_MERGE -->&nbsp;<input class="liteoption" type="submit" name="merge_posts" value="{L_MERGE_POSTS}" />&nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_DELETE -->&nbsp;<input class="liteoption" type="submit" name="delete_posts" value="{L_DELETE_POSTS}" />&nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_APPROVE -->&nbsp;<input class="liteoption" type="submit" name="approve" value="{L_APPROVE_POSTS}" />&nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_SPLIT -->&nbsp;<input class="liteoption" type="submit" name="split_all" value="{L_SPLIT_POSTS}" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="split_beyond" value="{L_SPLIT_AFTER}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_MERGE -->&nbsp;<input class="btnlite" type="submit" name="merge_posts" value="{L_MERGE_POSTS}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_DELETE -->&nbsp;<input class="btnlite" type="submit" name="delete_posts" value="{L_DELETE_POSTS}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_APPROVE -->&nbsp;<input class="btnlite" type="submit" name="approve" value="{L_APPROVE_POSTS}" />&nbsp;<!-- ENDIF -->
+			<!-- IF S_CAN_SPLIT -->&nbsp;<input class="btnlite" type="submit" name="split_all" value="{L_SPLIT_POSTS}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="split_beyond" value="{L_SPLIT_AFTER}" />&nbsp;<!-- ENDIF -->
 		</td>
 	</tr>
 	<!-- ENDIF -->
@@ -112,7 +112,7 @@
 	</tr>
 	<!-- END postrow -->
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
+		<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
 </table>
 
