@@ -671,62 +671,64 @@ else if( ( $delete && $mark_list ) || $delete_all )
 			unset($delete_type);
 		}
 
-		$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-			WHERE ";
-		$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-			WHERE ";
-
-		$delete_sql_id = "";
-		for($i = 0; $i < count($mark_list); $i++)
+		if ( count($mark_list) )
 		{
-			if( $delete_sql_id != "" )
+			$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
+				WHERE ";
+			$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
+				WHERE ";
+
+			$delete_sql_id = "";
+			for($i = 0; $i < count($mark_list); $i++)
 			{
-				$delete_sql_id .= ", ";
+				if( $delete_sql_id != "" )
+				{
+					$delete_sql_id .= ", ";
+				}
+				$delete_sql_id .= $mark_list[$i];
 			}
-			$delete_sql_id .= $mark_list[$i];
-		}
 
-		$delete_sql .= "privmsgs_id IN ($delete_sql_id)";
-		$delete_text_sql .= "privmsgs_text_id IN ($delete_sql_id)";
+			$delete_sql .= "privmsgs_id IN ($delete_sql_id)";
+			$delete_text_sql .= "privmsgs_text_id IN ($delete_sql_id)";
 
-		$delete_sql .= " AND ";
+			$delete_sql .= " AND ";
 
-		switch($folder)
-		{
-			case 'inbox':
-				$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
-					privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
-				break;
-
-			case 'outbox':
-				$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
-				break;
-
-			case 'sentbox':
-				$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
-				break;
-
-			case 'savebox':
-				$delete_sql .= "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
-				OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
-				break;
-		}
-
-		if(!$del_status = $db->sql_query($delete_sql, BEGIN_TRANSACTION))
-		{
-			message_die(GENERAL_ERROR, "Could not delete private message info.", "", __LINE__, __FILE__, $delete_sql);
-		}
-		else
-		{
-			if(!$del_text_status = $db->sql_query($delete_text_sql, END_TRANSACTION))
+			switch($folder)
 			{
-				message_die(GENERAL_ERROR, "Could not delete private message text.", "", __LINE__, __FILE__, $delete_text_sql);
+				case 'inbox':
+					$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
+						privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
+					break;
+
+				case 'outbox':
+					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+					break;
+
+				case 'sentbox':
+					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+					break;
+
+				case 'savebox':
+					$delete_sql .= "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
+						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
+					OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
+						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
+					break;
+			}
+
+			if(!$del_status = $db->sql_query($delete_sql, BEGIN_TRANSACTION))
+			{
+				message_die(GENERAL_ERROR, "Could not delete private message info.", "", __LINE__, __FILE__, $delete_sql);
+			}
+			else
+			{
+				if(!$del_text_status = $db->sql_query($delete_text_sql, END_TRANSACTION))
+				{
+					message_die(GENERAL_ERROR, "Could not delete private message text.", "", __LINE__, __FILE__, $delete_text_sql);
+				}
 			}
 		}
 	}
-
 }
 else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 {
@@ -751,10 +753,8 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 
 	$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
 
-	if( $db->sql_numrows($result) )
+	if( $saved_info = $db->sql_fetchrow($result) )
 	{
-		$saved_info = $db->sql_fetchrow($result);
-
 		if( $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] )
 		{
 			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
@@ -797,21 +797,24 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 			break;
 	}
 
-	$saved_sql_id = "";
-	for($i = 0; $i < count($mark_list); $i++)
+	if ( count($mark_list) )
 	{
-		if( $saved_sql_id != "" )
+		$saved_sql_id = "";
+		for($i = 0; $i < count($mark_list); $i++)
 		{
-			$saved_sql_id .= ", ";
+			if( $saved_sql_id != "" )
+			{
+				$saved_sql_id .= ", ";
+			}
+			$saved_sql_id .= $mark_list[$i];
 		}
-		$saved_sql_id .= $mark_list[$i];
-	}
 
-	$saved_sql .= " AND privmsgs_id IN ($saved_sql_id)";
+		$saved_sql .= " AND privmsgs_id IN ($saved_sql_id)";
 
-	if( !$save_status = $db->sql_query($saved_sql) )
-	{
-		message_die(GENERAL_ERROR, "Could not save private messages.", "", __LINE__, __FILE__, $saved_sql);
+		if( !$save_status = $db->sql_query($saved_sql) )
+		{
+			message_die(GENERAL_ERROR, "Could not save private messages.", "", __LINE__, __FILE__, $saved_sql);
+		}
 	}
 
 }
@@ -1063,30 +1066,34 @@ else if( $submit || $refresh || $mode != "" )
 
 				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
 				{
-					if( isset($HTTP_SERVER_VARS['PHP_SELF']) || isset($HTTP_ENV_VARS['PHP_SELF']) )
+					if( !empty($HTTP_SERVER_VARS['PHP_SELF']) || !empty($HTTP_ENV_VARS['PHP_SELF']) )
 					{
-						$script_name = ( isset($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+						$script_name = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
 					}
-					else if( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) || isset($HTTP_ENV_VARS['SCRIPT_NAME']) )
+					else if( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) || !empty($HTTP_ENV_VARS['SCRIPT_NAME']) )
 					{
-						$script_name = ( isset($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
+						$script_name = ( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
 					}
-					else if( isset($HTTP_SERVER_VARS['PATH_INFO']) || isset($HTTP_ENV_VARS['PATH_INFO']) )
+					else if( !empty($HTTP_SERVER_VARS['PATH_INFO']) || !empty($HTTP_ENV_VARS['PATH_INFO']) )
 					{
-						$script_name = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
+						$script_name = ( !empty($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
 					}
 					else
 					{
 						$script_name = "privmsg.$phpEx";
 					}
 
-					if( isset($HTTP_SERVER_VARS['SERVER_NAME']) || isset($HTTP_ENV_VARS['SERVER_NAME']) )
+					if ( !empty($board_config['cookie_domain']) )
 					{
-						$server_name = ( isset($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+						$server_name = $board_config['cookie_domain'];
 					}
-					else if( isset($HTTP_SERVER_VARS['HTTP_HOST']) || isset($HTTP_ENV_VARS['HTTP_HOST']) )
+					else if( !empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']) )
 					{
-						$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+						$server_name = ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+					}
+					else if( !empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']) )
+					{
+						$server_name = ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
 					}
 					else
 					{
