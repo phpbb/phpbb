@@ -86,7 +86,11 @@ HR {border: solid {T_FONTCOLOR1} 0px; border-top-width: 1px; height: 0px; }
 	<tr>
 		<td width="100%"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<td><span class="gensmall">{LAST_VISIT_DATE} / <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></span></td>
+				<td><span class="gensmall">
+				<!-- BEGIN switch_user_logged_in -->
+				{LAST_VISIT_DATE} / <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a>
+				<!-- END switch_user_logged_in -->
+				</span></td>
 				<td align="right"><span class="gensmall">{CURRENT_TIME}</span></td>
 			</tr>
 		</table></td>
