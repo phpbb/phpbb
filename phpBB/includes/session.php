@@ -773,12 +773,12 @@ class user extends session
 			$imgsrc = '"' . $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc) . '"';
 			$width = ($width) ? ' width="' . $width . '"' : '';
 			$height = ($height) ? ' height="' . $height . '"' : '';
-			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
 
-			$imgs[$img . $suffix] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '" />';
+			$imgs[$img . $suffix] = $imgsrc . $width . $height;
 		}
 
-		return $imgs[$img . $suffix];
+		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
+		return '<img src=' . $imgs[$img . $suffix] . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '" />';
 	}
 
 	// Start code for checking/setting option bit field for user table
