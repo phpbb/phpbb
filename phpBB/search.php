@@ -27,10 +27,12 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 $mode		= (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : false;
 $search_id	= (isset($_REQUEST['search_id'])) ? htmlspecialchars($_REQUEST['search_id']) : false;
 $start		= (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
+$post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
+$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : false;
 
 $search_keywords	= (!empty($_REQUEST['search_keywords'])) ? $_REQUEST['search_keywords'] : false;
 $search_author		= (!empty($_REQUEST['search_author'])) ? htmlspecialchars($_REQUEST['search_author']) : false;
-$show_results		= (isset($_REQUEST['show_results'])) ? htmlspecialchars($_REQUEST['show_results']) : 'topics';
+$show_results		= (isset($_REQUEST['show_results'])) ? htmlspecialchars($_REQUEST['show_results']) : 'posts';
 $search_terms		= (isset($_REQUEST['search_terms'])) ? (($_REQUEST['search_terms'] == 'all') ? 1 : 0) : 1;
 $search_fields		= (isset($_REQUEST['search_fields'])) ? $_REQUEST['search_fields'] : 'all';
 $search_child		= (!empty($_REQUEST['search_child'])) ? true : false;
@@ -54,17 +56,31 @@ if (!$auth->acl_get('u_search') || !$config['load_search'])
 	trigger_error($user->lang['NO_SEARCH']);
 }
 
-
-$store_vars		= array('sort_by', 'sort_dir', 'show_results', 'return_chars', 'total_match_count', 'current_time');
-$current_time	= time();
-
+// Define some vars
 $limit_days		= array(0 => $user->lang['ALL_RESULTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SORT_TIME'], 'f' => $user->lang['SORT_FORUM'], 'i' => $user->lang['SORT_TOPIC_TITLE'], 's' => $user->lang['SORT_POST_SUBJECT']);
-$sort_by_sql	= array('a' => (($show_results == 'posts') ? 'u.username' : 't.topic_poster'), 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'pt.post_subject' : 't.topic_title'));
 
 $s_limit_days = $s_sort_key = $s_sort_dir = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
+$store_vars		= array('sort_by', 'sort_dir', 'show_results', 'return_chars', 'total_match_count');
+$current_time	= time();
+
+// Check last search time ... if applicable
+if ($config['search_interval'])
+{
+	$sql = 'SELECT MAX(search_time) as last_time
+		FROM ' . SEARCH_TABLE;
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['last_time'] > time() - $config['search_interval'])
+		{
+			trigger_error($user->lang['NO_SEARCH_TIME']);
+		}
+	}
+}
 
 if ($search_keywords || $search_author || $search_id)
 {
@@ -175,7 +191,7 @@ if ($search_keywords || $search_author || $search_id)
 				{
 					$sql = 'SELECT post_id 
 						FROM ' . POSTS_TABLE . ' 
-						WHERE p.post_time > ' . $user->data['user_lastvisit'];
+						WHERE post_time > ' . $user->data['user_lastvisit'];
 					$field = 'post_id';
 				}
 				else
@@ -288,7 +304,6 @@ if ($search_keywords || $search_author || $search_id)
 		{
 			$split_words = str_replace($replace_synonym, $match_synonym, $split_words);
 		}
-
 	}
 
 
@@ -545,8 +560,8 @@ if ($search_keywords || $search_author || $search_id)
 		srand ((double) microtime() * 1000000);
 		$search_id = rand();
 
-		$sql = 'INSERT INTO ' . SEARCH_TABLE . " (search_id, session_id, search_array)
-			VALUES($search_id, '" . $db->sql_escape($user->data['session_id']) . "', '" . $db->sql_escape($data) . "')";
+		$sql = 'INSERT INTO ' . SEARCH_TABLE . " (search_id, session_id, search_time, search_array)
+			VALUES($search_id, '" . $db->sql_escape($user->data['session_id']) . "', $current_time, '" . $db->sql_escape($data) . "')";
 		$db->sql_query($sql);
 		unset($data);
 	}
@@ -584,8 +599,32 @@ if ($search_keywords || $search_author || $search_id)
 
 	$u_hilit = urlencode($split_words);
 
+	// Define ordering sql field, do it here because the order may be defined
+	// within an existing search result set
+	$sort_by_sql	= array('a' => (($show_results == 'posts') ? 'u.username' : 't.topic_poster'), 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'pt.post_subject' : 't.topic_title'));
+
 	if ($show_results == 'posts')
 	{
+		// Not joining this query to the one below at present ... may do in future
+		$sql = 'SELECT zebra_id, friend, foe
+			FROM ' . ZEBRA_TABLE . ' 
+			WHERE user_id = ' . $user->data['user_id'];
+		$result = $db->sql_query($sql);
+
+		$zebra = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['friend'])
+			{
+				$zebra['friend'][] = $row['zebra_id'];
+			}
+			else
+			{
+				$zebra['foe'][] = $row['zebra_id'];
+			}
+		}
+		$db->sql_freeresult($result);
+
 		$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_sig, u.user_sig_bbcode_uid
 			FROM ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p 
 			WHERE $sql_where 
@@ -663,11 +702,24 @@ if ($search_keywords || $search_author || $search_id)
 				}
 			}
 
+
+
 			$folder_img = ($unread_topic) ? $folder_new : $folder;
 			$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 		}
 		else
 		{
+			if (in_array($row['poster_id'], $zebra['foe']) && (!$view || $view != 'show' || $post_id != $row['post_id']))
+			{
+				$template->assign_block_vars('searchresults', array(
+					'S_IGNORE_POST' => true, 
+
+					'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['username'], "<a href=\"search.$phpEx$SID&amp;search_id=$search_id&amp;sk=$sort_key&amp;sd=$sort_dir&amp;st=$sort_days" . $row['post_id'] . '&amp;p=' . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
+				);
+
+				continue;
+			}
+
 			if (!empty($censors))
 			{
 				$row['post_text'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $row['post_text'] . '<'), 1, -1));
@@ -693,6 +745,7 @@ if ($search_keywords || $search_author || $search_id)
 		$template->assign_block_vars('searchresults', array(
 			'FORUM_ID' 			=> $forum_id,
 			'TOPIC_ID' 			=> $topic_id,
+			'POST_ID'			=> ($show_results == 'posts') ? $row['post_id'] : false, 
 
 			'TOPIC_AUTHOR' 		=> $topic_author,
 			'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time'], $config['board_timezone']),
@@ -811,7 +864,6 @@ for($i = 100; $i <= 1000 ; $i += 100)
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
 
-
 $template->assign_vars(array(
 	'S_SEARCH_ACTION'		=> "search.$phpEx$SID&amp;mode=results",
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
@@ -822,7 +874,7 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
 
-$sql = 'SELECT search_id, search_array 
+$sql = 'SELECT search_id, search_time, search_array 
 	FROM ' . SEARCH_TABLE;
 $result = $db->sql_query($sql);
 
@@ -843,15 +895,11 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$stopped_words = htmlspecialchars(implode(' ', unserialize(array_shift($data))));
-	foreach ($store_vars as $var)
-	{
-		$$var = array_shift($data);
-	}
 	unset($data);
 
 	$template->assign_block_vars('recentsearch', array(
 		'KEYWORDS'	=> $split_words,
-		'TIME'		=> $user->format_date($current_time), 
+		'TIME'		=> $user->format_date($row['search_time']), 
 
 		'U_KEYWORDS'	=> "search.$phpEx$SID&amp;search_keywords=" . urlencode($split_words), 
 		

@@ -1151,6 +1151,7 @@ $lang += array(
 	'POST_CHARACTERS'		=> 'characters of posts',
 	'SEARCH_PREVIOUS'		=> 'Search previous',
 	'RECENT_SEARCHES'		=> 'Recent searches', 
+	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently', 
 	'RESULT_DAYS'			=> 'Limit results to previous', 
 	'RESULT_SORT'			=> 'Sort results by', 
 	'RESULT_DIR'			=> 'Order results', 
@@ -1168,6 +1169,7 @@ $lang += array(
 	'ALL_RESULTS'		=> 'All results', 
 
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
+	'NO_SEARCH_TIME'		=> 'Sorry but you cannot use search at this time. Please try again in a few minutes.', 
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'FOUND_SEARCH_MATCH'	=> 'Search found %d match',
 	'FOUND_SEARCH_MATCHES'	=> 'Search found %d matches',
