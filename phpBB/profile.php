@@ -1503,6 +1503,19 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$template->assign_block_vars("edit_profile", array());
 			}
 
+			//
+			// Let's do an overall check for settings/versions which would prevent
+			// us from doing file uploads....
+			//
+			if( (get_cfg_var('file_uploads') == 0) || (strtolower(get_cfg_var('file_uploads')) == 'off')|| (phpversion() == '4.0.4pl1') || (!$board_config['allow_avatar_upload']) )
+			{
+				$form_enctype = '';
+			}
+			else
+			{
+				$form_enctype = 'enctype="multipart/form-data"';
+			}
+			
 			$template->assign_vars(array(
 				"USERNAME" => $username,
 				"EMAIL" => $email,
@@ -1604,6 +1617,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
 				"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'],
 				"S_HIDDEN_FIELDS" => $s_hidden_fields,
+				"S_FORM_ENCTYPE" => $form_enctype,
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 			);
 
@@ -1612,11 +1626,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// of the templates to 'fake' an IF...ELSE...ENDIF solution
 			// it works well :)
 			//
-			if( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
+			if( $userdata['user_allowavatar'] && ( ($board_config['allow_avatar_upload'] && $form_enctype != '') || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 			{
 				$template->assign_block_vars("avatarblock", array() );
 
-				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']) )
+				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']) && $form_enctype != '')
 				{
 					$template->assign_block_vars("avatarblock.avatarupload", array() );
 				}
