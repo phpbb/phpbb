@@ -1,31 +1,21 @@
 <?php
-/***************************************************************************
- *                           message_parser.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : message_parser.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 /*
-	TODO list:
-	- fix [flash], add width/height parameters?
-	- check that PHP syntax highlightning works well
-	- add other languages?
-	- add validation regexp to [email], [flash]
-	- need size limit checks on img/flash tags ... probably warrants some discussion)
+	TODO list for M-3:
+	- add other languages to syntax highlighter
+	- better (and unified, wrt other pages such as registration) validation for urls, emails, etc...
+	- need size limit checks on img/flash tags ... probably warrants some discussion
 */
 
 // case-insensitive strpos() - needed for some functions
@@ -56,6 +46,8 @@ class parse_message
 
 	var $attachment_data = array();
 	var $filename_data = array();
+
+	var $smilies = '';
 
 	function parse_message($message_type)
 	{
@@ -116,7 +108,7 @@ class parse_message
 
 			if (sizeof($allowed_tags))
 			{
-				$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<\1\2>', $this->message);
+				$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
 			}
 		}
 	}
@@ -170,27 +162,29 @@ class parse_message
 		// This array holds all bbcode data. BBCodes will be processed in this order, so it is important to
 		// keep [code] in first position and [quote] in second position.
 		$this->bbcodes = array(
-			'code'	=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\\1', '\\2')")),
-			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\\0')")),
-			'b'		=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']')),
-			'i'		=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']\1[/i:' . $this->bbcode_uid . ']')),
-			'url'	=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\\1', '\\2')")),
-			'img'	=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i' => '[img:' . $this->bbcode_uid . ']\1\2[/img:' . $this->bbcode_uid . ']')),
-			'size'	=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=\1:' . $this->bbcode_uid . ']\2[/size:' . $this->bbcode_uid . ']')),
-			'color'	=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=\1:' . $this->bbcode_uid . ']\2[/color:' . $this->bbcode_uid . ']')),
-			'u'		=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']')),
-			'list'	=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_list('\\0')")),
-			'email'	=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\\1', '\\2')")),
-			'flash'	=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => '[flash=\1,\2:' . $this->bbcode_uid . ']\3[/flash:' . $this->bbcode_uid . ']'))
+			'code'	=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
+			'quote'	=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:="(.*?)")?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
+			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']$1[/b:' . $this->bbcode_uid . ']')),
+			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']$1[/i:' . $this->bbcode_uid . ']')),
+			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
+			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i' => '[img:' . $this->bbcode_uid . ']$1$2[/img:' . $this->bbcode_uid . ']')),
+			'size'	 	=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=$1:' . $this->bbcode_uid . ']$2[/size:' . $this->bbcode_uid . ']')),
+			'color'	=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
+			'u'			=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']$1[/u:' . $this->bbcode_uid . ']')),
+			'list'		=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_list('\$0')")),
+			'email'	=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
+			'flash'	=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => '[flash=$1,$2:' . $this->bbcode_uid . ']$3[/flash:' . $this->bbcode_uid . ']'))
 		);
 
-/**************
 		if (!isset($rowset))
 		{
 			global $db;
 			$rowset = array();
 
-			$result = $db->sql_query('SELECT * FROM ' . BBCODES_TABLE);
+			$sql = 'SELECT bbcode_id, bbcode_tag, first_pass_match, first_pass_replace
+				FROM ' . BBCODES_TABLE;
+
+			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$rowset[] = $row;
@@ -198,19 +192,19 @@ class parse_message
 		}
 		foreach ($rowset as $row)
 		{
-			$this->bbcodes[$row['bbcode_name']] = array(
-				'bbcode_id'	=>	$row['bbcode_id'],
-				'regexp'	=>	array($row['first_pass_regexp'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replacement']))
+			$this->bbcodes[$row['bbcode_tag']] = array(
+				'bbcode_id'	=>	intval($row['bbcode_id']),
+				'regexp'			=>	array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
-**************/
 	}
 
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
 	function bbcode_code($stx, $in)
 	{
-		// if I remember correctly, preg_replace() will slash passed vars
-		$in = str_replace("\r\n", "\n", stripslashes($in));
+		// when using the /e modifier, preg_replace slashes double-quotes but does not
+		// seem to slash anything else
+		$in = str_replace("\r\n", "\n", str_replace('\"', '"', $in));
 		$out = '';
 
 		do
@@ -237,7 +231,7 @@ class parse_message
 			}
 
 			$code = substr($code, 0, -7);
-			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '\1', $code);
+			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
 
 			switch (strtolower($stx))
 			{
@@ -273,12 +267,18 @@ class parse_message
 						$str_to[] = '';
 						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
 						$str_to[] = '<span class="syntaxdefault">';
-						$str_from[] = '<span class="syntaxdefault">?&gt;</span>';
-						$str_to[] = '';
 					}
 
 					$code = str_replace($str_from, $str_to, $code);
-					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '\1\2\3', $code);
+					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
+
+					if ($remove_tags)
+					{
+						$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;</span>#', '', $code);
+					}
+
+					$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
+					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#', '</span>', $code);
 
 					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . trim($code) . '[/code:' . $this->bbcode_uid . ']';
 				break;
@@ -308,7 +308,8 @@ class parse_message
 		$tok = ']';
 		$out = '[';
 
-		$in = substr(stripslashes($in), 1);
+
+		$in = substr(str_replace('\"', '"', $in), 1);
 		$list_end_tags = $item_end_tags = array();
 
 		do
@@ -423,7 +424,7 @@ class parse_message
 		$tok = ']';
 		$out = '[';
 
-		$in = substr(stripslashes($in), 1);
+		$in = substr(str_replace('\"', '"', $in), 1);
 		$close_tags = $error_ary = array();
 		$buffer = '';
 
@@ -472,7 +473,7 @@ class parse_message
 
 					if (!empty($m[1]))
 					{
-						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;\1', $m[1]);
+						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;$1', $m[1]);
 						$end_tags = array();
 						$error = FALSE;
 
@@ -547,10 +548,29 @@ class parse_message
 
 	function validate_email($var1, $var2)
 	{
-		$var1 = stripslashes($var1);
-		$var2 = stripslashes($var2);
+		$txt = stripslashes($var2);
+		$email = ($var1 != '') ? stripslashes($var1) : stripslashes($var2);
 
-		$retval = '[email' . $var1 . ':' . $this->bbcode_uid . ']' . $var2 . '[/email:' . $this->bbcode_uid . ']';
+		$validated = TRUE;
+
+		if (!preg_match('!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i', $email))
+		{
+			$validated = FALSE;
+		}
+
+		if (!$validated)
+		{
+			return '[email' . (($var1) ? "=$var1" : '') . ']' . $var2 . '[/email]';
+		}
+
+		if ($var1)
+		{
+			$retval = '[email=' . $email . ':' . $this->bbcode_uid . ']' . $txt . '[/email:' . $this->bbcode_uid . ']';
+		}
+		else
+		{
+			$retval = '[email:' . $this->bbcode_uid . ']' . $email . '[/email:' . $this->bbcode_uid . ']';
+		}
 		return $retval;
 	}
 
@@ -587,20 +607,20 @@ class parse_message
 			$replace = array();
 
 			// relative urls for this board
-			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/([^ \t\n\r <"\']+)#i';
-			$replace[] = '<!-- l --><a href="\1" target="_blank">\1</a><!-- l -->';
+			$match[] = '#(^|[\n ])' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r <"\']+)#i';
+			$replace[] = '<!-- l --><a href="$1" target="_blank">$1</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
 			$match[] = '#(^|[\n ])([\w]+?://.*?[^ \t\n\r<"]*)#ie';
-			$replace[] = "'\\1<!-- m --><a href=\"\\2\" target=\"_blank\">' . ((strlen('\\2') > 55) ? substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- m -->'";
+			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
 
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 			$match[] = '#(^|[\n ])(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"]*)?)#ie';
-			$replace[] = "'\\1<!-- w --><a href=\"http://\\2\" target=\"_blank\">' . ((strlen('\\2') > 55) ? substr(str_replace(' ', '%20', '\\2'), 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- w -->'";
+			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
 
 			// matches an email@domain type address at the start of a line, or after a space.
 			$match[] = '#(^|[\n ])([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\\1<!-- e --><a href=\"mailto:\\2\">' . ((strlen('\\2') > 55) ? substr('\\2', 0, 39) . ' ... ' . substr('\\2', -10) : '\\2') . '</a><!-- e -->'";
+			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 
 			$this->message = preg_replace($match, $replace, $this->message);
 		}
@@ -622,6 +642,7 @@ class parse_message
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$match = $replace = array();
+
 			do
 			{
 				$match[] = '#(' . preg_quote($row['code'], '#') . ')#';
@@ -643,7 +664,6 @@ class parse_message
 
 			$this->message = preg_replace($match, $replace, ' ' . $this->message . ' ');
 		}
-		$db->sql_freeresult($result);
 	}
 
 	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
@@ -956,7 +976,7 @@ class fulltext_search
 		{
 			$sql = 'SELECT word_id, word_text
 				FROM ' . SEARCH_WORD_TABLE . '
-				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_add_words)) . ")";
+				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $unique_add_words)) . ")";
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
@@ -976,13 +996,13 @@ class fulltext_search
 					case 'mysql':
 					case 'mysql4':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text)
-							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'\1\')',  $new_words));
+							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')',  $new_words));
 						$db->sql_query($sql);
 						break;
 
 					case 'mssql':
 					case 'sqlite':
-						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\\1'",  $new_words));
+						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
 						$db->sql_query($sql);
 						break;
 
@@ -1029,7 +1049,7 @@ class fulltext_search
 				$sql = 'INSERT INTO ' . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
 					SELECT $post_id, word_id, $title_match 
 					FROM " . SEARCH_WORD_TABLE . ' 
-					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $word_ary)) . ')';
+					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $word_ary)) . ')';
 				$db->sql_query($sql);
 			}
 		}

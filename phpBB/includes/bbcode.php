@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              bbcode.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : bbcode.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class bbcode
 {
@@ -67,13 +59,15 @@ class bbcode
 		{
 			if ($this->bbcode_bitfield & (1 << $bbcode_id))
 			{
-				foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
+				if (!empty($this->bbcode_cache[$bbcode_id]))
 				{
-					foreach ($array as $search => $replace)
+					foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
 					{
-						${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
-						${$type}['replace'][] = $replace;
-
+						foreach ($array as $search => $replace)
+						{
+							${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
+							${$type}['replace'][] = $replace;
+						}
 					}
 				}
 			}
@@ -88,7 +82,8 @@ class bbcode
 			$message = preg_replace($preg['search'], $preg['replace'], $message);
 		}
 
-		return $message;
+		// Remove the uid from tags that have not been transformed into HTML
+		$message = str_replace(':' . $this->bbcode_uid, '', $message);
 	}
 	
 	//
@@ -99,19 +94,17 @@ class bbcode
 	//
 	function bbcode_cache_init()
 	{
+		global $user, $phpbb_root_path;
+
 		if (empty($this->template_filename))
 		{
-			global $user, $phpbb_root_path;
-
 			$style = 'primary';
 			if (!empty($user->theme['secondary']))
 			{
-				$merged_bitfield = $user->theme['primary']['bbcode_bitfield'] | $user->theme['secondary']['bbcode_bitfield'];
+				// If the primary style has custom templates for BBCodes then we'll make sure
+				// the bbcode.html file is present, otherwise we'll use the secondary style
 
-				// If any of styles has a specific template for any of applicable
-				// bbcodes then load the primary bbcode.html if present, otherwise
-				// load the secondary bbcode.html file
-				if ($this->bbcode_bitfield & $merged_bitfield)
+				if ($this->bbcode_bitfield & $user->theme['primary']['bbcode_bitfield'])
 				{
 					$style = (file_exists($phpbb_root_path . 'styles/templates/' . $user->theme['primary']['template_path'] . '/bbcode.html')) ? 'primary' : 'secondary';
 				}
@@ -134,21 +127,20 @@ class bbcode
 			}
 			$bbcode_ids[$bbcode_id] = $bbcode_id;
 
-			// WARNING: hardcoded values. it assumes that bbcodes with bbcode_id > 11 are user-defined bbcodes
 			if ($bbcode_id > 11)
 			{
-				$sql .= (($sql) ? ',' : '') . $bbcode_id . ',';
+				$sql .= (($sql) ? ',' : '') . $bbcode_id;
 			}
 		}
-/*
+
 		if ($sql)
 		{
 			global $db;
 			$rowset = array();
 
-			$sql = 'SELECT bbcode_id, second_pass_regexp, second_pass_replacement
+			$sql = 'SELECT *
 				FROM ' . BBCODES_TABLE . "
-				WHERE bbcode_id IN ($sql);
+				WHERE bbcode_id IN ($sql)";
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
@@ -157,7 +149,6 @@ class bbcode
 			}
 			$db->sql_freeresult($result);
 		}
-*/
 
 		foreach ($bbcode_ids as $bbcode_id)
 		{
@@ -202,7 +193,7 @@ class bbcode
 					else
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-							'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	str_replace('\\2', '[ img ]', $this->bbcode_tpl('url', $bbcode_id))
+							'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=>	str_replace('$2', '[ img ]', $this->bbcode_tpl('url', $bbcode_id))
 						));
 					}
 				break;
@@ -224,7 +215,7 @@ class bbcode
 				break;
 				case 8:
 					$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-						'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'	=>	"\$this->bbcode_second_pass_code('\\1', '\\2')"
+						'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'	=>	"\$this->bbcode_second_pass_code('\$1', '\$2')"
 					));
 				break;
 				case 9:
@@ -238,13 +229,13 @@ class bbcode
 							'[/*:m:$uid]'			=>	$this->bbcode_tpl('listitem_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\\1')",
+							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\$1')",
 						)
 					);
 				break;
 				case 10:
 					$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-							'#\[email:$uid\]((.*?))\[/email:$uid\]#is'		=>	$this->bbcode_tpl('email', $bbcode_id),
+							'#\[email:$uid\]((.*?))\[/email:$uid\]#is'				=>	$this->bbcode_tpl('email', $bbcode_id),
 							'#\[email=([^\[]+):$uid\](.*?)\[/email:$uid\]#is'	=>	$this->bbcode_tpl('email', $bbcode_id)
 					));
 				break;
@@ -258,20 +249,67 @@ class bbcode
 					else
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-							'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=>	str_replace('\\1', '\\3', str_replace('\\2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id)))
+							'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=>	str_replace('$1', '$3', str_replace('$2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id)))
 						));
 					}
 				break;
 				default:
 					if (isset($rowset[$bbcode_id]))
 					{
-						$this->bbcode_cache[$bbcode_id] = array(
-							'preg' => array($rowset[$bbcode_id]['second_pass_regexp'], $rowset[$bbcode_id]['second_pass_replacement'])
-						);
+						if ($this->template_bitfield & (1 << $bbcode_id))
+						{
+							// The bbcode requires a custom template to be loaded
+
+							if (!$bbcode_tpl = $this->bbcode_tpl($rowset[$bbcode_id]['bbcode_tag'], $bbcode_id))
+							{
+								// For some reason, the required template seems not to be available,
+								// use the default template
+
+								$bbcode_tpl = (!empty($rowset[$bbcode_id]['second_pass_replace'])) ? $rowset[$bbcode_id]['second_pass_replace'] : $rowset[$bbcode_id]['bbcode_tpl'];
+							}
+							else
+							{
+								// In order to use templates with custom bbcodes we need
+								// to replace all {VARS} to corresponding backreferences
+								// Note that backreferences are numbered from bbcode_match
+
+								if (preg_match_all('/\{(URL|EMAIL|TEXT|COLOR|NUMBER)[0-9]*\}/', $rowset[$bbcode_id]['bbcode_match'], $m))
+								{
+									foreach ($m[0] as $i => $tok)
+									{
+										$bbcode_tpl = str_replace($tok, '$' . ($i + 1), $bbcode_tpl);
+									}
+								}
+							}
+						}
+						else
+						{
+							// Default template
+
+							$bbcode_tpl = (!empty($rowset[$bbcode_id]['second_pass_replace'])) ? $rowset[$bbcode_id]['second_pass_replace'] : $rowset[$bbcode_id]['bbcode_tpl'];
+						}
+
+						// Replace {L_*} lang strings
+						$bbcode_tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace'_', ' ', '\$1')))", $bbcode_tpl);
+
+						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
+						{
+							// The custom BBCode requires second-pass pattern replacements
+
+							$this->bbcode_cache[$bbcode_id] = array(
+								'preg' => array($rowset[$bbcode_id]['second_pass_match'] => $bbcode_tpl)
+							);
+						}
+						else
+						{
+							$this->bbcode_cache[$bbcode_id] = array(
+								'str' => array($rowset[$bbcode_id]['second_pass_match'] => $bbcode_tpl)
+							);
+						}
 					}
 					else
 					{
-						$this->bbcode_cache[$bbcode_id] = array();
+						$this->bbcode_cache[$bbcode_id] = FALSE;
 					}
 			}
 		}
@@ -284,21 +322,21 @@ class bbcode
 			static $bbcode_hardtpl = array(
 				'b_open'		=>	'<span style="font-weight: bold">',
 				'b_close'		=>	'</span>',
-				'i_open'		=>	'<span style="font-style: italic">',
-				'i_close'		=>	'</span>',
+				'i_open'			=>	'<span style="font-style: italic">',
+				'i_close'			=>	'</span>',
 				'u_open'		=>	'<span style="text-decoration: underline">',
 				'u_close'		=>	'</span>',
-				'url'			=>	'<a href="\1" target="_blank">\2</a>',
-				'img'			=>	'<img src="\1" border="0" />',
-				'size'			=>	'<span style="font-size: \1px; line-height: normal">\2</span>',
-				'color'			=>	'<span style="color: \1">\2</span>',
-				'email'			=>	'<a href="mailto:\1">\2</a>'
+				'url'				=>	'<a href="$1" target="_blank">$2</a>',
+				'img'				=>	'<img src="$1" border="0" />',
+				'size'				=>	'<span style="font-size: $1px; line-height: normal">$2</span>',
+				'color'			=>	'<span style="color: $1">$2</span>',
+				'email'			=>	'<a href="mailto:$1">$2</a>'
 			);
 		}
 
 		if ($bbcode_id != -1 && !($this->template_bitfield & (1 << $bbcode_id)))
 		{
-			return $bbcode_hardtpl[$tpl_name];
+			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : FALSE;
 		}
 
 		if (empty($this->bbcode_template))
@@ -318,28 +356,28 @@ class bbcode
 			$tpl = preg_replace("/\n[\n\r\s\t]*/", '', $tpl);
 
 			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
-			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_template['\\1'] = \$this->bbcode_tpl_replace('\\1','\\2');", $tpl);
+			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_template['\$1'] = \$this->bbcode_tpl_replace('\$1','\$2');", $tpl);
 
 			$this->bbcode_template = array();
 			eval($tpl);
 		}
 
-		return $this->bbcode_template[$tpl_name];
+		return (isset($this->bbcode_template[$tpl_name])) ? $this->bbcode_template[$tpl_name] : ((isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : FALSE);
 	}
 	
 	function bbcode_tpl_replace($tpl_name, $tpl)
 	{
 		static $replacements = array(
-			'quote_username_open'	=>	array('{USERNAME}'	=>	'\\1'),
-			'color'					=>	array('{COLOR}'		=>	'\\1', 'TEXT'			=>	'\\2'),
-			'size'					=>	array('{SIZE}'		=>	'\\1', 'TEXT'			=>	'\\2'),
-			'img'					=>	array('{URL}'		=>	'\\1'),
-			'flash'					=>	array('{WIDTH}'		=>	'\\1', '{HEIGHT}'		=>	'\\2', '{URL}'		=>	'\\3'),
-			'url'					=>	array('{URL}'		=>	'\\1', '{DESCRIPTION}'	=>	'\\2'),
-			'email'					=>	array('{EMAIL}'		=>	'\\1', '{DESCRIPTION}'	=>	'\\2')
+			'quote_username_open'	=>	array('{USERNAME}'	=>	'$1'),
+			'color'								=>	array('{COLOR}'		=>	'$1', '{TEXT}'				=>	'$2'),
+			'size'									=>	array('{SIZE}'			=>	'$1', '{TEXT}'				=>	'$2'),
+			'img'									=>	array('{URL}'			=>	'$1'),
+			'flash'								=>	array('{WIDTH}'		=>	'$1', '{HEIGHT}'			=>	'$2', '{URL}'		=>	'$3'),
+			'url'									=>	array('{URL}'			=>	'$1', '{DESCRIPTION}'	=>	'$2'),
+			'email'								=>	array('{EMAIL}'			=>	'$1', '{DESCRIPTION}'	=>	'$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : ucwords(strtolower('\\1'))", $tpl);
+		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{
@@ -405,7 +443,9 @@ class bbcode
 
 	function bbcode_second_pass_code($type, $code)
 	{
-		$code = stripslashes($code);
+		// when using the /e modifier, preg_replace slashes double-quotes but does not
+		// seem to slash anything else
+		$code = str_replace('\"', '"', $code);
 
 		switch ($type)
 		{
