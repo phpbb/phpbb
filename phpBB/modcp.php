@@ -221,13 +221,29 @@ switch( $mode )
 		{
 			include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ? $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
 			$topic_id_sql = '';
 			for($i = 0; $i < count($topics); $i++)
 			{
-				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . $topics[$i];
+				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . intval($topics[$i]);
 			}
+
+			$sql = "SELECT topic_id 
+				FROM " . TOPICS_TABLE . "
+				WHERE topic_id IN ($topic_id_sql)
+					AND forum_id = $forum_id";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not get topic id information', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$topic_id_sql = '';
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . intval($row['topic_id']);
+			}
+			$db->sql_freeresult($result);
 
 			$sql = "SELECT poster_id, COUNT(post_id) AS posts 
 				FROM " . POSTS_TABLE . " 
@@ -269,7 +285,7 @@ switch( $mode )
 			$post_id_sql = '';
 			while ( $row = $db->sql_fetchrow($result) )
 			{
-				$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . $row['post_id'];
+				$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . intval($row['post_id']);
 			}
 			$db->sql_freeresult($result);
 
@@ -433,7 +449,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$new_forum_id = $HTTP_POST_VARS['new_forum'];
+			$new_forum_id = intval($HTTP_POST_VARS['new_forum']);
 			$old_forum_id = $forum_id;
 
 			if ( $new_forum_id != $old_forum_id )
@@ -448,7 +464,8 @@ switch( $mode )
 
 				$sql = "SELECT * 
 					FROM " . TOPICS_TABLE . " 
-					WHERE topic_id IN ($topic_list) 
+					WHERE topic_id IN ($topic_list)
+						AND forum_id = $old_forum_id
 						AND topic_status <> " . TOPIC_MOVED;
 				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
 				{
@@ -582,12 +599,13 @@ switch( $mode )
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
 		{
-			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . $topics[$i];
+			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . intval($topics[$i]);
 		}
 
 		$sql = "UPDATE " . TOPICS_TABLE . " 
 			SET topic_status = " . TOPIC_LOCKED . " 
 			WHERE topic_id IN ($topic_id_sql) 
+				AND forum_id = $forum_id
 				AND topic_moved_id = 0";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -626,12 +644,13 @@ switch( $mode )
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
 		{
-			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . $topics[$i];
+			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . intval($topics[$i]);
 		}
 
 		$sql = "UPDATE " . TOPICS_TABLE . " 
 			SET topic_status = " . TOPIC_UNLOCKED . " 
 			WHERE topic_id IN ($topic_id_sql) 
+				AND forum_id = $forum_id
 				AND topic_moved_id = 0";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -677,6 +696,21 @@ switch( $mode )
 
 		if ($post_id_sql != '')
 		{
+			$sql = "SELECT post_id 
+				FROM " . POSTS_TABLE . "
+				WHERE post_id IN ($post_id_sql)
+					AND forum_id = $forum_id";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$post_id_sql = '';
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($row['post_id']);
+			}
+			$db->sql_freeresult($result);
 
 			$sql = "SELECT post_id, poster_id, topic_id, post_time
 				FROM " . POSTS_TABLE . "
@@ -710,7 +744,7 @@ switch( $mode )
 
 				$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
 				$topic_time = time();
-
+				
 				$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 					VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 				if (!($db->sql_query($sql, BEGIN_TRANSACTION)))
@@ -901,7 +935,8 @@ switch( $mode )
 		// Look up relevent data for this post
 		$sql = "SELECT poster_ip, poster_id 
 			FROM " . POSTS_TABLE . " 
-			WHERE post_id = $post_id";
+			WHERE post_id = $post_id
+				AND forum_id = $forum_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Could not get poster IP information', '', __LINE__, __FILE__, $sql);

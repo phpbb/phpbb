@@ -36,13 +36,14 @@ class emailer
 	{
 		$this->reset();
 		$this->use_smtp = $use_smtp;
+		$this->reply_to = $this->from = '';
 	}
 
 	// Resets all the data (address, template file, etc etc to default
 	function reset()
 	{
 		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
+		$this->vars = $this->msg = $this->extra_headers = '';
 	}
 
 	// Sets an email address to send to
@@ -63,7 +64,7 @@ class emailer
 
 	function replyto($address)
 	{
-		$this->replyto = trim($address);
+		$this->reply_to = trim($address);
 	}
 
 	function from($address)
@@ -191,7 +192,7 @@ class emailer
 		$bcc = (count($this->addresses['bcc'])) ? implode(', ', $this->addresses['bcc']) : '';
 
 		// Build header
-		$this->extra_headers = (($this->replyto != '') ? "Reply-to: $this->replyto\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 
+		$this->extra_headers = (($this->reply_to != '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )
@@ -260,7 +261,7 @@ class emailer
 		$str = chunk_split(base64_encode($str), $length, $spacer);
 
 		// remove trailing spacer and add start and end delimiters
-		$str = preg_replace('#' . phpbb_preg_quote($spacer) . '$#', '', $str);
+		$str = preg_replace('#' . phpbb_preg_quote($spacer, '#') . '$#', '', $str);
 
 		return $start . $str . $end;
 	}
