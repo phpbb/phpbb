@@ -609,7 +609,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 				}
 				else
 				{
-					page_header('');
+					page_header('', '', false);
 				}
 			}
 
