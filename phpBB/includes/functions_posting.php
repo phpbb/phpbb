@@ -122,77 +122,8 @@ function decode_text(&$message, $bbcode_uid)
 
 	return;
 }
-/*
-// Update Last Post Informations
-function update_last_post_information($type, $id)
-{
-	global $db;
 
-	switch ($type)
-	{
-		case 'forum':
-			$sql_select_add = ', f.forum_parents';
-//			$sql_select_add = ', f.left_id';
-			$sql_table_add = ', ' . FORUMS_TABLE . ' f';
-			$sql_where_add = 'AND (t.forum_id = f.forum_id) AND (f.forum_id = ' . $id . ')';
-			$sql_update_table = FORUMS_TABLE;
-			break;
-
-		case 'topic':
-			$sql_select_add = '';
-			$sql_table_add = '';
-			$sql_where_add = 'AND (t.topic_id = ' . $id . ')';
-			$sql_update_table = TOPICS_TABLE;
-			break;
-		default:
-			return;
-	}
-
-	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username " . $sql_select_add . " 
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t " . $sql_table_add . "
-		WHERE p.post_approved = 1 
-			AND t.topic_approved = 1 
-			AND p.poster_id = u.user_id 
-			AND t.topic_id = p.topic_id 
-			$sql_where_add 
-		ORDER BY p.post_time DESC";
-	$result = $db->sql_query_limit($sql, 1);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	switch ($type)
-	{
-		case 'forum':
-			// Update forums: last post info, topics, posts ... we need to update
-			// each parent too ...
-
-			$forum_ids = $id;
-			$forum_parents = get_forum_parents($row);
-
-			foreach ($forum_parents as $parent_forum_id => $parent_name)
-			{
-				$forum_ids .= ', ' . $parent_forum_id;
-			}
-		
-			$where_clause = 'forum_id IN (' . $forum_ids . ')';
-			break;
-		case 'topic':
-			$where_clause = 'topic_id = ' . $id;
-			break;	
-	}
-
-	$update_sql = array(
-		$type . '_last_post_id' => intval($row['post_id']),
-		$type . '_last_post_time' => intval($row['post_time']),
-		$type . '_last_poster_id' => intval($row['poster_id']),
-		$type . '_last_poster_name' => (intval($row['poster_id']) == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
-	);
-
-	$sql = 'UPDATE ' . $sql_update_table . ' SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' WHERE ' . $where_clause;
-	$db->sql_query($sql);
-}
-*/
+// User Notification
 function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 {
 	global $db, $user, $config, $phpEx;
