@@ -1,28 +1,21 @@
-<br />
 
-<h1>Edit Category</h1>
+<h1>{L_EDIT_CATEGORY}</h1>
 
-<p>Use this form to modify a category.</p>
+<p>{L_EDIT_CATEGORY_EXPLAIN}</p>
 
-<form action="{S_FORUM_ACTION}" method="POST">
+<form action="{S_FORUM_ACTION}" method="post">
   <table cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
 	<tr> 
-	  <th class="thHead" colspan="2">Modify Category</th>
+	  <th class="thHead" colspan="2">{L_EDIT_CATEGORY}</th>
 	</tr>
 	<tr> 
-	  <td class="row1">Category Name:</td>
-	  <td class="row2">
-		<input type="text" size="25" name="cat_title" value="{CAT_TITLE}" />
-	  </td>
+	  <td class="row1">{L_CATEGORY}</td>
+	  <td class="row2"><input type="text" size="25" name="cat_title" value="{CAT_TITLE}" /></td>
 	</tr>
 	<tr> 
-	  <td class="catBottom" colspan="2" align="center"> 
-		<input type="hidden" name="mode" value="{S_NEWMODE}" />
-		<input type="hidden" name="cat_id" value="{S_CATID}" />
-		<input type="submit" name="submit" value="{BUTTONVALUE}" class="mainoption" />
-	  </td>
+	  <td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{S_SUBMIT_VALUE}" class="mainoption" /></td>
 	</tr>
   </table>
 </form>
 		
-<br clear="all">
+<br clear="all" />

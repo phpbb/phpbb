@@ -277,6 +277,27 @@ $lang['Resync'] = "Resync";
 $lang['No_mode'] = "No mode was set";
 $lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
 
+$lang['Move_contents'] = "Move all contents";
+$lang['Forum_delete'] = "Delete Forum";
+$lang['Forum_delete_explain'] = "The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.";
+
+$lang['Forum_settings'] = "General Forum Settings";
+$lang['Forum_name'] = "Forum name";
+$lang['Forum_desc'] = "Description";
+$lang['Forum_status'] = "Forum status";
+$lang['Forum_pruning'] = "Auto-pruning";
+
+$lang['Move_and_Delete'] = "Move and Delete";
+
+$lang['Delete_all_posts'] = "Delete all posts";
+$lang['Nowhere_to_move'] = "Nowhere to move too";
+
+$lang['Edit_Category'] = "Edit Category";
+$lang['Edit_Category_explain'] = "Use this form to modify a categories name.";
+
+$lang['Forums_updated'] = "Forum and Category information updated successfully";
+
+$lang['Click_return_forumadmin'] = "Click %sHere%s to return to Forum Administration";
 
 //
 // Smiley Management
