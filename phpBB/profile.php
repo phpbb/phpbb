@@ -254,6 +254,27 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		{
 			$email = $l_hidden;
 		}
+
+		if($members[$i]['user_icq'])
+		{
+			$icq_status = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+
+			$icq_add = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+		}
+		else
+		{
+			$icq_status = "&nbsp;";
+			$icq_add = "&nbsp;";
+		}
+
+		$aim = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$msnm = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$yim = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
+
 		$template->assign_vars(array(
 			"USERNAME" => stripslashes($profiledata['username']),
 			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['default_timezone']),
@@ -261,7 +282,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"POSTS" => $profiledata['user_posts'],
 			"PERCENTAGE" => $percentage . "%",
 			"EMAIL" => $email,
-			"ICQ" => stripslashes($profiledata['user_icq']),
+			"ICQ_STATUS" => $icq_status,
 			"AIM" => stripslashes($profiledata['user_aim']),
 			"MSN" => stripslashes($profiledata['user_msnm']),
 			"YIM" => stripslashes($profiledata['user_yim']),
@@ -534,6 +555,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								$error_type = false;
 								switch($user_avatar_type)
 								{
+									case "image/jpeg":
+										$imgtype = '.jpg';
+										break;
 									case "image/pjpeg":
 										$imgtype = '.jpg';
 										break;
@@ -608,7 +632,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$fsock = fsockopen($url_ary[2], $port, $errno, $errstr);
 							if($fsock)
 							{
-								$base_get = "http://" . $url_ary[2] . "/" . $url_ary[4];
+								$base_get = "/" . $url_ary[4];
 
 								//
 								// Uses HTTP 1.1, could use HTTP 1.0 ...
@@ -631,6 +655,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 									switch($file_type)
 									{
+										case "image/jpeg":
+											$imgtype = '.jpg';
+											break;
 										case "image/pjpeg":
 											$imgtype = '.jpg';
 											break;
@@ -936,7 +963,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 			"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\">" : "",
-			"AVATAR_SIZE" => $board_config['avatar_filesize'],
+			"AVATAR_SIZE" => $board_config['avatar_filesize'], 
 			"LANGUAGE_SELECT" => language_select($user_lang),
 			"THEME_SELECT" => theme_select($user_theme),
 			"TIMEZONE_SELECT" => tz_select($user_timezone),
@@ -947,12 +974,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $l_password_confirm_if_changed : "",
 			"L_SUBMIT" => $lang['Submit'], 
 			"L_RESET" => $lang['Reset'], 
-			"L_ICQ_NUMBER" => $l_icq_number,
-			"L_MESSENGER" => $l_messenger,
-			"L_YAHOO" => $l_yahoo,
-			"L_WEBSITE" => $l_website,
-			"L_AIM" => $l_aim,
-			"L_LOCATION" => $l_from,
+			"L_ICQ_NUMBER" => $lang['ICQ'],
+			"L_MESSENGER" => $lang['MSNM'],
+			"L_YAHOO" => $lang['YIM'],
+			"L_WEBSITE" => $lang['Website'],
+			"L_AIM" => $lang['AIM'],
+			"L_LOCATION" => $lang['From'],
 			"L_OCCUPATION" => $l_occupation,
 			"L_BOARD_LANGUAGE" => $lang['Board_lang'],
 			"L_BOARD_THEME" => $lang['Board_theme'],
@@ -975,7 +1002,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_UPLOAD_AVATAR_FILE" => $lang['Upload_Avatar_file'],
 			"L_UPLOAD_AVATAR_URL" => $lang['Upload_Avatar_URL'], 
 			"L_UPLOAD_AVATAR_URL_EXPLAIN" => $lang['Upload_Avatar_URL_explain'], 
-			"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
+			"L_AVATAR_GALLERY" => $lang['Select_from_gallery'], 
+			"L_SHOW_GALLERY" => $lang['Avatar_gallery'], 
 			"L_LINK_REMOTE_AVATAR" => $lang['Link_remote_Avatar'], 
 			"L_LINK_REMOTE_AVATAR_EXPLAIN" => $lang['Link_remote_Avatar_explain'], 
 			"L_DELETE_AVATAR" => $lang['Delete_Image'],
