@@ -330,6 +330,19 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 ?>
 
+<script language="Javascript" type="text/javascript">
+	//
+	// Should really check the browser to stop this whining ...
+	//
+	function marklist(status)
+	{
+		for (i = 0; i < document.inactive.length; i++)
+		{
+			document.inactive.elements[i].checked = status;
+		}
+	}
+</script>
+
 <h1><?php echo $lang['Welcome_phpBB']; ?></h1>
 
 <p><?php echo $lang['Admin_intro']; ?></p>
@@ -373,6 +386,9 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Gzip_compression']; ?>:</td>
 		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF']; ?></b></td>
 	</tr>
+	<!-- tr>
+		<td class="row1" colspan="4"><?php echo sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])); ?></td>
+	</tr -->
 </table>
 
 <h1><?php echo $lang['Admin_log']; ?></h1>
@@ -469,23 +485,6 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		<td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b></td>
 	</tr>
 </table></form>
-
-		</td>
-	</tr>
-</table>
-
-<script language="Javascript" type="text/javascript">
-	//
-	// Should really check the browser to stop this whining ...
-	//
-	function marklist(status)
-	{
-		for (i = 0; i < document.inactive.length; i++)
-		{
-			document.inactive.elements[i].checked = status;
-		}
-	}
-</script>
 
 <?php
 
