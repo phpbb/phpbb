@@ -15,7 +15,7 @@ class ucp_activate extends module
 {
 	function ucp_activate($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');

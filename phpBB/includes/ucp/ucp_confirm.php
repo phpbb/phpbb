@@ -22,7 +22,7 @@ class ucp_confirm extends module
 {
 	function ucp_confirm($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		// Do we have an id? No, then just exit
 		if (empty($_GET['id']))

@@ -349,10 +349,6 @@ class mcp_main extends mcp
 				));
 
 
-				// Define censored word matches
-				$censors = array();
-				obtain_word_list($censors);
-
 				$topic_rows = array();
 
 // TODO: no global announcements here
@@ -438,12 +434,8 @@ class mcp_main extends mcp
 						$topic_type .= $user->lang['VIEW_TOPIC_POLL'] . ' ';
 					}
 
-					$topic_title = $row['topic_title'];
-					if (count($censors['match']))
-					{
-						$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
-					}
-
+					$topic_title = censor_text($row['topic_title']);
+			
 					$template->assign_block_vars('topicrow', array(
 						'U_VIEW_TOPIC'		=>	"mcp.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;mode=topic_view',
 
@@ -841,7 +833,7 @@ class mcp_main extends mcp
 						$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 					}
 
-					$message = (empty($config['allow_smilies']) || !$user->data['user_viewsmilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+					$message = smilie_text($message);
 
 					$message = nl2br($message);
 
@@ -1364,7 +1356,7 @@ class mcp_main extends mcp
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
-				$message = (empty($config['allow_smilies']) || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+				$message = smilie_text($message);
 
 				$template->assign_vars(array(
 					'S_MCP_ACTION'			=>	$this->url . '&amp;mode=modoptions',

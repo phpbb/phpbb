@@ -298,11 +298,6 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 }
 
 
-// Word censors $censors['match'] & $censors['replace']
-$censors = array();
-obtain_word_list($censors);
-
-
 // Output listing of friends online
 $update_time = $config['load_online_time'] * 60;
 

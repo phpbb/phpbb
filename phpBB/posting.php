@@ -110,9 +110,6 @@ switch ($mode)
 		trigger_error('NO_POST_MODE');
 }
 
-$censors = array();
-obtain_word_list($censors);
-
 if ($sql)
 {
 	$result = $db->sql_query($sql);
@@ -252,10 +249,14 @@ else
 	$notify_set = 0;
 }
 
-
 if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 {
-	trigger_error('USER_CANNOT_' . strtoupper($mode));
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error('USER_CANNOT_' . strtoupper($mode));
+	}
+	
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['USER_CANNOT_' . strtoupper($mode)]);
 }
 
 
@@ -784,7 +785,7 @@ if (!sizeof($error) && $preview)
 {
 	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
-	$preview_subject = (sizeof($censors['match'])) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
+	$preview_subject = censor_text($preview_subject);
 
 	$preview_signature = ($mode == 'edit') ? $user_sig : $user->data['user_sig'];
 	$preview_signature_uid = ($mode == 'edit') ? $user_sig_bbcode_uid : $user->data['user_sig_bbcode_uid'];
@@ -849,13 +850,13 @@ if (count($poll_options))
 
 if ($mode == 'quote' && !$preview && !$refresh)
 {
-	$post_text = '[quote="' . $quote_username . '"]' . ((sizeof($censors['match'])) ? preg_replace($censors['match'], $censors['replace'], trim($post_text)) : trim($post_text)) . "[/quote]\n";
+	$post_text = '[quote="' . $quote_username . '"]' . censor_text(trim($post_text)) . "[/quote]\n";
 }
 
 
 if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
 {
-	$post_subject = ((!preg_match('/^Re:/', $post_subject)) ? 'Re: ' : '') . ((sizeof($censors['match'])) ? preg_replace($censors['match'], $censors['replace'], $post_subject) : $post_subject);
+	$post_subject = ((!preg_match('/^Re:/', $post_subject)) ? 'Re: ' : '') . censor_text($post_subject);
 }
 
 
@@ -1168,7 +1169,7 @@ page_footer();
 // User Notification
 function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
 {
-	global $db, $user, $censors, $config, $phpbb_root_path, $phpEx, $auth;
+	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
 	$topic_notification = ($mode == 'reply' || $mode == 'quote');
 	$forum_notification = ($mode == 'post');
@@ -1178,15 +1179,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		trigger_error('WRONG_NOTIFICATION_MODE');
 	}
 
-	if (!$censors)
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
-
 	$topic_title = ($topic_notification) ? $topic_title : $subject;
 	decode_text($topic_title);
-	$topic_title = (sizeof($censors['match'])) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
+	$topic_title = censor_text($topic_title);
 
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid 
@@ -1394,14 +1389,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0)
 {
 	global $user, $auth, $db, $template, $bbcode, $template;
-	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
-
-	// Define censored word matches
-	if (!$censors)
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
+	global $config, $phpbb_root_path, $phpEx, $SID;
 
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT u.username, u.user_id, u.user_karma, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
@@ -1454,13 +1442,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = (!$row['enable_smilies'] || !$config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+		$message = smilie_text($message, !$row['enable_smilies']);
 
-		if (sizeof($censors['match']))
-		{
-			$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
-			$message = preg_replace($censors['match'], $censors['replace'], $message);
-		}
+		$post_subject = censor_text($post_subject);
+		$message = censor_text($message);
 
 		$template->assign_block_vars($mode . '_row', array(
 			'KARMA_IMG'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',

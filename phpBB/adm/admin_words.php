@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              admin_words.php
- *                            -------------------
- *   begin                : Thursday, Jul 12, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_words.php 
+// STARTED   : Thu Jul 12, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -32,7 +24,7 @@ if (!empty($setmodules))
 
 define('IN_PHPBB', 1);
 // Include files
-$phpbb_root_path = '../';
+$phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
@@ -42,57 +34,35 @@ if (!$auth->acl_get('a_words'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-// What do we want to do?
-if (isset($_REQUEST['mode']))
+$mode = request_var('mode', '');
+$mode = (isset($_POST['add'])) ? 'add' : ((isset($_POST['save'])) ? 'save' : $mode);
+
+$s_hidden_fields = '';
+$word_info = array();
+
+switch ($mode)
 {
-	$mode = $_REQUEST['mode'];
-}
-else
-{
-	// These could be entered via a form button
-	if (isset($_POST['add']))
-	{
-		$mode = 'add';
-	}
-	else if (isset($_POST['save']))
-	{
-		$mode = 'save';
-	}
-	else
-	{
-		$mode = '';
-	}
-}
+	case 'edit':
+		$word_id = request_var('id', 0);
+		
+		if (!$word_id)
+		{
+			trigger_error($user->lang['NO_WORD']);
+		}
 
-if ($mode != '')
-{
-	switch ($mode)
-	{
-		case 'edit':
-		case 'add':
-			$word_id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
+		$sql = 'SELECT *
+			FROM ' . WORDS_TABLE . "
+			WHERE word_id = $word_id";
+		$result = $db->sql_query_limit($sql, 1);
 
-			$s_hidden_fields = '';
-			if ($mode == 'edit')
-			{
-				if (!$word_id)
-				{
-					trigger_error($user->lang['NO_WORD']);
-				}
+		$word_info = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-				$sql = "SELECT *
-					FROM " . WORDS_TABLE . "
-					WHERE word_id = $word_id";
-				$result = $db->sql_query($sql);
+		$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 
-				$word_info = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+	case 'add':
 
-				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
-			}
-
-			adm_page_header($user->lang['WORDS_TITLE']);
-
+		adm_page_header($user->lang['WORDS_TITLE']);
 ?>
 
 <h1><?php echo $user->lang['WORDS_TITLE']; ?></h1>
@@ -104,11 +74,11 @@ if ($mode != '')
 		<th colspan="2"><?php echo $user->lang['EDIT_WORD']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['WORD']; ?></td>
+		<td class="row1"><b><?php echo $user->lang['WORD']; ?></b>:</td>
 		<td class="row2"><input class="post" type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['REPLACEMENT']; ?></td>
+		<td class="row1"><b><?php echo $user->lang['REPLACEMENT']; ?></b>:</td>
 		<td class="row2"><input class="post" type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
 	</tr>
 	<tr>
@@ -122,11 +92,11 @@ if ($mode != '')
 			break;
 
 		case 'save':
-			$word_id = (isset($_POST['id'])) ? intval($_POST['id']) : 0;
-			$word = (isset($_POST['word'])) ? trim($_POST['word']) : '';
-			$replacement = (isset($_POST['replacement'])) ? trim($_POST['replacement']) : '';
+			$word_id = request_var('id', 0);
+			$word = request_var('word', '');
+			$replacement = request_var('replacement', '');
 
-			if ($word == '' || $replacement == '')
+			if (!$word || !$replacement)
 			{
 				trigger_error($user->lang['ENTER_WORD']);
 			}
@@ -140,20 +110,19 @@ if ($mode != '')
 			add_log('admin', $log_action, stripslashes($word));
 
 			$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
+			trigger_error($message);
 			break;
 
 		case 'delete':
 
-			if (isset($_POST['id']) || isset($_GET['id']))
-			{
-				$word_id = (isset($_POST['id'])) ? intval($_POST['id']) : intval($_GET['id']);
-			}
-			else
+			$word_id = request_var('id', 0);
+
+			if (!$word_id)
 			{
 				trigger_error($user->lang['NO_WORD']);
 			}
 
-			$sql = "DELETE FROM " . WORDS_TABLE . "
+			$sql = 'DELETE FROM ' . WORDS_TABLE . "
 				WHERE word_id = $word_id";
 			$db->sql_query($sql);
 
@@ -162,18 +131,13 @@ if ($mode != '')
 			add_log('admin', 'log_delete_word');
 
 			$message = $user->lang['WORD_REMOVE'];
+			trigger_error($message);
+		
 			break;
 
-	}
+		default:
 
-	trigger_error($message);
-
-}
-else
-{
-
-	adm_page_header($user->lang['WORDS_TITLE']);
-
+			adm_page_header($user->lang['WORDS_TITLE']);
 ?>
 
 <h1><?php echo $user->lang['WORDS_TITLE']; ?></h1>
@@ -189,16 +153,16 @@ else
 
 <?php
 
-	$sql = "SELECT *
-		FROM " . WORDS_TABLE . "
-		ORDER BY word";
-	$result = $db->sql_query($sql);
+		$sql = 'SELECT *
+			FROM ' . WORDS_TABLE . '
+			ORDER BY word';
+		$result = $db->sql_query($sql);
 
-	if ($row = $db->sql_fetchrow($result))
-	{
-		do
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
+			do
+			{
+				$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr>
@@ -209,10 +173,10 @@ else
 	</tr>
 <?php
 
+			}
+			while ($row = $db->sql_fetchrow($result));
 		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-	$db->sql_freeresult($result);
+		$db->sql_freeresult($result);
 
 ?>
 	<tr>
@@ -222,8 +186,8 @@ else
 
 <?php
 
-	adm_page_footer();
-
+		adm_page_footer();
+		break;
 }
 
 ?>

@@ -15,7 +15,7 @@ class ucp_prefs extends module
 {
 	function ucp_prefs($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();

@@ -15,7 +15,7 @@ class ucp_zebra extends module
 {
 	function ucp_zebra($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$submit	= (!empty($_POST['submit']) || !empty($_GET['add'])) ? true : false;
 

@@ -622,9 +622,9 @@ class user extends session
 			$this->lang_name = $config['default_lang'];
 		}
 		
-		$sql = "SELECT lang_id 
-			FROM phpbb_lang 
-			WHERE lang_iso = '" . $this->lang_name . "'";
+		$sql = 'SELECT lang_id 
+			FROM ' . LANG_TABLE . "
+			WHERE lang_iso = '{$this->lang_name}'";
 		$result = $db->sql_query($sql);
 
 		return (int) $db->sql_fetchfield('lang_id', 0, $result);
@@ -640,9 +640,8 @@ class user extends session
 			return;
 		}
 
-		$sql = 'SELECT * FROM
-			phpbb_profile_fields_data 
-			WHERE user_id = ' . $user_id;
+		$sql = 'SELECT * FROM ' . CUSTOM_PROFILE_DATA . "
+			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1); 
 
 		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;

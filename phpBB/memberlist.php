@@ -335,7 +335,7 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = ($config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $member['user_sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $member['user_sig']);
+			$member['user_sig'] = smilie_text($member['user_sig']);
 		}
 
 		$poster_avatar = '';

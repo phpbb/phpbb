@@ -15,7 +15,7 @@ class ucp_profile extends module
 {
 	function ucp_profile($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$preview	= (!empty($_POST['preview'])) ? true : false;
 		$submit		= (!empty($_POST['submit'])) ? true : false;
@@ -420,18 +420,16 @@ class ucp_profile extends module
 
 						$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
 					}
-
 					// If we allow users to disable display of emoticons
 					// we'll need an appropriate check and preg_replace here
-					$signature_preview = (empty($enable_smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature_preview) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature_preview);
+					$signature_preview = smilie_text($signature_preview, !$enable_smilies);
 
 					// Replace naughty words such as farty pants
-					if (sizeof($censors))
+/*					if (sizeof($censors))
 					{
 						$signature_preview = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature_preview . '<'), 1, -1));
-					}
-
-					$signature_preview = str_replace("\n", '<br />', $signature_preview);
+					}*/
+					$signature_preview = str_replace("\n", '<br />', censor_text($signature_preview));
 				}
 
 				$html_status = ($config['allow_html']) ? true : false; 

@@ -810,6 +810,8 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '', $log
 	return true;
 }
 
+// SMTP Class
+// Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
 class smtp_class
 {
 	var $server_response = '';
@@ -1099,7 +1101,7 @@ class smtp_class
 
 		$md5_challenge = base64_decode($this->responses[0]);
 		
-		// Parse the md5 challenge - from PEAR
+		// Parse the md5 challenge - from AUTH_SASL (PEAR)
 		$tokens = array();
 		while (preg_match('/^([a-z-]+)=("[^"]+(?<!\\\)"|[^,]+)/i', $md5_challenge, $matches))
 		{

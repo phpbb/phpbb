@@ -1049,7 +1049,7 @@ function login_forum_box(&$forum_data)
 
 		if ($password == $forum_data['forum_password'])
 		{
-			$sql = 'INSERT INTO phpbb_forum_access (forum_id, user_id, session_id)
+			$sql = 'INSERT INTO ' . FORUMS_ACCESS_TABLE . ' (forum_id, user_id, session_id)
 				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '" . $db->sql_escape($user->session_id) . "')";
 			$db->sql_query($sql);
 
@@ -1066,7 +1066,7 @@ function login_forum_box(&$forum_data)
 	page_footer();
 }
 
-// Bump Topic Check - used by posting and viewtopic (do not want another included file)
+// Bump Topic Check - used by posting and viewtopic
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
 	global $config, $auth, $user;
@@ -1095,6 +1095,38 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 
 	// A bump time of 0 will completely disable the bump feature... not intended but might be useful.
 	return $bump_time;
+}
+
+// Censoring
+function censor_text($text)
+{
+	global $censors, $user;
+
+	if (!isset($censors))
+	{
+		$censors = array();
+
+		// For ANONYMOUS, this option should be enabled by default
+		if ($user->optionget('viewcensors'))
+		{
+			obtain_word_list($censors);
+		}
+	}
+
+	if (sizeof($censors) && $user->optionget('viewcensors'))
+	{
+		return preg_replace($censors['match'], $censors['replace'], $text);
+	}
+
+	return $text;
+}
+
+// Smilie processing
+function smilie_text($text, $force_option = false)
+{
+	global $config, $user, $phpbb_root_path;
+
+	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
 }
 
 // Error and message handler, call with trigger_error if reqd

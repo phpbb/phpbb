@@ -614,7 +614,7 @@ if ($submit || $preview || $deleteall || $deletemark)
 				// Update Custom Fields
 				if (sizeof($cp_data))
 				{
-					$sql = 'UPDATE phpbb_profile_fields_data
+					$sql = 'UPDATE ' . CUSTOM_PROFILE_DATA . '
 						SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
@@ -1557,15 +1557,15 @@ function marklist(match, status)
 
 				// If we allow users to disable display of emoticons
 				// we'll need an appropriate check and preg_replace here
-				$signature_preview = (empty($enable_smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature_preview) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature_preview);
+				$signature_preview = smilie_text($signature_preview, !$enable_smilies);
 
 				// Replace naughty words such as farty pants
-				if (sizeof($censors))
+/*				if (sizeof($censors))
 				{
 					$signature_preview = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature_preview . '<'), 1, -1));
-				}
+				}*/
 
-				$signature_preview = str_replace("\n", '<br />', $signature_preview);
+				$signature_preview = str_replace("\n", '<br />', censor_text($signature_preview));
 			}
 
 			decode_text($user_sig, $user_sig_bbcode_uid);

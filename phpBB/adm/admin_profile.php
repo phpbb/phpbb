@@ -125,7 +125,7 @@ $cp = new custom_profile_admin();
 // Based on this, we decide which elements need to be edited later and which language items are missing
 $lang_ids = $lang_entry = $lang_diff = array();
 
-$result = $db->sql_query('SELECT lang_id FROM phpbb_lang');
+$result = $db->sql_query('SELECT lang_id FROM ' . LANG_TABLE);
 
 while ($row = $db->sql_fetchrow($result))
 {
@@ -592,7 +592,7 @@ if ($mode == 'delete')
 		$db->sql_query('DELETE FROM phpbb_profile_fields WHERE field_id = ' . $field_id);
 		$db->sql_query('DELETE FROM phpbb_profile_fields_lang WHERE field_id = ' . $field_id);
 		$db->sql_query('DELETE FROM phpbb_profile_lang WHERE field_id = ' . $field_id);
-		$db->sql_query('ALTER TABLE phpbb_profile_fields_data DROP ' . $field_ident);
+		$db->sql_query('ALTER TABLE ' . CUSTOM_PROFILE_DATA . ' DROP ' . $field_ident);
 
 		$order = 0;
 
@@ -633,7 +633,10 @@ if ($mode == 'activate')
 		trigger_error('INVALID_MODE');
 	}
 	
-	$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $config['default_lang'] . "'");
+	$sql = 'SELECT lang_id 
+		FROM ' . LANG_TABLE . " 
+		WHERE lang_iso = '{$config['default_lang']}'";
+	$result = $db->sql_query($sql);
 	$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 	$db->sql_freeresult($result);
 
@@ -754,7 +757,9 @@ function build_language_options($field_type, $mode = 'new')
 {
 	global $user, $config, $db, $cp;
 
-	$sql = 'SELECT lang_id, lang_iso FROM phpbb_lang' . (($mode == 'new') ? " WHERE lang_iso <> '" . $config['default_lang'] . "'" : '');
+	$sql = 'SELECT lang_id, lang_iso 
+		FROM ' . LANG_TABLE . 
+		(($mode == 'new') ? " WHERE lang_iso <> '" . $config['default_lang'] . "'" : '');
 	$result = $db->sql_query($sql);
 
 	$languages = array();
@@ -858,7 +863,10 @@ function save_profile_field($field_type, $field_ident)
 	// Collect all informations, if something is going wrong, abort the operation
 	$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
 
-	$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $config['default_lang'] . "'");
+	$sql = 'SELECT lang_id 
+		FROM ' . LANG_TABLE . ' 
+		WHERE lang_iso = '" . $config['default_lang'] . "'";
+	$result = $db->sql_query($sql);
 	$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 	$db->sql_freeresult($result);
 
@@ -888,7 +896,7 @@ function save_profile_field($field_type, $field_ident)
 
 	$field_id = $db->sql_nextid();
 		
-	$sql = "ALTER TABLE phpbb_profile_fields_data ADD $field_ident ";
+	$sql = 'ALTER TABLE ' . CUSTOM_PROFILE_DATA . " ADD $field_ident ";
 	switch ($field_type)
 	{
 		case FIELD_STRING:

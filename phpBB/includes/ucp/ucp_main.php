@@ -15,7 +15,7 @@ class ucp_main extends module
 {
 	function ucp_main($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		switch ($mode)
 		{
@@ -127,7 +127,7 @@ class ucp_main extends module
 						'TOPIC_ID' 			=> $topic_id,
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_POST_AUTHOR' 	=> $last_post_author,
-						'TOPIC_TITLE' 		=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
+						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE' 		=> $topic_type,
 
 						'LAST_POST_IMG' 	=> $last_post_img,
@@ -483,7 +483,7 @@ class ucp_main extends module
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_POST_AUTHOR' 	=> $last_post_author,
 						'GOTO_PAGE' 		=> $goto_page, 
-						'TOPIC_TITLE' 		=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
+						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE' 		=> $topic_type,
 
 						'LAST_POST_IMG' 	=> $last_post_img,

@@ -584,9 +584,8 @@ if ($search_keywords || $search_author || $search_id)
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
 
 	// Grab icons
-	$icons = $censors = array();
+	$icons = array();
 	obtain_icons($icons);
-	obtain_word_list($censors);
 
 	// Output header
 	$l_search_matches = ($total_match_count == 1) ? sprintf($user->lang['FOUND_SEARCH_MATCH'], $total_match_count) : sprintf($user->lang['FOUND_SEARCH_MATCHES'], $total_match_count);
@@ -733,10 +732,11 @@ if ($search_keywords || $search_author || $search_id)
 				continue;
 			}
 
-			if (!empty($censors))
+/*			if (!empty($censors))
 			{
 				$row['post_text'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $row['post_text'] . '<'), 1, -1));
-			}
+			}*/
+			$row['post_text'] = censor_text($row['post_text']);
 
 			if ($row['bbcode_bitfield'])
 			{
@@ -752,7 +752,7 @@ if ($search_keywords || $search_author || $search_id)
 			// via php.net's annotated manual
 			$row['post_text'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $hilit . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $row['post_text'] . '<'), 1, -1));
 
-			$row['post_text'] = (empty($config['allow_smilies']) || !$user->data['user_viewsmilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $row['post_text']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $row['post_text']);
+			$row['post_text'] = smilie_text($row['post_text']);
 		}
 
 		$template->assign_block_vars('searchresults', array(
@@ -769,11 +769,11 @@ if ($search_keywords || $search_author || $search_id)
 			'TOPIC_REPLIES'		=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'TOPIC_VIEWS'		=> $row['topic_views'],
 			'FORUM_TITLE'		=> $row['forum_name'], 
-			'TOPIC_TITLE' 		=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
+			'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 			'TOPIC_TYPE' 		=> $topic_type,
 
 			'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'], 
-			'POST_SUBJECT'		=> (!empty($row['post_subject'])) ? ((!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['post_subject']) : $row['post_subject']) : '', 
+			'POST_SUBJECT'		=> censor_text($row['post_subject']), 
 			'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '', 
 			'MESSAGE' 			=> (!empty($row['post_text'])) ? str_replace("\n", '<br />', $row['post_text']) : '', 
 

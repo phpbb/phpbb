@@ -112,7 +112,7 @@ if ($forum_data['forum_password'])
 }
 
 // Redirect to login upon emailed notification links
-if (!empty($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
+if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_NOTIFY_FORUM']);
 }
@@ -183,7 +183,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		}
 	}
 
-	// Forum rules, subscription info and word censors
+	// Forum rules amd subscription info
 	$s_watching_forum = $s_watching_forum_img = '';
 	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 	{
@@ -193,9 +193,6 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 	$s_forum_rules = '';
 	gen_forum_rules('forum', $forum_id);
-
-	$censors = array();
-	obtain_word_list($censors);
 
 	// Topic ordering options
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -539,7 +536,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 				'GOTO_PAGE' 		=> $goto_page, 
 				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
-				'TOPIC_TITLE' 		=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
+				'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 				'TOPIC_TYPE' 		=> $topic_type,
 
 				'LAST_POST_IMG' 	=> $last_post_img,

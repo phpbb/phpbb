@@ -432,10 +432,6 @@ $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . 
 $pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;sk=$sort_key&amp;st=$sort_days&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
-// Grab censored words
-$censors = array();
-obtain_word_list($censors);
-
 // Navigation links
 generate_forum_nav($topic_data);
 
@@ -447,10 +443,7 @@ get_moderators($forum_moderators, $forum_id);
 $server_path = (!$view) ? '' : generate_board_url() . '/';
 
 // Replace naughty words in title
-if (sizeof($censors))
-{
-	$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
-}
+$topic_title = censor_text($topic_title);
 
 // Send vars to template
 $template->assign_vars(array(
@@ -640,7 +633,8 @@ if (!empty($poll_start))
 
 	foreach ($poll_info as $poll_option)
 	{
-		$poll_option['poll_option_text'] = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_option['poll_option_text']) : $poll_option['poll_option_text'];
+		$poll_option['poll_option_text'] = censor_text($poll_option['poll_option_text']);
+
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
 
@@ -655,7 +649,7 @@ if (!empty($poll_start))
 	}
 
 	$template->assign_vars(array(
-		'POLL_QUESTION'		=> (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_title) : $poll_title,
+		'POLL_QUESTION'		=> censor_text($poll_title),
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
@@ -1090,19 +1084,18 @@ for ($i = 0; $i < count($post_list); ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
-		$user_cache[$poster_id]['sig'] = (!$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
-
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
-		if (count($censors))
+		$user_cache[$poster_id]['sig'] = smilie_text($user_cache[$poster_id]['sig']);
+
+		/*if (count($censors))
 		{
 			$user_cache[$poster_id]['sig'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_cache[$poster_id]['sig'] . '<'), 1, -1));
-		}
-
-		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
+		}*/
+		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', censor_text($user_cache[$poster_id]['sig']));
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
 
@@ -1124,9 +1117,8 @@ for ($i = 0; $i < count($post_list); ++$i)
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
-	// If we allow users to disable display of emoticons
-	// we'll need an appropriate check and preg_replace here
-	$message = (empty($config['allow_smilies']) || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	// Always process smilies after parsing bbcodes
+	$message = smilie_text($message);
 
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
@@ -1137,13 +1129,13 @@ for ($i = 0; $i < count($post_list); ++$i)
 	}
 
 	// Replace naughty words such as farty pants
-	if (sizeof($censors))
+/*	if (sizeof($censors))
 	{
 		$row['post_subject'] = preg_replace($censors['match'], $censors['replace'], $row['post_subject']);
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
-	}
-
-	$message = str_replace("\n", '<br />', $message);
+	}*/
+	$row['post_subject'] = censor_text($row['post_subject']);
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])

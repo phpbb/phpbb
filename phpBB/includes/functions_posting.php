@@ -91,22 +91,21 @@ function generate_smilies($mode, $forum_id)
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
 function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $url, $smilies, $sig)
 {
-	global $auth, $forum_id, $config, $censors, $user, $bbcode, $phpbb_root_path;
+	global $auth, $forum_id, $config, $user, $bbcode, $phpbb_root_path;
 
 	// Second parse bbcode here
 	$bbcode->bbcode_second_pass($message, $uid);
 
 	// If we allow users to disable display of emoticons we'll need an appropriate 
 	// check and preg_replace here
-	$message = (!$smilies || !$config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+	$message = smilie_text($message, !$smilies);
 
 	// Replace naughty words such as farty pants
-	if (sizeof($censors))
+/*	if (sizeof($censors))
 	{
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
-	}
-
-	$message = str_replace("\n", '<br />', $message);
+	}*/
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Signature
 	if ($sig && $config['allow_sig'] && $signature && $auth->acl_get('f_sigs', $forum_id))
@@ -114,15 +113,13 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 		$signature = trim($signature);
 
 		$bbcode->bbcode_second_pass($signature, $siguid);
+		$signature = smilie_text($signature);
 
-		$signature = (!$config['allow_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature);
-
-		if (sizeof($censors))
+/*		if (sizeof($censors))
 		{
 			$signature = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature . '<'), 1, -1));
-		}
-
-		$signature = str_replace("\n", '<br />', $signature);
+		}*/
+		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 	else
 	{

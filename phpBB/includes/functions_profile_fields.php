@@ -568,7 +568,10 @@ class custom_profile_admin extends custom_profile
 	{
 		global $user, $config, $db;
 
-		$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $config['default_lang'] . "'");
+		$sql = 'SELECT lang_id 
+			FROM ' . LANG_TABLE . " 
+			WHERE lang_iso = '" . $config['default_lang'] . "'";
+		$result = $db->sql_query($sql);
 		$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 		$db->sql_freeresult($result);
 
@@ -602,7 +605,10 @@ class custom_profile_admin extends custom_profile
 	{
 		global $user, $config, $db;
 
-		$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $config['default_lang'] . "'");
+		$sql = 'SELECT lang_id
+			FROM ' . LANG_TABLE . " 
+			WHERE lang_iso = '" . $config['default_lang'] . "'";
+		$result = $db->sql_query($sql);
 		$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 		$db->sql_freeresult($result);
 
@@ -639,7 +645,10 @@ class custom_profile_admin extends custom_profile
 	{
 		global $user, $config, $db;
 
-		$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $config['default_lang'] . "'");
+		$sql = 'SELECT lang_id 
+			FROM ' . LANG_TABLE . "
+			WHERE lang_iso = '" . $config['default_lang'] . "'";
+		$result = $db->sql_query($sql);
 		$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 		$db->sql_freeresult($result);
 

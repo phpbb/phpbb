@@ -15,7 +15,7 @@ class ucp_remind extends module
 {
 	function ucp_remind($id, $mode)
 	{
-		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 

@@ -1745,12 +1745,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
 
-	$censors = array();
-	if ($user->optionget('viewcensors'))
-	{
-		obtain_word_list($censors);
-	}
-
 	switch ($mode)
 	{
 		case 'admin':
@@ -1824,11 +1818,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			{
 				foreach ($log_data_ary as $log_data)
 				{
-					if (sizeof($censors) && $user->optionget('viewcensors'))
-					{
-						$log_data = preg_replace($censors['match'], $censors['replace'], $log_data);
-					}
-					$log_data = str_replace("\n", '<br />', $log_data);
+					$log_data = str_replace("\n", '<br />', censor_text($log_data));
 
 					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
 				}
