@@ -81,10 +81,10 @@ if ($avatar_dir = opendir($phpbb_root_path . $board_config['avatar_path']))
 	{
 		if($file != "." && $file != "..")
 		{
-			$avatar_dir_size += filesize($file);
+			$avatar_dir_size += filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
 		}
 	}
-	closedir($openDir);
+	closedir($avatar_dir);
 }
 if($avatar_dir_size > 0)
 {
