@@ -34,12 +34,6 @@ class ucp_prefs extends ucp
 		$submodules['VIEW']		= "module_id=$module_id&amp;mode=view";
 		$submodules['POST']		= "module_id=$module_id&amp;mode=post";
 
-		$user->lang = array_merge($user->lang, array(
-			'UCP_PERSONAL'	=> 'Personal Settings', 
-			'UCP_VIEW'		=> 'Viewing Posts', 
-			'UCP_POST'		=> 'Posting Messages')
-		);
-
 		ucp::subsection($submodules, $submode);
 		unset($submodules);
 
