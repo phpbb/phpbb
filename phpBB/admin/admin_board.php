@@ -46,35 +46,21 @@ else
 
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
-			if( isset($HTTP_POST_VARS['board_style']) )
+			if( $config_name == "default_theme" )
 			{
-				$default_template = substr($HTTP_POST_VARS['board_style'], 0, strrpos($HTTP_POST_VARS['board_style'], "_"));
-				$default_theme = substr($HTTP_POST_VARS['board_style'], strrpos($HTTP_POST_VARS['board_style'], "_") + 1);
-
-				$sql = "UPDATE " . CONFIG_TABLE . " SET
-					config_value = '$default_template'
-					WHERE config_name = 'board_template'";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Failed to update general configuration for board_template", "", __LINE__, __FILE__, $sql);
-				}
-				$sql = "UPDATE " . CONFIG_TABLE . " SET
-					config_value = '$default_theme'
-					WHERE config_name = 'default_theme'";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Failed to update general configuration for default_theme", "", __LINE__, __FILE__, $sql);
-				}
+				$new[$config_name] = substr($HTTP_POST_VARS['board_style'], strrpos($HTTP_POST_VARS['board_style'], "_") + 1);
 			}
-			else
+			else if( $config_name == "board_template" )
 			{
-				$sql = "UPDATE " . CONFIG_TABLE . " SET
-					config_value = '".$new[$config_name]."'
-					WHERE config_name = '$config_name'";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
-				}
+				$new[$config_name] = substr($HTTP_POST_VARS['board_style'], 0, strrpos($HTTP_POST_VARS['board_style'], "_"));
+			}
+
+			$sql = "UPDATE " . CONFIG_TABLE . " SET
+				config_value = '".$new[$config_name]."'
+				WHERE config_name = '$config_name'";
+			if( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
 			}
 		}
 	}
