@@ -168,15 +168,18 @@ switch($mode)
 
 			$sql = "SELECT post_id FROM ".POSTS_TABLE." WHERE ";
 			$delete_topics = "DELETE FROM ".TOPICS_TABLE." WHERE ";
+			$moved_topics = "DELETE FROM ".TOPICS_TABLE. " WHERE ";
 			for($x = 0; $x < count($topics); $x++)
 			{
 				if($x > 0)
 				{
 					$sql .= " OR ";
 					$delete_topics .= " OR ";
+					$moved_topics .= " OR ";
 				}
 				$sql .= "topic_id = ".$topics[$x];
 				$delete_topics .= "topic_id = ".$topics[$x];
+				$moved_topics .= "topic_moved_id = ".$topics[$x]; 
 			}
 			$topics_removed = $x;
 
@@ -215,6 +218,11 @@ switch($mode)
 				message_die(GENERAL_ERROR, "Could not delete topics!", "Error", __LINE__, __FILE__, $delete_topics);
 			}
 
+			if(!$result = $db->sql_query($moved_topics))
+			{
+				message_die(GENERAL_ERRORm "Could not delete moved topics!", "Error", __LINE__, __FILE__, $moved_topics);
+			}
+	
 			if(SQL_LAYER != "mysql")
 			{
 				$update_index = "UPDATE ".FORUMS_TABLE."
