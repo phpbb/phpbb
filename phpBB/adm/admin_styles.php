@@ -353,7 +353,7 @@ switch ($mode)
 											{
 												@mkdir("{$phpbb_root_path}styles/$template_path", 0777);
 												@chmod("{$phpbb_root_path}styles/$template_path", 0777);
-												copy_files($root_path, filelist("{$root_path}template", '', '*'), "$template_path/template");
+												copy_files("{$root_path}template", filelist("{$root_path}template", '', '*'), "$template_path/template");
 											}
 
 											$template_storedb = (!is_writeable("{$phpbb_root_path}styles/$template_path/template")) ? 1 : 0;
@@ -393,7 +393,7 @@ switch ($mode)
 
 												@mkdir("{$phpbb_root_path}styles/$theme_path", 0777);
 												@chmod("{$phpbb_root_path}/$theme_path", 0777);
-												copy_files($root_path, filelist("{$root_path}theme", '', '*'), "$theme_path/theme");
+												copy_files("{$root_path}theme", filelist("{$root_path}theme", '', '*'), "$theme_path/theme");
 											}
 
 											$theme_storedb = 0;
