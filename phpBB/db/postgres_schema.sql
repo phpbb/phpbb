@@ -94,6 +94,7 @@ CREATE TABLE phpbb_config (
    sitename varchar(100) NOT NULL,
    allow_html int2 NOT NULL,
    allow_bbcode int2 NOT NULL,
+   allow_smilies int2 NOT NULL,
    allow_sig int2 NOT NULL,
    allow_namechange int2 NOT NULL,
    allow_theme_create int2 NOT NULL,

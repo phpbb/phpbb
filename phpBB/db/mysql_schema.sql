@@ -48,6 +48,7 @@ CREATE TABLE phpbb_config (
    sitename varchar(100),
    allow_html tinyint(1),
    allow_bbcode tinyint(1),
+   allow_smilies tinyint(1),
    allow_sig tinyint(1),
    allow_namechange tinyint(1),
    allow_theme_create tinyint(1),
