@@ -101,7 +101,7 @@ function prune($forum_id, $prune_date)
 				message_die(GENERAL_ERROR, "Couldn't delete search matches", "", __LINE__, __FILE__, $sql);
 			}
 
-			remove_unmatched_words();
+			remove_search_post($sql_post);
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_topics = forum_topics - $pruned_topics, forum_posts = forum_posts - $pruned_posts
