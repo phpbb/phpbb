@@ -58,6 +58,7 @@ function show_coppa(&$coppa)
 //
 //
 
+$error = FALSE;
 $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
 if ( $mode == 'register' && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
@@ -187,8 +188,6 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 if ( isset($HTTP_POST_VARS['submit']) )
 {
 	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
-
-	$error = FALSE;
 
 	$passwd_sql = '';
 	if ( $mode == 'editprofile' )
