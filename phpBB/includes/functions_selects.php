@@ -26,9 +26,9 @@
 //
 function language_select($default, $select_name = "language", $dirname="language")
 {
-	global $phpEx;
+	global $phpEx, $phpbb_root_path;
 
-	$dir = opendir($dirname);
+	$dir = opendir($phpbb_root_path . $dirname);
 
 	$lang = array();
 	while ( $file = readdir($dir) )
