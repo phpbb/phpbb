@@ -174,7 +174,7 @@ class Template {
 		if (!empty($_REQUEST['explain']))
 		{
 			global $db;
-			echo $this->sql_report();
+			echo $db->sql_report;
 			return TRUE;
 		}
 		$_str = '';
