@@ -788,7 +788,7 @@ switch($mode)
 				"split_body" => "modcp_split.tpl")
 			);
 
-			$sql = "SELECT u.username, p.*, pt.post_text, pt.post_subject, p.post_username
+			$sql = "SELECT u.username, p.*, pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_username
 				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
@@ -849,13 +849,9 @@ switch($mode)
 						}
 					}
 
-					if( $board_config['allow_bbcode'] && $bbcode_uid != "" )
+					if( $bbcode_uid != "" )
 					{
-						$message = bbencode_second_pass($message, $bbcode_uid);
-					}
-					else if( !$board_config['allow_bbcode'] && $bbcode != "" )
-					{
-						$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+						$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 					}
 
 					//
