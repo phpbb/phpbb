@@ -40,9 +40,14 @@ class bbcode
 		{
 			$this->bbcode_uid = $bbcode_uid;
 		}
+
 		if ($bbcode_bitfield)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
+		}
+		elseif (!$this->bbcode_bitfield)
+		{
+			return;
 		}
 
 		if (empty($this->bbcode_cache))
@@ -104,59 +109,20 @@ class bbcode
 			$bbcode_ids[] = $bbcode_id;
 
 			// WARNING: hardcoded values. it assumes that bbcodes with bbcode_id > 11 are user-defined bbcodes
-			// and it has to be specified which bbcodes need the template to be loaded
 			if ($bbcode_id > 11)
 			{
 				$sql .= $bbcode_id . ',';
 			}
-			// WARNING: even more hardcoded stuff - define which bbcodes need template
-			elseif (in_array($bbcode_id, array(0, 5, 6, 8, 9)))
-			{
-				$load_template = TRUE;
-			}
 		}
-		if (!empty($load_template))
-		{
-			global $template, $user;
-
-			$tpl_filename = $template->make_filename('bbcode.html');
-
-			if (!$fp = @fopen($tpl_filename, 'rb'))
-			{
-				trigger_error('Could not load bbcode template');
-			}
-			$tpl = fread($fp, filesize($tpl_filename));
-			@fclose($fp);
-			
-			// replace \ with \\ and then ' with \'.
-			$tpl = str_replace('\\', '\\\\', $tpl);
-			$tpl = str_replace("'", "\'", $tpl);
-			
-			// strip newlines.
-			$tpl  = str_replace("\n", '', $tpl);
-			
-			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
-			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_tpl['\\1'] = trim('\\2');", $tpl);
-			
-			$this->bbcode_tpl = array();
-			eval($tpl);
-
-			$this->bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_open']);
-			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_username_open']);
-			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_WROTE}', $user->lang['WROTE'], $this->bbcode_tpl['quote_username_open']);
-			$this->bbcode_tpl['quote_username_open'] = str_replace('{USERNAME}', '\\1', $this->bbcode_tpl['quote_username_open']);
-			$this->bbcode_tpl['code_open'] = str_replace('{L_CODE}', $user->lang['CODE'], $this->bbcode_tpl['code_open']);
-		}
-
+/*
 		if ($sql)
 		{
 			global $db;
 			$rowset = array();
 
 			$sql = 'SELECT bbcode_id, second_pass_regexp, second_pass_replacement
-					FROM ' . BBCODES_TABLE . '
-					WHERE bbcode_id IN (' . substr($sql, 0, -1) . ')
-					ORDER BY bbcode_id';
+				FROM ' . BBCODES_TABLE . '
+				WHERE bbcode_id IN (' . substr($sql, 0, -1) . ')';
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
@@ -165,7 +131,7 @@ class bbcode
 			}
 			$db->sql_freeresult($result);
 		}
-
+*/
 		foreach ($bbcode_ids as $bbcode_id)
 		{
 			switch ($bbcode_id)
@@ -173,11 +139,11 @@ class bbcode
 				case 0:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str' => array(
-							'[quote:$uid]'			=>	$this->bbcode_tpl['quote_open'],
-							'[/quote:$uid]'			=>	$this->bbcode_tpl['quote_close']
+							'[quote:$uid]'			=>	$this->bbcode_tpl('quote_open'),
+							'[/quote:$uid]'			=>	$this->bbcode_tpl('quote_close')
 						),
 						'preg' => array(
-							'#\[quote:$uid="(.*?)"\]#'	=>	$this->bbcode_tpl['quote_username_open']
+							'#\[quote="(.*?)":$uid\]#'	=>	$this->bbcode_tpl('quote_username_open')
 						)
 					);
 				break;
@@ -265,7 +231,7 @@ class bbcode
 				case 11:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	'<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0"><param name="movie" value="\1"><param name="play" value="1"><param name="loop" value="1"><param name="quality" value="high"><embed src="\1" play="1" loop="1" quality="high"></embed></object>'
+							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash')
 						)
 					);
 				break;
@@ -282,6 +248,45 @@ class bbcode
 					}
 			}
 		}
+	}
+
+	function bbcode_tpl($tpl_name)
+	{
+		if (empty($this->bbcode_tpl))
+		{
+			global $template, $user;
+
+			$tpl_filename = $template->make_filename('bbcode.html');
+
+			if (!$fp = @fopen($tpl_filename, 'rb'))
+			{
+				trigger_error('Could not load bbcode template');
+			}
+			$tpl = fread($fp, filesize($tpl_filename));
+			@fclose($fp);
+
+			// replace \ with \\ and then ' with \'.
+			$tpl = str_replace('\\', '\\\\', $tpl);
+			$tpl = str_replace("'", "\'", $tpl);
+			
+			// strip newlines.
+			$tpl  = str_replace("\n", '', $tpl);
+
+			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
+			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_tpl['\\1'] = trim('\\2');", $tpl);
+
+			$this->bbcode_tpl = array();
+			eval($tpl);
+
+			$this->bbcode_tpl['quote_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_open']);
+			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_QUOTE}', $user->lang['QUOTE'], $this->bbcode_tpl['quote_username_open']);
+			$this->bbcode_tpl['quote_username_open'] = str_replace('{L_WROTE}', $user->lang['WROTE'], $this->bbcode_tpl['quote_username_open']);
+			$this->bbcode_tpl['quote_username_open'] = str_replace('{USERNAME}', '\\1', $this->bbcode_tpl['quote_username_open']);
+			$this->bbcode_tpl['code_open'] = str_replace('{L_CODE}', $user->lang['CODE'], $this->bbcode_tpl['code_open']);
+			$this->bbcode_tpl['flash'] = str_replace('{URL}', '\1', $this->bbcode_tpl['flash']);
+		}
+
+		return $this->bbcode_tpl[$tpl_name];
 	}
 	
 	function bbcode_ordered_list($chr)
@@ -316,7 +321,7 @@ class bbcode
 				$code = str_replace('  ', ' &nbsp;', $code);
 		}
 
-		$code = $this->bbcode_tpl['code_open'] . $code . $this->bbcode_tpl['code_close'];
+		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
 
 		return $code;
 	}
