@@ -18,8 +18,10 @@
 *   (at your option) any later version.
 *
 ***************************************************************************/
-include('extention.inc');
+include('extension.inc');
 include('config.' . $phpEx);
+
+set_time_limit(20*60);  // Increase maximum execution time to 20 minutes.
 
 function convert_ip($ip) 
 {
