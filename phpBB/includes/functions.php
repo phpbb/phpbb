@@ -280,7 +280,7 @@ function init_userprefs($userdata)
 		}
 	}
 
-	if( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
+	if( !@file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.".$phpEx) )
 	{
 		$board_config['default_lang'] = "english";
 	}
@@ -289,7 +289,7 @@ function init_userprefs($userdata)
 
 	if( defined("IN_ADMIN") )
 	{
-		if( !file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
+		if( !@file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
 		{
 			$board_config['default_lang'] = "english";
 		}
@@ -304,6 +304,7 @@ function init_userprefs($userdata)
 			$new_value = str_replace("_lang", "_" . $board_config['default_lang'], $value);
 	
 			$images[$key] = ( file_exists($new_value) ) ? $new_value : str_replace("_lang", "_english", $value);
+//			list($images_width[$key], $images_height[$key]) = getimagesize($images[$key]);
 		}
 	}
 
