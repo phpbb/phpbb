@@ -84,6 +84,8 @@ CREATE TABLE phpbb_categories (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_config (
    config_id int2 NOT NULL,
+   selected int2 NOT NULL, 
+   disable_board int2 DEFAULT '0' NOT NULL, 
    sitename varchar(100) NOT NULL,
    allow_html int2 NOT NULL,
    allow_bbcode int2 NOT NULL,
@@ -110,8 +112,7 @@ CREATE TABLE phpbb_config (
    avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
-   selected int2 NOT NULL, 
-   disable_board int2 DEFAULT '0' NOT NULL, 
+   prune_enable int2 DEFAULT '1' NOT NULL,
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_id)
 );
 
@@ -154,6 +155,20 @@ CREATE TABLE phpbb_forums (
 CREATE  INDEX cat_id_phpbb_forums_index ON phpbb_forums (cat_id);
 CREATE  INDEX forum_id_phpbb_forums_index ON phpbb_forums (forum_id);
 CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_forum_prune
+-------------------------------------------------------- */
+CREATE TABLE phpbb_forum_prune (
+	prune_id int4 NOT NULL auto_increment,
+	forum_id int4 NOT NULL,
+	prune_days int4 NOT NULL,
+	prune_freq int4 NOT NULL,
+	CONSTRAINT phpbb_forum_prune_pkey PRIMARY KEY (prune_id)
+);
+CREATE  INDEX prune_id_phpbb_forum_prune_index ON phpbb_forum_prune (cat_id);
+CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
 
 
 /* --------------------------------------------------------
@@ -373,7 +388,8 @@ CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_user_group (
    group_id int DEFAULT '0' NOT NULL,
-   user_id int DEFAULT '0' NOT NULL
+   user_id int DEFAULT '0' NOT NULL,
+   user_pending int2
 );
 CREATE  INDEX group_id_phpbb_user_group_index ON phpbb_user_group (group_id);
 CREATE  INDEX user_id_phpbb_user_group_index ON phpbb_user_group (user_id);

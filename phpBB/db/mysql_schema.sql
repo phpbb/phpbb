@@ -23,8 +23,7 @@ CREATE TABLE phpbb_auth_access (
    auth_votecreate tinyint(1) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(1) DEFAULT '0' NOT NULL,
    auth_vote tinyint(1) DEFAULT '0' NOT NULL,
-   auth_mod tinyint(1) DEFAULT '0' NOT NULL,
-   auth_admin tinyint(1) DEFAULT '0' NOT NULL
+   auth_mod tinyint(1) DEFAULT '0' NOT NULL
 );
 
 #
@@ -34,7 +33,8 @@ CREATE TABLE phpbb_auth_access (
 DROP TABLE IF EXISTS phpbb_user_group;
 CREATE TABLE phpbb_user_group (
    group_id int(11) DEFAULT '0' NOT NULL,
-   user_id int(11) DEFAULT '0' NOT NULL
+   user_id int(11) DEFAULT '0' NOT NULL,
+   user_pending tinyint(1)
 );
 
 #
@@ -88,7 +88,8 @@ DROP TABLE IF EXISTS phpbb_config;
 
 CREATE TABLE phpbb_config (
    config_id int(10) NOT NULL auto_increment,
-   selected int(2) DEFAULT '0' NOT NULL,
+   selected int(2) DEFAULT '0' NOT NULL, 
+   board_disable tinyint(1) DEFAULT '0' NOT NULL, 
    sitename varchar(100),
    allow_html tinyint(1),
    allow_bbcode tinyint(1),
@@ -115,7 +116,7 @@ CREATE TABLE phpbb_config (
    system_timezone int(11) DEFAULT '0' NOT NULL,
    sys_template varchar(100) DEFAULT 'Default' NOT NULL,
    prune_enable tinyint(1) DEFAULT '1' NOT NULL,
-	PRIMARY KEY (config_id),
+   PRIMARY KEY (config_id),
    UNIQUE selected (selected)
 );
 
@@ -132,19 +133,6 @@ CREATE TABLE phpbb_disallow (
    PRIMARY KEY (disallow_id)
 );
 
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_forum_access'
-#
-DROP TABLE IF EXISTS phpbb_forum_access;
-
-CREATE TABLE phpbb_forum_access (
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   user_id int(10) DEFAULT '0' NOT NULL,
-   can_post tinyint(1) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (forum_id, user_id)
-);
 
 # --------------------------------------------------------
 #
@@ -177,6 +165,8 @@ CREATE TABLE phpbb_forums (
    forum_posts int(11) DEFAULT '0' NOT NULL,
    forum_topics tinyint(4) DEFAULT '0' NOT NULL,
    forum_last_post_id int(11) DEFAULT '0' NOT NULL,
+   prune_next int(11),
+   prune_enable tinyint(1) DEFAULT '1' NOT NULL,
    auth_view tinyint(4) DEFAULT '0' NOT NULL,
    auth_read tinyint(4) DEFAULT '0' NOT NULL,
    auth_post tinyint(4) DEFAULT '0' NOT NULL,
@@ -188,9 +178,7 @@ CREATE TABLE phpbb_forums (
    auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
    auth_vote tinyint(4) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(4) DEFAULT '0' NOT NULL,
-   prune_next int(11),
-	prune_enable tinyint(1) DEFAULT '1' NOT NULL,
-	PRIMARY KEY (forum_id),
+   PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),
    KEY cat_id (cat_id)
@@ -306,21 +294,6 @@ CREATE TABLE phpbb_session (
    PRIMARY KEY (session_id),
    INDEX session_user_id (session_user_id),
    INDEX session_id_ip_user_id (session_id, session_ip, session_user_id)
-);
-
-
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_session_keys'
-#
-DROP TABLE IF EXISTS phpbb_session_keys;
-
-CREATE TABLE phpbb_session_keys (
-   key_user_id int(11) DEFAULT '0' NOT NULL,
-   key_ip char(8) NOT NULL,
-   key_login varchar(32) NOT NULL,
-   PRIMARY KEY (key_user_id),
-   KEY key_ip (key_ip)
 );
 
 
@@ -464,6 +437,7 @@ CREATE TABLE phpbb_users (
    user_allowhtml tinyint(1),
    user_allowbbcode tinyint(1),
    user_allowsmile tinyint(1), 
+   user_allowavatar tinyint(1) DEFAULT '1' NOT NULL, 
    user_allow_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_regdate int(11) DEFAULT '0' NOT NULL,
