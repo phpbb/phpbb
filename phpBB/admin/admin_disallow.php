@@ -33,11 +33,13 @@ if( !empty($setmodules) )
 //
 // Include required files, get $phpEx and check permissions
 //
-$phpbb_root_dir = "./../";
+$phpbb_root_dir = './../';
 require('pagestart.inc');
 
 if( isset($HTTP_POST_VARS['add_name']) )
 {
+	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
+
 	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? $HTTP_POST_VARS['disallowed_user'] : $HTTP_GET_VARS['disallowed_user'];
 	$disallowed_user = preg_replace( '/\*/', '%', $disallowed_user );
 

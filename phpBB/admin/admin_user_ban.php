@@ -337,21 +337,20 @@ if( isset($HTTP_POST_VARS['submit']) )
 }
 else
 {
-
 	$template->set_filenames(array(
-		"body" => "admin/user_ban_body.tpl")
+		'body' => 'admin/user_ban_body.tpl')
 	);
 
 	$template->assign_vars(array(
-		"L_BAN_TITLE" => $lang['Ban_control'],
-		"L_BAN_EXPLAIN" => $lang['Ban_explain'],
-		"L_BAN_EXPLAIN_WARN" => $lang['Ban_explain_warn'],
-		"L_IP_OR_HOSTNAME" => $lang['IP_hostname'],
-		"L_EMAIL_ADDRESS" => $lang['Email_address'],
-		"L_SUBMIT" => $lang['Submit'],
-		"L_RESET" => $lang['Reset'],
+		'L_BAN_TITLE' => $lang['Ban_control'],
+		'L_BAN_EXPLAIN' => $lang['Ban_explain'],
+		'L_BAN_EXPLAIN_WARN' => $lang['Ban_explain_warn'],
+		'L_IP_OR_HOSTNAME' => $lang['IP_hostname'],
+		'L_EMAIL_ADDRESS' => $lang['Email_address'],
+		'L_SUBMIT' => $lang['Submit'],
+		'L_RESET' => $lang['Reset'],
 
-		"S_BANLIST_ACTION" => append_sid("admin_user_ban.$phpEx"))
+		'S_BANLIST_ACTION' => append_sid("admin_user_ban.$phpEx"))
 	);
 
 	$userban_count = 0;
@@ -360,26 +359,31 @@ else
 		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS . "
 		ORDER BY username ASC";
-	$u_result = $db->sql_query($sql);
-	$user_list = $db->sql_fetchrowset($u_result);
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not select current user_id ban list', '', __LINE__, __FILE__, $sql);
+	}
 
-	$select_userlist = "";
+	$user_list = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
+
+	$select_userlist = '';
 	for($i = 0; $i < count($user_list); $i++)
 	{
-		$select_userlist .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+		$select_userlist .= '<option value="' . $user_list[$i]['user_id'] . '">' . $user_list[$i]['username'] . '</option>';
 		$userban_count++;
 	}
-	$select_userlist = "<select name=\"ban_user[]\" multiple=\"multiple\" size=\"5\">" . $select_userlist . "</select>";
+	$select_userlist = '<select name="ban_user[]" multiple="multiple" size="5">' . $select_userlist . '</select>';
 
 	$template->assign_vars(array(
-		"L_BAN_USER" => $lang['Ban_username'],
-		"L_BAN_USER_EXPLAIN" => $lang['Ban_username_explain'],
-		"L_BAN_IP" => $lang['Ban_IP'],
-		"L_BAN_IP_EXPLAIN" => $lang['Ban_IP_explain'],
-		"L_BAN_EMAIL" => $lang['Ban_email'],
-		"L_BAN_EMAIL_EXPLAIN" => $lang['Ban_email_explain'],
+		'L_BAN_USER' => $lang['Ban_username'],
+		'L_BAN_USER_EXPLAIN' => $lang['Ban_username_explain'],
+		'L_BAN_IP' => $lang['Ban_IP'],
+		'L_BAN_IP_EXPLAIN' => $lang['Ban_IP_explain'],
+		'L_BAN_EMAIL' => $lang['Ban_email'],
+		'L_BAN_EMAIL_EXPLAIN' => $lang['Ban_email_explain'],
 
-		"S_BAN_USERLIST_SELECT" => $select_userlist)
+		'S_BAN_USERLIST_SELECT' => $select_userlist)
 	);
 
 	$userban_count = 0;
@@ -392,79 +396,88 @@ else
 			AND b.ban_userid <> 0
 			AND u.user_id <> " . ANONYMOUS . "
 		ORDER BY u.user_id ASC";
-	$u_result = $db->sql_query($sql);
-	$user_list = $db->sql_fetchrowset($u_result);
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not select current user_id ban list', '', __LINE__, __FILE__, $sql);
+	}
 
-	$select_userlist = "";
+	$user_list = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
+
+	$select_userlist = '';
 	for($i = 0; $i < count($user_list); $i++)
 	{
-		$select_userlist .= "<option value=\"" . $user_list[$i]['ban_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+		$select_userlist .= '<option value="' . $user_list[$i]['ban_id'] . '">' . $user_list[$i]['username'] . '</option>';
 		$userban_count++;
 	}
 
-	if( $select_userlist == "" )
+	if( $select_userlist == '' )
 	{
-		$select_userlist = "<option value=\"-1\">" . $lang['No_banned_users'] . "</option>";
+		$select_userlist = '<option value="-1">' . $lang['No_banned_users'] . '</option>';
 	}
 
-	$select_userlist = "<select name=\"unban_user[]\" multiple=\"multiple\" size=\"5\">" . $select_userlist;
-	$select_userlist .= "</select>";
+	$select_userlist = '<select name="unban_user[]" multiple="multiple" size="5">' . $select_userlist . '</select>';
 
 	$sql = "SELECT ban_id, ban_ip, ban_email
 		FROM " . BANLIST_TABLE;
-	$b_result = $db->sql_query($sql);
-	$banlist = $db->sql_fetchrowset($b_result);
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not select current ip ban list', '', __LINE__, __FILE__, $sql);
+	}
 
-	$select_iplist = "";
-	$select_emaillist = "";
+	$banlist = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
 
-	for($i = 0; $i < $db->sql_numrows($b_result); $i++)
+	$select_iplist = '';
+	$select_emaillist = '';
+
+	for($i = 0; $i < count($banlist); $i++)
 	{
 		$ban_id = $banlist[$i]['ban_id'];
 
-		if( !empty($banlist[$i]['ban_ip']) )
+		if ( !empty($banlist[$i]['ban_ip']) )
 		{
-			$ban_ip = str_replace("255", "*", decode_ip($banlist[$i]['ban_ip']));
-			$select_iplist .= "<option value=\"$ban_id\">$ban_ip</option>";
+			$ban_ip = str_replace('255', '*', decode_ip($banlist[$i]['ban_ip']));
+			$select_iplist .= '<option value="' . $ban_id . '">' . $ban_ip . '</option>';
 			$ipban_count++;
 		}
-		else if( !empty($banlist[$i]['ban_email']) )
+		else if ( !empty($banlist[$i]['ban_email']) )
 		{
 			$ban_email = $banlist[$i]['ban_email'];
-			$select_emaillist .= "<option value=\"$ban_id\">$ban_email</option>";
+			$select_emaillist .= '<option value="' . $ban_id . '">' . $ban_email . '</option>';
 			$emailban_count++;
 		}
 	}
 
-	if($select_iplist == "")
+	if ( $select_iplist == '' )
 	{
-		$select_iplist = "<option value=\"-1\">" . $lang['No_banned_ip'] . "</option>";
+		$select_iplist = '<option value="-1">' . $lang['No_banned_ip'] . '</option>';
 	}
 
-	if( $select_emaillist == "") 
+	if ( $select_emaillist == '' )  
 	{
-		$select_emaillist = "<option value=\"-1\">" . $lang['No_banned_email'] . "</option>";
+		$select_emaillist = '<option value="-1">' . $lang['No_banned_email'] . '</option>';
 	}
 
-	$select_iplist = "<select name=\"unban_ip[]\" multiple=\"multiple\" size=\"5\">" . $select_iplist . "</select>";
-	$select_emaillist = "<select name=\"unban_email[]\" multiple=\"multiple\" size=\"5\">" . $select_emaillist . "</select>";
+	$select_iplist = '<select name="unban_ip[]" multiple="multiple" size="5">' . $select_iplist . '</select>';
+	$select_emaillist = '<select name="unban_email[]" multiple="multiple" size="5">' . $select_emaillist . '</select>';
 
 	$template->assign_vars(array(
-		"L_UNBAN_USER" => $lang['Unban_username'],
-		"L_UNBAN_USER_EXPLAIN" => $lang['Unban_username_explain'],
-		"L_UNBAN_IP" => $lang['Unban_IP'],
-		"L_UNBAN_IP_EXPLAIN" => $lang['Unban_IP_explain'],
-		"L_UNBAN_EMAIL" => $lang['Unban_email'],
-		"L_UNBAN_EMAIL_EXPLAIN" => $lang['Unban_email_explain'],
+		'L_UNBAN_USER' => $lang['Unban_username'],
+		'L_UNBAN_USER_EXPLAIN' => $lang['Unban_username_explain'],
+		'L_UNBAN_IP' => $lang['Unban_IP'],
+		'L_UNBAN_IP_EXPLAIN' => $lang['Unban_IP_explain'],
+		'L_UNBAN_EMAIL' => $lang['Unban_email'],
+		'L_UNBAN_EMAIL_EXPLAIN' => $lang['Unban_email_explain'],
 
-		"S_UNBAN_USERLIST_SELECT" => $select_userlist,
-		"S_UNBAN_IPLIST_SELECT" => $select_iplist,
-		"S_UNBAN_EMAILLIST_SELECT" => $select_emaillist,
-		"S_BAN_ACTION" => append_sid("admin_user_ban.$phpEx"))
+		'S_UNBAN_USERLIST_SELECT' => $select_userlist,
+		'S_UNBAN_IPLIST_SELECT' => $select_iplist,
+		'S_UNBAN_EMAILLIST_SELECT' => $select_emaillist,
+		'S_BAN_ACTION' => append_sid("admin_user_ban.$phpEx"))
 	);
 }
 
-$template->pparse("body");
+$template->pparse('body");
 
 include('page_footer_admin.'.$phpEx);
 
