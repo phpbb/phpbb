@@ -23,10 +23,6 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-
-// Instantiate BBCode class
-$bbcode = new bbcode();
 
 // Initial var setup
 $forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
@@ -38,6 +34,9 @@ $start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 // parameters are not directly used in SQL I'm tempted to say
 // if someone wishes to screw their view up by entering unknown data
 // good luck to them :D
+
+// If, for some reason, the SQL query would not fail and $sort vars were
+// displayed in $pagination_url they could be used for XSS -- Ashe
 $sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
@@ -248,17 +247,44 @@ $sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'AS
 
 
 // Cache this? ... it is after all doing a simple data grab
-$sql = "SELECT * 
-	FROM " . RANKS_TABLE . " 
-	ORDER BY rank_special, rank_min DESC";
-$result = $db->sql_query($sql, 120);
 
-$ranksrow = array();
-while ($row = $db->sql_fetchrow($result))
+// Only good if there are lots of ranks IMHO (we save the sorting)
+// Moved to global cache but could be simply obtained dynamically if we see
+// the cache is growing too big -- Ashe
+if ($cache->exists('ranks'))
 {
-	$ranksrow[] = $row;
+	$ranks = $cache->get('ranks');
 }
-$db->sql_freeresult($result);
+else
+{
+	$sql = 'SELECT *
+		FROM ' . RANKS_TABLE . '
+		ORDER BY rank_min DESC';
+	$result = $db->sql_query($sql);
+
+	$ranks = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['rank_special'])
+		{
+			$ranks['special'][$row['rank_id']] = array(
+				'rank_title'	=>	$row['rank_title'],
+				'rank_image'	=>	$row['rank_image']
+			);
+		}
+		else
+		{
+			$ranks['normal'][] = array(
+				'rank_title'	=>	$row['rank_title'],
+				'rank_min'		=>	$row['rank_min'],
+				'rank_image'	=>	$row['rank_image']
+			);
+		}
+	}
+	$db->sql_freeresult($result);
+
+	$cache->put('ranks', $ranks);
+}
 
 
 // Grab icons
@@ -473,32 +499,11 @@ if (!empty($poll_start))
 
 
 // Container for user details, only process once
-$user_cache = $attachments = $attach_list = array();
+$user_cache = $attachments = $attach_list = $rowset = array();
+$has_attachments = FALSE;
 $force_encoding = '';
+$bbcode_bitfield = 0;
 $i = 0;
-
-// Pull attachment data
-if ( ($config['allow_attachments']) && ($topic_attachment) && ($auth->acl_get('f_download', $forum_id)) )
-{
-	$sql = "SELECT a.post_id, p.topic_id, d.* 
-		FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d, " . POSTS_TABLE . " p
-		WHERE p.topic_id = " . $topic_id . "
-			AND p.post_id = a.post_id 
-			AND a.attach_id = d.attach_id 
-			AND p.post_attachment = 1 
-		ORDER BY d.filetime " . ((!$config['display_order']) ? "ASC" : "DESC") . ", a.post_id ASC";
-	$result = $db->sql_query($sql);
-
-	if ($row = $db->sql_fetchrow($result))
-	{
-		do
-		{
-			$attachments[$row['post_id']][] = $row;
-		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-	$db->sql_freeresult($result);
-}
 
 // Go ahead and pull all data for this topic
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
@@ -510,64 +515,218 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 	ORDER BY $sort_order";
 $result = (isset($_GET['view']) && $_GET['view'] == 'print') ? $db->sql_query($sql) : $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
 
-if ($row = $db->sql_fetchrow($result))
+if (!$row = $db->sql_fetchrow($result))
 {
-	do
+	trigger_error($user->lang['NO_TOPIC']);
+}
+
+
+// Posts are stored in the $rowset array while $attach_list and the global
+// bbcode_bitfield are built
+do
+{
+	$rowset[] = $row;
+
+	// Does post have an attachment? If so, add it to the list
+	if ($row['post_attachment'] && $config['allow_attachments'] && $auth->acl_get('f_download', $forum_id))
 	{
-		$poster_id = $row['user_id'];
-		$poster	= ($poster_id == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'];
+		$attach_list[] = $row['post_id'];
+
+		if ($row['post_approved'])
+		{
+			$has_attachments = TRUE;
+		}
+	}
+
+	// Define the global bbcode bitfield, will be used to load bbcodes
+	$bbcode_bitfield |= $row['bbcode_bitfield'];
+}
+while ($row = $db->sql_fetchrow($result));
+$db->sql_freeresult($result);
 
 
-		// Three situations can prevent a post being display:
-		// i)   The posters karma is below the minimum of the user 
-		// ii)  The poster is on the users ignore list
-		// iii) The post was made in a codepage different from the users
-		if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
+// Pull attachment data
+if (count($attach_list))
+{
+	$sql = 'SELECT a.post_id, d.* 
+		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
+		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
+			AND a.attach_id = d.attach_id
+		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'ASC' : 'DESC') . ', a.post_id ASC';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachments[$row['post_id']][] = $row;
+	}
+	$db->sql_freeresult($result);
+
+	// No attachments exist, but post table thinks they do
+	// so go ahead and reset post_attach flags
+	if (!count($attachments))
+	{
+		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			SET post_attachment = 0 
+			WHERE post_id IN (' . implode(', ', $attach_list) . ')';
+		$db->sql_query($sql);
+
+		// We need to update the topic indicator too if the 
+		// complete topic is now without an attachment
+		if (count($rowset) != $total_posts)
+		{
+			// Not all posts are displayed so we query the db to find if there's any attachment for this topic
+			$sql = 'SELECT a.post_id
+				FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
+				WHERE p.topic_id = $topic_id
+					AND p.post_approved = 1
+					AND p.post_id = a.post_id";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if (!$db->sql_fetchrow($result))
+			{
+				$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+			}
+		}
+		else
+		{
+			$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+		}
+	}
+	elseif ($has_attachments && !$topic_data['topic_attachment'])
+	{
+		// Topic has approved attachments but its flag is wrong
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
+	}
+}
+
+if ($bbcode_bitfield)
+{
+	// Instantiate BBCode class
+	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+	$bbcode = new bbcode($bbcode_bitfield);
+}
+
+foreach ($rowset as $row)
+{
+	$poster_id = $row['user_id'];
+	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
+
+	// Three situations can prevent a post being display:
+	// i)   The posters karma is below the minimum of the user 
+	// ii)  The poster is on the users ignore list
+	// iii) The post was made in a codepage different from the users
+	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
+	{
+		$template->assign_block_vars('postrow', array(
+			'S_BELOW_MIN_KARMA' => true, 
+			'S_ROW_COUNT' => $i++,
+
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $poster, intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+		);
+
+		continue;
+	}
+	else if ($row['post_encoding'] != $user->lang['ENCODING'])
+	{
+		if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
+		{
+			$force_encoding = $row['post_encoding'];
+		}
+		else
 		{
 			$template->assign_block_vars('postrow', array(
-				'S_BELOW_MIN_KARMA' => true, 
+				'S_WRONG_ENCODING' => true, 
 				'S_ROW_COUNT' => $i++,
 
-				'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $poster, intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+				'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $poster, '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
 			);
 
 			continue;
 		}
-		else if ($row['post_encoding'] != $user->lang['ENCODING'])
+	}
+
+	// Cache various user specific data ... so we don't have to recompute
+	// this each time the same user appears on this page
+	if (!isset($user_cache[$poster_id]))
+	{
+		if ($poster_id == ANONYMOUS)
 		{
-			if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
-			{
-				$force_encoding = $row['post_encoding'];
-			}
-			else
-			{
-				$template->assign_block_vars('postrow', array(
-					'S_WRONG_ENCODING' => true, 
-					'S_ROW_COUNT' => $i++,
-
-					'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $poster, '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
-				);
-
-				continue;
-			}
+			$user_cache[$poster_id] = array(
+				'joined'		=>	'',
+				'posts'			=>	'',
+				'from'			=>	'',
+				'avatar'		=>	'',
+				'rank_title'	=>	'',
+				'rank_image'	=>	'',
+				'posts'			=>	'',
+				'profile_img'	=>	'',
+				'profile'		=>	'',
+				'pm_img'		=>	'',
+				'pm'			=>	'',
+				'email_img'		=>	'',
+				'email'			=>	'',
+				'www_img'		=>	'',
+				'www'			=>	'',
+				'icq_status_img'=>	'',
+				'icq_img'		=>	'',
+				'icq'			=>	'',
+				'aim_img'		=>	'',
+				'aim'			=>	'',
+				'msn_img'		=>	'',
+				'msn'			=>	'',
+				'search_img'	=>	'',
+				'search'		=>	''
+			);
 		}
-
-
-		// Display the post - Cache this
-		$poster_posts = ($row['user_id'] != ANONYMOUS) ? $user->lang['POSTS'] . ': ' . $row['user_posts'] : '';
-
-
-		// Cache this
-		$poster_from = ($row['user_from'] && $row['user_id'] != ANONYMOUS) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '';
-
-
-		if (!isset($user_cache[$poster_id]['joined']) && $poster_id != ANONYMOUS)
+		else
 		{
-			$user_cache[$poster_id]['joined'] = ($row['user_id']) ? $user->lang['JOINED'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '';
-		}
+			$user_sig = ($row['user_sig'] && $config['allow_sig']) ? $row['user_sig'] : '';
+			if ($user_sig && $auth->acl_get('f_sigs', $forum_id))
+			{
+				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
+				{
+					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
+				}
 
-		if (!isset($user_cache[$poster_id]['avatar']))
-		{
+				$user_sig = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
+
+				if (count($censors))
+				{
+					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
+				}
+
+				$user_sig = '<br />_________________<br />' . nl2br($user_sig);
+			}
+
+			$profile_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
+			$pm_url = "ucp.$phpEx$SID&amp;mode=message&amp;action=send&amp;u=$poster_id";
+			$aim_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id";
+			$msn_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id";
+			$yim_url = 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg';
+			$search_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($row['username']) .'"&amp;showresults=posts';
+
+			$user_cache[$poster_id] = array(
+				'joined'		=>	$user->lang['JOINED'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
+				'posts'			=>	$user->lang['POSTS'] . ': ' . $row['user_posts'],
+				'from'			=>	($row['user_from']) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '',
+				'sig'			=>	$user_sig,
+				'profile_img'	=>	'<a href="' . $profile_url . '">' . $user->img('btn_profile', $user->lang['READ_PROFILE']) . '</a>',
+				'profile'		=>	'<a href="' . $profile_url . '">' . $user->lang['READ_PROFILE'] . '</a>',
+				'pm_img'		=>	'<a href="' . $pm_url . '">' . $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']) . '</a>',
+				'pm'			=>	'<a href="' . $pm_url . '">' . $user->lang['SEND_PRIVATE_MESSAGE'] . '</a>',
+				'www_img'		=>	($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('btn_www', $user->lang['VISIT_WEBSITE']) . '</a>' : '',
+				'www'			=>	($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['VISIT_WEBSITE'] . '</a>' : '',
+				'aim_img'		=>	($row['user_aim']) ? '<a href="' . $aim_url . '">' . $user->img('btn_aim', $user->lang['AIM']) . '</a>' : '',
+				'aim'			=>	($row['user_aim']) ? '<a href="' . $aim_url . '">' . $user->lang['AIM'] . '</a>' : '',
+				'msn_img'		=>	($row['user_msnm']) ? '<a href="' . $msn_url . '">' . $user->img('btn_msnm', $user->lang['MSNM']) . '</a>' : '',
+				'msn'			=>	($row['user_msnm']) ? '<a href="' . $msn_url . '">' . $user->lang['MSNM'] . '</a>' : '',
+				'yim_img'		=>	($row['user_yim']) ? '<a href="' . $yim_url . '" target="_contact" onclick="im_popup(\'' . $yim_url . '\', 790, 350)">' . $user->img('btn_yim', $user->lang['YIM']) . '</a>' : '',
+				'yim'			=>	($row['user_yim']) ? '<a href="' . $yim_url . '" target="_contact" onclick="im_popup(\'' . $yim_url . '\', 790, 350)">' . $user->lang['YIM'] . '</a>' : '',
+				'search_img'	=>	($auth->acl_get('f_search', $forum_id)) ? '<a href="' . $search_url . '">' . $user->img('btn_search', $user->lang['SEARCH_USER_POSTS']) . '</a>' : '',
+				'search'		=>	($auth->acl_get('f_search', $forum_id)) ? '<a href="' . $search_url . '">' . $user->lang['SEARCH_USER_POSTS'] . '</a>' : ''
+
+			);
+
 			if ($row['user_avatar_type'] && $auth->acl_get('u_setavatar'))
 			{
 				switch ($row['user_avatar_type'])
@@ -585,62 +744,30 @@ if ($row = $db->sql_fetchrow($result))
 						break;
 				}
 			}
+
+			if (!empty($row['user_rank']))
+			{
+				$user_cache[$poster_id]['rank_title'] = $ranks['special'][$row['user_rank']]['rank_title'];
+				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $ranks['special']['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
+			}
 			else
 			{
-				$user_cache[$poster_id]['avatar'] = '';
-			}
-		}
-
-
-		// Set poster rank
-		if (!isset($user_cache[$poster_id]['rank_title']) && $poster_id != ANONYMOUS)
-		{
-			foreach ($ranksrow as $rank)
-			{
-				if (empty($row['user_rank']) && $row['user_posts'] >= $rank['rank_min'])
+				foreach ($ranks['normal'] as $rank)
 				{
-					$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
-					$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $user_cache[$poster_id]['rank_title'] . '" title="' . $user_cache[$poster_id]['rank_title'] . '" /><br />' : '';
-					break;
-				}
-
-				if (!empty($rank['rank_special']) && $row['user_rank'] == $rank['rank_id'])
-				{
-					$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
-					$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $user_cache[$poster_id]['rank_title'] . '" title="' . $user_cache[$poster_id]['rank_title'] . '" /><br />' : '';
-					break;
+					if ($row['user_posts'] >= $rank['rank_min'])
+					{
+						$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
+						$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+						break;
+					}
 				}
 			}
-		}
-
-
-		// Handle anon users posting with usernames
-		if ($poster_id == ANONYMOUS && $row['post_username'] != '')
-		{
-			$poster = $row['post_username'];
-			$user_cache[$poster_id]['rank_title'] = $user->lang['GUEST'];
-			$user_cache[$poster_id]['rank_image'] = '';
-		}
-
-
-		// Cache various user specific data ... so we don't have to recompute
-		// this each time the same user appears on this page
-		if (!isset($user_cache[$poster_id]['profile']) && $poster_id != ANONYMOUS)
-		{
-			$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
-			$user_cache[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . $user->img('btn_profile', $user->lang['READ_PROFILE']) . '</a>';
-			$user_cache[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $user->lang['READ_PROFILE'] . '</a>';
-
-			$temp_url = "ucp.$phpEx$SID&amp;mode=message&amp;action=send&amp;u=$poster_id";
-			$user_cache[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']) . '</a>';
-			$user_cache[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $user->lang['SEND_PRIVATE_MESSAGE'] . '</a>';
 
 			if (!empty($row['user_viewemail']) || $auth->acl_gets('m_', 'a_', $forum_id))
 			{
-				$email_uri = ($config['board_email_form'] && $config['email_enable']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
-
-				$user_cache[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . $user->img('btn_email', $user->lang['SEND_EMAIL']) . '</a>';
-				$user_cache[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $user->lang['SEND_EMAIL'] . '</a>';
+				$email_url = ($config['board_email_form'] && $config['email_enable']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
+				$user_cache[$poster_id]['email_img'] = '<a href="' . $email_url . '">' . $user->img('btn_email', $user->lang['SEND_EMAIL']) . '</a>';
+				$user_cache[$poster_id]['email'] = '<a href="' . $email_url . '">' . $user->lang['SEND_EMAIL'] . '</a>';
 			}
 			else
 			{
@@ -648,15 +775,12 @@ if ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['email'] = '';
 			}
 
-			$user_cache[$poster_id]['www_img'] = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('btn_www', $user->lang['VISIT_WEBSITE']) . '</a>' : '';
-			$user_cache[$poster_id]['www'] = ($row['user_website']) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['VISIT_WEBSITE'] . '</a>' : '';
-
 			if (!empty($row['user_icq']))
 			{
-				$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$poster_id";
-				$user_cache[$poster_id]['icq_status_img'] = '<a href="' . $temp_url . '"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
-				$user_cache[$poster_id]['icq_img'] = '<a href="' . $temp_url . '">' . $user->img('btn_icq', $user->lang['ICQ']) . '</a>';
-				$user_cache[$poster_id]['icq'] =  '<a href="' . $temp_url . '">' . $user->lang['ICQ'] . '</a>';
+				$icq_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$poster_id";
+				$user_cache[$poster_id]['icq_status_img'] = '<a href="' . $icq_url . '"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
+				$user_cache[$poster_id]['icq_img'] = '<a href="' . $icq_url . '">' . $user->img('btn_icq', $user->lang['ICQ']) . '</a>';
+				$user_cache[$poster_id]['icq'] =  '<a href="' . $icq_url . '">' . $user->lang['ICQ'] . '</a>';
 			}
 			else
 			{
@@ -664,516 +788,422 @@ if ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['icq_img'] = '';
 				$user_cache[$poster_id]['icq'] = '';
 			}
-
-			$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id";
-			$user_cache[$poster_id]['aim_img'] = ($row['user_aim']) ? '<a href="' . $temp_url . '">' . $user->img('btn_aim', $user->lang['AIM']) . '</a>' : '';
-			$user_cache[$poster_id]['aim'] = ($row['user_aim']) ? '<a href="' . $temp_url . '">' . $user->lang['AIM'] . '</a>' : '';
-
-			$temp_url = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id";
-			$user_cache[$poster_id]['msn_img'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('btn_msnm', $user->lang['MSNM']) . '</a>' : '';
-			$user_cache[$poster_id]['msn'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
-
-			$temp_url = 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg';
-			$user_cache[$poster_id]['yim_img'] = ($row['user_yim']) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 350)">' . $user->img('btn_yim', $user->lang['YIM']) . '</a>' : '';
-			$user_cache[$poster_id]['yim'] = ($row['user_yim']) ? '<a href="' . $temp_url . '" target="_contact" onclick="im_popup(\'' . $temp_url . '\', 790, 350)">' . $user->lang['YIM'] . '</a>' : '';
-
-			if ($auth->acl_get('f_search', $forum_id))
-			{
-				$temp_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($row['username']) .'"&amp;showresults=posts';
-				$search_img = '<a href="' . $temp_url . '">' . $user->img('btn_search', $user->lang['SEARCH_USER_POSTS']) . '</a>';
-				$search ='<a href="' . $temp_url . '">' . $user->lang['SEARCH_USER_POSTS'] . '</a>';
-			}
-			else
-			{
-				$search_img = '';
-				$search = '';
-			}
-
 		}
-		else if (!$poster_id)
+	}
+
+	// Non-user specific images/text
+	$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
+	$quote_img = '<a href="' . $temp_url . '">' . $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
+	$quote = '<a href="' . $temp_url . '">' . $user->lang['REPLY_WITH_QUOTE'] . '</a>';
+
+	if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id)) || $auth->acl_get('m_edit', $forum_id))
+	{
+		$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
+		$edit_img = '<a href="' . $temp_url . '">' . $user->img('btn_edit', $user->lang['EDIT_DELETE_POST']) . '</a>';
+		$edit = '<a href="' . $temp_url . '">' . $user->lang['EDIT_DELETE_POST'] . '</a>';
+	}
+	else
+	{
+		$edit_img = '';
+		$edit = '';
+	}
+
+	if ($auth->acl_get('m_ip', $forum_id))
+	{
+		$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip";
+		$ip_img = '<a href="' . $temp_url . '">' . $user->img('btn_ip', $user->lang['VIEW_IP']) . '</a>';
+		$ip = '<a href="' . $temp_url . '">' . $user->lang['VIEW_IP'] . '</a>';
+	}
+	else
+	{
+		$ip_img = '';
+		$ip = '';
+	}
+
+	if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id']) || $auth->acl_get('m_delete', $forum_id))
+	{
+		$temp_url = "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'];
+		$delpost_img = '<a href="' . $temp_url . '">' . $user->img('btn_delete', $user->lang['DELETE_POST']) . '</a>';
+		$delpost = '<a href="' . $temp_url . '">' . $user->lang['DELETE_POST'] . '</a>';
+	}
+	else
+	{
+		$delpost_img = '';
+		$delpost = '';
+	}
+
+
+	// Parse the message and subject
+	$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
+	$message = $row['post_text'];
+
+	// If the board has HTML off but the post has HTML
+	// on then we process it, else leave it alone
+	if (!$auth->acl_get('f_html', $forum_id))
+	{
+		if ($row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id))
 		{
-			$user_cache[$poster_id]['profile_img'] = '';
-			$user_cache[$poster_id]['profile'] = '';
-			$user_cache[$poster_id]['pm_img'] = '';
-			$user_cache[$poster_id]['pm'] = '';
-			$user_cache[$poster_id]['email_img'] = '';
-			$user_cache[$poster_id]['email'] = '';
-			$user_cache[$poster_id]['www_img'] = '';
-			$user_cache[$poster_id]['www'] = '';
-			$user_cache[$poster_id]['icq_status_img'] = '';
-			$user_cache[$poster_id]['icq_img'] = '';
-			$user_cache[$poster_id]['icq'] = '';
-			$user_cache[$poster_id]['aim_img'] = '';
-			$user_cache[$poster_id]['aim'] = '';
-			$user_cache[$poster_id]['msn_img'] = '';
-			$user_cache[$poster_id]['msn'] = '';
-			$user_cache[$poster_id]['search_img'] = '';
-			$user_cache[$poster_id]['search'] = '';
+			$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
 		}
+	}
 
 
-		// Non-user specific images/text
-		$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
-		$quote_img = '<a href="' . $temp_url . '">' . $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
-		$quote = '<a href="' . $temp_url . '">' . $user->lang['REPLY_WITH_QUOTE'] . '</a>';
-
-		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id)) || $auth->acl_get('m_edit', $forum_id))
-		{
-			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
-			$edit_img = '<a href="' . $temp_url . '">' . $user->img('btn_edit', $user->lang['EDIT_DELETE_POST']) . '</a>';
-			$edit = '<a href="' . $temp_url . '">' . $user->lang['EDIT_DELETE_POST'] . '</a>';
-		}
-		else
-		{
-			$edit_img = '';
-			$edit = '';
-		}
-
-		if ($auth->acl_get('m_ip', $forum_id))
-		{
-			$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip";
-			$ip_img = '<a href="' . $temp_url . '">' . $user->img('btn_ip', $user->lang['VIEW_IP']) . '</a>';
-			$ip = '<a href="' . $temp_url . '">' . $user->lang['VIEW_IP'] . '</a>';
-		}
-		else
-		{
-			$ip_img = '';
-			$ip = '';
-		}
-
-		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $forum_topic_data['topic_last_post_id'] == $row['post_id']) || $auth->acl_get('m_delete', $forum_id))
-		{
-			$temp_url = "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'];
-			$delpost_img = '<a href="' . $temp_url . '">' . $user->img('btn_delete', $user->lang['DELETE_POST']) . '</a>';
-			$delpost = '<a href="' . $temp_url . '">' . $user->lang['DELETE_POST'] . '</a>';
-		}
-		else
-		{
-			$delpost_img = '';
-			$delpost = '';
-		}
+	// Second parse bbcode here
+	if ($row['bbcode_bitfield'])
+	{
+		$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+	}
 
 
-		// Does post have an attachment? If so, add it to the list
-		if ( ($row['post_attachment']) && ($config['allow_attachments']) && ($auth->acl_get('f_download', $forum_id)) )
-		{
-			$attach_list[] = $row['post_id'];
-		}
+	// If we allow users to disable display of emoticons
+	// we'll need an appropriate check and preg_replace here
+	$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 
-		// Parse the message and subject
-		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
-		$message = $row['post_text'];
-		$bbcode_uid = $row['bbcode_uid'];
+	// Highlight active words (primarily for search)
+	if ($highlight_match)
+	{
+		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
+		// via php.net's annotated manual
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"hilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+	}
 
 
-		// If the board has HTML off but the post has HTML
-		// on then we process it, else leave it alone
-		if (!$auth->acl_get('f_html', $forum_id))
-		{
-			if ($row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id))
-			{
-				$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
-			}
-		}
+	// Replace naughty words such as farty pants
+	if (sizeof($censors))
+	{
+		$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
+	}
 
 
-		// Second parse bbcode here
-		$bbcode->bbcode_second_pass(&$message, $bbcode_uid, $row['bbcode_bitfield']);
+	$message = nl2br($message);
 
-
-		// If we allow users to disable display of emoticons
-		// we'll need an appropriate check and preg_replace here
-		$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
-
-
-		// Highlight active words (primarily for search)
-		if ($highlight_match)
-		{
-			// This was shamelessly 'borrowed' from volker at multiartstudio dot de
-			// via php.net's annotated manual
-			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"hilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
-		}
-
-
-		// Replace naughty words such as farty pants
-		if (sizeof($censors))
-		{
-			$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
-			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
-		}
-
-
-		$message = nl2br($message);
-
-		
-		// Editing information
-		if (intval($row['post_edit_count']))
-		{
-			$l_edit_time_total = (intval($row['post_edit_count']) == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
-
-			$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
-		}
-		else
-		{
-			$l_edited_by = '';
-		}
-
-
-		// Signature
-		if (!isset($user_cache[$poster_id]['sig']))
-		{
-			$user_sig = ($row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig']) ? $row['user_sig'] : '';
-
-			if ($user_sig != '' && $auth->acl_get('f_sigs', $forum_id))
-			{
-				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
-				{
-					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-				}
-
-				$user_cache[$poster_id]['sig'] = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
-
-				if (count($censors))
-				{
-					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
-				}
-
-				$user_cache[$poster_id]['sig'] = '<br />_________________<br />' . nl2br($user_cache[$poster_id]['sig']);
-			}
-			else
-			{
-				$user_cache[$poster_id]['sig'] = '';
-			}
-		}
-
-
-		// Define the little post icon
-		$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', $user->lang['New_post']) : $user->img('icon_post', $user->lang['Post']);
-
-		// Little post link and anchor name
-		$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
-		$u_post_id = (!empty($newest_post_id) && $newest_post_id == $row['post_id']) ? 'newest' : $row['post_id'];
-
-
-		// Dump vars into template
-		$template->assign_block_vars('postrow', array(
-			'POSTER_NAME' 	=> $poster,
-			'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
-			'RANK_IMAGE' 	=> $user_cache[$poster_id]['rank_image'],
-			'POSTER_JOINED' => $user_cache[$poster_id]['joined'],
-			'POSTER_POSTS' 	=> $poster_posts,
-			'POSTER_FROM' 	=> $poster_from,
-			'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
-			'POST_DATE' 	=> $user->format_date($row['post_time']),
-
-			'POST_SUBJECT' 	=> $post_subject,
-			'MESSAGE' 		=> $message,
-			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
-			'EDITED_MESSAGE'=> $l_edited_by,
-
-			'RATING'		=> $rating, 
-
-			'MINI_POST_IMG' => $mini_post_img,
-			'EDIT_IMG' 		=> $edit_img,
-			'EDIT' 			=> $edit,
-			'QUOTE_IMG' 	=> $quote_img,
-			'QUOTE' 		=> $quote,
-			'IP_IMG' 		=> $ip_img,
-			'IP' 			=> $ip,
-			'DELETE_IMG' 	=> $delpost_img,
-			'DELETE' 		=> $delpost,
-
-			'PROFILE_IMG' 	=> $user_cache[$poster_id]['profile_img'],
-			'PROFILE' 		=> $user_cache[$poster_id]['profile'],
-			'SEARCH_IMG' 	=> $user_cache[$poster_id]['search_img'],
-			'SEARCH' 		=> $user_cache[$poster_id]['search'],
-			'PM_IMG' 		=> $user_cache[$poster_id]['pm_img'],
-			'PM' 			=> $user_cache[$poster_id]['pm'],
-			'EMAIL_IMG' 	=> $user_cache[$poster_id]['email_img'],
-			'EMAIL' 		=> $user_cache[$poster_id]['email'],
-			'WWW_IMG' 		=> $user_cache[$poster_id]['www_img'],
-			'WWW' 			=> $user_cache[$poster_id]['www'],
-			'ICQ_STATUS_IMG'=> $user_cache[$poster_id]['icq_status_img'],
-			'ICQ_IMG' 		=> $user_cache[$poster_id]['icq_img'],
-			'ICQ' 			=> $user_cache[$poster_id]['icq'],
-			'AIM_IMG' 		=> $user_cache[$poster_id]['aim_img'],
-			'AIM' 			=> $user_cache[$poster_id]['aim'],
-			'MSN_IMG' 		=> $user_cache[$poster_id]['msn_img'],
-			'MSN' 			=> $user_cache[$poster_id]['msn'],
-			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
-			'YIM' 			=> $user_cache[$poster_id]['yim'],
-
-			'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
-			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
-			'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-
-			'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-
-			'L_MINI_POST_ALT'	=> $mini_post_alt,
-
-			'S_ROW_COUNT'	=> $i++,
-
-			'S_HAS_ATTACHMENTS' => ($row['post_attachment']) ? TRUE : FALSE,
-			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
-			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
-
-			'U_MINI_POST'	=> $mini_post_url,
-			'U_POST_ID' 	=> $u_post_id
-		));
 	
-		// Process Attachments for this post
-		if (sizeof($attachments[$row['post_id']]) && $row['post_attachment'])
+	// Editing information
+	if (intval($row['post_edit_count']))
+	{
+		$l_edit_time_total = (intval($row['post_edit_count']) == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
+
+		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+	}
+	else
+	{
+		$l_edited_by = '';
+	}
+
+
+	// Define the little post icon
+	$mini_post_img = ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', $user->lang['New_post']) : $user->img('icon_post', $user->lang['Post']);
+
+	// Little post link and anchor name
+	$mini_post_url = 'viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
+	$u_post_id = (!empty($newest_post_id) && $newest_post_id == $row['post_id']) ? 'newest' : $row['post_id'];
+
+
+	// Dump vars into template
+	$template->assign_block_vars('postrow', array(
+		'POSTER_NAME' 	=> $poster,
+		'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
+		'RANK_IMAGE' 	=> $user_cache[$poster_id]['rank_image'],
+		'POSTER_JOINED' => $user_cache[$poster_id]['joined'],
+		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
+		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
+		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
+		'POST_DATE' 	=> $user->format_date($row['post_time']),
+
+		'POST_SUBJECT' 	=> $post_subject,
+		'MESSAGE' 		=> $message,
+		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
+		'EDITED_MESSAGE'=> $l_edited_by,
+
+		'RATING'		=> $rating, 
+
+		'MINI_POST_IMG' => $mini_post_img,
+		'EDIT_IMG' 		=> $edit_img,
+		'EDIT' 			=> $edit,
+		'QUOTE_IMG' 	=> $quote_img,
+		'QUOTE' 		=> $quote,
+		'IP_IMG' 		=> $ip_img,
+		'IP' 			=> $ip,
+		'DELETE_IMG' 	=> $delpost_img,
+		'DELETE' 		=> $delpost,
+
+		'PROFILE_IMG' 	=> $user_cache[$poster_id]['profile_img'],
+		'PROFILE' 		=> $user_cache[$poster_id]['profile'],
+		'SEARCH_IMG' 	=> $user_cache[$poster_id]['search_img'],
+		'SEARCH' 		=> $user_cache[$poster_id]['search'],
+		'PM_IMG' 		=> $user_cache[$poster_id]['pm_img'],
+		'PM' 			=> $user_cache[$poster_id]['pm'],
+		'EMAIL_IMG' 	=> $user_cache[$poster_id]['email_img'],
+		'EMAIL' 		=> $user_cache[$poster_id]['email'],
+		'WWW_IMG' 		=> $user_cache[$poster_id]['www_img'],
+		'WWW' 			=> $user_cache[$poster_id]['www'],
+		'ICQ_STATUS_IMG'=> $user_cache[$poster_id]['icq_status_img'],
+		'ICQ_IMG' 		=> $user_cache[$poster_id]['icq_img'],
+		'ICQ' 			=> $user_cache[$poster_id]['icq'],
+		'AIM_IMG' 		=> $user_cache[$poster_id]['aim_img'],
+		'AIM' 			=> $user_cache[$poster_id]['aim'],
+		'MSN_IMG' 		=> $user_cache[$poster_id]['msn_img'],
+		'MSN' 			=> $user_cache[$poster_id]['msn'],
+		'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
+		'YIM' 			=> $user_cache[$poster_id]['yim'],
+
+		'S_POST_REPORTED' => ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
+		'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
+		'U_MCP_REPORT'	=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
+
+		'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+
+		'L_MINI_POST_ALT'	=> $mini_post_alt,
+
+		'S_ROW_COUNT'	=> $i++,
+
+		'S_HAS_ATTACHMENTS' => ($row['post_attachment']) ? TRUE : FALSE,
+		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
+		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
+
+		'U_MINI_POST'	=> $mini_post_url,
+		'U_POST_ID' 	=> $u_post_id
+	));
+
+	// Process Attachments for this post
+	if (sizeof($attachments[$row['post_id']]) && $row['post_attachment'])
+	{
+		foreach($attachments[$row['post_id']] as $attachment)
 		{
-			foreach($attachments[$row['post_id']] as $attachment)
+			// Some basics...
+			$attachment['extension'] = strtolower(trim($attachment['extension']));
+			$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
+			$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
+
+			$upload_image = '';
+
+			if ( ($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == '') )
 			{
-				// Some basics...
-				$attachment['extension'] = strtolower(trim($attachment['extension']));
-				$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
-				$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
+				$upload_image = $user->img('icon_attach', '');
+			}
+			else if (trim($extensions[$attachment['extension']]['upload_icon']) != '')
+			{
+				$upload_image = '<img src="' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+			}
+	
+			$filesize = $attachment['filesize'];
+			$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+			if ($filesize >= 1048576)
+			{
+				$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
+			}
+			else if ($filesize >= 1024)
+			{
+				$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
+			}
 
-				$upload_image = '';
+			$display_name = $attachment['real_filename']; 
+			$comment = stripslashes(trim(nl2br($attachment['comment'])));
 
-				if ( ($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == '') )
+			$denied = false;
+			$update_count = false;
+
+			// Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
+			if ( (!in_array($attachment['extension'], $extensions['_allowed_'])) )
+			{
+				$denied = true;
+
+				$template->assign_block_vars('postrow.attachment', array(
+					'IS_DENIED' => true,	
+					'L_DENIED' => sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
+				);
+			} 
+
+			if (!$denied)
+			{
+				// define category
+				$image = FALSE;
+				$stream = FALSE;
+//					$swf = FALSE;
+				$thumbnail = FALSE;
+				$link = FALSE;
+
+				$l_downloaded_viewed = '';
+				$download_link = '';
+				$additional_array = array();
+				
+				switch (intval($extensions[$attachment['extension']]['display_cat']))
 				{
-					$upload_image = $user->img('icon_attach', '');
-				}
-				else if (trim($extensions[$attachment['extension']]['upload_icon']) != '')
-				{
-					$upload_image = '<img src="' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+					case STREAM_CAT:
+						$stream = TRUE;
+						break;
+/*						case SWF_CAT:
+						$swf = TRUE;
+						break;*/
+					case IMAGE_CAT:
+						if (intval($config['img_display_inlined']))
+						{
+							if ( (intval($config['img_link_width']) != 0) || (intval($config['img_link_height']) != 0) )
+							{
+								list($width, $height) = image_getdimension($filename);
+
+								$image = (($width == 0) && ($height == 0)) ? true : ((($width <= intval($config['img_link_width'])) && ($height <= intval($config['img_link_height']))) ? true : false);
+							}
+						}
+						else
+						{
+							$image = TRUE;
+						}
+						
+						if ($attachment['thumbnail'])
+						{
+							$thumbnail = TRUE;
+							$image = FALSE;
+						}
+						break;
 				}
 		
-				$filesize = $attachment['filesize'];
-				$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-				if ($filesize >= 1048576)
+
+				if ( (!$image) && (!$stream) /*&& (!$swf)*/ && (!$thumbnail) )
 				{
-					$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
-				}
-				else if ($filesize >= 1024)
-				{
-					$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
+					$link = TRUE;
 				}
 
-				$display_name = $attachment['real_filename']; 
-				$comment = stripslashes(trim(nl2br($attachment['comment'])));
-
-				$denied = false;
-				$update_count = false;
-
-				// Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
-				if ( (!in_array($attachment['extension'], $extensions['_allowed_'])) )
+				if ($image)
 				{
-					$denied = true;
+					// Images
+					// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
+					// Section between BEGIN and END with (Without the // of course):
+					//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+					//	$download_link = TRUE;
+					// 
+					// BEGIN
+					if ((intval($config['ftp_upload'])) && (trim($config['upload_dir']) == ''))
+					{
+						$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						$download_link = TRUE;
+					}
+					else
+					{
+						$img_source = $filename;
+						$download_link = FALSE;
+					}
+					// END
 
-					$template->assign_block_vars('postrow.attachment', array(
-						'IS_DENIED' => true,	
-						'L_DENIED' => sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $img_source;
+
+					// Directly Viewed Image ... update the download count
+					if (!$download_link)
+					{
+						$update_count = true;
+					}
+				}
+		
+				if ($thumbnail)
+				{
+					// Images, but display Thumbnail
+					// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
+					// Section between BEGIN and END with (Without the // of course):
+					//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
+					//
+					// BEGIN
+					if ( (intval($config['allow_ftp_upload'])) && (trim($config['upload_dir']) == '') )
+					{
+						$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
+					}
+					else
+					{
+						$thumb_source = $thumbnail_filename;
+					}
+					// END	
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+
+					$additional_array = array(
+						'IMG_THUMB_SRC' => $thumb_source
 					);
-				} 
+				}
 
-				if (!$denied)
+				if ($stream)
 				{
-					// define category
-					$image = FALSE;
-					$stream = FALSE;
-//					$swf = FALSE;
-					$thumbnail = FALSE;
-					$link = FALSE;
-
-					$l_downloaded_viewed = '';
-					$download_link = '';
-					$additional_array = array();
-					
-					switch (intval($extensions[$attachment['extension']]['display_cat']))
-					{
-						case STREAM_CAT:
-							$stream = TRUE;
-							break;
-/*						case SWF_CAT:
-							$swf = TRUE;
-							break;*/
-						case IMAGE_CAT:
-							if (intval($config['img_display_inlined']))
-							{
-								if ( (intval($config['img_link_width']) != 0) || (intval($config['img_link_height']) != 0) )
-								{
-									list($width, $height) = image_getdimension($filename);
-
-									$image = (($width == 0) && ($height == 0)) ? true : ((($width <= intval($config['img_link_width'])) && ($height <= intval($config['img_link_height']))) ? true : false);
-								}
-							}
-							else
-							{
-								$image = TRUE;
-							}
-							
-							if ($attachment['thumbnail'])
-							{
-								$thumbnail = TRUE;
-								$image = FALSE;
-							}
-							break;
-					}
-			
-
-					if ( (!$image) && (!$stream) /*&& (!$swf)*/ && (!$thumbnail) )
-					{
-						$link = TRUE;
-					}
-
-					if ($image)
-					{
-						// Images
-						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
-						// Section between BEGIN and END with (Without the // of course):
-						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						//	$linked_image = TRUE;
-						// 
-						// BEGIN
-						if ((intval($config['ftp_upload'])) && (trim($config['upload_dir']) == ''))
-						{
-							$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-							$linked_image = TRUE;
-						}
-						else
-						{
-							$img_source = $filename;
-							$linked_image = FALSE;
-						}
-						// END
-
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $img_source;
-
-						// Directly Viewed Image ... update the download count
-						if (!$linked_image)
-						{
-							$update_count = TRUE;
-						}
-					}
-			
-					if ($thumbnail)
-					{
-						// Images, but display Thumbnail
-						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
-						// Section between BEGIN and END with (Without the // of course):
-						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
-						//
-						// BEGIN
-						if ( (intval($config['allow_ftp_upload'])) && (trim($config['upload_dir']) == '') )
-						{
-							$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
-						}
-						else
-						{
-							$thumb_source = $thumbnail_filename;
-						}
-						// END	
-
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-
-						$additional_array = array(
-							'IMG_THUMB_SRC' => $thumb_source
-						);
-					}
-
-					if ($stream)
-					{
-						// Streams
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $filename;
+					// Streams
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $filename;
 //						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 
-						// Viewed/Heared File ... update the download count (download.php is not called here)
-						$update_count = true;
-					}
+					// Viewed/Heared File ... update the download count (download.php is not called here)
+					$update_count = true;
+				}
 /*			
-					if ($swf)
-					{
-						// Macromedia Flash Files
-						list($width, $height) = swf_getdimension($filename);
+				if ($swf)
+				{
+					// Macromedia Flash Files
+					list($width, $height) = swf_getdimension($filename);
 
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $filename;
-						
-						$additional_array = array(
-							'WIDTH' => $width,
-							'HEIGHT' => $height
-						);
-
-						// Viewed/Heared File ... update the download count (download.php is not called here)
-						$update_count = true;
-					}
-*/
-					if ($link)
-					{
-						$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-					}
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $filename;
 					
-					if ($image || $thumbnail || $stream || $thumbnail || $link)
-					{
-						$template_array = array_merge($additional_array, array(
-//							'IS_FLASH' => ($swf) ? true : false,
-							'IS_STREAM' => ($stream) ? true : false,
-							'IS_THUMBNAIL' => ($thumbnail) ? true : false,
-							'IS_IMAGE' => ($image) ? true : false,
-							'U_DOWNLOAD_LINK' => $download_link,
-							'UPLOAD_IMG' => $upload_image,
-							'DOWNLOAD_NAME' => $display_name,
-							'FILESIZE' => $filesize,
-							'SIZE_VAR' => $size_lang,
-							'COMMENT' => $comment,
-							'L_DOWNLOADED_VIEWED' => $l_downloaded_viewed,
-							'L_DOWNLOAD_COUNT' => sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
-						);
-						
-						$template->assign_block_vars('postrow.attachment', $template_array);
-					}
+					$additional_array = array(
+						'WIDTH' => $width,
+						'HEIGHT' => $height
+					);
 
-					if ($update_count)
-					{
-						$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
-							SET download_count = download_count + 1 
-							WHERE attach_id = " . $attachment['attach_id'];
-						$db->sql_query($sql);
-					}
+					// Viewed/Heared File ... update the download count (download.php is not called here)
+					$update_count = true;
+				}
+*/
+				if ($link)
+				{
+					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+				}
+				
+				if ($image || $thumbnail || $stream || $thumbnail || $link)
+				{
+					$template_array = array_merge($additional_array, array(
+//							'IS_FLASH' => ($swf) ? true : false,
+						'IS_STREAM' => ($stream) ? true : false,
+						'IS_THUMBNAIL' => ($thumbnail) ? true : false,
+						'IS_IMAGE' => ($image) ? true : false,
+						'U_DOWNLOAD_LINK' => $download_link,
+						'UPLOAD_IMG' => $upload_image,
+						'DOWNLOAD_NAME' => $display_name,
+						'FILESIZE' => $filesize,
+						'SIZE_VAR' => $size_lang,
+						'COMMENT' => $comment,
+						'L_DOWNLOADED_VIEWED' => $l_downloaded_viewed,
+						'L_DOWNLOAD_COUNT' => sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+					);
+					
+					$template->assign_block_vars('postrow.attachment', $template_array);
+				}
+
+				// NOTE: rather store attach_id in an array then update all download counts at once, outside of the loop -- Ashe
+				if ($update_count)
+				{
+					$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
+						SET download_count = download_count + 1 
+						WHERE attach_id = ' . $attachment['attach_id'];
+					$db->sql_query($sql);
 				}
 			}
 		}
 	}
-	while ($row = $db->sql_fetchrow($result));
-
-	unset($user_cache);
 }
-else
-{
-	trigger_error($user->lang['NO_TOPIC']);
-}
-
-// No attachments exist, but post table thinks they do
-// so go ahead and reset post_attach flags
-if ( (sizeof($attach_list)) && (count($attachments) == 0) )
-{
-	$sql = "UPDATE " . POSTS_TABLE . " 
-		SET post_attachment = 0 
-		WHERE post_id IN (" . implode(', ', $attach_list) . ")";
-	$db->sql_query($sql);
-
-	// We need to update the topic indicator too if the 
-	// complete topic is now without an attachment
-}
+unset($rowset);
+unset($user_cache);
 
 // Mark topics read
-markread('topic', $forum_id, $topic_id, $forum_topic_data['topic_last_post_id']);
+markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
 
 
-// Update the topic view counter
-$sql = "UPDATE " . TOPICS_TABLE . "
-	SET topic_views = topic_views + 1
-	WHERE topic_id = $topic_id";
-$db->sql_query($sql);
+// Update the topic view counter, excepted when the user was already reading it
+if (!preg_match("/&t=$topic_id\\b/", $user->data['session_page'] . ' '))
+{
+	$sql = "UPDATE " . TOPICS_TABLE . "
+		SET topic_views = topic_views + 1
+		WHERE topic_id = $topic_id";
+	$db->sql_query($sql);
+}
 
 
 // Mozilla navigation bar
