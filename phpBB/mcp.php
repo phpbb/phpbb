@@ -605,19 +605,6 @@ switch ($mode)
 
 		$posts_per_page = (isset($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : $config['posts_per_page'];
 
-		// Post ordering options
-		$previous_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
-		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
-
-		$sort_days = (!empty($_REQUEST['sort_days'])) ? max(intval($_REQUEST['sort_days']), 0) : 0;
-		$sort_key = (!empty($_REQUEST['sort_key']) && preg_match('/^(a|t|s)$/', $_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
-		$sort_dir = (!empty($_REQUEST['sort_dir']) && preg_match('/^(a|d)$/', $_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
-		$sort_order = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
-		$limit_posts_time = '';
-		$total_posts = $topic_info['topic_replies'] + 1;
-
 		// Temp fix for merge: display all posts after the topic has been selected to avoid any confusion
 		if ($to_topic_id)
 		{
@@ -625,6 +612,22 @@ switch ($mode)
 			$posts_per_page = 0;
 		}
 
+
+		// Following section altered for consistency with viewforum, viewtopic, etc.
+		// Post ordering options
+		$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
+
+		$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+		$sort_key = (!empty($_REQUEST['sk'])) ? $_REQUEST['sk'] : 't';
+		$sort_dir = (!empty($_REQUEST['sd'])) ? $_REQUEST['sd'] : 'a';
+
+		$s_limit_days = $s_sort_key = $s_sort_dir = '';
+		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+
+		$limit_posts_time = '';
+		$total_posts = $topic_info['topic_replies'] + 1;
 		if ($sort_days)
 		{
 			$min_post_time = time() - ($sort_days * 86400);
@@ -639,33 +642,8 @@ switch ($mode)
 			$limit_posts_time = "AND p.post_time >= $min_post_time ";
 		}
 
-		$select_sort_days = '<select name="sort_days">';
-		foreach ($previous_days as $day => $text)
-		{
-			$selected = ($sort_days == $day) ? ' selected="selected"' : '';
-			$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
-		}
-		$select_sort_days .= '</select>';
+		$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$select_sort = '<select name="sort_key">';
-		foreach ($sort_by_text as $key => $text)
-		{
-			$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-			$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
-		}
-		$select_sort .= '</select>';
-
-		$select_sort_dir = '<select name="sort_dir">';
-		$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
-		$select_sort_dir .= '</select>';
-
-		$select_post_days = '<select name="postdays">';
-		for($i = 0; $i < count($previous_days); $i++)
-		{
-			$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
-			$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
-		}
-		$select_post_days .= '</select>';
 
 		$sql = 'SELECT u.username, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
@@ -678,7 +656,7 @@ switch ($mode)
 		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$poster = (!empty($row['username'])) ? $row['username'] : ((!$row['post_username']) ? $user->lang['Guest'] : $row['post_username']);
+			$poster = (!empty($row['username'])) ? $row['username'] : ((!$row['post_username']) ? $user->lang['GUEST'] : $row['post_username']);
 
 			$message = $row['post_text'];
 			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_data['topic_title'];
@@ -741,6 +719,8 @@ switch ($mode)
 			}
 		}
 
+		// The acl_get in this won't work properly, needs to be acl_gets - Paul
+		// Minor change to order selects for consistency with viewforum, viewtopic - Paul
 		$template->assign_vars(array(
 			'TOPIC_TITLE'		=>	$topic_info['topic_title'],
 			'U_VIEW_TOPIC'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id",
@@ -759,10 +739,10 @@ switch ($mode)
 			'S_CAN_DELETE'		=>	($auth->acl_get('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
 			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE,
 
-			'S_SELECT_SORT_DIR'	=>	$select_sort_dir,
-			'S_SELECT_SORT_KEY' =>	$select_sort,
-			'S_SELECT_SORT_DAYS'=>	$select_sort_days,
-			'PAGINATION'		=>	(!$posts_per_page) ? '' : generate_pagination("$mcp_url&amp;mode=$mode&amp;posts_per_page=$posts_per_page&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;sort_days=$sort_days", $total_posts, $posts_per_page, $start)
+			'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
+			'S_SELECT_SORT_KEY' =>	$s_sort_key,
+			'S_SELECT_SORT_DAYS'=>	$s_limit_days,
+			'PAGINATION'		=>	(!$posts_per_page) ? '' : generate_pagination("$mcp_url&amp;mode=$mode&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total_posts, $posts_per_page, $start)
 		));
 	break;
 
@@ -1152,8 +1132,8 @@ switch ($mode)
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_info['forum_topics'], $config['topics_per_page'], $start),
-			'PAGE_NUMBER' => sprintf($user->lang['PAGE_OF'], (floor($start / $config['topics_per_page']) + 1), ceil($forum_info ['forum_topics'] / $config['topics_per_page']))
-		));
+			'PAGE_NUMBER' => on_page($forum_info['forum_topics'],  $config['topics_per_page'], $start))
+		);
 	break;
 
 	case 'front':

@@ -26,12 +26,13 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 
 // Start initial var setup
-$forum_id = (!empty($_GET['f'])) ? intval($_GET['f']) : 0;
-$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
+$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 $mark_read = (!empty($_GET['mark'])) ? $_GET['mark'] : '';
-$sort_days = (!empty($_REQUEST['sort_days'])) ? intval($_REQUEST['sort_days']) : 0;
-$sort_key = (!empty($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
-$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'd';
+
+$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+$sort_key = (!empty($_REQUEST['sk'])) ? $_REQUEST['sk'] : 't';
+$sort_dir = (!empty($_REQUEST['sd'])) ? $_REQUEST['sd'] : 'd';
 
 
 // Start session
@@ -177,39 +178,33 @@ if ($forum_data['forum_postable'])
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-	$sort_by_sql = array('a' => 't.topic_last_poster_name', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-	gen_sort_selects($limit_days, $sort_by_text, $s_limit_days, $s_sort_key, $s_sort_dir);
-
+	$s_limit_days = $s_sort_key = $s_sort_dir = '';
+	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
 	// Limit topics to certain time frame, obtain correct topic count
-	$topic_days = '';
-	if (isset($_REQUEST['sort']))
+	$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
+	$limit_topics_time = $topic_days = '';
+
+	if ($sort_days) 
 	{
-		if ($sort_days) 
-		{
-			$min_topic_time = time() - ($sort_days * 86400);
+		$min_topic_time = time() - ($sort_days * 86400);
 
-			// ref type on as rows as topics ... also not great
-			$sql = "SELECT COUNT(topic_id) AS forum_topics
-				FROM " . TOPICS_TABLE . "
-				WHERE  forum_id = $forum_id
-					AND topic_last_post_time >= $min_topic_time";
-			$result = $db->sql_query($sql);
+		// ref type on as rows as topics ... also not great
+		$sql = "SELECT COUNT(topic_id) AS forum_topics
+			FROM " . TOPICS_TABLE . "
+			WHERE  forum_id = $forum_id
+				AND topic_last_post_time >= $min_topic_time";
+		$result = $db->sql_query($sql);
 
-			$start = 0;
-			$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['forum_topics'] : 0;
-			$limit_topics_time = "AND t.topic_last_post_time >= $min_topic_time";
-		}
-		else
-		{
-			$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
-		}
+		$start = 0;
+		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['forum_topics'] : 0;
+		$limit_topics_time = "AND t.topic_last_post_time >= $min_topic_time";
 	}
 	else
 	{
 		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
-		$limit_topics_time = '';
 	}
 
 	// Select the sort order
@@ -220,7 +215,7 @@ if ($forum_data['forum_postable'])
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'POST_NEW_TOPIC';
 
 	$template->assign_vars(array(
-		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id", $topics_count, $config['topics_per_page'], $start),
+		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start), 
 		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],

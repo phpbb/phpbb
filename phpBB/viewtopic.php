@@ -27,13 +27,18 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 
 // Initial var setup
-$topic_id = (isset($_GET['t'])) ? intval($_GET['t']) : 0;
-$post_id = (isset($_GET['p'])) ? intval($_GET['p']) : 0;
-$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
+$topic_id = (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
+$post_id = (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
+$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 
-$sort_days = (!empty($_REQUEST['sort_days'])) ? intval($_REQUEST['sort_days']) : 0;
-$sort_key = (!empty($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
-$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
+// Do we need to check for specific allowed keys here? So long as
+// parameters are not directly used in SQL I'm tempted to say
+// if someone wishes to screw their view up by entering unknown data
+// good luck to them :D
+$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+$sort_key = (!empty($_REQUEST['sk'])) ? $_REQUEST['sk'] : 't';
+$sort_dir = (!empty($_REQUEST['sd'])) ? $_REQUEST['sd'] : 'a';
 
 
 // Do we have a topic or post id?
@@ -130,7 +135,8 @@ if ($user->data['user_id'] != ANONYMOUS)
 $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
-		AND f.forum_id = t.forum_id
+		AND ( f.forum_id = t.forum_id 
+			OR f.forum_id = $forum_id ) 
 		$order_sql";
 $result = $db->sql_query($sql);
 
@@ -139,11 +145,12 @@ if (!$topic_data = $db->sql_fetchrow($result))
 	trigger_error('NO_TOPIC');
 }
 extract($topic_data);
-$forum_id = intval($forum_id);
+
 
 // Configure style, language, etc.
 $user->setup(false, intval($forum_style));
 $auth->acl($user->data, intval($forum_id));
+
 
 // Start auth check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
@@ -155,7 +162,7 @@ if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
 		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
 	}
 
-	trigger_error($user->lang['Sorry_auth_read']);
+	trigger_error($user->lang['SORRY_AUTH_READ']);
 }
 
 
@@ -178,14 +185,12 @@ $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
 $sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
-gen_sort_selects($limit_days, $sort_by_text, $s_limit_days, $s_sort_key, $s_sort_dir);
+$s_limit_days = $s_sort_key = $s_sort_dir = '';
+gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
 
-$sort_days = (!empty($_REQUEST['sort_days'])) ? max(intval($_REQUEST['sort_days']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sort_key']) && preg_match('/^(a|t|s)$/', $_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
-$sort_dir = (!empty($_REQUEST['sort_dir']) && preg_match('/^(a|d)$/', $_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
-$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
+// Obtain correct post count and ordering SQL if user has
+// requested anything different
 $limit_posts_time = '';
 $total_posts = $topic_replies + 1;
 
@@ -205,33 +210,8 @@ if ($sort_days)
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 }
 
-$select_sort_days = '<select name="sort_days">';
-foreach ($previous_days as $day => $text)
-{
-	$selected = ($sort_days == $day) ? ' selected="selected"' : '';
-	$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
-}
-$select_sort_days .= '</select>';
-
-$select_sort = '<select name="sort_key">';
-foreach ($sort_by_text as $key => $text)
-{
-	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-	$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
-}
-$select_sort .= '</select>';
-
-$select_sort_dir = '<select name="sort_dir">';
-$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
-$select_sort_dir .= '</select>';
-
-$select_post_days = '<select name="postdays">';
-for($i = 0; $i < count($previous_days); $i++)
-{
-	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
-	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
-}
-$select_post_days .= '</select>';
+// Select the sort order
+$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 
 // Cache this? ... it is after all doing a simple data grab
@@ -247,7 +227,6 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 
-
 // Grab icons
 $icons = array();
 obtain_icons($icons);
@@ -255,10 +234,10 @@ obtain_icons($icons);
 
 // Was a highlight request part of the URI?
 $highlight_match = $highlight = '';
-if (isset($_GET['highlight']))
+if (isset($_GET['hilit']))
 {
 	// Split words and phrases
-	$words = explode(' ', trim(htmlspecialchars(urldecode($_GET['highlight']))));
+	$words = explode(' ', trim(htmlspecialchars(urldecode($_GET['hilit']))));
 
 	foreach ($words as $word)
 	{
@@ -269,7 +248,7 @@ if (isset($_GET['highlight']))
 	}
 	unset($words);
 
-	$highlight = urlencode($_GET['highlight']);
+	$highlight = urlencode($_GET['hilit']);
 }
 
 
@@ -287,7 +266,7 @@ $topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="me
 
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir" . (($highlight_match) ? "&amp;highlight=$highlight" : '');
+$pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
 
@@ -528,9 +507,11 @@ if ($row = $db->sql_fetchrow($result))
 					case USER_AVATAR_UPLOAD:
 						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
+
 					case USER_AVATAR_REMOTE:
 						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_remote']) ? '<img src="' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
+
 					case USER_AVATAR_GALLERY:
 						$user_cache[$poster_id]['avatar'] = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" border="0" alt="" />' : '';
 						break;
@@ -610,7 +591,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_icq']))
 			{
-				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
 				$user_cache[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
 				$user_cache[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 			}
