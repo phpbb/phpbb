@@ -138,10 +138,7 @@ if ( $row = $db->sql_fetchrow($result) )
 	{
 		for($i = 0; $i < count($sql); $i++)
 		{
-			if ( !$db->sql_query($sql[$i]) )
-			{
-				die("Couldn't run update >> " . $sql[$i]);
-			}
+			$db->sql_query($sql[$i]);
 		}
 	}
 
@@ -153,10 +150,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			$sql = "SELECT ban_id, ban_ip 
 				FROM " . BANLIST_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't select data >> " . $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
@@ -170,12 +164,10 @@ if ( $row = $db->sql_fetchrow($result) )
 				while ( $row = $db->sql_fetchrow($result) );
 			}
 
-			$sql = "SELECT post_id, poster_ip 
-				FROM " . POSTS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't select data >> " . $sql);
-			}
+			$sql = "SELECT DISTINCT poster_ip 
+				FROM " . POSTS_TABLE . " 
+				WHERE poster_ip NOT LIKE '%.%'";
+			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
@@ -183,17 +175,14 @@ if ( $row = $db->sql_fetchrow($result) )
 				{
 					$sql_update[] = "UPDATE " . POSTS_TABLE . " 
 						SET poster_ip = '" . decode_ip($row['poster_ip']) . "'
-						WHERE post_id = " . $row['post_id'];
+						WHERE poster_ip LIKE '" . $row['poster_ip'] . "'"; 
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
 
-			$sql = "SELECT privmsgs_id, privmsgs_ip 
+			$sql = "SELECT DISTINCT privmsgs_ip 
 				FROM " . PRIVMSGS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't select data >> " . $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
@@ -201,35 +190,14 @@ if ( $row = $db->sql_fetchrow($result) )
 				{
 					$sql_update[] = "UPDATE " . PRIVMSGS_TABLE . " 
 						SET privmsgs_ip = '" . decode_ip($row['privmsgs_ip']) . "'
-						WHERE privmsgs_id = " . $row['privmsgs_id'];
+						WHERE privmsgs_ip LIKE '" . $row['privmsgs_ip'] . "'";
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
 
-			$sql = "SELECT session_id, session_ip 
-				FROM " . SESSIONS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't select data >> " . $sql);
-			}
-
-			if ( $row = $db->sql_fetchrow($result) )
-			{
-				do
-				{
-					$sql_update[] = "UPDATE " . SESSIONS_TABLE . " 
-						SET session_ip = '" . decode_ip($row['session_ip']) . "'
-						WHERE session_id = '" . $row['session_id'] . "'";
-				}
-				while ( $row = $db->sql_fetchrow($result) );
-			}
-
-			$sql = "SELECT vote_id, vote_user_id, vote_user_ip 
+			$sql = "SELECT DISTINCT vote_user_ip 
 				FROM " . VOTE_USERS_TABLE;
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't select data >> " . $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
@@ -237,8 +205,7 @@ if ( $row = $db->sql_fetchrow($result) )
 				{
 					$sql_update[] = "UPDATE " . VOTE_USERS_TABLE . " 
 						SET vote_user_ip = '" . decode_ip($row['vote_user_ip']) . "'
-						WHERE vote_id = " . $row['vote_id'] . " 
-							AND vote_user_id = " . $row['vote_user_id'];
+						WHERE vote_user_ip LIKE '" . $row['vote_user_ip'] . "'";
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
@@ -265,10 +232,7 @@ if ( $row = $db->sql_fetchrow($result) )
 $sql = "UPDATE " . CONFIG_TABLE . " 
 	SET config_value = '.1.0 [20020905]' 
 	WHERE config_name = 'version'";
-if ( !($result = $db->sql_query($sql)) )
-{
-	die("Couldn't update version info");
-}
+$result = $db->sql_query($sql);
 
 echo "\n<br />\n<b>COMPLETE!</b><br />\n";
 echo "\n<p>Don't forget to delete this file!</p>\n";
