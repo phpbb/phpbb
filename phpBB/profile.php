@@ -201,7 +201,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 		}
-		$profiledata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL]);
+		$profiledata = get_userdata_from_id(intval($HTTP_GET_VARS[POST_USERS_URL]));
 
 		$sql = "SELECT *
 			FROM " . RANKS_TABLE . "
@@ -347,7 +347,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
 
-		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
+		$yim_img = ( $profiledata['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
 		$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
 		$search = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\">" . $lang['Search_user_posts'] . "</a>";
@@ -391,7 +391,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_CONTACT" => $lang['Contact'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 			"L_EMAIL" => $lang['Email'],
-			"L_PM" => $lang['Private_message'],
+			"L_SEND_PM" => $lang['Send_private_message'],
 			"L_ICQ_NUMBER" => $lang['ICQ'],
 			"L_YAHOO" => $lang['YIM'],
 			"L_AIM" => $lang['AIM'],
@@ -465,7 +465,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			if( $mode == "editprofile" )
 			{
-				$user_id = $HTTP_POST_VARS['user_id'];
+				$user_id = intval($HTTP_POST_VARS['user_id']);
 				$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
 			}
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
@@ -1327,8 +1327,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					}
 				}
 
-				$s_hidden_fields = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" /><input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
-				$s_hidden_vars = '<input type="hidden" name="user_id" value="' . $user_id . '" />';
+				$coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == "register") ? 0 : TRUE;
+
+				$s_hidden_vars = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" /><input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . $user_id . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="username" value="' . addslashes($username) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="email" value="' . addslashes($email) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . addslashes($icq) . '" />';
