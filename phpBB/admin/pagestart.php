@@ -46,7 +46,7 @@ $session->configure($userdata);
 //
 function page_header($sub_title)
 {
-	global $db, $lang, $phpEx;
+	global $board_config, $db, $lang, $phpEx;
 
 	include('page_header_admin.'.$phpEx);
 
@@ -68,7 +68,7 @@ function page_header($sub_title)
 
 function page_footer($ignore_copyright = false)
 {
-	global $db, $lang, $phpEx;
+	global $board_config, $db, $lang, $phpEx;
 
 ?>
 
@@ -82,10 +82,12 @@ function page_footer($ignore_copyright = false)
 
 }
 
-function page_message($title, $message)
+function page_message($title, $message, $show_header)
 {
 	global $lang;
 
+	if ( $show_header )
+	{
 ?>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -94,6 +96,12 @@ function page_message($title, $message)
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
+
+<?php
+
+	}
+
+?>
 
 <br /><br />
 

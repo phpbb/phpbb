@@ -39,7 +39,7 @@ require('pagestart.' . $phpEx);
 //
 if ( !$acl->get_acl_admin() )
 {
-	message_die(MESSAGE, 'No_admin');
+	message_die(MESSAGE, 'No_admin', '', true);
 }
 
 //

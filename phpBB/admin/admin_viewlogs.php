@@ -196,7 +196,7 @@ else
 {
 ?>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['No_entries']; ?></td>
+		<td class="row1" colspan="5" nowrap="nowrap"><?php echo $lang['No_entries']; ?></td>
 	</tr>
 <?php
 }
