@@ -105,8 +105,16 @@
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
+			<!-- IF postrow.S_POST_REPORTED -->
 			<tr>
-				<td colspan="2"><span class="postbody">{postrow.MESSAGE}{postrow.SIGNATURE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
+				<td colspan="2" class="gen"><a href="{postrow.U_MCP_REPORT}">{L_POST_BEEN_REPORTED}</a></td>
+			</tr>
+			<tr>
+				<td colspan="2"><hr /></td>
+			</tr>
+			<!-- ENDIF -->			
+			<tr>
+				<td><span class="postbody">{postrow.MESSAGE}{postrow.SIGNATURE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -126,7 +134,7 @@
 		document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
 
 				//--></script><noscript>{postrow.ICQ_IMG}</noscript></td>
-				<td width="100%" align="right" nowrap="nowrap"><!-- span class="gensmall">{postrow.RATING}</span -->&nbsp;</td>
+				<td width="100%" align="right" nowrap="nowrap"><!-- span class="gensmall">{postrow.RATING}</span --><span class="gensmall">[ <a href="{postrow.U_REPORT}">{L_REPORT_TO_ADMIN}</a> ]</span>&nbsp;</td>
 			</tr>
 		</table></td>
 	<!-- ENDIF -->

@@ -1,0 +1,54 @@
+<!-- INCLUDE overall_header.html -->
+
+<form action="{S_POST_ACTION}" method="post">
+
+{ERROR_BOX}
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" width="100%" align="left" valign="middle">&nbsp; &nbsp;<a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+	</tr>
+</table>
+
+<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+	<tr>
+		<th colspan="2" height="25">&nbsp;{L_REPORT_TO_ADMIN}&nbsp;</th>
+	</tr>
+	<tr>
+		<td class="row2" colspan="2" align="center"><span class="gen">&nbsp;{L_REPORT_TO_ADMIN_EXPLAIN}&nbsp;</span></td>
+	</tr>
+	<tr>
+		<td class="row1" width="22%"><span class="gen"><b>{L_REASON}</b></span></td>
+		<td class="row2" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}">{reason.DESCRIPTION}</option><!-- END reason --></select></td>
+	</tr>
+	<tr>
+		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span></td>
+		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
+			<tr> 
+				<td><input type="checkbox" name="notify" /></td>
+				<td><span class="gen">{L_REPORT_NOTIFY}</span></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row1" valign="top"><span class="gen"><b>{L_ADDITIONAL_INFOS}</b></span><br /><span class="gensmall">{L_CAN_BE_LEFT_BLANK}</span></td>
+		<td class="row2"><span class="gen"><textarea name="description" rows="25" cols="40" wrap="virtual" style="width:500px" class="post">{MESSAGE}</textarea></span></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center" height="28"><input type="submit" name="submit" class="mainoption" value="{L_REPORT_TO_ADMIN}" />&nbsp;<input type="submit" name="cancel" class="liteoption" value="{L_CANCEL}"></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+	<tr>
+		<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
+	</tr>
+</table></form>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+	<tr>
+		<td valign="top" align="right">{JUMPBOX}</td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->

@@ -29,7 +29,7 @@
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang = array_merge($lang, array(
+$lang = array(
 	'ENCODING'		=> 'iso-8859-15',
 	'DIRECTION'		=> 'ltr',
 	'LEFT'			=> 'left',
@@ -70,8 +70,6 @@ $lang = array_merge($lang, array(
 
 	'GO' => 'Go',
 	'JUMP_TO' => 'Jump to',
-	'SEARCH_FOR' => 'Search for', 
-
 	'SUBMIT' => 'Submit',
 	'RESET' => 'Reset',
 	'CANCEL' => 'Cancel',
@@ -83,6 +81,7 @@ $lang = array_merge($lang, array(
 	'NO' => 'No',
 	'ENABLED' => 'Enabled',
 	'DISABLED' => 'Disabled',
+	'SELECT' =>	'Select',
 	'ERROR' => 'Error',
 	'NEXT' => 'Next',
 	'PREVIOUS' => 'Previous',
@@ -281,6 +280,8 @@ $lang = array_merge($lang, array(
 	'VIEW_IP' => 'IP',
 	'DELETE_POST' => 'Delete',
 	'DELETE_POST_WARN' => 'Once deleted the post cannot be recovered',
+	'REPORT_TO_ADMIN' => 'Report this post',
+	'POST_BEEN_REPORTED' => 'This post has been reported',
 	'wrote' => 'wrote',
 	'Quote' => 'Quote',
 	'Code' => 'Code',
@@ -784,43 +785,6 @@ $lang = array_merge($lang, array(
 	'Viewing_priv_msgs' => 'Viewing Private Messages',
 	'Viewing_FAQ' => 'Viewing FAQ', 
 
-
-	'MOD_CP' => 'Moderator Control Panel',
-	'MOD_CP_EXPLAIN' => 'Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics.',
-	'SELECT' => 'Select',
-	'MOVE' => 'Move',
-	'LOCK' => 'Lock',
-	'UNLOCK' => 'Unlock',
-	'Topics_Removed' => 'The selected topics have been successfully removed from the database.',
-	'Topics_Locked' => 'The selected topics have been locked',
-	'Topics_Moved' => 'The selected topics have been moved',
-	'Topics_Unlocked' => 'The selected topics have been unlocked',
-	'No_Topics_Moved' => 'No topics were moved',
-	'Confirm_delete_topic' => 'Are you sure you want to remove the selected topic/s?',
-	'Confirm_lock_topic' => 'Are you sure you want to lock the selected topic/s?',
-	'Confirm_unlock_topic' => 'Are you sure you want to unlock the selected topic/s?',
-	'Confirm_move_topic' => 'Are you sure you want to move the selected topic/s?',
-	'Move_to_forum' => 'Move to forum',
-	'Leave_shadow_topic' => 'Leave shadow topic in old forum.',
-	'Split_Topic' => 'Split Topic Control Panel',
-	'Split_Topic_explain' => 'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post',
-	'Split_title' => 'New topic title',
-	'Split_forum' => 'Forum for new topic',
-	'Split_posts' => 'Split selected posts',
-	'Split_after' => 'Split from selected post',
-	'Topic_split' => 'The selected topic has been split successfully',
-	'Too_many_error' => 'You have selected too many posts. You can only select one post to split a topic after!',
-	'None_selected' => 'You have no selected any topics to preform this operation on. Please go back and select at least one.',
-	'New_forum' => 'New forum',
-	'This_posts_IP' => 'IP for this post',
-	'Other_IP_this_user' => 'Other IP\'s this user has posted from',
-	'Users_this_IP' => 'Users posting from this IP',
-	'IP_info' => 'IP Information',
-	'Lookup_IP' => 'Look up IP', 
-
-	'logm_lock' => 'Locked following topic/s => %s', 
-
-
 	'All_times' => 'All times are %s %s',
 	'-13'	=> 'GMT - 13 Hours',
 	'-12'	=> 'GMT - 12 Hours',
@@ -943,5 +907,5 @@ $lang = array_merge($lang, array(
 	'Critical_Error' => 'Critical Error',
 	'An_error_occured' => 'An Error Occurred',
 	'A_critical_error' => 'A Critical Error Occurred'
-));
+);
 ?>

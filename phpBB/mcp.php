@@ -57,6 +57,16 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
+
+/**
+$sql = 'SELECT auth_option_id, auth_value FROM phpbb_auth_options';
+$result = $db->sql_query($sql);
+while ($row=$db->sql_fetchrow($result))
+{
+	echo "$row[auth_option_id] $row[auth_value] => " . $auth->acl_get($row['auth_value'], 2) . "<br/>";
+}
+/**/
+
 // temp temp temp
 very_temporary_lang_strings();
 // temp temp temp
@@ -69,17 +79,18 @@ $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : '';
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : '';
 $start = (!empty($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
 
+
 //
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
 //
 if (isset($_POST['cancel']))
 {
-	if ($topic_id)
+	if ($topic_id > 0)
 	{
 		$redirect = "viewtopic.$phpEx$SID&t=$topic_id&amp;start=$start";
 	}
-	elseif ($forum_id)
+	elseif ($forum_id > 0)
 	{
 		$redirect = "viewforum.$phpEx$SID&f=$forum_id&amp;start=$start";
 	}
@@ -116,6 +127,22 @@ foreach ($post_modes as $post_mode)
 	}
 }
 
+// Cleanse inputted values
+foreach ($_POST['topic_id_list'] as $t_id)
+{
+	if ($t_id = intval($t_id))
+	{
+		$topic_id_list[] = $t_id;
+	}
+}
+foreach ($_POST['post_id_list'] as $p_id)
+{
+	if ($p_id = intval($p_id))
+	{
+		$post_id_list[] = $p_id;
+	}
+}
+
 // Build short_id_list and $return string
 $selected_post_ids = array();
 if (!empty($_GET['post_id_list']))
@@ -128,7 +155,7 @@ if (!empty($_GET['post_id_list']))
 		$post_id_list[] = base_convert($short, 36, 10);
 	}
 }
-$url_extra = (!empty($selected_post_ids)) ? '&amp;post_id_list=' . short_id_list($selected_post_ids) : '';
+$url_extra = (!empty($post_id_list)) ? '&amp;post_id_list=' . short_id_list($post_id_list ) : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 // Build up return links and acl list
@@ -208,26 +235,9 @@ if ($to_forum_id > 0)
 	}
 }
 
-// Cleanse inputted values then get permissions
-foreach ($_POST['topic_id_list'] as $t_id)
-{
-	if ($t_id = intval($t_id))
-	{
-		$topic_id_list[] = $t_id;
-	}
-}
-foreach ($_POST['post_id_list'] as $p_id)
-{
-	if ($p_id = intval($p_id))
-	{
-		$post_id_list[] = $p_id;
-	}
-}
-
+// Reset id lists then rebuild them from verified data
 $topic_id_sql = implode(', ', array_unique($topic_id_list));
 $post_id_sql = implode(', ', array_unique($post_id_list));
-
-// Reset id lists then rebuild them
 $forum_id_list = $topic_id_list = $post_id_list = array();
 $not_moderator = FALSE;
 
@@ -334,7 +344,7 @@ else
 {
 	// There's no forums list available so the user either submitted an empty or invalid list of posts/topics or isn't a moderator
 
-	if ($not_moderator)
+	if ($not_moderator || !$auth->acl_gets('m_', 'a_'))
 	{
 		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Not_Moderator');
 	}
@@ -344,7 +354,7 @@ else
 		if (!in_array($mode, $forumless_modes))
 		{
 			// The user has submitted invalid post_ids or topic_ids
-			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Topic_post_not_exist'] . $return_mcp);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['TOPIC_NOT_EXIST'] . $return_mcp);
 		}
 	}
 }
@@ -365,8 +375,8 @@ else
 $mcp_url = "mcp.$phpEx$SID";
 $tabs = array(
 	'front'			=>	$mcp_url,
-	'mod_queue'		=>	$mcp_url . '&amp;mode=mod_queue',
-	'post_reports'	=>	$mcp_url . '&amp;mode=post_reports'
+	'mod_queue'		=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=mod_queue',
+	'post_reports'	=>	$mcp_url . '&amp;f=' . $forum_id . '&amp;mode=post_reports'
 );
 
 $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
@@ -377,7 +387,7 @@ $return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . 
 
 if ($forum_id)
 {
-	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view' . $url_extra;
+	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view';
 }
 if ($topic_id)
 {
@@ -385,7 +395,7 @@ if ($topic_id)
 }
 if ($post_id)
 {
-	$tabs['post_details'] = $mcp_url . '&amp;mode=post_details' . $url_extra;
+	$tabs['post_details'] = $mcp_url . '&amp;mode=post_details';
 }
 if (!$forum_info['forum_postable'])
 {
@@ -421,9 +431,16 @@ if (!$mode)
 
 switch ($mode)
 {
+	case 'select_topic':
+		if ($url_extra)
+		{
+			$tabs['merge'] = $mcp_url . '&amp;mode=merge' . $url_extra;
+		}
+	break;
+
 	case 'merge':
 	case 'split':
-		$tabs[$mode] = $mcp_url . '&amp=' . $mode;
+		$tabs[$mode] = $mcp_url . '&amp;=' . $mode . $url_extra;
 	break;
 }
 // Get the current tab from the mode
@@ -537,7 +554,7 @@ switch ($mode)
 			'L_YES' => $user->lang['YES'],
 			'L_NO' => $user->lang['NO'],
 
-			'S_CONFIRM_ACTION' => $mcp_url . '&amp;mode=delete_posts',
+			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete_posts",
 			'S_HIDDEN_FIELDS' => $hidden_fields
 		));
 	break;
@@ -587,14 +604,9 @@ switch ($mode)
 			'L_YES' => $user->lang['YES'],
 			'L_NO' => $user->lang['NO'],
 
-			'S_CONFIRM_ACTION' => $mcp_url . '&amp;mode=delete' . (($quickmod) ? '&amp;quickmod=1' : ''),
+			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete" . (($quickmod) ? '&amp;quickmod=1' : ''),
 			'S_HIDDEN_FIELDS' => $hidden_fields
 		));
-	break;
-
-	case 'select_topic':
-		$post_id_str = short_id_list($post_id_list);
-		redirect(str_replace('&amp;', '&', $mcp_url) . '&mode=forum_view&post_id_list=' . $post_id_str);
 	break;
 
 	case 'merge':
@@ -605,13 +617,14 @@ switch ($mode)
 
 		$posts_per_page = (isset($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : $config['posts_per_page'];
 
+/*
 		// Temp fix for merge: display all posts after the topic has been selected to avoid any confusion
 		if ($to_topic_id)
 		{
 			$sort_days = 0;
 			$posts_per_page = 0;
 		}
-
+*/
 
 		// Following section altered for consistency with viewforum, viewtopic, etc.
 		// Post ordering options
@@ -688,13 +701,11 @@ switch ($mode)
 				'POST_ID'			=>	$row['post_id'],
 
 				'S_CHECKBOX'		=>	$s_checkbox,
-				'ROW_CLASS'			=>	($i % 2) ? 'row2' : 'row1',
+				'S_ROW_COUNT'		=>	$i++,
 				'S_DISPLAY_MODES'	=>	($i % 10 == 0) ? TRUE : FALSE,
 				
 				'U_POST_DETAILS'	=>	$mcp_url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details'
 			));
-
-			++$i;
 		}
 
 		if ($mode == 'topic_view' || $mode == 'split')
@@ -733,8 +744,8 @@ switch ($mode)
 
 			'POSTS_PER_PAGE'	=>	$posts_per_page,
 
-			'S_FORM_ACTION'		=>	$mcp_url . '&amp;mode=' . $mode,
-			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select() . '</select>',
+			'S_FORM_ACTION'		=>	"mcp.$phpEx$SID&amp;mode=$mode&amp;t=$topic_id&amp;start=$start",
+			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select($to_forum_id) . '</select>',
 			'S_CAN_SPLIT'		=>	($auth->acl_gets('m_split', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
 			'S_CAN_MERGE'		=>	($auth->acl_gets('m_merge', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
 			'S_CAN_DELETE'		=>	($auth->acl_gets('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
@@ -743,7 +754,7 @@ switch ($mode)
 			'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
 			'S_SELECT_SORT_KEY' =>	$s_sort_key,
 			'S_SELECT_SORT_DAYS'=>	$s_limit_days,
-			'PAGINATION'		=>	(!$posts_per_page) ? '' : generate_pagination("$mcp_url&amp;mode=$mode&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total_posts, $posts_per_page, $start)
+			'PAGINATION'		=>	(!$posts_per_page) ? '' : generate_pagination("mcp.$phpEx$SID&amp;t=$topic_id&amp;mode=$mode&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total_posts, $posts_per_page, $start)
 		));
 	break;
 
@@ -753,7 +764,7 @@ switch ($mode)
 		$template->assign_vars(array(
 			'FORUM_NAME'		=>	$forum_info['forum_name'],
 			'U_VIEW_FORUM'		=>	"viewforum.$phpEx$SID&amp;f=$forum_id",
-			'S_FORM_ACTION'		=>	$mcp_url
+			'S_FORM_ACTION'		=>	"mcp.$phpEx$SID"
 		));
 
 		$sql = 'SELECT u.username, p.*
@@ -899,23 +910,60 @@ switch ($mode)
 
 		if (!$subject)
 		{
-			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Empty_subject'] . $return_split);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['EMPTY_SUBJECT'] . $return_split);
 		}
-		if (!$to_forum_id)
+		if ($to_forum_id <= 0)
 		{
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['SELECT_DESTINATION_FORUM'] . $return_split);
 		}
 
 		if ($mode == 'split_beyond')
 		{
-			// TODO: this method only works when posts are displayed in chronological order
+			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
+			$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+			$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
+			$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
+			$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
+			$s_limit_days = $s_sort_key = $s_sort_dir = '';
+			gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+
+			if ($sort_days)
+			{
+				$min_post_time = time() - ($sort_days * 86400);
+
+				$sql = 'SELECT COUNT(post_id) AS num_posts
+					FROM ' . POSTS_TABLE . "
+					WHERE topic_id = $topic_id
+						AND post_time >= $min_post_time";
+				$result = $db->sql_query($sql);
+
+				$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
+				$limit_posts_time = "AND p.post_time >= $min_post_time ";
+			}
+			else
+			{
+				$limit_posts_time = '';
+				$total_posts = $topic_info['topic_replies'] + 1;
+			}
+
+			$sql = 'SELECT p.post_id
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+				WHERE p.topic_id = $topic_id
+					AND p.poster_id = u.user_id
+					$limit_posts_time
+				ORDER BY $sort_order
+				LIMIT $start, -1";
+			$result = $db->sql_query($sql);
+
+/*
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
 					AND post_id >= $post_id";
 			$result = $db->sql_query($sql);
-
+*/
 			$post_id_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -928,6 +976,7 @@ switch ($mode)
 			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected'] . $return_split);
 		}
 
+/*
 		$icon_id = (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, icon_id, topic_approved)
 			VALUES ($to_forum_id, '" . $db->sql_escape($subject) . "', $icon_id, 1)";
@@ -935,6 +984,7 @@ switch ($mode)
 
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
+*/
 
 		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
 		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
@@ -1032,21 +1082,27 @@ switch ($mode)
 		$db->sql_freeresult($result);
 	break;
 
+
+	case 'select_topic':
+/*		$post_id_str = short_id_list($post_id_list);
+		redirect(str_replace('&amp;', '&', $mcp_url) . '&mode=forum_view&post_id_list=' . $post_id_str);
+	break;
+*/
+
 	case 'forum_view':
 		mcp_header('mcp_forum.html', TRUE);
 
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_info['forum_name'],
 
-			'S_CAN_DELETE'	=>	$auth->acl_get('m_delete', $forum_id),
-			'S_CAN_MOVE'	=>	$auth->acl_get('m_move', $forum_id),
-			'S_CAN_LOCK'	=>	$auth->acl_get('m_lock', $forum_id),
-			'S_CAN_UNLOCK'	=>	$auth->acl_get('m_unlock', $forum_id),
-			'S_CAN_RESYNC'	=>	$auth->acl_gets('m_', 'a_', $forum_id),
+			'S_CAN_DELETE'	=>	$auth->acl_gets('a_', 'm_delete', $forum_id),
+			'S_CAN_MOVE'	=>	$auth->acl_gets('a_', 'm_move', $forum_id),
+			'S_CAN_LOCK'	=>	$auth->acl_gets('a_', 'm_lock', $forum_id),
+			'S_CAN_RESYNC'	=>	$auth->acl_gets('a_', 'm_', $forum_id),
 
-			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
-			'S_HIDDEN_FIELDS' => '<input type="hidden" name="f" value="' . $forum_id . '">',
-			'S_MCP_ACTION' => $mcp_url
+			'U_VIEW_FORUM'		=>	"viewforum.$phpEx$SID&amp;f=$forum_id",
+			'S_HIDDEN_FIELDS'	=>	'<input type="hidden" name="f" value="' . $forum_id . '">',
+			'S_MCP_ACTION'		=>	"mcp.$phpEx$SID"
 		));
 
 		// Define censored word matches
@@ -1116,17 +1172,17 @@ switch ($mode)
 			}
 
 			$template->assign_block_vars('topicrow', array(
-				'U_VIEW_TOPIC' => $mcp_url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
+				'U_VIEW_TOPIC'		=>	$mcp_url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
 
-				'S_SELECT_TOPIC'	=>	($topic_id && isset($_GET['post_id_list']) && $row['topic_id'] != $topic_id) ? TRUE : FALSE,
+				'S_SELECT_TOPIC'	=>	($mode == 'select_topic' && $row['topic_id'] != $topic_id) ? TRUE : FALSE,
 				'U_SELECT_TOPIC'	=>	$mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $url_extra,
 
-				'TOPIC_FOLDER_IMG' => $folder_img,
-				'TOPIC_TYPE' => $topic_type,
-				'TOPIC_TITLE' => $topic_title,
-				'REPLIES' => $row['topic_replies'],
-				'LAST_POST_TIME' => $user->format_date($row['topic_last_post_time']),
-				'TOPIC_ID' => $row['topic_id']
+				'TOPIC_FOLDER_IMG'	=>	$folder_img,
+				'TOPIC_TYPE'		=>	$topic_type,
+				'TOPIC_TITLE'		=>	$topic_title,
+				'REPLIES'			=>	$row['topic_replies'],
+				'LAST_POST_TIME'	=>	$user->format_date($row['topic_last_post_time']),
+				'TOPIC_ID'			=>	$row['topic_id']
 			));
 		}
 		$db->sql_freeresult($result);
@@ -1736,12 +1792,12 @@ function short_id_list($id_list)
 
 	foreach ($id_list as $id)
 	{
-		$short = base_convert($id, 10, 36);
+		$short = (string) base_convert($id, 10, 36);
 		$max_len = max(strlen($short), $max_len);
 		$short_id_list[] = $short;
 	}
 
-	$id_str = $max_len;
+	$id_str = (string) $max_len;
 	foreach ($short_id_list as $short)
 	{
 		$id_str .= str_pad($short, $max_len, '0', STR_PAD_LEFT);
@@ -1763,7 +1819,7 @@ function very_temporary_lang_strings()
 		'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
 		'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
 		'FORUM_NOT_EXIST'			=>	'The forum you selected does not exist',
-		'Topic_not_exist'			=>	'The topic you selected does not exist',
+		'TOPIC_NOT_EXIST'			=>	'The topic you selected does not exist',
 		'Posts_merged'				=>	'The selected posts have been merged',
 		'SELECT_TOPIC'				=>	'Select topic',
 		'Topic_number_is'			=>	'Topic #%d is %s',
@@ -1797,6 +1853,9 @@ function very_temporary_lang_strings()
 		'SPLIT_AFTER'				=>	'Split from selected post',
 
 		'DELETE_POSTS'				=>	'Delete posts',
+		'MOVE'						=>	'Move',
+		'LOCK'						=>	'Lock',
+		'UNLOCK'					=>	'Unlock',
 
 		'NOT_ALLOWED'				=>	'You are not allowed to perform this action.'
 	);
@@ -1814,5 +1873,34 @@ function very_temporary_lang_strings()
 		'merge'				=>	'Merge topic',
 		'split'				=>	'Split topic'
 	);
+
+	$user->lang['report_reasons'] = array(
+		'warez'				=>	'The post contains links to illegal or pirated software',
+		'sex'				=>	'The post contains nudity or something similar',
+		'off_topic'			=>	'Typically any of Pit\'t or TC\'s posts ^ ^'
+	);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ?>
