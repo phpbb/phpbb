@@ -492,8 +492,7 @@ class ucp_profile extends module
 					if (!sizeof($error))
 					{
 						$data['user_id'] = $user->data['user_id'];
-
-						if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+						if ( (!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
 						{
 							list($type, $filename, $width, $height) = avatar_upload($data, $error);
 						}

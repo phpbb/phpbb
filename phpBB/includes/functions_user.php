@@ -883,12 +883,12 @@ function avatar_remote($data, &$error)
 {
 	global $config, $db, $user, $phpbb_root_path;
 
-	if (!preg_match('#^(http[s]*?)|(ftp)://#i', $data['remotelink']))
+	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
 	{
 		$data['remotelink'] = 'http://' . $data['remotelink'];
 	}
 
-	if (!preg_match('#^(http[s]?)|(ftp)://(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}:?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
+	if (!preg_match('#^(http|https|ftp)://(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}:?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
 	{
 		$error[] = $user->lang['AVATAR_URL_INVALID'];
 		return false;
@@ -922,12 +922,19 @@ function avatar_upload($data, &$error)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
-	if (!empty($_FILES['uploadfile']['tmp_name']))
+	if (!empty($_FILES['uploadfile']['name']))
 	{
 		$filename = $_FILES['uploadfile']['tmp_name'];
 		$filesize = $_FILES['uploadfile']['size'];
 		$realname = $_FILES['uploadfile']['name'];
 
+		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
+		if ($filesize > $config['avatar_filesize'] || $filesize == 0)
+		{
+			$error[] = sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
+			return false;
+		}
+		
 		if (file_exists($filename) && preg_match('#^(.*?)\.(jpg|jpeg|gif|png)$#i', $realname, $match))
 		{
 			$realname = $match[1];
@@ -978,7 +985,8 @@ function avatar_upload($data, &$error)
 
 		if (empty($avatar_data))
 		{
-			$error[] = $user->lang['AVATAR_NOT_UPLOADED'];
+// TODO: The above code to fetch images doesn't work with quite a few servers. This part needs some changes..
+			$error[] = $user->lang['AVATAR_NOT_UPLOADED'] . '<br />Please try uploading the file manually.';
 			return false;
 		}
 		unset($url_ary);
