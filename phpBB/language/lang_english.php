@@ -150,6 +150,7 @@ $lang['theforums'] = "the forums";
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
 $lang['Topic_is_locked'] = "Topic is locked";
+$lang['Forum_is_locked'] = "Forum is locked";
 $lang['Joined'] = "Joined";
 
 //
@@ -244,7 +245,8 @@ $lang['Flood_Error'] = "Your last post was less then " . $board_config['flood_in
 $lang['Sorry_edit_own_posts'] = "Sorry but you can only edit your own posts";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
-$lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
+$lang['Announce_and_sticky'] = "You cannot post a topic that is both an announcement and a sticky topic";
+$lang['Forum_locked'] = "This forum is locked you cannot post, reply to or edit topics";
 $lang['Topic_locked'] = "This topic is locked you cannot edit posts or make replies";
 $lang['No_post_id'] = "You must select a post to edit";
 $lang['No_topic_id'] = "You must select a topic to reply to";

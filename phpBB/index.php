@@ -202,6 +202,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"NEWEST_UID" => $newest_uid,
 		"USERS_BROWSING" => $users_browsing,
 
+		"L_FORUM_LOCKED" => $lang['Forum_is_locked'], 
+
 		"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$newest_uid"))
 	);
 

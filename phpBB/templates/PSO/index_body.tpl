@@ -1,8 +1,9 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
+
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
 <table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
@@ -31,14 +32,14 @@
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
-				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></span></td>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_PRIVATEMSGS}">{L_PRIVATEMSGS}</a></b></span></td>
 			</tr>
 			<tr>
 				<td class="row1" width="7%" align="center" valign="middle"><img src="images/mailbox.gif"></td>
 				<td class="row2" colspan="5" align="left"><span class="gen">{L_PRIVATE_MESSAGE_INFO}</span></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">Who is Online</a></b></span></td>
+				<td class="cat" colspan="6"><span class="cattitle"><b><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></b></span></td>
 			</tr>
 			<tr>
 				<td class="row1" width="7%" align="center" valign="middle"><img src="images/whosonline.gif"></td>
@@ -57,6 +58,9 @@
 				<td>&nbsp;&nbsp;</td>
 				<td width="30" align="center"><img src="images/folder.gif"></td>
 				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="30" align="center"><img src="images/folder_lock.gif"></td>
+				<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
 			</tr>
 		</table></td>
 		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
