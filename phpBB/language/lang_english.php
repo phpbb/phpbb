@@ -425,4 +425,9 @@ $l_passexplain	= "Please fill out the form, a new password will be sent to your 
 $l_sendpass	= "Send Password";
 
 
+
+// Full page login
+$l_autologin = "Log me on automatically each visit";
+$l_resend_password = "I have forgotten my password";
+
 ?>
