@@ -69,6 +69,7 @@ switch( $mode )
 	
 		if( isset($install_to) )
 		{
+
 			include($phpbb_root_dir . "templates/" . $install_to . "/theme_info.cfg");
 
 			$template_name = $$install_to;
@@ -374,6 +375,21 @@ switch( $mode )
 			}
 			else
 			{
+				//
+				// First, check if we already have a style by this name
+				//
+				$sql = "SELECT themes_id FROM " . THEMES_TABLE . " WHERE style_name = '" . $updated['style_name'] . "'";
+				
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Could not query themes table", "Error", __LINE__, __FILE__, $sql);
+				}
+				
+				if($db->sql_numrows($result))
+				{
+					message_die(GENERAL_ERROR, $lang['Style_exists'], $lang['Error']);
+				}				
+				
 				while(list($key, $val) = each($updated))
 				{
 					$field_names[] = $key;

@@ -579,6 +579,7 @@ $lang['Download_theme_cfg'] = "The exporter could not write the theme informatio
 $lang['No_themes'] = "The template you selected has no themes attached to it. To create a new theme click the Create New link on the left hand panel";
 $lang['No_template_dir'] = "Could not open the template directory. It may be unreadable by the webserver or may not exist";
 $lang['Cannot_remove_style'] = "You cannot remove the style selected since it is currently the forum default. Please change the default style and try again.";
+$lang['Style_exists'] = "The style name to selected already exists, please go back and choose a different name.";
 
 $lang['Click_return_styleadmin'] = "Click %sHere%s to return to Style Administration";
 
