@@ -41,8 +41,7 @@ class sql_db
 	//
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
 	{
-
-		if(eregi("^([[:alnum:]]+):([[:alnum:]]+)$", $sqlserver, $db_type))
+		if( preg_match("/^(.*?):(.*?)$/i", $sqlserver, $db_type) )
 		{
 			$this->persistency = $persistency;
 			$this->user = $sqluser;

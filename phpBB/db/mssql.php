@@ -243,6 +243,7 @@ class sql_db
 			if($transaction == END_TRANSACTION)
 			{
 				$result = mssql_query("COMMIT", $this->db_connect_id);
+				$this->in_transaction = FALSE;
 			}
 
 			return $this->query_result;
