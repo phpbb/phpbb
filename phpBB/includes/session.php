@@ -19,6 +19,7 @@ class session
 	var $ip = '';
 	var $page = '';
 	var $cur_page = '';
+	var $current_page_filename = '';
 	var $load;
 
 	// Called at each page start ... checks for, updates and/or creates a session
@@ -30,11 +31,20 @@ class session
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
 
-		// Generate Valid URL
-		$this->cur_page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1.' . $phpEx . '?\2', str_replace('&amp;', '&', htmlspecialchars($this->page)));
-
-		$this->page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1\2', $this->page);
+		$split_page = array();
+		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', $this->page, $split_page, PREG_SET_ORDER);
+		
+		// Page for session_page value
+		$this->page = $split_page[0][1] . ((isset($split_page[0][2])) ? $split_page[0][2] : '');
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
+
+		// Current page correctly formatted for (login) redirects
+		$this->cur_page = str_replace('&amp;', '&', htmlspecialchars($split_page[0][1] . '.' . $phpEx . ((isset($split_page[0][2])) ? '?' . $split_page[0][2] : '')));
+
+		// Current page filename for use in template (index, viewtopic, viewforum...)
+		$this->current_page_filename = $split_page[0][1];
+
+		unset($split_page);
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
