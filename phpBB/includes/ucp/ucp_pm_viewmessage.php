@@ -112,10 +112,15 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Assign inline attachments
-	if (sizeof($attachments))
+	if (isset($attachments) && sizeof($attachments))
 	{
-		// preg_replace_callback does not work here because of inability to correctly assign globals (seems to be a bug in some PHP versions)
-		process_inline_attachments($message, $attachments, $update_count);
+		$unset_attachments = parse_inline_attachments($message, $attachments, $update_count, 0);
+
+		// Needed to let not display the inlined attachments at the end of the message again
+		foreach ($unset_attachments as $index)
+		{
+			unset($attachments[$index]);
+		}
 	}
 
 	$user_info['sig'] = '';
@@ -191,12 +196,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	);
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
-	if (sizeof($attachments))
+	if (isset($attachments) && sizeof($attachments))
 	{
 		foreach ($attachments as $attachment)
 		{
 			$template->assign_block_vars('attachment', array(
-				'DISPLAY_ATTACHMENT' => $attachment)
+				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
 		}
 	}
@@ -429,39 +434,6 @@ function get_user_informations($user_id, $user_row)
 	}
 
 	return $user_row;
-}
-
-function process_inline_attachments(&$message, &$attachments, &$update_count)
-{
-	global $user, $config;
-
-	$tpl = array();
-	$tpl = display_attachments(0, NULL, $attachments, $update_count, false, true);
-	$tpl_size = sizeof($tpl);
-
-	$unset_tpl = array();
-
-	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches);
-
-	$replace = array();
-	foreach ($matches[0] as $num => $capture)
-	{
-		// Flip index if we are displaying the reverse way
-		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
-
-		$replace['from'][] = $matches[0][$index];
-		$replace['to'][] = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][$num]);
-
-		$unset_tpl[] = $index;
-	}
-	unset($tpl, $tpl_size);
-
-	$message = str_replace($replace['from'], $replace['to'], $message);
-
-	foreach (array_unique($unset_tpl) as $index)
-	{
-		unset($attachments[$index]);
-	}
 }
 
 ?>

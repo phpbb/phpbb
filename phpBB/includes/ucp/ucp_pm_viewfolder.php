@@ -149,14 +149,14 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				'FOLDER_ID' 		=> $folder_id,
 				'MESSAGE_ID'		=> $message_id,
 				'MESSAGE_AUTHOR'	=> $message_author,
-				'SENT_TIME'		 	=> $user->format_date($row['message_time'], $config['board_timezone']),
+				'SENT_TIME'		 	=> $user->format_date($row['message_time']),
 				'SUBJECT'			=> censor_text($row['message_subject']),
 				'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
 				'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? "$url&amp;folder=" . $row['folder_id'] : '',
 				'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 				'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 				'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-				'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['pm_attachments'] && $config['auth_download_pm']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['message_attachment'])) : '',
+				'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['message_attachment'])) : '',
 
 				'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
 
