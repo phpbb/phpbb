@@ -557,8 +557,8 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 	$page_title = " " . $lang['Edit_post'];
 	$section_title = $lang['Edit_post_in'];
 
-	if( ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ) 
-		&& !$error && !$preview )
+	if( ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ) && 
+		!$error && !$preview )
 	{
 		
 		$sql = "SELECT poster_id  
@@ -577,20 +577,41 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 			}
 		}
 		
-		if( ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) && ( $is_last_post || $is_auth['auth_mod'] ) )
+		if( ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) && 
+			( $is_last_post || $is_auth['auth_mod'] ) )
 		{
 			// 
-			// Output a confirmation message, unless we've
-			// over-ridden it on the posting_body form (
-			// override_confirm set ), this is so people
-			// can implement JavaScript checkers if they wish
+			// Output a confirmation message, unless we've over-ridden it on the posting_body form (
+			// override_confirm set ), this is so people can implement JavaScript checkers if they wish
 			//
-			if( isset($HTTP_POST_VARS['delete']) && !isset($HTTP_POST_VARS['override_confirm']) )
+			if( isset($HTTP_POST_VARS['delete']) && 
+				!isset($HTTP_POST_VARS['override_confirm']) && 
+				!isset($HTTP_GET_VARS['confirm']) && !isset($HTTP_POST_VARS['confirm']))
 			{
 
-				$msg = '<br />' . $lang['Confirm_delete'] . '<br /><br /><a href="' . append_sid("posting.$phpEx?mode=editpost&" . POST_TOPIC_URL . "=$topic_id&" . POST_POST_URL . "=$post_id&delete=true&confirm=true") . '">' . $lang['Yes'] . '</a> &nbsp;&nbsp;&nbsp; <a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">' . $lang['No'] . '</a><br/><br />';
+				$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_TOPIC_URL . '" value="'. $topic_id . '"><input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '"><input type="hidden" name="delete" value="true">';
 
-				message_die(GENERAL_MESSAGE, $msg);
+				//
+				// Output confirmation page
+				//
+				include('includes/page_header.'.$phpEx);
+
+				$template->set_filenames(array(
+					"confirm_body" => "confirm_body.tpl")
+				);
+				$template->assign_vars(array(
+					"MESSAGE_TITLE" => $lang['Information'],
+					"MESSAGE_TEXT" => $lang['Confirm_delete'], 
+
+					"L_YES" => $lang['Yes'], 
+					"L_NO" => $lang['No'], 
+					
+					"S_CONFIRM_ACTION" => append_sid("posting.$phpEx"), 
+					"S_HIDDEN_FIELDS" => $s_hidden_fields)
+				);
+				$template->pparse("confirm_body");
+
+				include('includes/page_tail.'.$phpEx);
 
 			}
 			else if( isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) || 
@@ -665,10 +686,9 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 					else if($is_auth['auth_mod']) 
 					{
 						//
-						// It's not last and it's not both first and last
-						// so it's somewhere in the middle(!) Only moderators
-						// can delete these posts, all we need do is update
-						// the forums table data as necessary
+						// It's not last and it's not both first and last so it's somewhere in
+						// the middle(!) Only moderators can delete these posts, all we need do
+						// is update the forums table data as necessary
 						//
 						$sql_forum_upd = "forum_posts = forum_posts - 1";
 
@@ -746,6 +766,10 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 			}
 			else
 			{
+				//
+				// No action matched so return to viewtopic, should be fine for URL based
+				// confirmations
+				//
 				header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 			}
 		}
@@ -809,6 +833,15 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
 			}
 		}
+	}
+	else if( isset($HTTP_GET_VARS['not_confirm']) || isset($HTTP_POST_VARS['not_confirm']) )
+	{
+
+		//
+		// Cancelled a confirmation, just to viewtopic
+		//
+		header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+
 	}
 	else if(!$preview)
 	{
