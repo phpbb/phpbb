@@ -509,15 +509,11 @@ class queue
 	
 		if (!sizeof($this->queue_data))
 		{
-			@flock($fp, LOCK_UN);
-			fclose($fp);
-			unlink($this->cache_file);
+			@unlink($this->cache_file);
 		}
 		else
 		{
 			$file = '<?php $this->queue_data=' . $this->format_array($this->queue_data) . '; ?>';
-			@flock($fp, LOCK_UN);
-			fclose($fp);
 
 			if ($fp = @fopen($this->cache_file, 'w'))
 			{
