@@ -581,7 +581,7 @@ function sync($type, $id)
 			
 			for($i = 0; $i < count($rowset); $i++)
 			{
-   				sync($row[$i]['forum_id'], "forum");
+   				sync("forum", $row[$i]['forum_id']);
 	   		}
 		   	break;
 
@@ -596,7 +596,7 @@ function sync($type, $id)
 
 			for($i = 0; $i < count($rowset); $i++)
 			{
-				sync($row[$i]['topic_id'], "topic");
+				sync("topic", $row[$i]['topic_id']);
 			}
 			break;
 
@@ -610,7 +610,15 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
 			}
-			$last_post = ( $row = $db->sql_fetchrow($result) ) ? $row['last_post'] : 0;
+
+			if( $row = $db->sql_fetchrow($result) )
+			{
+				$last_post = $row['last_post'];
+			}
+			else
+			{
+				$last_post = 0;
+			}
 
 			$sql = "SELECT COUNT(post_id) AS total 
 				FROM " . POSTS_TABLE . " 
@@ -647,7 +655,15 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get post ID", "Error", __LINE__, __FILE__, $sql);
 			}
-			$last_post = ( $row = $db->sql_fetchrow($result) ) ? $row['last_post'] : 0;
+
+			if( $row = $db->sql_fetchrow($result) )
+			{
+				$last_post = $row['last_post'];
+			}
+			else
+			{
+				$last_post = 0;
+			}
 
 			$sql = "SELECT COUNT(post_id) AS total 
 				FROM " . POSTS_TABLE . " 
@@ -860,4 +876,43 @@ function smiley_sort($a, $b)
 	}
 	return (strlen($a['code']) > strlen($b['code'])) ? -1 : 1;
 }
+
+//
+// Obtain list of naughty words and build preg style
+// replacement arrays for use by the calling script,
+// note that the vars are passed as references this just makes
+// it easier to return both sets of arrays
+//
+function obtain_word_list(&$orig_word, &$replacement_word)
+{
+	global $db;
+
+	//
+	// Define censored word matches
+	//
+	$sql = "SELECT word, replacement
+		FROM  " . WORDS_TABLE;
+	if( !$words_result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+	}
+	else
+	{
+		$word_list = $db->sql_fetchrowset($words_result);
+
+		$orig_word = array();
+		$replacement_word = array();
+
+		for($i = 0; $i < count($word_list); $i++)
+		{
+			$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
+
+			$orig_word[] = "/\b(" . $word . ")\b/i";
+			$replacement_word[] = $word_list[$i]['replacement'];
+		}
+	}
+
+	return(TRUE);
+}
+
 ?>
