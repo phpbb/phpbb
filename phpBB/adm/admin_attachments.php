@@ -86,7 +86,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if ($old_size != $new_size)
 			{
-				// check for similar value of old_size in Extension Groups. If so, update these values.
+				// check fir similar value of old_size in Extension Groups. If so, update these values.
 				$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
 					SET max_filesize = $new_size
 					WHERE max_filesize = $old_size";
@@ -520,32 +520,17 @@ $select_size_mode = size_select('size', $size);
 $select_quota_size_mode = size_select('quota_size', $quota_size);
 $select_pm_size_mode = size_select('pm_size', $pm_size);
 
+$s_select_mode = '<select name="mode">';
+foreach ($modes as $_mode)
+{
+	$s_select_mode .= '<option value="' . $_mode . '"' . (($mode == $_mode) ? ' selected="selected"' : '') . '>' . $user->lang['ATTACH_' . strtoupper($_mode) . '_URL'] . '</option>';
+}
+$s_select_mode .= '</select>';
 ?>
 <form name="attachments" method="post" action="admin_attachments.<?php echo "$phpEx$SID&amp;mode=$mode"; ?>">
 	<table cellspacing="1" cellpadding="0" border="0" align="center" width="99%">
 	<tr>
-		<td align="right"> &nbsp;&nbsp; 
-<?php
-	for ($i = 0; $i < count($modes); $i++)
-	{
-		if ($i != 0)
-		{
-			?> | <?php
-		}
-
-		if ($mode != $modes[$i])
-		{
-			?><a href="admin_attachments.<?php echo "$phpEx$SID&amp;mode=" . $modes[$i]; ?>"><?php
-		}
-		
-		echo $user->lang['ATTACH_' . strtoupper($modes[$i]) . '_URL'];
-		
-		if ($mode != $modes[$i])
-		{
-			?></a><?php
-		}
-	}
-?>		</td>
+		<td align="right"><?php echo $s_select_mode; ?> &nbsp; <input type="submit" name="select_mode" class="btnlite" value="<?php echo $user->lang['SELECT']; ?>" /></td>
 	</tr>
 	</table>
 <?php

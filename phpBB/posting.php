@@ -159,7 +159,7 @@ if ($sql)
 		$db->sql_freeresult($result);
 	}
 
-	$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
+	$message_parser = new parse_message(0);
 
 
 	$message_parser->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
@@ -241,14 +241,13 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 		FROM ' . TOPICS_WATCH_TABLE . '
 		WHERE topic_id = ' . $topic_id . '
 			AND user_id = ' . $user->data['user_id'];
-	$result = $db->sql_query($sql);
-
+	$result = $db->sql_query_limit($sql, 1);
 	$notify_set = ($db->sql_fetchrow($result)) ? 1 : 0;
 	$db->sql_freeresult($result);
 }
 else
 {
-	$notify_set = -1;
+	$notify_set = 0;
 }
 
 
@@ -414,7 +413,7 @@ else if ($mode == 'bump')
 	
 	markread('post', $forum_id, $topic_id, $current_time);
 
-	add_log('mod', $forum_id, $topic_id, 'LOGM_BUMP');
+	add_log('mod', $forum_id, $topic_id, sprintf('LOGM_BUMP', $topic_title));
 
 	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id");
 
@@ -503,7 +502,6 @@ if ($submit || $preview || $refresh)
 	$post_lock			= (isset($_POST['lock_post'])) ? TRUE : FALSE;
 
 	$poll_delete		= (isset($_POST['poll_delete'])) ? TRUE : FALSE;
-
 
 	// Faster than crc32
 	$check_value	= (($preview || $refresh) && isset($_POST['status_switch'])) ? (int) $_POST['status_switch'] : (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
@@ -634,7 +632,7 @@ if ($submit || $preview || $refresh)
 	$poll_title = $poll['poll_title'];
 
 	// Check topic type
-	if ($topic_type != POST_NORMAL)
+	if ($topic_type != POST_NORMAL && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
 	{
 		switch ($topic_type)
 		{
@@ -651,7 +649,7 @@ if ($submit || $preview || $refresh)
 
 		if (!$auth->acl_get($auth_option, $forum_id))
 		{
-			$error[] = $user->lang['CANNOT_POST_' . strtoupper($auth_option)];
+			$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
 		}
 	}
 
@@ -938,7 +936,7 @@ $bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_
 $smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->optionget('smile') : 1);
 $urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked		= $enable_sig;
-$notify_checked		= (isset($notify)) ? $notify : (($notify_set == -1) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : $notify_set);
+$notify_checked		= (isset($notify)) ? $notify : ((!$notify_set) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : 1);
 $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_edit_locked;
 
@@ -1321,7 +1319,10 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		}
 		unset($email_list_ary);
 
-		$messenger->queue->save();
+		if (!empty($messenger->queue))
+		{
+			$messenger->queue->save();
+		}
 	}
 
 	// Handle the DB updates
@@ -2081,13 +2082,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$db->sql_transaction('commit');
 	
 	// Topic Notification
-	if (($data['notify_set'] == 0 || $data['notify_set'] == -1) && $data['notify'])
+	if (!$data['notify_set'] && $data['notify'])
 	{
 		$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
 			VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
 		$db->sql_query($sql);
 	}
-	else if ($data['notify_set'] == 1 && !$data['notify'])
+	else if ($data['notify_set'] && !$data['notify'])
 	{
 		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'] . '
