@@ -44,7 +44,7 @@ if( !$userdata['session_logged_in'] )
 }
 else if( $userdata['user_level'] != ADMIN )
 {
-	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 //
@@ -89,6 +89,8 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 			$row_color = "#" . ( ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2']);
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
+			$action = preg_replace("'_'", " ", $action);
+
 			$template->assign_block_vars("catrow.actionrow", array(
 				"ROW_COLOR" => $row_color, 
 				"ROW_CLASS" => $row_class, 
@@ -112,18 +114,41 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		"body" => "admin/admin_index_body.tpl")
 	);
 
+	$template->assign_vars(array(
+		"L_WELCOME" => $lang['Welcome_phpBB'], 
+		"L_ADMIN_INTRO" => $lang['Admin_intro'], 
+		"L_FORUM_STATS" => $lang['Forum_stats'], 
+		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'], 
+		"L_LOCATION" => $lang['Location'], 
+		"L_LAST_UPDATE" => $lang['Last_updated'],
+		"L_IP_ADDRESS" => $lang['IP_Address'], 
+		"L_STATISTIC" => $lang['Statistic'], 
+		"L_VALUE" => $lang['Value'], 
+		"L_NUMBER_POSTS" => $lang['Number_posts'],
+		"L_POSTS_PER_DAY" => $lang['Posts_per_day'],
+		"L_NUMBER_TOPICS" => $lang['Number_topics'],
+		"L_TOPICS_PER_DAY" => $lang['Topics_per_day'], 
+		"L_NUMBER_USERS" => $lang['Number_users'],
+		"L_USERS_PER_DAY" => $lang['Users_per_day'],
+		"L_BOARD_STARTED" => $lang['Board_started'],
+		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'], 
+		"L_DB_SIZE" => $lang['Database_size'])
+	);
+
 	//
 	// Get forum statistics
 	//
 	$total_posts = get_db_stat('postcount');
 	$total_users = get_db_stat('usercount');
 	$total_topics = get_db_stat('topiccount');
-	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['default_timezone']);
 
-	$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
 	$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
 	$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
 	$users_per_day = sprintf("%.2f", $total_users / $boarddays);
+
+	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['default_timezone']);
+
+	$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
 
 	$avatar_dir_size = 0;
 
@@ -190,7 +215,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 		$dbsize = 0;
 		for($i = 0; $i < count($tabledata_ary); $i++)
 		{
-			if($tabledata_ary[$i]['Type'] != "MRG_MyISAM")
+			if($tabledata_ary[$i]['Type'] != "MRG_MyISAM" && strstr($tabledata_ary[$i]['Name'], $table_prefix) )
 			{
 				$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
 			}
@@ -211,7 +236,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	}
 	else
 	{
-		$dbsize = "N/A";
+		$dbsize = $lang['Not_available'];
 	}
 
 	$template->assign_vars(array(
@@ -354,17 +379,12 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 				"LOGGED_ON" => $logged_on,
 				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default_timezone']),
 				"LOCATION" => $location,
-				"IPADDRESS" => $ip_address,
+				"IP_ADDRESS" => $ip_address,
 				"U_USER_PROFILE" => append_sid("admin_user.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
 				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
 	}
-	$template->assign_vars(array("L_USERNAME" => $lang['Username'],
-		"L_LOCATION" => $lang['Location'],
-		"L_LAST_UPDATE" => $lang['Last_updated'],
-		"L_IPADDRESS" => $lang['IP_Address'])
-	);
 
 	$template->pparse("body");
 
@@ -384,6 +404,9 @@ else
 		"S_FRAME_NAV" => "index.$phpEx?pane=left",
 		"S_FRAME_MAIN" => "index.$phpEx?pane=right")
 	);
+
+	header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
+	header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 	$template->pparse("body");
 	

@@ -401,7 +401,7 @@ $lang['Current_Image'] = "Current Image";
 $lang['Notify_on_privmsg'] = "Notify on Private Message";
 $lang['Hide_user'] = "Hide your online status";
 
-$lang['Profile_updated'] = "Your profile has been updated<br><br>" . $lang['Click_index'];
+$lang['Profile_updated'] = "Your profile has been updated<br /><br />" . $lang['Click_index'];
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
 $lang['Invalid_username'] = "The username you requested has been taken or disallowed";
@@ -455,7 +455,7 @@ Thank you for registering.
 "; // END
 
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
-$lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>" . $lang['Mailing_address'] . "<br>Or fax it to: <br>" . $lang['Fax_info'] . "<br> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
+$lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />" . $lang['Mailing_address'] . "<br />Or fax it to: <br />" . $lang['Fax_info'] . "<br /> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
 //
 // Memberslist
@@ -556,8 +556,8 @@ $lang['Viewing_FAQ'] = "Viewing FAQ";
 $lang['Information'] = "Information";
 $lang['Critical_Information'] = "Critical Information";
 
-$lang['You_been_banned'] = "You have been banned from this forum<br>Please contact the webmaster or board administrator for more information";
-$lang['No_topics_post_one'] = "There are no posts in this forum<br>Click on the <b>Post New Topic</b> link on this page to post one";
+$lang['You_been_banned'] = "You have been banned from this forum<br />Please contact the webmaster or board administrator for more information";
+$lang['No_topics_post_one'] = "There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one";
 $lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
 
 $lang['General_Error'] = "General Error";
@@ -565,7 +565,7 @@ $lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occured";
 $lang['A_critical_error'] = "A Critical Error Occured";
 
-$lang['Error_login'] = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again";
+$lang['Error_login'] = "Login Failed<br />You have specified an incorrect/inactive username or invalid password, please go back and try again";
 
 $lang['Not_Moderator'] = "You are not a moderator of this forum";
 $lang['Not_Authorised'] = "Not Authorised";
@@ -634,6 +634,32 @@ $lang[11] = "GMT + 11" . " " . $lang['Hours'];
 $lang[12] = "GMT + 12" . " " . $lang['Hours'];
 
 //
+// Main Admin section/s
+//
+
+// Index
+$lang['Not_admin'] = "You are not authorised to administer this board";
+$lang['Welcome_phpBB'] = "Welcome to phpBB";
+$lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
+$lang['Forum_stats'] = "Forum Statistics";
+
+$lang['Statistic'] = "Statistic";
+$lang['Value'] = "Value";
+$lang['Number_posts'] = "Number of posts";
+$lang['Posts_per_day'] = "Posts per day";
+$lang['Number_topics'] = "Number of topics";
+$lang['Topics_per_day'] = "Topics per day";
+$lang['Number_users'] = "Number of users";
+$lang['Users_per_day'] = "Users per day";
+$lang['Board_started'] = "Board started";
+$lang['Avatar_dir_size'] = "Avatar directory size";
+$lang['Database_size'] = "Database size";
+$lang['Not_available'] = "Not available";
+
+
+
+
+//
 // End
 // -------------------------------------------------
 
@@ -643,21 +669,21 @@ $lang[12] = "GMT + 12" . " " . $lang['Hours'];
 // Register
 $l_mailingaddress =
 "
-	James Atkinson<br>
-	c/o 100World.com Inc.<br>
-	512-1529 West 6th Ave.<br>
-	Vancouver BC, V6J 1R1<br>
-	Canada<br>
+	James Atkinson<br />
+	c/o 100World.com Inc.<br />
+	512-1529 West 6th Ave.<br />
+	Vancouver BC, V6J 1R1<br />
+	Canada<br />
 ";
 
 $l_faxinfo = "
 	Mark Fax with:
-  ATTN: James Atkinson<br>
-	RE: Forum Registration<br>
-	<br>
-	Fax Number: +1-604-742-1770<br>
+  ATTN: James Atkinson<br />
+	RE: Forum Registration<br />
+	<br />
+	Fax Number: +1-604-742-1770<br />
 ";
-$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>$l_mailingaddress<br>Or fax it to: <br>$l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
+$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />$l_mailingaddress<br />Or fax it to: <br />$l_faxinfo<br /> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
 $l_welcomesubj	= "Welcome to ".$board_config['sitename']." Forums";
 $l_welcomemail	= "
 $l_welcomesubj,
