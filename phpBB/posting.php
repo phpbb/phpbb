@@ -495,7 +495,7 @@ if (($submit) || ($preview) || ($refresh))
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 	}
 
-	if (($mode != 'edit') && (!$preview) && (!$refresh))
+	if (($mode != 'edit') && (!$preview) && (!$refresh) && (!$perm['f_ignoreflood']))
 	{
 		// Flood check
 		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
@@ -506,7 +506,7 @@ if (($submit) || ($preview) || ($refresh))
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']) && !$perm['f_ignoreflood'])
+			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']))
 			{
 				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['FLOOD_ERROR'];
 			}
