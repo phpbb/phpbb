@@ -73,6 +73,7 @@ define('ACL_INHERIT', 2);
 define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
 define('GROUP_HIDDEN', 2);
+define('GROUP_SPECIAL', 3);
 
 // Forum/Topic states
 define('ITEM_UNLOCKED', 0);
