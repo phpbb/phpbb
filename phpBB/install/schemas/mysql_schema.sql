@@ -52,7 +52,7 @@ CREATE TABLE phpbb_auth_prefetch (
   user_id mediumint(8) UNSIGNED NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1'
+  auth_allow_deny tinyint(4) NOT NULL default '1',
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
 );
@@ -66,7 +66,7 @@ CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1'
+  auth_allow_deny tinyint(4) NOT NULL default '1',
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
 );
