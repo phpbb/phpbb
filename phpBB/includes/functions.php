@@ -188,7 +188,7 @@ function init_userprefs($userdata)
 
 	if(!$board_config['override_user_themes'])
 	{
-		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && $userdata['user_theme'])
+		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && isset($userdata['user_theme']))
 		{
 			$theme = setuptheme($userdata['user_theme']);
 		}
@@ -201,20 +201,20 @@ function init_userprefs($userdata)
 	{
 		$theme = setuptheme($board_config['override_user_themes']);
 	}
-	if($userdata['user_lang'] != '')
+	if(!empty($userdata['user_lang']))
 	{
 		$board_config['default_lang'] = $userdata['user_lang'];
 	}
-	if($userdata['user_dateformat'])
+	if(!empty($userdata['user_dateformat']))
 	{
 		$board_config['default_dateformat'] = $userdata['user_dateformat'];
 	}
-	if($userdata['user_timezone'])
+	if(isset($userdata['user_timezone']))
 	{
 		$board_config['default_timezone'] = $userdata['user_timezone'];
 	}
 	// Setup user's Template
-	if($userdata['user_template'] != '')
+	if(!empty($userdata['user_template']))
 	{
 		$template = new Template("templates/".$userdata['user_template']);
 	}
@@ -230,7 +230,7 @@ function init_userprefs($userdata)
 	// This will be fixed by moving all $l_xxxx vars into a single
 	// $lang[''] array
 	//
-	if( file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
+	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
 	{
 		include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
 	}
