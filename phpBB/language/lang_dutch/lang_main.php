@@ -46,7 +46,6 @@ $lang['Forum'] = "Forum";
 $lang['Category'] = "Categorie";
 $lang['Topic'] = "Onderwerp";
 $lang['Topics'] = "Onderwerpen";
-$lang['Reply'] = "Beantwoorden";  // !!! REM Only needed in lang_admin.php ?
 $lang['Replies'] = "Antwoorden";
 $lang['Views'] = "Bekeken";
 $lang['Post'] = "Bericht";
@@ -69,7 +68,7 @@ $lang['3_Months'] = "3 Maanden";
 $lang['6_Months'] = "6 Maanden";
 $lang['1_Year'] = "1 Jaar";
 
-$lang['Go'] = "OK";
+$lang['Go'] = " OK ";
 $lang['Jump_to'] = "Ga naar";
 $lang['Submit'] = "OK";
 $lang['Reset'] = "Herstel";
@@ -82,8 +81,6 @@ $lang['No'] = "Nee";
 $lang['Enabled'] = "Inschakelen";
 $lang['Disabled'] = "Uitschakelen";
 $lang['Error'] = "Fout";
-$lang['Success'] = "Voltooid";  // !!! REM Not needed?
-
 $lang['Next'] = "Volgende";
 $lang['Previous'] = "Vorige";
 $lang['Goto_page'] = "Ga naar Pagina";
@@ -301,7 +298,6 @@ $lang['Confirm_delete_poll'] = "Weet je zeker dat je deze Poll wil verwijderen?"
 $lang['Flood_Error'] = "Je kan niet zo snel na je laatst geplaatste bericht een nieuwe plaatsen, probeer het later nog eens.";
 $lang['Empty_subject'] = "Je moet een titel opgeven als je een nieuw onderwerp opent.";
 $lang['Empty_message'] = "Je moet een bericht typen bij het plaatsen van een reactie.";
-$lang['Announce_and_sticky'] = "Een topic kan geen mededeling en sticky tegelijkertijd zijn."; // !!! not used
 $lang['Forum_locked'] = "Dit forum is gesloten. Het plaatsen of bewerken van berichten of onderwerpen is niet mogelijk";
 $lang['Topic_locked'] = "Dit onderwerp is gesloten. Het plaatsen of bewerken van berichten is niet mogelijk";
 $lang['No_post_id'] = "Je moet een bericht selecteren om te bewerken.";
@@ -379,7 +375,7 @@ $lang['Date'] = "Datum";
 $lang['Mark'] = "Markeer";
 $lang['Sent'] = "Verzonden";
 $lang['Saved'] = "Bewaard";
-$lang['Delete_marked'] = "Verwijder geslecteerde berichten";
+$lang['Delete_marked'] = "Verwijder geselecteerde berichten";
 $lang['Delete_all'] = "Verwijder alle berichten";
 $lang['Save_marked'] = "Bewaar geselecteerde berichten"; 
 $lang['Save_message'] = "Bewaar bericht";
@@ -713,7 +709,6 @@ $lang['You_been_banned'] = "Je bent gebanned op dit forum.<br />Neem contact op 
 //
 // Viewonline
 // !!! Overlap with Registered_users_total etc.
-$lang['Who_is_online'] = "Wie zijn er Online?"; // !!! Double
 $lang['Reg_users_online'] = "Er zijn %d geregistreerde en "; // There ae 5 Registered and // !!! no single user line?
 $lang['Hidden_users_online'] = "%d verborgen gebruikers online"; // 6 Hidden users online
 $lang['Guest_users_online'] = "Er zijn %d gasten online"; // There are 10 Guest users online
