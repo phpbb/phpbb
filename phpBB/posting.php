@@ -198,6 +198,11 @@ switch($mode)
 		$page_title = " ".$lang['Postnew'];
 		$section_title = $lang['Post_new_in'];
 
+		if($SQL_LAYER != "mysql")
+		{
+			$result = $db->sql_query("BEGIN");
+		}
+
 		if(isset($HTTP_POST_VARS['submit']) && !$error)
 		{
 			$topic_time = get_gmt_ts();
@@ -229,10 +234,19 @@ switch($mode)
 									$db->sql_query($sql);
 								}
 
+								if(SQL_LAYER != "mysql")
+								{
+									$result = $db->sql_query("COMMIT");
+									if(!$result)
+									{
+										error_die(SQL_ERROR, "Couldn't commit");
+									}
+								}
+
 								include('includes/page_header.'.$phpEx);
 								// If we get here the post has been inserted successfully.
-								$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id")."\">$l_here</a>
-   										$l_viewmsg<br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+								$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$new_post_id")."\">$l_here</a>
+   										$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
 
 								$template->set_filenames(array(
 									"reg_header" => "error_body.tpl"
@@ -246,11 +260,19 @@ switch($mode)
 							}
 							else
 							{
+								if(SQL_LAYER != "mysql")
+								{
+									$result = $db->sql_query("ROLLBACK");
+								}
 								error_die(QUERY_ERROR);
 							}
 						}
 						else
 						{
+							if(SQL_LAYER != "mysql")
+							{
+								$result = $db->sql_query("ROLLBACK");
+							}
 							if(DEBUG)
 							{
 								$error = $db->sql_error();
@@ -264,6 +286,10 @@ switch($mode)
 					}
 					else
 					{
+						if(SQL_LAYER != "mysql")
+						{
+							$result = $db->sql_query("ROLLBACK");
+						}
 						if(DEBUG)
 						{
 							$error = $db->sql_error();
@@ -277,6 +303,10 @@ switch($mode)
 				}
 				else
 				{
+					if(SQL_LAYER != "mysql")
+					{
+						$result = $db->sql_query("ROLLBACK");
+					}
 					if(DEBUG)
 					{
 						$error = $db->sql_error();
@@ -290,6 +320,10 @@ switch($mode)
 			}
 			else
 			{
+				if(SQL_LAYER != "mysql")
+				{
+					$result = $db->sql_query("ROLLBACK");
+				}
 				if(DEBUG)
 				{
 					$error = $db->sql_error();
@@ -315,6 +349,11 @@ switch($mode)
 
 		if(isset($HTTP_POST_VARS['submit']) && !$error)
 		{
+			if($SQL_LAYER != "mysql")
+			{
+				$result = $db->sql_query("BEGIN");
+			}
+
 			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
 			$topic_time = get_gmt_ts();
 
@@ -340,9 +379,19 @@ switch($mode)
 								$db->sql_query($sql);
 							}
 							include('includes/page_header.'.$phpEx);
+							//
 							// If we get here the post has been inserted successfully.
-							$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id#$new_post_id")."\">$l_here</a>
-  										$l_viewmsg<br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+							//
+							if(SQL_LAYER != "mysql")
+							{
+								$result = $db->sql_query("COMMIT");
+								if(!$result)
+								{
+									error_die(SQL_ERROR, "Couldn't commit");
+								}
+							}
+							
+							$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$new_post_id#$new_post_id")."\">$l_here</a>$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
 
 							$template->set_filenames(array(
 								"reg_header" => "error_body.tpl"
@@ -356,11 +405,19 @@ switch($mode)
 						}
 						else
 						{
+							if(SQL_LAYER != "mysql")
+							{
+								$result = $db->sql_query("ROLLBACK");
+							}
 							error_die(QUERY_ERROR);
 						}
 					}
 					else
 					{
+						if(SQL_LAYER != "mysql")
+						{
+							$result = $db->sql_query("ROLLBACK");
+						}
 						if(DEBUG)
 						{
 							$error = $db->sql_error();
@@ -374,6 +431,10 @@ switch($mode)
 				}
 				else
 				{
+					if(SQL_LAYER != "mysql")
+					{
+						$result = $db->sql_query("ROLLBACK");
+					}
 					if(DEBUG)
 					{
 						$error = $db->sql_error();
@@ -387,6 +448,10 @@ switch($mode)
 			}
 			else
 			{
+				if(SQL_LAYER != "mysql")
+				{
+					$result = $db->sql_query("ROLLBACK");
+				}
 				if(DEBUG)
 				{
 					$error = $db->sql_error();
@@ -426,8 +491,8 @@ switch($mode)
 					{
 						include('includes/page_header.'.$phpEx);
 						// If we get here the post has been inserted successfully.
-						$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id#$post_id")."\">$l_here</a>
-  									$l_viewmsg<br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+						$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$post_id#$post_id")."\">$l_here</a>
+  									$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
 
 						$template->set_filenames(array(
 							"reg_header" => "error_body.tpl"
