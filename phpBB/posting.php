@@ -1637,6 +1637,16 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 										message_die(GENERAL_ERROR, "Couldn't update topics vote information", "", __LINE__, __FILE__, $sql);
 									}
 								}
+								else if( !$is_last_post_topic )
+								{
+									$sql = "UPDATE " . TOPICS_TABLE . " 
+										SET topic_vote = 0 
+										WHERE topic_id = $topic_id";
+									if( !$result = $db->sql_query($sql) )
+									{
+										message_die(GENERAL_ERROR, "Couldn't update topic poll field", "", __LINE__, __FILE__, $sql);
+									}
+								}
 							}
 							else
 							{
