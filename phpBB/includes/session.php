@@ -692,7 +692,6 @@ class user extends session
 		// $lang == $this->lang
 		// $help == $this->help
 		// - add appropiate variables here, name them as they are used within the language file...
-die($lang_file);
 		if (!$use_db)
 		{
 			if ( (@include $this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx") === FALSE )
