@@ -220,7 +220,10 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
 		$result = $db->sql_query($sql);
 
-		$start = 0;
+		if (isset($_POST['sort']))
+		{
+			$start = 0;
+		}
 		$topics_count = ($row = $db->sql_fetchrow($result)) ? $row['num_topics'] : 0;
 		$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
 	}

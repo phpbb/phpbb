@@ -269,7 +269,10 @@ if ($sort_days)
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	$result = $db->sql_query($sql);
 
-	$start = 0;
+	if (isset($_POST['sort']))
+	{
+		$start = 0;
+	}
 	$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 }
