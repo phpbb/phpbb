@@ -1768,6 +1768,8 @@ function viewsource(url)
 			case 'details':
 			case 'install':
 
+				$l_prefix = ($action == 'add') ? 'ADD' : (($action == 'details') ? 'EDIT_DETAILS' : 'INSTALL');
+
 				// Do we want to edit an existing theme or are we creating a new theme
 				// or submitting an existing one?
 				if ($theme_id && empty($_POST['update']))
@@ -1885,22 +1887,36 @@ function viewsource(url)
 						$css_data = '';
 						if ($action == 'install')
 						{
-							if (!is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"))
+							if (!is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"))
 							{
-								$css_data = implode('', file("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"));
+								$css_data = implode('', file("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"));
 							}
 							else
 							{
 								$css_storedb = 0;
 							}
 						}
-						else if (!$safe_mode && is_writeable("{$phpbb_root_path}styles/themes") && $action == 'add')
+						else if (!$safe_mode && is_writeable("{$phpbb_root_path}styles") && $action == 'add')
 						{
-							umask(0);
-							if (@mkdir("{$phpbb_root_path}styles/themes/$theme_path", 0777))
+							if (!empty($_FILES['upload_file']))
 							{
-								$css_storedb = 0;
-								@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777);
+							}
+							else if (!empty($_POST['import_file']))
+							{
+							}
+							else
+							{
+								umask(0);
+								if (@mkdir("{$phpbb_root_path}styles/$theme_path", 0777))
+								{
+									@chmod("{$phpbb_root_path}styles/$theme_path", 0777);
+								}
+
+								if (@mkdir("{$phpbb_root_path}styles/$theme_path/theme/", 0777))
+								{
+									$css_storedb = 0;
+									@chmod("{$phpbb_root_path}styles/themes/$theme_path", 0777);
+								}
 							}
 
 							if (!empty($_POST['theme_basis']) && !$css_storedb)
@@ -1914,30 +1930,30 @@ function viewsource(url)
 								{
 									$css_data = ($row['css_storedb']) ? $row['css_data'] : implode('', file($phpbb_root_path . 'styles/themes/' . $row['theme_path'] . '/' . $row['theme_path'] . '.css'));
 
-									if (!$css_storedb && ($fp = @fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb')))
+									if (!$css_storedb && ($fp = @fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'wb')))
 									{
 										$css_storedb = (fwrite($fp, $css_data)) ? 0 : 1;
 
 										if (!$css_storedb)
 										{
 											// Get a list of all files and folders in the basis themes folder
-											$filelist = filelist($phpbb_root_path . 'styles/themes/' . $row['theme_path'], '', '*');
+											$filelist = filelist($phpbb_root_path . 'styles/' . $row['theme_path'] . '/themes', '', '*');
 
 											// Copy every file bar the original stylesheet
 											foreach ($filelist as $path => $file_ary)
 											{
 												foreach ($file_ary as $file)
 												{
-													if ($file == $row['theme_path'] . '.css')
+													if ($file == 'stylesheet.css')
 													{
 														continue;
 													}
 
-													if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/$path"))
+													if (!file_exists("{$phpbb_root_path}styles/$theme_path/theme/$path"))
 													{
-														@mkdir("{$phpbb_root_path}styles/themes/$theme_path/$path");
+														@mkdir("{$phpbb_root_path}styles/$theme_path/theme/$path");
 													}
-													@copy("{$phpbb_root_path}styles/themes/" . $row['theme_path'] . "/$path/$file", "{$phpbb_root_path}styles/themes/$theme_path/$path/$file");
+													@copy("{$phpbb_root_path}styles/" . $row['theme_path'] . "/theme/$path/$file", "{$phpbb_root_path}styles/$theme_path/theme/$path/$file");
 												}
 											}
 											unset($filelist);
@@ -1983,18 +1999,17 @@ function viewsource(url)
 
 
 				// Output the page
-				adm_page_header($user->lang['EDIT_THEME']);
+				adm_page_header($user->lang[$l_prefix . '_THEME']);
 
 ?>
 
-<h1><?php echo $user->lang['EDIT_THEME']; ?></h1>
+<h1><?php echo $user->lang[$l_prefix . '_THEME']; ?></h1>
 
-<p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
+<p><?php echo $user->lang[$l_prefix . '_THEME_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>" onsubmit="return csspreview()"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"<?php echo (!$safe_mode && is_writeable("{$phpbb_root_path}styles")) ? ' enctype="multipart/form-data"' : ''; ?> onsubmit="return csspreview()"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>Parameter</th>
-		<th>Value</th>
+		<th colspan="2"><?php echo $user->lang[$l_prefix . '_THEME']; ?></th>
 	</tr>
 <?php
 
@@ -2022,29 +2037,70 @@ function viewsource(url)
 
 ?></td>
 	</tr>
-<?php
-
-				if ($safe_mode || !is_writeable("{$phpbb_root_path}styles/themes"))
-				{
-					$message = ($safe_mode) ? 'Because PHP is running in safe mode your stylesheet will be stored in the database.' : 'Because your themes directory is not writeable your stylesheet will be stored in the database.';
-
-?>
-	</tr>
-		<td class="row3" colspan="2" align="center"><?php echo $message; ?></td>
-	</tr>
-<?php
-
-				}
-				else
-				{
-?>
 	<tr>
 		<td class="row1" width="40%"><b>Store location:</b><br /><span class="gensmall">Location of stylesheet, images are always stored on the filesystem.</span></td>
 		<td class="row2"><input type="radio" name="css_storedb" value="0"<?php echo $css_storedb_no; ?> /> Filesystem&nbsp;&nbsp;<input type="radio" name="css_storedb" value="1"<?php echo $css_storedb_yes; ?> />Database</td>
 	</tr>
 <?php
 
-				}
+				// Import, upload and basis options
+				if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
+				{
+
+					$archive_types = $archive_preg = '';
+					foreach (array('zip' => 'zlib', 'tar' => '', 'tar.gz' => 'zlib', 'tar.bz2' => 'bz2') as $type => $module)
+					{
+						if ($module && !extension_loaded($module))
+						{
+							break;
+						}
+						$archive_types .= (($archive_types != '') ? ', ' : '') . "<u>.$type</u>";
+						$archive_preg .= (($archive_preg != '') ? '|' : '') . '\.' . preg_quote($type);
+					}
+
+					$store_options = '';
+					$dp = opendir("{$phpbb_root_path}store");
+					while ($file = readdir($dp))
+					{
+						if ($file{0} != '.' && preg_match('#(' . $archive_preg . ')$#i', $file))
+						{
+							$store_options .= "<option value=\"$file\">$file</option>";
+						}
+					}
+					closedir($dp);
+
+					$store_options = '<option value="">No import</option>' . $store_options;
+
+					$sql = 'SELECT theme_id, theme_name 
+						FROM ' . STYLES_CSS_TABLE;
+					$result = $db->sql_query($sql);
+
+					$basis_options = '<option value="">No Basis</option>';
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$selected = (!empty($_POST['theme_basis']) && $_POST['theme_basis'] == $row['theme_id']) ? ' selected="selected"' : '';
+						$basis_options .= '<option value="' . $row['theme_id'] . '"' . $selected . '>' . $row['theme_name'] . '</option>';
+					}
+					$db->sql_freeresult($result);
+?>
+	<tr>
+		<th colspan="2">Theme Basis</th>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b>Use existing theme as basis:</b></td>
+		<td class="row2"><select name="import_file"><?php echo $basis_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b>Upload a file:</b><br /><span class="gensmall">Allowed archive types: <?php echo $archive_types; ?></span></td>
+		<td class="row2"><input class="post" type="file" name="upload_file" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b>Import from store:</b></td>
+		<td class="row2"><select name="import_file"><?php echo $store_options; ?></select></td>
+	</tr>
+<?php
+
+				}	
 
 ?>
 	<tr>
@@ -2127,11 +2183,11 @@ function viewsource(url)
 					}
 					else
 					{
-						if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'rb')))
+						if (!($fp = fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'rb')))
 						{
 							trigger_error($user->lang['NO_THEME']);
 						}
-						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"));
+						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"));
 						fclose($fp);
 					}
 
@@ -2212,10 +2268,10 @@ function viewsource(url)
 
 
 						// Where is the CSS stored?
-						if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css") && !$css_storedb)
+						if (is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css") && !$css_storedb)
 						{
 							// Grab template data
-							if (!($fp = fopen("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css", 'wb')))
+							if (!($fp = fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'wb')))
 							{
 								trigger_error($user->lang['NO_THEME']);
 							}
@@ -2609,6 +2665,13 @@ function csspreview()
 					export('theme', $theme_id, $theme_name, $theme_path, $files, $data);
 				}
 				break;
+
+			case 'import':
+			case 'upload':
+
+
+
+				break;
 		}
 
 		// Front page
@@ -2715,6 +2778,7 @@ function front($type, $options)
 				{
 					$new_ary[$i]['path'] = $file;
 					$new_ary[$i]['name'] = $name;
+					$i++;
 				}
 			}
 		}
@@ -2726,11 +2790,12 @@ function front($type, $options)
 	{
 		foreach ($new_ary as $key => $cfg)
 		{
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $cfg['name']; ?></td>
-		<td class="row1" colspan="<?php echo sizeof($options); ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>">Install</a></td>
+		<td class="<?php echo $row_class; ?>"><?php echo $cfg['name']; ?></td>
+		<td class="<?php echo $row_class; ?>" colspan="<?php echo sizeof($options); ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>">Install</a></td>
 	</tr>
 <?php
 
@@ -2750,16 +2815,7 @@ function front($type, $options)
 
 ?>
 	<tr>
-		<td class="cat" colspan="<?php echo sizeof($options) + 1; ?>" align="right">Create new theme: <input class="post" type="text" name="<?php echo $type; ?>_name" value="" maxlength="30" size="25" /><?php
-	
-	if (!$safe_mode)
-	{
-
-?> using <select name="<?php echo $type; ?>_basis"><option class="sep" value="0"><?php echo $user->lang['SELECT_BASIS']; ?></option><?php echo $basis_options; ?></select><?php
-	
-	}
-		
-?> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="<?php echo sizeof($options) + 1; ?>" align="right">Create new theme: <input class="post" type="text" name="<?php echo $type; ?>_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
