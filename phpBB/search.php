@@ -1163,6 +1163,10 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+	}
 }
 
 //
