@@ -243,7 +243,10 @@ function add_search_words($post_id, $post_text, $post_title = "")
 		}
 	}
 
-	remove_common('single', 0.4, $word);
+	if ( $mode == 'single' )
+	{
+		remove_common('single', 0.4, $word);
+	}
 
 	return;
 }
@@ -298,7 +301,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 		$common_word_id = "";
 		while( $row = $db->sql_fetchrow($result) )
 		{
-			$common_word_id = ( $common_word_id != "" ) ? ", " . $row['word_id'] : $row['word_id'];
+			$common_word_id .= ( $common_word_id != "" ) ? ", " . $row['word_id'] : $row['word_id'];
 		}
 
 		$db->sql_freeresult($result);
