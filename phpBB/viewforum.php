@@ -140,7 +140,7 @@ if( $total_mods = $db->sql_numrows($result_mods) )
 	{
 		if($mods_rowset[$i]['group_single_user'])
 		{
-			$mod_url = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
+			$mod_url = "profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
 			$mod_name = $mods_rowset[$i]['username'];
 		}
 		else
@@ -166,23 +166,23 @@ else
 }
 
 //
-// Generate a 'Show posts in previous x days' select box. If the postdays var is POSTed
+// Generate a 'Show topics in previous x days' select box. If the topicsdays var is sent
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
 $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
 $previous_days_text = array($lang['All_Topics'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
 
-if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
+if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
 {
-	$post_days = (!empty($HTTP_POST_VARS['postdays'])) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
-	$min_post_time = time() - ($post_days * 86400);
+	$topic_days = (!empty($HTTP_POST_VARS['topicdays'])) ? $HTTP_POST_VARS['topicdays'] : $HTTP_GET_VARS['topicdays'];
+	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
 		WHERE t.forum_id = $forum_id 
 			AND p.post_id = t.topic_last_post_id 
-			AND ( p.post_time > $min_post_time 
+			AND ( p.post_time >= $min_topic_time 
 				OR t.topic_type = " . POST_ANNOUNCE . " )";
 
 	if(!$result = $db->sql_query($sql))
@@ -191,9 +191,9 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	}
 	list($topics_count) = $db->sql_fetchrow($result);
 
-	$limit_posts_time = "AND ( p.post_time > $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
+	$limit_topics_time = "AND ( p.post_time >= $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
 
-	if(!empty($HTTP_POST_VARS['postdays']))
+	if(!empty($HTTP_POST_VARS['topicdays']))
 	{
 		$start = 0;
 	}
@@ -202,17 +202,17 @@ else
 {
 	$topics_count = $forum_row['forum_topics'];
 
-	$limit_posts_time = "";
-	$post_days = 0;
+	$limit_topics_time = "";
+	$topic_days = 0;
 }
 
-$select_post_days = "<select name=\"postdays\">";
+$select_topic_days = "<select name=\"topicdays\">";
 for($i = 0; $i < count($previous_days); $i++)
 {
-	$selected = ($post_days == $previous_days[$i]) ? " selected" : "";
-	$select_post_days .= "<option value=\"".$previous_days[$i]."\"$selected>".$previous_days_text[$i]."</option>";
+	$selected = ($topic_days == $previous_days[$i]) ? " selected=\"selected\"" : "";
+	$select_topic_days .= "<option value=\"" . $previous_days[$i] . "\"$selected>" . $previous_days_text[$i] . "</option>";
 }
-$select_post_days .= "</select>";
+$select_topic_days .= "</select>";
 
 //
 // Grab all the basic data (all topics except global announcements) 
@@ -225,7 +225,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
 		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
-		$limit_posts_time
+		$limit_topics_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
 
@@ -238,15 +238,15 @@ $total_topics = $db->sql_numrows($t_result);
 //
 // Post URL generation for templating vars
 //
-$post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&" . POST_FORUM_URL . "=$forum_id");
+$post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
 
 $template->assign_vars(array(
 	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
 
 	"U_POST_NEW_TOPIC" => $post_new_topic_url,
 
-	"S_SELECT_POST_DAYS" => $select_post_days,
-	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&start=$start"))
+	"S_SELECT_TOPIC_DAYS" => $select_topic_days,
+	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&amp;start=$start"))
 );
 
 //
@@ -276,6 +276,9 @@ $template->set_filenames(array(
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
+	"L_GO" => $lang['Go'], 
+	"L_JUMP_TO" => $lang['Jump_to'], 
+	"L_SELECT_FORUM" => $lang['Select_forum'], 
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
@@ -326,7 +329,7 @@ if($total_topics)
 
 		if($replies > $board_config['posts_per_page'])
 		{
-			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\">" . $lang['Goto_page'] . ": ";
+			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\" />" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
@@ -335,7 +338,7 @@ if($total_topics)
 				{
 					if( $j + $board_config['posts_per_page'] >= $replies + 1 )
 					{
-						$goto_page .= " ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$j") . "\">$times</a>";
+						$goto_page .= " ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
 					}
 				}
 				else
@@ -344,7 +347,7 @@ if($total_topics)
 					{
 						$goto_page .= ", ";
 					}
-					$goto_page .= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$j") . "\">$times</a>";
+					$goto_page .= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
 				}
 				$times++;
 			}
@@ -357,7 +360,7 @@ if($total_topics)
 
 		if($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED)
 		{	
-			$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
+			$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Topic_locked'] . "\" />";
 		}
 		else
 		{
@@ -380,26 +383,26 @@ if($total_topics)
 
 			if(empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'])
 			{
-				$folder_image = "<img src=\"$folder_new\">";
+				$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
 			}
 			else
 			{
 				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 				{
-					$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\">" : "<img src=\"$folder\">";
+					$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 				else
 				{
-					$folder_image = "<img src=\"$folder\">";
+					$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 			}
 
 		}
 			
-		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);
+		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
 		$topic_poster = stripslashes($topic_rowset[$i]['username']);
-		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
+		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['default_timezone']);
 
@@ -413,8 +416,8 @@ if($total_topics)
 		}
 
 		$last_post = $last_post_time . "<br />by ";
-		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
-		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
+		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 
 		$views = $topic_rowset[$i]['topic_views'];
 
@@ -436,7 +439,7 @@ if($total_topics)
 	}
 
 	$template->assign_vars(array(
-		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
+		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
 		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
 		"TOTAL_PAGES" => ceil( $topics_count / $board_config['topics_per_page'] ),
 

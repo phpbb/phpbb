@@ -59,7 +59,6 @@ $lang['Author'] = "Author";
 $lang['is'] = "is";
 $lang['are'] = "are";
 $lang['by'] = "by";
-$lang['All_Topics'] = "All Topics";
 $lang['Time'] = "Time";
 $lang['Hour'] = "Hour";
 $lang['Hours'] = "Hours";
@@ -112,6 +111,10 @@ $lang['YIM'] = "Yahoo Messenger";
 $lang['Error'] = "Error";
 
 $lang['IP_Address'] = "IP Address";
+
+$lang['Jump_to'] = "Jump to";
+$lang['Select_forum'] = "Select a forum";
+$lang['Go'] = "Go";
 
 //
 // Global Header strings
@@ -181,7 +184,8 @@ $lang['View_forum'] = "View Forum";
 $lang['Forum_not_exist'] = "The forum you selected does not exist, please go back and try again";
 $lang['Reached_on_error'] = "You have reached this page in error, please go back and try again";
 
-$lang['Display_topics'] = "Display Topics from previous";
+$lang['Display_topics'] = "Display topics from previous";
+$lang['All_Topics'] = "All Topics";
 $lang['Annoucement'] = "<b>Annoucement:</b>";
 $lang['Sticky'] = "<b>Sticky:</b>";
 
@@ -198,6 +202,10 @@ $lang['View_previous_topic'] = "View previous topic";
 $lang['No_newer_topics'] = "There are no newer topics in this forum";
 $lang['No_older_topics'] = "There are no older topics in this forum";
 $lang['Topic_post_not_exist'] = "The topic or post you requested does not exist";
+$lang['Display_posts'] = "Display posts from previous";
+$lang['All_Posts'] = "All Posts";
+$lang['Newest_First'] = "Newest First";
+$lang['Oldest_First'] = "Oldest First";
 
 $lang['Read_profile'] = "Read profile of"; // Followed by username of poster
 $lang['Send_email'] = "Send email to "; // Followed by username of poster

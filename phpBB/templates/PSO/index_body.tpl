@@ -49,17 +49,19 @@
 	</tr>
 </table>
 
+<br clear="all" />
+
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="top"><table cellspacing="0" border="0">
 			<tr>
-				<td width="30" align="center"><img src="images/folder_new.gif" alt="{L_NEWPOSTS}" /></td>
+				<td width="20" align="center"><img src="images/folder_new.gif" alt="{L_NEWPOSTS}" /></td>
 				<td><span class="gensmall">{L_NEWPOSTS}</span></td>
 				<td>&nbsp;&nbsp;</td>
-				<td width="30" align="center"><img src="images/folder.gif" alt="{L_NONEWPOSTS}" /></td>
+				<td width="20" align="center"><img src="images/folder.gif" alt="{L_NONEWPOSTS}" /></td>
 				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
 				<td>&nbsp;&nbsp;</td>
-				<td width="30" align="center"><img src="images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
+				<td width="20" align="center"><img src="images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
 				<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
 			</tr>
 		</table></td>

@@ -1,8 +1,8 @@
-<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
-	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
-		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
-		<td align="right" valign="bottom" nowrap><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;<input type="submit"  value="Go"></span></td>
-	</form></tr>
+<form method="post" action="{S_POST_DAYS_ACTION}"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
+	<tr>
+		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
+		<td align="right" valign="bottom"  nowrap="nowrap"><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_TOPIC_DAYS}&nbsp;<input type="submit"  value="{L_GO}" /></span></td>
+	</tr>
 </table>
 
 <table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
@@ -11,8 +11,8 @@
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td><span class="cattitle">{FORUM_NAME}</span><br><span class="gensmall">{L_MODERATOR}: {MODERATORS}</span></TD>
-						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a></td>
+						<td><span class="cattitle">{FORUM_NAME}</span><br /><span class="gensmall">{L_MODERATOR}: {MODERATORS}</span></td>
+						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1" alt="{L_NEW_TOPIC}" /></a></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -42,7 +42,7 @@
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td width="5" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a></td>
+						<td width="5" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1" alt="{L_NEW_TOPIC}" /></a></td>
 						<td align="left" valign="middle">&nbsp;&nbsp;&nbsp;<span class="gen">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span>&nbsp;</td>
 						<td align="right" valign="middle"><span class="gen">{PAGINATION}&nbsp;</span></td>
 					</tr>
@@ -50,28 +50,25 @@
 			</tr>
 		</table></td>
 	</tr>
-</table>
+</table></form>
 
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td align="left" valign="top"><table cellspacing="4" border="0">
+		<td align="left" valign="top"><table cellspacing="0" border="0">
 			<tr>
-				<td width="20"></td>
-				<td><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
-			</tr>
-			<tr>
-				<td width="20"><img src="images/folder_new.gif"></td>
-				<td><span class="gensmall">{L_NEWPOSTS}</td>
-			</tr>
-			<tr>
-				<td width="20"><img src="images/folder.gif"></td>
+				<td width="20" align="center"><img src="images/folder_new.gif" alt="{L_NEWPOSTS}" /></td>
+				<td><span class="gensmall">{L_NEWPOSTS}</span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="images/folder.gif" alt="{L_NONEWPOSTS}" /></td>
 				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
-			</tr>
-			<tr>
-				<td width="20"><img src="images/folder_lock.gif"></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
 				<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
 			</tr>
+			<tr>
+				<td colspan="8"><br /><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+			</tr>
 		</table></td>
-		<td align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
+		<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
 </table>
