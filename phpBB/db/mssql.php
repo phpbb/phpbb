@@ -150,7 +150,7 @@ class sql_db
 			}
 			else if( eregi("^INSERT ", $query) )
 			{
-				if( mssql_query(str_replace("\'", "''", $query), $this->db_connect_id) )
+				if( mssql_query($query, $this->db_connect_id) )
 				{
 					$this->result = time() + microtime();
 
@@ -167,7 +167,7 @@ class sql_db
 			}
 			else
 			{
-				if( mssql_query(str_replace("\'", "''", $query), $this->db_connect_id) )
+				if( mssql_query($query, $this->db_connect_id) )
 				{
 					$this->result = time() + microtime();
 

@@ -154,7 +154,7 @@ class sql_db
 			}
 			else if( eregi("^INSERT ", $query) )
 			{
-				$this->result = odbc_exec($this->db_connect_id, str_replace("\'", "''", $query));
+				$this->result = odbc_exec($this->db_connect_id, $query);
 
 				if( $this->result )
 				{
@@ -171,7 +171,7 @@ class sql_db
 			}
 			else
 			{
-				$this->result = odbc_exec($this->db_connect_id, str_replace("\'", "''", $query));
+				$this->result = odbc_exec($this->db_connect_id, $query);
 
 				if( $this->result )
 				{
