@@ -161,6 +161,10 @@ while( $row = $db->sql_fetchrow($result) )
 	$prev_user_id = $row['user_id'];
 }
 
+$online_userlist = $lang['Registered_users'] . " " . $online_userlist;
+
+$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+
 //
 // This block of INSERTs is only here for people that are running RC1 or RC2 of phpBB2.
 // Can be removed after most of those users have migrated to a version that has inserted
@@ -202,10 +206,6 @@ else if($total_online_users > $board_config['record_online_users'])
 	$board_config['record_online_users'] = $total_online_users;
 	$board_config['record_online_date'] = time();
 }
-
-$online_userlist = $lang['Registered_users'] . " " . $online_userlist;
-
-$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
 if( $total_online_users == 0 )
 {
