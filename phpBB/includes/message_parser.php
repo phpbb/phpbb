@@ -19,19 +19,40 @@
  *
  ***************************************************************************/
 
+/*
+	TODO list:
+	- fix [flash], add width/height parameters?
+	- check that PHP syntax highlightning works well
+	- add other languages?
+	- add validation regexp to [email], [flash]
+	- add validation regexp to [quote] with username
+	- add ACL check for [img]/[flash]/others (what to do when an unauthorised tag is found? do nothing/return an error message?)
+*/
+
+// case-insensitive strpos() - needed for some functions
+if (!function_exists('stripos'))
+{
+	function stripos($haystack, $needle)
+	{
+		if (preg_match('#' . preg_quote($needle, '#') . '#i', $haystack, $m))
+		{
+			return strpos($haystack, $m[0]);
+		}
+
+		return FALSE;
+	}
+}
+
 // Main message parser for posting, pm, etc. takes raw message
 // and parses it for attachments, html, bbcode and smilies
 class parse_message
 {
 	var $bbcode_tpl = null;
 	var $message_mode = 0; // MSG_POST/MSG_PM
-
-//----
 	var $bbcode_uid = '';
 	var $bbcode_bitfield = 0;
 	var $bbcode_array = array();
 	var $message = '';
-//----
 
 	function parse_message($message_type)
 	{
@@ -122,34 +143,29 @@ class parse_message
 
 	function bbcode()
 	{
-		// Warning, Least-Significant-Bit first
-		$bbcode_bitfield = str_repeat('0', 32);
 		if (empty($this->bbcode_array))
 		{
 			$this->bbcode_init();
 		}
 
+		$this->bbcode_bitfield = 0;
 		$size = strlen($this->message);
-		foreach ($this->bbcode_array as $offset => $row)
+		foreach ($this->bbcode_array as $bbcode_id => $row)
 		{
 			$parse = FALSE;
 			foreach ($row as $regex => $replacement)
 			{
 				$this->message = preg_replace($regex, $replacement, $this->message);
-
-				// Since we add bbcode_uid to all tags, the message length will increase whenever a tag is found
-				$new_size = strlen($this->message);
-				if ($size != $new_size)
-				{
-					$parse = TRUE;
-				}
 			}
 
-			$bbcode_bitfield{$offset} = ($parse) ? '1' : '0';
+			// Since we add bbcode_uid to all tags, the message length will increase whenever a tag is found
+			$new_size = strlen($this->message);
+			if ($size != $new_size)
+			{
+				$this->bbcode_bitfield += pow(2, $bbcode_id);
+				$size = $new_size;
+			}
 		}
-
-		// LSB becomes MSB then we convert it to decimal
-		$this->bbcode_bitfield = bindec(strrev($bbcode_bitfield));
 	}
 
 	function bbcode_init()
@@ -157,8 +173,10 @@ class parse_message
 		// Always parse [code] first
 		// [quote] moved to the second position
 		$this->bbcode_array = array(
-			8	=> array('#\[code\](.+\[/code\])#ise'				=>	'$this->bbcode_code("\1")'),
-			0	=> array('#\[quote(=".*?")?\](.+?)\[/quote\]#ise'	=>	'"[quote:$this->bbcode_uid" . $this->bbcode_quote("\1") . "]\2[/quote:$this->bbcode_uid]"'),
+			8	=> array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise'	=>	"\$this->bbcode_code('\\1', '\\2')"),
+			0	=> array('#\[quote(?:="(.*?)")?\](.+?)\[/quote\]#ise'	=>	"'[quote:" . $this->bbcode_uid . "' . \$this->bbcode_quote_username('\\1') . ']\\2[/quote:" . $this->bbcode_uid . "]'"),
+// TODO: validation regexp
+			11	=> array('#\[flash\](.*?)\[/flash\]#i'				=>	'[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'),
 			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	'$this->validate_email("\1", "\2")'),
 			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'	=>	'$this->bbcode_list("\0")'),
 			7	=> array('#\[u\](.*?)\[/u\]#is'						=>	'[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']'),
@@ -184,13 +202,20 @@ class parse_message
 	}
 
 
-	function bbcode_quote($username)
+	function bbcode_quote_username($username)
 	{
-		// Will do some stuff at some point (will hopefully prevent from breaking out quotes)
-		return $username;
+		if (!$username)
+		{
+			return '';
+		}
+
+		// Will do some stuff at some point (will hopefully prevent from breaking out of quotes)
+		$username = stripslashes($username);
+		return '="' . $username . '"';
 	}
 
-	function bbcode_code($in)
+	// Expects the argument to start right after the opening [code] tag and to end with [/code]
+	function bbcode_code($type, $in)
 	{
 		$str_from = array('<', '>', '"', ':', '[', ']', '(', ')', '{', '}', '.', '@');
 		$str_to = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;', '&#46;', '&#64;');
@@ -201,16 +226,17 @@ class parse_message
 
 		do
 		{
-			$pos = strpos($in, '[/code]') + 7;
+			$pos = stripos($in, '[/code]') + 7;
 			$buffer = substr($in, 0, $pos);
 			$in = substr($in, $pos);
 
+			// $buffer contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
 			while ($in)
 			{
-				$pos = strpos($in, '[/code]') + 7;
+				$pos = stripos($in, '[/code]') + 7;
 				$sub_buffer = substr($in, 0, $pos);
 
-				if (preg_match('#\[code\]#i', $sub_buffer))
+				if (preg_match('#\[code(?:=([a-z]+))?\]#i', $sub_buffer))
 				{
 					break;
 				}
@@ -222,13 +248,21 @@ class parse_message
 			}
 
 			$buffer = substr($buffer, 0, -7);
-			$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
-
-			$pos = strpos($in, '[code]');
-			if ($pos !== FALSE)
+			switch ($type)
 			{
-				$out .= substr($in, 0, $pos);
-				$in = substr($in, $pos + 6);
+				case 'php':
+					$out .= '[code=php:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
+				break;
+			
+				default:
+					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $buffer) . '[/code:' . $this->bbcode_uid . ']';
+
+			}
+
+			if (preg_match('#(.*?)\[code(?:=[a-z]+)?\](.+)#is', $in, $m))
+			{
+				$out .= $m[1];
+				$in = $m[2];
 			}
 		}
 		while ($in);
@@ -236,13 +270,14 @@ class parse_message
 		return $out;
 	}
 
+	// Expects the argument to start with a tag
 	function bbcode_list($in)
 	{
+		// $tok holds characters to stop at. Since the string starts with a '[' we'll get everything up to the first ']' which should be the opening [list] tag
 		$tok = ']';
 		$out = '[';
-		// if I remember correctly, preg_replace() will slash passed vars
-		$in = stripslashes($in);
-		$in = substr($in, 1);
+
+		$in = substr(stripslashes($in), 1);
 		$close_tags = array();
 
 		do
@@ -263,15 +298,19 @@ class parse_message
 
 			if ($tok == ']')
 			{
+				// if $tok is ']' the buffer holds a tag
+
 				if ($buffer == '/list' && count($close_tags))
 				{
+					// valid [/list] tag
 					$tag = array_pop($close_tags);
 					$out .= $tag;
 					$tok = '[';
 				}
 				elseif (preg_match('/list(=?(?:[0-9]|[a-z]|))/i', $buffer, $m))
 				{
-					array_push($close_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid . ']' : '/list:u:' . $this->bbcode_uid . ']'));
+					// sub-list, add a closing tag
+					array_push($close_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid : '/list:u:' . $this->bbcode_uid));
 					$out .= $buffer . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
@@ -279,6 +318,7 @@ class parse_message
 				{
 					if ($buffer == '*' && count($close_tags))
 					{
+						// the buffer holds a bullet tag and we have a [list] tag open
 						$buffer = '*:' . $this->bbcode_uid;
 					}
 
@@ -288,16 +328,18 @@ class parse_message
 			}
 			else
 			{
+				// Not within a tag, just add buffer to the return string
+
 				$out .= $buffer . $tok;
 				$tok = ($tok == '[') ? ']' : '[]';
 			}
 		}
 		while ($in);
 
-		// Close tags left = some tags still open
+		// do we have some tags open? close them now
 		if (count($close_tags))
 		{
-			$out .= '[' . implode('[', $close_tags);
+			$out .= '[' . implode('][', $close_tags) . ']';
 		}
 
 		return $out;
@@ -305,6 +347,9 @@ class parse_message
 
 	function validate_email($var1, $var2)
 	{
+		$var1 = stripslashes($var1);
+		$var2 = stripslashes($var2);
+
 		$retval = '[email' . $var1 . ':' . $this->bbcode_uid . ']' . $var2 . '[/email:' . $this->bbcode_uid . ']';
 		return $retval;
 	}
