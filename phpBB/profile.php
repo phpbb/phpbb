@@ -330,7 +330,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$ban_email_list = $db->sql_fetchrowset($result);
 			for($i = 0; $i < count($ban_email_list); $i++)
 			{
-				if( eregi("^" . $ban_email_list[$i]['ban_email'] . "$", $email) )
+				$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
+				if( eregi("^" . $match_email . "$", $email) )
 				{
 					$error = TRUE;
 					if(isset($error_msg))

@@ -740,9 +740,9 @@ $lang['Ban_username'] = "Ban one or more specific users";
 $lang['Ban_username_explain'] = "You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
 $lang['Ban_IP'] = "Ban one or more IP addresses or hostnames";
 $lang['IP_hostname'] = "IP addresses or hostnames";
-$lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas, to specify a range of IP's (not hostnames) separate the start and end with a hyphen (-), to specify a wildcard use *";
+$lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *";
 $lang['Ban_email'] = "Ban one or more email addresses";
-$lang['Ban_email_explain'] = "To specify more than one email address separate them with commas";
+$lang['Ban_email_explain'] = "To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com";
 
 $lang['Unban_username'] = "Un-ban one more specific users";
 $lang['Unban_username_explain'] = "You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
