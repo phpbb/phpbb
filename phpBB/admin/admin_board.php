@@ -127,6 +127,7 @@ $template->set_filenames(array(
 // box on the admin page 
 //
 $new['site_desc'] = htmlspecialchars($new['site_desc']);
+$new['sitename'] = htmlspecialchars($new['sitename']);
 $template->assign_vars(array(
 	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
 
