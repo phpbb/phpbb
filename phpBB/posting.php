@@ -804,7 +804,7 @@ if (!sizeof($error) && $preview)
 
 
 // Decode text for message display
-$bbcode_uid = ($mode == 'quote' && !$preview) ? $row['bbcode_uid'] : $message_parser->bbcode_uid;
+$bbcode_uid = ($mode == 'quote' && !$preview) ? $bbcode_uid : $message_parser->bbcode_uid;
 
 decode_text($post_text, $bbcode_uid);
 if ($subject)
