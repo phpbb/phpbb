@@ -1034,6 +1034,7 @@ $lang += array(
 
 	'EDIT_TEMPLATE'			=> 'Edit Template',
 	'EDIT_TEMPLATE_EXPLAIN'	=> 'Here you can edit your template set directly. Please remember that these edits are permanent and cannot be undone once submitted. If PHP can write to the template files in your styles directory any changes here will be written directly to those files. If PHP cannot write to those files they will be copied into the database and all changes will only be reflected there. Please take care when editing your template set, remember to close all replacement variable terms {XXXX} and conditional statements.', 
+	'SELECTED_TEMPLATE'		=> 'Selected template set:', 
 	'RAW_HTML'				=> 'Raw HTML', 
 	'TEMPLATE_UPDATED'		=> 'Template updated successfully', 
 
@@ -1220,6 +1221,7 @@ $lang += array(
 
 	'EDIT_IMAGESET'			=> 'Edit Imageset', 
 	'EDIT_IMAGESET_EXPLAIN'	=> 'Here you can edit the individual images which define the imageset. You can also specify  dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.', 
+	'SELECTED_IMAGESET'		=> 'Selected imageset', 
 	'IMAGE'					=> 'Image', 
 	'DIMENSIONS'			=> 'Dimensions', 
 	'DIMENSIONS_EXPLAIN'	=> 'Dimensions are optional, set to zero to ignore.', 
