@@ -553,6 +553,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							if($user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
 							{
 								$error_type = false;
+
+								//
+								// Opera appends the image name after the type, not big, not clever!
+								//
+								preg_match("'(image\/[a-z]+)'", $user_avatar_type, $user_avatar_type);
+								$user_avatar_type = $user_avatar_type[1];
+
 								switch($user_avatar_type)
 								{
 									case "image/jpeg":
@@ -648,7 +655,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								} 
 								fclose($fsock); 
 
-								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: ([^.*]+?)[\s]+/i", $avatar_data, $file_data))
+								if(preg_match("/Content-Length\: ([0-9]+)[^\/]+Content-Type\: (image\/[a-z]+)[\s]+/i", $avatar_data, $file_data))
 								{
 									$file_size = $file_data[1];
 									$file_type = $file_data[2];
