@@ -146,7 +146,7 @@ switch( $mode )
 									WHERE style_name = '" . str_replace("\'", "''", $style_name) . "'";
 								if(!$result = $db->sql_query($sql))
 								{
-									message_die(GENREAL_ERROR, "Could not query themes table!", "", __LINE__, __FILE__, $sql);
+									message_die(GENERAL_ERROR, "Could not query themes table!", "", __LINE__, __FILE__, $sql);
 								}
 
 								if(!$db->sql_numrows($result))
