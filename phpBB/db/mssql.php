@@ -403,14 +403,9 @@ class sql_db
 		return ( $query_id ) ? mssql_free_result($query_id) : false;
 	}
 
-	function sql_quote($sql)
+	function sql_escape($msg)
 	{
-		return str_replace("\'", "''", $sql);
-	}
-
-	function sql_escape($sql)
-	{
-		return str_replace("'", "''", str_replace('\\', '\\\\', $sql));
+		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
 	}
 
 	function sql_error($query_id = 0)

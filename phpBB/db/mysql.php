@@ -379,6 +379,11 @@ class sql_db
 		return ( $query_id ) ? @mysql_free_result($query_id) : false;
 	}
 
+	function sql_escape($msg)
+	{
+		return mysql_escape_string($msg);
+	}
+	
 	function sql_error($sql = '')
 	{
 		if ( !$this->return_on_error )
