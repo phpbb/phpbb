@@ -109,7 +109,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($view_online)
 	{
-		preg_match('/\/?([a-z]+)\.' . $phpEx . '/', $row['session_page'], $on_page);
+		preg_match('#([a-z]+)#', $row['session_page'], $on_page);
 
 		switch ($on_page[1])
 		{
@@ -130,15 +130,29 @@ while ($row = $db->sql_fetchrow($result))
 					switch ($on_page[1])
 					{
 						case 'posting':
-							$location = sprintf($user->lang['Posting_message'], $forum_data[$forum_id]);
+							preg_match('#mode=([a-z]+)#', $row['session_page'], $on_page);
+							
+							switch ($on_page[1])
+							{
+								case 'reply':
+								case 'topicreview':
+									$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]);
+									break;
+								default:
+									$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]);
+									break;
+							}
 							break;
+
 						case 'viewtopic':
-							$location = sprintf($user->lang['Reading_topic'], $forum_data[$forum_id]);
+							$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]);
 							break;
+
 						case 'viewforum':
-							$location .= $forum_data[$forum_id];
+							$location .= sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]);
 							break;
 					}
+
 					$location_url = "viewforum.$phpEx$SID&amp;f=$forum_id";
 				}
 				else
