@@ -33,6 +33,14 @@ init_userprefs($userdata);
 // End session management
 //
 
+$script_name = preg_replace("/^\/?(.*?)\/?$/", "\\1", trim($board_config['script_path']));
+$script_name = ( $script_name != '' ) ? $script_name . '/groupcp.'.$phpEx : 'groupcp.'.$phpEx;
+$server_name = trim($board_config['server_name']);
+$server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
+$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+
+$server_url = $server_protocol . $script_name . $server_name . $server_port;
+
 if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
 	$group_id = ( isset($HTTP_GET_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_GET_VARS[POST_GROUPS_URL]) : intval($HTTP_POST_VARS[POST_GROUPS_URL]);
@@ -197,7 +205,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
+		"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -403,7 +411,7 @@ else if( $group_id )
 					"GROUP_NAME" => $group_name,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id")
+					"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -509,7 +517,7 @@ else if( $group_id )
 						"GROUP_NAME" => $group_name,
 						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-						"U_GROUPCP" => $script_url . "?" . POST_GROUPS_URL . "=$group_id")
+						"U_GROUPCP" => $server_url . "?" . POST_GROUPS_URL . "=$group_id")
 					);
 					$emailer->send();
 					$emailer->reset();

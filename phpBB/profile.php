@@ -29,11 +29,22 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_PROFILE, $session_length);
+$userdata = session_pagestart($user_ip, PAGE_PROFILE);
 init_userprefs($userdata);
 //
 // End session management
 //
+
+//
+// Set default email variables
+//
+$script_name = preg_replace("/^\/?(.*?)\/?$/", "\\1", trim($board_config['script_path']));
+$script_name = ( $script_name != '' ) ? $script_name . '/profile.'.$phpEx : 'profile.'.$phpEx;
+$server_name = trim($board_config['server_name']);
+$server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
+$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+
+$server_url = $server_protocol . $script_name . $server_name . $server_port;
 
 // -----------------------
 // Page specific functions
@@ -1065,7 +1076,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"USERNAME" => $username,
 								"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-								"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
+								"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -1163,7 +1174,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey",
+										"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey",
+
 										"FAX_INFO" => $board_config['coppa_fax'],
 										"MAIL_INFO" => $board_config['coppa_mail'],
 										"EMAIL_ADDRESS" => $email,
@@ -1185,7 +1197,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 	
-										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
 									);
 								}
 
@@ -1204,7 +1216,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
-										"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
+										"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
@@ -1717,8 +1729,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					"USERNAME" => $username,
 					"PASSWORD" => $user_password,
 					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
-					
-					"U_ACTIVATE" => $script_url . "?mode=activate&act_key=$user_actkey")
+
+					"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -1924,7 +1936,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
 							$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
 							$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
-							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\n";
+							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
 
 							$emailer->use_template("profile_send_email", $user_lang);
 							$emailer->email_address($user_email);
@@ -1945,7 +1957,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
 							);
 
-							$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+							$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 							message_die(GENERAL_MESSAGE, $message);
 						}
@@ -1993,7 +2005,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$template->assign_vars(array(
 					"USERNAME" => $username,
 
-					"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? "checked=\"checked\"" : "", 
+					"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? 'checked="checked"' : '', 
 					"S_POST_ACTION" => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
 
 					"L_SEND_EMAIL_MSG" => $lang['Send_email_msg'], 

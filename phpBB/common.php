@@ -172,60 +172,6 @@ else
 }
 
 //
-// Set some server variables related to the current URL, mostly used for Email
-//
-if ( !empty($HTTP_SERVER_VARS['HTTPS']) )
-{
-	$server_protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else if ( !empty($HTTP_ENV_VARS['HTTPS']) )
-{
-	$server_protocol = ( !empty($HTTP_ENV_VARS['HTTPS']) ) ?  ( ( $HTTP_ENV_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
-}
-else
-{
-	$server_protocol = "http://";
-}
-
-if ( !empty($board_config['server_name']) )
-{
-	$server_name = $board_config['server_name'];
-}
-else if ( !empty($board_config['cookie_domain']) )
-{
-	$server_name = $board_config['cookie_domain'];
-}
-else if( !empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']) )
-{
-	$server_name = ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
-}
-else if( !empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']) )
-{
-	$server_name = ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
-}
-else
-{
-	$server_name = "";
-}
-
-$server_port = ( !empty($board_config['server_port']) && $board_config['server_port'] <> 80 ) ? ':' . $board_config['server_port'] : '';
-
-if ( !empty($HTTP_SERVER_VARS['PHP_SELF']) || !empty($HTTP_ENV_VARS['PHP_SELF']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-}
-else if ( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) || !empty($HTTP_ENV_VARS['SCRIPT_NAME']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['SCRIPT_NAME']) ) ? $HTTP_SERVER_VARS['SCRIPT_NAME'] : $HTTP_ENV_VARS['SCRIPT_NAME'];
-}
-else if ( !empty($HTTP_SERVER_VARS['PATH_INFO']) || !empty($HTTP_ENV_VARS['PATH_INFO']) )
-{
-	$script_name = ( !empty($HTTP_SERVER_VARS['PATH_INFO']) ) ? $HTTP_SERVER_VARS['PATH_INFO'] : $HTTP_ENV_VARS['PATH_INFO'];
-}
-
-$script_url = $server_protocol . $server_name . $server_port . $script_name;
-
-//
 // Show 'Board is disabled' message if needed.
 //
 if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") )
