@@ -645,8 +645,8 @@ class parse_message
 
 			do
 			{
-				$match[] = '#(' . preg_quote($row['code'], '#') . ')#';
-//				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+//				$match[] = '#(' . preg_quote($row['code'], '#') . ')#';
+				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -662,7 +662,7 @@ class parse_message
 				}
 			}
 
-			$this->message = preg_replace($match, $replace, ' ' . $this->message . ' ');
+			$this->message = trim(preg_replace($match, $replace, ' ' . $this->message . ' '));
 		}
 	}
 
