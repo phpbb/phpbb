@@ -12,9 +12,10 @@
 // -------------------------------------------------------------
 
 // TODO
-// BBCode support -> M-3
-// Previews of templates, imagesets, themes ... unified -> M-3
-// Add custom theme classes
+// For M-3
+// BBCode support
+// Replace template/s, stylesheet, images, etc.
+// Previews of templates, imagesets, themes ... unified
 // Security review
 
 if (!empty($setmodules))
@@ -69,8 +70,7 @@ else
 }
 
 // Set some basic vars
-$error = $cfg = $stylecfg = array();
-$tmp_path = '';
+$error = $cfg = array();
 
 $safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 $file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false; 
@@ -1191,7 +1191,7 @@ function csspreview()
 	case 'imageset':
 		$imglist = array(
 			'buttons'	=> array(
-				'btn_post', 'btn_post_pm', 'btn_reply', 'btn_reply_pm', 'btn_locked', 'btn_profile', 'btn_pm', 'btn_delete', 'btn_ip', 'btn_quote', 'btn_search', 'btn_edit', 'btn_report', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_topic_watch', 'btn_topic_unwatch',
+				'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_ip', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
 			),
 			'icons'		=> array(
 				'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
@@ -1201,18 +1201,21 @@ function csspreview()
 				'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
 			'polls'		=> array(
 				'poll_left', 'poll_center', 'poll_right',), 
-			'custom'	=> array(), 
 		);
 
 		switch ($action)
 		{
 			case 'edit':
 				$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($_POST['imgname']) : '';
+				$imgpath = (isset($_POST['imgpath'])) ? htmlspecialchars($_POST['imgpath']) : '';
+				$imgsize = (!empty($_POST['imgsize'])) ? true : false;
+				$imgwidth = (isset($_POST['imgwidth'])) ? intval($_POST['imgwidth']) : '';
 
 				if ($id)
 				{
-					$sql = 'SELECT * 
-						FROM ' . STYLES_IMAGE_TABLE . "
+					$sql_select = ($imgname) ? ", $imgname" : '';
+					$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
+						FROM " . STYLES_IMAGE_TABLE . "
 						WHERE imageset_id = $id";
 					$result = $db->sql_query($sql);
 
@@ -1222,10 +1225,52 @@ function csspreview()
 					}
 					$db->sql_freeresult($result);
 
+					// Check to see whether the selected image exists in the table
+					$valid_name = false;
+					foreach ($imglist as $category => $img_ary)
+					{
+						if (in_array($imgname, $img_ary))
+						{
+							$valid_name = true;
+							break;
+						}
+					}
 
-//					$cache->destroy('sql', STYLES_IMAGE_TABLE);
+					if (!$valid_name)
+					{
+						$error[] = $user->lang['NO_IMAGE'];
+					}
 
+					if ($update && $imgpath)
+					{
+						if (!sizeof($error))
+						{
+							// If imgwidth and imgheight are non-zero grab the actual size
+							// from the image itself ... we ignore width settings for the poll center
+							// image
+							$imgwidth = $imgheight = '';
+							if ($imgsize)
+							{
+								list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+								$imgwidth = ($imgname != 'poll_center') ? " width=\"$imgwidth\"" : '';
+								$imgheight = " height=\"$imgheight\"";
+							}
 
+							$imgpath = '"styles/' . $imageset_path . '/imageset/' . preg_replace('#^(.*?)/(.*?)$#', '{LANG}/\2', $imgpath)  . '"' . $imgwidth . $imgheight;
+
+							$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
+								SET $imgname = '$imgpath'
+								WHERE imageset_id = $id";
+							$db->sql_query($sql);
+
+							$cache->destroy('sql', STYLES_IMAGE_TABLE);
+
+							add_log('admin', 'LOG_EDIT_IMAGESET', $imageset_name);
+							$error[] = $user->lang['IMAGESET_UPDATED'];
+
+							$$imgname = $imgpath;
+						}
+					}
 
 					$test_ary = array();
 					foreach ($imglist as $category => $img_ary)
@@ -1238,46 +1283,87 @@ function csspreview()
 							}
 						}
 					}
-
-					unset($matches);
 					unset($test_ary);
-
-					$imgwidth = (preg_match('#width="([0-9]+?)"#i', $$imgname, $matches)) ? $matches[1] : 0;
-					$imgheight = (preg_match('#height="([0-9]+?)"#i', $$imgname, $matches)) ? $matches[1] : 0;
 				}
 
 				// Generate list of image options
 				$img_options = '';
 				foreach ($imglist as $category => $img_ary)
 				{
-					$img_options .= '<option class="sep">' . $category . '</option>';
+					$img_options .= (sizeof($img_ary)) ? '<option class="sep" value="">' . $user->lang['IMG_CAT_' . strtoupper($category)] . '</option>' : '';
 					foreach ($img_ary as $img)
 					{
 						$selected = ($img == $imgname) ? ' selected="selected"' : '';
-						$img_options .= '<option value="' . $img . '"' . $selected . '>' . (($category == 'custom') ? $img : $img) . '</option>';
+						$img_options .= '<option value="' . $img . '"' . $selected . '>' . (($category == 'custom') ? $img : $user->lang['IMG_' . strtoupper($img)]) . '</option>';
 					}
 				}
 
-				// Grab list of potential images
-				$imagesetlist = filelist("{$phpbb_root_path}styles/$imageset_path/imageset");
+				// TODO
+				// Check whether localised buttons exist in admins language first
+				// Clean up this code
+				$imglang = '';
+				$imagesetlist = array('nolang' => array(), 'lang' => array());
+				$dp = opendir("{$phpbb_root_path}styles/$imageset_path/imageset");
+				while ($file = readdir($dp))
+				{
+					if (!is_file($file) && !is_link($file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+					{
+						$dp2 = opendir("{$phpbb_root_path}styles/$imageset_path/imageset/$file");
+						while ($file2 = readdir($dp2))
+						{
+							$imglang = $file;
+							if (preg_match('#\.(gif|jpg|png)$#', $file2))
+							{
+								$imagesetlist['lang'][] = "$file/$file2";
+							}
+						}
+						closedir($dp2);
+					}
+					else if (preg_match('#\.(gif|jpg|png)$#', $file))
+					{
+						$imagesetlist['nolang'][] = $file;
+					}
+				}
+				closedir($dp);
 
 				$imagesetlist_options = '';
-				foreach ($imagesetlist as $path => $img_ary)
+				foreach ($imagesetlist as $type => $img_ary)
 				{
+					$imagesetlist_options .= ($type == 'lang') ? '<option class="sep" value="">' . $user->lang['LOCALISED_IMAGES'] . '</option>' : '<option class="sep" value="">' . $user->lang['GLOBAL_IMAGES'] . '</option>';
 					foreach ($img_ary as $img)
 					{
-						$img = ((substr($path, 0, 1) == '/') ? substr($path, 1) : $path) . $img; 
+						$imgvalue = preg_replace('#^.*?/(.*?)$#', '\1', $img);
+						$selected = (strstr($$imgname, $imgvalue)) ? ' selected="selected"' : '';
 
-						$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
-						$imagesetlist_options .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+						$imagesetlist_options .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $imgvalue . '</option>';
 					}
 				}
 				$imagesetlist_options = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $imagesetlist_options;
 				unset($imagesetlist);
 
+				$imgsize_no = $imgsize_yes = '';
+				if ($imgsize || preg_match('# height="[0-9]+?#', $$imgname))
+				{
+					$imgsize_yes = ' checked="checked"';
+				}
+				else
+				{
+					$imgsize_no = ' checked="checked"';
+				}
+
 				adm_page_header($user->lang['EDIT_IMAGESET']);
 
 ?>
+
+<script language="javascript" type="text/javascript" defer="defer">
+<!--
+
+function update_image(newimage)
+{
+	document.newimg.src = (newimage) ? "<?php echo "{$phpbb_root_path}styles/$imageset_path/imageset/"; ?>" + newimage : "images/no_image.png";
+}
+//-->
+</script>
 
 <h1><?php echo $user->lang['EDIT_IMAGESET']; ?></h1>
 
@@ -1287,27 +1373,58 @@ function csspreview()
 
 <form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_IMAGE']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
 				<th colspan="2"><?php echo $user->lang['EDIT_IMAGESET']; ?></th>
 			</tr>
+<?php
+
+				if (sizeof($error))
+				{
+
+?>
 			<tr>
-				<td class="row1" colspan="2" align="center"><?php echo (!empty($$imgname)) ? '<img src=' . str_replace('"styles/', '"../styles/', str_replace('{LANG}', $user->img_lang, $$imgname)) . ' vspace="5" />' : ''; ?></td>
+				<td class="row1" colspan="2" align="center"><?php echo ($update) ? '<span style="color:green">' . implode('<br />', $error) . '</span>' : implode('<br />', $error); ?></td>
+			</tr>
+<?php
+
+				}
+
+?>
+			<tr>
+				<td class="row1" colspan="2" align="center"><table width="100%" cellspacing="2" cellpadding="2" border="0">
+					<tr>
+						<td width="50%" align="center"><img src="<?php 
+	
+					echo (!empty($$imgname)) ? str_replace('"styles/', '../styles/', str_replace('{LANG}', $imglang, $$imgname)) : 'images/no_image.png'; 
+					
+?>" /></td>
+						<td width="50%" align="center"><img src="<?php 
+	
+					echo (!empty($$imgname)) ? preg_replace('#(width|height)="[0-9]+?"#', '', str_replace('"styles/', '../styles/', str_replace('{LANG}', $imglang, $$imgname))) : 'images/no_image.png'; 
+					
+?>" name="newimg" /></td>
+					</tr>
+					<tr>
+						<td class="gensmall" align="center"><?php echo $user->lang['CURRENT_IMAGE']; ?></td>
+						<td class="gensmall" align="center"><?php echo $user->lang['SELECTED_IMAGE']; ?></td>
+					</tr>
+				</table></td>
 			</tr>
 			<tr>
 				<th width="40%"><?php echo $user->lang['IMAGE_PARAMETER']; ?></th>
 				<th><?php echo $user->lang['IMAGE_VALUE']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b><?php echo $user->lang['IMAGE']; ?>:</b></td>
-				<td class="row2"><select name="imgpath"><?php echo $imagesetlist_options; ?></select></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['IMAGE']; ?>: </b></td>
+				<td class="row2"><select name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><?php echo $imagesetlist_options; ?></select></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b><?php echo $user->lang['DIMENSIONS']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['DIMENSIONS_EXPLAIN']; ?></span></td>
-				<td class="row2"><input class="post" type="text" name="imgwidth" maxlength="4" size="2" value="<?php echo (!empty($imgwidth)) ? $imgwidth : '0'; ?>" /> X <input class="post" type="text" name="imgheight" maxlength="4" size="2" value="<?php echo (!empty($imgheight)) ? $imgheight : '0'; ?>" /></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['DIMENSIONS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DIMENSIONS_EXPLAIN']; ?></span></td>
+				<td class="row2"><input type="radio" name="imgsize" value="1"<?php echo $imgsize_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="imgsize" value="0"<?php echo $imgsize_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnmain" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
