@@ -277,7 +277,7 @@ class parse_message
 					$str_to = array('<', '>');
 
 					$code = str_replace($str_from, $str_to, $code);
-					if (!preg_match('/\<\?.*?\?\>/is', $code))
+					if (!preg_match('/^\<\?.*?\?\>/is', $code))
 					{
 						$remove_tags = TRUE;
 						$code = "<?php $code ?>";
@@ -310,7 +310,7 @@ class parse_message
 					$code = str_replace($str_from, $str_to, $code);
 					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '\1\2\3', $code);
 
-					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
+					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . trim($code) . '[/code:' . $this->bbcode_uid . ']';
 				break;
 
 				default:
@@ -489,7 +489,7 @@ class parse_message
 					if ($config['max_quote_depth'] && count($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = $user->lang['QUOTE_DEPTH_EXCEEDED'];
+						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
