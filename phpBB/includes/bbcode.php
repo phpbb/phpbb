@@ -219,10 +219,13 @@ function bbencode_second_pass($text, $uid)
 
 } // bbencode_second_pass()
 
+// Need to initialize the random numbers only ONCE
+mt_srand( (double) microtime() * 1000000);
+
 function make_bbcode_uid()
 {
 	// Unique ID for this message..
-	$uid = md5(uniqid(rand()));
+	$uid = md5(mt_rand());
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 
 	return $uid;
