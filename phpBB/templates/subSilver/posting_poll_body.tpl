@@ -12,16 +12,12 @@
 			<!-- BEGIN poll_option_rows -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-				<td class="row2"><span class="genmed"><input type="text" name="poll_option_text[{poll_option_rows.S_POLL_OPTION_NUM}]" size="50" class="post" maxlength="255" value="{poll_option_rows.POLL_OPTION}" /></span> &nbsp;<input type="submit" name="edit_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_UPDATE_OPTION}" class="liteoption" /> 
-	<input type="submit" name="del_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" class="liteoption" />
-  </td>
+				<td class="row2"><span class="genmed"><input type="text" name="poll_option_text[{poll_option_rows.S_POLL_OPTION_NUM}]" size="50" class="post" maxlength="255" value="{poll_option_rows.POLL_OPTION}" /></span> &nbsp;<input type="submit" name="edit_poll_option" value="{L_UPDATE_OPTION}" class="liteoption" /> <input type="submit" name="del_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" class="liteoption" /></td>
 			</tr>
 			<!-- END poll_option_rows -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_OPTION}</b></span></td>
-				<td class="row2"><span class="genmed"><input type="text" name="add_poll_option_text" size="50" maxlength="255" class="post" value="{ADD_POLL_OPTION}" /></span> &nbsp;
-	<input type="submit" name="add_poll_option" value="{L_ADD_OPTION}" class="liteoption" />
-  </td>
+				<td class="row2"><span class="genmed"><input type="text" name="add_poll_option_text" size="50" maxlength="255" class="post" value="{ADD_POLL_OPTION}" /></span> &nbsp;<input type="submit" name="add_poll_option" value="{L_ADD_OPTION}" class="liteoption" /></td>
 			</tr>
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_LENGTH}</b></span></td>
