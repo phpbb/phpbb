@@ -701,7 +701,7 @@ $lang['ftp_password'] = "‗בדÉ ÇבÓÑ בבÜ FTP";
 $lang['Transfer_config'] = "ÇÈÏÃ ÇבהÞב";
 $lang['NoFTP_config'] = "בÞÏ ÝÔבÊ דÍÇזבÉ הÞב דבÝ ÇבÇÚÏÇÏ Çבל דזÞÚ ÇבדהÊÏל.  ÇבÑÌÇÁ ÓÍÈ דבÝ ÇבÇÚÏÇÏ זÇÑÓÇבו Çבל ד‗Çהו ÇבÕÍםÍ םÏזםÇ.";
 
-$lang['Install'] = "ÊÑ‗םÈ ÌÏםÏ"
+$lang['Install'] = "ÊÑ‗םÈ ÌÏםÏ";
 $lang['Upgrade'] = "ÊÍÏםË";
 
 
