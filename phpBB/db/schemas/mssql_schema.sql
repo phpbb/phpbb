@@ -30,7 +30,7 @@ GO
 CREATE TABLE [phpbb_banlist] (
 	[ban_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[ban_userid] [int] NULL ,
-	[ban_ip] [char] (8) NULL ,
+	[ban_ip] [char] (40) NULL ,
 	[ban_email] [varchar] (50) NULL 
 ) ON [PRIMARY]
 GO
@@ -111,7 +111,7 @@ CREATE TABLE [phpbb_posts] (
 	[forum_id] [int] NOT NULL ,
 	[poster_id] [int] NOT NULL ,
 	[post_time] [int] NOT NULL ,
-	[poster_ip] [char] (8) NULL ,
+	[poster_ip] [char] (40) NULL ,
 	[post_username] [char] (25) NULL ,
 	[enable_bbcode] [smallint] NULL ,
 	[enable_html] [smallint] NULL ,
@@ -137,7 +137,7 @@ CREATE TABLE [phpbb_privmsgs] (
 	[privmsgs_from_userid] [int] NOT NULL ,
 	[privmsgs_to_userid] [int] NOT NULL ,
 	[privmsgs_date] [int] NOT NULL ,
-	[privmsgs_ip] [char] (8) NOT NULL ,
+	[privmsgs_ip] [char] (40) NOT NULL ,
 	[privmsgs_enable_bbcode] [smallint] NULL ,
 	[privmsgs_enable_html] [smallint] NULL ,
 	[privmsgs_enable_smilies] [smallint] NULL ,
@@ -187,7 +187,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_user_id] [int] NOT NULL ,
 	[session_start] [int] NULL ,
 	[session_time] [int] NULL ,
-	[session_ip] [char] (8) NOT NULL ,
+	[session_ip] [char] (40) NOT NULL ,
 	[session_page] [int] NULL ,
 	[session_logged_in] [smallint] NULL 
 ) ON [PRIMARY]
@@ -383,7 +383,7 @@ GO
 CREATE TABLE [phpbb_vote_voters] (
 	[vote_id] [int] NOT NULL ,
 	[vote_user_id] [int] NOT NULL ,
-	[vote_user_ip] [char] (8) NOT NULL 
+	[vote_user_ip] [char] (40) NOT NULL 
 ) ON [PRIMARY]
 GO
 

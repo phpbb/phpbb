@@ -60,8 +60,8 @@ CREATE TABLE phpbb_groups (
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    ban_userid mediumint(8) NOT NULL,
-   ban_ip char(8) NOT NULL,
-   ban_email varchar(255),
+   ban_ip char(40) NOT NULL,
+   ban_email char(50),
    PRIMARY KEY (ban_id), 
    KEY ban_ip_user_id (ban_ip, ban_userid)
 );
@@ -73,7 +73,7 @@ CREATE TABLE phpbb_banlist (
 #
 CREATE TABLE phpbb_categories (
    cat_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   cat_title varchar(100),
+   cat_title char(60),
    cat_order mediumint(8) UNSIGNED NOT NULL,
    PRIMARY KEY (cat_id), 
    KEY cat_order (cat_order)
@@ -97,7 +97,7 @@ CREATE TABLE phpbb_config (
 #
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   disallow_username varchar(25),
+   disallow_username char(30),
    PRIMARY KEY (disallow_id)
 );
 
@@ -174,7 +174,7 @@ CREATE TABLE phpbb_posts (
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    poster_id mediumint(8) DEFAULT '0' NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
-   poster_ip char(8) NOT NULL, 
+   poster_ip char(40) NOT NULL, 
    post_username varchar(25), 
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
@@ -210,11 +210,11 @@ CREATE TABLE phpbb_posts_text (
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
-   privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
+   privmsgs_subject char(60) DEFAULT '0' NOT NULL,
    privmsgs_from_userid mediumint(8) DEFAULT '0' NOT NULL,
    privmsgs_to_userid mediumint(8) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
-   privmsgs_ip char(8) NOT NULL,
+   privmsgs_ip char(40) NOT NULL,
    privmsgs_enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    privmsgs_enable_html tinyint(1) DEFAULT '0' NOT NULL,
    privmsgs_enable_smilies tinyint(1) DEFAULT '1' NOT NULL, 
@@ -243,10 +243,10 @@ CREATE TABLE phpbb_privmsgs_text (
 #
 CREATE TABLE phpbb_ranks (
    rank_id smallint(5) UNSIGNED NOT NULL auto_increment,
-   rank_title varchar(50) NOT NULL,
+   rank_title char(50) NOT NULL,
    rank_min mediumint(8) DEFAULT '0' NOT NULL,
    rank_special tinyint(1) DEFAULT '0',
-   rank_image varchar(255),
+   rank_image char(100),
    PRIMARY KEY (rank_id) 
 );
 
@@ -269,7 +269,7 @@ CREATE TABLE phpbb_search_results (
 # Table structure for table `phpbb_search_wordlist`
 #
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar(50) binary NOT NULL default '',
+  word_text char(25) binary NOT NULL default '',
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   word_common tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY (word_text), 
@@ -308,7 +308,7 @@ CREATE TABLE phpbb_sessions (
    session_user_id mediumint(8) DEFAULT '0' NOT NULL,
    session_start int(11) DEFAULT '0' NOT NULL,
    session_time int(11) DEFAULT '0' NOT NULL,
-   session_ip char(8) DEFAULT '0' NOT NULL,
+   session_ip char(40) DEFAULT '0' NOT NULL,
    session_page int(11) DEFAULT '0' NOT NULL,
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
@@ -323,9 +323,9 @@ CREATE TABLE phpbb_sessions (
 #
 CREATE TABLE phpbb_smilies (
    smilies_id smallint(5) UNSIGNED NOT NULL auto_increment,
-   code varchar(50),
-   smile_url varchar(100),
-   emoticon varchar(75),
+   code char(10),
+   smile_url char(50),
+   emoticon char(50),
    PRIMARY KEY (smilies_id)
 );
 
@@ -336,46 +336,46 @@ CREATE TABLE phpbb_smilies (
 #
 CREATE TABLE phpbb_themes (
    themes_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
-   template_name varchar(30) NOT NULL default '', 
-   style_name varchar(30) NOT NULL default '',
-   head_stylesheet varchar(100) default NULL,
-   body_background varchar(100) default NULL,
-   body_bgcolor varchar(6) default NULL,
-   body_text varchar(6) default NULL,
-   body_link varchar(6) default NULL,
-   body_vlink varchar(6) default NULL,
-   body_alink varchar(6) default NULL,
-   body_hlink varchar(6) default NULL,
-   tr_color1 varchar(6) default NULL,
-   tr_color2 varchar(6) default NULL,
-   tr_color3 varchar(6) default NULL,
-   tr_class1 varchar(25) default NULL,
-   tr_class2 varchar(25) default NULL,
-   tr_class3 varchar(25) default NULL,
-   th_color1 varchar(6) default NULL,
-   th_color2 varchar(6) default NULL,
-   th_color3 varchar(6) default NULL,
-   th_class1 varchar(25) default NULL,
-   th_class2 varchar(25) default NULL,
-   th_class3 varchar(25) default NULL,
-   td_color1 varchar(6) default NULL,
-   td_color2 varchar(6) default NULL,
-   td_color3 varchar(6) default NULL,
-   td_class1 varchar(25) default NULL,
-   td_class2 varchar(25) default NULL,
-   td_class3 varchar(25) default NULL,
-   fontface1 varchar(50) default NULL,
-   fontface2 varchar(50) default NULL,
-   fontface3 varchar(50) default NULL,
+   template_name char(30) NOT NULL default '', 
+   style_name char(30) NOT NULL default '',
+   head_stylesheet char(100) default NULL,
+   body_background char(100) default NULL,
+   body_bgcolor char(6) default NULL,
+   body_text char(6) default NULL,
+   body_link char(6) default NULL,
+   body_vlink char(6) default NULL,
+   body_alink char(6) default NULL,
+   body_hlink char(6) default NULL,
+   tr_color1 char(6) default NULL,
+   tr_color2 char(6) default NULL,
+   tr_color3 char(6) default NULL,
+   tr_class1 char(25) default NULL,
+   tr_class2 char(25) default NULL,
+   tr_class3 char(25) default NULL,
+   th_color1 char(6) default NULL,
+   th_color2 char(6) default NULL,
+   th_color3 char(6) default NULL,
+   th_class1 char(25) default NULL,
+   th_class2 char(25) default NULL,
+   th_class3 char(25) default NULL,
+   td_color1 char(6) default NULL,
+   td_color2 char(6) default NULL,
+   td_color3 char(6) default NULL,
+   td_class1 char(25) default NULL,
+   td_class2 char(25) default NULL,
+   td_class3 char(25) default NULL,
+   fontface1 char(50) default NULL,
+   fontface2 char(50) default NULL,
+   fontface3 char(50) default NULL,
    fontsize1 tinyint(4) default NULL,
    fontsize2 tinyint(4) default NULL,
    fontsize3 tinyint(4) default NULL,
-   fontcolor1 varchar(6) default NULL,
-   fontcolor2 varchar(6) default NULL,
-   fontcolor3 varchar(6) default NULL,
-   span_class1 varchar(25) default NULL,
-   span_class2 varchar(25) default NULL,
-   span_class3 varchar(25) default NULL, 
+   fontcolor1 char(6) default NULL,
+   fontcolor2 char(6) default NULL,
+   fontcolor3 char(6) default NULL,
+   span_class1 char(25) default NULL,
+   span_class2 char(25) default NULL,
+   span_class3 char(25) default NULL, 
    img_size_poll smallint(5) UNSIGNED, 
    img_size_privmsg smallint(5) UNSIGNED, 
    PRIMARY KEY  (themes_id)
@@ -469,8 +469,8 @@ CREATE TABLE phpbb_topics_watch (
 CREATE TABLE phpbb_users (
    user_id mediumint(8) NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
-   username varchar(25) NOT NULL,
-   user_password varchar(32) NOT NULL,
+   username char(30) NOT NULL,
+   user_password char(32) NOT NULL,
    user_session_time int(11) DEFAULT '0' NOT NULL, 
    user_session_page smallint(5) DEFAULT '0' NOT NULL, 
    user_lastvisit int(11) DEFAULT '0' NOT NULL, 
@@ -479,8 +479,8 @@ CREATE TABLE phpbb_users (
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_timezone decimal(4,2) DEFAULT '0' NOT NULL,
    user_style tinyint(4),
-   user_lang varchar(255),
-   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
+   user_lang char(50),
+   user_dateformat char(15) DEFAULT 'd M Y H:i' NOT NULL,
    user_new_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
    user_unread_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL, 
    user_last_privmsg int(11) DEFAULT '0' NOT NULL, 
@@ -497,9 +497,9 @@ CREATE TABLE phpbb_users (
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_popup_pm tinyint(1) DEFAULT '0' NOT NULL, 
    user_rank int(11) DEFAULT '0',
-   user_avatar varchar(100),
+   user_avatar char(100),
    user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
-   user_email varchar(255),
+   user_email char(60),
    user_icq varchar(15),
    user_website varchar(100),
    user_from varchar(100),
@@ -553,7 +553,7 @@ CREATE TABLE phpbb_vote_results (
 CREATE TABLE phpbb_vote_voters (
   vote_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_id mediumint(8) NOT NULL DEFAULT '0',
-  vote_user_ip char(8) NOT NULL,
+  vote_user_ip char(40) NOT NULL,
   KEY vote_id (vote_id),
   KEY vote_user_id (vote_user_id),
   KEY vote_user_ip (vote_user_ip)

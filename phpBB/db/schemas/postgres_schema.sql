@@ -63,7 +63,7 @@ CREATE TABLE phpbb_groups (
 CREATE TABLE phpbb_banlist (
    ban_id int4 DEFAULT nextval('phpbb_banlist_id_seq'::text) NOT NULL,
    ban_userid int4,
-   ban_ip char(8),
+   ban_ip char(40),
    ban_email varchar(255),
    CONSTRAINT phpbb_banlist_pkey PRIMARY KEY (ban_id)
 );
@@ -171,7 +171,7 @@ CREATE TABLE phpbb_posts (
    poster_id int4 DEFAULT '0' NOT NULL,
    post_time int4 DEFAULT '0' NOT NULL,
    post_username varchar(25),
-   poster_ip char(8) DEFAULT '' NOT NULL,
+   poster_ip char(40) DEFAULT '' NOT NULL,
    enable_bbcode int2 DEFAULT '1' NOT NULL,
    enable_html int2 DEFAULT '0' NOT NULL,
    enable_smilies int2 DEFAULT '1' NOT NULL,
@@ -208,7 +208,7 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_from_userid int4 DEFAULT '0' NOT NULL,
    privmsgs_to_userid int4 DEFAULT '0' NOT NULL,
    privmsgs_date int4 DEFAULT '0' NOT NULL,
-   privmsgs_ip char(8) NOT NULL,
+   privmsgs_ip char(40) NOT NULL,
    privmsgs_enable_bbcode int2 DEFAULT '1' NOT NULL,
    privmsgs_enable_html int2 DEFAULT '0' NOT NULL,
    privmsgs_enable_smilies int2 DEFAULT '1' NOT NULL, 
@@ -286,7 +286,7 @@ CREATE TABLE phpbb_sessions (
    session_user_id int4 DEFAULT '0' NOT NULL,
    session_start int4 DEFAULT '0' NOT NULL,
    session_time int4 DEFAULT '0' NOT NULL,
-   session_ip char(8) DEFAULT '0' NOT NULL,
+   session_ip char(40) DEFAULT '0' NOT NULL,
    session_page int4 DEFAULT '0' NOT NULL,
    session_logged_in int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_session_pkey PRIMARY KEY (session_id)
@@ -532,7 +532,7 @@ CREATE INDEX option_id_phpbb_vote_results_index ON phpbb_vote_results (vote_opti
 CREATE TABLE phpbb_vote_voters (
   vote_id int4 NOT NULL DEFAULT '0',
   vote_user_id int4 NOT NULL DEFAULT '0',
-  vote_user_ip char(8) NOT NULL
+  vote_user_ip char(40) NOT NULL
 );
 CREATE INDEX vote_id_phpbb_vote_voters_index ON phpbb_vote_voters (vote_id);
 CREATE INDEX vote_user_id_phpbb_vote_voters_index ON phpbb_vote_voters (vote_user_id);
