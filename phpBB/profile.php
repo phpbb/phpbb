@@ -394,16 +394,32 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					FROM " . USERS_TABLE;
 				if($result = $db->sql_query($sql))
 				{
-					$user_id_row = $db->sql_fetchrow($result);
-					$new_user_id = $user_id_row['total'] + 1;
+					$row = $db->sql_fetchrow($result);
+					$new_user_id = $row['total'] + 1;
 
 					unset($result);
-					unset($user_id_row);
+					unset($row);
 				}
 				else
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtained next user_id information.", "", __LINE__, __FILE__, $sql);
 				}
+
+				$sql = "SELECT MAX(group_id) AS total
+					FROM " . GROUPS_TABLE;
+				if($result = $db->sql_query($sql))
+				{
+					$row = $db->sql_fetchrow($result);
+					$new_group_id = $row['total'] + 1;
+
+					unset($result);
+					unset($row);
+				}
+				else
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtained next user_id information.", "", __LINE__, __FILE__, $sql);
+				}
+
 			}
 
 			$avatar_sql = "";
@@ -668,7 +684,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 						$user_actkey = generate_activation_key();
 
 						//
-						// The user is inactive, remove their session forcing them to login again befor they can post.
+						// The user is inactive, remove their session forcing them to login again before they can post.
 						//
 						$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				  				  WHERE session_user_id = " . $userdata['user_id'];
@@ -748,14 +764,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
 					{
-						$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
-							VALUES ('$username', 'Personal User', 1, 0)";
+						$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
+							VALUES ($new_group_id, '', 'Personal User', 1, 0)";
 						if($result = $db->sql_query($sql))
 						{
-							$group_id = $db->sql_nextid();
-
 							$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
-								VALUES ($new_user_id, $group_id, 0)";
+								VALUES ($new_user_id, $new_group_id, 0)";
 							if($result = $db->sql_query($sql, END_TRANSACTION))
 							{
 								if($board_config['require_activation'])
