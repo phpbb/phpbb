@@ -214,7 +214,7 @@ CREATE TABLE phpbb_posts (
    forum_id int(10) DEFAULT '0' NOT NULL,
    poster_id int(10) DEFAULT '0' NOT NULL,
    post_time int(10) DEFAULT '0' NOT NULL,
-   poster_ip varchar(8) NOT NULL, 
+   poster_ip char(8) NOT NULL, 
    post_username varchar(30), 
    bbcode_uid varchar(10) NOT NULL,
    PRIMARY KEY (post_id),
@@ -251,8 +251,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_from_userid int(11) DEFAULT '0' NOT NULL,
    privmsgs_to_userid int(11) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
-   privmsgs_ip varchar(8) NOT NULL,
-   privmsgs_bbcode_uid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_ip char(8) NOT NULL,
+   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
@@ -321,7 +321,7 @@ DROP TABLE IF EXISTS phpbb_session_keys;
 
 CREATE TABLE phpbb_session_keys (
    key_user_id int(11) DEFAULT '0' NOT NULL,
-   key_ip varchar(8) NOT NULL,
+   key_ip char(8) NOT NULL,
    key_login varchar(32) NOT NULL,
    PRIMARY KEY (key_user_id),
    KEY key_ip (key_ip)

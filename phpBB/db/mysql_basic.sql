@@ -35,13 +35,13 @@ INSERT INTO phpbb_user_group (group_id, user_id) VALUES (2, 2);
 INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote) VALUES (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 # -- User Access (admin is set as ... an admin)
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_mod, auth_admin) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1);
 
 # -- Demo Topic
 INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_notify, topic_last_post_id) VALUES (1, 'Demo Topic', 1, NOW(), 0, 0, 1, 0, 0, 0, 1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 1, NOW(), '', '127.0.0.1');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 1, NOW(), '', '7F000001');
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, 'This is the subject', 'This is a demo post in the demo topic, what do you think of it?');
 
 # -- Themes
