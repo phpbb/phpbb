@@ -194,7 +194,7 @@ function get_schema()
 {
 	global $table_prefix;
 
-	$schemafile = file('db/schemas/mysql_schema.sql');
+	$schemafile = file('schemas/mysql_schema.sql');
 	$tabledata = 0;
 
 	for($i=0; $i < count($schemafile); $i++)
@@ -280,7 +280,7 @@ function get_inserts()
 {
 	global $table_prefix;
 
-	$insertfile = file('db/schemas/mysql_basic.sql');
+	$insertfile = file('schemas/mysql_basic.sql');
 
 	for($i = 0; $i < count($insertfile); $i++)
 	{
@@ -1936,7 +1936,7 @@ if ( !empty($next) )
 	}
 }
 
-print "<br />If the upgrade completed without error you may click <a href=\"index.$phpEx\">Here</a> to proceed to the index<br />";
+print "<br />If the upgrade completed without error you may click <a href=\"./../index.$phpEx\">Here</a> to proceed to the index<br />";
 
 common_footer();
 

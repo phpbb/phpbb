@@ -329,6 +329,8 @@ function session_end($session_id, $user_id)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
+	$current_time = time();
+
 	//
 	// Pull cookiedata or grab the URI propagated sid
 	//
