@@ -1066,7 +1066,17 @@ $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$
 $lang['Table_Prefix'] = "Prefix for tables in database";
 $lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
 $lang['Download_config'] = "Download Config";
-
+$lang['ftp_choose'] = "Choose Download Method";
+$lang['Attempt_ftp'] = "Attempt to ftp config file into place:";
+$lang['Send_file'] = "Just send the file to me and I'll ftp it manually:";
+$lang['ftp_option'] = "<br />Since the ftp extensions are loaded in php you may will also be given
+the option of first trying to automatically ftp the config file into place.";
+$lang['ftp_instructs'] = "You have chosen to attempt to ftp the file to your phpBB installation automagically.  Please enter the information below to facilitate this process. Note that the FTP Path should be the exact path via ftp to your phpBB2 installation as if you were ftping to it.";
+$lang['ftp_path'] = "FTP Path to phpBB2:";
+$lang['ftp_username'] = "Your FTP Username:";
+$lang['ftp_password'] = "Your FTP Password:";
+$lang['Transfer_config'] = "Start Transfer";
+$lang['ftp_info'] = "Enter Your FTP Information";
 
 //
 // Ranks admin
