@@ -1,55 +1,47 @@
 <?php
-/***************************************************************************
- *                               viewtopic.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : viewtopic.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
-
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 
 // Initial var setup
 $forum_id	= (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
 $topic_id	= (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
 $post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
-$start		= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
-$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : '';
+$voted_id	= (isset($_POST['vote_id'])) ? array_map('intval', $_POST['vote_id']) : 0;
 
+$start		= (isset($_GET['start'])) ? max(intval(&$_GET['start']), 0) : 0;
+$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : false;
+$rate		= (isset($_GET['rate'])) ? intval($_GET['rate']) : false;
+$sort_days	= (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+$sort_key	= (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
+$sort_dir	= (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
+$update		= (isset($_POST['update'])) ? true : false;
 
-$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
-
+$hilit_words = (isset($_GET['hilit'])) ? urldecode(&$_GET['hilit']) : false;
+$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
 {
 	trigger_error('NO_TOPIC');
 }
-
-$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
 // Find topic id if user requested a newer or older topic
 $unread_post_id = '';
@@ -221,7 +213,7 @@ if ($forum_password)
 
 
 // Not final in the slightest! Far too simplistic
-if (isset($_GET['rate']))
+if ($rate)
 {
 	// Check for rating count for previous X time
 
@@ -401,21 +393,17 @@ obtain_icons($icons);
 
 // Was a highlight request part of the URI?
 $highlight_match = $highlight = '';
-if (isset($_GET['hilit']))
+if ($hilit_words)
 {
-	// Split words and phrases
-	$words = explode(' ', trim(htmlspecialchars(urldecode($_GET['hilit']))));
-
-	foreach ($words as $word)
+	foreach (explode(' ', trim($hilit_words)) as $word)
 	{
-		if (trim($word) != '')
+		if (trim($word))
 		{
 			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*?', preg_quote($word, '#'));
 		}
 	}
-	unset($words);
 
-	$highlight = urlencode($_GET['hilit']);
+	$highlight = htmlspecialchars(urlencode($hilit_words));
 }
 
 
@@ -469,7 +457,7 @@ if (sizeof($censors))
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
     'FORUM_NAME' 	=> $forum_name,
-	'FORUM_DESC'	=> strip_tags($forum_desc),
+	'FORUM_DESC'	=> $forum_desc,
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
@@ -540,6 +528,7 @@ if (!empty($poll_start))
 	}
 	$db->sql_freeresult($result);
 
+	$cur_voted_id = array();
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT poll_option_id
@@ -548,10 +537,9 @@ if (!empty($poll_start))
 				AND vote_user_id = ' . $user->data['user_id'];
 		$result = $db->sql_query($sql);
 
-		$voted_id = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$voted_id[] = $row['poll_option_id'];
+			$cur_voted_id[] = $row['poll_option_id'];
 		}
 		$db->sql_freeresult($result);
 	}
@@ -564,20 +552,19 @@ if (!empty($poll_start))
 		// it can be overcome without great difficulty.
 		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
 		{
-			$voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
+			$cur_voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
 		}
 	}
 
-	$s_can_vote = (((!sizeof($voted_id) && $auth->acl_get('f_vote', $forum_id)) || $auth->acl_get('f_votechg', $forum_id)) && 
-		(($poll_length != 0 && $poll_start + $poll_length > time()) || ($poll_length == 0)) &&
+	$s_can_vote = (((!sizeof($cur_voted_id) && $auth->acl_get('f_vote', $forum_id)) || 
+		$auth->acl_get('f_votechg', $forum_id)) && 
+		(($poll_length != 0 && $poll_start + $poll_length > time()) || $poll_length == 0) &&
 		$topic_status != ITEM_LOCKED && 
 		$forum_status != ITEM_LOCKED) ? true : false;
-	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($voted_id)) || $_GET['vote'] = 'viewresult') ? true : false;
+	$s_display_results = (!$s_can_vote || ($s_can_vote && $voted_id) || $view = 'viewpoll') ? true : false;
 
-	if (isset($_POST['castvote']) && $s_can_vote)
+	if ($update && $s_can_vote)
 	{
-		$voted_id = array_map('intval', $_POST['vote_id']);
-
 		if (!sizeof($voted_id) || sizeof($voted_id) > $poll_max_options)
 		{
 			meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
@@ -589,6 +576,11 @@ if (!empty($poll_start))
 
 		foreach ($voted_id as $option)
 		{
+			if (in_array($option, $cur_voted_id))
+			{
+				continue;
+			}
+
 			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . " 
 				SET poll_option_total = poll_option_total + 1 
 				WHERE poll_option_id = $option 
@@ -603,6 +595,27 @@ if (!empty($poll_start))
 			}
 		}
 
+		foreach ($cur_voted_id as $option)
+		{
+			if (!in_array($option, $voted_id))
+			{
+				$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . " 
+					SET poll_option_total = poll_option_total - 1 
+					WHERE poll_option_id = $option 
+						AND topic_id = $topic_id";
+				$db->sql_query($sql);
+
+				if ($user->data['user_id'] != ANONYMOUS)
+				{
+					$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . " 
+						WHERE topic_id = $topic_id
+							AND poll_option_id = $option 
+							AND vote_user_id = " . $user->data['user_id'];
+					$db->sql_query($sql);
+				}
+			}
+		}
+
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
 			setcookie($config['cookie_name'] . '_poll_' . $topic_id, implode(',', $voted_id), time() + 31536000, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
@@ -612,7 +625,6 @@ if (!empty($poll_start))
 			SET poll_last_vote = ' . time() . ', topic_last_post_time = ' . time() . "  
 			WHERE topic_id = $topic_id";
 		$db->sql_query($sql);
-
 
 		meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
 
@@ -638,7 +650,7 @@ if (!empty($poll_start))
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
 			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * 250), true), 
-			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $voted_id)) ? true : false)
+			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
 		);
 	}
 
@@ -657,7 +669,7 @@ if (!empty($poll_start))
 		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false, 
 		'S_POLL_ACTION'		=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param",
 
-		'U_VIEW_RESULTS'	=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param&amp;vote=viewresult")
+		'U_VIEW_RESULTS'	=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;$u_sort_param&amp;view=viewpoll")
 	);
 
 	unset($poll_info);

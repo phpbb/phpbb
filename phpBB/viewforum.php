@@ -16,11 +16,9 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
-
 // Start session
 $user->start();
 $auth->acl($user->data);
-
 
 // Start initial var setup
 $forum_id	= (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
@@ -203,7 +201,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = '';
-	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
+	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
 	// Limit topics to certain time frame, obtain correct topic count
 	if ($sort_days)
@@ -419,16 +417,23 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 				if ($user->data['user_id'] != ANONYMOUS)
 				{
-					$unread_topic = true;
-					if ($mark_time_topic >= $row['topic_last_post_time'] || $mark_time_forum >= $row['topic_last_post_time'])
+					$unread_topic = $new_votes = true;
+					if ($mark_time_topic >= $row['topic_last_post_time'] || $mark_time_forum >= $row['topic_last_post_time'] || ($row['topic_last_post_time'] == $row['poll_last_vote'] && $replies))
 					{
 						$unread_topic = false;
 					}
+/*
+					if ($row['poll_start'] && ($mark_time_topic >= $row['poll_last_vote'] || $mark_time_forum >= $row['poll_last_vote']))
+					{
+						$new_votes = false;
+					}*/
 				}
 				else
 				{
-					$unread_topic = false;
+					$unread_topic = $new_votes = false;
 				}
+ 
+//				$folder_new .= ($new_votes) ? '_vote' : '';
 
 				$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
@@ -441,7 +446,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				}
 			}
 
-			if (!empty($row['poll_start']))
+			if (!$row['poll_start'])
 			{
 				$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
 			}
@@ -521,7 +526,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url,
-				'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;mode=reports&amp;t=$topic_id")
+				'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=reports&amp;t=$topic_id")
 			);
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
