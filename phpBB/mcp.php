@@ -163,6 +163,18 @@ foreach ($_POST['post_id_list'] as $p_id)
 	}
 }
 
+$selected_post_ids = array();
+if (!empty($_GET['post_id_list']))
+{
+	$len = $_GET['post_id_list']{0};
+	for ($i = 1; $i < strlen($_GET['post_id_list']); $i += $len)
+	{
+		$short = substr($_GET['post_id_list'], $i, $len);
+		$selected_post_ids[] = (string) base_convert($short, 36, 10);
+		$post_id_list[] = base_convert($short, 36, 10);
+	}
+}
+
 $topic_id_sql = implode(', ', $topic_id_list);
 $post_id_sql = implode(', ', $post_id_list);
 
@@ -299,23 +311,24 @@ $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
 $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
 $mcp_url .= ($start) ? '&amp;start=' . $start : '';
+$url_extra = (!empty($_GET['post_id_list'])) ? '&amp;post_id_list=' . htmlspecialchars($_GET['post_id_list']) : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_modcp'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id)
 {
-	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view';
+	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view' . $url_extra;
 }
 if ($topic_id)
 {
-	$tabs['topic_view'] = $mcp_url . '&amp;mode=topic_view';
+	$tabs['topic_view'] = $mcp_url . '&amp;mode=topic_view' . $url_extra;
 }
 if ($post_id)
 {
-	$tabs['post_view'] = $mcp_url . '&amp;mode=post_view';
+	$tabs['post_view'] = $mcp_url . '&amp;mode=post_view' . $url_extra;
 }
 if (!empty($_GET['post_id_list']))
 {
-	$tabs['merge'] = $mcp_url . '&amp;mode=merge&amp;post_id_list=' . htmlspecialchars($_GET['post_id_list']);
+	$tabs['merge'] = $mcp_url . '&amp;mode=merge' . $url_extra;
 }
 
 if (count($forum_id_list) == 1 && !$forum_info['forum_postable'])
@@ -408,16 +421,6 @@ switch ($mode)
 		));
 
 		$is_first_post = TRUE;
-		$selected_post_ids = array();
-		if (!empty($_GET['post_id_list']))
-		{
-			$len = $_GET['post_id_list']{0};
-			for ($i = 1; $i < strlen($_GET['post_id_list']); $i += $len)
-			{
-				$short = substr($_GET['post_id_list'], $i, $len);
-				$selected_post_ids[] = (string) base_convert($short, 36, 10);
-			}
-		}
 
 		$sql = "SELECT u.username, p.*, pt.*
 			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
