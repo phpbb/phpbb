@@ -290,6 +290,11 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 }
 else if ( isset($HTTP_POST_VARS['cancel']) )
 {
+	$sql = "UPDATE " . CONFIG_TABLE . " 
+		SET config_value = '0' 
+		WHERE config_name = 'board_disable'";
+	$db->sql_query($sql);
+
 	page_header($lang['DB']);
 
 ?>
