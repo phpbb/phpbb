@@ -37,7 +37,7 @@
 	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{CUR_PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="32" value="{CUR_PASSWORD}" />
 	  </td>
 	</tr>
 	<!-- END switch_edit_profile -->
@@ -45,14 +45,14 @@
 	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="100" value="{NEW_PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="new_password" size="25" maxlength="32" value="{NEW_PASSWORD}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}: * </span><br />
 		<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="100" value="{PASSWORD_CONFIRM}" />
+		<input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="32" value="{PASSWORD_CONFIRM}" />
 	  </td>
 	</tr>
 	<!-- BEGIN switch_confirm -->

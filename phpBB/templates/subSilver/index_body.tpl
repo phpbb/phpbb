@@ -76,7 +76,7 @@
 	  <td class="row1" align="center" valign="middle" height="28"><span class="gensmall">{L_USERNAME}: 
 		<input class="post" type="text" name="username" size="10" />
 		&nbsp;&nbsp;&nbsp;{L_PASSWORD}: 
-		<input class="post" type="password" name="password" size="10" />
+		<input class="post" type="password" name="password" size="10" maxlength="32" />
 		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
 		<input class="text" type="checkbox" name="autologin" />
 		&nbsp;&nbsp;&nbsp; 

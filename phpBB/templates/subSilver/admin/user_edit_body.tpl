@@ -28,14 +28,14 @@
 	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="password" name="password" size="35" maxlength="100" value="" />
+		<input class="post" type="password" name="password" size="35" maxlength="32" value="" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}: * </span><br />
 		<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 	  <td class="row2"> 
-		<input class="post" type="password" name="password_confirm" size="35" maxlength="100" value="" />
+		<input class="post" type="password" name="password_confirm" size="35" maxlength="32" value="" />
 	  </td>
 	</tr>
 	<tr> 

@@ -25,7 +25,7 @@
 		  <tr> 
 			<td align="right"><span class="gen">{L_PASSWORD}:</span></td>
 			<td> 
-			  <input type="password" name="password" size="25" maxlength="25" />
+			  <input type="password" name="password" size="25" maxlength="32" />
 			</td>
 		  </tr>
 		  <tr align="center"> 
