@@ -58,7 +58,7 @@
 	  <table cellspacing="0" cellpadding="0" border="0" height="18">
 		<tr> 
 		  <td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} 
-			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap">{ICQ_STATUS_IMG}{ICQ_ADD_IMG}</td>
+			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap">{postrow.ICQ_STATUS_IMG}{postrow.ICQ_ADD_IMG}</td>
 		</tr>
 	  </table>
 	</td>
