@@ -534,7 +534,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 else
 {
 
-	$select_list = make_forum_select();
+	$select_list = make_forum_select(false, false, false);
 
 	page_header($l_title);
 

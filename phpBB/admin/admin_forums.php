@@ -752,7 +752,7 @@ while ($row = $db->sql_fetchrow($result))
 
 <form method="get" action="admin_forums.<?php echo $phpEx,$SID ?>"><table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
+		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /><input type="hidden" name="sid" value="<?php echo $user->session_id; ?>" /></td>
 	</tr>
 </table></form>
 

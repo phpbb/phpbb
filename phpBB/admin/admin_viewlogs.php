@@ -19,9 +19,9 @@
  *
  ***************************************************************************/
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_general') )
+	if (!$auth->acl_get('a_general'))
 	{
 		return;
 	}
@@ -34,60 +34,36 @@ if ( !empty($setmodules) )
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have styles admin permissions?
-//
-if ( !$auth->acl_get('a_general') )
+if (!$auth->acl_get('a_general'))
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['No_admin']);
 }
 
-//
 // Set some variables
-//
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
-
-if ( isset($_POST['mode']) ||  isset($_GET['mode']) )
-{
-	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = 'admin';
-}
-
-if ( isset($_POST['f']) ||  isset($_GET['f']) )
-{
-	$forum_id = ( isset($_POST['f']) ) ? $_POST['f'] : $_GET['f'];
-}
-else
-{
-	$forum_id = 0;
-}
+$forum_id = (isset($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
+$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'admin';
 
 // Define some vars depending on which logs we're looking at
-$log_table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-$l_title = ( $mode == 'admin' ) ? $user->lang['Admin_logs'] : $user->lang['Mod_logs'];
-$l_title_explain = ( $mode == 'admin' ) ? $user->lang['Admin_logs_explain'] : $user->lang['Mod_logs_explain'];
+$log_table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
+$l_title = ($mode == 'admin') ? $user->lang['Admin_logs'] : $user->lang['Mod_logs'];
+$l_title_explain = ($mode == 'admin') ? $user->lang['Admin_logs_explain'] : $user->lang['Mod_logs_explain'];
 
-//
 // Delete entries if requested and able
-//
-if ( ( isset($_POST['delmarked']) || isset($_POST['delall']) ) && $auth->acl_get('a_clearlogs'))
+if ((isset($_POST['delmarked']) || isset($_POST['delall'])) && $auth->acl_get('a_clearlogs'))
 {
 	$where_sql = '';
-	if ( isset($_POST['delmarked']) && isset($_POST['mark']) )
+	if (isset($_POST['delmarked']) && isset($_POST['mark']))
 	{
-		foreach ( $_POST['mark'] as $marked )
+		foreach ($_POST['mark'] as $marked)
 		{
-			$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . intval($marked);
+			$where_sql .= (($where_sql != '') ? ', ' : '') . intval($marked);
 		}
 		$where_sql = "WHERE log_id IN ($where_sql)";
 	}
@@ -99,23 +75,21 @@ if ( ( isset($_POST['delmarked']) || isset($_POST['delall']) ) && $auth->acl_get
 	add_admin_log('log_' . $mode . '_clear');
 }
 
-//
 // Sorting ... this could become a function
-//
-if ( isset($_POST['sort']) || $start )
+if (isset($_POST['sort']) || $start)
 {
-	if ( !empty($_POST['sort_days']) || !empty($_GET['sort_days']) )
+	if (!empty($_REQUEST['sort_days']))
 	{
-		$sort_days = ( !empty($_POST['sort_days']) ) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
-		$where_sql = time() - ( $sort_days * 86400 );
+		$sort_days = intval($_REQUEST['sort_days']);
+		$where_sql = time() - ($sort_days * 86400);
 	}
 	else
 	{
 		$where_sql = 0;
 	}
 
-	$sort_key = ( isset($_POST['sort_key']) ) ? $_POST['sort_key'] : $_GET['sort_key'];
-	$sort_dir = ( isset($_POST['sort_dir']) ) ? $_POST['sort_dir'] : $_GET['sort_dir'];
+	$sort_key = (isset($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : '';
+	$sort_dir = (isset($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : '';
 }
 else
 {
@@ -131,22 +105,22 @@ $sort_by_text = array('u' => $user->lang['Sort_Username'], 't' => $user->lang['S
 $sort_by = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 $sort_day_options = '';
-foreach ( $previous_days as $day => $text )
+foreach ($previous_days as $day => $text)
 {
-	$selected = ( $sort_days == $day ) ? ' selected="selected"' : '';
+	$selected = ($sort_days == $day) ? ' selected="selected"' : '';
 	$sort_day_options .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
 }
 
 $sort_key_options = '';
-foreach ( $sort_by_text as $key => $text )
+foreach ($sort_by_text as $key => $text)
 {
-	$selected = ( $sort_key == $key ) ? ' selected="selected"' : '';
+	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
 	$sort_key_options .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 }
 
-$sort_order_options = ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Sort_Ascending'] . '</option><option value="d">' . $user->lang['Sort_Descending'] . '</option>' : '<option value="a">' . $user->lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Sort_Descending'] . '</option>';
+$sort_order_options = ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['Sort_Ascending'] . '</option><option value="d">' . $user->lang['Sort_Descending'] . '</option>' : '<option value="a">' . $user->lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Sort_Descending'] . '</option>';
 
-$sort_sql = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
+$sort_sql = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 // Output page
 page_header($l_title);
@@ -161,15 +135,15 @@ page_header($l_title);
 <?php
 
 // Define forum list if we're looking @ mod logs
-if ( $mode == 'mod' )
+if ($mode == 'mod')
 {
-	include($phpbb_root_path . '/includes/functions_admin.'.$phpEx);
+//include($phpbb_root_path . '/includes/functions_admin.'.$phpEx);
 	$forum_box = make_forum_select($forum_id);
 
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /></td>
+		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ this.form.submit() }"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /></td>
 	</tr>
 </table>
 <?php
@@ -198,11 +172,11 @@ $log_data = array();
 $log_count = 0;
 view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, $where_sql, $sort_sql);
 
-if ( $log_count )
+if ($log_count)
 {
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
-		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
+		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr>
@@ -216,7 +190,7 @@ if ( $log_count )
 
 	}
 
-	if ( $auth->acl_get('a_clearlogs') )
+	if ($auth->acl_get('a_clearlogs'))
 	{
 
 ?>
@@ -245,7 +219,7 @@ else
 		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></span></td>
 		<td align="right" valign="top" nowrap="nowrap"><?php
 
-	if ( $auth->acl_get('a_clearlogs') )
+	if ($auth->acl_get('a_clearlogs'))
 	{
 
 

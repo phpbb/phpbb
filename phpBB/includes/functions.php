@@ -186,13 +186,13 @@ function make_jumpbox($action, $forum_id = false)
 
 	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
 
-	$sql = 'SELECT forum_id, forum_name, forum_postable, forum_status, left_id, right_id
+	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
 	$right = $cat_right = 0;
-	$padding = $forum_list = '';
+	$padding = $forum_list = $holding = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if (!$row['forum_postable'] && ($row['left_id'] + 1 == $row['right_id']))
@@ -225,7 +225,7 @@ function make_jumpbox($action, $forum_id = false)
 			$holding = '';
 		}
 
-		if ($row['forum_status'] == ITEM_CATEGORY)
+		if ($row['right_id'] - $row['left_id'] > 1)
 		{
 			$cat_right = max($cat_right, $row['right_id']);
 

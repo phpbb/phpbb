@@ -20,41 +20,69 @@
  ***************************************************************************/
 
 // Simple version of jumpbox, just lists authed forums
-function make_forum_select($default_forum = false, $ignore_forum = false)
+function make_forum_select($forum_id = false, $ignore_forum = false, $add_select = true)
 {
-	global $db, $userdata, $auth, $lang;
+	global $db, $user, $auth;
 
 	$sql = "SELECT forum_id, forum_name, left_id, right_id
 		FROM " . FORUMS_TABLE . "
 		ORDER BY left_id ASC";
 	$result = $db->sql_query($sql);
 
-	$right = 0;
-	$subforum = '';
-	$forum_list = '';
-	while ( $row = $db->sql_fetchrow($result) )
+	$right = $cat_right = 0;
+	$forum_list = $padding = $holding = '';
+	
+	while ($row = $db->sql_fetchrow($result))
 	{
-		if ( $row['left_id'] < $right  )
+		if (!$auth->acl_gets('f_list', 'm_', 'a_', intval($row['forum_id'])) || $row['forum_id'] == $ignore_forum)
 		{
-			$subforum .= '&nbsp;&nbsp;&nbsp;';
+			// if the user does not have permissions to list this forum skip
+			continue;
 		}
-		else if ( $row['left_id'] > $right + 1 )
+
+		if ($row['left_id'] < $right)
 		{
-			$subforum = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+			$padding .= '&nbsp; &nbsp;';
+		}
+		else if ($row['left_id'] > $right + 1)
+		{
+			$padding = substr($padding, 0, -13 * ($row['left_id'] - $right + 1));
 		}
 
 		$right = $row['right_id'];
 
-		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ) && $ignore_forum != $row['forum_id'] )
+		$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
+
+		if ($row['left_id'] > $cat_right)
 		{
-			$selected = ( $row['forum_id'] == $default_forum ) ? ' selected="selected"' : '';
-			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $subforum . $row['forum_name'] . '</option>';
+			$holding = '';
 		}
 
+		if ($row['right_id'] - $row['left_id'] > 1)
+		{
+			$cat_right = max($cat_right, $row['right_id']);
+
+			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
+		}
+		else
+		{
+			$forum_list .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '- ' . $row['forum_name'] . '</option>';
+			$holding = '';
+		}
 	}
+
+	if (!$right)
+	{
+		$forum_list .= '<option value="-1">' . $user->lang['No_forums'] . '</option>';
+	}
+	else if ($add_select)
+	{
+		$forum_list = '<option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>' . $forum_list;
+	}
+
 	$db->sql_freeresult($result);
 
-	return ( $forum_list == '' ) ? '<option value="-1">' . $lang['No_forums'] . '</option>' : $forum_list;
+	return $forum_list;
 }
 
 // Synchronise functions for forums/topics
