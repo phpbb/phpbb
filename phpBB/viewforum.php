@@ -193,7 +193,7 @@ if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
 	}
 	list($topics_count) = $db->sql_fetchrow($result);
 
-	$limit_topics_time = "AND ( p.post_time >= $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
+	$limit_topics_time = "AND ( p.post_time >= $min_topic_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
 
 	if(!empty($HTTP_POST_VARS['topicdays']))
 	{
