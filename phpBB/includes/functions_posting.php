@@ -474,7 +474,7 @@ function generate_smilies($mode)
 	global $SID, $auth, $db, $session, $board_config, $template, $theme, $lang;
 	global $user_ip, $starttime;
 	global $phpEx, $phpbb_root_path;
-	global $userdata;
+	global $user, $userdata;
 
 	if ( $mode == 'window' )
 	{
