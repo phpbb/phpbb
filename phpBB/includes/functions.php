@@ -586,7 +586,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //    failures, etc.
 // -> ERROR : Use for any error, a simple page will be output
 //
-function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header = false)
+function message_die($msg_code, $msg_text = '', $msg_title = '')
 {
 	global $db, $session, $acl, $template, $board_config, $theme, $lang, $userdata, $user_ip;
 	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
@@ -594,31 +594,42 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 	switch ( $msg_code )
 	{
 		case MESSAGE:
-			if ( !$userdata )
+			if ( empty($lang) && !empty($board_config['default_lang']) )
 			{
-				$userdata = $session->start();
-				$acl = new auth('admin', $userdata);
-				$session->configure($userdata);
-			}
+				if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx) )
+				{
+					$board_config['default_lang'] = 'english';
+				}
 
-			if ( !defined('HEADER_INC') )
-			{
-				if ( !defined('IN_ADMIN') )
-				{
-					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
-				}
-				else
-				{
-					page_header('', '', false);
-				}
+				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
 			}
 
 			$msg_title = ( $msg_title == '' ) ? $lang['Information'] : $msg_title;
 			$msg_text = ( !empty($lang[$msg_text]) ) ? $lang[$msg_text] : $msg_text;
 
+			if ( !defined('HEADER_INC') )
+			{
+				if ( empty($userdata) )
+				{
+					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
+					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
+					$db->sql_close();
+					exit;
+				}
+				else if ( defined('IN_ADMIN') )
+				{
+					page_header('', '', false);
+				}
+				else
+				{
+					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+				}
+			}
+
 			if ( defined('IN_ADMIN') )
 			{
 				page_message($msg_title, $msg_text, $display_header);
+				page_footer();
 			}
 			else
 			{
@@ -630,21 +641,15 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 					'MESSAGE_TITLE' => $msg_title,
 					'MESSAGE_TEXT' => $msg_text)
 				);
-			}
 
-			if ( !defined('IN_ADMIN') )
-			{
 				include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 			}
-			else
-			{
-				page_footer();
-			}
+
 			break;
 
 		case ERROR:
 			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
-			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body>';
+			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
 			$db->sql_close();
 			break;
 	}
