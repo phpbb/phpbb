@@ -488,15 +488,15 @@ if (isset($_REQUEST['post']))
 					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 			}
-/*
+
 			// post counts for index, etc.
 			if ($mode == 'post')
 			{
-				set_config('num_topics', $config['num_topics'] + 1);
+				set_config('num_topics', $config['num_topics'] + 1, TRUE);
 			}
 
-			set_config('num_posts', $config['num_posts'] + 1);
-*/		}
+			set_config('num_posts', $config['num_posts'] + 1, TRUE);
+		}
 
 		// Topic notification
 		if (!empty($notify) && ($mode == 'post' || empty($notify_set)))

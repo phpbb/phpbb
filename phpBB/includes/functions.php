@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function set_config($config_name, $config_value, $is_dynamic = TRUE)
+function set_config($config_name, $config_value, $is_dynamic = FALSE)
 {
 	global $db, $cache, $config;
 
