@@ -102,10 +102,10 @@ for($i = 0; $i < $logged_online; $i++)
 	$userlist .= ($i < $logged_online - 2) ? ", " : "";
 }
 
-$l_r_user_s = ($logged_online == 1) ? $l_user : $l_users;
-$l_g_user_s = ($guests_online == 1) ? $l_user : $l_users;
-$l_is_are = ($logged_online == 1) ? $l_is : $l_are;
-$userlist = ($logged_online > 0) ? "$l_Registered $l_r_user_s: " . $userlist : "$l_Registered $l_r_user_s: $l_None";
+$l_r_user_s = ($logged_online == 1) ? $lang['User'] : $lang['Users'];
+$l_g_user_s = ($guests_online == 1) ? $lang['User'] : $lang['Users'];
+$l_is_are = ($logged_online == 1) ? $lang['is'] : $lang['are'];
+$userlist = ($logged_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $userlist : $lang['Registered'] . " $l_r_user_s: ".$lang['None'];
 
 //
 // The following assigns all _common_
@@ -122,41 +122,41 @@ $template->assign_vars(array(
 	"TOTAL_USERS_ONLINE" => "$l_There $l_is_are $logged_online $l_Registered $l_r_user_s $l_and $guests_online $l_guest $l_g_user_s $l_online",
 	"LOGGED_IN_USER_LIST" => $userlist,
 
-	"L_USERNAME" => $l_username,
-	"L_PASSWORD" => $l_password,
-	"L_LOGIN" => $l_login,
-	"L_LOG_ME_IN" => $l_log_me_in,
-	"L_WELCOMETO" => $l_welcometo,
-	"L_INDEX" => $l_indextitle,
-	"L_REGISTER" => $l_register,
-	"L_PROFILE" => $l_profile,
-	"L_SEARCH" => $l_search,
-	"L_PRIVATEMSGS" => $l_privmsgs,
-	"L_MEMBERLIST" => $l_memberslist,
-	"L_FAQ" => $l_faq,
-	"L_FORUM" => $l_forum,
-	"L_TOPICS" => $l_topics, 
-	"L_REPLIES" => $l_replies,
-	"L_VIEWS" => $l_views,
-	"L_POSTS" => $l_posts,
-	"L_LASTPOST" => $l_lastpost,
-	"L_MODERATOR" => $l_moderator,
-	"L_MESSAGES" => $l_messages,
-	"L_POSTEDTOTAL" => $l_postedtotal,
-	"L_WEHAVE" => $l_wehave,
-	"L_REGUSERS" => $l_regedusers,
-	"L_NEWESTUSER" => $l_newestuser,
-	"L_BROWSING" => $l_browsing,
-	"L_ARECURRENTLY" => $l_arecurrently,
-	"L_THEFORUMS" => $l_theforums,
-	"L_NONEWPOSTS" => $l_nonewposts,
-	"L_NEWPOSTS" => $l_newposts,
-	"L_POSTED" => $l_posted,
-	"L_JOINED" => $l_joined,
-	"L_AUTO_LOGIN" => $l_autologin,
-	"L_AUTHOR" => $l_author,
-	"L_MESSAGE" => $l_message,
-	"L_BY" => $l_by,
+	"L_USERNAME" => $lang['Username'],
+	"L_PASSWORD" => $lang['Password'],
+	"L_LOGIN" => $lang['Login'],
+	"L_LOG_ME_IN" => $lang['Log_me_in'],
+	"L_WELCOMETO" => $lang['Welcome_to'],
+	"L_INDEX" => $lang['Forum_Index'],
+	"L_REGISTER" => $lang['Register'],
+	"L_PROFILE" => $lang['Profile'],
+	"L_SEARCH" => $lang['Search'],
+	"L_PRIVATEMSGS" => $lang['Private_msgs'],
+	"L_MEMBERLIST" => $lang['Memberlist'],
+	"L_FAQ" => $lang['FAQ'],
+	"L_FORUM" => $lang['Forum'],
+	"L_TOPICS" => $lang['Topics'], 
+	"L_REPLIES" => $lang['Replies'],
+	"L_VIEWS" => $lang['Views'],
+	"L_POSTS" => $lang['Posts'],
+	"L_LASTPOST" => $lang['Last_Post'],
+	"L_MODERATOR" => $lang['Moderator'],
+	"L_MESSAGES" => $lang['Messages'],
+	"L_POSTEDTOTAL" => $lang['Posted_Total'],
+	"L_WEHAVE" => $lang['We_have'],
+	"L_REGUSERS" => $lang['Regedusers'],
+	"L_NEWESTUSER" => $lang['newestuser'],
+	"L_BROWSING" => $lang['browsing'],
+	"L_ARECURRENTLY" => $lang['arecurrently'],
+	"L_THEFORUMS" => $lang['theforums'],
+	"L_NONEWPOSTS" => $lang['No_new_posts'],
+	"L_NEWPOSTS" => $lang['New_posts'],
+	"L_POSTED" => $lang['Posted'],
+	"L_JOINED" => $lang['Joined'],
+	"L_AUTO_LOGIN" => $lang['Log_me_in'],
+	"L_AUTHOR" => $lang['Author'],
+	"L_MESSAGE" => $lang['Message'],
+	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 
 	"U_INDEX" => append_sid("index.".$phpEx),

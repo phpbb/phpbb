@@ -39,15 +39,22 @@ $lang['Topic'] = "Topic";
 $lang['Topics'] = "Topics";
 $lang['Reply'] = "Reply";
 $lang['Replies'] = "Replies";
+$lang['Views'] = "Views";
 $lang['Post'] = "Post";
 $lang['Posts'] = "Posts";
+$lang['Posted'] = "Posted";
 $lang['Message'] = "Message";
 $lang['Messages'] = "Messages";
 $lang['User'] = "User";
 $lang['Users'] = "Users";
+$lang['Username'] = "Username";
+$lang['Password'] = "Password";
+$lang['Email'] = "Email";
 $lang['Poster'] = "Poster";
 $lang['Author'] = "Author";
-
+$lang['is'] = "is";
+$lang['are'] = "are";
+$lang['by'] = "by";
 $lang['All_Topics'] = "All Topics";
 $lang['Hour'] = "Hour";
 $lang['Hours'] = "Hours";
@@ -68,6 +75,36 @@ $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where
 $lang['of'] = "of"; // See Page above
 
 //
+// Global Header strings
+//
+$lang['Registered'] = "Registered";
+$lang['None'] = "None";
+
+$lang['Welcome_to'] = "Welcome to"; // Followed by site name
+$lang['Register'] = "Register";
+$lang['Profile'] = "Profile";
+$lang['Search'] = "Search";
+$lang['Private_msgs'] = "Private Messages";
+$lang['Memberlist'] = "Memberlist";
+$lang['FAQ'] = "FAQ";
+$lang['Last_Post'] = "Last Post";
+$lang['Moderator'] = "Moderator(s)";
+
+// Stats block text
+$lang['Posted_Total'] = "Our users have posted a total of"; // Number of posts
+$lang['We_have'] = "We have"; // # registered users
+$lang['Regedusers'] = "Registered users";
+$lang['newestuser'] = "The newest Registered User is"; // username
+$lang['browsing'] = "browsing";
+$lang['arecurrently'] = "There are currently"; // # users browsing
+$lang['theforums'] = "the forums";
+
+
+$lang['No_new_posts'] = "No new posts";
+$lang['New_posts'] = "New posts";
+$lang['Joined'] = "Joined";
+
+//
 // Login
 //
 $lang['Login'] = "Login";
@@ -75,12 +112,13 @@ $lang['Logout'] = "Logout";
 $lang['You_are_logged_in'] = "You are logged in as"; // This is followed by the username
 $lang['You_are_not_logged_in'] = "You are not logged in";
 $lang['Forgotten_password'] = "I forgot my password";
+$lang['Log_me_in'] = "Log me on automatically each visit";
 
 //
 // Index page
 //
 $lang['No_Posts'] = "No Posts";
-
+$lang['Forum_Index'] = "Forum Index";
 //
 // Viewforum
 //
@@ -93,6 +131,12 @@ $lang['No_Posts'] = "No Posts";
 // Posting/Replying (Not private
 // messaging!)
 //
+$lang['Flood_Error'] = "Your last post was less then ".$board_config['flood_interval']." seconds ago. You must wait befor you post again!";
+$lang['Empty_subj'] = "You must specifiy a subject when posting a new topic.";
+$lang['Empty_msg'] = "You must enter a message when posting!";
+$lang['Postnew'] = "Post New Topic";
+$lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
+
 
 //
 // Private Messageing <= Should be blank for now
@@ -101,10 +145,14 @@ $lang['No_Posts'] = "No Posts";
 //
 // Profiles/Registration
 //
+$lang['Website'] = "Web Site";
+$lang['From'] = "From";
 
 //
 // Memberslist
 //
+$lang['Top10'] = "Top 10 Posters";
+$lang['Alphabetical'] = "Sorta Alphabetical";
 
 //
 // Search <= Should be blank for now
@@ -320,7 +368,7 @@ $l_memberslist	= "Memberslist";
 $l_faq		= "FAQ";
 $l_privmsgs	= "Private $l_messages";
 $l_sendpmsg	= "Send a Private Message";
-$l_postedtotal  = "Our users have posted a total of";
+$l_postedtotal  = 
 $l_wehave	= "We have";
 $l_regedusers	= "registered users.";
 $l_newestuser	= "The newest Registered User is";

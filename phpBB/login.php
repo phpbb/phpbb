@@ -131,7 +131,7 @@ else
 	$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
 
 	$template->assign_vars(array(
-		"L_SEND_PASSWORD" => $l_resend_password,
+		"L_SEND_PASSWORD" => $lang['Forgotten_password'],
 
 		"FORWARD_PAGE" => $forward_page,
 		"USERNAME" => $username,

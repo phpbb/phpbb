@@ -22,7 +22,7 @@ include('extension.inc');
 include('common.'.$phpEx);
 
 $pagetype = "memberlist";
-$page_title = $l_memberslist;
+$page_title = $lang['Memberlist'];
 
 //
 // Start session management
@@ -105,11 +105,11 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 	$template->assign_vars(array(
 		"U_VIEW_TOP10" => append_sid("memberlist.$phpEx?mode=topten"),
 		"U_SORTALPHA" => append_sid("memberlist.$phpEx?mode=alpha"),
-		"L_VIEW_TOP10" => $l_top10,
-		"L_SORTALPHA" => $l_alpha,
-		"L_EMAIL" => $l_email,
-		"L_WEBSITE" => $l_website,
-		"L_FROM" => $l_from));
+		"L_VIEW_TOP10" => $lang['Top10'],
+		"L_SORTALPHA" => $lang['Alphabetical'],
+		"L_EMAIL" => $lang['Email'],
+		"L_WEBSITE" => $lang['Website'],
+		"L_FROM" => $lang['From']));
 											
 	$members = $db->sql_fetchrowset($result);
 

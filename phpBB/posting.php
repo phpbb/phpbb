@@ -117,7 +117,7 @@ if(isset($HTTP_POST_VARS['submit']))
 			if(($current_time - $last_post_time) < $board_config['flood_interval'])
 			{
 				$error = TRUE;
-				$error_msg = $l_flooderror;
+				$error_msg = $lang['Flood_Error'];
 			}
 		}
 	}
@@ -133,7 +133,7 @@ if(isset($HTTP_POST_VARS['submit']))
 		{
 			$error_msg .= "<br />";
 		}
-		$error_msg .= $l_emptysubj;
+		$error_msg .= $lang['Empty_subj'];
 	}
 
 	if(!empty($HTTP_POST_VARS['message']))
@@ -188,15 +188,15 @@ if(isset($HTTP_POST_VARS['submit']))
 		{
 			$error_msg .= "<br />";
 		}
-		$error_msg .= $l_emptymsg;
+		$error_msg .= $lang['Empty_msg'];
 	}
 }
 
 switch($mode)
 {
 	case 'newtopic':
-		$page_title = " $l_postnew";
-		$section_title = $l_postnewin;
+		$page_title = " ".$lang['Postnew'];
+		$section_title = $lang['Post_new_in'];
 
 		if(isset($HTTP_POST_VARS['submit']) && !$error)
 		{
