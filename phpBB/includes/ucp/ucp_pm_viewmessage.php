@@ -7,16 +7,16 @@
 // STARTED   : Mon Apr 12, 2004
 // COPYRIGHT : © 2004 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
-	
+
 	$user->add_lang('viewtopic');
-	
+
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
 	$author_id	= (int) $message_row['author_id'];
@@ -83,7 +83,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-			$sql = 'SELECT * 
+			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
 					AND in_message = 1
@@ -99,8 +99,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			// No attachments exist, but message table thinks they do so go ahead and reset attach flags
 			if (!sizeof($attachments))
 			{
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . " 
-					SET message_attachment = 0 
+				$sql = 'UPDATE ' . PRIVMSGS_TABLE . "
+					SET message_attachment = 0
 					WHERE msg_id = $msg_id";
 				$db->sql_query($sql);
 			}
@@ -151,12 +151,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_POSTS' 		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
 		'AUTHOR_FROM' 		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
-		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])), 
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
 		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_PM']),
 		'IP_IMG' 			=> $user->img('btn_ip', $user->lang['VIEW_IP']),
 		'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_PM']),
 		'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['REPORTED_MESSAGE']),
-		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']), 
+		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
 		'EMAIL_IMG' 		=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
 		'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
 		'REPLY_IMG'			=> $user->img('btn_reply_pm', $user->lang['POST_REPLY_PM']),
@@ -175,8 +175,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_DELETE' 			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $author_id,
 		'U_EMAIL' 			=> $user_info['email'],
-		'U_QUOTE' 			=> ($config['auth_quote_pm'] && $auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '', 
-		'U_EDIT' 			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '', 
+		'U_QUOTE' 			=> ($config['auth_quote_pm'] && $auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_EDIT' 			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_POST_REPLY_PM' 	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
@@ -209,7 +209,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			$template->assign_var('S_DISPLAY_HISTORY', true);
 		}
 	}
-}	
+}
 
 // Display Message History
 function message_history($msg_id, $user_id, $message_row, $folder)
@@ -219,7 +219,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
 		FROM ' . PRIVMSGS_TABLE . ' p, ' . PRIVMSGS_TO_TABLE . ' t, ' . USERS_TABLE . ' u
-		WHERE t.msg_id = p.msg_id 
+		WHERE t.msg_id = p.msg_id
 			AND p.author_id = u.user_id
 			AND t.folder_id <> ' . PRIVMSGS_NO_BOX . "
 			AND t.user_id = $user_id";
@@ -273,7 +273,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	{
 		return false;
 	}
-	
+
 	// Instantiate BBCode class
 	if (!isset($bbcode) && $bbcode_bitfield)
 	{
@@ -288,7 +288,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 
 	$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm";
 	$next_history_pm = $previous_history_pm = $prev_id = 0;
-	
+
 	foreach ($rowset as $id => $row)
 	{
 		$author_id	= $row['author_id'];
@@ -319,7 +319,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'AUTHOR_NAME' 	=> $author,
 			'SUBJECT'	 	=> $subject,
 			'SENT_DATE' 	=> $user->format_date($row['message_time']),
-			'MESSAGE' 		=> str_replace("\n", '<br />', $message), 
+			'MESSAGE' 		=> str_replace("\n", '<br />', $message),
 			'FOLDER'		=> implode(', ', $row['folder']),
 
 			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
@@ -327,7 +327,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'U_MSG_ID'		=> $row['msg_id'],
 			'U_VIEW_MESSAGE'=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_AUTHOR_PROFILE' 	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$author_id",
-			'U_QUOTE' 		=> ($config['auth_quote_pm'] && $auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '', 
+			'U_QUOTE' 		=> ($config['auth_quote_pm'] && $auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM' 	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
 		unset($rowset[$id]);
@@ -367,8 +367,8 @@ function get_user_informations($user_id, $user_row)
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
 	{
-		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_allow_viewonline) AS viewonline 
-			FROM ' . SESSIONS_TABLE . " 
+		$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
+			FROM ' . SESSIONS_TABLE . "
 			WHERE session_user_id = $user_id
 			GROUP BY session_user_id";
 		$result = $db->sql_query_limit($sql, 1);
@@ -448,7 +448,7 @@ function process_inline_attachments(&$message, &$attachments, &$update_count)
 	{
 		// Flip index if we are displaying the reverse way
 		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
-		
+
 		$replace['from'][] = $matches[0][$index];
 		$replace['to'][] = (isset($tpl[$index])) ? $tpl[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][$num]);
 

@@ -947,7 +947,7 @@ if ($config['load_cp_viewtopic'])
 // Generate online information for user
 if ($config['load_onlinetrack'] && sizeof($id_cache))
 {
-	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_allow_viewonline) AS viewonline
+	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 		FROM ' . SESSIONS_TABLE . '
 		WHERE session_user_id IN (' . implode(', ', $id_cache) . ')
 		GROUP BY session_user_id';
