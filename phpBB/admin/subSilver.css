@@ -160,28 +160,19 @@ hr	{
 	Forms
 */
 input, textarea, select {
-	color:			black;
-	font:			normal 11px Verdana, Arial, Helvetica, sans-serif;
-	border-color:	black;
+	color:				black;
+	font:				normal 8pt Verdana, Arial, Helvetica, sans-serif;
+	border-color:		black;
 }
 
 input.text {
 	font-family:	'Courier New',courier;
 }
 
-input.post, textarea.post, select {
-	background-color:	white;
-}
-
-input {
-	text-indent:	2px;
-}
-
-input.button {
-	background-color:	#EFEFEF;
-	color:				black;
-	font-family:		Verdana, Arial, Helvetica, sans-serif;
-	font-size:			11px;
+textarea.edit {
+	font-family:	'Courier New',courier;
+	font-size:		9pt;
+	line-height:	125%;
 }
 
 input.mainoption {

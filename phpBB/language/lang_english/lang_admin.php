@@ -298,6 +298,7 @@ $lang['Delete_user_posts_explain'] = 'Setting this to yes will remove all posts 
 $lang['Confirm_prune_users'] = 'Are you sure you wish to prune the selected users?';
 $lang['Success_user_prune'] = 'The selected users have been pruned successfully';
 
+
 //
 // Banning
 //
@@ -710,24 +711,30 @@ $lang['Click_return_disallowadmin'] = 'Click %sHere%s to return to Disallow User
 //
 // Styles Admin
 //
-$lang['Styles_admin'] = 'Styles Administration';
-$lang['Styles_explain'] = 'Using this facility you can add, remove and manage styles (templates and themes) available to your users';
-$lang['Styles_addnew_explain'] = 'The following list contains all the themes that are available for the templates you currently have. The items on this list have not yet been installed into the phpBB database. To install a theme simply click the install link beside an entry';
-
-$lang['Select_template'] = 'Select a Template';
-
-$lang['Edit_styles'] = 'Edit Styles';
-$lang['Edit_templates'] = 'Edit Templates';
-$lang['Edit_imagesets'] = 'Edit Imagesets';
-$lang['Edit_themes'] = 'Edit Themes';
-
+$lang['Edit_style'] = 'Edit Styles';
 $lang['Style'] = 'Style';
-$lang['Template'] = 'Template';
-$lang['Install'] = 'Install';
+$lang['Styles_admin'] = 'Styles Administration';
+$lang['Styles_explain'] = 'Using this facility you can add, remove and manage styles. Styles are a combination of a template, theme (CSS) and imageset.';
+
+$lang['Edit_template'] = 'Edit Template';
+$lang['Edit_template_explain'] = 'Use this panel to edit an existing compiled template set. When you have made the required changes you can recompile the template and (or) download it. Please remember that the existing HTML templates are <b>not</b> altered, only the compiled versions are affected. Therefore you should download any altered files if you wish to keep them for future use and for archival purposes.';
+$lang['Select_template'] = 'Select template';
+$lang['Template'] = 'Select template';
 $lang['Download'] = 'Download';
 
 $lang['Edit_theme'] = 'Edit Theme';
-$lang['Edit_theme_explain'] = 'In the form below you can edit the settings for the selected theme';
+$lang['Edit_theme_explain'] = 'Use this panel to edit an existing theme. You can modify (or add) both CSS to be included within each page output by the forum (subject to the template including it) and an externally linked stylesheet. Remember, the location of the stylesheet is relative to the phpBB root directory.';
+$lang['Select_theme'] = 'Select theme';
+$lang['CSS_data'] = 'CSS Data';
+$lang['CSS_data_explain'] = 'This CSS is output to the template and may be included within the header of each page.';
+$lang['CSS_sheet'] = 'CSS Stylesheet';
+$lang['Success_theme_update'] = 'The theme has been successfully updated.';
+
+$lang['Edit_imageset'] = 'Edit Imageset';
+$lang['Edit_imageset_explain'] = '';
+
+
+
 
 $lang['Create_theme'] = 'Create Theme';
 $lang['Create_theme_explain'] = 'Use the form below to create a new theme for a selected template. When entering colours (for which you should use hexadecimal notation) you must not include the initial #, i.e.. CCCCCC is valid, #CCCCCC is not';
