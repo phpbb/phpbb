@@ -286,7 +286,7 @@ switch ( $row['config_value'] )
 				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . " 
 					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
 				$sql[] = "INSERT INTO Tmp_" . GROPUS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
-						SELECT group_id, group_type, group_name, group_description, group_moderator, group_signle_user FROM " . GROUPS_TABLE . " TABLOCKX";
+						SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
 				$sql[] = "DROP TABLE " . GROUPS_TABLE;
 				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD 
@@ -399,7 +399,7 @@ switch ( $row['config_value'] )
 				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . " 
 					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
 				$sql[] = "INSERT INTO Tmp_" . GROPUS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
-						SELECT group_id, group_type, group_name, group_description, group_moderator, group_signle_user FROM " . GROUPS_TABLE . " TABLOCKX";
+						SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
 				$sql[] = "DROP TABLE " . GROUPS_TABLE;
 				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD 
@@ -430,7 +430,7 @@ switch ( $row['config_value'] )
 				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . " 
 					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
 				$sql[] = "INSERT INTO Tmp_" . GROPUS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
-						SELECT group_id, group_type, group_name, group_description, group_moderator, group_signle_user FROM " . GROUPS_TABLE . " TABLOCKX";
+						SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
 				$sql[] = "DROP TABLE " . GROUPS_TABLE;
 				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD 
