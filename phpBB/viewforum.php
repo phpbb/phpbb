@@ -480,7 +480,7 @@ if( $total_topics )
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
 			$folder_image =  $images['folder'];
-			$folder_alt = $lang['Topic_Moved'];
+			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		}
 		else
