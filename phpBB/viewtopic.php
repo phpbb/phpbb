@@ -332,7 +332,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, p.enable_bbcode, p.enable_html, p.enable_smilies, pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.*,  pt.post_text, pt.post_subject
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -519,6 +519,11 @@ if( !empty($forum_row['topic_vote']) )
 				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
 				$vote_graphic = ($vote_graphic < $vote_graphic_max - 1) ? $vote_graphic + 1 : 0;
 				
+				if( count($orig_word) )
+				{
+					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
+				}
+
 				$template->assign_block_vars("poll_option", array(
 					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'], 
 					"POLL_OPTION_RESULT" => $vote_info[$i]['vote_result'], 
@@ -542,6 +547,11 @@ if( !empty($forum_row['topic_vote']) )
 
 			for($i = 0; $i < $vote_options; $i++)
 			{
+				if( count($orig_word) )
+				{
+					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
+				}
+
 				$template->assign_block_vars("poll_option", array(
 					"POLL_OPTION_ID" => $vote_info[$i]['vote_option_id'], 
 					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'])
@@ -556,6 +566,11 @@ if( !empty($forum_row['topic_vote']) )
 			);
 
 			$s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '"><input type="hidden" name="mode" value="vote">';
+		}
+
+		if( count($orig_word) )
+		{
+			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
 		}
 
 		$template->assign_vars(array(
@@ -672,7 +687,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . stripslashes($postrow[$i]['user_aim']) . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "";
 
-		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
+		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
 
 		$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
 	}
@@ -704,7 +719,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( $is_auth['auth_mod'] )
 	{
-		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
+		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
 		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
@@ -727,7 +742,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if( !$board_config['allow_html'] ) 
 	{
-		if($user_sig != "")
+		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
 		{
 			$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
 		}
@@ -740,7 +755,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( $board_config['allow_bbcode'] && $bbcode_uid != "" )
 	{
-		if($user_sig != "")
+		if( $user_sig != "" && $postrow[$i]['enable_sig'] )
 		{
 			$sig_uid = make_bbcode_uid();
 			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
@@ -754,7 +769,10 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
-	$message = ($user_sig != "") ? ereg_replace("\[addsig]$", "<br /><br />_________________<br />" . $user_sig, $message) : ereg_replace("\[addsig]$", "", $message);
+	if( $postrow[$i]['enable_sig'] )
+	{
+		$message .= "<br /><br />_________________<br />" . $user_sig;
+	}
 
 	if( count($orig_word) )
 	{
@@ -865,13 +883,13 @@ if($can_watch_topic)
 {
 	if($is_watching_topic)
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start\">" . $lang['Stop_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\">" . $lang['Stop_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start") . "\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
-		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start\">" . $lang['Start_watching_topic'] . "</a>";
-		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
+		$s_watching_topic = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . "\">" . $lang['Start_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start") . "\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
 	}
 }
 else

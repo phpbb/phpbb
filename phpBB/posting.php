@@ -30,8 +30,8 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 // Do some initial checks, set basic variables,
 // etc.
 //
-$html_entities_match = array("#<#", "#>#", "#& #");
-$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
+$html_entities_match = array("#<#", "#>#", "#& #", "#\"#");
+$html_entities_replace = array("&lt;", "&gt;", "&amp; ", "&quot;");
 
 $submit = ( isset($HTTP_POST_VARS['submit']) ) ? TRUE : 0;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
@@ -93,20 +93,21 @@ if( $cancel )
 {
 	if($post_id != "")
 	{
-		header("Location: " . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id"));
+		$redirect = "viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id";
 	}
 	else if($topic_id != "")
 	{
-		header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id"));
+		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
 	}
 	else if($forum_id != "")
 	{
-		header("Location: " . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"));
+		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
 	}
 	else
 	{
-		header("Location: " . append_sid("index.$phpEx"));
+		$redirect = "index.$phpEx";
 	}
+	header("Location:" . append_sid($redirect));
 }
 //
 // Continue var definitions
@@ -510,10 +511,6 @@ if( $submit && $mode != "vote" )
 
 			$post_message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 
-			if( $attach_sig )
-			{
-				$post_message .= (ereg(" $", $post_message)) ? "[addsig]" : " [addsig]";
-			}
 		}
 	}
 	else
@@ -694,8 +691,8 @@ if( ( $submit || $confirm ) && !$error )
 			$new_topic_id = $topic_id;
 		}
 
-		$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies)
-			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on)";
+		$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig)
+			VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
 		$result = ($mode == "reply") ? $db->sql_query($sql, BEGIN_TRANSACTION) : $db->sql_query($sql);
 
 		if($result)
@@ -1191,7 +1188,7 @@ if( ( $submit || $confirm ) && !$error )
 			}
 
 			$sql = "UPDATE " . POSTS_TABLE . "
-				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on" . $edited_sql . "
+				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . "
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
@@ -1505,7 +1502,7 @@ else if( $preview || $refresh || $error )
 			@reset($HTTP_POST_VARS['poll_option_text']);
 			while( list($option_id, $option_text) = each($HTTP_POST_VARS['poll_option_text']) )
 			{
-				$poll_option_list[$option_id] = trim(strip_tags(stripslashes($option_text)));
+				$poll_option_list[$option_id] = trim(strip_tags(preg_replace($html_entities_match, $html_entities_replace, stripslashes($option_text))));
 				$poll_options++;
 			}
 		}
@@ -1655,17 +1652,16 @@ else
 			$post_subject = $postrow['post_subject'];
 			$post_message = $postrow['post_text'];
 
-			if( eregi("\[addsig]$", $post_message) )
+			if( $mode == "editpost" )
 			{
-				$post_message = eregi_replace("\[addsig]$", "", $post_message);
-
-				$attach_sig = ( $mode == "editpost" ) ? ( ( $postrow['user_sig'] != "" ) ? TRUE : 0 ) : ( ( $userdata['user_sig'] != "" ) ? TRUE : 0 );
+				$attach_sig = ( $postrow['enable_sig'] && $postrow['user_sig'] != "" ) ? TRUE : 0; 
+				$user_sig = $postrow['user_sig'];
 			}
-			else 
+			else
 			{
-				$attach_sig = ( $mode == "editpost" ) ? 0 : ( ( $userdata['user_sig'] != "" ) ? TRUE : 0 );
+				$attach_sig = ( $userdata['user_attachsig'] ) ? TRUE : 0;
+				$user_sig = $userdata['user_sig'];
 			}
-			$user_sig = ( $attach_sig ) ? ( ( $mode == "editpost" ) ? $postrow['user_sig'] : $userdata['user_sig'] ) : "";
 
 			$post_message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
@@ -1712,12 +1708,16 @@ else
 						}
 
 						$vote_results_sum = 0;
-						while( $row = $db->sql_fetchrow($result) )
+						if( $row = $db->sql_fetchrow($result) )
 						{
 							$poll_title = $row['vote_text'];
 							$poll_length = $row['vote_length'];
 
 							$poll_option_list[$row['vote_option_id']] = $row['vote_option_text'];
+							while( $row = $db->sql_fetchrow($result) )
+							{
+								$poll_option_list[$row['vote_option_id']] = $row['vote_option_text'];
+							}
 						}
 						$poll_length = $poll_length / 86400;
 
@@ -1809,7 +1809,7 @@ if( $preview && !$error )
 		}
 	}
 
-	if( $user_sig != "" && $board_config['allow_bbcode'] )
+	if( $attach_sig && $user_sig != "" && $board_config['allow_bbcode'] )
 	{
 		$sig_uid = make_bbcode_uid();
 		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
@@ -1854,11 +1854,6 @@ if( $preview && !$error )
 		"L_POSTED" => $lang['Posted'])
 	);
 	$template->pparse("preview");
-
-	//
-	// Post preview output conversion
-	//
-	$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 
 }
 //
@@ -2018,13 +2013,13 @@ switch($mode)
 // Output the data to the template
 //
 $template->assign_vars(array(
-	"USERNAME" => $post_username,
-	"SUBJECT" => $post_subject,
+	"USERNAME" => preg_replace($html_entities_match, $html_entities_replace, $post_username),
+	"SUBJECT" => preg_replace($html_entities_match, $html_entities_replace, $post_subject),
 	"MESSAGE" => $post_message,
 	"HTML_STATUS" => $html_status,
 	"BBCODE_STATUS" => $bbcode_status,
 	"SMILIES_STATUS" => $smilies_status, 
-	"POLL_TITLE" => $poll_title,
+	"POLL_TITLE" => preg_replace($html_entities_match, $html_entities_replace, $poll_title),
 	"POLL_LENGTH" => $poll_length, 
 
 	"L_SUBJECT" => $lang['Subject'],
@@ -2086,7 +2081,7 @@ if( $display_poll )
 		while( list($option_id, $option_text) = each($poll_option_list) )
 		{
 			$template->assign_block_vars("poll_option_rows", array(
-				"POLL_OPTION" => $option_text, 
+				"POLL_OPTION" => preg_replace($html_entities_match, $html_entities_replace, $option_text), 
 
 				"S_POLL_OPTION_NUM" => $option_id)
 			);
