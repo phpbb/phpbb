@@ -37,8 +37,8 @@ if( !empty($board_config['privmsg_disable']) )
 //
 // Var definitions
 //
-$html_entities_match = array("#<#", "#>#", "#& #", "#\"#");
-$html_entities_replace = array("&lt;", "&gt;", "&amp; ", "&quot;");
+$html_entities_match = array("#&#", "#<#", "#>#", "#\"#");
+$html_entities_replace = array("&amp;", "&lt;", "&gt;", "&quot;");
 
 //
 // Parameters
@@ -1111,7 +1111,7 @@ else if( $submit || $refresh || $mode != "" )
 		//
 		$to_username = ( isset($HTTP_POST_VARS['username']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['username']))) : "";
 		$privmsg_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(strip_tags(stripslashes($HTTP_POST_VARS['subject']))) : "";
-		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim(stripslashes($HTTP_POST_VARS['message'])) : "";
+		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : "";
 		$privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 
 		//
@@ -1217,7 +1217,7 @@ else if( $submit || $refresh || $mode != "" )
 
 		if( $mode == "edit" )
 		{
-			$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
+			$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
 				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
 				WHERE pm.privmsgs_id = $privmsg_id
 					AND pmt.privmsgs_text_id = pm.privmsgs_id
@@ -1237,10 +1237,10 @@ else if( $submit || $refresh || $mode != "" )
 
 			$privmsg_subject = $privmsg['privmsgs_subject'];
 			$privmsg_message = $privmsg['privmsgs_text'];
+			$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
-			$privmsg_message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $privmsg_message);
+			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
-			$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
 			$user_sig = $privmsg['user_sig'];
@@ -1252,7 +1252,7 @@ else if( $submit || $refresh || $mode != "" )
 		else if( $mode == "reply" || $mode == "quote" )
 		{
 
-			$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id
+			$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id
 				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
 				WHERE pm.privmsgs_id = $privmsg_id
 					AND pmt.privmsgs_text_id = pm.privmsgs_id
@@ -1270,19 +1270,18 @@ else if( $submit || $refresh || $mode != "" )
 			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
 			$privmsg_subject = ( (strstr("Re:", $privmsg['privmsgs_subject'])) ? $lang['Re'] . ":" : "" ) . $privmsg['privmsgs_subject'];
+			$privmsg_message = $privmsg['privmsgs_text'];
+			$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
-			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $privmsg_message);
+			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
-			$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
 			if( $mode == "quote" )
 			{
-				$privmsg_message = $privmsg['privmsgs_text'];
-
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
 				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]";
@@ -1319,7 +1318,8 @@ else if( $submit || $refresh || $mode != "" )
 			$bbcode_uid = make_bbcode_uid();
 		}
 
-		$preview_message = prepare_message($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+		$preview_message = stripslashes(prepare_message($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+		$privmsg_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $privmsg_message));
 
 		//
 		// Finalise processing as per viewtopic

@@ -661,6 +661,7 @@ if( $cancel )
 		$redirect = "index.$phpEx";
 		$post_append = "";
 	}
+	header("HTTP/1.0 302 Redirect");
 	header("Location:" . append_sid($redirect) . $post_append, true);
 }
 //
@@ -985,6 +986,7 @@ if( !$is_auth[$is_auth_type] )
 				break;
 		}
 
+		header("HTTP/1.0 302 Redirect");
 		header("Location: " . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
 
 	}
@@ -1822,6 +1824,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			}
 			else
 			{
+				header("HTTP/1.0 302 Redirect");
 				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 			}
 		}
@@ -2366,7 +2369,6 @@ else
 
 			$post_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
-//			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
 
 			//
