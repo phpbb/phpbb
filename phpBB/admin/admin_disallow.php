@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,7 +24,7 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
-	$module['Users']['Disallow'] = append_sid($filename);
+	$module['Users']['Disallow'] = $filename . $SID;
 
 	return;
 }

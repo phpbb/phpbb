@@ -31,7 +31,7 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
-	$module['General']['Smilies'] = $filename;
+	$module['General']['Emoticons'] = $filename;
 
 	return;
 }
