@@ -455,7 +455,8 @@ $lang += array(
 	'ALL_POSTS'			=> 'All Posts',
 
 	'BACK_TO_TOP'		=> 'Top',
-	'POST_SUBJECT'		=> 'Post subject',
+	'POST_SUBJECT'		=> 'Post Subject',
+	'TOPIC_TITLE'		=> 'Topic Title',
 	'KARMA_LEVEL'		=> 'Karma Level', 
 	'READ_PROFILE'		=> 'Profile',
 	'SEND_EMAIL'		=> 'Email',
@@ -569,7 +570,6 @@ $lang += array(
 	'LOCK_POST'			=> 'Lock Post',
 	'LOCK_POST_EXPLAIN' => 'Prevent editing',
 
-	'CONFIRM_DELETE'			=> 'Are you sure you want to delete this post?',
 	'CANNOT_EDIT_TIME'			=> 'You can no longer edit or delete that post',
 	'CANNOT_EDIT_POST_LOCKED'	=> 'This post has been locked. You can no longer edit that post.',
 	'FLOOD_ERROR'				=> 'You cannot make another post so soon after your last.',
@@ -677,6 +677,7 @@ $lang += array(
 	'EXTENSION_DISABLED_AFTER_POSTING' => 'The extension <b>%s</b> has been deactivated and can no longer be displayed.', // used in Posts and PM's, replace %s with extension
 	'DESCRIPTION'			=> 'Description',
 	'DOWNLOAD'				=> 'Download',
+	'DOWNLOADS'				=> 'Downloads',
 	'FILESIZE'				=> 'Filesize',
 	'FILE_NOT_FOUND_404'	=> 'The file <b>%s</b> does not exist.',
 	'DOWNLOADED'			=> 'Downloaded',
@@ -849,6 +850,26 @@ $lang += array(
 
 	'ALREADY_ACTIVATED'		=> 'You have already activated your account',
 	'WRONG_ACTIVATION'		=> 'The activation key you supplied does not match any in the database',
+);
+
+// ucp_attachments
+$lang += array(
+	'CONFIRM_DELETE_ATTACHMENT'	=> 'Are you sure you want to delete this attachment?',
+	'CONFIRM_DELETE_ATTACHMENTS'=> 'Are you sure you want to delete these attachments?',
+	'ATTACHMENT_DELETED'		=> 'Attachment successfully deleted',
+	'ATTACHMENTS_DELETED'		=> 'Attachments successfully deleted',
+
+	'EXTENSION'					=> 'Extension',
+
+	'SORT_FILENAME'				=> 'Filename',
+	'SORT_COMMENT'				=> 'File Comment',
+	'SORT_EXTENSION'			=> 'Extension',
+	'SORT_SIZE'					=> 'Filesize',
+	'SORT_DOWNLOADS'			=> 'Downloads',
+	'SORT_POST_TIME'			=> 'Post Time',
+	'SORT_TOPIC_TITLE'			=> 'Topic Title',
+
+	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files'
 );
 
 // ucp_remind

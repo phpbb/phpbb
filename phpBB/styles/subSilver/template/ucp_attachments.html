@@ -1,0 +1,66 @@
+<!-- $Id$ -->
+
+<!-- INCLUDE ucp_header.html -->
+
+<!-- IF S_CONFIRM_DELETE -->
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<tr>
+	<th height="28" valign="middle">{MESSAGE_TITLE}</th>
+</tr>
+<tr>
+	<td class="row1" align="center"><span class="gen"><br />{MESSAGE_TEXT}<br /><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{L_YES}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span></td>
+</tr>
+</table>
+
+<!-- ELSEIF attachrow -->
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<tr>
+	<th height="28" nowrap="nowrap">#</th>
+	<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_FILENAME}">{L_FILENAME}</a></th>
+	<th nowrap="nowrap" width="25%"><a class="th" href="{U_SORT_FILE_COMMENT}">{L_FILE_COMMENT}</a></th>
+	<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_EXTENSION}">{L_EXTENSION}</a></th>
+	<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_FILESIZE}">{L_FILESIZE}</a></th>
+	<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_DOWNLOADS}">{L_DOWNLOADS}</a></th>
+	<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_POST_TIME}">{L_POST_TIME}</a></th>
+	<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_TOPIC_TITLE}">{L_TOPIC_TITLE}</a></th>
+	<th width="2%" nowrap="nowrap">{L_DELETE}</th>
+</tr>
+
+<!-- BEGIN attachrow -->
+
+	<!-- IF attach.S_ROW_COUNT is even -->
+	<tr class="row2">
+	<!-- ELSE -->
+	<tr class="row1">
+	<!-- ENDIF -->
+
+		<td class="gen" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
+		<td class="gen" align="center"><a href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a></td>
+		<td class="gen" align="center">{attachrow.COMMENT}</td>
+		<td class="gen" align="center">{attachrow.EXTENSION}</td>
+		<td class="gen" align="center" valign="middle" nowrap="nowrap">{attachrow.SIZE}</td>
+		<td class="gen" align="center">{attachrow.DOWNLOAD_COUNT}</td>
+		<td class="gensmall" align="center" valign="middle" nowrap="nowrap">&nbsp;{attachrow.POST_TIME}&nbsp;</td>
+		<td class="gen" align="center">{attachrow.TOPIC_TITLE}</td>
+		<td align="center" valign="middle"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1" /></td>
+	</tr>
+<!-- END attachrow -->
+
+<tr> 
+	<td class="cat" colspan="7" height="28"><div align="center"><span class="gen">{L_SORT_BY}: </span><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;<input type="submit" name="sort" value="{L_SORT}" class="btnlite" /></div></td>
+	<td class="cat" colspan="2" height="28" align="right"><input type="submit" name="delete" value="{L_DELETE_MARKED}" class="btnlite" /></td>
+</tr>
+</table>
+
+<!-- ELSE -->
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<tr>
+	<th>{L_UCP_NO_ATTACHMENTS}</th>
+</tr>
+</table>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE ucp_footer.html -->

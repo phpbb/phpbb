@@ -383,6 +383,7 @@ INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_or
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 2, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PREFS', 'prefs', 3, 1, 'personal\r\nview\r\npost', '');
 INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ZEBRA', 'zebra', 4, 1, 'friends\r\nfoes', '');
+INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ATTACHMENTS', 'attachments', 5, 1, '', 'u_attach');
 
 # MSSQL IDENTITY phpbb_modules OFF #
 

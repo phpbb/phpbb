@@ -1678,7 +1678,6 @@ $lang += array(
 
 	'MANAGE_EXTENSIONS'			=> 'Manage Extensions',
 	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. We strongly recommend not to allow scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
-	'EXTENSION'					=> 'Extension',
 	'ADD_EXTENSION'				=> 'Add extension',
 	'EXTENSIONS_UPDATED'		=> 'Extensions successfully updated',
 	'EXTENSION_EXIST'			=> 'The Extension %s already exist',

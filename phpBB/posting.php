@@ -336,7 +336,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 
 		$template->assign_vars(array(
 			'MESSAGE_TITLE'		=> $user->lang['DELETE_MESSAGE'],
-			'MESSAGE_TEXT'		=> $user->lang['CONFIRM_DELETE'],
+			'MESSAGE_TEXT'		=> $user->lang['CONFIRM_DELETE_POST'],
 
 			'S_CONFIRM_ACTION'	=> "posting.$phpEx$SID",
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
