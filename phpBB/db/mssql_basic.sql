@@ -11,7 +11,6 @@ BEGIN TRANSACTION;
 /*
   -- Config
 */
-INSERT INTO phpbb_config VALUES ('config_id','1');
 INSERT INTO phpbb_config VALUES ('board_disable','0');
 INSERT INTO phpbb_config VALUES ('board_startdate','994190324');
 INSERT INTO phpbb_config VALUES ('sitename','yourdomain.com');
