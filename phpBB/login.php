@@ -46,7 +46,7 @@ $header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SO
 extract($HTTP_GET_VARS);
 extract($HTTP_POST_VARS);
 
-$redirect = ( isset($redirect) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : '';
+$redirect = ( !empty($redirect) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : '';
 
 //
 // Do the login/logout/form/whatever
