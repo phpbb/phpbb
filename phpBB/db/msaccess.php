@@ -103,6 +103,8 @@ class sql_db
 				$this->in_transaction = TRUE;
 			}
 
+			$query = str_replace("LOWER(", "LCASE(", $query);
+
 			if( preg_match("/^SELECT(.*?)(LIMIT ([0-9]+)[, ]*([0-9]+)*)?$/s", $query, $limits) )
 			{
 				$query = $limits[1];
