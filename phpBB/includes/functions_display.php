@@ -183,18 +183,14 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 			$l_subforums = '';
 		}
 
+		$l_moderator = $moderators_list = '';
 		if ($display_moderators)
 		{
-			$l_moderator = $moderators_list = '';
 			if (!empty($forum_moderators[$forum_id]))
 			{
 				$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['Moderator'] : $user->lang['Moderators'];
 				$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 			}
-		}
-		else
-		{
-			$moderators_list = '<a href="memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id . '">' . $user->lang['View_moderators'] . '</a>';
 		}
 
 		$template->assign_block_vars('forumrow', array(
