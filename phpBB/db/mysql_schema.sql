@@ -448,7 +448,7 @@ CREATE TABLE phpbb_topics_watch (
 DROP TABLE IF EXISTS phpbb_users;
 CREATE TABLE phpbb_users (
    user_id int(11) NOT NULL auto_increment,
-   user_active tinyint(4),
+   user_active tinyint(4) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
