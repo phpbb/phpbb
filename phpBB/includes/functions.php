@@ -22,8 +22,10 @@
  *
  ***************************************************************************/
 
-function get_db_stat($db, $mode)
+function get_db_stat($mode)
 {
+	global $db;
+
 	switch($mode){
 		case 'postcount':
 			$sql = 'SELECT count(*) AS total FROM '.POSTS_TABLE;
@@ -73,8 +75,9 @@ function get_db_stat($db, $mode)
 }
 
 
-function make_jumpbox($db)
+function make_jumpbox()
 {
+	global $db;
 	global $l_jumpto, $l_noforums, $l_nocategories;
 
 	$sql = "SELECT c.*
@@ -157,8 +160,10 @@ function language_select($default, $name="language", $dirname="language/")
 	return $lang_select;
 }
 
-function theme_select($default, $db)
+function theme_select($default)
 {
+	global $db;
+	
 	$sql = "SELECT theme_id, theme_name FROM ".THEMES_TABLE." ORDER BY theme_name";
 	if($result = $db->sql_query($sql))
 	{
@@ -337,8 +342,11 @@ function tz_select($default)
 	return($tz_select);
 }
 
-function validate_username(&$username, $db)
+function validate_username(&$username)
 {
+
+	global $db;
+
 	$username = trim($username);
 	$username = strip_tags($username);
 	$username = htmlspecialchars($username);

@@ -31,9 +31,10 @@
  * TRUE if the user authorized
  * FALSE if the user is not
  */
-function auth($type, $db, $id = "", $user_ip = "")
+function auth($type, $id = "", $user_ip = "")
 {
-	global $userdata;
+	global $db, $userdata;
+
 	switch($type) 
 	{
 	// Empty for the moment.
@@ -45,8 +46,10 @@ function auth($type, $db, $id = "", $user_ip = "")
  * The following functions are used for getting user information. They are not related directly to auth()
  */
 
-function get_userdata_from_id($userid, $db) 
+function get_userdata_from_id($userid) 
 {
+	global $db;
+
 	$sql = "SELECT * FROM ".USERS_TABLE." WHERE user_id = $userid";
 	if(!$result = $db->sql_query($sql)) 
 	{
@@ -65,7 +68,10 @@ function get_userdata_from_id($userid, $db)
 	}
 }
 
-function get_userdata($username, $db) {
+function get_userdata($username) {
+
+	global $db;
+
 	$sql = "SELECT * FROM ".USERS_TABLE." WHERE username = '$username' AND user_level != ".DELETED;
 	if(!$result = $db->sql_query($sql))
 	{

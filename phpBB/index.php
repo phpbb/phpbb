@@ -37,12 +37,12 @@ init_userprefs($userdata);
 //
 //nl2br(var_dump($userdata));
 
-$total_posts = get_db_stat($db, 'postcount');
-$total_users = get_db_stat($db, 'usercount');
-$newest_userdata = get_db_stat($db, 'newestuser');
+$total_posts = get_db_stat('postcount');
+$total_users = get_db_stat('usercount');
+$newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
-$users_browsing = get_db_stat($db, "usersonline") . " Users ";
+$users_browsing = get_db_stat("usersonline") . " Users ";
 
 if(empty($viewcat))
 {

@@ -96,7 +96,7 @@ switch($pagetype)
 			     "jumpbox" => "jumpbox.tpl",
 			     "footer" => "viewforum_footer.tpl"));
 
-   $jumpbox = make_jumpbox($db);
+   $jumpbox = make_jumpbox();
    $template->assign_vars(array("JUMPBOX_LIST" => $jumpbox,
 			    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
 			    "SELECT_NAME" => POST_FORUM_URL));
@@ -114,7 +114,7 @@ switch($pagetype)
 			     "body" => "viewtopic_body.tpl",
 			     "jumpbox" => "jumpbox.tpl",
 			     "footer" => "viewtopic_footer.tpl"));
-   $jumpbox = make_jumpbox($db);
+   $jumpbox = make_jumpbox();
    $template->assign_vars(array("JUMPBOX_LIST" => $jumpbox,
 			    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
 			    "SELECT_NAME" => POST_FORUM_URL));
@@ -134,7 +134,7 @@ switch($pagetype)
 			"body" => "viewonline_body.tpl",
 			"jumpbox" => "jumpbox.tpl",
 			"footer" => "viewonline_footer.tpl"));
-		$jumpbox = make_jumpbox($db);
+		$jumpbox = make_jumpbox();
 		$template->assign_vars(array("TOTAL_POSTS" => $total_posts,
 			"TOTAL_USERS" => $total_users,
 			"POST_USER_URL" => POST_USERS_URL,

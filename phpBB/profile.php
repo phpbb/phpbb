@@ -51,7 +51,7 @@ switch($mode)
 				error_die(GENERAL_ERROR, $l_nouserid);
 			}
 		}
-		$profiledata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL], $db);
+		$profiledata = get_userdata_from_id($db, $HTTP_GET_VARS[POST_USERS_URL]);
 
 		// Calculate the number of days this user has been a member ($memberdays)
 		// Then calculate their posts per day

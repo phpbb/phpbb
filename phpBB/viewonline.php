@@ -36,9 +36,9 @@ init_userprefs($userdata);
 // End session management
 //
 
-$total_posts = get_db_stat($db, 'postcount');
-$total_users = get_db_stat($db, 'usercount');
-$newest_userdata = get_db_stat($db, 'newestuser');
+$total_posts = get_db_stat('postcount');
+$total_users = get_db_stat('usercount');
+$newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
 
