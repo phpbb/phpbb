@@ -500,6 +500,14 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
+	if(defined('HAS_DIED'))
+	{
+		die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
+	}
+	
+	define(HAS_DIED, 1);
+	
+
 	$sql_store = $sql;
 	
 	//
