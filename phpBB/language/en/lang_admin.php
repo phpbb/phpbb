@@ -324,6 +324,7 @@ $lang = array_merge($lang, array(
 	'acl_u_sendemail'	=> 'Can send emails',
 	'acl_u_sendpm'		=> 'Can send messages',
 	'acl_u_readpm'		=> 'Can read messages',
+	'acl_u_setavatar'	=> 'Can display avatar',
 	'acl_u_chgavatar'	=> 'Can change avatar',
 	'acl_u_chgcolor'	=> 'Can change default group',
 	'acl_u_chgemail'	=> 'Can change email address',
