@@ -23,6 +23,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_theme_create
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','50');

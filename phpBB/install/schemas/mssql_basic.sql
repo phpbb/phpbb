@@ -41,6 +41,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sentbox_privms
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_savebox_privmsgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
