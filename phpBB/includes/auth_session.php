@@ -142,6 +142,8 @@ class session {
 			message_die(CRITICAL_ERROR, 'Error creating user session', '', __LINE__, __FILE__, $sql);
 		}
 
+		$this->config();
+
 		return $this->userdata;
 	}
 
@@ -353,8 +355,8 @@ class session {
 
 	function config()
 	{
-		global $board_config, $theme, $images, $user_ip;
-		global $template, $lang, $phpEx, $phpbb_root_path;
+		global $db, $template, $lang, $board_config, $theme, $images;
+		global $phpEx, $phpbb_root_path;
 
 		if ( $this->userdata['user_id'] != ANONYMOUS )
 		{
@@ -394,18 +396,46 @@ class session {
 		//
 		// Set up style
 		//
-		if ( !$board_config['override_user_style'] )
+		$style = ( !$board_config['override_user_style'] && $this->userdata['user_id'] != ANONYMOUS && $this->userdata['user_style'] > 0 )? $this->userdata['user_style'] : $board_config['default_style'];
+
+		$sql = "SELECT *
+			FROM " . THEMES_TABLE . "
+			WHERE themes_id = $style";
+		if ( !($result = $db->sql_query($sql)) )
 		{
-			if ( $this->userdata['user_id'] != ANONYMOUS && $this->userdata['user_style'] > 0 )
+			message_die(CRITICAL_ERROR, 'Could not query database for theme info');
+		}
+
+		if ( !($theme = $db->sql_fetchrow($result)) )
+		{
+			message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
+		}
+
+		$template_path = 'templates/' ;
+		$template_name = $theme['template_name'] ;
+
+		$template = new Template($phpbb_root_path . $template_path . $template_name);
+
+		if ( $template )
+		{
+			$current_template_path = $template_path . $template_name;
+			@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
+
+			if ( !defined('TEMPLATE_CONFIG') )
 			{
-				if ( $theme = setup_style($this->userdata['user_style']) )
+				message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
+			}
+
+			$img_lang = ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
+
+			while( list($key, $value) = @each($images) )
+			{
+				if ( !is_array($value) )
 				{
-					return;
+					$images[$key] = str_replace('{LANG}', 'lang_' . $img_lang, $value);
 				}
 			}
 		}
-
-		$theme = setup_style($board_config['default_style']);
 
 		return;
 	}
