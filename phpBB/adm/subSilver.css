@@ -100,6 +100,7 @@ a.nav:hover {
 	font:			8pt Verdana, Arial, Helvetica, sans-serif; 
 	letter-spacing:	-1px;
 }
+.error { color: #FF0000 }
 
 /*
 	Tables

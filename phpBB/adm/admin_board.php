@@ -182,6 +182,10 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" size="4" maxlength="10" name="avatar_filesize" value="<?php echo $new['avatar_filesize']; ?>" /> Bytes</td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $user->lang['MIN_AVATAR_SIZE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MIN_AVATAR_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="avatar_min_height" value="<?php echo $new['avatar_min_height']; ?>" /> x <input class="post" type="text" size="3" maxlength="4" name="avatar_min_width" value="<?php echo $new['avatar_min_width']; ?>"></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_AVATAR_SIZE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_AVATAR_SIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="avatar_max_height" value="<?php echo $new['avatar_max_height']; ?>" /> x <input class="post" type="text" size="3" maxlength="4" name="avatar_max_width" value="<?php echo $new['avatar_max_width']; ?>"></td>
 	</tr>
@@ -307,6 +311,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['PASSWORD_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['PASSWORD_LENGTH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_pass_chars" value="<?php echo $new['min_pass_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_pass_chars" value="<?php echo $new['max_pass_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['MIN_RATINGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MIN_RATINGS_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="5" name="min_ratings" value="<?php echo $new['min_ratings']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_EMAIL_REUSE']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOW_EMAIL_REUSE_EXPLAIN']; ?></span></td>

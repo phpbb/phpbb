@@ -36,6 +36,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars','3
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars','30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars','6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars','30');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_ratings','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length','3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename','yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc','A _little_ text to describe your forum');
@@ -94,6 +95,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize','6144');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_width','20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_height','20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width','90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height','90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable','1');

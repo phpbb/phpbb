@@ -157,6 +157,33 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	return $rows;
 }
 
+function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
+{ 
+	static $matches = array();
+
+	$dh = opendir($rootdir . $dir);
+
+	while ($fname = readdir($dh))
+	{
+		if (is_file($rootdir . $dir . '/' . $fname) && 
+			preg_match('#\.' . $type . '$#i', $fname) &&  
+			filesize($rootdir . $dir . '/' . $fname))
+		{
+			$matches[] = array('path' => $dir, 'file' => $fname);
+		}
+		else if ($fname != '.' && $fname != '..' && 
+			!is_file($rootdir . $dir . '/' . $fname) && 
+			!is_link($rootdir . $dir . '/' . $fname))
+		{
+			filelist($rootdir, $dir . '/'. $fname, $type);
+		}
+	}
+	
+	closedir($dh);
+
+	return $matches;
+}
+
 // Posts and topics manipulation
 function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 {

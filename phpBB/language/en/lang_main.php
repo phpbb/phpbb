@@ -226,6 +226,7 @@ $lang = array(
 
 	'RETURN_INDEX'	=> 'Click %sHere%s to return to the index',
 	'RETURN_TOPIC'	=> 'Click %sHere%s to return to the topic',
+	'RETURN_POST'	=> 'Click %sHere%s to return to the post',
 	'RETURN_FORUM'	=> 'Click %sHere%s to return to the forum',
 	'RETURN_LOGIN'	=> 'Click %sHere%s to try again',
 	'RETURN_MCP'	=> 'Click %sHere%s to return to the Moderator Control Panel',
@@ -298,6 +299,20 @@ $lang = array(
 
 	'LOGIN_FORUM'	=> 'To view or post in this forum you must enter a password.', 
 	'WRONG_PASSWORD'=> 'You entered an incorrect password.', 
+
+	'KARMA' => array(
+		'-5'	=> 'Extremely Bad',
+		'-4'	=> 'Very Bad', 
+		'-3'	=> 'Very Poor', 
+		'-2'	=> 'Bad',
+		'-1'	=> 'Poor', 
+		'0'		=> 'Neutral', 
+		'1'		=> 'Not Bad',
+		'2'		=> 'Good',
+		'3'		=> 'Very Good', 
+		'4'		=> 'Extremely good', 
+		'5'		=> 'Excellent'
+	),
 
 
 	'INDEX'			=> 'Index page', 
@@ -420,6 +435,7 @@ $lang = array(
 	'VIEW_FORUM_TOPICS'	=> '%d Topics',
 
 
+	// Viewtopic
 	'VIEW_TOPIC'			=> 'View topic',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.', 
 	'PRINT_TOPIC'			=> 'Print View', 
@@ -438,10 +454,14 @@ $lang = array(
 
 	'BACK_TO_TOP'		=> 'Back to top',
 	'POST_SUBJECT'		=> 'Post subject',
+	'KARMA_LEVEL'		=> 'Karma Level', 
 	'READ_PROFILE'		=> 'Profile',
 	'SEND_EMAIL'		=> 'Email',
 	'VISIT_WEBSITE'		=> 'WWW',
-	'ICQ_STATUS'		=> 'ICQ Status',
+	'ICQ_STATUS'		=> 'ICQ Status', 
+	'RATE'				=> 'Rate', 
+	'RATE_GOOD'			=> 'Good', 
+	'RATE_BAD'			=> 'Bad', 
 	'EDIT_POST'			=> 'Edit',
 	'VIEW_IP'			=> 'IP',
 	'DELETE_POST'		=> 'Delete',
@@ -487,6 +507,9 @@ $lang = array(
 	'POLL_VOTED_OPTION'		=> 'You voted for this option', 
 	'POLL_RUN_TILL'			=> 'Poll runs till %s', // %s = date/time
 	'VOTE_SUBMITTED' 		=> 'Your vote has been cast',
+
+	'RATING_UPDATED'		=> 'Your existing rating for this poster has been updated', 
+	'RATING_ADDED'			=> 'Your rating for this poster has been saved.', 
 
 	'VIEW_TOPIC_POST'	=> '1 Post',
 	'VIEW_TOPIC_POSTS'	=> '%d Posts',
@@ -721,7 +744,7 @@ $lang = array(
 
 	'AVATAR_URL_INVALID'	=> 'The URL you specified is invalid.', 
 	'AVATAR_NOT_UPLOADED'	=> 'Avatar could not be uploaded.', 
-	'AVATAR_WRONG_SIZE'		=> 'The avatar must be at most %1$d pixels wide and %2$d pixels high.', 
+	'AVATAR_WRONG_SIZE'		=> 'The avatar must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.', 
 	'AVATAR_WRONG_FILESIZE'	=> 'The avatar must be between 0 and %d bytes.', 
 	'AVATAR_NO_SIZE'		=> 'Could not obtain width or height of linked avatar, please enter them manually.', 
 
@@ -735,6 +758,7 @@ $lang = array(
 	'NOTIFY_ON_PM'		=> 'Email me on new private messages',
 	'POPUP_ON_PM'		=> 'Pop up window on new private message',
 	'SHOW_EMAIL'		=> 'Users can contact me by email',
+	'ADMIN_EMAIL'		=> 'Administrators can email me information',
 	'BOARD_STYLE'		=> 'My board style',
 	'BOARD_LANGUAGE'	=> 'My language', 
 	'BOARD_TIMEZONE'	=> 'My timezone', 
@@ -749,6 +773,8 @@ $lang = array(
 	'VIEW_SIGS'			=> 'Display Signatures', 
 	'VIEW_AVATARS'		=> 'Display Avatars', 
 	'DISABLE_CENSORS'	=> 'Enable Word censoring', 
+	'MINIMUM_KARMA'		=> 'Minimum User Karma', 
+	'MINIMUM_KARMA_EXPLAIN'=> 'Posts by users with Karma less than this will be ignored.', 
 	'VIEW_TOPICS_DAYS'	=> 'Display topics from previous days', 
 	'VIEW_TOPICS_KEY'	=> 'Display topics ordering by', 
 	'VIEW_TOPICS_DIR'	=> 'Display topic order direction', 

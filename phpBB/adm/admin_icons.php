@@ -721,37 +721,4 @@ function update_image_dimensions()
 		break;
 }
 
-// ---------
-// FUNCTIONS
-//
-function filelist($rootdir, $dir = '', $type = 'gif|jpg|png')
-{ 
-	static $images = array();
-
-	$dh = opendir($rootdir . $dir);
-
-	while ($fname = readdir($dh))
-	{
-		if (is_file($rootdir . $dir . '/' . $fname) && 
-			preg_match('#\.' . $type . '$#i', $fname) &&  
-			filesize($rootdir . $dir . '/' . $fname))
-		{
-			$images[] = array('path' => $dir, 'file' => $fname);
-		}
-		else if ($fname != '.' && $fname != '..' && 
-			!is_file($rootdir . $dir . '/' . $fname) && 
-			!is_link($rootdir . $dir . '/' . $fname))
-		{
-			filelist($rootdir, $dir . '/'. $fname, $type);
-		}
-	}
-	
-	closedir($dh);
-
-	return $images;
-}
-//
-// FUNCTIONS
-// ---------
-
 ?>

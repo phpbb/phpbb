@@ -515,15 +515,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_TOPICS_PAGE'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_TOPICS_PAGE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" name="topics_per_page" value="<?php echo $forum_topics_per_page; ?>" size="3" maxlength="3" /></td>
+		<td class="row2"><input class="post" type="text" name="topics_per_page" value="<?php echo $forum_topics_per_page; ?>" size="3" maxlength="3" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="password" name="forum_password" value="<?php echo $forum_password; ?>" size="25" maxlength="25" /></td>
+		<td class="row2"><input class="post" type="password" name="forum_password" value="<?php echo $forum_password; ?>" size="25" maxlength="25" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM'] ?>: <br /><span class="gensmall"><?php echo $user->lang['FORUM_PASSWORD_CONFIRM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="password" name="forum_password_confirm" value="<?php echo $forum_password_confirm; ?>" size="25" maxlength="25" /></td>
+		<td class="row2"><input class="post" type="password" name="forum_password_confirm" value="<?php echo $forum_password_confirm; ?>" size="25" maxlength="25" /></td>
 	</tr>
 <?php
 
@@ -992,25 +992,31 @@ while ($row = $db->sql_fetchrow($result))
 	<tr>
 		<td class="row1" width="5%"><?php echo $folder_image; ?></td>
 		<td class="row1" width="50%"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td><span class="forumlink"><?php echo $forum_title ?></span></td><?php
-
-	if ($forum_type == FORUM_POST)
-	{
-
-?>
-				<td class="gensmall" align="right">&nbsp;<?php echo $user->lang['TOPICS']; ?>: <b><?php echo $row['forum_topics'] ?></b> / <?php echo $user->lang['POSTS']; ?>: <b><?php echo $row['forum_posts'] ?></b></td><?php
-
-	}
-
-?>
-			</tr>
+				<tr>
+					<td><span class="forumlink"><?php echo $forum_title ?></span></td>
+				</tr>
 			</table>
 			<table cellspacing="5" cellpadding="0" border="0">
 				<tr>
 					<td class="gensmall"><?php echo $row['forum_desc'] ?></td>
 				</tr>
-			</table></td>
+			</table>
+<?php
+
+	if ($forum_type == FORUM_POST)
+	{
+
+?>
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td class="gensmall">&nbsp;<?php echo $user->lang['TOPICS']; ?>: <b><?php echo $row['forum_topics'] ?></b> / <?php echo $user->lang['POSTS']; ?>: <b><?php echo $row['forum_posts'] ?></b></td>
+				</tr>
+			</table>
+<?php
+
+	}
+
+?></td>
 		<td class="row2" width="15%" align="center" valign="middle" nowrap="nowrap"><a href="admin_forums.<?php echo $url ?>&amp;mode=move_up"><?php echo $user->lang['MOVE_UP'] ?></a><br /><a href="admin_forums.<?php echo $url ?>&amp;mode=move_down"><?php echo $user->lang['MOVE_DOWN'] ?></a></td>
 		<td class="row2" width="20%" align="center" valign="middle" nowrap="nowrap">&nbsp;<a href="admin_forums.<?php echo $url ?>&amp;mode=edit"><?php echo $user->lang['EDIT'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=delete"><?php echo $user->lang['DELETE'] ?></a><?php
 			
@@ -1030,7 +1036,7 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input type="text" name="forum_name" /> <input class="liteoption" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
+		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input class="post" type="text" name="forum_name" /> <input class="liteoption" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
 	</tr>
 </table></form>
 
