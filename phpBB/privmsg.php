@@ -1274,7 +1274,7 @@ else if( $submit || $refresh || $mode != "" )
 			}
 			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
-			$privmsg_subject = ( (strstr("Re:", $privmsg['privmsgs_subject'])) ? $lang['Re'] . ":" : "" ) . $privmsg['privmsgs_subject'];
+			$privmsg_subject = ( ( !preg_match("/^Re:/", $privmsg['privmsgs_subject']) ) ? "Re: " : "" ) . $privmsg['privmsgs_subject'];
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
