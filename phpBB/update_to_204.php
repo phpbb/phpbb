@@ -660,7 +660,8 @@ switch ( $row['config_value'] )
 
 		$sql = "SELECT topic_id, topic_moved_id
 			FROM " . TOPICS_TABLE . "
-			WHERE topic_moved_id <> 0";
+			WHERE topic_moved_id <> 0
+				AND topic_status = " . TOPIC_MOVED;
 		$result = _sql($sql, $errored, $error_ary);
 
 		$topic_ary = array();
@@ -820,6 +821,7 @@ switch ( $row['config_value'] )
 			}
 			unset($update_list);
 		}
+		$db->sql_freeresult($result);
 
 		// Optimize/vacuum analyze the tables where appropriate
 		switch (SQL_LAYER)
