@@ -75,7 +75,7 @@ else
 if($userdata['session_logged_in'])
 {
 	$u_login_logout = "login.$phpEx?logout=true";
-	$l_login_logout = $lang['Logout'] . " : " . $userdata["username"] . "";
+	$l_login_logout = $lang['Logout'] . " [ " . $userdata["username"] . " ]";
 }
 else
 {
@@ -245,6 +245,8 @@ $template->assign_vars(array(
 
 	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
 	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
+	"S_CONTENT_DIR_LEFT" => $lang['LEFT'], 
+	"S_CONTENT_DIR_RIGHT" => $lang['RIGHT'], 
 	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['board_timezone']],
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
