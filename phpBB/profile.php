@@ -48,10 +48,10 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT username 
+			echo $sql_users = "SELECT username 
 				FROM ".USERS_TABLE." 
-				WHERE LOWER(u.username) = '".strtolower($username)."'";
-			$sql_disallow = "SELECT disallow_username 
+				WHERE LOWER(username) = '".strtolower($username)."'";
+			echo $sql_disallow = "SELECT disallow_username 
 				FROM ".DISALLOW_TABLE." 
 				WHERE disallow_username = '$username'";
 
@@ -888,7 +888,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					if($result = $db->sql_query($sql))
 					{
 						$sql = "INSERT INTO ".GROUPS_TABLE." 
-							(group_name, group_note, single_user) 
+							(group_name, group_description, group_single_user) 
 							VALUES 
 							('$username', 'Personal User', 1)";
 						if($result = $db->sql_query($sql))
