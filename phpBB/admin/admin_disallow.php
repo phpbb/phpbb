@@ -33,8 +33,9 @@ if( !empty($setmodules) )
 //
 // Include required files, get $phpEx and check permissions
 //
-$phpbb_root_dir = './../';
-require('pagestart.inc');
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 
 if( isset($HTTP_POST_VARS['add_name']) )
 {

@@ -35,18 +35,19 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
-
 //
 // Check if the user has cancled a confirmation message.
 //
+$phpbb_root_path = "../";
+
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
 if( empty($HTTP_POST_VARS['send_file']) )
 {
 	$no_page_header = ( $cancel ) ? TRUE : FALSE;
-	require('pagestart.inc');
+	require($phpbb_root_path . 'extension.inc');
+	require('pagestart.' . $phpEx);
 }
 
 if( $cancel )
@@ -72,7 +73,7 @@ switch( $mode )
 		if( isset($install_to) )
 		{
 
-			include($phpbb_root_dir . "templates/" . $install_to . "/theme_info.cfg");
+			include($phpbb_root_path. "templates/" . $install_to . "/theme_info.cfg");
 
 			$template_name = $$install_to;
 			$found = FALSE; 
@@ -127,15 +128,15 @@ switch( $mode )
 			
 			$installable_themes = array();
 			
-			if( $dir = @opendir($phpbb_root_dir . "templates/") )
+			if( $dir = @opendir($phpbb_root_path. "templates/") )
 			{
 				while( $sub_dir = @readdir($dir) )
 				{
 					if( !is_file($phpbb_root_path . 'templates/' .$sub_dir) && !is_link($phpbb_root_path . 'templates/' .$sub_dir) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
 					{
-						if( @file_exists($phpbb_root_dir . "templates/" . $sub_dir . "/theme_info.cfg") )
+						if( @file_exists($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg") )
 						{
-							include($phpbb_root_dir . "templates/" . $sub_dir . "/theme_info.cfg");
+							include($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg");
 							
 							for($i = 0; $i < count($$sub_dir); $i++)
 							{

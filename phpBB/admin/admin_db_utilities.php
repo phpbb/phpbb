@@ -53,9 +53,10 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
 $no_page_header = TRUE;
-require('pagestart.inc');
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
 
 //

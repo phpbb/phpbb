@@ -32,9 +32,10 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
 $no_page_header = TRUE;
-require('pagestart.inc');
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't

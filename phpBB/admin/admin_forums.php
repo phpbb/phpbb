@@ -32,9 +32,10 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
-require('pagestart.inc');
-include($phpbb_root_dir . 'includes/functions_admin.'.$phpEx);
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 $forum_auth_ary = array(
 	"auth_view" => AUTH_ALL, 

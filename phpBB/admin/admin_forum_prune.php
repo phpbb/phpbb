@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) )
+if ( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['Forums']['Prune'] = $filename;
@@ -32,9 +32,11 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
-require('pagestart.inc');
-include($phpbb_root_path . 'includes/prune.'.$phpEx);
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
+require($phpbb_root_path . 'includes/prune.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_admin.'.$phpEx); 
 
 //
 // Get the forum ID for pruning

@@ -34,9 +34,11 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = './../';
 $no_page_header = TRUE;
-require('pagestart.inc');
+
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 
 $params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv');
 

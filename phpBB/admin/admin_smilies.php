@@ -39,8 +39,6 @@ if( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
-
 if( isset($HTTP_GET_VARS['export_pack']) )
 {
 	if ( $HTTP_GET_VARS['export_pack'] == "send" )
@@ -48,8 +46,10 @@ if( isset($HTTP_GET_VARS['export_pack']) )
 		$no_page_header = true;
 	}
 }
-require('pagestart.inc');
 
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 
 //
 // Check to see what mode we should operate in.

@@ -23,9 +23,10 @@ if( !empty($setmodules) )
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_dir = "./../";
-require('pagestart.inc');
-include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 
 //
 // Pull all config data

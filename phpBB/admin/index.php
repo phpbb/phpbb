@@ -25,10 +25,10 @@ define('IN_PHPBB', 1);
 //
 // Load default header
 //
-$phpbb_root_dir = "./../";
-
 $no_page_header = TRUE;
-require('pagestart.inc');
+$phpbb_root_path = "../";
+require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
 
 // ---------------
 // Begin functions
