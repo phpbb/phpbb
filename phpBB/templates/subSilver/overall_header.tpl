@@ -70,7 +70,8 @@ TH.thCornerR { border-left-width: 0px; border-top-width: 1px; border-right-width
 TD.row3Right	 { background-color: {T_TR_COLOR3}; border: #FFFFFF; border-style: solid;  border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
 
 /* The largest text used in the index page title and toptic title etc. */
-.maintitle	{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000;}
+.maintitle	{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000; }
+a.maintitle	{ text-decoration : none; }
 
 
 /* General normal text */
