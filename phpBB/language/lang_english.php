@@ -6,11 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
-<<<<<<< lang_english.php
  *     $Id$
-=======
- *     $Id$
->>>>>>> 1.42
  *
  *  ***************************************************************************/
 
@@ -23,15 +19,19 @@
  *
  ***************************************************************************/
 
-// The future format of this file
-// will be $lang['message'] = "text";
-// message should be a good representation of
-// text (including capitalisation), spaces replaced
-// with underscores. Remembering different languages
-// treat consecutive words differently(!)
 //
-// The number of phrases should be kept to a minimum
-// so we should try and reuse as much as possible.
+// The future format of this file will be:
+//
+// ---> $lang['message'] = "text";
+//
+// message should be a GOOD representation of text, including capitalisation 
+// and underscoring for spacing. Remember different languages often interpret 
+// consecutive words in different ways, so if you're building a sentence then
+// try and indicate what 'words' follow
+//
+// The number of phrases should be kept to a minimum so we should try and reuse
+// as much as possible.
+//
 
 //
 // Common, these terms are used
@@ -101,7 +101,9 @@ $lang['Usergroups'] = "Usergroups";
 $lang['Last_Post'] = "Last Post";
 $lang['Moderator'] = "Moderator/s";
 
+//
 // Stats block text
+//
 $lang['Posted_Total'] = "Our users have posted a total of"; // Number of posts
 $lang['We_have'] = "We have"; // # registered users
 $lang['Regedusers'] = "Registered users";
@@ -109,7 +111,6 @@ $lang['newestuser'] = "The newest Registered User is"; // username
 $lang['browsing'] = "browsing";
 $lang['arecurrently'] = "There are currently"; // # users browsing
 $lang['theforums'] = "the forums";
-
 
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
@@ -130,6 +131,7 @@ $lang['Log_me_in'] = "Log me on automatically each visit";
 //
 $lang['No_Posts'] = "No Posts";
 $lang['Forum_Index'] = "Forum Index";
+
 //
 // Viewforum
 //
@@ -142,22 +144,45 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 $lang['Guest'] = 'Guest';
 
 //
-// Posting/Replying (Not private
-// messaging!)
+// Posting/Replying (Not private messaging!)
 //
-$lang['Flood_Error'] = "Your last post was less then ".$board_config['flood_interval']." seconds ago. You must wait before you post again!";
-$lang['Empty_subj'] = "You must specifiy a subject when posting a new topic.";
-$lang['Empty_msg'] = "You must enter a message when posting!";
-$lang['Postnew'] = "Post New Topic";
-$lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
+$lang['Message_body'] = "Message body";
+
+$lang['Post_a_new_topic'] = "Post a new topic";
+$lang['Post_new_topic_in'] = "Post new topic in:"; // Followed by forum name
+$lang['Post_a_reply'] = "Post a reply";
+$lang['Edit_Post'] = "Edit post";
 $lang['Post_Annoucement'] = "Post as an annoucement";
-$lang['UnAnnounce'] = "Remove annoucements status from this post";
-$lang['Post_Sticky'] = "Stick this topic";
-$lang['UnStick'] = "Unstick this topic";
-$lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
+$lang['Post_Sticky'] = "Make this topic sticky";
+$lang['Un_announce'] = "Remove annoucement status from this post";
+$lang['Un_stick'] = "Unstick this topic";
+$lang['Options'] = "Options";
+
+$lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
-$lang['Post_a'] = "Post a";
-$lang['Edit_Post'] = "Edit Post";
+$lang['Cancel_post'] = "Cancel post";
+
+$lang['Flood_Error'] = "Your last post was less then " . $board_config['flood_interval'] . " seconds ago. You must wait before you post again!";
+$lang['Sorry_edit_own_posts'] = "Sorry but you can only edit your own posts";
+$lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
+$lang['Empty_message'] = "You must enter a message when posting";
+$lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
+
+$lang['Attach_signature'] = "Attach signature (signatures can be changed in profile)";
+$lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
+$lang['HTML'] = "HTML";
+$lang['BBCode'] = "BBCode";
+$lang['Smilies'] = "Smilies"; 
+$lang['in_this_post'] = " in this post";
+$lang['is_ON'] = " is ON";
+$lang['is_OFF'] = " is OFF";
+$lang['Notify'] = "Notify";
+
+$lang['Stored'] = "Your message has been entered successfully";
+$lang['Click'] = "Click"; // Followed by here and then either return to topic or view message
+$lang['Here'] = "Here";
+$lang['to_return_forum'] = "to return to the forum";
+$lang['to_view_message'] = "to view your message";
 
 //
 // Private Messaging
@@ -182,7 +207,6 @@ $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
 
-
 //
 // Memberslist
 //
@@ -206,14 +230,39 @@ $lang['All'] = "All";
 //
 
 //
+// Auth related entries
+//
+$lang['Sorry_auth'] = "Sorry but only "; // This is followed by the auth type, eg. Registered and then one or more of the following entries
+
+$lang['Anonymous_Users'] = "Anonymous Users";
+$lang['Registered_Users'] = "Registered Users";
+$lang['Users_granted_access'] = "Users granted special access";
+$lang['Moderators'] = "Moderators";
+$lang['Administrators'] = "Administrators";
+
+$lang['can_read'] = " can read";
+$lang['can_post_announcements'] = " can post announcements in";
+$lang['can_post_sticky_topics'] = " can post sticky topics in";
+$lang['can_post_new_topics'] = " can post new topics in";
+$lang['can_reply_to_topics'] = " can reply to topics in";
+$lang['can_edit_topics'] = " can edit topics in";
+$lang['can_delete_topics'] = " can delete topics in";
+
+$lang['this_forum'] = " this forum";
+
+//
 // Errors (not related to a
 // specific failure on a page, eg.
 // incorrect password messages do
 // not belong here!)
 //
 
+
+
+
+
 //
-// Old format ...
+// Old format ... _DON'T_add_any_ new entries here!!
 //
 $l_forum 	= "Forum";
 $l_forums	= "Forums";

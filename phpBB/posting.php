@@ -94,40 +94,40 @@ switch($mode)
 		{
 			$auth_type = AUTH_ANNOUCE;
 			$is_auth_type = "auth_announce";
-			$error_string = "post annoucements";
+			$error_string = $lang['can_post_announcements'];
 		}
 		else if(isset($HTTP_POST_VARS['sticky']))
 		{
 			$auth_type = AUTH_STICKY;
 			$is_auth_type = "auth_sticky";
-			$error_string = "post sticky topics";
+			$error_string = $lang['can_post_sticky_topics'];
 		}
 		else
 		{
 			$auth_type = AUTH_ALL;
 			$is_auth_type = "auth_post";
-			$error_string = "post new topics";
+			$error_string = $lang['can_post_new_topics'];
 		}
 		break;
 	case 'reply':
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_reply";
-		$error_string = "reply to topics";
+		$error_string = $lang['can_reply_to_topics'];
 		break;
 	case 'editpost':
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_edit";
-		$error_string = "edit topics";
+		$error_string = $lang['can_edit_topics'];
 		break;
 	case 'delete':
 		$auth_type = AUTH_DELETE;
 		$is_auth_type = "auth_delete";
-		$error_string = "delete topics";
+		$error_string = $lang['can_delete_topics'];
 		break;
 	default:
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_all";
-		$error_string = "post new topics";
+		$error_string = $lang['can_post_new_topics'];
 		break;
 }
 
@@ -141,7 +141,7 @@ if(!$is_auth[$is_auth_type])
 	//
 	include('includes/page_header.'.$phpEx);
 
-	$msg = "I am sorry but you cannot $error_string in this forum, this function is restricted to " . $is_auth[$is_auth_type . "_type"] . " only.";
+	$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $error_string . $lang['this_forum'];
 
 	$template->set_filenames(array(
 		"reg_header" => "error_body.tpl"
@@ -246,7 +246,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		{
 			$error_msg .= "<br />";
 		}
-		$error_msg .= $lang['Empty_subj'];
+		$error_msg .= $lang['Empty_subject'];
 	}
 
 	// You can't make it both an annoumcement and a stick topic
@@ -320,7 +320,7 @@ switch($mode)
 {
 	case 'newtopic':
 		$page_title = " ".$lang['Postnew'];
-		$section_title = $lang['Post_new_in'];
+		$section_title = $lang['Post_new_topic_in'];
 
 		if($SQL_LAYER != "mysql")
 		{
@@ -387,10 +387,12 @@ switch($mode)
 									}
 								}
 
-								include('includes/page_header.'.$phpEx);
+								//
 								// If we get here the post has been inserted successfully.
-								$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$new_post_id")."\">$l_here</a>
-   										$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+								//
+								include('includes/page_header.'.$phpEx);
+
+								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 								$template->set_filenames(array(
 									"reg_header" => "error_body.tpl"
@@ -596,7 +598,7 @@ switch($mode)
 								}
 							}
 
-							$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$new_post_id#$new_post_id")."\">$l_here</a>$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 							$template->set_filenames(array(
 								"reg_header" => "error_body.tpl"
@@ -781,11 +783,13 @@ switch($mode)
 								}
 							}
 
-							include('includes/page_header.'.$phpEx);
+							//
 							// If we get here the post has been inserted successfully.
-							$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$post_id#$post_id")."\">$l_here</a>
-  										$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
-	
+							//
+							include('includes/page_header.'.$phpEx);
+
+							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+
 							$template->set_filenames(array(
 								"reg_header" => "error_body.tpl"
 							));
@@ -816,10 +820,12 @@ switch($mode)
 							}
 						}
 
-						include('includes/page_header.'.$phpEx);
+						//
 						// If we get here the post has been inserted successfully.
-						$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$post_id#$post_id")."\">$l_here</a>
-  									$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+						//
+						include('includes/page_header.'.$phpEx);
+
+						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 						$template->set_filenames(array(
 							"reg_header" => "error_body.tpl"
@@ -867,7 +873,7 @@ switch($mode)
 					{
 						include('includes/page_header.'.$phpEx);
 
-						$msg = "Sorry but you can only edit your own posts.";
+						$msg = $lang['Sorry_edit_own_posts'];;
 
 						$template->set_filenames(array(
 							"reg_header" => "error_body.tpl"
@@ -1053,17 +1059,17 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 
 		if($board_config['allow_html'])
 		{
-			$html_status = $l_htmlis . " " . $l_on;
+			$html_status = $lang['HTML'] . $lang['is_ON'];
 			$html_toggle = '<input type="checkbox" name="disable_html" ';
 			if($disable_html)
 			{
 				$html_toggle .= 'checked';
 			}
-			$html_toggle .= "> $l_disable $l_html $l_onthispost";
+			$html_toggle .= "> " . $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'];
 		}
 		else
 		{
-			$html_status = $l_htmlis . " " . $l_off;
+			$html_status = $lang['HTML'] . $lang['is_OFF'];
 		}
 
 		if($board_config['allow_bbcode'])
@@ -1074,11 +1080,11 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 			{
 				$bbcode_toggle .= "checked";
 			}
-			$bbcode_toggle .= "> $l_disable $l_bbcode $l_onthispost";
+			$bbcode_toggle .= "> " . $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'];
 		}
 		else
 		{
-			$bbcode_status = $l_bbcodeis . " " . $l_off;
+			$bbcode_status = $lang['BBCode'] . $lang['is_OFF'];
 		}
 
 		if($board_config['allow_smilies'])
@@ -1088,7 +1094,7 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 			{
 				$smile_toggle .= "checked";
 			}
-			$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
+			$smile_toggle .= "> " . $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'];
 		}
 
 		$sig_toggle = '<input type="checkbox" name="attach_sig" ';
@@ -1096,7 +1102,7 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 		{
 			$sig_toggle .= "checked";
 		}
-		$sig_toggle .= "> $l_attachsig";
+		$sig_toggle .= "> " . $lang['Attach_signature'];
 
 		if($mode == 'newtopic' || ($mode == 'editpost' && $is_first_post))
 		{
@@ -1118,7 +1124,7 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 					{
 						$announce_toggle .= "checked";
 					}
-					$annouce_toggle .= '> '.$lang['UnAnnounce'];
+					$annouce_toggle .= '> '.$lang['Un_announce'];
 				}
 			}
 
@@ -1140,7 +1146,7 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 					{
 						$sticky_toggle .= "checked";
 					}
-					$sticky_toggle .= '> '.$lang['UnStick'];
+					$sticky_toggle .= '> '.$lang['Un_stick'];
 				}
 			}
 		}
@@ -1153,7 +1159,7 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 			{
 				$notify_toggle .= "checked";
 			}
-			$notify_toggle .= "> $l_notify";
+			$notify_toggle .= "> " . $lang['Notify'];
 		}
 
 		if($mode == 'reply' || $mode == 'editpost')
@@ -1161,15 +1167,15 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 			$topic_id = ($HTTP_GET_VARS[POST_TOPIC_URL]) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
 			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
 		}
-		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\"><input type=\"hidden\" name=\"".POST_POST_URL."\" value=\"$post_id\"><input type=\"hidden\" name=\"is_first_post\" value=\"$is_first_post\">";
+		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\"><input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\"><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\"><input type=\"hidden\" name=\"is_first_post\" value=\"$is_first_post\">";
 
 		if($mode == 'newtopic')
 		{
-			$post_a = $lang['Post_a'] . " " . $lang['Topic'];
+			$post_a = $lang['Post_a_new_topic'];
 		}
 		else if($mode == 'reply')
 		{
-			$post_a = $lang['Post_a'] . " " . $lang['Reply'];
+			$post_a = $lang['Post_a_reply'];
 		}
 		else if($mode == 'editpost')
 		{
@@ -1177,13 +1183,6 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 		}
 		
 		$template->assign_vars(array(
-			"L_SUBJECT" => $l_subject,
-			"L_MESSAGE_BODY" => $l_body,
-			"L_OPTIONS" => $l_options,
-			"L_PREVIEW" => $lang['Preview'],
-			"L_SUBMIT" => $l_submit,
-			"L_CANCEL" => $l_cancelpost,
-			"L_POST_A" => $post_a,
 			"USERNAME_INPUT" => $username_input,
 			"PASSWORD_INPUT" => $password_input,
 			"SUBJECT_INPUT" => $subject_input,
@@ -1197,6 +1196,14 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 			"NOTIFY_TOGGLE" => $notify_toggle,
 			"BBCODE_TOGGLE" => $bbcode_toggle,
 			"BBCODE_STATUS" => $bbcode_status,
+
+			"L_SUBJECT" => $lang['Subject'],
+			"L_MESSAGE_BODY" => $lang['Message_body'],
+			"L_OPTIONS" => $lang['Options'],
+			"L_PREVIEW" => $lang['Preview'],
+			"L_SUBMIT" => $lang['Submit_post'],
+			"L_CANCEL" => $lang['Cancel_post'],
+			"L_POST_A" => $post_a,
 
 			"S_POST_ACTION" => append_sid("posting.$phpEx"),
 			"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)

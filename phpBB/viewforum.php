@@ -109,7 +109,7 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 	//
 	include('includes/page_header.'.$phpEx);
 
-	$msg = "I am sorry but only " . $is_auth['auth_read_type'] . " can read this forum.";
+	$msg = $lang['Sorry_auth'] . $is_auth['auth_read_type'] . $lang['can_read'] . $lang['this_forum'];
 
 	$template->set_filenames(array(
 		"reg_header" => "error_body.tpl"
@@ -136,7 +136,7 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 	if($x > 0)
 		$forum_moderators .= ", ";
 
-	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]['user_id'])."\">".$forum_row[$x]['username']."</a>";
+	$forum_moderators .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $forum_row[$x]['user_id']) . "\">" . $forum_row[$x]['username'] . "</a>";
 }
 
 
@@ -147,8 +147,8 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 // with dates newer than it (to properly handle
 // pagination) and alter the main query
 //
-$previous_days = array(0, 1, 7, 14, 30, 60, 180, 364);
-$previous_days_text = array("$l_All_Topics", "1 $l_Day", "7 $l_Days", "2 $l_Weeks", "1 $l_Month", "2 $l_Months", "6 $l_Months", "1 $l_Year");
+$previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
+$previous_days_text = array($lang['All_Topics'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
 
 if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 {
@@ -314,7 +314,7 @@ if($total_topics)
 		$replies = $topic_rowset[$x]['topic_replies'];
 		if($replies > $board_config['posts_per_page'])
 		{
-			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"".$images['posticon']."\">$l_gotopage: ";
+			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"".$images['posticon']."\">" . $lang['Goto_page'] .": ";
 			$times = 1;
 			for($i = 0; $i < ($replies + 1); $i += $board_config['posts_per_page'])
 			{

@@ -55,7 +55,7 @@
 */
 function auth($type, $forum_id, $userdata, $f_access = -1)
 {
-	global $db;
+	global $db, $lang;
 
 	switch($type)
 	{
@@ -230,27 +230,27 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			{
 				case AUTH_ALL:
 					$auth_user[$key] = 1;
-					$auth_user[$key . '_type'] = "Anonymous Users";
+					$auth_user[$key . '_type'] = $lang['Anonymous_users'];
 					break;
 
 				case AUTH_REG:
 					$auth_user[$key] = ($userdata['session_logged_in']) ? 1 : 0;
-					$auth_user[$key . '_type'] = "Registered Users";
+					$auth_user[$key . '_type'] = $lang['Registered_Users'];
 					break;
 
 				case AUTH_ACL:
 					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
-					$auth_user[$key . '_type'] = "Users granted special access";
+					$auth_user[$key . '_type'] = $lang['Users_granted_access'];
 					break;
 		
 				case AUTH_MOD:
 					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
-					$auth_user[$key . '_type'] = "Moderators";
+					$auth_user[$key . '_type'] = $lang['Moderators'];
 					break;
 	
 				case AUTH_ADMIN:
 					$auth_user[$key] = $is_admin;
-					$auth_user[$key . '_type'] = "Administrators";
+					$auth_user[$key . '_type'] = $lang['Administrators'];
 					break;
 
 				default:
@@ -269,27 +269,27 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				{
 					case AUTH_ALL:
 						$auth_user[$f_forum_id][$key] = 1;
-						$auth_user[$f_forum_id][$key . '_type'] = "Anonymous Users";
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Anonymous_users'];
 						break;
 
 					case AUTH_REG:
 						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in']) ? 1 : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = "Registered Users";
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Registered_Users'];
 						break;
 
 					case AUTH_ACL:
 						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = "Users granted special access";
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
 						break;
 		
 					case AUTH_MOD:
 						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = "Moderators";
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
 						break;
 	
 					case AUTH_ADMIN:
 						$auth_user[$f_forum_id][$key] = $is_admin;
-						$auth_user[$f_forum_id][$key . '_type'] = "Administrators";
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Administrators'];
 						break;
 
 					default:
