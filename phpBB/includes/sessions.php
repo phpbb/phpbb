@@ -229,8 +229,7 @@ function session_pagestart($user_ip, $thispage_id)
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
 			WHERE s.session_id = '$session_id'
-				AND u.user_id = s.session_user_id 
-				AND s.session_ip = '$user_ip'";
+				AND u.user_id = s.session_user_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -243,51 +242,60 @@ function session_pagestart($user_ip, $thispage_id)
 		//
 		if ( isset($userdata['user_id']) )
 		{
-			$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
+			//
+			// Do not check IP assuming equivalence, if IPv4 we'll check only first 24
+			// bits ... I've been told (by vHiker) this should alleviate problems with 
+			// load balanced et al proxies while retaining some reliance on IP security.
+			//
+			$ip_check_s = substr($userdata['session_ip'], 0, 6);
+			$ip_check_u = substr($user_ip, 0, 6);
 
-			//
-			// Only update session DB a minute or so after last update
-			//
-			if ( $current_time - $userdata['session_time'] > 60 )
+			if ( $ip_check_s == $ip_check_u )
 			{
-				// || $userdata['user_session_page'] != $thispage_id
-				$sql = "UPDATE " . SESSIONS_TABLE . " 
-					SET session_time = $current_time, session_page = $thispage_id 
-					WHERE session_id = '" . $userdata['session_id'] . "' 
-						AND session_ip = '$user_ip'";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
-				}
+				$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
 
-				if ( $userdata['user_id'] != ANONYMOUS )
+				//
+				// Only update session DB a minute or so after last update
+				//
+				if ( $current_time - $userdata['session_time'] > 60 )
 				{
-					$sql = "UPDATE " . USERS_TABLE . " 
-						SET user_session_time = $current_time, user_session_page = $thispage_id 
-						WHERE user_id = " . $userdata['user_id'];
+					$sql = "UPDATE " . SESSIONS_TABLE . " 
+						SET session_time = $current_time, session_page = $thispage_id 
+						WHERE session_id = '" . $userdata['session_id'] . "'";
 					if ( !$db->sql_query($sql) )
 					{
 						message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
 					}
+
+					if ( $userdata['user_id'] != ANONYMOUS )
+					{
+						$sql = "UPDATE " . USERS_TABLE . " 
+							SET user_session_time = $current_time, user_session_page = $thispage_id 
+							WHERE user_id = " . $userdata['user_id'];
+						if ( !$db->sql_query($sql) )
+						{
+							message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
+						}
+					}
+
+					//
+					// Delete expired sessions
+					//
+					$expiry_time = $current_time - $board_config['session_length'];
+					$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+						WHERE session_time < $expiry_time 
+							AND session_id <> '$session_id'";
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
+					}
+
+					setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 				}
 
-				//
-				// Delete expired sessions
-				//
-				$expiry_time = $current_time - $board_config['session_length'];
-				$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-					WHERE session_time < $expiry_time 
-						AND session_id <> '$session_id'";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
-				}
-
-				setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
-				setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+				return $userdata;
 			}
-
-			return $userdata;
 		}
 	}
 
