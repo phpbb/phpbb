@@ -445,7 +445,6 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 		else if($mode == "newtopic")
 		{
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
-
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
 				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, $topic_notify, " . TOPIC_UNLOCKED . ", $topic_type)";
 
@@ -461,8 +460,9 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 		if($mode == "reply" || ( $mode == "newtopic" && $result ) )
 		{
-			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid) 
-				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid')";
+			$enable_smiles = ($smile_on) ? 1 : 0;
+			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_smiles) 
+				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $enable_smiles)";
 			if($mode == "reply")
 			{
 				$result = $db->sql_query($sql, BEGIN_TRANSACTION);
@@ -831,9 +831,9 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 			{
 				$edited_sql = "";
 			}
-
+			$enable_smiles = ($smile_on) ? 1 : 0;
 			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET bbcode_uid = '$bbcode_uid'" . $edited_sql . "  
+				SET bbcode_uid = '$bbcode_uid', enable_smiles=$enable_smiles" . $edited_sql . "  
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))

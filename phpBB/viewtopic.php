@@ -27,12 +27,16 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 
 //
-//
+// Begin function to parse Smilies :)
 //
 function smilies_pass($message)
 {
 	global $db, $smilies_url;
 	static $smilies;
+	if(empty($smilies_url))
+	{
+		$smilies_url = "images/smilies";
+	}
 
 	if(empty($smilies))
 	{
@@ -46,12 +50,20 @@ function smilies_pass($message)
 
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$message = preg_replace("'([\n\\ \\.])" . preg_quote($smilies[$i]['code']) . "'s", '\1<img src="' . $smilies_url . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">', ' ' . $message);
+		$orig[] = "'([\s\.\>\
+])" . preg_quote($smilies[$i]['code']) . "([\s\.\
+])'si";
+		$repl[] = '\1<img src="'. $smilies_url . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">\2';
+	}
+	if($i > 0)
+	{
+		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
+		$message = substr($message, 1, -1);
 	}
 	return($message);
 }
 //
-//
+// End Smiley parsing function :)
 //
 
 
@@ -264,7 +276,7 @@ $select_post_order .= "</select>";
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, pt.post_text, pt.post_subject, p.enable_smiles
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -511,6 +523,11 @@ for($i = 0; $i < $total_posts; $i++)
 			$user_sig = htmlspecialchars($user_sig);
 		}
 		$message = htmlspecialchars($message);
+		//
+		// Added next line to fix doubled up conversions due to htmlspecialchars
+		// already being run on posts.  
+		//
+		$message = str_replace('&amp;', '&', $message);
 	}
 
 	if($board_config['allow_bbcode'])
@@ -535,9 +552,9 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
 	}
 
-	if($board_config['allow_smilies'])
+	if($board_config['allow_smilies'] && $postrow[$i]['enable_smiles'] == 1)
 	{
-//		$message = smilies_pass($message);
+		$message = smilies_pass($message);
 	}
 
 	//

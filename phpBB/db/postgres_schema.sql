@@ -210,6 +210,7 @@ CREATE TABLE phpbb_posts (
    bbcode_uid varchar(10) DEFAULT '' NOT NULL, 
    post_edit_time int4,
    post_edit_count int2 DEFAULT '0' NOT NULL, 
+	enable_smiles int2 DEFAULT '1' NOT NULL,
    CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
 );
 CREATE  INDEX forum_id_phpbb_posts_index ON phpbb_posts (forum_id);
