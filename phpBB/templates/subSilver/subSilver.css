@@ -1,0 +1,184 @@
+/* subSilver Theme for phpBB2
+ * Created by subBlue design
+ * http://www.subBlue.com
+ */
+
+body { 	background-color:#E5E5E5;
+		scrollbar-face-color: #C8D1D7; scrollbar-highlight-color: #EAF0F7;
+		scrollbar-shadow-color: #95AFC4; scrollbar-3dlight-color: #D6DDE2;
+		scrollbar-arrow-color:  #006699; scrollbar-track-color: #EFEFEF;
+		scrollbar-darkshadow-color: #7294AF;
+}
+
+font	{ font-family: Verdana, Arial, Helvetica, sans-serif }
+td		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+th		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+P		{ font-family: Verdana, Arial, Helvetica, sans-serif }
+hr		{ height: 0px; border: solid #c2cdd6 0px; border-top-width: 1px;}
+
+
+/* Forum colours */
+.bodyline	{ background-color:#FFFFFF; border: #AEBDC4; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px }
+.forumline	{ background-color:#FFFFFF; border: 2px #006699 solid }
+
+
+/* Main table cell colours and backgrounds */
+TH			{ background-color: #1B7CAD; height: 25px; font-size: 11px; line-height : 100%; font-weight: bold; color: #FFB163 }
+TD.tablebg	{ background-color: #000000 }
+TD.cat		{ background-color: #CBD3D9; height: 28px }
+TD.row1		{ background-color: #EFEFEF }
+TD.row2		{ background-color: #DEE3E7 }
+TD.row3		{ background-color: #c2cdd6 }
+TD.spaceRow { background-color: #c2cdd6; border: #FFFFFF; border-style: solid; border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TD.rowpic	{ background-color: #FFFFFF }
+
+
+/* Setting additional nice borders for the main table cells */
+TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-color:#CBD3D9; height: 28px; border: #FFFFFF; border-style: solid; }
+
+TD.catHead	 { height: 29px; border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }
+TD.catSides  { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TD.catLeft	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px }
+TD.catRight	 { border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TD.catBottom { height: 29px; border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 1px }
+
+TH.thHead,TH.thSides,TH.thTop,TH.thLeft,TH.thRight,TH.thBottom,TH.thCornerL,TH.thCornerR { border: #FFFFFF; border-style: solid; }
+
+TH.thHead	 { font-weight : bold; font-size: 12px; height: 25px; border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }
+TH.thSides	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TH.thTop	 { border-left-width: 0px; border-top-width: 1px; border-right-width: 0px; border-bottom-width: 0px }
+TH.thLeft	 { border-left-width: 1px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px }
+TH.thRight	 { border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+TH.thBottom  { border-left-width: 1px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 1px }
+TH.thCornerL { border-left-width: 1px; border-top-width: 1px; border-right-width: 0px; border-bottom-width: 0px }
+TH.thCornerR { border-left-width: 0px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 0px }
+
+TD.row3Right	 { background-color: #c2cdd6; border: #FFFFFF; border-style: solid;  border-left-width: 0px; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000;}
+
+
+/* General normal text */
+.gen		{ font-size : 12px; color : #000000; }
+a.gen		{ color: #006699; text-decoration: none; }
+a.gen:hover	{ color: #C23030; text-decoration: underline; }
+
+/* General medium text */
+.genmed		{ font-size : 11px; color : #000000; }
+a.genmed		{ text-decoration: none; color : #006699; }
+a.genmed:hover	{ text-decoration: underline; color : #C23030; }
+
+
+/* General small */
+.gensmall		{ font-size : 10px; color : #000000; }
+a.gensmall		{ color: #006699; text-decoration: none; }
+a.gensmall:hover	{ color: #C23030; text-decoration: underline; }
+
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu			{ font-size : 11px; text-decoration : none; color : #000000 }
+a.mainmenu			{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover	{ text-decoration: underline; color : #C23030; }
+
+
+/* Forum categories */
+.cattitle			{ font-size : 12px; line-height : 100%; letter-spacing: 1px; font-weight : bold; text-decoration : none; color : #004c75 }
+a.cattitle			{ text-decoration: none; color : #004c75; }
+a.cattitle:hover	{ text-decoration: underline; }
+
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink			{ font-size : 12px; font-weight : bold; text-decoration : none; color : #136C99; }
+a.forumlink			{ text-decoration: none; color : #136C99; }
+a.forumlink:hover	{ text-decoration: underline; color : #D68000; }
+
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-size : 11px; font-weight : bold; text-decoration : none; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+
+/* titles for the topics: can specify viewed link colour too */
+.topictitle			{ font-size : 11px; font-weight : bold; text-decoration : none; color : #000000; }
+a.topictitle		{ text-decoration: none; color : #006699; }
+a.topictitle:hover	{ text-decoration: underline; color : #D68000; }
+a.topictitle:visited	{ text-decoration: none; color : #5584AA; }
+
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; text-decoration : none; color : #000000;}
+a.name			{ color: #006699; text-decoration: none;}
+a.name:hover	{ color: #C23030; text-decoration: underline;}
+
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+a.postdetails		{ color: #006699; text-decoration: none; }
+a.postdetails:hover	{ color: #C23030; text-decoration: underline; }
+
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+
+a.postlink	{ text-decoration: none; color : #006699 }
+a.postlink:hover { text-decoration: underline; color : #C23030 }
+
+
+/* Quote Code (currently not used) */
+.code	{ font-family: Courier, Courier New; font-size: 11px; color: #006600;
+		  background-color: #FAFAFA; border: #c2cdd6; border-style: solid;
+		  border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+		}
+.quote	{ font-family: Verdana, Arial; font-size: 11px; color: #444444; line-height: 125%;
+		  background-color: #FAFAFA; border: #c2cdd6; border-style: solid;
+		  border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+		}
+.signature	{ font-size : 11px; text-decoration : none; line-height : 150%; color : #333366; }
+.editedby	{ font-size : 10px; line-height : 100%; color : #333333; }
+
+
+/* Form elements */
+input,textarea, select {
+color : #000000;
+font-family : Verdana, Arial, Helvetica, sans-serif;
+font-size : 11px;
+font-weight : normal;
+border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+background-color : #EFEFEF;
+color : #000000;
+font-family : Verdana, Arial, Helvetica, sans-serif;
+font-size : 11px;
+}
+
+
+/* The main submit button option */
+input.mainoption {
+background-color : #FAFAFA;
+font-weight : bold;
+}
+
+/* None bold submit button */
+input.liteoption {
+background-color : #FAFAFA;
+font-weight : normal;
+}
+
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Copyright and bottom info */
+.copyright		{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555555; font-size: 10px; letter-spacing: -1px;}
+a.copyright		{ color: #333333; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}

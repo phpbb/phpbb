@@ -1,6 +1,3 @@
-
-<br clear="all" />
-
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left" valign="bottom"><span class="gensmall">
