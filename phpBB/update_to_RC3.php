@@ -12,7 +12,7 @@ switch ( SQL_LAYER )
 {
 	case 'mysql':
 	case 'mysql4':
-		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
+/*		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
 			ADD COLUMN user_session_time int(11) DEFAULT '0' NOT NULL, 
 			ADD COLUMN user_session_page smallint(5) DEFAULT '0' NOT NULL, 
 			ADD INDEX (user_session_time)";
@@ -23,7 +23,7 @@ switch ( SQL_LAYER )
 		$sql[] = "UPDATE " . THEMES_TABLE . " 
 			SET head_stylesheet = 'subSilver.css' 
 			WHERE template_name = 'subSilver'";
-			
+*/			
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . "  
 			ADD COLUMN topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
 			ADD INDEX (topic_first_post_id)";
@@ -44,7 +44,7 @@ switch ( SQL_LAYER )
 		break;
 
 	case 'postgresql':
-		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
+/*		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
 			ADD COLUMN user_session_time int4";
 		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
 			ADD COLUMN user_session_page int2";
@@ -57,7 +57,7 @@ switch ( SQL_LAYER )
 		$sql[] = "UPDATE " . THEMES_TABLE . " 
 			SET head_stylesheet = 'subSilver.css' 
 			WHERE template_name = 'subSilver'";
-			
+*/				
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " 
 			ADD COLUMN topic_first_post_id int4";
 		$sql[] = "CREATE INDEX topic_first_post_id_" . $table_prefix . "topics_index 
@@ -91,7 +91,7 @@ switch ( SQL_LAYER )
 
 	case 'mssql-odbc':
 	case 'mssql':
-		$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD 
+/*		$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD 
 			user_session_time int NOT NULL, 
 			user_session_page smallint NOT NULL, 
 			CONSTRAINT [DF_" . $table_prefix . "users_user_session_time] DEFAULT (0) FOR [user_session_time],
@@ -101,7 +101,7 @@ switch ( SQL_LAYER )
 		$sql[] = "UPDATE " . THEMES_TABLE . " 
 			SET head_stylesheet = 'subSilver.css' 
 			WHERE template_name = 'subSilver'";
-
+*/	
 		$sql[] = "DROP INDEX " . TOPICS_TABLE . ".IX_" . $table_prefix . "topics";
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " ADD 
 			topic_first_post_id int NOT NULL, 
@@ -125,7 +125,7 @@ switch ( SQL_LAYER )
 		break;
 
 	case 'msaccess':
-		$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD 
+/*		$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD 
 			user_session_time int NOT NULL, 
 			user_session_page smallint NOT NULL";
 		$sql[] = "CREATE INDEX user_session_time 
@@ -133,7 +133,7 @@ switch ( SQL_LAYER )
 		$sql[] = "UPDATE " . THEMES_TABLE . " 
 			SET head_stylesheet = 'subSilver.css' 
 			WHERE template_name = 'subSilver'";
-
+*/	
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " ADD 
 			topic_first_post_id int NOT NULL";
 		$sql[] = "CREATE INDEX topic_first_post_id 
