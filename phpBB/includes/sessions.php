@@ -66,7 +66,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		// what's needed is a session timer in the user table
 		// + the user_lastvisit ... damn damn damn damn and blast
 		//
-		$sql = "SELECT user_password, user_session_time, user_email    
+		$sql = "SELECT user_password, user_session_time, user_email, user_active    
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -81,7 +81,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 
 		if( $auto_create )
 		{
-			if( isset($sessiondata['autologinid']) )
+			if( isset($sessiondata['autologinid']) && $row['user_active'] )
 			{
 				// We have to login automagically
 				if( $sessiondata['autologinid'] == $auto_login_key )
