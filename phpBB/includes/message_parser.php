@@ -55,6 +55,9 @@ class parse_message
 	var $message = '';
 	var $disabled_bbcodes = array();
 
+	var $attachment_data = array();
+	var $filename_data = array();
+
 	function parse_message($message_type)
 	{
 		$this->message_mode = $message_type;
@@ -543,26 +546,26 @@ class parse_message
 		return;
 	}
 
-	function parse_attachments($mode, $post_id, $submit, $preview, $refresh, &$attachment_data)
+	function parse_attachments($mode, $post_id, $submit, $preview, $refresh)
 	{
 		global $config, $_FILE, $_POST, $auth, $user;
 
 		$error = false;
 		$error_msg = '';
 
-		$num_attachments = count($attachment_data['attach_id']);
-		$attachment_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
-		$attachment_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
+		$num_attachments = count($this->attachment_data);
+		$this->filename_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
+		$this->filename_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
 		
 		$add_file = ( isset($_POST['add_file']) ) ? true : false;
 		$delete_file = ( isset($_POST['delete_file']) ) ? true : false;
 		$edit_comment = ( isset($_POST['edit_comment']) ) ? true : false;
 
-		if ( $submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $attachment_data['filename'] != '')
+		if ( $submit && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && $this->filename_data['filename'] != '')
 		{
 			if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
 			{
-				$filedata = upload_attachment($attachment_data['filename']);
+				$filedata = upload_attachment($this->filename_data['filename']);
 				
 				if ($filedata['error'])
 				{
@@ -572,19 +575,22 @@ class parse_message
 
 				if (($filedata['post_attach']) && (!$error))
 				{
-					array_unshift($attachment_data['physical_filename'], $filedata['destination_filename']);
-					array_unshift($attachment_data['comment'], $attachment_data['filecomment']);
-					array_unshift($attachment_data['real_filename'], $filedata['filename']);
-					array_unshift($attachment_data['extension'], $filedata['extension']);
-					array_unshift($attachment_data['mimetype'], $filedata['mimetype']);
-					array_unshift($attachment_data['filesize'], $filedata['filesize']);
-					array_unshift($attachment_data['filetime'], $filedata['filetime']);
-					array_unshift($attachment_data['attach_id'], '-1');
-					array_unshift($attachment_data['thumbnail'], $filedata['thumbnail']);
+					$new_entry = array(
+						'physical_filename' => $filedata['destination_filename'],
+						'comment' => $this->filename_data['filecomment'],
+						'real_filename' => $filedata['filename'],
+						'extension' => $filedata['extension'],
+						'mimetype' => $filedata['mimetype'],
+						'filesize' => $filedata['filesize'],
+						'filetime' => $filedata['filetime'],
+						'attach_id' => '-1',
+						'thumbnail' => $filedata['thumbnail']
+					);
 
-					$attachment_data['filecomment'] = '';
+					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+					$this->filename_data['filecomment'] = '';
 
-					// This Variable is set to FALSE here, because the Attachment Mod enter Attachments into the
+					// This Variable is set to FALSE here, because Attachments are entered into the
 					// Database in two modes, one if the id_list is -1 and the second one if post_attach is true
 					// Since post_attach is automatically switched to true if an Attachment got added to the filesystem,
 					// but we are assigning an id of -1 here, we have to reset the post_attach variable to FALSE.
@@ -607,94 +613,45 @@ class parse_message
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
-				// store old values
-				$actual_list = ( isset($_POST['attachment_list']) ) ? $_POST['attachment_list'] : array();
-				$actual_comment_list = ( isset($_POST['comment_list']) ) ? $_POST['comment_list'] : array();
-				$actual_filename_list = ( isset($_POST['filename_list']) ) ? $_POST['filename_list'] : array();
-				$actual_extension_list = ( isset($_POST['extension_list']) ) ? $_POST['extension_list'] : array();
-				$actual_mimetype_list = ( isset($_POST['mimetype_list']) ) ? $_POST['mimetype_list'] : array();
-				$actual_filesize_list = ( isset($_POST['filesize_list']) ) ? $_POST['filesize_list'] : array();
-				$actual_filetime_list = ( isset($_POST['filetime_list']) ) ? $_POST['filetime_list'] : array();
-				$actual_id_list = ( isset($_POST['attach_id_list']) ) ? $_POST['attach_id_list'] : array();
-				$actual_thumbnail_list = ( isset($_POST['attach_thumbnail_list']) ) ? $_POST['attach_thumbnail_list'] : array();
-
-				// clean values
-				
-				$attachment_data['physical_filename'] = array();
-				$attachment_data['comment'] = array();
-				$attachment_data['real_filename'] = array();
-				$attachment_data['extension'] = array();
-				$attachment_data['mimetype'] = array();
-				$attachment_data['filesize'] = array();
-				$attachment_data['filetime'] = array();
-				$attachment_data['attach_id'] = array();
-				$attachment_data['thumbnail'] = array();
-
-				// restore values :)
-				if( isset($_POST['attachment_list']) )
+				foreach ($_POST['delete_file'] as $index => $value)
 				{
-					for ($i = 0; $i < count($actual_list); $i++)
+					// delete selected attachment
+					if ($this->attachment_data[$index]['attach_id'] == '-1')
 					{
-						$restore = false;
-						if ($delete_file)
-						{
-							if (!isset($_POST['delete_file'][$actual_list[$i]]))
-							{
-								$restore = true;
-							}
-						}
+						phpbb_unlink($this->attachment_data[$index]['physical_filename'], 'file', $config['use_ftp_upload']);
 
-						if ($restore)
+						if ($this->attachment_data[$index]['thumbnail'] == 1)
 						{
-							$attachment_data['physical_filename'][] = $actual_list[$i];
-							$attachment_data['comment'][] = $actual_comment_list[$i];
-							$attachment_data['real_filename'][] = $actual_filename_list[$i];
-							$attachment_data['extension'][] = $actual_extension_list[$i];
-							$attachment_data['mimetype'][] = $actual_mimetype_list[$i];
-							$attachment_data['filesize'][] = $actual_filesize_list[$i];
-							$attachment_data['filetime'][] = $actual_filetime_list[$i];
-							$attachment_data['attach_id'][] = $actual_id_list[$i];
-							$attachment_data['thumbnail'][] = $actual_thumbnail_list[$i];
-						}
-						else
-						{
-							// delete selected attachment
-							if ($actual_id_list[$i] == '-1')
-							{
-								phpbb_unlink($actual_list[$i], 'file', $config['use_ftp_upload']);
-
-								if ($actual_thumbnail_list[$i] == 1)
-								{
-									phpbb_unlink('t_' . $actual_list[$i], 'thumbnail', $config['use_ftp_upload']);
-								}
-							}
-							else
-							{
-								delete_attachment($post_id, $actual_id_list[$i]);
-							}
+							phpbb_unlink('t_' . $this->attachment_data[$index]['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
 						}
 					}
+					else
+					{
+						delete_attachment($post_id, intval($this->attachment_data[$index]['attach_id']));
+					}
+					unset($this->attachment_data[$index]);
 				}
+				
+				// a quick way to reindex the array. :)
+				$this->attachment_data = array_merge($this->attachment_data);
 			}
 			else if ( ($edit_comment) || ($add_file) || ($preview) )
 			{
 				if ($edit_comment)
 				{
 					$actual_comment_list = ( isset($_POST['comment_list']) ) ? $_POST['comment_list'] : '';
-				
-					$attachment_data['comment'] = array();
 
-					for ($i = 0; $i < count($attachment_data['physical_filename']); $i++)
+					foreach ($actual_comment_list as $index => $entry)
 					{
-						$attachment_data['comment'][$i] = $actual_comment_list[$i];
+						$this->attachment_data[$index]['comment'] = $entry;
 					}
 				}
 				
-				if ((($add_file) || ($preview) ) && ($attachment_data['filename'] != '') )
+				if ((($add_file) || ($preview) ) && ($this->filename_data['filename'] != '') )
 				{
 					if ( $num_attachments < $config['max_attachments'] ) //|| $auth->acl_gets('m_', 'a_', $forum_id) )
 					{
-						$filedata = upload_attachment($attachment_data['filename']);
+						$filedata = upload_attachment($this->filename_data['filename']);
 				
 						if ($filedata['error'])
 						{
@@ -704,17 +661,20 @@ class parse_message
 
 						if (!$error)
 						{
-							array_unshift($attachment_data['physical_filename'], $filedata['destination_filename']);
-							array_unshift($attachment_data['comment'], $attachment_data['filecomment']);
-							array_unshift($attachment_data['real_filename'], $filedata['filename']);
-							array_unshift($attachment_data['extension'], $filedata['extension']);
-							array_unshift($attachment_data['mimetype'], $filedata['mimetype']);
-							array_unshift($attachment_data['filesize'], $filedata['filesize']);
-							array_unshift($attachment_data['filetime'], $filedata['filetime']);
-							array_unshift($attachment_data['attach_id'], '-1');
-							array_unshift($attachment_data['thumbnail'], $filedata['thumbnail']);
+							$new_entry = array(
+								'physical_filename' => $filedata['destination_filename'],
+								'comment' => $this->filename_data['filecomment'],
+								'real_filename' => $filedata['filename'],
+								'extension' => $filedata['extension'],
+								'mimetype' => $filedata['mimetype'],
+								'filesize' => $filedata['filesize'],
+								'filetime' => $filedata['filetime'],
+								'attach_id' => '-1',
+								'thumbnail' => $filedata['thumbnail']
+							);
 
-							$attachment_data['filecomment'] = '';
+							$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+							$this->filename_data['filecomment'] = '';
 						}
 					}
 					else

@@ -150,6 +150,8 @@ switch ($mode)
 		trigger_error($user->lang['NO_MODE']);
 }
 
+$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
+
 if ($sql != '')
 {
 	$result = $db->sql_query($sql);
@@ -230,43 +232,23 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 
-	$attachment_data = array();
-
-	$attachment_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
-	$attachment_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
+	$message_parser->filename_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
+	$message_parser->filename_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
 
 	// Get Attachment Data
-	$attachment_data['physical_filename'] = ( isset($_POST['attachment_list']) ) ? $_POST['attachment_list'] : array();
-	$attachment_data['comment'] = ( isset($_POST['comment_list']) ) ? $_POST['comment_list'] : array();
-	$attachment_data['real_filename'] = ( isset($_POST['filename_list']) ) ? $_POST['filename_list'] : array();
-	$attachment_data['extension'] = ( isset($_POST['extension_list']) ) ? $_POST['extension_list'] : array();
-	$attachment_data['mimetype'] = ( isset($_POST['mimetype_list']) ) ? $_POST['mimetype_list'] : array();
-	$attachment_data['filesize'] = ( isset($_POST['filesize_list']) ) ? $_POST['filesize_list'] : array();
-	$attachment_data['filetime'] = ( isset($_POST['filetime_list']) ) ? $_POST['filetime_list'] : array();
-	$attachment_data['attach_id'] = ( isset($_POST['attach_id_list']) ) ? $_POST['attach_id_list'] : array();
-	$attachment_data['thumbnail'] = ( isset($_POST['attach_thumbnail_list']) ) ? $_POST['attach_thumbnail_list'] : array();
-	
+	$message_parser->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+
 	if (($post_attachment) && (!$submit) && (!$refresh) && (!$preview) && ($mode == 'edit'))
 	{
-		$sql = "SELECT d.*
-			FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d
-			WHERE a.post_id = " . $post_id . "
+		$sql = 'SELECT d.*
+			FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
+			WHERE a.post_id = ' . $post_id . '
 				AND a.attach_id = d.attach_id
-			ORDER BY d.filetime DESC";
+			ORDER BY d.filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$attachment_data['attach_id'][] = intval($row['attach_id']);
-			$attachment_data['physical_filename'][] = trim($row['physical_filename']);
-			$attachment_data['comment'][] = trim($row['comment']);
-			$attachment_data['real_filename'][] = trim($row['real_filename']);
-			$attachment_data['extension'][] = trim($row['extension']);
-			$attachment_data['mimetype'][] = trim($row['mimetype']);
-			$attachment_data['filesize'][] = intval($row['filesize']);
-			$attachment_data['filetime'][] = intval($row['filetime']);
-			$attachment_data['thumbnail'][] = intval($row['thumbnail']);
-		}
+		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
+		
 		$db->sql_freeresult($result);
 	}
 	
@@ -351,8 +333,6 @@ if ( ($mode == 'edit') && ($post_edit_locked) && (!$auth->acl_gets('m_', 'a_', $
 {
 	trigger_error($user->lang['CANNOT_EDIT_POST_LOCKED']);
 }
-
-$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 if ($mode == 'edit')
 {
@@ -677,7 +657,7 @@ if (($submit) || ($preview) || ($refresh))
 		}
 	}
 
-	if (($result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh, $attachment_data)) != '')
+	if (($result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh)) != '')
 	{
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 	}
@@ -823,7 +803,7 @@ if (($submit) || ($preview) || ($refresh))
 			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 		);
 		
-		submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $attachment_data, $post_data);
+		submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data);
 	}	
 
 	$post_text = $message_parser->message;
@@ -1096,50 +1076,44 @@ if (($perm['f_attach']) || ($perm['m_edit']))
 		'S_SHOW_ATTACH_BOX' => true)
 	);
 
-	if (count($attachment_data['physical_filename']) > 0)
+	if (count($message_parser->attachment_data))
 	{
 		$template->assign_vars(array(
 			'S_HAS_ATTACHMENTS' => true)
 		);
 		
-		for ($i = 0; $i < count($attachment_data['physical_filename']); $i++)
+		$count = 0;
+		foreach ($message_parser->attachment_data as $attach_row)
 		{
-			$attachment_data['real_filename'][$i] = stripslashes($attachment_data['real_filename'][$i]);
+			$hidden = '';
+			$attach_row['real_filename'] = stripslashes($attach_row['real_filename']);
 
-			$hidden =  '<input type="hidden" name="attachment_list[]" value="' . $attachment_data['physical_filename'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="filename_list[]" value="' . $attachment_data['real_filename'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="extension_list[]" value="' . $attachment_data['extension'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="mimetype_list[]" value="' . $attachment_data['mimetype'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="filesize_list[]" value="' . $attachment_data['filesize'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="filetime_list[]" value="' . $attachment_data['filetime'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="attach_id_list[]" value="' . $attachment_data['attach_id'][$i] . '" />';
-			$hidden .= '<input type="hidden" name="attach_thumbnail_list[]" value="' . $attachment_data['thumbnail'][$i] . '" />';
+			foreach ($attach_row as $key => $value)
+			{
+				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
+			}
+			
+			$download_link = ($attach_row['attach_id'] == '-1') ? $config['upload_dir'] . '/' . $attach_row['physical_filename'] : $phpbb_root_path . 'download.' . $phpEx . $SID . '&id=' . intval($attach_row['attach_id']);
 				
-			if ( $attachment_data['attach_id'][$i] == '-1' )
-			{
-				$download_link = $config['upload_dir'] . '/' . $attachment_data['physical_filename'][$i];
-			}
-			else
-			{
-				$download_link = $phpbb_root_path . "download." . $phpEx . "$SID?id=" . $attachment_data['attach_id'][$i];
-			}
-
 			$template->assign_block_vars('attach_row', array(
-				'FILENAME' => $attachment_data['real_filename'][$i],
-				'ATTACH_FILENAME' => $attachment_data['physical_filename'][$i],
-				'FILE_COMMENT' => stripslashes(htmlspecialchars($attachment_data['comment'][$i])),
-				'ATTACH_ID' => $attachment_data['attach_id'][$i],
+				'FILENAME' => $attach_row['real_filename'],
+				'ATTACH_FILENAME' => $attach_row['physical_filename'],
+				'FILE_COMMENT' => stripslashes(htmlspecialchars($attach_row['comment'])),
+				'ATTACH_ID' => $attach_row['attach_id'],
+				'ASSOC_INDEX' => $count,
 
 				'U_VIEW_ATTACHMENT' => $download_link,
 				'S_HIDDEN' => $hidden)
 			);
+
+			$count++;
 		}
 	}
 
 	$template->assign_vars(array(
-		'FILE_COMMENT' => stripslashes(htmlspecialchars($attachment_data['filecomment'])),
+		'FILE_COMMENT' => stripslashes(htmlspecialchars($message_parser->filename_data['filecomment'])),
 		'FILESIZE' => $config['max_filesize'],
-		'FILENAME' => $attachment_data['filename'])
+		'FILENAME' => $message_parser->filename_data['filename'])
 	);
 }
 

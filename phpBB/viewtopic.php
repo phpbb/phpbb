@@ -821,7 +821,7 @@ if (count($attach_list))
 		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
 		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
 			AND a.attach_id = d.attach_id
-		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'ASC' : 'DESC') . ', a.post_id ASC';
+		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', a.post_id ASC';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

@@ -147,7 +147,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
-	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
 
 	// Replace naughty words such as farty pants
 	if (sizeof($censors))
@@ -585,11 +585,7 @@ function upload_attachment($filename)
 		
 	// Opera add the name to the mime type
 	$filedata['mimetype'] = ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
-	$filedata['extension'] = strrchr(strtolower($filename), '.');
-	$filedata['extension'][0] = ' ';
-	$filedata['extension'] = strtolower(trim($filedata['extension']));
-	$filedata['extension'] = (is_array($filedata['extension'])) ? '' : $filedata['extension'];
-	
+	$filedata['extension'] = array_pop(explode('.', strtolower($filename)));
 	$filedata['filesize'] = (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
 
 	$extensions = array();
@@ -929,7 +925,7 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 
 
 // Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data)
+function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $filename_data, $post_data)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template;
 
@@ -950,7 +946,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'topic_type'				=> $topic_type,
 			'topic_approved'			=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1, 
 			'icon_id'					=> $post_data['icon_id'],
-			'topic_attachment'			=> (sizeof($attachment_data['physical_filename'])) ? 1 : 0,
+			'topic_attachment'			=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
 			'topic_poster'				=> intval($user->data['user_id']), 
 			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']))
 		);
@@ -1052,32 +1048,32 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Submit Attachments
-	if (count($attachment_data['attach_id']) && !empty($post_data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
+	if (count($attachment_data) && !empty($post_data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
 	{
-		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
+		foreach ($attachment_data as $attach_row)
 		{
-			if ($attachment_data['attach_id'][$i] != '-1')
+			if ($attach_row['attach_id'] != '-1')
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$attach_sql = array(
-					'comment' => trim($attachment_data['comment'][$i])
+					'comment' => trim($attach_row['comment'])
 				);
 			
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . intval($attach_row['attach_id']);
 				$db->sql_query($sql);
 			}
 			else
 			{
 				// insert attachment into db 
 				$attach_sql = array(
-					'physical_filename' => $attachment_data['physical_filename'][$i],
-					'real_filename' => $attachment_data['real_filename'][$i],
-					'comment' => trim($attachment_data['comment'][$i]),
-					'extension' => $attachment_data['extension'][$i],
-					'mimetype' => $attachment_data['mimetype'][$i],
-					'filesize' => $attachment_data['filesize'][$i],
-					'filetime' => $attachment_data['filetime'][$i],
-					'thumbnail' => $attachment_data['thumbnail'][$i]
+					'physical_filename' => $attach_row['physical_filename'],
+					'real_filename' => $attach_row['real_filename'],
+					'comment' => trim($attach_row['comment']),
+					'extension' => $attach_row['extension'],
+					'mimetype' => $attach_row['mimetype'],
+					'filesize' => $attach_row['filesize'],
+					'filetime' => $attach_row['filetime'],
+					'thumbnail' => $attach_row['thumbnail']
 				);
 
 				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
@@ -1096,7 +1092,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			}
 		}
 
-		if (count($attachment_data['attach_id']) > 0)
+		if (count($attachment_data))
 		{
 			$sql = "UPDATE " . POSTS_TABLE . "
 				SET post_attachment = 1
