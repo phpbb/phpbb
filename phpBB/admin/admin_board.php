@@ -101,70 +101,56 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	message_die(MESSAGE, $message);
 }
 
-$style_select = style_select($new['default_style'], 'default_style', '../templates');
-$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
-$timezone_select = tz_select($new['board_timezone'], 'board_timezone');
-
-$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
-$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';
-
-$html_tags = $new['allow_html_tags'];
-
-$override_user_style_yes = ( $new['override_user_style'] ) ? 'checked="checked"' : '';
-$override_user_style_no = ( !$new['override_user_style'] ) ? 'checked="checked"' : '';
-
-$htmYes = ( $new['allow_html'] ) ? 'checked="checked"' : '';
-$htmNo = ( !$new['allow_html'] ) ? 'checked="checked"' : '';
-
-$bbcode_yes = ( $new['allow_bbcode'] ) ? 'checked="checked"' : '';
-$bbcode_no = ( !$new['allow_bbcode'] ) ? 'checked="checked"' : '';
-
-$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
-$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
-$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
-
-$board_email_form_yes = ( $new['board_email_form'] ) ? 'checked="checked"' : '';
-$board_email_form_no = ( !$new['board_email_form'] ) ? 'checked="checked"' : '';
-
-$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
-$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
-
-$privmsg_on = ( !$new['privmsg_disable'] ) ? 'checked="checked"' : '';
-$privmsg_off = ( $new['privmsg_disable'] ) ? 'checked="checked"' : '';
-
-$prune_yes = ( $new['prune_enable'] ) ? 'checked="checked"' : '';
-$prune_no = ( !$new['prune_enable'] ) ? 'checked="checked"' : '';
-
-$smile_yes = ( $new['allow_smilies'] ) ? 'checked="checked"' : '';
-$smile_no = ( !$new['allow_smilies'] ) ? 'checked="checked"' : '';
-
-$sig_yes = ( $new['allow_sig'] ) ? 'checked="checked"' : '';
-$sig_no = ( !$new['allow_sig'] ) ? 'checked="checked"' : '';
-
-$namechange_yes = ( $new['allow_namechange'] ) ? 'checked="checked"' : '';
-$namechange_no = ( !$new['allow_namechange'] ) ? 'checked="checked"' : '';
-
-$smtp_yes = ( $new['smtp_delivery'] ) ? 'checked="checked"' : '';
-$smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
-
+//
+// Which title?
+//
 switch ( $mode )
 {
 	case 'cookies':
-		$cookie_secure_yes = ( $new['cookie_secure'] ) ? 'checked="checked"' : '';
-		$cookie_secure_no = ( !$new['cookie_secure'] ) ? 'checked="checked"' : '';
+		$l_title = 'Cookie_settings';
+		break;
+	case 'avatars':
+		$l_title = 'Avatar_settings';
+		break;
+	case 'defaults':
+		$l_title = 'Board_defaults';
+		break;
+	case 'settings':
+		$l_title = 'Board_settings';
+		break;
+	case 'email':
+		$l_title = 'Email_settings';
+		break;
+	case 'server':
+		$l_title = 'Server_settings';
+		break;
+}
 
-		page_header($lang['Cookie_settings']);
+page_header($lang[$l_title]);
 
 ?>
 
-<h1><?php echo $lang['Cookie_settings']; ?></h1>
+<h1><?php echo $lang[$l_title]; ?></h1>
 
-<p><?php echo $lang['Cookie_settings_explain']; ?></p>
+<p><?php echo $lang[$l_title . '_explain']; ?></p>
 
 <form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Cookie_settings']; ?></th>
+		<th colspan="2"><?php echo $lang[$l_title]; ?></th>
 	</tr>
+<?php
+
+//
+// Output relevant page
+//
+switch ( $mode )
+{
+	case 'cookies':
+
+		$cookie_secure_yes = ( $new['cookie_secure'] ) ? 'checked="checked"' : '';
+		$cookie_secure_no = ( !$new['cookie_secure'] ) ? 'checked="checked"' : '';
+
+?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $lang['Cookie_domain']; ?></td>
 		<td class="row2"><input type="text" maxlength="255" name="cookie_domain" value="<?php echo $new['cookie_domain']; ?>" /></td>
@@ -190,28 +176,18 @@ switch ( $mode )
 		break;
 
 	case 'avatars':
-		$avatars_locaYes = ( $new['allow_avatar_local'] ) ? 'checked="checked"' : '';
-		$avatars_locaNo = ( !$new['allow_avatar_local'] ) ? 'checked="checked"' : '';
+
+		$avatars_local_yes = ( $new['allow_avatar_local'] ) ? 'checked="checked"' : '';
+		$avatars_local_no = ( !$new['allow_avatar_local'] ) ? 'checked="checked"' : '';
 		$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
 		$avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
 		$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
 		$avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
 
-		page_header($lang['Avatar_settings']);
-
 ?>
-
-<h1><?php echo $lang['Avatar_settings']; ?></h1>
-
-<p><?php echo $lang['Avatar_settings_explain']; ?></p>
-
-<form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Avatar_settings']; ?></th>
-	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $lang['Allow_local']; ?></td>
-		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_locaYes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_locaNo; ?>  /> <?php echo $lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_local_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_local_no; ?>  /> <?php echo $lang['No']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Allow_remote']; ?> <br /><span class="gensmall"><?php echo $lang['Allow_remote_explain']; ?></span></td>
@@ -243,17 +219,29 @@ switch ( $mode )
 
 	case 'defaults':
 
-		page_header($lang['Board_defaults']);
+		$style_select = style_select($new['default_style'], 'default_style', '../templates');
+		$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
+		$timezone_select = tz_select($new['board_timezone'], 'board_timezone');
+
+		$override_user_style_yes = ( $new['override_user_style'] ) ? 'checked="checked"' : '';
+		$override_user_style_no = ( !$new['override_user_style'] ) ? 'checked="checked"' : '';
+
+		$html_yes = ( $new['allow_html'] ) ? 'checked="checked"' : '';
+		$html_no = ( !$new['allow_html'] ) ? 'checked="checked"' : '';
+
+		$bbcode_yes = ( $new['allow_bbcode'] ) ? 'checked="checked"' : '';
+		$bbcode_no = ( !$new['allow_bbcode'] ) ? 'checked="checked"' : '';
+
+		$smile_yes = ( $new['allow_smilies'] ) ? 'checked="checked"' : '';
+		$smile_no = ( !$new['allow_smilies'] ) ? 'checked="checked"' : '';
+
+		$sig_yes = ( $new['allow_sig'] ) ? 'checked="checked"' : '';
+		$sig_no = ( !$new['allow_sig'] ) ? 'checked="checked"' : '';
+
+		$namechange_yes = ( $new['allow_namechange'] ) ? 'checked="checked"' : '';
+		$namechange_no = ( !$new['allow_namechange'] ) ? 'checked="checked"' : '';
 
 ?>
-<h1><?php echo $lang['Board_defaults']; ?></h1>
-
-<p><?php echo $lang['Board_defaults_explain']; ?></p>
-
-<form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Board_defaults']; ?></th>
-	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $lang['Default_style']; ?></td>
 		<td class="row2"><?php echo $style_select; ?></td>
@@ -280,7 +268,7 @@ switch ( $mode )
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Allowed_tags']; ?><br /><span class="gensmall"><?php echo $lang['Allowed_tags_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="30" maxlength="255" name="allow_html_tags" value="<?php echo $html_tags; ?>" /></td>
+		<td class="row2"><input type="text" size="30" maxlength="255" name="allow_html_tags" value="<?php echo $new['allow_html_tags']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Allow_BBCode']; ?></td>
@@ -312,17 +300,23 @@ switch ( $mode )
 
 	case 'settings':
 
-		page_header($lang['Board_settings']);
+		$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
+		$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';
+
+		$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
+		$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
+		$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
+
+		$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
+		$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
+
+		$privmsg_on = ( !$new['privmsg_disable'] ) ? 'checked="checked"' : '';
+		$privmsg_off = ( $new['privmsg_disable'] ) ? 'checked="checked"' : '';
+
+		$prune_yes = ( $new['prune_enable'] ) ? 'checked="checked"' : '';
+		$prune_no = ( !$new['prune_enable'] ) ? 'checked="checked"' : '';
 
 ?>
-<h1><?php echo $lang['Board_settings']; ?></h1>
-
-<p><?php echo $lang['Board_settings_explain']; ?></p>
-
-<form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Board_settings']; ?></th>
-	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $lang['Site_name']; ?></td>
 		<td class="row2"><input type="text" size="40" maxlength="255" name="sitename" value="<?php echo htmlentities($new['sitename']); ?>" /></td>
@@ -397,17 +391,13 @@ switch ( $mode )
 
 	case 'email':
 
-		page_header($lang['Email_settings']);
+		$board_email_form_yes = ( $new['board_email_form'] ) ? 'checked="checked"' : '';
+		$board_email_form_no = ( !$new['board_email_form'] ) ? 'checked="checked"' : '';
+
+		$smtp_yes = ( $new['smtp_delivery'] ) ? 'checked="checked"' : '';
+		$smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
 
 ?>
-<h1><?php echo $lang['Email_settings']; ?></h1>
-
-<p><?php echo $lang['Email_settings_explain']; ?></p>
-
-<form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Email_settings']; ?></th>
-	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Board_email_form']; ?><br /><span class="gensmall"><?php echo $lang['Board_email_form_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $lang['Enabled']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $lang['Disabled']; ?></td>
@@ -442,17 +432,7 @@ switch ( $mode )
 
 	case 'server':
 
-		page_header($lang['Server_settings']);
-
 ?>
-<h1><?php echo $lang['Server_settings']; ?></h1>
-
-<p><?php echo $lang['Server_settings_explain']; ?></p>
-
-<form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2"><?php echo $lang['Server_settings']; ?></th>
-	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Server_name']; ?><br /><span class="gensmall"><?php echo $lang['Server_name_explain']; ?></span></td>
 		<td class="row2"><input type="text" maxlength="255" size="40" name="server_name" value="<?php echo $new['server_name']; ?>" /></td>
