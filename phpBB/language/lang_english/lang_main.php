@@ -434,6 +434,10 @@ $lang['You_new_pm'] = 'A new private message is waiting for you in your Inbox';
 $lang['You_new_pms'] = 'New private messages are waiting for you in your Inbox';
 $lang['You_no_new_pm'] = 'No new private messages are waiting for you';
 
+$lang['Unread_message'] = 'Unread message';
+$lang['Read_message'] = 'Read message';
+
+$lang['Read_pm'] = 'Read message';
 $lang['Post_new_pm'] = 'Post message';
 $lang['Post_reply_pm'] = 'Reply to message';
 $lang['Post_quote_pm'] = 'Quote message';

@@ -461,6 +461,7 @@ $lang['reset_group_changes'] = 'Reset Changes';
 $lang['No_group_name'] = 'You must specify a name for this group';
 $lang['No_group_moderator'] = 'You must specify a moderator for this group';
 $lang['No_group_mode'] = 'You must specify a mode for this group, open or closed';
+$lang['No_group_action'] = 'No action was specified';
 $lang['delete_group_moderator'] = 'Delete the old group moderator?';
 $lang['delete_moderator_explain'] = 'If you\'re changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.';
 $lang['Click_return_groupsadmin'] = 'Click %sHere%s to return to Group Administration.';
