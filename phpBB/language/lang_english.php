@@ -315,8 +315,27 @@ $lang['No_folder'] = "No folder specified";
 //
 // Profiles/Registration
 //
+$lang['Viewing_profile_of'] = "Viewing profile of"; // followed by username
+$lang['Preferences'] = "Preferences";
+$lang['Items_required'] = "Items marked with a * are required unless stated otherwise";
+$lang['Registration_info'] = "Registraction Information";
+$lang['Profile_info'] = "Profile Information";
+$lang['Profile_info_warn'] = "This information will be publicly viewable";
+$lang['Avatar_panel'] = "Avatar control panel";
+
 $lang['Website'] = "Website";
 $lang['From'] = "From";
+$lang['Contact'] = "Contact";
+$lang['Email_address'] = "Email address";
+$lang['Email'] = "Email";
+$lang['Private_message'] = "Send Private Message";
+$lang['Hidden'] = "[ Hidden email address ]";
+$lang['Search_user_posts'] = "Search for posts by this user";
+$lang['Interests'] = "Interests";
+$lang['Occupation'] = "Occupation";
+
+$lang['posts_per_day'] = "posts per day"; 
+$lang['of_total'] = "of total"; // follows percentage of total posts
 
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
@@ -330,12 +349,20 @@ $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
 $lang['Always_bbcode'] = "Always allow BBCode";
 $lang['Always_add_sig'] = "Always attach my signature";
+$lang['Board_template'] = "Board Template";
 $lang['Board_theme'] = "Board Theme";
 $lang['Board_lang'] = "Board Language";
 $lang['No_themes'] = "No Themes In database";
 $lang['Timezone'] = "Timezone";
+$lang['Date_format'] = "Date format";
+$lang['Date_format_explain'] = "The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function";
+$lang['Signature'] = "Signature";
+$lang['Signature_explain'] = "This is a block of text that can be added to posts you make. There is a 255 character limit";
+$lang['Public_view_email'] = "Always show my Email Address";
 
-$lang['Avatar_panel'] = "Avatar control panel";
+$lang['password_if_changed'] = "You only need to supply a password if you want to change it";
+$lang['password_confirm_if_changed'] = "You only need to confirm your password if you changed it above";
+
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
 $lang['Upload_Avatar_file'] = "Upload Avatar from your machine";
@@ -686,7 +713,7 @@ $l_website 	= "Web Site Address";
 $l_occupation 	= "Occupation";
 $l_interests 	= "Interests";
 $l_signature 	= "Signature";
-$l_sigexplain 	= "This is a block of text that can be added to posts you make. There is a 255 character limit";
+$l_sigexplain 	= "";
 $l_usertaken	= "The $l_username you picked has been taken.";
 $l_userdisallowed= "The $l_username you picked has been disallowed by the administrator. $l_tryagain";
 $l_infoupdated	= "Your Information has been updated";
@@ -699,7 +726,7 @@ $l_boardtemplate = "Select Template";
 $l_date_format = "Date format";
 
 
-$l_date_format_explanation = "The syntax used is identical to the PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> function";
+$l_date_format_explanation = "";
 $l_password_if_changed = "You only need to supply a password if you want to change it.";
 $l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
 

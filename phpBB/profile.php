@@ -196,7 +196,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 	if($mode == "viewprofile")
 	{
 		$pagetype = "profile";
-		$page_title = "$l_profile";
+		$page_title = $lang['Viewing_profile'];
 
 		//
 		// Output page header and
@@ -249,31 +249,38 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			// Replace the @ with 'at'. Some anti-spam mesures.
 			$email_addr = str_replace("@", " at ", $profiledata['user_email']);
 			$email = "<a href=\"mailto:$email_addr\">$email_addr</a>";
+			$email_img = "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . stripslashes($profiledata['username']) . "\" border=\"0\"></a>";
 		}
 		else
 		{
-			$email = $l_hidden;
+			$email = $lang['Hidden'];
+			$email_img = $lang['Hidden'];
 		}
 
 		if($members[$i]['user_icq'])
 		{
-			$icq_status = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" border=\"0\"></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&img=5\" border=\"0\"></a>";
 
-			$icq_add = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
 		}
 		else
 		{
-			$icq_status = "&nbsp;";
-			$icq_add = "&nbsp;";
+			$icq_status_img = "&nbsp;";
+			$icq_add_img = "&nbsp;";
 		}
 
-		$aim = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$msnm = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$yim = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\"></a>";
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\"></a>";
+		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\">" . $lang['Search_user_posts'] . "</a>";
+
+		$www_img = ($profiledata['user_website']) ? "<img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "&nbsp;";
+
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $profiledata['user_id']) . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
 
 		$template->assign_vars(array(
 			"USERNAME" => stripslashes($profiledata['username']),
@@ -282,31 +289,40 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"POSTS" => $profiledata['user_posts'],
 			"PERCENTAGE" => $percentage . "%",
 			"EMAIL" => $email,
-			"ICQ_STATUS" => $icq_status,
-			"AIM" => stripslashes($profiledata['user_aim']),
-			"MSN" => stripslashes($profiledata['user_msnm']),
-			"YIM" => stripslashes($profiledata['user_yim']),
-			"WEBSITE" => stripslashes($profiledata['user_website']),
-			"LOCATION" => stripslashes($profiledata['user_from']),
-			"OCCUPATION" => stripslashes($profiledata['user_occ']),
-			"INTERESTS" => stripslashes($profiledata['user_interests']),
-			"AVATAR_IMG" => $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']),
+			"EMAIL_IMG" => $email_img, 
+			"PM_IMG" => $pm_img, 
+			"UL_SEARCH" => $search, 
+			"SEARCH_IMG" => $search_img, 
+			"ICQ_ADD_IMG" => $icq_add_img, 
+			"ICQ_STATUS_IMG" => $icq_status_img,
+			"AIM" => ( ($profiledata['user_aim']) ? stripslashes($profiledata['user_aim']) : "" ),
+			"AIM_IMG" => $aim_img, 
+			"MSN" => ( ($profiledata['user_msnm']) ? stripslashes($profiledata['user_msnm']) : "" ),
+			"MSN_IMG" => $msnm_img, 
+			"YIM" => ( ($profiledata['user_yim']) ? stripslashes($profiledata['user_yim']) : "" ),
+			"YIM_IMG" => $yim_img, 
+			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "" ),
+			"WEBSITE_IMG" => $www_img, 
+			"LOCATION" => ( ($profiledatas['user_from']) ? stripslashes($profiledata['user_from']) : "" ),
+			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "" ),
+			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "" ),
+			"AVATAR_IMG" => "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\">",
 
-			"L_VIEWING_PROFILE" => $l_viewing_profile,
-			"L_USERNAME" => $lang['Username'],
-			"L_VIEW_USERS_POSTS" => $l_view_users_posts,
-			"L_JOINED" => $l_joined,
-			"L_PER_DAY" => $l_per_day,
-			"L_OF_TOTAL" => $l_of_total,
-			"L_EMAIL_ADDRESS" => $l_emailaddress,
-			"L_ICQ_NUMBER" => $l_icq_number,
-			"L_YAHOO" => $l_yahoo,
-			"L_AIM" => $l_aim,
-			"L_WEBSITE" => $l_website,
-			"L_MESSENGER" => $l_messenger,
-			"L_LOCATION" => $l_from,
-			"L_OCCUPATION" => $l_occupation,
-			"L_INTERESTS" => $l_interests,
+			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'],
+			"L_PER_DAY" => $lang['posts_per_day'],
+			"L_OF_TOTAL" => $lang['of_total'],
+			"L_CONTACT" => $lang['Contact'],
+			"L_EMAIL_ADDRESS" => $lang['Email_address'], 
+			"L_EMAIL" => $lang['Email'], 
+			"L_PM" => $lang['Private_message'], 
+			"L_ICQ_NUMBER" => $lang['ICQ'],
+			"L_YAHOO" => $lang['YIM'],
+			"L_AIM" => $lang['AIM'],
+			"L_MESSENGER" => $lang['MSNM'],
+			"L_WEBSITE" => $lang['Website'],
+			"L_LOCATION" => $lang['From'],
+			"L_OCCUPATION" => $lang['Occupation'],
+			"L_INTERESTS" => $lang['Interests'],
 
 			"U_SEARCH_USER" => append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1"),
 			"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
@@ -382,6 +398,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$yim = (!empty($HTTP_POST_VARS['yim'])) ? trim(strip_tags($HTTP_POST_VARS['yim'])) : "";
 
 			$website = (!empty($HTTP_POST_VARS['website'])) ? trim(strip_tags($HTTP_POST_VARS['website'])) : "";
+			if($website != "")
+			{
+				if( !ereg("^http\:\/\/", $website) )
+				{
+					$website = "http://" . $website;
+				}
+			}
 			$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
 			$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
@@ -829,8 +852,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								}
 								else
 								{
-									$msg = $lang['Account_added']; //$l_acountadded;
-									$email_msg = $lang['Welcome_email']; //$l_welcomemail;
+									$msg = $lang['Account_added']; 
+									$email_msg = $lang['Welcome_email']; 
 								}
 
 								if(!$coppa)
@@ -977,8 +1000,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"DATE_FORMAT" => stripslashes($user_dateformat),
 			"TEMPLATE_SELECT" => template_select($user_template),
 
-			"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $l_password_if_changed : "",
-			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $l_password_confirm_if_changed : "",
+			"L_PASSWORD_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_if_changed'] : "",
+			"L_PASSWORD_CONFIRM_IF_CHANGED" => ($mode == "editprofile") ? $lang['password_confirm_if_changed'] : "",
 			"L_SUBMIT" => $lang['Submit'], 
 			"L_RESET" => $lang['Reset'], 
 			"L_ICQ_NUMBER" => $lang['ICQ'],
@@ -987,17 +1010,16 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_WEBSITE" => $lang['Website'],
 			"L_AIM" => $lang['AIM'],
 			"L_LOCATION" => $lang['From'],
-			"L_OCCUPATION" => $l_occupation,
+			"L_OCCUPATION" => $lang['Occupation'],
 			"L_BOARD_LANGUAGE" => $lang['Board_lang'],
 			"L_BOARD_THEME" => $lang['Board_theme'],
-			"L_BOARD_TEMPLATE" => $l_boardtemplate,
-			"L_TIMEZONE" => $l_timezone,
-			"L_DATE_FORMAT" => $l_date_format,
-			"L_DATE_FORMAT_EXPLANATION" => $l_date_format_explanation,
+			"L_BOARD_TEMPLATE" => $lang['Board_template'],
+			"L_TIMEZONE" => $lang['Timezone'],
+			"L_DATE_FORMAT" => $lang['Date_format'],
+			"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
 			"L_YES" => $lang['Yes'],
 			"L_NO" => $lang['No'],
-			"L_INTERESTS" => $l_interests,
-			"L_USER_UNIQUE" => $l_useruniq,
+			"L_INTERESTS" => $lang['Interests'],
 			"L_ALWAYS_ALLOW_SMILIES" => $lang['Always_smile'],
 			"L_ALWAYS_ALLOW_BBCODE" => $lang['Always_bbcode'],
 			"L_ALWAYS_ALLOW_HTML" => $lang['Always_html'], 
@@ -1016,17 +1038,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_DELETE_AVATAR" => $lang['Delete_Image'],
 			"L_CURRENT_IMAGE" => $lang['Current_Image'],
 
-			"L_SIGNATURE" => $l_signature,
-			"L_SIGNATURE_EXPLAIN" => $l_sigexplain, 
+			"L_SIGNATURE" => $lang['Signature'],
+			"L_SIGNATURE_EXPLAIN" => $lang['Signature_explain'], 
 			"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'], 
-			"L_PREFERENCES" => $l_preferences,
-			"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
-			"L_ITEMS_REQUIRED" => $l_itemsreq,
-			"L_REGISTRATION_INFO" => $l_reginfo,
-			"L_PROFILE_INFO" => $l_profile_info,
-			"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
-			"L_CONFIRM" => $l_confirm,
-			"L_EMAIL_ADDRESS" => $l_emailaddress,
+			"L_PREFERENCES" => $lang['Preferences'],
+			"L_PUBLIC_VIEW_EMAIL" => $lang['Public_view_email'],
+			"L_ITEMS_REQUIRED" => $lang['Items_required'],
+			"L_REGISTRATION_INFO" => $lang['Registration_info'],
+			"L_PROFILE_INFO" => $lang['Profile_info'],
+			"L_PROFILE_INFO_NOTICE" => $lang['Profile_info_warn'],
+			"L_CONFIRM" => $lang['Confirm'],
+			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 
 			"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'], 
 			"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],

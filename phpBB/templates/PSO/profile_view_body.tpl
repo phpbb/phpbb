@@ -8,54 +8,74 @@
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<th colspan="2"><span class="gen"><b>{L_VIEWING_PROFILE} {USERNAME}</b></th>
+				<td class="cat" colspan="2" align="center"><span class="cattitle"><b>{L_VIEWING_PROFILE} {USERNAME}</b></td>
 			</tr>
 			<tr>
-	           <td class="row1" width="20%"><span class="gen">{L_USERNAME}:</span></td>
-	           <td class="row2" valign="middle"><span class="gen"><b>{USERNAME}</b> [<a href="{U_SEARCH_USER}">{L_VIEW_USERS_POSTS}</a>]</span></td>
+	           <td class="row1" width="20%" height="25"><span class="gen">{L_USERNAME}:</span></td>
+	           <td class="row1" valign="middle"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><span class="gen"><b>{USERNAME}</b></span></td>
+						<td> &nbsp;&nbsp;&nbsp;&nbsp; </td>
+						<td>{AVATAR_IMG}</td>
+					</tr>
+				</table></td>
             </tr>
             <tr>
-				<td class="row1"><span class="gen">{L_JOINED}:</span></td>
-				<td class="row2"><span class="gen"><b>{JOINED}</b> [{POSTS_PER_DAY} {L_PER_DAY}]</span></td>
+				<td class="row2" height="25"><span class="gen">{L_JOINED}:</span></td>
+				<td class="row2"><span class="gen"><b>{JOINED}</b></span></td>
 			</tr>
             <tr>
-				<td class="row1"><span class="gen">{L_POSTS}:</span></td>
-				<td class="row2"><span class="gen"><b>{POSTS}</b> [{PERCENTAGE} {L_OF_TOTAL}]</span></td>
+				<td class="row1" height="25"><span class="gen">{L_POSTS}:</span></td>
+				<td class="row1"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><span class="gen"><b>{POSTS}</b></span></td>
+						<td> &nbsp;&nbsp;&nbsp; </td>
+						<td><span class="gen">[ {PERCENTAGE} {L_OF_TOTAL} / {POSTS_PER_DAY} {L_PER_DAY}]</span></td>
+						<td> &nbsp;&nbsp;&nbsp; </td>
+						<td><span class="gen"><b><a href="{U_SEARCH_USER}">{SEARCH_IMG}</a></b></span></td>
+					</tr>
+				</table></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}:</span></td>
-				<td class="row2"><span class="gen">{EMAIL}</span>&nbsp;{PM_IMG}</td>
+				<td class="row2" height="25"><span class="gen">{L_CONTACT}:</span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><span class="gen"><b> {EMAIL_IMG} </b></span></td>
+						<td> &nbsp;&nbsp;&nbsp; </td>
+						<td><span class="gen"><b> {PM_IMG} </b></span></td>
+					</tr>
+				</table></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
-				<td class="row2"><span class="gen">{ICQ}</span></td>
+				<td class="row1" height="25"><span class="gen">{L_ICQ_NUMBER}:</span></td>
+				<td class="row1"><span class="gen">{ICQ_IMG}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_AIM}:</span></td>
-				<td class="row2"><span class="gen">{AIM}</b></span></td>
+				<td class="row2" height="25"><span class="gen">{L_AIM}:</span></td>
+				<td class="row2"><span class="gen">{AIM_IMG}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_MESSENGER}:</span></td>
-				<td class="row2"><span class="gen">{MSN}</b></span></td>
+				<td class="row1" height="25"><span class="gen">{L_MESSENGER}:</span></td>
+				<td class="row1"><span class="gen">{MSN_IMG}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_YAHOO}:</span></td>
-				<td class="row2"><span class="gen">{YIM}</b></span></td>
+				<td class="row2" height="25"><span class="gen">{L_YAHOO}:</span></td>
+				<td class="row2"><span class="gen">{YIM_IMG}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_WEBSITE}:</span></td>
-				<td class="row2"><span class="gen"><a href="{U_USER_WEBSITE}" target="_userwww">{WEBSITE}</a></b></span></td>
+				<td class="row1" height="25"><span class="gen">{L_WEBSITE}:</span></td>
+				<td class="row1"><span class="gen"><a href="{U_USER_WEBSITE}" target="_userwww">{WEBSITE_IMG}</a></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_LOCATION}:</span></td>
+				<td class="row2" height="25"><span class="gen">{L_LOCATION}:</span></td>
 				<td class="row2"><span class="gen"><b>{LOCATION}</b></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_OCCUPATION}:</span></td>
-				<td class="row2"><span class="gen"><b>{OCCUPATION}</b></span></td>
+				<td class="row1" height="25"><span class="gen">{L_OCCUPATION}:</span></td>
+				<td class="row1"><span class="gen"><b>{OCCUPATION}</b></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_INTERESTS}:</span></td>
+				<td class="row2" height="25"><span class="gen">{L_INTERESTS}:</span></td>
 				<td class="row2"><span class="gen"><b>{INTERESTS}</b></span></td>
 			</tr>
 		</table></td>
