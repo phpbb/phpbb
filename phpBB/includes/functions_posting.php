@@ -130,7 +130,7 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 }
 
 // Update Last Post Informations
-function update_last_post_information($type, $id, &$parent_sql)
+function update_last_post_information($type, $id)
 {
 	global $db;
 
@@ -179,26 +179,6 @@ function update_last_post_information($type, $id, &$parent_sql)
 		$update_sql[] = 'forum_last_poster_id = 0';
 		$update_sql[] = "forum_last_poster_name = ''";
 	}
-/*
-	// Return 'Udate all Parents' information
-	// Not able to test this, since subforums seems to be broken
-	if ($type == 'forum')
-	{
-		$forum_parents = get_forum_branch($id, 'parents', 'descending', FALSE);
-		$forum_ids = array();
-		foreach ($forum_parents as $row)
-		{
-			$forum_ids[] = (int) $row['forum_id'];
-		}
-
-		if (sizeof($forum_ids))
-		{
-			$parent_sql[] = 'UPDATE ' . FORUMS_TABLE . ' 
-				SET ' . implode(', ', $update_sql) . '
-				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
-		}
-	}
-*/
 	
 	return $update_sql;
 }

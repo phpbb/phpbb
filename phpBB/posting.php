@@ -501,7 +501,7 @@ if ($submit || $preview || $refresh)
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
 	{
-		if (topic_review($topic_id, 'post_review', $topic_cur_post_id))
+		if (topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id))
 		{
 			$template->assign_var('S_POST_REVIEW', TRUE);
 		}
@@ -1064,7 +1064,7 @@ make_jumpbox('viewforum.'.$phpEx);
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
 {
-	if (topic_review($topic_id))
+	if (topic_review($topic_id, $forum_id))
 	{
 		$template->assign_var('S_DISPLAY_REVIEW', TRUE);
 	}
@@ -1320,7 +1320,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 }
 
 // Topic Review
-function topic_review($topic_id, $mode = 'topic_review', $cur_post_id = 0)
+function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0)
 {
 	global $user, $auth, $db, $template, $bbcode, $template;
 	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
@@ -1445,7 +1445,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 	// Specify our post mode
 	$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'delete_topic' : (($data['topic_first_post_id'] == $post_id) ? 'delete_first_post' : (($data['topic_last_post_id'] == $post_id) ? 'delete_last_post' : 'delete'));
-	$sql_data = $parent_sql = array();
+	$sql_data = array();
 	$next_post_id = 0;
 
 	$db->sql_transaction();
@@ -1476,7 +1476,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 				$sql_data['forum'] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
 			}
 
-			$update = update_last_post_information('forum', $forum_id, $parent_sql);
+			$update = update_last_post_information('forum', $forum_id);
 			if (sizeof($update))
 			{
 				$sql_data['forum'] .= ($sql_data['forum'] != '') ? ', ' . implode(', ', $update) : implode(', ', $update);
@@ -1522,7 +1522,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
 			}
 
-			$update = update_last_post_information('forum', $forum_id, $parent_sql);
+			$update = update_last_post_information('forum', $forum_id);
 			if (sizeof($update))
 			{
 				$sql_data['forum'] .= ($sql_data['forum'] != '') ? ', ' . implode(', ', $update) : implode(', ', $update);
@@ -1585,15 +1585,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 			WHERE user_id = ' . $data['poster_id'];
 		$db->sql_query($sql);
 	}
-/*
-	if (sizeof($parent_sql))
-	{
-		foreach ($parent_sql as $sql)
-		{
-			$db->sql_query($sql);
-		}
-	}
-*/
+
 	$db->sql_transaction('commit');
 
 	return $next_post_id;
@@ -1962,20 +1954,18 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	$db->sql_transaction('commit');
 
-	$parent_sql = array();
-
 	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post')
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id'], $parent_sql));
+			$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 		}
 		$sql_data['topic']['stat'][] = implode(', ', update_last_post_information('topic', $data['topic_id']));
 	}
 
 	if ($make_global)
 	{
-		$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id'], $parent_sql));
+		$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 	}
 
 	if ($post_mode == 'edit_topic')
@@ -2032,14 +2022,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			SET ' . implode(', ', $sql_data['user']['stat']) . '
 			WHERE user_id = ' . $user->data['user_id'];
 		$db->sql_query($sql);
-	}
-
-	if (sizeof($parent_sql))
-	{
-		foreach ($parent_sql as $sql)
-		{
-			$db->sql_query($sql);
-		}
 	}
 
 	// Fulltext parse
