@@ -13,26 +13,37 @@
 		<th nowrap="nowrap" width="5%"><a class="th" href="{U_SORT_DOWNLOADS}">{L_DOWNLOADS}</a></th>
 		<th width="2%" nowrap="nowrap">{L_DELETE}</th>
 	</tr>
-
+	<!-- IF TOTAL_ATTACHMENTS -->
+	<tr>
+		<td class="row3" colspan="6">
+			<table width="100%" cellspacing="1">
+			<tr>
+				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_ATTACHMENTS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<!-- ENDIF -->
 	<!-- BEGIN attachrow -->
 
 		<!-- IF attachrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
-		<td class="gen" style="padding: 4px;" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
-		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall"><!-- IF attachrow.S_IN_MESSAGE -->{L_PM}: <!-- ELSE -->{L_TOPIC}: <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
+		<td class="genmed" style="padding: 4px;" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
+		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall"><!-- IF attachrow.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
 		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">&nbsp;{attachrow.POST_TIME}&nbsp;</td>
-		<td class="gen" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{attachrow.SIZE}</td>
-		<td class="gen" style="padding: 4px;" align="center">{attachrow.DOWNLOAD_COUNT}</td>
+		<td class="genmed" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{attachrow.SIZE}</td>
+		<td class="genmed" style="padding: 4px;" align="center">{attachrow.DOWNLOAD_COUNT}</td>
 		<td style="padding: 4px;" align="center" valign="middle"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1" /></td>
 	</tr>
 	<!-- END attachrow -->
-
 	<tr> 
 		<td class="cat" colspan="6"><div style="float:left"><span class="gensmall">{L_SORT_BY}: </span><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_SORT}" /></div><div style="float:right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</div></td>
 	</tr>
 </table>
 
-<div class="nav" style="float:left">{PAGE_NUMBER}</div><div style="float:right"><b class="gensmall"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></div>
+<div style="float:right"><b class="gensmall"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b></div>
 
 <!-- ELSE -->
 

@@ -39,7 +39,7 @@
 			<!-- ELSEIF draftrow.S_LINK_PM --><br /><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
 			<!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
 		</td>
-		<td style="padding: 4px;" align="center" nowrap="nowrap"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
+		<td style="padding: 4px;" align="center" nowrap="nowrap"><span class="genmed"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
 		<td style="padding: 4px;" align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
 	</tr>
 	<!-- BEGINELSE -->
@@ -96,7 +96,7 @@
 		</table></td>
 	</tr>
 	<tr class="row1">
-		<td colspan="9" align="left" class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></td>
+		<td colspan="9" align="left"><p class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></p></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
