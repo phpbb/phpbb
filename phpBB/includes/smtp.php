@@ -153,7 +153,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	fputs($socket, "MAIL FROM: " . $board_config['board_email'] . "\r\n");
+	fputs($socket, "MAIL FROM: <" . $board_config['board_email'] . ">\r\n");
 	server_parse($socket, "250");
 
 	// Specify each user to send to and build to header.
@@ -165,9 +165,9 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		// Add an additional bit of error checking to the To field.
 		//
 		$mail_to_address = trim($mail_to_address);
-		if ( preg_match('/.+\@.+/', $mail_to_address) )
+		if ( preg_match('/[^ ]+\@[^ ]+/', $mail_to_address) )
 		{
-			fputs( $socket, "RCPT TO: $mail_to_address\r\n" );
+			fputs( $socket, "RCPT TO: <$mail_to_address>\r\n" );
 			server_parse( $socket, "250" );
 		}
 		$to_header .= "<$mail_to_address>, ";
@@ -180,9 +180,9 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		// Add an additional bit of error checking to bcc header...
 		//
 		$bcc_address = trim( $bcc_address );
-		if ( preg_match('/.+\@.+/', $bcc_address) )
+		if ( preg_match('/[^ ]+\@[^ ]+/', $bcc_address) )
 		{
-			fputs( $socket, "RCPT TO: $bcc_address\r\n" );
+			fputs( $socket, "RCPT TO: <$bcc_address>\r\n" );
 			server_parse( $socket, "250" );
 		}
 	}
@@ -193,9 +193,9 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		// Add an additional bit of error checking to cc header
 		//
 		$cc_address = trim( $cc_address );
-		if ( preg_match('/.+\@.+/', $cc_address) )
+		if ( preg_match('/[^ ]+\@[^ ]+/', $cc_address) )
 		{
-			fputs($socket, "RCPT TO: $cc_address\r\n");
+			fputs($socket, "RCPT TO: <$cc_address>\r\n");
 			server_parse($socket, "250");
 		}
 	}
