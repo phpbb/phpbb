@@ -1216,18 +1216,23 @@ if( !empty($next) )
 				WHERE u.user_id IS NULL";
 			$result = query($sql, "Couldn't obtain list of deleted users");
 			
-			$post_id_ary = array();
-			while( $row = $db->sql_fetchrow($result) )
+			$users_removed = $db->sql_numrows($result);
+
+			if( $users_removed )
 			{
-				$post_id_ary[] = $row['post_id'];
+				$post_id_ary = array();
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					$post_id_ary[] = $row['post_id'];
+				}
+
+				$sql = "UPDATE " . POSTS_TABLE . " 
+					SET poster_id = " . ANONYMOUS . ", enable_sig = 0 
+					WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
+				query($sql, "Couldn't update posts to remove deleted user poster_id values");
 			}
 
-			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET poster_id = " . ANONYMOUS . ", enable_sig = 0 
-				WHERE post_id IN (" . implode(", ", $post_id_ary) . ")";
-			query($sql, "Couldn't update posts to remove deleted user poster_id values");
-
-			print "Done<br />\n";
+			print "Removed $users_removed Users ... Done<br />\n";
 
 			echo "<br />Complete<br />\n";
 			end_step('convert_pm');
