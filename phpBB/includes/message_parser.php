@@ -995,60 +995,56 @@ class parse_message extends bbcode_firstpass
 	}
 	
 	// Parse Poll
-	function parse_poll(&$poll, $poll_data)
+	function parse_poll(&$poll)
 	{
-		global $auth, $forum_id, $user, $config;
+		global $auth, $user, $config;
 
-		// Need a second look at
-		return;
-		/*
-		// Process poll options
-		if ($poll_data['poll_option_text'] && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_get('m_edit', $forum_id)))
+		$poll_max_options = $poll['poll_max_options'];
+
+		// Parse Poll Option text ;)
+		$tmp_message = $this->message;
+		$this->message = $poll['poll_option_text'];
+		$bbcode_bitfield = $this->bbcode_bitfield;
+
+		$poll['poll_option_text'] = $this->parse($poll['enable_html'], $poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
+		
+		$this->bbcode_bitfield |= $bbcode_bitfield;
+		$this->message = $tmp_message;
+
+		// Parse Poll Title
+		$tmp_message = $this->message;
+		$this->message = $poll['poll_title'];
+		$bbcode_bitfield = $this->bbcode_bitfield;
+
+		$poll['poll_title'] = $this->parse($poll['enable_html'], $poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
+
+		$this->bbcode_bitfield |= $bbcode_bitfield;
+		$this->message = $tmp_message;
+
+		unset($tmp_message);
+
+		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
+		$poll['poll_options_size'] = sizeof($poll['poll_options']);
+			
+		if (sizeof($poll['poll_options']) == 1)
 		{
-			$message = $this->message;
-			$this->message = $poll_data['poll_option_text'];
-			
-			if (($result = $this->parse($poll_data['enable_html'], $poll_data['enable_bbcode'], $poll_data['bbcode_uid'], $poll_data['enable_urls'], $poll_data['enable_smilies'], false)) != '')
-			{
-				$this->warn_msg[] = $result;
-			}
-
-			$poll_data['poll_option_text'] = $this->message;
-			$this->message = $message;
-			unset($message);
-
-			$poll['poll_options'] = explode("\n", trim($poll_data['poll_option_text']));
-			$poll['poll_options_size'] = sizeof($poll['poll_options']);
-			
-			if (sizeof($poll['poll_options']) == 1)
-			{
-				$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
-			}
-			elseif (sizeof($poll['poll_options']) > intval($config['max_poll_options']))
-			{
-				$this->warn_msg[] = $user->lang['TOO_MANY_POLL_OPTIONS'];
-			}
-			elseif (sizeof($poll['poll_options']) < $poll['poll_options_size'])
-			{
-				$this->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
-			}
-			elseif ($poll_data['poll_max_options'] > sizeof($poll['poll_options']))
-			{
-				$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
-			}
-
-			$poll['poll_title'] = ($poll_data['poll_title']) ? $poll_data['poll_title'] : '';
-			$poll['poll_length'] = ($poll_data['poll_length']) ? intval($poll_data['poll_length']) : 0;
-
-			if (!$poll['poll_title'] && $poll['poll_options_size'])
-			{
-				$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
-			}
+			$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
+		}
+		else if ($poll['poll_options_size'] > (int) $config['max_poll_options'])
+		{
+			$this->warn_msg[] = $user->lang['TOO_MANY_POLL_OPTIONS'];
+		}
+		else if ($poll_max_options > $poll['poll_options_size'])
+		{
+			$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
 		}
 
-		$poll['poll_start'] = $poll_data['poll_start'];
-		$poll['poll_max_options'] = ($poll_data['poll_max_options'] < 1) ? 1 : (($poll_data['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll_data['poll_max_options']);
-		*/
+		if (!$poll['poll_title'] && $poll['poll_options_size'])
+		{
+			$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
+		}
+
+		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
 	}
 }
 

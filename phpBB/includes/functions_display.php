@@ -105,7 +105,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		{
 			$active_forum_ary['forum_id'][]		= $forum_id;
 			$active_forum_ary['enable_icons'][] = $row['enable_icons'];
-			$active_forum_ary['forum_topics']	+= $row['forum_topics'];
+			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
 		}
 
@@ -128,7 +128,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$subforums[$parent_id]['name'][$forum_id] = $row['forum_name'];
 
 			// Include subforum topic/post counts in parent counts
-			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
+			$forum_rows[$parent_id]['forum_topics'] += ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 			
 			// Do not list redirects in LINK Forums as Posts.
 			if ($row['forum_type'] != FORUM_LINK)
@@ -313,7 +313,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'FORUM_NAME'		=> $row['forum_name'],
 			'FORUM_DESC'		=> $row['forum_desc'], 
 			$l_post_click_count	=> $post_click_count,
-			'TOPICS'			=> $row['forum_topics'],
+			'TOPICS'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['forum_topics_real'] : $row['forum_topics'],
 			'LAST_POST_TIME'	=> $last_post_time,
 			'LAST_POSTER'		=> $last_poster,
 			'MODERATORS'		=> $moderators_list,

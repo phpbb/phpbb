@@ -751,7 +751,7 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		if (empty($imgs[$img . $suffix]) || $width)
+		if (empty($imgs[$img . $suffix]) || $width !== false)
 		{
 			if (!isset($this->theme['primary'][$img]) || !$this->theme['primary'][$img])
 			{
@@ -760,7 +760,7 @@ class user extends session
 				return $imgs[$img . $suffix];
 			}
 
-			if (!$width)
+			if ($width === false)
 			{
 				list($imgsrc, $height, $width) = explode('*', $this->theme['primary'][$img]);
 			}

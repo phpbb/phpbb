@@ -153,9 +153,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
 		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_PM']),
-		'IP_IMG' 			=> $user->img('btn_ip', $user->lang['VIEW_IP']),
+		'INFO_IMG' 			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
 		'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_PM']),
-		'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['REPORTED_MESSAGE']),
+		'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['MESSAGE_REPORTED_MESSAGE']),
 		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
 		'EMAIL_IMG' 		=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
 		'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
@@ -171,7 +171,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'],
 		'U_REPORT'			=> ($config['auth_report_pm'] && $auth->acl_get('u_pm_report')) ? "{$phpbb_root_path}report.$phpEx$SID&amp;pm=" . $message_row['msg_id'] : '',
-		'U_IP' 				=> ($auth->acl_get('m_ip') && $message_row['message_reported']) ? "{$phpbb_root_path}mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=pm_details&amp;p=" . $message_row['msg_id'] . '#ip' : '',
+		'U_INFO'			=> ($auth->acl_get('m_') && ($message_row['message_reported'] || $message_row['forwarded'])) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'] : '',
 		'U_DELETE' 			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $author_id,
 		'U_EMAIL' 			=> $user_info['email'],
@@ -201,7 +201,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
-	if ($_REQUEST['view'] != 'print')
+	if (!isset($_REQUEST['view']) || $_REQUEST['view'] != 'print')
 	{
 		// Message History
 		if (message_history($msg_id, $user->data['user_id'], $message_row, $folder))

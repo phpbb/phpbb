@@ -69,7 +69,13 @@
 								<!-- BEGIN poll_option -->
 								<tr>
 									<!-- IF S_CAN_VOTE -->
-									<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF -->/><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF -->&nbsp;</td>
+									<td>
+										<!-- IF S_IS_MULTI_CHOICE -->
+											<input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> />
+										<!-- ELSE -->
+											<input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> />
+										<!-- ENDIF -->
+									</td>
 									<!-- ENDIF -->
 									<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 									<!-- IF S_DISPLAY_RESULTS -->

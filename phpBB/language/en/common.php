@@ -333,6 +333,7 @@ $lang += array(
 	'SORT_BY'			=> 'Sort by',
 	'SORT_JOINED'		=> 'Joined Date',
 	'SORT_LOCATION'		=> 'Location',
+	'SORT_RANK'			=> 'Rank',
 	'SORT_TOPIC_TITLE'	=> 'Topic Title',
 	'SORT_USERNAME'		=> 'Username',
 	'SPLIT_TOPIC'		=> 'Split Topic',

@@ -68,7 +68,7 @@ function generate_smilies($mode, $forum_id)
 	{
 		$template->assign_block_vars('emoticon', array(
 			'SMILEY_CODE' 	=> $row['code'],
-			'SMILEY_IMG' 	=> $config['smilies_path'] . '/' . $row['smile_url'],
+			'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smile_url'],
 			'SMILEY_WIDTH' 	=> $row['smile_width'],
 			'SMILEY_HEIGHT' => $row['smile_height'],
 			'SMILEY_DESC' 	=> $row['emoticon'])

@@ -12,19 +12,31 @@
 		<td class="row2" colspan="2"><br clear="all" />
 			<table cellspacing="0" cellpadding="4" border="0" align="center">
 			<tr>
-				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span></td>
+				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
 			</tr>
 			<tr>
-				<td align="center"><table cellspacing="0" cellpadding="2" border="0">
+				<td align="center">
+					<table cellspacing="0" cellpadding="2" border="0">
 					<!-- BEGIN poll_option -->
 					<tr>
-						<td><input type="radio" name="vote_id" value="" />&nbsp;</td>
+						<td>
+							<!-- IF S_IS_MULTI_CHOICE -->
+								<input type="checkbox" name="vote_id" value="" />
+							<!-- ELSE -->
+								<input type="radio" name="vote_id" value="" />
+							<!-- ENDIF -->
+						</td>
 						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 					</tr>
 					<!-- END poll_option -->
-				</table></td>
+					</table>
+				</td>
 			</tr>
-		</table></td>
+			<tr>
+				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span></td>
+			</tr>
+			</table>
+		</td>
 	</tr>
 	<!-- ENDIF -->
 	<tr> 

@@ -172,7 +172,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags, f.forum_rules_bbcode_uid, f.forum_rules_bbcode_bitfield' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags, f.forum_rules_bbcode_uid, f.forum_rules_bbcode_bitfield' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -510,10 +510,12 @@ $template->assign_vars(array(
 // Does this topic contain a poll?
 if (!empty($poll_start))
 {
-	$sql = 'SELECT *
-		FROM ' . POLL_OPTIONS_TABLE . '
-		WHERE topic_id = ' . $topic_id . '
-		ORDER BY poll_option_id';
+	$sql = 'SELECT o.*, p.bbcode_bitfield, p.bbcode_uid
+		FROM ' . POLL_OPTIONS_TABLE . ' o, ' . POSTS_TABLE . " p
+		WHERE o.topic_id = $topic_id 
+			AND p.post_id = $topic_first_post_id
+			AND p.topic_id = o.topic_id
+		ORDER BY o.poll_option_id";
 	$result = $db->sql_query($sql);
 
 	$poll_info = array();
@@ -522,7 +524,7 @@ if (!empty($poll_start))
 		$poll_info[] = $row;
 	}
 	$db->sql_freeresult($result);
-
+	
 	$cur_voted_id = array();
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -550,7 +552,7 @@ if (!empty($poll_start))
 	}
 
 	$s_can_vote = (((!sizeof($cur_voted_id) && $auth->acl_get('f_vote', $forum_id)) ||
-		$auth->acl_get('f_votechg', $forum_id)) &&
+		($auth->acl_get('f_votechg', $forum_id) && $poll_vote_change)) &&
 		(($poll_length != 0 && $poll_start + $poll_length > time()) || $poll_length == 0) &&
 		$topic_status != ITEM_LOCKED &&
 		$forum_status != ITEM_LOCKED) ? true : false;
@@ -632,10 +634,27 @@ if (!empty($poll_start))
 		$poll_total += $poll_option['poll_option_total'];
 	}
 
+	if ($poll_info[0]['bbcode_bitfield'])
+	{
+		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		$poll_bbcode = new bbcode();
+
+		for ($i = 0, $j = sizeof($poll_info); $i < $j; $i++)
+		{
+			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
+			$poll_info[$i]['poll_option_text'] = smilie_text($poll_info[$i]['poll_option_text']);
+			$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
+		}
+
+		$poll_bbcode->bbcode_second_pass($poll_title, $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
+		$poll_title = smilie_text($poll_title);
+		$poll_title = str_replace("\n", '<br />', censor_text($poll_title));
+
+		unset($poll_bbcode);
+	}
+	
 	foreach ($poll_info as $poll_option)
 	{
-		$poll_option['poll_option_text'] = censor_text($poll_option['poll_option_text']);
-
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
 
@@ -650,7 +669,7 @@ if (!empty($poll_start))
 	}
 
 	$template->assign_vars(array(
-		'POLL_QUESTION'		=> censor_text($poll_title),
+		'POLL_QUESTION'		=> $poll_title,
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
@@ -667,8 +686,7 @@ if (!empty($poll_start))
 		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
 	);
 
-	unset($poll_info);
-	unset($voted_id);
+	unset($poll_info, $voted_id);
 }
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
@@ -1243,7 +1261,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
-		'U_INFO'		=> ($auth->acl_get('m_', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
+		'U_INFO'			=> ($auth->acl_get('m_', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],

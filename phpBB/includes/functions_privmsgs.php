@@ -501,7 +501,7 @@ function place_pm_into_folder($global_privmsgs_rules, $release = false)
 			}
 		}
 		
-		if ($full_folder_action != FULL_FOLDER_MOVE)
+		if ($full_folder_action < 0)
 		{
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
 				SET folder_id = $dest_folder, new = 0
