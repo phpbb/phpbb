@@ -429,8 +429,8 @@ CREATE TABLE phpbb_topics (
 #
 DROP TABLE IF EXISTS phpbb_topics_watch;
 CREATE TABLE phpbb_topics_watch (
-  topic_id int(11),
-  user_id int(11),
+  topic_id int(11) NOT NULL DEFAULT '0',
+  user_id int(11) NOT NULL DEFAULT '0',
   notify_status tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (topic_id),
   KEY user_id (user_id)
