@@ -469,8 +469,9 @@ $lang += array(
 	'DELETE_POST'		=> 'Delete',
 	'DELETE_POST_WARN'	=> 'Once deleted the post cannot be recovered',
 	'REPORT_POST'		=> 'Report this post',
-	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total',
-	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total',
+	'EDITED_TIME_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d time in total',
+	'EDITED_TIMES_TOTAL'=> 'Last edited by %1$s on %2$s, edited %3$d times in total',
+	'BUMPED_BY'			=> 'Last bumped by %1$s on %2$s',
 
 	'POST_REPORTED'		=> 'Click to view reports',
 	'POST_NOT_APPROVED'	=> 'Click to approve post',
@@ -1377,7 +1378,8 @@ $lang += array(
 	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
 	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
 	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
-	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement'
+	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement',
+	'LOGM_BUMP'				=>	'<b>Bumped Topic</b><br />&#187; %s'
 );
 
 // report
