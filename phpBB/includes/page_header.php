@@ -107,10 +107,20 @@ $l_g_user_s = ($guests_online == 1) ? $l_user : $l_users;
 $l_is_are = ($logged_online == 1) ? $l_is : $l_are;
 $userlist = ($logged_online > 0) ? "$l_Registered $l_r_user_s: " . $userlist : "$l_Registered $l_r_user_s: $l_None";
 
+//
+// The following assigns all _common_
+// variables that may be used at any point
+// in a template. Note that all URL's should
+// be wrapped in append_sid, as should all
+// S_x_ACTIONS for forms. 
+// 
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
-	"PHPEX" => $phpEx,
-	"PHPSELF" => $PHP_SELF,
+	"PAGE_TITLE" => $page_title,
+	"LOGIN_STATUS" => $logged_in_status,
+	"META_INFO" => $meta_tags,
+	"TOTAL_USERS_ONLINE" => "$l_There $l_is_are $logged_online $l_Registered $l_r_user_s $l_and $guests_online $l_guest $l_g_user_s $l_online",
+	"LOGGED_IN_USER_LIST" => $userlist,
 
 	"L_USERNAME" => $l_username,
 	"L_PASSWORD" => $l_password,
@@ -143,12 +153,10 @@ $template->assign_vars(array(
 	"L_NEWPOSTS" => $l_newposts,
 	"L_POSTED" => $l_posted,
 	"L_JOINED" => $l_joined,
-
 	"L_AUTO_LOGIN" => $l_autologin,
 	"L_AUTHOR" => $l_author,
 	"L_MESSAGE" => $l_message,
 	"L_BY" => $l_by,
-
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 
 	"U_INDEX" => append_sid("index.".$phpEx),
@@ -195,165 +203,8 @@ $template->assign_vars(array(
 	"T_IMG1" => $theme['img1'],
 	"T_IMG2" => $theme['img2'],
 	"T_IMG3" => $theme['img3'],
-	"T_IMG4" => $theme['img4'],
-
-	"PAGE_TITLE" => $page_title,
-	"LOGIN_STATUS" => $logged_in_status,
-	"META_INFO" => $meta_tags,
-	
-	"TOTAL_USERS_ONLINE" => "$l_There $l_is_are $logged_online $l_Registered $l_r_user_s $l_and $guests_online $l_guest $l_g_user_s $l_online",
-	"LOGGED_IN_USER_LIST" => $userlist
-	));
+	"T_IMG4" => $theme['img4']));
 
 $template->pparse("overall_header");
-
-//
-// Do a switch on page type, this way we only load
-// the templates that we need at the time
-//
-switch($pagetype)
-{
-
-	case 'index':
-		$template->set_filenames(array(
-			"header" => "index_header.tpl",
-			"body" => "index_body.tpl",
-			"footer" => "index_footer.tpl")
-		);
-		$template->assign_vars(array(
-			"TOTAL_POSTS" => $total_posts,
-			"TOTAL_USERS" => $total_users,
-			"NEWEST_USER" => $newest_user,
-			"NEWEST_UID" => $newest_uid,
-			"USERS_BROWSING" => $users_browsing,
-
-			"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
-		);
-
-		$template->pparse("header");
-		break;
-
-	case 'viewforum':
-		$template->set_filenames(array(
-			"header" => "viewforum_header.tpl",
-			"body" => "viewforum_body.tpl",
-			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewforum_footer.tpl")
-		);
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			"JUMPBOX_LIST" => $jumpbox,
-		    "SELECT_NAME" => POST_FORUM_URL)
-		);
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-		$template->assign_vars(array(
-			"FORUM_ID" => $forum_id,
-			"FORUM_NAME" => $forum_name,
-			"MODERATORS" => $forum_moderators,
-			"USERS_BROWSING" => $users_browsing)
-		);
-		$template->pparse("header");
-		break;
-		
-	case 'viewtopic':
-		$template->set_filenames(array(
-			"header" => "viewtopic_header.tpl",
-			"body" => "viewtopic_body.tpl",
-			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewtopic_footer.tpl")
-		);
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			"JUMPBOX_LIST" => $jumpbox,
-		    "SELECT_NAME" => POST_FORUM_URL)
-		);
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-		$template->assign_vars(array(
-			"FORUM_ID" => $forum_id,
-		    "FORUM_NAME" => $forum_name,
-		    "TOPIC_ID" => $topic_id,
-		    "TOPIC_TITLE" => $topic_title,
-			"POST_FORUM_URL" => POST_FORUM_URL,
-			"USERS_BROWSING" => $users_browsing)
-		);
-		$template->pparse("header");
-		break;
-
-	case 'viewonline':
-		$template->set_filenames(array(
-			"header" => "viewonline_header.tpl",
-			"body" => "viewonline_body.tpl",
-			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewonline_footer.tpl")
-		);
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			"JUMPBOX_LIST" => $jumpbox,
-		    "SELECT_NAME" => POST_FORUM_URL)
-		);
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-		$template->assign_vars(array(
-			"TOTAL_POSTS" => $total_posts,
-			"TOTAL_USERS" => $total_users,
-			"POST_USER_URL" => POST_USERS_URL,
-			"NEWEST_USER" => $newest_user,
-			"NEWEST_UID" => $newest_uid,
-			
-			"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
-		);
-		$template->pparse("header");
-		break;
-
-	case 'newtopic':
-		$template->set_filenames(array(
-			"header" => "newtopic_header.tpl",
-			"jumpbox" => "jumpbox.tpl",
-			"body" => "posting_body.tpl")
-		);
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			"JUMPBOX_LIST" => $jumpbox,
-		    "SELECT_NAME" => POST_FORUM_URL)
-		);
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-		$template->assign_vars(array(
-			"L_POSTNEWIN" => $l_postnewin,
-			"FORUM_ID" => $forum_id,
-			"FORUM_NAME" => $forum_name,
-			
-			"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
-		);
-		$template->pparse("header");
-		break;
-
-	case 'register':
-		if(!isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']))
-		{
-			$coppa = (!isset($HTTP_POST_VARS['coppa'])) ? FALSE : TRUE;
-
-			$template->set_filenames(array(
-				"body" => "agreement.tpl")
-			);
-			$template->assign_vars(array(
-				"COPPA" => $coppa,
-				
-				"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&agreed=true"),
-				"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&agreed=true&coppa=true"))
-			);
-		}
-		else
-		{
-			$template->set_filenames(array(
-				"body" => "profile_add_body.tpl")
-			);
-		}
-		break;
-		
-	case 'profile':
-		$template->set_filenames(array(
-			"body" => "profile_view_body.tpl")
-		);
-   break;
-}
 
 ?>

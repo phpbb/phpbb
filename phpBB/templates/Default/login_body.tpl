@@ -1,4 +1,11 @@
 <tr>
+	<td><div align="center"><table width="60%" cellspacing="0" cellpadding="4" border="0">
+		<tr>
+			<td align="left" style="{font-size: 8pt; height: 55px;}" nowrap><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+		</tr>
+	</table></div></td>
+</tr>
+<tr>
 	<td><br clear="all" /><br />
 	
 <table border="0" align="center" width="60%" bgcolor="#000000" cellpadding="0" cellspacing="1">
@@ -33,4 +40,9 @@
 </table></td>
 
 	</td>
+</tr>
+<tr>
+	<td><div align="center"><table align="center" border="0" width="60%">
+		<td style="{font-size: 8pt;}" align="right" valign="top"><b>{S_TIMEZONE}</b></td>
+	</table></div></td>
 </tr>

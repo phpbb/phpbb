@@ -42,7 +42,34 @@ $newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
 
+//
+// Output page header and load
+// viewonline template
+//
 include('includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	"body" => "viewonline_body.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+    "SELECT_NAME" => POST_FORUM_URL)
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+$template->assign_vars(array(
+	"TOTAL_POSTS" => $total_posts,
+	"TOTAL_USERS" => $total_users,
+	"POST_USER_URL" => POST_USERS_URL,
+	"NEWEST_USER" => $newest_user,
+	"NEWEST_UID" => $newest_uid,
+	
+	"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
+);
+//
+// End header
+//
 
 $sql = "SELECT u.username, u.user_id, s.session_page, s.session_logged_in, s.session_time
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 

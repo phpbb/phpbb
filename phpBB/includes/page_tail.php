@@ -23,29 +23,6 @@
  ***************************************************************************/
 
 //
-// Load/parse the footer template we need based on pagetype.
-//
-switch($pagetype)
-{
-	case 'index':
-		$template->pparse("footer");
-		break;
-
-	case 'viewforum':
-		$template->pparse("footer");
-		break;
-
-	case 'viewtopic':
-		$template->pparse("footer");
-		break;
-
-	case 'viewonline':
-		$template->pparse("footer");
-		break;
-
-}
-
-//
 // Show the overall footer.
 //
 if($userdata['session_logged_in'])

@@ -27,6 +27,8 @@ include('includes/bbcode.'.$phpEx);
 $page_title = "View Topic - $topic_title";
 $pagetype = "viewtopic";
 
+$is_moderator = 0;
+
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
 	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
@@ -35,8 +37,6 @@ else
 {
 	$topic_id = $HTTP_GET_VARS['topic'];
 }
-
-$is_moderator = 0;
 
 if(!isset($topic_id))
 {
@@ -57,34 +57,29 @@ if(isset($HTTP_GET_VARS['view']))
 		$operator = "<";
 	}
 
-	switch($dbms)
+	switch(SQL_LAYER)
 	{
-		case 'oracle':
-		case 'mssql':
-		case 'odbc':
-		case 'postgres':
-			$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
-						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-						WHERE t.topic_id in
-						(select min(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
-						AND f.forum_id = t.forum_id
-						AND fm.forum_id = t.forum_id
-						AND u.user_id = fm.user_id";
-		break;
-		default:
-			// And now the stupid MySQL case...I wish they would get around to implementing subselectes...
-			$sub_query = "SELECT topic_time FROM ".TOPICS_TABLE." WHERE topic_id = $topic_id";
+		case 'mysql':
+			//
+			// Now the stupid MySQL case...I wish they would get around 
+			// to implementing subselectes...
+			//
+			$sub_query = "SELECT topic_time 
+				FROM ".TOPICS_TABLE." 
+				WHERE topic_id = $topic_id";
 			if($sub_result = $db->sql_query($sub_query))
 			{
-				$resultset = $db->sql_fetchrowset($sub_result);
-				$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+				$result = $db->sql_fetchrow($sub_result);
+				echo $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
 							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-							FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-							WHERE t.topic_time ".$operator." ".$resultset[0]['topic_time']."
-							AND f.forum_id = t.forum_id
-							AND fm.forum_id = t.forum_id
-							AND u.user_id = fm.user_id";
+							FROM ".TOPICS_TABLE." t, ".TOPICS_TABLE." t2, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+							WHERE t.topic_time ".$operator." ".$result['topic_time']." 
+								AND t2.topic_id = $topic_id 
+								AND t.forum_id = t2.forum_id 
+								AND f.forum_id = t.forum_id
+								AND fm.forum_id = t.forum_id
+								AND u.user_id = fm.user_id 
+							ORDER BY t.topic_time DESC";
 				$db->sql_freeresult($sub_result);
 			}
 			else
@@ -99,7 +94,22 @@ if(isset($HTTP_GET_VARS['view']))
 					error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
 				}
 			}
-		break;
+			break;
+
+		default:
+			//
+			// The default query handles all the other supported
+			// DB's; PostgreSQL, MSSQL, ODBC and of course Oracle
+			//
+			echo $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+						f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+						FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+						WHERE t.topic_id in
+						(select min(topic_id) from ".TOPICS_TABLE." WHERE topic_time ".$operator." (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
+			break;
 	}
 }
 //
@@ -107,13 +117,15 @@ if(isset($HTTP_GET_VARS['view']))
 //
 else
 {
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
-			f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-			FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-			WHERE t.topic_id = $topic_id
-			AND f.forum_id = t.forum_id
+
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, 
+		f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+		FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u 
+		WHERE t.topic_id = $topic_id 
+			AND f.forum_id = t.forum_id 
 			AND fm.forum_id = t.forum_id
 			AND u.user_id = fm.user_id";
+
 }
 
 if(!$result = $db->sql_query($sql))
@@ -204,6 +216,33 @@ $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
 
 //
+// Dump out the page header
+//
+include('includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	"body" => "viewtopic_body.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+    "SELECT_NAME" => POST_FORUM_URL)
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+$template->assign_vars(array(
+	"FORUM_ID" => $forum_id,
+    "FORUM_NAME" => $forum_name,
+    "TOPIC_ID" => $topic_id,
+    "TOPIC_TITLE" => $topic_title,
+	"POST_FORUM_URL" => POST_FORUM_URL,
+	"USERS_BROWSING" => $users_browsing)
+);
+//
+// End header
+//
+
+//
 // Post, reply and other URL generation for
 // templating vars
 //
@@ -218,11 +257,6 @@ $template->assign_vars(array(
 	"U_VIEW_OLDER_TOPIC" => $view_older_topic_url,
 	"U_VIEW_NEWER_TOPIC" => $view_newer_topic_url,
 	"U_POST_REPLY_TOPIC" => $reply_topic_url));
-
-//
-// Dump out the page header
-//
-include('includes/page_header.'.$phpEx);
 
 //
 // Okay, let's do the loop, yeah come on baby let's do the loop

@@ -191,9 +191,30 @@ $template->assign_vars(array(
 	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=".$forum_id."&start=$start")));
 
 //
-// Dump out the page header
+// Dump out the page header and
+// load viewforum template
 //
 include('includes/page_header.'.$phpEx);
+
+$template->set_filenames(array(
+	"body" => "viewforum_body.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+    "SELECT_NAME" => POST_FORUM_URL)
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+$template->assign_vars(array(
+	"FORUM_ID" => $forum_id,
+	"FORUM_NAME" => $forum_name,
+	"MODERATORS" => $forum_moderators,
+	"USERS_BROWSING" => $users_browsing)
+);
+//
+// End header
+//
 
 //
 // Okay, lets dump out the page ...
@@ -270,6 +291,7 @@ if($total_topics)
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id", $topics_count, $board_config['topics_per_page'], $start))
 	);
+
 	$template->pparse("body");
 }
 else

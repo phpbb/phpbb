@@ -25,6 +25,18 @@ include('extension.inc');
 include('common.'.$phpEx);
 
 //
+// Obtain which forum id is required
+//
+if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
+{
+	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+}
+else
+{
+	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
+}
+
+//
 // Start session management
 //
 $userdata = session_pagestart($user_ip, PAGE_POSTING, $session_length);
@@ -33,6 +45,11 @@ init_userprefs($userdata);
 // End session management
 //
 
+//
+// Nothing in this file is set, lots of things
+// will change to meet coding standards and new
+// posting code ...
+// 
 
 if($submit && !$preview)
 {
@@ -65,14 +82,14 @@ else
 			$page_title = " $l_postnew";
 			$sql = "SELECT forum_name, forum_access 
 				FROM ".FORUMS_TABLE." 
-				WHERE forum_id = '$forum_id'";
+				WHERE forum_id = $forum_id";
 			if(!$result = $db->sql_query($sql))
 			{
 				error_die(SQL_QUERY, "Could not obtain forum/forum access information.", __LINE__, __FILE__);
 			}
-			$forum_info = $db->sql_fetchrowset($result);
-			$forum_name = stripslashes($forum_info[0]["forum_name"]);
-			$forum_access = $forum_info[0]["forum_access"];
+			$forum_info = $db->sql_fetchrow($result);
+			$forum_name = stripslashes($forum_info['forum_name']);
+			$forum_access = $forum_info['forum_access'];
 
 			if($forum_access == ANONALLOWED)
 			{
@@ -88,7 +105,26 @@ else
 			}
 
 			include('includes/page_header.'.$phpEx);
-			if($user_logged_in)
+
+			$template->set_filenames(array(
+				"body" => "posting_body.tpl",
+				"jumpbox" => "jumpbox.tpl")
+			);
+			$jumpbox = make_jumpbox();
+			$template->assign_vars(array(
+				"JUMPBOX_LIST" => $jumpbox,
+			    "SELECT_NAME" => POST_FORUM_URL)
+			);
+			$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+			$template->assign_vars(array(
+				"L_POSTNEWIN" => $l_postnewin,
+				"FORUM_ID" => $forum_id,
+				"FORUM_NAME" => $forum_name,
+			
+				"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
+			);
+
+			if($userdata['session_logged_in'])
 			{
 				$username_input = $userdata["username"];
 				$password_input = "";

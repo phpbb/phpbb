@@ -48,8 +48,28 @@ if(empty($viewcat))
 	$viewcat = -1;
 }
 
+//
+// Output page header and
+// open the index body template
+//
 include('includes/page_header.'.$phpEx);
 
+$template->set_filenames(array(
+	"body" => "index_body.tpl"));
+
+$template->assign_vars(array(
+	"TOTAL_POSTS" => $total_posts,
+	"TOTAL_USERS" => $total_users,
+	"NEWEST_USER" => $newest_user,
+	"NEWEST_UID" => $newest_uid,
+	"USERS_BROWSING" => $users_browsing,
+
+	"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
+);
+
+//
+// Start main
+//
 $sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 	FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
 	WHERE f.cat_id = c.cat_id
@@ -107,7 +127,7 @@ if($total_categories)
 		default:
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
-			echo $sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
 				FROM (( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
