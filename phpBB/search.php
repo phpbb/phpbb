@@ -19,6 +19,20 @@
  *
  ***************************************************************************/
 
+
+/*
+
+TODO
+
+Overhaul method for boolean searching
+Introduce phrase searching
+Search within this search set
+Search on topic/post title only
+Relevancy?
+Stemmers?
+
+*/
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
@@ -30,7 +44,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
+
 
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || empty($config['load_search']))
@@ -39,87 +53,26 @@ if (!$auth->acl_get('u_search') || empty($config['load_search']))
 }
 
 
-
-
-
-
-
 // Define initial vars
-if ( isset($_POST['mode']) || isset($_GET['mode']) )
-{
-	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = '';
-}
+$mode		= (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+$search_id	= (isset($_REQUEST['search_id'])) ? $_REQUEST['search_id'] : '';
+$start		= (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
 
-if ( isset($_POST['search_keywords']) || isset($_GET['search_keywords']) )
-{
-	$search_keywords = ( isset($_POST['search_keywords']) ) ? $_POST['search_keywords'] : $_GET['search_keywords'];
-}
-else
-{
-	$search_keywords = '';
-}
+$search_keywords	= (isset($_REQUEST['search_keywords'])) ? htmlspecialchars($_REQUEST['search_keywords']) : '';
+$search_author		= (isset($_REQUEST['search_author'])) ? htmlspecialchars($_REQUEST['search_author']) : '';
+$show_results		= (isset($_REQUEST['show_results'])) ? htmlspecialchars($_REQUEST['show_results']) : 'posts';
+$search_terms		= (isset($_REQUEST['search_terms'])) ? (( $_REQUEST['search_terms'] == 'all' ) ? 1 : 0) : 0;
+$search_fields		= (isset($_REQUEST['search_fields'])) ? (($_REQUEST['search_fields'] == 'all') ? 1 : 0) : 0;
 
-if ( isset($_POST['search_author']) || isset($_GET['search_author']))
-{
-	$search_author = ( isset($_POST['search_author']) ) ? $_POST['search_author'] : $_GET['search_author'];
-}
-else
-{
-	$search_author = '';
-}
+$return_chars	= (isset($_REQUEST['return_chars'])) ? intval($_REQUEST['return_chars']) : 200;
+$search_cat		= (isset($_REQUEST['search_cat'])) ? intval($_REQUEST['search_cat']) : -1;
+$search_forum	= (isset($_REQUEST['search_forum'])) ? intval($_REQUEST['search_forum']) : -1;
+$search_time	= (isset($_REQUEST['search_time'])) ? (time() - intval($_REQUEST['search_time'])) * 86400 : 0;
+	
 
-$search_id = ( isset($_GET['search_id']) ) ? $_GET['search_id'] : '';
 
-$show_results = ( isset($_POST['show_results']) ) ? $_POST['show_results'] : 'posts';
 
-if ( isset($_POST['search_terms']) )
-{
-	$search_terms = ( $_POST['search_terms'] == 'all' ) ? 1 : 0;
-}
-else
-{
-	$search_terms = 0;
-}
 
-if ( isset($_POST['search_fields']) )
-{
-	$search_fields = ( $_POST['search_fields'] == 'all' ) ? 1 : 0;
-}
-else
-{
-	$search_fields = 0;
-}
-
-$return_chars = ( isset($_POST['return_chars']) ) ? intval($_POST['return_chars']) : 200;
-
-$search_cat = ( isset($_POST['search_cat']) ) ? intval($_POST['search_cat']) : -1;
-$search_forum = ( isset($_POST['search_forum']) ) ? intval($_POST['search_forum']) : -1;
-
-$sort_by = ( isset($_POST['sort_by']) ) ? intval($_POST['sort_by']) : 0;
-
-if ( isset($_POST['sort_dir']) )
-{
-	$sort_dir = ( $_POST['sort_dir'] == 'DESC' ) ? 'DESC' : 'ASC';
-}
-else
-{
-	$sort_dir =  'DESC';
-}
-
-if ( !empty($_POST['search_time']) || !empty($_GET['search_time']))
-{
-	$search_time = time() - ( ( ( !empty($_POST['search_time']) ) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
-}
-else
-{
-	$search_time = 0;
-}
-
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 
 $sort_by_types = array($user->lang['Sort_Time'], $user->lang['Sort_Post_Subject'], $user->lang['Sort_Topic_Title'], $user->lang['Sort_Author'], $user->lang['Sort_Forum']);
 
@@ -261,10 +214,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 								AND m.word_id = w.word_id
 								AND w.word_common <> 1
 								$search_msg_only";
-						if ( !($result = $db->sql_query($sql)) )
-						{
-							message_die(ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
-						}
+						$result = $db->sql_query($sql);
 
 						$row = array();
 						while( $temp_row = $db->sql_fetchrow($result) )
