@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<form method="post" action="{S_PROFILE_ACTION}"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 		<td align="left"><a class="nav" href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
 	</tr>
@@ -23,7 +23,7 @@
 			</tr>
 			<tr> 
 				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_VISITED}: </td>
-				<td width="100%"><b class="gen">{VISITED}</b></td>
+				<td width="100%"><b class="gen">{VISITED} [ <!-- IF S_ONLINE --><span style="color:green">{L_USER_ONLINE}</span><!-- ELSE --><span style="color:red">{L_USER_OFFLINE}</span><!-- ENDIF --> ]</b></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
@@ -78,6 +78,10 @@
 			</tr>
 		</table></td>
 		<td class="row1" valign="top"><table cellspacing="1" cellpadding="2" border="0">
+			<tr>
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
+				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="liteoption" type="submit" name="submit" value="{L_GO}" /></td>
+			</tr>
 			<tr> 
 				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><b class="gen">{LOCATION}</b></td>
@@ -96,9 +100,7 @@
 			</tr>
 		</table></td>
 	</tr>
-</table>
-
-<br clear="all" />
+</table></form>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr> 

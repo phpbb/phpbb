@@ -99,18 +99,25 @@ else
 }
 
 
-
-$sql = "SELECT group_name, group_colour 
+// Grab group details for legend display
+$sql = "SELECT group_name, group_colour, group_type  
 	FROM " . GROUPS_TABLE . " 
-	WHERE group_colour <> ''";
-$result = $db->sql_query($sql, 300);
+	WHERE group_colour <> '' 
+		AND group_display = 1";
+$result = $db->sql_query($sql, 120);
 
+$legend = '';
+while ($row = $db->sql_fetchrow($result))
+{
+	$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</span>';
+}
 
-
+// Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=>	sprintf($l_total_post_s, $total_posts),
-	'TOTAL_USERS'	=>	sprintf($l_total_user_s, $total_users),
-	'NEWEST_USER'	=>	sprintf($user->lang['Newest_user'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'),
+	'TOTAL_POSTS'	=> sprintf($l_total_post_s, $total_posts),
+	'TOTAL_USERS'	=> sprintf($l_total_user_s, $total_users),
+	'NEWEST_USER'	=> sprintf($user->lang['Newest_user'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'), 
+	'LEGEND'		=> $legend, 
 
 	'FORUM_IMG'			=>	$user->img('forum', 'NO_NEW_POSTS'),
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', 'NEW_POSTS'),
@@ -119,7 +126,7 @@ $template->assign_vars(array(
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );
 
-// Start output of page
+// Output page
 $page_title = $user->lang['Index'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

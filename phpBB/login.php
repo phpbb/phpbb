@@ -32,10 +32,9 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
+$redirect = $username = $password = '';
 extract($_GET);
 extract($_POST);
-
-$redirect = (!empty($redirect)) ? $_SERVER['QUERY_STRING'] : '';
 
 // Do the login/logout/form/whatever
 if (isset($login) || isset($logout))
@@ -72,12 +71,14 @@ if (isset($login) || isset($logout))
 	}
 
 	// Redirect to wherever we're supposed to go ...
-	$redirect_url = ($redirect) ? preg_replace('#^.*?redirect=(.*?)&(.*?)$#', '\1' . $SID . '&\2', $redirect) : 'index.'.$phpEx;
+	$redirect_url = (preg_match('#^redirect=(.*?)$#', $redirect)) ? preg_replace('#^redirect=(.*?)&(.*?)$#', '\1.' . $phpEx . $SID . '&\2', $redirect) : 'index.'.$phpEx . $SID;
 	redirect($redirect_url);
 }
 
 if ($user->data['user_id'] == ANONYMOUS)
 {
+	$redirect = (!empty($_SERVER['QUERY_STRING'])) ? preg_replace('#^sid=[a-z0-9]*?&?(redirect=.*?)$#', '\1', $_SERVER['QUERY_STRING']) : '';
+
 	$template->assign_vars(array(
 		'U_SEND_PASSWORD' 	=> "ucp.$phpEx$SID&amp;mode=sendpassword",
 		'U_TERMS_USE'		=> "ucp.$phpEx$SID&amp;mode=terms", 

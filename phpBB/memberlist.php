@@ -31,16 +31,20 @@ $auth->acl($user->data);
 // End session management
 
 
-// Can this user view profiles/memberslist?
-if (!$auth->acl_gets('u_viewprofile', 'a_'))
-{
-	trigger_error($user->lang['NO_VIEW']);
-}
-
 
 // Grab data
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $user_id = (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
+
+// Can this user view profiles/memberslist?
+if (!$auth->acl_gets('u_viewprofile', 'a_'))
+{
+	if ($user->data['user_id'] == ANONYMOUS)
+	{
+		redirect("login.$phpEx$SID&redirect=memberlist&mode=$mode&u=$user_id");
+	}
+	trigger_error($user->lang['NO_VIEW_USERS']);
+}
 
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 $form = (!empty($_GET['form'])) ? $_GET['form'] : 0;
@@ -63,7 +67,6 @@ $joined = (!empty($_REQUEST['joined'])) ? explode('-', trim($_REQUEST['joined'])
 $active = (!empty($_REQUEST['active'])) ? explode('-', trim($_REQUEST['active'])) : array();
 $count = (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
 $ipdomain = (!empty($_REQUEST['ip'])) ? trim($_REQUEST['ip']) : '';
-
 
 // Grab rank information for later
 $sql = "SELECT * 
@@ -92,17 +95,19 @@ switch ($mode)
 		}
 
 		// Do the SQL thang
-		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit 
-			FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id";
+		$sql = "SELECT g.group_id, g.group_name, g.group_type 
+			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
+			WHERE ug.user_id = $user_id 
+				AND g.group_id = ug.group_id
+			ORDER BY group_type, group_name";
 		$result = $db->sql_query($sql);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		$group_options = '';
+		while ($row = $db->sql_fetchrow($result))
 		{
-			trigger_error($user->lang['NO_USER']);
+			$group_options .= '<option value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
-		$db->sql_freeresult($result);
-
+		
 		$sql = "SELECT COUNT(p.post_id) AS num_posts   
 			FROM " . POSTS_TABLE . " p, " . FORUMS_TABLE . " f
 			WHERE p.poster_id = $user_id 
@@ -138,6 +143,20 @@ switch ($mode)
 		$result = $db->sql_query($sql);
 
 		$active_t_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
+			FROM " . USERS_TABLE . " 
+			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
+			WHERE user_id = $user_id
+				AND user_active = 1
+			GROUP BY username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit";
+		$result = $db->sql_query($sql);
+
+		if (!($row = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_USER']);
+		}
 		$db->sql_freeresult($result);
 
 		// Do the relevant calculations 
@@ -182,6 +201,9 @@ switch ($mode)
 			'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 			'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
+			'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
+			'S_GROUP_OPTIONS'	=> $group_options, 
+
 			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 			'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 		);
@@ -205,7 +227,8 @@ switch ($mode)
 		// Get the appropriate username, etc.
 		$sql = "SELECT username, user_email, user_viewemail, user_lang
 			FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id";
+			WHERE user_id = $user_id
+				AND user_active = 1";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -446,11 +469,25 @@ switch ($mode)
 			);
 		}
 
+		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time 
+			FROM ' . SESSIONS_TABLE . ' 
+			WHERE session_time >= ' . (time() - 300) . '
+				AND session_user_id <> ' . ANONYMOUS . '
+			GROUP BY session_user_id';
+		$result = $db->sql_query($sql);
+
+		$session_times = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$session_times[$row['session_user_id']] = $row['session_time'];
+		}
+		$db->sql_freeresult($result);
+
 		// Do the SQL thang
 		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
-			ORDER BY $order_by
+			ORDER BY $order_by 
 			LIMIT $start, " . $config['topics_per_page'];
 		$result = $db->sql_query($sql);
 
@@ -459,6 +496,8 @@ switch ($mode)
 			$i = 0;
 			do
 			{
+				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : '';
+
 				$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
 					'ROW_NUMBER'	=> $i + ($start + 1),
 
@@ -610,7 +649,7 @@ function show_profile($data)
 
 	$template_vars = array(
 		'USERNAME'		=> $username,
-		'ONLINE_IMG'	=> ($data['user_lastvisit'] >= time() - 600) ? 'yes' : 'no', 
+		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - 300) ? '' : '', 
 
 		'AVATAR_IMG'	=> $poster_avatar,
 		'RANK_TITLE'	=> $rank_title, 
@@ -634,7 +673,9 @@ function show_profile($data)
 		'MSN_IMG'		=> $msn_img,
 		'MSN'			=> $msn,
 		'YIM_IMG'		=> $yim_img,
-		'YIM'			=> $yim
+		'YIM'			=> $yim, 
+
+		'S_ONLINE'		=> (intval($data['session_time']) >= time() - 300) ? true : false
 	);
 
 	return $template_vars;
