@@ -27,6 +27,14 @@ include($phpbb_root_path . 'includes/post.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 //
+// Is PM disabled?
+//
+if( !empty($board_config['privmsg_disable']) )
+{
+	message_die(GENERAL_MESSAGE, 'PM_disabled');
+}
+
+//
 // Var definitions
 //
 $html_entities_match = array("#<#", "#>#", "#& #", "#\"#");
@@ -817,7 +825,7 @@ else if( $submit || $refresh || $mode != "" )
 		{
 			$to_username = $HTTP_POST_VARS['username'];
 
-			$sql = "SELECT user_id, user_notify_pm, user_email
+			$sql = "SELECT user_id, user_notify_pm, user_email, user_lang 
 				FROM " . USERS_TABLE . "
 				WHERE username = '" . $to_username . "'
 					AND user_id <> " . ANONYMOUS;
@@ -977,7 +985,10 @@ else if( $submit || $refresh || $mode != "" )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 					
-					$emailer->use_template("privmsg_notify");
+					//
+					// Attempt to use language setting for recipient
+					//
+					$emailer->use_template("privmsg_notify", $to_userdata['user_lang']);
 
 					$emailer->extra_headers($email_headers);
 					$emailer->email_address($to_userdata['user_email']);

@@ -50,7 +50,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_admin_style','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1'); 
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');

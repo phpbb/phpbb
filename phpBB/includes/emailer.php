@@ -84,23 +84,24 @@ class emailer
 		$this->extra_headers = $headers;
 	}
 
-	function use_template($template_file)
+	function use_template($template_file, $template_lang = "")
 	{
-		global $board_config;
+		global $board_config, $phpbb_root_path;
 
-		$phpbb_root_path = "./";
-		$template_file = $phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/email/" . $template_file . ".tpl";
-		if (!file_exists($template_file))
+		if( $template_lang == "" )
+		{
+			$template_lang = $board_config['default_lang'];
+		}
+
+		$template_file = $phpbb_root_path . "language/lang_" . $template_lang . "/email/" . $template_file . ".tpl";
+		if( !file_exists($template_file) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't find template file: $template_file", "", __LINE__, __FILE__);
 		}
 		else
 		{
 			$this->tpl_file = $template_file;
-			//
-			// Load the email text into the $this->msg variable
-			//
-			if(!$this->load_msg())
+			if( !$this->load_msg() )
 			{
 				message_die(GENERAL_ERROR, "Couldn't load template file: $template_file", "", __LINE__, __FILE__);
 			}

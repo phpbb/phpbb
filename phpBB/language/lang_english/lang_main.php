@@ -87,6 +87,7 @@ $lang['Year'] = "Year";
 $lang['Years'] = "Years";
 
 $lang['Enabled'] = "Enabled";
+$lang['Disabled'] = "Disabled";
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
@@ -121,7 +122,6 @@ $lang['Jump_to'] = "Jump to";
 $lang['Select_forum'] = "Select a forum";
 
 $lang['Success'] = "Success";
-$lang['Private_messaging'] = "Send a Private Message";
 
 
 //
@@ -358,6 +358,7 @@ $lang['Topic_reply_notification'] = "Topic Reply Notification";
 // Private Messaging
 //
 $lang['Private_Messaging'] = "Private Messaging";
+$lang['PM_disabled'] = "Private messaging has been disabled on this board";
 
 $lang['Login_check_pm'] = "Login to check your private messages";
 $lang['New_pms'] = "You have %d new messages"; // You have 2 new messages
@@ -943,6 +944,11 @@ $lang['General_settings'] = "General Board Settings";
 $lang['Site_name'] = "Site name";
 $lang['Site_desc'] = "Site description";
 $lang['Acct_activation'] = "Enable account activation";
+
+$lang['Disable_privmsg'] = "Disable Private Messaging";
+$lang['Inbox_limits'] = "Max posts in Inbox";
+$lang['Sentbox_limits'] = "Max posts in Sentbox";
+$lang['Savebox_limits'] = "Max posts in Savebox";
 
 
 //

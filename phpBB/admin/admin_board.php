@@ -62,36 +62,53 @@ else
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");
+
 $admin_style_select = style_select($new['default_admin_style'], 'default_admin_style', "../templates");
+
 $lang_select = language_select($new['default_lang'], 'default_lang', "../language");
+
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
+
 $html_tags = $new['allow_html_tags'];
 
 $override_user_style_yes = ( $new['override_user_style'] ) ? "checked=\"checked\"" : "";
 $override_user_style_no = ( !$new['override_user_style'] ) ? "checked=\"checked\"" : "";
+
 $html_yes = ( $new['allow_html'] ) ? "checked=\"checked\"" : "";
 $html_no = ( !$new['allow_html'] ) ? "checked=\"checked\"" : "";
+
 $bbcode_yes = ( $new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
 $bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
+
 $activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
 $activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
 $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+
 $gzip_yes = ( $new['gzip_compress'] ) ? "checked=\"checked\"" : "";
 $gzip_no = ( !$new['gzip_compress'] ) ? "checked=\"checked\"" : "";
+
+$privmsg_on = ( !$new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
+$privmsg_off = ( $new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
+
 $prune_yes = ( $new['prune_enable'] ) ? "checked=\"checked\"" : "";
 $prune_no = ( !$new['prune_enable'] ) ? "checked=\"checked\"" : "";
+
 $smile_yes = ( $new['allow_smilies'] ) ? "checked=\"checked\"" : "";
 $smile_no = ( !$new['allow_smilies'] ) ? "checked=\"checked\"" : "";
+
 $sig_yes = ( $new['allow_sig'] ) ? "checked=\"checked\"" : "";
 $sig_no = ( !$new['allow_sig'] ) ? "checked=\"checked\"" : "";
+
 $namechange_yes = ( $new['allow_namechange'] ) ? "checked=\"checked\"" : "";
 $namechange_no = ( !$new['allow_namechange'] ) ? "checked=\"checked\"" : "";
+
 $avatars_local_yes = ( $new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
 $avatars_local_no = ( !$new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
 $avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
 $avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
 $avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
 $avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
+
 $smtp_yes = ( $new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 $smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 
@@ -109,7 +126,14 @@ $template->assign_vars(array(
 	"L_GENERAL_SETTINGS" => $lang['General_settings'],
 	"L_SITE_NAME" => $lang['Site_name'],
 	"L_SITE_DESCRIPTION" => $lang['Site_desc'],
-	"L_ACCT_ACTIVATION" => $lang['Acct_activation'],
+	"L_ACCT_ACTIVATION" => $lang['Acct_activation'], 
+	"L_PRIVATE_MESSAGING" => $lang['Private_Messaging'], 
+	"L_INBOX_LIMIT" => $lang['Inbox_limits'], 
+	"L_SENTBOX_LIMIT" => $lang['Sentbox_limits'], 
+	"L_SAVEBOX_LIMIT" => $lang['Savebox_limits'], 
+	"L_DISABLE_PRIVATE_MESSAGING" => $lang['Disable_privmsg'], 
+	"L_ENABLED" => $lang['Enabled'], 
+	"L_DISABLED" => $lang['Disabled'], 
 
 	"SITENAME" => $new['sitename'],
 	"SITE_DESCRIPTION" => $new['site_desc'],
@@ -118,7 +142,7 @@ $template->assign_vars(array(
 	"ACTIVATION_USER" => USER_ACTIVATION_SELF, 
 	"ACTIVATION_USER_CHECKED" => $activation_user,
 	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
-	"ACTIVATION_ADMIN_CHECKED" => $activation_admin,
+	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
 	"FLOOD_INTERVAL" => $new['flood_interval'],
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
 	"POSTS_PER_PAGE" => $new['posts_per_page'],
@@ -130,6 +154,11 @@ $template->assign_vars(array(
 	"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
 	"DEFAULT_DATEFORMAT" => $new['default_dateformat'],
 	"TIMEZONE_SELECT" => $timezone_select,
+	"S_PRIVMSG_ENABLED" => $privmsg_on, 
+	"S_PRIVMSG_DISABLED" => $privmsg_off, 
+	"INBOX_LIMIT" => $new['max_inbox_privmsgs'], 
+	"SENTBOX_LIMIT" => $new['max_sentbox_privmsgs'],
+	"SAVEBOX_LIMIT" => $new['max_savebox_privmsgs'],
 	"GZIP_YES" => $gzip_yes,
 	"GZIP_NO" => $gzip_no,
 	"PRUNE_YES" => $prune_yes,
