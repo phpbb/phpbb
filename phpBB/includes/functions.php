@@ -886,7 +886,8 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '$username_search'";
+			WHERE username LIKE '$username_search' 
+			ORDER BY username";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
