@@ -77,7 +77,10 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 					if ( preg_match('/^<\/?' . $match_tag . '\b/i', $hold_string) )
 					{
-						$tagallowed = true;
+						if ( !preg_match('/style[="](.*?)["]/i', $hold_string) )
+						{
+							$tagallowed = true;
+						}
 					}
 				}
 
