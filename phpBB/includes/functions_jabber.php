@@ -135,11 +135,53 @@ class Jabber
 		$this->CONNECTOR->CloseSocket();
 	}
 
+	function CruiseControl($seconds = -1)
+	{
+		$count = 0;
+
+		while ($count != $seconds)
+		{
+			$this->Listen();
+
+			do
+			{
+				$packet = $this->GetFirstFromQueue();
+
+				if ($packet)
+				{
+					$this->CallHandler($packet);
+				}
+
+			}
+			while (count($this->packet_queue) > 1);
+
+			$count += 0.25;
+			usleep(250000);
+			
+			if ($this->last_ping_time != date('H:i'))
+			{
+				// Modified by Nathan Fritz
+				if ($this->returned_keep_alive == FALSE)
+				{
+					$this->connected = FALSE;
+					$this->AddToLog('EVENT: Disconnected');
+				}
+
+				$this->returned_keep_alive = FALSE;
+				$this->keep_alive_id = 'keep_alive_' . time();
+				$this->SendPacket("<iq id='{$this->keep_alive_id}'/>", 'CruiseControl');
+				$this->last_ping_time = date("H:i");
+			}
+		}
+
+		return TRUE;
+	}
+
 	function SendAuth()
 	{
 		$this->auth_id	= 'auth_' . md5(time() . $_SERVER['REMOTE_ADDR']);
 
-		$this->resource	= 'Class.Jabber.PHP ' . md5($this->auth_id);
+//		$this->resource	= 'Class.Jabber.PHP ' . md5($this->auth_id);
 		$this->jid		= "{$this->username}@{$this->server}/{$this->resource}";
 
 		// request available authentication methods
@@ -222,6 +264,81 @@ class Jabber
 		$xml = trim($xml);
 
 		return ($this->CONNECTOR->WriteToSocket($xml)) ? TRUE : FALSE;
+	}
+
+	// get the transport registration fields
+	// method written by Steve Blinch, http://www.blitzaffe.com 
+	function TransportRegistrationDetails($transport)
+	{
+		$this->txnid++;
+		$packet = $this->SendIq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
+
+		if ($packet)
+		{
+			$res = array();
+
+			foreach ($packet['iq']['#']['query'][0]['#'] as $element => $data)
+			{
+				if ($element != 'instructions' && $element != 'key')
+				{
+					$res[] = $element;
+				}
+			}
+
+			return $res;
+		}
+		else
+		{
+			return 3;
+		}
+	}
+
+	// register with the transport
+	// method written by Steve Blinch, http://www.blitzaffe.com 
+	function TransportRegistration($transport, $details)
+	{
+		$this->txnid++;
+		$packet = $this->SendIq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
+
+		if ($packet)
+		{
+			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			unset($packet);
+		
+			$payload = ($key) ? "<key>$key</key>\n" : '';
+			foreach ($details as $element => $value)
+			{
+				$payload .= "<$element>$value</$element>\n";
+			}
+		
+			$packet = $this->SendIq($transport, 'set', "reg_{$this->txnid}", "jabber:iq:register", $payload);
+		
+			if ($this->GetInfoFromIqType($packet) == 'result')
+			{
+				if (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#']))
+				{
+					$return_code = 1;
+				}
+				else
+				{
+					$return_code = 2;
+				}
+			}
+			elseif ($this->GetInfoFromIqType($packet) == 'error')
+			{
+				if (isset($packet['iq']['#']['error'][0]['#']))
+				{
+					$return_code = "Error " . $packet['iq']['#']['error'][0]['@']['code'] . ": " . $packet['iq']['#']['error'][0]['#'];
+					$this->AddToLog('ERROR: TransportRegistration()');
+				}
+			}
+
+			return $return_code;
+		}
+		else
+		{
+			return 3;
+		}
 	}
 
 	function Listen()
