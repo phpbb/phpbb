@@ -114,14 +114,6 @@ class session
 			}
 		}
 
-		// Session check failed, redirect the user to the index page
-		// TODO: we could delay it until we grab user's data and display a localised error message
-		if (defined('NEED_SID'))
-		{
-			// NOTE: disabled until we decide how to deal with this
-			//redirect("index.$phpEx$SID");
-		}
-
 		// If we reach here then no (valid) session exists. So we'll create a new one,
 		// using the cookie user_id if available to pull basic user prefs.
 		$autologin = (isset($sessiondata['autologinid'])) ? $sessiondata['autologinid'] : '';
@@ -592,7 +584,9 @@ class user extends session
 				$lang_dates[$match] = $replace;
 			}
 		}
+
 		$format = (!$format) ? $this->date_format : $format;
+
 		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 
@@ -605,12 +599,16 @@ class user extends session
 			return $this->lang_id;
 		}
 
-		if (empty($this->lang_name))
+		if (!$this->lang_name)
 		{
 			$this->lang_name = $config['default_lang'];
 		}
 		
-		$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $this->lang_name . "'");
+		$sql = "SELECT lang_id 
+			FROM phpbb_lang 
+			WHERE lang_iso = '" . $this->lang_name . "'";
+		$result = $db->sql_query($sql);
+
 		return (int) $db->sql_fetchfield('lang_id', 0, $result);
 	}
 
@@ -632,11 +630,11 @@ class user extends session
 		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
 	}
 
-	function img($img, $alt = '', $width = false, $no_cache = false)
+	function img($img, $alt = '', $width = false, $suffix = '')
 	{
 		static $imgs;
 
-		if (empty($imgs[$img]) || $no_cache)
+		if (empty($imgs[$img . $suffix]) || $width)
 		{
 			if (!$width)
 			{
@@ -647,15 +645,20 @@ class user extends session
 				list($imgsrc, $height) = explode('*', $this->theme['primary'][$img]);
 			}
 
+			if ($suffix !== '')
+			{
+				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
+			}
+
 			$imgsrc = '"' . $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc) . '"';
 			$width = ($width) ? ' width="' . $width . '"' : '';
 			$height = ($height) ? ' height="' . $height . '"' : '';
 			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
 
-			$imgs[$img] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
+			$imgs[$img . $suffix] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
 		}
 
-		return $imgs[$img];
+		return $imgs[$img . $suffix];
 	}
 
 	// Start code for checking/setting option bit field for user table (if we go that way)
