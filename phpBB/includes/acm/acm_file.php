@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                              cache_file.php
+ *                              acm_file.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
