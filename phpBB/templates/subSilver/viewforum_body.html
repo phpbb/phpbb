@@ -56,9 +56,9 @@
 		<td class="row1" width="100%">
 			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_TOPIC_REPORTED -->
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr align="left" valign="middle" class="topictitle">
+				<tr align="left" valign="middle">
 					<td><!-- IF topicrow.S_TOPIC_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF --></td>
-					<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
+					<td width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
 				</tr>
 			</table>
 			<!-- ELSE -->
