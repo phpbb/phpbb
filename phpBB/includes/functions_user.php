@@ -289,7 +289,7 @@ function avatar_remote($data, &$error)
 	$data['filename'] = $data['remotelink']; 
 	$data['type'] = AVATAR_REMOTE;
 
-	return data;
+	return $data;
 }
 
 function avatar_upload($data, &$error)
