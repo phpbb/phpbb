@@ -68,7 +68,7 @@ function validate_email($email)
 			}
 			$sql = "SELECT user_email
 				FROM " . USERS_TABLE . "
-				WHERE user_email = '" . $email . "'";
+				WHERE user_email = '" . str_replace("\'", "''", $email) . "'";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
@@ -612,7 +612,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					if( !$error )
 					{
 						$password = md5($password);
-						$passwd_sql = "user_password = '$password', ";
+						$passwd_sql = "user_password = '" . str_replace("\'", "''", $password) . "', ";
 					}
 				}
 			}
@@ -654,7 +654,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					}
 					else
 					{
-						$username_sql = "username = '$username', ";
+						$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
 					}
 				}
 			}
@@ -968,7 +968,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				if( preg_match("#^http:\/\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+\/.*?\.(gif|jpg|png)$#is", $user_avatar_remoteurl) )
 				{
-					$avatar_sql = ", user_avatar = '$user_avatar_remoteurl', user_avatar_type = " . USER_AVATAR_REMOTE;
+					$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
 				}
 				else
 				{
@@ -978,7 +978,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			}
 			else if( $user_avatar_local != "" && $board_config['allow_avatar_local'] && $avatar_sql == "" && !$error )
 			{
-				$avatar_sql = ", user_avatar = '$user_avatar_local', user_avatar_type = " . USER_AVATAR_GALLERY;
+				$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_local) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 			}
 
 			if( !$error )
@@ -1006,9 +1006,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					}
 
 					$sql = "UPDATE " . USERS_TABLE . "
-						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_style = $user_style, user_active = $user_active, user_actkey = '$user_actkey'" . $avatar_sql . "
+						SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) ."', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_active = $user_active, user_actkey = '" . str_replace("\'", "''", $user_actkey) . "'" . $avatar_sql . "
 						WHERE user_id = $user_id";
-
 					if( $result = $db->sql_query($sql) )
 					{
 						if( $user_active == 0 )
@@ -1091,12 +1090,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					// Get current date
 					//
 					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-						VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
+						VALUES ($new_user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', '" . str_replace("\'", "''", $avatar_filename) . "', $viewemail, '" . str_replace("\'", "''", $aim) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
 
 					if( $board_config['require_activation'] ==USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa == 1)
 					{
 						$user_actkey = generate_activation_key();
-						$sql .= "0, '$user_actkey')";
+						$sql .= "0, '" . str_replace("\'", "''", $user_actkey) . "')";
 					}
 					else
 					{
@@ -1275,8 +1274,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$location = $userdata['user_from'];
 			$occupation = $userdata['user_occ'];
 			$interests = $userdata['user_interests'];
-			$signature = $userdata['user_sig'];
 			$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
+			$signature = ( $signature_bbcode_uid != "" ) ? preg_replace("/\:(([a-z0-9]:)?)$signature_bbcode_uid/si", "", $userdata['user_sig']) : $userdata['user_sig'];
 
 			$viewemail = $userdata['user_viewemail'];
 			$notifypm = $userdata['user_notify_pm'];
@@ -1353,10 +1352,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							}
 						}
 					}
-					else
-					{
-
-					}
 				}
 		
 				@closedir($dir);
@@ -1403,18 +1398,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == "register") ? 0 : TRUE;
 
 				$s_hidden_vars = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" /><input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . $user_id . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="username" value="' . $username . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="email" value="' . $email . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . $icq . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="aim" value="' . $aim . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="msn" value="' . $msn . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="yim" value="' . $yim . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="website" value="' . $website . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="location" value="' . $location . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="occupation" value="' . $occupation . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="interests" value="' . $interests . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="signature" value="' . $signature . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . str_replace("\"", "&quot;", $user_id) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="username" value="' . str_replace("\"", "&quot;", $username) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="email" value="' . str_replace("\"", "&quot;", $email) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . str_replace("\"", "&quot;", $icq) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="aim" value="' . str_replace("\"", "&quot;", $aim) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="msn" value="' . str_replace("\"", "&quot;", $msn) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="yim" value="' . str_replace("\"", "&quot;", $yim) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="website" value="' . str_replace("\"", "&quot;", $website) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="location" value="' . str_replace("\"", "&quot;", $location) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="occupation" value="' . str_replace("\"", "&quot;", $occupation) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="interests" value="' . str_replace("\"", "&quot;", $interests) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="signature" value="' . str_replace("\"", "&quot;", $signature) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
@@ -1427,7 +1422,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$s_hidden_vars .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
 				$s_hidden_vars .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="dateformat" value="' . $user_dateformat . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="dateformat" value="' . str_replace("\"", "&quot;", $user_dateformat) . '" />';
 
 				$template->assign_vars(array(
 					"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
@@ -1578,7 +1573,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"TIMEZONE_SELECT" => tz_select($user_timezone, 'timezone'),
 				"DATE_FORMAT" => $user_dateformat,
 				"HTML_STATUS" => $html_status,
-				"BBCODE_STATUS" => $bbcode_status,
+				"BBCODE_STATUS" => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
 				"SMILIES_STATUS" => $smilies_status,
 
 				"L_CURRENT_PASSWORD" => $lang['Current_password'], 
@@ -1680,8 +1675,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$sql = "SELECT user_id, username, user_email, user_active
 				FROM " . USERS_TABLE . " 
-				WHERE user_email = '$email' 
-					AND username = '$username'";
+				WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
+					AND username = '" . str_replace("\'", "''", $username) . "'";
 			if( $result = $db->sql_query($sql) )
 			{
 				if( !$db->sql_numrows($result) )
@@ -1804,14 +1799,14 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		$sql = "SELECT user_id, user_email, user_newpasswd 
 			FROM " . USERS_TABLE . "
-			WHERE user_actkey = '" . $HTTP_GET_VARS['act_key'] . "'";
+			WHERE user_actkey = '" . str_replace("\'", "''", $HTTP_GET_VARS['act_key']) . "'";
 			if( $result = $db->sql_query($sql) )
 			{
 				if( $row = $db->sql_fetchrow($result) )
 				{
 					if( $row['user_newpasswd'] != "" )
 					{
-						$sql_update_pass = ", user_password = '" . $row['user_newpasswd'] . "', user_newpasswd = ''";
+						$sql_update_pass = ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''";
 					}
 					else
 					{
