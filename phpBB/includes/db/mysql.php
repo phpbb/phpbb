@@ -407,7 +407,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return mysql_escape_string(stripslashes($msg));
+		return mysql_escape_string($msg);
 	}
 	
 	function sql_error($sql = '')
