@@ -23,6 +23,7 @@ class emailer
 {
 	var $msg, $subject, $extra_headers;
 	var $to_addres, $cc_address, $bcc_address;
+	var $reply_to, $from;
 
 	var $tpl_msg = array();
 
@@ -35,7 +36,7 @@ class emailer
 	function reset()
 	{
 		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = '';
+		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
 	}
 
 	// Sets an email address to send to
@@ -63,6 +64,11 @@ class emailer
 	function replyto($address)
 	{
 		$this->replyto = trim($address);
+	}
+
+	function from($address)
+	{
+		$this->from = trim($address);
 	}
 
 	// set up subject for mail
@@ -169,12 +175,12 @@ class emailer
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
-			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
+			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($user->lang['ENCODING']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->encoding = trim($lang['ENCODING']);
+			$this->encoding = trim($user->lang['ENCODING']);
 		}
 
 		if ($drop_header != '')
@@ -193,7 +199,7 @@ class emailer
 		}
 
 		// Build header
-		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . "From: <" . $config['board_email'] . ">\r\nReturn-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
+		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
 
 		// Send message ... removed $this->encode() from subject for time being
 		$result = ($config['smtp_delivery']) ? smtpmail($to, $this->subject, $this->msg, $this->extra_headers) : mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);

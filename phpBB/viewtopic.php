@@ -1207,8 +1207,7 @@ foreach ($rowset as $key => $row)
 				{
 					case IMAGE_CAT:
 						// Images
-						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
-						// Section between BEGIN and END with (Without the // of course):
+						// NOTE: If you want to use the download.php everytime an image is displayed inlined, use this line:
 						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 						if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
 						{
@@ -1226,8 +1225,7 @@ foreach ($rowset as $key => $row)
 					
 					case THUMB_CAT:
 						// Images, but display Thumbnail
-						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
-						// Section between BEGIN and END with (Without the // of course):
+						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, use this line:
 						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
 						if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
 						{
@@ -1242,7 +1240,7 @@ foreach ($rowset as $key => $row)
 						$download_link = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
 
 						$additional_array = array(
-							'IMG_THUMB_SRC' => $thumb_source // should be THUMB_IMG or similar
+							'THUMB_IMG' => $thumb_source
 						);
 						break;
 
@@ -1282,10 +1280,7 @@ foreach ($rowset as $key => $row)
 						);
 
 						// Viewed/Heared File ... update the download count (download.php is not called here)
-						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
-						{
-							$update_count[] = $attachment['attach_id'];
-						}
+						$update_count[] = $attachment['attach_id'];
 						break;
 */
 					default:
