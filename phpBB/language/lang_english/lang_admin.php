@@ -680,9 +680,11 @@ $lang['ftp_path'] = "FTP path to phpBB 2";
 $lang['ftp_username'] = "Your FTP Username";
 $lang['ftp_password'] = "Your FTP Password";
 $lang['Transfer_config'] = "Start Transfer";
+$lang['NoFTP_config'] = "The attempt to ftp the config file into place failed.  Please download the config file and ftp it into place manually.";
 
 $lang['Install'] = "Install";
 $lang['Upgrade'] = "Upgrade";
+
 
 $lang['Install_Method'] = "Choose your installation method";
 
