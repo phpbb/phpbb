@@ -31,9 +31,7 @@ class session {
 		$current_time = time();
 		$session_browser = ( !empty($HTTP_SERVER_VARS['HTTP_USER_AGENT']) ) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : $HTTP_ENV_VARS['HTTP_USER_AGENT'];
 		$this_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
-		$this_query = ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? explode('&', $HTTP_SERVER_VARS['QUERY_STRING']) : explode('&', $HTTP_ENV_VARS['QUERY_STRING']);
-		array_shift($this_query);
-		$this_page = $this_page . '&' . implode('&', $this_query);
+		$this_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
 
 		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_data']) )
 		{
@@ -53,7 +51,7 @@ class session {
 		//
 		if ( !empty($board_config['limit_load']) && file_exists('/proc/loadavg') )
 		{
-			if ( $load = file('/proc/loadvg') )
+			if ( $load = file('/proc/loadavg') )
 			{
 				$load = explode(' ', $load[0]);
 
@@ -138,19 +136,30 @@ class session {
 		$user_id = ( isset($sessiondata['userid']) ) ? $sessiondata['userid'] : ANONYMOUS;
 
 		//
-		// Limit 5 minute sessions
+		// Limit connections (for MySQL) or 5 minute sessions (for other DB's)
 		//
-		$sql = "SELECT COUNT(*) AS sessions 
-			FROM " . SESSIONS_TABLE . " 
-			WHERE session_time >= " . ( $current_time - 3600 );
+		switch ( DB_LAYER )
+		{
+			case 'mysql': 
+			case 'mysql4': 
+				$sql = "SELECT COUNT(*) AS sessions 
+					FROM " . SESSIONS_TABLE . " 
+					WHERE session_time >= " . ( $current_time - 3600 );
+				break;
+			default: 
+				$sql = "SELECT COUNT(*) AS sessions 
+					FROM " . SESSIONS_TABLE . " 
+					WHERE session_time >= " . ( $current_time - 3600 );
+				break;
+		}
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(CRITICAL_ERROR, 'Could not obtain ban information', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Could not obtain connection information', '', __LINE__, __FILE__, $sql);
 		}
-		
+
 		$row = $db->sql_fetchrow[$result];
 
-		if ( intval($board_config['active_sessions']) && $row['sessions'] >= $board_config['active_sessions'] )
+		if ( intval($board_config['active_sessions']) && $row['sessions'] >= intval($board_config['active_sessions']) )
 		{
 			message_die(GENERAL_MESSAGE, 'Board_unavailable', 'Information');
 		}
@@ -179,11 +188,11 @@ class session {
 		$sql = "SELECT ban_ip, ban_userid, ban_email 
 			FROM " . BANLIST_TABLE . " 
 			WHERE ban_ip IN (
-					'" . $user_ip_parts[1] . ".', 
-					'" . $user_ip_parts[1] . "." . $user_ip_parts[2] . ".',
-					'" . $user_ip_parts[1] . "." . $user_ip_parts[2] . "." . $user_ip_parts[3] . ".', 
-					'" . $user_ip_parts[1] . "." . $user_ip_parts[2] . "." . $user_ip_parts[3] . "." . $user_ip_parts[4] . "') 
-				OR ban_userid = $user_id";
+				'" . $user_ip_parts[0] . ".', 
+				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . ".',
+				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . "." . $user_ip_parts[2] . ".', 
+				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . "." . $user_ip_parts[2] . "." . $user_ip_parts[3] . "') 
+			OR ban_userid = " . $this->userdata['user_id'];
 		if ( $user_id != ANONYMOUS )
 		{
 			$sql .= " OR ban_email LIKE '" . str_replace('\\\'', '\\\'\\\'', $this->userdata['user_email']) . "' 
@@ -375,9 +384,10 @@ class session {
 		//
 		$style = ( !$board_config['override_user_style'] && $this->userdata['user_id'] != ANONYMOUS && $this->userdata['user_style'] > 0 )? $this->userdata['user_style'] : $board_config['default_style'];
 
-		$sql = "SELECT *
-			FROM " . THEMES_TABLE . "
-			WHERE themes_id = $style";
+		$sql = "SELECT s.style_name, s.template_name, c.css_data, c.css_extra_data  
+			FROM " . STYLES_TABLE . " s, " . STYLES_CSS_TABLE . " c
+			WHERE s.style_id = $style 
+				AND c.theme_id = s.style_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Could not query database for theme info');
@@ -387,6 +397,11 @@ class session {
 		{
 			message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
 		}
+
+		//
+		// Unserialize the extra data
+		//
+		$theme['css_extra_data'] = unserialize($theme['css_extra_data']);
 
 		$template_path = 'templates/' ;
 		$template_name = $theme['template_name'] ;
@@ -405,7 +420,7 @@ class session {
 
 			$img_lang = ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
 
-			while( list($key, $value) = @each($images) )
+			while ( list($key, $value) = @each($images) )
 			{
 				if ( !is_array($value) )
 				{
@@ -433,7 +448,7 @@ class auth {
 		global $db;
 
 		$sql = "SELECT ag.forum_id, ag.auth_allow_deny, ao.auth_option  
-			FROM phpbb_user_group ug, phpbb_auth_groups ag, phpbb_auth_options ao  
+			FROM  " . USER_GROUP_TABLE . " ug, " . ACL_GROUPS_TABLE . " ag, " . ACL_OPTIONS_TABLE . " ao  
 			WHERE ug.user_id = " . $userdata['user_id'] . " 
 				AND ag.group_id = ug.group_id 
 				AND ao.auth_option_id = ag.auth_option_id";
@@ -454,7 +469,7 @@ class auth {
 		$db->sql_freeresult($result);
 
 		$sql = "SELECT au.forum_id, au.auth_allow_deny, ao.auth_option  
-			FROM phpbb_auth_users au, phpbb_auth_options ao  
+			FROM " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao  
 			WHERE au.user_id = " . $userdata['user_id'] . " 
 				AND ao.auth_option_id = au.auth_option_id";
 		if ( !($result = $db->sql_query($sql)) )
@@ -566,9 +581,13 @@ class auth {
 //
 // Centralised login? May stay, may not ... depends if needed
 //
-function login($username, $password)
+function login($username, $password, $autologin = false)
 {
-	global $SID, $db, $board_config, $lang, $user_ip, $phpEx;
+	global $SID, $db, $board_config, $lang, $user_ip;
+	global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
+
+	$this_page = ( !empty($HTTP_SERVER_VARS['PHP_SELF']) ) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_ENV_VARS['PHP_SELF'];
+	$this_page .= '&' . ( ( !empty($HTTP_SERVER_VARS['QUERY_STRING']) ) ? $HTTP_SERVER_VARS['QUERY_STRING'] : $HTTP_ENV_VARS['QUERY_STRING'] );
 
 	$result = false;
 
@@ -584,8 +603,8 @@ function login($username, $password)
 	{
 		if ( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 		{
-			header($header_location . "index.$phpEx$SID");
-			exit;
+//			header($header_location . "index.$phpEx$SID");
+//			exit;
 		}
 
 		if ( $board_config['ldap_enable'] && extension_loaded('ldap') )
@@ -602,7 +621,7 @@ function login($username, $password)
 		{
 			if ( md5($password) == $row['user_password'] && $row['user_active'] )
 			{
-				$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? md5($password) : '';
+				$autologin = ( isset($autologin) ) ? md5($password) : '';
 
 				$user_ip_parts = explode('.', $user_ip);
 
@@ -640,7 +659,7 @@ function login($username, $password)
 				// Update the session
 				//
 				$sql = "UPDATE " . SESSIONS_TABLE . "
-					SET session_user_id = " . $row['user_id'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$session_browser', session_page = ''
+					SET session_user_id = " . $row['user_id'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$session_browser', session_page = '$this_page'
 					WHERE session_id = '" . $userdata['session_id'] . "'";
 				if ( !$db->sql_query($sql) )
 				{
@@ -660,16 +679,6 @@ function login($username, $password)
 
 	return $result;
 
-}
-
-//
-//
-// This routine is dead instead we just set a URL$SID for
-// appropriate URLs rather than this append stuff
-//
-function append_sid($url, $non_html_amp = false)
-{
-	return $url;
 }
 
 ?>
