@@ -104,8 +104,6 @@ if(!$total_posts = $db->sql_numrows($result))
 }
 $postrow = $db->sql_fetchrowset($result);
 
-$template->set_block("body", "postrow", "posts");
-
 for($x = 0; $x < $total_posts; $x++)
 {
 	$poster = stripslashes($postrow[$x]["username"]);
@@ -169,32 +167,31 @@ for($x = 0; $x < $total_posts; $x++)
 	
 	$message = eregi_replace("\[addsig]$", "<BR>_________________<BR>" . stripslashes($postrow[$x]["user_sig"]), $message);
 	
-	$template->set_var(array("TOPIC_TITLE" => $topic_title,
-				 "L_POSTED" => $l_posted,
-				 "L_JOINED" => $l_joined,
-				 "POSTER_NAME" => $poster,
-				 "POSTER_RANK" => $poster_rank,
-				 "RANK_IMAGE" => $rank_image,
-				 "ROW_COLOR" => $color,
-				 "POSTER_JOINED" => $poster_joined,
-				 "POSTER_POSTS" => $poster_posts,
-				 "POSTER_FROM" => $poster_from,
-				 "POST_DATE" => $post_date,
-				 "MESSAGE" => $message,
-				 "PROFILE_IMG" => $profile_img,
-				 "EMAIL_IMG" => $email_img,
-				 "WWW_IMG" => $www_img,
-				 "ICQ_STATUS_IMG" => $icq_status_img,
-				 "ICQ_ADD_IMG" => $icq_add_img,
-				 "AIM_IMG" => $aim_img,
-				 "MSN_IMG" => $msn_img,
-				 "YIM_IMG" => $yim_img,
-				 "EDIT_IMG" => $edit_img,
-				 "QUOTE_IMG" => $quote_img,
-				 "PMSG_IMG" => $pmsg_img,
-				 "IP_IMG" => $ip_img,
-				 "DELPOST_IMG" => $delpost_img));
-	$template->parse("posts", "postrow", true);
+	$template->assign_block_vars("postrow", array("TOPIC_TITLE" => $topic_title,
+		"L_POSTED" => $l_posted,
+		"L_JOINED" => $l_joined,
+		"POSTER_NAME" => $poster,
+		"POSTER_RANK" => $poster_rank,
+		"RANK_IMAGE" => $rank_image,
+		"ROW_COLOR" => $color,
+		"POSTER_JOINED" => $poster_joined,
+		"POSTER_POSTS" => $poster_posts,
+		"POSTER_FROM" => $poster_from,
+		"POST_DATE" => $post_date,
+		"MESSAGE" => $message,
+		"PROFILE_IMG" => $profile_img,
+		"EMAIL_IMG" => $email_img,
+		"WWW_IMG" => $www_img,
+		"ICQ_STATUS_IMG" => $icq_status_img,
+		"ICQ_ADD_IMG" => $icq_add_img,
+		"AIM_IMG" => $aim_img,
+		"MSN_IMG" => $msn_img,
+		"YIM_IMG" => $yim_img,
+		"EDIT_IMG" => $edit_img,
+		"QUOTE_IMG" => $quote_img,
+		"PMSG_IMG" => $pmsg_img,
+		"IP_IMG" => $ip_img,
+		"DELPOST_IMG" => $delpost_img));
 }
 
 if($total_replies > $posts_per_page)
@@ -247,10 +244,11 @@ else
 {
 	$pages = "1 page";
 }
-$template->set_var(array("PAGES" => $pages,
-			 "PAGINATION" => $pagination));
 
-$template->pparse("output", array("posts", "body"));
+$template->assign_vars(array("PAGES" => $pages,
+	"PAGINATION" => $pagination));
+
+$template->pparse("body");
 
 include('includes/page_tail.'.$phpEx);
 

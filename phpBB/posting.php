@@ -143,7 +143,7 @@ else
 			$notify_toggle .= "> $l_notify";
 			
 			
-			$template->set_var(array("L_ABOUTPOST" => $l_aboutpost,
+			$template->assign_vars(array("L_ABOUTPOST" => $l_aboutpost,
 											"L_SUBJECT" => $l_subject,
 											"L_MESSAGEBODY" => $l_body,
 											"L_OPTIONS" => $l_options,
@@ -163,7 +163,7 @@ else
 											"NOTIFY_TOGGLE" => $notify_toggle,
 											"BBCODE_TOGGLE" => $bbcode_toggle,
 											"BBCODE_STATUS" => $bbcode_status));
-			$template->pparse("output", "body");
+			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
 	break;
       case 'reply':

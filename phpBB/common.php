@@ -30,7 +30,7 @@ $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
 // Setup what template to use. Currently just use default
 include('includes/template.inc');
-$template = new Template("./templates/Default", "remove");
+$template = new Template("./templates/Default");
 
 include('functions/error.'.$phpEx);
 include('functions/sessions.'.$phpEx);

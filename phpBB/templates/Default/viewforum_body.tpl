@@ -14,12 +14,12 @@
 	        </tr>
 	        <!-- BEGIN topicrow -->
 	        <tr bgcolor="#DDDDDD" class="tablebody">
-	          <td width="5%" align="center" valign="middle">{FOLDER}</td>
-                  <td><a href="viewtopic.{PHPEX}?{POST_TOPIC_URL}={TOPIC_ID}&{REPLIES}">{TOPIC_TITLE}</a>{GOTO_PAGE}</td>
-                  <td width="5%" align="center" valign="middle">{REPLIES}</td>
-                  <td width="10%" align="center" valign="middle">{TOPIC_POSTER}</td>
-	          <td width="5%" align="center" valign="middle">{VIEWS}</td>
-	          <td width="15%" align="center" valign="middle">{LAST_POST}</td>
+	          <td width="5%" align="center" valign="middle">{topicrow.FOLDER}</td>
+                  <td><a href="viewtopic.{PHPEX}?{topicrow.POST_TOPIC_URL}={topicrow.TOPIC_ID}&{topicrow.REPLIES}">{topicrow.TOPIC_TITLE}</a>{topicrow.GOTO_PAGE}</td>
+                  <td width="5%" align="center" valign="middle">{topicrow.REPLIES}</td>
+                  <td width="10%" align="center" valign="middle">{topicrow.TOPIC_POSTER}</td>
+	          <td width="5%" align="center" valign="middle">{topicrow.VIEWS}</td>
+	          <td width="15%" align="center" valign="middle">{topicrow.LAST_POST}</td>
                 </tr>
 	        <!-- END topicrow -->
 	       </table>

@@ -41,9 +41,6 @@ if(empty($viewcat))
 
 include('includes/page_header.'.$phpEx);
 
-$template->set_block("body", "catrow", "cats");
-$template->set_block("catrow", "forumrow", "forums");
-
 $sql = "SELECT c.*
 	FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
 	WHERE f.cat_id=c.cat_id
@@ -99,12 +96,10 @@ if($total_categories)
 
 	for($i = 0; $i < $total_categories; $i++)
 	{
-		$template->set_var(array("CAT_ID" => $category_rows[$i]["cat_id"],
+		$template->assign_block_vars("catrow", array("CAT_ID" => $category_rows[$i]["cat_id"],
 			"PHP_SELF" => $PHP_SELF,
 			"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])));
-		$template->parse("cats", "catrow", true);
 		
-		$created_line = false;
 		for($j = 0; $j < $total_forums; $j++)
 		{
 
@@ -152,7 +147,7 @@ if($total_categories)
 					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
 				}
 
-				$template->set_var(array("FOLDER" => $folder_image,
+				$template->assign_block_vars("catrow.forumrow", array("FOLDER" => $folder_image,
 					"FORUM_NAME" => stripslashes($forum_rows[$j]["forum_name"]),
 					"FORUM_ID" => $forum_rows[$j]["forum_id"],
 					"FORUM_DESC" => stripslashes($forum_rows[$j]["forum_desc"]),
@@ -163,15 +158,7 @@ if($total_categories)
 					"LAST_POST" => $last_post,
 					"MODERATORS" => $moderators_links));
 
-				$template->parse("forums", "forumrow", true);
-
-				$created_line = true;
 			}
-		}
-		if($created_line)
-		{
-			$template->parse("cats", "forums", true);
-			$template->set_var("forums", "");
 		}
 
 	} // for ... categories
@@ -181,7 +168,7 @@ else
 {
    error_die($db, GENERAL_ERROR, "There are no Categories or Foums on this board.");
 }
-$template->pparse("output", "body");
+$template->pparse("body");
 
 include('includes/page_tail.'.$phpEx);
 ?>

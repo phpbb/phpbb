@@ -26,19 +26,19 @@
 	           <td>{TOPIC_TITLE}</td>
 	        </tr>
 	        <!-- BEGIN postrow -->
-	        <tr bgcolor="{ROW_COLOR}" class="tablebody">
+	        <tr bgcolor="{postrow.ROW_COLOR}" class="tablebody">
 	          <td width="15%" align="left" valign="top">
-                   <font style="{font-size: 10pt; font-weight: bold;}">{POSTER_NAME}</font><br>
-                   {POSTER_RANK}<br>
-                   {RANK_IMAGE}<br>
+                   <font style="{font-size: 10pt; font-weight: bold;}">{postrow.POSTER_NAME}</font><br>
+                   {postrow.POSTER_RANK}<br>
+                   {postrow.RANK_IMAGE}<br>
                    <br>
                    <font style="{font-size: 8pt;}">
-                   {L_JOINED}: {POSTER_JOINED}<br>{L_POSTS}: {POSTER_POSTS}<br>{POSTER_FROM}</font>
+                   {postrow.L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font>
                   </td>
 	          <td>
-                    <img src="images/posticon.gif"><font style="{font-size: 8pt;}">{L_POSTED}: {POST_DATE}</font><hr>
-                    {MESSAGE}<hr>
-                    {PROFILE_IMG}&nbsp;{EMAIL_IMG}&nbsp;{WWW_IMG}&nbsp;{ICQ_STATUS_IMG}&nbsp;{ICQ_ADD_IMG}&nbsp;{AIM_IMG}&nbsp;{YIM_IMG}&nbsp;{MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{EDIT_IMG}&nbsp;{QUOTE_IMG}&nbsp;{PMSG_IMG}&nbsp;<img src="images/div.gif">&nbsp;{IP_IMG}&nbsp;{DELPOST_IMG}
+                    <img src="images/posticon.gif"><font style="{font-size: 8pt;}">{postrow.L_POSTED}: {postrow.POST_DATE}</font><hr>
+                    {postrow.MESSAGE}<hr>
+                    {postrow.PROFILE_IMG}&nbsp;{postrow.EMAIL_IMG}&nbsp;{postrow.WWW_IMG}&nbsp;{postrow.ICQ_STATUS_IMG}&nbsp;{postrow.ICQ_ADD_IMG}&nbsp;{postrow.AIM_IMG}&nbsp;{postrow.YIM_IMG}&nbsp;{postrow.MSN_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.EDIT_IMG}&nbsp;{postrow.QUOTE_IMG}&nbsp;{postrow.PMSG_IMG}&nbsp;<img src="images/div.gif">&nbsp;{postrow.IP_IMG}&nbsp;{postrow.DELPOST_IMG}
                   </td>
           </tr>
 	        <!-- END postrow -->

@@ -74,7 +74,6 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 
 include('includes/page_header.'.$phpEx);
 
-$template->set_block("body", "topicrow", "topics");
 
 if(!isset($start))
 {
@@ -137,7 +136,7 @@ if($total_topics)
 	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
 	$last_post_user = $topic_rowset[$x]["user2"];
 	$folder_img = "<img src=\"images/folder.gif\">";
-	$template->set_var(array("FORUM_ID" => $forum_id,
+	$template->assign_block_vars("topicrow", array("FORUM_ID" => $forum_id,
 				 "POST_TOPIC_URL" => POST_TOPIC_URL,
 				 "TOPIC_ID" => $topic_id,
 				 "FOLDER" => $folder_img, 
@@ -147,8 +146,8 @@ if($total_topics)
 				 "TOPIC_TITLE" => $topic_title,
 				 "VIEWS" => $views,
 				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
-	$template->parse("topics", "topicrow",  true);
      }
+
    $count = 1;
    $next = $start + $topics_per_page;
    if($topics_count > $topics_per_page)
@@ -177,8 +176,8 @@ if($total_topics)
 	       }
 	  }
      }
-   $template->set_var(array("PAGINATION" => $pagination));
-   $template->pparse("output", array("topics", "body"));
+   $template->assign_vars(array("PAGINATION" => $pagination));
+   $template->pparse("body");
 }
 else
 {

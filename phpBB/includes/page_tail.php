@@ -26,17 +26,17 @@
 switch($pagetype) 
 {
  case 'index':
-   $template->pparse("output", "footer");
+   $template->pparse("footer");
    break;
    
  case 'viewforum':
    
-   $template->set_var(array("PHPEX" => $phpEx,
+   $template->assign_vars(array("PHPEX" => $phpEx,
 			    "FORUM_ID" => $forum_id));	
-   $template->pparse("output", "footer");
+   $template->pparse("footer");
    break;
  case 'viewtopic':
-   $template->pparse("output", "footer");
+   $template->pparse("footer");
    break;
 }
 
@@ -45,9 +45,9 @@ if($user_logged_in)
 {
    $admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
 }
-$template->set_var(array("PHPBB_VERSION" => "2.0-alpha",
+$template->assign_vars(array("PHPBB_VERSION" => "2.0-alpha",
 			 "ADMIN_LINK" => $admin_link));
-$template->pparse("output", "overall_footer");
+$template->pparse("overall_footer");
 
 // Close our DB connection.
 $db->sql_close();

@@ -29,16 +29,16 @@ $session_cookie_time = 3600;
 // DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "";
-$dbuser = "";
-$dbpasswd = "";
+$dbname = "phpbb2";
+$dbuser = "phpbb2";
+$dbpasswd = "bbphp2bb";
 
 // Date format (needs to go into DB)
 $date_format = "M d Y h:i:s a"; // American datesformat
 //$date_format = "d-m-Y H:i:s"; // European datesformat
 
 // DB table prefix
-$table_prefix = "phpbb_";
+$table_prefix = "";
 
 $url_images = "images";
 $image_quote = "$url_images/quote.gif";

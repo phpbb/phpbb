@@ -1,375 +1,427 @@
 <?php
-/*
- * Session Management for PHP3
- *
- * (C) Copyright 1999-2000 NetUSE GmbH
- *                    Kristian Koehntopp
- *
- * $Id$
- *
- * This code was NOT written by the phpBB group. It is part of the PHPLib 
- * package written by NetUSE GmbH and Kristian Koehntopp.
- * This code is released under the GNU General Public Licence and used in
- * accordance with said licence.
- */ 
  
- /**
-  * Some methods modified by Nathan Codding of the phpBB group for
-  * better performance - replacing preg_replace() with str_replace()
-  * where possible.
-  */
+// (insert phpBB file header here)
+ 
+/**
+ * Template class. By Nathan Codding of the phpBB group.
+ * The interface was originally inspired by PHPLib templates,
+ * and the template file formats are quite similar.
+ *  
+ */
+
+
+// global variable that holds all the data we'll be substituting into
+// the compiled templates.
+
+// This will end up being a multi-dimensional array like this:
+// $_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+// if it's a root-level variable, it'll be like this:
+// $_tpldata[.][0][varname] == value
+
+if (!isset($_tpldata))
+{
+	$_tpldata = array();
+}
+
 
 class Template {
   var $classname = "Template";
 
-  /* if set, echo assignments */
-  var $debug     = false;
+  // Hash of filenames for each template handle.
+  var $files = array();
 
-  /* $file[handle] = "filename"; */
-  var $file  = array();
-
-  /* relative filenames are relative to this pathname */
-  var $root   = "";
-
-  /* $varkeys[key] = "key"; $varvals[key] = "value"; */
-  var $varkeys = array();
-  var $varvals = array();
+  // Root template directory.
+  var $root = "";
   
-  /* "remove"  => remove undefined variables
-   * "comment" => replace undefined variables with comments
-   * "keep"    => keep undefined variables
+  // this will hash handle names to the compiled code for that handle.
+  var $compiled_code = array();
+  
+  // This will hold the uncompiled code for that handle.
+  var $uncompiled_code = array();
+  
+  /**
+   * Constructor. Simply sets the root dir.
+   * 
    */
-  var $unknowns = "remove";
-  
-  /* "yes" => halt, "report" => report error, continue, "no" => ignore error quietly */
-  var $halt_on_error  = "yes";
-  
-  /* last error message is retained here */
-  var $last_error     = "";
-
-
-  /***************************************************************************/
-  /* public: Constructor.
-   * root:     template directory.
-   * unknowns: how to handle unknown variables.
-   */
-  function Template($root = ".", $unknowns = "remove") {
-    $this->set_root($root);
-    $this->set_unknowns($unknowns);
+  function Template($root = ".") 
+  {
+    $this->set_rootdir($root);
   }
 
-  /* public: setroot(pathname $root)
-   * root:   new template directory.
+  /**
+   * Sets the template root directory for this Template object.
    */  
-  function set_root($root) {
-    if (!is_dir($root)) {
-      $this->halt("set_root: $root is not a directory.");
+  function set_rootdir($dir) 
+  {
+    if (!is_dir($dir)) 
+    {
       return false;
     }
     
-    $this->root = $root;
+    $this->root = $dir;
     return true;
   }
 
-  /* public: set_unknowns(enum $unknowns)
-   * unknowns: "remove", "comment", "keep"
-   *
+  /** 
+   * Sets the template filenames for handles. $filename_array
+   * should be a hash of handle => filename pairs.
    */
-  function set_unknowns($unknowns = "keep") {
-    $this->unknowns = $unknowns;
-  }
-
-  /* public: set_file(array $filelist)
-   * filelist: array of handle, filename pairs.
-   *
-   * public: set_file(string $handle, string $filename)
-   * handle: handle for a filename,
-   * filename: name of template file
-   */
-  function set_file($handle, $filename = "") {
-    if (!is_array($handle)) {
-      if ($filename == "") {
-        $this->halt("set_file: For handle $handle filename is empty.");
-        return false;
-      }
-      $this->file[$handle] = $this->filename($filename);
-    } else {
-      reset($handle);
-      while(list($h, $f) = each($handle)) {
-        $this->file[$h] = $this->filename($f);
-      }
-    }
-  }
-
-  /* public: set_block(string $parent, string $handle, string $name = "")
-   * extract the template $handle from $parent, 
-   * place variable {$name} instead.
-   */
-  function set_block($parent, $handle, $name = "") {
-    if (!$this->loadfile($parent)) {
-      $this->halt("subst: unable to load $parent.");
-      return false;
-    }
-    if ($name == "")
-      $name = $handle;
-
-    $str = $this->get_var($parent);
-    $reg = "/<!--\s+BEGIN $handle\s+-->(.*?)\n\s*<!--\s+END $handle\s+-->/sm";
-    preg_match($reg, $str, $m);
-    $str = preg_replace($reg, "{" . "$name}", $str);
-    $this->set_var($handle, $m[1]);
-    $this->set_var($parent, $str);
-  }
-  
-  /* public: set_var(array $values)
-   * values: array of variable name, value pairs.
-   *
-   * public: set_var(string $varname, string $value)
-   * varname: name of a variable that is to be defined
-   * value:   value of that variable
-   */
-  function set_var($varname, $value = "") {
-    if (!is_array($varname)) {
-      if (!empty($varname))
-        if ($this->debug) print "scalar: set *$varname* to *$value*<br>\n";
-        $this->varkeys[$varname] = '{' . $varname . '}';
-        $this->varvals[$varname] = $value;
-    } else {
-      reset($varname);
-      while(list($k, $v) = each($varname)) {
-        if (!empty($k))
-          if ($this->debug) print "array: set *$k* to *$v*<br>\n";
-          $this->varkeys[$k] = '{' . $k . '}';
-          $this->varvals[$k] = $v;
-      }
-    }
-  }
-
-  /* public: subst(string $handle)
-   * handle: handle of template where variables are to be substituted.
-   */
-  function subst($handle) {
-    if (!$this->loadfile($handle)) {
-      $this->halt("subst: unable to load $handle.");
-      return false;
-    }
-
-    $str = $this->get_var($handle); 
-    // This will break if $str is an array... Not sure if that ever
-    // actually happens, so we'll use this check for a while.
-    if (is_array($str)) die ("str is an array.");
-
-    reset($this->varkeys);
-    while (list($k, $v) = each ($this->varkeys))
-    {
-    	$str = str_replace($this->varkeys[$k], $this->varvals[$k], $str);	
-    }
-    
-    return $str;
-  }
-  
-  /* public: psubst(string $handle)
-   * handle: handle of template where variables are to be substituted.
-   */
-  function psubst($handle) {
-    print $this->subst($handle);
-    
-    return false;
-  }
-
-  /* public: parse(string $target, string $handle, boolean append)
-   * public: parse(string $target, array  $handle, boolean append)
-   * target: handle of variable to generate
-   * handle: handle of template to substitute
-   * append: append to target handle
-   */
-  function parse($target, $handle, $append = false) 
+  function set_filenames($filename_array) 
   {
-    if (!is_array($handle)) 
+  	if (!is_array($filename_array))
+  	{
+  		return false;	
+  	}
+  	
+		reset($filename_array);
+		while(list($handle, $filename) = each($filename_array)) 
+		{
+		  $this->files[$handle] = $this->make_filename($filename);
+		}
+		
+		return true;
+  }
+
+  
+  /**
+   * Load the file for the handle, compile the file,
+   * and run the compiled code. This will print out
+   * the results of executing the template.
+   */
+  function pparse($handle)
+  {
+  	global $_tpldata;
+  	
+  	if (!$this->loadfile($handle))
+  	{
+  		die("Template->pparse(): Couldn't load template file for handle $handle");	
+  	}
+  	
+  	// actually compile the template now.
+  	if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle]))
+  	{
+  		// Actually compile the code now.
+    	$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
+  	}
+  	
+  	// Run the compiled code.
+  	eval($this->compiled_code[$handle]);
+
+		return true;
+  }
+  
+  /**
+   * Inserts the uncompiled code for $handle as the
+   * value of $varname in the root-level. This can be used
+   * to effectively include a template in the middle of another 
+   * template.
+   * Note that all desired assignments to the variables in $handle should be done
+   * BEFORE calling this function.
+   */
+  function assign_var_from_handle($varname, $handle)
+  {
+  	global $_tpldata;
+  	if (!$this->loadfile($handle))
+  	{
+  		die("Template->assign_var_from_handle(): Couldn't load template file for handle $handle");	
+  	}
+  	
+  	// Compile it, with the "no echo statements" option on.
+  	$code = $this->compile($this->uncompiled_code[$handle], true);
+  	// turn it into a variable assignment.
+  	$code = '$_str = \'' . $code . '\';';
+  	
+  	// evaluate the variable assignment.
+  	eval($code);
+  	
+  	// assign the value of the generated variable to the given varname.
+  	$this->assign_var($varname, $_str);
+  	
+  	return true;
+  }
+  
+  /**
+   * Block-level variable assignment. Adds a new block iteration with the given
+   * variable assignments. Note that this should only be called once per block 
+   * iteration.
+   */
+  function assign_block_vars($blockname, $vararray)
+  {
+  	global $_tpldata;
+  	
+  	if (strstr($blockname, '.'))
+  	{
+  		// Nested block.	
+  		$blocks = explode('.', $blockname);
+  		$blockcount = sizeof($blocks) - 1;
+  		$str = '$_tpldata';
+  		for ($i = 0; $i < $blockcount; $i++)
+  		{
+  			$str .= '[\'' . $blocks[$i] . '.\']';
+  			eval('$lastiteration = sizeof(' . $str . ') - 1;');
+  			$str .= '[' . $lastiteration . ']';
+  		}
+  		// Now we add the block that we're actually assigning to.
+  		// We're adding a new iteration to this block with the given
+  		// variable assignments.
+  		$str .= '[\'' . $blocks[$blockcount] . '.\'][] = $vararray;';
+  		
+  		// Now we evaluate this assignment we've built up.
+  		eval($str);
+  	}
+  	else
+  	{
+  		// Top-level block.
+  		// Add a new iteration to this block with the variable assignments
+  		// we were given.
+  		$_tpldata[$blockname . '.'][] = $vararray;
+  	}
+  	
+  	return true;
+  }
+  
+  /**
+   * Root-level variable assignment. Adds to current assignments, overriding
+   * any existing variable assignment with the same name.
+   */
+  function assign_vars($vararray)
+  {
+  	global $_tpldata;
+  	
+  	reset ($vararray);
+  	while (list($key, $val) = each($vararray))
+  	{
+  		$_tpldata['.'][0][$key] = $val;	
+  	}
+  	
+  	return true;
+  }
+  
+	/**
+   * Root-level variable assignment. Adds to current assignments, overriding
+   * any existing variable assignment with the same name.
+   */
+	function assign_var($varname, $varval)
+	{
+		global $_tpldata;
+		
+		$_tpldata['.'][0][$varname] = $varval;
+		
+		return true;	
+	}
+	  
+  
+  /** 
+   * Generates a full path+filename for the given filename, which can either
+   * be an absolute name, or a name relative to the rootdir for this Template
+   * object.
+   */
+  function make_filename($filename) 
+  {
+    // Check if it's an absolute or relative path.
+    if (substr($filename, 0, 1) != '/')
     {
-      $str = $this->subst($handle);
-      if ($append) 
-      {
-        $this->set_var($target, $this->get_var($target) . $str);
-      } 
-      else 
-      {
-        $this->set_var($target, $str);
-      }
-    } 
-    else 
-    {
-      reset($handle);
-      while(list($i, $h) = each($handle)) 
-      {
-        $str = $this->subst($h);
-        $this->set_var($target, $str);
-      }
-    }
-    
-    return $str;
-  }
-  
-  function pparse($target, $handle, $append = false) {
-    print $this->parse($target, $handle, $append);
-    return false;
-  }
-  
-  /* public: get_vars()
-   */
-  function get_vars() {
-    reset($this->varkeys);
-    while(list($k, $v) = each($this->varkeys)) {
-      $result[$k] = $this->varvals[$k];
-    }
-    
-    return $result;
-  }
-  
-  /* public: get_var(string varname)
-   * varname: name of variable.
-   *
-   * public: get_var(array varname)
-   * varname: array of variable names
-   */
-  function get_var($varname) {
-    if (!is_array($varname)) {
-      return $this->varvals[$varname];
-    } else {
-      reset($varname);
-      while(list($k, $v) = each($varname)) {
-        $result[$k] = $this->varvals[$k];
-      }
-      
-      return $result;
-    }
-  }
-  
-  /* public: get_undefined($handle)
-   * handle: handle of a template.
-   */
-  function get_undefined($handle) {
-    if (!$this->loadfile($handle)) {
-      $this->halt("get_undefined: unable to load $handle.");
-      return false;
-    }
-    
-    preg_match_all("/\{([^}]+)\}/", $this->get_var($handle), $m);
-    $m = $m[1];
-    if (!is_array($m))
-      return false;
-
-    reset($m);
-    while(list($k, $v) = each($m)) {
-      if (!isset($this->varkeys[$v]))
-        $result[$v] = $v;
-    }
-    
-    if (count($result))
-      return $result;
-    else
-      return false;
-  }
-
-  /* public: finish(string $str)
-   * str: string to finish.
-   */
-  function finish($str) {
-    switch ($this->unknowns) {
-      case "keep":
-      break;
-      
-      case "remove":
-        $str = preg_replace('/{[^ \t\r\n}]+}/', "", $str);
-      break;
-
-      case "comment":
-        $str = preg_replace('/{([^ \t\r\n}]+)}/', "<!-- Template $handle: Variable \\1 undefined -->", $str);
-      break;
-    }
-    
-    return $str;
-  }
-
-  /* public: p(string $varname)
-   * varname: name of variable to print.
-   */
-  function p($varname) {
-    print $this->finish($this->get_var($varname));
-  }
-
-  function get($varname) {
-    return $this->finish($this->get_var($varname));
-  }
-    
-  /***************************************************************************/
-  /* private: filename($filename)
-   * filename: name to be completed.
-   */
-  function filename($filename) {
-    if (substr($filename, 0, 1) != "/") {
-      $filename = $this->root."/".$filename;
+      $filename = $this->root . '/' . $filename;
     }
     
     if (!file_exists($filename))
-      $this->halt("filename: file $filename does not exist.");
-
+    {
+      die("Template->make_filename(): Error - file $filename does not exist");
+    }
+    
     return $filename;
   }
   
-  /* private: varname($varname)
-   * varname: name of a replacement variable to be protected.
-   */
-  function varname($varname) {
-    return preg_quote("{".$varname."}");
-  }
-  
 	
-  /* private: loadfile(string $handle)
-   * handle:  load file defined by handle, if it is not loaded yet.
+  /**
+   * If not already done, load the file for the given handle and populate
+   * the uncompiled_code[] hash with its code. Do not compile.
    */
-  function loadfile($handle) {
-    if (isset($this->varkeys[$handle]) and !empty($this->varvals[$handle]))
+  function loadfile($handle) 
+  {
+  	global $_tpldata;
+  	
+    // If the file for this handle is already loaded and compiled, do nothing.
+    if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
+    {
       return true;
-
-    if (!isset($this->file[$handle])) {
-      $this->halt("loadfile: $handle is not a valid handle.");
-      return false;
     }
-    $filename = $this->file[$handle];
+
+		// If we don't have a file assigned to this handle, die.
+    if (!isset($this->files[$handle])) 
+    {
+      die("Template->loadfile(): No file specified for handle $handle");
+    }
+    
+    $filename = $this->files[$handle];
 
     $str = implode("", @file($filename));
-    if (empty($str)) {
-      $this->halt("loadfile: While loading $handle, $filename does not exist or is empty.");
-      return false;
+    if (empty($str)) 
+    {
+      die("Template->loadfile(): File $filename for handle $handle is empty");
     }
-
-    $this->set_var($handle, $str);
+		
+		$this->uncompiled_code[$handle] = $str;
     
     return true;
   }
-
-  /***************************************************************************/
-  /* public: halt(string $msg)
-   * msg:    error message to show.
+  
+  
+  
+	/**
+	 * Compiles the given string of code, and returns
+	 * the result in a string.
+	 * If "do_not_echo" is true, the returned code will not be directly
+	 * executable, but can be used as part of a variable assignment 
+	 * for use in assign_code_from_handle().
+	 */
+	function compile($code, $do_not_echo = false)
+	{
+		global $_tpldata;
+		
+		// replace \ with \\ and then ' with \'.
+		$code = str_replace('\\', '\\\\', $code);
+		$code = str_replace('\'', '\\\'', $code);
+		
+		// change template varrefs into PHP varrefs
+		
+		// This one will handle varrefs WITH namespaces
+		$varrefs = array();
+		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)([a-z0-9\-_]+?)\}#is', $code, $varrefs);
+		$varcount = sizeof($varrefs[1]);
+		for ($i = 0; $i < $varcount; $i++)
+		{
+			$namespace = $varrefs[1][$i];
+			$varname = $varrefs[3][$i];
+			$new = $this->generate_block_varref($namespace, $varname);
+			
+			$code = str_replace($varrefs[0][$i], $new, $code);
+		}
+		
+		// This will handle the remaining root-level varrefs
+		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . $_tpldata[\'.\'][0][\'\1\'] . \'', $code);
+		
+		// Break it up into lines.
+		$code_lines = explode("\n", $code);
+		
+		$block_nesting_level = 0;
+		$block_names = array();
+		$block_names[0] = ".";
+		
+		// Second: prepend echo ', append ' . "\n"; to each line.
+		$line_count = sizeof($code_lines);
+		for ($i = 0; $i < $line_count; $i++)
+		{
+			$code_lines[$i] = chop($code_lines[$i]);
+			if (preg_match('#<!-- BEGIN (.*?) -->#', $code_lines[$i], $m))
+			{
+				// We have the start of a block.
+				$block_nesting_level++;
+				$block_names[$block_nesting_level] = $m[1];
+				
+				if ($block_nesting_level < 2)
+				{
+					// Block is not nested.
+					$code_lines[$i] = '$_' . $m[1] . '_count = sizeof($_tpldata[\'' . $m[1] . '.\']);';
+					$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
+					$code_lines[$i] .= "\n" . '{';
+				}
+				else
+				{
+					// This block is nested.
+					
+					// Generate a namespace string for this block.
+					$namespace = implode('.', $block_names);
+					// strip leading period from root level..
+					$namespace = substr($namespace, 2);
+					// Get a reference to the data array for this block that depends on the 
+					// current indices of all parent blocks.
+					$varref = $this->generate_block_data_ref($namespace, false);
+					// Create the for loop code to iterate over this block.
+					$code_lines[$i] = '$_' . $m[1] . '_count = sizeof(' . $varref . ');';
+					$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
+					$code_lines[$i] .= "\n" . '{';
+				}
+			}
+			else if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
+			{
+				// We have the end of a block.
+				unset($block_names[$block_nesting_level]);
+				$block_nesting_level--;
+				$code_lines[$i] = '} // END ' . $m[1];
+			}
+			else
+			{
+				// We have an ordinary line of code.
+				if (!$do_not_echo)
+				{
+					$code_lines[$i] = 'echo \'' . $code_lines[$i] . '\' . "\\n";';
+				}
+			}
+			
+		}
+		
+		// Bring it back into a single string of lines of code.
+		$code = implode("\n", $code_lines);
+			
+		return $code	;
+		
+	}
+  
+  
+  /**
+   * Generates a reference to the given variable inside the given (possibly nested)
+   * block namespace. This is a string of the form:
+   * ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
+   * It's ready to be inserted into an "echo" line in one of the templates.
+   * NOTE: expects a trailing "." on the namespace.
    */
-  function halt($msg) {
-    $this->last_error = $msg;
-    
-    if ($this->halt_on_error != "no")
-      $this->haltmsg($msg);
-    
-    if ($this->halt_on_error == "yes")
-      die("<b>Halted.</b>");
-    
-    return false;
+  function generate_block_varref($namespace, $varname)
+  {
+  	// Strip the trailing period.
+  	$namespace = substr($namespace, 0, strlen($namespace) - 1);
+  	
+  	// Get a reference to the data block for this namespace.
+  	$varref = $this->generate_block_data_ref($namespace, true);
+  	// Prepend the necessary code to stick this in an echo line.
+  	$varref = '\' . ' . $varref;
+  	// Append the variable reference.
+  	$varref .= '[\'' . $varname . '\'] . \'';
+  	
+  	return $varref;
+  		
   }
   
-  /* public, override: haltmsg($msg)
-   * msg: error message to show.
-   */
-  function haltmsg($msg) {
-    printf("<b>Template Error:</b> %s<br>\n", $msg);
+  
+	/**
+	 * Generates a reference to the array of data values for the given 
+	 * (possibly nested) block namespace. This is a string of the form:
+	 * $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
+	 *
+	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
+	 * NOTE: does not expect a trailing "." on the blockname.
+	 */
+  function generate_block_data_ref($blockname, $include_last_iterator)
+  {
+  	// Get an array of the blocks involved.
+  	$blocks = explode(".", $blockname);
+  	$blockcount = sizeof($blocks) - 1;
+  	$varref = '$_tpldata';
+  	// Build up the string with everything but the last child.
+  	for ($i = 0; $i < $blockcount; $i++)
+  	{
+  		$varref .= '[\'' . $blocks[$i] . '.\'][$_' . $blocks[$i] . '_i]';	
+  	}
+  	// Add the block reference for the last child.
+  	$varref .= '[\'' . $blocks[$blockcount] . '.\']';
+  	// Add the iterator for the last child if requried.
+  	if ($include_last_iterator)
+  	{
+  		$varref .= '[$_' . $blocks[$blockcount] . '_i]';
+  	}
+  	
+  	return $varref;
   }
+
 }
 ?>
