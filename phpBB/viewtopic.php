@@ -280,7 +280,9 @@ for($x = 0; $x < $total_posts; $x++)
 		"QUOTE_IMG" => $quote_img,
 		"PMSG_IMG" => $pmsg_img,
 		"IP_IMG" => $ip_img,
-		"DELPOST_IMG" => $delpost_img));
+		"DELPOST_IMG" => $delpost_img,
+		
+		"U_POST_ID" => "#".$postrow[$x]["post_id"]));
 }
 
 if($total_replies > $board_config['posts_per_page'])
