@@ -617,6 +617,11 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 	<tr>
 		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
 	</tr>
+</table>
+
+<br clear="all" />
+
+<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="4"><?php echo $user->lang['PRESETS']; ?></th>
 	</tr>
