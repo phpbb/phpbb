@@ -732,11 +732,47 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	{
 		if (!$where_type)
 		{
-			$where_sql = '';
-			$where_sql_and = 'WHERE';
+			// Sync all topics/forums.
+         if($mode == 'topic')
+			{
+				//This can bomb out on a large forum so we're going to split this up.
+				$batch_size = 500;
+				
+				//TODO: Fit this into the layout.
+				print "Syncing topics, going to do this in batches (batch size = $batch_size):<br />";
+				$sql = "SELECT
+					MIN(topic_id) AS topic_min,
+					MAX(topic_id) AS topic_max
+				FROM " . TOPICS_TABLE;
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$topic_min = $row['topic_min'];
+				$topic_max = $row['topic_max'];
+
+				// Run the batches
+				$batch_start = $topic_min;
+				while($batch_start <= $topic_max)
+				{
+					if (defined('DEBUG_EXTRA'))
+					{
+						print "Syncing topic_id $batch_start to ". ($batch_start+$batch_size) . ".  ";
+						print ceil(memory_get_usage()/1024) . " KB<br />\n";
+						flush();
+					}
+					sync('topic', 'range', "topic_id BETWEEN $batch_start AND " . ($batch_start+$batch_size-1));
+					
+					$batch_start += $batch_size;
+				}
+			}
+			else
+			{
+				$where_sql = '';
+				$where_sql_and = 'WHERE';
+			}
 		}
 		elseif ($where_type == 'range')
 		{
+			// Only check a range of topics/forums. For instance: 'topic_id BETWEEN 1 AND 60'
 			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
@@ -744,8 +780,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		{
 			if (!sizeof($where_ids))
 			{
+				// Empty array with IDs. This means that we don't have any work to do. Just return.
 				return;
 			}
+			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
+         // $where_type contains the field for the where clause (forum_id, topic_id)
 			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
@@ -756,6 +795,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		{
 			return;
 		}
+		// $where_type contains the field for the where clause (forum_id, topic_id)
 		$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 		$where_sql_and = $where_sql . "\n\tAND";
 	}
@@ -1014,7 +1054,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			break;
 
 		case 'forum':
-			// 1° Get the list of all forums
+			// 1: Get the list of all forums
 			$sql = 'SELECT f.*
 				FROM ' . FORUMS_TABLE . " f
 				$where_sql";
@@ -1041,7 +1081,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$forum_data[$forum_id]['last_poster_name'] = '';
 			}
 
-			// 2° Get topic counts for each forum
+			// 2: Get topic counts for each forum
 			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')
@@ -1058,7 +1098,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				}
 			}
 
-			// 3° Get post count and last_post_id for each forum
+			// 3: Get post count and last_post_id for each forum
 			$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . '
 				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')
@@ -1075,7 +1115,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$post_ids[] = $row['last_post_id'];
 			}
 
-			// 4° Retrieve last_post infos
+			// 4: Retrieve last_post infos
 			if (count($post_ids))
 			{
 				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username
@@ -1112,7 +1152,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				unset($post_info);
 			}
 
-			// 5° Now do that thing
+			// 5: Now do that thing
 			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
 
 			foreach ($forum_data as $forum_id => $row)
@@ -1173,6 +1213,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$db->sql_freeresult($result);
 
 			// Use "t" as table alias because of the $where_sql clause
+         // NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
 				$where_sql
@@ -1283,7 +1324,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 			unset($approved_unapproved_ids);
 
-			// These are field that will be synchronised
+			// These are fields that will be synchronised
 			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
 
 			if ($sync_extra)

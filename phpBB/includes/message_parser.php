@@ -121,7 +121,7 @@ class bbcode_firstpass extends bbcode
 
 		$this->parsed_items = array('code' => 0, 'quote' => 0, 'attachment' => 0, 'url' => 0, 'email' => 0, 'img' => 0, 'flash' => 0);
 
-		if (!isset($rowset))
+		if (!is_array($rowset))
 		{
 			global $db;
 			$rowset = array();
@@ -643,7 +643,7 @@ class parse_message extends bbcode_firstpass
 		$this->allow_flash_bbcode = $allow_flash_bbcode;
 		$this->allow_quote_bbcode = $allow_quote_bbcode;
 
-		// If false, then the parsed message get returned but internal message not processed.
+		// If false, then $this->message won't be altered, the text will be returned instead.
 		if (!$update_this_message)
 		{
 			$tmp_message = $this->message;
@@ -812,28 +812,33 @@ class parse_message extends bbcode_firstpass
 	// into relative versions when the server/script path matches the link
 	function magic_url($server_protocol, $server_name, $server_port, $script_path)
 	{
+		static $match;
+		static $replace;
+		
 		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
 
 		$match = $replace = array();
 
-		// Be sure to not let the matches cross over. ;)
-
-		// relative urls for this board
-		$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
-		$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
-
-		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
-		$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
-
-		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
-		$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
-
-		// matches an email@domain type address at the start of a line, or after a space.
-		$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-		$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
-
+		if(!is_array($match))
+		{
+			// Be sure to not let the matches cross over. ;)
+	
+			// relative urls for this board
+			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
+			$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
+	
+			// matches a xxxx://aaaaa.bbb.cccc. ...
+			$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
+			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
+	
+			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+			$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
+			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
+	
+			// matches an email@domain type address at the start of a line, or after a space.
+			$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
+			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+		}
 		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
 			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
 			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
@@ -850,40 +855,55 @@ class parse_message extends bbcode_firstpass
 	function emoticons($max_smilies = 0)
 	{
 		global $db, $user, $phpbb_root_path;
+		static $match;
+		static $replace;
 
-		// NOTE: obtain_* function? chaching the table contents?
-
-		// For now setting the ttl to 10 minutes
-		switch (SQL_LAYER)
+		// NOTE: There is a memory leak in this block somewhere :\
+		// See if the static arrays have already been filled on an earlier invocation
+		if(!is_array($match))
 		{
-			case 'mssql':
-			case 'mssql-odbc':
-				$sql = 'SELECT * 
-					FROM ' . SMILIES_TABLE . '
-					ORDER BY LEN(code) DESC';
-				break;
-
-			// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
-			default:
-				$sql = 'SELECT * 
-					FROM ' . SMILIES_TABLE . '
-					ORDER BY LENGTH(code) DESC';
-				break;
-		}
-		$result = $db->sql_query($sql, 600);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$match = $replace = array();
-
-			do
+			// NOTE: obtain_* function? chaching the table contents?
+	
+			// For now setting the ttl to 10 minutes
+			switch (SQL_LAYER)
 			{
-				// (assertion)
-				$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+				case 'mssql':
+				case 'mssql-odbc':
+					$sql = 'SELECT * 
+						FROM ' . SMILIES_TABLE . '
+						ORDER BY LEN(code) DESC';
+					break;
+	
+				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
+				default:
+					$sql = 'SELECT * 
+						FROM ' . SMILIES_TABLE . '
+						ORDER BY LENGTH(code) DESC';
+					break;
 			}
-			while ($row = $db->sql_fetchrow($result));
-
+			$result = $db->sql_query($sql, 600);
+	
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$match = $replace = array();
+	
+				do
+				{
+					// (assertion)
+					$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
+					$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			else
+			{
+				$match = $replace = array();
+			}
+			$db->sql_freeresult($result);
+		}
+		
+		if(count($match))
+		{
 			if ($max_smilies)
 			{
 				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
@@ -898,7 +918,6 @@ class parse_message extends bbcode_firstpass
 
 			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
-		$db->sql_freeresult($result);
 	}
 
 	// Parse Attachments
@@ -1145,7 +1164,7 @@ class fulltext_search
 			return;
 		}
 
-		if (!$drop_char_match)
+		if (!is_array($drop_char_match))
 		{
 			$drop_char_match =   array('-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*');
 			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ');
