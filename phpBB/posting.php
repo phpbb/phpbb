@@ -11,7 +11,6 @@
  *
  ***************************************************************************/
 
-
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -60,10 +59,6 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 //
 // Start program proper
 //
-
-//
-// Obtain which forum id is required
-//
 if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
 {
 	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
@@ -72,6 +67,7 @@ else
 {
 	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
 }
+
 $mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "");
 
 //
@@ -96,22 +92,27 @@ switch($mode)
 	case 'newtopic':
 		$auth_type = AUTH_POST;
 		$is_auth_type = "auth_post";
+		$error_string = "post new topics";
 		break;
 	case 'reply':
 		$auth_type = AUTH_REPLY;
 		$is_auth_type = "auth_reply";
+		$error_string = "reply to topics";
 		break;
 	case 'editpost':
 		$auth_type = AUTH_EDIT;
 		$is_auth_type = "auth_edit";
+		$error_string = "edit topics";
 		break;
 	case 'delete':
 		$auth_type = AUTH_DELETE;
 		$is_auth_type = "auth_delete";
+		$error_string = "delete topics";
 		break;
 	default:
 		$auth_type = AUTH_POST;
 		$is_auth_type = "auth_post";
+		$error_string = "post new topics";
 		break;
 }
 
@@ -125,7 +126,7 @@ if(!$is_auth[$is_auth_type])
 	//
 	include('includes/page_header.'.$phpEx);
 
-	$msg = "I am sorry but you are not currently authorised to post to this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
+	$msg = "I am sorry but you cannot $error_string in this forum, this function is restricted to " . $is_auth[$is_auth_type . "_type"] . " only.";
 
 	$template->set_filenames(array(
 		"reg_header" => "error_body.tpl"

@@ -109,7 +109,7 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 	//
 	include('includes/page_header.'.$phpEx);
 	
-	$msg = "I am sorry but you are not currently authorised to read this forum. You could try logging on and trying again. If you are logged on then this is a private forum for which you have not been granted access.";
+	$msg = "I am sorry but only " . $is_auth['auth_read_type'] . " can read this forum.";
 
 	$template->set_filenames(array(
 		"reg_header" => "error_body.tpl"

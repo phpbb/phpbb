@@ -113,7 +113,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE aa.forum_id = $forum_id" : "";
 		$sql = "SELECT aa.forum_id, $a_sql 
-			FROM ".AUTH_FORUMS_TABLE." aa 
+			FROM ".FORUMS_TABLE." aa 
 			$forum_match_sql";
 		$af_result = $db->sql_query($sql);
 
@@ -156,6 +156,29 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			if($forum_id != AUTH_LIST_ALL)
 			{
 				$auth_user[$key] = ($f_access[$key] == AUTH_ALL) ? 1 : 0;
+
+				switch($f_access[$key])
+				{
+					case AUTH_ALL:
+						$auth_user[$key . '_type'] = "Anonymous Users";
+						break;
+
+					case AUTH_REG:
+						$auth_user[$key . '_type'] = "Registered Users";
+						break;
+
+					case AUTH_ACL:
+						$auth_user[$key . '_type'] = "Users granted Special Access";
+						break;
+		
+					case AUTH_MOD:
+						$auth_user[$key . '_type'] = "Moderators";
+						break;
+	
+					case AUTH_ADMIN:
+						$auth_user[$key . '_type'] = "Administrators";
+						break;
+				}
 			}
 			else
 			{
@@ -163,6 +186,29 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				{
 					$forum_id = $f_access[$i]['forum_id'];
 					$auth_user[$forum_id][$key] = ($f_access[$i][$key] == AUTH_ALL) ? 1 : 0;
+
+					switch($f_access[$i][$key])
+					{
+						case AUTH_ALL:
+							$auth_user[$forum_id][$key . '_type'] = "Anonymous Users";
+							break;
+
+						case AUTH_REG:
+							$auth_user[$forum_id][$key . '_type'] = "Registered Users";
+							break;
+
+						case AUTH_ACL:
+							$auth_user[$forum_id][$key . '_type'] = "Users granted special access";
+							break;
+		
+						case AUTH_MOD:
+							$auth_user[$forum_id][$key . '_type'] = "Moderators";
+							break;
+		
+						case AUTH_ADMIN:
+							$auth_user[$forum_id][$key . '_type'] = "Administrators";
+							break;
+					}
 				}
 			}
 		}
@@ -205,6 +251,29 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				if($forum_id != AUTH_LIST_ALL)
 				{
 					$auth_user[$key] = ($f_access[$key] == AUTH_ALL || $f_access[$key] == AUTH_REG) ? 1 : 0;
+
+					switch($f_access[$key])
+					{
+						case AUTH_ALL:
+							$auth_user[$key . '_type'] = "Anonymous Users";
+							break;
+
+						case AUTH_REG:
+							$auth_user[$key . '_type'] = "Registered Users";
+							break;
+
+						case AUTH_ACL:
+							$auth_user[$key . '_type'] = "Users granted special access";
+							break;
+		
+						case AUTH_MOD:
+							$auth_user[$key . '_type'] = "Moderators";
+							break;
+	
+						case AUTH_ADMIN:
+							$auth_user[$key . '_type'] = "Administrators";
+							break;
+					}
 				}
 				else
 				{
@@ -212,6 +281,29 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 					{
 						$f_forum_id = $f_access[$k]['forum_id'];
 						$auth_user[$f_forum_id][$key] = ($f_access[$k][$key] == AUTH_ALL || $f_access[$k][$key] == AUTH_REG) ? 1 : 0;
+
+						switch($f_access[$k][$key])
+						{
+							case AUTH_ALL:
+								$auth_user[$forum_id][$key . '_type'] = "Anonymous Users";
+								break;
+
+							case AUTH_REG:
+								$auth_user[$forum_id][$key . '_type'] = "Registered Users";
+								break;
+
+							case AUTH_ACL:
+								$auth_user[$forum_id][$key . '_type'] = "Users granted special access";
+								break;
+		
+							case AUTH_MOD:
+								$auth_user[$forum_id][$key . '_type'] = "Moderators";
+								break;
+		
+							case AUTH_ADMIN:
+								$auth_user[$forum_id][$key . '_type'] = "Administrators";
+								break;
+						}
 					}
 				}
 			}
@@ -254,22 +346,27 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 					{
 						case AUTH_ALL:
 							$auth_user[$key] = 1;
+							$auth_user[$key . '_type'] = "Anonymous Users";
 							break;
 
 						case AUTH_REG:
 							$auth_user[$key] = 1;
+							$auth_user[$key . '_type'] = "Registered Users";
 							break;
 
 						case AUTH_ACL:
 							$auth_user[$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
+							$auth_user[$key . '_type'] = "Users granted special access";
 							break;
 		
 						case AUTH_MOD:
 							$auth_user[$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
+							$auth_user[$key . '_type'] = "Moderators";
 							break;
 	
 						case AUTH_ADMIN:
 							$auth_user[$key] = $is_admin;
+							$auth_user[$key . '_type'] = "Administrators";
 							break;
 
 						default:
@@ -288,22 +385,27 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						{
 							case AUTH_ALL:
 								$auth_user[$f_forum_id][$key] = 1;
+								$auth_user[$f_forum_id][$key . '_type'] = "Anonymous Users";
 								break;
 
 							case AUTH_REG:
 								$auth_user[$f_forum_id][$key] = 1;
+								$auth_user[$f_forum_id][$key . '_type'] = "Registered Users";
 								break;
 
 							case AUTH_ACL:
 								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
+								$auth_user[$f_forum_id][$key . '_type'] = "Users granted special access";
 								break;
 		
 							case AUTH_MOD:
 								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
+								$auth_user[$f_forum_id][$key . '_type'] = "Moderators";
 								break;
 	
 							case AUTH_ADMIN:
 								$auth_user[$f_forum_id][$key] = $is_admin;
+								$auth_user[$f_forum_id][$key . '_type'] = "Administrators";
 								break;
 
 							default:
