@@ -447,10 +447,10 @@ switch ($row['config_value'])
 			case 'mssql-odbc':
 				// Add missing defaults to MSSQL post table schema
 				$sql[] = "ALTER TABLE [" . POSTS_TABLE . "] WITH NOCHECK ADD
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_bbcode] DEFAULT (1) FOR [enable_bbcode]
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_html] DEFAULT (0) FOR [enable_html]
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_smilies] DEFAULT (1) FOR [enable_smilies]
-					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_sig] DEFAULT (1) FOR [enable_sig]
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_html] DEFAULT (0) FOR [enable_html],
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_smilies] DEFAULT (1) FOR [enable_smilies],
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_sig] DEFAULT (1) FOR [enable_sig],
 					CONSTRAINT [DF_" . POSTS_TABLE . "_post_edit_count] DEFAULT (0) FOR [post_edit_count]";
 
 			case 'msaccess':

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.4 :: Install</title>
+<title>phpBB 2.0.5 :: Install</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css">
 <style type="text/css">
 <!--
@@ -24,7 +24,7 @@ p,ul,td {font-size:10pt;}
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
-		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.4 INSTALL</span></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.5 INSTALL</span></td>
 	</tr>
 </table>
 
@@ -33,7 +33,7 @@ p,ul,td {font-size:10pt;}
 
 <p>Please note these instructions are not fully comprehensive, a more thorough userguide will be available on the phpBB website in the near future. However, this document will walk you through the basics on installing the forum software.</p>
 
-<p>A basic overview of running phpBB 2.0.4 can be found in the accompanying <a href="README.html">README</a> documentation. Please ensure you read that document in addition to this! For more detailed information on using phpBB 2 you should read <a href="http://www.phpbb.com/guide/phpBB_Users_Guide.html" target="_new">Userguide</a> now available online.</p>
+<p>A basic overview of running phpBB 2.0.5 can be found in the accompanying <a href="README.html">README</a> documentation. Please ensure you read that document in addition to this! For more detailed information on using phpBB 2 you should read <a href="http://www.phpbb.com/guide/phpBB_Users_Guide.html" target="_new">Userguide</a> now available online.</p>
 
 <ol>
 <li><a href="#quickinstall">Quick Install</a></li>
@@ -88,7 +88,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="require"></a><h2 class="h2"><u>2. Requirements</u></h2>
 
-<p>Installation of phpBB 2.0.4 requires the following:</p>
+<p>Installation of phpBB 2.0.5 requires the following:</p>
 <ul>
 <li>A webserver or web hosting account running on any major Operating System</li>
 <li>A SQL database system, <b>one of</b>:
@@ -170,11 +170,11 @@ p,ul,td {font-size:10pt;}
 
 <p>Upgrading from these versions is generally quite easy. First you should make a copy of your existing <u>config.php</u>, keep it in a safe place! Next delete all the existing phpBB 2 files, do not leave any in place otherwise you may encounter errors later. You can leave alternative templates in-place but you should note they may not function correctly with the final release. It is therefore recommended you switch back to subSilver if you are currently using a different style. With this complete you can upload the new phpBB 2.0.0 files (see <a href="#install">New Installations</a> for details if necessary). Once complete copy back your saved <u>config.php</u>, replacing the new one.</p>
 
-<p>You should now run <b>install/update_to_204.php</b> which, depending on your previous version, will make a number of database changes. You may receive <u>FAILURES</u> during this procedure, they should not be a cause for concern unless you see an actual <u>ERROR</u>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
+<p>You should now run <b>install/update_to_205.php</b> which, depending on your previous version, will make a number of database changes. You may receive <u>FAILURES</u> during this procedure, they should not be a cause for concern unless you see an actual <u>ERROR</u>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
 
-<p><b>RC-2 and below MSSQL users</b>, please note that during the update procedure your existing forums table will be dropped and re-created. All data in standard fields will be retained. However if you have modified the forums table and added additional fields or altered existing ones these changes <b>WILL</b> be lost. If this is a significant issue for you we advise you comment out the "DROP FORUM TABLE" section in update_to_204.php and instead, manually alter the forum_id column to remove the IDENTITY setting (if it exists).</p>
+<p><b>RC-2 and below MSSQL users</b>, please note that during the update procedure your existing forums table will be dropped and re-created. All data in standard fields will be retained. However if you have modified the forums table and added additional fields or altered existing ones these changes <b>WILL</b> be lost. If this is a significant issue for you we advise you comment out the "DROP FORUM TABLE" section in update_to_205.php and instead, manually alter the forum_id column to remove the IDENTITY setting (if it exists).</p>
 
-<p>Once the update_to_204 has completed you <b>MUST</b> proceed to the Administration General Configuration panel and check all the values in General Configuration. This is essential if you were running any version before RC-3 since extra information needs to be entered to enable correct URLs to be output in emails.</p>
+<p>Once the update_to_205 has completed you <b>MUST</b> proceed to the Administration General Configuration panel and check all the values in General Configuration. This is essential if you were running any version before RC-3 since extra information needs to be entered to enable correct URLs to be output in emails.</p>
 
 <a name="langtempchanges"></a><h3 class="h3">6.i. Changes in language pack format and templates</h3>
 
@@ -192,21 +192,21 @@ p,ul,td {font-size:10pt;}
 
 <a name="#upgradeSTABLE_files"></a><h3 class="h3">7.ii. Changed files only</h3>
 
-<p>This package contains a number of archives, each contains the files changed from a given release to 2.0.4. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.3 you should select the phpBB-2.0.3_to_2.0.4.zip/tar.gz file.</p>
+<p>This package contains a number of archives, each contains the files changed from a given release to 2.0.5. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.4 you should select the phpBB-2.0.4_to_2.0.5.zip/tar.gz file.</p>
 
 <p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any Mods these files will overwrite the originals possibly destroying them in the process. You will need to re-add Mods to any affected file before uploading.</p>
 
-<p>As for the other upgrade procedures you should run <b>install/update_to_204.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
+<p>As for the other upgrade procedures you should run <b>install/update_to_205.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
 
 <a name="#upgradeSTABLE_patch"></a><h3 class="h3">7.iii. Patch file</h3>
 
 <p>The patch file is probably the best solution for those with many Mods or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <b>patch</b> application.</p>
 
-<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.2 you need the phpBB-2.0.2_to_2.0.4.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -p0 &lt; [PATCH NAME]</b> (where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.2 you need the phpBB-2.0.2_to_2.0.5.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -p0 &lt; [PATCH NAME]</b> (where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 <p>If you do get failures you should look at using the <a href="#upgradeSTABLE_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Mods to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
-<p>You should of course delete the patch file (or files) after use. As for the other upgrade procedures you should run <b>install/update_to_204.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
+<p>You should of course delete the patch file (or files) after use. As for the other upgrade procedures you should run <b>install/update_to_205.php</b> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
 
 <a name="#upgradeSTABLE_all"></a><h3 class="h3">7.iv. All package types</h3>
 
@@ -214,7 +214,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="postinstall"></a><h2 class="h2"><u>8. Important (security related) post-Install tasks for all installation methods</u></h2>
 
-<p>Once you have succssfully installed phpBB 2.0.4 you <b>MUST</b> ensure you remove the entire install/ and contrib/ directories. Leaving these in place is a <u>very serious potential security issue</u> which may lead to deletion or alteration of files, etc. Please note that until these directories are remove phpBB2 will not operate and a warning message will be displayed. Beyond these <b>essential</b> deletions you may also wish to delete the docs/ directories if you wish.</p>
+<p>Once you have succssfully installed phpBB 2.0.5 you <b>MUST</b> ensure you remove the entire install/ and contrib/ directories. Leaving these in place is a <u>very serious potential security issue</u> which may lead to deletion or alteration of files, etc. Please note that until these directories are remove phpBB2 will not operate and a warning message will be displayed. Beyond these <b>essential</b> deletions you may also wish to delete the docs/ directories if you wish.</p>
 
 <p>With these directories deleted you should proceed to the administration panel. Depending on how the installation completed you may have been directed there automatically. If not, login as the administrator you specified during install/upgrade and click the "<b>Administration Panel</b>" link at the bottom of any page. Ensure that details specified in General -> Configuration are correct!</p>
 
@@ -232,7 +232,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="safemode"></a><h3 class="h3">8.ii. Safe Mode</h3>
 
-<p>phpBB 2.0.4 includes support for using uploadable avatars on systems running PHP in safe mode. If this applies to your hosting service you will need to create a sub-directory called <u>tmp</u> in the directory you specified for storage of uploaded avatars (by default this is images/avatars as explained above). Give it the same access rights as for uploadable avatars above.</p>
+<p>phpBB 2.0.5 includes support for using uploadable avatars on systems running PHP in safe mode. If this applies to your hosting service you will need to create a sub-directory called <u>tmp</u> in the directory you specified for storage of uploaded avatars (by default this is images/avatars as explained above). Give it the same access rights as for uploadable avatars above.</p>
 
 <p>This safe mode support includes compatibility with various directory restrictions your host may impose (assuming they are not too restrictive and that the PHP installed is version 4.0.3 or later). There is generally no need for any manual setup for safe mode support it is typically handled transparantly.</p>
 

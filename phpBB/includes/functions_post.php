@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
-$html_entities_match = array('#&[a-z]+?;#', '#<#', '#>#');
+$html_entities_match = array('#&#', '#<#', '#>#');
 $html_entities_replace = array('&amp;', '&lt;', '&gt;');
 
 $unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');

@@ -257,7 +257,7 @@ if (defined('SHOW_ONLINE'))
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( $userdata['session_logged_in'] )
+if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) )
 {
 	if ( $userdata['user_new_privmsg'] )
 	{

@@ -693,7 +693,7 @@ if ( !empty($forum_topic_data['topic_vote']) )
 		$sql = "SELECT vote_id
 			FROM " . VOTE_USERS_TABLE . "
 			WHERE vote_id = $vote_id
-				AND vote_user_id = " . $userdata['user_id'];
+				AND vote_user_id = " . intval($userdata['user_id']);
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Could not obtain user vote data for this topic", '', __LINE__, __FILE__, $sql);

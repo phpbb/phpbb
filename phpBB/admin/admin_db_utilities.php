@@ -701,6 +701,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			$gzipcompress = (!empty($HTTP_POST_VARS['gzipcompress'])) ? $HTTP_POST_VARS['gzipcompress'] : ( (!empty($HTTP_GET_VARS['gzipcompress'])) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
 
+			$drop = (!empty($HTTP_POST_VARS['drop'])) ? intval($HTTP_POST_VARS['drop']) : ( (!empty($HTTP_GET_VARS['drop'])) ? intval($HTTP_GET_VARS['drop']) : 0 );
+
 			if(!empty($additional_tables))
 			{
 				if(ereg(",", $additional_tables))
@@ -856,7 +858,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			break;
 
 		case 'restore':
-			if(!isset($restore_start))
+			if(!isset($HTTP_POST_VARS['restore_start']))
 			{
 				//
 				// Define Template files...
