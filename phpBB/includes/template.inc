@@ -67,6 +67,15 @@ class Template {
     $this->set_rootdir($root);
   }
 
+	/**
+	 * Destroys this template object. Should be called when you're done with it, in order
+	 * to clear out the template data so you can load/parse a new template set.
+	 */
+	function destroy()
+	{
+		$_tpldata = array();
+	}
+
   /**
    * Sets the template root directory for this Template object.
    */  
