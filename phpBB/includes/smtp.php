@@ -170,7 +170,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 			fputs( $socket, "RCPT TO: <$mail_to_address>\r\n" );
 			server_parse( $socket, "250" );
 		}
-		$to_header .= "<$mail_to_address>, ";
+		$to_header .= ( ( $mail_to_address != '' ) ? ', ' : '' ) . "<$mail_to_address>";
 	}
 	// Ok now do the CC and BCC fields...
 	@reset( $bcc );
