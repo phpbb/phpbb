@@ -36,7 +36,7 @@
 define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response)
 {
-	if(!($server_response = fgets($socket, 100)))
+	if(!($server_response = fgets($socket, 256)))
 	{
 		message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__);
 	}
