@@ -92,25 +92,22 @@ if (
 	if ( $mode == 'editprofile' )
 	{
 		$user_id = intval($HTTP_POST_VARS['user_id']);
-		$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
+		$current_email = trim(strip_tags($HTTP_POST_VARS['current_email']));
 	}
 
 	$strip_var_list = array('username' => 'username', 'email' => 'email', 'icq' => 'icq', 'aim' => 'aim', 'msn' => 'msn', 'yim' => 'yim', 'website' => 'website', 'location' => 'location', 'occupation' => 'occupation', 'interests' => 'interests');
 
-// BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4
-//
-// NOTE ... nore sure about this htmlspecialchars here ... should users make 'extensive' use of special chars they will lose characters without realising it (as data is trimmed to fit the given fields)
-//
-// Only way around this at present will be to specialchar data in the relevant source as reqd. inc.
-// reverting this to how it was done a few days back.
-//
-// BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4  BEFORE 2.0.4
-
+	// Strip all tags from data ... may p**s some people off, could use
+	// htmlspecialchars but given the fields are limited in length we'd end
+	// up with (possibly) losing some data. Of course we could store the data
+	// "as is" and specialchar it as it's output but then we run into potential
+	// performance issues ... whichever way we go we'll end up  being moaned at
+	// "hum ho, ho hum" (TM)
 	while( list($var, $param) = @each($strip_var_list) )
 	{
 		if ( !empty($HTTP_POST_VARS[$param]) )
 		{
-			$$var = trim(htmlspecialchars($HTTP_POST_VARS[$param]));
+			$$var = trim(strip_tags($HTTP_POST_VARS[$param]));
 		}
 	}
 
@@ -159,7 +156,7 @@ if (
 	{
 		if ( preg_match('/^[a-z_]+$/i', $HTTP_POST_VARS['language']) )
 		{
-			$user_lang = htmlspecialchars($HTTP_POST_VARS['language']);
+			$user_lang = strip_tags($HTTP_POST_VARS['language']);
 		}
 		else
 		{
@@ -173,11 +170,11 @@ if (
 	}
 
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
-	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
+	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(strip_tags($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
 
-	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
+	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? strip_tags($HTTP_POST_VARS['avatarlocal']) : '' );
 
-	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['avatarremoteurl'])) : '';
+	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(strip_tags($HTTP_POST_VARS['avatarremoteurl'])) : '';
 	$user_avatar_upload = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : ( ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '' );
 	$user_avatar_name = ( !empty($HTTP_POST_FILES['avatar']['name']) ) ? $HTTP_POST_FILES['avatar']['name'] : '';
 	$user_avatar_size = ( !empty($HTTP_POST_FILES['avatar']['size']) ) ? $HTTP_POST_FILES['avatar']['size'] : 0;
@@ -190,9 +187,9 @@ if (
 	{
 		$username = stripslashes($username);
 		$email = stripslashes($email);
-		$cur_password = stripslashes($cur_password);
-		$new_password = stripslashes($new_password);
-		$password_confirm = stripslashes($password_confirm);
+		$cur_password = htmlspecialchars(stripslashes($cur_password));
+		$new_password = htmlspecialchars(stripslashes($new_password));
+		$password_confirm = htmlspecialchars(stripslashes($password_confirm));
 
 		$icq = stripslashes($icq);
 		$aim = stripslashes($aim);
@@ -668,7 +665,7 @@ if ( $error )
 	$occupation = stripslashes($occupation);
 	$interests = stripslashes($interests);
 	$signature = stripslashes($signature);
-	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
+	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
@@ -692,7 +689,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$occupation = $userdata['user_occ'];
 	$interests = $userdata['user_interests'];
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
-	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $userdata['user_sig']) : $userdata['user_sig'];
+	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $userdata['user_sig']) : $userdata['user_sig'];
 
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
