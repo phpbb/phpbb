@@ -26,6 +26,8 @@ class sql_db
 	var $num_queries = 0;
 	var $open_queries = array();
 
+	var $indexed = 0;
+
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
 		$this->persistency = $persistency;
@@ -117,7 +119,7 @@ class sql_db
 			}
 
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-
+			
 			if (!$this->query_result)
 			{
 				$this->num_queries++;
@@ -125,6 +127,11 @@ class sql_db
 				if (($this->query_result = @mysqli_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
+				}
+
+				if (is_object($this->query_result))
+				{
+					$this->query_result->cur_index = $this->indexed++;
 				}
 
 				if (defined('DEBUG_EXTRA'))
@@ -135,11 +142,7 @@ class sql_db
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
-					// mysql_free_result called within sql_save()
 				}
-/*				else if (strpos($query, 'SELECT') !== false && $this->query_result)
-				{
-				}*/
 			}
 			else if (defined('DEBUG_EXTRA'))
 			{
@@ -274,13 +277,17 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
+
 		if ($query_id)
 		{
-			unset($this->rowset[$query_id]);
-			unset($this->row[$query_id]);
-			while ($this->rowset[$query_id] = $this->sql_fetchrow($query_id))
+			$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+
+			unset($this->rowset[$cur_index]);
+			unset($this->row[$cur_index]);
+
+			while ($this->rowset[$cur_index] = $this->sql_fetchrow($query_id))
 			{
-				$result[] = $this->rowset[$query_id];
+				$result[] = $this->rowset[$cur_index];
 			}
 			return $result;
 		}
@@ -293,32 +300,35 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
+
 		if ($query_id)
 		{
 			if ($rownum > -1)
 			{
 				@mysqli_data_seek($query_id, $rownum);
-				$row = @mysqli_fetch_row($query_id);
+				$row = @mysqli_fetch_assoc($query_id);
 				$result = isset($row[$field]) ? $row[$field] : false;
 			}
 			else
 			{
-				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
+				$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+	
+				if (empty($this->row[$cur_index]) && empty($this->rowset[$cur_index]))
 				{
-					if ($this->sql_fetchrow())
+					if ($this->row[$cur_index] = $this->sql_fetchrow($query_id))
 					{
-						$result = $this->row[$query_id][$field];
+						$result = $this->row[$cur_index][$field];
 					}
 				}
 				else
 				{
-					if ($this->rowset[$query_id])
+					if ($this->rowset[$cur_index])
 					{
-						$result = $this->rowset[$query_id][$field];
+						$result = $this->rowset[$cur_index][$field];
 					}
-					elseif ($this->row[$query_id])
+					elseif ($this->row[$cur_index])
 					{
-						$result = $this->row[$query_id][$field];
+						$result = $this->row[$cur_index][$field];
 					}
 				}
 			}
@@ -349,7 +359,20 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return (is_object($query_id)) ? @mysqli_free_result($query_id) : false;
+		$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+
+		unset($this->rowset[$cur_index]);
+		unset($this->row[$cur_index]);
+
+		if (is_object($query_id))
+		{
+			$this->indexed--;
+			return @mysqli_free_result($query_id);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	function sql_escape($msg)
