@@ -31,7 +31,7 @@ function generate_smilies($mode, $forum_id)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		
-		$user->setup(false, (int) $row['forum_style']);
+		$user->setup('posting', (int) $row['forum_style']);
 
 		page_header($user->lang['SMILIES']);
 

@@ -27,6 +27,8 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
+$user->add_lang(array('posting', 'viewtopic'));
+
 if (!$auth->acl_get('a_attach'))
 {
 	trigger_error($user->lang['NO_ADMIN']);

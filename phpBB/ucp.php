@@ -223,7 +223,7 @@ class module
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('ucp');
 
 $ucp = new module();
 

@@ -31,7 +31,7 @@ require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
+$user->setup('admin');
 
 // Did user forget to login? Give 'em a chance to here ...
 if ($user->data['user_id'] == ANONYMOUS)

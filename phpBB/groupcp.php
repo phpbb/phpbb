@@ -19,7 +19,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('gcp');
 
 $script_name		= preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($config['script_path']));
 $script_name		= ($script_name != '') ? $script_name . '/groupcp.'.$phpEx : 'groupcp.'.$phpEx;

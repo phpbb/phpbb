@@ -102,7 +102,7 @@ if ($forum_data['forum_link'])
 }
 
 // Configure style, language, etc.
-$user->setup(false, $forum_data['forum_style']);
+$user->setup('viewforum', $forum_data['forum_style']);
 
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box

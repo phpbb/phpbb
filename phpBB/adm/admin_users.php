@@ -31,6 +31,8 @@ require('pagestart.' . $phpEx);
 include($phpbb_root_path.'includes/functions_user.'.$phpEx);
 include($phpbb_root_path.'includes/functions_profile_fields.'.$phpEx);
 
+$user->add_lang(array('posting', 'ucp', 'gcp'));
+
 //
 // Get and set basic vars
 //

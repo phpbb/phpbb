@@ -19,7 +19,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('mcp');
 
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;

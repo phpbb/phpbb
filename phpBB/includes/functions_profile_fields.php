@@ -43,7 +43,7 @@ class custom_profile
 	
 	function generate_profile_fields($mode, $lang_id, $cp_error)
 	{
-		global $db, $template, $auth;
+		global $db, $template, $auth, $user;
 
 		$sql = "SELECT l.*, f.*
 			FROM phpbb_profile_lang l, phpbb_profile_fields f 

@@ -1452,7 +1452,7 @@ function page_header($page_title = '')
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], ''), 
+		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''), 
 		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0, 
 		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0, 
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 

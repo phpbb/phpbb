@@ -17,6 +17,8 @@ class ucp_profile extends module
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
+		$user->add_lang('posting');
+
 		$preview	= (!empty($_POST['preview'])) ? true : false;
 		$submit		= (!empty($_POST['submit'])) ? true : false;
 		$delete		= (!empty($_POST['delete'])) ? true : false;

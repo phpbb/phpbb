@@ -48,7 +48,7 @@ $sort_dir	= (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('search');
 
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$config['load_search'])

@@ -21,43 +21,36 @@ $user->start();
 $auth->acl($user->data);
 $user->setup();
 
-// Load the appropriate faq file
-if (isset($_GET['mode']))
-{
-	switch($_GET['mode'])
-	{
-		case 'bbcode':
-			$lang_file = 'lang_bbcode';
-			$l_title = $lang['BBCode_guide'];
-			break;
-		default:
-			$lang_file = 'lang_faq';
-			$l_title = $lang['FAQ'];
-			break;
-	}
-}
-else
-{
-	$lang_file = 'lang_faq';
-	$l_title = $lang['FAQ'];
-}
+$mode = request_var('mode', '');
 
-include($user->lang_path . $lang_file . '.' . $phpEx);
+// Load the appropriate faq file
+switch ($mode)
+{
+	case 'bbcode':
+		$l_title = $user->lang['BBCODE_GUIDE'];
+		$user->add_lang('bbcode', false, true);
+		break;
+
+	default:
+		$l_title = $user->lang['FAQ'];
+		$user->add_lang('faq', false, true);
+		break;
+}
 
 // Pull the array data from the lang pack
 $j = 0;
 $counter = 0;
 $counter_2 = 0;
-$faq_block = array();
-$faq_block_titles = array();
+$help_block = array();
+$help_block_titles = array();
 
-for($i = 0; $i < count($faq); $i++)
+foreach ($user->help as $help_ary)
 {
-	if ($faq[$i][0] != '--')
+	if ($help_ary[0] != '--')
 	{
-		$faq_block[$j][$counter]['id'] = $counter_2;
-		$faq_block[$j][$counter]['question'] = $faq[$i][0];
-		$faq_block[$j][$counter]['answer'] = $faq[$i][1];
+		$help_block[$j][$counter]['id'] = $counter_2;
+		$help_block[$j][$counter]['question'] = $help_ary[0];
+		$help_block[$j][$counter]['answer'] = $help_ary[1];
 
 		$counter++;
 		$counter_2++;
@@ -66,7 +59,7 @@ for($i = 0; $i < count($faq); $i++)
 	{
 		$j = ($counter != 0) ? $j + 1 : 0;
 
-		$faq_block_titles[$j] = $faq[$i][1];
+		$help_block_titles[$j] = $help_ary[1];
 
 		$counter = 0;
 	}
@@ -74,39 +67,38 @@ for($i = 0; $i < count($faq); $i++)
 
 //
 // Lets build a page ...
-//
 $template->assign_vars(array(
-	'L_FAQ_TITLE' => $l_title,
-	'L_BACK_TO_TOP' => $lang['Back_to_top'])
+	'L_FAQ_TITLE'	=> $l_title,
+	'L_BACK_TO_TOP'	=> $user->lang['BACK_TO_TOP'])
 );
 
-for($i = 0; $i < count($faq_block); $i++)
+for ($i = 0; $i < count($help_block); $i++)
 {
-	if (count($faq_block[$i]))
+	if (sizeof($help_block[$i]))
 	{
 		$template->assign_block_vars('faq_block', array(
-			'BLOCK_TITLE' => $faq_block_titles[$i])
+			'BLOCK_TITLE' => $help_block_titles[$i])
 		);
 
 		$template->assign_block_vars('faq_block_link', array(
-			'BLOCK_TITLE' => $faq_block_titles[$i])
+			'BLOCK_TITLE' => $help_block_titles[$i])
 		);
 
-		for($j = 0; $j < count($faq_block[$i]); $j++)
+		for ($j = 0; $j < count($help_block[$i]); $j++)
 		{
 			$template->assign_block_vars('faq_block.faq_row', array(
-				'FAQ_QUESTION' => $faq_block[$i][$j]['question'],
-				'FAQ_ANSWER' => $faq_block[$i][$j]['answer'],
+				'FAQ_QUESTION' => $help_block[$i][$j]['question'],
+				'FAQ_ANSWER' => $help_block[$i][$j]['answer'],
 
 				'S_ROW_COUNT' => $j,
-				'U_FAQ_ID' => $faq_block[$i][$j]['id'])
+				'U_FAQ_ID' => $help_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
-				'FAQ_LINK' => $faq_block[$i][$j]['question'],
+				'FAQ_LINK' => $help_block[$i][$j]['question'],
 
 				'S_ROW_COUNT' => $j,
-				'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id'])
+				'U_FAQ_LINK' => '#' . $help_block[$i][$j]['id'])
 			);
 		}
 	}

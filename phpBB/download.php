@@ -17,13 +17,14 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 $download_id = request_var('id', 0);
-// Thumbnails are not called from this file by default
-$thumbnail = request_var('thumb', false);
+
+// Thumbnails are not handled by this file by default - but for modders this should be interesting. ;)
+$thumbnail = request_var('t', false);
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('viewtopic');
 
 if (!$download_id)
 {
@@ -46,7 +47,7 @@ if (!($attachment = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
-// Additional query, because of more than one attachment assigned to posts and private messages
+// 
 $sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
 	FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 	WHERE p.post_id = ' . $attachment['post_id'] . '
@@ -177,6 +178,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Now the tricky part... let's dance
+	// TODO: needs a little bit more testing... seems to break on some configurations (incomplete files)
 	@ob_end_clean();
 	@ini_set('zlib.output_compression', 'Off');
 	header('Pragma: public');
@@ -212,13 +214,9 @@ function download_allowed()
 		return true;
 	}
 
-	$url = trim(getenv('HTTP_REFERER'));
-	if ($url == '')
-	{
-		$url = trim($_SERVER['HTTP_REFERER']);
-	}
+	$url = (getenv('HTTP_REFERER')) ? trim(getenv('HTTP_REFERER')) : trim($_SERVER['HTTP_REFERER']);
 
-	if ($url == '')
+	if (!$url)
 	{
 		return ($config['secure_allow_empty_referer']) ? true : false;
 	}
@@ -228,14 +226,14 @@ function download_allowed()
 	$hostname = trim($url[0]);
 	unset($url);
 
-	$allowed = ($config['secure_allow_deny']) ? FALSE : TRUE;
+	$allowed = ($config['secure_allow_deny']) ? false : true;
 	$iplist = array();
 
 	$ip_ary = gethostbynamel($hostname);
 
 	foreach ($ip_ary as $ip)
 	{
-		if (!empty($ip))
+		if ($ip)
 		{
 			$iplist[] = $ip;
 		}
@@ -256,13 +254,16 @@ function download_allowed()
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!empty($row['site_ip']))
+			$site_ip = trim($row['site_ip']);
+			$site_hostname = trim($row['site_hostname']);
+
+			if ($site_ip)
 			{
 				foreach ($iplist as $ip)
 				{
-					if (preg_match('#^' . str_replace('*', '.*?', $row['site_ip']) . '$#i', $ip))
+					if (preg_match('#^' . str_replace('*', '.*?', $site_ip) . '$#i', $ip))
 					{
-						if (!empty($row['ip_exclude']))
+						if ($row['ip_exclude'])
 						{
 							$allowed = ($config['secure_allow_deny']) ? false : true;
 							break 2;
@@ -275,11 +276,11 @@ function download_allowed()
 				}
 			}
 
-			if (!empty($row['site_hostname']))
+			if ($site_hostname)
 			{
-				if (preg_match('#^' . str_replace('*', '.*?', $row['site_hostname']) . '$#i', $hostname))
+				if (preg_match('#^' . str_replace('*', '.*?', $site_hostname) . '$#i', $hostname))
 				{
-					if (!empty($row['ip_exclude']))
+					if ($row['ip_exclude'])
 					{
 						$allowed = ($config['secure_allow_deny']) ? false : true;
 						break;
@@ -291,6 +292,7 @@ function download_allowed()
 				}
 			}
 		}
+
 		$db->sql_freeresult($result);
 	}
 	

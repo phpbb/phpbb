@@ -84,7 +84,7 @@ if ($view && !$post_id)
 			if (!($row = $db->sql_fetchrow($result)))
 			{
 				// Setup user environment so we can process lang string
-				$user->setup();
+				$user->setup('viewtopic');
 
 				meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
 				$message = $user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
@@ -196,7 +196,7 @@ if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_
 }
 
 // Setup look and feel
-$user->setup(false, $forum_style);
+$user->setup('viewtopic', $forum_style);
 
 if (!$topic_approved && !$auth->acl_get('m_approve', $forum_id))
 {

@@ -842,7 +842,7 @@ function return_link($msg, $url)
 // Start session management
 $user->start();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('mcp');
 
 $mcp = new module();
 

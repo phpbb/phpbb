@@ -50,7 +50,7 @@ class ucp_pm extends ucp
 		// Is PM disabled?
 		if (!empty($config['privmsg_disable']))
 		{
-			trigger_error($user->lang['PM_disabled']);
+			trigger_error($user->lang['PM_DISABLED']);
 		}
 
 		$html_entities_match = array('#&#', '#<#', '#>#');

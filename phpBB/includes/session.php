@@ -453,6 +453,7 @@ class session
 class user extends session
 {
 	var $lang = array();
+	var $help = array();
 	var $theme = array();
 	var $date_format;
 	var $timezone;
@@ -467,7 +468,7 @@ class user extends session
 
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $lang, $help;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -514,28 +515,9 @@ class user extends session
 			}
 		}
 
-		include($this->lang_path . 'lang_main.' . $phpEx);
-		if (defined('IN_ADMIN'))
-		{
-			include($this->lang_path . 'lang_admin.' . $phpEx);
-		}
-		$this->lang = &$lang;
-
-/*		if (is_array($lang_set))
-		{
-			include($this->lang_path . '/common.' . $phpEx);
-
-			foreach ($lang_set as $lang_file)
-			{
-				include($this->lang_path . '/' . $lang_file . '.' . $phpEx);
-			}
-			unset($lang_set);
-		}
-		else
-		{
-			include($this->lang_path . '/common.' . $phpEx);
-			include($this->lang_path . '/' . $lang_set . '.' . $phpEx);
-		}*/
+		include($this->lang_path . '/common.' . $phpEx);
+		$this->add_lang($lang_set);
+		unset($lang_set);
 
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
@@ -589,6 +571,77 @@ class user extends session
 		}
 
 		return;
+	}
+
+	// Internal usage
+	function set_lang($lang_file, $use_db = false, $use_help = false)
+	{
+		global $lang, $help, $phpEx;
+
+		if (!$use_db)
+		{
+			include($this->lang_path . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx);
+		}
+		else if ($use_db)
+		{
+			// Get Database Language Strings
+			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
+			// For example: help:faq, posting
+		}
+	}
+
+	// Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
+	//
+	// $lang_set = array('posting', 'help' => 'faq');
+	// $lang_set = array('posting', 'viewtopic', 'help' => array('bbcode', 'faq'))
+	// $lang_set = array(array('posting', 'viewtopic'), 'help' => array('bbcode', 'faq'))
+	// $lang_set = 'posting'
+	// $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
+	function add_lang($lang_set, $use_db = false, $use_help = false)
+	{
+		global $lang, $help, $phpEx;
+
+		if (is_array($lang_set))
+		{
+			foreach ($lang_set as $key => $lang_file)
+			{
+				$key = (string) $key;
+				if ($key == 'db')
+				{
+					$this->add_lang($lang_file, true, $use_help);
+				}
+				else if ($key == 'help')
+				{
+					$this->add_lang($lang_file, $use_db, true);
+				}
+				else if (!is_array($lang_file))
+				{
+					$this->set_lang($lang_file, $use_db, $use_help);
+				}
+				else
+				{
+					$this->add_lang($lang_file, $use_db, $use_help);
+				}
+			}
+			unset($lang_set);
+		}
+		else if ($lang_set)
+		{
+			$this->set_lang($lang_set, $use_db, $use_help);
+		}
+
+		if ($use_help || sizeof($help))
+		{
+			$this->help += $help;
+			unset($help);
+		}
+
+		if (sizeof($lang))
+		{
+			$this->lang += $lang;
+			// Yes, we unset $lang here, this variable is in use elsewhere
+			unset($lang);
+		}
 	}
 
 	function format_date($gmepoch, $format = false)
