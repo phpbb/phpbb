@@ -88,25 +88,11 @@ if($online_count)
 
 		if(!(ix % 2))
 		{
-			if(isset($theme['td_color1']))
-			{
-				$row_color = "#".$theme['td_color1'];
-			}
-			else
-			{
-				$row_color = "#DDDDDD";
-			}
+			$row_color = "#".$theme['td_color1'];
 		}
 		else
 		{
-			if(isset($theme['td_color2']))
-			{
-				$row_color = "#".$theme['td_color2'];
-			}
-			else
-			{
-				$row_color = "#CCCCCC";
-			}
+			$row_color = "#".$theme['td_color2'];
 		}
 
 		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
@@ -178,12 +164,12 @@ if($online_count)
 		}
 		else
 		{
-			for($j = 0; $j < count($forumrow); $j++)
+			for($j = 0; $j < count($forumsrow); $j++)
 			{
-				if($onlinerow[$i]['session_page'] == $forumrow[$j]['forum_id'])
+				if($onlinerow[$i]['session_page'] == $forumsrow[$j]['forum_id'])
 				{
-					$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$forumrow[$j]['forum_id']);
-					$location = $forumrow[$j]['forum_name'];
+					$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$forumsrow[$j]['forum_id']);
+					$location = $forumsrow[$j]['forum_name'];
 					break;
 				}
 			}
