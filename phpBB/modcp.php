@@ -287,7 +287,202 @@ switch($mode)
 		break;
 
 	case 'move':
-		echo 'Move';
+                if($confirm)
+                {
+                        $new_forum = $HTTP_POST_VARS['new_forum'];
+                        $old_forum = $HTTP_POST_VARS[POST_FORUM_URL];
+                        if($HTTP_POST_VARS['preform_op'])
+                        {
+                                $topics = $HTTP_POST_VARS['preform_op'];
+                        }
+                        else
+                        {
+                                $topics = array($HTTP_POST_VARS[POST_TOPIC_URL]);
+                        }
+                        for($x = 0; $x < count($topics); $x++)
+                        {
+                                if($x != 0)
+                                {
+                                        $sql_clause .= ' OR ';
+                                }
+                                $sql_clause .= 'topic_id = '.$topics[$x];
+                                $sql_select = 'SELECT
+                                                topic_title,
+                                                topic_poster,
+                                                topic_time
+                                                FROM '.
+                                                TOPICS_TABLE." WHERE
+                                                topic_id = $topics[$x]";
+                                if(!$result = $db->sql_query($sql_select))
+                                {
+                                        message_die(GENERAL_ERROR, "Could not select from topic table!", "Error", __LINE__, __FILE__
+, $sql_select);
+                                }
+                                else
+                                {
+                                        $row = $db->sql_fetchrowset($result);
+                                        $ttitle = $row[0]['topic_title'];
+                                        $tpost = $row[0]['topic_poster'];
+                                        $ttime = $row[0]['topic_time'];
+                                        $sql_insert = 'INSERT INTO '.TOPICS_TABLE."
+                                                        (forum_id,topic_title,topic_poster,topic_time,topic_status,topic_type)
+                                                                VALUES
+                                                        ($old_forum,'$ttitle','$tpost',$ttime,$topics[$x],".TOPIC_MOVED.')';
+                                        if(!$result = $db->sql_query($sql_insert))
+                                        {
+                                                message_die(GENERAL_ERROR, "Could not insert into topics table!", "Error", __LINE__,
+ __FILE__, $sql_insert);
+                                        }
+                                        $newtopic_id = $db->sql_nextid();
+                                        $sql_insert = 'INSERT INTO '.POSTS_TABLE."
+                                                        (topic_id,forum_id,poster_id,post_time)
+                                                                VALUES
+                                                        ($newtopic_id,$old_forum,$tpost,$ttime)";
+                                        if(!$result = $db->sql_query($sql_insert))
+                                        {
+                                                message_die(GENERAL_ERROR, "Could not insert into posts table!", "Error", __LINE__,
+__FILE__, $sql_insert);
+                                        }
+                                        //Finally, update the last_post_id column to reflect the new post just inserted
+                                        $newpost_id = $db->sql_nextid();
+                                        $sql = 'UPDATE '.TOPICS_TABLE." SET topic_last_post_id = $newpost_id WHERE topic_id = $newtopic_id";
+                                        if(!$result = $db->sql_query($sql))
+                                        {
+                                                message_die(GENERAL_ERROR, "Could not update the topics table!", "Error", __LINE__,
+__FILE__, $sql);
+                                        }
+                                }
+                        }
+
+                        $sql_replies = 'SELECT SUM(topic_replies) AS total_posts FROM '.TOPICS_TABLE.' WHERE '.$sql_clause;
+                        if(!$result = $db->sql_query($sql_replies))
+                        {
+                                message_die(GENERAL_ERROR, "Could not sum topic replies in topics table!", "Error", __LINE__, __FILE__, $sql_replies);
+                        }
+                        else
+                        {
+                                $posts_row = $db->sql_fetchrowset($result);
+                                $posts = $posts_row[0]['total_posts'] + count($topics);
+                        }
+
+                        $sql_post = 'UPDATE '.POSTS_TABLE." SET forum_id = $new_forum WHERE $sql_clause";
+                        $sql_topic = 'UPDATE '.TOPICS_TABLE." SET forum_id = $new_forum WHERE $sql_clause";
+                        if(!$result = $db->sql_query($sql_post))
+                        {
+                                message_die(GENERAL_ERROR, "Could not update posts table!", "Error", __LINE__, __FILE__, $sql_post);
+                        }
+                        else if(!$result = $db->sql_query($sql_topic))
+                        {
+                                message_die(GENERAL_ERROR, "Could not update topics table!", "Error", __LINE__, __FILE__, $sql_topic);
+                        }
+                        if(SQL_LAYER != 'mysql')
+                        {
+                                $sql_forums_new = 'UPDATE '.FORUMS_TABLE." SET
+                                                forum_posts = forum_posts + $posts,
+                                                forum_topics = forum_topics + ".count($topics).",
+                                                forum_last_post_id =
+                                                        (select max(post_id) FROM ".POSTS_TABLE."
+                                                        WHERE forum_id = $new_forum)
+                                                WHERE forum_id = ".$new_forum;
+                                $sql_forums_old = 'UPDATE '.FORUMS_TABLE." SET
+                                                forum_posts = forum_posts - $posts + ".count($topics).",
+                                                forum_last_post_id =
+                                                        (select max(post_id) FROM ".POSTS_TABLE."
+                                                        WHERE forum_id = $old_forum)
+                                                WHERE forum_id = ".$old_forum;
+                        }
+                        else
+                        {
+                                $sql_lastpost = "select max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $new_forum";
+                                if(!$result = $db->sql_query($sql_lastpost))
+                                {
+                                        message_die(GENERAL_ERROR, "Could not get last post id from posts table", "Error", __LINE__,__FILE__, $sql_lastpost);
+                                }
+                                else
+                                {
+                                        $last_post_row = $db->sql_fetchrowset($result);
+                                        $last_post_new = $last_post_row[0]['last_post'];
+                                        if($last_post_new == "")
+                                        {
+                                                $last_post_new = "''";
+                                        }
+                                }
+                                $sql_lastpost = "select max(post_id) AS last_post FROM ".POSTS_TABLE." WHERE forum_id = $old_forum";
+                                if(!$result = $db->sql_query($sql_lastpost))
+                                {
+                                        message_die(GENERAL_ERROR, "Could not get last post id from posts table", "Error", __LINE__,__FILE__, $sql_lastpost);
+                                }
+                                else
+                                {
+                                        $last_post_row = $db->sql_fetchrowset($result);
+                                        $last_post_old = $last_post_row[0]['last_post'];
+                                        if($last_post_old == "")
+                                        {
+                                                $last_post_old = "''";
+                                        }
+                                }
+                                $sql_forums_new = 'UPDATE '.FORUMS_TABLE." SET
+                                                forum_posts = forum_posts + $posts,
+                                                forum_topics = forum_topics + ".count($topics).",
+                                                forum_last_post_id = $last_post_new
+                                                WHERE forum_id = $new_forum";
+                                $sql_forums_old = 'UPDATE '.FORUMS_TABLE." SET
+                                                forum_posts = forum_posts - $posts + ".count($topics).",
+                                                forum_last_post_id = $last_post_old
+                                                WHERE forum_id = $old_forum";
+                        }
+                        if(!$result = $db->sql_query($sql_forums_new))
+                        {
+                                message_die(GENERAL_ERROR, "Could not update forums table!", "Error", __LINE__, __FILE__, $sql_forums_new);
+                        }
+                        else if(!$result = $db->sql_query($sql_forums_old))
+                        {
+                                message_die(GENERAL_ERROR, "Could not update forums table!", "Error", __LINE__, __FILE__, $sql_forums_old);
+                        }
+                        else
+                        {
+                                if($quick_op)
+                                {
+                                        $next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id";
+                                        $return_message = $lang['to_return_topic'];
+                                }
+                                else
+                                {
+                                        $next_page = "modcp.$phpEx?".POST_FORUM_URL."=$forum_id";
+                                        $return_message = $lang['Return_to_modcp'];
+                                }
+                                $msg = $lang['Topics_Moved'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click']. " " . $lang['Here'] ."</a> " . $return_message;
+                                message_die(GENERAL_MESSAGE, $msg);
+                        }
+                }
+                else
+                {
+                        $hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
+                        $hidden_fields .= $lang['New_forum'] . ':  ' . make_forum_box('new_forum'). '</select><br><br>';
+                        if($HTTP_POST_VARS['preform_op'])
+                        {
+                                $topics = $HTTP_POST_VARS['preform_op'];
+                                for($x = 0; $x < count($topics); $x++)
+                                {
+                                        $hidden_fields .= '<input type="hidden" name="preform_op[]" value="'.$topics[$x].'">';
+                                }
+                        }
+                        else
+                        {
+                                $hidden_fields .= '<input type="hidden" name="'.POST_TOPIC_URL.'" value="'.$topic_id.'">';
+                        }
+                        $template->assign_vars( array   (
+                                                        "MESSAGE_TITLE" => $lang['Confirm'],
+                                                        "MESSAGE_TEXT" => $lang['Confirm_move_topic'],
+                                                        "L_YES" => $lang['Yes'],
+                                                        "L_NO" => $lang['No'],
+                                                        "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
+                                                        "S_HIDDEN_FIELDS" => $hidden_fields
+                                                        )
+                                                );
+                        $template->pparse("confirm");
+                        include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+                }
 		break;
 
 	case 'lock':
