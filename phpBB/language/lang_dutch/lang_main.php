@@ -131,7 +131,11 @@ $lang['Guest_users_zero_total'] = "0 Gasten";
 $lang['Guest_users_total'] = "%d Gasten";
 $lang['Guest_user_total'] = "%d Gast";
 
+$lang['Admin_online_color'] = "%sBeheerder%s";
+$lang['Mod_online_color'] = "%sModerator%s";
+
 $lang['You_last_visit'] = "Je laatste bezoek was op %s"; // %s replaced by date/time
+$lang['Current_time'] = "De huidige tijd nu is %s";
 $lang['Search_new'] = "Berichten sinds laatste bezoek";
 $lang['Search_your_posts'] = "Bekijk je berichten";
 $lang['Search_unanswered'] = "Bekijk onbeantwoorde berichten";
@@ -712,6 +716,9 @@ $lang['Search_author_explain'] = "Gebruik een * (wildcard) om op een deel van ee
 
 $lang['Search_for_any'] = "Zoek voor <i>een</i> van de woorden of gebruik AND, OR en NOT";
 $lang['Search_for_all'] = "Zoek naar <i>alle</i> woorden";
+$lang['Search_title_msg'] = "Zoek in bericht titel en tekst";
+$lang['Search_msg_only'] = "Zoek alleen in bericht tekst";
+
 
 $lang['Search_author'] = "Zoek op Auteur";
 
