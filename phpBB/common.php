@@ -49,7 +49,7 @@ define('MOD', 2);
 define('USER_ACTIVATION_NONE', 0);
 define('USER_ACTIVATION_SELF', 1);
 define('USER_ACTIVATION_ADMIN', 2);
-define('USER_ACTIVATION_CLOSED', 3);
+define('USER_ACTIVATION_DISABLE', 3);
 
 define('USER_AVATAR_NONE', 0);
 define('USER_AVATAR_UPLOAD', 1);
@@ -99,6 +99,7 @@ define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories'); // 
 define('CONFIG_TABLE', $table_prefix.'config');
+define('CONFIG_USER_TABLE', $table_prefix.'config_defaults');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
