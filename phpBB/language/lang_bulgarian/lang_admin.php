@@ -24,7 +24,7 @@
 *                     Bulgarian translation (Български превод)
 *                              ------------------- 
 *     begin                : Thu Dec 06 2001
-*     last update          : Fri Jan 15 2001  
+*     last update          : Fri Jan 28 2001  
 *     by                   : Boby Dimitrov (Боби Димитров) 
 *     email                : boby@azholding.com 
 ****************************************************************************/ 
@@ -65,7 +65,7 @@ $lang['Restore_DB'] = "Възстановяване на БД";
 $lang['Admin'] = "Администрация";
 $lang['Not_admin'] = "Нямате право да администрирате тези форуми";
 $lang['Welcome_phpBB'] = "Добре дошли в phpBB";
-$lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
+$lang['Admin_intro'] = "Благодарим ви, че избрахте phpBB за вашата форум система. Тази страница представя някой статистики за форумите. Можете да се върнете тук като кликнете на <u>Админ-панел</u> в левия фрейм. За да се върнете на началната страница на форумите, кликнете на логото (също в левия фрейм). Другите връзки в ляво водят към инструменти за администриране на всички аспекти на форумите. Всяка секция съдържа инструкции за администрирането.";
 $lang['Main_index'] = "Индекс на Форумите";
 $lang['Forum_stats'] = "Форум Статистики";
 $lang['Admin_Index'] = "Админ-панел";
@@ -98,8 +98,8 @@ $lang['Database_Utilities'] = "Работа с базата данни";
 
 $lang['Restore'] = "Възстановяване";
 $lang['Backup'] = "Съхраняване";
-$lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.";
-$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names separated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
+$lang['Restore_explain'] = "Тук можете да направите пълно възстановяване на базата данни на phpBB от съхранен файл. Ако сървърът ви го поддържа, можете да качите компресиран с gzip файл, който ще бъде автоматично разкомпресиран. <b>ВНИМАНИЕ!</b> Възстановяването ще изтрие всички налични данни. Процеса може да отнеме много време, моля не презареждайте страницата докато свърши!";
+$lang['Backup_explain'] = "Тук можете да съхраните цялата база данни на phpBB. Ако имате някакви допълнителни таблици в същата база данни като phpBB, които искате да бъдат съхранени, моля въведете имената им, разделени от запетаи в полето Допълнителни таблици по-долу. Ако сървъра ви го поддръжа, можете да компресирате файла с данните с gzip, за да намалите размера за сваляне.";
 
 $lang['Backup_options'] = "Опции за Съхраняване";
 $lang['Start_backup'] = "Започни Съхраняването";
@@ -134,9 +134,9 @@ $lang['Look_up_User'] = "Вижте Потребителя";
 $lang['Look_up_Group'] = "Вижте Групата"; 
 $lang['Look_up_Forum'] = "Вижте Форума"; 
 
-$lang['Group_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['User_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
-$lang['Forum_auth_explain'] = "Here you can alter the authorisation levels of each forum. You will have both a simple and advanced method for doing this, advanced offers greater control of each forum operation. Remember that changing the permission level of forums will affect which users can carry out the various operations within them.";
+$lang['Group_auth_explain'] = "Тук можете да промените правата и модераторския статут на всяка група. Когато сменяте правата на дадена група, не забравяйте, че личните потребителски настройки могат все пак да дадат на потребителя права, които са му били отнети с промяната на правата на групата. Ще бъдете предупредени, ако това е случая.";
+$lang['User_auth_explain'] = "Тук можете да промените правата и модераторския статут на всеки потребител. Когато сменяте правата на даден потребител, не забравяйте, че груповите права могат все пак да дадат на потребителя права, които са му били отнети с промяната на личните му права. Ще бъдете предупредени, ако това е случая.";
+$lang['Forum_auth_explain'] = "Тук можете да примените правата за всеки форум. Има прост и сложен метод за настройка, като сложния дава повече контрол над всяко действие във форума. Помнете, че като променяте правата за даден форум, това ще афектира въхру действията, които потребителите могат да изпълняват във форума.";
 
 $lang['Simple_mode'] = "Прости настройки";
 $lang['Advanced_mode'] = "Сложни настройки";
@@ -148,17 +148,26 @@ $lang['Is_Moderator'] = "Е Модератор";
 $lang['Not_Moderator'] = "Не е Модератор";
 
 $lang['Conflict_warning'] = "Предупреждение за конфликт в правата";
-$lang['Conflict_access_userauth'] = "This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_userauth'] = "This user still has moderator rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having moderator rights. The groups granting rights (and the forums involved) are noted below.";
+$lang['Conflict_access_userauth'] = "Този потребител все още има права за достъп във този форум заради членството си в определена група. Може би ще желаете да промените правата на групата или да премахнете потребителя от нея, за да сте сигурни, че потребителя няма да има достъп до този форум. Групите, даващи права на потребителя и въпросните форуми са отбелязани долу.";
+$lang['Conflict_mod_userauth'] = "Този потребител все още има модераторски права във този форум заради членството си в определена група. Може би ще желаете да промените правата на групата или да премахнете потребителя от нея, за да сте сигурни, че потребителя няма да има модераторски права в този форум. Групите, даващи права на потребителя и въпросните форуми са отбелязани долу.";
 
-$lang['Conflict_access_groupauth'] = "The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.";
-$lang['Conflict_mod_groupauth'] = "The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.";
+$lang['Conflict_access_groupauth'] = "Следните потребители все още имат права за достъп в този форум заради настройките на личните им права. Може би ще желаете да промените правата на потребителя, за да сте сигурни, че потребителя няма да има достъп до този форум. Потребителите с достъп и въпросните форуми са отбелязани долу.";
+$lang['Conflict_mod_groupauth'] = "Следните потребители все още имат модераторски права в този форум заради настройките на личните им права. Може би ще желаете да промените правата на потребителя, за да сте сигурни, че потребителя няма да има модераторски права в този форум. Потребителите с модераторски права и въпросните форуми са отбелязани долу.";
 
 $lang['Public'] = "Публичен";
 $lang['Private'] = "Частен";
 $lang['Registered'] = "Регистриран";
 $lang['Administrators'] = "Администратори";
 $lang['Hidden'] = "Скрит";
+
+// These are displayed in the drop down boxes for advanced 
+// mode forum auth, try and keep them short! 
+$lang['Forum_ALL'] = "Всички"; 
+$lang['Forum_REG'] = "Регнати"; 
+$lang['Forum_PRIVATE'] = "Частни"; 
+$lang['Forum_MOD'] = "Модове"; 
+$lang['Forum_ADMIN'] = "Админи"; 
+
 
 $lang['View'] = "Виждане";
 $lang['Read'] = "Четене";
@@ -194,8 +203,8 @@ $lang['Click_return_forumauth'] = "Кликнете %sтук%s за да се върнете в Контрол н
 // Banning
 //
 $lang['Ban_control'] = "Бан Контрол";
-$lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
-$lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
+$lang['Ban_explain'] = "От тук можете да изгоните потребител от форумите. Можете да изгоните потребител по потребителско име, по IP адрес или набор от IP адреси или домейн. Тези методи няма да позволят на потребителя да достигне дори до началната страница на форумите. За да попречите на изгоген потребител да се регистрира отново, но с друго име, можете да баннете определен мейл адрес. Обърнете внимание, че забраната на мейл адрес няма да попречи на потребителя да влиза и да пише във форумите ви. Ще трябва да изберете един от първите методи, за да постигнете това.";
+$lang['Ban_explain_warn'] = "Обърнете внимание, че като банвате набор от IP адреси, на практика можете неумишлено да изгоните много потребители от една и съща подмрежа. Това става, защото всички адреси между началния и крайния адрес, които сте задали, се считат за изгонени. Затова ползвайте малки набори от IP адреси или най-добре избройте няколко конкретни IP адреса.";
 
 $lang['Select_username'] = "Изберете Потребител";
 $lang['Select_ip'] = "Изберете IP";
@@ -232,7 +241,7 @@ $lang['Click_return_banadmin'] = "Кликнете %sтук%s за да се върнете в Бан Контро
 // Configuration
 //
 $lang['General_Config'] = "Обща конфигурация";
-$lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
+$lang['Config_explain'] = "Формата долу позволява настройка на всички общи опции по форумите. За настройки по потребителите или конкретен форум, кликнете съответните връзки в ляво.";
 
 $lang['Click_return_config'] = "Кликнете %sтук%s за да се върнете в Общата Конфигурация";
 
@@ -307,7 +316,7 @@ $lang['Sentbox_limits'] = "Максимум съобщения в Получени";
 $lang['Savebox_limits'] = "Максимум съобщения в Съхранени";
 
 $lang['Cookie_settings'] = "Настройки на Cookies"; 
-$lang['Cookie_settings_explain'] = "These control how the cookie sent to browsers is defined. In most cases the default should be sufficient. If you need to change these do so with care, incorrect settings can prevent users logging in.";
+$lang['Cookie_settings_explain'] = "Тук можете да настроите cookie-тата, които форумите изпращат. В повечето случаи текущата конфигурация е достатъчна. Внимавайте много при промяна на настройките, защото грешни стойности могат да попречат на потребителите да влизат във форумите.";
 $lang['Cookie_name'] = "Име на Cookie";
 $lang['Cookie_domain'] = "Домейн на Cookie";
 $lang['Cookie_path'] = "Път на Cookie";
@@ -319,7 +328,7 @@ $lang['Cookie_secure'] = "Secure Cookie (по https)";
 // Forum Management
 //
 $lang['Forum_admin'] = "Администриране на Форумите";
-$lang['Forum_admin_explain'] = "From this panel you can add, delete, edit, re-order and re-synchronise categories and forums";
+$lang['Forum_admin_explain'] = "От този панел можете да добавяте, изтривате, променяте, препреждате или синхронизирате категории и форумите.";
 $lang['Edit_forum'] = "Промяна на Форум";
 $lang['Create_forum'] = "Създаване на нов форум";
 $lang['Create_category'] = "Създаване на нова категория";
@@ -347,7 +356,7 @@ $lang['Forum_pruning'] = "Самозачистване";
 
 $lang['prune_freq'] = "Проверка за възрастта на темата на всеки";
 $lang['prune_days'] = "Премахни теми, в които не е било писано от";
-$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+$lang['Set_prune_data'] = "Включили сте самозачистването за този форум, но не сте задали интервал (или дни) на зачистване. Моля върнете се и коригирайте грешката.";
 
 $lang['Move_and_Delete'] = "Местене и изтриване";
 

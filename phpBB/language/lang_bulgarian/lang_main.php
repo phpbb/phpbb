@@ -23,7 +23,7 @@
 *                     Bulgarian translation (Български превод)
 *                              ------------------- 
 *     begin                : Thu Dec 06 2001
-*     last update          : Fri Jan 15 2001  
+*     last update          : Fri Jan 28 2001  
 *     by                   : Boby Dimitrov (Боби Димитров) 
 *     email                : boby@azholding.com 
 ****************************************************************************/ 
@@ -48,6 +48,8 @@ $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
+// Translator credit
+$lang['TRANSLATION_INFO'] = "Translation by: <a href=\"http://forums.rpgbg.net\" target=\"_blank\">Boby Dimitrov</a>";
 
 //
 // Common, these terms are used
@@ -133,6 +135,7 @@ $lang['Board_disable'] = "Затворено за профилактика! Моля опитайте по-късно!";
 // Global Header strings
 //
 $lang['Registered_users'] = "Регистрирани потребители:";
+$lang['Browsing_forum'] = "Потребители, разглеждащи този форум:";
 $lang['Online_users_zero_total'] = "Общо онлайн са <b>0</b> потребители: ";
 $lang['Online_users_total'] = "Общо онлайн са <b>%d</b> потребители: ";
 $lang['Reg_users_zero_total'] = "0 Регистрирани, ";
@@ -145,6 +148,7 @@ $lang['Hidden_user_total'] = "%d Скрит и ";
 $lang['Guest_users_zero_total'] = "0 Гости";
 $lang['Guest_users_total'] = "%d Гости";
 $lang['Guest_user_total'] = "%d Гост";
+$lang['Record_online_users'] = "Най-много потребители онлайн: <b>%s</b>, на %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sАдминистратор%s"; 
 $lang['Mod_online_color'] = "%sМодератор%s"; 
@@ -288,8 +292,8 @@ $lang['wrote'] = "написа"; // proceeds the username and is followed by the quote
 $lang['Quote'] = "Цитат"; // comes before bbcode quote output.
 $lang['Code'] = "Код"; // comes before bbcode code output.
 
-$lang['Edited_time_total'] = "Последната промяна на мнението е направена от %s на %s; мнението е било променяно общо %d път"; // Last edited by me on 12 Oct 2001, edited 1 time in total
-$lang['Edited_times_total'] = "Последната промяна на мнението е направена от %s на %s; мнението е било променяно общо %d пъти"; // Last edited by me on 12 Oct 2001, edited 2 times in total
+$lang['Edited_time_total'] = "Последната промяна е направена от %s на %s; мнението е било променяно общо %d път"; // Last edited by me on 12 Oct 2001, edited 1 time in total
+$lang['Edited_times_total'] = "Последната промяна е направена от %s на %s; мнението е било променяно общо %d пъти"; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
 $lang['Lock_topic'] = "Заключете тази тема";
 $lang['Unlock_topic'] = "Отключете тази тема";
@@ -464,6 +468,10 @@ $lang['Cannot_send_privmsg'] = "Администраторите са забранили изпращането на лич
 $lang['No_to_user'] = "Трябва да въведете потребителско име, за да изпратите това съобщение";
 $lang['No_such_user'] = "Няма такъв потребител";
 
+$lang['Disable_HTML_pm'] = "Изключете HTML в това съобщение"; 
+$lang['Disable_BBCode_pm'] = "Изключете BBCode в това съобщение"; 
+$lang['Disable_Smilies_pm'] = "Изключете Smilies в това съобщение"; 
+
 $lang['Message_sent'] = "Съобщението беше изпратено";
 
 $lang['Click_return_inbox'] = "Кликнете %sтук%s, за да се върнете в Входящи";
@@ -529,7 +537,6 @@ $lang['Search_user_posts'] = "Вижте всички мнения на %s"; // Find all posts by u
 
 $lang['No_user_id_specified'] = "Няма такъв потребител";
 $lang['Wrong_Profile'] = "Не можете да променяте чужд профил!";
-$lang['Sorry_banned_or_taken_email'] = "Мейл адреса, който сте въвели е използван от друг потребител, забранен или невалиден. Моля опитайте с друг адрес. Ако и с него имате проблеми, свържете се с администраторите!";
 $lang['Only_one_avatar'] = "Можете да изберете само един вид аватар";
 $lang['File_no_data'] = "Файлът , чийто адрес сте въвели, не същестува";
 $lang['No_connection_URL'] = "Адреса, който сте въвели, не може да бъде открит";
@@ -557,6 +564,7 @@ $lang['Public_view_email'] = "Винаги показвай мейл адреса ми";
 $lang['Current_password'] = "Текуща парола";
 $lang['New_password'] = "Нова парола";
 $lang['Confirm_password'] = "Потвърдете паролата";
+$lang['Confirm_password_explain'] = "Трябва да потвърдите вашата текуща парола, ако желаете да я смените или да промените мейл адреса си!";
 $lang['password_if_changed'] = "Въведете парола само ако искате да я смените!";
 $lang['password_confirm_if_changed'] = "Потвърдете паролата само ако я сменяте!";
 
@@ -589,7 +597,13 @@ $lang['Profile_updated_inactive'] = "Профилът ви е обновен, но тъй като сте пром
 
 $lang['Password_mismatch'] = "Паролите, които сте въвели не съвпадат";
 $lang['Current_password_mismatch'] = "Паролата, която сте въвели не съвпада с тази в базата";
-$lang['Invalid_username'] = "Потребителското име, което сте въвели е заето, забранено, или съдържа невалидни символи, като например \" !";
+$lang['Password_long'] = "Паролата ви неможе да е по-дълга от 32 символа!"; 
+$lang['Username_taken'] = "Потребителското име, което сте въвели е заето!"; 
+$lang['Username_invalid'] = "Потребителското име, което сте въвели е заето, забранено, или съдържа невалидни символи, като например \" !"; 
+$lang['Username_disallowed'] = "Потребителското име, което сте въвели е забранено!"; 
+$lang['Email_taken'] = "Мейл адреса, който сте въвели, е вече използван от друг потребител!"; 
+$lang['Email_banned'] = "Мейл адреса, който сте въвели, е баннат!"; 
+$lang['Email_invalid'] = "Мейл адреса, който сте въвели, е невалиден!"; 
 $lang['Signature_too_long'] = "Подписът ви е прекалено дълъг";
 $lang['Fields_empty'] = "Трябва да попълните задължителните полета";
 $lang['Avatar_filetype'] = "Аватара трябва да е .jpg, .gif или .png";
@@ -914,7 +928,7 @@ $lang['tz']['-2'] = "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena";
 $lang['tz']['-1'] = "(GMT -1:00 hours) Azores, Cape Verde Islands";
 $lang['tz']['0'] = "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia";
 $lang['tz']['1'] = "(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome";
-$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa, Warsaw";
+$lang['tz']['2'] = "(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa";
 $lang['tz']['3'] = "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi";
 $lang['tz']['3.5'] = "(GMT +3:30 hours) Tehran";
 $lang['tz']['4'] = "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi";
