@@ -407,7 +407,7 @@ get_forum_rules('topic', $s_forum_rules, $forum_id);
 
 $topic_mod = '';
 $topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'lock') ) ? ( ( $forum_data['topic_status'] == TOPIC_UNLOCKED ) ? '<option value="lock">' . $lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $lang['Unlock_topic'] . '</option>' ) : '';
-$topic_mod = ( $acl->get_acl($forum_id, 'mod', 'delete') ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
+$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'delete') ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
 $topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'move') ) ? '<option value="move">' . $lang['Move_topic'] . '</option>' : '';
 $topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'split') ) ? '<option value="split">' . $lang['Split_topic'] . '</option>' : '';
 $topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'merge') ) ? '<option value="merge">' . $lang['Merge_topic'] . '</option>' : '';
