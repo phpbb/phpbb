@@ -59,6 +59,11 @@ function admin_ldap(&$new)
 		<td class="row2"><input type="text" size="40" name="ldap_uid" value="<?php echo $new['ldap_uid']; ?>" /></td>
 	</tr>
 <?php
+	
+	//
+	// These are fields required in the config table
+	//
+	return array('ldap_server', 'ldap_base_dn', 'ldap_uid');
 
 }
 
