@@ -389,14 +389,14 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, "Could not obtain post/user information.", '', __LINE__, __FILE__, $sql);
 }
 
-if ( $row = $db->sql_fetchrow($result) )
+$postrow = array();
+if ($row = $db->sql_fetchrow($result))
 {
-	$postrow = array();
 	do
 	{
 		$postrow[] = $row;
 	}
-	while ( $row = $db->sql_fetchrow($result) );
+	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
 	$total_posts = count($postrow);
@@ -410,19 +410,19 @@ else
 } 
 
 $resync = FALSE; 
-if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrows)) 
+if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrow)) 
 { 
    $resync = TRUE; 
 } 
 elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies']) 
 { 
    $row_id = intval($forum_topic_data['topic_replies']) % intval($board_config['posts_per_page']); 
-   if ($postrows[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id'] || $start + count($postrows) < $forum_topic_data['topic_replies']) 
+   if ($postrow[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id'] || $start + count($postrow) < $forum_topic_data['topic_replies']) 
    { 
       $resync = TRUE; 
    } 
 } 
-elseif (count($postrows) < $board_config['posts_per_page']) 
+elseif (count($postrow) < $board_config['posts_per_page']) 
 { 
    $resync = TRUE; 
 } 
