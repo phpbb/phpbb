@@ -862,6 +862,12 @@ $lang['Word_added'] = "The word censor has been successfully added";
 $lang['Word_removed'] = "The selected word censor has been successfully removed";
 
 //
+//Mass Email
+//
+$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  If you are emailing a large group of people, please be patient after submiting and DO NOT stop the page halfway through.  It is normal for amass emailing to take a long time.";
+$lang['Compose'] = "Compose";
+
+//
 // End
 // -------------------------------------------------
 
