@@ -208,7 +208,7 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 
 	if( new_pm_flag )
 	{
-		window.open('{U_PRIVATEMSGS_POPUP}', '_phpbbprivmsg', 'HEIGHT=200,resizable=yes,WIDTH=400');;
+		window.open('{U_PRIVATEMSGS_POPUP}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');;
 	}
 //-->
 </script>
