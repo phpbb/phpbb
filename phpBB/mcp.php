@@ -463,7 +463,7 @@ switch ($mode)
 			'TO_TOPIC_ID'		=>	($to_topic_id) ? $to_topic_id : '',
 			'TO_TOPIC_EXPLAIN'	=>	($to_topic_id) ? sprintf($user->lang['Topic_number_is'], $to_topic_id, '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '" target="_new">' . htmlspecialchars($topic_data[$to_topic_id]['topic_title']) . '</a>') : '',
 
-			'S_FORM_ACTION'		=>	"mcp.$phpEx$SID",
+			'S_FORM_ACTION'		=>	$mcp_url,
 			'S_FORUM_SELECT'	=>	'<select name="new_forum_id">' . make_forum_select() . '</select>',
 			'S_ENABLE_SPLIT'	=>	($mode == 'topic_view' || $mode == 'split') ? TRUE : FALSE,
 			'S_ENABLE_MERGE'	=>	($mode == 'topic_view' || $mode == 'merge') ? TRUE : FALSE,
@@ -767,7 +767,7 @@ switch ($mode)
 			$template->assign_block_vars('topicrow', array(
 				'U_VIEW_TOPIC' => $mcp_url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
 
-				'S_MERGE_SELECT' => ($topic_id && !empty($_GET['post_id_list'])) ? sprintf($user->lang['Select_for_merge'], '<a href="' . $mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . '&amp;post_id_list=' . htmlspecialchars(@$_GET['post_id_list']) . '">', '</a>') : '',
+				'S_MERGE_SELECT' => ($topic_id && isset($_GET['post_id_list']) && $row['topic_id'] != $topic_id) ? sprintf($user->lang['Select_for_merge'], '<a href="' . $mcp_url . '&amp;mode=merge&amp;to_topic_id=' . $row['topic_id'] . $url_extra . '">', '</a>') : '',
 
 				'TOPIC_FOLDER_IMG' => $folder_img,
 				'TOPIC_TYPE' => $topic_type,
