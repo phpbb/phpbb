@@ -45,6 +45,10 @@ function get_db_stat($mode)
 						ORDER BY user_id DESC
 						LIMIT 1";
 		break;
+		case 'topiccount':
+			$sql = "SELECT SUM(forum_topics) AS total
+						FROM ".FORUMS_TABLE;
+		break;
 
 	}
 
@@ -427,7 +431,7 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT group_name AS username 
+			$sql_users = "SELECT group_name AS username
 				FROM " . GROUPS_TABLE . "
 				WHERE LOWER(group_name) = '" . strtolower($username) . "'";
 			$sql_disallow = "SELECT disallow_username

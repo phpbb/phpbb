@@ -215,7 +215,7 @@ $template->assign_vars(array(
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
 	"S_LAST_VISIT_DATE" => $s_last_visit,
-	"s_CURRENT_TIME" => create_date($board_config['default_dateformat'], $current_time, $board_config['default_timezone']),
+	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],

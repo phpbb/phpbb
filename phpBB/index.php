@@ -38,6 +38,7 @@ init_userprefs($userdata);
 
 $total_posts = get_db_stat('postcount');
 $total_users = get_db_stat('usercount');
+$total_topics = get_db_stat('topiccount');
 $newest_userdata = get_db_stat('newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
@@ -102,6 +103,7 @@ $template->set_filenames(array(
 $template->assign_vars(array(
 	"TOTAL_POSTS" => $total_posts,
 	"TOTAL_USERS" => $total_users,
+	"TOTAL_TOPICS" => $total_topics,
 	"NEWEST_USER" => $newest_user,
 	"NEWEST_UID" => $newest_uid,
 	"USERS_BROWSING" => $users_browsing,
