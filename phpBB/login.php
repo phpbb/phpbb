@@ -82,6 +82,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		}
 		else
 		{
+				echo "HERE4";
 			message_die(GENERAL_MESSAGE, $lang['Error_login']);
 		}
 	}
