@@ -18,10 +18,16 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
-
-include('extension.inc');
-include('config.'.$phpEx);
-include('includes/constants.'.$phpEx);
+if ( !defined('INSTALLING') )
+{
+	//
+	// If we are being called from the install script then we don't need these
+	// as they are already included.
+	//
+	include('extension.inc');
+	include('config.'.$phpEx);
+	include('includes/constants.'.$phpEx);
+}
 include('includes/db.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
 
