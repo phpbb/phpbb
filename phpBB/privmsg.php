@@ -667,7 +667,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 	// session id check
 	if ($sid == '' || $sid != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 
 	if ( isset($mark_list) && !is_array($mark_list) )
@@ -896,7 +896,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 	// session id check
 	if ($sid == '' || $sid != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 	
 	if (sizeof($mark_list))
@@ -1145,7 +1145,7 @@ else if ( $submit || $refresh || $mode != '' )
 		// session id check
 		if ($sid == '' || $sid != $userdata['session_id'])
 		{
-			message_die(ERROR, 'Invalid_session');
+			message_die(GENERAL_ERROR, 'Invalid_session');
 		}
 
 		if ( !empty($HTTP_POST_VARS['username']) )

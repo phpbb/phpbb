@@ -165,7 +165,7 @@ init_userprefs($userdata);
 // session id check
 if ($sid == '' || $sid != $userdata['session_id'])
 {
-	message_die(ERROR, 'Invalid_session');
+	message_die(GENERAL_ERROR, 'Invalid_session');
 }
 
 //

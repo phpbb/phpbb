@@ -162,7 +162,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 
 	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 
 	$sql = "SELECT group_moderator 
@@ -216,7 +216,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -326,7 +326,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 
 	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session');
+		message_die(GENERAL_ERROR, 'Invalid_session');
 	}
 
 	if ( $confirm )
@@ -475,7 +475,7 @@ else if ( $group_id )
 
 			if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
 			{
-				message_die(ERROR, 'Invalid_session');
+				message_die(GENERAL_ERROR, 'Invalid_session');
 			}
 
 			if ( !$is_moderator )

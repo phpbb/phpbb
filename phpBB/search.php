@@ -1319,7 +1319,7 @@ $template->assign_vars(array(
 	'S_CATEGORY_OPTIONS' => $s_categories, 
 	'S_TIME_OPTIONS' => $s_time, 
 	'S_SORT_OPTIONS' => $s_sort_by,
-	'S_HIDDEN_FIELDS' => $s_hidden_fields)
+	'S_HIDDEN_FIELDS' => '')
 );
 
 $template->pparse('body');
