@@ -239,7 +239,7 @@ else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_p
 			FROM " . SMILIES_TABLE;
 		if( !$result = $db->sql_query($sql) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Could not get smiley list", "", __LINE__, __FILE__, $sql);
 		}
 
 		$resultset = $db->sql_fetchrowset($result);
