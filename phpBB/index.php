@@ -209,6 +209,7 @@ if( ( $total_categories = count($category_rows) ) )
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
 		WHERE aa.auth_mod = " . TRUE . " 
 			AND g.group_single_user = 1
+			AND g.group_type <> " . GROUP_HIDDEN . "
 			AND ug.group_id = aa.group_id 
 			AND g.group_id = aa.group_id 
 			AND u.user_id = ug.user_id 
@@ -229,6 +230,7 @@ if( ( $total_categories = count($category_rows) ) )
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
 		WHERE aa.auth_mod = " . TRUE . " 
 			AND g.group_single_user = 0
+			AND g.group_type != " . GROUP_HIDDEN . "
 			AND ug.group_id = aa.group_id 
 			AND g.group_id = aa.group_id 
 		GROUP BY g.group_id, g.group_name, aa.forum_id 

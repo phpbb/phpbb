@@ -190,6 +190,7 @@ $sql = "SELECT u.user_id, u.username
 	WHERE aa.forum_id = $forum_id 
 		AND aa.auth_mod = " . TRUE . " 
 		AND g.group_single_user = 1
+		AND g.group_type <> ". GROUP_HIDDEN ."
 		AND ug.group_id = aa.group_id 
 		AND g.group_id = aa.group_id 
 		AND u.user_id = ug.user_id 
@@ -211,6 +212,7 @@ $sql = "SELECT g.group_id, g.group_name
 	WHERE aa.forum_id = $forum_id
 		AND aa.auth_mod = " . TRUE . " 
 		AND g.group_single_user = 0
+		AND g.group_type <> ". GROUP_HIDDEN ."
 		AND ug.group_id = aa.group_id 
 		AND g.group_id = aa.group_id 
 	GROUP BY g.group_id, g.group_name  
