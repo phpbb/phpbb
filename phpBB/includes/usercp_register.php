@@ -406,7 +406,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
 		{
-			@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+			@unlink(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']));
 		}
 		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
 	}
@@ -414,7 +414,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
 		{
-			@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
+			@unlink(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']));
 		}
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
 	}
