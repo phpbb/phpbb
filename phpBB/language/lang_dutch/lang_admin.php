@@ -305,7 +305,7 @@ $lang['Admin_email'] = 'Beheerder Email Adres';
 $lang['Email_sig'] = 'Email Handtekening';
 $lang['Email_sig_explain'] = 'Deze tekst wordt toegevoegd aan alle emails die het board verstuurt';
 $lang['Use_SMTP'] = 'Gebruik SMTP Server voor email';
-$lang['Use_SMTP_explain'] = 'Vul \'yes\' in als de email via een benoemde server wilt of moet versturen in plaats van de \'local mail\' functie';
+$lang['Use_SMTP_explain'] = 'Vul \'ja\' in als de email via een benoemde server wilt of moet versturen in plaats van de mail() functie';
 $lang['SMTP_server'] = 'SMTP Server Adres';
 $lang['SMTP_username'] = 'SMTP Gebruikersnaam';
 $lang['SMTP_username_explain'] = 'Vul alleen een gebruikersnaam in als dit nodig is';
@@ -366,7 +366,7 @@ $lang['Set_prune_data'] = 'Je hebt auto-prune aangezet voor dit forum, maar hebt
 $lang['Move_and_Delete'] = 'Verplaats en verwijder';
 
 $lang['Delete_all_posts'] = 'Verwijder alle posts';
-$lang['Nowhere_to_move'] = 'Geen plek om naartoe te verplaatsen';
+$lang['Nowhere_to_move'] = 'Geen plaats om naartoe te verplaatsen';
 
 $lang['Edit_Category'] = 'Bewerk Categorie';
 $lang['Edit_Category_explain'] = 'Gebruik dit formulier om de naam van een categorie aan te passen.';

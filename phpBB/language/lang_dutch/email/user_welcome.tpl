@@ -5,7 +5,7 @@ Charset: iso-8859-1
 
 Hieronder een overzicht van je login informatie:
 
-Je account is aagemaakt met de volgende gegevens.
+Je account is aangemaakt met de volgende gegevens.
 
 ----------------------------
 Gebruikersnaam: {USERNAME}
