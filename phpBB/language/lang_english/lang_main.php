@@ -120,6 +120,7 @@ $lang['Board_disable'] = "Sorry but this board is currently unavailable, please 
 // Global Header strings
 //
 $lang['Registered_users'] = "Registered Users:";
+$lang['Browsing_forum'] = "Users browsing this forum:";
 $lang['Online_users_zero_total'] = "In total there are <b>0</b> users online :: ";
 $lang['Online_users_total'] = "In total there are <b>%d</b> users online :: ";
 $lang['Online_user_total'] = "In total there is <b>%d</b> user online :: ";
@@ -453,6 +454,10 @@ $lang['PM_disabled'] = "Private messaging has been disabled on this board";
 $lang['Cannot_send_privmsg'] = "Sorry but the administrator has prevented you from sending private messages";
 $lang['No_to_user'] = "You must specify a username to send this message";
 $lang['No_such_user'] = "Sorry but no such user exists";
+
+$lang['Disable_HTML_pm'] = "Disable HTML in this message";
+$lang['Disable_BBCode_pm'] = "Disable BBCode in this message";
+$lang['Disable_Smilies_pm'] = "Disable Smilies in this message";
 
 $lang['Message_sent'] = "Your message has been sent";
 
