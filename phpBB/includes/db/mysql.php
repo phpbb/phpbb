@@ -119,11 +119,12 @@ class sql_db
 		if ($query != '')
 		{
 			global $cache;
+		
+			$this->query_result =  false;
 
-			$this->query_result = false;
 			if ($max_age && method_exists($cache, 'sql_load'))
 			{
-				$this->query_result = $cache->sql_load($query, $max_age);
+				$cache->sql_load($query, $max_age);
 			}
 
 			if (!$this->query_result)
@@ -192,12 +193,12 @@ class sql_db
 				{
 					$this->open_queries[] = $this->query_result;
 				}
-			}
 
-			if ($max_age && method_exists($cache, 'sql_save'))
-			{
-				$cache->sql_save($query, $this->query_result);
-				@mysql_free_result(array_pop($this->open_queries));
+				if ($max_age && method_exists($cache, 'sql_save'))
+				{
+					$cache->sql_save($query, $this->query_result);
+					@mysql_free_result(array_pop($this->open_queries));
+				}
 			}
 		}
 		else
