@@ -195,13 +195,15 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if(SQL_LAYER == 'mysql')
+	if( preg_match("/^mysql/", SQL_LAYER) )
 	{
 		$sql = "SELECT VERSION() AS mysql_version";
 		if($result = $db->sql_query($sql))
 		{
-			list($version) = $db->sql_fetchrow($result);
-			if( ereg("^3\.23", $version) )
+			$row = $db->sql_fetchrow($result);
+			echo $version = $row['mysql_version'];
+
+			if( preg_match("/^(3\.23|4\.)/", $version) )
 			{
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $dbname;
@@ -214,17 +216,27 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 				$dbsize = 0;
 				for($i = 0; $i < count($tabledata_ary); $i++)
 				{
-					if($tabledata_ary[$i]['Type'] != "MRG_MyISAM" && strstr($tabledata_ary[$i]['Name'], $table_prefix) )
+					if( $tabledata_ary[$i]['Type'] != "MRG_MyISAM" )
 					{
-						$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+						if( $table_prefix != "" )
+						{
+							if( strstr($tabledata_ary[$i]['Name'], $table_prefix) )
+							{
+								$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+							}
+						}
+						else
+						{
+							$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+						}
 					}
 				}
 
-				if($dbsize >= 1048576)
+				if( $dbsize >= 1048576 )
 				{
 					$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
 				}
-				else if($dbsize >= 1024)
+				else if( $dbsize >= 1024 )
 				{
 					$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
 				}
