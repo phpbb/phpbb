@@ -14,7 +14,6 @@
 /*
 	TODO:
 
-	- check there's no way for an admin to screw up left_id and right_id values
 	- make a function to verify and/or fix the tree?
 */
 
@@ -46,7 +45,6 @@ $forum_data = $errors = array();
 switch ($mode)
 {
 	case 'add':
-	case 'create':
 		$acl = 'a_forumadd';
 		break;
 	case 'delete':
@@ -81,32 +79,32 @@ if (isset($_POST['update']))
 
 		case 'edit':
 			$forum_data = array(
-				'forum_id'		=>	$forum_id,
-				'parent_id'		=>	$parent_id
+				'forum_id'		=>	$forum_id
 			);
 
 			// No break here
 
 		case 'add':
 			$forum_data += array(
-				'forum_type'						=>	request_var('forum_type', FORUM_POST),
-				'forum_status'					=>	request_var('forum_status', ITEM_UNLOCKED),
-				'forum_name'					=>	request_var('forum_name', ''),
-				'forum_link'						=>	request_var('forum_link', ''),
-				'forum_link_track'				=>	request_var('forum_link_track', FALSE),
-				'forum_desc'						=>	str_replace("\n", '<br />', request_var('forum_desc', '')),
-				'forum_image'					=>	request_var('forum_image', ''),
-				'forum_style'						=>	request_var('forum_style', 0),
-				'display_on_index'				=>	request_var('display_on_index', FALSE),
+				'parent_id'				=>	$parent_id,
+				'forum_type'			=>	request_var('forum_type', FORUM_POST),
+				'forum_status'			=>	request_var('forum_status', ITEM_UNLOCKED),
+				'forum_name'			=>	request_var('forum_name', ''),
+				'forum_link'			=>	request_var('forum_link', ''),
+				'forum_link_track'		=>	request_var('forum_link_track', FALSE),
+				'forum_desc'			=>	str_replace("\n", '<br />', request_var('forum_desc', '')),
+				'forum_image'			=>	request_var('forum_image', ''),
+				'forum_style'			=>	request_var('forum_style', 0),
+				'display_on_index'		=>	request_var('display_on_index', FALSE),
 				'forum_topics_per_page'	=>	request_var('topics_per_page', 0),
-				'enable_icons'					=>	request_var('enable_icons', FALSE),
-				'enable_prune'					=>	request_var('enable_prune', FALSE),
-				'prune_days'						=>	request_var('prune_days', 7),
-				'prune_freq'						=>	request_var('prune_freq', 1),
-				'prune_old_polls'				=>	request_var('prune_old_polls', FALSE),
-				'prune_announce'				=>	request_var('prune_announce', FALSE),
-				'prune_sticky'					=>	request_var('prune_sticky', FALSE),
-				'forum_password'				=>	request_var('forum_password', ''),
+				'enable_icons'			=>	request_var('enable_icons', FALSE),
+				'enable_prune'			=>	request_var('enable_prune', FALSE),
+				'prune_days'			=>	request_var('prune_days', 7),
+				'prune_freq'			=>	request_var('prune_freq', 1),
+				'prune_old_polls'		=>	request_var('prune_old_polls', FALSE),
+				'prune_announce'		=>	request_var('prune_announce', FALSE),
+				'prune_sticky'			=>	request_var('prune_sticky', FALSE),
+				'forum_password'		=>	request_var('forum_password', ''),
 				'forum_password_confirm'=>	request_var('forum_password_confirm', '')
 			);
 
@@ -118,7 +116,7 @@ if (isset($_POST['update']))
 			}
 
 			// Redirect to permissions
-			$message = ($mode == 'create') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
+			$message = ($mode == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 			$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], "<a href=\"admin_permissions.$phpEx$SID&amp;mode=forum&amp;submit_usergroups=true&amp;ug_type=forum&amp;action=usergroups&amp;f[forum][]=" . $forum_data['forum_id'] . '">', '</a>');
 
 			trigger_error($message);
@@ -136,14 +134,14 @@ switch ($mode)
 		}
 		else
 		{
-			$forum_id								=	request_var('f', 0);
-			$parent_id							=	request_var('parent_id', 0);
-			$style_id								=	request_var('style_id', 0);
-			$forum_type							=	request_var('forum_type', FORUM_POST);
-			$forum_status						=	request_var('forum_status', ITEM_UNLOCKED);
-			$forum_desc							=	request_var('forum_desc', '');
-			$forum_name						=	request_var('forum_name', '');
-			$forum_password					=	request_var('forum_password', '');
+			$forum_id				=	request_var('f', 0);
+			$parent_id				=	request_var('parent_id', 0);
+			$style_id				=	request_var('style_id', 0);
+			$forum_type				=	request_var('forum_type', FORUM_POST);
+			$forum_status			=	request_var('forum_status', ITEM_UNLOCKED);
+			$forum_desc				=	request_var('forum_desc', '');
+			$forum_name				=	request_var('forum_name', '');
+			$forum_password			=	request_var('forum_password', '');
 			$forum_password_confirm	=	request_var('forum_password_confirm', '');
 		}
 
@@ -693,7 +691,7 @@ if ($mode == 'sync')
 	echo '<br /><div class="gen" align="center"><b>' . $user->lang['FORUM_RESYNCED'] . '</b></div>';
 }
 
-?><form method="post" action="<?php echo "admin_forums.$phpEx$SID" ?>"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+?><form method="post" action="<?php echo "admin_forums.$phpEx$SID&amp;parent_id=$parent_id" ?>"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav"><?php echo $navigation ?></td>
 	</tr>
@@ -785,7 +783,7 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input type="hidden" name="parent_id" value="<? echo $forum_id ?>" /><input class="post" type="text" name="forum_name" /> <input class="btnlite" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
+		<td width="100%" colspan="6" class="cat"><input type="hidden" name="mode" value="add" /><input class="post" type="text" name="forum_name" /> <input class="btnlite" type="submit" value="<?php echo $user->lang['CREATE_FORUM'] ?>" /></td>
 	</tr>
 </table></form>
 
@@ -901,9 +899,12 @@ function update_forum_data(&$forum_data)
 	{
 		return $errors;
 	}
-	elseif (empty($forum_data['forum_id']))
+
+	if (empty($forum_data['forum_id']))
 	{
 		// no forum_id means we're creating a new forum
+
+		$db->sql_transaction('begin');
 
 		if ($forum_data['parent_id'])
 		{
@@ -928,8 +929,8 @@ function update_forum_data(&$forum_data)
 				WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
 			$db->sql_query($sql);
 
-			$forum_data['left_id'] = $right_id;
-			$forum_data['right_id'] = $right_id + 1;
+			$forum_data['left_id'] = $row['right_id'];
+			$forum_data['right_id'] = $row['right_id'] + 1;
 		}
 		else
 		{
@@ -946,7 +947,9 @@ function update_forum_data(&$forum_data)
 
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $forum_data);
 		$db->sql_query($sql);
-			
+		
+		$db->sql_transaction('commit');
+
 		$forum_data['forum_id'] = $db->sql_nextid();
 		add_log('admin', 'LOG_FORUM_ADD', $forum_data['forum_name']);
 	}
