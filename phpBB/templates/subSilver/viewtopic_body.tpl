@@ -1,7 +1,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{U_TOPIC}">{TOPIC_TITLE}</a><br />
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><br />
 	  <span class="gensmall"><b>{PAGINATION}</b><br />
 	  &nbsp; </span></td>
   </tr>
