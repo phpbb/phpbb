@@ -446,7 +446,7 @@ else if ( $mode != "" )
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
 
 			// If no code was entered complain ...
-			if ($smile_code == '' || $smile_url = '')
+			if ($smile_code == '' || $smile_url == '')
 			{
 				message_die(MESSAGE, $lang['Fields_empty']);
 			}
