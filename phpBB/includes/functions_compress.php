@@ -149,6 +149,7 @@ class compress_zip extends compress
 			$crc = (int) trim($tmp['crc']);
 			$strlen = (int) trim($tmp['strlen']);
 			$uc_size = (int) trim($tmp['uc_size']);
+			$c_size = (int) trim($tmp['c_size']);
 
 			$tmp = unpack("Vattrib/Voffset", substr($buffer, 38, 8));
 			$attrib = (int) trim($tmp['attrib']);
@@ -162,15 +163,16 @@ class compress_zip extends compress
 				$seek_ary[$j]['crc'] = $crc;
 				$seek_ary[$j]['strlen'] = $strlen;
 				$seek_ary[$j]['uc_size'] = $uc_size;
+				$seek_ary[$j]['c_size'] = $c_size;
 
 				$seek_ary[$j]['offset'] = $offset;
-				$seek_ary[$j]['filename'] = $dst . $filename;
+				$seek_ary[$j]['filename'] = "$dst$filename";
 
 				$j++;
 			}
 			else
 			{
-				$mkdir_ary[] = $dst . $filename;
+				$mkdir_ary[] = "$dst$filename";
 			}
 		}
 
