@@ -354,7 +354,7 @@ class ucp_profile extends ucp
 					$data = array();
 					if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
 					{
-						avatar_upload($data);
+						$this->error = avatar_upload($data);
 					}
 					else if (!empty($_POST['uploadurl']) && $can_upload)
 					{
@@ -365,7 +365,7 @@ class ucp_profile extends ucp
 						);
 						$data = $this->normalise_data($_POST, $normalise);
 
-						avatar_upload($data);
+						$this->error = avatar_upload($data);
 					}
 					else if (!empty($_POST['remotelink']) && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 					{
@@ -378,14 +378,14 @@ class ucp_profile extends ucp
 						);
 						$data = $this->normalise_data($_POST, $normalise);
 
-						avatar_remote($data);
+						$this->error = avatar_remote($data);
 					}
 					else if (!empty($_POST['delete']) && $auth->acl_get('u_chgavatar'))
 					{
 						$data['filename'] = $data['width'] = $data['height'] = '';
 					}
 
-					if (!sizeof($this->error))
+					if (!$this->error)
 					{
 						// Do we actually have any data to update?
 						if (sizeof($data))
@@ -440,7 +440,7 @@ class ucp_profile extends ucp
 
 
 				$template->assign_vars(array(
-					'ERROR'			=> (sizeof($this->error)) ? implode('<br />', $this->error) : '', 
+					'ERROR'			=> ($this->error) ? $this->error : '', 
 
 					'AVATAR'		=> $avatar_img, 
 					'AVATAR_SIZE'	=> $config['avatar_filesize'], 
