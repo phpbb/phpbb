@@ -159,7 +159,7 @@ if ($sql)
 	$poll_start = (isset($poll_start)) ? (int) $poll_start : 0;
 	$poll_options = array();
 	
-	if (!isset($icon_id))
+	if (!isset($icon_id) || in_array($mode, array('quote', 'reply')))
 	{
 		$icon_id = 0;
 	}
