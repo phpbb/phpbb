@@ -129,10 +129,6 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	}
 	server_parse($socket, "220");
 
-	// Send the RFC821 specified HELO.
-	fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
-	server_parse($socket, "250");
-
 	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
 	{ 
 		// Send the RFC2554 specified EHLO. 
