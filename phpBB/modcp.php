@@ -748,7 +748,7 @@ switch($mode)
 			{
 				$sql = "UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id
-					WHERE post_time > $post_time
+					WHERE post_time >= $post_time
 						AND topic_id = $topic_id";
 			}
 
@@ -765,7 +765,7 @@ switch($mode)
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 			);
 
-			$message = $lang['Topic_split'] . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+			$message = $lang['Topic_split'] . " " . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
