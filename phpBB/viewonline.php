@@ -23,7 +23,7 @@ $user->setup();
 
 // Get and set some variables
 $mode		= request_var('mode', '');
-$user_id	= request_var('u', 0);
+$session_id	= request_var('s', '');
 $start		= request_var('start', 0);
 $sort_key	= request_var('sk', 'b');
 $sort_dir	= request_var('sd', 'd');
@@ -41,8 +41,8 @@ if ($mode == 'whois')
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-	WHERE u.user_id = $user_id 
-		AND	s.session_user_id = u.user_id";
+	WHERE s.session_id = '$session_id' 
+		AND	u.user_id = s.session_user_id";
 	$result = $db->sql_query($sql);
 
 	if ($row = $db->sql_fetchrow($result))
@@ -82,7 +82,7 @@ $db->sql_freeresult($result);
 
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
+$sql = 'SELECT u.user_id, u.username, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . ' 
@@ -136,8 +136,7 @@ while ($row = $db->sql_fetchrow($result))
 	if ($view_online)
 	{
 		preg_match('#^([a-z]+)#i', $row['session_page'], $on_page);
-//		echo $row['session_page'];
-//		print_r($on_page);
+
 		switch ($on_page[1])
 		{
 			case 'index':
@@ -222,13 +221,13 @@ while ($row = $db->sql_fetchrow($result))
 			'USERNAME' 		=> $username,
 			'LASTUPDATE' 	=> $user->format_date($row['session_time']),
 			'FORUM_LOCATION'=> $location, 
-			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $user_id == $row['user_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '', 
+			'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '', 
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
 			'U_USER_PROFILE'	=> ($row['user_type'] <> USER_IGNORE) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
-			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup') ? '&amp;mode=lookup&amp;u=' . $row['user_id'] : ''), 
-			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;u=" . $row['user_id'], 
+			'U_USER_IP'			=> "viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;mode=lookup&amp;s=' . $row['session_id'] : ''), 
+			'U_WHOIS'			=> "viewonline.$phpEx$SID&amp;mode=whois&amp;s=" . $row['session_id'], 
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 
