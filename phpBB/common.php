@@ -142,17 +142,9 @@ $nav_links['author'] = array (
 //
 // Obtain and encode users IP
 //
-if(!empty($HTTP_CLIENT_IP))
+if( !empty($HTTP_X_FORWARDED_FOR) )
 {
-	$client_ip = ( ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_CLIENT_IP) ) ? $HTTP_CLIENT_IP : $REMOTE_ADDR;
-}
-else if(!empty($HTTP_X_FORWARDED_FOR))
-{
-	$client_ip = ( ereg("^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)", $HTTP_X_FORWARDED_FOR, $ip_list) ) ? $ip_list[0] : $REMOTE_ADDR;
-}
-else if(!empty($HTTP_PROXY_USER))
-{
-	$client_ip = ( ereg("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER) ) ? $HTTP_PROXY_USER : $REMOTE_ADDR;
+	$client_ip = ( preg_match("/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/", $HTTP_X_FORWARDED_FOR, $ip_list) ) ? $ip_list[1] : $REMOTE_ADDR;
 }
 else
 {
