@@ -274,6 +274,7 @@ $lang['You_are_watching'] = "You are now watching this topic";
 // Posting/Replying (Not private messaging!)
 //
 $lang['Message_body'] = "Message body";
+$lang['Topic_review'] = "Topic review";
 
 $lang['No_post_mode'] = "No post mode specified";
 
@@ -447,6 +448,7 @@ $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 $lang['File_no_data'] = "The file at the URL you gave contains no data";
 $lang['No_connection_URL'] = "A connection could not be made to the URL you gave";
 $lang['Incomplete_URL'] = "The URL you entered is incomplete";
+$lang['Wrong_remote_avatar_format'] = "The URL of the remote avatar is not valid";
 
 $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
