@@ -854,6 +854,45 @@ $lang += array(
 	'ICONS_IMPORTED' => 'The icons pack has been installed successfully.',
 );
 
+// Custom bbcodes
+$lang += array(
+	'BBCODES'						=>	'BBCodes',
+	'BBCODES_EXPLAIN'			=>	'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. Additionnally, you can save users from typing sometimes very long HTML code by providing them a single BBCode as replacement. From this page you can add, remove and edit custom BBCodes',
+
+	'TOO_MANY_BBCODES'		=>	'You cannot create any more BBCodes. Please remove one or more BBCodes then try again',
+	'BBCODE_NOT_EXIST'		=>	'The BBCode you selected does not exist',
+	'BBCODE_ADDED'				=>	'BBCode added successfully',
+	'BBCODE_EDITED'				=>	'BBCode edited successfully',
+
+	'BBCODE_TAG'					=>	'Tag',
+	'ADD_BBCODE'					=>	'Add a new BBCode',
+
+	// Note to translators: you can translate everything but what's between { and }
+	'BBCODE_USAGE'							=>	'BBCode usage',
+	'BBCODE_USAGE_EXPLAIN'			=>	'Here you define how to use the bbcode. Replace any variable input by the corresponding token (see below)',
+	'BBCODE_USAGE_EXAMPLE'			=>	'[colour={COLOR}]{TEXT}[/colour]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
+	'HTML_REPLACEMENT'					=>	'HTML replacement',
+	'HTML_REPLACEMENT_EXPLAIN'		=>	'Here you define the default HTML replacement (each template can have its own HTML replacement). Do not forget to put back tokens you used above!',
+	'HTML_REPLACEMENT_EXAMPLE'	=>	'&lt;font color="{COLOR}"&gt;{TEXT}&lt;/font&gt;<br /><br />&lt;font face="{TEXT1}"&gt;{TEXT2}&lt;/font&gt;',
+	'TOKENS'										=>	'Tokens',
+	'TOKENS_EXPLAIN'						=>	'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<i>&lt;stringname&gt;</i>} where <i>&lt;stringname&gt;</i> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user\'s locale',
+
+	'EXAMPLE'										=>	'Example:',
+	'EXAMPLES'									=>	'Examples:',
+
+	'TOKEN'							=>	'Token',
+	'TOKEN_DEFINITION'	 	=>	'What can it be?',
+
+	'tokens'	=>	array(
+		'TEXT'			=>	'Any text, including foreign characters, numbers, etc...',
+		'NUMBER'		=>	'Any serie of digits',
+		'EMAIL'			=>	'A valid email address',
+		'URL'				=>	'A valid URL using any protocol (http, ftp, etc... cannot be used for javascript exploits). If none is given, "http://" is prepended to to the string',
+		'LOCAL_URL'	=>	'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
+		'COLOR'		=>	'A HTML color, can be either in the numeric form #FF1234 or an english name such as "blue"'
+	)
+);
+
 // User admin
 $lang += array(
 	'User_admin' => 'User Administration',
