@@ -192,7 +192,7 @@ $select_post_days .= "</select>";
 // Grab all the basic data for
 // this forum
 //
-$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
 	FROM ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".POSTS_TABLE." p, ".USERS_TABLE." u2
 	WHERE t.forum_id = $forum_id
 		AND t.topic_poster = u.user_id
@@ -202,6 +202,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		$limit_posts_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
+
 if(!$t_result = $db->sql_query($sql))
 {
    error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
@@ -363,7 +364,16 @@ if($total_topics)
 		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['user_id']);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]['post_time'], $board_config['default_timezone']);
-		$last_post_user = $topic_rowset[$x]['user2'];
+
+		if($topic_rowset[$x]['id2'] == ANONYMOUS && $topic_rowset[$x]['post_username'] != '')
+		{
+			$last_post_user = $topic_rowset[$x]['post_username'];
+		}
+		else
+		{
+			$last_post_user = $topic_rowset[$x]['user2'];
+		}
+
 		$last_post_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['id2']);
 
 		$views = $topic_rowset[$x]['topic_views'];

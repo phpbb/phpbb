@@ -67,14 +67,14 @@ function get_db_stat($mode)
 	}
 }
 
-function get_userdata_from_id($userid) 
+function get_userdata_from_id($userid)
 {
 	global $db;
 
-	$sql = "SELECT * 
-		FROM ".USERS_TABLE." 
+	$sql = "SELECT *
+		FROM ".USERS_TABLE."
 		WHERE user_id = $userid";
-	if(!$result = $db->sql_query($sql)) 
+	if(!$result = $db->sql_query($sql))
 	{
 		$userdata = array("error" => "1");
 		return ($userdata);
@@ -95,9 +95,9 @@ function get_userdata($username) {
 
 	global $db;
 
-	$sql = "SELECT * 
-		FROM ".USERS_TABLE." 
-		WHERE username = '$username' 
+	$sql = "SELECT *
+		FROM ".USERS_TABLE."
+		WHERE username = '$username'
 			AND user_level != ".DELETED;
 	if(!$result = $db->sql_query($sql))
 	{
@@ -410,4 +410,63 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 }
 
+//
+// Check to see if the username has been taken, or if it is disallowed.
+// Used for registering, changing names, and posting anonymously with a username
+//
+function validate_username($username)
+{
+
+	global $db;
+
+	switch(SQL_LAYER)
+	{
+		// Along with subqueries MySQL also lacks
+		// a UNION clause which would be very nice here :(
+		// So we have to use two queries
+		case 'mysql':
+			$sql_users = "SELECT username
+				FROM ".USERS_TABLE."
+				WHERE LOWER(username) = '".strtolower($username)."'";
+			$sql_disallow = "SELECT disallow_username
+				FROM ".DISALLOW_TABLE."
+				WHERE disallow_username = '$username'";
+
+			if($result = $db->sql_query($sql_users))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			if($result = $db->sql_query($sql_disallow))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			break;
+
+		default:
+			$sql = "SELECT disallow_username
+				FROM ".DISALLOW_TABLE."
+				WHERE disallow_username = '$username'
+				UNION
+				SELECT username
+				FROM ".USERS_TABLE."
+				WHERE LOWER(username) = '".strtolower($username)."'";
+
+			if($result = $db->sql_query($sql))
+			{
+				if($db->sql_numrows($result) > 0)
+				{
+					return(FALSE);
+				}
+			}
+			break;
+	}
+
+	return(TRUE);
+}
 ?>

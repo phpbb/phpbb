@@ -269,8 +269,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_bbcode_uid int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
 );
-CREATE  INDEX privmsgs_from_groupid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_from_groupid);
-CREATE  INDEX privmsgs_to_groupid_phpbb_privmsgs_index ON phpbb_privmsgs (privmsgs_to_groupid);
+CREATE  INDEX privmsgs_from_groupid_index ON phpbb_privmsgs (privmsgs_from_groupid);
+CREATE  INDEX privmsgs_to_groupid_index ON phpbb_privmsgs (privmsgs_to_groupid);
 
 
 /* --------------------------------------------------------

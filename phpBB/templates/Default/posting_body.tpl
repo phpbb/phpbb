@@ -1,11 +1,11 @@
 <script language="Javascript">
 <!--
-function x () 
+function x ()
 {
 	return;
 }
 
-function addBBcode(bbCode) 
+function addBBcode(bbCode)
 {
 	document.posting.message.value=document.posting.message.value+bbCode;
 	document.posting.message.focus();
@@ -34,15 +34,11 @@ function addBBcode(bbCode)
     <tr>
       <td>
          <table border="0" width="100%" cellpadding="3" cellspacing="1">
-	        <tr class="tablebody">
-	           <td bgcolor="#DDDDDD" width="15%">{L_ABOUT_POST}</td>
-	           <td bgcolor="#CCCCCC">{ABOUT_POSTING}</td>
-	        </tr>
-                <tr class="tablebody">
+            <tr class="tablebody">
 	           <td bgcolor="#DDDDDD">{L_USERNAME}</td>
 	           <td bgcolor="#CCCCCC">{USERNAME_INPUT}</td>
-                </tr>
-                <tr class="tablebody">
+            </tr>
+             <tr class="tablebody">
                    <td bgcolor="#DDDDDD">{L_PASSWORD}</td>
                    <td bgcolor="#CCCCCC">{PASSWORD_INPUT}</td>
 	        </tr>

@@ -37,61 +37,7 @@ init_userprefs($userdata);
 //
 // Page specific functions
 //
-function validate_username($username)
-{
 
-	global $db;
-
-	switch(SQL_LAYER)
-	{
-		// Along with subqueries MySQL also lacks
-		// a UNION clause which would be very nice here :(
-		// So we have to use two queries
-		case 'mysql':
-			$sql_users = "SELECT username
-				FROM ".USERS_TABLE."
-				WHERE LOWER(username) = '".strtolower($username)."'";
-			$sql_disallow = "SELECT disallow_username
-				FROM ".DISALLOW_TABLE."
-				WHERE disallow_username = '$username'";
-
-			if($result = $db->sql_query($sql_users))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			if($result = $db->sql_query($sql_disallow))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			break;
-
-		default:
-			$sql = "SELECT disallow_username
-				FROM ".DISALLOW_TABLE."
-				WHERE disallow_username = '$username'
-				UNION
-				SELECT username
-				FROM ".USERS_TABLE."
-				WHERE LOWER(username) = '".strtolower($username)."'";
-
-			if($result = $db->sql_query($sql))
-			{
-				if($db->sql_numrows($result) > 0)
-				{
-					return(FALSE);
-				}
-			}
-			break;
-	}
-
-	return(TRUE);
-}
 function language_select($default, $dirname="language/")
 {
 	global $phpEx;

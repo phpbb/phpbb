@@ -136,7 +136,7 @@ if($total_categories)
 	{
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
 				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id
@@ -144,7 +144,7 @@ if($total_categories)
 					AND af.forum_id = f.forum_id
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 						FROM ".FORUMS_TABLE." f
 						WHERE NOT EXISTS (
 							SELECT p.post_time
@@ -158,7 +158,7 @@ if($total_categories)
 
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
 				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
 				WHERE f.forum_last_post_id = p.post_id(+)
 					AND p.post_id = t.topic_last_post_id(+)
@@ -180,7 +180,7 @@ if($total_categories)
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 */
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote
 				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
@@ -282,11 +282,18 @@ if($total_categories)
 
 				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
 				{
-
+					if($forum_rows[$j]['user_id'] == ANONYMOUS && $forum_rows[$j]['post_username'] != '')
+					{
+						$last_poster = $forum_rows[$j]['post_username'];
+					}
+					else
+					{
+						$last_poster = $forum_rows[$j]['username'];
+					}
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
 					$last_post = $last_post_time . "<br />by ";
-					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $forum_rows[$j]['username'] . "</a>&nbsp;";
+					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
 					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 

@@ -315,7 +315,7 @@ $topic_prev_row = $db->sql_fetchrow($result_prev);
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject, p.post_username
 	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -424,7 +424,7 @@ for($x = 0; $x < $total_posts; $x++)
 
 	$poster_avatar = ($postrow[$x]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"".$board_config['avatar_path']."/".$postrow[$x]['user_avatar']."\">" : "";
 
-	if(!$postrow[$x]['user_rank'])
+	if($postrow[$x]['user_rank'] == '')
 	{
 		for($i = 0; $i < count($ranksrow); $i++)
 		{
@@ -445,6 +445,13 @@ for($x = 0; $x < $total_posts; $x++)
 				$rank_image = ($ranksrow[$i]['rank_image']) ? "<img src=\"".$ranksrow[$i]['rank_image']."\">" : "";
 			}
 		}
+	}
+
+	// Handle anon users posting with usernames
+	if($poster_id == ANONYMOUS && $postrow[$x]['post_username'] != '')
+	{
+		$poster = stripslashes($postrow[$x]['post_username']);
+		$poster_rank = $lang['Guest'];
 	}
 
 	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
@@ -484,6 +491,7 @@ for($x = 0; $x < $total_posts; $x++)
 
 		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost&".POST_POST_URL."=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
+
 
 	$post_subject = ($postrow[$x]['post_subject'] != "") ? stripslashes($postrow[$x]['post_subject']) : "Re: ".$topic_title;
 

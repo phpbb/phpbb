@@ -110,8 +110,7 @@ switch($mode)
 		}
 		break;
 	case 'reply':
-
-		$auth_type = AUTH_REPLY;
+		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_reply";
 		$error_string = "reply to topics";
 		break;
@@ -171,6 +170,8 @@ $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_s
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
 $annouce = (isset($HTTP_POST_VARS['annouce'])) ? $HTTP_POST_VARS['annouce'] : "";
 $sticky = (isset($HTTP_POST_VARS['sticky'])) ? $HTTP_POST_VARS['sticky'] : "";
+$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
+
 
 if($annouce)
 {
@@ -188,12 +189,12 @@ else
 //
 // Prepare our message and subject on a 'submit'
 //
-if(isset($HTTP_POST_VARS['submit']))
+if(isset($HTTP_POST_VARS['submit']) || $preview)
 {
 	//
 	// Flood control
 	//
-	if($mode != 'editpost')
+	if($mode != 'editpost' && !$preview)
 	{
 		$sql = "SELECT max(post_time) AS last_post_time
 			FROM ".POSTS_TABLE."
@@ -214,6 +215,25 @@ if(isset($HTTP_POST_VARS['submit']))
 	//
 	// End: Flood control
 	//
+
+	// Handle anon posting with usernames
+	if(isset($HTTP_POST_VARS['username']))
+	{
+		$username = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['username']))));
+		if(!validate_username($username))
+		{
+			$error = TRUE;
+			if(isset($error_msg))
+			{
+				$error_msg .= "<br />";
+			}
+			$error_msg .= $lang['Bad_username'];
+		}
+	}
+	else
+	{
+		$username = "";
+	}
 
 	$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
 	if($mode == 'newtopic' && empty($subject))
@@ -239,7 +259,7 @@ if(isset($HTTP_POST_VARS['submit']))
 
 	if(!empty($HTTP_POST_VARS['message']))
 	{
-		if(!$error)
+		if(!$error && !$preview)
 		{
 			if($disable_html)
 			{
@@ -312,8 +332,12 @@ switch($mode)
 			}
 		}
 
-		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
+			if($username)
+			{
+				$username = addslashes($username);
+			}
 			$topic_time = get_gmt_ts();
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? $HTTP_POST_VARS['notify'] : 0;
 			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
@@ -322,8 +346,8 @@ switch($mode)
 			if($db->sql_query($sql))
 			{
 				$new_topic_id = $db->sql_nextid();
-				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
-						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '$user_ip', '$uid')";
+				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
+						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$uid')";
 
 				if($db->sql_query($sql))
 				{
@@ -504,7 +528,7 @@ switch($mode)
 		$page_title = " $l_reply";
 		$section_title = $l_postreplyto;
 
-		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
 			if($SQL_LAYER != "mysql")
 			{
@@ -519,11 +543,16 @@ switch($mode)
 				}
 			}
 
+			if($username)
+			{
+				$username = addslashes($username);
+			}
+
 			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
 			$topic_time = get_gmt_ts();
 
-				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
-						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '$user_ip', '$uid')";
+				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
+						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$uid')";
 
 			if($db->sql_query($sql))
 			{
@@ -673,7 +702,7 @@ switch($mode)
 	case 'editpost':
 		$page_title = " $l_editpost";
 		$section_title = $l_editpostin;
-		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
 			if(isset($HTTP_POST_VARS['delete_post']))
 			{
@@ -724,7 +753,7 @@ switch($mode)
 				}
 			}
 		}
-		else
+		else if(!$preview)
 		{
 			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
 			if(!empty($post_id))
@@ -832,6 +861,36 @@ if($error)
 // End: error handling
 //
 
+if(!isset($username))
+{
+	$username = $userdata["username"];
+}
+
+//
+// Start: Preview Post
+//
+if($preview)
+{
+	$preview_message = $message;
+	$uid = make_bbcode_uid();
+	$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $uid);
+	$preview_message = bbencode_second_pass($preview_message, $uid);
+	$preview_message = make_clickable($preview_message);
+
+	$template->set_filenames(array("preview" => "posting_preview.tpl"));
+	$template->assign_vars(array(
+		"TOPIC_TITLE" => $subject,
+		"ROW_COLOR" => $theme['td_color1'],
+		"POSTER_NAME" => $username,
+		"L_POSTED" => $lang['Posted'],
+		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
+		"MESSAGE" => stripslashes(nl2br($preview_message))));
+	$template->pparse("preview");
+}
+//
+// End: Preview Post
+//
+
 //
 // Show the same form for each mode.
 //
@@ -876,10 +935,6 @@ if($error)
 		}
 		else
 		{
-			if(!isset($username))
-			{
-				$username = $userdata["username"];
-			}
 			$username_input = '<input type="text" name="username" value="'.$username.'" size="25" maxlength="50">';
 			$password_input = '<input type="password" name="password" size="25" maxlenght="40">';
 		}

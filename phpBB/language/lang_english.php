@@ -135,6 +135,7 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 //
 // Viewtopic
 //
+$lang['Guest'] = 'Guest';
 
 //
 // Posting/Replying (Not private
@@ -168,6 +169,7 @@ $lang['Date'] = "Date";
 $lang['Website'] = "Website";
 $lang['From'] = "From";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
+$lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 
 //
 // Memberslist
