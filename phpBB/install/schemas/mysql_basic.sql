@@ -183,6 +183,7 @@ INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_readpm', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewonline', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewprofile', 1);
+INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_setavatar', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgavatar', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chggrp', 1);
 INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgemail', 1);
