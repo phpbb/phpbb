@@ -180,9 +180,16 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$num_u_access = $db->sql_numrows($au_result);
 		if($num_u_access)
 		{
-			while($u_row = $db->sql_fetchrow($au_result))
+			if($forum_id != AUTH_LIST_ALL)
 			{
-				$u_access[$u_row['forum_id']] = $u_row;
+				$u_access = $db->sql_fetchrowset($au_result);
+			}
+			else
+			{
+				while($u_row = $db->sql_fetchrow($au_result))
+				{
+					$u_access[$u_row['forum_id']] = $u_row;
+				}
 			}
 		}
 	}
