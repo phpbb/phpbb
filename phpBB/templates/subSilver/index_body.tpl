@@ -2,7 +2,12 @@
 <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left" valign="bottom"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
-	<td align="right" class="gensmall"><a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{L_LAST_VISIT} {LAST_VISIT_DATE}</td>
+	<td align="right" class="gensmall">
+		<!-- BEGIN egosearch -->
+		<a href="{egosearch.U_SEARCH_SELF}" class="gensmall">{egosearch.L_SEARCH_SELF}</a><br />
+		<!-- END egosearch -->
+		<a href="{U_SEARCH_UNANSWERED}" class="gensmall">{L_SEARCH_UNANSWERED}</a><br />
+		<a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{L_LAST_VISIT} {LAST_VISIT_DATE}</td>
   </tr>
 </table>
 

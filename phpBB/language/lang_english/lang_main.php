@@ -132,6 +132,8 @@ $lang['Online_users'] = "In total there are %d users online :: %d Registered, %d
 $lang['Online_user'] = "In total there is %d user online :: %d Registered, %d Hidden and %d Guests";
 
 $lang['You_last_visit'] = "You last visited on";
+$lang['Search_your_posts'] = "View your posts";
+$lang['Search_unanswered'] = "View unanswered posts";
 $lang['Add'] = "Add";
 $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";

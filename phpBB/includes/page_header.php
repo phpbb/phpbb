@@ -231,6 +231,7 @@ $template->assign_vars(array(
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 	"L_LAST_VISIT" => $lang['You_last_visit'],
+	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
@@ -243,6 +244,8 @@ $template->assign_vars(array(
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
+	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
+
 
 	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
 	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
@@ -292,6 +295,7 @@ $template->assign_vars(array(
 	"T_SPAN_CLASS3" => $theme['span_class3'])
 );
 
+
 //
 // Login box?
 //
@@ -302,6 +306,15 @@ if( !$userdata['session_logged_in'] )
 else
 {
 	$template->assign_block_vars("switch_user_logged_in", array());
+	//
+	// Bart's quick ego search
+	//
+	$template->assign_block_vars("egosearch", array(
+		"L_SEARCH_SELF" => $lang['Search_your_posts'],
+		"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"))
+	);
+
+
 }
 
 header ("Cache-Control: no-store, no-cache, must-revalidate");
