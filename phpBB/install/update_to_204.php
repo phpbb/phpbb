@@ -456,57 +456,62 @@ switch ($row['config_value'])
 
 	case '.0.3':
 
-		// Add indexes to post_id in search match table (+ word_id for MS Access)
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
 			case 'mysql4':
-				$sql[] = "ALTER TABLE " . SEARCH_MATCH_TABLE . " ADD INDEX post_id (post_id)";
-				break;
+				// Add indexes to post_id in search match table (+ word_id for MS Access)
+				$sql[] = "ALTER TABLE " . SEARCH_MATCH_TABLE . " 
+					ADD INDEX post_id (post_id)";
 
-			case 'postgresql':
-				$sql[] = "CREATE INDEX post_id_" . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " (post_id)";
-				break;
-
-			case 'msaccess':
-				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " ON " . SEARCH_MATCH_TABLE . " ([post_id])";
-				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . "_1 ON " . SEARCH_MATCH_TABLE . " ([word_id])";
-				break;
-		}
-		
-		// Regenerate groups table with incremented group_id for pgsql 
-		// ... missing in 2.0.3 ...
-		switch (SQL_LAYER)
-		{
-			case 'postgresql':
-				$sql[] = "CREATE SEQUENCE " . GROUPS_TABLE . "_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
-				$sql[] = "CREATE TABLE tmp_" . GROUPS_TABLE . " AS SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE;
-				$sql[] = "DROP TABLE " . GROUPS_TABLE;
-				$sql[] = "CREATE TABLE phpbb_groups (group_id int DEFAULT nextval('" . GROUPS_TABLE . "_id_seq'::text) NOT NULL, group_name varchar(40) NOT NULL, group_type int2 DEFAULT '1' NOT NULL, group_description varchar(255) NOT NULL, group_moderator int4 DEFAULT '0' NOT NULL, group_single_user int2 DEFAULT '0' NOT NULL, CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id))";
-				$sql[] = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_type, group_description, group_moderator, group_single_user) SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user FROM tmp_" . GROUPS_TABLE;
-				$sql[] = "DROP TABLE tmp_" . GROUPS_TABLE;
-				break;
-		}
-
-		// Modify user_timezone to decimal(5,2) for mysql ... mysql4/mssql/pgsql/msaccess
-		// should be completely unaffected
-		// Change default user_notify to 0 
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
+				// Modify user_timezone to decimal(5,2) for mysql ... mysql4/mssql/pgsql/msaccess
+				// should be completely unaffected
+				// Change default user_notify to 0 
 				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
 					MODIFY COLUMN user_timezone decimal(5,2) DEFAULT '0' NOT NULL, 
 					MODIFY COLUMN user_notify tinyint(1) DEFAULT '0' NOT NULL";
+
+				// Adjust field type for prune_days, prune_freq ... was too small
+				$sql[] = "ALTER TABLE " . PRUNE_TABLE . " 
+					MODIFY COLUMN prune_days smallint(5) UNSIGNED NOT NULL, 
+					MODIFY COLUMN prune_freq smallint(5) UNSIGNED NOT NULL";
 				break;
 
 			case 'mssql':
 			case 'mssql-odbc':
-				break;
+				// Add missing defaults to MSSQL post table schema
+				$sql[] = "ALTER TABLE [" . POSTS_TABLE . "] WITH NOCHECK ADD
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_bbcode] DEFAULT (1) FOR [enable_bbcode]
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_html] DEFAULT (0) FOR [enable_html]
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_smilies] DEFAULT (1) FOR [enable_smilies]
+					CONSTRAINT [DF_" . POSTS_TABLE . "_enable_sig] DEFAULT (1) FOR [enable_sig]
+					CONSTRAINT [DF_" . POSTS_TABLE . "_post_edit_count] DEFAULT (0) FOR [post_edit_count]";
 
 			case 'msaccess':
+				// Add indexes to post_id in search match table (+ word_id for MS Access)
+				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . " 
+					ON " . SEARCH_MATCH_TABLE . " ([post_id])";
+				$sql[] = "CREATE INDEX " . SEARCH_MATCH_TABLE . "_1 
+					ON " . SEARCH_MATCH_TABLE . " ([word_id])";
 				break;
 
 			case 'postgresql':
+				// Add indexes to post_id in search match table (+ word_id for MS Access)
+				$sql[] = "CREATE INDEX post_id_" . SEARCH_MATCH_TABLE . " 
+					ON " . SEARCH_MATCH_TABLE . " (post_id)";
+
+				// Regenerate groups table with incremented group_id for pgsql 
+				// ... missing in 2.0.3 ...
+				$sql[] = "CREATE SEQUENCE " . GROUPS_TABLE . "_id_seq start 3 increment 1 maxvalue 2147483647 minvalue 1 cache 1";
+				$sql[] = "CREATE TABLE tmp_" . GROUPS_TABLE . " 
+					AS SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user 
+						FROM " . GROUPS_TABLE;
+				$sql[] = "DROP TABLE " . GROUPS_TABLE;
+				$sql[] = "CREATE TABLE phpbb_groups (group_id int DEFAULT nextval('" . GROUPS_TABLE . "_id_seq'::text) NOT NULL, group_name varchar(40) NOT NULL, group_type int2 DEFAULT '1' NOT NULL, group_description varchar(255) NOT NULL, group_moderator int4 DEFAULT '0' NOT NULL, group_single_user int2 DEFAULT '0' NOT NULL, CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id))";
+				$sql[] = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_type, group_description, group_moderator, group_single_user) 
+					SELECT group_id, group_name, group_type, group_description, group_moderator, group_single_user 
+						FROM tmp_" . GROUPS_TABLE;
+				$sql[] = "DROP TABLE tmp_" . GROUPS_TABLE;
 				break;
 		}
 }

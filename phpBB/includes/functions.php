@@ -701,18 +701,15 @@ function redirect($url)
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
 	$url = preg_replace('/^\/?(.*?\/)?$/', '\1', trim($url));
 
-	// If redirects don't work for you, first make sure you've entered your server (domain) name,
-	// script path, protocol (insecure (http://) or secure (https://) cookie) and port 
-	// correctly in admin -> general -> configuration ... if they are fine, uncomment the following
-	// line and replace 'Location: ' . with $header_location . in the line following it.
-
-//	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	
+	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
 	{
-		header('HTTP/1.0 302 Redirect');
+		header('Refresh: 0; URL=' . $server_protocol . $server_name . $script_name . $server_port . $url);
+		echo '<html><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $script_name . $server_port . $url . '"></html>';
+		exit;
 	}
 
+	// Behave as per HTTP/1.1 spec for others
 	header('Location: ' . $server_protocol . $server_name . $script_name . $server_port . $url);
 	exit;
 }

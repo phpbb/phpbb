@@ -553,6 +553,14 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]
 GO
 
+ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
+	CONSTRAINT [DF_phpbb_posts_enable_bbcode] DEFAULT (1) FOR [enable_bbcode]
+	CONSTRAINT [DF_phpbb_posts_enable_html] DEFAULT (0) FOR [enable_html]
+	CONSTRAINT [DF_phpbb_posts_enable_smilies] DEFAULT (1) FOR [enable_smilies]
+	CONSTRAINT [DF_phpbb_posts_enable_sig] DEFAULT (1) FOR [enable_sig]
+	CONSTRAINT [DF_phpbb_posts_post_edit_count] DEFAULT (0) FOR [post_edit_count]
+GO
+
 ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_search_wordlist_word_common] DEFAULT (0) FOR [word_common]
 GO

@@ -109,8 +109,8 @@ CREATE TABLE phpbb_disallow (
 CREATE TABLE phpbb_forum_prune (
    prune_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(5) UNSIGNED NOT NULL,
-   prune_days tinyint(4) UNSIGNED NOT NULL,
-   prune_freq tinyint(4) UNSIGNED NOT NULL,
+   prune_days smallint(5) UNSIGNED NOT NULL,
+   prune_freq smallint(5) UNSIGNED NOT NULL,
    PRIMARY KEY(prune_id),
    KEY forum_id (forum_id)
 );
