@@ -309,11 +309,6 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	{
 		$error = FALSE;
 		$passwd_sql = "";
-		if($user_id != $userdata['user_id'])
-		{
-			$error = TRUE;
-			$error_msg = $lang['Wrong_Profile'];
-		}
 	}
 
 	//
