@@ -39,7 +39,7 @@ if ( !defined('INSTALLING') )
 
 	if( defined("PHPBB_INSTALLED") )
 	{
-		redirect("../index.$phpEx);
+		redirect("../index.$phpEx");
 	}
 }
 
@@ -565,9 +565,11 @@ if ( !empty($next) )
 				if ( !inarray($name, $ignore_configs) )
 				{
 					$name = ( !empty($rename_configs[$name]) ) ? $rename_configs[$name] : $name;
-
+					
+					// phpBB 1.x has some problems with escaping strings in the database. Try to correct for
+					// this by removing all slashes and then escaping once.
 					$sql = "REPLACE INTO " . CONFIG_TABLE . " (config_name, config_value) 
-						VALUES ('$name', '" . stripslashes($value) . "')";
+						VALUES ('$name', '".addslashes(stripslashes(stripslashes($value)))."')";
 					query($sql, "Couldn't update config table with values from old config table");
 				}
 			}
