@@ -181,7 +181,7 @@ class sql_db
 			return false;
 		}
 
-		return ( $this->query_result) ? $this->query_result : fals;
+		return ( $this->query_result) ? $this->query_result : false;
 	}
 
 	function sql_query_limit($query = '', $total, $offset = 0)
