@@ -492,7 +492,14 @@ else if( $mode == "read" )
 	$private_message = $privmsg['privmsgs_text'];
 	$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
 
-	$user_sig = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig'] : $privmsg['user_sig'];
+	if( $board_config['allow_sig'] )
+	{
+		$user_sig = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig'] : $privmsg['user_sig'];
+	}
+	else
+	{
+		$user_sig = "";
+	}
 	$user_sig_bbcode_uid = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg['user_sig_bbcode_uid'];
 
 	//
@@ -858,7 +865,7 @@ else if( $submit || $refresh || $mode != "" )
 	}
 
 	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+	$user_sig = ( $userdata['user_sig'] != "" && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
 	if( $submit && $mode != "edit" )
 	{
@@ -1127,14 +1134,14 @@ else if( $submit || $refresh || $mode != "" )
 		{
 			$page_title = $lang['Send_new_privmsg'];
 
-			$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+			$user_sig = ( $userdata['user_sig'] != "" && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 
 		}
 		else if( $mode == "reply" )
 		{
 			$page_title = $lang['Reply_privmsg'];
 
-			$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+			$user_sig = ( $userdata['user_sig'] != "" && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 
 		}
 		else if( $mode == "edit" )
@@ -1154,7 +1161,7 @@ else if( $submit || $refresh || $mode != "" )
 					message_die(GENERAL_MESSAGE, $lang['Sorry_edit_own_posts']);
 				}
 
-				$user_sig = ( $postrow['user_sig'] != "" ) ? $postrow['user_sig'] : "";
+				$user_sig = ( $postrow['user_sig'] != "" && $board_config['allow_sig'] ) ? $postrow['user_sig'] : "";
 			}
 			else
 			{
@@ -1254,7 +1261,7 @@ else if( $submit || $refresh || $mode != "" )
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = $privmsg['user_sig'];
+			$user_sig = (  $board_config['allow_sig'] ) ? $privmsg['user_sig'] : "";
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];

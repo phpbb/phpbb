@@ -983,7 +983,7 @@ for($i = 0; $i < $total_posts; $i++)
 	$message = $postrow[$i]['post_text'];
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
-	$user_sig = ( $postrow[$i]['enable_sig'] && $postrow[$i]['user_sig'] != "" ) ? $postrow[$i]['user_sig'] : "";
+	$user_sig = ( $postrow[$i]['enable_sig'] && $postrow[$i]['user_sig'] != "" && $board_config['allow_sig'] ) ? $postrow[$i]['user_sig'] : "";
 	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
 
 	//
