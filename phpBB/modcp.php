@@ -270,65 +270,124 @@ switch($mode)
 	
 	break;
 	case 'lock':
-		if($HTTP_POST_VARS['preform_op'])
+		if($confirm)
 		{
-			$topics = $HTTP_POST_VARS['preform_op'];
-		}
-		else
-		{
-			$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
-		}
-		
-		$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_LOCKED . " WHERE ";
-		for($x = 0; $x < count($topics); $x++)
-		{
-			if($x > 0)
+			if($HTTP_POST_VARS['preform_op'])
 			{
-				$sql .= " OR ";
+				$topics = $HTTP_POST_VARS['preform_op'];
 			}
-			$sql .= "topic_id = " . $topics[$x];
-		}
-		
-		if(!$result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			else
+			{
+				$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
+			}
+			
+			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_LOCKED . " WHERE ";
+			for($x = 0; $x < count($topics); $x++)
+			{
+				if($x > 0)
+				{
+					$sql .= " OR ";
+				}
+				$sql .= "topic_id = " . $topics[$x];
+			}
+			
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			}
+			else
+			{
+				$msg = $lang['Topics_Locked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				message_die(GENERAL_MESSAGE, $msg);
+			}
 		}
 		else
 		{
-			$msg = $lang['Topics_Locked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
-			message_die(GENERAL_MESSAGE, $msg);
+			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'">';
+			if($HTTP_POST_VARS['preform_op'])
+			{
+				$topics = $HTTP_POST_VARS['preform_op'];
+				for($x = 0; $x < count($topics); $x++)
+				{
+					$hidden_fields .= '<input type="hidden" name="preform_op[]" value="'.$topics[$x].'">';
+				}
+			}
+			else
+			{
+				$hidden_fields .= '<input type="hidden" name="'.POST_TOPIC_URL.'" value="'.$topic_id.'">';
+			}
+
+			$template->assign_vars(array("MESSAGE_TITLE" => $lang['Confirm'],
+												  "MESSAGE_TEXT" => $lang['Confirm_lock_topic'],
+												  "L_YES" => $lang['Yes'],
+												  "L_NO" => $lang['No'],
+												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
+												  "HIDDEN_FIELDS" => $hidden_fields));
+			$template->pparse("confirm");
+			include('includes/page_tail.'.$phpEx);
+			exit();
 		}
 
 	break;
 	case 'unlock':
-		if($HTTP_POST_VARS['preform_op'])
+		if($confirm)
 		{
-			$topics = $HTTP_POST_VARS['preform_op'];
-		}
-		else
-		{
-			$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
-		}
-			
-		$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_UNLOCKED . " WHERE ";
-		for($x = 0; $x < count($topics); $x++)
-		{
-			if($x > 0)
+			if($HTTP_POST_VARS['preform_op'])
 			{
-				$sql .= " OR ";
+				$topics = $HTTP_POST_VARS['preform_op'];
 			}
-			$sql .= "topic_id = " . $topics[$x];
-		}
-		
-		if(!$result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			else
+			{
+				$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
+			}
+				
+			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_UNLOCKED . " WHERE ";
+			for($x = 0; $x < count($topics); $x++)
+			{
+				if($x > 0)
+				{
+					$sql .= " OR ";
+				}
+				$sql .= "topic_id = " . $topics[$x];
+			}
+			
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			}
+			else
+			{
+				$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				message_die(GENERAL_MESSAGE, $msg);
+			}
 		}
 		else
 		{
-			$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
-			message_die(GENERAL_MESSAGE, $msg);
+			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'">';
+			if($HTTP_POST_VARS['preform_op'])
+			{
+				$topics = $HTTP_POST_VARS['preform_op'];
+				for($x = 0; $x < count($topics); $x++)
+				{
+					$hidden_fields .= '<input type="hidden" name="preform_op[]" value="'.$topics[$x].'">';
+				}
+			}
+			else
+			{
+				$hidden_fields .= '<input type="hidden" name="'.POST_TOPIC_URL.'" value="'.$topic_id.'">';
+			}
+
+			$template->assign_vars(array("MESSAGE_TITLE" => $lang['Confirm'],
+												  "MESSAGE_TEXT" => $lang['Confirm_unlock_topic'],
+												  "L_YES" => $lang['Yes'],
+												  "L_NO" => $lang['No'],
+												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
+												  "HIDDEN_FIELDS" => $hidden_fields));
+			$template->pparse("confirm");
+			include('includes/page_tail.'.$phpEx);
+			exit();
 		}
+	
 	break;
 	
 	case 'split':
