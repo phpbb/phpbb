@@ -28,7 +28,6 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
 
 // Forum info
 $sql = "SELECT forum_id, forum_name
