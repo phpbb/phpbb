@@ -401,7 +401,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_AIM" => $lang['AIM'],
 			"L_MESSENGER" => $lang['MSNM'],
 			"L_WEBSITE" => $lang['Website'],
-			"L_LOCATION" => $lang['From'],
+			"L_LOCATION" => $lang['Location'],
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_INTERESTS" => $lang['Interests'],
 
