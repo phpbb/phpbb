@@ -1042,10 +1042,9 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		{
 			$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
 		}
-
 		if( empty($theme) )
 		{
-			$theme = setup_style($board_config['default_theme']);
+			$theme = setup_style($board_config['default_style']);
 		}
 
 		//
