@@ -1,20 +1,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<!-- saved from url=(0044)http://area51.phpbb.com/codingstandards.html -->
-<!-- saved from url=(0044)http://gti.2y.net/~nate/codingstandards.html --><HTML><HEAD><TITLE>phpBB Coding Standard Guidelines</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4134.600" name=GENERATOR></HEAD>
-<BODY text=#000000 vLink=#0000ff aLink=#cccccc link=#0000ff 
-bgColor=#ffffff><FONT face=verdana,arial,tahoma size=-1><A name=top></A>
+<!-- saved from url=(0044) -->
+<HTML><HEAD><TITLE>phpBB Coding Standard Guidelines</TITLE>
+<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<META content="MSHTML 5.00.2920.0" name=GENERATOR></HEAD>
+<BODY aLink=#cccccc bgColor=#ffffff link=#0000ff text=#000000 
+vLink=#0000ff><FONT face=verdana,arial,tahoma size=-1><A name=top></A>
 <H2>phpBB Coding Standard Guidelines</H2>Comments or suggestions? email <A 
 href="mailto:nate@phpbb.com">nate@phpbb.com</A><BR><BR><A 
-href="http://gti.2y.net/~nate/codingstandards.html#editor">Editor 
+href="#editor">Editor 
 Settings</A><BR><A 
-href="http://gti.2y.net/~nate/codingstandards.html#naming">Naming 
+href="#naming">Naming 
 Conventions</A><BR><A 
-href="http://gti.2y.net/~nate/codingstandards.html#layout">Code Layout</A><BR><A 
-href="http://gti.2y.net/~nate/codingstandards.html#general">General 
+href="#layout">Code Layout</A><BR><A 
+href="#general">General 
 Guidelines</A><BR><BR><BR><A name=editor></A><A 
-href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+href="#top">top</A> 
 <H3>Editor Settings</H3>
 <P><B>Tabs vs Spaces:</B> In order to make this as simple as possible, we will 
 be using tabs, not spaces. Feel free to set how many spaces your editor uses 
@@ -28,7 +28,7 @@ are on Win32, or whatever the Mac uses. Any decent Win32 editor should be able
 to do this, but it might not always be the default. Know your editor. If you 
 want advice on Windows text editors, just ask one of the developers. Some of 
 them do their editing on Win32. </P><BR><BR><A name=naming></A><A 
-href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+href="#top">top</A> 
 <H3>Naming Conventions</H3>
 <P>We will not be using any form of hungarian notation in our naming 
 conventions. Many of us believe that hungarian naming is one of the primary code 
@@ -72,7 +72,7 @@ though; <CODE><FONT size=+1>print_login_status_for_a_given_user()</FONT></CODE>
 goes too far, for example -- that function would be better named <CODE><FONT 
 size=+1>print_user_login_status()</FONT></CODE> , or just <CODE><FONT 
 size=+1>print_login_status()</FONT></CODE>. </P><BR><BR><A name=layout></A><A 
-href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+href="#top">top</A> 
 <H3>Code Layout</H3>
 <P><B>Standard header for new files:</B> Here a template of the header that must 
 be included at the start of all phpBB files: <PRE><FONT size=+1>
@@ -205,8 +205,25 @@ look. Note where the lines break, the capitalization, and the use of brackets.
 		FROM table a, table b
 		WHERE (this = that) AND (this2 = that2)
 		</FONT></PRE>
+<P></P>
+<P><B>SQL insert statements:</B> SQL INSERT statements can be written in two 
+different ways. Either you specify explicitly the columns being inserted, or
+you rely on knowing the order of the columns in the database and do not
+specify them. We want to use the former approach, where it is explicitly
+stated whcih columns are being inserted. This means our application-level code
+will not depend on the order of the fields in the database, and will not be broken
+if we add additional fields (unless they're specified as NOT NULL, of course).
+<BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
+		# This is not what we want.
+		INSERT INTO mytable
+		VALUES ('something', 1, 'else')
+		
+		# This is correct.
+		INSERT INTO mytable (column1, column2, column3)
+		VALUES ('something', 1, 'else')
+		</FONT></PRE>		
 <P></P><BR><BR><A name=general></A><A 
-href="http://gti.2y.net/~nate/codingstandards.html#top">top</A> 
+href="#top">top</A> 
 <H3>General Guidelines</H3>
 <P><B>Quoting strings:</B> There are two different ways to quote strings in PHP 
 - either with single quotes or with double quotes. The main difference is that 
@@ -306,5 +323,5 @@ been set. <BR><BR>&nbsp;&nbsp;&nbsp;Examples:<PRE><FONT size=+1>
 		/* New way */
 		if (isset($forum)) ...
 		</FONT></PRE>
-<P></P><BR><BR><A href="http://gti.2y.net/~nate/codingstandards.html#top">Return 
+<P></P><BR><BR><A href="#top">Return 
 to top</A> </FONT></BODY></HTML>
