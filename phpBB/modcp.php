@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -196,6 +195,11 @@ if ( !$is_auth['auth_mod'] )
 switch( $mode )
 {
 	case 'delete':
+		if (!$is_auth['auth_delete'])
+		{
+			message_die(MESSAGE, sprintf($lang['Sorry_auth_delete'], $is_auth['auth_delete_type']));
+		}
+
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
