@@ -239,6 +239,7 @@ if ($forum_data['forum_postable'])
 		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_WATCH_FORUM' 	=> $s_watching_forum,
 		'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
+		'S_SEARCHBOX_ACTION'=> "search.$phpEx$SID&amp;f=$forum_id", 
 
 		'U_POST_NEW_TOPIC'	=> 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id,
 		'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
