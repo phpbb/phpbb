@@ -1,6 +1,6 @@
 <?php
 
-@set_time_limit(600);
+@set_time_limit(2400);
 ob_end_clean();
 //
 //
@@ -20,7 +20,7 @@ $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 //
 // Updates to this version ...
 //
-$version = '2.1.0 [20020816]';
+$version = '2.1.0 [20020817]';
 
 // ----------------
 // BEGIN VARS DEFNS
@@ -503,7 +503,8 @@ switch ( $this_version )
 		$sql_ary = array(
 			"INSERT INTO " . $table_prefix . "styles (style_id, template_id, theme_id, imageset_id, style_name) VALUES (1, 1, 1, 1, 'subSilver')",
 
-			"INSERT INTO " . $table_prefix . "styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_quote.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_edit.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_search.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_profile.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_pm.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_email.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_www.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_icq_add.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_aim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_yim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_msnm.gif\" width=\"59\" height=\"18\" border=\"0\"', '', '', '', '', '', '', '\"imagesets/subSilver/icon_delete.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_ip.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/icon_minipost.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_minipost_new.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_latest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_newest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/folder_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_new_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_locked_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '', '', '\"imagesets/subSilver/voting_lcap.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_rcap.gif\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_bar.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/ratings/{RATE}.gif\" width=\"45\" height=\"17\" border=\"0\"')",
+			"INSERT INTO " . $table_prefix . "styles_imageset (imageset_id, imageset_name, imageset_path, post_new, post_locked, post_pm, reply_new, reply_pm, reply_locked, icon_quote, icon_edit, icon_search, icon_profile, icon_pm, icon_email, icon_www, icon_icq, icon_aim, icon_yim, icon_msnm, icon_no_email, icon_no_www, icon_no_icq, icon_no_aim, icon_no_yim, icon_no_msnm, icon_delete, icon_ip, goto_post, goto_post_new, goto_post_latest, goto_post_newest, forum, forum_new, forum_locked, folder, folder_new, folder_hot, folder_hot_new, folder_locked, folder_locked_new, folder_sticky, folder_sticky_new, folder_announce, folder_announce_new, topic_watch, topic_unwatch, poll_left, poll_center, poll_right, rating) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/post.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply.gif\" width=\"88\" height=\"27\" border=\"0\"', '\"imagesets/subSilver/{LANG}/reply-locked.gif\" width=\"82\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_quote.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_edit.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_search.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_profile.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_pm.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_email.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_www.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_icq_add.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_aim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_yim.gif\" width=\"59\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_msnm.gif\" width=\"59\" height=\"18\" border=\"0\"', '', '', '', '', '', '', '\"imagesets/subSilver/icon_delete.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/{LANG}/icon_ip.gif\" width=\"16\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/icon_minipost.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_minipost_new.gif\" width=\"12\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_latest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/icon_newest_reply.gif\" width=\"18\" height=\"9\" border=\"0\"', '\"imagesets/subSilver/folder_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_new_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder_locked_big.gif\" width=\"46\" height=\"25\" border=\"0\"', '\"imagesets/subSilver/folder.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_new_hot.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_lock_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_sticky_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce.gif\" width=\"19\" height=\"18\" border=\"0\"', '\"imagesets/subSilver/folder_announce_new.gif\" width=\"19\" height=\"18\" border=\"0\"', '', '', '\"imagesets/subSilver/voting_lcap.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_rcap.gif\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/voting_bar
+.gif\" width=\"4\" height=\"12\" border=\"0\"', '\"imagesets/subSilver/ratings/{RATE}.gif\" width=\"45\" height=\"17\" border=\"0\"')",
 
 			"INSERT INTO " . $table_prefix . "styles_template (template_id, template_name, template_path, poll_length, pm_box_length, compile_crc) VALUES (1, 'subSilver &copy; phpBB Group', 'subSilver', 205, 175, '')",
 
@@ -864,12 +865,84 @@ switch ( $this_version )
 		}
 
 		gen_str_ok();
+
+	case '2.1.0 [20020816]':
+
+		$sql_ary = array();
+
+		gen_str_init('* Updating <b>post checksums</b>');
+
+		$sql_ary[] = "UPDATE " . $table_prefix . "posts_text
+			SET post_checksum = MD5(post_text)";
+
+		foreach ( $sql_ary as $sql )
+		{
+			$db->sql_query($sql);
+		}
+
+		gen_str_ok();
+		gen_str_init('* Updating <b>forum post info</b>');
+
+		switch ( SQL_LAYER )
+		{
+			case 'oracle':
+				$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+					FROM " . $table_prefix . "forums f, " . $table_prefix . "posts p, " . $table_prefix . "users u
+					WHERE p.post_id = f.forum_last_post_id(+)
+						AND u.user_id = p.poster_id(+)";
+				break;
+
+			default:
+				$sql = "SELECT f.forum_id, p.post_time, p.post_username, u.username, u.user_id
+					FROM (( " . $table_prefix . "forums f
+					LEFT JOIN " . $table_prefix . "posts p ON p.post_id = f.forum_last_post_id )
+					LEFT JOIN " . $table_prefix . "users u ON u.user_id = p.poster_id )";
+				break;
+		}
+		$result = $db->sql_query($sql);
+
+		$sql_ary = array();
+		while ( $row = $db->sql_fetchrow($result) )
+		{
+			$forum_id = $row['forum_id'];
+
+			$sql_ary[] = "UPDATE " . $table_prefix . "forums
+				SET forum_last_poster_id = " . $row['user_id'] . ", forum_last_poster_name = '" . $row['post_username'] . "', forum_last_post_time = " . $row['post_time'] . "
+				WHERE forum_id = $forum_id";
+
+			$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
+				FROM " . $table_prefix . "topics t, " . $table_prefix . "users u, " . $table_prefix . "posts p, " . $table_prefix . "posts p2, " . $table_prefix . "users u2
+				WHERE t.forum_id = $forum_id
+					AND u.user_id = t.topic_poster
+					AND p.post_id = t.topic_first_post_id
+					AND p2.post_id = t.topic_last_post_id
+					AND u2.user_id = p2.poster_id";
+			$result2 = $db->sql_query($sql);
+
+			while ( $row2 = $db->sql_fetchrow($result2) )
+			{
+				$sql_ary[] = "UPDATE " . $table_prefix . "topics
+					SET topic_first_poster_name = '" . $row2['post_username'] . "', topic_last_poster_id = " . $row2['id2'] . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . $row2['post_username2'] . "'
+					WHERE topic_id = " . $row2['topic_id'];
+			}
+			$db->sql_freeresult($result2);
+
+			unset($row2);
+		}
+		$db->sql_freeresult($result);
+
+		foreach ( $sql_ary as $sql )
+		{
+			$db->sql_query($sql);
+		}
+
+		gen_str_ok();
+
 		break;
 
 	default;
 		print "<span class=\"updtext\">* No updates needed</span><br />\n";
 }
-
 
 $sql = "UPDATE " . $table_prefix . "config
 	SET config_value = '$version'

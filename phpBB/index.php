@@ -127,18 +127,16 @@ if ( ( $total_categories = count($category_rows) ) )
 	switch ( SQL_LAYER )
 	{
 		case 'oracle':
-			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
-				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-				WHERE p.post_id = f.forum_last_post_id(+)
-					AND u.user_id = p.poster_id(+)
+			$sql = "SELECT f.*, u.username, u.user_id
+				FROM " . FORUMS_TABLE . " f, " . USERS_TABLE . " u
+				WHERE u.user_id = p.poster_id(+)
 				ORDER BY f.cat_id, f.forum_order";
 			break;
 
 		default:
-			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
-				FROM (( " . FORUMS_TABLE . " f
-				LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
-				LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
+			$sql = "SELECT f.*, u.username, u.user_id
+				FROM ( " . FORUMS_TABLE . " f
+				LEFT JOIN " . USERS_TABLE . " u ON u.user_id = f.forum_last_poster_id )
 				ORDER BY f.cat_id, f.forum_order";
 			break;
 	}
@@ -183,8 +181,6 @@ if ( ( $total_categories = count($category_rows) ) )
 		'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'],
 		'L_LEGEND' => $lang['Legend'],
 		'L_NO_FORUMS' => $lang['No_forums'],
-
-		'S_LEGEND' => $legend,
 
 		'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 	);
@@ -247,19 +243,11 @@ if ( ( $total_categories = count($category_rows) ) )
 
 										foreach ( $new_topic_data[$row_forum_id] as $check_topic_id => $check_post_time )
 										{
-											if ( empty($tracking_topics[$check_topic_id]) )
+											if ( empty($tracking_topics[$check_topic_id]) || $tracking_topics[$check_topic_id] < $check_post_time)
 											{
 												$unread_topics = true;
 												$forum_last_post_time = max($check_post_time, $forum_last_post_time);
 
-											}
-											else
-											{
-												if ( $tracking_topics[$check_topic_id] < $check_post_time )
-												{
-													$unread_topics = true;
-													$forum_last_post_time = max($check_post_time, $forum_last_post_time);
-												}
 											}
 										}
 
@@ -278,7 +266,6 @@ if ( ( $total_categories = count($category_rows) ) )
 												$unread_topics = false;
 											}
 										}
-
 									}
 								}
 
@@ -291,11 +278,11 @@ if ( ( $total_categories = count($category_rows) ) )
 
 							if ( $forum_data[$j]['forum_last_post_id'] )
 							{
-								$last_post_time = create_date($board_config['default_dateformat'], $forum_data[$j]['post_time'], $board_config['board_timezone']);
+								$last_post_time = create_date($board_config['default_dateformat'], $forum_data[$j]['forum_last_post_time'], $board_config['board_timezone']);
 
 								$last_post = $last_post_time . '<br />';
 
-								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != '' ) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $forum_data[$j]['user_id'] . '">' . $forum_data[$j]['username'] . '</a> ';
+								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['forum_last_poster_name'] != '' ) ? $forum_data[$j]['forum_last_poster_name'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $forum_data[$j]['user_id'] . '">' . $forum_data[$j]['username'] . '</a> ';
 
 								$last_post .= '<a href="' . "viewtopic.$phpEx$SID&amp;f=$row_forum_id&amp;p=" . $forum_data[$j]['forum_last_post_id'] . '#' . $forum_data[$j]['forum_last_post_id'] . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
 							}

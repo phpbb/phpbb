@@ -83,7 +83,7 @@ if ( !($forum_data = $db->sql_fetchrow($result)) )
 //
 // Configure style, language, etc.
 //
-$userdata['user_style'] = ( $forum_data['forum_style'] ) ? $forum_data['user_style'] : $userdata['user_style'];
+$userdata['user_style'] = ( $forum_data['forum_style'] ) ? $forum_data['forum_style'] : $userdata['user_style'];
 $session->configure($userdata);
 
 //
@@ -91,7 +91,7 @@ $session->configure($userdata);
 //
 if ( !$acl->get_acl($forum_id, 'forum', 'read') )
 {
-	if ( $userdata['user_id'] == ANONYMOUS )
+	if ( $userdata['user_id'] )
 	{
 		$redirect = "f=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
 		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
@@ -119,10 +119,10 @@ $tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'
 //
 if ( $mark_read == 'topics' )
 {
-	if ( $userdata['user_id']  != ANONYMOUS )
+	if ( $userdata['user_id'] )
 	{
-		$sql = "SELECT MAX(post_time) AS last_post
-			FROM " . POSTS_TABLE . "
+		$sql = "SELECT MAX(topic_last_post_time) AS last_post
+			FROM " . TOPICS_TABLE . "
 			WHERE forum_id = $forum_id";
 		$result = $db->sql_query($sql);
 
@@ -183,6 +183,9 @@ $orig_word = array();
 $replacement_word = array();
 obtain_word_list($orig_word, $replacement_word);
 
+
+
+
 //
 // Topic ordering options
 //
@@ -195,18 +198,20 @@ if ( isset($HTTP_POST_VARS['sort']) )
 	if ( !empty($HTTP_POST_VARS['sort_days']) )
 	{
 		$sort_days = ( !empty($HTTP_POST_VARS['sort_days']) ) ? intval($HTTP_POST_VARS['sort_days']) : intval($HTTP_GET_VARS['sort_days']);
-		$min_topic_time = time() - ($sort_days * 86400);
+		$min_topic_time = time() - ( $sort_days * 86400 );
 
-		$sql = "SELECT COUNT(t.topic_id) AS forum_topics
-			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
-			WHERE t.forum_id = $forum_id
-				AND p.post_id = t.topic_last_post_id
-				AND p.post_time >= $min_topic_time";
+		//
+		// ref type on as rows as topics ... also not great
+		//
+		$sql = "SELECT COUNT(topic_id) AS forum_topics
+			FROM " . TOPICS_TABLE . "
+			WHERE  forum_id = $forum_id
+				AND topic_last_post_time >= $min_topic_time";
 		$result = $db->sql_query($sql);
 
 		$start = 0;
 		$topics_count = ( $row = $db->sql_fetchrow($result) ) ? $row['forum_topics'] : 0;
-		$limit_topics_time = "AND p.post_time >= $min_topic_time";
+		$limit_topics_time = "AND t.topic_last_post_time >= $min_topic_time";
 	}
 	else
 	{
@@ -248,13 +253,15 @@ $select_sort_dir = '<select name="sort_dir">';
 $select_sort_dir .= ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $lang['Ascending'] . '</option><option value="d">' . $lang['Descending'] . '</option>' : '<option value="a">' . $lang['Ascending'] . '</option><option value="d" selected="selected">' . $lang['Descending'] . '</option>';
 $select_sort_dir .= '</select>';
 
+
+
+
 $post_alt = ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
-$post_img = '<img src=' . (( $forum_data['forum_status'] == FORUM_LOCKED ) ? $theme['post_locked'] : $theme['post_new'] ) . ' border="0" alt="' . $post_alt . '" title="' . $post_alt . '" />';
 
 $template->assign_vars(array(
 	'FORUM_ID' => $forum_id,
 	'FORUM_NAME' => $forum_data['forum_name'],
-	'POST_IMG' => $post_img,
+	'POST_IMG' => '<img src=' . (( $forum_data['forum_status'] == FORUM_LOCKED ) ? $theme['post_locked'] : $theme['post_new'] ) . ' border="0" alt="' . $post_alt . '" title="' . $post_alt . '" />',
 	'PAGINATION' => generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
 	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )),
 
@@ -314,14 +321,13 @@ $topic_rowset = array();
 
 if ( $start )
 {
-	$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username AS post_username2
-		FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
+	$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2
+		FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 		WHERE t.forum_id = $forum_id
 			AND t.topic_type = " . POST_ANNOUNCE . "
 			AND i.icons_id = t.topic_icon
 			AND u.user_id = t.topic_poster
-			AND p.post_id = t.topic_last_post_id
-			AND u2.user_id = p.poster_id
+			AND u2.user_id = t.topic_last_poster_id
 		ORDER BY $sort_order
 		LIMIT " . $board_config['topics_per_page'];
 	$result = $db->sql_query($sql);
@@ -333,14 +339,15 @@ if ( $start )
 	}
 }
 
-$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
-	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2
+//
+// topic icon join requires full table scan ... not good
+//
+$sql = "SELECT t.*, i.icons_url, i.icons_width, i.icons_height, u.username, u.user_id, u2.username as user2, u2.user_id as id2
+	FROM " . TOPICS_TABLE . " t, " . ICONS_TABLE . " i, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 	WHERE t.forum_id = $forum_id
 		AND i.icons_id = t.topic_icon
 		AND u.user_id = t.topic_poster
-		AND p.post_id = t.topic_first_post_id
-		AND p2.post_id = t.topic_last_post_id
-		AND u2.user_id = p2.poster_id
+		AND u2.user_id = t.topic_last_poster_id
 		$limit_topics_time
 	ORDER BY t.topic_type DESC, $sort_order
 	LIMIT $start, " . $board_config['topics_per_page'];
@@ -520,15 +527,15 @@ if ( $total_topics )
 		$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
 		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
-		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != '' ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
+		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['topic_first_poster_name'] != '' ) ? $topic_rowset[$i]['topic_first_poster_name'] : $lang['Guest'] );
 
 		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
 
 		$first_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_time'], $board_config['board_timezone']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_last_post_time'], $board_config['board_timezone']);
 
-		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ( $topic_rowset[$i]['post_username2'] != '' ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['id2'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
+		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ( $topic_rowset[$i]['topic_last_poster_name'] != '' ) ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
 
 		$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
 

@@ -73,7 +73,7 @@ function get_userdata($user)
 	global $db;
 
 	$sql = "SELECT *
-		FROM " . USERS_TABLE . " 
+		FROM " . USERS_TABLE . "
 		WHERE ";
 	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
@@ -91,13 +91,13 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 	$forum_sql = ( $forum_id ) ? 'AND au.forum_id = ' . $forum_id : '';
 
-	$sql = "SELECT au.forum_id, u.user_id, u.username 
+	$sql = "SELECT au.forum_id, u.user_id, u.username
 		FROM " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . USERS_TABLE . " u
-		WHERE ao.auth_type LIKE 'mod'  
-			AND au.auth_option_id = ao.auth_option_id 
-			$forum_sql 
-			AND u.user_id = au.user_id 
-		GROUP BY au.forum_id 
+		WHERE ao.auth_value LIKE 'mod_%'
+			$forum_sql
+			AND au.auth_option_id = ao.auth_option_id
+			AND u.user_id = au.user_id
+		GROUP BY au.forum_id, u.user_id, u.username
 		ORDER BY au.forum_id, u.user_id";
 	$result = $db->sql_query($sql);
 
@@ -106,13 +106,13 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_moderators[$row['forum_id']][] = '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
 	}
 
-	$sql = "SELECT au.forum_id, g.group_id, g.group_name  
+	$sql = "SELECT au.forum_id, g.group_id, g.group_name
 		FROM " . ACL_GROUPS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . GROUPS_TABLE . " g
-		WHERE ao.auth_type LIKE 'mod' 
-			AND au.auth_option_id = ao.auth_option_id 
-			$forum_sql 
-			AND g.group_id = au.group_id 
-		GROUP BY au.forum_id 
+		WHERE ao.auth_value LIKE 'mod_%'
+			$forum_sql
+			AND au.auth_option_id = ao.auth_option_id
+			AND g.group_id = au.group_id
+		GROUP BY au.forum_id, g.group_id, g.group_name
 		ORDER BY au.forum_id, g.group_id";
 	$result = $db->sql_query($sql);
 
@@ -149,12 +149,12 @@ function make_jumpbox($action, $match_forum_id = 0)
 {
 	global $SID, $acl, $template, $lang, $db, $nav_links, $phpEx;
 
-	$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
-		FROM (( " . FORUMS_TABLE . " f
-		LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
-		LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
-		ORDER BY f.forum_id";
-	$result = $db->sql_query($sql);
+//	$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+//		FROM (( " . FORUMS_TABLE . " f
+//		LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
+//		LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
+//		ORDER BY f.forum_id";
+//	$result = $db->sql_query($sql);
 
 	if ( $row = $db->sql_fetchrow($result) )
 	{
@@ -252,14 +252,14 @@ function language_select($default, $select_name = "language", $dirname="language
 }
 
 //
-// Pick a template/theme combo, 
+// Pick a template/theme combo,
 //
 function style_select($default_style, $select_name = "style", $dirname = "templates")
 {
 	global $db;
 
 	$sql = "SELECT style_id, style_name
-		FROM " . STYLES_TABLE . " 
+		FROM " . STYLES_TABLE . "
 		ORDER BY style_name, style_id";
 	$result = $db->sql_query($sql);
 
@@ -305,14 +305,14 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	$u_url = ( $mode == 'forum' ) ? 'f' : 't';
 
 	//
-	// Is user watching this thread? 
+	// Is user watching this thread?
 	//
-	if ( $user_id != ANONYMOUS )
+	if ( $user_id )
 	{
 		$can_watch = TRUE;
 
-		$sql = "SELECT notify_status 
-			FROM " . $table_sql . " 
+		$sql = "SELECT notify_status
+			FROM " . $table_sql . "
 			WHERE $where_sql = $match_id
 				AND user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -326,11 +326,11 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					$is_watching = 0;
 
 					$sql = "DELETE FROM " . $table_sql . "
-						WHERE $where_sql = $match_id 
+						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
 					$db->sql_query($sql);
 				}
-				
+
 				$template->assign_vars(array(
 					'META' => '<meta http-equiv="refresh" content="3;url=' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">')
 				);
@@ -562,7 +562,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 
 	if ( $row = $db->sql_fetchrow($result) )
 	{
-		do 
+		do
 		{
 			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
 			$replacement_word[] = $row['replacement'];

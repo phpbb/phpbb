@@ -386,21 +386,21 @@ class acl
 
 		if ( !($this->founder = $userdata['user_founder']) )
 		{
-			$and_sql = "ao.auth_option LIKE 'list'";
+			$and_sql = "ao.auth_value LIKE 'forum_list'";
 
 			if ( $extra_options )
 			{
 				$tmp_ary = explode(',', $extra_options);
 				foreach ( $tmp_ary as $option )
 				{
-					$and_sql .= " OR ao.auth_option LIKE '" . trim($option) . "'";
+					$and_sql .= " OR ao.auth_value LIKE '" . trim($option) . "'";
 				}
 			}
 
-			$and_sql = ( !$forum_id ) ? $and_sql : "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_option LIKE 'list' OR ao.auth_type LIKE 'mod' ) )";
-			$and_sql .= " OR ao.auth_type LIKE 'admin'";
+			$and_sql = ( !$forum_id ) ? $and_sql : "( a.forum_id = $forum_id ) OR ( a.forum_id <> $forum_id AND ( ao.auth_value LIKE 'forum_list' OR ao.auth_value LIKE 'mod_%' ) )";
+			$and_sql .= " OR ao.auth_value LIKE 'admin_%'";
 
-			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
 				FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
 				WHERE ug.user_id = " . $userdata['user_id'] . "
 					AND a.group_id = ug.group_id
@@ -412,21 +412,23 @@ class acl
 			{
 				do
 				{
-					switch ( $this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] )
+					list($type, $option) = explode('_', $row['auth_value']);
+
+					switch ( $this->acl[$row['forum_id']][$type][$option] )
 					{
 						case ACL_PERMIT:
 						case ACL_DENY:
 						case ACL_PREVENT:
 							break;
 						default:
-							$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+							$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
 					}
 				}
 				while ( $row = $db->sql_fetchrow($result) );
 			}
 			$db->sql_freeresult($result);
 
-			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_type, ao.auth_option
+			$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
 				FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
 				WHERE a.user_id = " . $userdata['user_id'] . "
 					AND ao.auth_option_id = a.auth_option_id
@@ -437,13 +439,15 @@ class acl
 			{
 				do
 				{
-					switch ( $this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] )
+					list($type, $option) = explode('_', $row['auth_value']);
+
+					switch ( $this->acl[$row['forum_id']][$type][$option] )
 					{
 						case ACL_PERMIT:
 						case ACL_PREVENT:
 							break;
 						default:
-							$this->acl[$row['forum_id']][$row['auth_type']][$row['auth_option']] = $row['auth_allow_deny'];
+							$this->acl[$row['forum_id']][$type][$option] = $row['auth_allow_deny'];
 							break;
 					}
 				}

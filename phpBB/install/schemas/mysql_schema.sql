@@ -28,7 +28,9 @@ CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) unsigned NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1'
+  auth_allow_deny tinyint(4) NOT NULL default '1',
+  KEY group_id (group_id),
+  KEY auth_option_id (auth_option_id)
 );
 
 
@@ -37,9 +39,8 @@ CREATE TABLE phpbb_auth_groups (
 #
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
-  auth_type char(15) NOT NULL default '',
-  auth_option char(15) NOT NULL default '',
-  PRIMARY KEY  (auth_option_id,auth_option)
+  auth_value char(20) NOT NULL,
+  PRIMARY KEY (auth_value, auth_option_id)
 );
 
 
@@ -52,6 +53,8 @@ CREATE TABLE phpbb_auth_prefetch (
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
   auth_allow_deny tinyint(4) NOT NULL default '1'
+  KEY user_id (user_id),
+  KEY auth_option_id (auth_option_id)
 );
 
 
@@ -64,6 +67,8 @@ CREATE TABLE phpbb_auth_users (
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
   auth_allow_deny tinyint(4) NOT NULL default '1'
+  KEY user_id (user_id),
+  KEY auth_option_id (auth_option_id)
 );
 
 
@@ -552,7 +557,11 @@ CREATE TABLE phpbb_topics (
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
    topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_first_poster_name varchar(30),
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_last_poster_name varchar(30),
+   topic_last_post_time int(11) DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
    poll_title varchar(255) NOT NULL,

@@ -58,7 +58,7 @@ if ( isset($HTTP_GET_VARS['view']) && empty($post_id) )
 					WHERE s.session_id = '$session_id'
 						AND u.user_id = s.session_user_id
 						AND p.topic_id = $topic_id
-						AND p.post_approved = " . TRUE . "
+						AND p.post_approved = 1
 						AND p.post_time >= u.user_lastvisit
 					ORDER BY p.post_time ASC
 					LIMIT 1";
@@ -75,7 +75,7 @@ if ( isset($HTTP_GET_VARS['view']) && empty($post_id) )
 			}
 		}
 
-		header($header_location . 'viewtopic.' . $phpEx . $SID . '&t=' . $topic_id);
+		header($header_location . 'index.' . $phpEx);
 		exit;
 	}
 	else if ( $HTTP_GET_VARS['view'] == 'next' || $HTTP_GET_VARS['view'] == 'previous' )
@@ -84,15 +84,11 @@ if ( isset($HTTP_GET_VARS['view']) && empty($post_id) )
 		$sql_ordering = ( $HTTP_GET_VARS['view'] == 'next' ) ? 'ASC' : 'DESC';
 
 		$sql = "SELECT t.topic_id
-			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2
+			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2
 			WHERE t2.topic_id = $topic_id
-				AND p2.post_id = t2.topic_last_post_id
 				AND t.forum_id = t2.forum_id
-				AND p.post_id = t.topic_last_post_id
-				AND p.post_approved = " . TRUE . "
-				AND p.post_time $sql_condition p2.post_time
-				AND p.topic_id = t.topic_id
-			ORDER BY p.post_time $sql_ordering
+				AND t.topic_last_post_time $sql_condition t2.topic_last_post_time
+			ORDER BY t.topic_last_post_time $sql_ordering
 			LIMIT 1";
 		$result = $db->sql_query($sql);
 
@@ -272,8 +268,7 @@ for($i = 0; $i < count($previous_days); $i++)
 $select_post_days .= '</select>';
 
 $sql = "SELECT *
-	FROM " . RANKS_TABLE . "
-	ORDER BY rank_special, rank_min";
+	FROM " . RANKS_TABLE;
 $result = $db->sql_query($sql);
 
 $ranksrow = array();
@@ -284,7 +279,7 @@ while ( $row = $db->sql_fetchrow($result) )
 $db->sql_freeresult($result);
 
 $rating = '';
-if ( $userdata['user_id'] != ANONYMOUS )
+if ( $userdata['user_id'] )
 {
 	$rating_text = array(-5 => $lang['Very_poor'], -2 => $lang['Quite_poor'], 0 => $lang['Unrated'], 2 => $lang['Quite_good'], 5 => $lang['Very_good']);
 
@@ -616,12 +611,16 @@ $poster_details = array();
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+// FROM phpbb_posts2 p, " . USERS_TABLE . " u
+// AND pt.post_id = p.post_id
+// pt.post_text, pt.post_subject, pt.bbcode_uid
+
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*, pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.post_approved = " . TRUE . "
-		$limit_posts_time
 		AND pt.post_id = p.post_id
+		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order
 	LIMIT $start, " . $board_config['posts_per_page'];
