@@ -425,76 +425,66 @@ switch($mode)
 	case 'split':
 		if($HTTP_POST_VARS['split'])
 		{
-			if($HTTP_POST_VARS['split_type'] == "split_after")
+			$posts = $HTTP_POST_VARS['preform_op'];
+				
+			$sql = "SELECT poster_id, topic_id, post_time FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
+			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
-				// Split off posts after the selected one
+				message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
 			}
-			else if($HTTP_POST_VARS['split_type'] == "split")
-			{
-		
-					$posts = $HTTP_POST_VARS['preform_op'];
-					
-					$sql = "SELECT poster_id, topic_id FROM ".POSTS_TABLE." WHERE post_id = ".$posts[0];
-					if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
-					{
-						message_die(GENERAL_ERROR, "Could not get post information", "Error", __LINE__, __FILE__, $sql);
-					}
-					
-					$post_rowset = $db->sql_fetchrowset($result);
-					$first_poster = $post_rowset[0]['poster_id'];
-					$topic_id = $post_rowset[0]['topic_id'];
-					
-					$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
-					if(empty($subject))
-					{
-						message_die(GENERAL_ERROR, $lang['Empty_subject'], $lang['Error'], __LINE__, __FILE__);
-					}
-					
-					$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
-					$topic_time = get_gmt_ts();
-					
-					$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-								VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".POST_NORMAL.")";
-					if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
-					{
-						message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
-					}
-							
-					$new_topic_id = $db->sql_nextid();
 			
-					$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE ";
-					for($x = 0; $x < count($posts); $x++)
-					{
-						if($x > 0)
-						{
-							$sql .= " OR ";
-						}
-						$sql .= "post_id = ".$posts[$x];
-						$last_post_id = $posts[$x];
-					}
-
+			$post_rowset = $db->sql_fetchrowset($result);
+			$first_poster = $post_rowset[0]['poster_id'];
+			$topic_id = $post_rowset[0]['topic_id'];
+			$post_time = $post_rowset[0]['post_time'];
+			
+			$subject = trim(strip_tags(htmlspecialchars(addslashes($HTTP_POST_VARS['subject']))));
+			if(empty($subject))
+			{
+				message_die(GENERAL_ERROR, $lang['Empty_subject'], $lang['Error'], __LINE__, __FILE__);
+			}
 					
-					if(!$result = $db->sql_query($sql, END_TRANSACTION))
+			$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
+			$topic_time = get_gmt_ts();
+					
+			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
+						VALUES ('$subject', $first_poster, " . $topic_time . ", $new_forum_id, 0, " . TOPIC_UNLOCKED . ", ".POST_NORMAL.")";
+			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
+			{
+				message_die(GENERAL_ERROR, "Could not insert new topic", "Error", __LINE__, __FILE__, $sql);
+			}
+							
+			$new_topic_id = $db->sql_nextid();
+			if($HTTP_POST_VARS['split_type'] == "split")
+			{
+				$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE ";
+				for($x = 0; $x < count($posts); $x++)
+				{
+					if($x > 0)
 					{
-						message_die(GENERAL_ERROR, "Could not update posts table!", $lang['Error'], __LINE__, __FILE__, $sql);
+						$sql .= " OR ";
 					}
-					else
-					{	
-						$sql = "UPDATE ".TOPICS_TABLE." SET topic_last_post_id = $last_post_id, topic_replies = ". ($x - 1) ." WHERE topic_id = $new_topic_id";
-						
-						if(!$result = $db->sql_query($sql))
-						{
-							message_die(GENERAL_ERROR, "Could not update topics table", $lang['Error'], __LINE__, __FILE__, $sql);
-						}
-						else
-						{
-							sync("topic", $topic_id);
-							sync("forum", $forum_id);
-							$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
-							$return_message = $lang['to_return_topic'];
-							message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
-						}
-					}
+					$sql .= "post_id = ".$posts[$x];
+					$last_post_id = $posts[$x];
+				}
+			}
+			else if($HTTP_POST_VARS['split_type'] == "split_after")
+			{
+				$sql = "UPDATE ".POSTS_TABLE." SET topic_id = $new_topic_id WHERE post_time >= $post_time AND topic_id = $topic_id";
+			}
+					
+			if(!$result = $db->sql_query($sql, END_TRANSACTION))
+			{
+				message_die(GENERAL_ERROR, "Could not update posts table!", $lang['Error'], __LINE__, __FILE__, $sql);
+			}
+			else
+			{	
+				sync("topic", $new_topic_id);
+				sync("topic", $topic_id);
+				sync("forum", $forum_id);
+				$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id";
+				$return_message = $lang['to_return_topic'];
+				message_die(GENERAL_MESSAGE, $lang['Topic_split'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message);
 			}
 		}
 		else
