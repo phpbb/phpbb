@@ -127,7 +127,7 @@ function add_admin_log()
 	$arguments = func_get_args();
 
 	$action = array_shift($arguments); 
-	$data = ( !sizeof($arguments) ) ? '' : serialize($arguments);
+	$data = ( !sizeof($arguments) ) ? '' : addslashes(serialize($arguments));
 
 	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data) 
 		VALUES (" . $userdata['user_id'] . ", '$user_ip', " . time() . ", '$action', '$data')";
@@ -164,7 +164,7 @@ function view_admin_log($limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'l.
 
 			if ( !empty($row['log_data']) )
 			{
-				$log_data_ary = unserialize($row['log_data']);
+				$log_data_ary = unserialize(stripslashes($row['log_data']));
 
 				foreach ( $log_data_ary as $log_data )
 				{
