@@ -70,11 +70,11 @@ switch ($mode)
 
 		$forum_type = (isset($_POST['forum_type'])) ? intval($_POST['forum_type']) : FORUM_POST;
 		$forum_status = (isset($_POST['forum_status'])) ? intval($_POST['forum_status']) : ITEM_UNLOCKED;
-		$forum_name = (isset($_POST['forum_name'])) ? htmlspecialchars($_POST['forum_name']) : '';
-		$forum_link = (isset($_POST['forum_link'])) ? htmlspecialchars($_POST['forum_link']) : ''; 
+		$forum_name = (isset($_POST['forum_name'])) ? htmlspecialchars(stripslashes($_POST['forum_name'])) : '';
+		$forum_link = (isset($_POST['forum_link'])) ? htmlspecialchars(stripslashes($_POST['forum_link'])) : ''; 
 		$forum_link_track = (!empty($_POST['forum_link_track'])) ? 1 : 0;
-		$forum_desc = (isset($_POST['forum_desc'])) ? str_replace("\n", '<br />', $_POST['forum_desc']) : '';
-		$forum_image = (isset($_POST['forum_image'])) ? htmlspecialchars($_POST['forum_image']) : '';
+		$forum_desc = (isset($_POST['forum_desc'])) ? str_replace("\n", '<br />', stripslashes($_POST['forum_desc'])) : '';
+		$forum_image = (isset($_POST['forum_image'])) ? htmlspecialchars(stripslashes($_POST['forum_image'])) : '';
 		$forum_style = (isset($_POST['forum_style'])) ? intval($_POST['forum_style']) : 0;
 		$display_on_index = (!empty($_POST['display_on_index'])) ? 1 : 0;
 		$forum_topics_per_page = (isset($_POST['topics_per_page'])) ? intval($_POST['topics_per_page']) : 0;
@@ -82,8 +82,8 @@ switch ($mode)
 		$enable_prune = (!empty($_POST['enable_prune'])) ? 1 : 0;
 		$prune_days = (isset($_POST['prune_days'])) ? intval($_POST['prune_days']) : 7;
 		$prune_freq = (isset($_POST['prune_freq'])) ? intval($_POST['prune_freq']) : 1;
-		$forum_password = (isset($_POST['forum_password'])) ? htmlspecialchars($_POST['forum_password']) : '';
-		$forum_password_confirm = (isset($_POST['forum_password_confirm'])) ? htmlspecialchars($_POST['forum_password_confirm']) : '';
+		$forum_password = (isset($_POST['forum_password'])) ? htmlspecialchars(stripslashes($_POST['forum_password'])) : '';
+		$forum_password_confirm = (isset($_POST['forum_password_confirm'])) ? htmlspecialchars(stripslashes($_POST['forum_password_confirm'])) : '';
 
 		if (isset($_POST['update']))
 		{
@@ -113,7 +113,7 @@ switch ($mode)
 			{
 				$error = implode('<br />', $error);
 			}
-			else if (!$forum_id)
+			else if ($mode == 'add')
 			{
 				if ($parent_id)
 				{
@@ -150,32 +150,32 @@ switch ($mode)
 						FROM ' . FORUMS_TABLE;
 					$result = $db->sql_query($sql);
 
-					$left_id = $db->sql_fetchfield('right_id', 0, $result) + 1;
+					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
+					$left_id = $row['right_id'] + 1;
 					$right_id = $left_id + 1;
 				}
 
 				$sql = array(
-					'parent_id'				=> $parent_id,
-					'left_id'				=> $left_id,
-					'right_id'				=> $right_id, 
-
-					'forum_name'			=> $forum_name,
-					'forum_desc'			=> $forum_desc, 
-					'forum_type'			=> $forum_type, 
-					'forum_status'			=> $forum_status, 
-					'forum_link'			=> $forum_link, 
-					'forum_link_track'		=> $forum_link_track, 
-					'forum_password'		=> $forum_password, 
-					'forum_topics_per_page'	=> $forum_topics_per_page, 
-					'forum_style'			=> $forum_style, 
-					'forum_image'			=> $forum_image, 
-					'display_on_index'		=> $display_on_index,
-					'enable_icons'			=> $enable_icons, 
-					'enable_prune'			=> $enable_prune,
-					'prune_days'			=> $prune_days,
-					'prune_freq'			=> $prune_freq,
+					'parent_id'				=> (int) $parent_id,
+					'left_id'				=> (int) $left_id,
+					'right_id'				=> (int) $right_id, 
+					'forum_name'			=> (string) $forum_name,
+					'forum_desc'			=> (string) $forum_desc, 
+					'forum_type'			=> (int) $forum_type, 
+					'forum_status'			=> (int) $forum_status, 
+					'forum_link'			=> (string) $forum_link, 
+					'forum_link_track'		=> (int) $forum_link_track, 
+					'forum_password'		=> (string) $forum_password, 
+					'forum_topics_per_page'	=> (int) $forum_topics_per_page, 
+					'forum_style'			=> (int) $forum_style, 
+					'forum_image'			=> (string) $forum_image, 
+					'display_on_index'		=> (int) $display_on_index,
+					'enable_icons'			=> (int) $enable_icons, 
+					'enable_prune'			=> (int) $enable_prune,
+					'prune_days'			=> (int) $prune_days,
+					'prune_freq'			=> (int) $prune_freq,
 				);
 
 				$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql);
@@ -190,8 +190,10 @@ switch ($mode)
 				trigger_error($message);
 
 			}
-			else
+			else if ($mode == 'edit')
 			{
+				echo "HERE";
+				exit;
 				$row = get_forum_info($forum_id);
 
 				if ($row['forum_type'] != $forum_type && $action)
@@ -223,23 +225,22 @@ switch ($mode)
 				}
 
 				$sql = array(
-					'parent_id'				=> $parent_id,
-
-					'forum_name'			=> $forum_name,
-					'forum_desc'			=> $forum_desc, 
-					'forum_type'			=> $forum_type, 
-					'forum_status'			=> $forum_status, 
-					'forum_link'			=> $forum_link, 
-					'forum_link_track'		=> $forum_link_track, 
-					'forum_topics_per_page'	=> $forum_topics_per_page, 
-					'forum_password'		=> $forum_password, 
-					'forum_style'			=> $forum_style, 
-					'forum_image'			=> $forum_image, 
-					'display_on_index'		=> $display_on_index,
-					'enable_icons'			=> $enable_icons,
-					'enable_prune'			=> $enable_prune,
-					'prune_days'			=> $prune_days,
-					'prune_freq'			=> $prune_freq,
+					'parent_id'				=> (int) $parent_id,
+					'forum_name'			=> (string) $forum_name,
+					'forum_desc'			=> (string) $forum_desc, 
+					'forum_type'			=> (int) $forum_type, 
+					'forum_status'			=> (int) $forum_status, 
+					'forum_link'			=> (string) $forum_link, 
+					'forum_link_track'		=> (int) $forum_link_track, 
+					'forum_topics_per_page'	=> (int) $forum_topics_per_page, 
+					'forum_password'		=> (string) $forum_password, 
+					'forum_style'			=> (int) $forum_style, 
+					'forum_image'			=> (string) $forum_image, 
+					'display_on_index'		=> (int) $display_on_index,
+					'enable_icons'			=> (int) $enable_icons,
+					'enable_prune'			=> (int) $enable_prune,
+					'prune_days'			=> (int) $prune_days,
+					'prune_freq'			=> (int) $prune_freq,
 				);
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . ' 
@@ -279,7 +280,7 @@ switch ($mode)
 			$l_title = $user->lang['CREATE_FORUM'];
 
 			$forum_id = $parent_id;
-			$parents_list = make_forum_select($parent_id);
+			$parents_list = make_forum_select($parent_id, false, false, false, false);
 
 			if ($parent_id && !isset($_POST['update']))
 			{
@@ -1190,6 +1191,9 @@ function delete_forum_content($forum_id)
 		$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . ' 
 			WHERE post_id IN (' . implode(', ', $id_ary) . ')';
 		$db->sql_query($sql);
+
+		// Remove attachments
+		delete_attachment($id_ary);
 		unset($id_ary);
 	}
 	$db->sql_freeresult();
@@ -1269,10 +1273,6 @@ function delete_forum_content($forum_id)
 			$db->sql_query('VACUUM');
 			break;
 	}
-
-	//
-	// TODO: delete attachments
-	//
 
 	$db->sql_transaction('commit');
 }
