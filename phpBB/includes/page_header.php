@@ -285,6 +285,9 @@ $template->assign_vars(array(
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
 	'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang[$tz], ''), 
 	'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0, 
+	'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0, 
+	'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
+	'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
 	'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
