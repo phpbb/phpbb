@@ -276,7 +276,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			$password = "";
 			$userdata['session_logged_in'] = 0;
 		}
-		print "userdata known?";
 		$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $autologon, $password);
 		if(!$result)
 		{
