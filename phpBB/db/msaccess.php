@@ -117,7 +117,7 @@ class sql_db
 					$query = "TOP " . ( $row_offset + $num_rows ) . $query;
 				}
 
-				$this->result = odbc_exec($this->db_connect_id, "SELECT $query"); 
+				$this->result = odbc_exec($this->db_connect_id, "SELECT $query");
 
 				if( $this->result )
 				{
@@ -137,7 +137,7 @@ class sql_db
 					$row_outer_max = ( isset($num_rows) ) ? $row_offset + $num_rows + 1 : 1E9;
 					$row_inner = 0;
 
-					while( odbc_fetch_row($this->result) && $row_outer < $row_outer_max )
+					while( odbc_fetch_row($this->result, $row_outer) && $row_outer < $row_outer_max )
 					{
 						for($j = 0; $j < count($this->field_names[$this->result]); $j++)
 						{
@@ -148,7 +148,7 @@ class sql_db
 						$row_inner++;
 					}
 
-					$this->num_rows[$this->result] = count($this->result_rowset[$this->result]);	
+					$this->num_rows[$this->result] = count($this->result_rowset[$this->result]);
 
 					odbc_free_result($this->result);
 				}
@@ -165,7 +165,7 @@ class sql_db
 					{
 						if( odbc_fetch_row($result_id) )
 						{
-							$this->next_id[$this->db_connect_id] = odbc_result($result_id, 1);	
+							$this->next_id[$this->db_connect_id] = odbc_result($result_id, 1);
 							$this->affected_rows[$this->db_connect_id] = odbc_num_rows($this->result);
 						}
 					}
@@ -232,7 +232,7 @@ class sql_db
 	//
 	function sql_numrows($query_id = 0)
 	{
-		if( !$query_id ) 
+		if( !$query_id )
 		{
 			$query_id = $this->result;
 		}
