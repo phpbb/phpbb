@@ -11,6 +11,11 @@
 // 
 // -------------------------------------------------------------
 
+// TODO for M-3:
+//
+// * add real language support [admin]
+// * simplify the class (logical seperation between display and insert/update)
+
 class custom_profile
 {
 	var $profile_types = array(1 => 'int', 2 => 'string', 3 => 'text', 4 => 'bool', 5 => 'dropdown', 6 => 'date');
@@ -41,6 +46,7 @@ class custom_profile
 		$db->sql_freeresult($result);
 	}
 	
+	// Assign fields to template, mode can be profile (for profile change or register for registration
 	function generate_profile_fields($mode, $lang_id, $cp_error)
 	{
 		global $db, $template, $auth, $user;
@@ -66,6 +72,95 @@ class custom_profile
 			);
 		}
 		$db->sql_freeresult($result);
+	}
+
+	function build_cache()
+	{
+		global $db, $user;
+
+		$this->cache = array();
+		
+		$sql = 'SELECT l.*, f.*
+			FROM phpbb_profile_lang l, phpbb_profile_fields f 
+			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
+				AND f.field_active = 1
+				AND f.field_hide = 0
+				AND l.field_id = f.field_id 
+			GROUP BY f.field_id
+			ORDER BY f.field_order';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->cache[$row['field_ident']] = $row;
+		}
+		$db->sql_freeresult($result);
+	}
+
+	// Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
+	// This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
+	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	{
+		global $db;
+
+		if ($mode == 'grab')
+		{
+			if (!is_array($user_id))
+			{
+				$user_id = array($user_id);
+			}
+			
+			if (!$this->cache)
+			{
+				$this->build_cache();
+			}
+
+			if (!implode(', ', $user_id))
+			{
+				return array();
+			}
+
+			$sql = 'SELECT *
+				FROM phpbb_profile_fields_data
+				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
+			$result = $db->sql_query($sql);
+
+			if (!($row = $db->sql_fetchrow($result)))
+			{
+				return array();
+			}
+			
+			$user_fields = array();
+			do
+			{
+				foreach ($row as $ident => $value)
+				{
+					if ($ident != 'user_id')
+					{
+						$user_fields[$row['user_id']][$ident]['value'] = $value;
+						$user_fields[$row['user_id']][$ident]['data'] = $this->cache[$ident];
+					}
+				}
+			} 
+			while ($row = $db->sql_fetchrow($result));
+			
+			$db->sql_freeresult($result);
+
+			return $user_fields;
+		}
+		else if ($mode == 'show')
+		{
+			// $profile_row == $user_fields[$row['user_id']]
+			$tpl_fields = array();
+
+			foreach ($profile_row as $ident => $ident_ary)
+			{
+				$tpl_fields['PF_' . strtoupper($ident) . '_VALUE'] = $this->get_profile_value($ident_ary['data']['field_id'], $ident_ary['data']['lang_id'], $ident_ary['data']['field_type'], $ident_ary['value']);
+				$tpl_fields['PF_' . strtoupper($ident) . '_TITLE'] = $ident_ary['data']['lang_name'];
+			}
+		
+			return $tpl_fields;
+		}
 	}
 
 	// Get language entries for options and store them here for later use
@@ -99,7 +194,7 @@ class custom_profile
 			$db->sql_freeresult($result);
 		}
 	}
-
+	
 	// VALIDATE Function - validate entered data
 	function validate_profile_field($field_type, &$field_value, $field_data)
 	{
@@ -193,7 +288,36 @@ class custom_profile
 		return false;
 	}
 
-	function get_profile_value($field_validation, &$profile_row, $default_value, $preview)
+	// Get Profile Value
+	function get_profile_value($field_id, $lang_id, $field_type, $value)
+	{
+		switch ($this->profile_types[$field_type])
+		{
+			case 'int':
+				return (int) $value;
+				break;
+			case 'string':
+			case 'text':
+				// Prepare further, censor_text, smilies, bbcode, html, whatever
+				return str_replace("\n", '<br />', $value);
+				break;
+			case 'date':
+				break;
+			case 'dropdown':
+				if (!sizeof($this->options_lang[$field_id][$lang_id]))
+				{
+					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
+				}
+
+				return $this->options_lang[$field_id][$lang_id][(int) $value];
+				break;
+			case 'bool':
+				break;
+		}
+	}
+
+	// Get field value for registration/profile
+	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
 
@@ -216,7 +340,7 @@ class custom_profile
 	{
 		global $template;
 
-		$value = $this->get_profile_value('int', $profile_row, $profile_row['field_default_value'], $preview);
+		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 		$this->set_tpl_vars($profile_row, $value);
 
 		return $this->get_cp_html();
@@ -279,7 +403,8 @@ class custom_profile
 	{
 		global $template;
 
-		$value = $this->get_profile_value('int', $profile_row, $profile_row['field_default_value'], $preview);
+		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
+		
 		$this->set_tpl_vars($profile_row, $value);
 
 		if ($profile_row['field_length'] == 1)
@@ -306,7 +431,7 @@ class custom_profile
 	{
 		global $template;
 
-		$value = $this->get_profile_value('', $profile_row, $profile_row['lang_default_value'], $preview);
+		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
 		$this->set_tpl_vars($profile_row, $value);
 
 		return $this->get_cp_html();
@@ -316,7 +441,7 @@ class custom_profile
 	{
 		global $template;
 
-		$value = $this->get_profile_value('', $profile_row, $profile_row['lang_default_value'], $preview);
+		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
 
 		$field_length = explode('|', $profile_row['field_length']);
 		$profile_row['field_rows'] = $field_length[0];
@@ -331,9 +456,9 @@ class custom_profile
 	{
 		global $user, $template;
 
-		$value = $this->get_profile_value('int', $profile_row, $profile_row['field_default_value'], $preview);
+		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
-		if (!sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
+		if (!isset($this->options_lang[$profile_row['field_id']]) || !sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
 		{
 			$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $preview);
 		}
