@@ -130,6 +130,76 @@ class compress_zip extends compress
 
 	function extract($dst)
 	{
+		$header = $data = '';
+
+		fseek($this->fp, -14, SEEK_END);
+		$tmp = unpack("ventries/vtotentries/Vctsize/Vctpos", fread($this->fp, 12));
+		$entries = (int) trim($tmp['entries']);
+		$totentries = (int) trim($tmp['totentries']);
+		$ctsize = (int) trim($tmp['ctsize']);
+		$ctpos = (int) trim($tmp['ctpos']);
+
+		for ($i = 0; $i < $entries; $i++)
+		{
+			fseek($this->fp, $ctpos);
+
+			$buffer = fread($this->fp, 46);
+
+			$tmp = unpack("Vcrc/Vc_size/Vuc_size/vstrlen", substr($buffer, 16, 14));
+			$crc = (int) trim($tmp['crc']);
+			$c_size = (int) trim($tmp['c_size']);
+			$uc_size = (int) trim($tmp['uc_size']);
+			$strlen = (int) trim($tmp['strlen']);
+
+			$tmp = unpack("Vattrib/Voffset", substr($buffer, 38, 8));
+			$attrib = (int) trim($tmp['attrib']);
+			$offset = (int) trim($tmp['offset']);
+
+			$filename =  fread($this->fp, $strlen);
+
+			$ctpos = ftell($this->fp);
+
+			if ($attrib == 0x41FF0010)
+			{
+				mkdir($dst . $filename);
+			}
+			else
+			{
+				fseek($this->fp, $offset + 30 + $strlen);
+
+				// We have to fudge here for time being
+
+				// Read buffer, prepend and append gz file header/footer
+				$buffer = pack('va1a1Va1a1', 0x8b1f, chr(0x08), chr(0x00), time(), chr(0x00), chr(3)) . fread($this->fp, $c_size) . pack("VV", $crc, $uc_size);
+
+				if (!($fp = fopen($dst . $filename . '.gz', 'wb')))
+				{
+					die("Could not open temporary $filename.gz");
+				}
+				fwrite($fp, $buffer);
+				fclose($fp);
+				unset($buffer);
+				unset($fp);
+
+				if (!($fp = fopen($dst . $filename, 'wb')))
+				{
+					die("Could not open $filename");
+				}
+
+				if (!($gzfp = gzopen($dst . $filename . '.gz', 'rb')))
+				{
+					die("Could not open temporary $filename.gz");
+				}
+
+				while ($buffer = gzread($gzfp, 1024))
+				{
+					fwrite($fp, $buffer);
+				}
+				gzclose($gzfp);
+				fclose($fp);
+				unlink($dst . $filename . '.gz');
+			}
+		}
 	}
 
 	function close()
@@ -154,17 +224,17 @@ class compress_zip extends compress
 		$c_len = strlen($zdata);
 		unset($data);
 
-		$fr = "\x50\x4b\x03\x04";
-		$fr .= "\x14\x00";	// ver needed to extract
-		$fr .= "\x00\x00";	// gen purpose bit flag
-		$fr .= "\x08\x00";	// compression method
-		$fr .= $hexdtime;				// last mod time and date
-		$fr .= pack('V', $crc);			// crc32
-		$fr .= pack('V', $c_len);		// compressed filesize
-		$fr .= pack('V', $unc_len);		// uncompressed filesize
-		$fr .= pack('v', strlen($name));// length of filename
-		$fr .= pack('v', 0);			// extra field length
-		$fr .= $name;
+		$fr = "\x50\x4b\x03\x04"; //
+		$fr .= "\x14\x00";	// ver needed to extract 4
+		$fr .= "\x00\x00";	// gen purpose bit flag 6
+		$fr .= "\x08\x00";	// compression method 8
+		$fr .= $hexdtime;				// last mod time and date 10
+		$fr .= pack('V', $crc);			// crc32 14
+		$fr .= pack('V', $c_len);		// compressed filesize 18
+		$fr .= pack('V', $unc_len);		// uncompressed filesize 22
+		$fr .= pack('v', strlen($name));// length of filename 26
+		$fr .= pack('v', 0);			// extra field length 28
+		$fr .= $name; // 30
 		$fr .= $zdata;
 		unset($zdata);
 		$fr .= pack('V', $crc);
