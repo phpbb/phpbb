@@ -35,7 +35,11 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	//
 	$message = trim($message);
 
-	if($html_on)
+	if( !$html_on )
+	{
+		$message = htmlspecialchars($message);
+	}
+/*	else if($html_on)
 	{
 		$start = -1;
 		$end = 0;
@@ -73,7 +77,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 			}
 		}
 	}
-
+*/
 	if($bbcode_on)
 	{
 		$message = bbencode_first_pass($message, $bbcode_uid);

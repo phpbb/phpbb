@@ -480,31 +480,26 @@ for($i = 0; $i < $total_posts; $i++)
 			$user_sig = htmlspecialchars($user_sig);
 		}
 		$message = htmlspecialchars($message);
+//		$message = str_replace('&amp;', '&', $message);
 	}
 
-	if($board_config['allow_bbcode'])
+	if($board_config['allow_bbcode'] && $bbcode_uid != "")
 	{
 		if($user_sig != "")
 		{
-			//
-			// Move this to profile? Well, first pass
-			//
 			$sig_uid = make_bbcode_uid();
 			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
 			$user_sig = bbencode_second_pass($user_sig, $sig_uid);
-			$user_sig = str_replace("\n", "<br />", $user_sig);
 		}
 
-		if($postrow[$i]['allow_bbcode'])
-		{
-			$message = bbencode_second_pass($message, $bbcode_uid);
-		}
+		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
 
 	$message = make_clickable($message);
-	$message = str_replace("\n", "<br />", $message);
 
 	$message = ($user_sig != "") ? ereg_replace("\[addsig]$", "<br /><br />_________________<br />" . $user_sig, $message) : ereg_replace("\[addsig]$", "", $message);
+	
+	$message = str_replace("\n", "<br />", $message);
 
 	if($board_config['allow_smilies'] && $postrow[$i]['enable_smilies'])
 	{
