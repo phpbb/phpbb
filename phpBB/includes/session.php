@@ -303,10 +303,10 @@ class session
 		global $db, $config;
 
 		// Get expired sessions, only most recent for each user
-		$sql = "SELECT session_user_id, MAX(session_time) AS recent_time
+		$sql = "SELECT session_user_id, session_page, MAX(session_time) AS recent_time
 			FROM " . SESSIONS_TABLE . "
 			WHERE session_time < " . ($current_time - $config['session_length']) . "
-			GROUP BY session_user_id";
+			GROUP BY session_user_id, session_page";
 		$result = $db->sql_query_limit($sql, 5);
 
 		$del_user_id = '';
@@ -318,7 +318,7 @@ class session
 				if (intval($row['session_user_id']) != ANONYMOUS)
 				{
 					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_lastvisit = " . $row['recent_time'] . "
+						SET user_lastvisit = " . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "' 
 						WHERE user_id = " . $row['session_user_id'];
 					$db->sql_query($sql);
 				}
@@ -503,36 +503,59 @@ class auth
 	var $founder = false;
 	var $acl = array();
 	var $option = array();
+	var $acl_options = array();
 
 	function acl(&$userdata)
 	{
-		global $db, $acl_options;
+		global $db, $cache;
 
-		if (!($this->founder = $userdata['user_founder']))
+		if (!($this->acl_options = $cache->get('acl_options')))
 		{
-			if (trim($userdata['user_permissions']) == '')
-			{
-				$this->acl_cache($userdata);
-			}
+			$sql = "SELECT auth_value, is_global, is_local
+				FROM " . ACL_OPTIONS_TABLE . "
+				ORDER BY auth_option_id";
+			$result = $db->sql_query($sql);
 
-			$global_chars = ceil(sizeof($acl_options['global']) / 8);
-			$local_chars = ceil(sizeof($acl_options['local']) / 8) + 2;
-
-			for($i = 0; $i < $global_chars; $i++)
+			$global = $local = 0;
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_LEFT_PAD);
-			}
-
-			for ($i = $global_chars; $i < strlen($userdata['user_permissions']); $i += $local_chars)
-			{
-				$forum_id = (ord($userdata['user_permissions']{$i}) << 8) + ord($userdata['user_permissions']{$i + 1});
-				for($j = $i + 2; $j < $i + $local_chars; $j++)
+				if (!empty($row['is_global']))
 				{
-					$this->acl['local'][$forum_id] .= str_pad(decbin(ord($userdata['user_permissions']{$j})), 8, 0, STR_PAD_LEFT);
+					$this->acl_options['global'][$row['auth_value']] = $global++;
+				}
+				if (!empty($row['is_local']))
+				{
+					$this->acl_options['local'][$row['auth_value']] = $local++;
 				}
 			}
-			unset($forums);
+			$db->sql_freeresult($result);
+
+			$cache->put('acl_options', $this->acl_options);
+			$auth->acl_clear_prefetch();
+			$this->acl_cache($userdata);
 		}
+		else if (trim($userdata['user_permissions']) == '')
+		{
+			$this->acl_cache($userdata);
+		}
+
+		$global_chars = ceil(sizeof($this->acl_options['global']) / 8);
+		$local_chars = ceil(sizeof($this->acl_options['local']) / 8) + 2;
+
+		for($i = 0; $i < $global_chars; $i++)
+		{
+			$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_LEFT_PAD);
+		}
+
+		for ($i = $global_chars; $i < strlen($userdata['user_permissions']); $i += $local_chars)
+		{
+			$forum_id = (ord($userdata['user_permissions']{$i}) << 8) + ord($userdata['user_permissions']{$i + 1});
+			for($j = $i + 2; $j < $i + $local_chars; $j++)
+			{
+				$this->acl['local'][$forum_id] .= str_pad(decbin(ord($userdata['user_permissions']{$j})), 8, 0, STR_PAD_LEFT);
+			}
+		}
+		unset($forums);
 
 		return;
 	}
@@ -540,31 +563,25 @@ class auth
 	// Look up an option
 	function acl_get($opt, $f = 0)
 	{
-		global $acl_options;
 		static $cache;
 
-		if (!isset($cache[$f][$opt]) && !$this->founder)
+		if (!isset($cache[$f][$opt]))
 		{
-			if (isset($acl_options['global'][$opt]))
+			if (isset($this->acl_options['global'][$opt]))
 			{
-				$cache[$f][$opt] = $this->acl['global']{$acl_options['global'][$opt]};
+				$cache[$f][$opt] = $this->acl['global']{$this->acl_options['global'][$opt]};
 			}
-			if (isset($acl_options['local'][$opt]))
+			if (isset($this->acl_options['local'][$opt]))
 			{
-				$cache[$f][$opt] |= $this->acl['local'][$f]{$acl_options['local'][$opt]};
+				$cache[$f][$opt] |= $this->acl['local'][$f]{$this->acl_options['local'][$opt]};
 			}
 		}
 
-		return  ($this->founder) ? true : $cache[$f][$opt];
+		return  $cache[$f][$opt];
 	}
 
 	function acl_gets()
 	{
-		if ($this->founder)
-		{
-			return true;
-		}
-
 		$args = func_get_args();
 		$f = array_pop($args);
 
@@ -592,7 +609,7 @@ class auth
 	// Cache data
 	function acl_cache(&$userdata)
 	{
-		global $db, $acl_options;
+		global $db;
 
 		$acl_db = array();
 
@@ -635,8 +652,8 @@ class auth
 			}
 			unset($acl_db);
 
-			$global_bits = 8 * ceil(sizeof($acl_options['global']) / 8);
-			$local_bits = 8 * ceil(sizeof($acl_options['local']) / 8);
+			$global_bits = 8 * ceil(sizeof($this->acl_options['global']) / 8);
+			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8);
 			$local_hold = $global_hold = '';
 
 			foreach ($this->acl as $f => $auth_ary)
@@ -657,16 +674,16 @@ class auth
 					$hold_str = 'local_hold';
 				}
 
-				foreach ($acl_options[$ary_key] as $opt => $id)
+				foreach ($this->acl_options[$ary_key] as $opt => $id)
 				{
 					if (!empty($auth_ary[$opt]))
 					{
 						$holding[$id] = 1;
 
 						$option_key = substr($opt, 0, strpos($opt, '_') + 1);
-						if (empty($holding[$acl_options[$ary_key][$option_key]]))
+						if (empty($holding[$this->acl_options[$ary_key][$option_key]]))
 						{
-							$holding[$acl_options[$ary_key][$option_key]] = 1;
+							$holding[$this->acl_options[$ary_key][$option_key]] = 1;
 						}
 					}
 					else
@@ -676,7 +693,8 @@ class auth
 				}
 
 				$$hold_str .= ($f) ? pack('C2', $f >> 8, $f) : '';
-				$bitstring = implode('', $holding);
+				$bitstring = str_pad(implode('', $holding), $len, 0, STR_PAD_RIGHT);
+
 				for ($i = 0; $i < $len; $i += 8)
 				{
 					$$hold_str .= chr(bindec(substr($bitstring, $i, 8)));
@@ -686,7 +704,7 @@ class auth
 
 			if ($global_hold == '')
 			{
-				for($i = 0; $i < $global_bits / 8; $i++)
+				for($i = 0; $i < $global_bits; $i += 8)
 				{
 					$global_hold .= chr(0);
 				}

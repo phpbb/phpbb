@@ -109,6 +109,7 @@ define('PRIVMSGS_UNREAD_MAIL', 5);
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
+define('ACL_DEPS_TABLE', $table_prefix.'auth_dependencies');
 define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
@@ -195,33 +196,6 @@ else
 	$db->sql_freeresult($result);
 
 	$cache->put('config', $config);
-}
-
-if (!($acl_options = $cache->get('acl_options')))
-{
-	$acl_options = array();
-
-	$sql = "SELECT auth_value, is_global, is_local
-		FROM " . ACL_OPTIONS_TABLE . "
-		ORDER BY auth_option_id";
-	$result = $db->sql_query($sql);
-
-	$global = $local = 0;
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (!empty($row['is_global']))
-		{
-			$acl_options['global'][$row['auth_value']] = $global++;
-		}
-		if (!empty($row['is_local']))
-		{
-			$acl_options['local'][$row['auth_value']] = $local++;
-		}
-	}
-	$db->sql_freeresult($result);
-
-	$cache->put('acl_options', $acl_options);
-	$auth->acl_clear_prefetch();
 }
 
 /*
