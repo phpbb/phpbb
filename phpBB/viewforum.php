@@ -519,7 +519,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 			if ($config['load_db_lastread'])
 			{
-				if ($row['mark_time'] > $row['topic_last_post_time'] && !isset($update_forum))
+				if ($row['mark_time'] >= $row['topic_last_post_time'] && !isset($update_forum))
 				{
 					$update_forum = true;
 				}
@@ -530,7 +530,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			}
 			else
 			{
-				if ($tracking_topics[$topic_id] > $row['topic_last_post_time'] && !isset($update_forum))
+				if ($tracking_topics[$topic_id] >= $row['topic_last_post_time'] && !isset($update_forum))
 				{
 					$update_forum = true;
 				}
@@ -549,7 +549,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	// after reading a topic
 	if ($user->data['user_id'] != ANONYMOUS && $update_forum)
 	{
-		markread('mark', $forum_id);
+		markread('mark', $forum_id, false, time());
 	}
 }
 

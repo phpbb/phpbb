@@ -35,8 +35,9 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 	}
 	else
 	{
-		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
-			WHERE config_name = '" . $config_name . "'");
+		$sql = 'DELETE FROM ' . CONFIG_TABLE . " 
+			WHERE config_name = '$config_name'";
+		$db->sql_query($sql);
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
 			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "')";

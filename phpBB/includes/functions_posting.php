@@ -1173,7 +1173,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		
 	// Mark this topic as read and posted to.
 	$mark_mode = ($mode == 'post' || $mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
-	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
+	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_time']);
 
 	$db->sql_transaction('commit');
 
