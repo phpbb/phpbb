@@ -38,11 +38,11 @@ include('includes/constants.'.$phpEx);
 
 $url_images = "images";
 $images['quote'] = "$url_images/quote.gif";
+$images['search_icon'] = "$url_images/search_icon.gif";
 $images['edit'] = "$url_images/edit.gif";
 $images['profile'] = "$url_images/profile.gif";
-$images['privmsg'] = "$url_images/icon_pm.gif";
+$images['privmsg'] = "$url_images/icon_privmsg.gif";
 $images['email'] = "$url_images/email.gif";
-$images['pmsg'] = "$url_images/pm.gif";
 $images['delpost'] = "$url_images/edit.gif";
 $images['ip'] = "$url_images/ip_logged.gif";
 $images['www'] = "$url_images/www_icon.gif";
