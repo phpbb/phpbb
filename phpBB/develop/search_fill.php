@@ -275,7 +275,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 
 			// Get the word_id's out of the DB (to see if they are already there)
 			$sql = "SELECT word_id, word_text
-				FROM phpbb_search_wordlist
+				FROM ".SEARCH_WORD_TABLE." 
 				WHERE word_text IN ($sql_select)
 				GROUP BY word_text";
 			$result = $db->sql_query($sql);
