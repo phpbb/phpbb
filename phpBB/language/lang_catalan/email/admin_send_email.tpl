@@ -4,7 +4,7 @@ El següent email t'ha estat enviat per l'administrador de "{SITENAME}". Si aques
 
 {BOARD_EMAIL}
 
-Inclou l'email complet (particularment les capçaleres). 
+Inclou l'email complet (particularment les capçaleres).
 
 El missatge que se t'ha enviat és el següent:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
