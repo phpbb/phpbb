@@ -437,7 +437,7 @@ if ($forum_data['forum_postable'])
 
 			// Type and folder
 			$topic_type = '';
-			if ($topic_rowset[$i]['topic_status'] == TOPIC_MOVED)
+			if ($topic_rowset[$i]['topic_status'] == ITEM_MOVED)
 			{
 				$topic_type = $user->lang['Topic_Moved'] . ' ';
 				$topic_id = $topic_rowset[$i]['topic_moved_id'];
@@ -596,7 +596,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html'
 ));
-make_jumpbox('viewforum.'.$phpEx . $SID, $forum_id);
+make_jumpbox("viewforum.$phpEx$SID", $forum_id);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

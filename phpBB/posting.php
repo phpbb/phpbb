@@ -468,16 +468,10 @@ if (isset($post))
 			// post counts for index, etc.
 			if ($s_mode == 'post')
 			{
-				$sql = 'UPDATE ' . CONFIG_TABLE . "
-					SET config_value = '" . ($config['num_topics'] + 1) . "'
-					WHERE config_name = 'num_topics'";
-				$db->sql_query($sql);
+				set_config('num_topics', $config['num_topics'] + 1);
 			}
 
-			$sql = 'UPDATE ' . CONFIG_TABLE . "
-				SET config_value = '" . ($config['num_posts'] + 1) . "'
-				WHERE config_name = 'num_posts'";
-			$db->sql_query($sql);
+			set_config('num_posts', $config['num_posts'] + 1);
 		}
 
 		// Topic notification

@@ -86,7 +86,7 @@ class acm
 
 	function load($varname, $expire_time = 0)
 	{
-		return (exists($varname, $expire_time)) ? $this->vars[$varname] : null;
+		return ($this->exists($varname, $expire_time)) ? $this->vars[$varname] : null;
 	}
 
 	function exists($varname, $expire_time = 0)
