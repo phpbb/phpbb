@@ -23,12 +23,12 @@
 		<span class="postbody">{postrow.attachment.COMMENT}</span><br />
 
 		<object id=rmstream_{postrow.attachment.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="0">
-		<param name="src" value="{postrow.attachment.FORUM_URL}/{postrow.attachment.U_DOWNLOAD_LINK}">
+		<param name="src" value="{postrow.attachment.U_FORUM}/{postrow.attachment.U_DOWNLOAD_LINK}">
 		<param name="autostart" value="false">
 		<param name="controls" value="ImageWindow">
 		<param name="console" value="{postrow.attachment.U_DOWNLOAD_LINK}">
 		<param name="prefetch" value="true">
-		<embed name=rmstream_{postrow.attachment.ATTACH_ID} type="audio/x-pn-realaudio-plugin" src="{postrow.attachment.FORUM_URL}/{postrow.attachment.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="video" prefetch="true"></embed>
+		<embed name=rmstream_{postrow.attachment.ATTACH_ID} type="audio/x-pn-realaudio-plugin" src="{postrow.attachment.U_FORUM}/{postrow.attachment.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="video" prefetch="true"></embed>
 		</object>
 		<br />
 		<object id=ctrls_{postrow.attachment.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">

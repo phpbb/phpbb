@@ -1023,7 +1023,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
 						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
 						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . "
-							AND topic_id = $topic_id";
+							AND topic_id = " . $post_data['topic_id'];
 					$db->sql_query($sql);
 				}
 			}

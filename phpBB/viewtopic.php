@@ -635,6 +635,7 @@ if (!$row = $db->sql_fetchrow($result))
 // and the global bbcode_bitfield are built
 do
 {
+	$display_notice = FALSE;
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
@@ -647,6 +648,24 @@ do
 		);
 
 		continue;
+	}
+
+	// Does post have an attachment? If so, add it to the list
+	if ($row['post_attachment'] && $config['allow_attachments'])
+	{
+		if ($auth->acl_get('f_download', $forum_id))
+		{
+			$attach_list[] = $row['post_id'];
+	
+			if ($row['post_approved'])
+			{
+				$has_attachments = TRUE;
+			}
+		}
+		else
+		{
+			$display_notice = TRUE;
+		}
 	}
 
 	$rowset[] = array(
@@ -668,21 +687,11 @@ do
 		'bbcode_bitfield'		=> $row['bbcode_bitfield'],
 		'enable_html'			=> $row['enable_html'],
 		'enable_smilies'		=> $row['enable_smilies'],
-		'enable_sig'			=> $row['enable_sig']
+		'enable_sig'			=> $row['enable_sig'],
+		'display_notice'		=> $display_notice
 	);
 
-	// Does post have an attachment? If so, add it to the list
-	if ($row['post_attachment'] && $config['allow_attachments'] && $auth->acl_get('f_download', $forum_id))
-	{
-		$attach_list[] = $row['post_id'];
-
-		if ($row['post_approved'])
-		{
-			$has_attachments = TRUE;
-		}
-	}
-
-
+	
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
 
@@ -815,6 +824,8 @@ $db->sql_freeresult($result);
 // Pull attachment data
 if (count($attach_list))
 {
+	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 	$sql = 'SELECT a.post_id, d.* 
 		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
 		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
@@ -1045,200 +1056,14 @@ foreach ($rowset as $key => $row)
 		'S_ROW_COUNT'		=> $i++,
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
-		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE)
+		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
+		'S_DISPLAY_NOTICE'	=> $row['display_notice'])
 	);
 
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
 	{
-		foreach ($attachments[$row['post_id']] as $attachment)
-		{
-			// Some basics...
-			$attachment['extension'] = strtolower(trim($attachment['extension']));
-			$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
-			$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
-
-			$upload_image = '';
-
-			if (($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == ''))
-			{
-				$upload_image = $user->img('icon_attach', '');
-			}
-			else if (trim($extensions[$attachment['extension']]['upload_icon']) != '')
-			{
-				$upload_image = '<img src="' . $phpbb_root_path . 'images/upload_icons/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
-			}
-	
-			$filesize = $attachment['filesize'];
-			$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-
-			if ($filesize >= 1048576)
-			{
-				$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
-			}
-			else if ($filesize >= 1024)
-			{
-				$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
-			}
-
-			$display_name = $attachment['real_filename']; 
-			$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
-
-			$denied = false;
-			
-			if ((!in_array($attachment['extension'], $extensions['_allowed_'])))
-			{
-				$denied = true;
-
-				$template->assign_block_vars('postrow.attachment', array(
-					'IS_DENIED'		=> true,	
-
-					'L_DENIED'		=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
-				);
-			} 
-
-			if (!$denied)
-			{
-				$l_downloaded_viewed = '';
-				$download_link = '';
-				$additional_array = array();
-				
-				$display_cat = $extensions[$attachment['extension']]['display_cat'];
-				
-				if ($display_cat == IMAGE_CAT)
-				{
-					if ($attachment['thumbnail'])
-					{
-						$display_cat = THUMB_CAT;
-					}
-					else
-					{
-						$display_cat = NONE_CAT;
-
-						if ($config['img_display_inlined'])
-						{
-							if ($config['img_link_width'] || $config['img_link_height'])
-							{
-								list($width, $height) = image_getdimension($filename);
-
-								$display_cat = (!$width && !$height) ? IMAGE_CAT : (($width <= $config['img_link_width'] && $height <=$config['img_link_height']) ? IMAGE_CAT : NONE_CAT);
-							}
-						}
-						else
-						{
-							$display_cat = IMAGE_CAT;
-						}
-					}					
-				}
-		
-				switch ($display_cat)
-				{
-					case IMAGE_CAT:
-						// Images
-						// NOTE: If you want to use the download.php everytime an image is displayed inlined, use this line:
-						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
-						{
-							$img_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
-						}
-						else
-						{
-							$img_source = $filename;
-							$update_count[] = $attachment['attach_id'];
-						}
-
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $img_source;
-						break;
-					
-					case THUMB_CAT:
-						// Images, but display Thumbnail
-						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, use this line:
-						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
-						if (!empty($config['use_ftp_upload']) && trim($config['upload_dir']) == '')
-						{
-							$thumb_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] . '&thumb=1';
-						}
-						else
-						{
-							$thumb_source = $thumbnail_filename;
-						}
-
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
-
-						$additional_array = array(
-							'THUMB_IMG' => $thumb_source
-						);
-						break;
-
-					case WM_CAT:
-						// Windows Media Streams
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $filename;
-
-						// Viewed/Heared File ... update the download count (download.php is not called here)
-						$update_count[] = $attachment['attach_id'];
-						break;
-
-					case RM_CAT:
-						// Real Media Streams
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $filename;
-
-						$additional_array = array(
-							'FORUM_URL' => generate_board_url(), // should be U_FORUM or similar
-							'ATTACH_ID' => $attachment['attach_id']
-						);
-
-						// Viewed/Heared File ... update the download count (download.php is not called here)
-						$update_count[] = $attachment['attach_id'];
-						break;
-/*			
-					case SWF_CAT:
-						// Macromedia Flash Files
-						list($width, $height) = swf_getdimension($filename);
-
-						$l_downloaded_viewed = $user->lang['VIEWED'];
-						$download_link = $filename;
-					
-						$additional_array = array(
-							'WIDTH' => $width,
-							'HEIGHT' => $height
-						);
-
-						// Viewed/Heared File ... update the download count (download.php is not called here)
-						$update_count[] = $attachment['attach_id'];
-						break;
-*/
-					default:
-						$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-						break;
-				}
-
-				$template_array = array_merge($additional_array, array(
-//					'IS_FLASH'		=> ($display_cat == SWF_CAT) ? true : false,
-					'IS_WM_STREAM'	=> ($display_cat == WM_CAT) ? true : false,
-					'IS_RM_STREAM'	=> ($display_cat == RM_CAT) ? true : false,
-					'IS_THUMBNAIL'	=> ($display_cat == THUMB_CAT) ? true : false,
-					'IS_IMAGE'		=> ($display_cat == IMAGE_CAT) ? true : false,
-					'DOWNLOAD_NAME' => $display_name,
-					'FILESIZE'		=> $filesize,
-					'SIZE_VAR'		=> $size_lang,
-					'COMMENT'		=> $comment,
-
-					'U_DOWNLOAD_LINK' => $download_link,
-
-					'UPLOAD_IMG' => $upload_image,
-
-					'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
-					'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
-				);
-					
-				$template->assign_block_vars('postrow.attachment', $template_array);
-			}
-		}
+		display_attachments($attachments[$row['post_id']], $update_count);
 	}
 
 	unset($rowset[$key]);

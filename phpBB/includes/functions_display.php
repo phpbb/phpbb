@@ -337,4 +337,201 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	);
 }
 
+// Display Attachments
+function display_attachments($attachment_data, &$update_count, $force_physical = false)
+{
+	global $extensions, $template;
+	global $config, $user, $phpbb_root_path, $phpEx, $SID;
+
+	if (empty($extensions) || !is_array($extensions))
+	{
+		obtain_attach_extensions($extensions);
+	}
+
+	$update_count = array();
+
+	foreach ($attachment_data as $attachment)
+	{
+		// Some basics...
+		$attachment['extension'] = strtolower(trim($attachment['extension']));
+		$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
+		$thumbnail_filename = $config['upload_dir'] . '/thumbs/t_' . $attachment['physical_filename'];
+
+		$upload_image = '';
+
+		if ($user->img('icon_attach', '') != '' && $extensions[$attachment['extension']]['upload_icon'] == '')
+		{
+			$upload_image = $user->img('icon_attach', '');
+		}
+		else if ($extensions[$attachment['extension']]['upload_icon'] != '')
+		{
+			$upload_image = '<img src="' . $phpbb_root_path . 'images/upload_icons/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+		}
+	
+		$filesize = $attachment['filesize'];
+		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+
+		if ($filesize >= 1048576)
+		{
+			$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
+		}
+		else if ($filesize >= 1024)
+		{
+			$filesize = (round((round($filesize / 1024 * 100) / 100), 2));
+		}
+
+		$display_name = $attachment['real_filename']; 
+		$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
+
+		$denied = false;
+			
+		if (!in_array($attachment['extension'], $extensions['_allowed_']))
+		{
+			$denied = true;
+
+			$template->assign_block_vars('postrow.attachment', array(
+				'IS_DENIED'		=> true,	
+
+				'L_DENIED'		=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
+			);
+		} 
+
+		if (!$denied)
+		{
+			$l_downloaded_viewed = '';
+			$download_link = '';
+			$additional_array = array();
+				
+			$display_cat = $extensions[$attachment['extension']]['display_cat'];
+
+			if ($display_cat == IMAGE_CAT)
+			{
+				if ($attachment['thumbnail'])
+				{
+					$display_cat = THUMB_CAT;
+				}
+				else
+				{
+					if ($config['img_display_inlined'])
+					{
+						if ($config['img_link_width'] || $config['img_link_height'])
+						{
+							list($width, $height) = image_getdimension($filename);
+
+							$display_cat = (!$width && !$height) ? IMAGE_CAT : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? IMAGE_CAT : NONE_CAT);
+						}
+					}
+					else
+					{
+						$display_cat = NONE_CAT;
+					}
+				}					
+			}
+
+			switch ($display_cat)
+			{
+				// Images
+				case IMAGE_CAT:
+					if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '' && !$force_physical)
+					{
+						$img_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'];
+					}
+					else
+					{
+						$img_source = $filename;
+						$update_count[] = $attachment['attach_id'];
+					}
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $img_source;
+					break;
+					
+				// Images, but display Thumbnail
+				case THUMB_CAT:
+					if (!empty($config['use_ftp_upload']) && trim($config['upload_dir']) == '' && !$force_physical)
+					{
+						$thumb_source = $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] . '&thumb=1';
+					}
+					else
+					{
+						$thumb_source = $thumbnail_filename;
+					}
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+
+					$additional_array = array(
+						'THUMB_IMG' => $thumb_source
+					);
+					break;
+
+				// Windows Media Streams
+				case WM_CAT:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $filename;
+
+					// Viewed/Heared File ... update the download count (download.php is not called here)
+					$update_count[] = $attachment['attach_id'];
+					break;
+
+				// Real Media Streams
+				case RM_CAT:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $filename;
+
+					$additional_array = array(
+						'U_FORUM' => generate_board_url(),
+						'ATTACH_ID' => $attachment['attach_id']
+					);
+
+					// Viewed/Heared File ... update the download count (download.php is not called here)
+					$update_count[] = $attachment['attach_id'];
+					break;
+/*			
+				// Macromedia Flash Files
+				case SWF_CAT:
+					list($width, $height) = swf_getdimension($filename);
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$download_link = $filename;
+					
+					$additional_array = array(
+						'WIDTH' => $width,
+						'HEIGHT' => $height
+					);
+
+					// Viewed/Heared File ... update the download count (download.php is not called here)
+					$update_count[] = $attachment['attach_id'];
+					break;
+*/
+				default:
+					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+					break;
+			}
+
+			$template_array = array_merge($additional_array, array(
+//				'IS_FLASH'		=> ($display_cat == SWF_CAT) ? true : false,
+				'IS_WM_STREAM'	=> ($display_cat == WM_CAT) ? true : false,
+				'IS_RM_STREAM'	=> ($display_cat == RM_CAT) ? true : false,
+				'IS_THUMBNAIL'	=> ($display_cat == THUMB_CAT) ? true : false,
+				'IS_IMAGE'		=> ($display_cat == IMAGE_CAT) ? true : false,
+				'DOWNLOAD_NAME' => $display_name,
+				'FILESIZE'		=> $filesize,
+				'SIZE_VAR'		=> $size_lang,
+				'COMMENT'		=> $comment,
+
+				'U_DOWNLOAD_LINK' => $download_link,
+
+				'UPLOAD_IMG' => $upload_image,
+
+				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+				'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+			);
+
+			$template->assign_block_vars('postrow.attachment', $template_array);
+		}
+	}
+}
+
 ?>
