@@ -301,10 +301,18 @@ switch($mode)
 				$sql = "DELETE 
 					FROM " . VOTE_USERS_TABLE . " 
 					WHERE vote_id IN ($vote_id_sql)";
-				if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not delete vote users", "", __LINE__, __FILE__, $sql);
 				}
+			}
+
+			$sql = "DELETE 
+				FROM " . TOPICS_WATCH_TABLE . " 
+				WHERE topic_id IN ($topic_id_sql)";
+			if( !$result = $db->sql_query($sql, END_TRANSACTION) )
+			{
+				message_die(GENERAL_ERROR, "Could not delete watched post list", "", __LINE__, __FILE__, $sql);
 			}
 
 			sync("forum", $forum_id);
