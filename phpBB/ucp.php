@@ -86,7 +86,7 @@ if($_GET['mode'] || $_POST['mode'])
 	}
 	else if($mode == 'register')
 	{
-		if($user->data['user_id'])
+		if($user->data['user_id'] != ANONYMOUS)
 		{
 			redirect("index.$phpEx$SID");
 		}
