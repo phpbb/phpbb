@@ -301,6 +301,10 @@ $lang['Email_sig_explain'] = "This text will be attached to all emails the board
 $lang['Use_SMTP'] = "Use SMTP Server for email";
 $lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a named server instead of the local mail function";
 $lang['SMTP_server'] = "SMTP Server Address";
+$lang['SMTP_username'] = "SMTP Username";
+$lang['SMTP_username_explain'] = "Only enter a username if your smtp server requires it";
+$lang['SMTP_password'] = "SMTP Password";
+$lang['SMTP_password_explain'] = "Only enter a password if your smtp server requires it";
 
 $lang['Disable_privmsg'] = "Private Messaging";
 $lang['Inbox_limits'] = "Max posts in Inbox";
