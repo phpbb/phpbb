@@ -920,10 +920,10 @@ else if( $group_id )
 			"L_NO_MEMBERS" => $lang['No_group_members'])
 		);
 	}
-
+	$current_page = ( !$members_count ) ? '1' : ceil( $members_count / $board_config['topics_per_page'] );
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
-		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $members_count / $board_config['topics_per_page'] )), 
+		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), $current_page ), 
 
 		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
