@@ -27,11 +27,10 @@ if ( !empty($setmodules) )
 	}
 
 	$file = basename(__FILE__);
-	$module['General']['Avatar_Setup'] = "$file$SID&mode=avatars";
-	$module['General']['Basic_Config'] = "$file$SID&mode=basic";
-	$module['General']['Cookie_Parameters'] = "$file$SID&mode=cookies";
-	$module['General']['Default_Settings'] = "$file$SID&mode=gendefs";
-	$module['Users']['Default_Settings'] = "$file$SID&mode=userdefs";
+	$module['General']['Avatars'] = "$file$SID&mode=avatars";
+	$module['General']['Cookies'] = "$file$SID&mode=cookies";
+	$module['General']['Defaults'] = "$file$SID&mode=gendefs";
+	$module['Users']['Defaults'] = "$file$SID&mode=userdefs";
 	return;
 }
 

@@ -27,7 +27,7 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['General']['View_admin_log'] = $filename . "$SID&amp;mode=admin";
+	$module['General']['Admin_logs'] = $filename . "$SID&amp;mode=admin";
 
 	return;
 }
@@ -74,8 +74,13 @@ if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) )
 	$sql = "DELETE FROM " . LOG_ADMIN_TABLE . " 
 		$where_sql";
 	$db->sql_query($sql);
+
+	add_admin_log('log_admin_clear');
 }
 
+//
+//
+//
 if ( isset($HTTP_POST_VARS['sort']) )
 {
 	if ( !empty($HTTP_POST_VARS['sort_days']) )

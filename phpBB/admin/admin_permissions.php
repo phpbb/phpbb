@@ -128,31 +128,59 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 
 ?>
 
-<form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>">
+<form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="50%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $lang['Allowed_users']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><select name="user_allowed" multiple="multiple" size="4"><?php echo $user_allowed_options; ?></select><br />[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New User" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove User" /></td>
+	</tr>
+</table>
 
-<h3><?php echo $lang['Allowed_users']; ?></h3>
+<br clear="all" />
 
-<select name="user_allowed"><?php echo $user_allowed_options; ?></select>
+<table class="bg" width="50%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $lang['Disallowed_users']; ?></th>
+	</tr>
+	<tr>
+		<td class="row2" align="center"><select name="user_disallowed" multiple="multiple" size="4"><?php echo $user_allowed_options; ?></select><br />[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New User" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove User" /></td>
+	</tr>
+</table>
 
-<p>[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</p>
+<br clear="all" />
 
-<h3><?php echo $lang['Allowed_groups']; ?></h3>
+<table class="bg" width="50%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $lang['Allowed_groups']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><select name="group_allowed" multiple="multiple" size="4"><?php echo $group_allowed_options; ?></select><br />[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="addgroup" value="Add New Group" /> &nbsp; <input class="liteoption" type="submit" name="delgroup" value="Remove Group" /></td>
+	</tr>
+</table>
 
-<select name="group_allowed"><?php echo $group_allowed_options; ?></select>
+<br clear="all" />
 
-<p>[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</p>
-
-<h3><?php echo $lang['Disallowed_users']; ?></h3>
-
-<select name="user_disallowed"><?php echo $user_disallowed_options; ?></select>
-
-<p>[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</p>
-
-<h3><?php echo $lang['Disallowed_groups']; ?></h3>
-
-<select name="group_disallowed"><?php echo $group_disallowed_options; ?></select>
-
-<p>[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</p>
+<table class="bg" width="50%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $lang['Disallowed_groups']; ?></th>
+	</tr>
+	<tr>
+		<td class="row2" align="center"><select name="group_disallowed" multiple="multiple" size="4"><?php echo $group_disallowed_options; ?></select><br />[ <a href=""><?php echo $lang['Advanced']; ?></a> ]</td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="liteoption" type="submit" name="addgroup" value="Add New Group" /> &nbsp; <input class="liteoption" type="submit" name="delgroup" value="Remove Group" /></td>
+	</tr>
+</table>
 
 <?php
 			break;
@@ -274,6 +302,33 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	<tr>
 		<th>Setting</th>
 		<th>Users</th>
+	</tr>
+<?php
+			for($i = 0; $i < sizeof($auth_options); $i++)
+			{
+				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+
+				$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+
+?>
+	<tr>
+		<td class="<?php echo $cell_bg; ?>"><?php echo $l_can_cell; ?></td>
+		<td class="<?php echo $cell_bg; ?>" align="center"><?php if ( !empty($auth_users[$auth_options[$i]['auth_option']]) ) { ?><select name="user_option[<?php echo $auth_options[$i]['auth_option']; ?>]" multiple="multiple"><?php echo $auth_users[$auth_options[$i]['auth_option']]; ?></select><?php } else { ?>&nbsp;<?php } ?></td>
+	</tr>
+<?php
+			}
+
+?>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New User" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove User" /></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th>Setting</th>
 		<th>Groups</th>
 	</tr>
 <?php
@@ -286,15 +341,17 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 ?>
 	<tr>
 		<td class="<?php echo $cell_bg; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $cell_bg; ?>" align="center"><?php if ( !empty($auth_users[$auth_options[$i]['auth_option']]) ) { ?><select name="user_option[<?php echo $auth_options[$i]['auth_option']; ?>]"><?php echo $auth_users[$auth_options[$i]['auth_option']]; ?></select><?php } else { ?>&nbsp;<?php } ?></td>
 		<td class="<?php echo $cell_bg; ?>" align="center"><?php if ( !empty($auth_groups[$auth_options[$i]['auth_option']]) ) { ?><select name="group_option[<?php echo $auth_options[$i]['auth_option']; ?>]"><?php echo $auth_groups[$auth_options[$i]['auth_option']]; ?></select><?php } else { ?>&nbsp;<?php } ?></td>
 	</tr>
-
 <?php
 			}
 
 ?>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="adduser" value="Add New Group" /> &nbsp; <input class="liteoption" type="submit" name="deluser" value="Remove Group" /></td>
+	</tr>
 </table>
+
 <?php 
 			break;
 	}

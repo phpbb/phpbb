@@ -39,13 +39,15 @@ $lang['Styles'] = 'Styles Admin';
 
 $lang['Configuration'] = 'Configuration';
 $lang['Permissions'] = 'Permissions';
-$lang['Manage'] = 'Management';
+$lang['Manage'] = 'Manage';
 $lang['Disallow'] = 'Disallow names';
 $lang['Prune'] = 'Pruning';
 $lang['Mass_Email'] = 'Mass Email';
 $lang['Ranks'] = 'Ranks';
 $lang['Smilies'] = 'Smilies';
-$lang['Ban_Management'] = 'Ban Control';
+$lang['Ban_users'] = 'Ban Usernames';
+$lang['Ban_emails'] = 'Ban Emails';
+$lang['Ban_ips'] = 'Ban IPs';
 $lang['Word_Censor'] = 'Word Censors';
 $lang['Export'] = 'Export';
 $lang['Create_new'] = 'Create';
@@ -82,6 +84,16 @@ $lang['log_disallow_add'] = 'Added disallowed username <b>%s</b>';
 $lang['log_disallow_delete'] = 'Deleted disallowed username';
 
 $lang['log_prune'] = 'Pruned forum <b>%s</b>';
+
+$lang['log_admin_clear'] = 'Cleared admin log';
+
+$lang['log_ban_user'] = 'Banned username : <b>%s</b> [ %s ]';
+$lang['log_ban_ip'] = 'Banned ip : <b>%s</b> [ %s ]';
+$lang['log_ban_email'] = 'Banned email : <b>%s</b> [ %s ]';
+$lang['log_unban_user'] = 'Unbanned username [ %s total ]';
+$lang['log_unban_ip'] = 'Unbanned ip [ %s total ]';
+$lang['log_unban_email'] = 'Unbanned email [ %s total ]';
+
 
 //
 // View log
@@ -274,31 +286,27 @@ $lang['Click_return_forumauth'] = 'Click %sHere%s to return to Forum Permissions
 //
 // Banning
 //
-$lang['Ban_control'] = 'Ban Control';
-$lang['Ban_explain'] = 'Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.';
-$lang['Ban_explain_warn'] = 'Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.';
+$lang['Ban_explain'] = 'Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log.';
 
-$lang['Select_username'] = 'Select a Username';
-$lang['Select_ip'] = 'Select an IP';
-$lang['Select_email'] = 'Select an Email address';
+$lang['Ban_length'] = 'Length of ban';
+$lang['Permanent'] = 'Permanent';
+$lang['30_Mins'] = '30 Minutes';
+$lang['1_Hour'] = '1 Hour';
+$lang['6_Hours'] = '6 Hours';
+$lang['Ban_reason'] = 'Reason for ban';
 
-$lang['Ban_username'] = 'Ban one or more specific users';
-$lang['Ban_username_explain'] = 'You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
+$lang['Ban_username_explain'] = 'You can ban multiple users in one go just enter each name on a new line';
+$lang['Unban_username'] = 'Un-ban usernames';
+$lang['Unban_username_explain'] = 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
-$lang['Ban_IP'] = 'Ban one or more IP addresses or hostnames';
 $lang['IP_hostname'] = 'IP addresses or hostnames';
-$lang['Ban_IP_explain'] = 'To specify several different IP\'s or hostnames separate them with commas. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *';
+$lang['Ban_IP_explain'] = 'To specify several different IP\'s or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *';
+$lang['Unban_IP'] = 'Un-ban IPs';
+$lang['Unban_IP_explain'] = 'You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['Ban_email'] = 'Ban one or more email addresses';
 $lang['Ban_email_explain'] = 'To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com';
-
-$lang['Unban_username'] = 'Un-ban one more specific users';
-$lang['Unban_username_explain'] = 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
-
-$lang['Unban_IP'] = 'Un-ban one or more IP addresses';
-$lang['Unban_IP_explain'] = 'You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
-
-$lang['Unban_email'] = 'Un-ban one or more email addresses';
+$lang['Unban_email'] = 'Un-ban Emails';
 $lang['Unban_email_explain'] = 'You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['No_banned_users'] = 'No banned usernames';

@@ -414,6 +414,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	$sql = "SELECT user_id, username, user_regdate 
 		FROM " . USERS_TABLE . " 
 		WHERE user_active = 0 
+			AND user_id <> " . ANONYMOUS . " 
 		ORDER BY user_regdate ASC";
 	$result = $db->sql_query($sql);
 

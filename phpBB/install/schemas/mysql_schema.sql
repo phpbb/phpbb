@@ -77,7 +77,7 @@ CREATE TABLE phpbb_banlist (
    ban_ip varchar(40) NOT NULL, 
    ban_email varchar(50), 
    ban_start int(11), 
-   ban_length int(11), 
+   ban_end int(11), 
    PRIMARY KEY (ban_id), 
    KEY ban_ip_user_id (ban_ip, ban_userid)
 );
