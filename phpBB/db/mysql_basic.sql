@@ -7,13 +7,13 @@
 INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, selected, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload) VALUES ( '1', 'phpbb.com', '0', '1', '1', '1', '0', '1', '10', '10', '25', '10', '0', '0', '', '', '5', 'english', 'd M Y H:m:i', '0', 'Default', '6144', 'images/avatars', '0');
 
 # -- Categories
-INSERT INTO phpbb_categories VALUES (1,'Test category 1','1');
+INSERT INTO phpbb_categories VALUES (1, 'Test category 1', '1');
 
 # -- Forums
-INSERT INTO phpbb_forums VALUES (1,1,'Test Forum 1','This is just a test forum, nothing special here.',1,1,1,1,1,1);
+INSERT INTO phpbb_forums VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 1);
 
 # -- Users (admin is set as that, an admin ... password is null, change it once online!)
-INSERT INTO phpbb_users VALUES (-1,1,'Anonymous',NOW(),'','','Default','','-8','d M Y H:i',0,'',1,'','','','','','','',0,1,'','','',0,0,0,0,0,'','',0);
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '');
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '2', 'Admin', '1', NOW(), '', '', 'admin@yourdomain.com', '', '', '', '', '', 'A Signature', '1', '1', '', '', '', '0', '0', '1', '0', '1', '1', '', 'english', '-8', 'd M Y h:i a', '', '', '0', '1', 'Default');
 
 # -- Ranks
@@ -38,10 +38,10 @@ INSERT INTO phpbb_auth_forums (forum_id, auth_view, auth_read, auth_post, auth_r
 INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, auth_mod) VALUES (2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
-INSERT INTO phpbb_topics VALUES(1,1,'Demo Topic', 1,NOW(), 0,0,0,0,1);
+INSERT INTO phpbb_topics VALUES(1, 1, 'Demo Topic', 1, NOW(), 0, 0, 0, 0, 1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts VALUES(1,1,1,1,NOW(), '127.0.0.1' , LEFT(MD5('42'),10));
+INSERT INTO phpbb_posts VALUES(1, 1, 1, 1, NOW(), '127.0.0.1' , LEFT(MD5('42'), 10));
 INSERT INTO phpbb_posts_text VALUES(1,'This is the subject', 'This is a demo post in the demo topic');
 
 # -- Themes

@@ -96,9 +96,7 @@ CREATE TABLE phpbb_banlist (
    ban_id int4 DEFAULT nextval('phpbb_banlist_id_seq'::text) NOT NULL,
    ban_userid int4,
    ban_ip char(8),
-   ban_start int4,
-   ban_end int4,
-   ban_time_type int4,
+   ban_email varchar(255),
    CONSTRAINT phpbb_banlist_pkey PRIMARY KEY (ban_id)
 );
 CREATE  INDEX ban_userid_phpbb_banlist_index ON phpbb_banlist (ban_userid);
