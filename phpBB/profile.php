@@ -470,10 +470,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			if( $mode == "editprofile" )
 			{
 				$user_id = intval($HTTP_POST_VARS['user_id']);
-				$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
+				$current_email = trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['current_email']))));
 			}
-			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
-			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
+
+			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['username']))) : "";
+			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars(str_replace("&nbsp;", " ",$HTTP_POST_VARS['email'])))) : "";
 
 			$password_current = (!empty($HTTP_POST_VARS['cur_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['cur_password']))) : "";
 			$password = (!empty($HTTP_POST_VARS['new_password'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['new_password']))) : "";
@@ -774,16 +775,19 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								}
 								else
 								{
+									$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
+
 									$error = true;
-									$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Avatar_imagesize'] : $lang['Avatar_imagesize'];
+									$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 								}
 							}
 						}
 						else
 						{
+							$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
+
 							$error = true;
-							$error_filesize = $lang['Avatar_filesize'] . " " . round($board_config['avatar_filesize'] / 1024) . " " . $lang['kB'];
-							$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $error_filesize : $error_filesize;
+							$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 						}
 					}
 					else
@@ -1112,13 +1116,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								$emailer->use_template($email_template);
 								$emailer->email_address($email);
-								$emailer->set_subject($lang['Welcome_subject']);
+								$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
 								$emailer->extra_headers($email_headers);
 
 								if( $coppa )
 								{
 									$emailer->assign_vars(array(
-										"WELCOME_MSG" => $lang['Welcome_subject'],
+										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
@@ -1140,7 +1144,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								else
 								{
 									$emailer->assign_vars(array(
-										"WELCOME_MSG" => $lang['Welcome_subject'],
+										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
@@ -1160,7 +1164,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 									$emailer->extra_headers($email_headers);
 
 									$emailer->assign_vars(array(
-										"WELCOME_MSG" => $lang['Welcome_subject'],
+										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -1861,7 +1865,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 					if( !empty($HTTP_POST_VARS['subject']) )
 					{
-						$subject = trim(strip_tags($HTTP_POST_VARS['subject']));
+						$subject = trim(strip_tags(stripslashes($HTTP_POST_VARS['subject'])));
 					}
 					else
 					{
@@ -1871,7 +1875,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 					if( !empty($HTTP_POST_VARS['message']) )
 					{
-						$message = trim(strip_tags($HTTP_POST_VARS['message']));
+						$message = trim(strip_tags(stripslashes($HTTP_POST_VARS['message'])));
 					}
 					else
 					{
