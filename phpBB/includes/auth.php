@@ -60,8 +60,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	switch($type)
 	{
 		case AUTH_ALL:
-			$a_sql = "aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote";
-			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote");
+			$a_sql = "aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments";
+			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote", "auth_attachments");
 			break;
 		case AUTH_VIEW:
 			$a_sql = "aa.auth_view";
@@ -95,6 +95,10 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			$a_sql = "aa.auth_vote";
 			$auth_fields = array("auth_vote");
 			break;
+		case AUTH_ATTACH:
+			$a_sql = "aa.auth_attachments";
+			$auth_fields = array("auth_attachments");
+			break;
 		default:
 			break;
 	}
@@ -125,7 +129,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			}
 			else
 			{
-				$f_access = $db->sql_fetchrowset($af_result);
+				$f_access = ($forum_id != AUTH_LIST_ALL) ? $db->sql_fetchrow($af_result) : $db->sql_fetchrowset($af_result);
 			}
 		}
 	}
@@ -190,7 +194,6 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		for($i = 0; $i < count($auth_fields); $i++)
 		{
 			$key = $auth_fields[$i];
-			$value = ($forum_id != AUTH_LIST_ALL) ? $f_access[$key] : $f_access[$k][$key];
 
 			if(!$num_u_access)
 			{
@@ -201,14 +204,14 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				//
 				if($forum_id != AUTH_LIST_ALL)
 				{
-					$auth_user[$key] = ($value == AUTH_ALL || $value == AUTH_REG) ? 1 : 0;
+					$auth_user[$key] = ($f_access[$key] == AUTH_ALL || $f_access[$key] == AUTH_REG) ? 1 : 0;
 				}
 				else
 				{
 					for($k = 0; $k < count($f_access); $k++)
 					{
 						$f_forum_id = $f_access[$k]['forum_id'];
-						$auth_user[$f_forum_id][$key] = ($value == AUTH_ALL || $value == AUTH_REG) ? 1 : 0;
+						$auth_user[$f_forum_id][$key] = ($f_access[$k][$key] == AUTH_ALL || $f_access[$k][$key] == AUTH_REG) ? 1 : 0;
 					}
 				}
 			}
@@ -245,97 +248,69 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				// contents of the access levels are.
 				//
 
-				switch($value)
+				if($forum_id != AUTH_LIST_ALL)
 				{
-					case AUTH_ALL:
-						if($forum_id != AUTH_LIST_ALL)
-						{
+					switch($value)
+					{
+						case AUTH_ALL:
 							$auth_user[$key] = 1;
-						}
-						else
-						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
-								$auth_user[$f_forum_id][$key] = 1;
-							}
-						}
-						break;
+							break;
 
-					case AUTH_REG:
-						if($forum_id != AUTH_LIST_ALL)
-						{
+						case AUTH_REG:
 							$auth_user[$key] = 1;
-						}
-						else
-						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
-								$auth_user[$f_forum_id][$key] = 1;
-							}
-						}
-						break;
+							break;
 
-					case AUTH_ACL:
-						if($forum_id != AUTH_LIST_ALL)
-						{
+						case AUTH_ACL:
 							$auth_user[$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-						}
-						else
-						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
-								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-							}
-						}
-						break;
+							break;
 		
-					case AUTH_MOD:
-						if($forum_id != AUTH_LIST_ALL)
-						{
-							$auth_user[$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-						}
-						else
-						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
-								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
-							}
-						}
-						break;
+						case AUTH_MOD:
+							$auth_user[$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
+							break;
 	
-					case AUTH_ADMIN:
-						if($forum_id != AUTH_LIST_ALL)
-						{
+						case AUTH_ADMIN:
 							$auth_user[$key] = $is_admin;
-						}
-						else
-						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
-								$auth_user[$f_forum_id][$key] = $is_admin;
-							}
-						}
-						break;
+							break;
 
-					default:
-						if($forum_id != AUTH_LIST_ALL)
-						{
+						default:
 							$auth_user[$key] = 0;
-						}
-						else
+							break;
+					}
+				}
+				else
+				{
+					for($k = 0; $k < count($f_access); $k++)
+					{
+						$value = $f_access[$k][$key];
+						$f_forum_id = $f_access[$k]['forum_id'];
+
+						switch($value)
 						{
-							for($k = 0; $k < count($f_access); $k++)
-							{
-								$f_forum_id = $f_access[$k]['forum_id'];
+							case AUTH_ALL:
+								$auth_user[$f_forum_id][$key] = 1;
+								break;
+
+							case AUTH_REG:
+								$auth_user[$f_forum_id][$key] = 1;
+								break;
+
+							case AUTH_ACL:
+								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_ACL, $key, $u_access, $is_admin);
+								break;
+		
+							case AUTH_MOD:
+								$auth_user[$f_forum_id][$key] = auth_check_user(AUTH_MOD, $key, $u_access, $is_admin);
+								break;
+	
+							case AUTH_ADMIN:
+								$auth_user[$f_forum_id][$key] = $is_admin;
+								break;
+
+							default:
 								$auth_user[$f_forum_id][$key] = 0;
-							}
+								break;
 						}
-						break;
+					}
 				}
 			}
 		}
