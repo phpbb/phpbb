@@ -243,6 +243,12 @@ $lang['Config_explain'] = "Alla olevalla lomakkeella voit ylläpitää sivuston yle
 $lang['Click_return_config'] = "Klikkaa %stästä%s palataksesi yleistietojen konfigurointiin";
 
 $lang['General_settings'] = "Sivuston yleisasetukset";
+$lang['Server_name'] = "Domain nimi";
+$lang['Server_name_explain'] = "Domain nimi jolla sivusto toimii";
+$lang['Script_path'] = "Skriptien polku";
+$lang['Script_path_explain'] = "Polku, jossa phpBB2 sijaitsee suhteessa domain nimeen";
+$lang['Server_port'] = "Palvelimen portti";
+$lang['Server_port_explain'] = "Portti, jossa palvelin toimii, yleensä 80, muuta jos jokin muu";
 $lang['Site_name'] = "Sivuston nimi";
 $lang['Site_desc'] = "Sivuston kuvaus";
 $lang['Board_disable'] = "Passivoi sivusto";
@@ -298,7 +304,7 @@ $lang['Avatar_gallery_path_explain'] = " Polku phpBB juurihakemiston alle valmii
 $lang['COPPA_settings'] = "COPPA asetukset";
 $lang['COPPA_fax'] = "COPPA Faksi numero";
 $lang['COPPA_mail'] = "COPPA postiosoite";
-$lang['COPPA_mail_explain'] = "Tähän osoitteeseen huoltajat lähettävä COPPA rekisteröinti-ilmoitukset";
+$lang['COPPA_mail_explain'] = "Tähän osoitteeseen huoltajat lähettävät COPPA rekisteröinti-ilmoitukset";
 
 $lang['Email_settings'] = "Sähköposti asetukset";
 $lang['Admin_email'] = "Hallinnon sähköpostiosoite";
@@ -307,6 +313,10 @@ $lang['Email_sig_explain'] = "Tämä teksti liitetään kaikkiin tämän sivuston lähe
 $lang['Use_SMTP'] = "Käytä SMTP serveriä sähköpostiin";
 $lang['Use_SMTP_explain'] = "Vastaa kyllä, jos haluat lähettää sähköpostin nimetyn palvelimen kautta, paikallisen mail toiminnon sijasta";
 $lang['SMTP_server'] = "SMTP serverin osoite";
+$lang['SMTP_username'] = "SMTP käyttäjätunnus";
+$lang['SMTP_username_explain'] = "Anna käyttäjätunnus vain jos smtp palvelin vaatii sitä";
+$lang['SMTP_password'] = "SMTP salasana";
+$lang['SMTP_password_explain'] = "Anna salasana vain jos smtp palvelin vaatii sitä";
 
 $lang['Disable_privmsg'] = "Yksityiset viestit";
 $lang['Inbox_limits'] = "Maks. viestit Saapunut kansiossa";
@@ -315,11 +325,12 @@ $lang['Savebox_limits'] = "Maks. viestit Tallennetut kansiossa";
 
 $lang['Cookie_settings'] = "Cookie asetukset"; 
 $lang['Cookie_settings_explain'] = "Kuinka selaimelle lähetettävät cookiet määritellään. Yleensä oletusarvot ovat riittäviä. Jos näitä on tarvetta muuttaa, tee se huolella. Väärät asetukset voivat estää käyttäjien kirjautumisen.";
-$lang['Cookie_name'] = "Cookie nimi";
 $lang['Cookie_domain'] = "Cookie domain";
+$lang['Cookie_name'] = "Cookie nimi";
 $lang['Cookie_path'] = "Cookie polku";
-$lang['Session_length'] = "Istunnon pituus [ sekunteja ]";
 $lang['Cookie_secure'] = "Suojattu cookie  [ https ]";
+$lang['Cookie_secure_explain'] = "Jos palvelimesi toimii SSL:n kautta aktivoi tämä, muussa tapauksessa jätä pois käytöstä";
+$lang['Session_length'] = "Istunnon pituus [ sekunteja ]";
 
 
 //
@@ -480,7 +491,7 @@ $lang['Prune_success'] = "Foorumien siivous onnistui";
 // Word censor
 //
 $lang['Words_title'] = "Sanojen sensurointi";
-$lang['Words_explain'] = "Tästä hallintpaneelista voi lisätä, muokata ja poistaa sanoja jotka automaattisesti sensuroidaan foorumeissa. Lisäksi käyttäjätunnuksissa ei sallita näitä sanoja. Jokerit (*) ovat hyväksyttyjä sana kentässä, esim. *testi* täsmää kestotestin kanssa, test* täsmää testaus kanssa, *testi täsmää epotesti kanssa.";
+$lang['Words_explain'] = "Tästä hallintapaneelista voi lisätä, muokata ja poistaa sanoja jotka automaattisesti sensuroidaan foorumeissa. Lisäksi käyttäjätunnuksissa ei sallita näitä sanoja. Jokerit (*) ovat hyväksyttyjä sana kentässä, esim. *testi* täsmää kestotestin kanssa, test* täsmää testaus kanssa, *testi täsmää epotesti kanssa.";
 $lang['Word'] = "Sana";
 $lang['Edit_word_censor'] = "Muokkaa sanan sensuuria";
 $lang['Replacement'] = "Korvaus";

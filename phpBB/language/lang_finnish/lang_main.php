@@ -299,6 +299,7 @@ $lang['Start_watching_topic'] = "Seuraa aiheen vastauksia";
 $lang['No_longer_watching'] = "Aihetta ei enää seurata";
 $lang['You_are_watching'] = "Aihe on nyt seurannassa";
 
+$lang['Total_votes'] = "Ääniä yhteensä";
 
 //
 // Posting/Replying (Not private messaging!)
