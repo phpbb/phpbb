@@ -1,15 +1,13 @@
 <div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
-	<tr>
-		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
-	</tr>
+	<tr><form method="post" action="{S_MODE_ACTION}">
+		<td align="left" valign="bottom"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+		<td align="right"><span class="gen">{L_SELECT_SORT_METHOD}:&nbsp;{S_MODE_SELECT}&nbsp;&nbsp;{L_ORDER}&nbsp;{S_ORDER_SELECT}&nbsp;&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}"></span></td>
+	</form></tr>
 </table></div>
 
 <div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
-			<tr><form method="post" action="{S_MODE_ACTION}">
-				<td colspan="7" bgcolor="{T_TH_COLOR2}" align="right"><span class="gen">{L_SELECT_SORT_METHOD}:&nbsp;{S_MODE_SELECT}&nbsp;&nbsp;{L_ORDER}&nbsp;{S_ORDER_SELECT}&nbsp;&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}"></span></td>
-			</form></tr>
 			<tr>
 				<th>&nbsp;</th>
 				<th><b>{L_USERNAME}</b></td>
