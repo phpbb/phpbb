@@ -28,10 +28,12 @@ if ( !defined('INSTALLING') )
 	include('config.'.$phpEx);
 	include('includes/constants.'.$phpEx);
 }
+// Force the DB type to be MySQL
+$dbms = 'mysql';
 include('includes/db.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
 
-set_time_limit(20*60);  // Increase maximum execution time to 20 minutes.
+set_time_limit(0); // Unlimited execution time
 
 $months = array(
 	'Jan' => 1,
@@ -94,61 +96,91 @@ function common_footer()
 
 function get_schema()
 {
-	$schemafile = file('db/mysql_schema.sql');
+	global $table_prefix;
+	$schemafile = file('db/schemas/mysql_schema.sql');
 	$tabledata = 0;
-	$pattern = "/^\s*(\w+)\s+(\w+)\((\d+)\)(.*)$/";
 	for($i=0; $i < count($schemafile); $i++)
 	{
 		$line = $schemafile[$i];
 		if(preg_match("/^CREATE TABLE (\w+)/i", $line, $matches))
 		{
+			// Start of a new table definition, set some variables and go to the next line.
 			$tabledata = 1;
-			$table = $matches[1];
-			$table_def[$table] = $line;
+			// Replace the 'phpbb_' prefix by the user defined prefix.
+			$table = str_replace("phpbb_", $table_prefix, $matches[1]);
+			$table_def[$table] = "CREATE TABLE $table (\n";
 			continue;
 		}
 		if(preg_match("/^\);/", $line))
 		{
+			// End of the table definition
+			// After this we will skip everything until the next 'CREATE' line
 			$tabledata = 0;
 			$table_def[$table] .= ")"; // We don't need the closing semicolon
 		}
 		if($tabledata == 1)
 		{
+			// We are inside a table definition, parse this line.
+			// Add the current line to the complete table definition:
 			$table_def[$table] .= $line;
-			preg_match($pattern, $line, $matches);
-			$i%2 == 1 ? $color = "#FF0000" : $color = "#0000FF"; 
-			$field = $matches[1];
-			$type = $matches[2];
-			$size = $matches[3];
-			preg_match("/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i", $matches[4], $match);
-			$default = $match[1];
-			preg_match("/NOT NULL/i", $matches[4]) ? $notnull = 1 : $notnull =0;
-			preg_match("/auto_increment/i", $matches[4]) ? $auto_increment = 1 : $auto_increment =0;
-			/*
-			print "<font color = $color>\n";
-			print "$line<br>\n";
-			print "$field $type($size)";
-			if (isset($default)){
-				print " DEFAULT $default";
-			}
-			if ($notnull == 1)
+			if(preg_match("/^\s*(\w+)\s+(\w+)\((\d+)\)(.*)$/", $line, $matches))
 			{
-				print " NOT NULL";
-			}
-			if ($auto_increment == 1)
-			{
-				print " auto_increment";
-			}
-			print "<br>\n";
-			print "<font>\n";
-			*/
-			$field_def[$table][$field] = array(
-				'type' => $type,
-				'size' => $size,
-				'default' => $default,
-				'notnull' => $notnull,
-				'auto_increment' => $auto_increment
+				// This is a column definition
+				$field = $matches[1];
+				$type = $matches[2];
+				$size = $matches[3];
+				preg_match("/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i", $matches[4], $match);
+				$default = $match[1];
+				preg_match("/NOT NULL/i", $matches[4]) ? $notnull = 1 : $notnull =0;
+				preg_match("/auto_increment/i", $matches[4]) ? $auto_increment = 1 : $auto_increment = 0;
+				/*
+				$i%2 == 1 ? $color = "#FF0000" : $color = "#0000FF"; 
+				print "<font color = $color>\n";
+				print "$line<br>\n";
+				print "$field $type($size)";
+				if (isset($default)){
+					print " DEFAULT $default";
+				}
+				if ($notnull == 1)
+				{
+					print " NOT NULL";
+				}
+				if ($auto_increment == 1)
+				{
+					print " auto_increment";
+				}
+				print "<br>\n";
+				print "<font>\n";
+				*/
+				$field_def[$table][$field] = array(
+					'type' => $type,
+					'size' => $size,
+					'default' => $default,
+					'notnull' => $notnull,
+					'auto_increment' => $auto_increment
 				);
+			}
+			
+			if(preg_match("/\s*PRIMARY\s+KEY\s*\((.*)\).*/", $line, $matches))
+			{
+				// Primary key
+				$key_def[$table]['PRIMARY'] = $matches[1];
+			}
+			else if(preg_match("/\s*KEY\s+(\w+)\s*\((.*)\)/", $line, $matches))
+			{
+				// Normal key
+				$key_def[$table][$matches[1]] = $matches[2];
+			}
+			else if(preg_match("/^\s*(\w+)\s*(.*?),?\s*$/", $line, $matches))
+			{
+				// Column definition
+				$create_def[$table][$matches[1]] = $matches[2];
+			}
+			else
+			{
+				print "$line<br>";
+				// It's a bird! It's a plane! It's something we didn't expect ;(
+			}
 		}
 	}
 	/*
@@ -158,15 +190,18 @@ function get_schema()
 	*/
 	$schema['field_def'] = $field_def;
 	$schema['table_def'] = $table_def;
+	$schema['create_def'] = $create_def;
+	$schema['key_def'] = $key_def;
 	return $schema;
 }
 
 function get_inserts()
 {
-	$insertfile = file("db/mysql_basic.sql");
+	global $table_prefix;
+	$insertfile = file("db/schemas/mysql_basic.sql");
 	for($i=0; $i < count($insertfile); $i++)
 	{
-		if (preg_match("/^(.*INSERT INTO (.*?)\s.*);$/i", $insertfile[$i], $matches))
+		if (preg_match("/^(.*INSERT INTO (.*?)\s.*);$/i", str_replace("phpbb_", $table_prefix, $insertfile[$i]), $matches))
 		{
 			$returnvalue[$matches[2]][] = $matches[1];
 		}
@@ -296,6 +331,21 @@ if(!isset($next)) $next = 'start';
 // If debug is set we'll do all steps in one go.
 $debug=1;
 
+// Parse the MySQL schema file into some arrays.
+$schema = get_schema();
+$table_def = $schema['table_def'];
+$field_def = $schema['field_def'];
+$key_def = $schema['key_def'];
+$create_def = $schema['create_def'];
+
+/*
+print "tables:<br>";
+print_r($table_def);
+print "create:<br>";
+print_r($create_def);
+die;
+*/
+
 if(isset($next))
 {
 	switch($next)
@@ -305,43 +355,48 @@ if(isset($next))
 	case 'cleanstart':
 		$sql = "DROP TABLE sessions";
 		query($sql, "Couldn't drop table 'sessions'");
-		end_step('rename_tables');
+		$sql = "DROP TABLE themes";
+		query($sql, "Couldn't drop table 'themes'");
+		end_step('mod_old_tables');
 
-	case 'rename_tables':
+	case 'mod_old_tables':
 		common_header();
 		echo "<H2>Step 2: Rename tables</H2>\n";
 
-		$newnames = array(
+		$modtables = array(
 			"banlist" => "banlist",
 			"catagories" => "categories",
-			// Don't rename config yet, we'll create a new one and merge those later.
-			//"config" => "config",
+			"config" => "old_config",
 			"forums" => "forums",
 			"disallow" => "disallow",
 			"posts" => "posts",
 			"posts_text" => "posts_text",
 			"priv_msgs" => "privmsgs",
 			"ranks" => "ranks",
-			"sessions" => "sessions",
 			"smiles" => "smilies",
 			"topics" => "topics",
 			"users" => "users",
 			"words" => "words"
-			);
-		while(list($old, $new) = each($newnames))
+		);
+		while(list($old, $new) = each($modtables))
 		{
+			$sql = "SHOW INDEX FROM $old";
+			$result = query($sql, "Couldn't get list of indices for table $old");
+			while($row = mysql_fetch_array($result))
+			{
+				$index = $row['Key_name'];
+				if($index != 'PRIMARY')
+				{
+					query("ALTER TABLE $old DROP INDEX $index", "Couldn't DROP INDEX $old.$index");
+				}
+			}
+
+			// Rename table
 			$new = $table_prefix . $new;
 			$sql = "ALTER TABLE $old RENAME $new";
-			if(!$result = $db->sql_query($sql))
-			{
-				echo "Couldn't rename '$old' to '$new'<br>\n";
-				$sql_error = $db->sql_error();
-				print $sql_error['code'] .": ". $sql_error['message']. "<br>\n";
-			}
-			else
-			{
-				print "Renamed '$old' to '$new'<br>\n";
-			}
+			print "Renaming '$old' to '$new'<br>\n";
+			query($sql, "Failed to rename $old to $new");
+			
 		}
 		common_footer();
 		end_step('create_tables');
@@ -350,18 +405,9 @@ if(isset($next))
 		common_header();
 		echo "<H2>Step 2: Create new phpBB2 tables</H2>\n";
 		
-		$schema = get_schema();
-		$table_def = $schema['table_def'];
-		$field_def = $schema['field_def'];
-		
 		// Create array with tables in 'old' database
 		$sql = 'SHOW TABLES';
-		if(!$result = $db->sql_query($sql))
-		{
-			echo "Couldn't get list of current tables<br>\n";
-			$sql_error = $db->sql_error();
-			print $sql_error['code'] .": ". $sql_error['message']. "<br>\n";
-		}
+		$result = query($sql, "Couldn't get list of current tables");
 		while ($table = $db->sql_fetchrow($result))
 		{
 			$currenttables[] = $table[0];
@@ -370,14 +416,14 @@ if(isset($next))
 		// Check what tables we need to CREATE
 		while (list($table, $definition) = each ($table_def))
 		{
+		print "<font color='green'>Table: $table</font><br>";
 			if (!inarray($table, $currenttables))
 			{
 				print "Creating $table: ";
-				if(!$result = $db->sql_query($definition))
+				$result = query($definition, "Couldn't create table $table");
+				if($db->sql_affectedrows($result) < 1)
 				{
-					echo "Couldn't create table<br>\n";
-					$sql_error = $db->sql_error();
-					print $sql_error['code'] .": ". $sql_error['message']. "<br>\n";
+					echo "Couldn't create table (no affected rows)<br>\n";
 					print $definition . "<br>\n";
 				}
 				else
@@ -406,12 +452,13 @@ if(isset($next))
 				print "<br>";
 			}
 		}
+		print "New config table has been created with default values.<p>\n";
 		//end_step('convert_config');
 		
 	case 'convert_config':
 		common_header();
 		print "Starting!<br>";
-		$sql = "SELECT * FROM config";
+		$sql = "SELECT * FROM $table_prefix"."old_config";
 		$result = query($sql, "Couldn't get info from old config table");
 		$oldconfig = $db->sql_fetchrow($result);
 		while(list($name, $value) = each($oldconfig))
@@ -520,6 +567,8 @@ if(isset($next))
 			flush();
 			$sql = "SELECT * from ". USERS_TABLE. " WHERE user_id BETWEEN $batchstart AND $batchend";
 			$result = query($sql, "Couldn't get ". USERS_TABLE .".user_id $batchstart to $batchend");
+
+			// Array with user fields that we want to check for invalid data (to few characters)
 			$checklength = array(
 				'user_occ',
 				'user_website',
@@ -912,16 +961,35 @@ if(isset($next))
 				{
 					// If the current is not a key of $current_def and it is not a field that is 
 					// to be renamed then the field doesn't currently exist.
-					$changes[] = "\nADD $field $type($size) $default $notnull $auto_increment ";
+				//$changes[] = "\nADD $field $type($size) $default $notnull $auto_increment ";
+					$changes[] = "\nADD $field ". $create_def[$table][$field];
 				}
 				else
 				{
-					$changes[] = "\nCHANGE $oldfield $field $type($size) $default $notnull $auto_increment";
+				//$changes[] = "\nCHANGE $oldfield $field $type($size) $default $notnull $auto_increment";
+					$changes[] = "\nCHANGE $oldfield $field ". $create_def[$table][$field];
 				}
 			}
+			
 			$alter_sql .= join(',', $changes);
 			unset($changes);
 			unset($current_fields);
+			
+			$sql = "SHOW INDEX FROM $table";
+			$result = query($sql, "Couldn't get list of indices for table $table");
+			unset($indices);
+			while($row = mysql_fetch_array($result))
+			{
+				$indices[] = $row['Key_name'];
+			}
+			
+			while (list($key_name, $key_field) = each($key_def[$table]) )
+			{
+				if(!inarray($key_name, $indices))
+				{
+					$alter_sql .= ($key_name == 'PRIMARY') ? ",\nADD PRIMARY KEY ($key_field)" : ",\nADD INDEX $key_name ($key_field)";
+				}
+			}
 			print "$alter_sql<br>\n";
 			query($alter_sql, "Couldn't alter table $table");
 			flush();

@@ -432,6 +432,7 @@ else
 	// out some additional instruction_textions later on what to do after installation
 	// for the odbc DBMS.
 	//
+	print "dbms = - $dbms -<br>";
 	if( isset($dbms) ) 
 	{
 		include($phpbb_root_path.'includes/db.'.$phpEx);
