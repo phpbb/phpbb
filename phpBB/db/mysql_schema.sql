@@ -44,6 +44,7 @@ CREATE TABLE phpbb_user_group (
 DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
    group_id int(11) NOT NULL auto_increment,
+   group_type smallint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int(11) DEFAULT '0' NOT NULL,
@@ -203,7 +204,7 @@ CREATE TABLE phpbb_posts (
    post_time int(10) DEFAULT '0' NOT NULL,
    poster_ip char(8) NOT NULL, 
    post_username varchar(30), 
-   bbcode_uid varchar(10) NOT NULL,
+   bbcode_uid char(10) NOT NULL,
    post_edit_time int(11),
    post_edit_count smallint(4) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (post_id),
@@ -241,7 +242,7 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_to_userid int(11) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
    privmsgs_ip char(8) NOT NULL,
-   privmsgs_bbcode_uid varchar(10) DEFAULT '0' NOT NULL,
+   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
    PRIMARY KEY (privmsgs_id),
    KEY privmsgs_from_userid (privmsgs_from_userid),
    KEY privmsgs_to_userid (privmsgs_to_userid)
@@ -411,7 +412,6 @@ CREATE TABLE phpbb_topics (
    topic_replies int(11) DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
-   topic_notify tinyint(3) DEFAULT '0',
    topic_last_post_id int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),

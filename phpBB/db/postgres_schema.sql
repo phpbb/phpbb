@@ -181,6 +181,7 @@ CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_groups (
    group_id int4 DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
+   group_type int2 DEFAULT '1' NOT NULL, 
    group_name varchar(100) NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int4 NOT NULL, 
