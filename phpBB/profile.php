@@ -246,6 +246,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			if($mode == "editprofile")
 			{
 				$user_id = $HTTP_POST_VARS['user_id'];
+				$current_email = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['current_email'])));
 			}
 			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
 			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
@@ -646,12 +647,50 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			{
 				if($mode == "editprofile")
 				{
+					if($email != $current_email && $board_config['require_activation'])
+					{
+						$user_active = 0;
+						$user_actkey = generate_activation_key();
+
+						//
+						// The user is inactive, remove their session forcing them to login again befor they can post.
+						//
+						$sql = "DELETE FROM " . SESSIONS_TABLE . "
+				  				  WHERE session_user_id = " . $userdata['user_id'];
+
+				  		$db->sql_query($sql);
+
+					}
+					else
+					{
+						$user_active = 1;
+						$user_actkey = "";
+					}
+
 					$sql = "UPDATE " . USERS_TABLE . "
-						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme" . $avatar_sql . "
+						SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_active = $user_active, user_actkey = '$user_actkey', user_theme = $user_theme" . $avatar_sql . "
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
 					{
+						if($user_active == 0)
+						{
+							//
+							// The users account has been deactivated, send them an email with a new activation key
+							//
+							$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+
+							$emailer->use_template("activate");
+							$emailer->email_address($email);
+							$emailer->set_subject($lang['Reactivate']);
+							$emailer->extra_headers($email_headers);
+
+							$emailer->assign_vars(array("SITENAME" => $board_config['sitename'],
+																 "U_ACTIVATE" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$user_actkey",
+																 "EMAIL_SIG" => $board_config['board_email']));
+							$emailer->send();
+							$emailer->reset();
+						}
 						message_die(GENERAL_MESSAGE, $lang['Profile_updated']);
 					}
 					else
@@ -730,7 +769,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									$emailer->assign_vars(array("WELCOME_MSG" => $lang['Welcome_subject'],
 																		 "USERNAME" => $username,
 																		 "PASSWORD" => $password_confirm,
-																		 "ACTIVATE_URL" => "http://".$SERVER_NAME."/".$PHP_SELF."?mode=activate&act_key=$act_key",
+																		 "ACTIVATE_URL" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$act_key",
 																		 "EMAIL_SIG" => $board_config['board_email']));
 									$emailer->send();
 									$emailer->reset();
@@ -819,6 +858,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		if($mode == "editprofile")
 		{
 			$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
+			// Send the users current email address. If they change it, and account activation is turned on
+			// the user account will be disabled and the user will have to reactivate their account.
+			$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
 		}
 
 		$template->set_filenames(array(

@@ -1,25 +1,25 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                                 sessions.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
 //
 // session_begin()
@@ -27,7 +27,7 @@
 // Adds/updates a new session to the database for the given userid.
 // Returns the new session ID on success.
 //
-function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0) 
+function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0)
 {
 
 	global $db, $lang, $board_config, $phpEx;
@@ -60,14 +60,14 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	ereg("(..)(..)(..)(..)", $user_ip, $user_ip_parts);
 
 	$sql = "SELECT ban_ip, ban_userid
-		FROM " . BANLIST_TABLE . " 
-		WHERE ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "' 
-			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff' 
-			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff' 
-			OR ban_ip = '" . $user_ip_parts[1] . "ffffff' 
+		FROM " . BANLIST_TABLE . "
+		WHERE ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "'
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff'
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff'
+			OR ban_ip = '" . $user_ip_parts[1] . "ffffff'
 			OR ban_userid = $user_id";
 	$result = $db->sql_query($sql);
-	if (!$result) 
+	if (!$result)
 	{
 		message_die(CRITICAL_ERROR, "Couldn't obtain ban information.", __LINE__, __FILE__, $sql);
 	}
@@ -76,7 +76,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 
 	//
 	// Check for user and ip ban ...
-	// 
+	//
 	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
 	{
 		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
@@ -85,8 +85,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	else
 	{
 		/*
-		$sql = "SELECT COUNT(*) 
-			FROM " . SESSIONS_TABLE . " 
+		$sql = "SELECT COUNT(*)
+			FROM " . SESSIONS_TABLE . "
 			WHERE session_ip = '$user_ip'";
 		if($result = $db->sql_query($sql))
 		{
@@ -102,7 +102,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$login = 0;
 			$autologin = 0;
 		}
-	
+
 		//
 		// Try and pull the last time stored
 		// in a cookie, if it exists
@@ -118,7 +118,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		if(!$result || !$db->sql_affectedrows())
 		{
 			$session_id = md5(uniqid($user_ip));
-			
+
 			$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
 				VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
@@ -209,7 +209,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	if( !empty($session_id) )
 	{
 		//
-		// session_id exists so go ahead and attempt to grab all 
+		// session_id exists so go ahead and attempt to grab all
 		// data in preparation
 		//
 		$sql = "SELECT u.*, s.*
@@ -218,16 +218,16 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
-		if (!$result) 
+		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart", __LINE__, __FILE__, $sql);
 		}
-		
+
 		$userdata = $db->sql_fetchrow($result);
-		
+
 		//
 		// Did the session exist in the DB?
-		// 
+		//
 		if(isset($userdata['user_id']))
 		{
 			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
@@ -262,7 +262,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			// We didn't need to update session
 			// so just return userdata
 			//
-	
+
 			return $userdata;
 		}
 	}
@@ -277,14 +277,14 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	if( isset($sessiondata['userid']) && isset($sessiondata['autologinid']) )
 	{
 		$sql = "SELECT user_id, user_autologin_key
-			FROM " . USERS_TABLE . " 
+			FROM " . USERS_TABLE . "
 			WHERE user_id = " . $sessiondata['userid'];
 		$result = $db->sql_query($sql);
-		if (!$result) 
+		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch (non-session) : session_pagestart", __LINE__, __FILE__, $sql);
 		}
-		
+
 		$userdata = $db->sql_fetchrow($result);
 
 		if($userdata['user_autologin_key'])
@@ -292,7 +292,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			if($userdata['user_autologin_key'] == $sessiondata['autologinid'])
 			{
 				//
-				// We have a match, and not the kind you light ... 
+				// We have a match, and not the kind you light ...
 				//
 				$login = 1;
 				$autologin = 1;
@@ -329,7 +329,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
-		if (!$result) 
+		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart new user", __LINE__, __FILE__, $sql);
 		}
@@ -346,7 +346,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 // deleting the corresponding entry
 // in the sessions table
 //
-function session_end($session_id, $user_id) 
+function session_end($session_id, $user_id)
 {
 	global $db, $lang, $board_config;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
@@ -376,7 +376,7 @@ function session_end($session_id, $user_id)
 		WHERE (session_id = '" . $session_id . "')
 			AND (session_user_id = $user_id)";
 	$result = $db->sql_query($sql, $db);
-	if (!$result) 
+	if (!$result)
 	{
 		message_die(CRITICAL_ERROR, "Couldn't delete user session : session_end", __LINE__, __FILE__, $sql);
 	}
@@ -387,7 +387,7 @@ function session_end($session_id, $user_id)
 			SET user_autologin_key = ''
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql, $db);
-		if (!$result) 
+		if (!$result)
 		{
 			message_die(CRITICAL_ERROR, "Couldn't reset user autologin key : session_end", __LINE__, __FILE__, $sql);
 		}

@@ -426,6 +426,7 @@ $lang['Avatar_imagesize'] = "The avatar must be less than " . $board_config['ava
 $lang['Account_added'] = "Thank you for registering, your account has been created. You may now login with your username and password";
 $lang['Account_inactive'] = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information";
 $lang['Account_active'] = "Your account has now been activated. Thank you for registering";
+$lang['Reactivate'] = "Reactivate your account!";
 
 $lang['Welcome_subject'] = "Welcome to " . $board_config['sitename'] . " Forums";
 
