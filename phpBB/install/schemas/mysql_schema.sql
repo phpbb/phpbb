@@ -253,6 +253,7 @@ CREATE TABLE phpbb_groups (
    group_avatar_type tinyint(4),
    group_rank int(11) DEFAULT '0',
    group_colour varchar(6) DEFAULT '' NOT NULL,
+   group_display tinyint(1) DEFAULT '1' NOT NULL,
    group_description varchar(255) NOT NULL,
    PRIMARY KEY (group_id)
 );
@@ -645,7 +646,7 @@ CREATE TABLE phpbb_styles_imageset (
   icon_no_aim varchar(200) default '',
   icon_no_yim varchar(200) default '',
   icon_no_msnm varchar(200) default '',
-  item_approved varchar(200) NOT NULL default '',
+  item_unapproved varchar(200) NOT NULL default '',
   item_reported varchar(200) NOT NULL default '',
   goto_post varchar(200) default NULL,
   goto_post_new varchar(200) default NULL,
