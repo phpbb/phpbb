@@ -236,7 +236,7 @@ CREATE TABLE [phpbb_themes] (
 	[fontcolor3] [char] (6) NULL ,
 	[span_class1] [varchar] (25) NULL ,
 	[span_class2] [varchar] (25) NULL ,
-	[span_class3] [varchar] (25) NULL 
+	[span_class3] [varchar] (25) NULL ,
 	[img_size_poll] [smallint] NULL ,
 	[img_size_privmsg] [smallint] NULL 
 ) ON [PRIMARY]
