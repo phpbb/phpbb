@@ -467,17 +467,17 @@ if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 {
 	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
 
-	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete") . "\"><img src=\"images/topic_delete.gif\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=delete&quick_op=1") . "\"><img src=\"images/topic_delete.gif\" alt = \"" . $lang['Delete_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
-	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=move&quick_op=1"). "\"><img src=\"images/topic_move.gif\" alt = \"" . $lang['Move_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 
 	if($forum_row[0]['topic_status'] == TOPIC_UNLOCKED)
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock&quick_op=1") . "\"><img src=\"images/topic_lock.gif\" alt = \"" . $lang['Lock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
 	else
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock&quick_op=1") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
 }
 

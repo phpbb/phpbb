@@ -112,9 +112,11 @@ if($HTTP_POST_VARS['not_confirm'])
 include('includes/page_header.'.$phpEx);
 
 // Set template files
-$template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm.tpl"));
+$template->set_filenames(array("body" => "modcp_body.tpl", "confirm" => "confirm_body.tpl"));
 
 $mode = ($HTTP_POST_VARS['mode']) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+$quick_op = ($HTTP_GET_VARS['quick_op']) ? $HTTP_GET_VARS['quick_op'] : $HTTP_POST_VARS['quick_op'];
+
 $delete = ($HTTP_POST_VARS['delete']) ? 1 : 0;
 $move = ($HTTP_POST_VARS['move']) ? 1 : 0;
 $lock = ($HTTP_POST_VARS['lock']) ? 1 : 0;
@@ -152,7 +154,7 @@ switch($mode)
 			}
 			else
 			{
-				$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
+				$topics = array($HTTP_POST_VARS[POST_TOPIC_URL]);
 			}
 		
 			$sql = "SELECT post_id FROM ".POSTS_TABLE." WHERE ";
@@ -234,13 +236,23 @@ switch($mode)
 					message_die(GENERAL_ERROR, "Could not update index!", "Error", __LINE__, __FILE__, $update_index);
 				}
 			}
+			if($quick_op)
+			{
+				$next_page = "viewforum.$phpEx?".POST_FORUM_URL."=$forum_id";
+				$return_message = $lang['to_return_forum'];
+			}
+			else
+			{
+				$next_page = "modcp.$phpEx?".POST_FORUM_URL."=$forum_id";
+				$return_message = $lang['Return_to_modcp'];
+			}
 							
-			$msg = $lang['Topics_Removed'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+			$msg = $lang['Topics_Removed'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message;
 			message_die(GENERAL_MESSAGE, $msg);
 		}
 		else
 		{
-			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'">';
+			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
 				$topics = $HTTP_POST_VARS['preform_op'];
@@ -259,7 +271,7 @@ switch($mode)
 												  "L_YES" => $lang['Yes'],
 												  "L_NO" => $lang['No'],
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-												  "HIDDEN_FIELDS" => $hidden_fields));
+												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
 			include('includes/page_tail.'.$phpEx);
 			exit();
@@ -278,7 +290,7 @@ switch($mode)
 			}
 			else
 			{
-				$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
+				$topics = array($HTTP_POST_VARS[POST_TOPIC_URL]);
 			}
 			
 			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_LOCKED . " WHERE ";
@@ -297,13 +309,23 @@ switch($mode)
 			}
 			else
 			{
-				$msg = $lang['Topics_Locked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				if($quick_op)
+				{
+					$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id";
+					$return_message = $lang['to_return_topic'];
+				}
+				else
+				{
+					$next_page = "modcp.$phpEx?".POST_FORUM_URL."=$forum_id";
+					$return_message = $lang['Return_to_modcp'];
+				}
+				$msg = $lang['Topics_Locked'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message;
 				message_die(GENERAL_MESSAGE, $msg);
 			}
 		}
 		else
 		{
-			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'">';
+			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
 				$topics = $HTTP_POST_VARS['preform_op'];
@@ -322,7 +344,7 @@ switch($mode)
 												  "L_YES" => $lang['Yes'],
 												  "L_NO" => $lang['No'],
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-												  "HIDDEN_FIELDS" => $hidden_fields));
+												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
 			include('includes/page_tail.'.$phpEx);
 			exit();
@@ -338,7 +360,7 @@ switch($mode)
 			}
 			else
 			{
-				$topics = array($HTTP_GET_VARS[POST_TOPIC_URL]);
+				$topics = array($HTTP_POST_VARS[POST_TOPIC_URL]);
 			}
 				
 			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_UNLOCKED . " WHERE ";
@@ -357,13 +379,24 @@ switch($mode)
 			}
 			else
 			{
-				$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				if($quick_op)
+				{
+					$next_page = "viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id";
+					$return_message = $lang['to_return_topic'];
+				}
+				else
+				{
+					$next_page = "modcp.$phpEx?".POST_FORUM_URL."=$forum_id";
+					$return_message = $lang['Return_to_modcp'];
+				}
+
+				$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid($next_page)."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $return_message;
 				message_die(GENERAL_MESSAGE, $msg);
 			}
 		}
 		else
 		{
-			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'">';
+			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'"><input type="hidden" name="'.POST_FORUM_URL.'" value="'.$forum_id.'"><input type="hidden" name="quick_op" value="'.$quick_op.'">';
 			if($HTTP_POST_VARS['preform_op'])
 			{
 				$topics = $HTTP_POST_VARS['preform_op'];
@@ -382,7 +415,7 @@ switch($mode)
 												  "L_YES" => $lang['Yes'],
 												  "L_NO" => $lang['No'],
 												  "S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-												  "HIDDEN_FIELDS" => $hidden_fields));
+												  "S_HIDDEN_FIELDS" => $hidden_fields));
 			$template->pparse("confirm");
 			include('includes/page_tail.'.$phpEx);
 			exit();
