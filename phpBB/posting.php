@@ -1342,6 +1342,12 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									{
 										$path = '';
 									}
+
+									$orig_word = array();
+									$replacement_word = array();
+									obtain_word_list($orig_word, $replacement_word);
+
+									$topic_title = preg_replace($orig_word, $replacement_word, $email_set[0]['topic_title']);
 												
 									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
@@ -1359,7 +1365,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 												"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 												"USERNAME" => $email_set[$i]['username'],
 												"SITENAME" => $board_config['sitename'],
-												"TOPIC_TITLE" => $email_set[$i]['topic_title'],
+												"TOPIC_TITLE" => $topic_title,
 
 												"U_TOPIC" => $protocol . $server_name . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id",
 												"U_STOP_WATCHING_TOPIC" => $protocol . $server_name . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic")
