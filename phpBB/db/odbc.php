@@ -126,6 +126,11 @@ class sql_db
 		unset($this->row);
 		if($query != "")
 		{
+			if($this->db_type == "msaccess")
+			{
+				echo $query = preg_replace("/LOWER\(/", "LCASE(", $query);
+			}
+
 			if(!eregi("^INSERT ",$query))
 			{
 				if(eregi("LIMIT", $query))
