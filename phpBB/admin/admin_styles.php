@@ -561,6 +561,7 @@ switch( $mode )
 						}
 					}
 				}
+				$s_template_select .= '</select>';
 			}
 			else
 			{
