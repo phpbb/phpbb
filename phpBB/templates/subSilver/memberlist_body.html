@@ -131,7 +131,7 @@ function marklist(status)
 	<tr>
 		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
+				<td align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>
