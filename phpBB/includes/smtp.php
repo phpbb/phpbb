@@ -144,6 +144,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	server_parse($socket, "250", __LINE__);
 
 	// Specify each user to send to and build to header.
+	$to_header = '';
+
 	@reset($mail_to_array);
 	while(list(, $mail_to_address) = each($mail_to_array))
 	{
@@ -154,7 +156,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 			fputs($socket, "RCPT TO: $mail_to_address\r\n");
 			server_parse($socket, "250", __LINE__);
 		}
-		$to_header .= (($to_header !='') ? ', ' : '') . "$mail_to_address";
+		$to_header .= (($to_header != '') ? ', ' : '') . "$mail_to_address";
 	}
 
 	// Ok now do the CC and BCC fields...
