@@ -253,7 +253,7 @@ if( !empty($mode) )
 				$newmode = 'modforum';
 				$buttonvalue = $lang['Update'];
 
-				$forum_id = intval($HTTP_GET_VARS['forum_id']);
+				$forum_id = intval($HTTP_GET_VARS[POST_FORUM_URL]);
 
 				$row = get_info('forum', $forum_id);
 
@@ -305,7 +305,7 @@ if( !empty($mode) )
 				"body" => "admin/forum_edit_body.tpl")
 			);
 
-			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="forum_id" value="' . $forum_id . '" />';
+			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
 			$template->assign_vars(array(
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"),
@@ -347,7 +347,7 @@ if( !empty($mode) )
 
 			$sql = "SELECT MAX(forum_order) AS max_order
 				FROM " . FORUMS_TABLE . "
-				WHERE cat_id = " . intval($HTTP_POST_VARS['cat_id']);
+				WHERE cat_id = " . intval($HTTP_POST_VARS[POST_CAT_URL]);
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
@@ -382,7 +382,7 @@ if( !empty($mode) )
 
 			// There is no problem having duplicate forum names so we won't check for it.
 			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable" . $field_sql . ")
-				VALUES ('" . $next_id . "', '" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . $value_sql . ")";
+				VALUES ('" . $next_id . "', '" . str_replace("\'", "''", $HTTP_POST_VARS['forumname']) . "', " . intval($HTTP_POST_VARS[POST_CAT_URL]) . ", '" . str_replace("\'", "''", $HTTP_POST_VARS['forumdesc']) . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . $value_sql . ")";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
@@ -392,7 +392,7 @@ if( !empty($mode) )
 			{
 				$new_forum_id = $db->sql_nextid();
 
-				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				if( $HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
 				{
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
@@ -422,23 +422,23 @@ if( !empty($mode) )
 			}
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_name = '" . $HTTP_POST_VARS['forumname'] . "', cat_id = " . intval($HTTP_POST_VARS['cat_id']) . ", forum_desc = '" . $HTTP_POST_VARS['forumdesc'] . "', forum_status = " . intval($HTTP_POST_VARS['forumstatus']) . ", prune_enable = " . intval($HTTP_POST_VARS['prune_enable']) . "
-				WHERE forum_id = " . intval($HTTP_POST_VARS['forum_id']);
+				SET forum_name = '" . str_replace("\'", "''", $HTTP_POST_VARS['forumname']) . "', cat_id = " . intval($HTTP_POST_VARS[POST_CAT_URL]) . ", forum_desc = '" . str_replace("\'", "''", $HTTP_POST_VARS['forumdesc']) . "', forum_status = " . intval($HTTP_POST_VARS['forumstatus']) . ", prune_enable = " . intval($HTTP_POST_VARS['prune_enable']) . "
+				WHERE forum_id = " . intval($HTTP_POST_VARS[POST_FORUM_URL]);
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
 			}
 
-			if($HTTP_POST_VARS['prune_enable'] == 1)
+			if( $HTTP_POST_VARS['prune_enable'] == 1 )
 			{
-				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				if( $HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "" )
 				{
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
 				$sql = "SELECT *
 					FROM " . PRUNE_TABLE . "
-					WHERE forum_id = " . intval($HTTP_POST_VARS['forum_id']);
+					WHERE forum_id = " . intval($HTTP_POST_VARS[POST_FORUM_URL]);
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
@@ -448,12 +448,12 @@ if( !empty($mode) )
 				{
 					$sql = "UPDATE " . PRUNE_TABLE . "
 						SET	prune_days = " . intval($HTTP_POST_VARS['prune_days']) . ",	prune_freq = " . intval($HTTP_POST_VARS['prune_freq']) . "
-				 		WHERE forum_id = " . intval($HTTP_POST_VARS['forum_id']);
+				 		WHERE forum_id = " . intval($HTTP_POST_VARS[POST_FORUM_URL]);
 				}
 				else
 				{
 					$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-						VALUES(" . intval($HTTP_POST_VARS['forum_id']) . ", " . intval($HTTP_POST_VARS['prune_days']) . ", " . intval($HTTP_POST_VARS['prune_freq']) . ")";
+						VALUES(" . intval($HTTP_POST_VARS[POST_FORUM_URL]) . ", " . intval($HTTP_POST_VARS['prune_days']) . ", " . intval($HTTP_POST_VARS['prune_freq']) . ")";
 				}
 
 				if( !$result = $db->sql_query($sql) )
@@ -509,7 +509,7 @@ if( !empty($mode) )
 			$newmode = 'modcat';
 			$buttonvalue = $lang['Update'];
 
-			$cat_id = intval($HTTP_GET_VARS['cat_id']);
+			$cat_id = intval($HTTP_GET_VARS[POST_CAT_URL]);
 
 			$row = get_info('category', $cat_id);
 			$cat_title = $row['cat_title'];
@@ -518,7 +518,7 @@ if( !empty($mode) )
 				"body" => "admin/category_edit_body.tpl")
 			);
 
-			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="cat_id" value="' . $cat_id . '" />';
+			$s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
 
 			$template->assign_vars(array(
 				'CAT_TITLE' => $cat_title,
@@ -538,8 +538,8 @@ if( !empty($mode) )
 		case 'modcat':
 			// Modify a category in the DB
 			$sql = "UPDATE " . CATEGORIES_TABLE . "
-				SET cat_title = '" . $HTTP_POST_VARS['cat_title'] . "'
-				WHERE cat_id = " . intval($HTTP_POST_VARS['cat_id']);
+				SET cat_title = '" . str_replace("\'", "''", $HTTP_POST_VARS['cat_title']) . "'
+				WHERE cat_id = " . intval($HTTP_POST_VARS[POST_CAT_URL]);
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
@@ -553,7 +553,7 @@ if( !empty($mode) )
 			
 		case 'deleteforum':
 			// Show form to delete a forum
-			$forum_id = intval($HTTP_GET_VARS['forum_id']);
+			$forum_id = intval($HTTP_GET_VARS[POST_FORUM_URL]);
 
 			$select_to = '<select name="to_id">';
 			$select_to .= "<option value=\"-1\"$s>" . $lang['Delete_all_posts'] . "</option>\n";
@@ -651,7 +651,7 @@ if( !empty($mode) )
 			//
 			// Show form to delete a category
 			//
-			$cat_id = intval($HTTP_GET_VARS['cat_id']);
+			$cat_id = intval($HTTP_GET_VARS[POST_CAT_URL]);
 
 			$buttonvalue = $lang['Move_and_Delete'];
 			$newmode = 'movedelcat';
@@ -757,7 +757,7 @@ if( !empty($mode) )
 			// Change order of forums in the DB
 			//
 			$move = intval($HTTP_GET_VARS['move']);
-			$forum_id = intval($HTTP_GET_VARS['forum_id']);
+			$forum_id = intval($HTTP_GET_VARS[POST_FORUM_URL]);
 
 			$forum_info = get_info('forum', $forum_id);
 
@@ -781,7 +781,7 @@ if( !empty($mode) )
 			// Change order of categories in the DB
 			//
 			$move = intval($HTTP_GET_VARS['move']);
-			$cat_id = intval($HTTP_GET_VARS['cat_id']);
+			$cat_id = intval($HTTP_GET_VARS[POST_CAT_URL]);
 
 			$sql = "UPDATE " . CATEGORIES_TABLE . "
 				SET cat_order = cat_order + $move
@@ -797,7 +797,7 @@ if( !empty($mode) )
 			break;
 
 		case 'forum_sync':
-			sync('forum', intval($HTTP_GET_VARS['forum_id']));
+			sync('forum', intval($HTTP_GET_VARS[POST_FORUM_URL]));
 			$show_index = TRUE;
 
 			break;
@@ -875,11 +875,11 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 			'CAT_ID' => $cat_id,
 			'CAT_DESC' => $category_rows[$i]['cat_title'],
 
-			'U_CAT_EDIT' => append_sid("admin_forums.$phpEx?mode=editcat&amp;cat_id=$cat_id"),
-			'U_CAT_DELETE' => append_sid("admin_forums.$phpEx?mode=deletecat&cat_id=$cat_id"),
-			'U_CAT_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=cat_order&move=-15&cat_id=$cat_id"),
-			'U_CAT_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=cat_order&move=15&cat_id=$cat_id"),
-			'U_VIEWCAT' => append_sid($phpbb_root_path."index.$phpEx?viewcat=$cat_id"))
+			'U_CAT_EDIT' => append_sid("admin_forums.$phpEx?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
+			'U_CAT_DELETE' => append_sid("admin_forums.$phpEx?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
+			'U_CAT_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=cat_order&amp;move=-15&amp;" . POST_CAT_URL . "=$cat_id"),
+			'U_CAT_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=cat_order&amp;move=15&amp;" . POST_CAT_URL . "=$cat_id"),
+			'U_VIEWCAT' => append_sid($phpbb_root_path."index.$phpEx?" . POST_CAT_URL . "=$cat_id"))
 		);
 
 		for($j = 0; $j < $total_forums; $j++)
@@ -896,12 +896,12 @@ if( $total_categories = $db->sql_numrows($q_categories) )
 					'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
 					'NUM_POSTS' => $forum_rows[$j]['forum_posts'],
 
-					'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']),
-					'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;forum_id=$forum_id"),
-					'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;forum_id=$forum_id"),
-					'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&forum_id=$forum_id"),
-					'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&forum_id=$forum_id"),
-					'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;forum_id=$forum_id"))
+					'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
+					'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id"),
+					'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;" . POST_FORUM_URL . "=$forum_id"),
+					'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&amp;" . POST_FORUM_URL . "=$forum_id"),
+					'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&amp;" . POST_FORUM_URL . "=$forum_id"),
+					'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id"))
 				);
 
 			}// if ... forumid == catid

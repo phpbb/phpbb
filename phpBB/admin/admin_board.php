@@ -46,7 +46,7 @@ else
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
 			$sql = "UPDATE " . CONFIG_TABLE . " SET
-				config_value = '" . $new[$config_name] . "'
+				config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
 				WHERE config_name = '$config_name'";
 			if( !$db->sql_query($sql) )
 			{
