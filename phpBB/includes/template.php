@@ -20,6 +20,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 /**
  * Template class. By Nathan Codding of the phpBB group.
  * The interface was originally inspired by PHPLib templates,

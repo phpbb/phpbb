@@ -19,6 +19,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 define("BBCODE_UID_LEN", 10);
 
 // global that holds loaded-and-prepared bbcode templates, so we only have to do 
@@ -536,9 +541,6 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 {
 	global $lang;
 
-	$html_entities_match = array("#<#", "#>#");
-	$html_entities_replace = array("&lt;", "&gt;");
-
 	$code_start_html = $bbcode_tpl['code_open'];
 	$code_end_html =  $bbcode_tpl['code_close'];
 
@@ -550,8 +552,6 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 	{
 		$before_replace = $matches[1][$i];
 		$after_replace = $matches[1][$i];
-
-		$after_replace = preg_replace($html_entities_match, $html_entities_replace, $after_replace);
 		
 		// Replace 2 spaces with "&nbsp; " so non-tabbed code indents without making huge long lines.
 		$after_replace = str_replace("  ", "&nbsp; ", $after_replace);
@@ -762,6 +762,24 @@ function smiley_sort($a, $b)
 	}
 
 	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
+}
+
+//
+// this does exactly what preg_quote() does in PHP 4-ish: 
+// http://www.php.net/manual/en/function.preg-quote.php
+//
+// This function is here because the 2nd paramter to preg_quote was added in some
+// version of php 4.0.x.. So we use this in order to maintain compatibility with
+// earlier versions of PHP.
+// 
+// If you just need the 1-parameter preg_quote call, then don't bother using this.
+//
+function phpbb_preg_quote($str, $delimiter)
+{
+	$text = preg_quote($str);
+	$text = str_replace($delimiter, "\\" . $delimiter, $text);
+	
+	return $text;
 }
 
 ?>

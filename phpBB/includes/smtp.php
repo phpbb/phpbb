@@ -19,6 +19,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 define('SMTP_INCLUDED', 1);
 //
 // This function has been modified as provided

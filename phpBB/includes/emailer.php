@@ -19,6 +19,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 //
 // The emailer class has support for attaching files, that isn't implemented
 // in the 2.0 release but we can probable find some way of using it in a future

@@ -20,6 +20,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 // Debug Level
 define('DEBUG', 1); // Debugging on
 //define('DEBUG', 0); // Debugging off

@@ -19,6 +19,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 {
 	// Weird, $init_match doesn't work with static when double quotes (") are used...

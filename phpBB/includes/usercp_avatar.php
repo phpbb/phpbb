@@ -21,6 +21,12 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PROFILE') )
+{
+	die("Hacking attempt");
+	exit;
+}
+
 function check_image_type(&$type, &$error, &$error_msg)
 {
 	global $lang;

@@ -20,6 +20,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 switch($dbms)
 {
 	case 'mysql':

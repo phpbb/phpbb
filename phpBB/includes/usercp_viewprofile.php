@@ -23,7 +23,7 @@
 
 if ( !defined('IN_PROFILE') )
 {
-	header("Location: ../index.$phpEx");
+	die("Hacking attempt");
 	exit;
 }
 

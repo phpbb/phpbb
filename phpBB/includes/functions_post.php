@@ -20,6 +20,11 @@
  *
  ***************************************************************************/
 
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
 $html_entities_match = array('#&#', '#<#', '#>#');
 $html_entities_replace = array('&amp;', '&lt;', '&gt;');
 
@@ -254,7 +259,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 	else if ( $mode == 'editpost' )
 	{
-		$result = remove_search_post($post_id);
+		remove_search_post($post_id);
 	}
 
 	if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) )
@@ -370,9 +375,9 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 // Update post stats and details
 //
-function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id)
+function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id, &$user_id)
 {
-	global $db, $userdata;
+	global $db;
 
 	$sign = ( $mode == 'delete' ) ? "- 1" : "+ 1";
 	$forum_update_sql = "forum_posts = forum_posts $sign";
@@ -388,6 +393,9 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 			}
 			else
 			{
+
+				$topic_update_sql = "topic_replies = topic_replies - 1";
+
 				$sql = "SELECT MAX(post_id) AS post_id
 					FROM " . POSTS_TABLE . " 
 					WHERE topic_id = $topic_id";
@@ -398,7 +406,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$topic_update_sql = 'topic_last_post_id = ' . $row['post_id'];
+					$topic_update_sql .= ', topic_last_post_id = ' . $row['post_id'];
 				}
 			}
 
@@ -467,7 +475,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	{
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_posts = user_posts $sign 
-			WHERE user_id = " . $userdata['user_id'];
+			WHERE user_id = $user_id";
 		if ( !($result = $db->sql_query($sql, END_TRANSACTION)) )
 		{
 			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
@@ -558,7 +566,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	remove_unmatched_words();
+	remove_search_post($post_id);
 
 	if ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] )
 	{
