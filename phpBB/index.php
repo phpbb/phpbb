@@ -107,6 +107,7 @@ if($total_categories)
 	{
 		$template->assign_block_vars("catrow", array("CAT_ID" => $category_rows[$i]["cat_id"],
 			"PHP_SELF" => $PHP_SELF,
+			"POST_FORUM_URL" => POST_FORUM_URL,
 			"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])));
 		
 		for($j = 0; $j < $total_forums; $j++)

@@ -24,6 +24,15 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+//
+// Set page ID for session management
+//
+$userdata = session_pagestart($user_ip, PAGE_LOGIN, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
 if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 {
 	if($HTTP_POST_VARS['submit'] == "Login" && !$userdata['session_logged_in'])
@@ -69,7 +78,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 	{
 		if($userdata['session_logged_in'])
 		{
-			session_end($db, $userdata["session_id"], $userdata["user_id"]);
+			session_end($userdata["session_id"], $userdata["user_id"]);
 		}
 		header("Location: index.$phpEx");
 	}

@@ -19,7 +19,7 @@
 	        <!-- BEGIN forumrow -->
 	        <tr bgcolor="{catrow.forumrow.ROW_COLOR}" class="tablebody">
 	          <td width="5%" align="center" valign="middle">{catrow.forumrow.FOLDER}</td>
-            <td><a href="viewforum.{PHPEX}?forum_id={catrow.forumrow.FORUM_ID}&{catrow.forumrow.POSTS}">{catrow.forumrow.FORUM_NAME}</a><br>{catrow.forumrow.FORUM_DESC}</td>
+            <td><a href="viewforum.{PHPEX}?{catrow.POST_FORUM_URL}={catrow.forumrow.FORUM_ID}&{catrow.forumrow.POSTS}">{catrow.forumrow.FORUM_NAME}</a><br>{catrow.forumrow.FORUM_DESC}</td>
             <td width="5%" align="center" valign="middle">{catrow.forumrow.TOPICS}</td>
 	          <td width="5%" align="center" valign="middle">{catrow.forumrow.POSTS}</td>
 	          <td width="15%" align="center" valign="middle">{catrow.forumrow.LAST_POST}</td>
