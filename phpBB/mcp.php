@@ -865,7 +865,7 @@ include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 //
 function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view')
 {
-	global $phpbb_root_path, $phpEx, $SID, $template, $user, $db, $config;
+	global $phpbb_root_path, $phpEx, $SID, $template, $auth, $user, $db, $config;
 	global $forum_id, $forum_info;
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
@@ -881,6 +881,7 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 
 	$page_title = sprintf($user->lang['MCP'], '', '');
 	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+
 	$template->set_filenames(array(
 		'body' => $template_name
 	));
