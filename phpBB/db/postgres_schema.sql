@@ -121,7 +121,7 @@ CREATE TABLE phpbb_config (
    avatar_max_width int2 DEFAULT '70' NOT NULL,
    avatar_max_height int2 DEFAULT '70' NOT NULL,
    avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
-   smilies_patch varchar(50) DEFAULT 'images/smiles' NOT NULL,
+   smilies_path varchar(50) DEFAULT 'images/smiles' NOT NULL,
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
    prune_enable int2 DEFAULT '1' NOT NULL,
