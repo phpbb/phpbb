@@ -883,41 +883,53 @@ switch($mode)
 		//
 		// Get other IP's this user has posted under
 		//
-		$sql = "SELECT DISTINCT poster_ip 
+		$sql = "SELECT poster_ip, count(*) as postings 
 			FROM " . POSTS_TABLE . " 
 			WHERE poster_id = $poster_id 
-				AND poster_ip <> '" . $post_row['poster_ip'] . "' 
-			ORDER BY poster_ip DESC";
+			GROUP BY (poster_ip)
+			ORDER BY postings DESC";
 		if(!$result = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Could not get IP information for this user", "Error", __LINE__, __FILE__, $sql);
 		}
 
 		$poster_ips = $db->sql_fetchrowset($result);
+		$j = 0;
 		for($i = 0; $i < count($poster_ips); $i++)
 		{
+			if ( $poster_ips[$i]['poster_ip'] == $post_row['poster_ip'] )
+			{
+				$template->assign_vars(array(
+					"POSTINGS" => $poster_ips[$i]['postings'] . " " .$lang['Posts'])
+				);
+				continue;
+			}
 			$ip = decode_ip($poster_ips[$i]['poster_ip']);
-			$ip = ( $rdns_ip_num == $ip ) ? gethostbyaddr($ip) : $ip;
+			$ip = ( $rdns_ip_num == $poster_ips[$i]['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
 
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$j++; // Can't use $i because of the 'continue'
+			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars("iprow", array(
 				"ROW_COLOR" => "#" . $row_color, 
 				"ROW_CLASS" => $row_class, 
-				"IP" => $ip, 
+				"IP" => $ip,
+				"POSTINGS" => $poster_ips[$i]['postings'] . " " .$lang['Posts'],
 
-				"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip))
+				"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $poster_ips[$i]['poster_ip']))
 			);
 		}
 
 		//
 		// Get other users who've posted under this IP
 		//
-		$sql = "SELECT DISTINCT u.username, u.user_id 
+		$sql = "SELECT u.user_id, u.username, count(*) as postings 
 			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p 
 			WHERE p.poster_id = u.user_id 
-				AND p.poster_ip = '" . $post_row['poster_ip'] . "'";
+				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
+			GROUP BY u.user_id, u.username
+			ORDER BY postings DESC";
 		if(!$result = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Could not get posters information based on IP", "Error", __LINE__, __FILE__, $sql);
@@ -936,6 +948,7 @@ switch($mode)
 				"ROW_COLOR" => "#" . $row_color, 
 				"ROW_CLASS" => $row_class, 
 				"USERNAME" => $username,
+				"POSTINGS" => $poster_ids[$i]['postings'] . " " .$lang['Posts'],
 				"L_SEARCH_POSTS" => sprintf($lang['Search_user_posts'], $username), 
 
 				"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
