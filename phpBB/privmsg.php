@@ -69,6 +69,15 @@ else
 }
 
 //
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
 // Cancel 
 //
 if ( $cancel )
@@ -77,15 +86,6 @@ if ( $cancel )
 	header($header_location . append_sid("privmsg.$phpEx?folder=$folder", true));
 	exit;
 }
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
-init_userprefs($userdata);
-//
-// End session management
-//
 
 //
 // Var definitions
