@@ -249,7 +249,6 @@ switch ($mode)
 		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
 
 		// Caching screws up slashes so we fudge a solution
-		$new['allow_name_chars'] = ;
 		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[/w_/+/. /-/[/]]+');
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
