@@ -474,6 +474,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 			}
 
+			$passwd_sql = "";
 			if( !empty($password) && !empty($password_confirm) )
 			{
 				// Awww, the user wants to change their password, isn't that cute..
@@ -510,6 +511,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 			}
 
+			$username_sql = "";
 			if($board_config['allow_namechange'] || $mode == "register")
 			{
 				if($username != $userdata['username'] || $mode == "register")
