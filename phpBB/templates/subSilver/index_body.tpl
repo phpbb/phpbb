@@ -52,13 +52,11 @@
   </tr>
   <tr> 
 	<td class="row1" align="center" valign="middle" rowspan="2"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-	<td class="row1" align="left" width="100%"> 
-	  <p><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span></p>
+	<td class="row1" align="left" width="100%"><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span>
 	</td>
   </tr>
   <tr> 
-	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />
-	  {LOGGED_IN_USER_LIST}</span></td>
+	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{LOGGED_IN_USER_LIST}</span></td>
   </tr>
 </table>
 
@@ -88,12 +86,12 @@
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}"/></td>
-	<td class="gensmall"><span class="gensmall">{L_NEW_POSTS}</span></td>
+	<td><span class="gensmall">{L_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
 	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" /></td>
-	<td class="gensmall">{L_NO_NEW_POSTS}</td>
+	<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
-	<td class="gensmall">{L_FORUM_LOCKED}</td>
+	<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
   </tr>
 </table>
