@@ -378,7 +378,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['location']))) : "";
 				$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags(addslashes($HTTP_POST_VARS['occupation']))) : "";
 				$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
-				echo $signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+				$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
 
 				$viewemail = $HTTP_POST_VARS['viewemail'];
 				$attachsig = $HTTP_POST_VARS['attachsig'];
