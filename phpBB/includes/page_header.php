@@ -75,7 +75,7 @@ if ( $userdata['session_logged_in'] )
 }
 else
 {
-	$u_login_logout = 'login.'.$phpEx . '&amp;sid=' . $userdata['session_id'];
+	$u_login_logout = 'login.'.$phpEx;
 	$l_login_logout = $lang['Login'];
 }
 

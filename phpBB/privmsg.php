@@ -69,6 +69,16 @@ else
 	$folder = 'inbox';
 }
 
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
+
 //
 // Start session management
 //
@@ -644,6 +654,13 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 	{
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
+
+	// session id check
+	if ($sid == '' || $sid != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
+	}
+
 	if ( isset($mark_list) && !is_array($mark_list) )
 	{
 		// Set to empty array instead of '0' if nothing is selected.
@@ -652,7 +669,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 	if ( !$confirm )
 	{
-		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" />';
 		$s_hidden_fields .= ( isset($HTTP_POST_VARS['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 
 		for($i = 0; $i < count($mark_list); $i++)
@@ -842,6 +859,12 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 
+	// session id check
+	if ($sid == '' || $sid != $userdata['session_id'])
+	{
+		message_die(ERROR, 'Invalid_session');
+	}
+	
 	//
 	// See if recipient is at their savebox limit
 	//
@@ -939,13 +962,12 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 }
 else if ( $submit || $refresh || $mode != '' )
 {
-
 	if ( !$userdata['session_logged_in'] )
 	{
 		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($HTTP_GET_VARS[POST_USERS_URL]) : '';
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
 	}
-
+	
 	//
 	// Toggles
 	//
@@ -1006,6 +1028,12 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( $submit )
 	{
+		// session id check
+		if ($sid == '' || $sid != $userdata['session_id'])
+		{
+			message_die(ERROR, 'Invalid_session');
+		}
+
 		if ( !empty($HTTP_POST_VARS['username']) )
 		{
 			$to_username = $HTTP_POST_VARS['username'];
@@ -1444,7 +1472,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$preview_message = make_clickable($preview_message);
 		$preview_message = str_replace("\n", '<br />', $preview_message);
 
-		$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="folder" value="' . $folder . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 
 		if ( isset($privmsg_id) )
@@ -1566,7 +1594,7 @@ else if ( $submit || $refresh || $mode != '' )
 		$post_a = $lang['Edit_message'];
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
+	$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="folder" value="' . $folder . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 	if ( $mode == 'edit' )
 	{

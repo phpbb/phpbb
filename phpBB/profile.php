@@ -34,6 +34,16 @@ init_userprefs($userdata);
 // End session management
 //
 
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
+
 //
 // Set default email variables
 //

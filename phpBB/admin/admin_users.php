@@ -65,8 +65,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 	{
 		$user_id = intval( $HTTP_POST_VARS['id'] );
 
-		$this_userdata = get_userdata($user_id);
-		if( !$this_userdata )
+		if (!($this_userdata = get_userdata($user_id)))
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 		}
@@ -179,26 +178,14 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 			$sql = "SELECT privmsgs_id
 				FROM " . PRIVMSGS_TABLE . "
-				WHERE ( ( privmsgs_from_userid = $user_id 
-						AND privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )
-					OR ( privmsgs_from_userid = $user_id
-						AND privmsgs_type = " . PRIVMSGS_SENT_MAIL . " )
-					OR ( privmsgs_to_userid = $user_id
-						AND privmsgs_type = " . PRIVMSGS_READ_MAIL . " )
-					OR ( privmsgs_to_userid = $user_id
-						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-					OR ( privmsgs_from_userid = $user_id
-						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) )";
+				WHERE privmsgs_from_userid = $user_id 
+					OR privmsgs_to_userid = $user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, 'Could not select all user\'s private messages', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not select all users private messages', '', __LINE__, __FILE__, $sql);
 			}
-			
-			//
+
 			// This little bit of code directly from the private messaging section.
-			// Thanks Paul!
-			//
-			
 			while ( $row_privmsgs = $db->sql_fetchrow($result) )
 			{
 				$mark_list[] = $row_privmsgs['privmsgs_id'];
@@ -208,21 +195,10 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			{
 				$delete_sql_id = implode(', ', $mark_list);
 				
-				//
-				// We shouldn't need to worry about updating conters here...
-				// They are already gone!
-				//
-				
 				$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
 					WHERE privmsgs_text_id IN ($delete_sql_id)";
 				$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
 					WHERE privmsgs_id IN ($delete_sql_id)";
-				
-				//
-				// Shouldn't need the switch statement here, either, as we just want
-				// to take out all of the private messages.  This will not affect
-				// the other messages we want to keep; the ids are unique.
-				//
 				
 				if ( !$db->sql_query($delete_sql) )
 				{
@@ -233,22 +209,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				{
 					message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
 				}
-			}
-			
-			$sql = "UPDATE " . PRIVMSGS_TABLE . "
-				SET privmsgs_to_userid = " . DELETED . "
-				WHERE privmsgs_to_userid = $user_id";
-			if ( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update private messages saved to the user', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "UPDATE " . PRIVMSGS_TABLE . "
-				SET privmsgs_from_userid = " . DELETED . "
-				WHERE privmsgs_from_userid = $user_id";
-			if ( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update private messages saved from the user', '', __LINE__, __FILE__, $sql);
 			}
 
 			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
