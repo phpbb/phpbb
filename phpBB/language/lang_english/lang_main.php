@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                               lang_english.php
+ *                            lang_main.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -19,19 +19,23 @@
  *
  ***************************************************************************/
 
+// -------------------------------------------------------------------------
+//                            NOTE THE FOLLOWING
+// -------------------------------------------------------------------------
 //
-// The future format of this file will be:
+// The format of this file is:
 //
 // ---> $lang['message'] = "text";
 //
-// message should be a GOOD representation of text, including capitalisation
+// 'message' should be a GOOD representation of text, including capitalisation
 // and underscoring for spacing. Remember different languages often interpret
 // consecutive words in different ways, so if you're building a sentence then
-// try and indicate what 'words' follow
+// try and indicate what 'words' follow if applicable
 //
-// The number of phrases should be kept to a minimum so we should try and reuse
-// as much as possible.
+// The number of phrases should be kept to a minimum so try and reuse as much
+// as possible.
 //
+
 
 //
 // Common, these terms are used
@@ -123,6 +127,7 @@ $lang['Go'] = "Go";
 
 $lang['Success'] = "Success";
 
+
 //
 // Global Header strings
 //
@@ -150,6 +155,7 @@ $lang['Moderator'] = "Moderator/s";
 $lang['Mark_all_topics'] = "Mark all topics read";
 $lang['Mark_all_forums'] = "Mark all forums read";
 
+
 //
 // Stats block text
 //
@@ -170,6 +176,7 @@ $lang['Topic_is_locked'] = "Topic is locked";
 $lang['Forum_is_locked'] = "Forum is locked";
 $lang['Joined'] = "Joined";
 
+
 //
 // Login
 //
@@ -180,6 +187,7 @@ $lang['You_are_not_logged_in'] = "You are not logged in";
 $lang['Forgotten_password'] = "I forgot my password";
 $lang['Log_me_in'] = "Log me on automatically each visit";
 
+
 //
 // Index page
 //
@@ -187,10 +195,12 @@ $lang['No_Posts'] = "No Posts";
 $lang['Forum_Index'] = "Forum Index";
 $lang['No_forums'] = "This board has no forums";
 
+$lang['Private_Message'] = "Private Message";
 $lang['Private_Messages'] = "Private Messages";
 $lang['Who_is_Online'] = "Who is Online";
 
 $lang['Forums_marked_read'] = "All forums have been marked read";
+
 
 //
 // Viewforum
@@ -209,6 +219,7 @@ $lang['Topic_Poll'] = "<b>[ Poll ]</b>";
 
 $lang['View_newest_posts'] = "View posts since your last visit";
 $lang['Topics_marked_read'] = "The topics for this forum have now been marked read";
+
 
 //
 // Viewtopic
@@ -257,6 +268,7 @@ $lang['Stop_watching_topic'] = "Stop watching this topic";
 $lang['Start_watching_topic'] = "Watch this topic for replies";
 $lang['No_longer_watching'] = "You are no longer watching this topic";
 $lang['You_are_watching'] = "You are now watching this topic";
+
 
 //
 // Posting/Replying (Not private messaging!)
@@ -337,6 +349,7 @@ $lang['to_return_topic'] = "to return to the topic";
 
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
 
+
 //
 // Private Messaging
 //
@@ -398,6 +411,7 @@ $lang['Unmark_all'] = "Unmark all";
 $lang['Your'] = "Your"; // Example of use of this var : "Your Inbox is 50% full";
 $lang['full'] = "full";
 
+
 //
 // Profiles/Registration
 //
@@ -415,7 +429,7 @@ $lang['From'] = "From";
 $lang['Contact'] = "Contact";
 $lang['Email_address'] = "Email address";
 $lang['Email'] = "Email";
-$lang['Private_message'] = "Send Private Message";
+$lang['Send_private_message'] = "Send private message";
 $lang['Hidden_email'] = "[ Hidden ]";
 $lang['Search_user_posts'] = "Search for posts by this user";
 $lang['Interests'] = "Interests";
@@ -517,6 +531,7 @@ $lang['No_email_match'] = "The email address you supplied does not match the one
 $lang['New_password_activation'] = "New password activation";
 $lang['Password_activated'] = "Your account has been re-activated. To logon please use the password supplied in the email you received";
 
+
 //
 // Memberslist
 //
@@ -526,6 +541,7 @@ $lang['Top_Ten'] = "Top Ten Posters";
 $lang['Ascending'] = "Ascending";
 $lang['Descending'] = "Descending";
 $lang['Order'] = "Order";
+
 
 //
 // Group control panel
@@ -538,6 +554,9 @@ $lang['Group_Information'] = "Group Information";
 $lang['Group_name'] = "Group name";
 $lang['Group_description'] = "Group description";
 $lang['Group_membership'] = "Group membership";
+$lang['Group_Members'] = "Group Members";
+$lang['Group_Moderator'] = "Group Moderator";
+$lang['Pending_members'] = "Pending Members";
 
 $lang['Current_memberships'] = "Current memberships";
 $lang['Non_member_groups'] = "Non-member groups";
@@ -545,18 +564,18 @@ $lang['Memberships_pending'] = "Memberships pending";
 
 $lang['Join_group'] = "Join Group";
 $lang['No_group_members'] = "This group has no members";
-
-$lang["Group_joined"] = "You have successfully subscribed to this group, you will be notifed when your subscription is approved by the group moderator.";
+$lang['No_pending_group_members'] = "This group has no pending members";
+$lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notifed when your subscription is approved by the group moderator";
 $lang['Group_request'] = "A request to join your group has been made";
 $lang['Group_approved'] = "Your request has been approved";
-$lang['Group_added'] = "You have been added!";
+$lang['Group_added'] = "You have been added to this usergroup";
 
-$lang['Could_not_add_user'] = "Could not add the selected user. Please go back and make sure you typed the correct username.";
+$lang['Could_not_add_user'] = "The user you selected does not exist";
 
 $lang['Confirm_unsub'] = "Are you sure you want to unsubscribe from this group?";
-$lang['Confirm_unsub_pending'] = "Are you sure you want to unsubscribe from this group? You subscription has not yet been approved or denied!";
+$lang['Confirm_unsub_pending'] = "Your subscription to this group has not yet been approved, are you sure you want to unsubscribe?";
 
-$lang['Usub_success'] = "You have been successfully unsubscribed from this group.";
+$lang['Unsub_success'] = "You have been unsubscribed from this group.";
 
 $lang['Approve_selected'] = "Approve Selected";
 $lang['Deny_selected'] = "Deny Selected";
@@ -568,6 +587,7 @@ $lang['Not_group_moderator'] = "You are not this groups moderator therefor you c
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
 $lang['Member_this_group'] = "You are a member of this group";
+$lang['Pending_this_group'] = "Your membership of this group is pending";
 $lang['Are_group_moderator'] = "You are the group moderator";
 $lang['None'] = "None";
 
@@ -600,9 +620,7 @@ $lang['found'] = "found"; // this precedes the number of matches found and follo
 $lang['match'] = "Match"; // this and the following entry proceed the number of matches found
 $lang['matches'] = "Matches";
 $lang['Search_new'] = "View posts since last visit";
-//
-// Topic Admin <= Should be blank for now
-//
+
 
 //
 // Auth related entries
@@ -625,6 +643,7 @@ $lang['can_delete_topics'] = " can delete topics in";
 
 $lang['this_forum'] = " this forum";
 
+
 //
 // Viewonline
 //
@@ -643,6 +662,7 @@ $lang['Viewing_online'] = "Viewing who is online";
 $lang['Viewing_member_list'] = "Viewing member list";
 $lang['Viewing_priv_msgs'] = "Viewing Private Messages";
 $lang['Viewing_FAQ'] = "Viewing FAQ";
+
 
 //
 // Errors (not related to a
@@ -664,6 +684,7 @@ $lang['Error_login'] = "Login Failed<br />You have specified an incorrect/inacti
 
 $lang['Not_Moderator'] = "You are not a moderator of this forum";
 $lang['Not_Authorised'] = "Not Authorised";
+
 
 //
 // Moderator Control Panel
@@ -701,6 +722,7 @@ $lang['Users_this_IP'] = "Users posting from this IP";
 $lang['IP_info'] = "IP Information";
 $lang['Lookup_IP'] = "Look up IP";
 
+
 //
 // Timezones ... for display on each page
 //
@@ -737,16 +759,21 @@ $lang['10'] = "EST (Australia)";
 $lang['11'] = "GMT + 11" . " " . $lang['Hours'];
 $lang['12'] = "GMT + 12" . " " . $lang['Hours'];
 
-//
-// Main Admin section/s
-//
 
+// --------------------
+// Main Admin section/s
+// --------------------
+
+//
 // Index
+//
 $lang['Admin'] = "Administration";
 $lang['Not_admin'] = "You are not authorised to administer this board";
 $lang['Welcome_phpBB'] = "Welcome to phpBB";
 $lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
 $lang['Forum_stats'] = "Forum Statistics";
+$lang['Admin_Index'] = "Admin Index";
+$lang['Preview_forum'] = "Preview Forum";
 
 $lang['Statistic'] = "Statistic";
 $lang['Value'] = "Value";
@@ -759,9 +786,13 @@ $lang['Users_per_day'] = "Users per day";
 $lang['Board_started'] = "Board started";
 $lang['Avatar_dir_size'] = "Avatar directory size";
 $lang['Database_size'] = "Database size";
+$lang['Gzip_compression'] ="Gzip compression";
 $lang['Not_available'] = "Not available";
 
+
+//
 // DB Utils
+//
 $lang['Database_Utilities'] = "Database Utilities";
 $lang['Restore'] = "Restore";
 $lang['Backup'] = "Backup";
@@ -785,7 +816,10 @@ $lang['Restore_Error_filename'] = "Filename problem, please try an alternative f
 $lang['Restore_Error_decompress'] = "Cannot decompress a gzip file, please upload a plain text version";
 $lang['Restore_Error_no_file'] = "No file was uploaded";
 
+
+//
 // Auth pages
+//
 $lang['Administrator'] = "Administrator";
 $lang['User'] = "User";
 $lang['Group'] = "Group";
@@ -845,11 +879,17 @@ $lang['and_belongs_groups'] = "and belongs to the following groups"; // followed
 
 $lang['Group_has_members'] = "This group has the following members";
 
+$lang['Forum_auth_updated'] = "Forum permissions updated";
+$lang['User_auth_updated'] = "User permissions updated";
+$lang['Group_auth_updated'] = "Group permissions updated";
+$lang['return_forum_auth_admin'] = "to return to the forum permissions panel";
 $lang['return_group_auth_admin'] = "to return to the group permissions panel";
 $lang['return_user_auth_admin'] = "to return to the user permissions panel";
 
 
+//
 // Banning
+//
 $lang['Ban_control'] = "Ban Control";
 $lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
 $lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
@@ -877,7 +917,9 @@ $lang['No_unban'] = "Leave list unchanged";
 $lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
 
 
+//
 // Configuration
+//
 $lang['General_Config'] = "General Configuration";
 $lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
 $lang['General_settings'] = "General Board Settings";
@@ -885,36 +927,48 @@ $lang['Site_name'] = "Site name";
 $lang['Acct_activation'] = "Enable account activation";
 
 
-$lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
-
-
+//
 // Forum Management
+//
+$lang['Forum_admin'] = "Forum Administration";
+$lang['Forum_admin_explain'] = "From this panel you can add, delete, edit, re-order and re-synchronise categories and forums";
+$lang['Edit_forum'] = "Edit forum";
+$lang['Create_forum'] = "Create new forum";
+$lang['Create_category'] = "Create new category";
 $lang['Remove'] = "Remove";
 $lang['Action'] = "Action";
 $lang['Update_order'] = "Update Order";
+$lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
+$lang['Edit'] = "Edit";
+$lang['Delete'] = "Delete";
+$lang['Move_up'] = "Move up";
+$lang['Move_down'] = "Move down";
+$lang['Resync'] = "Resync";
+$lang['No_mode'] = "No mode was set";
+$lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
 
-
+//
 // Smiley Management
-$lang['smile_remove_err'] = "Error Deleting Smiley!";
+//
 $lang['smiley_return'] = "Return to smiley listing";
-$lang['smiley_del_success'] = "The smiley was successfully removed!";
-$lang['smile_edit_err'] = "Error processing smiley edits";
+$lang['smiley_del_success'] = "The smiley was successfully removed";
 $lang['smiley_title'] = "Smiles Editing Utility";
 $lang['smiley_code'] = "Smiley Code";
 $lang['smiley_url'] = "Smiley Image File";
 $lang['smiley_emot'] = "Smiley Emotion";
-$lang['smiley_add_success'] = "The smiley was successfully added!";
-$lang['smiley_edit_success'] = "The smiley was successfully updated!";
-$lang['smile_load_err'] = "There was an error retrieving the smilies!";
+$lang['smiley_add_success'] = "The smiley was successfully added";
+$lang['smiley_edit_success'] = "The smiley was successfully updated";
 $lang['smile_add'] = "Add a new Smiley";
-$lang['smile_desc'] = "Some wonderful text describing the smiley administration here :)";
-$lang['smile_instr'] = "There should be some text here with instructions on what the admin should fill in for the smiley fields when editing or adding a smiley.";
+$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
 $lang['smiley_config'] = "Smiley Configuration";
 $lang['Code'] = "Code";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Emotion";
 
+
+//
 // User Management
+//
 $lang['User_admin'] = "Administration";
 $lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
 $lang['User_delete'] = "Delete this user";
@@ -927,23 +981,31 @@ $lang['Admin_avatar_explain'] = "Here you can see and delete the user's current 
 $lang['User_special'] = "Special admin-only fields";
 $lang['User_special_explain'] = "These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.";
 
+
+//
 // Group Management
-$lang['Group_admin_explain'] = "Here you can administer all your groups, including deleting, adding, as well as editing groups.  You may choose moderators, toggle open/closed group status, and set the name and description.";
-$lang['Error_updating_groups'] = "There was an error while updating the groups.";
-$lang['Success_updating_groups'] = "The group was updated/added successfully.";
-$lang['Group_mode_not_selected'] = "You did not select a mode. Please go back and try again.";
-$lang['Group_edit_explain'] = "Edit group:";
+//
+$lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
+$lang['Error_updating_groups'] = "There was an error while updating the groups";
+$lang['Updated_group'] = "The group was successfully updated";
+$lang['Added_new_group'] = "The new group was successfully created";
+$lang['Deleted_group'] = "The group was successfully deleted";
+$lang['New_group'] = "Create new group";
+$lang['Edit_group'] = "Edit group";
 $lang['group_name'] = "Group name";
 $lang['group_description'] = "Group description";
 $lang['group_moderator'] = "Group moderator";
 $lang['group_status'] = "Group status";
 $lang['group_open'] = "Open group";
 $lang['group_closed'] = "Closed group";
-$lang['New_group'] = "Click here to create a new group.";
 $lang['group_delete'] = "Delete group";
-$lang['group_delete_check'] = "Click here to delete this group.";
+$lang['group_delete_check'] = "Delete this group";
 $lang['submit_group_changes'] = "Submit Changes";
 $lang['reset_group_changes'] = "Reset Changes";
+$lang['No_group_name'] = "You must specify a name for this group";
+$lang['No_group_moderator'] = "You must specify a moderator for this group";
+$lang['No_group_mode'] = "You must specify a mode for this group, open or closed";
+
 
 //
 // Prune Administration
@@ -959,6 +1021,8 @@ $lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did 
 $lang['Topics_pruned'] = "Topics pruned";
 $lang['Posts_pruned'] = "Posts pruned";
 $lang['Prune_success'] = "Pruning of forums was successful";
+
+
 //
 // Word censor
 //
@@ -975,11 +1039,13 @@ $lang['Word_updated'] = "The selected word censor has been successfully updated"
 $lang['Word_added'] = "The word censor has been successfully added";
 $lang['Word_removed'] = "The selected word censor has been successfully removed";
 
+
 //
-//Mass Email
+// Mass Email
 //
 $lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients.  If you are emailing a large group of people, please be patient after submiting and DO NOT stop the page halfway through.  It is normal for amass emailing to take a long time.";
 $lang['Compose'] = "Compose";
+
 
 //
 // Install Process
@@ -1008,25 +1074,27 @@ $lang['Table_Prefix'] = "Prefix for tables in database";
 $lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
 $lang['Download_config'] = "Download Config";
 
+
 //
 // Ranks admin
 //
 $lang['Must_select_rank'] = "Sorry, you didn't select a rank.  Please go back and try again.";
 $lang['Ranks_title'] = "Rank Administration";
-$lang['Ranks_explain'] = "Here you can add, edit, view, and delete ranks. This is also a place to create custom ranks.";
+$lang['Ranks_explain'] = "Here you can add, edit, view, and delete ranks. This is also a place to create custom ranks";
 $lang['Rank_title'] = "Rank Title";
-$lang['Rank_special'] = "Special rank?";
+$lang['Rank_special'] = "Is special rank";
 $lang['Rank_minimum'] = "Minimum Posts";
 $lang['Rank_maximum'] = "Maximum Posts";
-$lang['Rank_updated'] = "The rank was successfully updated.";
-$lang['Rank_added'] = "The rank was successfully added.";
-$lang['Rank_removed'] = "The rank was successfully deleted.";
+$lang['Rank_updated'] = "The rank was successfully updated";
+$lang['Rank_added'] = "The rank was successfully added";
+$lang['Rank_removed'] = "The rank was successfully deleted";
 $lang['Add_new_rank'] = "Add new rank";
 $lang['Rank_image'] = "Rank Image";
-$lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. Please enter a URL, beginning with http://";
+$lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. You can specify either a relative or absolute path to the image";
+$lang['return_rank_admin'] = "to return to rank admin";
 
 //
-// End
+// That's all Folks!
 // -------------------------------------------------
 
 ?>
