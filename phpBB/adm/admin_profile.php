@@ -864,9 +864,10 @@ function save_profile_field($field_type, $field_ident)
 	$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
 
 	$sql = 'SELECT lang_id 
-		FROM ' . LANG_TABLE . ' 
+		FROM ' . LANG_TABLE . " 
 		WHERE lang_iso = '" . $config['default_lang'] . "'";
 	$result = $db->sql_query($sql);
+
 	$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
 	$db->sql_freeresult($result);
 
