@@ -90,6 +90,10 @@
 		<td class="row2" colspan="2"><span class="gensmall">{L_COOKIE_SETTINGS_EXPLAIN}</span></td>
 	</tr>
 	<tr>
+		<td class="row1">{L_COOKIE_DOMAIN}</td>
+		<td class="row2"><input type="text" maxlength="255" name="cookie_domain" value="{COOKIE_DOMAIN}" /></td>
+	</tr>
+	<tr>
 		<td class="row1">{L_COOKIE_NAME}</td>
 		<td class="row2"><input type="text" maxlength="16" name="cookie_name" value="{COOKIE_NAME}" /></td>
 	</tr>
