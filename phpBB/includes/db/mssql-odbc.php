@@ -256,7 +256,7 @@ class sql_db
 			$row_offset = ($total) ? $offset : '';
 			$num_rows = ($total) ? $total : $offset;
 
-			$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . preg_replace('/^SELECT/', '', $query);
+			$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
 
 			return $this->sql_query($query, $cache_ttl); 
 		} 

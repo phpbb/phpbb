@@ -1501,7 +1501,7 @@ function split_sql_file($sql, $delimiter)
 	for ($i = 0; $i < $token_count; $i++)
 	{
 		// Don't wanna add an empty string as the last thing in the array.
-		if ($i != $token_count - 1 || strlen($tokens[$i] > 0))
+		if ($i != $token_count - 1)
 		{
 			// This is the total number of single quotes in the token.
 			$total_quotes = preg_match_all("#'#", $tokens[$i], $matches);
@@ -1639,12 +1639,12 @@ function cache_moderators()
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
-			case 'mysql4':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) 
 					VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
 				$db->sql_query($sql);
 				break;
 
+			case 'mysql4':
 			case 'mssql':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
@@ -1949,10 +1949,10 @@ if (class_exists('auth'))
 						switch (SQL_LAYER)
 						{
 							case 'mysql':
-							case 'mysql4':
 								$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
 								break;
 
+							case 'mysql4':
 							case 'mssql':
 							case 'sqlite':
 								$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
@@ -2091,12 +2091,15 @@ if (class_exists('auth'))
 					switch (SQL_LAYER)
 					{
 						case 'mysql':
-						case 'mysql4':
 							$sql .= (($sql != '') ? ', ' : '') . "('$option', " . $type_sql[$type] . ")";
 							break;
+
+						case 'mysql4':
 						case 'mssql':
+						case 'sqlite':
 							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
 							break;
+
 						default:
 							$sql = 'INSERT INTO ' . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
 								VALUES ($option, " . $type_sql[$type] . ")";

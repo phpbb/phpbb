@@ -83,7 +83,7 @@ $available_dbms = array(
 		'LABEL'			=> 'FireBird',
 		'SCHEMA'		=> 'firebird',
 		'MODULE'		=> 'interbase', 
-		'DELIM'			=> ';',
+		'DELIM'			=> ';;',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql'		=> array(

@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                 firebird.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            :(C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : firebird.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!defined('SQL_LAYER'))
 {
@@ -30,25 +22,28 @@ class sql_db
 	var $query_result;
 	var $return_on_error = false;
 	var $transaction = false;
-	var $sql_report = '';
 	var $sql_time = 0;
+	var $num_queries = 0;
+	var $open_queries = array();
 
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database = '', $port = '', $persistency = false)
+	var $last_query_text = '';
+
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
-		$this->open_queries = array();
-		$this->num_queries = 0;
-
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
-		$this->server = $sqlserver;
+		$this->server = $sqlserver . (($port) ? ':' . $port : '');
+		$this->dbname = $database;
 
-		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password, false, false, 3) : @ibase_connect($this->server, $this->user, $this->password, false, false, 3);
+		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $this->password, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $this->password, false, false, 3);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
 
+	//
 	// Other base methods
+	//
 	function sql_close()
 	{
 		if (!$this->db_connect_id)
@@ -56,9 +51,14 @@ class sql_db
 			return false;
 		}
 
-		if (count($this->open_queries))
+		if ($this->transaction)
 		{
-			foreach($this->open_queries as $query_id)
+			@ibase_commit($this->db_connect_id);
+		}
+
+		if (sizeof($this->open_queries))
+		{
+			foreach ($this->open_queries as $i_query_id => $query_id)
 			{
 				@ibase_free_query($query_id);
 			}
@@ -79,19 +79,19 @@ class sql_db
 
 	function sql_transaction($status = 'begin')
 	{
-		switch($status)
+		switch ($status)
 		{
 			case 'begin':
 				$this->transaction = true;
 				break;
 
 			case 'commit':
-				$result = ibase_commit();
+				$result = @ibase_commit();
 				$this->transaction = false;
 				break;
 
 			case 'rollback':
-				$result = ibase_rollback();
+				$result = @ibase_rollback();
 				$this->transaction = false;
 				break;
 
@@ -103,95 +103,34 @@ class sql_db
 	}
 
 	// Base query method
-	function sql_query($query = '', $expire_time = 0)
+	function sql_query($query = '', $cache_ttl = 0)
 	{
 		if ($query != '')
 		{
 			global $cache;
 
-			if (!$expire_time || !$cache->sql_load($query, $expire_time))
-			{
-				if ($expire_time)
-				{
-					$cache_result = true;
-				}
+			$this->last_query_text = $query;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
-				$this->query_result = false;
+			if (!$this->query_result)
+			{
 				$this->num_queries++;
 
-				if (!empty($_GET['explain']))
-				{
-					global $starttime;
-
-					$curtime = explode(' ', microtime());
-					$curtime = $curtime[0] + $curtime[1] - $starttime;
-				}
-
-				if (($this->query_result = ibase_query($query, $this->db_connect_id)) === FALSE)
+				if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
 				}
 
-				if (!$this->transaction && (strpos($query, 'INSERT') === 0 || strpos($query, 'UPDATE') === 0))
+				// TODO: have to debug the commit states in firebird
+				if (!$this->transaction)
 				{
-					echo $query;
-					ibase_commit();
+					@ibase_commit_ret();
 				}
 
-				if (!empty($_GET['explain']))
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
-					$endtime = explode(' ', microtime());
-					$endtime = $endtime[0] + $endtime[1] - $starttime;
-
-					$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
-
-					if ($this->query_result)
-					{
-						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" .($endtime - $curtime) . "</b>\n</pre>";
-					}
-					else
-					{
-						$error = $this->sql_error();
-						$this->sql_report .= '<b>FAILED</b> - SQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
-					}
-
-					$this->sql_time += $endtime - $curtime;
-/*
-					if (preg_match('/^SELECT/', $query))
-					{
-						$html_table = FALSE;
-						if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
-						{
-							while($row = mysql_fetch_assoc($result))
-							{
-								if (!$html_table && count($row))
-								{
-									$html_table = TRUE;
-									$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
-									$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
-								}
-								$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
-							}
-						}
-
-						if ($html_table)
-						{
-							$this->sql_report .= '</table><br>';
-						}
-					}
-*/
-					$this->sql_report .= "<hr>\n";
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
-
-				$this->open_queries[] = $this->query_result;
-			}
-
-			$this->last_query_text[$this->query_result] = $query;
-
-			if (!empty($cache_result))
-			{
-				$cache->sql_save($query, $this->query_result);
-				@ibase_free_result(array_pop($this->open_queries));
 			}
 		}
 		else
@@ -202,21 +141,20 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0)
-	{
-		if ($query != '')
+	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	{ 
+		if ($query != '') 
 		{
-			$this->query_result = false;
-			$this->num_queries++;
+			$this->query_result = false; 
 
 			$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
-			return $this->sql_query($query, $expire_time);
-		}
-		else
-		{
-			return false;
-		}
+			return $this->sql_query($query, $cache_ttl); 
+		} 
+		else 
+		{ 
+			return false; 
+		} 
 	}
 
 	// Idea for this from Ikonboard
@@ -231,7 +169,7 @@ class sql_db
 		$values = array();
 		if ($query == 'INSERT')
 		{
-			foreach($assoc_ary as $key => $var)
+			foreach ($assoc_ary as $key => $var)
 			{
 				$fields[] = $key;
 
@@ -245,16 +183,16 @@ class sql_db
 				}
 				else
 				{
-					$values[] =(is_bool($var)) ? intval($var) : $var;
+					$values[] = (is_bool($var)) ? intval($var) : $var;
 				}
 			}
 
-			$query = '(' . implode(', ', $fields) . ') VALUES(' . implode(', ', $values) . ')';
+			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
-		else if ($query == 'UPDATE')
+		else if ($query == 'UPDATE' || $query == 'SELECT')
 		{
 			$values = array();
-			foreach($assoc_ary as $key => $var)
+			foreach ($assoc_ary as $key => $var)
 			{
 				if (is_null($var))
 				{
@@ -266,16 +204,19 @@ class sql_db
 				}
 				else
 				{
-					$values[] =(is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
-			$query = implode(', ', $values);
+			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
 		}
 
 		return $query;
 	}
 
 	// Other query methods
+	//
+	// NOTE :: Want to remove _ALL_ reliance on sql_numrows from core code ...
+	//         don't want this here by a middle Milestone
 	function sql_numrows($query_id = false)
 	{
 		return FALSE;
@@ -283,10 +224,11 @@ class sql_db
 
 	function sql_affectedrows()
 	{
-		return ($this->query_result !== FALSE) ? TRUE : FALSE; // Does this work?
+		// hmm, maybe doing something similar as in mssql-odbc.php?
+		return ($this->query_result) ? true : false;
 	}
 
-	function sql_fetchrow($query_id = 0)
+	function sql_fetchrow($query_id = false)
 	{
 		global $cache;
 
@@ -295,20 +237,27 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
 
 		$row = array();
-		foreach (get_object_vars(ibase_fetch_object($query_id, IBASE_TEXT)) as $key => $value)
+		$cur_row = @ibase_fetch_object($query_id, IBASE_TEXT);
+
+		if (!$cur_row)
+		{
+			return false;
+		}
+
+		foreach (get_object_vars($cur_row) as $key => $value)
 		{
 			$row[strtolower($key)] = trim(str_replace("\\0", "\0", str_replace("\\n", "\n", $value)));
 		}
 		return ($query_id) ? $row : false;
 	}
 
-	function sql_fetchrowset($query_id = 0)
+	function sql_fetchrowset($query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -319,10 +268,12 @@ class sql_db
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id, IBASE_TEXT )))
+
+			while ($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id, IBASE_TEXT)))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
+
 			return $result;
 		}
 		else
@@ -342,7 +293,9 @@ class sql_db
 		{
 			if ($rownum > -1)
 			{
-				$result = @mysql_result($query_id, $rownum, $field);
+				// NOTE: Let's see how often we use this one and how fast we can produce a working query. ;D
+				// At the moment we are not taking advantage of this feature.
+				trigger_error('ROWNUM > 0 in sql_fetchfield not supported, please file a bug report.');
 			}
 			else
 			{
@@ -393,7 +346,7 @@ class sql_db
 
 	function sql_nextid()
 	{
-		if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text[$query_id], $tablename))
+		if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 		{
 			$query = "SELECT GEN_ID('" . $tablename[1] . "_gen', 0) AS new_id  
 				FROM RDB\$DATABASE";
@@ -414,6 +367,11 @@ class sql_db
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (!$this->transaction && $query_id)
+		{
+			@ibase_commit();
 		}
 
 		return ($query_id) ? @ibase_free_result($query_id) : false;
