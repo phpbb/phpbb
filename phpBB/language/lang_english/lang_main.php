@@ -892,6 +892,7 @@ $lang['4.5'] = "GMT + 4.5 Hours";
 $lang['5'] = "GMT + 5 Hours";
 $lang['5.5'] = "GMT + 5.5 Hours";
 $lang['6'] = "GMT + 6 Hours";
+$lang['6.5'] = "GMT + 6.5 Hours";
 $lang['7'] = "GMT + 7 Hours";
 $lang['8'] = "WST (Australia)";
 $lang['9'] = "GMT + 9 Hours";
