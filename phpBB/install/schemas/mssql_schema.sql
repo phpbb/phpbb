@@ -412,7 +412,7 @@ GO
 ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_confirm] PRIMARY KEY  CLUSTERED
 	(
-		[session_id, confirm_id]
+		[session_id],[confirm_id]
 	)  ON [PRIMARY]
 GO
 

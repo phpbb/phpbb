@@ -58,16 +58,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 		$entry = str_replace('*', ' ', $entry);
 
 		// 'words' that consist of <3 or >20 characters are removed.
-		$entry = explode(' ', $entry);
-		for ($i = 0; $i < sizeof($entry); $i++)
-		{
-			$entry[$i] = trim($entry[$i]);
-			if ((strlen($entry[$i]) < 3) || (strlen($entry[$i]) > 20))
-			{
-				$entry[$i] = '';
-			}
-		}
-		$entry = implode(' ', $entry);
+		$entry = preg_replace('/[ ]([\S]{1,2}|[\S]{21,})[ ]/',' ', $entry);
 	}
 
 	if ( !empty($stopword_list) )
@@ -107,17 +98,8 @@ function split_words(&$entry, $mode = 'post')
 
 	return $split_entries[1];
 */
-	$split_entries = array();
-	$split = explode(' ', $entry);
-	for ($i = 0; $i < count($split); $i++)
-	{
-		if (trim($split[$i]) != '')
-		{
-			$split_entries[] = trim($split[$i]);
-		}
-	}
-
-	return $split_entries;
+	// Trim 1+ spaces to one space and split this trimmed string into words.
+	return explode(' ', trim(preg_replace('#\s+#', ' ', $entry)));
 }
 
 function add_search_words($mode, $post_id, $post_text, $post_title = '')

@@ -612,7 +612,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 			{
-				$sql = "SELECT user_email 
+				$sql = "SELECT user_email, user_lang 
 					FROM " . USERS_TABLE . "
 					WHERE user_level = " . ADMIN;
 				
@@ -621,22 +621,25 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
 				}
 				
+				$emailer->from($board_config['board_email']);
+				$emailer->replyto($board_config['board_email']);
+		
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$emailer->bcc(trim($row['user_email']));
+					$emailer->email_address(trim($row['user_email']));
+					$emailer->use_template("admin_activate", $row['user_lang']);
+					$emailer->set_subject($lang['New_account_subject']);
+
+					$emailer->assign_vars(array(
+						'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
+						'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+
+						'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
+					);
+					$emailer->send();
+					$emailer->reset();
 				}
-
-				$emailer->use_template("admin_activate", $board_config['default_lang']);
-				$emailer->set_subject($lang['New_account_subject']);
-
-				$emailer->assign_vars(array(
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
-					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
-
-					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
-				);
-				$emailer->send();
-				$emailer->reset();
+				$db->sql_freeresult($result);
 			}
 
 			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');

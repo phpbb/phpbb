@@ -499,7 +499,7 @@ switch ($row['config_value'])
 			case 'mssql':
 			case 'mssql-odbc':
 				$sql[] = 'CREATE TABLE [' . $table_prefix . 'confirm] ([confirm_id] [char] (32) NOT NULL , [session_id] [char] (32) NOT NULL , [code] [char] (6) NOT NULL ) ON [PRIMARY]';
-				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [PK_' . $table_prefix . 'confirm] PRIMARY KEY  CLUSTERED ( [session_id, confirm_id])  ON [PRIMARY]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [PK_' . $table_prefix . 'confirm] PRIMARY KEY  CLUSTERED ( [session_id],[confirm_id])  ON [PRIMARY]';
 				$sql[] = 'ALTER TABLE [' . $table_prefix . 'confirm] WITH NOCHECK ADD CONSTRAINT [DF_' . $table_prefix . 'confirm_confirm_id] DEFAULT (\'\') FOR [confirm_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_session_id] DEFAULT (\'\') FOR [session_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_code] DEFAULT (\'\') FOR [code]';
 				break;
 
