@@ -31,8 +31,6 @@
  * Theme -> Séma
  * Style -> Stílus
  *
- * grep "XXX mauzi" for TODO's
- *
  ***************************************************************************/
 
 //
@@ -248,6 +246,12 @@ $lang['Config_explain'] = "Beállíthatja a fórum alapvetõ tulajdonságait. A felha
 $lang['Click_return_config'] = "Kattintson %side%s az Általános Beállításokhoz való visszatéréshez";
 
 $lang['General_settings'] = "Általános fórum beállítások";
+$lang['Server_name'] = "Domain Név";
+$lang['Server_name_explain'] = "A domain neve, amelyiken a fórum üzemel";
+$lang['Script_path'] = "Szkript elérési út";
+$lang['Script_path_explain'] = "A fórum elérési útvonala a domain alatt";
+$lang['Server_port'] = "Szerver Port";
+$lang['Server_port_explain'] = "A szerver port címe, általában 80";
 $lang['Site_name'] = "Fórum neve";
 $lang['Site_desc'] = "Fórum leírása";
 $lang['Board_disable'] = "Fórum letiltása";
@@ -265,7 +269,7 @@ $lang['Board_email_form'] = "Levelezés a fórumon keresztül";
 $lang['Board_email_form_explain'] = "A felhasználók levelezhetnek a fórumon keresztül";
 $lang['Topics_per_page'] = "Témák oldalanként";
 $lang['Posts_per_page'] = "Hozzászólások oldalanként";
-$lang['Hot_threshold'] = "Posts for Popular Threshold"; // XXX mauzi TODO
+$lang['Hot_threshold'] = "Népszerûségi küszöb";
 $lang['Default_style'] = "Alapértelmezett stílus";
 $lang['Override_style'] = "Stílusának felülbírálása";
 $lang['Override_style_explain'] = "Felülbírálja a felhasználók stílus beállításait";
@@ -312,6 +316,10 @@ $lang['Email_sig_explain'] = "Ez a szövegrészlet minden levélhez csatolható, ami
 $lang['Use_SMTP'] = "SMTP szerver használata a levelezéshez";
 $lang['Use_SMTP_explain'] = "Válassza ezt a lehetõséget, ha egy SMTP szerveren keresztül akarja küldeni a leveleket a helyi sendmail helyett";
 $lang['SMTP_server'] = "SMTP szerver címe";
+$lang['SMTP_username'] = "SMTP Felhasználónév";
+$lang['SMTP_username_explain'] = "Csak akkor adjon meg felhasználónevet, ha szükséges";
+$lang['SMTP_password'] = "SMTP Jelszó";
+$lang['SMTP_password_explain'] = "Csak akkor adjon meg jelszót, ha szükséges";
 
 $lang['Disable_privmsg'] = "Privát Üzenetek";
 $lang['Inbox_limits'] = "Maximális üzenetek száma a Beérkezett Üzenetek mappában";
@@ -320,11 +328,14 @@ $lang['Savebox_limits'] = "Maximális üzenetek száma az Elmentett Üzenetek mappáb
 
 $lang['Cookie_settings'] = "Cookie Beállítások"; 
 $lang['Cookie_settings_explain'] = "Beállíthatja a böngészõknek küldött cookie-kat. A legtöbb esetben az alapbeállítások megfelelõek. Legyen körültekintõ, mert egy helytelen beállítás megakadályozhatja a felhasználók belépését.";
-$lang['Cookie_name'] = "Cookie neve";
+
+
 $lang['Cookie_domain'] = "Cookie domain";
+$lang['Cookie_name'] = "Cookie neve";
 $lang['Cookie_path'] = "Cookie elérési út";
-$lang['Session_length'] = "Cookie érvényessége [ másodperc ]";
 $lang['Cookie_secure'] = "Cookie kódolása [ https ]";
+$lang['Cookie_secure_explain'] = "Válassza ezt a lehetõséget, ha SSL-t használ";
+$lang['Session_length'] = "Cookie érvényessége [ másodperc ]";
 
 
 //
@@ -336,20 +347,20 @@ $lang['Edit_forum'] = "Fórum szerkesztése";
 $lang['Create_forum'] = "Új fórum létrehozása";
 $lang['Create_category'] = "Új témakör létrehozása";
 $lang['Remove'] = "Törlés";
-$lang['Action'] = "Action"; // XXX mauzi innetol
-$lang['Update_order'] = "Update Order";
+$lang['Action'] = "Tevékenység";
+$lang['Update_order'] = "Sorrend frissítése";
 $lang['Config_updated'] = "Fórum beállítások sikeresen frissítve";
 $lang['Edit'] = "Szerkesztés";
 $lang['Delete'] = "Törlés";
 $lang['Move_up'] = "Feljebb";
 $lang['Move_down'] = "Lejjebb";
 $lang['Resync'] = "Szinkronizálás";
-$lang['No_mode'] = "No mode was set";
-$lang['Forum_edit_delete_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side";
+$lang['No_mode'] = "Nem lett mód megadva";
+$lang['Forum_edit_delete_explain'] = "Az alábbiakban testreszabhatja a fórumot. Felhasználók és csoportok beállításához használja a linkeket a bal panelon";
 
-$lang['Move_contents'] = "Move all contents";
+$lang['Move_contents'] = "Tartalom áthelyezése";
 $lang['Forum_delete'] = "Fórum törlése";
-$lang['Forum_delete_explain'] = "The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.";
+$lang['Forum_delete_explain'] = "Az alábbiakban letörölhet egy fórumot (vagy egy témakört) és eldöntheti, hogy hova akarja áthelyezni a tartalmát.";
 
 $lang['Forum_settings'] = "Fórum általános beállításai";
 $lang['Forum_name'] = "Fórum neve";
@@ -357,9 +368,9 @@ $lang['Forum_desc'] = "Leírása";
 $lang['Forum_status'] = "Fórum státusza";
 $lang['Forum_pruning'] = "Automatikus karbantartás";
 
-$lang['prune_freq'] = 'Check for topic age every';
+$lang['prune_freq'] = 'Téma életkorának ellenõrzése';
 $lang['prune_days'] = "Törli azokat a témákat, amelyekhez nem szóltak hozzá";
-$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+$lang['Set_prune_data'] = "Bekapcsolta az automatikus karbantartást, de nem határozta meg a karbantartás intervallumát";
 
 $lang['Move_and_Delete'] = "Mozgatás és Törlés";
 
@@ -383,29 +394,29 @@ $lang['smiley_title'] = "Emotikonok szerkesztése";
 $lang['smile_desc'] = "Az alábbiakban megadhatja az emotikonokat, amit a felhasználók alkalmazhatnak a hozzászólásaikban és a Privát Üzeneteikben.";
 
 $lang['smiley_config'] = "Smiley Beállítások";
-$lang['smiley_code'] = "Smiley Kód";
-$lang['smiley_url'] = "Smiley Image File";
-$lang['smiley_emot'] = "Smiley Emotion";
+$lang['smiley_code'] = "Smiley kód";
+$lang['smiley_url'] = "Smiley kép file";
+$lang['smiley_emot'] = "Smiley jelentése";
 $lang['smile_add'] = "Új emotikon";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Jelentés";
 
-$lang['Select_pak'] = "Select Pack (.pak) File";
+$lang['Select_pak'] = "Válasszon smiley csomagot (.pak)";
 $lang['replace_existing'] = "Jelenlegi Smiley lecserélése";
 $lang['keep_existing'] = "Jelenlegi Smiley megtartása";
-$lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
-$lang['smiley_import'] = "Smiley Pack Import";
-$lang['choose_smile_pak'] = "Choose a Smile Pack .pak file";
-$lang['import'] = "Import Smileys";
-$lang['smile_conflicts'] = "What should be done in case of conflicts";
-$lang['del_existing_smileys'] = "Delete existing smileys before import";
-$lang['import_smile_pack'] = "Smiley Csomag importálása";
-$lang['export_smile_pack'] = "Smiley Csomag exportálása";
-$lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
+$lang['smiley_import_inst'] = "Csomagolja ki az összes emotikont, és másolja fel a megfelelõ helyre.";
+$lang['smiley_import'] = "Smiley csomag importálása";
+$lang['choose_smile_pak'] = "Válasszon smiley csomagot (.pak)";
+$lang['import'] = "Emotikonok importálása";
+$lang['smile_conflicts'] = "Mi történjen ütközések esetén?";
+$lang['del_existing_smileys'] = "Meglévõ emotikonok törlése";
+$lang['import_smile_pack'] = "Smiley csomag importálása";
+$lang['export_smile_pack'] = "Smiley csomag exportálása";
+$lang['export_smiles'] = "Smiley csomag letöltéséhez kattintson %side%s. Utána mentse el az összes meglévõ smile képet.";
 
 $lang['smiley_add_success'] = "A Smiley sikeresen hozzáadva";
 $lang['smiley_edit_success'] = "A Smiley sikeresen frissítve";
-$lang['smiley_import_success'] = "A Smiley Csomag sikeresen importálva!";
+$lang['smiley_import_success'] = "A Smiley csomag sikeresen importálva!";
 $lang['smiley_del_success'] = "A Smiley sikeresen eltávolítva";
 $lang['Click_return_smileadmin'] = "Kattintson %side%s az Emotikonok szerkesztéséhez való visszatéréshez";
 
@@ -544,11 +555,11 @@ $lang['Click_return_rankadmin'] = "Kattintson %side%s a Rang Adminisztrációhoz v
 // Disallow Username Admin
 //
 $lang['Disallow_control'] = "Foglalt felhasználónevek Beállítása";
-$lang['Disallow_explain'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it";
+$lang['Disallow_explain'] = "Az alábbiakban lefoglalhat felhasználóneveket. Használja a * karaktert, mint Joker. Nem foglalhat le már létezõ felhasználónevet, elõször törölje a felhasználót";
 
 $lang['Delete_disallow'] = "Törlés";
 $lang['Delete_disallow_title'] = "Foglalt felhasználónév törlése";
-$lang['Delete_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
+$lang['Delete_disallow_explain'] = "Egyszerûen megszüntetheti a nevek foglalását, ha kiválasztja az alábbi listából.";
 
 $lang['Add_disallow'] = "Hozzáadás";
 $lang['Add_disallow_title'] = "Foglalt felhasználónév hozzáadása";
@@ -558,7 +569,7 @@ $lang['No_disallowed'] = "Nincsenek foglalt nevek";
 
 $lang['Disallowed_deleted'] = "A foglalt felhasználónév sikeresen törölve";
 $lang['Disallow_successful'] = "A foglalt felhasználónév sikeresen hozzáadva";
-$lang['Disallowed_already'] = "The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present";
+$lang['Disallowed_already'] = "Nem lehet lefoglalni a felhasználónevet. Vagy már szerepel a listában, vagy szerepel a szó cenzorok között, vagy már használja egy másik felhasználó";
 
 $lang['Click_return_disallowadmin'] = "Kattintson %side%s a Foglalt felhasználónevek adminisztrációjához való visszatéréshez";
 
@@ -567,8 +578,8 @@ $lang['Click_return_disallowadmin'] = "Kattintson %side%s a Foglalt felhasználón
 // Styles Admin
 //
 $lang['Styles_admin'] = "Stílus Adminisztráció";
-$lang['Styles_explain'] = "Using this facility you can add, remove and manage styles (templates and themes) available to your users";
-$lang['Styles_addnew_explain'] = "The following list contains all the themes that are available for the templates you currently have. The items on this list have not yet been installed into the phpBB database. To install a theme simply click the install link beside an entry";
+$lang['Styles_explain'] = "Az alábbiakban menedzselheti a stílusokat és sémákat";
+$lang['Styles_addnew_explain'] = "Az alábbi sémák elérhetõek, de nem lettek telepítve a phpBB adatbázisba. Telepítéshez egyszerûen jelölje ki a kívánt sémákat.";
 
 $lang['Select_template'] = "Válasszon Sablont";
 
@@ -584,13 +595,13 @@ $lang['Create_theme'] = "Séma Létrehozása";
 $lang['Create_theme_explain'] = "Az alábbiakban létrehozhat egy új sémát. Ha színeket definiál (és hexadecimálisan adja meg az értékeket) ne használja a # elõtagot, pl. CCCCCC egy érvényes, #CCCCCC egy érvénytelen érték";
 
 $lang['Export_themes'] = "Séma Exportálása";
-$lang['Export_explain'] = "In this panel you will be able to export the theme data for a selected template. Select the template from the list below and the script will create the theme configuration file and attempt to save it to the selected template directory. If it cannot save the file itself it will give you the option to download it. In order for the script to save the file you must give write access to the webserver for the selected template dir. For more information on this see the phpBB 2 users guide.";
+$lang['Export_explain'] = "Az alábbiakban exportálhatja a séma adatait. Válassza ki a sablont az alábbiakban, és a rendszer létrehozza a konfigurációs filet, és megkíséreli elmenteni a kiválasztott könyvtárba. Ha a mentés nem sikerül, felajánlja a file letöltését. A sikeres mentéshez adjon írásjogot a webszervernek a megfelelõ könyvtárra.";
 
-$lang['Theme_installed'] = "The selected theme has been installed successfully";
-$lang['Style_removed'] = "The selected style has been removed from the database. To fully remove this style from your system you must delete the appropriate style from your templates directory.";
-$lang['Theme_info_saved'] = "The theme information for the selected template has been saved. You should now return the permissions on the theme_info.cfg (and if applicable the selected template directory) to read-only";
-$lang['Theme_updated'] = "The selected theme has been updated. You should now export the new theme settings";
-$lang['Theme_created'] = "Theme created. You should now export the theme to the theme configuration file for safe keeping or use elsewhere"; // XXX mauzi idaig
+$lang['Theme_installed'] = "A kért séma sikeresen telepítve";
+$lang['Style_removed'] = "A kért stílus sikeresen el lett távolítva az adatbázisból. A teljes eltávolításhoz törölje le a stílus könyvtárát a sablonok könyvtárból.";
+$lang['Theme_info_saved'] = "A séma információi sikeresen el lett mentve. Javasoljuk, hogy ezután állítsa át a séma könyvtárán a hozzáférési jogokat csak olvashatóra.";
+$lang['Theme_updated'] = "A kért séma sikeresen frissítve. Most már exportálhatja a séma beállításait.";
+$lang['Theme_created'] = "Az új séma létrehozva. Most már exportálhatja a séma beállításait.";
 
 $lang['Confirm_delete_style'] = "Biztos benne, hogy törölni akarja ezt a stílust?";
 

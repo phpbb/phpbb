@@ -37,8 +37,6 @@
  * theme -> séma
  * style -> stílus
  *
- * grep "XXX mauzi" for TODO's
- *
  ***************************************************************************/
 
 
@@ -699,7 +697,7 @@ $lang['No_group_members'] = "Ennek a csoportnak nincsenek tagjai";
 $lang['Group_hidden_members'] = "Ez egy rejtett csoport, nem lehet megtekinteni a tagjait";
 $lang['No_pending_group_members'] = "Ennek a csoportnak nincsenek függõben lévõ tagjai";
 $lang["Group_joined"] = "Sikeresen felíratkozott a csoportba.<br />A késõbbiekben kap értesítést arról, ha a csoport moderátor jóváhagyja a feliratkozását";
-$lang['Group_request'] = "A request to join your group has been made"; // XXX mauzi
+$lang['Group_request'] = "A csatlakozási kérése megtörtént";
 $lang['Group_approved'] = "A kérése elfogadva";
 $lang['Group_added'] = "Sikeresen csatlakozott a csoporthoz"; 
 $lang['Already_member_group'] = "Már tagja ennek a csoportnak";
