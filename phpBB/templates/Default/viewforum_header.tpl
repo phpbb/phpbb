@@ -8,7 +8,7 @@
 	      <td>                         
 	        <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	          <tr>                                
-	            <td align="left" style="{font-size: 8pt; height: 55px;}">
+	            <td align="left" style="{font-size: 8pt; height: 55px;}" nowrap>
 							<div style="{font-size: 10pt; font-weight: bold}">{FORUM_NAME}</div>
 							Moderated by - {MODERATORS}<br>
 	            <a href="index.{PHPEX}">{SITENAME} - Forum Index</a> >> {FORUM_NAME}
