@@ -88,6 +88,19 @@ CREATE TABLE phpbb_banlist (
    PRIMARY KEY (ban_id)
 );
 
+# Table: 'phpbb_bbcodes'
+CREATE TABLE phpbb_bbcodes (
+  bbcode_id tinyint(3) unsigned NOT NULL default '0',
+  bbcode_tag varchar(16) NOT NULL default '',
+  bbcode_match varchar(255) NOT NULL default '',
+  bbcode_tpl text NOT NULL default '',
+  first_pass_match varchar(255) NOT NULL default '',
+  first_pass_replace varchar(255) NOT NULL default '',
+  second_pass_match varchar(255) NOT NULL default '',
+  second_pass_replace text NOT NULL default '',
+  PRIMARY KEY  (bbcode_id)
+);
+
 # Table: 'phpbb_cache'
 CREATE TABLE phpbb_cache (
   var_name varchar(255) DEFAULT '' NOT NULL,
