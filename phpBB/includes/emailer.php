@@ -47,19 +47,19 @@ class emailer
 		// If a language variable for non-disclosure is passed, we prepend it to the address.
 		if ($lang_var != '')
 		{
-			if ( $template_lang == '' )
+			if ($template_lang == '')
 			{
 				$template_lang = $config['default_lang'];
 			}
 
 			$language_file = $phpbb_root_path . 'language/' . $template_lang . '/lang_main.' . $phpEx;
 
-			if ( !@file_exists($language_file) )
+			if (!@file_exists($language_file))
 			{
 				$language_file = $phpbb_root_path . 'language/' . $config['default_lang'] . '/lang_main.' . $phpEx;
 			}
 			
-			if ( @file_exists($language_file) )
+			if (@file_exists($language_file))
 			{
 				include($language_file);
 				$this->address .= $lang[$lang_var];
@@ -132,7 +132,7 @@ class emailer
 	// Send the mail out to the recipients set previously in var $this->address
 	function send()
 	{
-		global $config, $phpEx, $phpbb_root_path;
+		global $config, $user, $phpEx, $phpbb_root_path;
 
 		if (empty($config['email_enable']))
 		{
@@ -163,12 +163,12 @@ class emailer
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
+			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->subject = (($this->subject != '') ? $this->subject : 'No Subject');
+			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
 		}
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
@@ -229,7 +229,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	global $config;
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
-	$message = preg_replace("/(?<!\r)\n/si", "\r\n", $message);
+	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
 	if ($headers != '')
 	{

@@ -123,194 +123,6 @@ function decode_text(&$message, $bbcode_uid)
 	return;
 }
 
-// User Notification
-function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
-{
-	global $db, $user, $config, $phpEx;
-
-	$topic_notification = (($mode == 'reply') || ($mode == 'quote')) ? true : false;
-	$newtopic_notification = ($mode == 'post') ? true : false;
-
-	// Get banned User ID's
-	$sql = "SELECT ban_userid 
-		FROM " . BANLIST_TABLE;
-	$result = $db->sql_query($sql);
-
-	$user_id_sql = '';
-	while ( $row = $db->sql_fetchrow($result) )
-	{
-		if ( isset($row['ban_userid']) )
-		{
-			$user_id_sql = ", " . $row['ban_userid'];
-		}
-	}
-
-	if ($topic_notification)
-	{
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
-			FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_TABLE . " f
-			WHERE tw.topic_id = $topic_id 
-				AND tw.user_id NOT IN (" . $user->data['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
-				AND tw.notify_status = 0
-				AND f.forum_id = $forum_id
-				AND t.topic_id = tw.topic_id 
-				AND u.user_id = tw.user_id";
-	}
-	else if ($newtopic_notification)
-	{
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
-			FROM " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
-			WHERE fw.forum_id = $forum_id 
-				AND fw.user_id NOT IN (" . $user->data['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
-				AND fw.notify_status = 0
-				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id";
-	}
-	else
-	{
-		trigger_error('WRONG_NOTIFICATION_MODE');
-	}
-
-	$result = $db->sql_query($sql);
-
-	if (empty($censors))
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
-
-	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-	$emailer = new emailer($config['smtp_delivery']);
-
-	$script_name = preg_replace("/^\/?(.*?)\/?$/", "\\1", trim($config['script_path']));
-
-	$script_name_forum = ( $script_name != '' ) ? $script_name . '/viewforum.'.$phpEx : 'viewforum.'.$phpEx;
-	$script_name_topic = ( $script_name != '' ) ? $script_name . '/viewtopic.'.$phpEx : 'viewtopic.'.$phpEx;
-
-	$server_name = trim($config['server_name']);
-	$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
-	$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
-
-	$email_headers = "From: " . $config['board_email'] . "\nReturn-Path: " . $config['board_email'] . "\r\n";
-			
-	$update_watched_sql_topic = '';
-	$update_watched_sql_forum = '';
-	
-	$email_users = array();
-
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		if ($topic_notification)
-		{
-			$topic_title = $row['topic_title'];
-			decode_text($topic_title);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
-		}
-		else
-		{
-			decode_text($subject);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
-		}
-				
-		do
-		{
-			if (trim($row['user_email']) != '')
-			{
-				$row['email_template'] = ($topic_notification) ? 'topic_notify' : 'newtopic_notify';
-				$email_users[] = $row;
-
-				if ($topic_notification)
-				{
-					$update_watched_sql_topic .= ($update_watched_sql_topic != '') ? ', ' . $row['user_id'] : $row['user_id'];
-				}
-				else
-				{
-					$update_watched_sql_forum .= ($update_watched_sql_forum != '') ? ', ' . $row['user_id'] : $row['user_id'];
-				}
-			}
-		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-	
-	// Handle remaining Notifications (Forum)
-	if ($topic_notification)
-	{
-		$already_notified = ($update_watched_sql_topic == '') ? '' : $update_watched_sql_topic . ', ';
-		$already_notified .= ($update_watched_sql_forum == '') ? '' : $update_watched_sql_forum . ', ';
-
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
-			WHERE fw.forum_id = $forum_id 
-				AND fw.user_id NOT IN (" . $already_notified . $user->data['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
-				AND fw.notify_status = 0
-				AND t.topic_id = $topic_id
-				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id";
-		$result = $db->sql_query($sql);
-			
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$topic_title = $row['topic_title'];
-			decode_text($topic_title);
-			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
-
-			do
-			{
-				if (trim($row['user_email']) != '')
-				{
-					$row['email_template'] = 'forum_notify';
-					$email_users[] = $row;
-
-					$update_watched_sql_forum .= ($update_watched_sql_forum != '') ? ', ' . $row['user_id'] : $row['user_id'];
-				}
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-	}
-
-	@reset($email_users);
-	foreach ($email_users as $row)
-	{
-		$emailer->use_template($row['email_template'], $row['user_lang']);
-		$emailer->email_address($row['user_email']);
-		$emailer->set_subject();
-		$emailer->extra_headers($email_headers);
-	
-		$emailer->assign_vars(array(
-			'EMAIL_SIG' => str_replace("<br />", "\n", "-- \n" . $config['board_email_sig']),
-			'USERNAME' => $row['username'],
-			'SITENAME' => $config['sitename'],
-			'TOPIC_TITLE' => $topic_title, 
-			'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name_topic . '?p=' . $post_id . '#' . $post_id,
-			'U_FORUM' => $server_protocol . $server_name . $server_port . $script_name_forum . '?f=' . $forum_id,
-			'FORUM_NAME' => $row['forum_name'], 
-			'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name_topic . '?t=' . $topic_id . '&unwatch=topic',
-			'U_STOP_WATCHING_FORUM' => $server_protocol . $server_name . $server_port . $script_name_forum . '?f=' . $forum_id . '&unwatch=forum')
-		);
-	
-		$emailer->send();
-		$emailer->reset();
-	}
-
-	if ($update_watched_sql_topic != '')
-	{
-		$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
-			SET notify_status = 1
-			WHERE topic_id = " . $topic_id . "
-				AND user_id IN (" . $update_watched_sql_topic . ")";
-		$db->sql_query($sql);
-	}
-
-	if ($update_watched_sql_forum != '')
-	{
-		$sql = "UPDATE " . FORUMS_WATCH_TABLE . "
-			SET notify_status = 1
-			WHERE forum_id = " . $forum_id . "
-				AND user_id IN (" . $update_watched_sql_forum . ")";
-		$db->sql_query($sql);
-	}
-}
-
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
 function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 {
@@ -438,289 +250,6 @@ function update_last_post_information($type, $id)
 
 	$sql = 'UPDATE ' . $sql_update_table . ' SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' WHERE ' . $where_clause;
 	$db->sql_query($sql);
-}
-
-// Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data)
-{
-	global $db, $auth, $user, $config, $phpEx, $SID, $template;
-
-	$search = new fulltext_search();
-	$current_time = time();
-
-	$post_data['subject'] = $subject;
-
-	$db->sql_transaction();
-
-	// Initial Topic table info
-	if ( ($mode == 'post') || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
-	{
-		$topic_sql = array(
-			'forum_id' 					=> $post_data['forum_id'],
-			'topic_title' 				=> stripslashes($subject),
-			'topic_time'				=> $current_time,
-			'topic_type'				=> $topic_type,
-			'topic_approved'			=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1, 
-			'icon_id'					=> $post_data['icon_id'],
-			'topic_attachment'			=> (sizeof($attachment_data['physical_filename'])) ? 1 : 0,
-			'topic_poster'				=> intval($user->data['user_id']), 
-			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']))
-		);
-
-		if (!empty($poll['poll_options']))
-		{
-			$topic_sql = array_merge($topic_sql, array(
-				'poll_title'			=> stripslashes($poll['poll_title']),
-				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
-				'poll_length'			=> $poll['poll_length'] * 3600)
-			);
-		}
-
-		$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql) : 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $post_data['topic_id'];
-		$db->sql_query($sql);
-
-		$post_data['topic_id'] = ($mode == 'post') ? $db->sql_nextid() : $post_data['topic_id'];
-	}
-
-	// Post table info
-	$post_sql = array(
-		'topic_id' 			=> $post_data['topic_id'],
-		'forum_id' 			=> $post_data['forum_id'],
-		'poster_id' 		=> ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
-		'post_username'		=> ($username != '') ? stripslashes($username) : '', 
-		'post_subject'		=> stripslashes($subject),
-		'icon_id'			=> $post_data['icon_id'], 
-		'poster_ip' 		=> $user->ip,
-		'post_time' 		=> $current_time,
-		'post_approved' 	=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
-		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
-		'enable_sig' 		=> $post_data['enable_sig'],
-		'enable_bbcode' 	=> $post_data['enable_bbcode'],
-		'enable_html' 		=> $post_data['enable_html'],
-		'enable_smilies' 	=> $post_data['enable_smilies'],
-		'enable_magic_url' 	=> $post_data['enable_urls'],
-		'bbcode_uid'		=> $bbcode_uid,
-		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
-		'post_edit_locked'	=> $post_data['post_edit_locked']
-	);
-
-	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
-	{
-		$post_sql = array_merge($post_sql, array(
-			'post_checksum' => $post_data['message_md5'],
-			'post_text' 	=> $message, 
-			'post_encoding' => $user->lang['ENCODING'] 
-		));
-	}
-	$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_data['post_id'] : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
-	$db->sql_query($sql);
-
-	$post_data['post_id'] = ($mode == 'edit') ? $post_data['post_id'] : $db->sql_nextid();
-
-	// Submit Poll
-	if (!empty($poll['poll_options']))
-	{
-		$cur_poll_options = array();
-	
-		if ($poll['poll_start'] && $mode == 'edit')
-		{
-			$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
-				WHERE topic_id = " . $post_data['topic_id'] . "
-				ORDER BY poll_option_id";
-			$result = $db->sql_query($sql);
-
-			while ($cur_poll_options[] = $db->sql_fetchrow($result));
-			$db->sql_freeresult($result);
-		}
-
-		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
-		{
-			if (trim($poll['poll_options'][$i]) != '')
-			{
-				if (empty($cur_poll_options[$i]))
-				{
-					$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
-						VALUES (" . $i . ", " . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
-					$db->sql_query($sql);
-				}
-				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
-				{
-					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
-						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
-					$db->sql_query($sql);
-				}
-			}
-		}
-			
-		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
-		{
-			$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-				WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
-					AND topic_id = " . $post_data['topic_id'];
-			$db->sql_query($sql);
-		}
-	}
-
-	// Submit Attachments
-	if (count($attachment_data['attach_id']) && !empty($post_data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
-	{
-		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
-		{
-			if ($attachment_data['attach_id'][$i] != '-1')
-			{
-				// update entry in db if attachment already stored in db and filespace
-				$attach_sql = array(
-					'comment' => trim($attachment_data['comment'][$i])
-				);
-			
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
-				$db->sql_query($sql);
-			}
-			else
-			{
-				// insert attachment into db 
-				$attach_sql = array(
-					'physical_filename' => $attachment_data['physical_filename'][$i],
-					'real_filename' => $attachment_data['real_filename'][$i],
-					'comment' => trim($attachment_data['comment'][$i]),
-					'extension' => $attachment_data['extension'][$i],
-					'mimetype' => $attachment_data['mimetype'][$i],
-					'filesize' => $attachment_data['filesize'][$i],
-					'filetime' => $attachment_data['filetime'][$i],
-					'thumbnail' => $attachment_data['thumbnail'][$i]
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-
-				$attach_sql = array(
-					'attach_id' => $db->sql_nextid(),
-					'post_id' => $post_data['post_id'],
-					'privmsgs_id' => 0,
-					'user_id_from' => ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
-					'user_id_to' => 0
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-			}
-		}
-
-		if (count($attachment_data['attach_id']) > 0)
-		{
-			$sql = "UPDATE " . POSTS_TABLE . "
-				SET post_attachment = 1
-				WHERE post_id = " . $post_data['post_id'];
-			$db->sql_query($sql);
-
-			$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_attachment = 1
-				WHERE topic_id = " . $post_data['topic_id'];
-			$db->sql_query($sql);
-		}
-	}
-
-	// Fulltext parse
-	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
-	{
-		$result = $search->add($mode, $post_data['post_id'], $message, $subject);
-	}
-
-	// Sync forums, topics and users ...
-	if ($mode != 'edit')
-	{
-		// Update forums: last post info, topics, posts ... we need to update
-		// each parent too ...
-		$forum_ids = $post_data['forum_id'];
-		$forum_parents = get_forum_parents($post_data);
-		foreach ($forum_parents as $parent_forum_id => $parent_name)
-		{
-			$forum_ids .= ', ' . $parent_forum_id;
-		}
-
-		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1, forum_topics_real = forum_topics_real + 1' : '';
-		$forum_sql = array(
-			'forum_last_post_id' 	=> $post_data['post_id'],
-			'forum_last_post_time' 	=> $current_time,
-			'forum_last_poster_id' 	=> intval($user->data['user_id']),
-			'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : $user->data['username'],
-		);
-
-		$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
-		$db->sql_query($sql);
-
-		// Update topic: first/last post info, replies
-		$topic_sql = array(
-			'topic_last_post_id' 	=> $post_data['post_id'],
-			'topic_last_post_time' 	=> $current_time,
-			'topic_last_poster_id' 	=> intval($user->data['user_id']),
-			'topic_last_poster_name'=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])),
-		);
-
-		if ($mode == 'post')
-		{
-			$topic_sql = array_merge($topic_sql, array(
-				'topic_first_post_id' 		=> $post_data['post_id'],
-			));
-		}
-
-		$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . $post_data['topic_id'];
-		$db->sql_query($sql);
-
-		// Update user post count ... if appropriate
-		if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('f_postcount', $post_data['forum_id']))
-		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_posts = user_posts + 1
-				WHERE user_id = ' . intval($user->data['user_id']);
-			$db->sql_query($sql);
-		}
-
-		// post counts for index, etc.
-		if ($mode == 'post')
-		{
-			set_config('num_topics', $config['num_topics'] + 1, TRUE);
-		}
-
-		set_config('num_posts', $config['num_posts'] + 1, TRUE);
-	}
-
-	// Topic Notification
-	if ((!$post_data['notify_set']) && ($post_data['notify']))
-	{
-		$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
-			VALUES (" . $user->data['user_id'] . ", " . $post_data['topic_id'] . ")";
-		$db->sql_query($sql);
-	}
-	else if (($post_data['notify_set']) && (!$post_data['notify']))
-	{
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE user_id = " . $user->data['user_id'] . "
-				AND topic_id = " . $post_data['topic_id'];
-		$db->sql_query($sql);
-	}
-		
-	// Mark this topic as read and posted to.
-	$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
-	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
-
-	$db->sql_transaction('commit');
-
-	// Send Notifications
-	if (($mode != 'edit') && ($mode != 'delete'))
-	{
-		user_notification($mode, stripslashes($post_data['subject']), $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
-	}
-
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $post_data['forum_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">')
-	);
-
-	$message = ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
-	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
-	trigger_error($message);
 }
 
 // Delete Attachment
@@ -1384,6 +913,481 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 	}
 
 	return ($deleted);
+}
+
+
+//
+// posting.php specific
+//
+
+
+// Submit Post
+function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data)
+{
+	global $db, $auth, $user, $config, $phpEx, $SID, $template;
+
+	$search = new fulltext_search();
+	$current_time = time();
+
+	$post_data['subject'] = $subject;
+
+	$db->sql_transaction();
+
+	// Initial Topic table info
+	if ( ($mode == 'post') || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
+	{
+		$topic_sql = array(
+			'forum_id' 					=> $post_data['forum_id'],
+			'topic_title' 				=> stripslashes($subject),
+			'topic_time'				=> $current_time,
+			'topic_type'				=> $topic_type,
+			'topic_approved'			=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1, 
+			'icon_id'					=> $post_data['icon_id'],
+			'topic_attachment'			=> (sizeof($attachment_data['physical_filename'])) ? 1 : 0,
+			'topic_poster'				=> intval($user->data['user_id']), 
+			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']))
+		);
+
+		if (!empty($poll['poll_options']))
+		{
+			$topic_sql = array_merge($topic_sql, array(
+				'poll_title'			=> stripslashes($poll['poll_title']),
+				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
+				'poll_length'			=> $poll['poll_length'] * 3600)
+			);
+		}
+
+		$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql) : 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $post_data['topic_id'];
+		$db->sql_query($sql);
+
+		$post_data['topic_id'] = ($mode == 'post') ? $db->sql_nextid() : $post_data['topic_id'];
+	}
+
+	// Post table info
+	$post_sql = array(
+		'topic_id' 			=> $post_data['topic_id'],
+		'forum_id' 			=> $post_data['forum_id'],
+		'poster_id' 		=> ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
+		'post_username'		=> ($username != '') ? stripslashes($username) : '', 
+		'post_subject'		=> stripslashes($subject),
+		'icon_id'			=> $post_data['icon_id'], 
+		'poster_ip' 		=> $user->ip,
+		'post_time' 		=> $current_time,
+		'post_approved' 	=> ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 0 : 1,
+		'post_edit_time' 	=> ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id']) ? $current_time : 0,
+		'enable_sig' 		=> $post_data['enable_sig'],
+		'enable_bbcode' 	=> $post_data['enable_bbcode'],
+		'enable_html' 		=> $post_data['enable_html'],
+		'enable_smilies' 	=> $post_data['enable_smilies'],
+		'enable_magic_url' 	=> $post_data['enable_urls'],
+		'bbcode_uid'		=> $bbcode_uid,
+		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
+		'post_edit_locked'	=> $post_data['post_edit_locked']
+	);
+
+	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
+	{
+		$post_sql = array_merge($post_sql, array(
+			'post_checksum' => $post_data['message_md5'],
+			'post_text' 	=> $message, 
+			'post_encoding' => $user->lang['ENCODING'] 
+		));
+	}
+	$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . $post_data['post_id'] : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
+	$db->sql_query($sql);
+
+	$post_data['post_id'] = ($mode == 'edit') ? $post_data['post_id'] : $db->sql_nextid();
+
+	// Submit Poll
+	if (!empty($poll['poll_options']))
+	{
+		$cur_poll_options = array();
+	
+		if ($poll['poll_start'] && $mode == 'edit')
+		{
+			$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
+				WHERE topic_id = " . $post_data['topic_id'] . "
+				ORDER BY poll_option_id";
+			$result = $db->sql_query($sql);
+
+			while ($cur_poll_options[] = $db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+		}
+
+		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
+		{
+			if (trim($poll['poll_options'][$i]) != '')
+			{
+				if (empty($cur_poll_options[$i]))
+				{
+					$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
+						VALUES (" . $i . ", " . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
+					$db->sql_query($sql);
+				}
+				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
+				{
+					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
+					$db->sql_query($sql);
+				}
+			}
+		}
+			
+		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
+		{
+			$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
+				WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
+					AND topic_id = " . $post_data['topic_id'];
+			$db->sql_query($sql);
+		}
+	}
+
+	// Submit Attachments
+	if (count($attachment_data['attach_id']) && !empty($post_data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
+	{
+		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
+		{
+			if ($attachment_data['attach_id'][$i] != '-1')
+			{
+				// update entry in db if attachment already stored in db and filespace
+				$attach_sql = array(
+					'comment' => trim($attachment_data['comment'][$i])
+				);
+			
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
+				$db->sql_query($sql);
+			}
+			else
+			{
+				// insert attachment into db 
+				$attach_sql = array(
+					'physical_filename' => $attachment_data['physical_filename'][$i],
+					'real_filename' => $attachment_data['real_filename'][$i],
+					'comment' => trim($attachment_data['comment'][$i]),
+					'extension' => $attachment_data['extension'][$i],
+					'mimetype' => $attachment_data['mimetype'][$i],
+					'filesize' => $attachment_data['filesize'][$i],
+					'filetime' => $attachment_data['filetime'][$i],
+					'thumbnail' => $attachment_data['thumbnail'][$i]
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+
+				$attach_sql = array(
+					'attach_id' => $db->sql_nextid(),
+					'post_id' => $post_data['post_id'],
+					'privmsgs_id' => 0,
+					'user_id_from' => ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
+					'user_id_to' => 0
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+			}
+		}
+
+		if (count($attachment_data['attach_id']) > 0)
+		{
+			$sql = "UPDATE " . POSTS_TABLE . "
+				SET post_attachment = 1
+				WHERE post_id = " . $post_data['post_id'];
+			$db->sql_query($sql);
+
+			$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_attachment = 1
+				WHERE topic_id = " . $post_data['topic_id'];
+			$db->sql_query($sql);
+		}
+	}
+
+	// Fulltext parse
+	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
+	{
+		$result = $search->add($mode, $post_data['post_id'], $message, $subject);
+	}
+
+	// Sync forums, topics and users ...
+	if ($mode != 'edit')
+	{
+		// Update forums: last post info, topics, posts ... we need to update
+		// each parent too ...
+		$forum_ids = $post_data['forum_id'];
+		$forum_parents = get_forum_parents($post_data);
+		foreach ($forum_parents as $parent_forum_id => $parent_name)
+		{
+			$forum_ids .= ', ' . $parent_forum_id;
+		}
+
+		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1, forum_topics_real = forum_topics_real + 1' : '';
+		$forum_sql = array(
+			'forum_last_post_id' 	=> $post_data['post_id'],
+			'forum_last_post_time' 	=> $current_time,
+			'forum_last_poster_id' 	=> intval($user->data['user_id']),
+			'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : $user->data['username'],
+		);
+
+		$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
+		$db->sql_query($sql);
+
+		// Update topic: first/last post info, replies
+		$topic_sql = array(
+			'topic_last_post_id' 	=> $post_data['post_id'],
+			'topic_last_post_time' 	=> $current_time,
+			'topic_last_poster_id' 	=> intval($user->data['user_id']),
+			'topic_last_poster_name'=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])),
+		);
+
+		if ($mode == 'post')
+		{
+			$topic_sql = array_merge($topic_sql, array(
+				'topic_first_post_id' 		=> $post_data['post_id'],
+			));
+		}
+
+		$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . $post_data['topic_id'];
+		$db->sql_query($sql);
+
+		// Update user post count ... if appropriate
+		if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('f_postcount', $post_data['forum_id']))
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = user_posts + 1
+				WHERE user_id = ' . intval($user->data['user_id']);
+			$db->sql_query($sql);
+		}
+
+		// post counts for index, etc.
+		if ($mode == 'post')
+		{
+			set_config('num_topics', $config['num_topics'] + 1, TRUE);
+		}
+
+		set_config('num_posts', $config['num_posts'] + 1, TRUE);
+	}
+
+	// Topic Notification
+	if ((!$post_data['notify_set']) && ($post_data['notify']))
+	{
+		$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
+			VALUES (" . $user->data['user_id'] . ", " . $post_data['topic_id'] . ")";
+		$db->sql_query($sql);
+	}
+	else if (($post_data['notify_set']) && (!$post_data['notify']))
+	{
+		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+			WHERE user_id = " . $user->data['user_id'] . "
+				AND topic_id = " . $post_data['topic_id'];
+		$db->sql_query($sql);
+	}
+		
+	// Mark this topic as read and posted to.
+	$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
+	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
+
+	$db->sql_transaction('commit');
+
+	// Send Notifications
+	if (($mode != 'edit') && ($mode != 'delete'))
+	{
+		user_notification($mode, stripslashes($post_data['subject']), $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
+	}
+
+	$template->assign_vars(array(
+		'META' => '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $post_data['forum_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">')
+	);
+
+	$message = ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
+	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
+	trigger_error($message);
+}
+
+// User Notification
+function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
+{
+	global $db, $user, $config, $phpEx;
+
+	$topic_notification = ($mode == 'reply' || $mode == 'quote') ? true : false;
+	$newtopic_notification = ($mode == 'post') ? true : false;
+
+	if (empty($censors))
+	{
+		$censors = array();
+		obtain_word_list($censors);
+	}
+
+	// Get banned User ID's
+	$sql = "SELECT ban_userid 
+		FROM " . BANLIST_TABLE;
+	$result = $db->sql_query($sql);
+
+	$sql_ignore_users = ANONYMOUS . ', ' . $user->data['user_id'];
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (isset($row['ban_userid']))
+		{
+			$sql_ignore_users = ', ' . $row['ban_userid'];
+		}
+	}
+
+	//
+	if ($topic_notification)
+	{
+		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
+			FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_TABLE . " f
+			WHERE tw.topic_id = $topic_id 
+				AND tw.user_id NOT IN ($sql_ignore_users) 
+				AND tw.notify_status = 0
+				AND f.forum_id = $forum_id
+				AND t.topic_id = tw.topic_id 
+				AND u.user_id = tw.user_id";
+	}
+	else if ($newtopic_notification)
+	{
+		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
+			FROM " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
+			WHERE fw.forum_id = $forum_id 
+				AND fw.user_id NOT IN ($sql_ignore_users) 
+				AND fw.notify_status = 0
+				AND f.forum_id = fw.forum_id
+				AND u.user_id = fw.user_id";
+	}
+	else
+	{
+		trigger_error('WRONG_NOTIFICATION_MODE');
+	}
+	$result = $db->sql_query($sql);
+
+	$email_users = array();
+	$update_watched_sql_topic = $update_watched_sql_forum = '';
+	//
+	if ($row = $db->sql_fetchrow($result))
+	{
+		if ($topic_notification)
+		{
+			$topic_title = decode_text($row['topic_title']);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
+		}
+		else
+		{
+			$subject = decode_text($subject);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
+		}
+				
+		$which_sql = ($topic_notification) ? 'update_watched_sql_topic' : 'update_watched_sql_forum';
+		do
+		{
+			if (trim($row['user_email']) != '')
+			{
+				$row['email_template'] = ($topic_notification) ? 'topic_notify' : 'newtopic_notify';
+				$email_users[] = $row;
+
+				$$which_sql .= ($$which_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
+			}
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
+	
+	// Handle remaining Notifications (Forum)
+	if ($topic_notification)
+	{
+		$already_notified = ($update_watched_sql_topic == '') ? '' : $update_watched_sql_topic . ', ';
+		$already_notified .= ($update_watched_sql_forum == '') ? '' : $update_watched_sql_forum . ', ';
+
+		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
+			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
+			WHERE fw.forum_id = $forum_id 
+				AND fw.user_id NOT IN (" . $already_notified . $user->data['user_id'] . ", " . ANONYMOUS . $user_id_sql . " ) 
+				AND fw.notify_status = 0
+				AND t.topic_id = $topic_id
+				AND f.forum_id = fw.forum_id
+				AND u.user_id = fw.user_id";
+		$result = $db->sql_query($sql);
+			
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$topic_title = decode_text($row['topic_title']);
+			$topic_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
+
+			do
+			{
+				if (trim($row['user_email']) != '')
+				{
+					$row['email_template'] = 'forum_notify';
+					$email_users[] = $row;
+
+					$update_watched_sql_forum .= ($update_watched_sql_forum != '') ? ', ' . $row['user_id'] : $row['user_id'];
+				}
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+	}
+
+	// We're going to try and minimise the number of emails we send by using bcc.
+	// The complication here is that different templates and/or localisations may
+	// be required so we need to account for these.
+	if (sizeof($email_users) && $config['email_enable'])
+	{
+		global $phpbb_root_path, $phpEx;
+
+		@set_time_limit(60);
+
+		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+		$emailer = new emailer();
+
+		$bcc_list_ary = array();
+		foreach ($email_users as $row)
+		{
+			$bcc_list_ary[$row['email_template']][$row['user_lang']] .= (($bcc_list != '') ? ', ' : '') . $row['user_email'];
+		}
+		unset($email_users);
+
+		foreach ($bcc_list_ary as $email_template => $bcc_list)
+		{
+			foreach ($bcc_list as $lang => $bcc)
+			{
+				$emailer->use_template($email_template, $lang);
+				$emailer->email_address(':;');
+				$emailer->extra_headers($email_headers . "Bcc: $bcc\n");
+
+				$emailer->assign_vars(array(
+					'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+					'SITENAME'		=> $config['sitename'],
+					'TOPIC_TITLE'	=> $topic_title, 
+					'FORUM_NAME'	=> $row['forum_name'], 
+
+					'U_TOPIC'				=> generate_board_url() . 'viewtopic.'.$phpEx . '?t=' . $topic_id . '&p=' . $post_id . '#' . $post_id,
+					'U_FORUM'				=> generate_board_url() . 'viewforum.'.$phpEx . '?f=' . $forum_id,
+					'U_STOP_WATCHING_TOPIC' => generate_board_url() . 'viewtopic.'.$phpEx . '?t=' . $topic_id . '&unwatch=topic',
+					'U_STOP_WATCHING_FORUM' => generate_board_url() . 'viewforum.'.$phpEx . '?f=' . $forum_id . '&unwatch=forum')
+				);
+
+				$emailer->send();
+				$emailer->reset();
+			}
+		}
+	}
+	unset($bcc_list_ary);
+
+	if ($update_watched_sql_topic != '')
+	{
+		$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
+			SET notify_status = 1
+			WHERE topic_id = " . $topic_id . "
+				AND user_id IN (" . $update_watched_sql_topic . ")";
+		$db->sql_query($sql);
+	}
+
+	if ($update_watched_sql_forum != '')
+	{
+		$sql = "UPDATE " . FORUMS_WATCH_TABLE . "
+			SET notify_status = 1
+			WHERE forum_id = " . $forum_id . "
+				AND user_id IN (" . $update_watched_sql_forum . ")";
+		$db->sql_query($sql);
+	}
 }
 
 ?>
