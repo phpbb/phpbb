@@ -56,7 +56,7 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id, fa.* 
+	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.* 
 		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." fa 
 		WHERE f.forum_id = $forum_id 
 			AND fa.forum_id = f.forum_id 
@@ -88,9 +88,9 @@ if(!$forum_row)
 //
 // Start auth check
 //
-$is_auth = auth(READ, $forum_id, $userdata, $forum_row['0']['auth_read']);
+$is_auth = auth(ALL, $forum_id, $userdata, $forum_row[0]);
 
-if(!$is_auth)
+if(!$is_auth['auth_read'])
 {
 	//
 	// Ooopss, user is not authed
@@ -304,10 +304,21 @@ if($total_topics)
 		);
 	}
 
+	$s_auth_can = "";
+	$s_auth_can .= "You " . (($is_auth['auth_read']) ? "<b>can</b>" : "<b>cannot</b>" ) . " read posts in this forum<br>";
+	$s_auth_can .= "You " . (($is_auth['auth_post']) ? "<b>can</b>" : "<b>cannot</b>") . " add new topics to this forum<br>";
+	$s_auth_can .= "You " . (($is_auth['auth_reply']) ? "<b>can</b>" : "<b>cannot</b>") . " reply to posts in this forum<br>";
+	$s_auth_can .= "You " . (($is_auth['auth_edit']) ? "<b>can</b>" : "<b>cannot</b>") . " edit your posts in this forum<br>";
+	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
+	$s_auth_can .= ($is_auth['auth_mod']) ? "You are a moderator of this forum<br>" : "";
+	$s_auth_can .= ($is_auth['auth_admin']) ? "You are a board admin<br>" : "";
+
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
 		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']),
+		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']), 
+
+		"S_AUTH_LIST" => $s_auth_can,
 		
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],

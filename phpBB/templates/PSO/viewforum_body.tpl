@@ -51,7 +51,7 @@
 	<tr>
 		<td width="20"></td>
 		<td width="40%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
-		<td rowspan="6" align="right" valign="top" nowrap>{JUMPBOX}</td>
+		<td rowspan="6" align="right" valign="top" nowrap>{JUMPBOX}<br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{S_AUTH_LIST}</font></td>
 	</tr>
 	<tr>
 		<td><img src="images/red_folder.gif"></td>

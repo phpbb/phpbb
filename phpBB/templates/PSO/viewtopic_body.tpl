@@ -9,12 +9,12 @@
 	<tr>
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-			        <td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
-			                <tr>
-                        			<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b>{TOPIC_TITLE}</b></font></td> 
-                        			<td align="right" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1" /></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1" /></a>&nbsp;</td>  
- 			               </tr>
-        			</table></td>
+		        <td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
+	                <tr>
+               			<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b>{TOPIC_TITLE}</b></font></td> 
+               			<td align="right" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1" /></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1" /></a>&nbsp;</td>  
+	               </tr>
+      			</table></td>
 			</tr>
 			<tr>
 				<td width="20%" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_AUTHOR}</b></font></td>
@@ -59,6 +59,6 @@
 <div align="center"><table cellspacing="2" border="0" width="98%">
 	<tr>
 		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
-		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
+		<td align="right" valign="top" nowrap>{JUMPBOX}<br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{S_AUTH_LIST}</font></td>
 	</tr>
 </table></div>

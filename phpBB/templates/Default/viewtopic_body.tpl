@@ -145,6 +145,9 @@
 
 	 </td>
 	</tr>
+	<tr>
+		<td align="left" style="{font-size: 8pt; height: 55px;}">{S_AUTH_LIST}</td>
+	</tr>
   </table>
  </td>
 </tr>
