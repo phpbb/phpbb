@@ -181,8 +181,6 @@ if ($sql != '')
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$message_parser->bbcode_uid = $row['bbcode_uid'];
-
 	$forum_id = intval($row['forum_id']);
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
@@ -375,6 +373,11 @@ if ( ($mode == 'edit') && ($post_edit_locked) && (!$auth->acl_gets('m_', 'a_', $
 }
 
 $message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
+
+if ($mode == 'edit')
+{
+	$message_parser->bbcode_uid = $row['bbcode_uid'];
+}
 
 // Delete triggered ?
 if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->data['user_id'] != ANONYMOUS) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
@@ -668,11 +671,8 @@ if ($preview)
 
 	$post_time = $current_time;
 
-	// DEBUG
-	// $message_parser->bbcode_bitfield = bindec('1111111111');
-
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-	$bbcode = new bbcode($message_parser->bbcode_uid, $message_parser->bbcode_bitfield);
+	$bbcode = new bbcode($message_parser->bbcode_bitfield);
 
 	$preview_message = format_display($message_parser->message, $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
@@ -700,12 +700,18 @@ if ($preview)
 
 // Decode text for message display
 decode_text($post_text, $message_parser->bbcode_uid);
-decode_text($subject, $message_parser->bbcode_uid);
+if ($subject)
+{
+	decode_text($subject, $message_parser->bbcode_uid);
+}
 
 // Save us some processing time. ;)
-$poll_options_tmp = implode("\n", $poll_options);
-decode_text($poll_options_tmp);
-$poll_options = explode("\n", $poll_options_tmp);
+if (count($poll_options_tmp))
+{
+	$poll_options_tmp = implode("\n", $poll_options);
+	decode_text($poll_options_tmp);
+	$poll_options = explode("\n", $poll_options_tmp);
+}
 
 if (($mode == 'quote') && (!$preview) && (!$refresh))
 {
