@@ -307,7 +307,7 @@ function end_step($next)
 	if(!isset($debug))
 	{
 		// Print out link to next step and wait only if we are not debugging.
-		print "<br><a href=\"$PHP_SELF?next=$next\">Next step: $next</a><br>\n";
+		print "<br><a href=\"$PHP_SELF?next=$next\">Next step: <b>$next</b></a><br>\n";
 		break;
 	}
 	else
@@ -360,7 +360,6 @@ if(isset($next))
 
 	case 'mod_old_tables':
 		common_header();
-		echo "<H2>Step 2: Rename tables</H2>\n";
 
 		$modtables = array(
 			"banlist" => "banlist",
@@ -402,7 +401,6 @@ if(isset($next))
 		
 	case 'create_tables':
 		common_header();
-		echo "<H2>Step 2: Create new phpBB2 tables</H2>\n";
 		
 		// Create array with tables in 'old' database
 		$sql = 'SHOW TABLES';
@@ -463,13 +461,13 @@ if(isset($next))
 				WHERE config_name = '$name'";
 			query($sql, "Couldn't update config table with values from old config table");
 		}
-		end_step('droptables');
 		
+		end_step('droptables');
 	case 'droptables':
 		//drop access, whosonline, sessions (recreate)
 		echo "Nothing here yet<br>\n";
-		end_step('convert_ip_date');
 
+		end_step('convert_ip_date');
 	case 'convert_ip_date':
 		common_header();
 		$names[POSTS_TABLE]['poster_ip'] = 'ip';
@@ -493,8 +491,8 @@ if(isset($next))
 		lock_tables(0);
 		
 		common_footer();
+
 		end_step('fix_addslashes');
-		
 	case 'fix_addslashes':
 		$slashfields[TOPICS_TABLE] = array('topic_title');
 		$slashfields[FORUMS_TABLE] = array('forum_desc');
@@ -527,8 +525,8 @@ if(isset($next))
 			}
 		}
 		lock_tables(0);
+		
 		end_step('convert_users');
-
 	case 'convert_users':
 		$sql = "
 			SELECT 
@@ -638,7 +636,6 @@ if(isset($next))
 				{
 					case '4':
 						$row['user_level'] = ADMIN;
-						print $row['username'] . " is an admin. Giving level: ". ADMIN . "<br>\n";
 						break;
 					case '-1':
 						$row['user_level'] = ANONYMOUS;
@@ -666,9 +663,8 @@ if(isset($next))
 			}
 			lock_tables(0);
 		}
+		
 		end_step('convert_posts');
-
-
 	case 'convert_posts':
 		common_header();
 
@@ -750,8 +746,7 @@ if(isset($next))
 			lock_tables(0);
 		}
 
-	end_step('convert_pm');
-
+		end_step('convert_pm');
 	case 'convert_pm':
 		$sql = "
 			SELECT 
@@ -850,10 +845,9 @@ if(isset($next))
 				
 		}
 		lock_tables(0);
-		end_step('convert_mods');
 		
+		end_step('convert_mods');
 	case 'convert_mods';
-		echo "<h3>Converting moderator table</h3>";
 		$sql = "SELECT * FROM forum_mods";
 		$result = query($sql, "Couldn't get list with all forum moderators");
 		while($row = mysql_fetch_array($result))
@@ -882,15 +876,60 @@ if(isset($next))
 			$group_id = mysql_fetch_array($insert_group);
 			$group_id = $group_id['group_id'];
 
+			print "Adding moderator for forum ".$row['forum_id']."<br>\n";
 			$sql = "INSERT INTO ".AUTH_ACCESS_TABLE." (group_id, forum_id, auth_mod) VALUES ($group_id, ".$row['forum_id'].", 1)";
 			query($sql, "Couldn't set moderator (user_id = ".$row['user_id'].") for forum ".$row['forum_id'].".");
 		}
 		
-		
-		
-	
-		end_step('update_schema');
+		end_step('convert_privforums');
+	case 'convert_privforums':
+		$sql = "SELECT fa.*, forum_name FROM forum_access fa LEFT JOIN forums f using (forum_id) ORDER BY fa.forum_id, fa.user_id";
+		$forum_access = query($sql, "Couldn't get list with special forum access (forum_access)");
+		while($row = mysql_fetch_array($forum_access))
+		{
+			// Iterate trough access table
+			if($row['forum_id'] != $forum_id)
+			{
+				// This is a new forum, create new group.
+				$forum_id = $row['forum_id'];
+				$sql = "INSERT INTO ".GROUPS_TABLE." 
+					(group_type, group_name, group_description, group_moderator, group_single_user)
+					VALUES
+					(".GROUP_HIDDEN.", '".addslashes($row['forum_name'])." Group', 'Converted group', ".$row['user_id'].", 0)
+					";
 
+				print "Creating new group for (private) forum: $forum_id<br>\n";
+				$result = query($sql, "Couldn't create group for ".$row['forum_name']);
+				$group_id = $db->sql_nextid($result);
+				if( $group_id <= 0 )
+				{
+					print "<font color=\"red\">Group creation failed. Aborting creation of groups...<br></font>\n";
+					continue 2;
+				}
+				print "Creating auth_access group for forum: $forum_id<br>\n";
+				$sql = "INSERT INTO ".AUTH_ACCESS_TABLE."
+					(group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete)
+					VALUES
+					($group_id, $forum_id, 1, 1, 1, 1, 1, 1)
+					";
+				$result = query($sql, "Unable to set group auth access.");
+				if( $db->sql_affectedrows($result) <= 0 )
+				{
+					print "<font color=\"red\">Group creation failed. Aborting creation of groups...</font><br>\n";
+					continue 2;
+				}
+			}
+			// Add user to the group
+			$user_id = $row['user_id'];
+			$sql = "INSERT INTO ".USER_GROUP_TABLE ."
+				(group_id, user_id, user_pending)
+				VALUES
+				($group_id, $user_id, 0)
+				";
+			query($sql, "Unable to add user_id $user_id to group_id $group_id <br>\n");
+		}
+
+		end_step('update_schema');
 	case 'update_schema':
 		common_header();
 		$rename = 
@@ -984,6 +1023,82 @@ if(isset($next))
 			flush();
 		}
 
+		end_step('convert_forums');
+	case 'convert_forums':
+		$sql = "SELECT * FROM ".FORUMS_TABLE;
+		$result = query($sql, "Couldn't get list with all forums");
+		while($row = mysql_fetch_array($result))
+		{
+			print "Converting forumpermissions for forum: '".$row['forum_name'] ."'.<br>\n";
+			// Old auth structure:
+			// forum_type: (only concerns viewing)
+			//		0 = Public
+			//		1 = Private
+			switch($row['forum_type'])
+			{
+				case 0:
+					$auth_view			= AUTH_ALL;
+					$auth_read			= AUTH_ALL;
+					break;
+				default:
+					$auth_view			= AUTH_ALL;
+					$auth_read			= AUTH_ALL;
+					break;
+			}
+		
+			// forum_access: (only concerns posting)
+			//		1 = Registered users only
+			//		2 = Anonymous Posting
+			//		3 = Moderators/Administrators only
+			switch($row['forum_access'])
+			{
+				case 1:
+					// Public forum, no anonymous posting
+					$auth_post			= AUTH_REG;
+					$auth_reply			= AUTH_REG;
+					$auth_edit			= AUTH_REG;
+					$auth_delete		= AUTH_REG;
+					$auth_vote			= AUTH_REG;
+					$auth_pollcreate	= AUTH_REG;
+					$auth_sticky		= AUTH_MOD;
+					$auth_announce		= AUTH_MOD;
+					break;
+				case 2:
+					$auth_post			= AUTH_ALL;
+					$auth_reply			= AUTH_ALL;
+					$auth_edit			= AUTH_ALL;
+					$auth_delete		= AUTH_ALL;
+					$auth_vote			= AUTH_ALL;
+					$auth_pollcreate	= AUTH_ALL;
+					$auth_sticky		= AUTH_MOD;
+					$auth_announce		= AUTH_MOD;
+					break;
+				default:
+					$auth_post			= AUTH_MOD;
+					$auth_reply			= AUTH_MOD;
+					$auth_edit			= AUTH_MOD;
+					$auth_delete		= AUTH_MOD;
+					$auth_vote			= AUTH_MOD;
+					$auth_pollcreate	= AUTH_MOD;
+					$auth_sticky		= AUTH_MOD;
+					$auth_announce		= AUTH_MOD;
+					break;
+			}
+			
+			$sql = "UPDATE ".FORUMS_TABLE." SET
+				auth_view = $auth_view,
+				auth_read = $auth_read,
+				auth_post = $auth_post,
+				auth_edit = $auth_edit,
+				auth_delete = $auth_delete,
+				auth_vote = $auth_vote,
+				auth_pollcreate = $auth_pollcreate,
+				auth_sticky = $auth_sticky,
+				auth_announce = $auth_announce
+				WHERE forum_id = ". $row['forum_id'];
+			query($sql, "Was unable to update forum permissions!");
+		}
+	
 		end_step('insert_themes');
 	case 'insert_themes':
 		common_header();
