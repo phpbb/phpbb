@@ -248,7 +248,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$posts_per_day = sprintf("%.2f", $profiledata['user_posts'] / $memberdays);
 
 		// Get the users percentage of total posts
-		if($profiledata['user_posts'] != 0)
+		if( $profiledata['user_posts'] != 0 && $total_posts != 0 )
 		{
 			$total_posts = get_db_stat("postcount");
 			$percentage = sprintf("%.2f", ($profiledata['user_posts'] / $total_posts) * 100);
