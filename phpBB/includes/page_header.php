@@ -126,6 +126,24 @@ switch($pagetype)
 			    "TOPIC_TITLE" => $topic_title));
    $template->pparse("header");
    break;
+
+	case 'viewonline':
+		$template->set_filenames(array("header" => "viewonline_header.tpl",
+			"body" => "viewonline_body.tpl",
+			"jumpbox" => "jumpbox.tpl",
+			"footer" => "viewonline_footer.tpl"));
+		$jumpbox = make_jumpbox($db);
+		$template->assign_vars(array("TOTAL_POSTS" => $total_posts,
+			"TOTAL_USERS" => $total_users,
+			"NEWEST_USER" => $newest_user,
+			"NEWEST_UID" => $newest_uid,
+			"JUMPBOX_LIST" => $jumpbox,
+			"JUMPBOX_ACTION" => "viewforum.".$phpEx,
+			"SELECT_NAME" => POST_FORUM_URL));
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		$template->pparse("header");
+		break;
+	
  case 'newtopic':
    $template->set_filenames(array("header" => "newtopic_header.tpl",
 			     "body" => "posting_body.tpl"));

@@ -44,10 +44,11 @@ $newest_uid = $newest_userdata["user_id"];
 
 include('includes/page_header.'.$phpEx);
 
-$sql = "SELECT u.username, u.user_id, f.forum_name, f.forum_id, s.session_page, s.session_logged_in
+$sql = "SELECT u.username, u.user_id, f.forum_name, f.forum_id, s.session_page, s.session_logged_in, s.session_time
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	LEFT JOIN ".FORUMS_TABLE." f ON f.forum_id = s.session_page
-	WHERE u.user_id = s.session_user_id";
+	WHERE u.user_id = s.session_user_id
+	ORDER BY s.session_time DESC";
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -65,7 +66,9 @@ $template->assign_vars(array(
 	"POST_USER_URL" => POST_USERS_URL,
 	"L_WHOSONLINE" => $l_whosonline,
 	"L_USERNAME" => $l_username,
-	"L_LOCATION" => $l_location
+	"L_LOCATION" => $l_location,
+	"L_LAST_UPDATE" => "Last Updated",
+	"L_LOGGED_ON" => "Logged On"
 	)
 );
 
@@ -84,21 +87,22 @@ if($online_count)
 			$row_color = "#DDDDDD";
 		}
 
-		if(!stristr($onlinerow[$i]['username'], "Anonymous"))
+		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
 		{
 			$username = $onlinerow[$i]['username'];
 			if($onlinerow[$i]['session_logged_in'])
 			{
-				$username .= "&nbsp;&nbsp;[ Logged In ]";
+				$loggedon = "&nbsp;$l_yes&nbsp;";
 			}
 			else
 			{
-				$username .= "&nbsp;&nbsp;[ Logged Out ]";
+				$loggedon = "&nbsp;$l_no&nbsp;";
 			}
 		}
 		else
 		{
 			$username = "$l_anonymous";
+			$loggedon = "&nbsp;-&nbsp;";
 		}
 
 		if($onlinerow[$i]['forum_name'] == "")
@@ -147,6 +151,8 @@ if($online_count)
 			array("ROW_COLOR" => $row_color,
 				"USER_ID" => $onlinerow[$i]['user_id'],
 				"USERNAME" => $username,
+				"LOGGEDON" => $loggedon,
+				"LASTUPDATE" => create_date($default_dateformat, $onlinerow[$i]['session_time'], $sys_timezone),
 				"LOCATION" => $location,
 				"LOCATION_URL" => $location_url
 			)
