@@ -10,15 +10,6 @@
  *
  ***************************************************************************/
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
 if(!defined("SQL_LAYER"))
 {
 
@@ -204,6 +195,8 @@ class sql_db
 				}
 				else
 				{
+					$query = preg_replace("/\\\'/s", "''", $query);
+
 					$this->query_result = @mssql_query($query, $this->db_connect_id);
 					if($this->query_result)
 					{

@@ -10,20 +10,7 @@
  *
  ***************************************************************************/
 
-  /***************************************************************************
-   *
-   *   This program is free software; you can redistribute it and/or modify
-   *   it under the terms of the GNU General Public License as published by
-   *   the Free Software Foundation; either version 2 of the License, or
-   *   (at your option) any later version.
-   *
-   *
-   *
-   ***************************************************************************/
-
-
 define("BBCODE_UID_LEN", 10);
-
 
 /**
  * Does second-pass bbencoding. This should be used before displaying the message in
@@ -112,8 +99,6 @@ function bbencode_second_pass($text, $uid)
 
 } // bbencode_second_pass()
 
-
-
 function make_bbcode_uid()
 {
 	// Unique ID for this message..
@@ -122,8 +107,6 @@ function make_bbcode_uid()
 
 	return $uid;
 }
-
-
 
 function bbencode_first_pass($text, $uid)
 {
@@ -168,7 +151,6 @@ function bbencode_first_pass($text, $uid)
 	return $text;
 
 } // bbencode_first_pass()
-
 
 /**
  * $text - The text to operate on.
@@ -350,9 +332,6 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 } // bbencode_first_pass_pda()
 
-
-
-
 /**
  * Does second-pass bbencoding of the [code] tags. This includes
  * running htmlspecialchars() over the text contained between
@@ -397,7 +376,6 @@ function bbencode_second_pass_code($text, $uid)
 
 } // bbencode_second_pass_code()
 
-
 /**
  * Rewritten by Nathan Codding - Feb 6, 2001.
  * - Goes through the given string, and replaces xxxx://yyyy with an HTML <a> tag linking
@@ -411,10 +389,8 @@ function bbencode_second_pass_code($text, $uid)
  * Notes: the email one might get annoying - it's easy to make it more restrictive, though.. maybe
  * have it require something like xxxx@yyyy.zzzz or such. We'll see.
  */
-
 function make_clickable($text)
 {
-
 	// pad it with a space so we can match things at the start of the 1st line.
 	$ret = " " . $text;
 
@@ -448,9 +424,8 @@ function make_clickable($text)
  * - Does not distinguish between "www.xxxx.yyyy" and "http://aaaa.bbbb" type URLs.
  *
  */
-
-function undo_make_clickable($text) {
-
+function undo_make_clickable($text)
+{
 	$text = preg_replace("#<!-- BBCode auto-link start --><a href=\"(.*?)\" target=\"_blank\">.*?</a><!-- BBCode auto-link end -->#i", "\\1", $text);
 	$text = preg_replace("#<!-- BBcode auto-mailto start --><a href=\"mailto:(.*?)\">.*?</a><!-- BBCode auto-mailto end -->#i", "\\1", $text);
 
@@ -458,14 +433,13 @@ function undo_make_clickable($text) {
 
 }
 
-
-
 /**
  * Nathan Codding - August 24, 2000.
  * Takes a string, and does the reverse of the PHP standard function
  * htmlspecialchars().
  */
-function undo_htmlspecialchars($input) {
+function undo_htmlspecialchars($input)
+{
 	$input = preg_replace("/&gt;/i", ">", $input);
 	$input = preg_replace("/&lt;/i", "<", $input);
 	$input = preg_replace("/&quot;/i", "\"", $input);
@@ -473,8 +447,6 @@ function undo_htmlspecialchars($input) {
 
 	return $input;
 }
-
-
 
 /**
  * This is used to change a [*] tag into a [*:$uid] tag as part
@@ -489,7 +461,6 @@ function replace_listitems($text, $uid)
 	return $text;
 }
 
-
 /**
  * Escapes the "/" character with "\/". This is useful when you need
  * to stick a runtime string into a PREG regexp that is being delimited
@@ -501,13 +472,13 @@ function escape_slashes($input)
 	return $output;
 }
 
-
 /**
  * This function does exactly what the PHP4 function array_push() does
  * however, to keep phpBB compatable with PHP 3 we had to come up with our own
  * method of doing it.
  */
-function bbcode_array_push(&$stack, $value) {
+function bbcode_array_push(&$stack, $value)
+{
    $stack[] = $value;
    return(sizeof($stack));
 }
@@ -517,9 +488,11 @@ function bbcode_array_push(&$stack, $value) {
  * however, to keep phpBB compatable with PHP 3 we had to come up with our own
  * method of doing it.
  */
-function bbcode_array_pop(&$stack) {
+function bbcode_array_pop(&$stack)
+{
    $arrSize = count($stack);
    $x = 1;
+
    while(list($key, $val) = each($stack))
    {
       if($x < count($stack))
@@ -536,7 +509,5 @@ function bbcode_array_pop(&$stack) {
 
    return($return_val);
 }
-
-
 
 ?>
