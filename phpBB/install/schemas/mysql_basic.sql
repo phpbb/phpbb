@@ -98,6 +98,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '26
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_dir', 'files');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_display_inlined', '1');
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
@@ -384,8 +385,8 @@ INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, d
 INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (2, 'Archives', 0, 1, 1, '', 0);
 INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (3, 'Plain Text', 0, 0, 1, '', 0);
 INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (4, 'Documents', 0, 0, 1, '', 0);
-INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (5, 'Real Media', 0, 0, 2, '', 0);
-INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (6, 'Streams', 2, 0, 1, '', 0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (5, 'Real Media', 3, 0, 2, '', 0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize) VALUES (6, 'Windows Media', 2, 0, 1, '', 0);
 
 # -- extensions
 INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (1, 1, 'gif', '');

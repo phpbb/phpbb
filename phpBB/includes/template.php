@@ -373,7 +373,7 @@ class Template
 
 		$template_php = str_replace(' ?><?php ', '', $template_php);
 
-		return  (!$no_echo) ? $template_php : "\$$echo_var .= '" . addslashes($template_php) . "'";
+		return  (!$no_echo) ? str_replace("\\'", "'", $template_php) : "\$$echo_var .= '" . addslashes($template_php) . "'";
 	}
 
 	function compile_var_tags(&$text_blocks)

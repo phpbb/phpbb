@@ -4,7 +4,7 @@
 	<!-- IF postrow.attachment.IS_DENIED -->
 		<span class="postbody">[{postrow.attachment.L_DENIED}]</span><br /><br />
 	<!-- ENDIF -->
-	<!-- IF postrow.attachment.IS_STREAM -->
+	<!-- IF postrow.attachment.IS_WM_STREAM -->
 		<span class="postbody">{postrow.attachment.COMMENT}</span><br />
 		<object id="wmp" classid="CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,0,0,0" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject"> 
 		<param name="FileName" value="{postrow.attachment.U_DOWNLOAD_LINK}"> 
@@ -18,6 +18,40 @@
 		<param name="Loop" value="0"> 
 		<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows95/downloads/contents/wurecommended/s_wufeatured/mediaplayer/default.asp" src="{postrow.attachment.U_DOWNLOAD_LINK}" name=MediaPlayer2 showcontrols=1 showdisplay=0 showstatusbar=1 autosize=1 autostart=0 visible=1 animationatstart=0 loop=0></embed> 
 		</object>
+		<br /><span class="gensmall">{postrow.attachment.DOWNLOAD_NAME} - {postrow.attachment.L_DOWNLOADED_VIEWED} {postrow.attachment.L_DOWNLOAD_COUNT}</span><br /><br />
+	<!-- ELSEIF postrow.attachment.IS_RM_STREAM -->
+		<span class="postbody">{postrow.attachment.COMMENT}</span><br />
+
+		<object id=rmstream_{postrow.attachment.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="0">
+		<param name="src" value="{postrow.attachment.FORUM_URL}/{postrow.attachment.U_DOWNLOAD_LINK}">
+		<param name="autostart" value="false">
+		<param name="controls" value="ImageWindow">
+		<param name="console" value="{postrow.attachment.U_DOWNLOAD_LINK}">
+		<param name="prefetch" value="true">
+		<embed name=rmstream_{postrow.attachment.ATTACH_ID} type="audio/x-pn-realaudio-plugin" src="{postrow.attachment.FORUM_URL}/{postrow.attachment.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="video" prefetch="true"></embed>
+		</object>
+		<br />
+		<object id=ctrls_{postrow.attachment.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
+		<param name="controls" value="ControlPanel">
+		<param name="console" value="{postrow.attachment.U_DOWNLOAD_LINK}">
+		<embed name=ctrls_{postrow.attachment.ATTACH_ID} type="audio/x-pn-realaudio-plugin" width="0" height="36" controls="ControlPanel" console="video"></embed>
+		</object>
+
+		<script language="Javascript">
+		<!--
+
+ 	    while (!document.rmstream_{postrow.attachment.ATTACH_ID}.GetClipWidth())
+		{
+		}
+
+		var width = document.rmstream_{postrow.attachment.ATTACH_ID}.GetClipWidth();
+		var height = document.rmstream_{postrow.attachment.ATTACH_ID}.GetClipHeight();
+
+		document.rmstream_{postrow.attachment.ATTACH_ID}.width = width;
+		document.rmstream_{postrow.attachment.ATTACH_ID}.height = height;
+		document.ctrls_{postrow.attachment.ATTACH_ID}.width = width;
+		//-->
+		</script>
 		<br /><span class="gensmall">{postrow.attachment.DOWNLOAD_NAME} - {postrow.attachment.L_DOWNLOADED_VIEWED} {postrow.attachment.L_DOWNLOAD_COUNT}</span><br /><br />
 	<!-- ELSEIF postrow.attachment.IS_IMAGE -->
 		<span class="postbody">{postrow.attachment.COMMENT}<br />

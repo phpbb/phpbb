@@ -1102,8 +1102,7 @@ foreach ($rowset as $key => $row)
 			$comment = stripslashes(trim(nl2br($attachment['comment'])));
 
 			$denied = false;
-
-			// Admin is allowed to view forbidden Attachments
+			
 			if ((!in_array($attachment['extension'], $extensions['_allowed_'])))
 			{
 				$denied = true;
@@ -1116,165 +1115,161 @@ foreach ($rowset as $key => $row)
 
 			if (!$denied)
 			{
-				// define category
-				$image = FALSE;
-				$stream = FALSE;
-//					$swf = FALSE;
-				$thumbnail = FALSE;
-				$link = FALSE;
-
 				$l_downloaded_viewed = '';
 				$download_link = '';
 				$additional_array = array();
 				
-				switch (intval($extensions[$attachment['extension']]['display_cat']))
+				$display_cat = intval($extensions[$attachment['extension']]['display_cat']);
+				
+				if ($display_cat == IMAGE_CAT)
 				{
-					case STREAM_CAT:
-						$stream = TRUE;
-						break;
-/*
-					case SWF_CAT:
-						$swf = TRUE;
-						break;
-*/
-					case IMAGE_CAT:
+					if ($attachment['thumbnail'])
+					{
+						$display_cat = THUMB_CAT;
+					}
+					else
+					{
+						$display_cat = NONE_CAT;
+
 						if (intval($config['img_display_inlined']))
 						{
 							if ( (intval($config['img_link_width']) != 0) || (intval($config['img_link_height']) != 0) )
 							{
 								list($width, $height) = image_getdimension($filename);
 
-								$image = (($width == 0) && ($height == 0)) ? true : ((($width <= intval($config['img_link_width'])) && ($height <= intval($config['img_link_height']))) ? true : false);
+								$display_cat = (($width == 0) && ($height == 0)) ? IMAGE_CAT : ((($width <= intval($config['img_link_width'])) && ($height <= intval($config['img_link_height']))) ? IMAGE_CAT : NONE_CAT);
 							}
 						}
 						else
 						{
-							$image = TRUE;
+							$display_cat = IMAGE_CAT;
 						}
-						
-						if ($attachment['thumbnail'])
+					}					
+				}
+		
+				switch ($display_cat)
+				{
+					case IMAGE_CAT:
+						// Images
+						// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
+						// Section between BEGIN and END with (Without the // of course):
+						//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						// 
+						// BEGIN
+						if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
 						{
-							$thumbnail = TRUE;
-							$image = FALSE;
+							$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						}
+						else
+						{
+							$img_source = $filename;
+							$update_count[] = $attachment['attach_id'];
+						}
+						// END
+
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $img_source;
+						break;
+					
+					case THUMB_CAT:
+						// Images, but display Thumbnail
+						// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
+						// Section between BEGIN and END with (Without the // of course):
+						//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
+						//
+						// BEGIN
+						if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
+						{
+							$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
+						}
+						else
+						{
+							$thumb_source = $thumbnail_filename;
+						}
+						// END	
+
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+
+						$additional_array = array(
+							'IMG_THUMB_SRC' => $thumb_source
+						);
+						break;
+
+					case WM_CAT:
+						// Windows Media Streams
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $filename;
+
+						// Viewed/Heared File ... update the download count (download.php is not called here)
+						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
+						{
+							$update_count[] = $attachment['attach_id'];
 						}
 						break;
-				}
-		
 
-				// && !$swf
-				if (!$image && !$stream  && !$thumbnail)
-				{
-					$link = TRUE;
-				}
+					case RM_CAT:
+						// Real Media Streams
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $filename;
 
-				if ($image)
-				{
-					// Images
-					// NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
-					// Section between BEGIN and END with (Without the // of course):
-					//	$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-					// 
-					// BEGIN
-					if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
-					{
-						$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-					}
-					else
-					{
-						$img_source = $filename;
-						$update_count[] = $attachment['attach_id'];
-					}
-					// END
+						$additional_array = array(
+							'FORUM_URL' => generate_board_url(),
+							'ATTACH_ID' => $attachment['attach_id']
+						);
 
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $img_source;
-				}
-		
-				if ($thumbnail)
-				{
-					// Images, but display Thumbnail
-					// NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
-					// Section between BEGIN and END with (Without the // of course):
-					//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
-					//
-					// BEGIN
-					if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
-					{
-						$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
-					}
-					else
-					{
-						$thumb_source = $thumbnail_filename;
-					}
-					// END	
-
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-
-					$additional_array = array(
-						'IMG_THUMB_SRC' => $thumb_source
-					);
-				}
-
-				if ($stream)
-				{
-					// Streams
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
-//					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
-
-					// Viewed/Heared File ... update the download count (download.php is not called here)
-					if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
-					{
-						$update_count[] = $attachment['attach_id'];
-					}
-				}
+						// Viewed/Heared File ... update the download count (download.php is not called here)
+						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
+						{
+							$update_count[] = $attachment['attach_id'];
+						}
+						break;
 /*			
-				if ($swf)
-				{
-					// Macromedia Flash Files
-					list($width, $height) = swf_getdimension($filename);
+					case SWF_CAT:
+						// Macromedia Flash Files
+						list($width, $height) = swf_getdimension($filename);
 
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
+						$l_downloaded_viewed = $user->lang['VIEWED'];
+						$download_link = $filename;
 					
-					$additional_array = array(
-						'WIDTH' => $width,
-						'HEIGHT' => $height
-					);
+						$additional_array = array(
+							'WIDTH' => $width,
+							'HEIGHT' => $height
+						);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
-					$update_count[] = $attachment['attach_id'];
-				}
+						// Viewed/Heared File ... update the download count (download.php is not called here)
+						if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
+						{
+							$update_count[] = $attachment['attach_id'];
+						}
+						break;
 */
-				if ($link)
-				{
-					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+					default:
+						$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+						break;
 				}
-				
-				if ($image || $thumbnail || $stream || $link)
-				{
-					$template_array = array_merge($additional_array, array(
-//						'IS_FLASH'		=> ($swf) ? true : false,
-						'IS_STREAM'		=> ($stream) ? true : false,
-						'IS_THUMBNAIL'	=> ($thumbnail) ? true : false,
-						'IS_IMAGE'		=> ($image) ? true : false,
-						'DOWNLOAD_NAME' => $display_name,
-						'FILESIZE'		=> $filesize,
-						'SIZE_VAR'		=> $size_lang,
-						'COMMENT'		=> $comment,
 
-						'U_DOWNLOAD_LINK' => $download_link,
+				$template_array = array_merge($additional_array, array(
+//					'IS_FLASH'		=> ($display_cat == SWF_CAT) ? true : false,
+					'IS_WM_STREAM'	=> ($display_cat == WM_CAT) ? true : false,
+					'IS_RM_STREAM'	=> ($display_cat == RM_CAT) ? true : false,
+					'IS_THUMBNAIL'	=> ($display_cat == THUMB_CAT) ? true : false,
+					'IS_IMAGE'		=> ($display_cat == IMAGE_CAT) ? true : false,
+					'DOWNLOAD_NAME' => $display_name,
+					'FILESIZE'		=> $filesize,
+					'SIZE_VAR'		=> $size_lang,
+					'COMMENT'		=> $comment,
 
-						'UPLOAD_IMG' => $upload_image,
+					'U_DOWNLOAD_LINK' => $download_link,
 
-						'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
-						'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
-					);
+					'UPLOAD_IMG' => $upload_image,
+
+					'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+					'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+				);
 					
-					$template->assign_block_vars('postrow.attachment', $template_array);
-				}
+				$template->assign_block_vars('postrow.attachment', $template_array);
 			}
 		}
 	}

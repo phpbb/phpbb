@@ -112,9 +112,11 @@ define('PHYSICAL_LINK', 2);
 
 // Categories - Attachments
 define('NONE_CAT', 0);
-define('IMAGE_CAT', 1);
-define('STREAM_CAT', 2);
-//define('SWF_CAT', 3);
+define('IMAGE_CAT', 1); // Inline Images
+define('WM_CAT', 2); // Windows Media Files - Streaming
+define('RM_CAT', 3); // Real Media Files - Streaming
+define('THUMB_CAT', 4); // Not used within the database, only while displaying posts
+//define('SWF_CAT', 5); // Replaced by [flash] ? or an additional possibility ?
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);

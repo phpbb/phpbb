@@ -38,150 +38,6 @@ if (!$auth->acl_get('a_attach'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-function size_select($select_name, $size_compare)
-{
-	global $user;
-
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KB'], $user->lang['MB']);
-	$size_types = array('b', 'kb', 'mb');
-
-	$select_field = '<select name="' . $select_name . '">';
-
-	for ($i = 0; $i < count($size_types_text); $i++)
-	{
-		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
-
-		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
-	}
-	
-	$select_field .= '</select>';
-
-	return ($select_field);
-}
-
-function test_upload(&$error, &$error_msg, $upload_dir, $ftp_path, $ftp_upload_allowed, $create_directory = false)
-{
-	global $user;
-
-	$error = FALSE;
-
-	// Does the target directory exist, is it a directory and writeable. (only test if ftp upload is disabled)
-	if (!$ftp_upload_allowed)
-	{
-		if ($create_directory)
-		{
-			if (!@file_exists($upload_dir))
-			{
-				@mkdir($upload_dir, 0755);
-				@chmod($upload_dir, 0777);
-			}
-		}
-		
-		if (!@file_exists($upload_dir))
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $new['upload_dir']) . '<br />';
-		}
-	
-		if (!$error && !is_dir($upload_dir))
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $new['upload_dir']) . '<br />';
-		}
-	
-		if (!$error)
-		{
-			if ( !($fp = @fopen($upload_dir . '/0_000000.000', 'w')) )
-			{
-				$error = TRUE;
-				$error_msg = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $new['upload_dir']) . '<br />';
-			}
-			else
-			{
-				@fclose($fp);
-				@unlink($upload_dir . '/0_000000.000');
-			}
-		}
-	}
-	else
-	{
-		// Check FTP Settings
-		$server = ( empty($new['ftp_server']) ) ? 'localhost' : $new['ftp_server'];
-		$conn_id = @ftp_connect($server);
-
-		if (!$conn_id)
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['FTP_ERROR_CONNECT'], $server) . '<br />';
-		}
-
-		$login_result = @ftp_login($conn_id, $new['ftp_user'], $new['ftp_pass']);
-
-		if (!$login_result && !$error)
-		{
-			$error = TRUE;
-			$error_msg = sprintf($user->lang['FTP_ERROR_LOGIN'], $new['ftp_user']) . '<br />';
-		}
-		
-		if (!@ftp_pasv($conn_id, intval($new['ftp_pasv_mode'])))
-		{
-			$error = TRUE;
-			$error_msg = $user->lang['FTP_ERROR_PASV_MODE'];
-		}
-
-		if (!$error)
-		{
-			// Check Upload
-			$tmpfname = @tempnam('/tmp', 't0000');
-			@unlink($tmpfname); // unlink for safety on php4.0.3+
-			$fp = @fopen($tmpfname, 'w');
-			@fwrite($fp, 'test');
-			@fclose($fp);
-
-			if ($create_directory)
-			{
-				$result = @ftp_chdir($conn_id, $ftp_path);
-			
-				if (!$result)
-				{
-					@ftp_mkdir($conn_id, $ftp_path);
-				}
-			}
-
-			$result = @ftp_chdir($conn_id, $ftp_path);
-
-			if (!$result)
-			{
-				$error = TRUE;
-				$error_msg = sprintf($user->lang['FTP_ERROR_PATH'], $ftp_path) . '<br />';
-			}
-			else
-			{
-				$res = @ftp_put($conn_id, 't0000', $tmpfname, FTP_ASCII);
-			
-				if (!$res)
-				{
-					$error = TRUE;
-					$error_msg = sprintf($user->lang['FTP_ERROR_UPLOAD'], $ftp_path) . '<br />';
-				}
-				else
-				{
-					$res = @ftp_delete($conn_id, 't0000');
-
-					if (!$res)
-					{
-						$error = TRUE;
-						$error_msg = sprintf($user->lang['FTP_ERROR_DELETE'], $ftp_path) . '<br />';
-					}
-				}
-			}
-
-			@ftp_quit($conn_id);
-			@unlink($tmpfname);
-		}
-	}
-}
-
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 
 $config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
@@ -263,11 +119,11 @@ while ($row = $db->sql_fetchrow($result))
 	}
 }
 
-if ($submit && $mode == 'manage')
+if ($submit && ($mode == 'manage' || $mode == 'cats'))
 {
 	add_log('admin', 'LOG_SETTING_CONFIG');
 	$notify = TRUE;
-	$notify_msg = $user->lang['Config_updated'];
+	$notify_msg = $user->lang['ATTACH_CONFIG_UPDATED'];
 }
 
 // Adjust the Upload Directory
@@ -291,6 +147,10 @@ switch ($mode)
 {
 	case 'manage':
 		$l_title = 'ATTACHMENT_CONFIG';
+		break;
+
+	case 'cats':
+		$l_title = 'MANAGE_CATEGORIES';
 		break;
 }
 
@@ -546,6 +406,255 @@ if ($mode == 'manage')
 <?php
 }
 
+if ($mode == 'cats')
+{
+	$sql = "SELECT group_name, cat_id
+		FROM " . EXTENSION_GROUPS_TABLE . "
+		WHERE cat_id > 0
+		ORDER BY cat_id";
+	$result = $db->sql_query($sql);
+
+	$s_assigned_groups = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
+	}
+	
+	$display_inlined_yes = ($new['img_display_inlined']) ? 'checked="checked"' : '';
+	$display_inlined_no = (!$new['img_display_inlined']) ? 'checked="checked"' : '';
+
+	$create_thumbnail_yes = ($new['img_create_thumbnail']) ? 'checked="checked"' : '';
+	$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
+
+?>
+	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	<tr>
+	  <th align="center" colspan="2"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></th>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['DISPLAY_INLINED']; ?>:<br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="img_display_inlined" value="1" <?php echo $display_inlined_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0" <?php echo $display_inlined_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+<?php
+	
+	// Check Thumbnail Support
+	if ( ($new['img_imagick'] == '') && (count(get_supported_image_types()) == 0) )
+	{
+		$new['img_create_thumbnail'] = '0';
+	}
+	else
+	{
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['CREATE_THUMBNAIL']; ?>:<br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="img_create_thumbnail" value="1" <?php echo $create_thumbnail_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0" <?php echo $create_thumbnail_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="7" maxlength="15" name="img_min_thumb_filesize" value="<?php echo $new['img_min_thumb_filesize']; ?>" class="post" /> <?php echo $user->lang['BYTES']; ?></td>
+	</tr>
+<?php
+	}
+?>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['IMAGICK_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="50%"><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="submit" name="search_imagick" value="<?php echo $user->lang['SEARCH_IMAGICK']; ?>" class="liteoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
+	</tr>
+</table></form>
+
+<br clear="all" />
+
+<?php
+}
+
 page_footer();
+
+// Generate select form
+function size_select($select_name, $size_compare)
+{
+	global $user;
+
+	$size_types_text = array($user->lang['BYTES'], $user->lang['KB'], $user->lang['MB']);
+	$size_types = array('b', 'kb', 'mb');
+
+	$select_field = '<select name="' . $select_name . '">';
+
+	for ($i = 0; $i < count($size_types_text); $i++)
+	{
+		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
+
+		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
+	}
+	
+	$select_field .= '</select>';
+
+	return ($select_field);
+}
+
+// Test Settings
+function test_upload(&$error, &$error_msg, $upload_dir, $ftp_path, $ftp_upload_allowed, $create_directory = false)
+{
+	global $user;
+
+	$error = FALSE;
+
+	// Does the target directory exist, is it a directory and writeable. (only test if ftp upload is disabled)
+	if (!$ftp_upload_allowed)
+	{
+		if ($create_directory)
+		{
+			if (!@file_exists($upload_dir))
+			{
+				@mkdir($upload_dir, 0755);
+				@chmod($upload_dir, 0777);
+			}
+		}
+		
+		if (!@file_exists($upload_dir))
+		{
+			$error = TRUE;
+			$error_msg = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $new['upload_dir']) . '<br />';
+		}
+	
+		if (!$error && !is_dir($upload_dir))
+		{
+			$error = TRUE;
+			$error_msg = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $new['upload_dir']) . '<br />';
+		}
+	
+		if (!$error)
+		{
+			if ( !($fp = @fopen($upload_dir . '/0_000000.000', 'w')) )
+			{
+				$error = TRUE;
+				$error_msg = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $new['upload_dir']) . '<br />';
+			}
+			else
+			{
+				@fclose($fp);
+				@unlink($upload_dir . '/0_000000.000');
+			}
+		}
+	}
+	else
+	{
+		// Check FTP Settings
+		$server = ( empty($new['ftp_server']) ) ? 'localhost' : $new['ftp_server'];
+		$conn_id = @ftp_connect($server);
+
+		if (!$conn_id)
+		{
+			$error = TRUE;
+			$error_msg = sprintf($user->lang['FTP_ERROR_CONNECT'], $server) . '<br />';
+		}
+
+		$login_result = @ftp_login($conn_id, $new['ftp_user'], $new['ftp_pass']);
+
+		if (!$login_result && !$error)
+		{
+			$error = TRUE;
+			$error_msg = sprintf($user->lang['FTP_ERROR_LOGIN'], $new['ftp_user']) . '<br />';
+		}
+		
+		if (!@ftp_pasv($conn_id, intval($new['ftp_pasv_mode'])))
+		{
+			$error = TRUE;
+			$error_msg = $user->lang['FTP_ERROR_PASV_MODE'];
+		}
+
+		if (!$error)
+		{
+			// Check Upload
+			$tmpfname = @tempnam('/tmp', 't0000');
+			@unlink($tmpfname); // unlink for safety on php4.0.3+
+			$fp = @fopen($tmpfname, 'w');
+			@fwrite($fp, 'test');
+			@fclose($fp);
+
+			if ($create_directory)
+			{
+				$result = @ftp_chdir($conn_id, $ftp_path);
+			
+				if (!$result)
+				{
+					@ftp_mkdir($conn_id, $ftp_path);
+				}
+			}
+
+			$result = @ftp_chdir($conn_id, $ftp_path);
+
+			if (!$result)
+			{
+				$error = TRUE;
+				$error_msg = sprintf($user->lang['FTP_ERROR_PATH'], $ftp_path) . '<br />';
+			}
+			else
+			{
+				$res = @ftp_put($conn_id, 't0000', $tmpfname, FTP_ASCII);
+			
+				if (!$res)
+				{
+					$error = TRUE;
+					$error_msg = sprintf($user->lang['FTP_ERROR_UPLOAD'], $ftp_path) . '<br />';
+				}
+				else
+				{
+					$res = @ftp_delete($conn_id, 't0000');
+
+					if (!$res)
+					{
+						$error = TRUE;
+						$error_msg = sprintf($user->lang['FTP_ERROR_DELETE'], $ftp_path) . '<br />';
+					}
+				}
+			}
+
+			@ftp_quit($conn_id);
+			@unlink($tmpfname);
+		}
+	}
+}
+
+// Get supported Image types
+function get_supported_image_types()
+{
+	$types = array();
+
+	if (@extension_loaded('gd'))
+	{
+		if (@function_exists('imagegif'))
+		{
+			$types[] = '1';
+		}
+		if (@function_exists('imagejpeg'))
+		{
+			$types[] = '2';
+		}
+		if (@function_exists('imagepng'))
+		{
+			$types[] = '3';
+		}
+    }
+
+	return ($types);
+}
 
 ?>

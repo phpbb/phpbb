@@ -875,6 +875,9 @@ $lang = array_merge($lang, array(
 	'EVT_IN' => 'in', 
 	'EVT_CREATED' => 'The event has been successfully created.', 
 
+	'ATTACHMENTS'				=> 'Attachments',
+	'ATTACH_CONFIG_UPDATED'		=> 'Attachment configuration updated successfully',
+
 	'ATTACHMENT_CONFIG'			=> 'Attachment Configuration',
 	'ATTACH_MANAGE_URL'			=> 'Configuration',
 	'ATTACH_CATS_URL'			=> 'Special Categories',
@@ -925,6 +928,25 @@ $lang = array_merge($lang, array(
 	'FTP_ERROR_PATH'			=> 'Could not access ftp directory: \'%s\'. Please check your FTP Settings.',
 	'FTP_ERROR_UPLOAD'			=> 'Could not upload files to ftp directory: \'%s\'. Please check your FTP Settings.',
 	'FTP_ERROR_DELETE'			=> 'Could not delete files in ftp directory: \'%s\'. Please check your FTP Settings.',
+
+	'MANAGE_CATEGORIES'			=> 'Manage Special Categories',
+	'MANAGE_CATEGORIES_EXPLAIN' => 'Here you can configure the Special Categories. You can set up Special Parameters and Conditions for the Special Categories assigned to one or more Extension Groups.',
+	'SETTINGS_CAT_IMAGES'		=> 'Settings for Special Category: Images',
+	'ASSIGNED_GROUP'			=> 'Assigned Group',
+	'DISPLAY_INLINED'			=> 'Display Images Inlined',
+	'DISPLAY_INLINED_EXPLAIN'	=> 'Choose whether to display images directly within the post (yes) or to display images as a link ?',
+	'CREATE_THUMBNAIL'			=> 'Create Thumbnail',
+	'CREATE_THUMBNAIL_EXPLAIN'	=> 'Always create a Thumbnail. This feature overrides nearly all Settings within this Special Category, except of the Maximum Image Dimensions. With this Feature a Thumbnail will be displayed within the post, the User can click it to open the real Image.<br />Please Note that this feature requires Imagick to be installed, if it\'s not installed or if Safe-Mode is enabled the GD-Extension of PHP will be used. If the Image-Type is not supported by PHP, this Feature will be not used.',
+	'MIN_THUMB_FILESIZE'		=> 'Minimum Thumbnail Filesize',
+	'MIN_THUMB_FILESIZE_EXPLAIN' => 'If an Image is smaller than this defined Filesize no Thumbnail will be created, because it\'s small enough.',
+	'IMAGICK_PATH'				=> 'Imagick Program (Complete Path)',
+	'IMAGICK_PATH_EXPLAIN'		=> 'Enter the Path to the convert program of imagick, normally /usr/bin/convert (on windows: c:/imagemagick/convert.exe).',
+	'SEARCH_IMAGICK'			=> 'Search Imagick',
+	'MAX_IMAGE_SIZE'			=> 'Maximum Image Dimensions',
+	'MAX_IMAGE_SIZE_EXPLAIN'	=> 'Here you can define the maximum allowed Image Dimension to be attached (Width x Height in pixels).<br />If it is set to 0x0, this feature is disabled. With some Images this Feature will not work due to limitations in PHP.',
+	'IMAGE_LINK_SIZE'			=> 'Image Link Dimensions',
+	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'If this defined Dimension of an Image is reached, the Image will be displayed as a Link, rather than displaying it inlined,<br />if Inline View is enabled (Width x Height in pixels).<br />If it is set to 0x0, this feature is disabled. With some Images this Feature will not work due to limitations in PHP.',
+
 
 	'WELCOME_INSTALL' => 'Welcome to phpBB 2 Installation',
 	'INITIAL_CONFIG' => 'Basic Configuration',
