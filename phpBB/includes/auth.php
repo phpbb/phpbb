@@ -180,7 +180,10 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$num_u_access = $db->sql_numrows($au_result);
 		if($num_u_access)
 		{
-			$u_access = $db->sql_fetchrowset($au_result);
+			while($u_row = $db->sql_fetchrow($au_result))
+			{
+				$u_access[$u_row['forum_id']] = $u_row;
+			}
 		}
 	}
 
