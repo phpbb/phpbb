@@ -630,9 +630,10 @@ function get_table_content_mysql($table, $handler)
 
 function output_table_content($content)
 {
-	global $backup_sql;
+	global $tempfile;
 
-	$backup_sql .= $content . "\n";
+	fwrite($tempfile, $content . "\n");
+	//$backup_sql .= $content . "\n";
 
 	return;
 }
@@ -775,7 +776,19 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			{
 				$backup_sql = "\n" . pg_get_sequences("\n", $backup_type);
 			}
-
+			//
+			// Ok to save on some memory we're going to try writing all this stuff
+			// to a tmpfile and sending it later...
+			//
+			$tempfile = tmpfile();
+			if(!$tempfile)
+			{
+				//
+				// Temp file creation failed... Do something here..
+				//
+				exit;
+			}
+			fwrite($tempfile, $backup_sql);
 			for($i = 0; $i < count($tables); $i++)
 			{
 				$table_name = $tables[$i];
@@ -784,8 +797,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				if($backup_type != 'data')
 				{
-					$backup_sql .= "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
-					$backup_sql .= $table_def_function($table_prefix . $table_name, "\n") . "\n";
+					fwrite($tempfile, "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n");
+					fwrite($tempfile, $table_def_function($table_prefix . $table_name, "\n") . "\n");
 				}
 
 				if($backup_type != 'structure')
@@ -793,6 +806,15 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					$table_content_function($table_prefix . $table_name, "output_table_content");
 				}
 			}
+			
+			//
+			// Flush all output to the temp file and get it's size, then rewind the
+			// pointer to the beginning.
+			//			
+			
+			fflush($tempfile);
+			$temp_size = ftell($tempfile) + 1;
+			rewind($tempfile);
 
 			//
 			// move forward with sending the file across...
@@ -818,14 +840,16 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql.gz\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
 
-				echo gzencode($backup_sql);
+				//echo gzencode($backup_sql);
+				echo gzencode(fread($tempfile, $temp_size));
 			}
 			else
 			{
 				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
 				header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
 
-				echo $backup_sql;
+				//echo $backup_sql;
+				echo fread($tempfile, $temp_size);
 			}
 
 			exit;
