@@ -231,7 +231,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$email_img = "";
 		}
 
-		$avatar_img = ( !empty($profiledata['user_avatar']) ) ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\" alt=\"\" />" : "&nbsp;";
+		if($profiledata['user_avatar'] != "" && $profiledata['user_id'] != ANONYMOUS)
+		{
+			$avatar_img = (eregi("http", $profiledata['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $profiledata['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $profiledata['user_avatar'] . "\" alt=\"\" />";;
+		}
+		else
+		{
+			$avatar_img = "&nbsp;";
+		}
 
 		if( !empty($profiledata['user_icq']) )
 		{
