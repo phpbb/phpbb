@@ -520,7 +520,7 @@ class auth
 
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
-			$sql = "SELECT auth_value, is_global, is_local
+			$sql = "SELECT auth_option, is_global, is_local
 				FROM " . ACL_OPTIONS_TABLE . "
 				ORDER BY auth_option_id";
 			$result = $db->sql_query($sql);
@@ -530,11 +530,11 @@ class auth
 			{
 				if (!empty($row['is_global']))
 				{
-					$this->acl_options['global'][$row['auth_value']] = $global++;
+					$this->acl_options['global'][$row['auth_option']] = $global++;
 				}
 				if (!empty($row['is_local']))
 				{
-					$this->acl_options['local'][$row['auth_value']] = $local++;
+					$this->acl_options['local'][$row['auth_option']] = $local++;
 				}
 			}
 			$db->sql_freeresult($result);
@@ -622,7 +622,7 @@ class auth
 
 		$acl_db = array();
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_value
+		$sql = "SELECT a.forum_id, a.auth_setting, ao.auth_option
 			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao, " . USER_GROUP_TABLE . " ug
 			WHERE ug.user_id = " . $userdata['user_id'] . "
 				AND a.group_id = ug.group_id
@@ -635,7 +635,7 @@ class auth
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "SELECT a.forum_id, a.auth_allow_deny, ao.auth_option_id, ao.auth_value
+		$sql = "SELECT a.forum_id, a.auth_setting, ao.auth_option_id, ao.auth_option
 			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " ao
 			WHERE a.user_id = " . $userdata['user_id'] . "
 				AND ao.auth_option_id = a.auth_option_id";
@@ -653,10 +653,10 @@ class auth
 
 			foreach ($acl_db as $row)
 			{
-				if ($row['auth_allow_deny'] != ACL_INHERIT &&
-					$this->acl[$row['forum_id']][$row['auth_value']] !== ACL_DENY)
+				if ($row['auth_setting'] != ACL_UNSET &&
+					$this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
 				{
-					$this->acl[$row['forum_id']][$row['auth_value']] = intval($row['auth_allow_deny']);
+					$this->acl[$row['forum_id']][$row['auth_option']] = intval($row['auth_setting']);
 				}
 			}
 			unset($acl_db);
