@@ -273,9 +273,10 @@ class session {
 		$result = $db->sql_query($sql);
 
 		$del_session_id = '';
+		$del_sessions = 0;
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $row['user_id'] != ANONYMOUS )
+			if ( $row['session_user_id'] )
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_lastvisit = " . $row['session_time'] . ", user_session_page = '" . $row['session_page'] . "'
@@ -284,6 +285,7 @@ class session {
 			}
 
 			$del_session_id .= ( ( $del_session_id != '' ) ? ', ' : '' ) . '\'' . $row['session_id'] . '\'';
+			$del_sessions++;
 		}
 
 		if ( $del_session_id != '' )
@@ -296,14 +298,20 @@ class session {
 			$db->sql_query($sql);
 		}
 
-		$sql = "UPDATE " . CONFIG_TABLE . "
-			SET config_value = '$current_time'
-			WHERE config_name = 'session_last_gc'";
-		$db->sql_query($sql);
+		if ( $del_sessions < 10 )
+		{
+			//
+			// Less than 10 sessions, update gc timer ... else we want gc
+			// called again to delete other sessions
+			//
+			$sql = "UPDATE " . CONFIG_TABLE . "
+				SET config_value = '$current_time'
+				WHERE config_name = 'session_last_gc'";
+			$db->sql_query($sql);
+		}
 
 		return;
 	}
-
 
 	//
 	//
@@ -370,6 +378,8 @@ class session {
 		return;
 	}
 }
+
+
 
 //
 // Will be keeping my eye of 'other products' to ensure these things don't
