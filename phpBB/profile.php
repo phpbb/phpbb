@@ -344,7 +344,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 			if(!empty($password) && !empty($password_confirm))
 			{
-				// The user wants to change their password, isn't that cute..
+				// Awww, the user wants to change their password, isn't that cute..
 				if($password != $password_confirm)
 				{
 					$error = TRUE;
@@ -733,6 +733,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 																		 "ACTIVATE_URL" => "http://".$SERVER_NAME."/".$PHP_SELF."?mode=activate&act_key=$act_key",
 																		 "EMAIL_SIG" => $board_config['board_email']));
 									$emailer->send();
+									$emailer->reset();
 								}
 
 								message_die(GENERAL_MESSAGE, $msg);

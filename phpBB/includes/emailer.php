@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
-                          smtp.php  -  description
+                          emailer.php  -  description
                              -------------------
     begin                : Sunday Aug. 12, 2001
     copyright            : (C) 2001 The phpBB Group
@@ -37,9 +37,20 @@ class emailer
 	{
 		$this->use_smtp = $use_smtp;
 		$this->tpl_file = NULL;
-		$this->sddress = NULL;
+		$this->address = NULL;
  		$this->msg = "";
 	   $this->mimeOut = "";
+	}
+
+	//
+	// Resets all the data (address, template file, etc etc to default
+	//
+	function reset()
+	{
+		$this->tpl_file = "";
+		$this->address = "";
+		$this->msg = "";
+		$this->memOut = "";
 	}
 
 	//

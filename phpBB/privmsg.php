@@ -60,7 +60,7 @@ if($mode == "read")
 {
 	if(!empty($HTTP_GET_VARS[POST_POST_URL]))
 	{
-		$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL]; 
+		$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL];
 	}
 	else
 	{
@@ -77,7 +77,7 @@ if($mode == "read")
 		if($folder == "inbox")
 		{
 			$user_to_sql = "AND pm.privmsgs_to_userid = " . $userdata['user_id'];
-			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid"; 
+			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid";
 			$sql_type = "AND (pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 		}
 		else if($folder == "outbox")
@@ -108,12 +108,12 @@ if($mode == "read")
 		message_die(GENERAL_ERROR, $lang['No_folder']);
 	}
 
-	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text 
-		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u  
-		WHERE pm.privmsgs_id = $privmsgs_id 
-			AND pmt.privmsgs_text_id = pm.privmsgs_id 
-			$user_to_sql 
-			$user_from_sql 
+	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text
+		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u
+		WHERE pm.privmsgs_id = $privmsgs_id
+			AND pmt.privmsgs_text_id = pm.privmsgs_id
+			$user_to_sql
+			$user_from_sql
 			$sql_type";
 	if(!$pm_status = $db->sql_query($sql))
 	{
@@ -128,8 +128,8 @@ if($mode == "read")
 
 	if($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL && $folder == "inbox")
 	{
-		$sql = "UPDATE " . PRIVMSGS_TABLE . " 
-			SET privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
+		$sql = "UPDATE " . PRIVMSGS_TABLE . "
+			SET privmsgs_type = " . PRIVMSGS_READ_MAIL . "
 			WHERE privmsgs_id = " . $privmsg['privmsgs_id'];
 		if(!$pm_upd_status = $db->sql_query($sql))
 		{
@@ -144,7 +144,7 @@ if($mode == "read")
 		// set limits on numbers of storable posts for
 		// users ... hopefully!
 		//
-		$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
+		$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid)
 			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . $privmsg['privmsgs_subject'] . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
 		if(!$pm_sent_status = $db->sql_query($sql))
 		{
@@ -154,7 +154,7 @@ if($mode == "read")
 		{
 			$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
-			$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
+			$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text)
 				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_text'] . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
@@ -197,18 +197,18 @@ if($mode == "read")
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 	$template->assign_vars(array(
-		"INBOX" => $inbox_url, 
-		"SENTBOX" => $sentbox_url, 
-		"OUTBOX" => $outbox_url, 
-		"SAVEBOX" => $savebox_url, 
+		"INBOX" => $inbox_url,
+		"SENTBOX" => $sentbox_url,
+		"OUTBOX" => $outbox_url,
+		"SAVEBOX" => $savebox_url,
 
 		"L_FLAG" => $lang['Flag'],
 		"L_SUBJECT" => $lang['Subject'],
-		"L_DATE" => $lang['Date'], 
+		"L_DATE" => $lang['Date'],
 		"L_FROM_OR_TO" => (($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To']),
 
-		"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+		"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"),
+		"S_HIDDEN_FIELDS" => $s_hidden_fields,
 		"S_POST_NEW_MSG" => $post_new_mesg_url,
 		"S_POST_REPLY_MSG" => $post_reply_mesg_url)
 	);
@@ -279,7 +279,7 @@ if($mode == "read")
 	$message = make_clickable($message);
 	$message = str_replace("\n", "<br />", $message);
 	$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
-	
+
 	$template->assign_vars(array(
 		"POSTER_NAME" => $poster,
 		"POSTER_AVATAR" => $poster_avatar,
@@ -294,8 +294,8 @@ if($mode == "read")
 		"AIM_IMG" => $aim_img,
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,
-		"QUOTE_IMG" => $quote_img, 
-		"EDIT_IMG" => $edit_img, 
+		"QUOTE_IMG" => $quote_img,
+		"EDIT_IMG" => $edit_img,
 
 		"L_FROM" => $lang['From'])
 	);
@@ -326,8 +326,8 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 
 	//
-	// When we get to the point of a code review we really really really need to look at 
-	// combining the following fragments with the posting routine. I don't think or see it 
+	// When we get to the point of a code review we really really really need to look at
+	// combining the following fragments with the posting routine. I don't think or see it
 	// necessary to actually use posting for privmsgs but I'm sure more can be combined in
 	// common functions ... not that I think all functions are common, some functions are
 	// actually quite classy and sophisticated, champagne, caviar and all that
@@ -344,11 +344,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		if(!empty($HTTP_GET_VARS[POST_POST_URL]))
 		{
-			$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL]; 
+			$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL];
 		}
 		else if(!empty($HTTP_POST_VARS[POST_POST_URL]))
 		{
-			$privmsgs_id = $HTTP_POST_VARS[POST_POST_URL]; 
+			$privmsgs_id = $HTTP_POST_VARS[POST_POST_URL];
 		}
 		else
 		{
@@ -360,9 +360,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		$user_id = $HTTP_GET_VARS[POST_USERS_URL];
 
-		$sql = "SELECT username 
-			FROM " . USERS_TABLE . " 
-			WHERE user_id = $user_id 
+		$sql = "SELECT username
+			FROM " . USERS_TABLE . "
+			WHERE user_id = $user_id
 				AND user_id <> " . ANONYMOUS;
 		if(!$result = $db->sql_query($sql))
 		{
@@ -388,13 +388,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 
 	if($mode == "edit" && !$preview && !$submit)
-	{ 
-		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id 
-			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
-			WHERE pm.privmsgs_id = $privmsgs_id 
-				AND pmt.privmsgs_text_id = pm.privmsgs_id 
-				AND pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+	{
+		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_text, u.username, u.user_id
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
+			WHERE pm.privmsgs_id = $privmsgs_id
+				AND pmt.privmsgs_text_id = pm.privmsgs_id
+				AND pm.privmsgs_from_userid = " . $userdata['user_id'] . "
+				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
 				AND u.user_id = pm.privmsgs_to_userid";
 		if(!$pm_edit_status = $db->sql_query($sql))
 		{
@@ -408,7 +408,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		$privmsg = $db->sql_fetchrow($pm_edit_status);
 
 		$subject = stripslashes($privmsg['privmsgs_subject']);
-		$message = stripslashes($privmsg['privmsgs_text']); 
+		$message = stripslashes($privmsg['privmsgs_text']);
 		$message = str_replace("[addsig]", "", $message);
 		$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
 
@@ -419,12 +419,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	else if($mode == "reply" && !$preview && !$submit)
 	{
 
-		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
-			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
-			WHERE pm.privmsgs_id = $privmsgs_id 
-				AND pmt.privmsgs_text_id = pm.privmsgs_id 
-				AND pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
+		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
+			WHERE pm.privmsgs_id = $privmsgs_id
+				AND pmt.privmsgs_text_id = pm.privmsgs_id
+				AND pm.privmsgs_to_userid = " . $userdata['user_id'] . "
+				AND pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . "
 				AND u.user_id = pm.privmsgs_from_userid";
 		if(!$pm_reply_status = $db->sql_query($sql))
 		{
@@ -445,7 +445,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		{
 			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
-			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
+			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text']));
 			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
 			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
 		}
@@ -462,22 +462,22 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$username_search = stripslashes(str_replace("*", "%", $HTTP_POST_VARS['username_search']));
 			$first_letter = 65;
 
-			$sql = "SELECT username 
-				FROM " . USERS_TABLE . " 
-				WHERE ( username LIKE '%$username_search' 
-					OR username LIKE '$username_search%' 
-					OR username LIKE '%$username_search%' 
-					OR username LIKE '$username_search' ) 
+			$sql = "SELECT username
+				FROM " . USERS_TABLE . "
+				WHERE ( username LIKE '%$username_search'
+					OR username LIKE '$username_search%'
+					OR username LIKE '%$username_search%'
+					OR username LIKE '$username_search' )
 					AND user_id <> " . ANONYMOUS;
 		}
 		else
 		{
 			$first_letter = $HTTP_POST_VARS['user_alpha'];
 
-			$sql = "SELECT username 
-				FROM " . USERS_TABLE . " 
-				WHERE ( username LIKE '" . chr($first_letter) . "%' 
-					OR username LIKE '" . chr($first_letter) . "' ) 
+			$sql = "SELECT username
+				FROM " . USERS_TABLE . "
+				WHERE ( username LIKE '" . chr($first_letter) . "%'
+					OR username LIKE '" . chr($first_letter) . "' )
 					AND user_id <> " . ANONYMOUS;
 		}
 	}
@@ -485,10 +485,10 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		$first_letter = (!empty($to_username)) ? ord(ucfirst($to_username)) : 65;
 
-		$sql = "SELECT username 
-			FROM " . USERS_TABLE . " 
-			WHERE ( username LIKE '" . chr($first_letter) . "%' 
-				OR username LIKE '" . chr($first_letter) . "' ) 
+		$sql = "SELECT username
+			FROM " . USERS_TABLE . "
+			WHERE ( username LIKE '" . chr($first_letter) . "%'
+				OR username LIKE '" . chr($first_letter) . "' )
 				AND user_id <> " . ANONYMOUS;
 	}
 
@@ -605,9 +605,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 		if( !empty($to_username) )
 		{
-			$sql = "SELECT user_id, username, user_notify_pm, user_email   
-				FROM " . USERS_TABLE . " 
-				WHERE username = '" . addslashes($to_username) . "' 
+			$sql = "SELECT user_id, username, user_notify_pm, user_email
+				FROM " . USERS_TABLE . "
+				WHERE username = '" . addslashes($to_username) . "'
 					AND user_id <> " . ANONYMOUS;
 			if(!$result = $db->sql_query($sql))
 			{
@@ -635,14 +635,14 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 			if($mode != "edit")
 			{
-				$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
+				$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid)
 					VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', '" . $bbcode_uid . "')";
 			}
 			else
 			{
-				$sql_info = "UPDATE " . PRIVMSGS_TABLE . " 
-					SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_bbcode_uid = '$bbcode_uid' 
-					WHERE privmsgs_id = $privmsgs_id";	
+				$sql_info = "UPDATE " . PRIVMSGS_TABLE . "
+					SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_bbcode_uid = '$bbcode_uid'
+					WHERE privmsgs_id = $privmsgs_id";
 			}
 
 			if(!$pm_sent_status = $db->sql_query($sql_info, BEGIN_TRANSACTION))
@@ -656,13 +656,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				{
 					$privmsg_sent_id = $db->sql_nextid();
 
-					$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
+					$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text)
 						VALUES ($privmsg_sent_id, '$message')";
 				}
 				else
 				{
-					$sql = "UPDATE " . PRIVMSGS_TEXT_TABLE . " 
-						SET privmsgs_text = '$message' 
+					$sql = "UPDATE " . PRIVMSGS_TEXT_TABLE . "
+						SET privmsgs_text = '$message'
 						WHERE privmsgs_text_id = $privmsgs_id";
 				}
 
@@ -674,7 +674,17 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				{
 					if($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']))
 					{
-						@mail($to_userdata['user_email'], $lang['Notification_subject'], $email_msg, "From: ".$board_config['board_email_from']."\r\n");
+						$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+						$emailer->use_template("privmsg_notify");
+						$emailer->email_address($to_userdata['user_email']);
+						$emailer->set_subject($lang['Notification_subject']);
+						$emailer->extra_headers($email_headers);
+
+						$emailer->assign_vars(array("SITENAME" => $board_config['sitename'],
+															 "U_INBOX" => "http://".$SERVER_NAME . $PHP_SELF . "?folder=inbox",
+															 "EMAIL_SIG" => $board_config['board_email']));
+						$emailer->send();
+						$emailer->reset();
 					}
 				}
 
@@ -692,10 +702,10 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	if($mode == "post")
 	{
 		unset($mod_group_list);
-		$sql = "SELECT g.group_id, g.group_name, g.group_moderator, g.group_single_user, u.username 
-			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
-			WHERE g.group_moderator = " . $userdata['user_id'] ." 
-				AND ug.group_id = g.group_id 
+		$sql = "SELECT g.group_id, g.group_name, g.group_moderator, g.group_single_user, u.username
+			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u
+			WHERE g.group_moderator = " . $userdata['user_id'] ."
+				AND ug.group_id = g.group_id
 				AND u.user_id = ug.user_id";
 		if(!$group_status = $db->sql_query($sql))
 		{
@@ -733,15 +743,15 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			"preview" => "posting_preview.tpl")
 		);
 		$template->assign_vars(array(
-			"TOPIC_TITLE" => $subject, 
-			"POST_SUBJECT" => $subject, 
+			"TOPIC_TITLE" => $subject,
+			"POST_SUBJECT" => $subject,
 			"ROW_COLOR" => "#" . $theme['td_color1'],
 			"POSTER_NAME" => $to_username,
 			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 			"MESSAGE" => stripslashes(nl2br($preview_message)),
 
-			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-		
+			"S_HIDDEN_FIELDS" => $s_hidden_fields,
+
 			"L_PREVIEW" => $lang['Preview'],
 			"L_POSTED" => $lang['Posted'])
 		);
@@ -809,7 +819,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		$bbcode_status = $lang['BBCode'] . $lang['is_OFF'];
 	}
-		
+
 	if($board_config['allow_smilies'])
 	{
 		$smilies_status = $lang['ON'];
@@ -861,22 +871,22 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$privmsgs_id\">";
 	}
-		
+
 	$template->assign_vars(array(
-		"S_USERNAME_INPUT" => $username_input, 
+		"S_USERNAME_INPUT" => $username_input,
 
 		"SUBJECT_INPUT" => $subject_input,
 		"MESSAGE_INPUT" => $message_input,
 		"HTML_STATUS" => $html_status,
 		"HTML_TOGGLE" => $html_toggle,
-		"SMILIES_STATUS" => $smilies_status, 
+		"SMILIES_STATUS" => $smilies_status,
 		"SMILE_TOGGLE" => $smile_toggle,
 		"SIG_TOGGLE" => $sig_toggle,
 		"NOTIFY_TOGGLE" => $notify_toggle,
 		"BBCODE_TOGGLE" => $bbcode_toggle,
 		"BBCODE_STATUS" => $bbcode_status,
 
-		"L_SUBJECT" => $lang['Subject'], 
+		"L_SUBJECT" => $lang['Subject'],
 		"L_MESSAGE_BODY" => $lang['Message_body'],
 		"L_OPTIONS" => $lang['Options'],
 		"L_PREVIEW" => $lang['Preview'],
@@ -890,7 +900,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
 		"S_ALPHA_SELECT" => $user_alpha_select,
-		"S_NAMES_SELECT" => $user_names_select, 
+		"S_NAMES_SELECT" => $user_names_select,
 		"S_POST_ACTION" => append_sid("privmsg.$phpEx"),
 		"S_HIDDEN_FORM_FIELDS" => $s_hidden_fields)
 	);
@@ -917,7 +927,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		switch($folder)
 		{
 			case 'inbox':
-				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
+				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 				break;
 			case 'outbox':
@@ -927,13 +937,13 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
 				break;
 			case 'savebox':
-				$delete_type = "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " ) 
+				$delete_type = "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " )
 					AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 				break;
 		}
 
-		$deleteall_sql = "SELECT privmsgs_id 
-			FROM " . PRIVMSGS_TABLE . " 
+		$deleteall_sql = "SELECT privmsgs_id
+			FROM " . PRIVMSGS_TABLE . "
 			WHERE " . $delete_type;
 
 		if(!$del_list_status = $db->sql_query($deleteall_sql))
@@ -949,10 +959,10 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		unset($delete_list);
 		unset($delete_type);
 	}
-	
-	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . " 
+
+	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
 		WHERE ";
-	$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . " 
+	$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
 		WHERE ";
 
 	for($i = 0; $i < count($delete_ary); $i++)
@@ -972,7 +982,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 	switch($folder)
 	{
 		case 'inbox':
-			$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
+			$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 			break;
 		case 'outbox':
@@ -982,7 +992,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 			$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
 			break;
 		case 'savebox':
-			$delete_sql .= "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " ) 
+			$delete_sql .= "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " )
 				AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 			break;
 	}
@@ -1007,14 +1017,14 @@ else if( ( isset($HTTP_POST_VARS['save'])  && !empty($HTTP_POST_VARS['mark']) ) 
 		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
 
-	$saved_sql = "UPDATE " . PRIVMSGS_TABLE . "  
-		SET privmsgs_type = " . PRIVMSGS_SAVED_MAIL . " 
+	$saved_sql = "UPDATE " . PRIVMSGS_TABLE . "
+		SET privmsgs_type = " . PRIVMSGS_SAVED_MAIL . "
 		WHERE ";
 
 	if(isset($HTTP_POST_VARS['save']))
 	{
 		$saved_ary = $HTTP_POST_VARS['mark'];
-		
+
 		for($i = 0; $i < count($saved_ary); $i++)
 		{
 			$saved_sql .= "privmsgs_id = " . $saved_ary[$i] . " ";
@@ -1029,7 +1039,7 @@ else if( ( isset($HTTP_POST_VARS['save'])  && !empty($HTTP_POST_VARS['mark']) ) 
 	switch($folder)
 	{
 		case 'inbox':
-			$saved_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
+			$saved_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 			break;
 		case 'sentbox':
@@ -1104,40 +1114,40 @@ $sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_s
 switch($folder)
 {
 	case 'inbox':
-		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
-			AND ( privmsgs_type =  " . PRIVMSGS_NEW_MAIL . " 
+		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . "
+			AND ( privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
 				OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
 
-		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-			AND u.user_id = pm.privmsgs_from_userid 
-			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . " 
-				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )"; 
+		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . "
+			AND u.user_id = pm.privmsgs_from_userid
+			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
+				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
 		break;
 
 	case 'outbox':
-		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
+		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . "
 			AND privmsgs_type =  " . PRIVMSGS_NEW_MAIL;
 
-		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
-			AND u.user_id = pm.privmsgs_to_userid 
+		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . "
+			AND u.user_id = pm.privmsgs_to_userid
 			AND pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL;
 		break;
 
 	case 'sentbox':
-		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
+		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . "
 			AND privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
 
-		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
-			AND u.user_id = pm.privmsgs_to_userid 
+		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . "
+			AND u.user_id = pm.privmsgs_to_userid
 			AND pm.privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
 		break;
 
 	case 'savebox':
-		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
-			AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL; 
+		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . "
+			AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 
-		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-			AND u.user_id = pm.privmsgs_from_userid 
+		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . "
+			AND u.user_id = pm.privmsgs_from_userid
 			AND pm.privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 		break;
 }
@@ -1185,20 +1195,20 @@ $select_msg_days .= "</select>";
 // Dump vars to template
 //
 $template->assign_vars(array(
-	"INBOX" => $inbox_url, 
-	"SENTBOX" => $sentbox_url, 
-	"OUTBOX" => $outbox_url, 
-	"SAVEBOX" => $savebox_url, 
+	"INBOX" => $inbox_url,
+	"SENTBOX" => $sentbox_url,
+	"OUTBOX" => $outbox_url,
+	"SAVEBOX" => $savebox_url,
 
 	"L_MARK" => $lang['Mark'],
 	"L_FLAG" => $lang['Flag'],
 	"L_SUBJECT" => $lang['Subject'],
-	"L_DATE" => $lang['Date'], 
-	"L_DISPLAY_MESSAGES" => $lang['Display_messages'], 
+	"L_DATE" => $lang['Date'],
+	"L_DISPLAY_MESSAGES" => $lang['Display_messages'],
 	"L_FROM_OR_TO" => (($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To']),
 
-	"S_HIDDEN_FIELDS" => "", 
-	"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
+	"S_HIDDEN_FIELDS" => "",
+	"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"),
 	"S_POST_NEW_MSG" => $post_new_mesg_url,
 	"S_SELECT_MSG_DAYS" => $select_msg_days,
 	"S_MSG_DAYS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder&start=$start"),
@@ -1264,7 +1274,7 @@ if($pm_count)
 			"U_READ" => $u_subject,
 			"U_FROM_USER_PROFILE" => $u_from_user_profile)
 		);
-	} // for ... 
+	} // for ...
 }
 else
 {
