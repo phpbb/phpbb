@@ -35,6 +35,8 @@ if($setmodules == 1)
 //
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
+include($phpbb_root_path . 'includes/post.'.$phpEx);
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
@@ -139,7 +141,7 @@ if( $mode == "searchuser" )
 	//
 	exit;
 }
-else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username_select']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL])) )
+else if ( $mode == "edit" && (isset($HTTP_POST_VARS['username']) && $mode != "save" ))
 {
 	//
 	// Let's find out a little about them...
@@ -151,7 +153,7 @@ else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username_select']) || iss
 	}
 	else
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username_select']);
+		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
 	}
 
 	//
@@ -233,13 +235,13 @@ else if ( ($mode == "edit") || (isset($HTTP_POST_VARS['username_select']) || iss
 
 	$rank_rows = $db->sql_fetchrowset($result);
 
-	$rank_select_box = "";
+	$rank_select_box = '<option value="0">No Special Rank</option>';
 
 	for($i = 0; $i < $rank_count; $i++)
 	{
 		$rank = $rank_rows[$i]['rank_title'];
 		$rank_id = $rank_rows[$i]['rank_id'];
-		if ( $this_userdata['user_rank'] == $i + 1 )
+		if ( $this_userdata['user_rank'] == $rank_id )
 		{
 			$rank_select_box .= "<option value=\"" . $rank_id . "\" selected=\"selected\">" . $rank . "</option>";
 		}
@@ -406,9 +408,9 @@ else if( $HTTP_POST_VARS['mode'] == "save" )
 	$user_status = (!empty($HTTP_POST_VARS['user_status'])) ? intval($HTTP_POST_VARS['user_status']) : 0;
 	$user_allowpm = (!empty($HTTP_POST_VARS['user_allowpm'])) ? intval($HTTP_POST_VARS['user_allowpm']) : 0;
 	$user_allowavatar = (!empty($HTTP_POST_VARS['user_allowavatar'])) ? intval($HTTP_POST_VARS['user_allowavatar']) : 0;
-	$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : "";
+	$user_rank = (!empty($HTTP_POST_VARS['user_rank'])) ? intval($HTTP_POST_VARS['user_rank']) : 0;
 	
-	$user_rank_sql = (isset($user_rank)) ? ", user_rank = " . $user_rank : "";
+	$user_rank_sql = ", user_rank = " . $user_rank;
 
 	if(isset($HTTP_POST_VARS['submit']))
 	{
@@ -544,7 +546,7 @@ else if( $HTTP_POST_VARS['mode'] == "save" )
 
 				$template->assign_vars(array(
 					"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-					"MESSAGE_TEXT" => "Error updating user profile")
+					"MESSAGE_TEXT" => "Error updating user profile<br>$sql")
 				);
 				$template->pparse("body");
 			}
@@ -567,8 +569,6 @@ else
 {
 	//
 	// Default user selection box
-	//
-	// This should be altered on the final system
 	//
 	$sql = "SELECT user_id, username
 		FROM " . USERS_TABLE . "
