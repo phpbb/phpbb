@@ -54,7 +54,7 @@ if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_UR
 {
 	$forum_id = ( isset($HTTP_POST_VARS[POST_FORUM_URL]) ) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 
-	if( $forum_id == "ALL" )
+	if( $forum_id == -1 )
 	{
 		$forum_sql = "";
 	}
