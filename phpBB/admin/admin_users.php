@@ -36,7 +36,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Set mode
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'main';
@@ -117,18 +117,15 @@ if (isset($_POST['username']) || isset($_GET['u']) || isset($_POST['u']))
 	<tr>
 		<td align="right"><b>Main</b> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=profile">Profile</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=pref">Preferences</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=avatar">Avatar</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=permissions">Permissions</a></td>
 	</tr>
-	<tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
-			<tr>
-				<th colspan="2"><?php echo $user->lang[$mode]; ?></td>
-			</tr>
 <?php
 
 	switch ($mode)
 	{
 		case 'main':
 
-?>
+?>	
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<td class="row1">Username: <br /><span class="gensmall">Click profile to edit</span></td>
 				<td class="row2"><?php echo $userdata['username']; ?> [ <a href="admin_ban.<?php echo $phpEx . $SID; ?>&amp;mode=user&amp;ban=<?php echo $userdata['username']; ?>&amp;bansubmit=true">Ban</a> ]</td>
@@ -213,36 +210,36 @@ if (isset($_POST['username']) || isset($_GET['u']) || isset($_POST['u']))
 			<tr>
 				<td colspan="2"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 					<tr>
+						<td class="cat" colspan="3" align="right">Select permission set: <select name="acl_type"><?php 
+
+	$acl_types = '<option>Global Settings</option><option>---------------</option>';
+	$acl_types .= '<option value="a">' . $user->lang['ADMINISTRATOR'] . '</option><option value="u">' . $user->lang['USER'] . '</option>';
+	$acl_types .= '<option>Forum Settings</option><option>---------------</option>';
+	$acl_types .= make_forum_select(false, false, false);
+
+	echo $acl_types;
+
+?></select>&nbsp;</td>
+					</tr>
+					<tr>
 						<th>&nbsp;<?php echo $user->lang['Option']; ?>&nbsp;</th>
 						<th>&nbsp;<?php echo $user->lang['Allow']; ?>&nbsp;</th>
 						<th>&nbsp;<?php echo $user->lang['Deny']; ?>&nbsp;</th>
 					</tr>
 <?php
-			$type_lang = array(
-				'f' => 'Forum',
-				'a' => 'Administrator',
-				'm' => 'Moderator',
-				'u' => 'User',
-			);
 
 			foreach ($global as $type => $auth_ary)
 			{
-?>
-					<tr>
-						<td class="cat" colspan="3"><?php echo $type_lang[$type]; ?></td>
-					</tr>
-<?php
-
-			foreach ($auth_ary as $option => $allow)
-			{
-				if ($option != $type .'_')
+				foreach ($auth_ary as $option => $allow)
 				{
-					$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
+					if ($option != $type .'_')
+					{
+						$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
-					$l_can_cell = (!empty($user->lang['acl_' . $option])) ? $user->lang['acl_' . $option] : ucfirst(preg_replace('#.*?_#', '', $option));
+						$l_can_cell = (!empty($user->lang['acl_' . $option])) ? $user->lang['acl_' . $option] : ucfirst(preg_replace('#.*?_#', '', $option));
 
-					$allow_type = ($allow == ACL_ALLOW) ? ' checked="checked"' : '';
-					$deny_type = ($allow == ACL_DENY) ? ' checked="checked"' : '';
+						$allow_type = ($allow == ACL_ALLOW) ? ' checked="checked"' : '';
+						$deny_type = ($allow == ACL_DENY) ? ' checked="checked"' : '';
 ?>
 				<tr>
 					<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
@@ -250,8 +247,8 @@ if (isset($_POST['username']) || isset($_GET['u']) || isset($_POST['u']))
 					<td class="<?php echo $row_class; ?>" align="center"><input type="radio"<?php echo $deny_type; ?> /></td>
 				</tr>
 <?php
-			}
-			}
+					}
+				}
 			}
 
 ?>

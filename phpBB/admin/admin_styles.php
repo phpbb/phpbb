@@ -17,28 +17,24 @@ if ( !empty($setmodules) )
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have styles admin permissions?
-//
-if ( !$auth->acl_get('a_styles') )
+if (!$auth->acl_get('a_styles'))
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['No_admin']);
 }
 
 /*
 $dp = opendir($phpbb_root_path . 'templates/cache/');
-while ( $file = readdir($dp) )
+while ($file = readdir($dp))
 {
-	if ( !is_file($phpbb_root_path . 'templates/cache/' . $file) && !is_link($phpbb_root_path . 'templates/cache/' . $file) && $file != '.' && $file != '..' )
+	if (!is_file($phpbb_root_path . 'templates/cache/' . $file) && !is_link($phpbb_root_path . 'templates/cache/' . $file) && $file != '.' && $file != '..')
 	{
-		$selected = ( $tplroot == $file ) ? ' selected="selected"' : '';
+		$selected = ($tplroot == $file) ? ' selected="selected"' : '';
 		$tplroot_options .= '<option name="' . $file . '"' . $selected . '>' . $file . '</option>';
 	}
 }
@@ -46,19 +42,17 @@ closedir($dp);
 */
 
 //
-//
-//
-$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
+$mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
 
-switch ( $mode )
+switch ($mode)
 {
 	case 'editimageset':
-		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : $config['default_style'];
+		$imgroot = (isset($_POST['imgroot'])) ? $_POST['imgroot']  : $config['default_style'];
 
-		if ( isset($_POST['img_addconfig']) )
+		if (isset($_POST['img_addconfig']))
 		{
 		}
-		else if ( isset($_POST['img_addlocal']) )
+		else if (isset($_POST['img_addlocal']))
 		{
 		}
 
@@ -70,27 +64,25 @@ switch ( $mode )
 		$result = $db->sql_query($sql);
 
 		$imgroot_options = '';
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$selected = ( $imgroot == $row['imageset_path'] ) ? ' selected="selected"' : '';
+			$selected = ($imgroot == $row['imageset_path']) ? ' selected="selected"' : '';
 			$imgroot_options .= '<option name="' . $row['imageset_path'] . '"' . $selected . '>' . $row['imageset_path'] . '</option>';
 		}
 
 		$imgname_options = '';
 		$dp = opendir($phpbb_root_path . 'imagesets/' . $imgroot . '/');
-		while ( $file = readdir($dp) )
+		while ($file = readdir($dp))
 		{
-			if ( preg_match('#\.(gif|png|jpg|jpeg)$#', $file) && is_file($phpbb_root_path . 'imagesets/' . $imgroot . '/' . $file) )
+			if (preg_match('#\.(gif|png|jpg|jpeg)$#', $file) && is_file($phpbb_root_path . 'imagesets/' . $imgroot . '/' . $file))
 			{
-				$selected = ( $imgname == $file ) ? ' selected="selected"' : '';
+				$selected = ($imgname == $file) ? ' selected="selected"' : '';
 				$imgname_options .= '<option value="' . $file . '"' . $selected . '>' . $file . '</option>';
 			}
 		}
 		closedir($dp);
 
-		//
 		// Output page
-		//
 		page_header($user->lang['Edit_Imageset']);
 
 ?>
@@ -105,7 +97,7 @@ switch ( $mode )
 
 <?php
 
-	if ( isset($_POST['img_root']) )
+	if (isset($_POST['img_root']))
 	{
 		$sql = "SELECT *
 			FROM " . STYLES_IMAGE_TABLE . "
@@ -123,9 +115,9 @@ switch ( $mode )
 
 			for($i = 1; $i < count($imageset); $i++)
 			{
-				$row_class = ( !($i%2) ) ? 'row1' : 'row2';
+				$row_class = (!($i%2)) ? 'row1' : 'row2';
 
-				$img = ( !empty($images[$imageset[$i]]) ) ? '<img src=' . $images[$imageset[$i]] . ' />' : '';
+				$img = (!empty($images[$imageset[$i]])) ? '<img src=' . $images[$imageset[$i]] . ' />' : '';
 				$img = str_replace('"imagesets/', '"../imagesets/', $img);
 				$img = str_replace('{LANG}', $user->img_lang, $img);
 				$img = str_replace('{RATE}', 3, $img);
@@ -155,13 +147,13 @@ switch ( $mode )
 
 	case 'edittemplate':
 
-		$tplcols = ( isset($_POST['tplcols']) ) ? max(60, intval($_POST['tplcols'])) : 90;
-		$tplrows = ( isset($_POST['tplrows']) ) ? max(4, intval($_POST['tplrows'])) : 30;
-		$tplname = ( isset($_POST['tplname']) ) ? $_POST['tplname']  : '';
-		$tplroot = ( isset($_POST['tplroot']) ) ? $_POST['tplroot']  : 'subSilver';
+		$tplcols = (isset($_POST['tplcols'])) ? max(60, intval($_POST['tplcols'])) : 90;
+		$tplrows = (isset($_POST['tplrows'])) ? max(4, intval($_POST['tplrows'])) : 30;
+		$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
+		$tplroot = (isset($_POST['tplroot'])) ? $_POST['tplroot']  : 'subSilver';
 
 		$str = '';
-		if ( isset($_POST['tpl_compile']) && !empty($_POST['decompile']) )
+		if (isset($_POST['tpl_compile']) && !empty($_POST['decompile']))
 		{
 			$str = "<?php\n" . $template->compile(stripslashes($_POST['decompile'])) . "\n?".">";
 
@@ -175,10 +167,10 @@ switch ( $mode )
 
 			exit;
 		}
-		else if ( !empty($tplname) && isset($_POST['tpl_name']) )
+		else if (!empty($tplname) && isset($_POST['tpl_name']))
 		{
 			$fp = fopen($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 'r');
-			while ( !feof($fp) )
+			while (!feof($fp))
 			{
 				$str .= fread($fp, 4096);
 			}
@@ -188,10 +180,10 @@ switch ( $mode )
 		}
 		else
 		{
-			$str = ( !empty($_POST['decompile']) ) ? stripslashes($_POST['decompile']) : '';
+			$str = (!empty($_POST['decompile'])) ? stripslashes($_POST['decompile']) : '';
 		}
 
-		if ( isset($_POST['tpl_download']) )
+		if (isset($_POST['tpl_download']))
 		{
 			header("Content-Type: text/html; name=\"" . $tplname . ".html\"");
 			header("Content-disposition: attachment; filename=" . $tplname . ".html");
@@ -204,19 +196,17 @@ switch ( $mode )
 
 		$tplname_options = '';
 		$dp = @opendir($phpbb_root_path . 'templates/cache/' . $tplroot . '/');
-		while ( $file = readdir($dp) )
+		while ($file = readdir($dp))
 		{
-			if ( strstr($file, '.html.' . $phpEx) && is_file($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $file) )
+			if (strstr($file, '.html.' . $phpEx) && is_file($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $file))
 			{
 				$tpl = substr($file, 0, strpos($file, '.'));
-				$selected = ( $tplname == $tpl ) ? ' selected="selected"' : '';
+				$selected = ($tplname == $tpl) ? ' selected="selected"' : '';
 				$tplname_options .= '<option value="' . $tpl . '"' . $selected . '>' . $tpl . '</option>';
 			}
 		}
 		closedir($dp);
 
-		//
-		//
 		//
 		page_header($user->lang['Edit_template']);
 
@@ -255,21 +245,21 @@ switch ( $mode )
 
 	case 'edittheme':
 
-		$theme_id = ( isset($_POST['themeroot']) ) ? $_POST['themeroot']  : '';
+		$theme_id = (isset($_POST['themeroot'])) ? $_POST['themeroot']  : '';
 
-		if ( isset($_POST['update']) )
+		if (isset($_POST['update']))
 		{
 			$sql = "SELECT theme_id, theme_name
 				FROM " . STYLES_CSS_TABLE . "
 				WHERE theme_id = $theme_id";
 			$result = $db->sql_query($sql);
 
-			if ( $row = $db->sql_fetchrow($result) )
+			if ($row = $db->sql_fetchrow($result))
 			{
 				$theme_name = $row['theme_name'];
 
-				$css_data = ( !empty($_POST['css_data']) ) ? htmlentities($_POST['css_data']) : '';
-				$css_external = ( !empty($_POST['css_data']) ) ? $_POST['css_data'] : '';
+				$css_data = (!empty($_POST['css_data'])) ? htmlentities($_POST['css_data']) : '';
+				$css_external = (!empty($_POST['css_data'])) ? $_POST['css_data'] : '';
 
 				$sql = "UPDATE " > STYLES_CSS_TABLE . "
 					SET css_data = '$css_data', css_external = '$css_external'
@@ -289,26 +279,26 @@ switch ( $mode )
 		$result = $db->sql_query($sql);
 
 		$theme_options = '';
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			do
 			{
-				$theme_options .= ( ( $theme_options != '' ) ? ', ' : '' ) . '<option value="' . $row['theme_id'] . '">' . $row['theme_name'] . '</option>';
+				$theme_options .= (($theme_options != '') ? ', ' : '') . '<option value="' . $row['theme_id'] . '">' . $row['theme_name'] . '</option>';
 			}
-			while ( $row = $db->sql_fetchrow($result) );
+			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
 		$css_data = '';
 		$css_external = '';
-		if ( $theme_id )
+		if ($theme_id)
 		{
 			$sql = "SELECT css_data, css_external
 				FROM " . STYLES_CSS_TABLE . "
 				WHERE theme_id = $theme_id";
 			$result = $db->sql_query($sql);
 
-			if ( $row = $db->sql_fetchrow($result) )
+			if ($row = $db->sql_fetchrow($result))
 			{
 				$css_data = preg_replace('/\t{1,}/i', ' ', $row['css_data']);
 				$css_external = $row['css_external'];
@@ -349,8 +339,6 @@ switch ( $mode )
 
 
 //
-//
-//
 function get_templates($tplroot = '')
 {
 	global $db;
@@ -361,9 +349,9 @@ function get_templates($tplroot = '')
 	$result = $db->sql_query($sql);
 
 	$tplroot_options = '';
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$selected = ( $tplroot == $row['template_path'] ) ? ' selected="selected"' : '';
+		$selected = ($tplroot == $row['template_path']) ? ' selected="selected"' : '';
 		$tplroot_options .= '<option value="' . $row['template_path'] . '"' . $selected . '>' . $row['template_path'] . '</option>';
 	}
 

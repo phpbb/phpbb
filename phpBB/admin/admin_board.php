@@ -37,7 +37,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+require_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 // Get mode
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
@@ -168,15 +168,15 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['Allow_local']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_local_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_local_no; ?>  /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_local_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_local_no; ?>  /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_remote']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Allow_remote_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="allow_avatar_remote" value="1"<?php echo $avatars_remote_yes; ?>  /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_remote" value="0"<?php echo $avatars_remote_no; ?>  /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_avatar_remote" value="1"<?php echo $avatars_remote_yes; ?>  /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_remote" value="0"<?php echo $avatars_remote_no; ?>  /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_upload']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_avatar_upload" value="1"<?php echo $avatars_upload_yes; ?>  /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_upload" value="0"<?php echo $avatars_upload_no; ?>  /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_avatar_upload" value="1"<?php echo $avatars_upload_yes; ?>  /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_upload" value="0"<?php echo $avatars_upload_no; ?>  /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Max_filesize']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Max_filesize_explain']; ?></span></td>
@@ -235,7 +235,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Override_style']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Override_style_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="override_user_style" value="1" <?php echo $override_user_style_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="override_user_style" value="0" <?php echo $override_user_style_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="override_user_style" value="1" <?php echo $override_user_style_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="override_user_style" value="0" <?php echo $override_user_style_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Default_language']; ?>: </td>
@@ -259,19 +259,19 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_topic_notify']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_topic_notify" value="1" <?php echo $topic_notify_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_topic_notify" value="0" <?php echo $topic_notify_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_topic_notify" value="1" <?php echo $topic_notify_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_topic_notify" value="0" <?php echo $topic_notify_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_forum_notify']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_forum_notify" value="1" <?php echo $forum_notify_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_forum_notify" value="0" <?php echo $forum_notify_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_forum_notify" value="1" <?php echo $forum_notify_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_forum_notify" value="0" <?php echo $forum_notify_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_name_change']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_HTML']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_html" value="1" <?php echo $html_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" <?php echo $html_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_html" value="1" <?php echo $html_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_html" value="0" <?php echo $html_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allowed_tags']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Allowed_tags_explain']; ?></span></td>
@@ -279,15 +279,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_BBCode']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_bbcode" value="1" <?php echo $bbcode_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_bbcode" value="0" <?php echo $bbcode_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_bbcode" value="1" <?php echo $bbcode_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_bbcode" value="0" <?php echo $bbcode_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_smilies']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_smilies" value="1" <?php echo $smile_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" <?php echo $smile_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_smilies" value="1" <?php echo $smile_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_smilies" value="0" <?php echo $smile_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_sig']; ?>: </td>
-		<td class="row2"><input type="radio" name="allow_sig" value="1" <?php echo $sig_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="allow_sig" value="0" <?php echo $sig_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="allow_sig" value="1" <?php echo $sig_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_sig" value="0" <?php echo $sig_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Max_sig_length']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Max_sig_length_explain']; ?></span></td>
@@ -327,11 +327,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Board_disable']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Board_disable_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $user->lang['No']; ?><br /><input type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
+		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $user->lang['NO']; ?><br /><input type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Enable_prune']; ?>: </td>
-		<td class="row2"><input type="radio" name="prune_enable" value="1" <?php echo $prune_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" <?php echo $prune_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="prune_enable" value="1" <?php echo $prune_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" <?php echo $prune_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Acct_activation']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Acct_activation_explain']; ?></span></td>
@@ -339,7 +339,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Enable_COPPA']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Enable_COPPA_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="coppa_enable" value="1" <?php echo $coppa_enable_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="coppa_enable" value="0" <?php echo $coppa_enable_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="coppa_enable" value="1" <?php echo $coppa_enable_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="coppa_enable" value="0" <?php echo $coppa_enable_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['COPPA_fax']; ?>: </td>
@@ -427,7 +427,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Use_SMTP']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Use_SMTP_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="smtp_delivery" value="1" <?php echo $smtp_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="smtp_delivery" value="0" <?php echo $smtp_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="smtp_delivery" value="1" <?php echo $smtp_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="smtp_delivery" value="0" <?php echo $smtp_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['SMTP_server']; ?>: </td>
@@ -485,7 +485,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Enable_gzip']; ?>: </td>
-		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $user->lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $user->lang['No']; ?></td>
+		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Smilies_path']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Smilies_path_explain']; ?></span></td>
@@ -561,7 +561,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" /></td>
 	</tr>
 </table></form>
 
