@@ -23,7 +23,7 @@
 
 function topic_review($topic_id, $is_inline_review)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
+	global $SID, $session, $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
 	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 	global $starttime;
@@ -58,16 +58,13 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$userdata = session_pagestart($user_ip, $forum_id);
-		init_userprefs($userdata);
+		$userdata = $session->start();
+		$acl = new auth($userdata);
 		//
 		// End session management
 		//
 
-		$is_auth = array();
-		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
-
-		if ( !$is_auth['auth_read'] )
+		if ( !$acl->get_acl($forum_id, 'forum', 'list') || !$acl->get_acl($forum_id, 'forum', 'read') )
 		{
 			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
 		}
@@ -154,7 +151,7 @@ function topic_review($topic_id, $is_inline_review)
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
 			}
 
-			if ( $bbcode_uid != "" )
+			if ( $bbcode_uid != '' )
 			{
 				$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 			}
