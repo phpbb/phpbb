@@ -520,12 +520,43 @@ if (!$row = $db->sql_fetchrow($result))
 	trigger_error($user->lang['NO_TOPIC']);
 }
 
-
-// Posts are stored in the $rowset array while $attach_list and the global
-// bbcode_bitfield are built
+// Posts are stored in the $rowset array while $attach_list, $user_cache
+// and the global bbcode_bitfield are built
 do
 {
-	$rowset[] = $row;
+	$poster_id = intval($row['poster_id']);
+	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
+
+	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
+	{
+		$rowset[] = array(
+			'below_karma'	=>	TRUE,
+			'poster'		=>	$poster,
+			'user_karma'	=>	$row['user_karma']
+		);
+
+		continue;
+	}
+
+	$rowset[] = array(
+		'post_id'				=>	$row['post_id'],
+		'poster'				=>	$poster,
+		'user_id'				=>	$row['user_id'],
+		'topic_id'				=>	$row['topic_id'],
+		'post_subject'			=>	$row['spost_ubject'],
+		'post_edit_count'		=>	$row['post_edit_count'],
+		'post_edit_time'		=>	$row['post_edit_time'],
+		'icon_id'				=>	$row['icon_id'],
+		'post_approved'			=>	$row['post_approved'],
+		'post_reported'			=>	$row['post_reported'],
+		'post_text'				=>	$row['post_text'],
+		'post_encoding'			=>	$row['post_encoding'],
+		'bbcode_uid'			=>	$row['bbcode_uid'],
+		'bbcode_bitfield'		=>	$row['bbcode_bitfield'],
+		'enable_html'			=>	$row['enable_html'],
+		'enable_smilies'		=>	$row['enable_smilies'],
+		'enable_sig'			=>	$row['enable_sig']
+	);
 
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'] && $auth->acl_get('f_download', $forum_id))
@@ -541,110 +572,6 @@ do
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
 	$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
-}
-while ($row = $db->sql_fetchrow($result));
-$db->sql_freeresult($result);
-
-
-// Pull attachment data
-if (count($attach_list))
-{
-	$sql = 'SELECT a.post_id, d.* 
-		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
-		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
-			AND a.attach_id = d.attach_id
-		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'ASC' : 'DESC') . ', a.post_id ASC';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$attachments[$row['post_id']][] = $row;
-	}
-	$db->sql_freeresult($result);
-
-	// No attachments exist, but post table thinks they do
-	// so go ahead and reset post_attach flags
-	if (!count($attachments))
-	{
-		$sql = 'UPDATE ' . POSTS_TABLE . ' 
-			SET post_attachment = 0 
-			WHERE post_id IN (' . implode(', ', $attach_list) . ')';
-		$db->sql_query($sql);
-
-		// We need to update the topic indicator too if the 
-		// complete topic is now without an attachment
-		if (count($rowset) != $total_posts)
-		{
-			// Not all posts are displayed so we query the db to find if there's any attachment for this topic
-			$sql = 'SELECT a.post_id
-				FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
-				WHERE p.topic_id = $topic_id
-					AND p.post_approved = 1
-					AND p.post_id = a.post_id";
-			$result = $db->sql_query_limit($sql, 1);
-
-			if (!$db->sql_fetchrow($result))
-			{
-				$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
-			}
-		}
-		else
-		{
-			$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
-		}
-	}
-	elseif ($has_attachments && !$topic_data['topic_attachment'])
-	{
-		// Topic has approved attachments but its flag is wrong
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
-	}
-}
-
-if ($bbcode_bitfield)
-{
-	// Instantiate BBCode class
-	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-	$bbcode = new bbcode($bbcode_bitfield);
-}
-
-foreach ($rowset as $row)
-{
-	$poster_id = $row['user_id'];
-	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
-
-	// Three situations can prevent a post being display:
-	// i)   The posters karma is below the minimum of the user 
-	// ii)  The poster is on the users ignore list
-	// iii) The post was made in a codepage different from the users
-	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
-	{
-		$template->assign_block_vars('postrow', array(
-			'S_BELOW_MIN_KARMA' => true, 
-			'S_ROW_COUNT' => $i++,
-
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $poster, intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
-		);
-
-		continue;
-	}
-	else if ($row['post_encoding'] != $user->lang['ENCODING'])
-	{
-		if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
-		{
-			$force_encoding = $row['post_encoding'];
-		}
-		else
-		{
-			$template->assign_block_vars('postrow', array(
-				'S_WRONG_ENCODING' => true, 
-				'S_ROW_COUNT' => $i++,
-
-				'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $poster, '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
-			);
-
-			continue;
-		}
-	}
 
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
@@ -659,6 +586,7 @@ foreach ($rowset as $row)
 				'avatar'		=>	'',
 				'rank_title'	=>	'',
 				'rank_image'	=>	'',
+				'sig'			=>	'',
 				'posts'			=>	'',
 				'profile_img'	=>	'',
 				'profile'		=>	'',
@@ -690,18 +618,6 @@ foreach ($rowset as $row)
 //				}
 
 				$user_sig = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
-
-				if ($row['user_sig_bbcode_bitfield'])
-				{
-					$bbcode->bbcode_second_pass(&$user_sig, $row['user_sig_bbcode_uid'], $row['user_sig_bbcode_bitfield']);
-				}
-
-				if (count($censors))
-				{
-					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
-				}
-
-				$user_sig = nl2br($user_sig);
 			}
 
 			$profile_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
@@ -716,6 +632,10 @@ foreach ($rowset as $row)
 				'posts'			=>	$user->lang['POSTS'] . ': ' . $row['user_posts'],
 				'from'			=>	($row['user_from']) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '',
 				'sig'			=>	$user_sig,
+				'sig_bbcode_uid'=>	$row['user_sig_bbcode_uid'],
+				'sig_bbcode_bitfield'	=>	$row['user_sig_bbcode_bitfield'],
+				'avatar'		=>	'',
+
 				'profile_img'	=>	'<a href="' . $profile_url . '">' . $user->img('btn_profile', $user->lang['READ_PROFILE']) . '</a>',
 				'profile'		=>	'<a href="' . $profile_url . '">' . $user->lang['READ_PROFILE'] . '</a>',
 				'pm_img'		=>	'<a href="' . $pm_url . '">' . $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']) . '</a>',
@@ -795,6 +715,125 @@ foreach ($rowset as $row)
 				$user_cache[$poster_id]['icq'] = '';
 			}
 		}
+	}
+}
+while ($row = $db->sql_fetchrow($result));
+$db->sql_freeresult($result);
+
+
+// Pull attachment data
+if (count($attach_list))
+{
+	$sql = 'SELECT a.post_id, d.* 
+		FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . ' d
+		WHERE a.post_id IN (' . implode(', ', $attach_list) . ')
+			AND a.attach_id = d.attach_id
+		ORDER BY d.filetime ' . ((!$config['display_order']) ? 'ASC' : 'DESC') . ', a.post_id ASC';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$attachments[$row['post_id']][] = $row;
+	}
+	$db->sql_freeresult($result);
+
+	// No attachments exist, but post table thinks they do
+	// so go ahead and reset post_attach flags
+	if (!count($attachments))
+	{
+		$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			SET post_attachment = 0 
+			WHERE post_id IN (' . implode(', ', $attach_list) . ')';
+		$db->sql_query($sql);
+
+		// We need to update the topic indicator too if the 
+		// complete topic is now without an attachment
+		if (count($rowset) != $total_posts)
+		{
+			// Not all posts are displayed so we query the db to find if there's any attachment for this topic
+			$sql = 'SELECT a.post_id
+				FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
+				WHERE p.topic_id = $topic_id
+					AND p.post_approved = 1
+					AND p.post_id = a.post_id";
+			$result = $db->sql_query_limit($sql, 1);
+
+			if (!$db->sql_fetchrow($result))
+			{
+				$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+			}
+		}
+		else
+		{
+			$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 0 WHERE topic_id = $topic_id");
+		}
+	}
+	elseif ($has_attachments && !$topic_data['topic_attachment'])
+	{
+		// Topic has approved attachments but its flag is wrong
+		$db->sql_query('UPDATE ' . TOPICS_TABLE . " SET topic_attachment = 1 WHERE topic_id = $topic_id");
+	}
+}
+
+if ($bbcode_bitfield)
+{
+	// Instantiate BBCode class
+	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+	$bbcode = new bbcode($bbcode_bitfield);
+}
+
+foreach ($rowset as $key => $row)
+{
+	$poster_id = intval($row['user_id']);
+
+	// Three situations can prevent a post being display:
+	// i)   The posters karma is below the minimum of the user 
+	// ii)  The poster is on the users ignore list
+	// iii) The post was made in a codepage different from the users
+	if (!empty($row['below_karma']))
+	{
+		$template->assign_block_vars('postrow', array(
+			'S_BELOW_MIN_KARMA' => true, 
+			'S_ROW_COUNT' => $i++,
+
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+		);
+
+		continue;
+	}
+	else if ($row['post_encoding'] != $user->lang['ENCODING'])
+	{
+		if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
+		{
+			$force_encoding = $row['post_encoding'];
+		}
+		else
+		{
+			$template->assign_block_vars('postrow', array(
+				'S_WRONG_ENCODING' => true, 
+				'S_ROW_COUNT' => $i++,
+
+				'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
+			);
+
+			continue;
+		}
+	}
+
+	// End signature parsing, only if needed
+	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
+	{
+		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
+		{
+			$bbcode->bbcode_second_pass(&$user_cache[$poster_id]['sig'], $row['sig_bbcode_uid'], $row['sig_bbcode_bitfield']);
+		}
+		if (count($censors))
+		{
+			$user_cache[$poster_id]['sig'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_cache[$poster_id]['sig'] . '<'), 1, -1));
+		}
+
+		$user_cache[$poster_id]['sig'] = nl2br($user_cache[$poster_id]['user_sig']);
+		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
 
 	// Non-user specific images/text
@@ -889,7 +928,7 @@ foreach ($rowset as $row)
 	{
 		$l_edit_time_total = (intval($row['post_edit_count']) == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
 
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $row['poster'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 	}
 	else
 	{
@@ -907,7 +946,7 @@ foreach ($rowset as $row)
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', array(
-		'POSTER_NAME' 	=> $poster,
+		'POSTER_NAME' 	=> $row['poster'],
 		'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMAGE' 	=> $user_cache[$poster_id]['rank_image'],
 		'POSTER_JOINED' => $user_cache[$poster_id]['joined'],
@@ -963,16 +1002,16 @@ foreach ($rowset as $row)
 
 		'S_ROW_COUNT'	=> $i++,
 
-		'S_HAS_ATTACHMENTS' => ($row['post_attachment']) ? TRUE : FALSE,
+		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 		'U_MINI_POST'	=> $mini_post_url,
-		'U_POST_ID' 	=> $u_post_id)
-	);
+		'U_POST_ID' 	=> $u_post_id
+	));
 
 	// Process Attachments for this post
-	if (sizeof($attachments[$row['post_id']]) && $row['post_attachment'])
+	if (sizeof($attachments[$row['post_id']]))
 	{
 		foreach($attachments[$row['post_id']] as $attachment)
 		{
@@ -1193,6 +1232,9 @@ foreach ($rowset as $row)
 			}
 		}
 	}
+
+	unset($rowset[$key]);
+	unset($attachments[$row['post_id']]);
 }
 unset($rowset);
 unset($user_cache);
