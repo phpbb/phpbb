@@ -1197,7 +1197,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		return;
 	}
 
-
+/*
 	foreach (discover_auth(array_keys($notify_rows), array('f_read'), $forum_id) as $user_id => $forum_ary)
 	{
 		foreach ($forum_ary as $forum_id => $option_ary)
@@ -1209,7 +1209,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			}
 		}
 	}
-
+*/
 
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$email_users = $delete_ids = $update_notification = array();
@@ -1279,8 +1279,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			}
 		}
 		unset($email_list_ary);
+
+		$messenger->queue->save();
 	}
-	$messenger->queue->save();
 
 	// Handle the DB updates
 	$db->sql_transaction();
