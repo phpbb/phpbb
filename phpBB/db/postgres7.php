@@ -4,7 +4,7 @@
    *                            -------------------
    *   begin                : Saturday, Feb 13, 2001
    *   copyright            : (C) 2001 The phpBB Group
-   *   email                : support@phpbb.com
+   *   email                : supportphpbb.com
    *
    *   $Id$
    *
@@ -49,7 +49,6 @@ class sql_db
 		}
 		if($sqlserver)
 		{
-
 			if(ereg(":",$sqlserver))
 			{
 				list($sqlserver,$sqlport) = split(":",$sqlserver);
@@ -57,7 +56,10 @@ class sql_db
 			}
 			else
 			{
-				$this->connect_string .= "host=$sqlserver ";
+				if($sqlserver != "localhost")
+				{
+					$this->connect_string .= "host=$sqlserver ";
+				}
 			}
 		}
 		if($database)
@@ -98,7 +100,7 @@ class sql_db
 		{
 			if($this->query_result)
 			{
-				@pg_freeresult($this->query_result);
+				pg_freeresult($this->query_result);
 			}
 			$result = @pg_close($this->db_connect_id);
 			return $result;
@@ -119,6 +121,8 @@ class sql_db
 		unset($this->query_result);
 		if($query != "")
 		{
+			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2, \\1", $query);
+
 			$this->query_result = @pg_exec($this->db_connect_id, $query);
 			if($this->query_result)
 			{
@@ -230,12 +234,16 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id]);
+			$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC);
 			if($this->row)
 			{
 				$this->rownum[$query_id]++;
+				return $this->row;
 			}
-			return $this->row;
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
@@ -254,7 +262,7 @@ class sql_db
 			unset($this->row[$query_id]);
 			$this->rownum[$query_id] = 0;
 
-			while($this->rowset = @pg_fetch_array($query_id, $this->rownum[$query_id]))
+			while($this->rowset = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC))
 			{
 				$result[] = $this->rowset;
 				$this->rownum[$query_id]++;
@@ -276,17 +284,17 @@ class sql_db
 		{
 			if($row_offset != -1)
 			{
-				$this->row = @pg_fetch_array($query_id, $row_offset);
+				$this->row = @pg_fetch_array($query_id, $row_offset, PGSQL_ASSOC);
 			}
 			else
 			{
 				if($this->rownum[$query_id])
 				{
-					$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id]-1);
+					$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id]-1, PGSQL_ASSOC);
 				}
 				else
 				{
-					$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id]);
+					$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC);
 					if($this->row)
 					{
 						$this->rownum[$query_id]++;
@@ -332,12 +340,13 @@ class sql_db
 		{
 			if( eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename))
 			{
-				$query = "SELECT last_value FROM ".$tablename[2]."_id_seq";
-				$temp_q_id =  pg_exec($this->db_connect_id, $query);
-				$temp_result = pg_fetch_array($temp_q_id, 0);
+				$query = "SELECT last_value 
+					FROM ".$tablename[2]."_id_seq";
+				$temp_q_id =  @pg_exec($this->db_connect_id, $query);
+				$temp_result = @pg_fetch_array($temp_q_id, 0, PGSQL_ASSOC);
 				if($temp_result)
 				{
-					return $temp_result["last_value"]+1;
+					return $temp_result['last_value']+1;
 				}
 				else
 				{
