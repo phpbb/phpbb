@@ -255,14 +255,18 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
-		AND ( t.topic_type = " . POST_GLOBAL_ANNOUNCE . "
-			OR t.topic_type = " . POST_ANNOUNCE . " )
+		AND t.topic_type = " . POST_ANNOUNCE . " 
 	ORDER BY p.post_time DESC";
 if(!$ta_result = $db->sql_query($sql))
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
 $total_announcements = $db->sql_numrows($ta_result);
+
+//
+// Total topics ...
+//
+$total_topics += $total_announcements;
 
 //
 // Define censored word matches
@@ -374,21 +378,21 @@ $template->assign_vars(array(
 //
 // Okay, lets dump out the page ...
 //
-if($total_topics || $total_announcements)
+if($total_topics)
 {
 	//
 	// First get announcements
 	//
-	while( $row = $db->sql_fetchrow($ta_result) )
+	while( $ta_row = $db->sql_fetchrow($ta_result) )
 	{
-		$topic_rowset[] = $row;
+		$topic_rowset[] = $ta_row;
 	}
 	//
 	// Now get everything else
 	//
-	while( $row = $db->sql_fetchrow($t_result) )
+	while( $t_row = $db->sql_fetchrow($t_result) )
 	{
-		$topic_rowset[] = $row;
+		$topic_rowset[] = $t_row;
 	}
 
 	for($i = 0; $i < $total_topics; $i++)
@@ -461,10 +465,8 @@ if($total_topics || $total_announcements)
 			$topic_type = $lang['Topic_Moved'] . " ";
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 		}
-
 		else
 		{
-
 			if($topic_rowset[$i]['topic_type'] == POST_ANNOUNCE)
 			{
 				$folder = $images['folder_announce'];
@@ -520,7 +522,6 @@ if($total_topics || $total_announcements)
 					$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 			}
-
 		}
 
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
