@@ -56,7 +56,6 @@ $images['new_folder'] = "$url_images/red_folder.gif";
 $images['latest_reply'] = "$url_images/latest_reply.gif";
 $images['locked_folder'] = "$url_images/folder_lock.gif";
 
-
 include('includes/template.inc');
 
 include('includes/error.'.$phpEx);
@@ -65,7 +64,6 @@ include('includes/sessions.'.$phpEx);
 include('includes/auth.'.$phpEx);
 include('includes/functions.'.$phpEx);
 include('includes/db.'.$phpEx);
-
 
 //
 // Obtain and encode users IP
@@ -77,11 +75,11 @@ if(!empty($HTTP_CLIENT_IP))
 		$client_ip = $HTTP_CLIENT_IP; 
 	}
 }
-else if(!empty($HTTP_X_FORWADED_FOR))
+else if(!empty($HTTP_X_FORWARDED_FOR))
 {
 	if(strstr(",", $HTTP_X_FORWARDED_FOR))
 	{
-		list($client_ip) = explode(",", $HTTP_X_FORWADED_FOR);
+		list($client_ip) = explode(",", $HTTP_X_FORWARDED_FOR);
 	}
 	else
 	{
