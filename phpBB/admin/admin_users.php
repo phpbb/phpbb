@@ -437,7 +437,8 @@ else
 
 	$sql = "SELECT user_id, username
 		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS;
+		WHERE user_id <> " . ANONYMOUS ."
+		ORDER BY username";
 	$u_result = $db->sql_query($sql);
 	$user_list = $db->sql_fetchrowset($u_result);
 
