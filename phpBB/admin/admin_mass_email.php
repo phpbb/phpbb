@@ -33,7 +33,7 @@ if( !empty($setmodules) )
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 require($phpbb_root_path . 'extension.inc');
 require('./pagestart.' . $phpEx);
 
@@ -49,84 +49,78 @@ $subject = '';
 //
 // Do the job ...
 //
-if( isset($HTTP_POST_VARS['submit']) )
+if ( isset($HTTP_POST_VARS['submit']) )
 {
+	$subject = stripslashes(trim($HTTP_POST_VARS['subject']));
+	$message = stripslashes(trim($HTTP_POST_VARS['message']));
+	
+	$error = FALSE;
+	$error_msg = '';
+
+	if ( empty($subject) )
+	{
+		$error = true;
+		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
+	}
+
+	if ( empty($message) )
+	{
+		$error = true;
+		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
+	}
+
 	$group_id = intval($HTTP_POST_VARS[POST_GROUPS_URL]);
 
-	if( $group_id != -1 )
-	{
-		$sql = "SELECT u.user_email 
-			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
-			WHERE ug.group_id = $group_id 
-				AND ug.user_pending <> " . TRUE . "  
-				AND u.user_id = ug.user_id";
-	}
-	else
-	{
-		$sql = "SELECT user_email 
-			FROM " . USERS_TABLE;
-	}
-	if( !($result = $db->sql_query($sql)) )
+	$sql = ( $group_id != -1 ) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not select group members', '', __LINE__, __FILE__, $sql);
 	}
 
-
-
-
-
-	if( !$db->sql_numrows($result) )
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		//
-		// Output a relevant GENERAL_MESSAGE about users/group
-		// not existing
-		//
+		$bcc_list = '';
+		do
+		{
+			$bcc_list .= ( ( $bcc_list != '' ) ? ', ' : '' ) . $row['user_email'];
+		}
+		while ( $row = $db->sql_fetchrow($result) );
+
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		$message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
+
+		$error = true;
+		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $message : $message;
 	}
 
-	$email_list = $db->sql_fetchrowset($g_result);
-
-
-
-	
-
-	$subject = stripslashes($HTTP_POST_VARS['subject']);
-	$message = stripslashes($HTTP_POST_VARS['message']);
-	
-	//
-	// Error checking needs to go here ... if no subject and/or
-	// no message then skip over the send and return to the form
-	//
-	$error = FALSE;
-
-	if( !$error )
+	if ( !$error )
 	{
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+
 		//
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
+		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
 		{
-			// We are running on windows, force delivery to use
-			// our smtp functions since php's are broken by default
+			$ini_val = ( @phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
+
+			// We are running on windows, force delivery to use our smtp functions
+			// since php's are broken by default
 			$board_config['smtp_delivery'] = 1;
-			$board_config['smtp_host'] = get_cfg_var('SMTP');
+			$board_config['smtp_host'] = @$ini_val('SMTP');
 		}
+
 		$emailer = new emailer($board_config['smtp_delivery']);
 	
-		$email_headers = 'From: ' . $board_config['board_email'] . "\n";
-
-		$bcc_list = '';
-		for($i = 0; $i < count($email_list); $i++)
-		{
-			$bcc_list .= ( ( $bcc_list != '' ) ? ', ' : '' ) . $email_list[$i]['user_email'];
-		}
-		$email_headers .= "Bcc: $bcc_list\n";
-		
-		$email_headers .= 'Return-Path: ' . $userdata['board_email'] . "\n";
-		$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
+		$email_headers = 'Return-Path: ' . $userdata['board_email'] . "\r\nFrom: " . $board_config['board_email'] . "\r\n";
+		$email_headers .= "Bcc: $bcc_list\r\n";
+		$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\r\n";
+		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\r\n";
+		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\r\n";
 		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\r\n";
 
 		$emailer->use_template('admin_send_email');
@@ -142,11 +136,20 @@ if( isset($HTTP_POST_VARS['submit']) )
 		$emailer->send();
 		$emailer->reset();
 
-		$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
-
-		message_die(GENERAL_MESSAGE, $message);
+		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>'));
 	}
 }	
+
+if ( $error )
+{
+	$template->set_filenames(array(
+		'reg_header' => 'error_body.tpl')
+	);
+	$template->assign_vars(array(
+		'ERROR_MESSAGE' => $error_msg)
+	);
+	$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+}
 
 //
 // Initial selection
