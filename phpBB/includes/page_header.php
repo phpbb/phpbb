@@ -335,7 +335,7 @@ $template->assign_vars(array(
 	'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
 	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
-	'S_TIMEZONE' 			=> ( $user->data['user_dst'] ) ? sprintf($user->lang['All_times'], $user->lang[floatval($config['board_timezone'])], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[floatval($config['board_timezone'])], ''),
+	'S_TIMEZONE' 			=> ( $user->data['user_dst'] ) ? sprintf($user->lang['All_times'], $user->lang[doubleval($config['board_timezone'])], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[doubleval($config['board_timezone'])], ''),
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
 	'T_STYLESHEET_LINK' => 'templates/' . $user->theme['css_external'],
