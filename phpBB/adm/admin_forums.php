@@ -816,22 +816,6 @@ adm_page_footer();
 // ------------------
 // Begin function block
 //
-
-function request_var($var_name, $default)
-{
-	if (!isset($_REQUEST[$var_name]))
-	{
-		return $default;
-	}
-	else
-	{
-		$var = $_REQUEST[$var_name];
-		settype($var, gettype($default));
-
-		return $var;
-	}
-}
-
 function get_forum_info($forum_id)
 {
 	global $db;
