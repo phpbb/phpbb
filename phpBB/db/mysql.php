@@ -381,7 +381,8 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return mysql_escape_string($msg);
+		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+//		return mysql_escape_string($msg);
 	}
 	
 	function sql_error($sql = '')
