@@ -6,7 +6,11 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
+<<<<<<< lang_english.php
  *     $Id$
+=======
+ *     $Id$
+>>>>>>> 1.104
  *
  *  ***************************************************************************/
 
@@ -141,6 +145,9 @@ $lang['Usergroups'] = "Usergroups";
 $lang['Last_Post'] = "Last Post";
 $lang['Moderator'] = "Moderator/s";
 
+$lang['Mark_all_topics'] = "Mark all topics read";
+$lang['Mark_all_forums'] = "Mark all forums read";
+
 //
 // Stats block text
 //
@@ -188,8 +195,8 @@ $lang['Reached_on_error'] = "You have reached this page in error, please go back
 
 $lang['Display_topics'] = "Display topics from previous";
 $lang['All_Topics'] = "All Topics";
-$lang['Annoucement'] = "<b>Annoucement:</b>";
-$lang['Sticky'] = "<b>Sticky:</b>";
+$lang['Topic_Announcement'] = "<b>Announcement:</b>";
+$lang['Topic_Sticky'] = "<b>Sticky:</b>";
 
 //
 // Viewtopic
@@ -242,7 +249,7 @@ $lang['Post_a_reply'] = "Post a reply";
 $lang['Post_topic_as'] = "Post topic as";
 $lang['Edit_Post'] = "Edit post";
 $lang['Post_Normal'] = "Normal";
-$lang['Post_Annoucement'] = "Announcement";
+$lang['Post_Announcement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
 $lang['Options'] = "Options";
 
@@ -547,6 +554,7 @@ $lang['this_forum'] = " this forum";
 //
 $lang['Who_is_online'] = "Who is online";
 $lang['Online_explain'] = "This data is based on users active over the past five minutes";
+$lang['No_users_browsing'] = "There are no users currently browsing this forum";
 $lang['Location'] = "Location";
 $lang['Last_updated'] = "Last Updated";
 

@@ -176,14 +176,14 @@ if($total_categories = $db->sql_numrows($q_categories))
 		{
 			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 1;
 
-			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['username'];
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = stripslashes($forum_mods_list[$i]['username']);
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
 		}
 		else
 		{
 			$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 0;
 
-			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_name'];
+			$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = stripslashes($forum_mods_list[$i]['group_name']);
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_id'];
 		}
 	}
@@ -192,12 +192,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 	// Find which forums are visible for this user
 	//
 	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_rows);
-
-	//
-	// Output page header and open the index body template
-	//
-	$page_title = $lang['Forum_Index'];
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "index_body.tpl")
@@ -248,37 +242,29 @@ if($total_categories = $db->sql_numrows($q_categories))
 				if($forum_rows[$j]['forum_status'] == FORUM_LOCKED)
 				{
 					$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Forum_locked'] . "\" />";
-
 				}
 				else
 				{
+					$unread_topics = false;
 					if( count($new_topic_data[$forum_id]) )
 					{
 						for($k = 0; $k < count($new_topic_data[$forum_id]); $k++)
 						{
-							if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k]]) )
-							{
-								$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
-							}
-							else
+							if( !isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k]]) )
 							{
 								if($mark_read == "forums")
 								{
-									setcookie('phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k], time(), time()+6000, $cookiepath, $cookiedomain, $cookiesecure);
-									$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
+									setcookie('phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k], time(), 0, $cookiepath, $cookiedomain, $cookiesecure);
 								}
 								else
 								{
-									$folder_image = "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />";
+									$unread_topics = true;
 								}
 							}
 						}
 					}
-					else
-					{
-						$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
-					}
 
+					$folder_image = ( $unread_topics ) ? "<img src=\"" . $images['folder_new'] . "\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
@@ -288,15 +274,15 @@ if($total_categories = $db->sql_numrows($q_categories))
 				{
 					if($forum_rows[$j]['user_id'] == ANONYMOUS && $forum_rows[$j]['post_username'] != '')
 					{
-						$last_poster = $forum_rows[$j]['post_username'];
+						$last_poster = stripslashes($forum_rows[$j]['post_username']);
 					}
 					else
 					{
-						$last_poster = $forum_rows[$j]['username'];
+						$last_poster = stripslashes($forum_rows[$j]['username']);
 					}
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
-					$last_post = $last_post_time . "<br />by ";
+					$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
 					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
@@ -379,6 +365,14 @@ else
 {
 	message_die(GENERAL_MESSAGE, $lang['No_forums']);
 }
+
+//
+// Output page header and open the index body template
+// we do this here because of the mark topics read cookie
+// code
+//
+$page_title = $lang['Forum_Index'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
 // Generate the page

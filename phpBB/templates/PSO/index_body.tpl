@@ -64,6 +64,8 @@
 				<td width="20" align="center"><img src="images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
 				<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
 			</tr>
+			<tr>
+				<td colspan="8"><br /><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_FORUMS_READ}</a></span></td>
 		</table></td>
 		<td align="right" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 	</tr>
