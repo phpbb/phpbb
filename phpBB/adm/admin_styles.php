@@ -288,13 +288,11 @@ switch ($mode)
 			FROM ' . STYLES_TABLE;
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
-			{
-				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
-				$stylevis = (!$row['style_active']) ? 'activate' : 'deactivate';
+			$stylevis = (!$row['style_active']) ? 'activate' : 'deactivate';
 
 ?>
 	<tr>
@@ -307,11 +305,8 @@ switch ($mode)
 	</tr>
 <?php
 
-			}
-			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
-
 
 ?>
 	<tr>
@@ -526,11 +521,9 @@ switch ($mode)
 			FROM ' . STYLES_IMAGE_TABLE;
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
-			{
-				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 ?>
 	<tr>
@@ -541,11 +534,8 @@ switch ($mode)
 	</tr>
 <?php
 
-			}
-			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
-
 
 ?>
 	<tr>
@@ -564,8 +554,176 @@ switch ($mode)
 
 	case 'templates':
 
+		$template_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : false;
+
+		$tpllist = array(
+			'misc'		=> array(
+				'confirm_body.html', 'faq_body.html', 'index_body.html',  'message_body.html', 'viewonline_body.html', 
+			),
+			'includes'	=> array(
+				'overall_footer.html', 'overall_header.html', 'simple_footer.html', 'simple_header.html', 'searchbox.html', 'jumpbox.html',
+			), 
+			'forum'		=> array(
+				'viewforum_body.html', 'viewforum_subforum.html', 
+			),
+			'topic'		=> array(
+				'viewtopic_attach_body.html', 'viewtopic_body.html', 'viewtopic_print.html',
+			),
+			'group'		=> array(
+				'gcp_body.html', 'gcp_pending_info.html', 'gcp_user_body.html', 
+			),
+			'user'		=> array(
+				'ucp_agreement.html', 'ucp_footer.html', 'ucp_header.html', 'ucp_main.html', 'ucp_pm_body.html', 'ucp_pm_popup.html', 'ucp_pm_preview.html', 'ucp_pm_read.html', 'ucp_prefs.html', 'ucp_profile.html', 'ucp_register.html', 'ucp_remind.html', 
+			),
+			'profile'	=> array(
+				'memberlist_body.html', 'memberlist_email.html', 'memberlist_im.html', 'memberlist_view.html', 
+			), 
+			'mod'		=> array(
+				'mcp_forum.html', 'mcp_foruminfo.html', 'mcp_front.html', 'mcp_header.html', 'mcp_jumpbox.html', 'mcp_move.html', 'mcp_post.html', 'mcp_queue.html', 'mcp_reports.html', 'mcp_topic.html', 'mcp_viewlogs.html', 'report_body.html', 
+			),
+			'search'	=> array(
+				'search_body.html', 'search_results_posts.html', 'search_results_topics.html', 
+			),
+			'posting'	=> array(
+				'posting_attach_body.html', 'posting_body.html', 'posting_poll_body.html', 'posting_preview.html', 'posting_smilies.html', 'posting_topic_review.html', 
+			),
+			'login'		=> array(
+				'login_body.html', 'login_forum.html', 
+			), 
+			'custom'	=> array(), 
+		);
+
+		// Lights, Camera ...
 		switch ($action)
 		{
+			case 'cache':
+
+				$sql = 'SELECT * 
+					FROM ' . STYLES_TPL_TABLE . "
+					WHERE template_id = $template_id";
+				$result = $db->sql_query($sql);
+
+				if (!(extract($db->sql_fetchrow($result))))
+				{
+					trigger_error($user->lang['NO_TEMPLATE']);
+				}
+				$db->sql_freeresult($result);
+
+
+				if (!($dp = @opendir($phpbb_root_path . 'cache')))
+				{
+					trigger_error($user->lang['ERR_TPLCACHE_READ']);
+				}
+
+				$cache_prefix = 'tpl_' . $template_path;
+
+
+				// User wants to delete one or more files ... 
+				if ($_POST['update'] && !empty($_POST['delete']))
+				{
+					foreach ($_POST['delete'] as $file)
+					{
+						if (file_exists($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx) && is_file($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx))
+						{
+							unlink($phpbb_root_path . 'cache/' . $cache_prefix . '_' . $file . '.html.' . $phpEx);
+						}
+					}
+
+					add_log('admin', 'LOG_CLEAR_TPLCACHE', $template_name);
+					trigger_error($user->lang['TEMPLATE_CACHE_CLEARED']);
+				}
+
+
+				$tplcache_ary = array();
+				while ($file = readdir($dp))
+				{
+					if (is_file($phpbb_root_path . 'cache/' . $file) && strstr($file, $cache_prefix))
+					{
+						$filename = preg_replace('#^' . $cache_prefix . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file);
+						$tplcache_ary[$filename]['cache'] = filemtime($phpbb_root_path . 'cache/' . $file);
+						$tplcache_ary[$filename]['size'] = filesize($phpbb_root_path . 'cache/' . $file);
+						$tplcache_ary[$filename]['src'] = filemtime($phpbb_root_path . 'styles/templates/' . $template_path . '/' . $filename . '.html');
+					}
+				}
+				closedir($dp);
+
+
+				// Output the page
+				adm_page_header($user->lang['TEMPLATE_CACHE']);
+
+?>
+
+<script language="Javascript" type="text/javascript">
+<!--
+function marklist(match, status)
+{
+	len = eval('document.' + match + '.length');
+	for (i = 0; i < len; i++)
+	{
+		eval('document.' + match + '.elements[i].checked = ' + status);
+	}
+}
+//-->
+</script>
+
+<h1><?php echo $user->lang['TEMPLATE_CACHE']; ?></h1>
+
+<p><?php echo $user->lang['TEMPLATE_CACHE_EXPLAIN']; ?></p>
+
+<form name="tplcache" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$template_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th nowrap="nowrap"><?php echo $user->lang['CACHE_FILENAME']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['CACHE_FILESIZE']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['CACHE_CACHED']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['CACHE_CREATED']; ?></th>
+		<th width="1%"><?php echo $user->lang['MARK']; ?></th>
+	</tr>
+<?php
+
+				if (sizeof($tplcache_ary))
+				{
+					foreach ($tplcache_ary as $filename => $times_ary)
+					{
+						$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $filename; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo sprintf('%.1f KB', $times_ary['size'] / 1024); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($times_ary['cache']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($times_ary['src']); ?></td>
+		<td class="<?php echo $row_class; ?>" width="1%" align="center"><input type="checkbox" name="delete[]" value="<?php echo $filename; ?>" /></td>
+	</tr>
+<?php
+
+					}
+				}
+				else
+				{
+
+?>
+	<tr>
+		<td class="row1" colspan="5" align="center"><?php echo $user->lang['NO_CACHED_TPL_FILES']; ?></td>
+	</tr>
+<?php
+				}
+
+?>
+	<tr>
+		<td class="cat" colspan="5" align="right"><input class="btnlite" type="submit" name="update" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /></td>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<tr>
+		<td align="right"><b><span class="gensmall"><a href="javascript:marklist('tplcache', true);" class="gensmall"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('tplcache', false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></span></b></td>
+	</tr>
+</table></form>
+<?php
+
+				adm_page_footer();
+				break;
+
 			case 'preview':
 				break;
 
@@ -609,48 +767,9 @@ switch ($mode)
 
 			case 'edit':
 
-				$template_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : false;
 				$tplcols = (isset($_POST['tplcols'])) ? max(20, intval($_POST['tplcols'])) : 76;
 				$tplrows = (isset($_POST['tplrows'])) ? max(5, intval($_POST['tplrows'])) : 20;
 				$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
-
-
-				$tpllist = array(
-					'misc'		=> array(
-						'confirm_body.html', 'faq_body.html', 'index_body.html',  'message_body.html', 'viewonline_body.html', 
-					),
-					'includes'	=> array(
-						'overall_footer.html', 'overall_header.html', 'simple_footer.html', 'simple_header.html', 'searchbox.html', 'jumpbox.html',
-					), 
-					'forum'		=> array(
-						'viewforum_body.html', 'viewforum_subforum.html', 
-					),
-					'topic'		=> array(
-						'viewtopic_attach_body.html', 'viewtopic_body.html', 'viewtopic_print.html',
-					),
-					'group'		=> array(
-						'gcp_body.html', 'gcp_pending_info.html', 'gcp_user_body.html', 
-					),
-					'user'		=> array(
-						'ucp_agreement.html', 'ucp_footer.html', 'ucp_header.html', 'ucp_main.html', 'ucp_pm_body.html', 'ucp_pm_popup.html', 'ucp_pm_preview.html', 'ucp_pm_read.html', 'ucp_prefs.html', 'ucp_profile.html', 'ucp_register.html', 'ucp_remind.html', 
-					),
-					'profile'	=> array(
-						'memberlist_body.html', 'memberlist_email.html', 'memberlist_im.html', 'memberlist_view.html', 
-					), 
-					'mod'		=> array(
-						'mcp_forum.html', 'mcp_foruminfo.html', 'mcp_front.html', 'mcp_header.html', 'mcp_jumpbox.html', 'mcp_move.html', 'mcp_post.html', 'mcp_queue.html', 'mcp_reports.html', 'mcp_topic.html', 'mcp_viewlogs.html', 'report_body.html', 
-					),
-					'search'	=> array(
-						'search_body.html', 'search_results_posts.html', 'search_results_topics.html', 
-					),
-					'posting'	=> array(
-						'posting_attach_body.html', 'posting_body.html', 'posting_poll_body.html', 'posting_preview.html', 'posting_smilies.html', 'posting_topic_review.html', 
-					),
-					'login'		=> array(
-						'login_body.html', 'login_forum.html', 
-					), 
-					'custom'	=> array(), 
-				);
 
 				$tpldata = '';
 				if ($template_id)
@@ -798,11 +917,9 @@ switch ($mode)
 			FROM ' . STYLES_TPL_TABLE;
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
-			{
-				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 ?>
 	<tr>
@@ -816,14 +933,8 @@ switch ($mode)
 	</tr>
 <?php
 
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-		else
-		{
 		}
 		$db->sql_freeresult($result);
-
 
 ?>
 	<tr>
@@ -1560,11 +1671,9 @@ function csspreview()
 			FROM ' . STYLES_CSS_TABLE;
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
-			{
-				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+			$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 ?>
 	<tr>
@@ -1582,11 +1691,8 @@ function csspreview()
 	</tr>
 <?php
 
-			}
-			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
-
 
 ?>
 	<tr>
