@@ -1,4 +1,4 @@
-Subject: Добре дошли на {SITENAME} Форумите
+Subject: Добре дошли на форумите на {SITENAME}
 Charset: windows-1251
 
 {WELCOME_MSG}
