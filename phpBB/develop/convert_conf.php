@@ -1,4 +1,4 @@
-<?
+<?php
 
 $phpbb_root_path = "../";
 

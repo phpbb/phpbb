@@ -1,4 +1,4 @@
-<?
+<?php
 include('../extension.inc');
 include('../config.'.$phpEx);
 include('../includes/constants.'.$phpEx);
@@ -41,22 +41,22 @@ Hello, welcome to this little phpBB Benchmarking script :)<p>
 
 At the moment there are:<br>
 <table>
-<tr><td align="right"><?=$nr_of_users?></td><td>Users</td></tr>
-<tr><td align="right"><?=$nr_of_topics?></td><td>Topics</td></tr>
-<tr><td align="right"><?=$nr_of_forums?></td><td>Forums</td></tr>
-<tr><td align="right"><?=$nr_of_posts?></td><td>Posts</td></tr>
+<tr><td align="right"><?php echo $nr_of_users?></td><td>Users</td></tr>
+<tr><td align="right"><?php echo $nr_of_topics?></td><td>Topics</td></tr>
+<tr><td align="right"><?php echo $nr_of_forums?></td><td>Forums</td></tr>
+<tr><td align="right"><?php echo $nr_of_posts?></td><td>Posts</td></tr>
 </table>
 <p>
 What do you want to create?<p>
 
-<form method="get" action="<?=$PHP_SELF?>">
+<form method="get" action="<?php echo $PHP_SELF?>">
 <input type="text" name="users" size="3"> Users<br>
 <input type="text" name="forums" size="3"> Forums/categories<br>
 <input type="text" name="posts" size="3"> Posts/topics (optional: post size in <input type="text" name="size" size="3"> bytes)<br>
 <input type="submit" name="submit">
 </form>
 
-    <?
+    <?php
 } else {
 
   
