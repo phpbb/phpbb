@@ -31,7 +31,7 @@ unset($ip);
 
 include('template.inc');
 // Setup what template to use. Currently just use default
-$template = new Template("./templates/Default", "keep");
+$template = new Template("./templates/Default", "remove");
 
 include('functions/error.'.$phpEx);
 include('functions/sessions.'.$phpEx);

@@ -40,8 +40,8 @@ define(PUBLIC, 1);
 define(PRIVATE, 2);
 
 // Forum posting levels
-define(ANONALLOWED, 1);
-define(REGONLY, 2);
+define(ANONALLOWED, 2);
+define(REGONLY, 1);
 define(MODONLY, 3);
 
 // Topic state

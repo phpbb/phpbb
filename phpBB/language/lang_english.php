@@ -270,8 +270,10 @@ $l_htmlis	= "$l_html is";
 $l_bbcodeis	= "$l_bbcode is";
 
 $l_notify	= "Notify by email when replies are posted";
-
+// "
 // Newtopic
+$l_postnew      = "Post New Topic";
+$l_postnewin    = "Post New Topic in:";
 $l_emptymsg	= "You must type a $l_message to post. You cannot post an empty $l_message.";
 $l_aboutpost	= "About Posting";
 $l_regusers	= "All <b>Registered</b> users";
@@ -279,9 +281,9 @@ $l_anonusers	= "<b>Anonymous</b> users";
 $l_modusers	= "Only <B>Moderators and Administrators</b>";
 $l_anonhint	= "<br>(To post anonymously simply do not enter a username and password)";
 $l_inthisforum	= "can post new topics and replies to this forum";
-$l_attachsig	= "Show signature <font size=-2>(This can be altered or added in your profile)</font>";
+$l_attachsig	= "Show signature (This can be altered or added in your profile)";
 $l_cancelpost	= "Cancel Post";
-
+$l_preview      = "Preview Post";
 // Reply
 $l_nopostlock	= "You cannot post a reply to this topic, it has been locked.";
 $l_topicreview  = "Topic Review";

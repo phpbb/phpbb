@@ -121,7 +121,14 @@ switch($pagetype)
 			    "TOPIC_TITLE" => $topic_title));
    $template->pparse("output", "header");
    break;
-			    
+ case 'newtopic':
+   $template->set_file(array("header" => "newtopic_header.tpl",
+			     "body" => "posting_body.tpl"));
+   $template->set_var(array("FORUM_ID" => $forum_id,
+			    "FORUM_NAME" => $forum_name,
+			    "L_POSTNEWIN" => $l_postnewin));
+   $template->pparse("output", "header");
+   break;
 }
 			    
 ?>
