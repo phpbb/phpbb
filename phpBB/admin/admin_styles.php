@@ -38,35 +38,35 @@ $phpbb_root_dir = "./../";
 //
 // Check if the user has cancled a confirmation message.
 //
-$confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : FALSE;
-$cancel = ( $HTTP_POST_VARS['cancel'] ) ? TRUE : FALSE;
+$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
+$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
-if($cancel)
+if( $cancel )
 {
-	header("Location: admin_styles.$phpEx");
+	header("Location: " . append_sid("admin_styles.$phpEx"));
 }
 
-if(!$HTTP_POST_VARS['send_file'])
+if( !$HTTP_POST_VARS['send_file'] )
 {
 	require('pagestart.inc');
 }
 
-if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
-	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 }
 else 
 {
 	$mode = "";
 }
 
-switch($mode)
+switch( $mode )
 {
 	case "addnew":
-		$install_to = ($HTTP_GET_VARS['install_to']) ? urldecode($HTTP_GET_VARS['install_to']) : $HTTP_POST_VARS['install_to'];
-		$style_name = ($HTTP_GET_VARS['style']) ? urldecode($HTTP_GET_VARS['style']) : $HTTP_POST_VARS['style'];
+		$install_to = ( isset($HTTP_GET_VARS['install_to']) ) ? urldecode($HTTP_GET_VARS['install_to']) : $HTTP_POST_VARS['install_to'];
+		$style_name = ( isset($HTTP_GET_VARS['style']) ) ? urldecode($HTTP_GET_VARS['style']) : $HTTP_POST_VARS['style'];
 	
-		if(isset($install_to))
+		if( isset($install_to) )
 		{
 			include($phpbb_root_dir . "templates/" . $install_to . "/theme_info.cfg");
 
@@ -75,7 +75,7 @@ switch($mode)
 			
 			for($i = 0; $i < count($template_name) && !$found; $i++)
 			{
-				if($template_name[$i]['style_name'] == $style_name)
+				if( $template_name[$i]['style_name'] == $style_name )
 				{
 					while(list($key, $val) = each($template_name[$i]))
 					{
@@ -109,7 +109,7 @@ switch($mode)
 			}
 			$sql .= ")";
 			
-			if(!$result = $db->sql_query($sql))
+			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Could not insert theme data!", "Error", __LINE__, __FILE__, $sql);
 			}
@@ -192,9 +192,9 @@ switch($mode)
 	
 	case "create":
 	case "edit":
-		$submit = (isset($HTTP_POST_VARS['submit'])) ? 1 : 0;
+		$submit = ( isset($HTTP_POST_VARS['submit']) ) ? TRUE : 0;
 		
-		if($submit)
+		if( $submit )
 		{
 			//	
 			// DAMN! Thats alot of data to validate...
@@ -204,6 +204,7 @@ switch($mode)
 			$updated['head_stylesheet'] = $HTTP_POST_VARS['head_stylesheet'];
 			$updated['body_background'] = $HTTP_POST_VARS['body_background'];
 			$updated['body_bgcolor'] = $HTTP_POST_VARS['body_bgcolor'];
+			$updated['body_text'] = $HTTP_POST_VARS['body_text'];
 			$updated['body_link'] = $HTTP_POST_VARS['body_link'];
 			$updated['body_vlink'] = $HTTP_POST_VARS['body_vlink'];
 			$updated['body_alink'] = $HTTP_POST_VARS['body_alink'];
@@ -558,10 +559,11 @@ switch($mode)
 				"L_STYLESHEET" => $lang['Stylesheet'],
 				"L_BACKGROUND_IMAGE" => $lang['Background_image'],
 				"L_BACKGROUND_COLOR" => $lang['Background_color'],
-				"L_BODY_LINK" => $lang['Link_color'],
-				"L_BODY_VLINK" => $lang['VLink_color'],
-				"L_BODY_ALINK" => $lang['ALink_color'],
-				"L_BODY_HLINK" => $lang['HLink_color'],
+				"L_BODY_TEXT_COLOR" => $lang['Text_color'],
+				"L_BODY_LINK_COLOR" => $lang['Link_color'],
+				"L_BODY_VLINK_COLOR" => $lang['VLink_color'],
+				"L_BODY_ALINK_COLOR" => $lang['ALink_color'],
+				"L_BODY_HLINK_COLOR" => $lang['HLink_color'],
 				"L_TR_COLOR1" => $lang['Tr_color1'],
 				"L_TR_COLOR2" => $lang['Tr_color2'],
 				"L_TR_COLOR3" => $lang['Tr_color3'],
@@ -597,10 +599,11 @@ switch($mode)
 				"HEAD_STYLESHEET" => $selected['head_stylesheet'],
 				"BODY_BACKGROUND" => $selected['body_background'],
 				"BODY_BGCOLOR" => $selected['body_bgcolor'],
-				"BODY_LINK" => $selected['body_link'],
-				"BODY_VLINK" => $selected['body_vlink'],
-				"BODY_ALINK" => $selected['body_alink'],
-				"BODY_HLINK" => $selected['body_hlink'],
+				"BODY_TEXT_COLOR" => $selected['body_text'],
+				"BODY_LINK_COLOR" => $selected['body_link'],
+				"BODY_VLINK_COLOR" => $selected['body_vlink'],
+				"BODY_ALINK_COLOR" => $selected['body_alink'],
+				"BODY_HLINK_COLOR" => $selected['body_hlink'],
 				"TR_COLOR1" => $selected['tr_color1'],
 				"TR_COLOR2" => $selected['tr_color2'],
 				"TR_COLOR3" => $selected['tr_color3'],
@@ -791,9 +794,9 @@ switch($mode)
 		break;
 
 	case "delete":
-		$style_id = ($HTTP_GET_VARS['style_id']) ? intval($HTTP_GET_VARS['style_id']) : intval($HTTP_POST_VARS['style_id']);
+		$style_id = ( isset($HTTP_GET_VARS['style_id']) ) ? intval($HTTP_GET_VARS['style_id']) : intval($HTTP_POST_VARS['style_id']);
 		
-		if(!$confirm)
+		if( !$confirm )
 		{
 			if($style_id == $board_config['default_style'])
 			{

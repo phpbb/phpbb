@@ -16,9 +16,9 @@
 		<td class="row2" colspan="2">{S_TEMPLATE_SELECT}</td>
 	</tr>
 	<tr>
-		<td class="cattitle">{L_THEME_ELEMENT}</td>
-		<td class="cattitle">{L_VALUE}</td>
-		<td class="cattitle">{L_SIMPLE_NAME}</td>
+		<th>{L_THEME_ELEMENT}</th>
+		<th>{L_VALUE}</th>
+		<th>{L_SIMPLE_NAME}</th>
 	</tr>
 	<tr>
 		<td class="row1">{L_STYLESHEET}:<br /><span class="gensmall">Filename for CSS stylesheet to use for this theme.</span></td>
@@ -32,27 +32,32 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_BACKGROUND_COLOR}:</td>
-		<td class="row2" ><input type="text" size="25" maxlength="100" name="body_bgcolor" value="{BODY_BGCOLOR}"></td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_bgcolor" value="{BODY_BGCOLOR}"></td>
 		<td class="row2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="row1">{L_BODY_LINK}:</td>
-		<td class="row2" ><input type="text" size="25" maxlength="100" name="body_link" value="{BODY_LINK}"></td>
+		<td class="row1">{L_BODY_TEXT_COLOR}:</td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_text" value="{BODY_TEXT_COLOR}"></td>
 		<td class="row2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="row1">{L_BODY_VLINK}:</td>
-		<td class="row2" ><input type="text" size="25" maxlength="100" name="body_vlink" value="{BODY_VLINK}"></td>
+		<td class="row1">{L_BODY_LINK_COLOR}:</td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_link" value="{BODY_LINK_COLOR}"></td>
+		<td class="row2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="row1">{L_BODY_VLINK_COLOR}:</td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_vlink" value="{BODY_VLINK_COLOR}"></td>
 		<td class="row2">&nbsp;</td>		
 	</tr>
 	<tr>
-		<td class="row1">{L_BODY_ALINK}:</td>
-		<td class="row2" ><input type="text" size="25" maxlength="100" name="body_alink" value="{BODY_ALINK}"></td>
+		<td class="row1">{L_BODY_ALINK_COLOR}:</td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_alink" value="{BODY_ALINK_COLOR}"></td>
 		<td class="row2">&nbsp;</td>		
 	</tr>
 	<tr>
-		<td class="row1">{L_BODY_HLINK}:</td>
-		<td class="row2" ><input type="text" size="25" maxlength="100" name="body_hlink" value="{BODY_HLINK}"></td>
+		<td class="row1">{L_BODY_HLINK_COLOR}:</td>
+		<td class="row2" ><input type="text" size="6" maxlength="6" name="body_hlink" value="{BODY_HLINK_COLOR}"></td>
 		<td class="row2">&nbsp;</td>		
 	</tr>
 

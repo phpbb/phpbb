@@ -589,6 +589,7 @@ $lang['Background_image'] = "Background Image";
 $lang['Background_color'] = "Background Colour";
 $lang['Theme_name'] = "Theme Name";
 $lang['Link_color'] = "Link Colour";
+$lang['Text_color'] = "Text Colour";
 $lang['VLink_color'] = "Visited Link Colour";
 $lang['ALink_color'] = "Active Link Colour";
 $lang['HLink_color'] = "Hover Link Colour";
