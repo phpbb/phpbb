@@ -57,7 +57,7 @@ if (!empty($load_extensions))
 
 // Include files
 require($phpbb_root_path . 'includes/acm/cache_' . $acm_type . '.'.$phpEx);
-require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
+require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
