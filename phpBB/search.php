@@ -371,7 +371,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 			$result = $db->sql_query($sql);
 			if(!$result)
 			{
-				error_die(QUERY_ERROR, "Couldn't obtain search results", __LINE__, __FILE__);
+				message_die(QUERY_ERROR, "Couldn't obtain search results", __LINE__, __FILE__);
 			}
 			$searchset = $db->sql_fetchrowset($result);
 
@@ -490,7 +490,7 @@ $sql = "SELECT forum_name, forum_id
 $result = $db->sql_query($sql);
 if(!$result)
 {
-	error_die(QUERY_ERROR, "Couldn't obtain forum_name/forum_id", __LINE__, __FILE__);
+	message_die(QUERY_ERROR, "Couldn't obtain forum_name/forum_id", __LINE__, __FILE__);
 }
 
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
