@@ -35,18 +35,18 @@ $phpbb_root_dir = "./../";
 $no_page_header = TRUE;
 require('pagestart.inc');
 
-
 //
 // Start program - define vars
 //
+//                View      Read      Post      Reply     Edit     Delete    Sticky   Announce    Vote      Poll
 $simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 1, 1, 3, 1, 1),
-	1  => array(0, 0, 1, 1, 1, 1, 1, 3, 1, 1),
-	2  => array(1, 1, 1, 1, 1, 1, 1, 3, 1, 1),
-	3  => array(0, 2, 2, 2, 2, 2, 2, 3, 2, 2),
-	4  => array(2, 2, 2, 2, 2, 2, 2, 3, 2, 2),
-	5  => array(0, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-	6  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+	0  => array(AUTH_ALL, AUTH_ALL, AUTH_ALL, AUTH_ALL, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG),
+	1  => array(AUTH_ALL, AUTH_ALL, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG),
+	2  => array(AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG),
+	3  => array(AUTH_ALL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_MOD, AUTH_ACL, AUTH_ACL),
+	4  => array(AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_MOD, AUTH_ACL, AUTH_ACL),
+	5  => array(AUTH_ALL, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD),
+	6  => array(AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD),
 );
 
 $simple_auth_types = array($lang['Public'], $lang['Registered'], $lang['Registered'] . " [" . $lang['Hidden'] . "]", $lang['Private'], $lang['Private'] . " [" . $lang['Hidden'] . "]", $lang['Moderators'], $lang['Moderators'] . " [" . $lang['Hidden'] . "]");
@@ -154,7 +154,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 	$template->assign_vars(array(
 		"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
 	);
-	$message = $lang['Forum_auth_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_forumauth.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_forum_auth_admin'];
+	$message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid("admin_forumauth.$phpEx") . '">', "</a>");
 	message_die(GENERAL_MESSAGE, $message);
 
 } // End of submit
@@ -169,9 +169,13 @@ $sql = "SELECT f.*
 	WHERE c.cat_id = f.cat_id
 	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
-$f_result = $db->sql_query($sql);
+if ( !($result = $db->sql_query($sql)) )
+{
+	message_die(GENERAL_ERROR, "Couldn't obtain forum list", "", __LINE__, __FILE__, $sql);
+}
 
-$forum_rows = $db->sql_fetchrowset($f_result);
+$forum_rows = $db->sql_fetchrowset($result);
+$db->sql_freeresult($result);
 
 if( empty($forum_id) )
 {
@@ -183,12 +187,12 @@ if( empty($forum_id) )
 		"body" => "admin/auth_select_body.tpl")
 	);
 
-	$select_list = "<select name=\"" . POST_FORUM_URL . "\">";
+	$select_list = '<select name="' . POST_FORUM_URL . '">';
 	for($i = 0; $i < count($forum_rows); $i++)
 	{
-		$select_list .= "<option value=\"" . $forum_rows[$i]['forum_id'] . "\">" . $forum_rows[$i]['forum_name'] . "</option>";
+		$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 	}
-	$select_list .= "</select>";
+	$select_list .= '</select>';
 
 	$template->assign_vars(array(
 		"L_AUTH_TITLE" => $lang['Auth_Control_Forum'],
@@ -213,21 +217,24 @@ else
 
 	$forum_name = $forum_rows[0]['forum_name'];
 
-	reset($simple_auth_ary);
-	while(list($key, $auth_levels) = each($simple_auth_ary))
+	@reset($simple_auth_ary);
+	while( list($key, $auth_levels) = each($simple_auth_ary))
 	{
 		$matched = 1;
 		for($k = 0; $k < count($auth_levels); $k++)
 		{
 			$matched_type = $key;
 
-			if($forum_rows[0][$forum_auth_fields[$k]] != $auth_levels[$k])
+			if ( $forum_rows[0][$forum_auth_fields[$k]] != $auth_levels[$k] )
 			{
 				$matched = 0;
 			}
 		}
-		if($matched)
+
+		if ( $matched )
+		{
 			break;
+		}
 	}
 
 	//
