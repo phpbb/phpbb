@@ -186,7 +186,7 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 		WHERE t.forum_id = $forum_id 
 			AND p.post_id = t.topic_last_post_id 
 			AND ( p.post_time > $min_post_time 
-			OR t.topic_type = " . POST_ANNOUNCE . " )";
+				OR t.topic_type = " . POST_ANNOUNCE . " )";
 
 	if(!$result = $db->sql_query($sql))
 	{
