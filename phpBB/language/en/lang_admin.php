@@ -521,6 +521,7 @@ $lang += array(
 	'JAB_SERVER'			=> 'Jabber server', 
 	'JAB_SERVER_EXPLAIN'	=> 'See %sjabber.org%s for a list of servers', 
 	'JAB_PORT'				=> 'Jabber port', 
+	'JAB_PORT_EXPLAIN'		=> 'Leave blank unless you know it is not 5222', 
 	'JAB_USERNAME'			=> 'Jabber username', 
 	'JAB_USERNAME_EXPLAIN'	=> 'If this user is not registered it will be created if possible.', 
 	'JAB_PASSWORD'			=> 'Jabber password', 

@@ -336,6 +336,7 @@ class messenger
 			$this->jabber = new Jabber;
 
 			$this->jabber->server	= $config['jab_host'];
+			$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
 			$this->jabber->username = $config['jab_username'];
 			$this->jabber->password = $config['jab_password'];
 			$this->jabber->resource = (!empty($config['jab_resource'])) ? htmlentities($config['jab_resource']) : '';
@@ -358,7 +359,7 @@ class messenger
 				$this->jabber->SendMessage($address, 'normal', NULL, array('body' => $msg));
 			}
 
-			$this->jabber->CruiseControl(2);
+			sleep(1);
 			$this->jabber->Disconnect();
 		}
 		else
@@ -409,7 +410,7 @@ class queue
 
 		set_config('last_queue_run', time());
 
-		if (!file_exists($this->cache_file) || file_exists($this->cache_file . '.lock'))
+		if (!file_exists($this->cache_file) || (file_exists($this->cache_file . '.lock') && filemtime($this->cache_file) > time() - $config['queue_interval']))
 		{
 			return;
 		}
@@ -449,6 +450,7 @@ class queue
 					$this->jabber = new Jabber;
 
 					$this->jabber->server	= $config['jab_host'];
+					$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
 					$this->jabber->username = $config['jab_username'];
 					$this->jabber->password = $config['jab_password'];
 					$this->jabber->resource = (!empty($config['jab_resource'])) ? htmlentities($config['jab_resource']) : '';
@@ -515,7 +517,7 @@ class queue
 				case 'jabber':
 					// Hang about a couple of secs to ensure the messages are
 					// handled, then disconnect
-					$this->jabber->CruiseControl(2);
+					sleep(1);
 					$this->jabber->Disconnect();
 					break;
 			}
