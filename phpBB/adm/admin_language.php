@@ -16,10 +16,8 @@
 //	* add ability to change uninstalled language packs
 //	* add ability to create new language pack from existing one
 //	* add documentation/help
-//	* safe mode checks
 //	* Ability to add/remove entries to/from help files?
 //  * Extend help entries to textarea
-//  * Check for missing help and email files too
 
 if (!empty($setmodules))
 {
@@ -67,6 +65,9 @@ if (is_array($cur_file))
 }
 
 $cur_file = (strpos($cur_file, 'email/') !== false) ? 'email/' . basename($cur_file) : basename($cur_file) . '.' . $phpEx;
+$safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
+
+$language_files = array('common', 'groups', 'mcp', 'memberlist', 'posting', 'search', 'ucp', 'viewforum', 'viewtopic', 'admin', 'help_bbcode', 'help_faq');
 
 if (!$mode)
 {
@@ -166,27 +167,30 @@ switch ($action)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
-		if (strpos($cur_file, 'email/') !== false)
+		if (!$safe_mode)
 		{
-			$mkdir_ary[] = 'language/' . $row['lang_iso'] . '/email';
-		}
-		
-		foreach ($mkdir_ary as $dir)
-		{
-			$dir = $phpbb_root_path . 'store/' . $dir;
-
-			if (!is_dir($dir))
+			$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
+			if (strpos($cur_file, 'email/') !== false)
 			{
-				if (!@mkdir($dir, 0777))
+				$mkdir_ary[] = 'language/' . $row['lang_iso'] . '/email';
+			}
+		
+			foreach ($mkdir_ary as $dir)
+			{
+				$dir = $phpbb_root_path . 'store/' . $dir;
+	
+				if (!is_dir($dir))
 				{
-					trigger_error("Could not create directory $dir");
+					if (!@mkdir($dir, 0777))
+					{
+						trigger_error("Could not create directory $dir");
+					}
+					@chmod($dir, 0777);
 				}
-				@chmod($dir, 0777);
 			}
 		}
 
-		$filename = "{$phpbb_root_path}store/language/{$row['lang_iso']}/{$cur_file}";
+		$filename = get_filename($row['lang_iso'], $cur_file, true);
 		$fp = fopen($filename, 'wb');
 
 		if (strpos($cur_file, 'email/') !== false)
@@ -334,35 +338,33 @@ $lang += array(
 			trigger_error('NO_LANGUAGE_PACK_DEFINED');
 		}
 		
-		$sql = 'SELECT * FROM ' . LANG_TABLE . "
-			WHERE lang_id = $lang_id
-				OR lang_iso = '{$config['default_lang']}'";
+		$sql = 'SELECT * FROM ' . LANG_TABLE . '
+			WHERE lang_id = ' . $lang_id;
 		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$lang_entries[$row['lang_id']] = $row;
-		}
+		$lang_entries = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		
-		$lang_iso = $lang_entries[$lang_id]['lang_iso'];
-
-		$language_files = array('common', 'groups', 'mcp', 'memberlist', 'posting', 'search', 'ucp', 'viewforum', 'viewtopic', 'admin');
-		$help_files = array('help_bbcode', 'help_faq');
-
-		$email_templates = filelist($phpbb_root_path . 'language/' . $lang_iso, 'email', 'txt');
-		$email_templates = $email_templates['email/'];
-
+		$lang_iso = $lang_entries['lang_iso'];
 		$missing_vars = $missing_files = array();
+
+		$email_templates = filelist($phpbb_root_path . 'language/' . $config['default_lang'], 'email', 'txt');
+		$email_templates = $email_templates['email/'];
 		
-		if (!in_array(str_replace(".{$phpEx}", '', $cur_file), $language_files) && !in_array(str_replace(".{$phpEx}", '', $cur_file), $help_files) && !in_array(basename($cur_file), $email_templates))
+		if (!in_array(str_replace(".{$phpEx}", '', $cur_file), $language_files) && !in_array(basename($cur_file), $email_templates))
 		{
 			trigger_error('WRONG_LANGUAGE_FILE');
 		}
 
 		if (isset($_POST['remove_store']))
 		{
-			@unlink($phpbb_root_path . 'store/language/' . $lang_iso . '/' . $cur_file);
+			if (!$safe_mode)
+			{
+				@unlink(get_filename($lang_iso, $cur_file));
+			}
+			else
+			{
+				@unlink(get_filename($lang_iso, $cur_file, true));
+			}
 		}
 
 ?>
@@ -371,23 +373,23 @@ $lang += array(
 		<form method="post" action="<?php echo "admin_language.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$lang_id"; ?>">
 		<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 		<tr>
-			<th colspan="2"><?php echo $lang_entries[$lang_id]['lang_local_name']; ?></th>
+			<th colspan="2"><?php echo $lang_entries['lang_local_name']; ?></th>
 		</tr>
 		<tr>
 			<td class="row1"><b><?php echo $user->lang['LANG_ENGLISH_NAME']; ?>: </b></td>
-			<td class="row2"><input type="text" class="text" name="lang_english_name" value="<?php echo $lang_entries[$lang_id]['lang_english_name']; ?>" /></td>
+			<td class="row2"><input type="text" class="text" name="lang_english_name" value="<?php echo $lang_entries['lang_english_name']; ?>" /></td>
 		</tr>
 		<tr>
 			<td class="row1"><b><?php echo $user->lang['LANG_LOCAL_NAME']; ?>: </b></td>
-			<td class="row2"><input type="text" class="text" name="lang_local_name" value="<?php echo $lang_entries[$lang_id]['lang_local_name']; ?>" /></td>
+			<td class="row2"><input type="text" class="text" name="lang_local_name" value="<?php echo $lang_entries['lang_local_name']; ?>" /></td>
 		</tr>
 		<tr>
 			<td class="row1"><b><?php echo $user->lang['LANG_ISO_CODE']; ?>: </b></td>
-			<td class="row2"><?php echo $lang_entries[$lang_id]['lang_iso']; ?></td>
+			<td class="row2"><?php echo $lang_entries['lang_iso']; ?></td>
 		</tr>
 		<tr>
 			<td class="row1"><b><?php echo $user->lang['LANG_AUTHOR']; ?>: </b></td>
-			<td class="row2"><input type="text" class="text" name="lang_author" value="<?php echo $lang_entries[$lang_id]['lang_author']; ?>" /></td>
+			<td class="row2"><input type="text" class="text" name="lang_author" value="<?php echo $lang_entries['lang_author']; ?>" /></td>
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="right"><input type="submit" name="update_details" class="btnmain" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
@@ -398,35 +400,44 @@ $lang += array(
 <?php
 
 		// If current lang is different from the default lang, then first try to grab missing/additional vars
-		if ($lang_entries[$lang_id]['lang_iso'] != $config['default_lang'])
+		if ($lang_iso != $config['default_lang'])
 		{
 			$is_missing_var = false;
 
 			foreach ($language_files as $file)
 			{
-				if (file_exists("{$phpbb_root_path}language/{$lang_entries[$lang_id]['lang_iso']}/{$file}.{$phpEx}"))
+				if (file_exists(get_filename($lang_iso, "$file.$phpEx")))
 				{
-					$missing_vars[$file . '.' . $phpEx] = compare_language_files($config['default_lang'], $lang_entries[$lang_id]['lang_iso'], $file);
+					$missing_vars["$file.$phpEx"] = compare_language_files($config['default_lang'], $lang_iso, $file);
 
-					if (sizeof($missing_vars[$file . '.' . $phpEx]))
+					if (sizeof($missing_vars["$file.$phpEx"]))
 					{
 						$is_missing_var = true;
 					}
 					else
 					{
-						unset($missing_vars[$file . '.' . $phpEx]);
+						unset($missing_vars["$file.$phpEx"]);
 					}
 				}
 				else
 				{
-					$missing_files[] = "{$phpbb_root_path}language/{$lang_entries[$lang_id]['lang_iso']}/{$file}.{$phpEx}";
+					$missing_files[] = get_filename($lang_iso, "$file.$phpEx");
 				}
 			}
 		
+			// More missing files... for example email templates?
+			foreach ($email_templates as $file)
+			{
+				if (!file_exists(get_filename($lang_iso, "email/$file.$phpEx")))
+				{
+					$missing_files[] = get_filename("email/$file.$phpEx");
+				}
+			}
+
 			if (sizeof($missing_files))
 			{
 ?>
-				<h1><?php echo sprintf($user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries[$lang_id]['lang_local_name']); ?></h1>
+				<h1><?php echo sprintf($user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries['lang_local_name']); ?></h1>
 
 				<p><b style="color: red;"><?php echo implode('<br />', $missing_files); ?></b></p>
 
@@ -439,7 +450,7 @@ $lang += array(
 ?>
 				<h1><?php echo $user->lang['MISSING_LANG_VARIABLES']; ?></h1>
 
-				<p><?php echo sprintf($user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries[$lang_id]['lang_local_name']); ?></p>
+				<p><?php echo sprintf($user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']); ?></p>
 				
 				<form method="post" action="<?php echo "admin_language.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$lang_id"; ?>">
 				<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -473,16 +484,26 @@ $lang += array(
 		$s_lang_options = '<option class="sep">' . $user->lang['LANGUAGE_FILES'] . '</option>';
 		foreach ($language_files as $file)
 		{
-			$prefix = (file_exists($phpbb_root_path . 'store/language/' . $lang_iso . '/' . $file . '.' . $phpEx)) ? '* ' : '';
+			if (strpos($file, 'help_') === 0)
+			{
+				continue;
+			}
+
+			$prefix = (file_exists(get_filename($lang_iso, $file . '.' . $phpEx, true))) ? '* ' : '';
 
 			$selected = ($cur_file == $file . '.' . $phpEx) ? ' selected="selected"' : '';
 			$s_lang_options .= '<option value="' . $file . '"' . $selected . '>' . $prefix . $file . '.' . $phpEx . '</option>';
 		}
 		
 		$s_lang_options .= '<option class="sep">' . $user->lang['HELP_FILES'] . '</option>';
-		foreach ($help_files as $file)
+		foreach ($language_files as $file)
 		{
-			$prefix = (file_exists($phpbb_root_path . 'store/language/' . $lang_iso . '/' . $file . '.' . $phpEx)) ? '* ' : '';
+			if (strpos($file, 'help_') !== 0)
+			{
+				continue;
+			}
+
+			$prefix = (file_exists(get_filename($lang_iso, $file . '.' . $phpEx, true))) ? '* ' : '';
 
 			$selected = ($cur_file == $file . '.' . $phpEx) ? ' selected="selected"' : '';
 			$s_lang_options .= '<option value="' . $file . '"' . $selected . '>' . $prefix . $file . '.' . $phpEx . '</option>';
@@ -491,7 +512,7 @@ $lang += array(
 		$s_lang_options .= '<option class="sep">' . $user->lang['EMAIL_TEMPLATES'] . '</option>';
 		foreach ($email_templates as $file)
 		{
-			$prefix = (file_exists($phpbb_root_path . 'store/language/' . $lang_iso . '/email/' . $file)) ? '* ' : '';
+			$prefix = (file_exists(get_filename($lang_iso, "email/{$file}", true))) ? '* ' : '';
 
 			$selected = ($cur_file == 'email/' . $file) ? ' selected="selected"' : '';
 			$s_lang_options .= '<option value="email/' . $file . '"' . $selected . '>' . $prefix . $file . '</option>';
@@ -499,12 +520,11 @@ $lang += array(
 
 		// Get Language Entries - if saved within store folder, we take this one (with the option to remove it)
 		$lang = array();
-		$filename = "language/{$lang_iso}/{$cur_file}";
 		$is_email_file = (strpos($cur_file, 'email/') !== false) ? true : false;
 		$is_help_file = (strpos($cur_file, 'help_') === 0) ? true : false;
-		$file_from_store = (file_exists("{$phpbb_root_path}store/{$filename}")) ? true : false;
+		$file_from_store = (file_exists(get_filename($lang_iso, $cur_file, true))) ? true : false;
 
-		if (!$file_from_store && !file_exists("{$phpbb_root_path}{$filename}"))
+		if (!$file_from_store && !file_exists(get_filename($lang_iso, $cur_file)))
 		{
 			$print_message = sprintf($user->lang['MISSING_LANGUAGE_FILE'], $cur_file);
 		}
@@ -512,11 +532,11 @@ $lang += array(
 		{
 			if ($is_email_file)
 			{
-				$lang = implode('', file($phpbb_root_path . (($file_from_store) ? 'store/' : '') . $filename));
+				$lang = implode('', file(get_filename($lang_iso, $cur_file, $file_from_store)));
 			}
 			else
 			{
-				include($phpbb_root_path . (($file_from_store) ? 'store/' : '') . $filename);
+				include(get_filename($lang_iso, $cur_file, $file_from_store));
 
 				if ($is_help_file)
 				{
@@ -693,7 +713,6 @@ $lang += array(
 		$db->sql_freeresult($result);
 
 		$use_method = request_var('use_method', '');
-
 		$methods = array('tar');
 
 		foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type => $module)
@@ -755,8 +774,6 @@ $lang += array(
 			$compress = new compress_tar('w', $phpbb_root_path . 'store/lang_pack_' . $row['lang_iso'] . '.' . $use_method, $use_method);
 		}
 		
-		$language_files = array('common', 'groups', 'mcp', 'memberlist', 'posting', 'search', 'ucp', 'viewforum', 'viewtopic', 'admin');
-		$help_files = array('help_bbcode', 'help_faq');
 		$email_templates = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'email', 'txt');
 		$email_templates = $email_templates['email/'];
 		
@@ -764,21 +781,16 @@ $lang += array(
 		$src_path = 'language/' . $row['lang_iso'] . '/';
 		foreach ($language_files as $file)
 		{
-			if (file_exists($phpbb_root_path . 'store/' . $src_path . $file . '.' . $phpEx))
+			if (file_exists(get_filename($row['lang_iso'], $file . '.' . $phpEx, 'store')))
 			{
-				$compress->add_file('store/' . $src_path . $file . '.' . $phpEx, 'store/');
-			}
-			else
-			{
-				$compress->add_file($src_path . $file . '.' . $phpEx);
-			}
-		}
-
-		foreach ($help_files as $file)
-		{
-			if (file_exists($phpbb_root_path . 'store/' . $src_path . $file . '.' . $phpEx))
-			{
-				$compress->add_file('store/' . $src_path . $file . '.' . $phpEx, 'store/');
+				if ($safe_mode)
+				{
+					$compress->add_custom_file('store/langfile_' . $row['lang_iso'] . '_' . $file . '.' . $phpEx, $src_path . $file . '.' . $phpEx);
+				}
+				else
+				{
+					$compress->add_file('store/' . $src_path . $file . '.' . $phpEx, 'store/');
+				}
 			}
 			else
 			{
@@ -788,9 +800,16 @@ $lang += array(
 
 		foreach ($email_templates as $file)
 		{
-			if (file_exists($phpbb_root_path . 'store/' . $src_path . 'email/' . $file))
+			if (file_exists(get_filename($row['lang_iso'], 'email/' . $file, 'store')))
 			{
-				$compress->add_file('store/' . $src_path . 'email/' . $file, 'store/');
+				if ($safe_mode)
+				{
+					$compress->add_custom_file('store/langfile_' . $row['lang_iso'] . '_email_' . $file, $src_path . 'email/' . $file);
+				}
+				else
+				{
+					$compress->add_file('store/' . $src_path . 'email/' . $file, 'store/');
+				}
 			}
 			else
 			{
@@ -885,16 +904,19 @@ $lang += array(
 	{
 		if ($file{0} != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
 		{
-			if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
+			if (!in_array($file, $installed))
 			{
-				if (!in_array($file, $installed))
+				if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
 				{
-					$new_ary[$file] = array(
-						'iso'		=> $file,
-						'name'		=> trim($iso[0]),
-						'local_name'=> trim($iso[1]),
-						'author'	=> trim($iso[2])
-					);
+					if (sizeof($iso) == 3)
+					{					
+						$new_ary[$file] = array(
+							'iso'		=> $file,
+							'name'		=> trim($iso[0]),
+							'local_name'=> trim($iso[1]),
+							'author'	=> trim($iso[2])
+						);
+					}
 				}
 			}
 		}
@@ -956,13 +978,13 @@ function compare_language_files($source_lang, $dest_lang, $file_var)
 	$lang_entry_src = $lang;
 
 	$lang = array();
-	if (file_exists("{$phpbb_root_path}store/language/{$dest_lang}/{$file_var}.{$phpEx}"))
+	if (file_exists(get_filename($dest_lang, $file_var . '.' . $phpEx, true)))
 	{
-		include("{$phpbb_root_path}store/language/{$dest_lang}/{$file_var}.{$phpEx}");
+		include(get_filename($dest_lang, $file_var . '.' . $phpEx, true));
 	}
 	else
 	{
-		include("{$phpbb_root_path}language/{$dest_lang}/{$file_var}.{$phpEx}");
+		include(get_filename($dest_lang, $file_var . '.' . $phpEx));
 	}
 	$lang_entry_dst = $lang;
 
@@ -1013,6 +1035,24 @@ function print_language_entries(&$lang_ary, $key_prefix = '', $input_field = tru
 		</tr>
 <?php
 		}
+	}
+}
+
+function get_filename($lang_iso, $file, $check_store = false)
+{
+	global $phpbb_root_path, $safe_mode;
+	
+	if ($check_store && $safe_mode)
+	{
+		return "{$phpbb_root_path}store/langfile_{$lang_iso}_" . ((strpos($file, 'email/') !== false) ? str_replace('email/', 'email_', $file) : $file);
+	}
+	else if ($check_store)
+	{
+		return $phpbb_root_path . 'store/language/' . $lang_iso . '/' . $file;
+	}
+	else
+	{
+		return $phpbb_root_path . 'language/' . $lang_iso . '/' . $file;
 	}
 }
 
