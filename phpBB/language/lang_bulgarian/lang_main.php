@@ -23,10 +23,22 @@
 *                     Bulgarian translation (Български превод)
 *                              ------------------- 
 *     begin                : Thu Dec 06 2001
-*     last update          : Fri Jan 11 2001  
+*     last update          : Fri Jan 15 2001  
 *     by                   : Boby Dimitrov (Боби Димитров) 
 *     email                : boby@azholding.com 
 ****************************************************************************/ 
+
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
 
 
 //setlocale(LC_ALL, "en");
@@ -83,8 +95,8 @@ $lang['Disabled'] = "Изкл.";
 $lang['Error'] = "Грешка";
 $lang['Success'] = "Успех";
 
-$lang['Next'] = "Следващ";
-$lang['Previous'] = "Предишен";
+$lang['Next'] = "Следваща";
+$lang['Previous'] = "Предишна";
 $lang['Goto_page'] = "Иди на страница";
 $lang['Joined'] = "Регистриран на";
 $lang['IP_Address'] = "IP Адрес";
