@@ -154,8 +154,6 @@ else if (isset($_POST['delete']))
 }
 else if (isset($_POST['presetsave']))
 {
-	print_r($_POST['option']);
-
 	$holding_ary = array();
 	foreach ($_POST['option'] as $acl_option => $allow_deny)
 	{
@@ -440,15 +438,14 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			ORDER BY preset_id ASC";
 		$result = $db->sql_query($sql);
 
-		$preset_options = $preset_js = '';
-		$holding = $preset_ary = array();
+		$preset_options = $preset_js = $preset_update_options = '';
+		$holding = array();
 		if ($row = $db->sql_fetchrow($result))
 		{
 			do
 			{
-				$preset_ary[$row['preset_id']] = $row['preset_name'];
-
-				$preset_options .= '<option value="preset_' . $row['preset_id'] . '">* ' . $row['preset_name'] . '</option>';
+				$preset_update_options .= '<option value="' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
+				$preset_options .= '<option style="color:red" value="preset_' . $row['preset_id'] . '">* ' . $row['preset_name'] . '</option>';
 
 				$preset_data = unserialize($row['preset_data']);
 				
@@ -543,7 +540,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 <form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php echo $preset_options; ?></select></td>
+		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php echo ($preset_options) ? '<option>--' . $user->lang['PRESETS'] . '--</option>' . $preset_options : ''; ?></select></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -564,9 +561,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			if (!empty($_POST['presetsave']) || !empty($_POST['presetdel']))
 			{
 				$allow_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_ALLOW) ? ' checked="checked"' : '';
-
 				$deny_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_DENY) ? ' checked="checked"' : '';
-
 				$inherit_type = ($_POST['option'][$auth_options[$i]['auth_value']] == ACL_INHERIT) ? ' checked="checked"' : '';
 			}
 			else
@@ -641,18 +636,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 				<td nowrap="nowrap"><?php echo $user->lang['SELECT_PRESET']; ?>: </td>
 				<td><select name="presetoption"><option value="-1"><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><?php 
 
-		$preset_options = '';
-		foreach ($preset_ary as $preset_id => $preset_name)
-		{
-			$preset_options .= '<option value="' . $preset_id . '">' . $preset_name . '</option>';
-		}
-
-		for ($i = 0; $i < 10 - sizeof($preset_ary); $i++)
-		{
-			$preset_options .= '<option value="-1">-- ' . $user->lang['EMPTY'] . ' --</option>';
-		}
-
-		echo $preset_options;
+		echo $preset_update_options;
 	
 ?></select></td>
 			</tr>
