@@ -231,8 +231,8 @@ class ucp_prefs extends module
 				$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 				$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-				$s_limit_days = $s_sort_key = $s_sort_dir = '';
-				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
+				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 				$images = (isset($images)) ? $images : $user->optionget('viewimg');
 				$images_yes = ($images) ? ' checked="checked"' : '';

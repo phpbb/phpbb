@@ -137,6 +137,7 @@ class ucp_attachments extends module
 		$template->assign_vars(array( 
 			'PAGE_NUMBER'			=> on_page($num_attachments, $config['posts_per_page'], $start),
 			'PAGINATION'			=> generate_pagination("{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['posts_per_page'], $start),
+			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
 

@@ -40,7 +40,7 @@ class ucp_zebra extends module
 			extract($data);
 			unset($data);
 
-			if ($add)
+			if ($add && !sizeof($error))
 			{
 				$add = explode("\n", $add);
 
@@ -138,12 +138,21 @@ class ucp_zebra extends module
 									break;
 							}
 						}
+						else
+						{
+							$error[] = 'NOT_ADDED_' . strtoupper($mode);
+						}
 						unset($user_id_ary);
 					}
+					else
+					{
+						$error[] = 'USER_NOT_FOUND';
+					}
+
 					$db->sql_freeresult($result);
 				}
 			}
-			else if ($usernames)
+			else if ($usernames && !sizeof($error))
 			{
 				// Force integer values
 				$usernames = array_map('intval', $usernames);
@@ -154,9 +163,16 @@ class ucp_zebra extends module
 				$db->sql_query($sql);
 			}
 
-			meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
-			$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
-			trigger_error($message);
+			if (!sizeof($error))
+			{			
+				meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+				$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+				trigger_error($message);
+			}
+			else
+			{
+				$template->assign_var('ERROR', implode('<br />', preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error)));
+			}
 		}
 
 		$sql_and = ($mode == 'friends') ? 'z.friend = 1' : 'z.foe = 1';
