@@ -207,7 +207,10 @@ class messenger
 
 	function error($type, $msg)
 	{
-		global $phpEx, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path;
+
+		// Session doesn't exist, create it
+		$user->start();
 
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		add_log('critical', $type . '_ERROR', $msg);
