@@ -22,7 +22,7 @@ if (!empty($setmodules))
 	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=server" : '';
 	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=auth" : '';
 	$module['GENERAL']['LOAD_SETTINGS'] = ($auth->acl_get('a_server')) ? "$filename$SID&amp;mode=load" : '';
-	$module['USER']['KARMA_SETTINGS'] = ($auth->acl_get('a_users')) ? "$filename$SID&amp;mode=karma" : '';
+	$module['USER']['KARMA_SETTINGS'] = ($auth->acl_get('a_user')) ? "$filename$SID&amp;mode=karma" : '';
 	return;
 }
 
@@ -73,7 +73,7 @@ switch ($mode)
 		break;
 	case 'karma':
 		$l_title = 'KARMA_SETTINGS';
-		$which_auth = 'a_users';
+		$which_auth = 'a_user';
 		break;
 	default:
 		return;
@@ -86,8 +86,8 @@ if (!$auth->acl_get($which_auth))
 }
 
 // Pull all config data
-$sql = "SELECT *
-	FROM " . CONFIG_TABLE;
+$sql = 'SELECT *
+	FROM ' . CONFIG_TABLE;
 $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
@@ -96,11 +96,11 @@ while ($row = $db->sql_fetchrow($result))
 	$config_value = $row['config_value'];
 
 	$default_config[$config_name] = $config_value;
-	$new[$config_name] = (isset($_POST[$config_name])) ? $_POST[$config_name] : $default_config[$config_name];
+	$new[$config_name] = request_var($config_name, $default_config[$config_name]);
 
 	if ($submit)
 	{
-		set_config($config_name, str_replace('\\\\', '\\', addslashes($new[$config_name])));
+		set_config($config_name, $new[$config_name]);
 	}
 }
 
@@ -241,8 +241,7 @@ switch ($mode)
 		$attachments_yes = ($new['allow_attachments']) ? 'checked="checked"' : '';
 		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
 
-		// Caching screws up slashes so we fudge a solution
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[/w_/+/. /-/[/]]+');
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[/w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
 		{
@@ -435,14 +434,6 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="flood_interval" value="<?php echo $new['flood_interval']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['MIN_SEARCH_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MIN_SEARCH_CHARS_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_search_chars" value="<?php echo $new['min_search_chars']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['MAX_SEARCH_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MAX_SEARCH_CHARS_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
-	</tr>
-	<tr>
 		<td class="row1"><b><?php echo $user->lang['TOPICS_PER_PAGE']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="topics_per_page" size="3" maxlength="4" value="<?php echo $new['topics_per_page']; ?>" /></td>
 	</tr>
@@ -472,6 +463,9 @@ switch ($mode)
 
 		$smtp_yes = ($new['smtp_delivery']) ? 'checked="checked"' : '';
 		$smtp_no = (!$new['smtp_delivery']) ? 'checked="checked"' : '';
+
+		$smtp_auth_plain = ($new['smtp_auth_method'] == 'PLAIN' || !$new['smtp_auth_method']) ? 'checked="checked"' : '';
+		$smtp_auth_login = ($new['smtp_auth_method'] == 'LOGIN') ? 'checked="checked"' : '';
 
 ?>
 	<tr>
@@ -509,6 +503,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SMTP_PORT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMTP_PORT_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="smtp_port" value="<?php echo $new['smtp_port']; ?>" size="4" maxlength="5" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['SMTP_AUTH_METHOD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMTP_AUTH_METHOD_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="smtp_auth_method" value="PLAIN" <?php echo $smtp_auth_plain; ?> /> <?php echo $user->lang['SMTP_PLAIN']; ?>&nbsp;&nbsp;<input type="radio" name="smtp_auth_method" value="LOGIN" <?php echo $smtp_auth_login; ?> /> <?php echo $user->lang['SMTP_LOGIN']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SMTP_USERNAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMTP_USERNAME_EXPLAIN']; ?></span></td>
@@ -648,6 +646,14 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" size="3" maxlength="4" name="search_interval" value="<?php echo $new['search_interval']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><b><?php echo $user->lang['MIN_SEARCH_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MIN_SEARCH_CHARS_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_search_chars" value="<?php echo $new['min_search_chars']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['MAX_SEARCH_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MAX_SEARCH_CHARS_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH_UPDATE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_UPDATE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="load_search_upd" value="1"<?php echo $search_update_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_upd" value="0" <?php echo $search_update_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
@@ -727,7 +733,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['ENABLE_KARMA']; ?>: </b></td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['ENABLE_KARMA']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="enable_karma" value="1"<?php echo $enable_karma_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_karma" value="0" <?php echo $enable_karma_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
