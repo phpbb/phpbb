@@ -187,10 +187,10 @@ class session
 		{
 			$banned = false;
 
-			$sql = "SELECT ban_ip, ban_userid, ban_email, ban_exclude  
-				FROM " . BANLIST_TABLE . "
-				WHERE ban_end >= $current_time
-					OR ban_end = 0";
+			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end  
+				FROM ' . BANLIST_TABLE . '
+				WHERE ban_end >= ' . time() . '
+					OR ban_end = 0';
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -218,10 +218,17 @@ class session
 
 			if ($banned)
 			{
-				// TODO
-				// Note that at present this doesn't surround the administrator
-				// text with an appropriate URL
-				trigger_error('BOARD_BANNED');
+				// Initiate environment ... since it won't be set at this stage
+				$this->setup();
+
+				// Determine which message to output 
+				$till_date = (!empty($row['ban_end'])) ? $this->format_date($row['ban_end']) : '';
+				$message = (!empty($row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+	
+				$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
+				// More internal HTML ... :D
+				$message .= (!empty($row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $row['ban_show_reason']) : '';
+				trigger_error($message);
 			}
 		}
 
@@ -390,7 +397,7 @@ class user extends session
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
-			$this->dst = 0;
+			$this->dst = $config['board_dst'] * 3600;
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
@@ -509,6 +516,8 @@ class auth
 	{
 		global $db, $cache;
 
+		$this->founder = ($userdata['user_founder']) ? true : false;
+
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
 			$sql = "SELECT auth_value, is_global, is_local
@@ -563,7 +572,6 @@ class auth
 	// Look up an option
 	function acl_get($opt, $f = 0)
 	{
-		return TRUE;
 		static $cache;
 
 		if (!isset($cache[$f][$opt]))
@@ -578,7 +586,7 @@ class auth
 			}
 		}
 
-		return  $cache[$f][$opt];
+		return ($this->founder) ? true : $cache[$f][$opt];
 	}
 
 	function acl_gets()
