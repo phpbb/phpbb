@@ -225,6 +225,67 @@ function tz_select($default)
 
 	return($tz_select);
 }
+
+function upload_avatar($avatar_location, $avatar_filename, $avatar_type, $avatar_size)
+{
+
+	global $board_config, $userdata;
+
+	$avatar_sql = "";
+	$error = false;
+	$error_msg = "";
+
+	if(file_exists($avatar_location) && ereg(".jpg$|.gif$|.png$", $avatar_filename))
+	{
+		if($avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
+		{
+			switch($avatar_type)
+			{
+				case "image/pjpeg": 
+					$imgtype = '.jpg';
+					break;
+				case "image/gif": 
+					$imgtype = '.gif';
+					break;
+				case "image/png": 
+					$imgtype = '.png';
+					break;
+				default:
+					$error = true;
+					break;
+			}
+
+			if(!$error)
+			{
+				$avatar_filename = $userdata['user_id'].$imgtype;
+				if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
+				{
+					@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
+				}
+				@copy($avatar_location, "./".$board_config['avatar_path']."/$avatar_filename");
+				$avatar_sql = ", user_avatar = '$avatar_filename'";
+			}
+			else
+			{
+				$error = true;
+				$error_msg = "The avatar filetype must be .jpg, .gif or .png";
+			}
+		}
+		else
+		{
+			$error = true;
+			$error_msg = "The avatar image file size must more than 0 kB and less than ".round($board_config['avatar_filesize']/1024)." kB";
+		}
+	}
+	else
+	{
+		$error = true;
+		$error_msg = "The avatar filetype must be .jpg, .gif or .png";
+	}
+
+	return array($avatar_sql, $error, $error_msg, $userdata['user_avatar']);
+
+}
 //
 // End of functions defns
 //
@@ -352,8 +413,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$pagetype = "register";
 			$page_title = "$l_register";
 
-			$max_avatar_size = $board_config['avatar_filesize'];
-
 			//
 			// Output page header and
 			// profile_add template
@@ -388,13 +447,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
 				$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
 
-				$user_avatar = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 				$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 				$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 				$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone'];
 				$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 				$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
-			
+
+				$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
+				$user_avatar_name = ($HTTP_POST_FILES['avatar']['name']) ? $HTTP_POST_FILES['avatar']['name'] : "";
+				$user_avatar_size = ($HTTP_POST_FILES['avatar']['size']) ? $HTTP_POST_FILES['avatar']['size'] : 0;
+				$user_avatar_type = ($HTTP_POST_FILES['avatar']['type']) ? $HTTP_POST_FILES['avatar']['type'] : "";
+
 				$error = FALSE;
 			
 				$passwd_sql = "";
@@ -431,7 +494,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				}
 
-				$avatar_sql = "";
 				if($board_config['allow_avatar_upload'])
 				{
 					if(isset($HTTP_POST_VARS['avatardel']))
@@ -442,40 +504,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							$avatar_sql = ", user_avatar = ''";
 						}
 					}
-					else if(isset($user_avatar))
+					else if(!empty($user_avatar_loc))
 					{
-						if(file_exists($user_avatar))
-						{
-							if($HTTP_POST_FILES['avatar']['size'] <= $max_avatar_size)
-							{
-								switch($HTTP_POST_FILES['avatar']['type'])
-								{
-									case "image/pjpeg": 
-										$imgtype = '.jpg';
-										break;
-									case "image/gif": 
-										$imgtype = '.gif';
-										break;
-									case "image/png": 
-										$imgtype = '.png';
-										break;
-									default:
-										$error = true;
-									break;
-								}
-
-								if(!$error)
-								{
-									$avatar_filename = $userdata['user_id'].$imgtype;
-									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
-									{
-										@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
-									}
-									@copy($user_avatar, "./".$board_config['avatar_path']."/$avatar_filename");
-									$avatar_sql = ", user_avatar = '$avatar_filename'";
-								}
-							}
-						}
+						//
+						// Returns various vars, $user_avatar is sent
+						// in case we get an error and need to display the current
+						// avatar
+						//
+						list($avatar_sql, $error, $error_msg, $user_avatar) = upload_avatar($user_avatar_loc, $user_avatar_name, $user_avatar_type, $user_avatar_size);
 					}
 				}
 
@@ -529,6 +565,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					));
 					$template->pparse("reg_header");
 				}
+
 			}
 			else
 			{
@@ -632,7 +669,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 				"L_AVATAR" => $l_avatar,
-				"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($max_avatar_size / 1024)). $l_kB,
+				"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($board_config['avatar_filesize'] / 1024)). $l_kB,
 				"L_UPLOAD_IMAGE" => $l_Upload_Image,
 				"L_DELETE_IMAGE" => $l_Delete_Image,
 				"L_CURRENT_IMAGE" => $l_Current_Image,
@@ -679,14 +716,16 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
 			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
 
-			$user_avatar = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 			$user_timezone = str_replace("+", "", (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['default_timezone']);
 			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-			$max_avatar_size = $board_config['avatar_filesize'];
+			$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
+			$user_avatar_name = ($HTTP_POST_FILES['avatar']['name']) ? $HTTP_POST_FILES['avatar']['name'] : "";
+			$user_avatar_size = ($HTTP_POST_FILES['avatar']['size']) ? $HTTP_POST_FILES['avatar']['size'] : 0;
+			$user_avatar_type = ($HTTP_POST_FILES['avatar']['type']) ? $HTTP_POST_FILES['avatar']['type'] : "";
 
 			if(!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'])
 			{
@@ -765,39 +804,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$avatar_filename = "";
 				if($board_config['allow_avatar_upload'])
 				{
-					if(isset($user_avatar))
+					if(!empty($user_avatar_loc))
 					{
-						if(file_exists($user_avatar))
-						{
-							if($HTTP_POST_FILES['avatar']['size'] <= $max_avatar_size)
-							{
-								switch($HTTP_POST_FILES['avatar']['type'])
-								{
-									case "image/pjpeg": 
-										$imgtype = '.jpg';
-										break;
-									case "image/gif": 
-										$imgtype = '.gif';
-										break;
-									case "image/png": 
-										$imgtype = '.png';
-										break;
-									default:
-										$error = true;
-									break;
-								}
-
-								if(!$error)
-								{
-									$avatar_filename = $userdata['user_id'].$imgtype;
-									if(file_exists("./".$board_config['avatar_path']."/".$userdata['user_avatar']))
-									{
-										@unlink("./".$board_config['avatar_path']."/".$userdata['user_avatar']);
-									}
-									@copy($user_avatar, "./".$board_config['avatar_path']."/$avatar_filename");
-								}
-							}
-						}
+						//
+						// Returns various vars, $user_avatar is sent
+						// in case we get an error and need to display the current
+						// avatar
+						//
+						list($avatar_sql, $error, $error_msg, $user_avatar) = upload_avatar($user_avatar_loc, $user_avatar_name, $user_avatar_type, $user_avatar_size);
 					}
 				}
 
@@ -972,7 +986,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
 					"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 					"L_AVATAR" => $l_avatar,
-					"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($max_avatar_size / 1024)). $l_kB,
+					"L_AVATAR_EXPLAIN" => $l_avatar_explain . (round($board_config['avatar_filesize'] / 1024)). $l_kB,
 					"L_UPLOAD_IMAGE" => $l_Upload_Image,
 					"L_DELETE_IMAGE" => $l_Delete_Image,
 					"L_CURRENT_IMAGE" => $l_Current_Image,
