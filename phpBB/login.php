@@ -89,7 +89,50 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 }
 else
 {
-	header("Location: index.$phpEx");
+	//
+	// Do a full login page dohickey
+	//
+	$pagetype = "login";
+	$page_title = "Log In";
+
+	include('includes/page_header.'.$phpEx);
+
+	$template->assign_vars(array(
+		"PHPEX" => $phpEx,
+		"PHP_SELF" => $PHP_SELF,
+
+		"T_TR_COLOR1" => "#AA0000",
+		"T_TR_COLOR2" => "#AA0000",
+		"T_TR_COLOR3" => "#AA0000",
+		"T_TH_COLOR1" => "#495FA8",
+		"T_TH_COLOR2" => "#AAAA00",
+		"T_TH_COLOR3" => "#AA00AA",
+		"T_TD_COLOR1" => "#000000",
+		"T_TD_COLOR2" => "#CCCCCC",
+		"T_TD_COLOR3" => "#DDDDDD",
+		"T_FONTFACE1" => "sans-serif",
+		"T_FONTFACE2" => "sans-serif",
+		"T_FONTFACE3" => "sans-serif",
+		"T_FONTSIZE1" => "2",
+		"T_FONTSIZE2" => "2",
+		"T_FONTSIZE3" => "2",
+		"T_FONTCOLOR1" => "#FFFFFF",
+		"T_FONTCOLOR2" => "#000000",
+		"T_FONTCOLOR3" => "2",
+
+		"L_USERNAME" => $l_username,
+		"L_PASSWORD" => $l_password,
+		"L_SEND_PASSWORD" => "Send me a new password",
+		"L_LOGIN" => $l_login,
+
+		"USERNAME" => $userdata['username']
+		)
+	);
+
+	$template->pparse("body");
+
+	include('includes/page_tail.'.$phpEx);
+
 }
 
 ?>
