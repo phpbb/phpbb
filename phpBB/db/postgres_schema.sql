@@ -401,6 +401,7 @@ CREATE TABLE phpbb_topics (
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
    topic_notify int2 DEFAULT '0',
+   topic_moved_id int4,
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );

@@ -293,6 +293,7 @@ switch($mode)
 				$sql_select = 'SELECT
 									topic_title,
 									topic_poster,
+									topic_status,
 									topic_time
 									FROM '.
 									TOPICS_TABLE." WHERE
@@ -304,6 +305,7 @@ switch($mode)
 				else
 				{
 					$row = $db->sql_fetchrowset($result);
+
 					$ttitle = $row[0]['topic_title'];
 					$tpost = $row[0]['topic_poster'];
 					$ttime = $row[0]['topic_time'];
@@ -831,9 +833,14 @@ switch($mode)
 
 		for($x = 0; $x < $total_topics; $x++)
 		{
+			$topic_title = "";
 			if($topics[$x]['topic_status'] == TOPIC_LOCKED)
 			{
 				$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
+			}
+			else if($topics[$x]['topic_status'] == TOPIC_MOVED)
+			{
+				$topic_title = "<b>" . $lang['Topic_Moved'] . ":</b> ";
 			}
 			else
 			{
@@ -842,15 +849,13 @@ switch($mode)
 
 			$topic_id = $topics[$x]['topic_id'];
 
-			$topic_title = "";
-
 			if($topics[$x]['topic_type'] == POST_STICKY)
 			{
-				$topic_title = $lang['Sticky'] . " ";
+				$topic_title = "<b>".$lang['Post_Sticky'] . ":</b> ";
 			}
 			else if($topics[$x]['topic_type'] == POST_ANNOUNCE)
 			{
-				$topic_title = $lang['Annoucement'] . " ";
+				$topic_title = "<b>" . $lang['Post_Announcement'] . ":</b> ";
 			}
 
 			$topic_title .= stripslashes($topics[$x]['topic_title']);
