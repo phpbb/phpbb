@@ -310,6 +310,7 @@ $lang = array(
 	'DELETE_TOPIC' => 'Delete topic',
 	'SPLIT_TOPIC' => 'Split topic',
 	'MERGE_TOPIC' => 'Merge topic',
+	'CHANGE_TOPIC_TYPE'	=> 'Change topic type to: ',
 
 	'Stop_watching_topic' => 'Stop watching this topic',
 	'Start_watching_topic' => 'Watch this topic for replies',
