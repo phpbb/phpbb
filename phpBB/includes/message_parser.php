@@ -111,7 +111,7 @@ class bbcode_firstpass extends bbcode
 			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
 			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i' => '[img:' . $this->bbcode_uid . ']$1$2[/img:' . $this->bbcode_uid . ']')),
 			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=$1:' . $this->bbcode_uid . ']$2[/size:' . $this->bbcode_uid . ']')),
-			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('#\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]#is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
+			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
 			'u'			=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']$1[/u:' . $this->bbcode_uid . ']')),
 			'list'		=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_list('\$0')")),
 			'email'		=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
