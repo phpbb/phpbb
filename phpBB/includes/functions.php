@@ -739,7 +739,7 @@ function obtain_word_list(&$censors)
 		{
 			do
 			{
-				$censors['match'][] = '#(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')#i';
+				$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
 				$censors['replace'][] = $row['replacement'];
 			}
 			while ($row = $db->sql_fetchrow($result));

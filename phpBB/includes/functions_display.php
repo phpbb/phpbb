@@ -290,10 +290,17 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 function display_attachments($attachment_data, &$update_count, $force_physical = false)
 {
 	global $extensions, $template;
-	global $config, $user, $phpbb_root_path, $phpEx, $SID;
+	global $config, $user, $phpbb_root_path, $phpEx, $SID, $censors;
 
+	if (empty($censors))
+	{
+		$censors = array();
+		obtain_word_list($censors);
+	}
+	
 	if (empty($extensions) || !is_array($extensions))
 	{
+		$extensions = array();
 		obtain_attach_extensions($extensions);
 	}
 
@@ -323,7 +330,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
 		$display_name = $attachment['real_filename']; 
-		$comment = str_replace("\n", '<br />', $attachment['comment']);
+		$comment = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], str_replace("\n", '<br />', $attachment['comment'])) : str_replace("\n", '<br />', $attachment['comment']);
 
 		$denied = FALSE;
 			

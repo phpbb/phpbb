@@ -119,6 +119,12 @@ switch ($mode)
 		trigger_error($user->lang['NO_MODE']);
 }
 
+if (empty($censors))
+{
+	$censors = array();
+	obtain_word_list($censors);
+}
+
 if ($sql != '')
 {
 	$result = $db->sql_query($sql);
@@ -749,12 +755,6 @@ if ($submit || $preview || $refresh)
 // Preview
 if (!sizeof($error) && $preview)
 {
-	if (empty($censors))
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
-
 	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
@@ -824,13 +824,13 @@ if (count($poll_options))
 
 if ($mode == 'quote' && !$preview && !$refresh)
 {
-	$post_text = '[quote="' . $quote_username . '"]' . trim($post_text) . "[/quote]\n";
+	$post_text = '[quote="' . $quote_username . '"]' . ((sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], trim($post_text)) : trim($post_text)) . "[/quote]\n";
 }
 
 
 if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
 {
-	$post_subject = ((!preg_match('/^Re:/', $post_subject)) ? 'Re: ' : '') . $post_subject;
+	$post_subject = ((!preg_match('/^Re:/', $post_subject)) ? 'Re: ' : '') . ((sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $post_subject) : $post_subject);
 }
 
 
