@@ -193,7 +193,9 @@ class session {
 
 		$sql = "SELECT ban_ip, ban_userid, ban_email 
 			FROM " . BANLIST_TABLE . " 
-			WHERE ban_ip IN (
+			WHERE ( ban_start + ban_length <= $current_time 
+					OR ban_length = 0 )
+				AND ban_ip IN (
 				'" . $user_ip_parts[0] . ".', 
 				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . ".',
 				'" . $user_ip_parts[0] . "." . $user_ip_parts[1] . "." . $user_ip_parts[2] . ".', 
