@@ -4,7 +4,14 @@
 <h1>{L_SMILEY_TITLE}</h1>
 
 <P>{L_SMILEY_INSTR}</p>
-
+<script language="javascript">
+<!--
+function update_smiley(newimage)
+{
+	document.smiley_image.src = '{S_SMILEY_BASEDIR}/' + newimage;
+}
+-->
+</script>
 <form method="post" action="{S_SMILEY_ACTION}">
 <input type="hidden" name="mode" value="{S_HIDDEN_VAR}">
 <input type="hidden" name="id" value="{SMILEY_ID_VAL}">
@@ -18,7 +25,12 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_SMILEY_URL_LBL}</td>
-		<td class="row1"><input type="text" name="url" value="{SMILEY_URL_VAL}" /></td>
+		<td class="row1"><select name="url" onchange="update_smiley(this.options[selectedIndex].value);">
+			<!-- BEGIN smile_images -->
+			<option value="{smile_images.FILENAME}" {smile_images.SELECTED}>{smile_images.FILENAME}</option>
+			<!-- END smile_images -->
+			</select>
+			<img name='smiley_image' src="{S_SMILEY_BASEDIR}/{SMILEY_URL_VAL}" border=0 alt="smiley"></td>
 	</tr>
 	<tr>
 		<td class="row2">{L_SMILEY_EMOTION_LBL}</td>

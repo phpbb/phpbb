@@ -34,6 +34,17 @@ require('pagestart.inc');
 // Check to see what mode we should operate in.
 //
 $mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+//
+// Read a listing of uploaded smilies for use in the add or edit smliey code...
+//
+$dir = opendir($phpbb_root_path . $board_config['smilies_path']);
+while($file = readdir($dir))
+{
+	if($file != '.' && $file != '..')
+	{
+		$smiley_images[] = $file;
+	}
+}
 switch($mode)
 {
 	//
@@ -98,8 +109,18 @@ switch($mode)
 			"SMILEY_ID_VAL" => $smile_data['smilies_id'],
 			"SMILEY_URL_VAL" => $smile_data['smile_url'],
 			"SMILEY_EMOTION" => $smile_data['emoticon'],
-			"S_HIDDEN_VAR" => "save")
+			"S_HIDDEN_VAR" => "save",
+			"S_SMILEY_BASEDIR" => $phpbb_root_path . '/' . $board_config['smilies_path'])
 		);
+		for( $i = 0; $i < count($smiley_images); $i++ )
+		{
+			$smiley_selected = ($smiley_images[$i] == $smile_data['smile_url']) ? "SELECTED" : "";
+			$template->assign_block_vars("smile_images", array(
+				"FILENAME" => $smiley_images[$i], 
+				"SELECTED" => $smiley_selected)
+			);
+		}
+
 		//
 		// Spit out the edit form.
 		//
@@ -120,10 +141,19 @@ switch($mode)
 			"L_SMILEY_CODE_LBL" => $lang['smiley_code'],
 			"L_SMILEY_URL_LBL" => $lang['smiley_url'],
 			"L_SMILEY_EMOTION_LBL" => $lang['smiley_emot'],
+			"SMILEY_URL_VAL" => $smiley_images[0],
 			"L_SUBMIT" => $lang['Submit_changes'],
 			"L_RESET" => $lang['Reset_changes'],
-			"S_HIDDEN_VAR" => "savenew")
+			"S_HIDDEN_VAR" => "savenew",
+			"S_SMILEY_BASEDIR" => $phpbb_root_path . '/' . $board_config['smilies_path'])
 		);
+		for( $i = 0; $i < count($smiley_images); $i++ )
+		{
+			$template->assign_block_vars("smile_images", array(
+				"FILENAME" => $smiley_images[$i])
+			);
+		}
+
 		//
 		// Spit out the add form.
 		//
