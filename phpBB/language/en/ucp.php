@@ -341,6 +341,7 @@ $lang += array(
 	'UCP_AVATAR'				=> 'Your avatar',
 	'UCP_PROFILE_INFO'			=> 'Your Profile',
 	'UCP_REG_DETAILS'			=> 'Registration details',
+	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_SIGNATURE'				=> 'Your signature',
 	'UCP_REMIND'				=> 'Send password',
 	'UCP_WATCHED'				=> 'Watched items',

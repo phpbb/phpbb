@@ -148,11 +148,11 @@ elseif ($pane == 'right')
 
 				if (!$delete)
 				{
-					set_config('num_users', $config['num_users'] + $db->affected_rows(), true);
+					set_config('num_users', $config['num_users'] + $db->sql_affectedrows(), true);
 				}
 
 				$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
-				add_log('admin', $log_action, $db->affected_rows());
+				add_log('admin', $log_action, $db->sql_affectedrows());
 				break;
 
 			case 'remind':
@@ -166,7 +166,7 @@ elseif ($pane == 'right')
 					trigger_error($user->lang['EMAIL_DISABLED']);
 				}
 
-				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_method, user_regdate, user_actkey 
+				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
 					FROM ' . USERS_TABLE . " 
 					WHERE user_id IN ($mark)";
 				$result = $db->sql_query($sql);
@@ -205,7 +205,11 @@ elseif ($pane == 'right')
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					$messenger->queue->save();
+					if ($messenger->queue)
+					{
+						$messenger->queue->save();
+					}
+
 					unset($email_list);
 
 					add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
