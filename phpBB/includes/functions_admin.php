@@ -311,7 +311,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	{
 		if (!$where_type)
 		{
-			$where_sql = $where_sql_and = 'WHERE';
+			$where_sql = '';
+			$where_sql_and = 'WHERE';
 		}
 		else
 		{
@@ -329,75 +330,92 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					AND p.post_approved <> t.topic_approved";
 			$result = $db->sql_query($sql);
 
-			$topic_ids = $approved_ids = $unapproved_ids = array();
+			$topic_ids = $approved_unapproved_ids = array();
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['post_approved'])
-				{
-					$approved_ids[] = $row['topic_id'];
-				}
-				else
-				{
-					$unapproved_ids[] = $row['topic_id'];
-				}
+				$approved_unapproved_ids[] = $row['topic_id'];
+			}
+			$db->sql_freeresult();
+
+			if (!count($approved_unapproved_ids))
+			{
+				return;
 			}
 
-			if (count($approved_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 1
-					WHERE topic_id IN (' . implode(', ', $approved_ids) . ')';
-				$db->sql_query($sql);
-			}
-			if (count($unapproved_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 0
-					WHERE topic_id IN (' . implode(', ', $unapproved_ids) . ')';
-				$db->sql_query($sql);
-			}
-			return;
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_approved = 1 - topic_approved
+				WHERE topic_id IN (' . implode(', ', $approved_unapproved_ids) . ')';
+			$db->sql_query($sql);
 		break;
 
 		case 'reported':
-			$sql = "SELECT p.topic_id, p.post_reported
-				FROM " . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-				$where_sql_and p.topic_id = t.topic_id
-					AND p.post_reported <> t.topic_reported
+			$topic_data = $topic_ids = $post_ids = array();
+
+			if ($sync_extra)
+			{
+				// NOTE: untested
+				$sql = 'SELECT p.post_id
+					FROM ' . POSTS_TABLE . ' t
+					LEFT JOIN ' . REPORTS_TABLE . " r ON r.post_id = t.post_id
+					$where_sql
+						AND	((t.post_reported = 1 AND r.post_id IS NULL)
+						OR	 (t.post_reported = 0 AND r.post_id > 0))";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$post_ids[] = $row['post_id'];
+				}
+				$db->sql_freeresult();
+
+				if (count($post_ids))
+				{
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET post_reported = 1 - post_reported
+						WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+					$db->sql_query($sql);
+					unset($post_ids);
+				}
+			}
+
+			// NOTE: untested
+			$sql = 'SELECT t.topic_id, t.topic_reported, p.post_reported
+				FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . POSTS_TABLE . " p ON p.topic_id = t.topic_id
+				$where_sql
 				GROUP BY p.topic_id, p.post_reported";
 			$result = $db->sql_query($sql);
 
-			$reported_ids = $unreported_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['post_reported'])
+				if (!isset($topic_data[$row['topic_id']]))
 				{
-					$reported_ids[] = $row['topic_id'];
+					$topic_data[$row['topic_id']] = array(
+						'topic_reported' => $row['topic_reported'],
+						'post_reported' => $row['post_reported']
+					);
 				}
 				else
 				{
-					$unreported_ids[] = $row['topic_id'];
+					$topic_data[$row['topic_id']]['post_reported'] |= $row['post_reported'];
 				}
 			}
 
-			if (count($reported_ids))
+			foreach ($topic_data as $topic_id => $row)
 			{
-				$unreported_ids = array_diff($unreported_ids, $reported_ids);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_reported = 1
-					WHERE topic_id IN (' . implode(', ', $reported_ids) . ')';
-				$db->sql_query($sql);
-			}
-			if (count($unreported_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_reported = 0
-					WHERE topic_id IN (' . implode(', ', $unreported_ids) . ')';
-				$db->sql_query($sql);
+				if ($row['post_reported'] != $row['topic_reported'])
+				{
+					$topic_ids[] = $topic_id;
+				}
 			}
 
+			if (count($topic_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 1 - topic_reported
+					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+			}
 			return;
 		break;
 
@@ -429,7 +447,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				FROM ' . FORUMS_TABLE . ' f, ' . FORUMS_TABLE . " f2
 				$where_sql_and f2.left_id BETWEEN f.left_id AND f.right_id";
 
-			$forum_data = $forum_ids = $post_ids = $subforum_list = $post_count = $post_count_real = $last_post_id = $post_info = $topic_count = $topic_count_real = array();
+			$forum_data = $forum_ids = $post_ids = $subforum_list = $post_count = $last_post_id = $post_info = $topic_count = $topic_count_real = array();
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
@@ -476,25 +494,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 
 			// 3° Get post counts for each forum
-			$sql = 'SELECT forum_id, post_approved, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+			$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . '
 				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')
-				GROUP BY forum_id, post_approved';
+				GROUP BY forum_id';
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (!isset($post_count_real[$row['forum_id']]))
-				{
-					$post_count_real[$row['forum_id']] = $row['forum_posts'];
-				}
-				else
-				{
-					$post_count_real[$row['forum_id']] += $row['forum_posts'];
-				}
-				if ($row['post_approved'])
-				{
-					$last_post_id[$row['forum_id']] = intval($row['last_post_id']);
-				}
+				$post_count[$row['forum_id']] = intval($row['forum_posts']);
+				$last_post_id[$row['forum_id']] = intval($row['last_post_id']);
 			}
 
 			// 4° Do the math
@@ -595,7 +603,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		break;
 
 		case 'topic':
-			$topic_data = $topic_ids = $post_ids = $approved_ids = $unapproved_ids = $resync_forums = array();
+			$topic_data = $topic_ids = $post_ids = $approved_unapproved_ids = $resync_forums = array();
 
 			$sql = 'SELECT t.*, p.post_approved, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
@@ -609,16 +617,17 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$row['first_post_id'] = intval($row['first_post_id']);
 				$row['last_post_id'] = intval($row['last_post_id']);
 				$row['replies'] = $row['total_posts'] - 1;
-				$row['replies_real'] = $row['total_posts'] - 1;
 
 				if (!isset($topic_data[$row['topic_id']]))
 				{
-					$topic_ids[] = $row['topic_id'];
+					$topic_ids[$row['topic_id']] = '';
 					$topic_data[$row['topic_id']] = $row;
+					$topic_data[$row['topic_id']]['reported'] = 0;
+					$topic_data[$row['topic_id']]['replies_real'] += $row['total_posts'] - 1;
 				}
 				else
 				{
-					$topic_data[$row['topic_id']]['replies_real'] += $row['replies_real'];
+					$topic_data[$row['topic_id']]['replies_real'] += $row['total_posts'];
 
 					if ($topic_data[$row['topic_id']]['first_post_id'] > $row['first_post_id'])
 					{
@@ -631,6 +640,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 				}
 			}
+			$db->sql_freeresult();
 
 			foreach ($topic_data as $topic_id => $row)
 			{
@@ -641,6 +651,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				}
 			}
 
+			// Now we delete empty topics
+			// NOTE: we'll need another function to take care of orphans (posts with no valid topic and topics with no forum)
 			if (!count($topic_ids))
 			{
 				// If we get there, topic ids were invalid or topics did not contain any posts
@@ -650,34 +662,52 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 			else
 			{
-				if (count($where_ids))
+				$delete_ids = array();
+
+				if (count($where_ids) && $where_type == 'topic_id')
 				{
 					// If we get there, we already have a range of topic_ids; make a diff and delete topics
 					// that didn't return any row
-					$delete_ids = array_diff($where_ids, $topic_ids);
-					if (count($delete_ids))
-					{
-						delete_topics('topic_id', $topic_ids);
-					}
+					$delete_ids = array_diff($where_ids, array_keys($topic_ids));
 				}
 				else
 				{
 					// We're resync'ing by forum_id so we'll have to determine which topics we have to delete
-					$sql = 'SELECT topic_id
-						FROM ' . TOPICS_TABLE . "
-						$where_sql_and topic_id NOT IN (" . implode($topic_ids) . ')';
-					$result = $db->sql_query($sql);
-
-					$delete_ids = array();
-					while ($row = $db->sql_fetchrow($result))
+					// NOTE: if there are too many topics, the query can get too long and may crash the server
+					if (count($topic_ids) < 100)
 					{
-						$delete_ids[] = $row['topic_id'];
-					}
+						$sql = 'SELECT topic_id
+							FROM ' . TOPICS_TABLE . "
+							$where_sql_and topic_id NOT IN (" . implode(',', array_keys($topic_ids)) . ')';
+						$result = $db->sql_query($sql);
 
-					if (count($delete_ids))
-					{
-						delete_topics('topic_id', $delete_ids);
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$delete_ids[] = $row['topic_id'];
+						}
 					}
+					else
+					{
+						$sql = 'SELECT topic_id
+							FROM ' . TOPICS_TABLE . "
+							$where_sql";
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							if (!isset($topic_ids[$row['topic_id']]))
+							{
+								$delete_ids[] = $row['topic_id'];
+							}
+						}
+					}
+					$db->sql_freeresult();
+				}
+
+				unset($topic_ids);
+				if (count($delete_ids))
+				{
+					delete_topics('topic_id', $delete_ids);
 				}
 			}
 
@@ -690,6 +720,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
 					AND u.user_id = p.poster_id';
+
+			$post_ids = array();
+
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -699,11 +732,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					{
 						if ($row['post_approved'])
 						{
-							$approved_ids[] = $row['topic_id'];
-						}
-						else
-						{
-							$unapproved_ids[] = $row['topic_id'];
+							$approved_unapproved_ids[] = $row['topic_id'];
 						}
 					}
 					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
@@ -717,23 +746,39 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 				}
 			}
+			$db->sql_freeresult();
 
-			if (count($approved_ids))
+			// approved becomes unapproved, and vice-versa
+			if (count($approved_unapproved_ids))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 1
-					WHERE topic_id IN (' . implode(', ', $approved_ids) . ')';
-				$db->sql_query($sql);
-			}
-			if (count($unapproved_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 0
-					WHERE topic_id IN (' . implode(', ', $unapproved_ids) . ')';
+					SET topic_approved = 1 - topic_approved
+					WHERE topic_id IN (' . implode(', ', $approved_unapproved_ids) . ')';
 				$db->sql_query($sql);
 			}
 
+			// These are field that will be synchronised
 			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+
+			if ($sync_extra)
+			{
+				// This routine assumes that post_reported values are correct
+				// if they are not, use sync('reported') instead
+				$fieldnames[] = 'reported';
+				$sql = 'SELECT t.topic_id, p.post_id
+					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+					$where_sql_and p.topic_id = t.topic_id
+						AND p.post_reported = 1
+					GROUP t.topic_id";
+
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_data[$row['topic_id']]['reported'] = 1;
+				}
+
+				// Resync topic_attachment as well?
+			}
 
 			foreach ($topic_data as $topic_id => $row)
 			{
@@ -768,6 +813,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$resync_forums[] = $row['forum_id'];
 				}
 			}
+			unset($topic_data);
 
 			// if some topics have been resync'ed then resync parent forums
 			if ($resync_parents && count($resync_forums))
