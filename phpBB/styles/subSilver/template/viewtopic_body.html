@@ -98,15 +98,28 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<!-- IF postrow.S_IGNORE_POST -->
+	<!-- IF postrow.S_IGNORE_POST -->
 		<td class="gensmall" colspan="2" height="25" align="center">{postrow.L_IGNORE_POST}</td>
-		<!-- ELSE -->
-		<td rowspan="2" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a>
+	<!-- ELSE -->
+		<td align="center" valign="middle"><a name="{postrow.U_POST_ID}"></a><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td>{postrow.POST_ICON_IMG}&nbsp;</td>
+				<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+				<td class="gensmall" width="100%" valign="middle">{postrow.POST_SUBJECT}</td>
+				<td valign="top" nowrap="nowrap">&nbsp;<!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_DELETE --><a href="{postrow.U_DELETE}">{DELETE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_IP --><a href="{postrow.U_IP}">{IP_IMG}</a> <!-- ENDIF --></td>
+			</tr>
+		</table></td>
+	</tr>
+
+	<!-- IF postrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+		<td valign="top">
 			
-			<table width="150" cellspacing="0" cellpadding="4" border="0">
-				<tr>
-					<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
-				</tr>
+			<table width="150" cellspacing="0" cellpadding="4" border="0" align="center">
 				<tr>
 					<td align="center">{postrow.KARMA_IMG}</td>
 				</tr>
@@ -139,14 +152,41 @@
 			</span>
 
 			<br />
-
 		</td>
-		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<td height="100%"><table height="100%" width="100%" cellspacing="5" cellpadding="0" border="0">
 			<tr>
-				<td>{postrow.POST_ICON_IMG}&nbsp;</td>
-				<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
-				<td class="gensmall" width="100%" valign="middle">{postrow.POST_SUBJECT}</td>
-				<td valign="top" nowrap="nowrap">&nbsp;<!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_DELETE --><a href="{postrow.U_DELETE}">{DELETE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_IP --><a href="{postrow.U_IP}">{IP_IMG}</a> <!-- ENDIF --></td>
+				<td valign="top">
+					<span class="postbody">{postrow.MESSAGE}</span>
+					<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
+					<!-- IF postrow.S_DISPLAY_NOTICE --><span class="gensmall" style="color:red;"><br /><br />{L_DOWNLOAD_NOTICE}</span><!-- ENDIF -->
+					<!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF -->
+					<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
+				</td>
+			</tr>
+			<tr>
+				<td valign="bottom">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0">
+						<tr valign="middle">
+							<!-- IF postrow.S_POST_UNAPPROVED -->
+							<td width="5">{UNAPPROVED_IMG}</td>
+							<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_NOT_APPROVED}</a></b>&nbsp;</td>
+							<!-- ENDIF -->
+							<!-- IF postrow.S_POST_REPORTED -->
+							<td width="5">{REPORTED_IMG}</td>
+							<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b>&nbsp;</td>
+							<!-- ENDIF -->
+							<!-- IF postrow.S_CAN_RATE -->
+							<td nowrap="nowrap" class="gensmall"><b>{L_RATE}:</b> <a style="color:green" href="{postrow.U_RATE_GOOD}">{L_RATE_GOOD}</a> / <a style="color:red" href="{postrow.U_RATE_BAD}">{L_RATE_BAD}</a></td>
+							<!-- ENDIF -->
+							<td width="100%">&nbsp;</td>
+							<td width="10" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a></td>
+							<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+							<!-- IF postrow.U_REPORT -->
+							<td>&nbsp;<a href="{postrow.U_REPORT}">{REPORT_IMG}</a></td>
+							<!-- ENDIF -->
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table></td>
 	</tr>
@@ -157,51 +197,7 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td valign="top"><table width="100%" cellspacing="0" cellpadding="5" border="0">
-			<tr>
-				<td height="120" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
-					<tr>
-						<td><span class="postbody">{postrow.MESSAGE}</span>
-						<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
-						<!-- IF postrow.S_DISPLAY_NOTICE --><span class="gensmall" style="color:red;"><br /><br />{L_DOWNLOAD_NOTICE}</span><!-- ENDIF -->
-						<!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF -->
-						<span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
-					</tr>
-				</table></td>
-			</tr>
-			<tr>
-				<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tr valign="middle">
-						<!-- IF postrow.S_POST_UNAPPROVED -->
-						<td width="5">{UNAPPROVED_IMG}</td>
-						<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_NOT_APPROVED}</a></b>&nbsp;</td>
-						<!-- ENDIF -->
-						<!-- IF postrow.S_POST_REPORTED -->
-						<td width="5">{REPORTED_IMG}</td>
-						<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b>&nbsp;</td>
-						<!-- ENDIF -->
-						<!-- IF postrow.S_CAN_RATE -->
-						<td nowrap="nowrap" class="gensmall"><b>{L_RATE}:</b> <a style="color:green" href="{postrow.U_RATE_GOOD}">{L_RATE_GOOD}</a> / <a style="color:red" href="{postrow.U_RATE_BAD}">{L_RATE_BAD}</a></td>
-						<!-- ENDIF -->
-						<td width="100%">&nbsp;</td>
-						<td width="10" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a></td>
-						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
-						<!-- IF postrow.U_REPORT -->
-						<td>&nbsp;<a href="{postrow.U_REPORT}">{REPORT_IMG}</a></td>
-						<!-- ENDIF -->
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
-	</tr>
-
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-
-		<td class="nav" width="150" align="center" valign="middle"><!-- IF MCP --><a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a><!-- ELSE --><a href="#top">{L_BACK_TO_TOP}</a><!-- ENDIF --></td>
+		<td class="nav" width="150" align="center" valign="middle"><a href="#{postrow.U_PREV_POST_ID}">Up</a> | <a href="#top">{L_BACK_TO_TOP}</a> | <a href="#{postrow.U_NEXT_POST_ID}">Down</a></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td valign="middle" nowrap="nowrap"><!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_WWW --><a href="{postrow.U_WWW}" target="_userwww">{WWW_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_AIM --><a href="{postrow.U_AIM}" onclick="im_popup('{postrow.U_AIM}', 550, 320); return false">{AIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_YIM --><a href="{postrow.U_YIM}" onclick="im_popup('{postrow.U_YIM}', 780, 550); return false">{YIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_MSN --><a href="{postrow.U_MSN}" onclick="im_popup('{postrow.U_MSN}', 550, 320); return false">{MSN_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_JABBER --><a href="{postrow.U_JABBER}" onclick="im_popup('{postrow.U_JABBER}', 550, 320); return false">{JABBER_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_ICQ --><script language="JavaScript" type="text/javascript"><!-- 

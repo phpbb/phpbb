@@ -1,29 +1,20 @@
 <?php 
-/***************************************************************************
- *                                ucp.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : bbcode.php 
+// STARTED   : Thu Nov 21, 2002
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 // TODO for 2.2:
 //
 // * Registration
 //    * Link to (additional?) registration conditions
-//    * Admin defineable characters allowed in usernames?
 //    * Admin forced revalidation of given user/s from ACP
 
 // * Opening tab:
@@ -43,15 +34,12 @@
 // * PM system
 //    * See privmsg
 
-// * Avatars
-//    * as current but with definable width/height box?
-
 // * Permissions?
 //    * List permissions granted to this user (in UCP and ACP UCP)
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
 
@@ -152,136 +140,6 @@ class ucp extends user
 
 	// Normalises supplied data dependant on required type/length, errors
 	// on incorrect data
-	function normalise_data(&$data, &$normalise)
-	{
-		$valid_data = array();
-		foreach ($normalise as $var_type => $var_ary)
-		{
-			foreach ($var_ary as $var_name => $var_limits)
-			{
-				$var_name = (is_string($var_name)) ? $var_name : $var_limits; 
-
-				if (isset($data[$var_name]))
-				{
-					switch ($var_type)
-					{
-						case 'int':
-							$valid_data[$var_name] = (int) $data[$var_name];
-							break;
-
-						case 'float':
-							$valid_data[$var_name] = (double) $data[$var_name];
-							break;
-
-						case 'bool':
-							$valid_data[$var_name] = ($data[$var_name] <= 0) ? 0 : 1;
-							break;
-
-						case 'string':
-							// Cleanup data, remove excess spaces, run entites
-							$valid_data[$var_name] = htmlentities(trim(preg_replace('#\s{2,}#s', ' ', strtr((string) $data[$var_name], array_flip(get_html_translation_table(HTML_ENTITIES))))));
-
-							// How should we check this data?
-							if (!is_array($var_limits))
-							{
-								// Is the match a string? If it is, process it further, else we'll
-								// assume it's a maximum length
-								if (is_string($var_limits))
-								{
-									if (strstr($var_limits, ','))
-									{
-										list($min_value, $max_value) = explode(',', $var_limits);
-										if (!empty($valid_data[$var_name]) && strlen($valid_data[$var_name]) < $min_value)
-										{
-											$this->error[] = strtoupper($var_name) . '_TOO_SHORT';
-										}
-
-										if (strlen($valid_data[$var_name]) > $max_value)
-										{
-											$this->error[] = strtoupper($var_name) . '_TOO_LONG';
-										}
-									}
-								}
-								else
-								{
-									if (strlen($valid_data[$var_name]) > $var_limits)
-									{
-										$this->error[] = strtoupper($var_name) . '_TOO_LONG';
-									}
-								}
-							}
-							break;
-					}
-				}
-			}
-		}
-
-		return $valid_data;
-	}
-
-	// Validates data subject to supplied requirements, errors appropriately
-	function validate_data(&$data, &$validate)
-	{
-		global $db, $user, $config;
-
-		foreach ($validate as $operation => $var_ary)
-		{
-			foreach ($var_ary as $var_name => $compare)
-			{
-				if (!empty($compare))
-				{
-					switch ($operation)
-					{
-						case 'match':
-							if (is_array($compare))
-							{
-								foreach ($compare as $match)
-								{
-									if (!preg_match($match, $data[$var_name]))
-									{
-										$this->error[] = strtoupper($var_name) . '_WRONG_DATA';
-									}
-								}
-							}
-							else if (!preg_match($compare, $data[$var_name]))
-							{
-								$this->error[] = strtoupper($var_name) . '_WRONG_DATA';
-							}
-							break;
-
-						case 'compare':
-							if (is_array($compare))
-							{
-								if (!in_array($data[$var_name], $compare))
-								{
-									$this->error[] = strtoupper($var_name) . '_MISMATCH';
-								}
-							}
-							else if ($data[$var_name] != $compare)
-							{
-								$this->error[] = strtoupper($var_name) . '_MISMATCH';
-							}
-							break;
-
-						case 'function':
-							if ($result = $compare($data[$var_name]))
-							{
-								$this->error[] = $result;
-							}
-
-							break;
-
-						case 'reqd':
-							if (!isset($data[$compare]) || (is_string($data[$compare]) && $data[$compare] === ''))
-							{
-								$this->error[] = strtoupper($compare) . '_MISSING_DATA';
-							}
-							break;
-					}
-				}
-			}
-		}
-	}
 }
 //
 // FUNCTIONS
@@ -291,7 +149,6 @@ class ucp extends user
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
 
 // Basic parameter data

@@ -258,7 +258,8 @@ class session
 			$sql_ary = array(
 				'session_id'				=> (string) $this->session_id,
 				'session_user_id'			=> (int) $user_id,
-				'session_start'				=> (int) $this->data['session_last_visit'],
+				'session_start'				=> (int) $current_time, 
+				'session_last_visit'		=> (int) $this->data['session_last_visit'],
 				'session_time'				=> (int) $current_time, 
 				'session_ip'				=> (string) $this->ip,
 				'session_browser'			=> (string) $this->browser,
@@ -282,7 +283,7 @@ class session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			// Trigger EVENT_NEW_SESSION
+			// Trigger EVT_NEW_SESSION
 		}
 
 		return true;
@@ -311,6 +312,11 @@ class session
 		$db->sql_query($sql);
 
 		$this->session_id = '';
+
+		if ($this->data['user_id'] != ANONYMOUS)
+		{
+			// Trigger EVT_END_SESSION
+		}
 
 		return true;
 	}
@@ -467,6 +473,7 @@ class user extends session
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
 			global $SID;
+
 			$style = intval($_GET['style']);
 			$SID .= '&amp;style=' . $style;
 		}
@@ -482,7 +489,7 @@ class user extends session
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
 				AND i.imageset_id = s.imageset_id';
-		$result = $db->sql_query($sql, 600);
+		$result = $db->sql_query($sql, 3600);
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{

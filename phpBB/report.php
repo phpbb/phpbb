@@ -1,35 +1,25 @@
 <?php
-/***************************************************************************
- *                                report.php
- *                            -------------------
- *   begin                : July 4, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : report.php 
+// STARTED   : Thu Apr 3, 2003
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
-
 
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
@@ -42,7 +32,6 @@ if (isset($_POST['cancel']))
 {
 	redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
 }
-
 
 // Grab all relevant data
 $sql = 'SELECT f.*, t.*, p.*

@@ -37,11 +37,12 @@ class ucp_profile extends ucp
 		{
 			case 'reg_details':
 
-				if (isset($_POST['submit']))
+				if ($submit)
 				{
-					$data = array();
+
+
 					$normalise = array(
-						'string' => array(
+						's' => array(
 							'username'			=> $config['min_name_chars'] . ',' . $config['max_name_chars'],
 							'password_confirm'	=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
 							'new_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'],
@@ -50,27 +51,29 @@ class ucp_profile extends ucp
 							'email_confirm'		=> '7,60', 
 						)
 					);
-					$data = $this->normalise_data($_POST, $normalise);
+					$data = normalise_data($_POST, $normalise);
 
 					// md5 current password for checking
 					$data['cur_password'] = md5($data['cur_password']);
 
 					$validate = array(
-						'reqd'		=> array('username', 'email'), 
-						'compare'	=> array(
+						'r'	=> array('username', 'email'), 
+						'c'	=> array(
 							'password_confirm'	=> ($data['new_password']) ? $data['new_password'] : '', 
 							'cur_password'		=> ($data['new_password'] || $data['email'] != $user->data['user_email'] || $data['username'] != $user->data['username']) ? $user->data['user_password'] : '', 
 							'email_confirm'		=> ($data['email'] != $user->data['user_email']) ? $data['email'] : '', 
 						),
-						'match'		=> array(
+						'm'	=> array(
 							'username'	=> ($data['username'] != $user->data['username']) ? '#^' . preg_replace('#/{1}#', '\\', $config['allow_name_chars']) . '$#iu' : '', 
 						), 
-						'function'	=> array(
+						'f'	=> array(
 							'username'	=> ($data['username'] != $user->data['username']) ? 'validate_username' : '', 
 							'email'		=> ($data['email'] != $user->data['user_email']) ? 'validate_email' : '', 
 						), 
 					);
-					$this->validate_data($data, $validate);
+					validate_data($data, $validate);
+
+
 
 					if (!sizeof($this->error))
 					{
@@ -128,7 +131,7 @@ class ucp_profile extends ucp
 				{
 					$data = array();
 					$normalise = array(
-						'string' => array(
+						's' => array(
 							'icq'		=> '3,15',
 							'aim'		=> '5,255',
 							'msn'		=> '5,255',
@@ -139,17 +142,17 @@ class ucp_profile extends ucp
 							'occupation'=> '2,500', 
 							'interests'	=> '2,500', 
 						), 
-						'int'	=> array('bday_day', 'bday_month', 'bday_year')
+						'i'	=> array('bday_day', 'bday_month', 'bday_year')
 					);
-					$data = $this->normalise_data($_POST, $normalise);
+					$data = normalise_data($_POST, $normalise);
 
 					$validate = array(
-						'match'	=> array(
+						'm'	=> array(
 							'icq'		=> ($data['icq']) ? '#^[0-9]+$#i' : '', 
 							'website'	=> ($data['website']) ? '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i' : '', 
 						),
 					);
-					$this->validate_data($data, $validate);
+					validate_data($data, $validate);
 
 					if (!sizeof($this->error))
 					{
@@ -261,7 +264,7 @@ class ucp_profile extends ucp
 						$message_parser = new parse_message();
 						$message_parser->message = $signature;
 						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-						echo ">>" . $signature = $message_parser->message;
+						$signature = $message_parser->message;
 
 						$sql_ary = array(
 							'user_sig'					=> $signature, 
@@ -269,7 +272,7 @@ class ucp_profile extends ucp
 							'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 						);
 
-						echo $sql = 'UPDATE ' . USERS_TABLE . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -356,24 +359,24 @@ class ucp_profile extends ucp
 					else if (!empty($_POST['uploadurl']) && $can_upload)
 					{
 						$normalise = array(
-							'string' => array(
+							's' => array(
 								'uploadurl'	=> '1,255',
 							)
 						);
-						$data = $this->normalise_data($_POST, $normalise);
+						$data = normalise_data($_POST, $normalise);
 
 						$this->error = avatar_upload($data);
 					}
 					else if (!empty($_POST['remotelink']) && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 					{
 						$normalise = array(
-							'string' => array(
+							's' => array(
 								'remotelink'	=> '1,255',
 								'width'			=> '1,3',
 								'height'		=> '1,3',
 							)
 						);
-						$data = $this->normalise_data($_POST, $normalise);
+						$data = normalise_data($_POST, $normalise);
 
 						$this->error = avatar_remote($data);
 					}

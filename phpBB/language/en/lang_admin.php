@@ -45,6 +45,7 @@ $lang += array(
 	'EVENTS'			=> 'Events', 
 	'CRON'				=> 'Cronjobs', 
 	'PHP_INFO'			=> 'PHP Information', 
+	'IM'				=> 'Jabber Settings', 
 
 	'GROUP_CAT'		=> 'Usergroups',
 	'CREATE'		=> 'Create',
@@ -468,42 +469,83 @@ $lang += array(
 
 // Banning
 $lang += array(
-	'BAN_EXPLAIN' => 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log. The length of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <u>Until</u> for the ban length and enter a date in yyyy-mm-dd format.',
-	'BAN_LENGTH' => 'Length of ban',
-	'PERMANENT' => 'Permanent',
-	'30_MINS' => '30 Minutes',
-	'1_HOUR' => '1 Hour',
-	'6_HOURS' => '6 Hours',
-	'OTHER' => 'Until', 
-	'BAN_EXCLUDE' => 'Exclude from banning', 
-	'BAN_USER_EXCLUDE_EXPLAIN' => 'Enable this to exclude the entered users from all current bans.', 
+	'BAN_EXPLAIN'				=> 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log. The length of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <u>Until</u> for the ban length and enter a date in yyyy-mm-dd format.',
+	'BAN_EXCLUDE'				=> 'Exclude from banning', 
+
+	'BAN_REASON'	=> 'Reason for ban',
+	'BAN_LENGTH'	=> 'Length of ban',
+	'PERMANENT'		=> 'Permanent',
+	'30_MINS'		=> '30 Minutes',
+	'1_HOUR'		=> '1 Hour',
+	'6_HOURS'		=> '6 Hours',
+	'OTHER'			=> 'Until', 
+
+	'BAN_USERNAME_EXPLAIN'		=> 'You can ban multiple users in one go by entering each name on a new line. Use the <u>Find a Username</u> facility to look up and add one or more users automatically.',
+	'UNBAN_USERNAME'			=> 'Un-ban or Un-exclude usernames',
+	'UNBAN_USERNAME_EXPLAIN'	=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users have a grey background.',
+	'BAN_USER_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered users from all current bans.', 
+	'NO_BANNED_USERS'			=> 'No banned usernames',
+
+	'IP_HOSTNAME'			=> 'IP addresses or hostnames',
+	'BAN_IP_EXPLAIN'		=> 'To specify several different IP\'s or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *',
+	'UNBAN_IP'				=> 'Un-ban or Un-exclude IPs',
+	'UNBAN_IP_EXPLAIN'		=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IP\'s have a grey background.',
+	'BAN_IP_EXCLUDE_EXPLAIN'=> 'Enable this to exclude the entered IP from all current bans.', 
+	'NO_BANNED_IP'			=> 'No banned IP addresses',
+
+	'BAN_EMAIL'					=> 'Ban one or more email addresses',
+	'BAN_EMAIL_EXPLAIN'			=> 'To specify more than one email address enter each on a new line. To match partial addresses use * as the wildcard, e.g. *@hotmail.com, *@*.domain.tld, etc.',
+	'UNBAN_EMAIL'				=> 'Un-ban or Un-exclude Emails',
+	'UNBAN_EMAIL_EXPLAIN'		=> 'You can unban (or un-exclude) multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded email addresses have a grey background.',
 	'BAN_EMAIL_EXCLUDE_EXPLAIN' => 'Enable this to exclude the entered email address from all current bans.', 
-	'BAN_IP_EXCLUDE_EXPLAIN' => 'Enable this to exclude the entered IP from all current bans.', 
-	'BAN_REASON' => 'Reason for ban',
-	'BAN_USERNAME_EXPLAIN' => 'You can ban multiple users in one go by entering each name on a new line. Use the <u>Find a Username</u> facility to look up and add one or more users automatically.',
-	'UNBAN_USERNAME' => 'Un-ban or Un-exclude usernames',
-	'UNBAN_USERNAME_EXPLAIN' => 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users have a grey background.',
-	'IP_HOSTNAME' => 'IP addresses or hostnames',
-	'BAN_IP_EXPLAIN' => 'To specify several different IP\'s or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *',
-	'UNBAN_IP' => 'Un-ban or Un-exclude IPs',
-	'UNBAN_IP_EXPLAIN' => 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IP\'s have a grey background.',
-	'BAN_EMAIL' => 'Ban one or more email addresses',
-	'BAN_EMAIL_EXPLAIN' => 'To specify more than one email address enter each on a new line. To match partial addresses use * as the wildcard, e.g. *@hotmail.com, *@*.domain.tld, etc.',
-	'UNBAN_EMAIL' => 'Un-ban or Un-exclude Emails',
-	'UNBAN_EMAIL_EXPLAIN' => 'You can unban (or un-exclude) multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded email addresses have a grey background.',
-	'NO_BANNED_USERS' => 'No banned usernames',
-	'NO_BANNED_IP' => 'No banned IP addresses',
-	'NO_BANNED_EMAIL' => 'No banned email addresses',
-	'BAN_UPDATE_SUCESSFUL' => 'The banlist has been updated successfully', 
+	'NO_BANNED_EMAIL'			=> 'No banned email addresses',
+
+	'BAN_UPDATE_SUCESSFUL'	=> 'The banlist has been updated successfully', 
+);
+
+// Jabber settings
+$lang += array(
+	'IM_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Please note that not all servers offer all transports and changes in protocols can prevent transports from operating.', 
+
+	'JAB_ENABLE'			=> 'Enable Jabber', 
+	'JAB_ENABLE_EXPLAIN'	=> 'Enables use of jabber messaging and notifications', 
+
+	'JAB_SERVER'			=> 'Jabber server', 
+	'JAB_SERVER_EXPLAIN'	=> 'See %sjabber.org%s for a list of servers', 
+	'JAB_PORT'				=> 'Jabber port', 
+	'JAB_USERNAME'			=> 'Jabber username', 
+	'JAB_USERNAME_EXPLAIN'	=> 'If this user is not registered it will be created if possible.', 
+	'JAB_PASSWORD'			=> 'Jabber password', 
+	'JAB_RESOURCE'			=> 'Jabber resource', 
+	'JAB_RESOURCE_EXPLAIN'	=> 'The resource locates this particular connection, e.g. board, home, etc.', 
+
+	'JAB_TRANSPORTS'		=> 'Jabber Transports', 
+	'JAB_AIM_ENABLE'		=> 'Enable AIM transport', 
+	'AIM_USERNAME'			=> 'AIM Username', 
+	'AIM_USERNAME_EXPLAIN'	=> 'A valid username on %sAIM%s', 
+	'AIM_PASSWORD'			=> 'AIM Password', 
+	'JAB_ICQ_ENABLE'		=> 'Enable ICQ transport', 
+	'ICQ_USERNAME'			=> 'ICQ UID', 
+	'ICQ_USERNAME_EXPLAIN'	=> 'A valid user id on %sICQ%s', 
+	'ICQ_PASSWORD'			=> 'ICQ Password', 
+	'JAB_MSN_ENABLE'		=> 'Enable MSN transport', 
+	'MSN_USERNAME'			=> 'MSN Username', 
+	'MSN_USERNAME_EXPLAIN'	=> 'A valid username on %sMSN%s', 
+	'MSN_PASSWORD'			=> 'MSN Password', 
+	'JAB_YIM_ENABLE'		=> 'Enable YIM transport', 
+	'YIM_USERNAME'			=> 'YIM Username', 
+	'YIM_USERNAME_EXPLAIN'	=> 'A valid username on %sYIM%s', 
+	'YIM_PASSWORD'			=> 'YIM Password', 
 );
 
 // Cookie settings
 $lang += array(
-	'COOKIE_SETTINGS_EXPLAIN' => 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
-	'COOKIE_DOMAIN' => 'Cookie domain',
-	'COOKIE_NAME' => 'Cookie name',
-	'COOKIE_PATH' => 'Cookie path',
-	'COOKIE_SECURE' => 'Cookie secure',
+	'COOKIE_SETTINGS_EXPLAIN'	=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
+
+	'COOKIE_DOMAIN'			=> 'Cookie domain',
+	'COOKIE_NAME'			=> 'Cookie name',
+	'COOKIE_PATH'			=> 'Cookie path',
+	'COOKIE_SECURE'			=> 'Cookie secure',
 	'COOKIE_SECURE_EXPLAIN' => 'If your server is running via SSL set this to enabled else leave as disabled',
 );
 

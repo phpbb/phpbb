@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              memberlist.php
- *                            -------------------
- *   begin                : Friday, May 11, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : memberlist.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 // TODO
 // Add permission check for IM clients
@@ -168,6 +160,7 @@ switch ($mode)
 
 					$jabber->username = (!empty($config['jab_username'])) ? $config['jab_username'] : '';
 					$jabber->password = (!empty($config['jab_password'])) ? $config['jab_password'] : '';
+					$jabber->resource = 'phpBB';
 
 					// If a username/password are set we will try and authorise. If they don't we will
 					// try and create a new user, username will be the basic domain name with _phpbb
@@ -204,7 +197,7 @@ switch ($mode)
 						set_config('jab_password', $jabber->password);
 					}
 
-					$jabber->SendPresence();
+					$jabber->SendPresence(NULL, NULL, 'online');
 
 					// This _really_ needs to be an "email" template I think ... indeed the whole system is probably
 					// best suited "merged" with email in some way. Would enable notifications, etc. to be sent via
@@ -212,7 +205,7 @@ switch ($mode)
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
 					$message = stripslashes(htmlspecialchars($_POST['message']));
 
-					$jabber->SendMessage($row[$sql_field], NULL, NULL, array('subject' => $subject, 'body' => $message));
+					$jabber->SendMessage($row[$sql_field], 'normal', NULL, array('subject' => $subject, 'body' => $message), '');
 					$jabber->Disconnect();
 
 					$s_select = 'S_SENT_JABBER';

@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                                common.php
- *                            -------------------
- *   begin                : Saturday, Feb 23, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : common.php
+// STARTED   : Sat Feb 17, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!defined('IN_PHPBB'))
 {
@@ -45,9 +37,9 @@ if (!get_magic_quotes_gpc())
 {
 	$_GET = slash_input_data($_GET);
 	$_POST = slash_input_data($_POST);
+	$_REQUEST = slash_input_data($_REQUEST);
 	$_COOKIE = slash_input_data($_COOKIE);
 }
-
 
 require($phpbb_root_path . 'config.'.$phpEx);
 
@@ -161,6 +153,7 @@ define('DRAFTS_TABLE', $table_prefix.'drafts');
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');
 define('EXTENSION_GROUPS_TABLE', $table_prefix.'extension_groups');
 define('FORUMS_TABLE', $table_prefix.'forums');
+define('FORUMS_ACCESS_TABLE', $table_prefix.'forum_access');
 define('FORUMS_TRACK_TABLE', $table_prefix.'forums_marking');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');

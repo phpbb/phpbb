@@ -72,7 +72,7 @@ class ucp_register extends ucp
 		if (isset($_POST['submit']))
 		{
 			$normalise = array(
-				'string' => array(
+				's' => array(
 					'username'			=> $config['min_name_chars'] . ',' . $config['max_name_chars'],
 					'password_confirm'	=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'], 
 					'new_password'		=> $config['min_pass_chars'] . ',' . $config['max_pass_chars'],
@@ -81,25 +81,25 @@ class ucp_register extends ucp
 					'email'				=> '7,60', 
 					'email_confirm'		=> '7,60',
 				),
-				'float'	=> array('tz')
+				'f'	=> array('tz')
 			);
-			$data = $this->normalise_data($_POST, $normalise);
+			$data = normalise_data($_POST, $normalise);
 
 			$validate = array(
-				'reqd'		=> array('username', 'email', 'email_confirm', 'new_password', 'password_confirm', 'lang', 'confirm_code', 'tz'), 
-				'compare'	=> array(
+				'r'		=> array('username', 'email', 'email_confirm', 'new_password', 'password_confirm', 'lang', 'confirm_code', 'tz'), 
+				'c'	=> array(
 					'password_confirm'	=> $data['new_password'], 
 					'email_confirm'		=> $data['email'], 
 				), 
-				'match'		=> array(
+				'm'		=> array(
 					'username'	=> '#^' . preg_replace('#/{1}#', '\\', $config['allow_name_chars']) . '$#iu', 
 				), 
-				'function'	=> array(
+				'f'	=> array(
 					'username'	=> 'validate_username', 
 					'email'		=> 'validate_email', 
 				), 
 			);
-			$this->validate_data($data, $validate);
+			validate_data($data, $validate);
 
 			// Visual Confirmation handling
 			if ($config['enable_confirm'])

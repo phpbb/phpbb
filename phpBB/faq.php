@@ -1,35 +1,25 @@
 <?php
-/***************************************************************************
- *                                  faq.php
- *                            -------------------
- *   begin                : Sunday, Jul 8, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : faq.php 
+// STARTED   : Mon Jul 8, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
-
 
 // Load the appropriate faq file
 if (isset($_GET['mode']))

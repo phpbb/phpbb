@@ -23,7 +23,7 @@
 		<!-- IF S_IS_POSTABLE -->
 		<td width="10" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 		<!-- ENDIF -->
-		<td class="nav" width="100%" valign="middle">&nbsp; <a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
+		<td class="nav" width="100%" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></td>
 	</tr>
 </table>
 
@@ -83,7 +83,7 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF -->
 				</td>
 				<!-- ENDIF -->
-				<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}<a class="topictitle" href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
+				<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}<a class="topictitle" href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
 			</tr>
 		</table></td>
 		<td class="row2" align="center" valign="middle"><span class="topicauthor">{topicrow.TOPIC_AUTHOR}</span></td>

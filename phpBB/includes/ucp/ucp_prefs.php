@@ -43,23 +43,23 @@ class ucp_prefs extends ucp
 				{
 					$data = array();
 					$normalise = array(
-						'string' => array(
+						's' => array(
 							'dateformat'=> '3,15',
 							'lang'		=> '2,5',
 						), 
-						'int'	=> array('dst', 'style'),
-						'float' => array('tz'),
-						'bool'	=> array('viewemail', 'massemail', 'hideonline', 'notifypm', 'popuppm')
+						'i'	=> array('dst', 'style'),
+						'f' => array('tz'),
+						'b'	=> array('viewemail', 'massemail', 'hideonline', 'notifypm', 'popuppm')
 					);
-					$data = $this->normalise_data($_POST, $normalise);
+					$data = normalise_data($_POST, $normalise);
 
 					$validate = array(
-						'reqd'	=> array('lang', 'tz', 'dateformat', 'style'), 
-						'match'	=> array(
+						'r'	=> array('lang', 'tz', 'dateformat', 'style'), 
+						'm'	=> array(
 							'lang'		=> ($data['lang']) ? '#^[a-z_]+$#i' : '', 
 						),
 					);
-					$this->validate_data($data, $validate);
+					validate_data($data, $validate);
 
 					if (!sizeof($this->error))
 					{
@@ -147,14 +147,14 @@ class ucp_prefs extends ucp
 				{
 					$data = array();
 					$normalise = array(
-						'string'	=> array(
+						's'	=> array(
 							'sk'	=> '1,1', 
 							'sd'	=> '1,1', 
 						),
-						'int'	=> array('st', 'minkarma'), 
-						'bool'	=> array('images', 'flash', 'smilies', 'sigs', 'avatars', 'wordcensor'), 
+						'i'	=> array('st', 'minkarma'), 
+						'b'	=> array('images', 'flash', 'smilies', 'sigs', 'avatars', 'wordcensor'), 
 					);
-					$data = $this->normalise_data($_POST, $normalise);
+					$data = normalise_data($_POST, $normalise);
 
 					if (!sizeof($this->error))
 					{
@@ -257,9 +257,9 @@ class ucp_prefs extends ucp
 				{
 					$data = array();
 					$normalise = array(
-						'bool'	=> array('bbcode', 'html', 'smilies', 'sig', 'notify'),
+						'b'	=> array('bbcode', 'html', 'smilies', 'sig', 'notify'),
 					);
-					$data = $this->normalise_data($_POST, $normalise);
+					$data = normalise_data($_POST, $normalise);
 
 					if (!sizeof($this->error))
 					{

@@ -13,7 +13,7 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);

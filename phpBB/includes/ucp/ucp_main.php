@@ -4,8 +4,8 @@
 // $Id$
 //
 // FILENAME  : ucp_main.php
-// STARTED   : Sat Feb 21, 2003
-// COPYRIGHT : © 2003 phpBB Group
+// STARTED   : Mon May 19, 2003
+// COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
 // 

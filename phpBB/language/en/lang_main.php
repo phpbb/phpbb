@@ -447,7 +447,7 @@ $lang += array(
 	'DISPLAY_POSTS'		=> 'Display posts from previous',
 	'ALL_POSTS'			=> 'All Posts',
 
-	'BACK_TO_TOP'		=> 'Back to top',
+	'BACK_TO_TOP'		=> 'Top',
 	'POST_SUBJECT'		=> 'Post subject',
 	'KARMA_LEVEL'		=> 'Karma Level', 
 	'READ_PROFILE'		=> 'Profile',
@@ -994,6 +994,7 @@ $lang += array(
 	'BEFORE'			=> 'Before',
 	'AFTER'				=> 'After',
 	'NEVER'				=> 'Never',
+	'SELECT_MARKED'		=> 'Select Marked',
 
 	'SEND_EMAIL'	=> 'Send Email',
 	'NO_EMAIL'		=> 'You are not permitted to send email to this user.',
@@ -1107,40 +1108,48 @@ $lang += array(
 
 // search
 $lang += array(
-	'Search_query' => 'Search Query',
-	'Search_options' => 'Search Options',
-	'Search_keywords' => 'Search for Keywords',
-	'Search_keywords_explain' => 'You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches',
-	'Search_author' => 'Search for Author',
-	'SEARCH_AUTHOR_EXPLAIN' => 'Use * as a wildcard for partial matches',
-	'Last_active' => 'Last active',
-	'SELECT_MARKED' => 'Select Marked',
-	'Search_for_any' => 'Search for any terms or use query as entered',
-	'Search_for_all' => 'Search for all terms',
-	'Search_title_msg' => 'Search topic title and message text',
-	'Search_msg_only' => 'Search message text only',
-	'Return_first' => 'Return first',
-	'characters_posts' => 'characters of posts',
-	'Search_previous' => 'Search previous',
+	'SEARCH_QUERY'		=> 'Search Query',
+	'SEARCH_OPTIONS'	=> 'Search Options',
 
-	'SORT_BY' => 'Sort by',
-	'SORT_TIME' => 'Post Time',
+	'SEARCH_KEYWORDS'			=> 'Search for Keywords',
+	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Use <b>+</b> for words which must be found, <b>-</b> for words which must not be found and <b>|</b> for words which may or may not be found. Use * as a wildcard for partial matches',
+
+	'SEARCH_AUTHOR'			=> 'Search for Author',
+	'SEARCH_AUTHOR_EXPLAIN'	=> 'Use * as a wildcard for partial matches', 
+	'SEARCH_FORUMS'			=> 'Search in forums',
+	'SEARCH_FORUMS_EXPLAIN'	=> 'Select the forum or forums you wish to search in. For speed all subforums can be searched by selecting the parent and setting enable search subforums below.', 
+	'SEARCH_ALL_TERMS'		=> 'Search for all terms or use query as entered',
+	'SEARCH_ANY_TERMS'		=> 'Search for any terms',
+	'SEARCH_WITHIN'			=> 'Search within', 
+	'SEARCH_TITLE_MSG'		=> 'Topic titles and message text',
+	'SEARCH_MSG_ONLY'		=> 'Message text only',
+	'SEARCH_TITLE_ONLY'		=> 'Topic titles only',
+	'RETURN_FIRST'			=> 'Return first',
+	'POST_CHARACTERS'		=> 'characters of posts',
+	'SEARCH_PREVIOUS'		=> 'Search previous',
+	'RECENT_SEARCHES'		=> 'Recent searches', 
+	'RESULT_DAYS'			=> 'Limit results to previous', 
+	'RESULT_SORT'			=> 'Sort results by', 
+	'RESULT_DIR'			=> 'Order results', 
+
+	'SORT_BY'			=> 'Sort by',
+	'SORT_TIME'			=> 'Post Time',
 	'SORT_POST_SUBJECT' => 'Post Subject',
-	'SORT_TOPIC_TITLE' => 'Topic Title',
-	'SORT_AUTHOR' => 'Author',
-	'SORT_FORUM' => 'Forum',
+	'SORT_TOPIC_TITLE'	=> 'Topic Title',
+	'SORT_AUTHOR'		=> 'Author',
+	'SORT_FORUM'		=> 'Forum',
+	'LAST_ACTIVE'		=> 'Last active',
 
-	'Display_results' => 'Display results as',
-	'All_available' => 'All available',
-	'No_searchable_forums' => 'You do not have permissions to search any forum on this site',
-	'No_search_match' => 'No topics or posts met your search criteria',
-	'Found_search_match' => 'Search found %d match',
-	'Found_search_matches' => 'Search found %d matches',
+	'DISPLAY_RESULTS'	=> 'Display results as',
+	'ALL_AVAILABLE'		=> 'All available',
+	'ALL_RESULTS'		=> 'All results', 
 
+	'NO_SEARCHABLE_FORUMS'	=> 'You do not have permissions to search any forum on this site',
+	'NO_SEARCH_MATCH'		=> 'No topics or posts met your search criteria',
+	'FOUND_SEARCH_MATCH'	=> 'Search found %d match',
+	'FOUND_SEARCH_MATCHES'	=> 'Search found %d matches',
 	
-	'Not_Authorised'	=> 'Not Authorised',
-
-
+	'NOT_AUTHORISED'	=> 'Not Authorised',
 );
 
 // viewonline

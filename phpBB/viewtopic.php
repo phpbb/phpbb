@@ -121,7 +121,6 @@ if ($view && !$post_id)
 	}
 }
 
-
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
@@ -180,16 +179,13 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 // Extract the data
 extract($topic_data);
 
-
 // Setup look and feel
 $user->setup(false, $forum_style);
-
 
 if (!$topic_approved && !$auth->acl_get('m_approve', $forum_id))
 {
 	trigger_error('NO_TOPIC');
 }
-
 
 // Start auth check
 if (!$auth->acl_get('f_read', $forum_id))
@@ -202,7 +198,6 @@ if (!$auth->acl_get('f_read', $forum_id))
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
-
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box
 if ($forum_password)
@@ -210,13 +205,10 @@ if ($forum_password)
 	login_forum_box($topic_data);
 }
 
-
-
 // Not final in the slightest! Far too simplistic
 if ($rate)
 {
 	// Check for rating count for previous X time
-
 
 	// Grab existing rating for this post, if it exists
 	$sql = 'SELECT * 
@@ -380,16 +372,13 @@ else
 // Select the sort order
 $sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-
 // Grab ranks
 $ranks = array();
 obtain_ranks($ranks);
 
-
 // Grab icons
 $icons = array();
 obtain_icons($icons);
-
 
 // Was a highlight request part of the URI?
 $highlight_match = $highlight = '';
@@ -405,7 +394,6 @@ if ($hilit_words)
 
 	$highlight = htmlspecialchars(urlencode($hilit_words));
 }
-
 
 // Forum rules listing
 $s_forum_rules = '';
@@ -429,23 +417,19 @@ $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="viewlogs">' . 
 $pagination_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
 $pagination = generate_pagination($pagination_url, $total_posts, $config['posts_per_page'], $start);
 
-
 // Grab censored words
 $censors = array();
 obtain_word_list($censors);
 
-
 // Navigation links
 generate_forum_nav($topic_data);
-
 
 // Moderators
 $forum_moderators = array();
 get_moderators($forum_moderators, $forum_id);
 
-
 // This is only used for print view so ...
-$server_path = (!isset($_GET['view'])) ? '' : (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
+$server_path = (!$view) ? '' : (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
 
 // Replace naughty words in title
 if (sizeof($censors))
@@ -497,7 +481,7 @@ $template->assign_vars(array(
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
-	'U_TOPIC'				=> $server_path . "viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
+	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
 	'U_VIEW_UNREAD_POST'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread",
 	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;hilit=$highlight",
@@ -510,7 +494,6 @@ $template->assign_vars(array(
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id")
 );
-
 
 // Does this topic contain a poll?
 if (!empty($poll_start))
@@ -676,12 +659,11 @@ if (!empty($poll_start))
 	unset($voted_id);
 }
 
-
 // Container for user details, only process once
 $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
 $has_attachments = $display_notice = FALSE;
 $force_encoding = '';
-$bbcode_bitfield = $i = 0;
+$bbcode_bitfield = $i = $i_total = 0;
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = FALSE;
@@ -722,7 +704,7 @@ do
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
-	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
+	if ($row['user_karma'] < $user->data['user_min_karma'] && (!$view || $view != 'karma' || $post_id != $row['post_id']))
 	{
 		$rowset[] = array(
 			'below_karma'	=> TRUE,
@@ -798,7 +780,6 @@ do
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
-
 
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
@@ -939,7 +920,6 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 }
 unset($id_cache);
 
-
 // Pull attachment data
 if (count($attach_list))
 {
@@ -960,8 +940,7 @@ if (count($attach_list))
 		}
 		$db->sql_freeresult($result);
 
-		// No attachments exist, but post table thinks they do
-		// so go ahead and reset post_attach flags
+		// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
 		if (!count($attachments))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . ' 
@@ -1011,7 +990,6 @@ if (count($attach_list))
 	}
 }
 
-
 // Instantiate BBCode if need be
 if ($bbcode_bitfield)
 {
@@ -1019,6 +997,8 @@ if ($bbcode_bitfield)
 	$bbcode = new bbcode($bbcode_bitfield);
 }
 
+$i_total = sizeof($rowset) - 1;
+$prev_post_id = '';
 
 // Output the posts
 foreach ($rowset as $i => $row)
@@ -1042,7 +1022,7 @@ foreach ($rowset as $i => $row)
 	}
 	else if ($row['post_encoding'] != $user->lang['ENCODING'])
 	{
-		if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
+		if ($view == 'encoding' && $post_id == $row['post_id'])
 		{
 			$force_encoding = $row['post_encoding'];
 		}
@@ -1078,13 +1058,10 @@ foreach ($rowset as $i => $row)
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
 
-
 	// Parse the message and subject
 	$message = $row['post_text'];
 
-
-	// If the board has HTML off but the post has HTML
-	// on then we process it, else leave it alone
+	// If the board has HTML off but the post has HTML on then we process it, else leave it alone
 	if (!$auth->acl_get('f_html', $forum_id))
 	{
 		if ($row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id))
@@ -1093,18 +1070,15 @@ foreach ($rowset as $i => $row)
 		}
 	}
 
-
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
 	{
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
-
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
 	$message = (empty($config['allow_smilies']) || !$user->data['user_viewsmilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
-
 
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
@@ -1114,7 +1088,6 @@ foreach ($rowset as $i => $row)
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
-
 	// Replace naughty words such as farty pants
 	if (sizeof($censors))
 	{
@@ -1122,9 +1095,7 @@ foreach ($rowset as $i => $row)
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
-
 	$message = str_replace("\n", '<br />', $message);
-
 
 	// Editing information
 	if (!empty($row['post_edit_count']) && $config['display_last_edited'])
@@ -1137,7 +1108,6 @@ foreach ($rowset as $i => $row)
 	{
 		$l_edited_by = '';
 	}
-
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', array(
@@ -1186,6 +1156,8 @@ foreach ($rowset as $i => $row)
 		'U_MCP_DETAILS'	=>	"mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
+		'U_NEXT_POST_ID'	=> ($i < $i_total) ? $rowset[$i + 1]['post_id'] : '', 
+		'U_PREV_POST_ID'	=> $prev_post_id, 
 
 		'S_ROW_COUNT'		=> $i,
 		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? true : false, 
@@ -1201,12 +1173,13 @@ foreach ($rowset as $i => $row)
 		display_attachments($attachments[$row['post_id']], $update_count);
 	}
 
+	$prev_post_id = $row['post_id'];
+
 	unset($rowset[$i]);
 	unset($attachments[$row['post_id']]);
 }
 unset($rowset);
 unset($user_cache);
-
 
 // Update topic view and if necessary attachment view counters ... but only
 // if this is the first 'page view'
@@ -1227,11 +1200,9 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 	}
 }
 
-
 // Mark topics read
 $mark_forum_id = ($topic_type == POST_GLOBAL) ? 0 : $forum_id;
 markread('topic', $mark_forum_id, $topic_id, $row['post_time']);
-
 
 // Change encoding if appropriate
 if ($force_encoding != '')
@@ -1239,12 +1210,11 @@ if ($force_encoding != '')
 	$user->lang['ENCODING'] = $force_encoding;
 }
 
-
 // Output the page
 page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_title);
 
 $template->set_filenames(array(
-	'body' => (isset($_GET['view']) && $_GET['view'] == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
+	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 

@@ -11,6 +11,7 @@
 // 
 // -------------------------------------------------------------
 
+
 function set_config($config_name, $config_value, $is_dynamic = FALSE)
 {
 	global $db, $cache, $config;
@@ -215,7 +216,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql, 600);
+	$result = $db->sql_query($sql);
 
 	$right = $cat_right = $padding_inc = 0;
 	$padding = $forum_list = $holding = '';
@@ -236,7 +237,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 
 		if ($row['left_id'] < $right)
 		{
-			$padding .= '&nbsp; &nbsp; &nbsp;';
+			$padding .= '&nbsp; &nbsp;';
 			$padding_store[$row['parent_id']] = $padding;
 		}
 		else if ($row['left_id'] > $right + 1)
@@ -376,7 +377,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				{
 					$is_watching = 0;
 
-					$sql = "DELETE FROM " . $table_sql . "
+					$sql = 'DELETE FROM ' . $table_sql . "
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
 					$db->sql_query($sql);
@@ -393,7 +394,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 				if ($notify_status)
 				{
-					$sql = "UPDATE " . $table_sql . "
+					$sql = 'UPDATE ' . $table_sql . "
 						SET notify_status = 0
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
@@ -409,7 +410,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 				{
 					$is_watching = TRUE;
 
-					$sql = "INSERT INTO " . $table_sql . " (user_id, $where_sql, notify_status)
+					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, 0)";
 					$db->sql_query($sql);
 				}
@@ -691,11 +692,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
-	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
-//	$page_string = '<a href="javascript:goto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
+//	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
+	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 
-//	$template->assign_var('BASE_URL', $base_url);
-//	$template->assign_var('PER_PAGE', $per_page);
+	$template->assign_var('BASE_URL', $base_url);
+	$template->assign_var('PER_PAGE', $per_page);
 
 	return $page_string;
 }
@@ -706,7 +707,7 @@ function on_page($num_items, $per_page, $start)
 
 	$on_page = floor($start / $per_page) + 1;
 
-//	$template->assign_var('ON_PAGE', $on_page);
+	$template->assign_var('ON_PAGE', $on_page);
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
@@ -961,16 +962,13 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 	page_footer();
 }
 
-// TODO
-// If forum has parents, check to see if password has been entered
-// for those (if it/they are the same as this forums).? If they are 
-// different then we ignore them as if they were blank
+// Generate forum login box
 function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
 	$sql = 'SELECT forum_id
-		FROM phpbb_forum_access 
+		FROM ' . FORUMS_ACCESS_TABLE . '  
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
 			AND user_id = ' . $user->data['user_id'] . "
 			AND session_id = '$user->session_id'";
@@ -987,6 +985,7 @@ function login_forum_box(&$forum_data)
 	{
 		// TODO
 		// Remove old valid sessions
+		$sql = '';
 
 		if ($_POST['password'] == $forum_data['forum_password'])
 		{

@@ -15,6 +15,141 @@
 // User functions
 //
 
+function normalise_data(&$data, &$normalise)
+{
+
+	$valid_data = array();
+	foreach ($normalise as $var_type => $var_ary)
+	{
+		foreach ($var_ary as $var_name => $var_limits)
+		{
+			$var_name = (is_string($var_name)) ? $var_name : $var_limits; 
+			$l_prefix = strtoupper($var_name);
+
+			if (isset($data[$var_name]))
+			{
+				switch ($var_type)
+				{
+					case 'i':
+						$valid_data[$var_name] = (int) $data[$var_name];
+						break;
+
+					case 'f':
+						$valid_data[$var_name] = (double) $data[$var_name];
+						break;
+
+					case 'b':
+						$valid_data[$var_name] = ($data[$var_name] <= 0) ? 0 : 1;
+						break;
+
+					case 's':
+						// Cleanup data, remove excess spaces, convert entity forms
+						$valid_data[$var_name] = trim(preg_replace('#\s{2,}#s', ' ', strtr((string) $data[$var_name], array_flip(get_html_translation_table(HTML_ENTITIES)))));
+
+						// How should we check this data?
+						if (!is_array($var_limits))
+						{
+							// Is the match a string? If it is, process it further, else we'll
+							// assume it's a maximum length
+							if (is_string($var_limits))
+							{
+								if (strstr($var_limits, ','))
+								{
+									list($min_value, $max_value) = explode(',', $var_limits);
+									if (!empty($valid_data[$var_name]) && strlen($valid_data[$var_name]) < $min_value)
+									{
+										$this->error[] = $l_prefix . '_TOO_SHORT';
+									}
+
+									if (strlen($valid_data[$var_name]) > $max_value)
+									{
+										$this->error[] = $l_prefix . '_TOO_LONG';
+									}
+								}
+							}
+							else
+							{
+								if (strlen($valid_data[$var_name]) > $var_limits)
+								{
+									$this->error[] = $l_prefix . '_TOO_LONG';
+								}
+							}
+						}
+						break;
+				}
+			}
+		}
+	}
+
+	return $valid_data;
+}
+
+// Validates data subject to supplied requirements, errors appropriately
+function validate_data(&$data, &$validate)
+{
+	global $db, $user, $config;
+
+	foreach ($validate as $operation => $var_ary)
+	{
+		foreach ($var_ary as $var_name => $compare)
+		{
+			$l_prefix = strtoupper($var_name);
+
+			if (!empty($compare))
+			{
+				switch ($operation)
+				{
+					case 'm':
+						if (is_array($compare))
+						{
+							foreach ($compare as $match)
+							{
+								if (!preg_match($match, $data[$var_name]))
+								{
+									$this->error[] = $l_prefix . '_WRONG_DATA';
+								}
+							}
+						}
+						else if (!preg_match($compare, $data[$var_name]))
+						{
+							$this->error[] = $l_prefix . '_WRONG_DATA';
+						}
+						break;
+
+					case 'c':
+						if (is_array($compare))
+						{
+							if (!in_array($data[$var_name], $compare))
+							{
+								$this->error[] = $l_prefix . '_MISMATCH';
+							}
+						}
+						else if ($data[$var_name] != $compare)
+						{
+							$this->error[] = $l_prefix . '_MISMATCH';
+						}
+						break;
+
+					case 'f':
+						if ($result = $compare($data[$var_name]))
+						{
+							$this->error[] = $result;
+						}
+
+						break;
+
+					case 'r':
+						if (!isset($data[$compare]) || (is_string($data[$compare]) && $data[$compare] === ''))
+						{
+							$this->error[] = strtoupper($compare) . '_MISSING_DATA';
+						}
+						break;
+				}
+			}
+		}
+	}
+}
+
 // Generates an alphanumeric random string of given length
 function gen_rand_string($num_chars)
 {
