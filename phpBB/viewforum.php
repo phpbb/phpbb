@@ -22,13 +22,7 @@
  * 
  ***************************************************************************/ 
 include('extension.inc');
-include('config.'.$phpEx);
-include('template.inc');
-include('functions/sessions.'.$phpEx);
-include('functions/auth.'.$phpEx);
-include('functions/functions.'.$phpEx);
-include('functions/error.'.$phpEx);
-include('db.'.$phpEx);
+include('common.'.$phpEx);
 
 // Check if the user has acutally sent a forum ID with his/her request
 // If not give them a nice error page.

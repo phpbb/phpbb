@@ -22,17 +22,11 @@
  * 
  ***************************************************************************/ 
 include('extension.inc');
-include('config.'.$phpEx);
-include('template.inc');
-include('functions/sessions.'.$phpEx);
-include('functions/auth.'.$phpEx);
-include('functions/functions.'.$phpEx);
-include('functions/error.'.$phpEx);
-include('db.'.$phpEx);
+include('common.'.$phpEx);
 
-$total_users = get_user_count($db, $users_table);
-$total_posts = get_total_posts($db, $forums_table);
-$newest_userdata = get_newest_user($db, $users_table);
+$total_users = get_user_count($db, "");
+$total_posts = get_total_posts($db, "");
+$newest_userdata = get_newest_user($db, "");
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
 $users_browsing = "4 Users";
@@ -63,7 +57,7 @@ if($total_categories)
 
 	$total_forums = $db->sql_numrows($q_forums);
 	$forum_rows = $db->sql_fetchrowset($q_forums);
-
+	
 	for($i = 0; $i < $total_categories; $i++)
 	{
 		$template->set_var(array("CAT_ID" => $category_rows[$i]["cat_id"],
@@ -107,11 +101,13 @@ if($total_categories)
 					"TOPICS" => $topics,
 					"LAST_POST" => $last_post,
 					"MODERATORS" => $moderators));
+
 				$template->parse("forums", "forumrow", true);
 			} // if ... then
 		} // for total forums
 		$template->parse("cats", "forums", true);
 		$template->set_var("forums", "");
+
 	} // for ... categories
 
 }// if ... total_categories
