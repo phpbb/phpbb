@@ -269,7 +269,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 	{
 		$sql = "SELECT user_id   
 			FROM " . USERS_TABLE . "
-			WHERE username = '$username'";
+			WHERE username IN ('$username')";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -285,7 +285,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 	{
 		$sql = "SELECT group_name    
 			FROM " . GROUPS_TABLE . "
-			WHERE group_id = $group_id";
+			WHERE group_id IN ($group_id)";
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -405,7 +405,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 		{
 			$db->sql_freeresult($result);
 
-			$sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
+			$sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE user_id IN ($where_sql) ORDER BY username, user_regdate ASC";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -581,9 +581,9 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 
 <form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['Select'] . ' -&gt;'; ?></option><option value="all_allow"><?php echo $user->lang['ALL_ALLOW']; ?></option><option value="all_deny"><?php echo $user->lang['ALL_DENY']; ?></option><option value="all_inherit"><?php echo $user->lang['ALL_INHERIT']; ?></option><?php 
+		<td align="right"><?php echo $user->lang['PRESETS']; ?>: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><option value="all_allow"><?php echo $user->lang['ALL_ALLOW']; ?></option><option value="all_deny"><?php echo $user->lang['ALL_DENY']; ?></option><option value="all_inherit"><?php echo $user->lang['ALL_INHERIT']; ?></option><?php 
 
-		echo ($preset_options) ? '<option class="sep">' . $user->lang['PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
+		echo ($preset_options) ? '<option class="sep">' . $user->lang['USER_PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
 
 ?></select></td>
 	</tr>
@@ -656,7 +656,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 
 ?>
 			<tr>
-				<td height="16" align="center"><a class="gensmall" href="javascript:marklist('inherit', true);"><?php echo $user->lang['Mark_all']; ?></a> :: <a href="javascript:marklist('inherit', false);" class="gensmall"><?php echo $user->lang['Unmark_all']; ?></a></td>
+				<td height="16" align="center"><a class="gensmall" href="javascript:marklist('inherit', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('inherit', false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -725,7 +725,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 			</tr>
 			<tr>
 				<td nowrap="nowrap"><?php echo $user->lang['SELECT_PRESET']; ?>: </td>
-				<td><select name="presetoption"><option class="sep" value="-1"><?php echo $user->lang['Select'] . ' -&gt;'; ?></option><?php 
+				<td><select name="presetoption"><option class="sep" value="-1"><?php echo $user->lang['SELECT'] . ' -&gt;'; ?></option><?php 
 
 		echo $preset_update_options;
 	
@@ -899,10 +899,10 @@ switch ($mode)
 
 ?>
 	<tr>
-		<th align="center"><?php echo $user->lang['Select_a_Forum']; ?></th>
+		<th align="center"><?php echo $user->lang['LOOK_UP_FORUM']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $user->lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $user->lang['LOOK_UP_FORUM']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 <?php
 		
@@ -914,7 +914,7 @@ switch ($mode)
 		<th align="center"><?php echo $user->lang['Select_a_User']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><input type="text" class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="submituser" value="<?php echo $user->lang['Look_up_user']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="type" value="user" /></td>
+		<td class="row1" align="center"><input type="text" class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="submituser" value="<?php echo $user->lang['Look_up_user']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="type" value="user" /></td>
 	</tr>
 <?php
 		break;
