@@ -23,7 +23,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
 
-	if( !$db->sql_query($sql) )
+	if( !($result = $db->sql_query($sql)) )
 	{  
 		$errored = true;
 		$error_ary['sql'][] = ( is_array($sql) ) ? $sql[$i] : $sql;
@@ -36,7 +36,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		flush();
 	}
 
-	return;
+	return $result;
 }
 
 define('IN_PHPBB', 1);
@@ -433,7 +433,7 @@ switch ( $row['config_value'] )
 		$sql = "SELECT themes_id 
 			FROM " . THEMES_TABLE . " 
 			WHERE template_name = 'subSilver'";
-		_sql($sql, $errored, $error_ary);
+		$result = _sql($sql, $errored, $error_ary);
 
 		if( $row = $db->sql_fetchrow($result) )
 		{
@@ -457,7 +457,7 @@ switch ( $row['config_value'] )
 			FROM " . POSTS_TABLE . "
 			GROUP BY topic_id
 			ORDER BY topic_id ASC";
-		_sql($sql, $errored, $error_ary);
+		$result = _sql($sql, $errored, $error_ary);
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
@@ -477,7 +477,7 @@ switch ( $row['config_value'] )
 				AND ug.group_id = aa.group_id
 				AND u.user_id = ug.user_id 
 				AND u.user_level <> " . ADMIN;
-		_sql($sql, $errored, $error_ary);
+		$result = _sql($sql, $errored, $error_ary);
 
 		$mod_user = array();
 		while ( $row = $db->sql_fetchrow($result) )
@@ -520,7 +520,7 @@ switch ( $row['config_value'] )
 		{
 			$sql = "SELECT user_id, user_timezone_old 
 				FROM " . USERS_TABLE;
-			_sql($sql, $errored, $error_ary);
+			$result = _sql($sql, $errored, $error_ary);
 
 			while ( $row = $db->sql_fetchrow($result) )
 			{
@@ -534,7 +534,7 @@ switch ( $row['config_value'] )
 		$sql = "SELECT topic_id, topic_moved_id 
 			FROM " . TOPICS_TABLE . " 
 			WHERE topic_moved_id <> 0";
-		_sql($sql, $errored, $error_ary);
+		$result = _sql($sql, $errored, $error_ary);
 
 		$topic_ary = array();
 		while ( $row = $db->sql_fetchrow($result) )
@@ -547,7 +547,7 @@ switch ( $row['config_value'] )
 			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
 				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $topic_moved_id";
-			_sql($sql, $errored, $error_ary);
+			$result = _sql($sql, $errored, $error_ary);
 
 			$sql = ( $row = $db->sql_fetchrow($result) ) ? "UPDATE " . TOPICS_TABLE . "	SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " WHERE topic_id = $topic_id" : "DELETE FROM " . TOPICS_TABLE . " WHERE topic_id = " . $row['topic_id'];
 			_sql($sql, $errored, $error_ary);
