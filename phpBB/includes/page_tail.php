@@ -52,7 +52,10 @@ $template->assign_vars(array(
 ));
 
 
-$cache->save_cache();
+if (!empty($cache))
+{
+	$cache->save_cache();
+}
 $template->display('body');
 
 exit;

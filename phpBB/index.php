@@ -25,16 +25,7 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Get posted/get info
-$cat_id = (!empty($_GET['c'])) ? intval($_GET['c']) : 0;
-
-if (isset($_GET['mark']) || isset($_POST['mark']))
-{
-	$mark_read = (isset($_POST['mark'])) ? $_POST['mark'] : $_GET['mark'];
-}
-else
-{
-	$mark_read = '';
-}
+$mark_read = (isset($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
 
 // Start session management
 $user->start();
@@ -55,7 +46,7 @@ if ($mark_read == 'forums')
 	);
 
 	$message = $user->lang['Forums_marked_read'] . '<br /><br />' . sprintf($user->lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
-	message_die(MESSAGE, $message);
+	trigger_error($message);
 }
 
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
@@ -79,7 +70,7 @@ else
 }
 
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-display_forums(array('forum_id' => 0));
+display_forums();
 
 if ($total_posts == 0)
 {

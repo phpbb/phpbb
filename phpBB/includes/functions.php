@@ -50,7 +50,7 @@ function set_config($config_name, $config_value)
 	}
 
 	$config[$config_name] = $config_value;
-	$cache->save('config', $config);
+	$cache->put('config', $config);
 
 }
 
@@ -214,9 +214,7 @@ function make_jumpbox($action, $forum_id = false)
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	
-	// Cache the forums list for 60 seconds
-	$result = $db->sql_query($sql, 60);
+	$result = $db->sql_query($sql);
 
 	$right = $cat_right = 0;
 	$padding = $forum_list = $holding = '';
@@ -265,7 +263,7 @@ function make_jumpbox($action, $forum_id = false)
 		}
 
 		$nav_links['chapter forum'][$row['forum_id']] = array (
-			'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
+			'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
 			'title' => $row['forum_name']
 		);
 	}
@@ -676,7 +674,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	global $db, $cache;
 	if ($cache->exists('word_censors'))
 	{
-		$words = $cache->load('word_censors');
+		$words = $cache->get('word_censors');
 		$orig_word = $words['orig'];
 		$replacement_word = $words['replacement'];
 	}
@@ -693,7 +691,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 		}
 
 		$words = array('orig' => $orig_word, 'replacement' => $replacement_word);
-		$cache->save('word_censors', $words);
+		$cache->put('word_censors', $words);
 	}
 
 	return true;

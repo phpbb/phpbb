@@ -192,10 +192,10 @@ switch ($mode)
 			'parent_id'			=> $parent_id, 
 			'left_id'			=> $left_id,
 			'right_id'			=> $right_id, 
-			'forum_status'		=> ITEM_UNLOCKED,
+			'forum_status'		=> intval($_POST['forum_status']),
 			'forum_postable'	=> (!empty($_POST['forum_postable'])) ? 1 : 0,
-			'forum_name'		=> sql_quote($_POST['forum_name']),
-			'forum_desc'		=> sql_quote($_POST['forum_desc']), 
+			'forum_name'		=> $_POST['forum_name'],
+			'forum_desc'		=> $_POST['forum_desc'], 
 			'forum_style'		=> (!empty($_POST['forum_style'])) ? intval($_POST['forum_style']) : 'NULL', 
 			'enable_post_count'	=> (!empty($_POST['disable_post_count'])) ? 0 : 1,
 			'enable_icons'		=> (!empty($_POST['enable_icons'])) ? 1 : 0, 
@@ -281,6 +281,8 @@ switch ($mode)
 		{
 			//
 			// wasn't this form submitted? is anyone trying to remotely delete forums
+			//
+			// NOTE/TODO: this should not be possible because of session_id verification so this part can be removed
 			//
 			trigger_error('Did not submit', E_USER_ERROR);
 		}

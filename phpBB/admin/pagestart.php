@@ -25,6 +25,7 @@ if (!defined('IN_PHPBB'))
 }
 
 define('IN_ADMIN', true);
+define('NEED_SID', true);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
@@ -32,17 +33,6 @@ $user->start($update);
 $user->setup();
 $auth->acl($user->data);
 // End session management
-
-//
-// If session_ids do not match, rewrite the URL correctly then redirect the user
-//
-if ($_REQUEST['sid'] != $user->data['session_id'])
-{
-	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $_SERVER['REQUEST_URI']);
-	$url = preg_replace('/\?$/', '', $url);
-	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $user->data['session_id'];
-	redirect($url);
-}
 
 // -----------------------------
 // Functions

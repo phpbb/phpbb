@@ -37,6 +37,11 @@
 import_request_variables('GP', 's_');
 
 define('IN_PHPBB', true);
+if (count($_POST))
+{
+	define('NEED_SID', true);
+}
+
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
@@ -633,8 +638,8 @@ $urls_checked = (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked = (isset($attach_sig)) ? $attach_sig : (($config['allow_sigs']) ? $user->data['user_atachsig'] : 0);
 $notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
 
-// Page title & action URL
-$s_action = "posting.$phpEx$SID&amp;mode=$s_mode&amp;f=" . intval($forum_id);
+// Page title & action URL, include session_id for security purpose
+$s_action = "posting.$phpEx?sid=" . $user->session_id . "&amp;mode=$s_mode&amp;f=" . intval($forum_id);
 switch ($s_mode)
 {
 	case 'post':

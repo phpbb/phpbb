@@ -45,7 +45,7 @@
 //    * Limit read/post/reply/etc. permissions
 
 define('IN_PHPBB', true);
-define('ADD_SID', true);
+define('NEED_SID', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);

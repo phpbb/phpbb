@@ -397,6 +397,11 @@ class sql_db
 	
 	function sql_error($sql = '')
 	{
+		$result = array(
+			'message' => @mysql_error(),
+			'code' => @mysql_errno()
+		);
+
 		if ( !$this->return_on_error )
 		{
 			if ( $this->transaction )
@@ -411,8 +416,6 @@ class sql_db
 			trigger_error($message, E_USER_ERROR);
 		}
 
-		$result['message'] = @mysql_error();
-		$result['code'] = @mysql_errno();
 
 		return $result;
 	}

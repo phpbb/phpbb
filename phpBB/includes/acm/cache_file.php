@@ -67,7 +67,7 @@ class acm
 		}
 	}
 
-	function save($varname, $var)
+	function put($varname, $var)
 	{
 		$this->vars[$varname] = $var;
 		$this->vars_ts[$varname] = time();
@@ -84,7 +84,7 @@ class acm
 		}
 	}
 
-	function load($varname, $expire_time = 0)
+	function get($varname, $expire_time = 0)
 	{
 		return ($this->exists($varname, $expire_time)) ? $this->vars[$varname] : null;
 	}

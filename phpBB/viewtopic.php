@@ -387,7 +387,7 @@ $template->assign_vars(array(
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($topic_replies, $config['posts_per_page'], $start),
-	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
 	'POST_IMG' 	=> $post_img,
@@ -401,7 +401,7 @@ $template->assign_vars(array(
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
 	'S_AUTH_LIST' 			=> $s_forum_rules,
 	'S_TOPIC_MOD' 			=> ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "mcp.$phpEx$SID&amp;t=$topic_id",
+	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
 	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight",
@@ -710,7 +710,7 @@ if ($row = $db->sql_fetchrow($result))
 
 		if ($auth->acl_gets('m_ip', 'a_', $forum_id))
 		{
-			$temp_url = "mcp.$phpEx$SID&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
+			$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
 			$ip_img = '<a href="' . $temp_url . '">' . $user->img('icon_ip', $user->lang['VIEW_IP']) . '</a>';
 			$ip = '<a href="' . $temp_url . '">' . $user->lang['VIEW_IP'] . '</a>';
 		}

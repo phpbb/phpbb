@@ -807,7 +807,7 @@ class auth_admin extends auth
 
 	function acl_cache_options($options = false)
 	{
-		global $db;
+		global $db, $cache;
 
 		$options = array();
 
@@ -833,6 +833,7 @@ class auth_admin extends auth
 			$db->sql_freeresult($result);
 		}
 
+/*
 		// Re-cache options
 		$cache_str = "\$acl_options = array(\n";
 		foreach ($options as $type => $options_ary)
@@ -847,6 +848,9 @@ class auth_admin extends auth
 		$cache_str .= ");";
 
 		config_cache_write('\$acl_options = array\(.*?\);', $cache_str);
+		$this->acl_clear_prefetch();
+*/
+		$cache->put('acl_options', $options);
 		$this->acl_clear_prefetch();
 
 		return $options;

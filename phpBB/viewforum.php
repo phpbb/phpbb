@@ -271,7 +271,7 @@ if ($forum_data['forum_postable'])
 		'POST_IMG' 		=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
-		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
+		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '',
 		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
 		'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
@@ -291,7 +291,7 @@ if ($forum_data['forum_postable'])
 		'L_POSTED' 				=> $user->lang['Posted'],
 		'L_JOINED' 				=> $user->lang['Joined'],
 		'L_AUTHOR' 				=> $user->lang['Author'],
-		'L_NO_TOPICS' 			=> ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $user->lang['Forum_locked'] : $user->lang['No_topics_post_one'],
+		'L_NO_TOPICS' 			=> ( $forum_data['forum_status'] == ITEM_LOCKED ) ? $user->lang['Forum_locked'] : $user->lang['No_topics_post_one'],
 		'L_GOTO_PAGE' 			=> $user->lang['Goto_page'],
 
 		'S_SELECT_SORT_DIR' => $select_sort_dir,

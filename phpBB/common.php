@@ -80,7 +80,6 @@ define('GROUP_SPECIAL', 3);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
-define('ITEM_CATEGORY', 3);
 
 // Topic types
 define('POST_NORMAL', 0);
@@ -183,7 +182,7 @@ if ( empty($acl_options) )
 }
 */
 
-if (!$config = $cache->load('config'))
+if (!$config = $cache->get('config'))
 {
 	$config = array();
 
@@ -195,7 +194,18 @@ if (!$config = $cache->load('config'))
 		$config[$row['config_name']] = $row['config_value'];
 	}
 
-	$cache->save('config', $config);
+	$cache->put('config', $config);
+}
+
+if ($cache->exists('acl_options'))
+{
+	$acl_options = $cache->get('acl_options');
+}
+else
+{
+	require_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+	$auth_admin = new auth_admin();
+	$acl_options = $auth_admin->acl_cache_options();
 }
 
 /*

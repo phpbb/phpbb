@@ -42,8 +42,7 @@ class session
 		{
 			$sessiondata = ( isset($_COOKIE[$config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
 			$this->session_id = ( isset($_COOKIE[$config['cookie_name'] . '_sid']) ) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
-			$SID = (defined('IN_ADMIN')) ? '?sid=' . $this->session_id : '?sid=';
-//			$SID = (defined('ADD_SID')) ? '?sid=' . $this->session_id : '?sid=';
+			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
@@ -79,7 +78,8 @@ class session
 		}
 
 		// session_id exists so go ahead and attempt to grab all data in preparation
-		if (!empty($this->session_id))
+		// Added session check
+		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
 		{
 			$sql = "SELECT u.*, s.*
 				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
@@ -111,6 +111,14 @@ class session
 					return true;
 				}
 			}
+		}
+
+		// Session check failed, redirect the user to the index page
+		// TODO: we could delay it until we grab user's data and display a localised error message
+		if (defined('NEED_SID'))
+		{
+			// NOTE: disabled until we decide how to deal with this
+			//redirect("index.$phpEx$SID");
 		}
 
 		// If we reach here then no (valid) session exists. So we'll create a new one,
@@ -309,7 +317,7 @@ class session
 				$db->sql_query($sql);
 			}
 
-			$del_user_id .= (($del_user_id != '') ? ', ' : '') . ' \'' . $row['session_user_id'] . '\'';
+			$del_user_id .= (($del_user_id != '') ? ', ' : '') . " '" . $row['session_user_id'] . "'";
 			$del_sessions++;
 		}
 
@@ -440,12 +448,11 @@ class user extends session
 				AND c.theme_id = s.style_id
 				AND i.imageset_id = s.imageset_id";
 
-		// Cache this query for 60 seconds
-		$result = $db->sql_query($sql, 60);
+		$result = $db->sql_query($sql);
 
 		if (!($this->theme = $db->sql_fetchrow($result)))
 		{
-			message_die(ERROR, 'Could not get style data');
+			trigger_error('Could not get style data');
 		}
 
 		$template->set_template($this->theme['template_path']);
@@ -701,6 +708,7 @@ class auth
 
 		$method = trim($config['auth_method']);
 
+		// NOTE: don't we need $phpbb_root_path here?
 		if (file_exists('includes/auth/auth_' . $method . '.' . $phpEx))
 		{
 			include_once('includes/auth/auth_' . $method . '.' . $phpEx);

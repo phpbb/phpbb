@@ -19,13 +19,21 @@
  *
  ***************************************************************************/
 
-function display_forums($root_data=array(), $display_moderators=TRUE)
+function display_forums($root_data = '', $display_moderators = TRUE)
 {
 	global $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
 
-	$where_sql = ($root_data['forum_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
+	if (!$root_data)
+	{
+		$root_data = array('forum_id' => 0);
+		$where_sql = '';
+	}
+	else
+	{
+		$where_sql = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
+	}
 
-	if($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$lastread_select = ", lr.lastread_time";
 		$lastread_sql = "
@@ -34,8 +42,8 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 				AND (f.forum_id = lr.forum_id OR f.forum_id = -lr.forum_id)
 				AND lr.lastread_time >= f.forum_last_post_time)";
 
-		// Temp fix
-		$where_sql .= ' GROUP BY f.forum_id';
+		// Temp fix for index
+		//$where_sql .= ' GROUP BY f.forum_id';
 	}
 	else
 	{
