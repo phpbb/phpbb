@@ -46,7 +46,7 @@ $template->set_block("catrow", "forumrow", "forums");
 $sql = "SELECT c.*
 	FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
 	WHERE f.cat_id=c.cat_id
-	GROUP BY c.cat_id
+	GROUP BY c.cat_id, c.cat_title, c.cat_order
 	ORDER BY c.cat_order";
 if(!$q_categories = $db->sql_query($sql)) 
 {
@@ -106,6 +106,7 @@ if($total_categories)
 		$created_line = false;
 		for($j = 0; $j < $total_forums; $j++)
 		{
+
 			if( ( $forum_rows[$j]["cat_id"] == $category_rows[$i]["cat_id"] && $viewcat == -1 ) ||
 				( $category_rows[$i]["cat_id"] == $viewcat) )
 			{
