@@ -211,10 +211,39 @@ switch( $mode )
 				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . $topics[$i];
 			}
 
+			$sql = "SELECT poster_id, COUNT(post_id) AS posts 
+				FROM " . POSTS_TABLE . " 
+				WHERE topic_id IN ($topic_id_sql) 
+				GROUP BY poster_id";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not get poster id information', '', __LINE__, __FILE__, $sql);
+			}
+
+			$count_sql = array();
+			while ( $row = $db->sql_fetchrow($result) )
+			{
+				$count_sql[] = "UPDATE " . USERS_TABLE . " 
+					SET user_posts = user_posts - " . $row['posts'] . " 
+					WHERE user_id = " . $row['poster_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if ( sizeof($count_sql) )
+			{
+				for($i = 0; $i < sizeof($count_sql); $i++)
+				{
+					if ( !$db->sql_query($count_sql[$i]) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update user post count information', '', __LINE__, __FILE__, $sql);
+					}
+				}
+			}
+			
 			$sql = "SELECT post_id 
 				FROM " . POSTS_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql)";
-			if ( !$result = $db->sql_query($sql) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
 			}
