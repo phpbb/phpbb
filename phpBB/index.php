@@ -27,9 +27,9 @@ include('common.'.$phpEx);
 $pagetype = "index";
 $page_title = "Forum Index";
 
-$total_users = get_user_count($db, "");
-$total_posts = get_total_posts($db, "");
-$newest_userdata = get_newest_user($db, "");
+$total_posts = get_db_stat($db, 'postcount');
+$total_users = get_db_stat($db, 'usercount');
+$newest_userdata = get_db_stat($db, 'newestuser');
 $newest_user = $newest_userdata["username"];
 $newest_uid = $newest_userdata["user_id"];
 $users_browsing = "4 Users";

@@ -22,63 +22,54 @@
  * 
  ***************************************************************************/ 
 
-function get_total_posts($db, $forums_table) 
+function get_db_stat($db, $mode) 
 {
-   $sql = "SELECT sum(forum_posts) AS total FROM ".FORUMS_TABLE;
-   if(!$result = $db->sql_query($sql))
-     {
-	return "ERROR";
-     }
-   else
-     {
-	$rowset = $db->sql_fetchrowset($result);
-	return($rowset[0]["total"]);
-     }
+	switch($mode){
+		case 'postcount':
+			$sql = 'SELECT count(*) AS total FROM '.POSTS_TABLE;
+		break;
+
+		case 'usercount':
+			$sql = 'SELECT count(*) AS total 
+						FROM '. USERS_TABLE .' 
+						WHERE user_id != '.ANONYMOUS.'
+						AND user_level != '.DELETED;
+		break;
+
+		case 'newestuser':
+			$sql = 'SELECT user_id, username
+						FROM '.USERS_TABLE.'
+						WHERE user_id != ' . ANONYMOUS. '
+						AND user_level != '. DELETED .'
+						ORDER BY user_id DESC LIMIT 1';
+		break;
+	}
+
+	
+	if(!$result = $db->sql_query($sql))
+	{
+		return 'ERROR';
+	}
+	else
+	{
+		$row = $db->sql_fetchrow($result);
+		if($mode == 'newestuser')
+		{
+			return($row);
+		}
+		else
+		{
+			return($row['total']);
+		}
+	}
 }
 
-function get_user_count($db)
-{
-   $sql = "SELECT count(user_id) AS total 
-	    FROM ". USERS_TABLE ." 
-	    WHERE user_id != ".ANONYMOUS."
-	    AND user_level != ".DELETED;
-
-   if(!$result = $db->sql_query($sql))
-     {
-	return "ERROR";
-     }
-   else
-     {
-	$rowset = $db->sql_fetchrowset($result);
-	return($rowset[0]["total"]);
-     }
-}
-
-function get_newest_user($db)
-{
-   $sql = "SELECT user_id, username
-	    FROM ".USERS_TABLE."
-	    WHERE user_id != " . ANONYMOUS. "
-	    AND user_level != ". DELETED ."
-	    ORDER BY user_id DESC LIMIT 1";
-   if(!$result = $db->sql_query($sql))
-     {
-	return array("user_id" => "-1", "username" => "ERROR");
-     }
-      else
-     {
-	$rowset = $db->sql_fetchrowset($result);
-	$return_data = array("user_id" => $rowset[0]["user_id"],
-			     "username" => $rowset[0]["username"]);
-	return($return_data);
-     }
-}
 
 function make_jumpbox($db)
 {
-	$sql = "SELECT cat_id, cat_title FROM ".CATEGORIES_TABLE." ORDER BY cat_order";
+	$sql = 'SELECT cat_id, cat_title FROM '.CATEGORIES_TABLE.' ORDER BY cat_order';
 	
-	$boxstring = "";
+	$boxstring = '';
 	if($result = $db->sql_query($sql))
 	{
 		if($total_cats = $db->sql_numrows($result))
@@ -124,37 +115,6 @@ function make_jumpbox($db)
 	}
 
 	return($boxstring);
-}
-
-function get_moderators($db, $forum_id)
-{
-   $sql = "SELECT u.username, u.user_id FROM " . FORUM_MODS_TABLE ." f, " . USERS_TABLE . " u
-           WHERE f.forum_id = '$forum_id' AND u.user_id = f.user_id";
-   if($result = $db->sql_query($sql))
-     {
-	if($total_mods = $db->sql_numrows($result))
-	  {
-	     $rowset = $db->sql_fetchrowset($result);
-	     for($x = 0; $x < $total_mods; $x++)
-	       {
-		  $modArray[] = array("id" => $rowset[$x]["user_id"],
-				      "name" => $rowset[$x]["username"]);
-	       }
-	  }
-	else 
-	  {
-	     $modArray[] = array("id" => "-1",
-				 "name" => "ERROR");
-	  }
-
-     }
-   else
-     {
-	$modArray[] = array("id" => "-1",
-			    "name" => "ERROR");
-     }
-   
-   return($modArray);
 }
 
 ?>
