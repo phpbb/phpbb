@@ -544,7 +544,11 @@ class user extends session
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
-		require($this->lang_path . "common.$phpEx");
+		if ((@include $this->lang_path . "common.$phpEx") === FALSE)
+		{
+			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
+		}
+
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
@@ -688,10 +692,13 @@ class user extends session
 		// $lang == $this->lang
 		// $help == $this->help
 		// - add appropiate variables here, name them as they are used within the language file...
-
+die($lang_file);
 		if (!$use_db)
 		{
-			require($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
+			if ( (@include $this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx") === FALSE )
+			{
+				trigger_error("Language file " . $this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx" . " couldn't be opened.");
+			}
 		}
 		else if ($use_db)
 		{
