@@ -37,6 +37,7 @@ $lang['Users_cat'] = 'User Admin';
 $lang['Groups_cat'] = 'Group Admin';
 $lang['Forums_cat'] = 'Forum Admin';
 $lang['Styles_cat'] = 'Styles Admin';
+$lang['Log_cat'] = 'Log Admin';
 
 $lang['Avatar_settings'] = 'Avatar Settings';
 $lang['Cookie_settings'] = 'Cookie Settings';
@@ -67,6 +68,8 @@ $lang['Mod_logs'] = 'Moderator Log';
 
 $lang['Users'] = 'Users';
 $lang['Groups'] = 'Groups';
+
+$lang['Look_up_Forum'] = 'Select a Forum';
 
 //
 // Logging
@@ -414,6 +417,7 @@ $lang['SMTP_username'] = 'SMTP Username';
 $lang['SMTP_username_explain'] = 'Only enter a username if your smtp server requires it';
 $lang['SMTP_password'] = 'SMTP Password';
 $lang['SMTP_password_explain'] = 'Only enter a password if your smtp server requires it';
+
 
 //
 // Board settings

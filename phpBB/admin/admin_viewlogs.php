@@ -27,8 +27,8 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['General']['Admin_logs'] = $filename . "$SID&amp;mode=admin";
-	$module['General']['Mod_logs'] = $filename . "$SID&amp;mode=mod";
+	$module['Log']['Admin_logs'] = $filename . "$SID&amp;mode=admin";
+	$module['Log']['Mod_logs'] = $filename . "$SID&amp;mode=mod";
 
 	return;
 }
