@@ -34,8 +34,8 @@ function check_forum_name($forumname)
 {
 	global $db;
 
-	$sql = "SELECT * 
-		FROM " . FORUMS_TABLE . " 
+	$sql = "SELECT *
+		FROM " . FORUMS_TABLE . "
 		WHERE forum_name = '$forumname'";
 	$result = $db->sql_query($sql);
 	if( !$result )
@@ -110,7 +110,7 @@ function get_list($mode, $id, $select)
 			break;
 	}
 
-	$sql = "SELECT * 
+	$sql = "SELECT *
 		FROM $table";
 	if( $select == 0 )
 	{
@@ -180,8 +180,8 @@ function renumber_order($mode, $cat = 0)
 
 	while( $row = $db->sql_fetchrow($result) )
 	{
-		$sql = "UPDATE $table 
-			SET $orderfield = $i 
+		$sql = "UPDATE $table
+			SET $orderfield = $i
 			WHERE $idfield = " . $row[$idfield];
 		if( !$db->sql_query($sql) )
 		{
@@ -246,6 +246,10 @@ if(isset($mode))  // Are we supposed to do something?
 			if( $HTTP_POST_VARS['prune_enable'] == TRUE )
 			{
 				$new_forum_id = $db->sql_nextid();
+				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				{
+					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+				}
 
 				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
 					VALUES($new_forum_id, " . $HTTP_POST_VARS['prune_days'] . ", " . $HTTP_POST_VARS['prune_freq'] . ")";
@@ -263,7 +267,7 @@ if(isset($mode))  // Are we supposed to do something?
 			{
 				$HTTP_POST_VARS['prune_enable'] = 0;
 			}
-			$sql = "UPDATE " . FORUMS_TABLE . " 
+			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_name = '" . $HTTP_POST_VARS['forumname'] . "', cat_id = " . $HTTP_POST_VARS['cat_id'] . ", forum_desc = '" . $HTTP_POST_VARS['forumdesc'] . "', forum_status = " . $HTTP_POST_VARS['forumstatus'] . ", prune_enable = " . $HTTP_POST_VARS['prune_enable'] . "
 				WHERE forum_id = ".$HTTP_POST_VARS['forum_id'];
 			if( !$result = $db->sql_query($sql) )
@@ -273,7 +277,12 @@ if(isset($mode))  // Are we supposed to do something?
 
 			if($HTTP_POST_VARS['prune_enable'] == 1)
 			{
-				$sql = "SELECT * 
+				if($HTTP_POST_VARS['prune_days'] == "" || $HTTP_POST_VARS['prune_freq'] == "")
+				{
+					message_die(GENERAL_ERROR, $lang['Set_prune_data'], $lang['Error']);
+				}
+
+				$sql = "SELECT *
 					FROM " . PRUNE_TABLE . "
 					WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
 				if( !$result = $db->sql_query($sql) )
@@ -283,7 +292,7 @@ if(isset($mode))  // Are we supposed to do something?
 
 				if( $db->sql_numrows($result) > 0 )
 				{
-					$sql = "UPDATE " . PRUNE_TABLE . " 
+					$sql = "UPDATE " . PRUNE_TABLE . "
 						SET	prune_days = " . $HTTP_POST_VARS['prune_days'] . ",	prune_freq = " . $HTTP_POST_VARS['prune_freq'] . "
 				 		WHERE forum_id = " . $HTTP_POST_VARS['forum_id'];
 				}
@@ -302,7 +311,7 @@ if(isset($mode))  // Are we supposed to do something?
 			break;
 
 		case 'addcat':
-			$sql = "SELECT MAX(cat_order) AS max_order 
+			$sql = "SELECT MAX(cat_order) AS max_order
 				FROM " . CATEGORIES_TABLE;
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -316,7 +325,7 @@ if(isset($mode))  // Are we supposed to do something?
 			//
 			// There is no problem having duplicate forum names so we won't check for it.
 			//
-			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order) 
+			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
 				VALUES ('" . $HTTP_POST_VARS['catname'] . "', $next_order)";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -347,9 +356,9 @@ if(isset($mode))  // Are we supposed to do something?
 				if( $row['prune_enable'] == 1 )
 				{
 					$prune_enabled = "checked=\"checked\"";
-					$sql = "SELECT * 
+					$sql = "SELECT *
                 			FROM " . PRUNE_TABLE . "
-                			WHERE forum_id = $forum_id"; 
+                			WHERE forum_id = $forum_id";
 					if(!$pr_result = $db->sql_query($sql))
 					{
 						 message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
@@ -419,8 +428,8 @@ if(isset($mode))  // Are we supposed to do something?
 			break;
 
 		case 'modcat':
-			$sql = "UPDATE " . CATEGORIES_TABLE . " 
-				SET cat_title = '" . $HTTP_POST_VARS['cat_title'] . "' 
+			$sql = "UPDATE " . CATEGORIES_TABLE . "
+				SET cat_title = '" . $HTTP_POST_VARS['cat_title'] . "'
 				WHERE cat_id = " . $HTTP_POST_VARS['cat_id'];
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -437,8 +446,8 @@ if(isset($mode))  // Are we supposed to do something?
 
 			print "move '$from_id' to '$to_id'";
 
-			$sql = "SELECT * 
-				FROM " . FORUMS_TABLE . " 
+			$sql = "SELECT *
+				FROM " . FORUMS_TABLE . "
 				WHERE forum_id IN ($from_id, $to_id)";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -457,14 +466,14 @@ if(isset($mode))  // Are we supposed to do something?
 			}
 			else
 			{
-				$sql = "UPDATE " . TOPICS_TABLE . " 
+				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET forum_id = $to_id
 					WHERE forum_id = $from_id";
 				if( !$result = $db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't move topics to other forum", "", __LINE__, __FILE__, $sql);
 				}
-				$sql = "UPDATE " . POSTS_TABLE . " 
+				$sql = "UPDATE " . POSTS_TABLE . "
 					SET	forum_id = $to_id
 					WHERE forum_id = $from_id";
 				if( !$result = $db->sql_query($sql) )
@@ -489,8 +498,8 @@ if(isset($mode))  // Are we supposed to do something?
 			$to_id = $HTTP_POST_VARS['to_id'];
 			print "move '$from_id' to '$to_id'";
 
-			$sql = "SELECT * 
-				FROM " . CATEGORIES_TABLE . " 
+			$sql = "SELECT *
+				FROM " . CATEGORIES_TABLE . "
 				WHERE cat_id IN ($from_id, $to_id)";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -501,7 +510,7 @@ if(isset($mode))  // Are we supposed to do something?
 				message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
 			}
 
-			$sql = "UPDATE " . FORUMS_TABLE . " 
+			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET cat_id = $to_id
 				WHERE cat_id = $from_id";
 			if( !$result = $db->sql_query($sql) )
@@ -509,7 +518,7 @@ if(isset($mode))  // Are we supposed to do something?
 				message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE FROM " . CATEGORIES_TABLE ." 
+			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
 				WHERE cat_id = $from_id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -569,8 +578,8 @@ if(isset($mode))  // Are we supposed to do something?
 			$move = $HTTP_GET_VARS['move'];
 			$cat_id = $HTTP_GET_VARS['cat_id'];
 
-			$sql = "UPDATE " . CATEGORIES_TABLE . " 
-				SET cat_order = cat_order + $move 
+			$sql = "UPDATE " . CATEGORIES_TABLE . "
+				SET cat_order = cat_order + $move
 				WHERE cat_id = $cat_id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -586,8 +595,8 @@ if(isset($mode))  // Are we supposed to do something?
 			$forum_info = get_info('forum', $forum_id);
 			$cat_id = $forum_info['cat_id'];
 
-			$sql = "UPDATE " . FORUMS_TABLE . " 
-				SET forum_order = forum_order + $move 
+			$sql = "UPDATE " . FORUMS_TABLE . "
+				SET forum_order = forum_order + $move
 				WHERE forum_id = $forum_id";
 			if( !$result = $db->sql_query($sql) )
 			{
@@ -626,7 +635,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 {
 	$category_rows = $db->sql_fetchrowset($q_categories);
 
-	$sql = "SELECT * 
+	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
 		ORDER BY cat_id, forum_order";
 	if(!$q_forums = $db->sql_query($sql))

@@ -843,6 +843,7 @@ $lang['reset_group_changes'] = "Reset Changes";
 $lang['prune_days'] = 'Remove topics that haven\'t been posted to in';
 $lang['prune_freq'] = 'Check for topic age every';
 $lang['days'] = 'Days';
+$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune, please go back and do so";
 
 //
 // Word censor

@@ -125,7 +125,7 @@ CREATE TABLE phpbb_config (
    smilies_path varchar(50) DEFAULT 'images/smiles' NOT NULL,
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
-   prune_enable int2 DEFAULT '1' NOT NULL,
+   prune_enable int2 DEFAULT '0' NOT NULL,
    gzip_compress int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_id)
 );
