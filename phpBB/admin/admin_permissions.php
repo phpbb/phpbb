@@ -251,8 +251,6 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 	$s_hidden_fields = '';
 
 
-
-
 	if (!empty($forum_id))
 	{
 		$sql = "SELECT forum_name, parent_id  
@@ -405,24 +403,30 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 		{
 			$db->sql_freeresult($result);
 
-			$sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE user_id IN ($where_sql) ORDER BY username, user_regdate ASC";
+			echo "2 >> " . $sql = ($_POST['type'] == 'group') ? "SELECT group_id AS id, group_name AS name, group_type FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC" : "SELECT user_id AS id, username AS name, user_founder FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 			$result = $db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($row = $db->sql_fetchrow($result))
 			{
-				$ug_test = (!empty($user->lang[$row['name']])) ? $user->lang[$row['name']] : $row['name'];
-				$ug .= (!strstr($ug, $ug_test)) ? $ug_test . "\n" : '';
 
-				$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
-				$ug_hidden .= (!strstr($ug_hidden, $ug_test)) ? $ug_test : '';
+				do
+				{
+					$ug_test = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang[$row['name']] : $row['name'];
+					$ug .= (!strstr($ug, $ug_test)) ? $ug_test . "\n" : '';
 
-				$auth_values[$row['auth_value']] = (isset($auth_group[$row['auth_value']])) ?  min($auth_group[$row['auth_value']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
+					$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
+					$ug_hidden .= (!strstr($ug_hidden, $ug_test)) ? $ug_test : '';
+
+					$auth_values[$row['auth_value']] = (isset($auth_group[$row['auth_value']])) ?  min($auth_group[$row['auth_value']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
+				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			else
+			{
 			}
 		}
 		$db->sql_freeresult($result);
-
-
-
+echo htmlspecialchars($ug_hidden);
 
 		// Now we'll build a list of preset options ...
 		$preset_options = $preset_js = $preset_update_options = '';
@@ -850,7 +854,7 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 				<td class="row1" align="center"><textarea cols="40" rows="4" name="entries"></textarea></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $user->lang['FIND_USERNAME']; ?>" class="liteoption" onclick="window.open('<?php echo "../memberlist.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
