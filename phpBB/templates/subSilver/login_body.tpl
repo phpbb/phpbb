@@ -1,5 +1,5 @@
  
-<form action="{S_LOGIN_ACTION}" method="post">
+<form action="{S_LOGIN_ACTION}" method="post" target="_top">
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
