@@ -838,6 +838,8 @@ function viewsource(url)
 							$db->sql_query($sql);
 						}
 
+						$cache->destroy('sql', STYLES_CSS_TABLE);
+
 						$error[] = $user->lang['THEME_UPDATED'];
 						add_log('admin', 'LOG_EDIT_THEME', $theme_name);
 					}
@@ -1193,6 +1195,11 @@ function csspreview()
 						trigger_error($user->lang['NO_IMAGESET']);
 					}
 					$db->sql_freeresult($result);
+
+
+//					$cache->destroy('sql', STYLES_IMAGE_TABLE);
+
+
 
 					$test_ary = array();
 					foreach ($imglist as $category => $img_ary)
@@ -1589,6 +1596,8 @@ function remove($type, $id)
 				$onfs = (file_exists("{$phpbb_root_path}styles/$path/{$type}")) ? 1 : 0;
 			}
 		}
+
+		$cache->destroy('sql', STYLES_TABLE);
 
 		add_log('admin', 'LOG_DELETE_' . $l_prefix, ${$type . '_name'});
 		$message = ($onfs) ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
@@ -2422,7 +2431,7 @@ function install_style($action, $name, $copyright, $active, $default, $root_path
 // Commented inline
 function install($type, $action, $id)
 {
-	global $phpbb_root_path, $phpEx, $SID, $config, $db, $user;
+	global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user;
 	global $safe_mode, $file_uploads, $archive_preg;
 
 	$install_path = (isset($_REQUEST['path'])) ? htmlspecialchars($_REQUEST['path']) : '';
@@ -2641,6 +2650,8 @@ function install($type, $action, $id)
 
 			if (!sizeof($error))
 			{
+				$cache->destroy('sql', STYLES_TABLE);
+
 				$message = ($storedb) ? '_ADDED_DB' : '_ADDED';
 				trigger_error($user->lang[$l_type . $message]);
 			}
@@ -2721,6 +2732,8 @@ function install($type, $action, $id)
 
 			if (!sizeof($error))
 			{
+				$cache->destroy('sql', STYLES_TABLE);
+
 				$message = ($storedb) ? '_ADDED_DB' : '_ADDED';
 				trigger_error($user->lang["$l_type$message"]);
 			}
@@ -2816,6 +2829,8 @@ function install($type, $action, $id)
 					set_config('default_style', $id);
 				}
 			}
+
+			$cache->destroy('sql', STYLES_TABLE);
 
 			add_log('admin', 'LOG_EDIT_' . $l_type, $name);
 			trigger_error($user->lang[$l_type . '_EDITED']);
