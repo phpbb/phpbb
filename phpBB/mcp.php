@@ -146,41 +146,51 @@ $url_extra = (!empty($post_id_list)) ? '&amp;post_id_list=' . short_id_list($pos
 $return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 // Build up return links and acl list
-// $acl_list_src contains the acl list for source forum(s)
-// $acl_list_trg contains the acl list for destination forum(s)
+// $acl_src contains the acl list for source forum(s)
+// $acl_trg contains the acl list for destination forum(s)
 
-$acl_list_src = array('m_', 'a_');
-$acl_list_trg = array('m_', 'a_');
+$acl_src = 'm_';
+$acl_trg = 'm_';
 $return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 switch ($mode)
 {
+	case 'make_global':
+	case 'make_announce':
+		$acl_src = 'f_announce';
+	break;
+
+	case 'make_sticky':
+		$acl_src = 'f_sticky';
+	break;
+
 	case 'approve':
 	case 'unapprove':
 	case 'disapprove':
-		$acl_list_src = array('m_approve', 'a_');
+		$acl_src = 'm_approve';
 	break;
 
 	case 'split':
 	case 'split_all':
 	case 'split_beyond':
-		$acl_list_src = array('m_split', 'a_');
-		$acl_list_trg = array('f_post', 'm_', 'a_');
+		$acl_src = 'a_';
+		$acl_trg = 'f_post';
 
 		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
 	break;
 
 	case 'merge':
 	case 'merge_posts':
-		$acl_list_src = array('m_merge', 'a_');
-		$acl_list_trg = array('m_merge', 'a_');
+		$acl_src = 'm_merge';
+		$acl_trg = 'm_merge';
 
 		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
 	break;
 
 	case 'move':
-		$acl_list_src = array('m_move', 'a_');
-		$acl_list_trg = array('f_post', 'm_', 'a_');
+		$acl_src = 'm_move';
+		$acl_trg = 'f_post';
+	break;
 }
 
 // Check destination forum or topic if applicable
@@ -214,11 +224,11 @@ if ($to_forum_id > 0)
 		$forum_data[$to_forum_id] = $row;
 	}
 
-	if (!$auth->acl_gets('f_list', 'm_', 'a_', $to_forum_id))
+	if (!$auth->acl_get('f_list', $to_forum_id))
 	{
 		trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mode);
 	}
-	if (!$auth->acl_gets($acl_list_trg, $to_forum_id))
+	if (!$auth->acl_gets($acl_trg, $to_forum_id))
 	{
 		trigger_error('NOT_ALLOWED');
 	}
@@ -236,7 +246,7 @@ $not_moderator = FALSE;
 
 if ($forum_id > 0)
 {
-	if ($auth->acl_gets($acl_list_src, $forum_id))
+	if ($auth->acl_gets($acl_src, $forum_id))
 	{
 		$forum_id_list[] = $forum_id;
 	}
@@ -255,7 +265,7 @@ if ($topic_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets($acl_list_src, $row['forum_id']))
+		if ($auth->acl_gets($acl_src, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -280,7 +290,7 @@ if ($post_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets($acl_list_src, $row['forum_id']))
+		if ($auth->acl_gets($acl_src, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -337,7 +347,7 @@ else
 {
 	// There's no forums list available so the user either submitted an empty or invalid list of posts/topics or isn't a moderator
 
-	if ($not_moderator || !$auth->acl_gets('m_', 'a_'))
+	if ($not_moderator || !$auth->acl_get('m_'))
 	{
 		trigger_error('Not_Moderator');
 	}
@@ -378,15 +388,15 @@ $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
 //$mcp_url .= ($start) ? '&amp;start=' . $start : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '">', '</a>');
 
-if ($forum_id && $forum_data[$forum_id]['forum_postable'] && $auth->acl_gets('m_', 'a_', $forum_id))
+if ($forum_id && $forum_data[$forum_id]['forum_postable'] && $auth->acl_get('m_', $forum_id))
 {
 	$tabs['forum_view'] = $mcp_url . '&amp;mode=forum_view';
 }
-if ($topic_id && $auth->acl_gets('m_delete', 'm_split', 'm_merge', 'm_approve', 'a_', $forum_id))
+if ($topic_id && $auth->acl_gets('m_delete', 'm_split', 'm_merge', 'm_approve', $forum_id))
 {
 	$tabs['topic_view'] = $mcp_url . '&amp;mode=topic_view' . $url_extra;
 }
-if ($post_id && $auth->acl_gets('m_', 'a_', $forum_id))
+if ($post_id && $auth->acl_gets('m_', $forum_id))
 {
 	$tabs['post_details'] = $mcp_url . '&amp;mode=post_details';
 }
@@ -539,13 +549,31 @@ else
 
 switch ($mode)
 {
+	case 'make_global':
 	case 'make_announce':
-	case 'smake_sticky':
+	case 'make_sticky':
 	case 'make_normal':
-		$topic_type = constant('POST_' . strtoupper(preg_replace('/make_([a-z]+)/', '\1', $mode)));
+		switch ($mode)
+		{
+			case 'make_global':
+				$set_sql = 'topic_type = ' . POST_ANNOUNCE . ', forum_id = 0';
+			break;
+
+			case 'make_announce':
+				$set_sql = 'topic_type = ' . POST_ANNOUNCE;
+			break;
+
+			case 'smake_sticky':
+				$set_sql = 'topic_type = ' . POST_STICKY;
+			break;
+
+			case 'make_normal':
+				$set_sql = 'topic_type = ' . POST_STICKY;
+			break;
+		}
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
-			SET topic_type = $topic_type
+			SET $set_sql
 			WHERE topic_id IN (" . implode(', ', $topic_id_list) . ')';
 		$db->sql_query($sql);
 
@@ -986,10 +1014,10 @@ switch ($mode)
 
 			'S_FORM_ACTION'		=>	"mcp.$phpEx$SID&amp;mode=$mode&amp;t=$topic_id&amp;start=$start",
 			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select($to_forum_id) . '</select>',
-			'S_CAN_SPLIT'		=>	($auth->acl_gets('m_split', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
-			'S_CAN_MERGE'		=>	($auth->acl_gets('m_merge', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
-			'S_CAN_DELETE'		=>	($auth->acl_gets('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
-			'S_CAN_APPROVE'		=>	($has_unapproved_posts && $auth->acl_gets('m_approve', 'a_', $forum_id) && $mode == 'topic_view') ? TRUE : FALSE,
+			'S_CAN_SPLIT'		=>	($auth->acl_get('m_split', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
+			'S_CAN_MERGE'		=>	($auth->acl_get('m_merge', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
+			'S_CAN_DELETE'		=>	($auth->acl_get('m_delete', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
+			'S_CAN_APPROVE'		=>	($has_unapproved_posts && $auth->acl_get('m_approve', $forum_id) && $mode == 'topic_view') ? TRUE : FALSE,
 			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE,
 
 			'PAGE_NUMBER'		=>	on_page($total_posts, $posts_per_page, $start),
@@ -1331,10 +1359,10 @@ switch ($mode)
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_info['forum_name'],
 
-			'S_CAN_DELETE'	=>	$auth->acl_gets('a_', 'm_delete', $forum_id),
-			'S_CAN_MOVE'	=>	$auth->acl_gets('a_', 'm_move', $forum_id),
-			'S_CAN_LOCK'	=>	$auth->acl_gets('a_', 'm_lock', $forum_id),
-			'S_CAN_RESYNC'	=>	$auth->acl_gets('a_', 'm_', $forum_id),
+			'S_CAN_DELETE'	=>	$auth->acl_get('m_delete', $forum_id),
+			'S_CAN_MOVE'	=>	$auth->acl_get('m_move', $forum_id),
+			'S_CAN_LOCK'	=>	$auth->acl_get('m_lock', $forum_id),
+			'S_CAN_RESYNC'	=>	$auth->acl_get('m_', $forum_id),
 
 			'U_VIEW_FORUM'		=>	"viewforum.$phpEx$SID&amp;f=$forum_id",
 			'S_HIDDEN_FIELDS'	=>	'<input type="hidden" name="f" value="' . $forum_id . '">',
