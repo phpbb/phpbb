@@ -7,7 +7,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id $
+ *     $Id: $
  *
  ****************************************************************************/
 
@@ -149,6 +149,14 @@ $lang['Private'] = "Приватный";
 $lang['Registered'] = "Зарегистрированный";
 $lang['Administrators'] = "Администраторы";
 $lang['Hidden'] = "Спрятанный";
+
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "Все";
+$lang['Forum_REG'] = "Регистр.";
+$lang['Forum_PRIVATE'] = "Приватный";
+$lang['Forum_MOD'] = "Модератор";
+$lang['Forum_ADMIN'] = "Админ";
 
 $lang['View'] = "Смотреть";
 $lang['Read'] = "Читать";
@@ -686,6 +694,10 @@ $lang['Upgrade'] = "Обновление";
 
 
 $lang['Install_Method'] = "Выберите метод установки";
+
+$lang['Install_No_Ext'] = "Конфигурация PHP на вашем сервере не поддерживает выбранную вами СУБД";
+
+$lang['Install_No_PCRE'] = "Для работы phpBB2 требуется модуль Перл-совместимых регулярных выражений, который, видимо, отключен в вашей конфигурации PHP!";
 
 //
 // That's all Folks!

@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id$
+ *     $Id: $
  *
  ****************************************************************************/
 
@@ -114,6 +114,7 @@ $lang['Board_disable'] = "Извините, эти форумы отключены. Попробуйте зайти попоз
 // Global Header strings
 //
 $lang['Registered_users'] = "Зарегистрированные пользователи:";
+$lang['Browsing_forum'] = "Пользователи на этом форуме:";
 $lang['Online_users_zero_total'] = "Сейчас посетителей на форуме: <b>0</b>, из них ";
 $lang['Online_users_total'] = "Сейчас посетителей на форуме: <b>%d</b>, из них ";
 $lang['Online_user_total'] = "Сейчас посетителей на форуме: <b>%d</b>, из них ";
@@ -126,6 +127,7 @@ $lang['Hidden_user_total'] = "скрытых: %d и ";
 $lang['Guest_users_zero_total'] = "гостей: 0";
 $lang['Guest_users_total'] = "гостей: %d";
 $lang['Guest_user_total'] = "гостей: %d";
+$lang['Record_online_users'] = "Больше всего посетителей (<b>%s</b>) здесь было %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sАдминистратор%s";
 $lang['Mod_online_color'] = "%sМодератор%s";
@@ -447,6 +449,10 @@ $lang['Cannot_send_privmsg'] = "Извините, вам не разрешено отправлять Личные соо
 $lang['No_to_user'] = "Вы должны указать имя получателя этого сообщения";
 $lang['No_such_user'] = "Извините, но такого пользователя не существует";
 
+$lang['Disable_HTML_pm'] = "Отключить в этом сообщении HTML";
+$lang['Disable_BBCode_pm'] = "Отключить в этом сообщении BBCode";
+$lang['Disable_Smilies_pm'] = "Отключить в этом сообщении смайлики";
+
 $lang['Message_sent'] = "Ваше сообщение было отправлено";
 
 $lang['Click_return_inbox'] = "%sВернуться в папку Входящие%s";
@@ -512,7 +518,7 @@ $lang['Search_user_posts'] = "Найти все собщения пользователя %s"; // Find all p
 
 $lang['No_user_id_specified'] = "Извините, такого пользователя не существует";
 $lang['Wrong_Profile'] = "Вы не можете редактировать чужой профиль.";
-$lang['Sorry_banned_or_taken_email'] = "Извините, но введённый вами адрес e-mail был либо запрещён, либо занят другим пользователем, либо неправилен. Попробуйте ввести другой адрес, если же и он будет запрещён, то свяжитесь с администратором форумов.";
+
 $lang['Only_one_avatar'] = "Может быть указан только один тип аватары";
 $lang['File_no_data'] = "Файл по указанному вами URL не содержит данных";
 $lang['No_connection_URL'] = "Невозможно установить соединения с указанным вами URL";
@@ -540,6 +546,7 @@ $lang['Public_view_email'] = "Всегда показывать мой адрес e-mail";
 $lang['Current_password'] = "Текущий пароль";
 $lang['New_password'] = "Новый пароль";
 $lang['Confirm_password'] = "Подтвердите пароль";
+$lang['Confirm_password_explain'] = "Вы должны указать ваш текущий пароль, если хотите изменить его или поменять свой адрес e-mail.";
 $lang['password_if_changed'] = "Указывайте пароль только если вы хотите его поменять";
 $lang['password_confirm_if_changed'] = "Подтверждать пароль нужно в том случае, если вы изменили его выше.";
 
@@ -572,6 +579,13 @@ $lang['Profile_updated_inactive'] = "Ваш профиль был изменён, но вы изменили важ
 
 $lang['Password_mismatch'] = "Введённые пароли не совпадают";
 $lang['Current_password_mismatch'] = "Введённый вами пароль не совпадает с паролем из базы";
+$lang['Password_long'] = "Ваш пароль доллжен быть не длиннее 32 символов";
+$lang['Username_taken'] = "Извините, пользователь с таким именем уже существует";
+$lang['Username_invalid'] = "Извините, это имя содержит неподходящие символы, (например \")";
+$lang['Username_disallowed'] = "Извините, это имя было запрещено к использованию";
+$lang['Email_taken'] = "Извините, этот адрес e-mail уже занят другим пользователем";
+$lang['Email_banned'] = "Извините, этот адрес e-mail был запрещён";
+$lang['Email_invalid'] = "Извините, этот адрес e-mail неправилен";
 $lang['Invalid_username'] = "Запрошенное имя пользователя уже занято, запрещено, либо содержит неподходящие символы (например \")";
 $lang['Signature_too_long'] = "Слишком длинная подпись";
 $lang['Fields_empty'] = "Вы должны заполнить обязательные поля";
