@@ -101,7 +101,7 @@ CREATE TABLE phpbb_confirm (
   code char(6) NOT NULL default '',
   PRIMARY KEY  (session_id,confirm_id),
   KEY session_id (session_id)
-) 
+);
 
 
 # --------------------------------------------------------

@@ -692,6 +692,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 // dougk_ff7 <October 5, 2002>
 function phpbb_realpath($path)
 {
+	global $phpbb_root_path, $phpEx;
+
 	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.'.$phpEx)) ? $path : @realpath($path);
 }
 
