@@ -28,7 +28,7 @@
 		</td>
 	  </tr>
 	  <tr> 
-		<td colspan="4" align="center"><span class="gen"><b>Total Votes : {TOTAL_VOTES}</b></span></td>
+		<td colspan="4" align="center"><span class="gen"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></span></td>
 	  </tr>
 	</table>
 	<br clear="all" />

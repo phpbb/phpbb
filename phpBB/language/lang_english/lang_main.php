@@ -293,6 +293,7 @@ $lang['Start_watching_topic'] = "Watch this topic for replies";
 $lang['No_longer_watching'] = "You are no longer watching this topic";
 $lang['You_are_watching'] = "You are now watching this topic";
 
+$lang['Total_votes'] = "Total Votes";
 
 //
 // Posting/Replying (Not private messaging!)
