@@ -755,9 +755,6 @@ switch($mode)
 
 			$poster_ids = $db->sql_fetchrowset($result);
 			sort($poster_ids);
-			echo "<pre>";
-			var_dump($poster_ids);
-			echo "</pre>";
 
 			$posts = 0;
 			while(list($null, $userdata) = each($poster_ids))
@@ -777,11 +774,6 @@ switch($mode)
 				$last_username = $username;
 				$last_user_ip = $user_id;
 			}
-
-			echo "<pre>";
-			var_dump($other_users);
-			echo "</pre>";
-
 
 	break;
 
