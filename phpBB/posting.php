@@ -138,7 +138,6 @@ if ($sql != '')
 
 	$post_subject = (in_array($mode, array('quote', 'edit', 'delete'))) ? $post_subject : $topic_title;
 
-
 	$poll_length = ($poll_length) ? $poll_length/3600 : $poll_length;
 	$poll_options = array();
 
@@ -500,58 +499,10 @@ if ($submit || $preview || $refresh)
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
 	{
-		$template->assign_vars(array(
-			'S_POST_REVIEW' => TRUE)
-		);
-
-		// Go ahead and pull all data for the remaining posts
-		$sql = 'SELECT u.username, u.user_id, p.* 
-			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-			WHERE p.topic_id = $topic_id
-				AND p.poster_id = u.user_id
-				AND p.post_id > $topic_cur_post_id
-				AND p.post_approved = 1
-			ORDER BY p.post_time DESC";
-		$result = $db->sql_query_limit($sql, $config['posts_per_page']);
-
-		if ($row = $db->sql_fetchrow($result))
+		if (topic_review($topic_id, 'post_review', $topic_cur_post_id))
 		{
-			$i = 0;
-			do
-			{
-				$user_id = $row['user_id'];
-				$poster = $row['username'];
-
-				// Handle anon users posting with usernames
-				if ($user_id == ANONYMOUS && $row['post_username'] != '')
-				{
-					$poster = $row['post_username'];
-					$poster_rank = $user->lang['GUEST'];
-				}
-
-				$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
-				$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $row['post_text']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $row['post_text']);
-
-				if (sizeof($censors['match']))
-				{
-					$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
-					$message = preg_replace($censors['match'], $censors['replace'], $message);
-				}
-
-				$template->assign_block_vars('post_postrow', array(
-					'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
-					'POSTER_NAME' 		=> $poster,
-					'POST_DATE' 		=> $user->format_date($row['post_time']),
-					'POST_SUBJECT' 		=> $post_subject,
-					'MESSAGE' 			=> str_replace("\n", '<br />', $message),
-
-					'S_ROW_COUNT'		=> $i++)
-				);
-			}
-			while ($row = $db->sql_fetchrow($result));
+			$template->assign_var('S_POST_REVIEW', TRUE);
 		}
-		$db->sql_freeresult($result);
-
 		$submit = FALSE;
 		$refresh = TRUE;
 	}
@@ -750,7 +701,7 @@ if ($submit || $preview || $refresh)
 	}	
 
 	$post_text = $message_parser->message;
-	$post_subject = $topic_title = stripslashes($subject);
+	$post_subject = stripslashes($subject);
 }
 
 // Preview
@@ -994,7 +945,6 @@ $template->assign_vars(array(
 
 	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_EDIT_POST'			=> ($mode == 'edit'),
-	'S_DISPLAY_REVIEW'		=> ($mode == 'reply' || $mode == 'quote') ? TRUE : FALSE,
 	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username != '')) ? TRUE : FALSE,
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? TRUE : FALSE,
@@ -1105,7 +1055,10 @@ make_jumpbox('viewforum.'.$phpEx);
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
 {
-	topic_review($topic_id, $forum_id);
+	if (topic_review($topic_id))
+	{
+		$template->assign_var('S_DISPLAY_REVIEW', TRUE);
+	}
 }
 
 page_footer();
@@ -1358,7 +1311,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 }
 
 // Topic Review
-function topic_review($topic_id, $forum_id)
+function topic_review($topic_id, $mode = 'topic_review', $cur_post_id = 0)
 {
 	global $user, $auth, $db, $template, $bbcode, $template;
 	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
@@ -1370,38 +1323,13 @@ function topic_review($topic_id, $forum_id)
 		obtain_word_list($censors);
 	}
 
-	// Get topic info ...
-	$sql = 'SELECT t.topic_title, f.forum_id, f.forum_style 
-		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-		WHERE t.topic_id = $topic_id
-			AND f.forum_id IN (t.forum_id, $forum_id)";
-	$result = $db->sql_query($sql);
-
-	if (!($row = $db->sql_fetchrow($result)))
-	{
-		trigger_error($user->lang['NO_TOPIC']);
-	}
-
-	$forum_id = $row['forum_id'];
-	$topic_title = $row['topic_title'];
-
-	$user->setup(FALSE, $row['forum_style']);
-
-	if (!$auth->acl_get('f_read', $forum_id))
-	{
-		trigger_error($user->lang['SORRY_AUTH_READ']);
-	}
-
-	$topic_title = (sizeof($censors['match'])) ? preg_replace($censors['match'], $censors['replace'], $topic_title) : $topic_title;
-
-	$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
-
 	// Go ahead and pull all data for this topic
-	$sql = 'SELECT u.username, u.user_id, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
+	$sql = 'SELECT u.username, u.user_id, u.user_karma, p.post_id, p.post_username, p.post_subject, p.post_text, p.enable_smilies, p.bbcode_uid, p.bbcode_bitfield, p.post_time
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
 			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
+			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 		ORDER BY p.post_time DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
@@ -1409,7 +1337,7 @@ function topic_review($topic_id, $forum_id)
 	// and it goes like this ...
 	if (!$row = $db->sql_fetchrow($result))
 	{
-		trigger_error($user->lang['NO_TOPIC']);
+		return FALSE;
 	}
 
 	$bbcode_bitfield = 0;
@@ -1454,14 +1382,16 @@ function topic_review($topic_id, $forum_id)
 			$message = preg_replace($censors['match'], $censors['replace'], $message);
 		}
 
-		$template->assign_block_vars('postrow', array(
-			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
+		$template->assign_block_vars($mode . '_row', array(
+			'KARMA_IMG'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',
 			'POSTER_NAME' 	=> $poster,
-			'POST_DATE' 	=> $user->format_date($row['post_time']),
 			'POST_SUBJECT' 	=> $post_subject,
-			'POST_ID'		=> $row['post_id'],
+			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
+			'POST_DATE' 	=> $user->format_date($row['post_time']),
 			'MESSAGE' 		=> str_replace("\n", '<br />', $message), 
 
+			'U_POST_ID'		=> $row['post_id'],
+			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 			'U_QUOTE'		=> ($auth->acl_get('f_quote', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '', 
 
 			'S_ROW_COUNT'	=> $i)
@@ -1469,7 +1399,12 @@ function topic_review($topic_id, $forum_id)
 		unset($rowset[$i]);
 	}
 
-	$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['QUOTE_POST']));
+	if ($mode == 'topic_review')
+	{
+		$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['QUOTE_POST']));
+	}
+
+	return TRUE;
 }
 
 
