@@ -526,6 +526,31 @@ function validate_username($username)
 				}
 			}
 			break;
+		case 'mysql4':
+         $sql_users = "SELECT u.username, g.group_name
+            FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
+            WHERE ug.user_id = u.user_id
+               AND g.group_id = ug.group_id
+               AND   ( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
+                  OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
+         $sql_disallow = "SELECT disallow_username
+            FROM " . DISALLOW_TABLE . "
+            WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
+         if($result = $db->sql_query($sql_users))
+         {
+            if($db->sql_numrows($result) > 0)
+            {
+               return(FALSE);
+            }
+         }
+         if($result = $db->sql_query($sql_disallow))
+         {
+            if($db->sql_numrows($result) > 0)
+            {
+               return(FALSE);
+            }
+         }
+         break;
 
 		default:
 			$sql = "SELECT u.username, g.group_name
