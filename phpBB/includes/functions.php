@@ -21,7 +21,7 @@
 
 function sql_quote($msg)
 {
-	return str_replace("'", "''", $msg);
+	return str_replace("\'", "''", $msg);
 }
 
 function get_userdata($user)
@@ -73,6 +73,81 @@ function get_forum_branch($forum_id, $type='all', $order='descending', $include_
 		$rows[] = $row;
 	}
 	return $rows;
+}
+
+function forum_nav_links(&$forum_id, &$forum_name)
+{
+	global $SID, $template, $phpEx, $auth;
+
+	$type = 'parent';
+	$forum_rows = array();
+
+	if (!($forum_branch = get_forum_branch($forum_id)))
+	{
+		trigger_error($user->lang['Forum_not_exist']);
+	}
+
+	$s_has_subforums = FALSE;
+	foreach ($forum_branch as $row)
+	{
+		if ($type == 'parent')
+		{
+			$link = ($row['forum_status'] == ITEM_CATEGORY) ? 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'] : 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
+
+			$template->assign_block_vars('navlinks', array(
+				'FORUM_NAME'	=>	$row['forum_name'],
+				'U_VIEW_FORUM'	=>	$link
+			));
+
+			if ($row['forum_id'] == $forum_id)
+			{
+				$branch_root_id = 0;
+				$forum_data = $row;
+				$type = 'child';
+
+				$forum_name = $row['forum_name'];
+			}
+		}
+		else
+		{
+			if ($row['parent_id'] == $forum_data['forum_id'])
+			{
+				// Root-level forum
+				$forum_rows[] = $row;
+				$parent_id = $row['forum_id'];
+
+				if ($row['forum_status'] == ITEM_CATEGORY)
+				{
+					$branch_root_id = $row['forum_id'];
+				}
+				else
+				{
+					$s_has_subforums = TRUE;
+				}
+			}
+			elseif ($row['parent_id'] == $branch_root_id)
+			{
+				// Forum directly under a category
+				$forum_rows[] = $row;
+				$parent_id = $row['forum_id'];
+
+				if ($row['forum_status'] != ITEM_CATEGORY)
+				{
+					$s_has_subforums = TRUE;
+				}
+			}
+			elseif ($row['forum_status'] != ITEM_CATEGORY)
+			{
+				// Subforum
+				if ($auth->acl_get('f_list', $row['forum_id']))
+				{
+					$subforums[$parent_id][] = $row;
+				}
+			}
+		}
+	}
+
+	return $s_has_subforums;
 }
 
 // Obtain list of moderators of each forum
