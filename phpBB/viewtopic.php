@@ -84,12 +84,14 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
 				}
 
+				$db->sql_close();
 				$post_id = $row['post_id'];
 				header($header_location . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
 				exit;
 			}
 		}
 
+		$db->sql_close();
 		header($header_location . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 		exit;
 	}
