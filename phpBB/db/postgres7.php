@@ -382,8 +382,8 @@ class sql_db
 		if(!$query_id){
 			$query_id = $this->query_result;
 		}
-		$result[message] = @pg_errormessage($query_id);
-		$result[code] = -1;
+		$result['message'] = @pg_errormessage($this->db_connect_id);
+		$result['code'] = -1;
 		return $result;
 	}
 
