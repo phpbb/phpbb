@@ -5,6 +5,8 @@
 
 <h2>{L_USER_OR_GROUPNAME}: {USERNAME}</h2>
 
+<form method="post" action="{S_AUTH_ACTION}">
+
 <p>{USER_GROUP_MEMBERSHIPS}</p>
 
 <h2>{L_PERMISSIONS}</h2>
@@ -12,7 +14,7 @@
 <p>{L_AUTH_EXPLAIN}</p>
 
 <table cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr><form method="post" action="{S_AUTH_ACTION}">
+	<tr>
 		<th width="30%">{L_FORUM}</th>
 		<!-- BEGIN acltype -->
 		<th>{acltype.L_UG_ACL_TYPE}</th>
@@ -34,10 +36,8 @@
 				<td align="center"><span class="gensmall">{U_SWITCH_MODE}</span></td>
 			</tr>
 			<tr>
-				<td align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT_CHANGES}">&nbsp;&nbsp;<input type="reset" value="{L_RESET_CHANGES}"></td>
+				<td align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT_CHANGES}" />&nbsp;&nbsp;<input type="reset" value="{L_RESET_CHANGES}" /></td>
 			</tr>
 		</table></td>
-	</form></tr>
-</table>
-
-<br clear="all" />
+	</tr>
+</table></form>

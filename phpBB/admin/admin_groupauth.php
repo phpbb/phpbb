@@ -698,11 +698,11 @@ else
 				}
 				else if( $allowed )
 				{
-					$optionlist_acl .= "<option value=\"1\" selected>" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\" selected=\"selected\">" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
 				else
 				{
-					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option><option value=\"0\" selected>". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option><option value=\"0\" selected=\"selected\">". $lang['Disallowed_Access'] . "</option>";
 				}
 
 				$optionlist_acl .= "</select>";
@@ -731,11 +731,11 @@ else
 						{
 							if(!$auth_field_acl[$forum_id][$field_name])
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected=\"selected\">" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
 							}
 						}
 						else
@@ -746,7 +746,7 @@ else
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
 						}
 
@@ -760,11 +760,11 @@ else
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
 		if($group_ary['auth_mod'])
 		{
-			$optionlist_mod .= "<option value=\"1\" selected>" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\" selected=\"selected\">" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		else
 		{
-			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected>" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		$optionlist_mod .= "</select>";
 
@@ -827,7 +827,6 @@ else
 	}
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"$group_id\">";
-	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
 
 	$s_column_span = 2; // Two columns always present
 	if(!$adv)

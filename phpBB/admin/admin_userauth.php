@@ -30,10 +30,26 @@ if($setmodules == 1)
 	return;
 }
 
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+
 //
-// Include required files, get $phpEx and check permissions
+// Start session management
 //
-require('pagestart.inc');
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=admin/");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+}
 
 //
 // Start program - define vars
@@ -106,7 +122,6 @@ function a_auth_check_user($type, $key, $u_auth, $is_admin)
 //
 //
 //
-
 if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 {
 	$user_id = $HTTP_POST_VARS[POST_USERS_URL];
@@ -545,6 +560,8 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		{
 			$warning_list = "<br />" . $lang['Conflict_message_userauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] . " <a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id\">" . $lang['HERE'] . "</a> ". $lang['return_user_auth_admin'] . "<br />";
 
+			include('page_header_admin.'.$phpEx);
+
 			$template->set_filenames(array(
 				"body" => "admin/admin_message_body.tpl")
 			);
@@ -559,7 +576,6 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id"));
 		}
 	}
-
 }
 else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 {
@@ -581,6 +597,8 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
 	}
 	$select_list .= "</select>";
+
+	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_select_body.tpl")
@@ -611,6 +629,9 @@ else
 	{
 		$adv = FALSE;
 	}
+
+	$template_header = "admin/page_header.tpl";
+	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_ug_body.tpl")
@@ -766,11 +787,11 @@ else
 				}
 				else if($allowed)
 				{
-					$optionlist_acl .= "<option value=\"1\"  selected=\"selected\">" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\" selected=\"selected\">" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
 				else
 				{
-					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option><option value=\"0\"  selected=\"selected\">". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option><option value=\"0\" selected=\"selected\">". $lang['Disallowed_Access'] . "</option>";
 				}
 
 				$optionlist_acl .= "</select>";
@@ -803,7 +824,7 @@ else
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\"  selected=\"selected\">" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected=\"selected\">" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
 							}
 						}
 						else
@@ -814,7 +835,7 @@ else
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\"  selected=\"selected\">" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
 						}
 
@@ -828,11 +849,11 @@ else
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
 		if($user_ary['auth_mod'])
 		{
-			$optionlist_mod .= "<option value=\"1\"  selected=\"selected\">" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\" selected=\"selected\">" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		else
 		{
-			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\"  selected=\"selected\">" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		$optionlist_mod .= "</select>";
 
@@ -867,10 +888,10 @@ else
 
 		$i++;
 	}
-	reset($auth_user);
+	@reset($auth_user);
 
 	$t_username .= $userinf[0]['username'];
-	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin"  selected=\"selected\">' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user"  selected=\"selected\">' . $lang['User'] . '</option></select>';
+	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected=\"selected\">' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user" selected=\"selected\">' . $lang['User'] . '</option></select>';
 
 	for($i = 0; $i < count($userinf); $i++)
 	{
