@@ -113,7 +113,7 @@ $lang['Click_return_topic'] = "Clicca %squi%s per tornare all'argomento"; // %s'
 $lang['Click_return_login'] = "Clicca %squi%s per riprovare";
 $lang['Click_return_forum'] = "Clicca %squi%s per tornare al forum";
 $lang['Click_view_message'] = "Clicca %squi%s per vedere il tuo messaggio";
-$lang['Click_return_modcp'] = "Clicca %squi%s pre tornare al Pannello di Controllo dei Moderatori";
+$lang['Click_return_modcp'] = "Clicca %squi%s per tornare al Pannello di Controllo dei Moderatori";
 $lang['Click_return_group'] = "Clicca %squi%s per tornare alle informazioni sul gruppo";
 
 $lang['Admin_panel'] = "Vai al Pannello di Amministrazione";
@@ -125,6 +125,7 @@ $lang['Board_disable'] = "Spiacenti ma questo forum non è al momento disponibile
 // Global Header strings
 //
 $lang['Registered_users'] = "Utenti registrati:";
+$lang['Browsing_forum'] = "Utenti che stanno navigando nel forum:";
 $lang['Online_users_total'] = "In totale ci sono <b>%d</b> utenti in linea :: ";
 $lang['Online_user_total'] = "In totale c'è <b>%d</b> utente in linea :: ";
 $lang['Reg_users_total'] = "%d Registrati, ";
@@ -133,8 +134,12 @@ $lang['Hidden_users_total'] = "%d Nascosti e ";
 $lang['Hidden_user_total'] = "%d Nascosto e ";
 $lang['Guest_users_total'] = "%d Ospiti";
 $lang['Guest_user_total'] = "%d Ospite";
+$lang['Record_online_users'] = "Il massimo numero di utenti in linea è stato <b>%s</b> il %s"; // first %s = number of users, second %s is the date.
 
-$lang['You_last_visit'] = "La tua ultima visita è ststa %s"; // %s replaced by date/time
+$lang['Admin_online_color'] = "%sAmministratore%s"; 
+$lang['Mod_online_color'] = "%sModeratore%s";
+
+$lang['You_last_visit'] = "La tua ultima visita è stata %s"; // %s replaced by date/time
 $lang['Current_time'] = "La data di oggi è %s"; // %s replaced by time
 
 $lang['Search_new'] = "Guarda i messaggi dall'ultima visita";
@@ -216,7 +221,7 @@ $lang['Reached_on_error'] = "Sei arrivato in questa pagina per errore";
 $lang['Display_topics'] = "Mostra prima gli argomenti di";
 $lang['All_Topics'] = "Tutti gli argomenti";
 
-$lang['Topic_Announcement'] = "<b>Annunci:</b>";
+$lang['Topic_Announcement'] = "<b>Annuncio:</b>";
 $lang['Topic_Sticky'] = "<b>Importante:</b>";
 $lang['Topic_Moved'] = "<b>Spostato:</b>";
 $lang['Topic_Poll'] = "<b>[ Sondaggio ]</b>";
@@ -289,6 +294,7 @@ $lang['Start_watching_topic'] = "Controlla questo argomento";
 $lang['No_longer_watching'] = "Non stai più controllando questo argomento";
 $lang['You_are_watching'] = "Adesso stai controllando questo argomento";
 
+$lang['Total_votes'] = "Voti Totali";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -304,7 +310,7 @@ $lang['Post_topic_as'] = "Inserisci l'argomento come";
 $lang['Edit_Post'] = "Modifica il messaggio";
 $lang['Options'] = "Opzioni";
 
-$lang['Post_Announcement'] = "Annunci";
+$lang['Post_Announcement'] = "Annuncio";
 $lang['Post_Sticky'] = "Importante";
 $lang['Post_Normal'] = "Normale";
 
@@ -451,6 +457,10 @@ $lang['Cannot_send_privmsg'] = "Spiacenti, ma l'amministratore del forum ti ha v
 $lang['No_to_user'] = "Devi specificare uno username per inviare il messaggio";
 $lang['No_such_user'] = "Spiacenti, ma questo utente non esiste";
 
+$lang['Disable_HTML_pm'] = "Disabilita HTML in questo messaggio";
+$lang['Disable_BBCode_pm'] = "Disabilita BBCode in questo messaggio";
+$lang['Disable_Smilies_pm'] = "Disabilita Smilies in questo messaggio";
+
 $lang['Message_sent'] = "Il tuo messaggio è stato spedito";
 
 $lang['Click_return_inbox'] = "Clicca %squi%s per tornare alla cartella di Posta in Arrivo";
@@ -516,7 +526,6 @@ $lang['Search_user_posts'] = "Trova tutti i messaggi di %s"; // Find all posts b
 
 $lang['No_user_id_specified'] = "Spiacenti, ma questo utente non esiste";
 $lang['Wrong_Profile'] = "Non puoi modificare un profilo che non è il tuo";
-$lang['Sorry_banned_or_taken_email'] = "Spiacenti, ma l'indirizzo Email che hai inserito è già stato disabilitato, è già registrato da un altro utente o non è valido. Per favore prova con un indirizzo alternativo, se anche quello è stato disabilitato devi contattare l'amministratore del forum per chiarimenti";
 $lang['Only_one_avatar'] = "Può essere specificato un solo tipo di avatar";
 $lang['File_no_data'] = "Il file all'URL che hai fornito non contiene dati";
 $lang['No_connection_URL'] = "Non è possibile connettersi all'URL che hai fornito";
@@ -544,6 +553,7 @@ $lang['Public_view_email'] = "Mostra sempre il mio indirizzo Email";
 $lang['Current_password'] = "Password attuale";
 $lang['New_password'] = "Nuova password";
 $lang['Confirm_password'] = "Conferma password";
+$lang['Confirm_password_explain'] = "Devi confermare la tua password attuale se vuoi cambiarla o modificare il tuo indirizzo email";
 $lang['password_if_changed'] = "Devi inserire la password solo se vuoi cambiarla";
 $lang['password_confirm_if_changed'] = "Devi confermare la tua password solo se ne hai inserita una nuova qui sopra";
 
@@ -576,7 +586,13 @@ $lang['Profile_updated_inactive'] = "Il tuo profilo è stato aggiornato. Hai modi
 
 $lang['Password_mismatch'] = "La password che hai inserito non corrisponde";
 $lang['Current_password_mismatch'] = "La password attuale che hai fornito non corrisponde a quella inserita nel database";
-$lang['Invalid_username'] = "Lo username che hai richiesto è già utilizzato o è stato disabilitato. Oppure contiene caratteri non validi come il carattere \" ";
+$lang['Password_long'] = "La tua password non deve essere più lunga di 32 caratteri";
+$lang['Username_taken'] = "Spiacenti, ma questo username esiste già";
+$lang['Username_invalid'] = "Spiacenti, ma questo username contiene un carattere invalido come \"";
+$lang['Username_disallowed'] = "Spiacenti, ma questo username è stato disabilitato";
+$lang['Email_taken'] = "Spiacenti, ma questo indirizzo email è già stato reigstrato da un utente";
+$lang['Email_banned'] = "Spiacenti, ma questo indirizzo email è stato escluso";
+$lang['Email_invalid'] = "Spiacenti, ma questo indirizzo email non è valido";
 $lang['Signature_too_long'] = "La tua firma è troppo lunga";
 $lang['Fields_empty'] = "Devi riempire i campi richiesti";
 $lang['Avatar_filetype'] = "Il file dell'avatar deve essere .jpg, .gif o .png";
@@ -720,6 +736,8 @@ $lang['Search_author_explain'] = "Usa * come abbreviazione per parole parziali";
 $lang['Search_for_any'] = "Cerca per ogni parola oppure usa la frase esatta";
 $lang['Search_for_all'] = "Cerca tutti i termini";
 
+$lang['Search_title_msg'] = "Cerca nel titolo e nel testo"; 
+$lang['Search_msg_only'] = "Cerca solo nel testo"; 
 $lang['Return_first'] = "Dai i primi"; // followed by xxx characters in a select box
 $lang['characters_posts'] = "caratteri del messaggio";
 
@@ -788,14 +806,14 @@ $lang['Forum_Location'] = "Località del Forum";
 $lang['Last_updated'] = "Ultimo aggiornamento";
 
 $lang['Forum_index'] = "Indice Forum";
-$lang['Logging_on'] = "Entrando";
-$lang['Posting_message'] = "Inviando un messaggio";
-$lang['Searching_forums'] = "Cercando nei forum";
-$lang['Viewing_profile'] = "Guardando il profilo";
-$lang['Viewing_online'] = "Guardando chi c'è in linea";
-$lang['Viewing_member_list'] = "Guardando la lista degli utenti";
-$lang['Viewing_priv_msgs'] = "Guardando i messaggi privati";
-$lang['Viewing_FAQ'] = "Guardando le FAQ";
+$lang['Logging_on'] = "Sta entrando";
+$lang['Posting_message'] = "Sta inviando un messaggio";
+$lang['Searching_forums'] = "Sta cercando nei forum";
+$lang['Viewing_profile'] = "Sta guardando il profilo";
+$lang['Viewing_online'] = "Sta guardando chi c'è in linea";
+$lang['Viewing_member_list'] = "Sta guardando la lista degli utenti";
+$lang['Viewing_priv_msgs'] = "Sta guardando i messaggi privati";
+$lang['Viewing_FAQ'] = "Sta guardando le FAQ";
 
 
 //

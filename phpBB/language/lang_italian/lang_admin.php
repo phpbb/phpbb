@@ -1,6 +1,7 @@
 <?php
+
 /***************************************************************************
- *                            lang_admin.php [Italian]
+ *                            lang_admin.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -20,9 +21,13 @@
  ***************************************************************************/
 
 //
-// Translation by teo
+//	Translation produced by tesno
+//	http://www.snowbox.it/
 //
 
+//
+// Format is same as lang_main
+//
 
 //
 // Modules, this replaces the keys used
@@ -40,7 +45,7 @@ $lang['Manage'] = "Gestione";
 $lang['Disallow'] = "Disabilita nomi";
 $lang['Prune'] = "Pruning";
 $lang['Mass_Email'] = "Email Generali";
-$lang['Ranks'] = "Classifiche";
+$lang['Ranks'] = "Livelli";
 $lang['Smilies'] = "Smilies";
 $lang['Ban_Management'] = "Ban Control";
 $lang['Word_Censor'] = "Censura Parole";
@@ -151,6 +156,14 @@ $lang['Private'] = "Privato";
 $lang['Registered'] = "Registrato";
 $lang['Administrators'] = "Amministratori";
 $lang['Hidden'] = "Nascosto";
+
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "TUTTI";
+$lang['Forum_REG'] = "REG";
+$lang['Forum_PRIVATE'] = "PRIVATO";
+$lang['Forum_MOD'] = "MOD";
+$lang['Forum_ADMIN'] = "ADMIN";
 
 $lang['View'] = "Guarda";
 $lang['Read'] = "Leggi";
@@ -499,26 +512,26 @@ $lang['Click_return_massemail'] = "Clicca %squi%s per tornare al pannello Email 
 //
 // Ranks admin
 //
-$lang['Ranks_title'] = "Amministrazione Elenchi";
-$lang['Ranks_explain'] = "Con questo modulo puoi aggiungere, cancellare, modificare e guardare gli elenchi. Puoi anche creare degli elenchi personali che possono essere applicati ad un utente attraverso la Gestione Utenti";
+$lang['Ranks_title'] = "Amministrazione Livelli";
+$lang['Ranks_explain'] = "Con questo modulo puoi aggiungere, cancellare, modificare e guardare il livello degli utenti. Puoi anche creare dei livelli personali che possono essere applicati ad un utente attraverso la Gestione Utenti";
 
-$lang['Add_new_rank'] = "Aggiungi un novo elenco";
+$lang['Add_new_rank'] = "Aggiungi un novo livello";
 
-$lang['Rank_title'] = "Titolo Elenco";
-$lang['Rank_special'] = "Imposta un Elenco Speciale";
+$lang['Rank_title'] = "Titolo Livello";
+$lang['Rank_special'] = "Imposta un Livello Speciale";
 $lang['Rank_minimum'] = "Messaggi Minimi";
 $lang['Rank_maximum'] = "Messaggi Massimi";
-$lang['Rank_image'] = "Immagine Elenco (Relativo al percorso del forum)";
-$lang['Rank_image_explain'] = "Utilizza questo per definire una piccola immagine associata con l'elenco";
+$lang['Rank_image'] = "Immagine Livello (Relativo al percorso del forum)";
+$lang['Rank_image_explain'] = "Utilizza questo per definire una piccola immagine associata con il livello";
 
-$lang['Must_select_rank'] = "Devi selezionare un elenco";
-$lang['No_assigned_rank'] = "Nessun elenco speciale assegnato";
+$lang['Must_select_rank'] = "Devi selezionare un livello";
+$lang['No_assigned_rank'] = "Nessun livello speciale assegnato";
 
-$lang['Rank_updated'] = "L'elenco è stato aggiornato con successo";
-$lang['Rank_added'] = "L'elenco è stato aggiunto con successo";
-$lang['Rank_removed'] = "L'elenco è stato cancellato con seccesso";
+$lang['Rank_updated'] = "Il livello è stato aggiornato con successo";
+$lang['Rank_added'] = "Il livello è stato aggiunto con successo";
+$lang['Rank_removed'] = "Il livello è stato cancellato con seccesso";
 
-$lang['Click_return_rankadmin'] = "Clicca %squi%s per tornare al pannello Amministrazione Elenchi";
+$lang['Click_return_rankadmin'] = "Clicca %squi%s per tornare al pannello Amministrazione Livelli";
 
 
 //
@@ -684,6 +697,10 @@ $lang['Install'] = "Installa";
 $lang['Upgrade'] = "Aggiorna";
 
 $lang['Install_Method'] = "Scegli un metodo di installazione";
+
+$lang['Install_No_Ext'] = "La configurazione php del tuo server non supporta il tipo di database che hai scelto"; 
+
+$lang['Install_No_PCRE'] = "phpBB2 Richiede il Perl-Compatible Regular Expressions Module per php che la tua configurazione php non sembra supportare!"; 
 
 //
 // That's all Folks!
