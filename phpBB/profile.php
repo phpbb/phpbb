@@ -55,7 +55,7 @@ switch($mode)
 
 		// Calculate the number of days this user has been a member ($memberdays)
 		// Then calculate their posts per day
-		$regdate = strtotime($profiledata['user_regdate']);
+		$regdate = $profiledata['user_regdate'];
       $memberdays = (time() - $regdate) / (24*60*60);
       $posts_per_day = $profiledata['user_posts'] / $memberdays;
 
@@ -85,7 +85,7 @@ switch($mode)
 												"L_USERNAME" => $l_username,
 												"L_VIEWPOSTUSER" => $l_viewpostuser,
 												"L_JOINED" => $l_joined,
-												"JOINED" => $profiledata['user_regdate'],
+												"JOINED" => create_date($date_format, $profiledata['user_regdate'], $sys_timezone),
 												"POSTS_PER_DAY" => $posts_per_day,
 												"L_PERDAY" => $l_perday,
 												"POSTS" => $profiledata['user_posts'],
@@ -206,7 +206,7 @@ switch($mode)
 					    VALUES (
 					    $new_user_id,
 					    '".addslashes($username)."',
-					    '".time()."',
+					    '".gmmktime(gmdate("H, i, s, m, d, Y", time()))."',
 					    '$md_pass',
 					    '$email',
 					    '$icq',
