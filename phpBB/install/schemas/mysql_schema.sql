@@ -73,10 +73,9 @@ CREATE TABLE phpbb_banlist (
    ban_email varchar(50),
    ban_start int(11),
    ban_end int(11),
+   ban_exclude tinyint(1) DEFAULT '0' NOT NULL, 
    ban_reason varchar(255),
-   PRIMARY KEY (ban_id),
-   KEY ban_ip_user_id (ban_ip, ban_userid),
-   KEY ban_email (ban_email)
+   PRIMARY KEY (ban_id)
 );
 
 
@@ -95,7 +94,7 @@ CREATE TABLE phpbb_config (
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_disallow' <- combine with banlist
+# Table structure for table 'phpbb_disallow'
 #
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,

@@ -171,7 +171,10 @@ class session
 			$this->data['user_id'] = $user_id = ANONYMOUS;
 		}
 
-		$sql = "SELECT ban_ip, ban_userid, ban_email
+		// Is user banned? Are they excempt?
+		$banned = false;
+
+		$sql = "SELECT ban_ip, ban_userid, ban_email, ban_exclude  
 			FROM " . BANLIST_TABLE . "
 			WHERE ban_end >= $current_time
 				OR ban_end = 0";
@@ -179,15 +182,29 @@ class session
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (( $row['user_id'] == $this->data['user_id'] ||
+			if ((
+				($row['user_id'] == $this->data['user_id']) ||
 				($row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
 				($row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
 				&& !$this->data['user_founder'])
 			{
-				trigger_error('You_been_banned');
+				if (!empty($row['ban_exclude']))
+				{
+					$banned = false;
+					break;
+				}
+				else
+				{
+					$banned = true; 
+				}
 			}
 		}
 		$db->sql_freeresult($result);
+
+		if ($banned)
+		{
+			trigger_error('You_been_banned');
+		}
 
 		// Is there an existing session? If so, grab last visit time from that
 		$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
