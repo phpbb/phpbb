@@ -319,7 +319,7 @@ if(isset($mode))  // Are we supposed to do something?
 			$buttonvalue = 'Change';
 
 			$cat_id = $HTTP_GET_VARS['cat_id'];
-			$row = get_info('category', $catid);
+			$row = get_info('category', $cat_id);
 			$cat_title = $row['cat_title'];
 
 			$template->set_filenames(array(

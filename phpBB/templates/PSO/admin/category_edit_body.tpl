@@ -2,7 +2,7 @@
 
 <h1>Edit Category</h1>
 
-<p>Use this forum to modify a category.</p>
+<p>Use this form to modify a category.</p>
 
 <form action="{S_FORUM_ACTION}" method="POST">
 
