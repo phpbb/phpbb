@@ -315,16 +315,20 @@ if ($user->data['user_id'] != ANONYMOUS)
 	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 }
 
-// Define censored word matches
-$orig_word = array();
-$replacement_word = array();
-obtain_word_list($orig_word, $replacement_word);
+
+
+
+// Grab censored words
+$censors = array();
+obtain_word_list($censors);
 
 // Replace naughty words in title
-if (count($orig_word))
+if (sizeof($censors))
 {
-	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+	$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
 }
+
+
 
 // Navigation links ... common to several scripts so we need
 // to look at centralising this ... major issue is variable naming
@@ -346,7 +350,7 @@ if ($parent_id > 0)
 		}
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . sql_escape(serialize($forum_parents)) . "'
+				SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
 				WHERE parent_id = " . $parent_id;
 		$db->sql_query($sql);
 	}
@@ -375,8 +379,10 @@ get_moderators($forum_moderators, $forum_id);
 
 
 
-
+// This is only used for print view so ...
 $server_path = (($config['cookie_secure']) ? 'https://' : 'http://' ) . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
+
+
 
 // Send vars to template
 $template->assign_vars(array(
@@ -404,9 +410,10 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
-	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight",
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
 	'U_FORUM'				=> $server_path,
+
+	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight",
 	'U_VIEW_FORUM' 			=> $view_forum_url,
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url,
@@ -414,6 +421,8 @@ $template->assign_vars(array(
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
+
+
 
 // Mozilla navigation bar
 $nav_links['prev'] = array(
@@ -467,7 +476,7 @@ if (!empty($poll_start))
 
 	foreach ($poll_info as $poll_option)
 	{
-		$poll_option['poll_option_text'] = (sizeof($orig_word)) ? preg_replace($orig_word, $replacement_word, $poll_option['poll_option_text']) : $poll_option['poll_option_text'];
+		$poll_option['poll_option_text'] = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_option['poll_option_text']) : $poll_option['poll_option_text'];
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
 
@@ -480,7 +489,7 @@ if (!empty($poll_start))
 		);
 	}
 
-	$poll_title = (sizeof($orig_word)) ? preg_replace($orig_word, $replacement_word, $poll_title) : $poll_title;
+	$poll_title = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $poll_title) : $poll_title;
 
 	$template->assign_vars(array(
 		'POLL_QUESTION'		=> $poll_title,
@@ -490,7 +499,7 @@ if (!empty($poll_start))
 
 		'S_HAS_POLL_OPTIONS'=> !$display_results,
 		'S_HAS_POLL_DISPLAY'=> $display_results,
-		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_dats&amp;postorder=$poster_order",
+		'S_POLL_ACTION'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$poster_order",
 
 		'L_SUBMIT_VOTE'	=> $user->lang['Submit_vote'],
 		'L_VIEW_RESULTS'=> $user->lang['View_results'],
@@ -502,13 +511,22 @@ if (!empty($poll_start))
 
 
 
+// TEMP TEMP TEMP TEMP
+$rating = '';
+for ($i = 0; $i < 6; $i++)
+{
+	$rating .= (($rating != '') ? '&nbsp;' : '') . '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=??&amp;rate=' . $i . '">' . $i . '</a>';
+}
+// TEMP TEMP TEMP TEMP
+
+
 
 // Container for user details, only process once
 $user_cache = $attach_list = array();
 $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, p.*, pt.post_text, pt.post_subject, pt.bbcode_uid
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*, pt.post_text, pt.post_subject, pt.bbcode_uid
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.post_approved = " . TRUE . "
@@ -574,6 +592,8 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
+
+
 		// Generate ranks, set them to empty string initially.
 		if (!isset($user_cache[$poster_id]['rank_title']))
 		{
@@ -601,12 +621,16 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
+
+
 		// Handle anon users posting with usernames
 		if (!$poster_id && $row['post_username'] != '')
 		{
 			$poster = $row['post_username'];
 			$poster_rank = $user->lang['GUEST'];
 		}
+
+
 
 		if (!isset($user_cache[$poster_id]['profile']) && $poster_id)
 		{
@@ -691,6 +715,8 @@ if ($row = $db->sql_fetchrow($result))
 			$user_cache[$poster_id]['search'] = '';
 		}
 
+
+
 		// Non-user specific images/text
 		$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
 		$quote_img = '<a href="' . $temp_url . '">' . $user->img('icon_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
@@ -732,16 +758,22 @@ if ($row = $db->sql_fetchrow($result))
 			$delpost = '';
 		}
 
+
+
 		// Does post have an attachment? If so, add it to the list
 		if ($row['post_attach'])
 		{
 			$attach_list[] = $post_id;
 		}
 
+
+
 		// Parse the message and subject
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
 		$message = $row['post_text'];
 		$bbcode_uid = $row['bbcode_uid'];
+
+
 
 		// If the board has HTML off but the post has HTML
 		// on then we process it, else leave it alone
@@ -753,18 +785,13 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
-		// Parse message for admin-defined/templated BBCode if reqd
-		if ($bbcode_uid != '')
-		{
-//			$message = ($auth->acl_get('f_bbcode', $forum_id)) ? bbencode_second_pass($message, $bbcode_uid, $auth->acl_get('f_img', $forum_id)) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
-		}
+
+		// Second parse bbcode here
+
 
 		// If we allow users to disable display of emoticons
 		// we'll need an appropriate check and preg_replace here
-		if ($row['enable_smilies'])
-		{
-			$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
-		}
+		$message = (empty($row['enable_smilies']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 		// Highlight active words (primarily for search)
 		if ($highlight_match)
@@ -775,10 +802,10 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 		// Replace naughty words such as farty pants
-		if (count($orig_word))
+		if (sizeof($censors))
 		{
-			$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $message . '<'), 1, -1));
+			$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 		}
 
 		$message = nl2br($message);
@@ -799,21 +826,17 @@ if ($row = $db->sql_fetchrow($result))
 		if (!isset($user_cache[$poster_id]['sig']))
 		{
 			$user_sig = ($row['enable_sig'] && $row['user_sig'] != '' && $config['allow_sig']) ? $row['user_sig'] : '';
-			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
 
-			if ($user_sig != '' && $user_sig_bbcode_uid != '' && $auth->acl_get('f_sigs', $forum_id))
+			if ($user_sig != '' && $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id))
 			{
 				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
 				{
 					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 				}
 
-				if ($row['user_allowsmile'])
-				{
-					$user_cache[$poster_id]['sig'] = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
-				}
+				$user_cache[$poster_id]['sig'] = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
-				if (count($orig_word) && $user_sig != '')
+				if (count($orig_word))
 				{
 					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $user_sig . '<'), 1, -1));
 				}
@@ -848,6 +871,8 @@ if ($row = $db->sql_fetchrow($result))
 			'MESSAGE' 		=> $message,
 			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 			'EDITED_MESSAGE'=> $l_edited_by,
+
+			'RATING' =>		$rating, 
 
 			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' 		=> $edit_img,
@@ -888,6 +913,8 @@ if ($row = $db->sql_fetchrow($result))
 		));
 	}
 	while ($row = $db->sql_fetchrow($result));
+
+	unset($user_cache);
 }
 else
 {

@@ -203,9 +203,9 @@ if ($forum_data['forum_postable'])
 	$s_forum_rules = '';
 	get_forum_rules('forum', $s_forum_rules, $forum_id);
 
-	$orig_word = array();
-	$replacement_word = array();
-	obtain_word_list($orig_word, $replacement_word);
+	// Grab censored words
+	$censors = array();
+	obtain_word_list($censors);
 
 	// Topic ordering options
 	$previous_days = array(0 => $user->lang['All_Topics'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
@@ -271,7 +271,7 @@ if ($forum_data['forum_postable'])
 		'POST_IMG' 		=> (intval($forum_data['forum_status']) == ITEM_LOCKED) ? $user->img('post_locked', $post_alt) : $user->img('post_new', $post_alt),
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
-		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '',
+		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
 		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
 		'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
@@ -306,19 +306,9 @@ if ($forum_data['forum_postable'])
 		'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 	);
 
-	// Topic icons
-	$sql = "SELECT *
-		FROM " . ICONS_TABLE . "
-		WHERE icons_id > 1";
-	$result = $db->sql_query($sql);
-
-	$topic_icons = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$topic_icons[$row['icons_id']]['img'] = $row['icons_url'];
-		$topic_icons[$row['icons_id']]['width'] = $row['icons_width'];
-		$topic_icons[$row['icons_id']]['height'] = $row['icons_height'];
-	}
+	// Grab icons
+	$icons = array();
+	obtain_icons($icons);
 
 	// Grab all the basic data. If we're not on page 1 we also grab any
 	// announcements that may exist.
@@ -328,22 +318,12 @@ if ($forum_data['forum_postable'])
 
 	if (empty($forum_data['topics_list']))
 	{
-		$sql = "
-			SELECT 
-				t.*,
-				u.username,
-				u.user_id,
-				u2.username as user2,
-				u2.user_id as id2,
-				lr.lastread_time,
-				lr.lastread_type
-			FROM " . 
-				TOPICS_TABLE . " t
-				LEFT JOIN " . LASTREAD_TABLE . " lr ON (
-					lr.user_id = " . $user->data['user_id'] . "
-					AND t.topic_id=lr.topic_id), " .
-				USERS_TABLE . " u, " . 
-				USERS_TABLE . " u2
+		$sql = "SELECT 	t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, lr.lastread_time, lr.lastread_type
+			FROM " . TOPICS_TABLE . " t
+			LEFT JOIN " . LASTREAD_TABLE . " lr ON (
+				lr.user_id = " . $user->data['user_id'] . "
+				AND t.topic_id=lr.topic_id)
+				, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 			WHERE t.forum_id = $forum_id
 				AND t.topic_type = " . POST_ANNOUNCE . "
 				AND u.user_id = t.topic_poster
@@ -360,22 +340,12 @@ if ($forum_data['forum_postable'])
 		}
 		$db->sql_freeresult($result);
 
-		$sql = "
-			SELECT 
-				t.*, 
-				u.username,
-				u.user_id,
-				u2.username as user2,
-				u2.user_id as id2,
-				lr.lastread_time,
-				lr.lastread_type
-			FROM " . 
-				TOPICS_TABLE . " t
-				LEFT JOIN " . LASTREAD_TABLE . " lr ON (
-					lr.user_id = " . $user->data['user_id'] . "
-					AND t.topic_id=lr.topic_id), " .
-				USERS_TABLE . " u, " . 
-				USERS_TABLE . " u2
+		$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, lr.lastread_time, lr.lastread_type
+			FROM " . TOPICS_TABLE . " t
+			LEFT JOIN " . LASTREAD_TABLE . " lr ON (
+				lr.user_id = " . $user->data['user_id'] . "
+				AND t.topic_id=lr.topic_id) 
+				, " . USERS_TABLE . " u, " . USERS_TABLE . " u2
 			WHERE t.forum_id = $forum_id
 				AND t.topic_approved = 1
 				AND u.user_id = t.topic_poster
@@ -415,7 +385,7 @@ if ($forum_data['forum_postable'])
 	if (empty($forum_data['topics_list']) && !empty($topics_list))
 	{
 		$sql = 'INSERT INTO ' . TOPICS_PREFETCH_TABLE . " (forum_id, start, sort_key, sort_dir, topics_list)
-				VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
+			VALUES ($forum_id, $start, '$sort_key', '$sort_dir', '$topics_list')";
 //		$db->sql_query($sql);
 	}
 
@@ -426,7 +396,7 @@ if ($forum_data['forum_postable'])
 		{
 			$topic_id = $topic_rowset[$i]['topic_id'];
 			
-			$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
+			$topic_title = (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
 
 			// See if the user has posted in this topic.
 			if($topic_rowset[$i]['lastread_type'] == LASTREAD_POSTED)
@@ -490,7 +460,7 @@ if ($forum_data['forum_postable'])
 					$unread_topic = false;
 				}
 
-				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
+				$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'New_posts' : (($topic_rowset[$i]['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
@@ -565,10 +535,7 @@ if ($forum_data['forum_postable'])
 				'VIEWS' 			=> $topic_rowset[$i]['topic_views'],
 				'TOPIC_TITLE' 		=> $topic_title,
 				'TOPIC_TYPE' 		=> $topic_type,
-				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $topic_icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $topic_icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
-
-
-				'TOPIC_RATING' 		=> (!empty($topic_rowset[$i]['topic_rating'])) ? '<img src=' . str_replace('{RATE}', $topic_rowset[$i]['topic_rating'], $theme['rating']) . ' alt="' . $topic_rowset[$i]['topic_rating'] . '" title="' . $topic_rowset[$i]['topic_rating'] . '" />' : '',
+				'TOPIC_ICON' 		=> (!empty($topic_rowset[$i]['topic_icon']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$topic_rowset[$i]['topic_icon']]['img'] . '" width="' . $icons[$topic_rowset[$i]['topic_icon']]['width'] . '" height="' . $icons[$topic_rowset[$i]['topic_icon']]['height'] . '" alt="" title="" />' : '',
 
 				'S_ROW_COUNT'	=> $i,
 
@@ -594,8 +561,8 @@ $nav_links['up'] = array(
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'viewforum_body.html'
-));
+	'body' => 'viewforum_body.html')
+);
 make_jumpbox("viewforum.$phpEx$SID", $forum_id);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);

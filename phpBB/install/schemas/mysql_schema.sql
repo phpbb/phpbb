@@ -20,6 +20,7 @@ CREATE TABLE phpbb_attach_desc (
   PRIMARY KEY (attach_id)
 );
 
+
 # --------------------------------------------------------
 #
 # Table structure for table `phpbb_auth_groups`

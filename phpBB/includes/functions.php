@@ -19,16 +19,6 @@
  *
  ***************************************************************************/
 
-function sql_escape($msg)
-{
-	return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
-}
-
-function sql_quote($msg)
-{
-	return str_replace("\'", "''", $msg);
-}
-
 function set_config($config_name, $config_value)
 {
 	global $db, $cache, $config;
@@ -36,16 +26,17 @@ function set_config($config_name, $config_value)
 	if (isset($config[$config_name]))
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
-				SET config_value = '" . sql_escape($config_value) . "'
-				WHERE config_name = '$config_name'";
+			SET config_value = '" . $db->sql_escape($config_value) . "'
+			WHERE config_name = '$config_name'";
 		$db->sql_query($sql);
 	}
 	else
 	{
-		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . ' WHERE config_name = "' . $config_name . '"');
+		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . ' 
+			WHERE config_name = "' . $config_name . '"');
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
-				VALUES ('$config_name', '" . sql_escape($config_value) . "'";
+			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "'";
 		$db->sql_query($sql);
 	}
 
@@ -61,7 +52,7 @@ function get_userdata($user)
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
 		WHERE ";
-	$sql .= ((is_int($user)) ? "user_id = $user" : "username = '" .  sql_quote($user) . "'") . " AND user_id <> " . ANONYMOUS;
+	$sql .= ((is_int($user)) ? "user_id = $user" : "username = '" .  $db->sql_escape($user) . "'") . " AND user_id <> " . ANONYMOUS;
 	$result = $db->sql_query($sql);
 
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
@@ -130,7 +121,7 @@ function generate_forum_nav(&$forum_data)
 			}
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_parents = '" . sql_escape(serialize($forum_parents)) . "'
+					SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
 					WHERE parent_id = " . $forum_data['parent_id'];
 			$db->sql_query($sql);
 		}
@@ -669,14 +660,13 @@ function on_page($num_items, $per_page, $start)
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier
 // to return both sets of arrays
-function obtain_word_list(&$orig_word, &$replacement_word)
+function obtain_word_list(&$censors)
 {
 	global $db, $cache;
+
 	if ($cache->exists('word_censors'))
 	{
-		$words = $cache->get('word_censors');
-		$orig_word = $words['orig'];
-		$replacement_word = $words['replacement'];
+		$censors = $cache->get('word_censors'); // transfer to just if (!(...)) ? works fine for me
 	}
 	else
 	{
@@ -684,17 +674,50 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 			FROM  " . WORDS_TABLE;
 		$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		$censors = array();
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-			$replacement_word[] = $row['replacement'];
-		}
+			do
+			{
+				$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+				$censors['replace'][] = $row['replacement'];
+			}
+			while ($row = $db->sql_fetchrow($result));
 
-		$words = array('orig' => $orig_word, 'replacement' => $replacement_word);
-		$cache->put('word_censors', $words);
+			$cache->put('word_censors', $censors);
+		}
+		$db->sql_freeresult($result);
 	}
 
 	return true;
+}
+
+// Obtain currently listed icons, re-caching if necessary
+function obtain_icons(&$icons)
+{
+	global $db, $cache;
+
+	if (!($icons = $cache->get('icons')))
+	{
+		// Topic icons
+		$sql = "SELECT *
+			FROM " . ICONS_TABLE . "
+			WHERE icons_id > 1";
+		$result = $db->sql_query($sql);
+
+		$icons = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$icons[$row['icons_id']]['img'] = $row['icons_url'];
+			$icons[$row['icons_id']]['width'] = $row['icons_width'];
+			$icons[$row['icons_id']]['height'] = $row['icons_height'];
+		}
+		$db->sql_freeresult($result);
+
+		$cache->put('icons', $icons);
+	}
+
+	return;
 }
 
 // Redirects the user to another page then exits the script nicely
@@ -815,7 +838,7 @@ function validate_email($email)
 
 			$sql = "SELECT user_email
 				FROM " . USERS_TABLE . "
-				WHERE user_email = '" . sql_quote($email) . "'";
+				WHERE user_email = '" . $db->sql_escape($email) . "'";
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
