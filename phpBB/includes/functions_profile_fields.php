@@ -32,9 +32,10 @@ class custom_profile
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
+
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $cp_data[$row['field_ident']], $row)) !== false)
 			{
-				$cp_error[$row['field_ident']] = $cp_result;
+				$cp_error[] = strtoupper($row['field_ident']) . "_$cp_result";
 			}
 		}
 		$db->sql_freeresult($result);
