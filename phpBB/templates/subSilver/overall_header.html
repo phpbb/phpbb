@@ -12,16 +12,21 @@
 {T_STYLESHEET_DATA}
 //-->
 </style>
-<!-- IF S_USER_PM_POPUP -->
 <script language="Javascript" type="text/javascript">
 <!--
+<!-- IF S_USER_PM_POPUP -->
 	if ( {PRIVATE_MESSAGE_NEW_FLAG} )
 	{
 		window.open('{U_PRIVATEMSGS}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');;
 	}
+<!-- ENDIF -->
+function im_popup(url, width, height)
+{
+	window.open(url, '_contact', 'HEIGHT=' + height + ',resizable=yes,scrollbars=yes, WIDTH=' + width);
+	return false;
+}
 //-->
 </script>
-<!-- ENDIF -->
 </head>
 <body>
 
