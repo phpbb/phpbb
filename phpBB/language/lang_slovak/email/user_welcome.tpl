@@ -1,0 +1,17 @@
+Subject: Vitajte v diskusnom fóre {SITENAME}
+Charset:  Windows-1250
+
+{WELCOME_MSG}
+
+Prosím uschovajte tento email. Údaje o Vašom úète sú nasledovné:
+
+----------------------------
+Uívate¾ské meno: {USERNAME}
+Heslo: {PASSWORD}
+----------------------------
+
+Nezabudnite svoje heslo, pretoe bolo zakódované v našej databáze a my by sme Vám ho nemohli znovu posla. Ak predsa zabudnete heslo, môete poiada o nové, ktoré Vám bude aktivované rovnakım spôsobom ako Váš úèet. 
+
+Ïakujeme za registráciu.
+
+{EMAIL_SIG}
