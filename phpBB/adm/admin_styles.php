@@ -25,11 +25,13 @@ require('pagestart.' . $phpEx);
 // Do we have styles admin permissions?
 if (!$auth->acl_get('a_styles'))
 {
-	trigger_error($user->lang['No_admin']);
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 //
-$mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
+
+
 
 
 switch ($mode)
@@ -46,9 +48,9 @@ switch ($mode)
 
 		$imageset = array('imageset_path', 'post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_profile', 'icon_pm', 'icon_delete', 'icon_ip', 'icon_quote', 'icon_search', 'icon_edit', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm', 'goto_post', 'goto_post_new', 'goto_post_latest', 'goto_post_newest', 'forum', 'forum_new', 'forum_locked', 'sub_forum', 'sub_forum_new', 'folder', 'folder_new', 'folder_hot', 'folder_hot_new', 'folder_locked', 'folder_locked_new', 'folder_sticky', 'folder_sticky_new', 'folder_announce', 'folder_announce_new', 'topic_watch', 'topic_unwatch', 'poll_left', 'poll_center', 'poll_right', 'rating');
 
-		$sql = "SELECT imageset_name, imageset_path
-			FROM " . STYLES_IMAGE_TABLE . "
-			ORDER BY imageset_name";
+		$sql = 'SELECT imageset_name, imageset_path
+			FROM ' . STYLES_IMAGE_TABLE . '
+			ORDER BY imageset_name';
 		$result = $db->sql_query($sql);
 
 		$imgroot_options = '';
@@ -249,6 +251,18 @@ switch ($mode)
 		adm_page_footer();
 		break;
 
+
+
+
+
+
+
+
+
+
+
+
+
 	case 'edittheme':
 
 		$theme_id = (isset($_POST['themeroot'])) ? $_POST['themeroot']  : '';
@@ -311,28 +325,129 @@ switch ($mode)
 			}
 		}
 
+		$user->lang = array_merge($user->lang, array(
+			'SELECT_CLASS'		=> 'Select class', 
+			'style_body'		=> 'Body',
+			'style_p'			=> 'Paragraphs', 
+			'style_th'			=> 'Table Header Cell',
+			'style_td'			=> 'Table Data Cell',
+			'style_postdetails'	=> 'Post Information',
+			'style_postbody'	=> 'Post text', 
+			'style_gen'			=> 'General Text', 
+			'style_genmed'		=> 'Medium Text', 
+			'style_gensmall'	=> 'Small Text',
+			'style_copyright'	=> 'Copyright Text', 
+			
+		));
+
+		$base_classes = array(
+			'body',
+			'p', 
+			'th',
+			'td', 
+			'postdetails',
+			'postbody', 
+			'gen', 
+			'gensmall', 
+			'copyright'
+		);
+	
+		$class_options = '';
+		foreach ($base_classes as $class)
+		{
+			$class_options .= '<option value="' . $class . '">' . $user->lang['style_' . $class] . '</option>';
+		}
+
+
+		$imglist = filelist($phpbb_root_path . 'templates');
+
+		$bg_imglist = '';
+		foreach ($imglist as $img)
+		{
+			$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
+
+//			$selected = ' selected="selected"';
+			$bg_imglist .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+		}
+		$bg_imglist = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>----------</option>' . $bg_imglist;
+
+
 ?>
 
-<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>">
+<script language="javascript" type="text/javascript">
+<!--
+
+function swatch(field)
+{
+	window.open('./swatch.php?form=style&amp;name=' + field, '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+	return false;
+}
+
+//-->
+</script>
 
 <h2><?php echo $user->lang['Edit_theme']; ?></h2>
 
 <p><?php echo $user->lang['Edit_theme_explain']; ?></p>
 
-<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $user->lang['Select_theme']; ?>: <select name="themeroot"><?php echo $theme_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="<?php echo $user->lang['Select']; ?>" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="class"><?php echo $class_options; ?></select>&nbsp; <input class="liteoption" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['CSS_data']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CSS_data_explain']; ?></td>
-		<td class="row2"><textarea class="edit" cols="65" rows="15" name="css_data"><?php echo htmlentities($css_data); ?></textarea></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $user->lang['CSS_sheet']; ?>: </td>
-		<td class="row2"><input type="text" name="css_external" maxlength="60" size="60" value="<?php echo $css_external; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['Reset']; ?>" /></td>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th>Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1">Background image:</td>
+				<td class="row2"><select name="backgroundimage"><?php echo $bg_imglist ?></select></td>
+			</tr>
+			<tr>
+				<td class="row1">Repeat background:</td>
+				<td class="row2"><select name="repeat"><option value="no">No</option><option value="x">Horizontally Only</option><option value="y">Vertically Only</option><option value="yes">Both Directions</option></select></td>
+			</tr>
+			<tr>
+				<td class="row1">Background color:</td>
+				<td class="row2"><input class="post" type="text" name="bgcolor" value="" size="6" maxlength="6" /> [ <a href="swatch.php" onclick="swatch('bgcolor');return false" target="_swatch">Web-safe Colour Swatch</a> ]</td>
+			</tr>
+			<tr>
+				<td class="row1">Foreground color:</td>
+				<td class="row2"><input class="post" type="text" name="color" value="" size="6" maxlength="6" /> [ <a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a> ]</td>
+			</tr>
+			<tr>
+				<td class="row1">Font:</td>
+				<td class="row2"><input class="post" type="text" name="fontface" value="" size="40" maxlength="255" /></td>
+			</tr>
+			<tr>
+				<td class="row1">Font size:</td>
+				<td class="row2"><input class="post" type="text" name="fontsize" value="" size="3" maxlength="3" /> <select name="fontsizescale"><option value="pt">pt</option><option value="px">px</option><option value="em">em</option><option value="%">%</option></select></td>
+			</tr>
+			<tr>
+				<td class="row1">Font Bold:</td>
+				<td class="row2"><input type="radio" name="bold" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="bold" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+			</tr>
+			<tr>
+				<td class="row1">Font Italic:</td>
+				<td class="row2"><input type="radio" name="italic" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="italic" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+			</tr>
+			<tr>
+				<td class="row1">Font Underline:</td>
+				<td class="row2"><input type="radio" name="underline" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="underline" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+			</tr>
+			<tr>
+				<td class="row1">Line spacing:</td>
+				<td class="row2"><input class="post" type="text" name="linespacing" value="" size="3" maxlength="3" /> <select name="linespacingscale"><option value="pt">pt</option><option value="px">px</option><option value="em">em</option><option value="%">%</option></select></td>
+			</tr>
+			<!-- tr>
+				<td class="row1" width="40%">Advanced: <br /><span class="gensmall">Enter here any additional CSS parameters and their values. Enter each parameter on a new row and terminate each with semi-colon ;</td>
+				<td class="row2"><textarea name="freeform" cols="40" rows="3"></textarea></td>
+			</tr -->
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+			</tr>
+		</table></td>
 	</tr>
 </table></form>
 
@@ -341,6 +456,15 @@ switch ($mode)
 		adm_page_footer();
 
 		break;
+
+
+
+
+
+
+
+
+
 }
 
 
