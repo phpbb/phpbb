@@ -136,8 +136,6 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		}
 	}
 
-	$login = 1;
-
 	//
 	// Create or update the session
 	//
