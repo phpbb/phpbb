@@ -129,7 +129,7 @@ if (!empty($_GET['post_id_list']))
 	}
 }
 $url_extra = (!empty($selected_post_ids)) ? '&amp;post_id_list=' . short_id_list($selected_post_ids) : '';
-$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+$return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 // Build up return links and acl list
 // $acl_list_src contains the acl list for source forum(s)
@@ -137,7 +137,7 @@ $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href
 
 $acl_list_src = array('m_', 'a_');
 $acl_list_trg = array('m_', 'a_');
-$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
 
 switch ($mode)
 {
@@ -147,7 +147,7 @@ switch ($mode)
 		$acl_list_src = array('m_split', 'a_');
 		$acl_list_trg = array('f_post', 'm_', 'a_');
 
-		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
+		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
 	break;
 
 	case 'merge':
@@ -155,7 +155,7 @@ switch ($mode)
 		$acl_list_src = array('m_merge', 'a_');
 		$acl_list_trg = array('m_merge', 'a_');
 
-		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
+		$return_mode = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
 	break;
 }
 
@@ -393,7 +393,7 @@ $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
 $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
 //$mcp_url .= ($start) ? '&amp;start=' . $start : '';
-$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '">', '</a>');
+$return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id)
 {
@@ -506,7 +506,7 @@ switch ($mode)
 		resync('topic', 'topic_id', $topic_id_list);
 
 		$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-		$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+		$l_redirect = sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -530,7 +530,7 @@ switch ($mode)
 			delete_posts('post_id', $post_id_list);
 
 			$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-			$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			$l_redirect = sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -575,12 +575,12 @@ switch ($mode)
 			if ($quickmod)
 			{
 				$redirect_page = "";
-				$l_redirect = sprintf($user->lang['Click_return_forum'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+				$l_redirect = sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 			}
 			else
 			{
 				$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
-				$l_redirect = sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+				$l_redirect = sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 			}
 
 			$template->assign_vars(array(
@@ -628,7 +628,7 @@ switch ($mode)
 		// Post ordering options
 		$previous_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
+		$sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
 		$sort_days = (!empty($_REQUEST['sort_days'])) ? max(intval($_REQUEST['sort_days']), 0) : 0;
 		$sort_key = (!empty($_REQUEST['sort_key']) && preg_match('/^(a|t|s)$/', $_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
@@ -687,11 +687,10 @@ switch ($mode)
 		}
 		$select_post_days .= '</select>';
 
-		$sql = "SELECT u.username, p.*, pt.*
-			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+		$sql = 'SELECT u.username, p.*
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE p.topic_id = $topic_id
 				AND p.poster_id = u.user_id
-				AND p.post_id = pt.post_id
 				$limit_posts_time
 			ORDER BY $sort_order";
 		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
@@ -796,11 +795,10 @@ switch ($mode)
 			'S_FORM_ACTION'		=>	$mcp_url
 		));
 
-		$sql = "SELECT u.username, p.*, pt.*
-			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+		$sql = 'SELECT u.username, p.*
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
-				AND p.poster_id = u.user_id
-				AND p.post_id = pt.post_id";
+				AND p.poster_id = u.user_id";
 		$result = $db->sql_query($sql);
 
 		if (!$row = $db->sql_fetchrow($result))
@@ -843,7 +841,7 @@ switch ($mode)
 	case 'move':
 		if ($confirm)
 		{
-			$return_move = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=move">', '</a>');
+			$return_move = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '&amp;mode=move">', '</a>');
 
 			if (!$to_forum_id)
 			{
@@ -910,15 +908,15 @@ switch ($mode)
 		if (isset($_GET['quickmod']))
 		{
 			$redirect_page = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start";
-			$message .= sprintf($user->lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
+			$message .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
 			$redirect_page = $mcp_url . '&amp;mode=forum_view';
-			$message .= sprintf($user->lang['Click_return_mcp'], '<a href="' . $redirect_page . '">', '</a>');
+			$message .= sprintf($user->lang['RETURN_MCP'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message .= '<br \><br \>' . sprintf($user->lang['Click_return_forum'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
+		$message .= '<br \><br \>' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
@@ -928,7 +926,7 @@ switch ($mode)
 	break;
 
 	case 'merge_posts':
-		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
+		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
 		move_posts($post_id_list, $to_topic_id);
 
 		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Posts_merged'] . $return_url . $return_mcp);
@@ -936,7 +934,7 @@ switch ($mode)
 
 	case 'split_all':
 	case 'split_beyond':
-		$return_split = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=split' . $url_extra . '">', '</a>');
+		$return_split = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '&amp;mode=split' . $url_extra . '">', '</a>');
 
 		if (!$subject)
 		{
@@ -977,7 +975,7 @@ switch ($mode)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
-		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
+		$return_url = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
 		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
 		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
 	break;
@@ -1385,10 +1383,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 
 	$where_sql = ' WHERE post_id IN (' . implode(', ', $post_ids) . ')';
 
+	$db->sql_return_on_error(FALSE);
 	$db->sql_query('DELETE FROM ' . POSTS_TABLE . $where_sql);
-	$db->sql_query('DELETE FROM ' . POSTS_TEXT_TABLE . $where_sql);
+//	$db->sql_query('DELETE FROM ' . POSTS_TEXT_TABLE . $where_sql);
 	$db->sql_query('DELETE FROM ' . RATINGS_TABLE . $where_sql);
 	$db->sql_query('DELETE FROM ' . SEARCH_MATCH_TABLE . $where_sql);
+	$db->sql_return_on_error(TRUE);
 
 	if ($auto_sync)
 	{
