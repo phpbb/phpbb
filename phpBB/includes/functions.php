@@ -692,7 +692,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 // dougk_ff7 <October 5, 2002>
 function phpbb_realpath($path)
 {
-	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.'.$phpEx)) ? $path : realpath($path);
+	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.'.$phpEx)) ? $path : @realpath($path);
 }
 
 function redirect($url)
@@ -705,10 +705,11 @@ function redirect($url)
 	}
 
 	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
-	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
-	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
-	$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-	$url = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($url));
+	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
+	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
+	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
