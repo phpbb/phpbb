@@ -169,30 +169,16 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-
-// NOTE: for global announcements, set forum_id to the forum they should be
-// displayed by default. Change this query to user POST_GLOBAL rather than
-// "forum_id = 0". NOTE2: if you read this I forgot to remove this note before I committed my files.
-
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
 			" . ((!$forum_id) ? '' : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . "
 			)
 		$order_sql";
-
-$sql = 'SELECT t.topic_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_replies, t.topic_replies_real, t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
-	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
-	WHERE $join_sql
-		AND (f.forum_id = t.forum_id
-			OR (t.forum_id = 0 AND 
-				f.forum_id = $forum_id)
-			)
-		$order_sql";
 $result = $db->sql_query($sql);
 
-if (!$topic_data = $db->sql_fetchrow($result))
+if (!($topic_data = $db->sql_fetchrow($result)))
 {
 	trigger_error('NO_TOPIC');
 }
@@ -200,22 +186,15 @@ if (!$topic_data = $db->sql_fetchrow($result))
 // Extract the data
 extract($topic_data);
 
-if (!$topic_approved && !$auth->acl_get('m_approve', $forum_id))
-{
-	trigger_error('NO_TOPIC');
-}
 
 // Setup look and feel
 $user->setup(false, $forum_style);
 
-// TODO: shouldn't this be moved after the f_read check?
-// Forum is passworded ... check whether access has been granted to this
-// user this session, if not show login box
-if ($forum_password)
-{
-	login_forum_box($topic_data);
-}
 
+if (!$topic_approved && !$auth->acl_get('m_approve', $forum_id))
+{
+	trigger_error('NO_TOPIC');
+}
 
 
 // Start auth check
@@ -230,123 +209,12 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 
 
-
-
-
-// Not final in the slightest! Far too simplistic
-if (isset($_GET['rate']))
+// Forum is passworded ... check whether access has been granted to this
+// user this session, if not show login box
+if ($forum_password)
 {
-	// Check for rating count for previous X time
-
-
-	// Grab existing rating for this post, if it exists
-	$sql = 'SELECT * 
-		FROM ' . RATINGS_TABLE . ' 
-		WHERE user_id = ' . $user->data['user_id'] . "
-			AND post_id = $post_id";
-	$result = $db->sql_query($sql);
-
-	switch ($_GET['rate'])
-	{
-		case 'good':
-			$rate = 1;
-			break;
-		case 'bad':
-			$rate = -1;
-			break;
-	}
-
-	$updated = ($row = $db->sql_fetchrow($result)) ? true : false;
-	$db->sql_freeresult($result);
-
-	// Insert rating if appropriate
-	$sql = (!$updated) ? 'INSERT INTO ' . RATINGS_TABLE . ' (user_id, post_id, rating, rating_time) VALUES (' . $user->data['user_id'] . ", $post_id, $rate, " . time() . ')' : 'UPDATE ' . RATINGS_TABLE . " SET rating = $rate, rating_time = " . time() . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id'];
-	$db->sql_query($sql);
-
-	// Rating sum and count since first post
-	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
-		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
-		WHERE p2.post_id = $post_id 
-			AND p.poster_id = p2.poster_id 
-			AND p.post_time < " . (time() - (30 * 86400)) . ' 
-			AND r.post_id = p.post_id 
-			AND r.user_id <> p2.poster_id 
-		GROUP BY p.poster_id';
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$total_ratings = $row['total_ratings'];
-	$historic_rating = ($row['rated'] / $row['total_ratings']) * 0.30;
-
-	// Rating sum and count past thirty days
-	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
-		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
-		WHERE p2.post_id = $post_id
-			AND p.poster_id = p2.poster_id  
-			AND p.post_time > " . (time() - (30 * 86400)) . ' 
-			AND r.post_id = p.post_id 
-			AND r.user_id <> p2.poster_id 
-		GROUP BY p.poster_id';
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$total_ratings += $row['total_ratings'];
-	$thirty_day_rating = ($row['rated'] / $row['total_ratings']) * 0.50;
-
-	if ($total_ratings > $config['min_ratings'])
-	{
-		// Post count and reg date for this user
-		$sql = 'SELECT user_id, user_regdate, user_posts 
-			FROM ' . USERS_TABLE . ' 
-			WHERE user_id = ' . $row['poster_id'];
-		$result = $db->sql_query($sql);
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$post_count_rating = ($row['user_posts'] / $config['num_posts']) * 0.1;
-		$day_rating = (($row['user_regdate'] > $config['board_startdate']) ? $config['board_startdate'] / $row['user_regdate'] : 1) * 0.1;
-		$poster_id = $row['user_id'];
-
-		// Number of rated posts by this user
-/*		$sql = 'SELECT COUNT(DISTINCT(p.post_id)) AS rated_posts
-			FROM ' . RATINGS_TABLE . ' r , ' . POSTS_TABLE . " p 
-			WHERE p.poster_id = $poster_id  
-				AND r.post_id = p.post_id
-				AND r.user_id <> $poster_id";
-		$result = $db->sql_query($sql);
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);*/
-
-		$karma = ($historic_rating + $thirty_day_rating + $day_rating + $post_count_rating) * 5;
-		$karma = ($karma < 0) ? floor($karma) : (($karma > 0) ? ceil($karma) : 0);
-
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_karma = $karma 
-			WHERE user_id = $poster_id";
-		$db->sql_query($sql);
-	}
-
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id");
-	$message = ($updated) ? $user->lang['RATING_UPDATED'] : $user->lang['RATING_ADDED'];
-	$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_POST'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id\">", '</a>');
-	trigger_error($message);
+	login_forum_box($topic_data);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 // What is start equal to?
