@@ -29,7 +29,8 @@ if ( !defined('IN_PHPBB') )
 
 if ( isset($HTTP_POST_VARS['submit']) )
 {
-	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+	// session id check
+	if ($sid == '' || $sid != $userdata['session_id'])
 	{
 		message_die(ERROR, 'Invalid_session');
 	}

@@ -33,7 +33,7 @@ if ( !defined('IN_PHPBB') )
 //
 function show_coppa()
 {
-	global $template, $lang, $phpbb_root_path, $phpEx;
+	global $userdata, $template, $lang, $phpbb_root_path, $phpEx;
 
 	$template->set_filenames(array(
 		'body' => 'agreement.tpl')
@@ -46,8 +46,8 @@ function show_coppa()
 		"AGREE_UNDER_13" => $lang['Agree_under_13'],
 		'DO_NOT_AGREE' => $lang['Agree_not'],
 
-		"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
-		"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
+		"U_AGREE_OVER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;sid=" . $userdata['session_id'],
+		"U_AGREE_UNDER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true&amp;sid=" . $userdata['session_id'])
 	);
 
 	$template->pparse('body');
@@ -80,9 +80,10 @@ if (
 	isset($HTTP_POST_VARS['cancelavatar']) ||
 	$mode == 'register' )
 {
-	if (!isset($HTTP_POST_VARS['sid']) || $HTTP_POST_VARS['sid'] != $userdata['session_id'])
+	// session id check
+	if ($sid == '' || $sid != $userdata['session_id'])
 	{
-		message_die(ERROR, 'Invalid_session_id');
+		message_die(ERROR, 'Invalid_session');
 	}
 
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
@@ -246,7 +247,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Fields_empty'];
 		}
-
 	}
 
 	$passwd_sql = '';

@@ -273,7 +273,7 @@ if ( $userdata['session_logged_in'] )
 		else
 		{
 			$s_privmsg_new = 0;
-			$icon_pm = $images['pm_no_new_msg'];
+			$icon_pm = $images['pm_new_msg'];
 		}
 	}
 	else
