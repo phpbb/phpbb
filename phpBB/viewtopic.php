@@ -480,6 +480,7 @@ if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
 		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=unlock&quick_op=1") . "\"><img src=\"images/topic_unlock.gif\" alt = \"" . $lang['Unlock_topic'] . "\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
+	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=split") . "\">Split Topic</a>";
 }
 
 $template->assign_vars(array(
