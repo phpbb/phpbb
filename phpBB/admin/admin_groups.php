@@ -36,13 +36,12 @@ require('pagestart.inc');
 
 if( isset($HTTP_POST_VARS[POST_GROUPS_URL]) || isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 {
-	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
+	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_POST_VARS[POST_GROUPS_URL]) : intval($HTTP_GET_VARS[POST_GROUPS_URL]);
 }
 else
 {
 	$group_id = "";
 }
-
 
 if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 {
@@ -77,8 +76,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 			"group_name" => "",
 			"group_description" => "",
 			"group_moderator" => "",
-			"group_type" => "1"
-		);
+			"group_type" => GROUP_OPEN);
 		$group_open = "checked=\"checked\"";
 
 		$mode = "newgroup";
@@ -107,8 +105,9 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	}
 	$select_list .= "</select>";
 
-	$group_open = ( !empty($group_info['group_type']) ) ? "checked=\"checked\"" : "";
-	$group_closed = ( empty($group_info['group_type']) ) ? "checked=\"checked\"" : "";
+	$group_open = ( $group_info['group_type'] == GROUP_OPEN ) ? "checked=\"checked\"" : "";
+	$group_closed = ( $group_info['group_type'] == GROUP_CLOSED ) ? "checked=\"checked\"" : "";
+	$group_hidden = ( $group_info['group_type'] == GROUP_HIDDEN ) ? "checked=\"checked\"" : "";
 
 	$template->set_filenames(array(
 		"body" => "admin/group_edit_body.tpl")
@@ -128,6 +127,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"L_GROUP_STATUS" => $lang['group_status'],
 		"L_GROUP_OPEN" => $lang['group_open'],
 		"L_GROUP_CLOSED" => $lang['group_closed'],
+		"L_GROUP_HIDDEN" => $lang['group_hidden'],
 		"L_GROUP_DELETE" => $lang['group_delete'],
 		"L_GROUP_DELETE_CHECK" => $lang['group_delete_check'],
 		"L_SUBMIT" => $lang['submit_group_changes'],
@@ -137,8 +137,12 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"L_YES" => $lang['Yes'],
 
 		"S_SELECT_MODERATORS" => $select_list,
+		"S_GROUP_OPEN_TYPE" => GROUP_OPEN,
+		"S_GROUP_CLOSED_TYPE" => GROUP_CLOSED,
+		"S_GROUP_HIDDEN_TYPE" => GROUP_HIDDEN,
 		"S_GROUP_OPEN_CHECKED" => $group_open,
 		"S_GROUP_CLOSED_CHECKED" => $group_closed,
+		"S_GROUP_HIDDEN_CHECKED" => $group_hidden,
 		"S_GROUP_ACTION" => append_sid("admin_groups.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);

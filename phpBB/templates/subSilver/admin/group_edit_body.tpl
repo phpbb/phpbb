@@ -35,10 +35,7 @@
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
 	  <td class="row2" width="62%"> 
-		<input type="radio" name="group_type" value="1" {S_GROUP_OPEN_CHECKED} />
-		{L_GROUP_OPEN} &nbsp;&nbsp; 
-		<input type="radio" name="group_type" value="0" {S_GROUP_CLOSED_CHECKED} />
-		{L_GROUP_CLOSED}</td>
+		<input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN}</td> 
 	</tr>
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_DELETE}:</span></td>

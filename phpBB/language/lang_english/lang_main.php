@@ -337,6 +337,7 @@ $lang['Click_return_login'] = "Click %sHere%s to try again";
 $lang['Click_return_forum'] = "Click %sHere%s to return to the forum";
 $lang['Click_view_message'] = "Click %sHere%s to view your message";
 $lang['Click_return_modcp'] = "Click %sHere%s to return to the Moderator Control Panel";
+$lang['Click_return_group'] = "Click %sHere%s to return to group information";
 
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
 
@@ -561,7 +562,10 @@ $lang['No_pending_group_members'] = "This group has no pending members";
 $lang["Group_joined"] = "You have successfully subscribed to this group<br />You will be notifed when your subscription is approved by the group moderator";
 $lang['Group_request'] = "A request to join your group has been made";
 $lang['Group_approved'] = "Your request has been approved";
-$lang['Group_added'] = "You have been added to this usergroup";
+$lang['Group_added'] = "You have been added to this usergroup"; 
+$lang['Already_member_group'] = "You are already a member of this group";
+$lang['User_is_member_group'] = "User is already a member of this group";
+$lang['Group_type_updated'] = "Successfully updated group type";
 
 $lang['Could_not_add_user'] = "The user you selected does not exist";
 

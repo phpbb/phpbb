@@ -47,6 +47,12 @@ define(USER_AVATAR_REMOTE, 2);
 define(USER_AVATAR_GALLERY, 3);
 
 
+// Group settings
+define(GROUP_OPEN, 0);
+define(GROUP_CLOSED, 1);
+define(GROUP_HIDDEN, 2);
+
+
 // Forum state
 define(FORUM_UNLOCKED, 0);
 define(FORUM_LOCKED, 1);
@@ -77,13 +83,6 @@ define(GENERAL_MESSAGE, 200);
 define(GENERAL_ERROR, 202);
 define(CRITICAL_MESSAGE, 203);
 define(CRITICAL_ERROR, 204);
-
-define(SQL_CONNECT, 1);
-define(BANNED, 2);
-define(QUERY_ERROR, 3);
-define(SESSION_CREATE, 4);
-define(NO_TOPICS, 5);
-define(LOGIN_FAILED, 7);
 
 
 // Private messaging
@@ -133,13 +132,11 @@ define(AUTH_MOD, 3);
 define(AUTH_ADMIN, 5);
 
 define(AUTH_VIEW, 1);
-
 define(AUTH_READ, 2);
 define(AUTH_POST, 3);
 define(AUTH_REPLY, 4);
 define(AUTH_EDIT, 5);
 define(AUTH_DELETE, 6);
-
 define(AUTH_ANNOUNCE, 7);
 define(AUTH_STICKY, 8);
 define(AUTH_POLLCREATE, 9);
