@@ -199,7 +199,14 @@ class emailer
 			@reset($address_ary);
 			while (list(, $which_ary) = each($address_ary))
 			{
-				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
+				if ($type != 'to')
+				{
+					$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
+				}
+				else
+				{
+					$$type .= (($$type != '') ? ',' : '') . $which_ary['email'];
+				}
 			}
 		}
 
