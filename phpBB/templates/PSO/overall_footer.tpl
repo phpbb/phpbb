@@ -1,6 +1,6 @@
 <br clear="all" />
 
-<div align="center" />
+<div align="center">
 <span class="gensmall">{ADMIN_LINK}</span>
 <br clear="all" /><br />
 <!-- 

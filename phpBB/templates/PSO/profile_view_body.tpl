@@ -1,70 +1,70 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="/">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
-		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_VIEWING_PROFILE} {USERNAME}</b></font></td>
+				<th colspan="2"><span class="gen"><b>{L_VIEWING_PROFILE} {USERNAME}</b></th>
 			</tr>
 			<tr>
-	           <td bgcolor="{T_TD_COLOR1}" width="20%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_USERNAME}:</font></td>
-	           <td bgcolor="{T_TD_COLOR2}" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{USERNAME}</b> [<a href="{U_SEARCH_USER}">{L_VIEW_USERS_POSTS}</a>]</font></td>
+	           <td class="row1" width="20%"><span class="gen">{L_USERNAME}:</span></td>
+	           <td class="row2" valign="middle"><span class="gen"><b>{USERNAME}</b> [<a href="{U_SEARCH_USER}">{L_VIEW_USERS_POSTS}</a>]</span></td>
             </tr>
             <tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_JOINED}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{JOINED}</b> [{POSTS_PER_DAY} {L_PER_DAY}]</font></td>
+				<td class="row1"><span class="gen">{L_JOINED}:</span></td>
+				<td class="row2"><span class="gen"><b>{JOINED}</b> [{POSTS_PER_DAY} {L_PER_DAY}]</span></td>
 			</tr>
             <tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_POSTS}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{POSTS}</b> [{PERCENTAGE} {L_OF_TOTAL}]</font></td>
+				<td class="row1"><span class="gen">{L_POSTS}:</span></td>
+				<td class="row2"><span class="gen"><b>{POSTS}</b> [{PERCENTAGE} {L_OF_TOTAL}]</span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_EMAIL_ADDRESS}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{EMAIL}</font></td>
+				<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}:</span></td>
+				<td class="row2"><span class="gen">{EMAIL}</span>&nbsp;{PM_IMG}</td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_ICQ_NUMBER}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{ICQ}</font></td>
+				<td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
+				<td class="row2"><span class="gen">{ICQ}</span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_AIM}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{AIM}</b></font></td>
+				<td class="row1"><span class="gen">{L_AIM}:</span></td>
+				<td class="row2"><span class="gen">{AIM}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_MESSENGER}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{MSN}</b></font></td>
+				<td class="row1"><span class="gen">{L_MESSENGER}:</span></td>
+				<td class="row2"><span class="gen">{MSN}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_YAHOO}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{YIM}</b></font></td>
+				<td class="row1"><span class="gen">{L_YAHOO}:</span></td>
+				<td class="row2"><span class="gen">{YIM}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_WEBSITE}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{U_USER_WEBSITE}" target="_userwww">{WEBSITE}</a></b></font></td>
+				<td class="row1"><span class="gen">{L_WEBSITE}:</span></td>
+				<td class="row2"><span class="gen"><a href="{U_USER_WEBSITE}" target="_userwww">{WEBSITE}</a></b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_LOCATION}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{LOCATION}</b></font></td>
+				<td class="row1"><span class="gen">{L_LOCATION}:</span></td>
+				<td class="row2"><span class="gen"><b>{LOCATION}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_OCCUPATION}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{OCCUPATION}</b></font></td>
+				<td class="row1"><span class="gen">{L_OCCUPATION}:</span></td>
+				<td class="row2"><span class="gen"><b>{OCCUPATION}</b></span></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_INTERESTS}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{INTERESTS}</b></font></td>
+				<td class="row1"><span class="gen">{L_INTERESTS}:</span></td>
+				<td class="row2"><span class="gen"><b>{INTERESTS}</b></span></td>
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table cellspacing="2" border="0" width="98%">
+<table cellspacing="2" border="0" width="98%" align="center">
 	<tr>
-		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>

@@ -1,34 +1,34 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="/">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
-		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
+		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
-				<td colspan="3" bgcolor="{T_TH_COLOR2}" align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{TOTAL_USERS_ONLINE}</b></font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">This data is based on users active over the past five minutes.</font></td>
+				<td class="cat" colspan="3" align="center"><span class="gen"><b>{TOTAL_USERS_ONLINE}</b></span><br /><span class="gensmall">This data is based on users active over the past five minutes</span></td>
 			</tr>
 			<tr>
-				<td width="35%" bgcolor="{T_TH_COLOR3}" align="center">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_USERNAME}</font>&nbsp;</td>
-				<td width="25%" bgcolor="{T_TH_COLOR3}" align="center">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_LAST_UPDATE}</font>&nbsp;</td>
-				<td width="40%" bgcolor="{T_TH_COLOR3}" align="center">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_LOCATION}</font>&nbsp;</td>
+				<th width="35%">&nbsp;{L_USERNAME}&nbsp;</th>
+				<th width="25%">&nbsp;{L_LAST_UPDATE}&nbsp;</th>
+				<th width="40%">&nbsp;{L_LOCATION}&nbsp;</th>
 			</tr>
 			<!-- BEGIN userrow -->
-			<tr>
-				<td bgcolor="{userrow.ROW_COLOR}" width="35%">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{userrow.U_USER_PROFILE}">{userrow.USERNAME}</a></font>&nbsp;</td>
-				<td bgcolor="{userrow.ROW_COLOR}" width="25%" align="center">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{userrow.LASTUPDATE}</font>&nbsp;</td>
-				<td bgcolor="{userrow.ROW_COLOR}" width="40%">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{userrow.U_FORUM_LOCATION}">{userrow.LOCATION}</a></font>&nbsp;</td>
+			<tr bgcolor="{userrow.ROW_COLOR}">
+				<td width="35%">&nbsp;<span class="gen"><a href="{userrow.U_USER_PROFILE}">{userrow.USERNAME}</a></span>&nbsp;</td>
+				<td width="25%" align="center">&nbsp;<span class="gen">{userrow.LASTUPDATE}</span>&nbsp;</td>
+				<td width="40%">&nbsp;<span class="gen"><a href="{userrow.U_FORUM_LOCATION}">{userrow.LOCATION}</a></span>&nbsp;</td>
 			</tr>
 			<!-- END userrow -->
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table cellspacing="2" border="0" width="98%">
+<table cellspacing="2" border="0" width="98%" align="center">
 	<tr>
-		<td width="40%" valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><b>{S_TIMEZONE}</b></font></td>
+		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>

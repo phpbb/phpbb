@@ -33,7 +33,7 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
 <a name="#top"></a>
 
-<div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg" width="100%"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
@@ -56,9 +56,6 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 			</tr>
 		</table></td>
 	</tr>
-	<tr>
-		
-	</tr>
-</table></div>
+</table>
 
 <br clear="all" /><br />

@@ -1,10 +1,10 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr><form method="post" action="{S_PRIVMSGS_ACTION}">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
@@ -52,11 +52,11 @@
 			</tr>
 		</table></td>
 	</form></tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellspacing="2" border="0">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>

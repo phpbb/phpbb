@@ -1,8 +1,8 @@
-<div align="center"><table width="80%" cellspacing="0" cellpadding="4" border="0">
+<table width="80%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
 <script language="JavaScript" type="text/javascript">
 <!--
@@ -31,7 +31,7 @@ function submit_check_alert(formObj)
 //-->
 </script>
 
-<div align="center"><table width="80%" cellpadding="1" cellspacing="0" border="0">
+<table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr><form action="{S_POST_ACTION}" method="POST" onSubmit="return submit_check_alert(this);">
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
@@ -40,6 +40,7 @@ function submit_check_alert(formObj)
 			<tr>
 				<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
 				<td class="row2">{USERNAME_INPUT}</td>
+			</tr>
             <tr>
 				<td class="row1"><span class="gen"><b>{L_SUBJECT}</b></span></td>
 				<td class="row2"><span class="courier">{SUBJECT_INPUT}</span></td>
@@ -62,11 +63,11 @@ function submit_check_alert(formObj)
 			</tr>
 		</table></td>
 	</form></tr>
-</table></div>
+</table>
 
-<div align="center"><table cellspacing="2" border="0" width="80%">
+<table cellspacing="2" border="0" width="80%" align="center">
 	<tr>
 		<td valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>

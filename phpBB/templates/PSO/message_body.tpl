@@ -1,5 +1,5 @@
 
-<div align="center"><table width="80%" cellpadding="0" cellspacing="1" border="0">
+<table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>

@@ -1,4 +1,5 @@
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
@@ -55,11 +56,11 @@
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellspacing="2" border="0">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>

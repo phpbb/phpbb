@@ -1,18 +1,18 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
 		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
 		<td align="right" valign="bottom" nowrap><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;<input type="submit"  value="Go"></span></td>
 	</form></tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="cattitle">{FORUM_NAME}</span><br><span class="gensmall">{L_MODERATOR}: {MODERATORS}</span></TD>
-						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td align="right"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="1"></a></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -45,32 +45,28 @@
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table cellspacing="2" border="0" width="98%">
+<table cellspacing="2" border="0" width="98%" align="center">
 	<tr>
-		<td width="20"></td>
-		<td width="40%"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
-		<td rowspan="6" align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
+		<td align="left" valign="top"><table cellspacing="4" border="0">
+			<tr>
+				<td width="20"></td>
+				<td><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+			</tr>
+			<tr>
+				<td width="20"><img src="images/folder_new.gif"></td>
+				<td><span class="gensmall">{L_NEWPOSTS}</td>
+			</tr>
+			<tr>
+				<td width="20"><img src="images/folder.gif"></td>
+				<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
+			</tr>
+			<tr>
+				<td width="20"><img src="images/folder_lock.gif"></td>
+				<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
+			</tr>
+		</table></td>
+		<td align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
-	<tr>
-		<td><img src="images/folder_new.gif"></td>
-		<td><span class="gensmall">{L_NEWPOSTS}</td>
-	</tr>
-	<tr>
-		<td><img src="images/folder_new_hot.gif"></td>
-		<td><span class="gensmall">{L_NEWPOSTS} [ > {L_HOT_THRESHOLD} ]</span></td>
-	</tr>
-	<tr>
-		<td><img src="images/folder.gif"></td>
-		<td><span class="gensmall">{L_NONEWPOSTS}</span></td>
-	</tr>
-	<tr>
-		<td><img src="images/folder_hot.gif"></td>
-		<td><span class="gensmall">{L_NONEWPOSTS} [ > {L_HOT_THRESHOLD} ]</span></td>
-	</tr>
-	<tr>
-		<td><img src="images/folder_lock.gif"></td>
-		<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
-	</tr>
-</table></div>
+</table>

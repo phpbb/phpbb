@@ -1,10 +1,10 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr><form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
@@ -74,7 +74,7 @@
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_HIDE_USER}:</span></td>
-				<td class="row2"><input type="radio" name="allowviewonline" value="1" {HIDE_USER_YES}> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="allowviewonline" value="0" {HIDE_USER_NO}> <span class="gen">{L_NO}</span></td>
+				<td class="row2"><input type="radio" name="hideonline" value="1" {HIDE_USER_YES}> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="hideonline" value="0" {HIDE_USER_NO}> <span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_NOTIFY_ON_PRIVMSG}:</span></td>
@@ -148,12 +148,12 @@
 			<!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
 			<tr>
 				<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
-				<td class="row2">&nbsp;</td>
+				<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}"></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;&nbsp;<input type="reset" value="{L_RESET}"</td>
+			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;&nbsp;<input type="reset" value="{L_RESET}"></td>
 			</tr>
 		</table></td>
 	</form></tr>
-</table></div>
+</table>

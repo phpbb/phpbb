@@ -1,12 +1,12 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
-	<tr><form method="post" action="{S_POST_DAYS_ACTION}">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
+	<tr>
 		<td align="left" valign="bottom" nowrap><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></span></td>
-	</form></tr>
-</table></div>
+	</tr>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr><form method="post" action="{S_MODCP_ACTION}">
-		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
+		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
 				<td class="cat" colspan="5" align="center"><span class="cattitle">{L_MOD_CP}</span><br><span class="gensmall">{L_MOD_CP_EXPLAIN}</span></td>
 			</tr>
@@ -37,11 +37,11 @@
 			</tr>
 		</table></td>
 	</form></tr>
-</table></div>
+</table><
 
-<div align="center"><table cellspacing="2" border="0" width="98%">
+<table cellspacing="2" border="0" width="98%" align="center">
 	<tr>
 		<td width="40%"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
-</table></div>
+</table>

@@ -1,10 +1,10 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
 </table></div>
 
-<div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
+<table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="3" cellspacing="1" border="0">
 			<tr>
@@ -46,9 +46,9 @@
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table align="center" border="0" width="98%">
+<table align="center" border="0" width="98%" align="center">
 	<tr>
 		<td width="30" align="center"><img src="images/folder_new.gif"></td>
 		<td><span class="gensmall">{L_NEWPOSTS}</span></td>

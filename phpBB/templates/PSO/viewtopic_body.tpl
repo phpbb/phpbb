@@ -1,11 +1,11 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a> -> {TOPIC_TITLE}</span></td>
 		<td align="right" valign="bottom" nowrap><span class="gen"> <a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a> </span></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
@@ -43,7 +43,7 @@
 						</table></td>
 					</tr>
 					<tr>
-						<td height="100%" valign="top"><span class="gen">{postrow.MESSAGE}</span></td>
+						<td width="100%" height="100%" valign="top"><span class="gen">{postrow.MESSAGE}</span></td>
 					</tr>
 					<tr>
 						<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -70,11 +70,11 @@
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellspacing="2" border="0">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span><br><br>{S_TOPIC_ADMIN}</td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}<br><span class="gensmall">{S_AUTH_LIST}</span></td>
 	</tr>
-</table></div>
+</table>

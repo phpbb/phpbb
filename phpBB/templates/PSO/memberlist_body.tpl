@@ -1,21 +1,21 @@
-<div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
+<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr><form method="post" action="{S_MODE_ACTION}">
 		<td align="left" valign="bottom"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 		<td align="right"><span class="gen">{L_SELECT_SORT_METHOD}:&nbsp;{S_MODE_SELECT}&nbsp;&nbsp;{L_ORDER}&nbsp;{S_ORDER_SELECT}&nbsp;&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}"></span></td>
 	</form></tr>
-</table></div>
+</table>
 
-<div align="center"><table border="0" cellpadding="1" cellspacing="0" width="98%">
+<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
 				<th>&nbsp;</th>
-				<th><b>{L_USERNAME}</b></td>
-				<th><b>{L_EMAIL}</b></td>
-				<th><b>{L_FROM}</b></td>
-				<th><b>{L_JOINED}</b></td>
-				<th><b>{L_POSTS}</b></td>
-				<th><b>{L_WEBSITE}</b></td>
+				<th>{L_USERNAME}</td>
+				<th>{L_EMAIL}</td>
+				<th>{L_FROM}</td>
+				<th>{L_JOINED}</td>
+				<th>{L_POSTS}</td>
+				<th>{L_WEBSITE}</td>
 			</tr>
 			<!-- BEGIN memberrow -->
 			<tr>
@@ -38,11 +38,11 @@
 			</tr>
 		</table></td>
 	</tr>
-</table></div>
+</table>
 
-<div align="center"><table width="98%" cellspacing="2" border="0">
+<table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right" valign="top" nowrap>{JUMPBOX}</td>
 	</tr>
-</table></div>
+</table>
