@@ -39,10 +39,8 @@
 </table>
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
-	<td align="left" valign="top"><span class="nav"> {L_PAGE} <b>{ON_PAGE}</b> 
-	  {L_OF} <b>{TOTAL_PAGES}</b></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span><span class="gensmall"><br />
-	  {S_TIMEZONE}</span></td>
+	<td align="left" valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span><br /><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
 <table width="100%" cellspacing="2" border="0" align="center">

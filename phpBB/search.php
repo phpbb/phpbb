@@ -1056,11 +1056,8 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 		$template->assign_vars(array(
 			"PAGINATION" => generate_pagination($base_url, $total_match_count, $per_page, $start),
-			"ON_PAGE" => floor( $start / $per_page ) + 1,
-			"TOTAL_PAGES" => ceil( $total_match_count / $per_page ),
+			"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $per_page ) + 1 ), ceil( $total_match_count / $per_page )), 
 
-			"L_OF" => $lang['of'],
-			"L_PAGE" => $lang['Page'],
 			"L_GOTO_PAGE" => $lang['Goto_page'])
 		);
 
