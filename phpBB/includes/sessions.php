@@ -290,6 +290,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				error_die(SESSION_CREATE);
 			}
 		}
+		$userdata['session_id'] = $result;
 
 	}
 	else
@@ -311,6 +312,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				error_die(SESSION_CREATE);
 			}
 		}
+		$userdata['session_id'] = $result;
 		$userdata['session_logged_in'] = 0;
 	}
 
