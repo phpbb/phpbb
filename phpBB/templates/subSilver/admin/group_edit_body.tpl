@@ -24,6 +24,13 @@
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_MODERATOR}:</span></td>
 	  <td class="row2" width="62%">{S_SELECT_MODERATORS}</td>
 	</tr>
+
+	<tr> 
+	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
+	  <td class="row2" width="62%"> 
+		<input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN}</td> 
+	</tr>
+	<!-- BEGIN group_edit -->
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_DELETE_MODERATOR}</span>
 	  <br />
@@ -33,16 +40,12 @@
 		{L_YES}</td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
-	  <td class="row2" width="62%"> 
-		<input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN}</td> 
-	</tr>
-	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_DELETE}:</span></td>
 	  <td class="row2" width="62%"> 
 		<input type="checkbox" name="group_delete" value="1">
 		{L_GROUP_DELETE_CHECK}</td>
 	</tr>
+	<!-- END group_edit -->
 	<tr> 
 	  <td class="catBottom" colspan="2" align="center"><span class="cattitle"> 
 		<input type="submit" name="group_update" value="{L_SUBMIT}" class="mainoption" />

@@ -2362,7 +2362,7 @@ else
 				$user_sig = $userdata['user_sig'];
 			}
 
-			$post_message = preg_replace("/\:$post_bbcode_uid(|\:[a-z])/si", "", $post_message);
+			$post_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $post_message);
 			$post_message = str_replace("<br />", "\n", $post_message);
 			$post_message = preg_replace($html_entities_match, $html_entities_replace, $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);

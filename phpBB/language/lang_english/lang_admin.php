@@ -357,8 +357,14 @@ $lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administr
 //
 // User Management
 //
-$lang['User_admin'] = "Administration";
+$lang['User_admin'] = "User Administration";
 $lang['User_admin_explain'] = "Here you can change your user's information and certain specific options. To modify the users permissions please use the user and group permissions system.";
+
+$lang['Look_up_user'] = "Look up user";
+
+$lang['Admin_user_fail'] = "Couldn't update the user's profiile.";
+$lang['Admin_user_updated'] = "The user's profile was successfully updated.";
+$lang['Click_return_useradmin'] = "Click %sHere%s to return to User Administration";
 
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user, this cannot be undone.";
@@ -377,6 +383,8 @@ $lang['User_special_explain'] = "These fields are not able to be modified by the
 //
 // Group Management
 //
+
+$lang['Group_administration'] = "Group Administration";
 $lang['Group_admin_explain'] = "From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description";
 $lang['Error_updating_groups'] = "There was an error while updating the groups";
 $lang['Updated_group'] = "The group was successfully updated";
@@ -400,6 +408,9 @@ $lang['No_group_moderator'] = "You must specify a moderator for this group";
 $lang['No_group_mode'] = "You must specify a mode for this group, open or closed";
 $lang['delete_group_moderator'] = "Delete the old group moderator?";
 $lang['delete_moderator_explain'] = "If you're changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.";
+$lang['return_group_admin'] = "Click %sHere%s to return to Group Administration.";
+$lang['Select_group'] = "Select a group";
+$lang['Look_up_group'] = "Look up group";
 
 
 //
@@ -503,7 +514,7 @@ $lang['Rank_removed'] = "The rank was successfully deleted";
 $lang['Add_new_rank'] = "Add new rank";
 $lang['Rank_image'] = "Rank Image";
 $lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. You can specify either a relative or absolute path to the image";
-$lang['return_rank_admin'] = "to return to rank admin";
+$lang['return_rank_admin'] = "Click %sHere%s to return to rank admin";
 
 
 //

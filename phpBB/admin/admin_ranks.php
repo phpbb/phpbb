@@ -31,6 +31,7 @@ if($setmodules == 1)
 // Let's set the root dir for phpBB
 //
 $phpbb_root_dir = "./../";
+$no_page_header = TRUE;
 require('pagestart.inc');
 
 
@@ -65,6 +66,7 @@ if( $mode != "" )
 		//
 		// They want to add a new rank, show the form.
 		//
+		include('page_header_admin.' . $phpEx);
 		
 		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 		
@@ -193,7 +195,7 @@ if( $mode != "" )
 		$template->assign_vars(array(
 			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
 		);
-		$message .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_ranks.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_rank_admin'];
+		$message .= "<br />" . sprintf($lang['return_rank_admin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>");
 		message_die(GENERAL_MESSAGE, $message);
 
 	}
@@ -225,7 +227,8 @@ if( $mode != "" )
 			$template->assign_vars(array(
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_ranks.$phpEx") . '">')
 			);
-			$message = $lang['Rank_removed'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_ranks.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['return_rank_admin'];
+			$message = $lang['Rank_removed'];
+			$message .= "<br />" . sprintf($lang['return_rank_admin'], "<a href=\"" . append_sid("admin_ranks.$phpEx") . "\">", "</a>");
 			message_die(GENERAL_MESSAGE, $message);
 
 		}
@@ -242,7 +245,8 @@ if( $mode != "" )
 		//
 		// They didn't feel like giving us any information. Oh, too bad, we'll just display the
 		// list then...
-		
+		include('page_header_admin.' . $phpEx);		
+	
 		$template->set_filenames(array(
 			"body" => "admin/ranks_list_body.tpl")
 		);
@@ -309,7 +313,8 @@ else
 	//
 	// Show the default page
 	//
-	
+	include('page_header_admin.' . $phpEx);
+		
 	$template->set_filenames(array(
 		"body" => "admin/ranks_list_body.tpl")
 	);

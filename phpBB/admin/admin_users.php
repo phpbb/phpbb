@@ -30,8 +30,12 @@ if($setmodules == 1)
 
 //
 // Load default header
+// We need to tell the pagestart file not to load page headers
+// because of the use of META tags.
 //
+
 $phpbb_root_dir = "./../";
+$no_page_header = TRUE;
 require('pagestart.inc');
 include($phpbb_root_dir . 'includes/bbcode.'.$phpEx);
 include($phpbb_root_dir . 'includes/post.'.$phpEx);
@@ -132,6 +136,7 @@ if( $mode == "searchuser" )
 }
 else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset($HTTP_POST_VARS[POST_USERS_URL]) ) )
 {
+	include('page_header_admin.' . $phpEx);
 	//
 	// Let's find out a little about them...
 	//
@@ -186,9 +191,9 @@ else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_
 	
 	$COPPA = false;
 
-	$html_status =   ($board_config['allow_html']) ? $lang['ON'] : $lang['OFF'];
-	$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
-	$smilies_status =  ($board_config['allow_smilies']) ? $lang['ON'] : $lang['OFF'];
+	$html_status =  ($userdata['user_allowhtml']) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
+	$bbcode_status = ($userdata['user_allowbbcode']) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
+	$smilies_status = ($userdata['user_allowsmile']) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="id" value="' . $this_userdata['user_id'] . '" />';
@@ -231,12 +236,12 @@ else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_
 		$rank = $rank_rows[$i]['rank_title'];
 		$rank_id = $rank_rows[$i]['rank_id'];
 		
-		$selected = ( $this_userdata['user_rank'] == $i + 1 ) ? "selected=\"selected\"" : "";
-		$rank_select_box .= "<option value=\"" . $rank_id . "\"$selected>" . $rank . "</option>";
+		$selected = ( $this_userdata['user_rank'] == $rank_id ) ? "selected=\"selected\"" : "";
+		$rank_select_box .= "<option value=\"" . $rank_id . "\" " . $selected . ">" . $rank . "</option>";
 	}
 
 	$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
-
+	
 	$template->set_filenames(array(
 		"body" => "admin/user_edit_body.tpl")
 	);
@@ -275,9 +280,6 @@ else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_
 		"TIMEZONE_SELECT" => tz_select($user_timezone),
 		"STYLE_SELECT" => style_select($user_style, 'style'),
 		"DATE_FORMAT" => $user_dateformat,
-		"HTML_STATUS" => $html_status,
-		"BBCODE_STATUS" => $bbcode_status,
-		"SMILIES_STATUS" => $smilies_status,
 		"ALLOW_PM_YES" => ($user_allowpm) ? "checked=\"checked\"" : "",
 		"ALLOW_PM_NO" => (!$user_allowpm) ? "checked=\"checked\"" : "",
 		"ALLOW_AVATAR_YES" => ($user_allowavatar) ? "checked=\"checked\"" : "",
@@ -323,7 +325,7 @@ else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_
 		"L_CURRENT_IMAGE" => $lang['Current_Image'],
 
 		"L_SIGNATURE" => $lang['Signature'],
-		"L_SIGNATURE_EXPLAIN" => $lang['Signature_explain'],
+		"L_SIGNATURE_EXPLAIN" => sprintf($lang['Signature_explain'], $board_config['max_sig_chars']),
 		"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'],
 		"L_PREFERENCES" => $lang['Preferences'],
 		"L_PUBLIC_VIEW_EMAIL" => $lang['Public_view_email'],
@@ -334,9 +336,9 @@ else if( $mode == "edit" && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_
 		"L_CONFIRM" => $lang['Confirm'],
 		"L_EMAIL_ADDRESS" => $lang['Email_address'],
 
-		"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
-		"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
-		"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
+		"HTML_STATUS" => $html_status,
+		"BBCODE_STATUS" => $bbcode_status,
+		"SMILIES_STATUS" => $smilies_status,
 
 		"L_DELETE_USER" => $lang['User_delete'],
 		"L_DELETE_USER_EXPLAIN" => $lang['User_delete_explain'],
@@ -353,6 +355,12 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 	//
 	// Ok, the profile has been modified and submitted, let's update
 	//
+	
+	//
+	// First let's declare our "Return Address"
+	//
+	$return_address = append_sid("admin_users." . $phpEx);
+	
 	$user_id = intval($HTTP_POST_VARS['id']);
 
 	$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
@@ -399,6 +407,11 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 		$error = FALSE;
 		$passwd_sql = "";
 	}
+	else
+	{
+		$error = TRUE;
+		$passwd_sql = "";
+	}
 
 	if(!empty($password) && !empty($password_confirm))
 	{
@@ -406,7 +419,7 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 		if($password != $password_confirm)
 		{
 			$error = TRUE;
-			$error_msg = $lang['Password_mismatch'];
+			$error_msg .= $lang['Password_mismatch'];
 		}
 		else
 		{
@@ -417,12 +430,12 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 	else if($password && !$password_confirm)
 	{
 		$error = TRUE;
-		$error_msg = $lang['Password_mismatch'];
+		$error_msg .= $lang['Password_mismatch'];
 	}
 	else if(!$password && $password_confirm)
 	{
 		$error = TRUE;
-		$error_msg = $lang['Password_mismatch'];
+		$error_msg .= $lang['Password_mismatch'];
 	}
 
 	if( $signature != "" )
@@ -465,15 +478,7 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 							WHERE user_id = $user_id";
 						$result = @$db->sql_query($sql);
 
-						$template->set_filenames(array(
-							"body" => "admin/admin_message_body.tpl")
-						);
-
-						$template->assign_vars(array(
-							"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-							"MESSAGE_TEXT" => $lang['User_deleted'])
-						);
-						$template->pparse("body");
+						$message = $lang['User_deleted'];
 					}
 					else
 					{
@@ -492,15 +497,7 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 
 			if( $error == TRUE )
 			{
-					$template->set_filenames(array(
-						"body" => "admin/admin_message_body.tpl")
-					);
-					
-					$template->assign_vars(array(
-						"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-						"MESSAGE_TEXT" => "Could not update user table")
-					);
-					$template->pparse("body");
+				$error_msg .= $lang['Admin_user_fail'];
 			}
 		}
 		else
@@ -510,45 +507,30 @@ else if( $mode == "save" && isset($HTTP_POST_VARS['submit']) )
 				WHERE user_id = $user_id";
 			if( $result = $db->sql_query($sql) )
 			{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-					"MESSAGE_TEXT" => $lang['Profile_updated'])
-				);
-				$template->pparse("body");
+				$message .= $lang['Admin_user_updated'];
 			}
 			else
 			{
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
-
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-					"MESSAGE_TEXT" => "Error updating user profile")
-				);
-				$template->pparse("body");
+				$error = TRUE;
+				$error_msg .= $lang['Admin_user_fail'];
 			}
 		}
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url=' . $return_address . '">')
+		);
+		message_die(GENERAL_MESSAGE, $message . "<br />" . sprintf($lang['Click_return_useradmin'], "<a href=\"" . $return_address . "\">", "</a>"), $lang['User_admin']);
 	}
 	else
 	{
-		$template->set_filenames(array(
-			"body" => "admin/admin_message_body.tpl")
-		);
-
 		$template->assign_vars(array(
-			"MESSAGE_TITLE" => $lang['User'] . $lang['User_admin'],
-			"MESSAGE_TEXT" => $error_msg)
+			"META" => '<meta http-equiv="refresh" content="3;url=' . $return_address . '">')
 		);
-		$template->pparse("body");
+		message_die(GENERAL_ERROR, $error_msg . "<br />" . sprintf($lang['Click_return_useradmin'], "<a href=\"" . $return_address . "\">", "</a>"), $lang['User_admin']);
 	}
 }
 else
 {
+	include('page_header_admin.' . $phpEx);
 	//
 	// Default user selection box
 	//
@@ -576,7 +558,7 @@ else
 		"L_USER_TITLE" => $lang['User'] . " " . $lang['User_admin'],
 		"L_USER_EXPLAIN" => $lang['User_admin_explain'],
 		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
+		"L_LOOK_UP" => $lang['Look_up_user'],
 		"L_FIND_USERNAME" => $lang['Find_username'],
 
 		"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"), 

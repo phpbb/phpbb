@@ -398,7 +398,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['board_timezone']),
 				"LOCATION" => $location,
 				"IP_ADDRESS" => $ip_address,
-				"U_USER_PROFILE" => append_sid("admin_users.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']))
+				"U_USER_PROFILE" => append_sid("admin_users.$phpEx?" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id'] . "&mode=edit"))
 			);
 		}
 	}

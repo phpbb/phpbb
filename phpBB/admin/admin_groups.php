@@ -32,6 +32,7 @@ if($setmodules == 1)
 // Load default header
 //
 $phpbb_root_dir = "./../";
+$no_page_header = TRUE;
 require('pagestart.inc');
 
 if( isset($HTTP_POST_VARS[POST_GROUPS_URL]) || isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
@@ -48,6 +49,12 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	//
 	// Ok they are editing a group or creating a new group
 	//
+	include('page_header_admin.' . $phpEx);
+
+	$template->set_filenames(array(
+		"body" => "admin/group_edit_body.tpl")
+	);
+
 	if ( isset($HTTP_POST_VARS['edit']) )
 	{
 		//
@@ -68,6 +75,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		$group_info = $db->sql_fetchrow($result);
 
 		$mode = "editgroup";
+		$template->assign_block_vars("group_edit", array());
 
 	}
 	else if( isset($HTTP_POST_VARS['new']) )
@@ -109,9 +117,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	$group_closed = ( $group_info['group_type'] == GROUP_CLOSED ) ? "checked=\"checked\"" : "";
 	$group_hidden = ( $group_info['group_type'] == GROUP_HIDDEN ) ? "checked=\"checked\"" : "";
 
-	$template->set_filenames(array(
-		"body" => "admin/group_edit_body.tpl")
-	);
+
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
@@ -119,7 +125,7 @@ if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 		"GROUP_NAME" => $group_info['group_name'],
 		"GROUP_DESCRIPTION" => $group_info['group_description'],
 
-		"L_GROUP_TITLE" => $lang['Group'] . " " . $lang['Admin'],
+		"L_GROUP_TITLE" => $lang['Group_administration'],
 		"L_GROUP_EDIT_DELETE" => ( isset($HTTP_POST_VARS['new']) ) ? $lang['New_group'] : $lang['Edit_group'], 
 		"L_GROUP_NAME" => $lang['group_name'],
 		"L_GROUP_DESCRIPTION" => $lang['group_description'],
@@ -228,8 +234,14 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
 			}
-
-			message_die(GENERAL_MESSAGE, $lang['Updated_group']);
+			
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_groups.$phpEx") . '">')
+			);
+	
+			$message = $lang['Updated_group'];
+			$message .= "<br />" . sprintf($lang['return_group_admin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>");
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else if( $mode == "newgroup" )
 		{
@@ -250,7 +262,13 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 				message_die(GENERAL_ERROR, "Couldn't insert new user-group info", "", __LINE__, __FILE__, $sql);
 			}
 
-			message_die(GENERAL_MESSAGE, $lang['Added_new_group']);
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_groups.$phpEx") . '">')
+			);
+			
+			$message = $lang['Added_new_group'];
+			$message .= "<br />" . sprintf($lang['return_group_admin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>");
+			message_die(GENERAL_MESSAGE, $message);
 
 		}
 		else
@@ -261,6 +279,8 @@ else if( isset($HTTP_POST_VARS['group_update']) )
 }
 else
 {
+	include('page_header_admin.' . $phpEx);
+	
 	$sql = "SELECT group_id, group_name
 		FROM " . GROUPS_TABLE . "
 		WHERE group_single_user <> " . TRUE . "
@@ -280,10 +300,10 @@ else
 	);
 
 	$template->assign_vars(array(
-		"L_GROUP_TITLE" => $lang['Group'] . " " . $lang['Admin'],
+		"L_GROUP_TITLE" => $lang['Group_administration'],
 		"L_GROUP_EXPLAIN" => $lang['Group_admin_explain'],
-		"L_GROUP_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
+		"L_GROUP_SELECT" => $lang['Select_group'],
+		"L_LOOK_UP" => $lang['Look_up_group'],
 		"L_CREATE_NEW_GROUP" => $lang['New_group'],
 
 		"S_GROUP_ACTION" => append_sid("admin_groups.$phpEx"),

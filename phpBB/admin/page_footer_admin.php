@@ -30,7 +30,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0 beta-1")
+	"PHPBB_VERSION" => "2.0 CVS")
 );
 
 $template->pparse("page_footer");
