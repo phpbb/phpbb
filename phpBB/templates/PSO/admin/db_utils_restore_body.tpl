@@ -1,15 +1,16 @@
+
 <br clear="all" />
 
-<h1>Database Utilities : Restore</h1>
+<h1>{L_DATABASE_RESTORE}</h1>
 
-<P>This will perform a full restore of all phpBB tables from a saved file. <b>WARNING</b> This will overwrite any existing data</p>
+<P>{L_RESTORE_EXPLAIN}</p>
 
 <table cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>Select a File</th>
+		<th>{L_SELECT_FILE}</th>
 	</tr>
 	<tr><form enctype="multipart/form-data" method="post" action="{S_DBUTILS_ACTION}">
-		<td class="row1" align="center">&nbsp;<input type="file" name="backup_file">&nbsp;&nbsp;<input type="submit" name="restore_start" value="Start Restore">&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<input type="file" name="backup_file">&nbsp;&nbsp;{S_HIDDEN_FIELDS}<input type="submit" name="restore_start" value="{L_START_RESTORE}">&nbsp;</td>
 	</form></tr>
 </table></div>
 

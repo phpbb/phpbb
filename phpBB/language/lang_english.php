@@ -656,6 +656,24 @@ $lang['Avatar_dir_size'] = "Avatar directory size";
 $lang['Database_size'] = "Database size";
 $lang['Not_available'] = "Not available";
 
+// DB Utils
+$lang['Database_Utilities'] = "Database Utilities";
+$lang['Restore'] = "Restore";
+$lang['Backup'] = "Backup";
+$lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. <b>WARNING</b> This will overwrite any existing data.";
+$lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below.";
+$lang['Backup_options'] = "Backup options";
+$lang['Start_backup'] = "Start Backup";
+$lang['Full_backup'] = "Full backup";
+$lang['Structure_backup'] = "Structure Only backup";
+$lang['Data_backup'] = "Data only backup";
+$lang['Additional_tables'] = "Additional tables";
+$lang['Select_file'] = "Select a file";
+$lang['Start_Restore'] = "Start Restore";
+$lang['Restore_success'] = "The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.";
+$lang['Backup_download'] = "Your download will start shortly please wait till it begins";
+$lang['Backups_not_supported'] = "Sorry but database backups are not currently supported for your database system";
+
 // Auth pages
 $lang['Administrator'] = "Administrator";
 $lang['User'] = "User";

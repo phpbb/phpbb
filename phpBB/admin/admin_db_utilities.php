@@ -155,8 +155,8 @@ function get_table_def_postgres($table, $crlf)
 
 	if(!$result)
 	{
-		$error = $db->sql_error();
-		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		include('page_header_admin.'.$phpEx);
+		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	} // end if..
 
 	if ($drop == 1)
@@ -235,6 +235,7 @@ function get_table_def_postgres($table, $crlf)
 
 	if(!$result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_pri_keys);
 	}
 
@@ -296,6 +297,7 @@ function get_table_def_postgres($table, $crlf)
 
 	if (!$result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
 	}
 
@@ -346,6 +348,7 @@ function get_table_def_mysql($table, $crlf)
 	$result = $db->sql_query($field_query);
 	if(!result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	}
 
@@ -381,6 +384,7 @@ function get_table_def_mysql($table, $crlf)
 	$result = $db->sql_query($key_query);
 	if(!$result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "FAILED IN get_table_def (show keys)", "", __LINE__, __FILE__, $key_query);
 	}
 
@@ -454,6 +458,7 @@ function get_table_content_postgres($table, $handler)
 
 	if (!$result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
@@ -532,6 +537,7 @@ function get_table_content_mysql($table, $handler)
 
 	if (!$result)
 	{
+		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Faild in get_table_content (select *)", "", __LINE__, __FILE__, "SELECT * FROM $table");
 	}
 
@@ -685,14 +691,9 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	switch($perform)
 	{
 		case 'backup':
+
 			if( SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql' )
 			{
-				//
-				// Page header
-				//
-				$template_header = "admin/page_header.tpl";
-				include('page_header_admin.'.$phpEx);
-
 				switch(SQL_LAYER)
 				{
 					case 'oracle':
@@ -706,12 +707,20 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 						break;
 				}
 
-				$db_message = "<h2>Database backups are not currently supported for your Database system (" . $db_type . ")</h2>\n";
+				//
+				// Page header
+				//
+				include('page_header_admin.'.$phpEx);
+
+				$template->set_filenames(array(
+					"body" => "admin/admin_message_body.tpl")
+				);
 
 				$template->assign_vars(array(
-					"U_DB_MESSAGE" => $db_message,
-					"U_DB_LINKS" => $db_links)
+					"MESSAGE_TITLE" => $lang['Information'], 
+					"MESSAGE_TEXT" => $lang['Backups_not_supported'])
 				);
+
 				$template->pparse("body");
 				
 				break;
@@ -745,25 +754,26 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				// Page header
 				//
-				$template_header = "admin/page_header.tpl";
 				include('page_header_admin.'.$phpEx);
 
-				$db_message = "<H2>This will perform a backup of all phpBB2 related tables.</H2><BR>\n";
-				$db_message .= "<P>If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below.<BR>\n";
-				$db_message .= "Otherwise just select the form of backup you want to perform and click the Start Backup button below.</P><BR>\n\n";
-				$db_links = "<FORM METHOD=\"post\" ACTION=\"". append_sid($PHP_SELF) . "\">\n";
-				$db_links .= "<TABLE BORDER=0>\n";
-				$db_links .= "<TR><TD>Additional Tables:</TD><TD><INPUT TYPE=\"text\" NAME=\"additional_tables\"></TD></TR>\n";
-				$db_links .= "<TR><TD>Full Backup:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"full\" checked></TD></TR>\n";
-				$db_links .= "<TR><TD>Table Structure Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"structure\"></TD></TR>\n";
-				$db_links .= "<TR><TD>Table Data Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"data\"></TD></TR>\n";
-				$db_links .= "</TABLE><INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"backup\">\n";
-				$db_links .= "<INPUT TYPE=\"hidden\" NAME=\"drop\" VALUE=\"1\">";
-				$db_links .= "<INPUT TYPE=\"submit\" NAME=\"backupstart\" VALUE=\"Start Backup\"></FORM></P>\n";
+				$template->set_filenames(array(
+					"body" => "admin/db_utils_backup_body.tpl")
+				);
+
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\"><input type=\"hidden\" name=\"drop\" value=\"1\"><input type=\"hidden\" name=\"perform\" value=\"$perform\">";
 
 				$template->assign_vars(array(
-					"U_DB_MESSAGE" => $db_message,
-					"U_DB_LINKS" => $db_links)
+					"L_DATABASE_BACKUP" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
+					"L_BACKUP_EXPLAIN" => $lang['Backup_explain'], 
+					"L_FULL_BACKUP" => $lang['Full_backup'],
+					"L_STRUCTURE_BACKUP" => $lang['Structure_backup'],
+					"L_DATA_BACKUP" => $lang['Data_backup'],
+					"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
+					"L_START_BACKUP" => $lang['Start_backup'],
+					"L_BACKUP_OPTIONS" => $lang['Backup_options'],
+
+					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"))
 				);
 				$template->pparse("body");
 
@@ -772,22 +782,22 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			else if( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
+
+				$template->set_filenames(array(
+					"body" => "admin/admin_message_body.tpl")
+				);
+				
+				$template->assign_vars(array(
+					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=".quotemeta($additional_tables)."&backup_type=$backup_type&drop=1&backupstart=1&startdownload=1\">", 
+
+					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
+					"MESSAGE_TEXT" => $lang['Backup_download'])
+				);
+
 				//
 				// Page header
 				//
-				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=".quotemeta($additional_tables)."&backup_type=$backup_type&drop=1&backupstart=1&startdownload=1\">")
-				);
-
-				$template_header = "admin/page_header.tpl";
 				include('page_header_admin.'.$phpEx);
-
-				$db_message = "<H2>Your backup file will start downloading soon</H2><br>\n";
-
-				$template->assign_vars(array(
-					"U_DB_MESSAGE" => $db_message,
-					"U_DB_LINKS" => $db_links)
-				);
 
 				$template->pparse("body");
 
@@ -853,13 +863,17 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				// Page header
 				//
-				$template_header = "admin/page_header.tpl";
 				include('page_header_admin.'.$phpEx);
 
-				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\">";
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\"><input type=\"hidden\" name=\"perform\" value=\"$perform\">";
 
 				$template->assign_vars(array(
-					"S_DBRESTORE_ACTION" => append_sid("admin_db_utilities.$phpEx"), 
+					"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'], 
+					"L_RESTORE_EXPLAIN" => $lang['Restore_explain'], 
+					"L_SELECT_FILE" => $lang['Select_file'], 
+					"L_START_RESTORE" => $lang['Start_Restore'], 
+
+					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"), 
 					"S_HIDDEN_FIELDS" => $s_hidden_fields)
 				);
 				$template->pparse("body");
@@ -872,6 +886,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// Handle the file upload ....
 				if($backup_file == "none")
 				{
+					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Backup file upload failed");
 				}
 
@@ -882,6 +897,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				}
 				else
 				{
+					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Trouble Accessing uploaded file");
 				}
 
@@ -908,6 +924,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
+								include('page_header_admin.'.$phpEx);
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}
@@ -917,15 +934,17 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				// Page header
 				//
-				$template_header = "admin/page_header.tpl";
 				include('page_header_admin.'.$phpEx);
 
-				$db_message = "<CENTER><H2>The Database has been successfully restored..</H2>\n";
-				$db_message .= "<P><BR>Your board should be back to the state it was when the backup was made.<BR></P>\n";
+				$template->set_filenames(array(
+					"body" => "admin/admin_message_body.tpl")
+				);
 
+				$message = $lang['Restore_success'];
+				
 				$template->assign_vars(array(
-					"U_DB_MESSAGE" => $db_message,
-					"U_DB_LINKS" => $db_links)
+					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'], 
+					"MESSAGE_TEXT" => $message)
 				);
 
 				$template->pparse("body");
@@ -934,23 +953,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			break;
 	}
 } 
-else 
-{
-	//
-	// Page header
-	//
-	$template_header = "admin/page_header.tpl";
-	include('page_header_admin.'.$phpEx);
-
-	$db_message = "<h2>These Utilties will help you to backup or restore your phpBB database</h2><br>\n";
-
-	$template->assign_vars(array(
-		"U_DB_MESSAGE" => $db_message,
-		"U_DB_LINKS" => $db_links)
-	);
-
-	$template->pparse("body");
-}
 
 include('page_footer_admin.'.$phpEx);
 
