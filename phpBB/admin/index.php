@@ -35,6 +35,19 @@ init_userprefs($userdata);
 // End sessionmanagement
 //
 
+//
+// Start Auth check
+//
+if($userdata['user_level'] != ADMIN)
+{
+	message_die(CRITICAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised'], __LINE__, __FILE__);
+}
+//
+// End Auth check
+//
+		
+
+
 if ($pane == 'top')
 {
 	$page_title = $lang['View_topic'] ." - $topic_title";
@@ -45,6 +58,8 @@ if ($pane == 'top')
 }
 elseif ($pane == 'left')
 {
+	$pagetype = "noheader";
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 	print "<BASE TARGET=\"main\">";
 	$dir = opendir(".");
 
@@ -58,19 +73,27 @@ elseif ($pane == 'left')
 		}
 	}
 
+	$template->set_filenames(array(
+		"body" => "admin/navigate.tpl")
+	);
+					
+
 	while( list($cat, $action_array) = each($module) )
 	{
-		print "<H3>$cat</H3>\n";
-		print "<ul>\n";
-		
+		$template->assign_block_vars("catrow", array(
+			"CATNAME" => $cat)
+		);
 		while( list($action, $file) = each($action_array) )
 		{
-			print "<li><a href=\"$file\">$action</a></li>\n";
+			$template->assign_block_vars("catrow.actionrow", array(
+				"ACTIONNAME"	=> $action,
+				"FILE"			=> $file)
+			);
 		}
-		
-		print "</ul>\n";
 	}
 	//var_dump($module);
+	
+	$template->pparse("body");
 
 	$setmodules = 0;
 }
