@@ -240,12 +240,14 @@
 	  </td>
 	</tr>
 	<!-- END avatar_remote_upload -->
+	<!-- BEGIN avatar_remote_link -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}</span></td>
 	  <td class="row2"> 
 		<input type="text" name="avatarremoteurl" size="40" class="post" style="width: 200px"  />
 	  </td>
 	</tr>
+	<!-- END avatar_remote_link -->
 	<!-- BEGIN avatar_local_gallery -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}</span></td>

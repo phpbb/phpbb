@@ -201,17 +201,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		}
 
-		if( $user_status == 0 )
-		{
-			// User is (made) inactive. Delete all their sessions.
-			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-				WHERE session_user_id = $user_id";
-			if( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete this users sessions', '', __LINE__, __FILE__, $sql);
-			}
-		}
-
 		if( $signature != "" )
 		{
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
@@ -219,7 +208,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			{
 				$sig_length_check = preg_replace('/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is', '\\1\\3\\4', $sig_length_check);
 			}
-			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
 
 			// Only create a new bbcode_uid when there was no uid yet.
 			if ( $signature_bbcode_uid == '' )
@@ -235,9 +223,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			}
 		}
 
-		//
-		// Avatar stuff
-		//
 		//
 		// Avatar stuff
 		//
@@ -1123,7 +1108,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'S_PROFILE_ACTION' => append_sid("admin_users.$phpEx"))
 		);
 
-		if( file_exists('./../' . $board_config['avatar_path'] ) )
+		if( file_exists('./../' . $board_config['avatar_path'] ) && ($board_config['allow_avatar_upload'] == TRUE) )
 		{
 			if ( $form_enctype != '' )
 			{
@@ -1132,9 +1117,14 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$template->assign_block_vars('avatar_remote_upload', array() );
 		}
 
-		if( file_exists('./../' . $board_config['avatar_gallery_path'] ) )
+		if( file_exists('./../' . $board_config['avatar_gallery_path'] ) && ($board_config['allow_avatar_local'] == TRUE) )
 		{
 			$template->assign_block_vars('avatar_local_gallery', array() );
+		}
+		
+		if( $board_config['allow_avatar_remote'] == TRUE )
+		{
+			$template->assign_block_vars('avatar_remote_link', array() );
 		}
 	}
 
