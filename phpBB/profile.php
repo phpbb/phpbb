@@ -257,6 +257,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$email_img = $lang['Hidden_email'];
 		}
 
+		$avatar_img = ( !empty($profiledata['user_avatar']) ) ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\">" : "&nbsp;";
+
 		if($members[$i]['user_icq'])
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&img=5\" border=\"0\"></a>";
@@ -306,7 +308,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"LOCATION" => ( ($profiledatas['user_from']) ? stripslashes($profiledata['user_from']) : "" ),
 			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "" ),
 			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "" ),
-			"AVATAR_IMG" => "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\">",
+			"AVATAR_IMG" => $avatar_img,
 
 			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'],
 			"L_PER_DAY" => $lang['posts_per_day'],
