@@ -161,29 +161,35 @@ class compress_zip extends compress
 
 			if ($attrib == 0x41FF0010)
 			{
-				mkdir($dst . $filename);
+				if (!@mkdir($dst . $filename))
+				{
+					trigger_error("Could not create directory $filename");
+				}
 			}
 			else
 			{
 				fseek($this->fp, $offset + 30 + $strlen);
 
 				// We have to fudge here for time being
-
-				// Read buffer, prepend and append gz file header/footer
-				$buffer = pack('va1a1Va1a1', 0x8b1f, chr(0x08), chr(0x00), time(), chr(0x00), chr(3)) . fread($this->fp, $c_size) . pack("VV", $crc, $uc_size);
-
 				if (!($fp = fopen($dst . $filename . '.gz', 'wb')))
 				{
-					die("Could not open temporary $filename.gz");
+					trigger_error("Could not open temporary $filename.gz");
 				}
-				fwrite($fp, $buffer);
+
+				// .gz header
+				fwrite($fp, pack('va1a1Va1a1', 0x8b1f, chr(0x08), chr(0x00), time(), chr(0x00), chr(3)));
+				// data ... write it out in 1KB packets to conserve mem
+				while ($buffer = fread($this->fp, 1024))
+				{
+					fwrite($fp, $buffer);
+				}
+				// .gz footer
+				fwrite($fp, pack("VV", $crc, $uc_size));
 				fclose($fp);
-				unset($buffer);
-				unset($fp);
 
 				if (!($fp = fopen($dst . $filename, 'wb')))
 				{
-					die("Could not open $filename");
+					trigger_error("Could not create $filename");
 				}
 
 				if (!($gzfp = gzopen($dst . $filename . '.gz', 'rb')))
@@ -328,7 +334,10 @@ class compress_tar extends compress
 
 				if ($filetype == 5)
 				{
-					mkdir($dst . $filename);
+					if (!@mkdir($dst . $filename))
+					{
+						trigger_error("Could not create directory $filename");
+					}
 					continue;
 				}
 				else
@@ -338,7 +347,7 @@ class compress_tar extends compress
 	
 					if (!($fp = fopen($dst . $filename, 'wb')))
 					{
-						trigger_error('Could not open file for output');
+						trigger_error("Could create file $filename");
 					}
 
 					$size = 0;
