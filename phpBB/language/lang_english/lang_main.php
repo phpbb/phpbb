@@ -1196,6 +1196,7 @@ $lang['span_class2'] = "Span Class 2";
 $lang['span_class3'] = "Span Class 3";
 $lang['Theme_updated'] = "The selected theme has been updated. Don't forget to export the new theme settings to the theme configuration file!";
 $lang['Theme_created'] = "Theme created! Don't forget to export the new theme settings to the theme configuration file!";
+$lang['Cannot_remove_style'] = "The style you have selected is the current forum wide default style. Therefor, you cannot remove it. Please change the default style and try again.";
 
 
 //

@@ -669,6 +669,11 @@ switch($mode)
 		
 		if(!$confirm)
 		{
+			if($style_id == $board_config['default_style'])
+			{
+				message_die(GENERAL_MESSAGE, $lang['Cannot_remove_style'], $lang['Error']);
+			}
+			
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'" /><input type="hidden" name="style_id" value="'.$style_id.'" />';
 			
 			//
