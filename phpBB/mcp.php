@@ -253,7 +253,7 @@ $not_moderator = FALSE;
 
 if ($forum_id > 0)
 {
-	if ($auth->acl_gets($acl_list, $forum_id))
+	if ($auth->acl_gets($acl_list_src, $forum_id))
 	{
 		$forum_id_list[] = $forum_id;
 	}
@@ -272,7 +272,7 @@ if ($topic_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets($acl_list, $row['forum_id']))
+		if ($auth->acl_gets($acl_list_src, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -297,7 +297,7 @@ if ($post_id_sql)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($auth->acl_gets($acl_list, $row['forum_id']))
+		if ($auth->acl_gets($acl_list_src, $row['forum_id']))
 		{
 			$forum_id_list[] = $row['forum_id'];
 			$topic_id_list[] = $row['topic_id'];
@@ -623,7 +623,7 @@ switch ($mode)
 	case 'topic_view':
 		mcp_header('mcp_topic.html', TRUE);
 
-		$posts_per_page = (!empty($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : 0;
+		$posts_per_page = (isset($_REQUEST['posts_per_page'])) ? intval($_REQUEST['posts_per_page']) : $config['posts_per_page'];
 
 		// Post ordering options
 		$previous_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -1819,7 +1819,7 @@ function very_temporary_lang_strings()
 		'POSTS_PER_PAGE_EXPLAIN'	=>	'(Set to 0 to view all posts)',
 
 		'MERGE_TOPIC'				=>	'Merge topic',
-		'MERGE_TOPIC_EXPLAIN'		=>	'Pour selected posts into another topic, that\'s like baking a cake',
+		'MERGE_TOPIC_EXPLAIN'		=>	'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic. Please enter the destination topic id or click on the "Select" button to search for one',
 		'MERGE_TOPIC_ID'			=>	'Destination topic id',
 		'MERGE_POSTS'				=>	'Merge posts',
 
