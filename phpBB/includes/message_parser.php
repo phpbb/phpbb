@@ -180,12 +180,6 @@ class parse_message
 				foreach ($bbcode_data['regexp'] as $regexp => $replacement)
 				{
 					$this->message = preg_replace($regexp, $replacement, $this->message);
-
-					if (is_array($this->message))
-					{
-						$this->warn_msg[] = $this->message['error_msg'];
-						$this->message = $this->message['message'];
-					}
 				}
 			}
 
@@ -193,7 +187,7 @@ class parse_message
 			$new_size = strlen($this->message);
 			if ($size != $new_size)
 			{
-				$this->bbcode_bitfield += pow(2, $bbcode_data['bbcode_id']);
+				$this->bbcode_bitfield |= (1 << $bbcode_data['bbcode_id']);
 				$size = $new_size;
 			}
 		}

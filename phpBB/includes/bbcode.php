@@ -35,18 +35,18 @@ class bbcode
 		}
 	}
 
-	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = '')
+	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = FALSE)
 	{
 		if ($bbcode_uid)
 		{
 			$this->bbcode_uid = $bbcode_uid;
 		}
 
-		if ($bbcode_bitfield)
+		if ($bbcode_bitfield !== FALSE)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
 		}
-		elseif (!$this->bbcode_bitfield)
+		if (!$this->bbcode_bitfield)
 		{
 			return $message;
 		}
@@ -62,7 +62,7 @@ class bbcode
 		$bitlen = strlen(decbin($this->bbcode_bitfield));
 		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
 		{
-			if ($this->bbcode_bitfield & pow(2, $bbcode_id))
+			if ($this->bbcode_bitfield & (1 << $bbcode_id))
 			{
 				foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
 				{
@@ -105,7 +105,7 @@ class bbcode
 
 		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
 		{
-			if (isset($this->bbcode_cache[$bbcode_id]) || !($this->bbcode_bitfield & pow(2, $bbcode_id)))
+			if (isset($this->bbcode_cache[$bbcode_id]) || !($this->bbcode_bitfield & (1 << $bbcode_id)))
 			{
 				// do not try to re-cache it if it's already in
 				continue;
@@ -276,7 +276,7 @@ class bbcode
 			);
 		}
 
-		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & pow(2, $bbcode_id)))
+		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & (1 << $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
 		}
