@@ -252,7 +252,7 @@ if ($search_keywords || $search_author || $search_id)
 					{
 						$$var = array_shift($data);
 					}
-
+					
 					$sql_where = (($show_results == 'posts') ? 'p.post_id' : 't.topic_id') . ' IN (' . implode(', ', $data) . ')';
 					unset($data);
 				}
@@ -318,8 +318,12 @@ if ($search_keywords || $search_author || $search_id)
 		}
 	}
 
+	if (isset($old_split_words) && sizeof($old_split_words))
+	{
+		$split_words = (sizeof($split_words)) ? array_diff($split_words, $old_split_words) : $old_split_words;
+	}
 
-	if (sizeof($split_words) && array_diff($split_words, $old_split_words))
+	if (sizeof($split_words))
 	{
 
 
