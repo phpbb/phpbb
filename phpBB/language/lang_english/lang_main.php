@@ -128,6 +128,7 @@ $lang['Reg_users_total'] = "%d Registered, ";
 $lang['Reg_user_total'] = "%d Registered, ";
 $lang['Hidden_users_zero_total'] = "0 Hidden and ";
 $lang['Hidden_user_total'] = "%d Hidden and ";
+$lang['Hidden_users_total'] = "%d Hidden and ";
 $lang['Guest_users_zero_total'] = "0 Guests";
 $lang['Guest_users_total'] = "%d Guests";
 $lang['Guest_user_total'] = "%d Guest";
