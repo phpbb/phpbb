@@ -292,28 +292,28 @@ function setup_style($style)
 		WHERE themes_id = $style";
 	if(!$result = $db->sql_query($sql))
 	{
-		return(FALSE);
+		message_die(CRITICAL_ERROR, "Couldn't query database for theme info.");
 	}
 
 	if( !$row = $db->sql_fetchrow($result) )
 	{
-		return(FALSE);
+		message_die(CRITICAL_ERROR, "Couldn't get theme data for themes_id=$style.");
 	}
 
-//	$template_path = ( defined("IN_ADMIN") ) ? "admin/templates/" : "templates/" ;
-//	$template_name = ( defined("IN_ADMIN") ) ? $board_config['board_admin_template'] : $myrow['template_name'] ;
-	$template_path = "templates/" ;
+//	$template_path = ( defined('IN_ADMIN') ) ? 'admin/templates/' : 'templates/' ;
+//	$template_name = ( defined('IN_ADMIN') ) ? $board_config['board_admin_template'] : $myrow['template_name'] ;
+	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
 	if( $template )
 	{
-		@include($phpbb_root_path . $template_path . $template_name . "/" . $template_name . ".cfg");
+		@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
 
 		if( !defined("TEMPLATE_CONFIG") )
 		{
-			message_die(CRITICAL_ERROR, "Couldn't open " . $template_name . " template config file");
+			message_die(CRITICAL_ERROR, "Couldn't open $template_name template config file");
 		}
 
 	}
