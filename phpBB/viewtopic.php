@@ -23,13 +23,13 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
-if(!isset($HTTP_GET_VARS['topic_id']))  // For backward compatibility
+if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
 	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
 }
 else
 {
-	$topic_id = $HTTP_GET_VARS['topic_id'];
+	$topic_id = $HTTP_GET_VARS['topic'];
 }
 
 $is_moderator = 0;
