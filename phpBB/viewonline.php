@@ -81,7 +81,7 @@ $sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, s.session_page, s
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 	WHERE u.user_id <> " . ANONYMOUS . "
 		AND u.user_id = s.session_user_id
-		AND s.session_time >= " . ( time() - 1200 ) . "
+		AND s.session_time >= " . ( time() - 300 ) . "
 		AND s.session_logged_in = " . TRUE . "
 	ORDER BY s.session_time DESC";
 if(!$result = $db->sql_query($sql))
@@ -93,7 +93,7 @@ $onlinerow_reg = $db->sql_fetchrowset($result);
 $sql = "SELECT session_page, session_logged_in, session_time, session_ip
 	FROM " . SESSIONS_TABLE . "
 	WHERE session_logged_in = 0
-		AND session_time >= " . ( time() - 1200 ) . "
+		AND session_time >= " . ( time() - 300 ) . "
 	ORDER BY session_time DESC";
 if(!$result = $db->sql_query($sql))
 {
