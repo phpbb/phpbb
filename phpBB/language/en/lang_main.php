@@ -734,6 +734,7 @@ $lang = array_merge($lang, array(
 	'logm_lock' => 'Locked following topic/s => %s', 
 
 	'All_times' => 'All times are %s %s',
+	'-13' => 'GMT - 13 Hours',
 	'-12' => 'GMT - 12 Hours',
 	'-11' => 'GMT - 11 Hours',
 	'-10' => 'GMT - 10 Hours',
@@ -765,7 +766,9 @@ $lang = array_merge($lang, array(
 	'10' => 'GMT + 10 Hours',
 	'11' => 'GMT + 11 Hours',
 	'12' => 'GMT + 12 Hours',
+	'13' => 'GMT + 13 Hours',
 	'tz' => array(
+		'-13' => 'GMT - 13 Hours',
 		'-12' => 'GMT - 12 Hours',
 		'-11' => 'GMT - 11 Hours',
 		'-10' => 'GMT - 10 Hours',
@@ -797,6 +800,7 @@ $lang = array_merge($lang, array(
 		'10' => 'GMT + 10 Hours',
 		'11' => 'GMT + 11 Hours',
 		'12' => 'GMT + 12 Hours',
+		'13' => 'GMT + 13 Hours',
 		'dst' => '[ DST ]'
 	),
 	'datetime' => array(

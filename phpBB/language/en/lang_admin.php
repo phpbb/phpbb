@@ -30,6 +30,7 @@ $lang = array_merge($lang, array(
 
 	'PERMISSIONS'	=> 'Permissions',
 	'MANAGE'		=> 'Manage',
+	'ADD'			=> 'Add', 
 
 	'DB_CAT'		=> 'Database Admin', 
 	'DB_BACKUP'		=> 'DB Backup',
@@ -597,21 +598,50 @@ $lang = array_merge($lang, array(
 	'User_special' => 'Special admin-only fields',
 	'User_special_explain' => 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.',
 
-	'Group_administration' => 'Group Administration',
-	'Group_admin_explain' => 'From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description',
+	'GROUP_MANAGE_EXPLAIN' => 'From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
+	'USER_DEF_GROUPS' => 'User defined groups', 
+	'USER_DEF_GROUPS_EXPLAIN' => 'These are groups created by you or another admin on this board. You can modify, delete or otherwise alter these. You can also define group wide settings which affect each and every member of the group.', 
+	'SPECIAL_GROUPS' => 'Special groups',
+	'SPECIAL_GROUPS_EXPLAIN' => 'These are pre-defined groups, they cannot be deleted or directly modified. However you can still add users and alter settings which affect all members of each group.',
+	'GROUP_MEMBERS' => 'Group members', 
+	'GROUP_MEMBERS_EXPLAIN' => 'This is a complete listing of all the members of this usergroup. You can delete, approve or disprove of existing and new members.', 
+	'GROUP_EDIT_EXPLAIN' => 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also impose certain settings for all members of this group. For example, group wide avatars, ranks, colouration, etc. can all be set. Please note that certain settings are imposed just once (e.g. daylight savings, timezone, etc.) and are not stored for future use. Others, such as colouration can be changed independently by users unless appropriate user or group permissions are set.', 
+	'ADD_NEW_GROUP' => 'Create new group', 
+	'GROUP_SETTINGS_SAVE' => 'Saved group settings', 
+	'GROUP_SETTINGS_SAVE_EXPLAIN' => 'These settings are defined and stored for this group.', 
+	'GROUP_SETTINGS' => 'Unsaved group settings', 
+	'GROUP_SETTINGS_EXPLAIN' => 'These settings are applied to each user once upon submission, they are not stored.', 
+	'GROUP_DETAILS' => 'Group details', 
+	'GROUP_NAME' => 'Group name',
+	'GROUP_DESC' => 'Group description',
+	'GROUP_MODERATORS' => 'Group moderators',
+	'GROUP_TYPE' => 'Group type', 
+	'GROUP_TYPE_EXPLAIN' => '<u>Open</u>: any user can join,<br /><u>Request</u>: any user can request to join,<br /><u>Closed</u>: normal users can only view group,<br /><u>Hidden</u>: prevents display of users.', 
+	'GROUP_OPEN' => 'Open',
+	'GROUP_REQUEST' => 'Request',
+	'GROUP_CLOSED' => 'Closed',
+	'GROUP_HIDDEN' => 'Hidden',
+	'GROUP_COLOR' => 'Group colour', 
+	'GROUP_COLOR_EXPLAIN' => 'Defines the colour (as hex triplet) members usernames will appear in, leave blank if not needed.', 
+	'GROUP_RANK' => 'Group rank', 
+	'GROUP_AVATAR' => 'Group avatar', 
+	'GROUP_AVATAR_EXPLAIN' => 'This image will be displayed in the Group Control Panel. You can also apply this avatar to all members.', 
+
+	'GROUP_LANG' => 'Group language', 
+	'GROUP_TIMEZONE' => 'Group timezone', 
+	'GROUP_DST' => 'Group daylight savings', 
+
+	'GROUP_FORCE_SET' => 'Force settings', 
+	'GROUP_FORCE_SET_EXPLAIN' => 'Enable this to force all the above settings to replace users individual settings.', 
+
+	'USER_DEFAULT' => 'User default', 
+
+
 	'Error_updating_groups' => 'There was an error while updating the groups',
 	'Updated_group' => 'The group was successfully updated',
 	'Added_new_group' => 'The new group was successfully created',
 	'Deleted_group' => 'The group was successfully deleted',
-	'New_group' => 'Create new group',
-	'Edit_group' => 'Edit group',
-	'group_name' => 'Group name',
-	'group_description' => 'Group description',
-	'group_moderator' => 'Group moderator',
-	'group_status' => 'Group status',
-	'group_open' => 'Open group',
-	'group_closed' => 'Closed group',
-	'group_hidden' => 'Hidden group',
+
 	'group_delete' => 'Delete group',
 	'group_delete_check' => 'Delete this group',
 	'submit_group_changes' => 'Submit Changes',
@@ -624,6 +654,8 @@ $lang = array_merge($lang, array(
 	'Click_return_groupsadmin' => 'Click %sHere%s to return to Group Administration.',
 	'Select_group' => 'Select a group',
 	'Look_up_group' => 'Look up group',
+
+
 
 	'FORUM_PRUNE_EXPLAIN' => 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
 	'DO_PRUNE' => 'Do Prune',
