@@ -19,6 +19,7 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
 if ( !defined('IN_PHPBB') )
 {
    die("Hacking attempt");
@@ -39,22 +40,22 @@ function prune($forum_id, $prune_date)
 			AND t.topic_vote = 0 
 			AND t.topic_type <> " . POST_ANNOUNCE . "
 			AND p.post_id = t.topic_last_post_id";
-	if ( $prune_date != "" )
+	if ( $prune_date != '' )
 	{
 		$sql .= " AND p.post_time < $prune_date";
 	}
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain lists of topics to prune.", "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to prune', '', __LINE__, __FILE__, $sql);
 	}
 
-	$sql_topics = "";
+	$sql_topics = '';
 	while( $row = $db->sql_fetchrow($result) )
 	{
-		$sql_topics .= ( ( $sql_topics != "" ) ? ", " : "" ) . $row['topic_id'];
+		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
 	}
 		
-	if( $sql_topics != "" )
+	if( $sql_topics != '' )
 	{
 		$sql = "SELECT post_id
 			FROM " . POSTS_TABLE . " 
@@ -62,22 +63,22 @@ function prune($forum_id, $prune_date)
 				AND topic_id IN ($sql_topics)";
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't obtain list of posts to prune.", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'Could not obtain list of posts to prune', '', __LINE__, __FILE__, $sql);
 		}
 
-		$sql_post = "";
+		$sql_post = '';
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$sql_post .= ( ( $sql_post != "" ) ? ", " : "" ) . $row['post_id'];
+			$sql_post .= ( ( $sql_post != '' ) ? ', ' : '' ) . $row['post_id'];
 		}
 
-		if ( $sql_post != "" )
+		if ( $sql_post != '' )
 		{
 			$sql = "DELETE FROM " . TOPICS_TABLE . " 
 				WHERE topic_id IN ($sql_topics)";
 			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete topics during prune.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete topics during prune', '', __LINE__, __FILE__, $sql);
 			}
 
 			$pruned_topics = $db->sql_affectedrows();
@@ -86,7 +87,7 @@ function prune($forum_id, $prune_date)
 				WHERE post_id IN ($sql_post)";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete post_text during prune.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete post_text during prune', '', __LINE__, __FILE__, $sql);
 			}
 
 			$pruned_posts = $db->sql_affectedrows();
@@ -95,14 +96,14 @@ function prune($forum_id, $prune_date)
 				WHERE post_id IN ($sql_post)";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete post during prune.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete post during prune', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
 				WHERE post_id IN ($sql_post)";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete search matches", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete search matches', '', __LINE__, __FILE__, $sql);
 			}
 
 			remove_search_post($sql_post);
@@ -112,22 +113,20 @@ function prune($forum_id, $prune_date)
 				WHERE forum_id = $forum_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't update forum data after prune.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update forum data after prune', '', __LINE__, __FILE__, $sql);
 			}
 
-			return array ("topics" => $pruned_topics, "posts" => $pruned_posts);
+			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
 		}
 	}
 
-	return array("topics" => 0, "posts" => 0);
+	return array('topics' => 0, 'posts' => 0);
 }
 
-/***************************************************************************\
-*
-*	Function auto_prune(), this function will read the configuration data from
-* 	the auto_prune table and call the prune function with the necessary info.
-*
-****************************************************************************/
+//
+// Function auto_prune(), this function will read the configuration data from
+// the auto_prune table and call the prune function with the necessary info.
+//
 function auto_prune($forum_id = 0)
 {
 	global $db, $lang;
@@ -135,10 +134,9 @@ function auto_prune($forum_id = 0)
 	$sql = "SELECT *
 		FROM " . PRUNE_TABLE . "
 		WHERE forum_id = $forum_id";
-
 	if ( !($result = $db->sql_query($sql)) )
 	{
-		message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, 'Could not read auto_prune table', '', __LINE__, __FILE__, $sql);
 	}
 
 	if ( $row = $db->sql_fetchrow($result) )
@@ -155,7 +153,7 @@ function auto_prune($forum_id = 0)
 				WHERE forum_id = $forum_id";
 			if ( !$db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Auto-Prune: Couldn't update forum table.", __LINE__, __FILE__);
+				message_die(GENERAL_ERROR, 'Could not update forum table', '', __LINE__, __FILE__, $sql);
 			}
 		}
 	}
