@@ -221,7 +221,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		//
 		$regdate = $profiledata['user_regdate'];
 
-		$memberdays = round( ( time() - $regdate ) / 86400 );
+		$memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
 		$posts_per_day = sprintf("%.2f", $profiledata['user_posts'] / $memberdays);
 
 		// Get the users percentage of total posts
