@@ -125,7 +125,7 @@ class bbcode
 				// do not try to re-cache it if it's already in
 				continue;
 			}
-			$bbcode_ids[$bbcode_id] = $bbcode_id;
+			$bbcode_ids[] = $bbcode_id;
 
 			if ($bbcode_id > 11)
 			{
@@ -221,12 +221,12 @@ class bbcode
 				case 9:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str' => array(
-							'[list:$uid]'			=>	$this->bbcode_tpl('ulist_open_default', $bbcode_id),
-							'[/list:u:$uid]'		=>	$this->bbcode_tpl('ulist_close', $bbcode_id),
-							'[/list:o:$uid]'		=>	$this->bbcode_tpl('olist_close', $bbcode_id),
-							'[*:$uid]'				=>	$this->bbcode_tpl('listitem', $bbcode_id),
-							'[/*:$uid]'				=>	$this->bbcode_tpl('listitem_close', $bbcode_id),
-							'[/*:m:$uid]'			=>	$this->bbcode_tpl('listitem_close', $bbcode_id)
+							'[list:$uid]'		=>	$this->bbcode_tpl('ulist_open_default', $bbcode_id),
+							'[/list:u:$uid]'	=>	$this->bbcode_tpl('ulist_close', $bbcode_id),
+							'[/list:o:$uid]'	=>	$this->bbcode_tpl('olist_close', $bbcode_id),
+							'[*:$uid]'			=>	$this->bbcode_tpl('listitem', $bbcode_id),
+							'[/*:$uid]'			=>	$this->bbcode_tpl('listitem_close', $bbcode_id),
+							'[/*:m:$uid]'		=>	$this->bbcode_tpl('listitem_close', $bbcode_id)
 						),
 						'preg' => array(
 							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\$1')",
@@ -320,17 +320,17 @@ class bbcode
 		if (empty($bbcode_hardtpl))
 		{
 			static $bbcode_hardtpl = array(
-				'b_open'		=>	'<span style="font-weight: bold">',
-				'b_close'		=>	'</span>',
-				'i_open'			=>	'<span style="font-style: italic">',
-				'i_close'			=>	'</span>',
-				'u_open'		=>	'<span style="text-decoration: underline">',
-				'u_close'		=>	'</span>',
-				'url'				=>	'<a href="$1" target="_blank">$2</a>',
-				'img'				=>	'<img src="$1" border="0" />',
-				'size'				=>	'<span style="font-size: $1px; line-height: normal">$2</span>',
-				'color'			=>	'<span style="color: $1">$2</span>',
-				'email'			=>	'<a href="mailto:$1">$2</a>'
+				'b_open'	=>	'<span style="font-weight: bold">',
+				'b_close'	=>	'</span>',
+				'i_open'	=>	'<span style="font-style: italic">',
+				'i_close'	=>	'</span>',
+				'u_open'	=>	'<span style="text-decoration: underline">',
+				'u_close'	=>	'</span>',
+				'url'		=>	'<a href="$1" target="_blank">$2</a>',
+				'img'		=>	'<img src="$1" border="0" />',
+				'size'		=>	'<span style="font-size: $1px; line-height: normal">$2</span>',
+				'color'		=>	'<span style="color: $1">$2</span>',
+				'email'		=>	'<a href="mailto:$1">$2</a>'
 			);
 		}
 
@@ -369,12 +369,12 @@ class bbcode
 	{
 		static $replacements = array(
 			'quote_username_open'	=>	array('{USERNAME}'	=>	'$1'),
-			'color'								=>	array('{COLOR}'		=>	'$1', '{TEXT}'				=>	'$2'),
-			'size'									=>	array('{SIZE}'			=>	'$1', '{TEXT}'				=>	'$2'),
-			'img'									=>	array('{URL}'			=>	'$1'),
-			'flash'								=>	array('{WIDTH}'		=>	'$1', '{HEIGHT}'			=>	'$2', '{URL}'		=>	'$3'),
-			'url'									=>	array('{URL}'			=>	'$1', '{DESCRIPTION}'	=>	'$2'),
-			'email'								=>	array('{EMAIL}'			=>	'$1', '{DESCRIPTION}'	=>	'$2')
+			'color'					=>	array('{COLOR}'		=>	'$1', '{TEXT}'			=>	'$2'),
+			'size'					=>	array('{SIZE}'		=>	'$1', '{TEXT}'			=>	'$2'),
+			'img'					=>	array('{URL}'		=>	'$1'),
+			'flash'					=>	array('{WIDTH}'		=>	'$1', '{HEIGHT}'		=>	'$2', '{URL}'	=>	'$3'),
+			'url'					=>	array('{URL}'		=>	'$1', '{DESCRIPTION}'	=>	'$2'),
+			'email'					=>	array('{EMAIL}'		=>	'$1', '{DESCRIPTION}'	=>	'$2')
 		);
 
 		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
