@@ -7,19 +7,54 @@
 
 
 <h2>Forum Statistics</h2>
-<p>
-	Current number of posts: <b>{NUMBER_OF_POSTS}</b><br />
-	Current number of topics: <b>{NUMBER_OF_TOPICS}</b><br />
-	Current number of users: <b>{NUMBER_OF_USERS}</b><br />
-	<br />
-	Board started on: <b>{STARTDATE}</b><br />
-	Posts per day: <b>{POSTS_PER_DAY}</b><br />
-	Topics per day: <b>{TOPICS_PER_DAY}</b><br />
-	Users per day: <b>{USERS_PER_DAY}</b><br />
-	<br />
-	Avatar directory size: <b>{AVATAR_DIR_SIZE} (in kilobytes)</b><br />
-	Database size: <b>{DB_SIZE}</b>
-</p>
+<table border="0" cellpadding="1" cellspacing="0" width="65%">
+	<tr>
+		<td class="tablebg">
+			<table width="100%" cellpadding="4" cellspacing="1" border="0">
+				<tr>
+					<th width="50%">Statistic</th>
+					<th width="50%">Value</th>
+				</tr>
+				<tr>
+					<td class="row1">Current number of posts:</td>
+					<td class="row2"><b>{NUMBER_OF_POSTS}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Current number of topics:</td>
+					<td class="row2"><b>{NUMBER_OF_TOPICS}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Current number of users:</td>
+					<td class="row2"><b>{NUMBER_OF_USERS}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Board started on:</td>
+					<td class="row2"><b>{STARTDATE}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Posts per day:</td>
+					<td class="row2"><b>{POSTS_PER_DAY}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Topics per day:</td>
+					<td class="row2"><b>{TOPICS_PER_DAY}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Users per day:</td>
+					<td class="row2"><b>{USERS_PER_DAY}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Avatar directory size:</td>
+					<td class="row2"><b>{AVATAR_DIR_SIZE}</b></td>
+				</tr>
+				<tr>
+					<td class="row1">Database size:</td>
+					<td class="row2"><b>{DB_SIZE}</b></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
 
 <h2>Users Online</h2>
 <table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">

@@ -29,11 +29,14 @@ if($setmodules == 1)
 	return;
 }
 
-if(!$from_index)
+if($from_index != 1)
 {
 	$phpbb_root_path = "./../";
 	include($phpbb_root_path . 'extension.inc');
 	include($phpbb_root_path . 'common.'.$phpEx);
+
+	$template_header = "admin/page_header.tpl";	
+	include('page_header_admin.'.$phpEx);
 }
 
 //
@@ -86,10 +89,24 @@ if ($avatar_dir = opendir($phpbb_root_path . $board_config['avatar_path']))
 	}
 	closedir($avatar_dir);
 }
-if($avatar_dir_size > 0)
-{
-	$avatar_dir_size = sprintf("%.2f", $avatar_dir_size / 1024);
-}
+
+//
+// This bit of code translates the avatar directory size into human readable format
+// Borrowed the code from the PHP.net annoted manual, origanally written by:
+// Jesse (jesse@jess.on.ca)
+//
+if($avatar_dir_size >= 1048576) 
+{ 
+	$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . "MB"; 
+} 
+else if($avatar_dir_size >= 1024) 
+{ 
+	$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . "KB"; 
+} 
+else 
+{ 
+	$avatar_dir_size = $avatar_dir_size . "Bytes"; 
+} 
 
 if($posts_per_day > $total_posts)
 {
@@ -265,7 +282,7 @@ $template->assign_vars(array("L_USERNAME" => $lang['Username'],
 
 $template->pparse("body");
 
-if(!$from_index)
+if($from_index != 1)
 {
 	include('page_footer_admin.'.$phpEx);
 }
