@@ -618,7 +618,7 @@ function update_image_dimensions()
 				$spacer = TRUE;
 ?>
 			<tr>
-				<td class="row3" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><?php echo $user->lang[$lang . '_not_displayed'] ?></td>
+				<td class="row3" colspan="<?php echo ($mode == 'emoticons') ? 5 : 3; ?>" align="center"><?php echo $user->lang[$lang . '_NOT_DISPLAYED'] ?></td>
 			</tr>
 <?php
 			}
