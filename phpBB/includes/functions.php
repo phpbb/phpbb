@@ -978,11 +978,6 @@ function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
-	//TODO
-	if ($forum_data['parent_id'])
-	{
-	}
-
 	$sql = 'SELECT * 
 		FROM phpbb_forum_access 
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
@@ -1352,8 +1347,9 @@ function page_header($page_title = '')
 		'S_DISPLAY_PM'			=> (empty($config['privmsg_disable'])) ? 1 : 0, 
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0, 
 
-		'T_THEME_PATH'		=> 'styles/themes/' . $user->theme['primary']['theme_path'], 
-		'T_STYLESHEET_LINK' => 'styles/themes/' . $user->theme['primary']['theme_path'] . '/' . $user->theme['primary']['theme_name'] . '.css')
+		'T_THEME_PATH'			=> 'styles/themes/' . $user->theme['primary']['theme_path'], 
+		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['css_storedb']) ? 'styles/themes/' . $user->theme['primary']['theme_path'] . '/' . $user->theme['primary']['theme_name'] . '.css' : '',
+		'T_THEME_DATA'			=> (!$user->theme['primary']['css_storedb']) ? '' : $user->theme['primary']['css_data'])
 	);
 
 	if (!empty($config['send_encoding']))
