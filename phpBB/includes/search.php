@@ -118,17 +118,19 @@ function add_search_words($post_id, $post_text, $post_title = "")
 	{
 		$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
-		if( count($search_matches) )
+		if( !empty($search_matches) )
 		{
-			$word = array();
 			sort($search_matches);
 
+			$word = array();
+			$prev_word = "";
 			$word_text_sql = "";
+
 			for ($i = 0; $i < count($search_matches); $i++)
 			{ 
 				$search_matches[$i] = trim($search_matches[$i]);
 
-				if( $search_matches[$i] != "" && $search_matches[$i] != $search_matches[$i-1] ) 
+				if( $search_matches[$i] != "" && $search_matches[$i] != $prev_word ) 
 				{
 					$word[] = $search_matches[$i]; 
 
@@ -139,6 +141,8 @@ function add_search_words($post_id, $post_text, $post_title = "")
 
 					$word_text_sql .= "'" . $search_matches[$i] . "'";
 				} 
+
+				$prev_word = $search_matches[$i];
 			}
 
 			$sql = "SELECT word_id, word_text, word_common    
@@ -175,7 +179,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 					}
 				}
 
-				if( !$check_words[$word[$i]] )
+				if( empty($check_words[$word[$i]]) )
 				{
 					$match_word[] = "'" . $word[$i] . "'";
 				}
