@@ -14,7 +14,7 @@ TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size
 
 TD {font-family:Verdana,serif;font-size:10pt}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
-TD.cat		{background-color:{T_TH_COLOR2}}
+TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
 TD.row1		{background-color:{T_TD_COLOR1}}
 TD.row2		{background-color:{T_TD_COLOR2}}
 
