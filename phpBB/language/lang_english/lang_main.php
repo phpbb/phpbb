@@ -1004,8 +1004,6 @@ $lang['Critical_Error'] = 'Critical Error';
 $lang['An_error_occured'] = 'An Error Occurred';
 $lang['A_critical_error'] = 'A Critical Error Occurred';
 
-$lang['AIM_greeting'] = 'Hello. Are you there?';
-
 //
 // That's all, Folks!
 // -------------------------------------------------
