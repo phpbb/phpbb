@@ -64,7 +64,7 @@ class Template
 	var $force_recompile;
 
 
-	function set_template($template = '', $static_lang = false, $force_recompile = false)
+	function set_template($template = '', $static_lang = false, $force_recompile = true)
 	{
 		global $phpbb_root_path;
 
@@ -248,8 +248,14 @@ class Template
 		
 		if ($include)
 		{
-//			eval($this->compiled_code[$handle]);
-			include($filename);
+			if (!$this->force_recompile)
+			{
+				include($filename);
+			}
+			else
+			{
+				eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
+			}
 		}
 	}
 
