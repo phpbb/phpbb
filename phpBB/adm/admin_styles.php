@@ -1181,6 +1181,7 @@ function viewsource(url)
 						if ($action == 'add')
 						{
 							$sql_ary = array_merge($sql_ary, array(
+								'theme_path'		=> $theme_path, 
 								'css_storedb'		=> $css_storedb, 
 								'css_data'			=> ($css_storedb) ? $css_data : '', 
 							));
