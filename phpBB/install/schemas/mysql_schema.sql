@@ -467,8 +467,19 @@ CREATE TABLE phpbb_styles_template (
    template_copyright varchar(50) NOT NULL,
    template_path varchar(30) NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
-   tpl_storedb	tinyint(1) DEFAULT '0' NOT NULL, 
+   template_storedb	tinyint(1) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (template_id)
+);
+
+# Table: 'phpbb_styles_template_data'
+CREATE TABLE phpbb_styles_template_data (
+   template_id tinyint(4) UNSIGNED NOT NULL,
+   template_filename varchar(50) DEFAULT '' NOT NULL, 
+   template_included text NOT NULL, 
+   template_mtime int(11) DEFAULT '0' NOT NULL, 
+   template_data text, 
+   KEY (template_id), 
+   KEY (template_filename)
 );
 
 # Table: 'phpbb_styles_theme'
@@ -477,8 +488,9 @@ CREATE TABLE phpbb_styles_theme (
    theme_name varchar(30) DEFAULT '' NOT NULL,
    theme_copyright varchar(50) DEFAULT '' NOT NULL,
    theme_path varchar(30) DEFAULT '' NOT NULL,
-   css_storedb tinyint(1) DEFAULT '0' NOT NULL, 
-   css_data text DEFAULT '' NOT NULL,
+   theme_storedb tinyint(1) DEFAULT '0' NOT NULL, 
+   theme_mtime int(11) DEFAULT '0' NOT NULL, 
+   theme_data text DEFAULT '' NOT NULL,
    PRIMARY KEY (theme_id)
 );
 
