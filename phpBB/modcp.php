@@ -275,6 +275,7 @@ switch($mode)
 		}
 		
 	break;
+
 	default:
 
 		$template->set_filenames(array("body" => "modcp_body.tpl"));
@@ -308,8 +309,29 @@ switch($mode)
 		
 		for($x = 0; $x < $total_topics; $x++)
 		{	
+			if($topics[$x]['topic_status'] == TOPIC_LOCKED)
+			{	
+				$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
+			}
+			else
+			{
+				$folder_image = "<img src=\"" . $images['folder'] . "\">";
+			}
+			
 			$topic_id = $topics[$x]['topic_id'];
-			$topic_title = stripslashes($topics[$x]['topic_title']);
+			
+			$topic_title = "";
+			
+			if($topics[$x]['topic_type'] == POST_STICKY)
+			{
+				$topic_title = $lang['Sticky'] . " ";
+			}
+			else if($topics[$x]['topic_type'] == POST_ANNOUNCE)
+			{
+				$topic_title = $lang['Annoucement'] . " ";
+			}
+			
+			$topic_title .= stripslashes($topics[$x]['topic_title']);
 			$u_view_topic = append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id");
 			$topic_replies = $topics[$x]['topic_replies'];
 			$last_post_time = create_date($board_config['default_dateformat'], $topics[$x]['post_time'], $board_config['default_timezone']);
@@ -317,6 +339,7 @@ switch($mode)
 			
 			$template->assign_block_vars("topicrow", array(
 													"U_VIEW_TOPIC" => $u_view_topic,
+													"FOLDER_IMG" => $folder_image,
 													"TOPIC_TITLE" => $topic_title,
 													"REPLIES" => $topic_replies,
 													"LAST_POST" => $last_post_time,

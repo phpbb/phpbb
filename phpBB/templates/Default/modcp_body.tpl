@@ -16,6 +16,7 @@
 	        	<td>
 	        		<table width="100%" border="0" cellspacing="1" cellpadding="2">
 	        			<tr class="tableheader">
+	        				<td width="5%">&nbsp;</td>
 	        				<td align="center" width="25%">{L_TOPICS}</td>
 	        				<td align="center" width="5%">{L_REPLIES}</td>
 	        				<td align="center" width="15%">{L_LASTPOST}</td>
@@ -23,6 +24,7 @@
 	        			</tr>
 	        			<!-- BEGIN topicrow -->
 	        			<tr class="tablebody">
+	        				<td width="3%" bgcolor="#DDDDDD">{topicrow.FOLDER_IMG}</td>
 	        				<td bgcolor="#CCCCCC"><a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></td>
 	        				<td bgcolor="#DDDDDD" align="center">{topicrow.REPLIES}</td>
 	        				<td bgcolor="#CCCCCC" align="center">{topicrow.LAST_POST}</td>
@@ -30,7 +32,7 @@
 	        			</tr>		
 	        			<!-- END topicrow -->
 	        			<tr class="tablebody">
-	        				<td bgcolor="#CCCCCC" colspan="4">
+	        				<td bgcolor="#CCCCCC" colspan="5">
 	        				<table border="0" width="100%">
 	        					<tr>
 	        						<td>{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></td>
@@ -40,7 +42,7 @@
 	        				</td>
 	        			</tr>
 	        			<tr class="tableheader">
-	 	       			<td colspan="4" align="right">
+	 	       			<td colspan="5" align="right">
 	 	       				<input type="hidden" name="{POST_FORUM_URL}" value="{FORUM_ID}">
 	 	       				<input type="submit" name="delete" value="{L_DELETE}">&nbsp;&nbsp;
 	 	       				<input type="submit" name="move" value="{L_MOVE}">&nbsp;&nbsp;
