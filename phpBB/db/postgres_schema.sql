@@ -84,8 +84,7 @@ CREATE TABLE phpbb_categories (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_config (
    config_id int2 NOT NULL,
-   selected int2 NOT NULL, 
-   disable_board int2 DEFAULT '0' NOT NULL, 
+   board_disable int2 DEFAULT '0' NOT NULL, 
    sitename varchar(100) NOT NULL,
    allow_html int2 NOT NULL,
    allow_bbcode int2 NOT NULL,
@@ -101,6 +100,7 @@ CREATE TABLE phpbb_config (
    hot_threshold int2 NOT NULL,
    email_sig varchar(255) NOT NULL,
    email_from varchar(100) NOT NULL,
+   require_activation int2 DEFAULT '0' NOT NULL, 
    default_theme int4 NOT NULL,
    default_dateformat varchar(20) NOT NULL,
    default_lang varchar(50) NOT NULL,
