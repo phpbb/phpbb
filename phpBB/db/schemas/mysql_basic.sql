@@ -6,6 +6,7 @@
 # -- Config
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('config_id','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename','yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc','A _little_ text to describe your forum');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name','phpbb2mysql');
@@ -19,25 +20,29 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode','1')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange','0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_theme_create','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1'); 
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a'); 
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold','25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_inbox_privmsgs','50');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sentbox_privmsgs','25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_savebox_privmsgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_enable','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
@@ -47,12 +52,12 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path','images/avatars');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path','images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','images/icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_enable','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('prune_logs_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_users', '0');
@@ -60,10 +65,58 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.myserver.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('newest_user_id', 2);
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('newest_user_id', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('newest_username', 'Admin');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_users', 1);
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.1.0 [20020430]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_users', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_posts', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('num_topics', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '1.0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20020430]');
+
+
+# -- auth options
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_list');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_read');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_post');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_reply');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_edit');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_delete');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_poll');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_vote');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_announce');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_sticky');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_attach');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_html');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_bbcode');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_smilies');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_img');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_flash');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_sigs');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_download');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_search');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_email');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_print');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_ignoreflood');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('forum_ignorequeue');
+
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_edit');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_delete');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_move');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_lock');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_split');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_merge');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_approve');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('mod_ban');
+
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_config');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_user');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_group');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_forum');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_posts');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_ban');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_email');
+INSERT INTO phpbb_auth_options (auth_option) VALUES ('admin_backup');
 
 
 # -- Categories
@@ -75,10 +128,10 @@ INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order,
 
 
 # -- Users
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( -1, 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, NULL, '', '', '', '', '', '', 0, 0);
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 0, 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, NULL, '', '', '', '', '', '', 0, 0);
 
 # -- username: admin    password: admin (change this or remove it once everything is working!)
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 2, 'Admin', 1, 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'english', 0, 'd M Y h:i a', '', '', 0, 1);
+INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 1, 'Admin', 1, 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'english', 0, 'd M Y h:i a', '', '', 0, 1);
 
 
 # -- Ranks
@@ -86,13 +139,11 @@ INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image
 
 
 # -- Groups
-INSERT INTO phpbb_groups (group_id, group_name, group_description, group_single_user) VALUES (1, 'Anonymous', 'Personal User', 1);
-INSERT INTO phpbb_groups (group_id, group_name, group_description, group_single_user) VALUES (2, 'Admin', 'Personal User', 1);
+INSERT INTO phpbb_groups (group_id, group_name, group_type) VALUES (1, 'REGISTERED', 0);
 
 
 # -- User -> Group
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, -1, 0);
-INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (2, 2, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, 1, 0);
 
 
 # -- Demo Topic
@@ -102,12 +153,6 @@ INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic
 # -- Demo Post
 INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, 972086460, NULL, '7F000001');
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, NULL, 'This is an example post in your phpBB 2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
-
-
-# -- Themes
-INSERT INTO phpbb_themes (themes_id, template_name, style_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (1, 'subSilver', 'subSilver', 'subSilver.css', '', 'E5E5E5', '000000', '006699', '5493B4', '', 'DD6900', 'EFEFEF', 'DEE3E7', 'D1D7DC', '', '', '', '98AAB1', '006699', 'FFFFFF', 'cellpic1.gif', 'cellpic3.gif', 'cellpic2.jpg', 'FAFAFA', 'FFFFFF', '', 'row1', 'row2', '', 'Verdana, Arial, Helvetica, sans-serif', 'Trebuchet MS', 'Courier, \'Courier New\', sans-serif', 10, 11, 12, '444444', '006600', 'FFA34F', '', '', '');
-
-INSERT INTO phpbb_themes_name (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, tr_class1_name, tr_class2_name, tr_class3_name, th_color1_name, th_color2_name, th_color3_name, th_class1_name, th_class2_name, th_class3_name, td_color1_name, td_color2_name, td_color3_name, td_class1_name, td_class2_name, td_class3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, span_class1_name, span_class2_name, span_class3_name) VALUES (1, 'The lightest row colour', 'The medium row color', 'The darkest row colour', '', '', '', 'Border round the whole page', 'Outer table border', 'Inner table border', 'Silver gradient picture', 'Blue gradient picture', 'Fade-out gradient on index', 'Background for quote boxes', 'All white areas', '', 'Background for topic posts', '2nd background for topic posts', '', 'Main fonts', 'Additional topic title font', 'Form fonts', 'Smallest font size', 'Medium font size', 'Normal font size (post body etc)', 'Quote & copyright text', 'Code text colour', 'Main table header text colour', '', '', '');
 
 
 # -- Smilies
