@@ -67,6 +67,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
 				header($header_location . append_sid("index.$phpEx", true));
+				exit;
 			}
 			else
 			{
@@ -81,10 +82,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 						if( !empty($HTTP_POST_VARS['redirect']) )
 						{
 							header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+							exit;
 						}
 						else
 						{
 							header($header_location . append_sid("index.$phpEx", true));
+							exit;
 						}
 					}
 					else
@@ -129,10 +132,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
 			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			exit;
 		}
 		else
 		{
 			header($header_location . append_sid("index.$phpEx", true));
+			exit;
 		}
 	}
 	else
@@ -140,10 +145,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
 			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			exit;
 		}
 		else
 		{
 			header($header_location . append_sid("index.$phpEx", true));
+			exit;
 		}
 	}
 }
@@ -224,6 +231,7 @@ else
 	else
 	{
 		header($header_location . append_sid("index.$phpEx", true));
+		exit;
 	}
 
 }

@@ -182,6 +182,7 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
 		$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 		header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
+		exit;
 	}
 
 	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
@@ -299,6 +300,7 @@ else
 		{
 			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
 			header($header_location . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
+			exit;
 		}
 	}
 	else

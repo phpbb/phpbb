@@ -344,6 +344,7 @@ else
 	else
 	{
 		header("Location: " . append_sid("index.$phpEx", true));
+		exit;
 	}
 }
 

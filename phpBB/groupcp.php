@@ -159,6 +159,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	if ( !$userdata['session_logged_in'] )
 	{
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	$sql = "SELECT group_moderator 
@@ -208,6 +209,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	if ( !$userdata['session_logged_in'] )
 	{
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -309,10 +311,12 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	if ( $cancel )
 	{
 		header($header_location . append_sid("groupcp.$phpEx", true));
+		exit;
 	}
 	elseif ( !$userdata['session_logged_in'] )
 	{
 		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		exit;
 	}
 
 	if ( $confirm )
@@ -396,6 +400,7 @@ else if ( $group_id )
 		if ( !$userdata['session_logged_in'] )
 		{
 			header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			exit;
 		}
 	}
 
@@ -457,6 +462,7 @@ else if ( $group_id )
 			if ( !$userdata['session_logged_in'] )
 			{
 				header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+				exit;
 			}
 
 			if ( !$is_moderator )

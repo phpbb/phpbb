@@ -101,18 +101,19 @@ if( !get_magic_quotes_gpc() )
 // malicious rewriting of language and otherarray values via
 // URI params
 //
-$board_config = Array();
-$userdata = Array();
-$theme = Array();
-$images = Array();
-$lang = Array();
+$board_config = array();
+$userdata = array();
+$theme = array();
+$images = array();
+$lang = array();
 $gen_simple_header = FALSE;
 
-@include($phpbb_root_path . 'config.'.$phpEx);
+include($phpbb_root_path . 'config.'.$phpEx);
 
 if( !defined("PHPBB_INSTALLED") )
 {
 	header("Location: install.$phpEx");
+	exit;
 }
 
 include($phpbb_root_path . 'includes/constants.'.$phpEx);

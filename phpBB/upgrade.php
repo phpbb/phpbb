@@ -37,7 +37,8 @@ if ( !defined('INSTALLING') )
 
 	if( defined("PHPBB_INSTALLED") )
 	{
-		header("Location: index.$phpEx");
+		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+		header($header_location . " index.$phpEx");
 		exit;
 	}
 }

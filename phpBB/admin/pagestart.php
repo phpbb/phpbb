@@ -39,7 +39,9 @@ init_userprefs($userdata);
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../" . append_sid("login.$phpEx?redirect=admin/"));
+	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . '../' . append_sid("login.$phpEx?redirect=admin/"));
+	exit;
 }
 else if( $userdata['user_level'] != ADMIN )
 {
