@@ -739,7 +739,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				if( $user_avatar_loc != "" )
 				{
-					if( file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
+					if( file_exists($user_avatar_loc) && ereg(".jpg$|.jpeg$|.gif$|.png$", $user_avatar_name) )
 					{
 						if( $user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
 						{
@@ -956,7 +956,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 				}
 
-				if( preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) )
+				if( preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|jpeg|png)$)#is", $user_avatar_remoteurl) )
 				{
 					$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
 				}
@@ -1329,7 +1329,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$avatar_col_count = 0;
 						while( $sub_file = @readdir($sub_dir) )
 						{
-							if( preg_match("/(\.gif$|\.png$|\.jpg)$/is", $sub_file) )
+							if( preg_match("/(\.gif$|\.png$|\.jpg|\.jpeg)$/is", $sub_file) )
 							{
 								$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . "/" . $sub_file;
 
@@ -1662,8 +1662,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
-			$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
-			$email = (!empty($HTTP_POST_VARS['email'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
+			$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
+			$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
 
 			$sql = "SELECT user_id, username, user_email, user_active, user_lang 
 				FROM " . USERS_TABLE . " 
@@ -1678,13 +1678,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$row = $db->sql_fetchrow($result); 
 
-				$username = $row['username'];
-				
-				if($row['user_active'] == 0)
+				if( $row['user_active'] == 0 )
 				{
 					message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
 				}
-				
+
+				$username = $row['username'];
+
 				$user_actkey = generate_activation_key();
 				$user_password = generate_password();
 				
