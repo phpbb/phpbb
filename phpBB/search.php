@@ -43,7 +43,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 	$searchchars = array("'[\s]+'", "'\/'", "';'", "'@'", "'&'", "'#'", "'_'", "'|'", "'¬'", "'\*'");
 	$replacechars = array(" ", "", "", "", " ", "", "", "", " ", "", "%");
 
-	$searchstring = stripslashes(trim(preg_replace($searchchars, $replacechars, preg_quote(strip_tags($searchstring)))));
+	$searchstring = trim(preg_replace($searchchars, $replacechars, strip_tags($searchstring)));
 
 	//
 	// Here could go a file containing words to ignore,
@@ -87,13 +87,15 @@ function gensearch_sql($searchstring, $override_all = 0)
 			$is_phrase[$j] = true;
 			$searchwords[$j] = $word[2];
 			if($word[1] == "+" || $word[1] == "-")
+			{
 				$searchwords[$j] = $word[1] . $searchwords[$j];
+			}
 			$j++;
 		}
 		elseif(preg_match("/^(.*?)\"$/", $words[$i], $word))
 		{
 			$phrase = false;
-			 $searchwords[$j] .= " " . $word[1];
+			$searchwords[$j] .= " " . $word[1];
 			$j++;
 		}
 		elseif(preg_match("/^([\+\-]*)\"(.*?)$/", $words[$i], $word) && !$override_all)
@@ -102,7 +104,9 @@ function gensearch_sql($searchstring, $override_all = 0)
 			$is_phrase[$j] = true;
 			$searchwords[$j] = trim($word[2]);
 			if($word[1] == "+" || $word[1] == "-")
+			{
 				$searchwords[$j] = $word[1] . $searchwords[$j];
+			}
 		}
 		else
 		{
@@ -127,7 +131,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 		while($i < count($searchwords))
 		{
 			if($searchwords[$i] == "and" || $searchwords[$i] == "+")
-				{
+			{
 				$searchtype = "AND";
 				$bin_and = true;
 				$i++;
@@ -166,27 +170,37 @@ function gensearch_sql($searchstring, $override_all = 0)
 		}
 
 		if($bin_or)
+		{
 			$binsearchtype[] = "OR";
+		}
 		if($bin_and)
+		{
 			$binsearchtype[] = "AND";
+		}
 		if($bin_not)
+		{
 			$binsearchtype[] = "NOT";
+		}
 
 		//
 		// Search for words (OR AND and NOT arrays)
 		//
 		$searchstring = "";
-		for($i=0;$i<count($binsearchtype);$i++)
+		for($i = 0; $i < count($binsearchtype); $i++)
 		{
 			if($binsearchtype[$i] == "AND" && count($searchlistandtype["AND"]))
 			{
 				if($i > 0)
+				{
 					$searchstring .= ") AND (";
-				for($j=0;$j<count($searchlistandtype["AND"]);$j++)
+				}
+				for($j = 0; $j < count($searchlistandtype["AND"]); $j++)
 				{
 					if($j != 0)
+					{
 						$searchstring .= " AND ";
-					$findword = addslashes($searchlistandtype["AND"][$j]);
+					}
+					$findword = $searchlistandtype["AND"][$j];
 					$is_phrase_word = $searchlist_isphrase["AND"][$j];
 					if($is_phrase_word)
 					{
@@ -201,12 +215,16 @@ function gensearch_sql($searchstring, $override_all = 0)
 			elseif($binsearchtype[$i] == "OR" && count($searchlistandtype["OR"]))
 			{
 				if($i > 0)
+				{
 					$searchstring .= ") AND (";
-				for($j=0;$j<count($searchlistandtype["OR"]);$j++)
+				}
+				for($j = 0; $j < count($searchlistandtype["OR"]); $j++)
 				{
 					if($j != 0)
+					{
 						$searchstring .= " OR ";
-					$findword = addslashes($searchlistandtype["OR"][$j]);
+					}
+					$findword = $searchlistandtype["OR"][$j];
 					$is_phrase_word = $searchlist_isphrase["OR"][$j];
 					if($is_phrase_word)
 					{
@@ -221,12 +239,16 @@ function gensearch_sql($searchstring, $override_all = 0)
 			elseif($binsearchtype[$i] == "NOT" && count($searchlistandtype["NOT"]))
 			{
 				if($i > 0)
+				{
 					$searchstring .= ") AND (";
-				for($j=0;$j<count($searchlistandtype["NOT"]);$j++)
+				}
+				for($j = 0; $j < count($searchlistandtype["NOT"]); $j++)
 				{
 					if($j != 0)
+					{
 						$searchstring .= " AND ";
-					$findword = addslashes($searchlistandtype["NOT"][$j]);
+					}
+					$findword = $searchlistandtype["NOT"][$j];
 					$is_phrase_word = $searchlist_isphrase["NOT"][$j];
 					if($is_phrase_word)
 					{
@@ -249,7 +271,9 @@ function gensearch_sql($searchstring, $override_all = 0)
 		{
 			$searchwords[$i] = eregi_replace("(\+)|(\-)|(^and$)|(^or$)|(^not$)|(\")|( )", "", $searchwords[$i]);
 			if($i > 0 && $i < count($searchwords) && $searchwords[$i] != "")
+			{
 				$searchstring .= " AND ";
+			}
 			if($searchwords[$i] != "")
 			{
 				$searchstring .= "( pt.post_text LIKE '%".$searchwords[$i]."%' )";
@@ -289,8 +313,8 @@ init_userprefs($userdata);
 
 $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 
-$querystring = (isset($HTTP_POST_VARS['querystring'])) ? $HTTP_POST_VARS['querystring'] : ( (!empty($HTTP_GET_VARS['q'])) ? stripslashes($HTTP_GET_VARS['q']) : "" );
-$authorstring = (isset($HTTP_POST_VARS['authorstring'])) ? $HTTP_POST_VARS['authorstring'] : ( (!empty($HTTP_GET_VARS['a'])) ? stripslashes($HTTP_GET_VARS['a']) : "" );
+$querystring = (isset($HTTP_POST_VARS['querystring'])) ? $HTTP_POST_VARS['querystring'] : ( (!empty($HTTP_GET_VARS['q'])) ? $HTTP_GET_VARS['q'] : "" );
+$authorstring = (isset($HTTP_POST_VARS['authorstring'])) ? $HTTP_POST_VARS['authorstring'] : ( (!empty($HTTP_GET_VARS['a'])) ? $HTTP_GET_VARS['a'] : "" );
 
 $return_chars = ($HTTP_POST_VARS['charsreqd'] != "all") ? $HTTP_POST_VARS['charsreqd'] : -1;
 $return_chars = (isset($HTTP_GET_VARS['c'])) ? ( ($HTTP_GET_VARS['c'] != "all") ? $HTTP_GET_VARS['c'] : -1 ) : $return_chars;
@@ -335,14 +359,14 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 		$search_sql = "";
 		if($querystring != "")
 		{
-			$searchdata = gensearch_sql(stripslashes($querystring), $searchall);
+			$searchdata = gensearch_sql($querystring, $searchall);
 			$search_sql = $searchdata[0];
 		}
 		if($authorstring != "")
 		{
 			$search_sql = preg_replace("/\(\)/", "", $search_sql);
-			$authorstring = stripslashes($authorstring);
-			$search_sql .= ($searchstring == "") ? "u.username LIKE '%$authorstring%'" : " AND (u.username LIKE '%$authorstring%')";
+			$authorstring = $authorstring;
+			$search_sql .= ($search_sql == "") ? "(u.username LIKE '%$authorstring%')" : " AND (u.username LIKE '%$authorstring%')";
 		}
 
 		if(!ereg("\([ ]*\)",$search_sql))
@@ -414,7 +438,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 
 					$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
-					$message = stripslashes($searchset[$i]['post_text']);
+					$message = $searchset[$i]['post_text'];
 
 					if($return_chars != 0 )
 					{
@@ -442,11 +466,11 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 					}
 
 					$template->assign_block_vars("searchresults", array(
-						"TOPIC_TITLE" => stripslashes($searchset[$i]['topic_title']),
-						"FORUM_NAME" => stripslashes($searchset[$i]['forum_name']),
-						"POST_SUBJECT" => stripslashes($searchset[$i]['post_subject']),
+						"TOPIC_TITLE" => $searchset[$i]['topic_title'],
+						"FORUM_NAME" => $searchset[$i]['forum_name'],
+						"POST_SUBJECT" => $searchset[$i]['post_subject'],
 						"POST_DATE" => $post_date,
-						"POSTER_NAME" => stripslashes($searchset[$i]['username']),
+						"POSTER_NAME" => $searchset[$i]['username'],
 						"TOPIC_REPLIES" => $searchset[$i]['topic_replies'],
 						"TOPIC_VIEWS" => $searchset[$i]['topic_views'],
 						"MESSAGE" => $message,
