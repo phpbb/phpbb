@@ -1544,6 +1544,10 @@ switch ($mode)
 	break;
 
 	case 'merge_posts':
+		if (!$to_topic_id)
+		{
+			redirect("mcp.$phpEx$SID&mode=select_topic&f=$forum_id" . str_replace('&amp;', '&', $url_extra));
+		}
 		if (!count($post_id_list))
 		{
 			trigger_error($user->lang['NO_POST_SELECTED'] . '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . '&amp;to_topic_id=' . $to_topic_id . '">', '</a>'));
