@@ -167,13 +167,6 @@ class Template {
 	 */
 	function display($handle)
 	{
-		if (!empty($_REQUEST['explain']))
-		{
-			global $db;
-			echo $db->sql_report;
-			return TRUE;
-		}
-
 		$_str = '';
 
 		if (!$this->compile_load($_str, $handle, true))
