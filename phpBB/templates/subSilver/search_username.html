@@ -80,7 +80,7 @@ function refresh_username(selected_username)
 			<tr class="row1">
 			<!-- ENDIF -->
 				<td align="center"><span class="gen">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</span></td>
-				<td align="center"><span class="gen"><a class="gen" href="{memberrow.U_VIEWPROFILE}" onClick="refresh_username('{memberrow.USERNAME}');return false;">{memberrow.USERNAME}</a></span></td>
+				<td align="center"><span class="gen"><a class="gen" href="javascript:refresh_username('{memberrow.USERNAME}');return false;" onclick="refresh_username('{memberrow.USERNAME}');return false;">{memberrow.USERNAME}</a></span></td>
 				<td align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
 				<td align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
 				<td align="center" valign="middle"><span class="gensmall">{memberrow.ACTIVE}</span></td>
