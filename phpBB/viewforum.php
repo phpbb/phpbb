@@ -397,6 +397,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			{
 				switch ($row['topic_type'])
 				{
+					case POST_GLOBAL:
 					case POST_ANNOUNCE:
 						$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 						$folder = 'folder_announce';
