@@ -330,6 +330,7 @@ $lang['Add_option'] = "Voeg keuze toe";
 $lang['Update'] = "Bijwerken";
 $lang['Delete'] = "Verwijder";
 $lang['Poll_for'] = "Poll blijft geldig voor"; //BVB
+$lang['Days'] = "Dagen"; // This is used for the Run poll for ... Days + in admin_forums for pruning
 $lang['Poll_for_explain'] = "[ Leeg laten of 0 invullen voor geen einde ]"; //BVB
 $lang['Delete_poll'] = "Verwijder Poll";
 
@@ -670,6 +671,7 @@ $lang['User_is_member_group'] = "Gebruiker is al lid van deze groep";
 $lang['Group_type_updated'] = "Groepstype is veranderd";
 
 $lang['Could_not_add_user'] = "De gebruiker die je opgaf bestaat niet";
+$lang['Could_not_anon_user'] = "Anonieme gebruikers kunnen geen lid worden van een groep";
 
 $lang['Confirm_unsub'] = "Weet je zeker dat je je af wil melden van deze groep?";
 $lang['Confirm_unsub_pending'] = "Je aanmelding voor deze groep is nog niet goedgekeurd, weet je zeker dat je je toch af wil melden?";
