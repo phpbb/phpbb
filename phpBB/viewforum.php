@@ -103,7 +103,8 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 	if ( !$userdata['session_logged_in'] )
 	{
 		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : "" );
-		header("Location: " . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
+		$header_location = ( @preg_match("/Microsoft|WebSTAR/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
+		header($header_location . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
 	}
 	//
 	// The user is not authed to read this forum ...
@@ -189,7 +190,6 @@ $sql = "SELECT u.user_id, u.username
 	WHERE aa.forum_id = $forum_id 
 		AND aa.auth_mod = " . TRUE . " 
 		AND g.group_single_user = 1
-		AND g.group_type <> ". GROUP_HIDDEN ."
 		AND ug.group_id = aa.group_id 
 		AND g.group_id = aa.group_id 
 		AND u.user_id = ug.user_id 
@@ -378,7 +378,7 @@ if ( $is_auth['auth_mod'] )
 // Mozilla navigation bar
 //
 $nav_links['up'] = array(
-	'url' => append_sid("index.".$phpEx),
+	'url' => append_sid('index.'.$phpEx),
 	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
 );
 
