@@ -329,7 +329,7 @@ function remove_remarks($sql)
 	{
 		if ($i != $linecount - 1 || strlen($lines[$i]) > 0)
 		{
-			$output .= ($lines[$i][0] != '#') ? $lines[$i] . "\n" : "\n";
+			$output .= ($lines[$i]{0} != '#') ? $lines[$i] . "\n" : "\n";
 			// Trading a bit of speed for lower mem. use here.
 			$lines[$i] = '';
 		}
@@ -740,12 +740,22 @@ function add_log()
 
 	$mode		= array_shift($args);
 	$forum_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$topic_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
 	$action		= array_shift($args);
 	$data		= (!sizeof($args)) ? '' : addslashes(serialize($args));
 
-	$sql = ($mode == 'admin') ? "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data) VALUES (" . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')" : "INSERT INTO " . LOG_MOD_TABLE . " (user_id, forum_id, log_ip, log_time, log_operation, log_data) VALUES (" . $user->data['user_id'] . ", $forum_id, '$user->ip', " . time() . ", '$action', '$data')";
-	$db->sql_query($sql);
+	if ($mode == 'admin')
+	{
+		$sql = 'INSERT INTO ' . LOG_ADMIN_TABLE . ' (user_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+	}
+	else
+	{
+		$sql = 'INSERT INTO ' . LOG_MOD_TABLE . ' (user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
+				VALUES (' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+	}
 
+	$db->sql_query($sql);
 	return;
 }
 
