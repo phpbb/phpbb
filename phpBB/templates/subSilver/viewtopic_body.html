@@ -27,7 +27,11 @@
 	<tr align="right">
 		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td class="nav" nowrap="nowrap">&nbsp;<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC} | <!-- ENDIF --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a> | <a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a></td>
+				<td class="nav" nowrap="nowrap">&nbsp;
+				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC} | <!-- ENDIF -->
+				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a> | <!-- ENDIF -->
+				<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- ENDIF -->
+				</td>
 				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a>&nbsp;</td>
 			</tr>
 		</table></td>
@@ -101,7 +105,10 @@
 			
 			<table width="150" cellspacing="0" cellpadding="4" border="0">
 				<tr>
-					<td align="center"><b class="name">{postrow.POSTER_NAME}</b></td>
+					<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+				</tr>
+				<tr>
+					<td align="center">{postrow.KARMA_IMG}</td>
 				</tr>
 				<!-- IF postrow.POSTER_RANK -->
 				<tr>
@@ -126,6 +133,8 @@
 			<!-- IF postrow.POSTER_FROM --><br />{L_LOCATION}: {postrow.POSTER_FROM}<!-- ENDIF -->
 			</span>
 
+			<br />
+
 		</td>
 		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -143,7 +152,7 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td><table width="100%" cellspacing="0" cellpadding="5" border="0">
+		<td valign="top"><table width="100%" cellspacing="0" cellpadding="5" border="0">
 			<tr>
 				<td height="120" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
 					<tr>
@@ -165,6 +174,9 @@
 						<!-- IF postrow.S_POST_REPORTED -->
 						<td width="5">{REPORTED_IMG}</td>
 						<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b>&nbsp;</td>
+						<!-- ENDIF -->
+						<!-- IF postrow.S_CAN_RATE -->
+						<td nowrap="nowrap" class="gensmall"><b>{L_RATE}:</b> <a style="color:green" href="{postrow.U_RATE_GOOD}">{L_RATE_GOOD}</a> / <a style="color:red" href="{postrow.U_RATE_BAD}">{L_RATE_BAD}</a></td>
 						<!-- ENDIF -->
 						<td width="100%">&nbsp;</td>
 						<td width="10" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a></td>
@@ -189,12 +201,12 @@
 		<td class="nav" width="150" align="center" valign="middle"><a href="#top">{L_BACK_TO_TOP}</a></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td valign="middle" nowrap="nowrap"><!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_WWW --><a href="{postrow.U_WWW}" target="_userwww">{WWW_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_AIM --><a href="{postrow.U_AIM}">{AIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_YIM --><a href="{postrow.U_YIM}">{YIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_MSN --><a href="{postrow.U_MSN}">{MSN_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_JABBER --><a href="{postrow.U_JABBER}">{JABBER_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_ICQ --><script language="JavaScript" type="text/javascript"><!--
+				<td valign="middle" nowrap="nowrap"><!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_WWW --><a href="{postrow.U_WWW}" target="_userwww">{WWW_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_AIM --><a href="{postrow.U_AIM}" onclick="im_popup('{postrow.U_AIM}', 550, 320); return false">{AIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_YIM --><a href="{postrow.U_YIM}" onclick="im_popup('{postrow.U_YIM}', 780, 550); return false">{YIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_MSN --><a href="{postrow.U_MSN}" onclick="im_popup('{postrow.U_MSN}', 550, 320); return false">{MSN_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_JABBER --><a href="{postrow.U_JABBER}" onclick="im_popup('{postrow.U_JABBER}', 550, 320); return false">{JABBER_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_ICQ --><script language="JavaScript" type="text/javascript"><!-- 
 
-	if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
-		document.write(' <a href="{postrow.U_ICQ}">{ICQ_IMG}</a>');
+	if (navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1)
+		document.write(' <a href="{postrow.U_ICQ}" onclick="im_popup(\'{postrow.U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a>');
 	else
-		document.write('</td><td>&nbsp;</td><td width="100%" valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute"><a href="{postrow.U_ICQ}">{ICQ_IMG}</a></div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
+		document.write('</td><td>&nbsp;</td><td width="100%" valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute"><a href="{postrow.U_ICQ}" onclick="im_popup(\'{postrow.U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a></div><div style="position:absolute;left:3px;top:-1px"><a href="{postrow.U_ICQ}" onclick="im_popup(\'{postrow.U_ICQ}\', 550, 320); return false">{postrow.ICQ_STATUS_IMG}</a></div></div>');
 
 				//--></script><noscript><a href="{postrow.U_ICQ}">{ICQ_IMG}</a></noscript><!-- ENDIF --></td>
 			</tr>

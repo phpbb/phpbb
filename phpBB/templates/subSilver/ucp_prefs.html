@@ -44,9 +44,15 @@
 				<td class="row2"><input type="radio" name="viewemail" value="1"{VIEW_EMAIL_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="viewemail" value="0"{VIEW_EMAIL_NO} /><span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr> 
+				<td class="row1"><b class="genmed">{L_ADMIN_EMAIL}:</b></td>
+				<td class="row2"><input type="radio" name="massemail" value="1"{ADMIN_EMAIL_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="massemail" value="0"{ADMIN_EMAIL_NO} /><span class="gen">{L_NO}</span></td>
+			</tr>
+			<!-- IF S_CAN_HIDE_ONLINE -->
+			<tr> 
 				<td class="row1"><b class="genmed">{L_HIDE_ONLINE}:</b></td>
 				<td class="row2"><input type="radio" name="hideonline" value="1"{HIDE_ONLINE_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="hideonline" value="0"{HIDE_ONLINE_NO} /><span class="gen">{L_NO}</span></td>
 			</tr>
+			<!-- ENDIF -->
 			<tr> 
 				<td class="row1"><b class="genmed">{L_NOTIFY_ON_PM}:</b></td>
 				<td class="row2"><input type="radio" name="notifypm" value="1"{NOTIFY_PM_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="notifypm" value="0"{NOTIFY_PM_NO} /><span class="gen">{L_NO}</span></td>
@@ -105,6 +111,10 @@
 				<td class="row2"><input type="radio" name="wordcensor" value="1"{DISABLE_CENSORS_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="wordcensor" value="0"{DISABLE_CENSORS_NO} /><span class="gen">{L_NO}</span></td>
 			</tr>
 			<!-- ENDIF -->
+			<tr>
+				<td class="row1"><b class="genmed">{L_MINIMUM_KARMA}:</b><br /><span class="gensmall">{L_MINIMUM_KARMA_EXPLAIN}</span></td>
+				<td class="row2"><select name="minkarma">{S_MIN_KARMA_OPTIONS}</select></td>
+
 			<tr> 
 				<td class="row1"><b class="genmed">{L_VIEW_TOPICS_DAYS}:</b></td>
 				<td class="row2">{S_SELECT_SORT_DAYS}</td>

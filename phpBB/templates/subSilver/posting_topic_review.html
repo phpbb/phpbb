@@ -69,17 +69,48 @@ function addquote(post_id, username) {
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
-		<td width="22%" align="left" valign="top"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span></td>
-		<td height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<td rowspan="2" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a>
+		
+			<table width="150" cellspacing="0" cellpadding="4" border="0">
+				<tr>
+					<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+				</tr>
+				<tr>
+					<td align="center">{postrow.KARMA_IMG}</td>
+				</tr>
+			</table>
+		</td>
+		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td width="100%">{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
-				<td valign="top" align="right" nowrap="nowrap"><!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a><!-- ENDIF --></td>
+				<td>&nbsp;</td>
+				<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+				<td class="gensmall" width="100%" valign="middle">{postrow.POST_SUBJECT}</td>
+				<td valign="top" nowrap="nowrap">&nbsp;<!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a><!-- ENDIF --></td>
+			</tr>
+		</table></td>
+	</tr>
+	<!-- IF postrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+
+		<td valign="top"><table width="100%" cellspacing="0" cellpadding="5" border="0">
+			<tr>
+				<td height="120" valign="top"><table width="100%" cellspacing="0" cellpadding="2">
+					<tr>
+						<td><div id="message_{postrow.POST_ID}" class="postbody">{postrow.MESSAGE}</div></td>
+					</tr>
+				</table></td>
 			</tr>
 			<tr>
-				<td colspan="2"><hr /></td>
-			</tr>
-			<tr>
-				<td colspan="2"><span class="postbody"><div id="message_{postrow.POST_ID}">{postrow.MESSAGE}</div></span></td>
+				<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr valign="middle">
+						<td width="100%">&nbsp;</td>
+						<td width="10" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a></td>
+						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+					</tr>
+				</table></td>
 			</tr>
 		</table></td>
 	</tr>

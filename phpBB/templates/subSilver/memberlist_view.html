@@ -19,6 +19,9 @@
 			<tr>
 				<td class="gen" align="center"><!-- IF USER_COLOR neq '' --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
 			</tr>
+			<tr>
+				<td align="center">{KARMA_IMG}</td>
+			</tr>
 			<!-- IF RANK -->
 			<tr>
 				<td class="postdetails" align="center">{RANK}</td>
@@ -69,34 +72,38 @@
 		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr> 
 				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
-				<td class="row1" valign="middle" width="100%"><b class="gen">{EMAIL_IMG}</b></td>
+				<td class="row1" valign="middle" width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_PM}: </td>
-				<td valign="middle"><b class="gen">{PM_IMG}</b></td>
+				<td valign="middle"><!-- IF U_PM --><a href="{U_PM}">{PM_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_MSNM}: </td>
-				<td valign="middle"><span class="gen">{MSN_IMG}</span></td>
+				<td valign="middle"><!-- IF U_MSN --><a href="{U_MSN}" onclick="im_popup('{U_MSN}', 550, 320); return false">{MSN_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_YIM}: </td>
-				<td valign="middle">{YIM_IMG}</td>
+				<td valign="middle"><!-- IF U_YIM --><a href="{U_YIM}" onclick="im_popup('{U_YIM}', 780, 550); return false">{YIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_AIM}: </td>
-				<td valign="middle">{AIM_IMG}</td>
+				<td valign="middle"><!-- IF U_AIM --><a href="{U_AIM}" onclick="im_popup('{U_AIM}', 550, 320); return false">{AIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_ICQ}: </td>
-				<td><script language="JavaScript" type="text/javascript"><!-- 
+				<td valign="top"><!-- IF U_ICQ --><script language="JavaScript" type="text/javascript"><!-- 
 
 		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
-			document.write(' {ICQ_IMG}');
+			document.write(' <a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a>');
 		else
-			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
+			document.write('<div style="position:relative"><div style="position:absolute"><a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a></div><div style="position:absolute;left:3px;top:-1px"><a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_STATUS_IMG}</a></div></div>');
 		  
-				//--></script><noscript>{ICQ_IMG}</noscript></td>
+				//--></script><noscript><a href="{U_ICQ}">{ICQ_IMG}</a></noscript><!-- ENDIF --></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_JABBER}: </td>
+				<td valign="middle"><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="im_popup('{U_JABBER}', 550, 320); return false">{JABBER_IMG}</a><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 		<td class="row1" valign="top"><table cellspacing="1" cellpadding="2" border="0">
@@ -118,7 +125,7 @@
 			</tr>
 			<tr> 
 				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
-				<td><b class="gen">{WWW}</b></td>
+				<td><!-- IF U_WWW --><a href="{U_WWW}" target="_userwww">{WWW_IMG}</a><!-- ENDIF --></td>
 			</tr>
 		</table></td>
 	</tr>

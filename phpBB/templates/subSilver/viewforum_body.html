@@ -81,13 +81,13 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF -->
 				</td>
 				<!-- ENDIF -->
-				<td width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
+				<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}<a class="topictitle" href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
 			</tr>
 		</table></td>
-		<td class="row2" align="center" valign="middle"><span class="name">{topicrow.TOPIC_AUTHOR}</span></td>
-		<td class="row1" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
-		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.VIEWS}</span></td>
-		<td class="row1" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</span></td>
+		<td class="row2" align="center" valign="middle"><span class="topicauthor">{topicrow.TOPIC_AUTHOR}</span></td>
+		<td class="row1" align="center" valign="middle"><span class="topicdetails">{topicrow.REPLIES}</span></td>
+		<td class="row2" align="center" valign="middle"><span class="topicdetails">{topicrow.VIEWS}</span></td>
+		<td class="row1" align="center" valign="middle" nowrap="nowrap"><span class="topicdetails">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</span></td>
 	</tr>
 
 	<!-- BEGINELSE -->
