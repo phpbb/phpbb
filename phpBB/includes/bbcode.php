@@ -36,11 +36,6 @@ class bbcode
 
 	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = '')
 	{
-		if (empty($this->bbcode_cache))
-		{
-			$this->bbcode_cache_init();
-		}
-
 		if ($bbcode_uid)
 		{
 			$this->bbcode_uid = $bbcode_uid;
@@ -48,6 +43,11 @@ class bbcode
 		if ($bbcode_bitfield)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
+		}
+
+		if (empty($this->bbcode_cache))
+		{
+			$this->bbcode_cache_init();
 		}
 
 		$str = array('search' => array(), 'replace' => array());
@@ -101,7 +101,6 @@ class bbcode
 			{
 				continue;
 			}
-
 			$bbcode_ids[] = $bbcode_id;
 
 			// WARNING: hardcoded values. it assumes that bbcodes with bbcode_id > 11 are user-defined bbcodes
