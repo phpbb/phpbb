@@ -352,6 +352,8 @@ $lang['Forum_delete'] = 'Verwijder Forum';
 $lang['Forum_delete_explain'] = 'Met het formulier hieronder kun je een forum (of categorie) verwijderen en bepalen waarheen je alle topics (of forums) wilt verplaatsen.';
 
 $lang['Forum_settings'] = 'Algemene Forum Instellingen';
+$lang['Status_locked'] = 'Gesloten';
+$lang['Status_unlocked'] = 'Open';
 $lang['Forum_name'] = 'Forum naam';
 $lang['Forum_desc'] = 'Omschrijving';
 $lang['Forum_status'] = 'Forum status';

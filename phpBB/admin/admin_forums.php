@@ -301,11 +301,14 @@ if( !empty($mode) )
 			$catlist = get_list('category', $cat_id, TRUE);
 
 			$forumstatus == ( FORUM_LOCKED ) ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
+			
+			// These two options ($lang['Status_unlocked'] and $lang['Status_locked']) seem to be missing from
+			// the language files.
+			$lang['Status_unlocked'] = isset($lang['Status_unlocked']) ? $lang['Status_unlocked'] : 'Unlocked';
+			$lang['Status_locked'] = isset($lang['Status_locked']) ? $lang['Status_locked'] : 'Locked';
+			
 			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
-
 			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n"; 
-
-
 
 			$template->set_filenames(array(
 				"body" => "admin/forum_edit_body.tpl")
