@@ -473,10 +473,11 @@ CREATE TABLE phpbb_styles_template (
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
    theme_id tinyint(4) UNSIGNED NOT NULL auto_increment,
-   theme_name varchar(30),
-   theme_copyright varchar(50),
-   theme_path varchar(30),
-   css_data text,
+   theme_name varchar(30) DEFAULT '' NOT NULL,
+   theme_copyright varchar(50) DEFAULT '' NOT NULL,
+   theme_path varchar(30) DEFAULT '' NOT NULL,
+   css_storedb tinyint(1) DEFAULT '0' NOT NULL, 
+   css_data text DEFAULT '' NOT NULL,
    PRIMARY KEY (theme_id)
 );
 
