@@ -1,5 +1,5 @@
 			<tr>
-				<td class="row2" colspan="2"><br clear="all" /><form method="POST" action="{S_VOTE_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
+				<td class="row2" colspan="2"><br clear="all" /><form method="POST" action="{S_POLL_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
 					<tr>
 						<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span></td>
 					</tr>

@@ -6,11 +6,11 @@
 </table>
 
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
-  <!-- BEGIN groups_joined -->
+  <!-- BEGIN switch_groups_joined -->
   <tr> 
 	<th colspan="2" align="center" class="thHead" height="25">{L_GROUP_MEMBERSHIP_DETAILS}</th>
   </tr>
-  <!-- BEGIN groups_member -->
+  <!-- BEGIN switch_groups_member -->
   <tr> 
 	<td class="row1"><span class="gen">{L_YOU_BELONG_GROUPS}</span></td>
 	<td class="row2" align="right"> 
@@ -24,8 +24,8 @@
 	  </table>
 	</td>
   </tr>
-  <!-- END groups_member -->
-  <!-- BEGIN groups_pending -->
+  <!-- END switch_groups_member -->
+  <!-- BEGIN switch_groups_pending -->
   <tr> 
 	<td class="row1"><span class="gen">{L_PENDING_GROUPS}</span></td>
 	<td class="row2" align="right"> 
@@ -39,9 +39,9 @@
 	  </table>
 	</td>
   </tr>
-  <!-- END groups_pending -->
-  <!-- END groups_joined -->
-  <!-- BEGIN groups_remaining -->
+  <!-- END switch_groups_pending -->
+  <!-- END switch_groups_joined -->
+  <!-- BEGIN switch_groups_remaining -->
   <tr> 
 	<th colspan="2" align="center" class="thHead" height="25">{L_JOIN_A_GROUP}</th>
   </tr>
@@ -58,7 +58,7 @@
 	  </table>
 	</td>
   </tr>
-  <!-- END groups_remaining -->
+  <!-- END switch_groups_remaining -->
 </table>
 
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">

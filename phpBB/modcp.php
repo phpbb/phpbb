@@ -86,7 +86,9 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 	{
 		$redirect = "index.$phpEx";
 	}
-	header("Location: " . append_sid($redirect, true));
+
+	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . append_sid($redirect, true));
 }
 
 //
@@ -179,7 +181,7 @@ init_userprefs($userdata);
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata);
 
-if( !$is_auth['auth_mod'] )
+if ( !$is_auth['auth_mod'] )
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
@@ -403,14 +405,13 @@ switch($mode)
 					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . $topics[$i];
 				}
 
-				$sql_select = "SELECT * 
+				$sql = "SELECT * 
 					FROM " . TOPICS_TABLE . " 
 					WHERE topic_id IN ($topic_list) 
 						AND topic_moved_id = 0";
-
-				if ( !($result = $db->sql_query($sql_select, BEGIN_TRANSACTION)) )
+				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
 				{
-					message_die(GENERAL_ERROR, 'Could not select from topic table', '', __LINE__, __FILE__, $sql_select);
+					message_die(GENERAL_ERROR, 'Could not select from topic table', '', __LINE__, __FILE__, $sql);
 				}
 
 				$row = $db->sql_fetchrowset($result);
@@ -518,14 +519,14 @@ switch($mode)
 				'L_YES' => $lang['Yes'],
 				'L_NO' => $lang['No'],
 
-				'S_FORUM_BOX' => make_forum_select('new_forum', $forum_id), 
+				'S_FORUM_SELECT' => make_forum_select('new_forum', $forum_id), 
 				'S_MODCP_ACTION' => append_sid("modcp.$phpEx"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
-			$template->pparse("movetopic");
+
+			$template->pparse('movetopic');
 
 			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
 		}
 		break;
 
@@ -724,6 +725,7 @@ switch($mode)
 					'L_POST_SUBJECT' => $lang['Post_subject'], 
 					'L_MARK_ALL' => $lang['Mark_all'], 
 					'L_UNMARK_ALL' => $lang['Unmark_all'], 
+					'L_POST' => $lang['Post'], 
 
 					'FORUM_NAME' => $forum_name, 
 
@@ -797,8 +799,9 @@ switch($mode)
 						'POST_DATE' => $post_date,
 						'POST_SUBJECT' => $post_subject,
 						'MESSAGE' => $message,
-						'SPLIT_CHECKBOX' => $checkbox,
-						'POST_ID' => $post_id)
+						'POST_ID' => $post_id,
+						
+						'S_SPLIT_CHECKBOX' => $checkbox)
 					);
 				}
 
@@ -872,39 +875,43 @@ switch($mode)
 			message_die(GENERAL_ERROR, 'Could not get IP information for this user', '', __LINE__, __FILE__, $sql);
 		}
 
-		$poster_ips = $db->sql_fetchrowset($result);
-
-		$j = 0;
-		for($i = 0; $i < count($poster_ips); $i++)
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $poster_ips[$i]['poster_ip'] == $post_row['poster_ip'] )
+			$i = 0;
+			do
 			{
-				$template->assign_vars(array(
-					'POSTINGS' => $poster_ips[$i]['postings'] . ' ' .$lang['Posts'])
+				if ( $row['poster_ip'] == $post_row['poster_ip'] )
+				{
+					$template->assign_vars(array(
+						'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ))
+					);
+					continue;
+				}
+
+				$ip = decode_ip($row['poster_ip']);
+				$ip = ( $rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
+
+				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+				$template->assign_block_vars('iprow', array(
+					'ROW_COLOR' => '#' . $row_color, 
+					'ROW_CLASS' => $row_class, 
+					'IP' => $ip,
+					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
+
+					'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip']))
 				);
-				continue;
+
+				$i++; 
 			}
-			$ip = decode_ip($poster_ips[$i]['poster_ip']);
-			$ip = ( $rdns_ip_num == $poster_ips[$i]['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
-
-			$j++; // Can't use $i because of the 'continue'
-			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-			$template->assign_block_vars('iprow', array(
-				'ROW_COLOR' => '#' . $row_color, 
-				'ROW_CLASS' => $row_class, 
-				'IP' => $ip,
-				'POSTINGS' => $poster_ips[$i]['postings'] . ' ' .$lang['Posts'],
-
-				'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $poster_ips[$i]['poster_ip']))
-			);
+			while ( $row = $db->sql_fetchrow($result) );
 		}
 
 		//
 		// Get other users who've posted under this IP
 		//
-		$sql = "SELECT u.user_id, u.username, count(*) as postings 
+		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings 
 			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p 
 			WHERE p.poster_id = u.user_id 
 				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
@@ -915,29 +922,34 @@ switch($mode)
 			message_die(GENERAL_ERROR, 'Could not get posters information based on IP', '', __LINE__, __FILE__, $sql);
 		}
 
-		$poster_ids = $db->sql_fetchrowset($result);
-
-		for($i = 0; $i < count($poster_ids); $i++)
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			$id = $poster_ids[$i]['user_id'];
-			$username = ( $is == ANONYMOUS ) ? $lang['Guest'] : $poster_ids[$i]['username'];
+			$i = 0;
+			do
+			{
+				$id = $row['user_id'];
+				$username = ( $id == ANONYMOUS ) ? $lang['Guest'] : $row['username'];
 
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$template->assign_block_vars('userrow', array(
-				'ROW_COLOR' => '#' . $row_color, 
-				'ROW_CLASS' => $row_class, 
-				'USERNAME' => $username,
-				'POSTINGS' => $poster_ids[$i]['postings'] . ' ' .$lang['Posts'],
-				'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username), 
+				$template->assign_block_vars('userrow', array(
+					'ROW_COLOR' => '#' . $row_color, 
+					'ROW_CLASS' => $row_class, 
+					'USERNAME' => $username,
+					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
+					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username), 
 
-				'U_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-				'U_SEARCHPOSTS' => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
-			);
+					'U_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
+					'U_SEARCHPOSTS' => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
+				);
+
+				$i++; 
+			}
+			while ( $row = $db->sql_fetchrow($result) );
 		}
 
-		$template->pparse("viewip");
+		$template->pparse('viewip');
 
 		break;
 
@@ -961,6 +973,10 @@ switch($mode)
 			'L_MOVE' => $lang['Move'],
 			'L_LOCK' => $lang['Lock'],
 			'L_UNLOCK' => $lang['Unlock'],
+			'L_TOPICS' => $lang['Topics'], 
+			'L_REPLIES' => $lang['Replies'], 
+			'L_LASTPOST' => $lang['Last_Post'], 
+			'L_SELECT' => $lang['Select'], 
 
 			'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
 			'S_HIDDEN_FIELDS' => '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">',
@@ -1018,8 +1034,6 @@ switch($mode)
 				}
 			}
 
-			$folder_image = '<img src="' . $folder_img . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" />';
-
 			$topic_id = $row['topic_id'];
 			$topic_type = $row['topic_type'];
 			$topic_status = $row['topic_status'];
@@ -1060,20 +1074,20 @@ switch($mode)
 			$template->assign_block_vars('topicrow', array(
 				'U_VIEW_TOPIC' => $u_view_topic,
 
-				'FOLDER_IMG' => $folder_image, 
+				'TOPIC_FOLDER_IMG' => $folder_img, 
 				'TOPIC_TYPE' => $topic_type, 
 				'TOPIC_TITLE' => $topic_title,
 				'REPLIES' => $topic_replies,
-				'LAST_POST' => $last_post_time,
-				'TOPIC_ID' => $topic_id)
+				'LAST_POST_TIME' => $last_post_time,
+				'TOPIC_ID' => $topic_id,
+					
+				'L_TOPIC_FOLDER_ALT' => $folder_alt)
 			);
 		}
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
-
 			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
-
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
 

@@ -94,16 +94,16 @@ if ( $result = $db->sql_query($sql) )
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 					$emailer = new emailer($board_config['smtp_delivery']);
 
-					$email_headers = "From: " . $userdata['user_email'] . "\n";
+					$email_headers = 'From: ' . $userdata['user_email'] . "\n";
 					if ( !empty($HTTP_POST_VARS['cc_email']) )
 					{
 						$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
 					}
-					$email_headers .= "Return-Path: " . $userdata['user_email'] . "\n";
-					$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
-					$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
-					$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
-					$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+					$email_headers .= 'Return-Path: ' . $userdata['user_email'] . "\n";
+					$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
+					$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
+					$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
+					$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\r\n";
 
 					$emailer->use_template('profile_send_email', $user_lang);
 					$emailer->email_address($user_email);
@@ -138,20 +138,9 @@ if ( $result = $db->sql_query($sql) )
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
-			'body' => 'profile_send_email.tpl',
-			'jumpbox' => 'jumpbox.tpl')
+			'body' => 'profile_send_email.tpl')
 		);
-
-		$jumpbox = make_jumpbox();
-		$template->assign_vars(array(
-			'L_GO' => $lang['Go'],
-			'L_JUMP_TO' => $lang['Jump_to'],
-			'L_SELECT_FORUM' => $lang['Select_forum'],
-
-			'S_JUMPBOX_LIST' => $jumpbox,
-			'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
-		);
-		$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+		make_jumpbox('viewforum.'.$phpEx);
 
 		if ( $error )
 		{
@@ -164,15 +153,9 @@ if ( $result = $db->sql_query($sql) )
 			$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
 		}
 
-		if ( $userdata['user_sig'] != '' )
-		{
-			$template->assign_block_vars('signature_checkbox', array());
-		}
-
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'S_SIGNATURE_CHECKED' => ( $attach_sig ) ? 'checked="checked"' : '', 
 			'S_POST_ACTION' => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 
@@ -184,7 +167,6 @@ if ( $result = $db->sql_query($sql) )
 			'L_EMPTY_MESSAGE_EMAIL' => $lang['Empty_message_email'],
 			'L_OPTIONS' => $lang['Options'],
 			'L_CC_EMAIL' => $lang['CC_email'], 
-			'L_NOTIFY_ON_REPLY' => $lang['Notify'], 
 			'L_SPELLCHECK' => $lang['Spellcheck'],
 			'L_SEND_EMAIL' => $lang['Send_email'])
 		);

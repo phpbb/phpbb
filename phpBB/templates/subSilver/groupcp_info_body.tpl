@@ -1,45 +1,48 @@
  
-<form method="post" action="{S_GROUPCP_ACTION}">
+<form action="{S_GROUPCP_ACTION}" method="post">
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-  <tr> 
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-  </tr>
+	<tr>
+		<td align="left" class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
+	</tr>
 </table>
 
-  <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+<table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr> 
-	  <th colspan="7" class="thHead" height="25"><span class="tableTitle">{L_GROUP_INFORMATION}</span></th>
+		<th class="thHead" colspan="7" height="25"><span class="tableTitle">{L_GROUP_INFORMATION}</span></th>
 	</tr>
 	<tr> 
-	  <td class="row1" width="20%"><span class="gen">{L_GROUP_NAME}:</span></td>
-	  <td class="row2"><span class="gen"><b>{GROUP_NAME}</b></span></td>
+		<td class="row1" width="20%"><span class="gen">{L_GROUP_NAME}:</span></td>
+		<td class="row2"><span class="gen"><b>{GROUP_NAME}</b></span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="20%"><span class="gen">{L_GROUP_DESC}:</span></td>
-	  <td class="row2"><span class="gen">{GROUP_DESC}</span></td>
+		<td class="row1" width="20%"><span class="gen">{L_GROUP_DESC}:</span></td>
+		<td class="row2"><span class="gen">{GROUP_DESC}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="20%"><span class="gen">{L_GROUP_MEMBERSHIP}:</span></td>
-	  <td class="row2"><span class="gen">{GROUP_DETAILS} &nbsp;&nbsp;
-	  <!-- BEGIN switch_subscribe_group_input -->
-	  <input class="mainoption" type="submit" name="joingroup" value="{L_JOIN_GROUP}" />
-	  <!-- END switch_subscribe_group_input -->
-	  <!-- BEGIN switch_unsubscribe_group_input -->
-	  <input class="mainoption" type="submit" name="unsub" value="{L_UNSUBSCRIBE_GROUP}" />
-	  <!-- END switch_unsubscribe_group_input -->
-	  </span></td>
+		<td class="row1" width="20%"><span class="gen">{L_GROUP_MEMBERSHIP}:</span></td>
+		<td class="row2"><span class="gen">{GROUP_DETAILS} &nbsp;&nbsp;
+		<!-- BEGIN switch_subscribe_group_input -->
+		<input class="mainoption" type="submit" name="joingroup" value="{L_JOIN_GROUP}" />
+		<!-- END switch_subscribe_group_input -->
+		<!-- BEGIN switch_unsubscribe_group_input -->
+		<input class="mainoption" type="submit" name="unsub" value="{L_UNSUBSCRIBE_GROUP}" />
+		<!-- END switch_unsubscribe_group_input -->
+		</span></td>
 	</tr>
 	<!-- BEGIN switch_mod_option -->
 	<tr> 
-	  <td class="row1" width="20%"><span class="gen">{L_GROUP_TYPE}:</span></td>
-	  <td class="row2"><span class="gen"><span class="gen"><input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN} &nbsp;&nbsp; <input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" /></span></td>
+		<td class="row1" width="20%"><span class="gen">{L_GROUP_TYPE}:</span></td>
+		<td class="row2"><span class="gen"><span class="gen"><input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN} &nbsp;&nbsp; <input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" /></span></td>
 	</tr>
 	<!-- END switch_mod_option -->
-  </table>
+</table>
+
 {S_HIDDEN_FIELDS}
+
 </form>
 
-<form method="post" action="{S_GROUPCP_ACTION}" name="post">
+<form action="{S_GROUPCP_ACTION}" method="post" name="post">
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
 	  <th class="thCornerL" height="25">{L_PM}</th>
@@ -50,11 +53,9 @@
 	  <th class="thTop">{L_WEBSITE}</th>
 	  <th class="thCornerR">{L_SELECT}</th>
 	</tr>
-
 	<tr> 
 	  <td class="catSides" colspan="8" height="28"><span class="cattitle">{L_GROUP_MODERATOR}</span></td>
 	</tr>
-
 	<tr> 
 	  <td class="row1" align="center"> {MOD_PM_IMG} </td>
 	  <td class="row1" align="center"><span class="gen"><a href="{U_MOD_VIEWPROFILE}" class="gen">{MOD_USERNAME}</a></span></td>
@@ -64,11 +65,9 @@
 	  <td class="row1" align="center">{MOD_WWW_IMG}</td>
 	  <td class="row1" align="center"> &nbsp; </td>
 	</tr>
-
 	<tr> 
 	  <td class="catSides" colspan="8" height="28"><span class="cattitle">{L_GROUP_MEMBERS}</span></td>
 	</tr>
-
 	<!-- BEGIN member_row -->
 	<tr> 
 	  <td class="{member_row.ROW_CLASS}" align="center"> {member_row.PM_IMG} </td>

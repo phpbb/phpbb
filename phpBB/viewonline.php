@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = "./";
+$phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
@@ -35,37 +35,22 @@ init_userprefs($userdata);
 //
 
 //
-// Output page header and load
-// viewonline template
+// Output page header and load viewonline template
 //
 $page_title = $lang['Who_is_online'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	"body" => "viewonline_body.tpl",
-	"jumpbox" => "jumpbox.tpl")
+	'body' => 'viewonline_body.tpl')
 );
-
-$jumpbox = make_jumpbox();
-$template->assign_vars(array(
-	"L_GO" => $lang['Go'],
-	"L_JUMP_TO" => $lang['Jump_to'],
-	"L_SELECT_FORUM" => $lang['Select_forum'],
-	
-	"S_JUMPBOX_LIST" => $jumpbox,
-	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
-);
-$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-//
-// End header
-//
+make_jumpbox('viewforum.'.$phpEx);
 
 $template->assign_vars(array(
-	"L_WHOSONLINE" => $lang['Who_is_online'],
-	"L_ONLINE_EXPLAIN" => $lang['Online_explain'],
-	"L_USERNAME" => $lang['Username'],
-	"L_FORUM_LOCATION" => $lang['Forum_Location'],
-	"L_LAST_UPDATE" => $lang['Last_updated'])
+	'L_WHOSONLINE' => $lang['Who_is_online'],
+	'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
+	'L_USERNAME' => $lang['Username'],
+	'L_FORUM_LOCATION' => $lang['Forum_Location'],
+	'L_LAST_UPDATE' => $lang['Last_updated'])
 );
 
 //
@@ -82,7 +67,7 @@ if( $result = $db->sql_query($sql) )
 }
 else
 {
-	message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_ERROR, 'Could not obtain user/online forums information', '', __LINE__, __FILE__, $sql);
 }
 
 //
@@ -94,15 +79,15 @@ $is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 //
 // Get user list
 //
-$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip 
-	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-	WHERE u.user_id = s.session_user_id 
-		AND ( u.user_session_time >= " . ( time() - 300 ) . " 
-			OR s.session_time >= " . ( time() - 300 ) . " )  
-	ORDER BY u.username ASC, s.session_ip";
+$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip
+	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
+	WHERE u.user_id = s.session_user_id
+		AND ( s.session_time >= ".( time() - 300 ) . " 
+			OR u.user_session_time >= " . ( time() - 300 ) . " )
+	ORDER BY u.username ASC, s.session_ip ASC";
 if ( !($result = $db->sql_query($sql)) )
 {
-	message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_ERROR, 'Could not obtain regd user/online information', '', __LINE__, __FILE__, $sql);
 }
 
 if( $row = $db->sql_fetchrow($result) )
@@ -128,7 +113,7 @@ if( $row = $db->sql_fetchrow($result) )
 			{
 				$username = $row['username'];
 
-				$style_color = "";
+				$style_color = '';
 				if ( $row['user_level'] == ADMIN )
 				{
 					$username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
@@ -226,7 +211,7 @@ if( $row = $db->sql_fetchrow($result) )
 			}
 			else
 			{
-				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $user_page);
+				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $user_page);
 				$location = $forum_data[$user_page];
 			}
 
@@ -234,14 +219,14 @@ if( $row = $db->sql_fetchrow($result) )
 			$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$template->assign_block_vars("$which_row", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
-				"USERNAME" => $username,
-				"LASTUPDATE" => create_date($board_config['default_dateformat'], $last_update, $board_config['board_timezone']),
-				"FORUM_LOCATION" => $location,
+				'ROW_COLOR' => '#' . $row_color,
+				'ROW_CLASS' => $row_class,
+				'USERNAME' => $username,
+				'LASTUPDATE' => create_date($board_config['default_dateformat'], $last_update, $board_config['board_timezone']),
+				'FORUM_LOCATION' => $location,
 
-				"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
-				"U_FORUM_LOCATION" => append_sid($location_url))
+				'U_USER_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
+				'U_FORUM_LOCATION' => append_sid($location_url))
 			);
 
 			$$which_counter++;
@@ -289,26 +274,26 @@ if( $row = $db->sql_fetchrow($result) )
 	}
 
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
-		"TOTAL_GUEST_USERS_ONLINE" => sprintf($l_g_user_s, $guest_users))
+		'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
+		'TOTAL_GUEST_USERS_ONLINE' => sprintf($l_g_user_s, $guest_users))
 	);
 
 	if ( $registered_users + $hidden_users == 0 )
 	{
 		$template->assign_vars(array(
-			"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
+			'L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing'])
 		);
 	}
 
 	if ( $guest_users == 0 )
 	{
 		$template->assign_vars(array(
-			"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
+			'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'])
 		);
 	}
 }
 
-$template->pparse("body");
+$template->pparse('body');
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

@@ -24,7 +24,7 @@
 		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
 		<td class="row2"><input type="text" class="post" style="width:200px" name="email" size="25" maxlength="255" value="{EMAIL}" /></td>
 	</tr>
-	<!-- BEGIN edit_profile -->
+	<!-- BEGIN switch_edit_profile -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_CURRENT_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
@@ -32,7 +32,7 @@
 		<input type="password" class="post" style="width: 200px" name="cur_password" size="25" maxlength="100" value="{PASSWORD}" />
 	  </td>
 	</tr>
-	<!-- END edit_profile -->
+	<!-- END switch_edit_profile -->
 	<tr> 
 	  <td class="row1"><span class="gen">{L_NEW_PASSWORD}: *</span><br />
 		<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
@@ -211,7 +211,7 @@
 	<tr> 
 	  <td class="catSides" colspan="2" height="28">&nbsp;</td>
 	</tr>
-	<!-- BEGIN avatar_block -->
+	<!-- BEGIN switch_avatar_block -->
 	<tr> 
 	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>
@@ -223,31 +223,31 @@
 			</tr>
 		</table></td>
 	</tr>
-	<!-- BEGIN avatar_local_upload -->
+	<!-- BEGIN switch_avatar_local_upload -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
 		<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatar_local_upload -->
-	<!-- BEGIN avatar_remote_upload -->
+	<!-- END switch_avatar_local_upload -->
+	<!-- BEGIN switch_avatar_remote_upload -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
 		<td class="row2"><input type="text" name="avatarurl" size="40" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatar_remote_upload -->
-	<!-- BEGIN avatar_remote_link -->
+	<!-- END switch_avatar_remote_upload -->
+	<!-- BEGIN switch_avatar_remote_link -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
 		<td class="row2"><input type="text" name="avatarremoteurl" size="40" class="post" style="width:200px" /></td>
 	</tr>
-	<!-- END avatar_remote_link -->
-	<!-- BEGIN avatar_local_gallery -->
+	<!-- END switch_avatar_remote_link -->
+	<!-- BEGIN switch_avatar_local_gallery -->
 	<tr> 
 		<td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
 		<td class="row2"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" /></td>
 	</tr>
-	<!-- END avatar_local_gallery -->
-	<!-- END avatar_block -->
+	<!-- END switch_avatar_local_gallery -->
+	<!-- END switch_avatar_block -->
 	<tr>
 		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" name="reset" class="liteoption" /></td>
 	</tr>

@@ -236,27 +236,22 @@ function storeCaret(textEl) {
 	</tr>
 </table>
 
-  <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
 	<tr> 
-	  <th class="thHead" colspan="2" height="25"><b>{L_POST_A}</b></th>
+		<th class="thHead" colspan="2" height="25"><b>{L_POST_A}</b></th>
 	</tr>
-				<!-- BEGIN username_select -->
-				<tr> 
-				  <td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-				  <td class="row2"><span class="genmed"><input type="text" class="post" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></span></td>
-				</tr>
-				<!-- END username_select -->
-	<!-- This is for private messaging -->
-	<!-- BEGIN privmsg_extensions -->
+	<!-- BEGIN switch_username_select -->
 	<tr> 
-	  <td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-	  <td class="row2"><span class="genmed"> 
-		<input type="text"  class="post" name="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />
-		&nbsp; 
-		<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" />
-		</span></td>
+		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
+		<td class="row2"><span class="genmed"><input type="text" class="post" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></span></td>
 	</tr>
-	<!-- END privmsg_extensions -->
+	<!-- END switch_username_select -->
+	<!-- BEGIN switch_privmsg -->
+	<tr> 
+		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
+		<td class="row2"><span class="genmed"><input type="text"  class="post" name="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />&nbsp;<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></span></td>
+	</tr>
+	<!-- END switch_privmsg -->
 	<tr> 
 	  <td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
 	  <td class="row2" width="78%"> <span class="gen"> 
@@ -374,60 +369,60 @@ function storeCaret(textEl) {
 	  <td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><span class="gensmall">{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</span></td>
 	  <td class="row2"><span class="gen"> </span> 
 		<table cellspacing="0" cellpadding="1" border="0">
-		  <!-- BEGIN html_checkbox -->
+		  <!-- BEGIN switch_html_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="disable_html" {S_HTML_CHECKED} />
 			</td>
 			<td><span class="gen">{L_DISABLE_HTML}</span></td>
 		  </tr>
-		  <!-- END html_checkbox -->
-		  <!-- BEGIN bbcode_checkbox -->
+		  <!-- END switch_html_checkbox -->
+		  <!-- BEGIN switch_bbcode_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} />
 			</td>
 			<td><span class="gen">{L_DISABLE_BBCODE}</span></td>
 		  </tr>
-		  <!-- END bbcode_checkbox -->
-		  <!-- BEGIN smilies_checkbox -->
+		  <!-- END switch_bbcode_checkbox -->
+		  <!-- BEGIN switch_smilies_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} />
 			</td>
 			<td><span class="gen">{L_DISABLE_SMILIES}</span></td>
 		  </tr>
-		  <!-- END smilies_checkbox -->
-		  <!-- BEGIN signature_checkbox -->
+		  <!-- END switch_smilies_checkbox -->
+		  <!-- BEGIN switch_signature_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} />
 			</td>
 			<td><span class="gen">{L_ATTACH_SIGNATURE}</span></td>
 		  </tr>
-		  <!-- END signature_checkbox -->
-		  <!-- BEGIN notify_checkbox -->
+		  <!-- END switch_signature_checkbox -->
+		  <!-- BEGIN switch_notify_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="notify" {S_NOTIFY_CHECKED} />
 			</td>
 			<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
 		  </tr>
-		  <!-- END notify_checkbox -->
-		  <!-- BEGIN delete_checkbox -->
+		  <!-- END switch_notify_checkbox -->
+		  <!-- BEGIN switch_delete_checkbox -->
 		  <tr> 
 			<td> 
 			  <input type="checkbox" name="delete" />
 			</td>
 			<td><span class="gen">{L_DELETE_POST}</span></td>
 		  </tr>
-		  <!-- END delete_checkbox -->
-		  <!-- BEGIN type_toggle -->
+		  <!-- END switch_delete_checkbox -->
+		  <!-- BEGIN switch_type_toggle -->
 		  <tr> 
 			<td></td>
 			<td><span class="gen">{S_TYPE_TOGGLE}</span></td>
 		  </tr>
-		  <!-- END type_toggle -->
+		  <!-- END switch_type_toggle -->
 		</table>
 	  </td>
 	</tr>

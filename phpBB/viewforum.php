@@ -389,26 +389,15 @@ $page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'viewforum_body.tpl',
-	'jumpbox' => 'jumpbox.tpl')
+	'body' => 'viewforum_body.tpl')
 );
-
-$jumpbox = make_jumpbox();
-$template->assign_vars(array(
-	'L_GO' => $lang['Go'],
-	'L_JUMP_TO' => $lang['Jump_to'],
-	'L_SELECT_FORUM' => $lang['Select_forum'],
-	
-	'S_JUMPBOX_LIST' => $jumpbox,
-	'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
-);
-$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+make_jumpbox('viewforum.'.$phpEx);
 
 $template->assign_vars(array(
 	'FORUM_ID' => $forum_id,
 	'FORUM_NAME' => $forum_row['forum_name'],
 	'MODERATORS' => $forum_moderators,
-	'IMG_POST' => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'],
+	'POST_IMG' => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'],
 
 	'FOLDER_IMG' => $images['folder'],
 	'FOLDER_NEW_IMG' => $images['folder_new'],
@@ -421,9 +410,25 @@ $template->assign_vars(array(
 	'FOLDER_ANNOUNCE_IMG' => $images['folder_announce'],
 	'FOLDER_ANNOUNCE_NEW_IMG' => $images['folder_announce_new'],
 
+	'L_TOPICS' => $lang['Topics'],
+	'L_REPLIES' => $lang['Replies'],
+	'L_VIEWS' => $lang['Views'],
+	'L_POSTS' => $lang['Posts'],
+	'L_LASTPOST' => $lang['Last_Post'], 
 	'L_MODERATOR' => $l_moderators, 
 	'L_MARK_TOPICS_READ' => $lang['Mark_all_topics'], 
 	'L_POST_NEW_TOPIC' => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
+	'L_NO_NEW_POSTS' => $lang['No_new_posts'],
+	'L_NEW_POSTS' => $lang['New_posts'],
+	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
+	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
+	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'],
+	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'],
+	'L_ANNOUNCEMENT' => $lang['Post_Announcement'], 
+	'L_STICKY' => $lang['Post_Sticky'], 
+	'L_POSTED' => $lang['Posted'],
+	'L_JOINED' => $lang['Joined'],
+	'L_AUTHOR' => $lang['Author'],
 
 	'S_AUTH_LIST' => $s_auth_can, 
 
@@ -473,7 +478,8 @@ if( $total_topics )
 			$topic_type = $lang['Topic_Moved'] . ' ';
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
-			$folder_image = '<img src="' . $images['folder'] . '" alt="' . $lang['No_new_posts'] . '" title="' . $lang['No_new_posts'] . '" />';
+			$folder_image =  $images['folder'];
+			$folder_alt = $lang['Topic_Moved'];
 			$newest_post_img = '';
 		}
 		else
@@ -542,36 +548,40 @@ if( $total_topics )
 
 						if( $unread_topics )
 						{
-							$folder_image = '<img src="' . $folder_new . '" alt="' . $lang['New_posts'] . '" title="' . $lang['New_posts'] . '" />';
+							$folder_image = $folder_new;
+							$folder_alt = $lang['New_posts'];
 
 							$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 						}
 						else
 						{
+							$folder_image = $folder;
 							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-							$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
 							$newest_post_img = '';
 						}
 					}
 					else
 					{
-						$folder_image = '<img src="' . $folder_new . '" alt="' . $lang['New_posts'] . '" title="' . $lang['New_posts'] . '" />';
+						$folder_image = $folder_new;
+						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 						$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
 				}
 				else 
 				{
+					$folder_image = $folder;
 					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-					$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
+
 					$newest_post_img = '';
 				}
 			}
 			else
 			{
+				$folder_image = $folder;
 				$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-				$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
+
 				$newest_post_img = '';
 			}
 		}
@@ -606,35 +616,43 @@ if( $total_topics )
 		
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
-		$topic_poster = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']) . '">' : '';
-		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != "" ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
-		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $topic_rowset[$i]['user_id']) . '">' : '';
+		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != '' ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
+
+		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+
+		$first_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_time'], $board_config['board_timezone']);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
 
-		$last_post = $last_post_time . '<br />';
-		$last_post .= ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username2'] != "" ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a> ';
-		$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
+		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username2'] != '' ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a>';
+
+		$last_post_url = '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $topic_rowset[$i]['topic_last_post_id']) . '#' . $topic_rowset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
 		$views = $topic_rowset[$i]['topic_views'];
 		
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars("topicrow", array(
+		$template->assign_block_vars('topicrow', array(
+			'ROW_COLOR' => $row_color,
+			'ROW_CLASS' => $row_class,
 			'FORUM_ID' => $forum_id,
 			'TOPIC_ID' => $topic_id,
-			'FOLDER' => $folder_image,
-			'TOPIC_POSTER' => $topic_poster,
+			'TOPIC_FOLDER_IMG' => $folder_image, 
+			'TOPIC_AUTHOR' => $topic_author, 
 			'GOTO_PAGE' => $goto_page,
 			'REPLIES' => $replies,
 			'NEWEST_POST_IMG' => $newest_post_img, 
 			'TOPIC_TITLE' => $topic_title,
 			'TOPIC_TYPE' => $topic_type,
 			'VIEWS' => $views,
-			'LAST_POST' => $last_post,
-			'ROW_COLOR' => $row_color,
-			'ROW_CLASS' => $row_class,
+			'FIRST_POST_TIME' => $first_post_time, 
+			'LAST_POST_TIME' => $last_post_time, 
+			'LAST_POST_AUTHOR' => $last_post_author, 
+			'LAST_POST_IMG' => $last_post_url, 
+
+			'L_TOPIC_FOLDER_ALT' => $folder_alt, 
 
 			'U_VIEW_TOPIC' => $view_topic_url)
 		);
@@ -646,7 +664,6 @@ if( $total_topics )
 
 		'L_GOTO_PAGE' => $lang['Goto_page'])
 	);
-
 }
 else
 {
@@ -658,7 +675,7 @@ else
 		'L_NO_TOPICS' => $no_topics_msg)
 	);
 
-	$template->assign_block_vars('notopicsrow', array() );
+	$template->assign_block_vars('switch_no_topics', array() );
 
 }
 

@@ -27,7 +27,7 @@
 define("IN_LOGIN", true);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = "./";
+$phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
@@ -40,6 +40,8 @@ init_userprefs($userdata);
 // End session management
 //
 
+$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
 	//
@@ -47,19 +49,17 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	// since this doesn't exist for ISAPI mode and therefore the 
 	// normal Location redirector is used in preference
 	//
-	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
-		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : "";
-		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : "";
+		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : '';
+		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level 
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\'", "''", $username) . "'";
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
 		}
 
 		if( $row = $db->sql_fetchrow($result) )
@@ -94,10 +94,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				}
 				else
 				{
-					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
 
 					$template->assign_vars(array(
-						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
 					);
 
 					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
@@ -111,7 +111,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
 
 			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
 			);
 
 			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
@@ -159,7 +159,7 @@ else
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
-			"body" => "login_body.tpl")
+			'body' => 'login_body.tpl')
 		);
 
 		if( isset($HTTP_POST_VARS['redirect']) || isset($HTTP_GET_VARS['redirect']) )
@@ -170,25 +170,25 @@ else
 			{
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
 
-				$forward_match = explode("&", $forward_to);
+				$forward_match = explode('&', $forward_to);
 
 				if(count($forward_match) > 1)
 				{
-					$forward_page = "";
+					$forward_page = '';
 
 					for($i = 1; $i < count($forward_match); $i++)
 					{
 						if( !ereg("sid=", $forward_match[$i]) )
 						{
-							if( $forward_page != "" )
+							if( $forward_page != '' )
 							{
-								$forward_page .= "&";
+								$forward_page .= '&';
 							}
 							$forward_page .= $forward_match[$i];
 						}
 					}
 
-					$forward_page = $forward_match[0] . "?" . $forward_page;
+					$forward_page = $forward_match[0] . '?' . $forward_page;
 				}
 				else
 				{
@@ -198,31 +198,32 @@ else
 		}
 		else
 		{
-			$forward_page = "";
+			$forward_page = '';
 		}
 
-		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : "";
+		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 
+		make_jumpbox('viewforum.'.$phpEx, $forum_id);
 		$template->assign_vars(array(
-			"USERNAME" => $username,
+			'USERNAME' => $username,
 
-			"L_ENTER_PASSWORD" => $lang['Enter_password'], 
-			"L_SEND_PASSWORD" => $lang['Forgotten_password'],
+			'L_ENTER_PASSWORD' => $lang['Enter_password'], 
+			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
-			"U_SEND_PASSWORD" => append_sid("profile.$phpEx?mode=sendpassword"), 
+			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"), 
 			
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
+			'S_HIDDEN_FIELDS' => $s_hidden_fields)
 		);
 
-		$template->pparse("body");
+		$template->pparse('body');
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 	else
 	{
-		header("Location: " . append_sid("index.$phpEx", true));
+		header($header_location . append_sid("index.$phpEx", true));
 	}
 
 }

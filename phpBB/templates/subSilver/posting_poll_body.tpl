@@ -23,9 +23,9 @@
 				<td class="row1"><span class="gen"><b>{L_POLL_LENGTH}</b></span></td>
 				<td class="row2"><span class="genmed"><input type="text" name="poll_length" size="3" maxlength="3" class="post" value="{POLL_LENGTH}" /></span>&nbsp;<span class="gen"><b>{L_DAYS}</b></span> &nbsp; <span class="gensmall">{L_POLL_LENGTH_EXPLAIN}</span></td>
 			</tr>
-			<!-- BEGIN poll_delete_toggle -->
+			<!-- BEGIN switch_poll_delete_toggle -->
             <tr>
 				<td class="row1"><span class="gen"><b>{L_POLL_DELETE}</b></span></td>
 				<td class="row2"><input type="checkbox" name="poll_delete" /></td>
 			</tr>
-			<!-- END poll_delete_toggle -->
+			<!-- END switch_poll_delete_toggle -->

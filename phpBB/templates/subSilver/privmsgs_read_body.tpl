@@ -2,13 +2,13 @@
 <table cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
 	<td valign="middle">{INBOX_IMG}</td>
-	<td valign="middle"><span class="cattitle">{INBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle"><span class="cattitle">{INBOX} &nbsp;</span></td>
 	<td valign="middle">{SENTBOX_IMG}</td>
-	<td valign="middle"><span class="cattitle">{SENTBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle"><span class="cattitle">{SENTBOX} &nbsp;</span></td>
 	<td valign="middle">{OUTBOX_IMG}</td>
-	<td valign="middle"><span class="cattitle">{OUTBOX_LINK}&nbsp;&nbsp;</span></td>
+	<td valign="middle"><span class="cattitle">{OUTBOX} &nbsp;</span></td>
 	<td valign="middle">{SAVEBOX_IMG}</td>
-	<td valign="middle"><span class="cattitle">{SAVEBOX_LINK}</span></td>
+	<td valign="middle"><span class="cattitle">{SAVEBOX}</span></td>
   </tr>
 </table>
 
@@ -54,11 +54,11 @@
 			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
 		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
-			document.write('{ICQ_ADD_IMG}');
+			document.write('{ICQ_IMG}');
 		else
-			document.write('<div style="position:relative"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
+			document.write('<div style="position:relative"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
 		  
-		  //--></script><noscript>{ICQ_ADD_IMG}</noscript></td>
+		  //--></script><noscript>{ICQ_IMG}</noscript></td>
 		  </tr>
 		</table>
 	  </td>

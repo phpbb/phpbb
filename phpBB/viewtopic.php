@@ -45,11 +45,7 @@ if ( isset($HTTP_GET_VARS[POST_POST_URL]))
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-//
-// End initial var setup
-//
-
-if( !isset($topic_id) && !isset($post_id) )
+if ( !isset($topic_id) && !isset($post_id) )
 {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
@@ -62,6 +58,8 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if ( $HTTP_GET_VARS['view'] == 'newest' )
 	{
+		$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+
 		if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) )
 		{
 			$session_id = $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid'];
@@ -85,24 +83,15 @@ if ( isset($HTTP_GET_VARS['view']) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 				{
 					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
 				}
-				else
-				{
-					$post_id = $row['post_id'];
-					header("Location: " . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
-					exit;
-				}
-			}
-			else
-			{
-				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
+
+				$post_id = $row['post_id'];
+				header($header_location . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
 				exit;
 			}
 		}
-		else
-		{
-			header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
-			exit;
-		}
+
+		header($header_location . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
+		exit;
 	}
 	else if ( $HTTP_GET_VARS['view'] == 'next' || $HTTP_GET_VARS['view'] == 'previous' )
 	{
@@ -224,7 +213,7 @@ if( $userdata['session_logged_in'] )
 		FROM " . TOPICS_WATCH_TABLE . "
 		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
-	if( !($result = $db->sql_query($sql)) )
+	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Could not obtain topic watch information", '', __LINE__, __FILE__, $sql);
 	}
@@ -462,7 +451,6 @@ if ( count($orig_word) )
 if ( isset($HTTP_GET_VARS['highlight']) )
 {
 	$highlight_match = array();
-	$highlight_replace = array();
 
 	//
 	// Split words and phrases
@@ -473,13 +461,11 @@ if ( isset($HTTP_GET_VARS['highlight']) )
 	{
 		if ( trim($words[$i]) != '' )
 		{
-			$highlight_match[] = '#\b(\/?)(' . str_replace("*", ".*?", $words[$i]) . ')(?!(.*?".">.*?<)|(.*?\">)|((1)?'.'>))\b#i';
-			$highlight_replace[] = '<span style="color:#' . $theme['fontcolor3'] . '"><b>\2</b></span>';
+			$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $words[$i]) . ')\b#is';
 		}
 	}
 
 	$highlight_active = ( count($highlight_match) ) ? true : false;
-
 }
 else
 {
@@ -492,9 +478,7 @@ else
 //
 $new_topic_url = append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
 $reply_topic_url = append_sid("posting.$phpEx?mode=reply&amp;" . POST_TOPIC_URL . "=$topic_id");
-
 $view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-
 $view_prev_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
 $view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=next");
 
@@ -540,7 +524,7 @@ if ( $userdata['session_logged_in'] )
 		$topic_last_read = $userdata['user_lastvisit'];
 	}
 
-	if( count($tracking_topics) == 150 && empty($tracking_topics[$topic_id]) )
+	if ( count($tracking_topics) >= 150 && empty($tracking_topics[$topic_id]) )
 	{
 		asort($tracking_topics);
 		unset($tracking_topics[key($tracking_topics)]);
@@ -548,39 +532,22 @@ if ( $userdata['session_logged_in'] )
 
 	$tracking_topics[$topic_id] = time();
 
-	setcookie($board_config['cookie_name'] . _t, serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+	setcookie($board_config['cookie_name'] . '_t', serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 }
 
-//
-// Dump out the page header and load viewtopic body template
-//
 //
 // Load templates
 //
 $template->set_filenames(array(
-	'body' => 'viewtopic_body.tpl',
-	'jumpbox' => 'jumpbox.tpl')
+	'body' => 'viewtopic_body.tpl')
 );
-
-$jumpbox = make_jumpbox($forum_id);
-$template->assign_vars(array(
-	'L_GO' => $lang['Go'],
-	'L_JUMP_TO' => $lang['Jump_to'],
-	'L_SELECT_FORUM' => $lang['Select_forum'],
-
-	'S_JUMPBOX_LIST' => $jumpbox,
-	'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
-);
-$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 //
 // Output page header
 // 
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-//
-// End header
-//
 
 //
 // User authorisation levels output
@@ -608,7 +575,6 @@ if ( $is_auth['auth_mod'] )
 // Topic watch information
 //
 $s_watching_topic = '';
-
 if ( $can_watch_topic )
 {
 	if ( $is_watching_topic )
@@ -640,10 +606,12 @@ $template->assign_vars(array(
 	'PAGINATION' => $pagination,
 	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
 
-	'IMG_POST' => $post_img,
-	'IMG_REPLY' => $reply_img,
+	'POST_IMG' => $post_img,
+	'REPLY_IMG' => $reply_img,
 
-	'L_POSTED' => $lang['Posted'],
+	'L_AUTHOR' => $lang['Author'],
+	'L_MESSAGE' => $lang['Message'],
+	'L_POSTED' => $lang['Posted'], 
 	'L_POST_SUBJECT' => $lang['Post_subject'],
 	'L_VIEW_NEXT_TOPIC' => $lang['View_next_topic'],
 	'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
@@ -803,11 +771,10 @@ if ( !empty($forum_row['topic_vote']) )
 			'POLL_QUESTION' => $vote_title,
 
 			'S_HIDDEN_FIELDS' => ( !empty($s_hidden_fields) ) ? $s_hidden_fields : '',
-			'S_VOTE_ACTION' => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
+			'S_POLL_ACTION' => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
 		);
 
 		$template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');
-
 	}
 }
 
@@ -861,31 +828,24 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if ( $userdata['session_logged_in'] && $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read )
 	{
-		$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" title="' . $lang['New_post'] . '" border="0" />';
+		$mini_post_img = $images['icon_minipost_new'];
+		$mini_post_alt = $lang['New_post'];
 	}
 	else
 	{
-		$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" title="' . $lang['Post'] . '" border="0" />';
+		$mini_post_img = $images['icon_minipost'];
+		$mini_post_alt = $lang['Post'];
 	}
 	
 	$mini_post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $postrow[$i]['post_id']) . '#' . $postrow[$i]['post_id'];
 
 	//
-	// Generate ranks
-	//
-	
-	//
-	// Set them to empty string initially, in case we don't find a rank for this dude.
+	// Generate ranks, set them to empty string initially.
 	//
 	$poster_rank = '';
 	$rank_image = '';
 	if ( $postrow[$i]['user_id'] == ANONYMOUS )
 	{
-		//
-		// This is redundant, but some day we might wanna stick in a rank for anon. posts.
-		//
-		$poster_rank = '';
-		$rank_image = '';
 	}
 	else if ( $postrow[$i]['user_rank'] )
 	{
@@ -919,85 +879,123 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
+	$temp_url = '';
+
 	if ( $poster_id != ANONYMOUS )
 	{
-		$profile_img = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+		$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
+		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-		$pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+		$temp_url = append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id");
+		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 		if ( !empty($postrow[$i]['user_viewemail']) || $is_auth['auth_mod'] )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $postrow[$i]['user_email'];
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
 		}
 		else
 		{
 			$email_img = '';
+			$email = '';
 		}
 
-		$www_img = ($postrow[$i]['user_website']) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+		$www_img = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+		$www = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
 		if ( !empty($postrow[$i]['user_icq']) )
 		{
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . $lang['ICQ'] . '</a>';
 		}
 		else
 		{
 			$icq_status_img = '';
-			$icq_add_img = '';
+			$icq_img = '';
+			$icq = '';
 		}
 
 		$aim_img = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+		$aim = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-		$msn_img = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+		$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
+		$msn_img = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+		$msn = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
 		$yim_img = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+		$yim = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 	}
 	else
 	{
 		$profile_img = '';
+		$profile = '';
 		$pm_img = '';
+		$pm = '';
 		$email_img = '';
+		$email = '';
 		$www_img = '';
+		$www = '';
 		$icq_status_img = '';
-		$icq_add_img = '';
+		$icq_img = '';
+		$icq = '';
 		$aim_img = '';
+		$aim = '';
 		$msn_img = '';
+		$msn = '';
 		$yim_img = '';
+		$yim = '';
 	}
 
-	$quote_img = '<a href="' . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
+	$temp_url = append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
+	$quote_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
+	$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
 
-	$search_img = '<a href="' . append_sid("search.$phpEx?search_author=" . urlencode($poster)) . '"><img src="' . $images['icon_search'] . '" border="0" /></a>';
+	$temp_url = append_sid("search.$phpEx?search_author=" . urlencode($postrow[$i]['username']) . "&amp;showresults=posts");
+	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . $lang['Search_user_posts'] . '" title="' . $lang['Search_user_posts'] . '" border="0" /></a>';
+	$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
 
 	if ( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
 	{
-		$edit_img = '<a href="' . append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
+		$temp_url = append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
+		$edit_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
+		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
 	}
 	else
 	{
 		$edit_img = '';
+		$edit = '';
 	}
 
 	if ( $is_auth['auth_mod'] )
 	{
-		$ip_img = '<a href="' . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;" . POST_TOPIC_URL . "=" . $topic_id) . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
+		$temp_url = append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;" . POST_TOPIC_URL . "=" . $topic_id);
+		$ip_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
+		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
 
-		$delpost_img = '<a href="' . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+		$temp_url = append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
+		$delpost_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+		$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 	}
 	else
 	{
 		$ip_img = '';
+		$ip = '';
 
 		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $i == $total_replies - 1 )
 		{
-			$delpost_img = '<a href="' . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+			$temp_url = append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
+			$delpost_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+			$delpost_img = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 		}
 		else
 		{
 			$delpost_img = '';
+			$delpost = '';
 		}
 	}
 
@@ -1010,8 +1008,7 @@ for($i = 0; $i < $total_posts; $i++)
 	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
 
 	//
-	// Note! The order used for parsing the message _is_
-	// important, moving things around could break any 
+	// Note! The order used for parsing the message _is_ important, moving things around could break any 
 	// output
 	//
 
@@ -1048,7 +1045,7 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 	}
 
-	if ( $user_sig != '' )
+	if ( $user_sig != '' && $board_config['allow_sig'] )
 	{
 		$user_sig = make_clickable($user_sig);
 	}
@@ -1059,7 +1056,77 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if ( $highlight_active )
 	{
-		$message = preg_replace($highlight_match, $highlight_replace, $message);
+		if ( preg_match('/<.*>/', $message) )
+		{
+			$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
+
+			$end_html = 0;
+			$start_html = 1;
+			$temp_message = '';
+			$message = ' ' . $message . ' ';
+
+			while( $start_html = strpos($message, '<', $start_html) )
+			{
+				$grab_length = $start_html - $end_html - 1;
+				$temp_message .= substr($message, $end_html + 1, $grab_length);
+
+				if ( $end_html = strpos($message, '>', $start_html) )
+				{
+					$length = $end_html - $start_html + 1;
+					$hold_string = substr($message, $start_html, $length);
+
+					if ( strrpos(' ' . $hold_string, '<') != 1 )
+					{
+						$end_html = $start_html + 1;
+						$end_counter = 1;
+
+						while ( $end_counter && $end_html < strlen($message) )
+						{
+							if ( substr($message, $end_html, 1) == '>' )
+							{
+								$end_counter--;
+							}
+							else if ( substr($message, $end_html, 1) == '<' )
+							{
+								$end_counter++;
+							}
+
+							$end_html++;
+						}
+
+						$length = $end_html - $start_html + 1;
+						$hold_string = substr($message, $start_html, $length);
+						$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
+						$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
+					}
+					else if ( $hold_string == '<!-- #sh -->' )
+					{
+						$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
+					}
+					else if ( $hold_string == '<!-- #eh -->' )
+					{
+						$hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
+					}
+
+					$temp_message .= $hold_string;
+
+					$start_html += $length;
+				}
+				else
+				{
+					$start_html = strlen($message);
+				}
+			}
+
+			$grab_length = strlen($message) - $end_html - 1;
+			$temp_message .= substr($message, $end_html + 1, $grab_length);
+
+			$message = trim($temp_message);
+		}
+		else
+		{
+			$message = preg_replace($highlight_match, '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>', $message);
+		}
 	}
 
 	//
@@ -1098,7 +1165,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if ( $user_sig != '' )
 	{
-		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />", $user_sig);
+		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $user_sig);
 	}
 
 	$message = str_replace("\n", "\n<br />\n", $message);
@@ -1127,8 +1194,6 @@ for($i = 0; $i < $total_posts; $i++)
 	$template->assign_block_vars('postrow', array(
 		'ROW_COLOR' => '#' . $row_color,
 		'ROW_CLASS' => $row_class,
-		'MINI_POST_IMG' => $mini_post_img, 
-
 		'POSTER_NAME' => $poster,
 		'POSTER_RANK' => $poster_rank,
 		'RANK_IMAGE' => $rank_image,
@@ -1136,33 +1201,44 @@ for($i = 0; $i < $total_posts; $i++)
 		'POSTER_POSTS' => $poster_posts,
 		'POSTER_FROM' => $poster_from,
 		'POSTER_AVATAR' => $poster_avatar,
-
 		'POST_DATE' => $post_date,
 		'POST_SUBJECT' => $post_subject,
 		'MESSAGE' => $message, 
 		'SIGNATURE' => $user_sig, 
 		'EDITED_MESSAGE' => $l_edited_by, 
 
-		'PROFILE_IMG' => $profile_img,
+		'MINI_POST_IMG' => $mini_post_img, 
+		'PROFILE_IMG' => $profile_img, 
+		'PROFILE' => $profile, 
 		'SEARCH_IMG' => $search_img,
+		'SEARCH' => $search,
 		'PM_IMG' => $pm_img,
+		'PM' => $pm,
 		'EMAIL_IMG' => $email_img,
+		'EMAIL' => $email,
 		'WWW_IMG' => $www_img,
-		'ICQ' => ( !empty($postrow[$i]['user_icq']) ) ? $postrow[$i]['user_icq'] : '&nbsp;', 
-		'ICQ_IMG' => ( !empty($postrow[$i]['user_icq']) ) ? $images['icon_icq'] : '&nbsp;',
+		'WWW' => $www,
 		'ICQ_STATUS_IMG' => $icq_status_img,
-		'ICQ_ADD_IMG' => $icq_add_img, 
+		'ICQ_IMG' => $icq_img, 
+		'ICQ' => $icq, 
 		'AIM_IMG' => $aim_img,
+		'AIM' => $aim,
 		'MSN_IMG' => $msn_img,
+		'MSN' => $msn,
 		'YIM_IMG' => $yim_img,
-
+		'YIM' => $yim,
 		'EDIT_IMG' => $edit_img,
+		'EDIT' => $edit,
 		'QUOTE_IMG' => $quote_img,
+		'QUOTE' => $quote,
 		'IP_IMG' => $ip_img, 
+		'IP' => $ip, 
 		'DELETE_IMG' => $delpost_img, 
+		'DELETE' => $delpost, 
+
+		'L_MINI_POST_ALT' => $mini_post_alt, 
 
 		'U_MINI_POST' => $mini_post_url,
-
 		'U_POST_ID' => $postrow[$i]['post_id'])
 	);
 }

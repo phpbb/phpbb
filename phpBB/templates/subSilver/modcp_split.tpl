@@ -48,7 +48,7 @@
 	  <td width="100%" valign="top" class="{postrow.ROW_CLASS}"> 
 		<table width="100%" cellspacing="0" cellpadding="3" border="0">
 		  <tr> 
-			<td valign="middle"><img src="templates/subSilver/images/icon_minipost.gif" alt="Post image icon"><span class="postdetails">{L_POSTED}: 
+			<td valign="middle"><img src="templates/subSilver/images/icon_minipost.gif" alt="{L_POST}"><span class="postdetails">{L_POSTED}: 
 			  {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 		  </tr>
 		  <tr> 
@@ -58,7 +58,7 @@
 		  </tr>
 		</table>
 	  </td>
-	  <td width="5%" align="center" class="{postrow.ROW_CLASS}">{postrow.SPLIT_CHECKBOX}</td>
+	  <td width="5%" align="center" class="{postrow.ROW_CLASS}">{postrow.S_SPLIT_CHECKBOX}</td>
 	</tr>
 	<tr> 
 	  <td colspan="3" height="1" class="row3"><img src="templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>

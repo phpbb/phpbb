@@ -1,10 +1,4 @@
 
-<!-- Spell checker option part 1: You must sign up for free at www.spellchecker.net to use this option -->
-<!-- Change the path to point to the file you got once signed up at Spellchecker.net -->
-<!-- Remember to uncomment the spellchecker button near the end of this template -->
-<!-- script type="text/javascript" language="javascript" src=spellcheck/spch.js></script -->
-<!-- End spellchecker option -->
-
 <script language="JavaScript" type="text/javascript">
 <!--
 function checkForm(formObj) {
@@ -63,13 +57,7 @@ function checkForm(formObj) {
 		</table></td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center" height="28"> {S_HIDDEN_FORM_FIELDS} 
-		<!-- Spell checker option part 2: You must sign up for free at www.spellchecker.net to use this option -->
-		<!-- Change the path in the onclick function to point to your files you got once signed up at Spellchecker.net -->
-		<!-- Remember to uncomment the link to the javascript file at the top of this template -->
-		<!-- input type="button" tabindex="4" class="liteoption" name="spellcheck" value="{L_SPELLCHECK}" onClick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB/spellcheck/sproxy.php', true);" / -->
-		<!-- End spellchecker option -->
-		&nbsp;<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
+		<td class="catBottom" colspan="2" align="center" height="28"><input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
 	</tr>
 </table>
 

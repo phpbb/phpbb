@@ -278,7 +278,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	}
 	@reset($avatar_images);
 
-	$s_categories = '';
+	$s_categories = '<select name="avatarcategory">';
 	while( list($key) = each($avatar_images) )
 	{
 		$selected = ( $key == $category ) ? ' selected="selected"' : '';
@@ -287,6 +287,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 			$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 		}
 	}
+	$s_categories .= '</select>';
 
 	$s_colspan = 0;
 	for($i = 0; $i < count($avatar_images[$category]); $i++)
@@ -323,7 +324,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		'L_RETURN_PROFILE' => $lang['Return_profile'], 
 		'L_CATEGORY' => $lang['Select_category'], 
 
-		'S_OPTIONS_CATEGORIES' => $s_categories, 
+		'S_CATEGORY_SELECT' => $s_categories, 
 		'S_COLSPAN' => $s_colspan, 
 		'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=$mode"), 
 		'S_HIDDEN_FIELDS' => $s_hidden_vars)

@@ -27,7 +27,7 @@
   </tr>
   <!-- BEGIN forumrow -->
   <tr> 
-	<td class="row1" align="center" valign="middle" height="50">{catrow.forumrow.FOLDER}</td>
+	<td class="row1" align="center" valign="middle" height="50"><img src="{catrow.forumrow.FORUM_FOLDER_IMG}" width="46" height="25" alt="{catrow.forumrow.L_FORUM_FOLDER_ALT}" title="{catrow.forumrow.L_FORUM_FOLDER_ALT}" /></td>
 	<td class="row1" width="100%" height="50"><span class="forumlink"> <a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink">{catrow.forumrow.FORUM_NAME}</a><br />
 	  </span> <span class="genmed">{catrow.forumrow.FORUM_DESC}<br />
 	  </span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
@@ -56,7 +56,7 @@
 	</td>
   </tr>
   <tr> 
-	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE} &nbsp; [ {L_WHOSONLINE_ADMIN} ] &nbsp; [ {L_WHOSONLINE_MOD} ]<br />{L_RECORD_USERS}<br />{LOGGED_IN_USER_LIST}</span></td>
+	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE} &nbsp; [ {L_WHOSONLINE_ADMIN} ] &nbsp; [ {L_WHOSONLINE_MOD} ]<br />{RECORD_USERS}<br />{LOGGED_IN_USER_LIST}</span></td>
   </tr>
 </table>
 

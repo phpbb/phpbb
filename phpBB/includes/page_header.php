@@ -31,22 +31,22 @@ define('HEADER_INC', TRUE);
 // gzip_compression
 //
 $do_gzip_compress = FALSE;
-if($board_config['gzip_compress'])
+if ( $board_config['gzip_compress'] )
 {
 	$phpver = phpversion();
 
-	if($phpver >= '4.0.4pl1')
+	if ( $phpver >= '4.0.4pl1' )
 	{
-		if(extension_loaded('zlib'))
+		if ( extension_loaded('zlib') )
 		{
 			ob_start('ob_gzhandler');
 		}
 	}
-	else if($phpver > '4.0')
+	else if ( $phpver > '4.0' )
 	{
-		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
+		if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
 		{
-			if(extension_loaded('zlib'))
+			if ( extension_loaded('zlib') )
 			{
 				$do_gzip_compress = TRUE;
 				ob_start();
@@ -68,14 +68,14 @@ $template->set_filenames(array(
 //
 // Generate logged in/logged out status
 //
-if($userdata['session_logged_in'])
+if ( $userdata['session_logged_in'] )
 {
-	$u_login_logout = "login.$phpEx?logout=true";
-	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata["username"] . ' ]';
+	$u_login_logout = 'login.'.$phpEx.'?logout=true';
+	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
 }
 else
 {
-	$u_login_logout = "login.$phpEx";
+	$u_login_logout = 'login.'.$phpEx;
 	$l_login_logout = $lang['Login'];
 }
 
@@ -87,7 +87,6 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 //
 $user_forum_sql = ( !empty($forum_id) ) ? "AND ( u.user_session_page = $forum_id 
 	OR s.session_page = $forum_id)" : '';
-
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
@@ -95,8 +94,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.s
 			OR u.user_session_time >= " . ( time() - 300 ) . " )
 		$user_forum_sql 
 	ORDER BY u.username ASC, s.session_ip ASC";
-$result = $db->sql_query($sql);
-if(!$result)
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 }
@@ -115,24 +113,24 @@ $prev_user_ip = '';
 while( $row = $db->sql_fetchrow($result) )
 {
 	// User is logged in and therefor not a guest
-	if( $row['session_logged_in'] )
+	if ( $row['session_logged_in'] )
 	{
 		// Skip multiple sessions for one user
-		if( $row['user_id'] != $prev_user_id )
+		if ( $row['user_id'] != $prev_user_id )
 		{
 			$style_color = '';
-			if( $row['user_level'] == ADMIN )
+			if ( $row['user_level'] == ADMIN )
 			{
 				$row['username'] = '<b>' . $row['username'] . '</b>';
 				$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
 			}
-			else if( $row['user_level'] == MOD )
+			else if ( $row['user_level'] == MOD )
 			{
 				$row['username'] = '<b>' . $row['username'] . '</b>';
 				$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 			}
 
-			if( $row['user_allow_viewonline'] )
+			if ( $row['user_allow_viewonline'] )
 			{
 				$user_online_link = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'>' . $row['username'] . '</a>';
 				$logged_visible_online++;
@@ -143,26 +141,27 @@ while( $row = $db->sql_fetchrow($result) )
 				$logged_hidden_online++;
 			}
 			
-			if( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
+			if ( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
 			{
-				$online_userlist .= ( $online_userlist != "" ) ? ", " . $user_online_link : $user_online_link;
+				$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 			}
 		}
+
+		$prev_user_id = $row['user_id'];
 	}
 	else
 	{
 		// Skip multiple sessions for one user
-		if( $row['session_ip'] != $prev_session_ip )
+		if ( $row['session_ip'] != $prev_session_ip )
 		{
 			$guests_online++;
 		}
 	}
 
 	$prev_session_ip = $row['session_ip'];
-	$prev_user_id = $row['user_id'];
 }
 
-if( empty($online_userlist) )
+if ( empty($online_userlist) )
 {
 	$online_userlist = $lang['None'];
 }
@@ -172,31 +171,31 @@ $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_o
 
 if ( $total_online_users > $board_config['record_online_users'])
 {
+	$board_config['record_online_users'] = $total_online_users;
+	$board_config['record_online_date'] = time();
+
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '$total_online_users'
 		WHERE config_name = 'record_online_users'";
-	if ( !$result = $db->sql_query($sql) )
+	if ( !$db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, 'Could not update online user record (nr of users)', '', __LINE__, __FILE__, $sql);
 	}
 
 	$sql = "UPDATE " . CONFIG_TABLE . "
-		SET config_value = '" . time() . "'
+		SET config_value = '" . $board_config['record_online_date'] . "'
 		WHERE config_name = 'record_online_date'";
-	if ( !$result = $db->sql_query($sql) )
+	if ( !$db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, 'Could not update online user record (date)', '', __LINE__, __FILE__, $sql);
 	}
-
-	$board_config['record_online_users'] = $total_online_users;
-	$board_config['record_online_date'] = time();
 }
 
-if( $total_online_users == 0 )
+if ( $total_online_users == 0 )
 {
 	$l_t_user_s = $lang['Online_users_zero_total'];
 }
-else if( $total_online_users == 1 )
+else if ( $total_online_users == 1 )
 {
 	$l_t_user_s = $lang['Online_user_total'];
 }
@@ -205,11 +204,11 @@ else
 	$l_t_user_s = $lang['Online_users_total'];
 }
 
-if( $logged_visible_online == 0 )
+if ( $logged_visible_online == 0 )
 {
 	$l_r_user_s = $lang['Reg_users_zero_total'];
 }
-else if( $logged_visible_online == 1 )
+else if ( $logged_visible_online == 1 )
 {
 	$l_r_user_s = $lang['Reg_user_total'];
 }
@@ -218,11 +217,11 @@ else
 	$l_r_user_s = $lang['Reg_users_total'];
 }
 
-if( $logged_hidden_online == 0 )
+if ( $logged_hidden_online == 0 )
 {
 	$l_h_user_s = $lang['Hidden_users_zero_total'];
 }
-else if( $logged_hidden_online == 1 )
+else if ( $logged_hidden_online == 1 )
 {
 	$l_h_user_s = $lang['Hidden_user_total'];
 }
@@ -231,11 +230,11 @@ else
 	$l_h_user_s = $lang['Hidden_users_total'];
 }
 
-if( $guests_online == 0 )
+if ( $guests_online == 0 )
 {
 	$l_g_user_s = $lang['Guest_users_zero_total'];
 }
-else if( $guests_online == 1 )
+else if ( $guests_online == 1 )
 {
 	$l_g_user_s = $lang['Guest_user_total'];
 }
@@ -253,19 +252,19 @@ $l_online_users .= sprintf($l_g_user_s, $guests_online);
 // Obtain number of new private messages
 // if user is logged in
 //
-if( $userdata['session_logged_in'] )
+if ( $userdata['session_logged_in'] )
 {
-	if( $userdata['user_new_privmsg'] )
+	if ( $userdata['user_new_privmsg'] )
 	{
 		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms']; 
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']); 
 
-		if( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
+		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET user_last_privmsg = " . $userdata['user_lastvisit'] . " 
 				WHERE user_id = " . $userdata['user_id'];
-			if( !$status = $db->sql_query($sql) )
+			if ( !($status = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
 			}
@@ -287,7 +286,7 @@ if( $userdata['session_logged_in'] )
 		$icon_pm = $images['pm_no_new_msg'];
 	}
 
-	if( $userdata['user_unread_privmsg'] )
+	if ( $userdata['user_unread_privmsg'] )
 	{
 		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms']; 
 		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']); 
@@ -301,7 +300,7 @@ else
 {
 	$icon_pm = $images['pm_no_new_msg'];
 	$l_privmsgs_text = $lang['Login_check_pm'];
-	$l_privmsgs_text_unread = "";
+	$l_privmsgs_text_unread = '';
 	$s_privmsg_new = 0;
 }
 
@@ -310,16 +309,16 @@ else
 //
 $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
-while(list($nav_item, $nav_array) = @each($nav_links) )
+while( list($nav_item, $nav_array) = @each($nav_links) )
 {
-	if( !empty($nav_array['url']) )
+	if ( !empty($nav_array['url']) )
 	{
 		$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nav_array['url'], $nav_array['title']);
 	}
 	else
 	{
 		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
-		while(list(,$nested_array) = each($nav_array) )
+		while( list(,$nested_array) = each($nav_array) )
 		{  
 			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
 		}
@@ -328,63 +327,43 @@ while(list($nav_item, $nav_array) = @each($nav_links) )
 
 //
 // The following assigns all _common_ variables that may be used at any point
-// in a template. Note that all URL's should be wrapped in append_sid, as
-// should all S_x_ACTIONS for forms.
+// in a template.
 //
 $template->assign_vars(array(
 	'SITENAME' => $board_config['sitename'], 
 	'SITE_DESCRIPTION' => $board_config['site_desc'], 
 	'PAGE_TITLE' => $page_title,
+	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit), 
+	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
 	'TOTAL_USERS_ONLINE' => $l_online_users,
-	'LOGGED_IN_USER_LIST' => $online_userlist,
+	'LOGGED_IN_USER_LIST' => $online_userlist, 
+	'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
 	'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
 	'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
 	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new, 
-	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit), 
-	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
 
 	'PRIVMSG_IMG' => $icon_pm,
 
-	'L_USERNAME' => $lang['Username'],
-	'L_PASSWORD' => $lang['Password'],
-	'L_LOGIN' => $lang['Login'],
-	'L_LOG_ME_IN' => $lang['Log_me_in'],
-	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
-	'L_REGISTER' => $lang['Register'],
-	'L_PROFILE' => $lang['Profile'],
-	'L_SEARCH' => $lang['Search'],
-	'L_PRIVATEMSGS' => $lang['Private_Messages'],
-	'L_WHO_IS_ONLINE' => $lang['Who_is_Online'],
-	'L_MEMBERLIST' => $lang['Memberlist'],
-	'L_FAQ' => $lang['FAQ'],
-	'L_USERGROUPS' => $lang['Usergroups'],
-	'L_FORUM' => $lang['Forum'],
-	'L_TOPICS' => $lang['Topics'],
-	'L_REPLIES' => $lang['Replies'],
-	'L_VIEWS' => $lang['Views'],
-	'L_POSTS' => $lang['Posts'],
-	'L_LASTPOST' => $lang['Last_Post'],
-	'L_NO_NEW_POSTS' => $lang['No_new_posts'],
-	'L_NEW_POSTS' => $lang['New_posts'],
-	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'],
-	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'],
-	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
-	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
-	'L_ANNOUNCEMENT' => $lang['Post_Announcement'], 
-	'L_STICKY' => $lang['Post_Sticky'], 
-	'L_POSTED' => $lang['Posted'],
-	'L_JOINED' => $lang['Joined'],
-	'L_AUTO_LOGIN' => $lang['Log_me_in'],
-	'L_AUTHOR' => $lang['Author'],
-	'L_SUBJECT' => $lang['Subject'],
-	'L_MESSAGE' => $lang['Message'],
-	'L_LOGIN_LOGOUT' => $l_login_logout,
+	'L_USERNAME' => $lang['Username'], 
+	'L_PASSWORD' => $lang['Password'], 
+	'L_LOGIN_LOGOUT' => $l_login_logout, 
+	'L_LOGIN' => $lang['Login'], 
+	'L_LOG_ME_IN' => $lang['Log_me_in'], 
+	'L_AUTO_LOGIN' => $lang['Log_me_in'], 
+	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']), 
+	'L_REGISTER' => $lang['Register'], 
+	'L_PROFILE' => $lang['Profile'], 
+	'L_SEARCH' => $lang['Search'], 
+	'L_PRIVATEMSGS' => $lang['Private_Messages'], 
+	'L_WHO_IS_ONLINE' => $lang['Who_is_Online'], 
+	'L_MEMBERLIST' => $lang['Memberlist'], 
+	'L_FAQ' => $lang['FAQ'], 
+	'L_USERGROUPS' => $lang['Usergroups'], 
 	'L_SEARCH_NEW' => $lang['Search_new'], 
-	'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'],
+	'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'], 
 	'L_SEARCH_SELF' => $lang['Search_your_posts'], 
 	'L_WHOSONLINE_ADMIN' => sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'), 
 	'L_WHOSONLINE_MOD' => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'), 
-	'L_RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
 
 	'U_SEARCH_UNANSWERED' => append_sid('search.'.$phpEx.'?search_id=unanswered'),
 	'U_SEARCH_SELF' => append_sid('search.'.$phpEx.'?search_id=egosearch'), 
@@ -455,7 +434,7 @@ $template->assign_vars(array(
 //
 // Login box?
 //
-if( !$userdata['session_logged_in'] )
+if ( !$userdata['session_logged_in'] )
 {
 	$template->assign_block_vars('switch_user_logged_out', array());
 }
@@ -463,21 +442,18 @@ else
 {
 	$template->assign_block_vars('switch_user_logged_in', array());
 
-	if( !empty($userdata['user_popup_pm']) )
+	if ( !empty($userdata['user_popup_pm']) )
 	{
 		$template->assign_block_vars('switch_enable_pm_popup', array());
 	}
 }
-if ( $HTTP_SERVER_VARS['REQUEST_METHOD'] == 'POST' )
-{
-	header ('Cache-Control: private, must-revalidate, max-age=25');
-}
-else
+
+if ( getenv('REQUEST_METHOD') != 'POST' )
 {
 	header ('Cache-Control: private, no-cache, must-revalidate, pre-check=2, post-check=2, max-age=25');
 	header ('Pragma: no-cache');
-	header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 }
+header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 header ('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
 $template->pparse('overall_header');

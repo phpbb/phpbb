@@ -680,20 +680,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 //
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-$template->set_filenames(array(
-	"jumpbox" => "jumpbox.tpl")
-);
-
-$jumpbox = make_jumpbox();
-$template->assign_vars(array(
-	'L_GO' => $lang['Go'],
-	'L_JUMP_TO' => $lang['Jump_to'],
-	'L_SELECT_FORUM' => $lang['Select_forum'],
-
-	'S_JUMPBOX_LIST' => $jumpbox,
-	'S_JUMPBOX_ACTION' => append_sid('viewforum.$phpEx'))
-);
-$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+make_jumpbox('viewforum.'.$phpEx);
 
 if ( $mode == 'editprofile' )
 {
@@ -711,7 +698,7 @@ if( isset($HTTP_POST_VARS['avatargallery']) && !$error )
 	$avatar_category = ( !empty($HTTP_POST_VARS['avatarcategory']) ) ? $HTTP_POST_VARS['avatarcategory'] : '';
 
 	$template->set_filenames(array(
-		"body" => "profile_avatar_gallery.tpl")
+		'body' => 'profile_avatar_gallery.tpl')
 	);
 
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat);
@@ -786,7 +773,7 @@ else
 
 	if ( $mode == 'editprofile' )
 	{
-		$template->assign_block_vars('edit_profile', array());
+		$template->assign_block_vars('switch_edit_profile', array());
 	}
 
 	//
@@ -908,25 +895,25 @@ else
 	//
 	if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 	{
-		$template->assign_block_vars('avatar_block', array() );
+		$template->assign_block_vars('switch_avatar_block', array() );
 
 		if ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) )
 		{
 			if ( $form_enctype != '' )
 			{
-				$template->assign_block_vars('avatar_block.avatar_local_upload', array() );
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', array() );
 			}
-			$template->assign_block_vars('avatar_block.avatar_remote_upload', array() );
+			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', array() );
 		}
 
 		if ( $board_config['allow_avatar_remote'] )
 		{
-			$template->assign_block_vars('avatar_block.avatar_remote_link', array() );
+			$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
 		}
 
 		if ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) )
 		{
-			$template->assign_block_vars('avatar_block.avatar_local_gallery', array() );
+			$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
 		}
 	}
 }

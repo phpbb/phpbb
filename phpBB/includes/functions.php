@@ -90,9 +90,9 @@ function get_userdata($user)
 	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
 }
 
-function make_jumpbox($match_forum_id = 0)
+function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $lang, $db, $SID, $nav_links, $phpEx;
+	global $template, $lang, $db, $SID, $nav_links, $phpEx;
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
@@ -174,7 +174,20 @@ function make_jumpbox($match_forum_id = 0)
 		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 	}
 
-	return $boxstring;
+	$template->set_filenames(array(
+		'jumpbox' => 'jumpbox.tpl')
+	);
+	$template->assign_vars(array(
+		'L_GO' => $lang['Go'],
+		'L_JUMP_TO' => $lang['Jump_to'],
+		'L_SELECT_FORUM' => $lang['Select_forum'],
+
+		'S_JUMPBOX_SELECT' => $boxstring,
+		'S_JUMPBOX_ACTION' => append_sid($action))
+	);
+	$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+
+	return;
 }
 
 //

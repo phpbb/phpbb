@@ -44,7 +44,7 @@
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr> 
 	<td><span class="nav">{PAGE_NUMBER}</span></td>
-	<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}&nbsp;</span></td>
+	<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
   </tr>
 </table></form>
 

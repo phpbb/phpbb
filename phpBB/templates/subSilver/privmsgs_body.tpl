@@ -18,18 +18,18 @@
 	  <table height="40" cellspacing="2" cellpadding="2" border="0">
 		<tr valign="middle"> 
 		  <td>{INBOX_IMG}</td>
-		  <td><span class="cattitle">{INBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td><span class="cattitle">{INBOX} &nbsp;</span></td>
 		  <td>{SENTBOX_IMG}</td>
-		  <td><span class="cattitle">{SENTBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td><span class="cattitle">{SENTBOX} &nbsp;</span></td>
 		  <td>{OUTBOX_IMG}</td>
-		  <td><span class="cattitle">{OUTBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td><span class="cattitle">{OUTBOX} &nbsp;</span></td>
 		  <td>{SAVEBOX_IMG}</td>
-		  <td><span class="cattitle">{SAVEBOX_LINK}&nbsp;&nbsp;</span></td>
+		  <td><span class="cattitle">{SAVEBOX} &nbsp;</span></td>
 		</tr>
 	  </table>
 	</td>
 	<td align="right"> 
-	  <!-- BEGIN box_size_notice -->
+	  <!-- BEGIN switch_box_size_notice -->
 	  <table width="175" cellspacing="1" cellpadding="2" border="0" class="bodyline">
 		<tr> 
 		  <td colspan="3" width="100%" class="row1" nowrap="nowrap"><span class="gensmall">{BOX_SIZE_STATUS}</span></td>
@@ -49,7 +49,7 @@
 		  <td width="33%" align="right" class="row1"><span class="gensmall">100%</span></td>
 		</tr>
 	  </table>
-	  <!-- END box_size_notice -->
+	  <!-- END switch_box_size_notice -->
 	</td>
   </tr>
 </table>
@@ -62,7 +62,7 @@
 	  <td align="left" valign="middle">{POST_PM_IMG}</td>
 	  <td align="left" width="100%">&nbsp;<span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
 	  <td align="right" nowrap="nowrap"><span class="gensmall">{L_DISPLAY_MESSAGES}: 
-		<select name="msgdays">{S_MSG_DAYS_OPTIONS}
+		<select name="msgdays">{S_SELECT_MSG_DAYS}
 		</select>
 		<input type="submit" value="{L_GO}" name="submit_msgdays" class="liteoption" />
 		</span></td>
@@ -79,7 +79,7 @@
 	</tr>
 	<!-- BEGIN listrow -->
 	<tr> 
-	  <td width="5%" align="center" valign="middle" class="{listrow.ROW_CLASS}"><span class="postdetails">{listrow.ICON_FLAG_IMG}</span></td>
+	  <td class="{listrow.ROW_CLASS}" width="5%" align="center" valign="middle"><img src="{listrow.PRIVMSG_FOLDER_IMG}" width="19" height="18" alt="{listrow.L_PRIVMSG_FOLDER_ALT}" title="{listrow.L_PRIVMSG_FOLDER_ALT}" /></td>
 	  <td width="55%" valign="middle" class="{listrow.ROW_CLASS}"><span class="topictitle">&nbsp;<a href="{listrow.U_READ}" class="topictitle">{listrow.SUBJECT}</a></span></td>
 	  <td width="20%" valign="middle" align="center" class="{listrow.ROW_CLASS}"><span class="name">&nbsp;<a href="{listrow.U_FROM_USER_PROFILE}" class="name">{listrow.FROM}</a></span></td>
 	  <td width="15%" align="center" valign="middle" class="{listrow.ROW_CLASS}"><span class="postdetails">{listrow.DATE}</span></td>
@@ -88,11 +88,11 @@
 		</span></td>
 	</tr>
 	<!-- END listrow -->
-	<!-- BEGIN nomessages -->
+	<!-- BEGIN switch_no_messages -->
 	<tr> 
 	  <td class="row1" colspan="5" align="center" valign="middle"><span class="gen">{L_NO_MESSAGES}</span></td>
 	</tr>
-	<!-- END nomessages -->
+	<!-- END switch_no_messages -->
 	<tr> 
 	  <td class="catBottom" colspan="5" height="28" align="right"> {S_HIDDEN_FIELDS} 
 		<input type="submit" name="save" value="{L_SAVE_MARKED}" class="mainoption" />

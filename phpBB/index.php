@@ -267,6 +267,17 @@ if( ( $total_categories = count($category_rows) ) )
 		'FORUM_NEW_IMG' => $images['forum_new'],
 		'FORUM_LOCKED_IMG' => $images['forum_locked'],
 
+		'L_FORUM' => $lang['Forum'],
+		'L_TOPICS' => $lang['Topics'],
+		'L_REPLIES' => $lang['Replies'],
+		'L_VIEWS' => $lang['Views'],
+		'L_POSTS' => $lang['Posts'],
+		'L_LASTPOST' => $lang['Last_Post'], 
+		'L_NO_NEW_POSTS' => $lang['No_new_posts'],
+		'L_NEW_POSTS' => $lang['New_posts'],
+		'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
+		'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
+
 		'L_MODERATOR' => $lang['Moderators'], 
 		'L_FORUM_LOCKED' => $lang['Forum_is_locked'],
 		'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'], 
@@ -299,10 +310,10 @@ if( ( $total_categories = count($category_rows) ) )
 		//
 		if ( $display_forums )
 		{
-			$template->assign_block_vars("catrow", array(
-				"CAT_ID" => $cat_id,
-				"CAT_DESC" => $category_rows[$i]['cat_title'],
-				"U_VIEWCAT" => append_sid("index.$phpEx?" . POST_CAT_URL . "=$cat_id"))
+			$template->assign_block_vars('catrow', array(
+				'CAT_ID' => $cat_id,
+				'CAT_DESC' => $category_rows[$i]['cat_title'],
+				'U_VIEWCAT' => append_sid("index.$phpEx?" . POST_CAT_URL . "=$cat_id"))
 			);
 
 			if ( $viewcat == $cat_id || $viewcat == -1 )
@@ -317,7 +328,8 @@ if( ( $total_categories = count($category_rows) ) )
 						{
 							if ( $forum_data[$j]['forum_status'] == FORUM_LOCKED )
 							{
-								$folder_image = '<img src="' . $images['forum_locked'] . '" alt="' . $lang['Forum_locked'] . '" />';
+								$folder_image = $images['forum_locked']; 
+								$folder_alt = $lang['Forum_locked'];
 							}
 							else
 							{
@@ -365,7 +377,8 @@ if( ( $total_categories = count($category_rows) ) )
 									}
 								}
 
-								$folder_image = ( $unread_topics ) ? '<img src="' . $images['forum_new'] . '" alt="' . $lang['New_posts'] . '" title="' . $lang['New_posts'] . '" />' : '<img src="' . $images['forum'] . '" alt="' . $lang['No_new_posts'] . '" title="' . $lang['No_new_posts'] . '" />';
+								$folder_image = ( $unread_topics ) ? $images['forum_new'] : $images['forum']; 
+								$folder_alt = ( $unread_topics ) ? $lang['New_posts'] : $lang['No_new_posts']; 
 							}
 
 							$posts = $forum_data[$j]['forum_posts'];
@@ -377,9 +390,9 @@ if( ( $total_categories = count($category_rows) ) )
 
 								$last_post = $last_post_time . '<br />';
 
-								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != "" ) ? $forum_data[$j]['post_username'] . " " : $lang['Guest'] . " " ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
+								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != '' ) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
 								
-								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
 							}
 							else
 							{
@@ -400,20 +413,21 @@ if( ( $total_categories = count($category_rows) ) )
 							$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 							$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-							$template->assign_block_vars("catrow.forumrow",	array(
-								"ROW_COLOR" => '#' . $row_color,
-								"ROW_CLASS" => $row_class,
-								"FOLDER" => $folder_image,
-								"FORUM_NAME" => $forum_data[$j]['forum_name'],
-								"FORUM_DESC" => $forum_data[$j]['forum_desc'],
-								"POSTS" => $forum_data[$j]['forum_posts'],
-								"TOPICS" => $forum_data[$j]['forum_topics'],
-								"LAST_POST" => $last_post,
-								"MODERATORS" => $moderator_list,
+							$template->assign_block_vars('catrow.forumrow',	array(
+								'ROW_COLOR' => '#' . $row_color,
+								'ROW_CLASS' => $row_class,
+								'FORUM_FOLDER_IMG' => $folder_image, 
+								'FORUM_NAME' => $forum_data[$j]['forum_name'],
+								'FORUM_DESC' => $forum_data[$j]['forum_desc'],
+								'POSTS' => $forum_data[$j]['forum_posts'],
+								'TOPICS' => $forum_data[$j]['forum_topics'],
+								'LAST_POST' => $last_post,
+								'MODERATORS' => $moderator_list,
 
-								"L_MODERATOR" => $l_moderators, 
+								'L_MODERATOR' => $l_moderators, 
+								'L_FORUM_FOLDER_ALT' => $folder_alt, 
 
-								"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+								'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 							);
 						}
 					}

@@ -5,17 +5,17 @@
   </tr>
 </table>
 
-<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0" align="center">
   <tr> 
 	<th class="thHead" colspan="2" height="25" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
   </tr>
   <tr> 
-	<td class="catLeft" align="center" width="40%" height="28"><b><span class="gen">{L_AVATAR}</span></b></td>
+	<td class="catLeft" width="40%" height="28" align="center"><b><span class="gen">{L_AVATAR}</span></b></td>
 	<td class="catRight" width="60%"><b><span class="gen">{L_ABOUT_USER}</span></b></td>
   </tr>
   <tr> 
 	<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br /><span class="postdetails">{POSTER_RANK}</span></td>
-	<td class="row1" valign="top" rowspan="3"><table width="100%" border="0" cellspacing="1" cellpadding="3">
+	<td class="row1" rowspan="3" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="3">
 		<tr> 
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_JOINED}:&nbsp;</span></td>
 		  <td width="100%"><b><span class="gen">{JOINED}</span></b></td>
@@ -30,7 +30,7 @@
 		</tr>
 		<tr> 
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_WEBSITE}:&nbsp;</span></td>
-		  <td><span class="gen"><b>{WEBSITE}</b></span></td>
+		  <td><span class="gen"><b>{WWW}</b></span></td>
 		</tr>
 		<tr> 
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_OCCUPATION}:&nbsp;</span></td>
@@ -73,11 +73,11 @@
 		  <td class="row1"><script language="JavaScript" type="text/javascript"><!-- 
 
 		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
-			document.write(' {ICQ_ADD_IMG}');
+			document.write(' {ICQ_IMG}');
 		else
-			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
+			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
 		  
-		  //--></script><noscript>{ICQ_ADD_IMG}</noscript></td>
+		  //--></script><noscript>{ICQ_IMG}</noscript></td>
 		</tr>
 	  </table>
 	</td>

@@ -1,26 +1,19 @@
 
-<div align="center"> <span class="copyright"><br />{ADMIN_LINK}<br />
-  <!--
+<div align="center"><span class="copyright"><br />{ADMIN_LINK}<br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the 
+	Powered by phpBB {PHPBB_VERSION} line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected. 
 
-	Please note that the following copyright notice
-	MUST be displayed on each and every page output
-	by phpBB. You may alter the font, colour etc. but
-	you CANNOT remove it, nor change it so that it be,
-	to all intents and purposes, invisible. You may ADD
-	your own notice to it should you have altered the
-	code but you may not replace it. The hyperlink must
-	also remain intact. These conditions are part of the
-	licence this software is released under. See the
-	LICENCE and README files for more information.
-
-	The phpBB Group : 2001
-
+	The phpBB Group : 2002
 // -->
-  Powered by phpBB {PHPBB_VERSION} &copy; 2001 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB 
-  Group</a><br />{TRANSLATION_INFO}</span></div>
-	</td>
-  </tr>
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> {PHPBB_VERSION} &copy; 2001 phpBB Group<br />{TRANSLATION_INFO}</span></div>
+		</td>
+	</tr>
 </table>
-&nbsp;
+
 </body>
 </html>
