@@ -8,7 +8,7 @@
 	<tr>
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="right"><a href="{U_VIEW_TOP10}">{L_VIEW_TOP10}</a> | <a href="{U_SORTALPHA}">{L_SORTALPHA}</a></td>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="right"><a href="{U_VIEW_TOP10}"><img src="templates/PSO/images/topten-posters.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_SORTALPHA}"><img src="templates/PSO/images/alphabetical.gif" border="1"></a></td>
 			</tr>
 			<tr>
 				<td bgcolor="{T_TH_COLOR3}"align="center"><font face="verdana" size="{T_FONTSIZE2}"><b>{L_USERNAME}</td>
@@ -29,7 +29,12 @@
 			</tr>
 			<!-- END memberrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">Page &gt;&gt; {PAGINATION}</font></td>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">&nbsp;{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></font></td>
+						<td align="right"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_GOTO_PAGE}:&nbsp;{PAGINATION}&nbsp;</font></td>
+					</tr>
+				</table></td>
 			</tr>
 		</table></td>
 	</tr>

@@ -22,7 +22,7 @@
 			</tr>
 	        <!-- BEGIN postrow -->
 			<tr bgcolor="{postrow.ROW_COLOR}">
-				<td rowspan="2" width="20%" align="left" valign="top"><table height="100%" cellspacing="0" cellpadding="0" border="0">
+				<td width="20%" align="left" valign="top"><table height="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td valign="top"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{postrow.POSTER_NAME}</b></font><br><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}">{postrow.POSTER_RANK}<br><br>{L_JOINED}: {postrow.POSTER_JOINED}<br>{L_POSTS}: {postrow.POSTER_POSTS}<br>{postrow.POSTER_FROM}</font><br><br>{postrow.POSTER_AVATAR}<br><br></td>
 					</tr>
@@ -30,12 +30,9 @@
 						<td valign="bottom"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="#top">Back to top</a></font></td>
 					</tr>
 				</table></td>
-				<td bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">Post Subject: {postrow.POST_SUBJECT}</font></td>
-			</tr>
-			<tr bgcolor="{postrow.ROW_COLOR}">
-				<td height="100%" width="80%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
+				<td width="80%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
 					<tr>
-						<td><a name="{postrow.U_POST_ID}"></a><img src="images/posticon.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}</font><hr></td>
+						<td><a name="{postrow.U_POST_ID}"></a><img src="images/posticon.gif" alt="Post image icon"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_POSTED}: {postrow.POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {postrow.POST_SUBJECT}</font><hr></td>
 					</tr>
 					<tr>
 						<td height="100%" valign="top"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">{postrow.MESSAGE}</font></td>
@@ -49,8 +46,9 @@
 			<tr bgcolor="<?php echo $color1?>">
 				<td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td align="left" valign="middle"><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1" /></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1" /></a></td>
-						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{PAGINATION}</font></td>
+						<td width="140" align="left" valign="middle" nowrap><a href="{U_POST_REPLY_TOPIC}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_TOPIC}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td align="left" valign="middle">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></font>&nbsp;</td>
+						<td align="right" valign="middle"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}">{L_GOTO_PAGE}:&nbsp;{PAGINATION}</font></td>
 					</tr>
 				</table></td>
 			</tr>

@@ -60,8 +60,12 @@ $lang['Months'] = "Months";
 $lang['Year'] = "Year";
 $lang['Years'] = "Years";
 
-$lang['All_times'] = "All times"; // This is followed by GMT and the timezone offset
+$lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
 $lang['GMT'] = "GMT";
+
+$lang['Goto_page'] = "Goto page";
+$lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
+$lang['of'] = "of"; // See Page above
 
 //
 // Login
@@ -75,6 +79,7 @@ $lang['Forgotten_password'] = "I forgot my password";
 //
 // Index page
 //
+$lang['No_Posts'] = "No Posts";
 
 //
 // Viewforum
