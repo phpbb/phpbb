@@ -297,6 +297,7 @@ function update_last_post_information($type, $id)
 	{
 		case 'forum':
 			$sql_select_add = ', f.forum_parents';
+//			$sql_select_add = ', f.left_id';
 			$sql_table_add = ', ' . FORUMS_TABLE . ' f';
 			$sql_where_add = 'AND (t.forum_id = f.forum_id) AND (f.forum_id = ' . $id . ')';
 			$sql_update_table = FORUMS_TABLE;
@@ -330,16 +331,13 @@ function update_last_post_information($type, $id)
 		case 'forum':
 			// Update forums: last post info, topics, posts ... we need to update
 			// each parent too ...
-			$forum_ids = $id;
-			$forum_parents = trim($row['forum_parents']);
 
-			if ($forum_parents != '')
+			$forum_ids = $id;
+			$forum_parents = get_forum_parents($row);
+
+			foreach ($forum_parents as $parent_forum_id => $parent_name)
 			{
-				$forum_parents = unserialize($forum_parents);
-				foreach ($forum_parents as $parent_forum_id => $parent_name)
-				{
-					$forum_ids .= ', ' . $parent_forum_id;
-				}
+				$forum_ids .= ', ' . $parent_forum_id;
 			}
 		
 			$where_clause = 'forum_id IN (' . $forum_ids . ')';
@@ -815,13 +813,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		// Update forums: last post info, topics, posts ... we need to update
 		// each parent too ...
 		$forum_ids = $post_data['forum_id'];
-		if (!empty($post_data['forum_parents']))
+		$forum_parents = get_forum_parents($post_data);
+		foreach ($forum_parents as $parent_forum_id => $parent_name)
 		{
-			$post_data['forum_parents'] = unserialize($post_data['forum_parents']);
-			foreach ($post_data['forum_parents'] as $parent_forum_id => $parent_name)
-			{
-				$forum_ids .= ', ' . $parent_forum_id;
-			}
+			$forum_ids .= ', ' . $parent_forum_id;
 		}
 
 		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1' : '';

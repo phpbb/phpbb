@@ -106,10 +106,37 @@ function generate_forum_nav(&$forum_data)
 	global $db, $user, $template, $phpEx, $SID;
 
 	// Get forum parents
+	$forum_parents = get_forum_parents($forum_data);
+
+	// Build navigation links
+	foreach ($forum_parents as $parent_forum_id => $parent_name)
+	{
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=>	$parent_name,
+			'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
+		));
+	}
+	$template->assign_block_vars('navlinks', array(
+		'FORUM_NAME'	=>	$forum_data['forum_name'],
+		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_data['forum_id']
+	));
+
+	$template->assign_vars(array(
+		'FORUM_ID' 		=> $forum_data['forum_id'],
+		'FORUM_NAME'	=> $forum_data['forum_name'],
+		'FORUM_DESC'	=> $forum_data['forum_desc']
+	));
+
+	return;
+}
+
+// Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
+function get_forum_parents($forum_data)
+{
 	$forum_parents = array();
 	if ($forum_data['parent_id'] > 0)
 	{
-		if (empty($forum_data['forum_parents']))
+		if ($forum_data['forum_parents'] == '')
 		{
 			$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
@@ -134,26 +161,7 @@ function generate_forum_nav(&$forum_data)
 		}
 	}
 
-	// Build navigation links
-	foreach ($forum_parents as $parent_forum_id => $parent_name)
-	{
-		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=>	$parent_name,
-			'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
-		));
-	}
-	$template->assign_block_vars('navlinks', array(
-		'FORUM_NAME'	=>	$forum_data['forum_name'],
-		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_data['forum_id']
-	));
-
-	$template->assign_vars(array(
-		'FORUM_ID' 		=> $forum_data['forum_id'],
-		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> $forum_data['forum_desc']
-	));
-
-	return;
+	return $forum_parents;
 }
 
 // Obtain list of moderators of each forum
@@ -235,11 +243,13 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	return;
 }
 
-function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
+function make_jumpbox($action, $forum_id = false, $enable_select_all = false)
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['SELECT_FORUM'] . '</option><option value="-1">-----------------</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }">';
+	$boxstring .= ($enable_select_all) ? '<option value="0">' . $user->lang['ALL_FORUMS'] : '<option value="-1">' . $user->lang['SELECT_FORUM'];
+	$boxstring .= '</option><option value="-1">-----------------</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -305,12 +315,7 @@ function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 	}
 
 	$boxstring .= '</select>';
-
-	$extra_form_fields['sid'] = $user->session_id;
-	foreach ($extra_form_fields as $key => $val)
-	{
-		$boxstring .= '<input type="hidden" name="' . $key . '" value="' . htmlspecialchars($val) . '" />';
-	}
+	$boxstring .= '<input type="hidden" name="sid" value="' . $user->session_id . '" />';
 
 	$template->assign_vars(array(
 		'S_JUMPBOX_SELECT' => $boxstring,
