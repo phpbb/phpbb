@@ -1402,7 +1402,7 @@ function username_search()
 
 	$total_users = ( $row = $db->sql_fetchrow($result) ) ? $row['total_users'] : 0;
 
-	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;order=$sort_order", $total_users, $board_config['topics_per_page'], $start);
+	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;field=$field&amp;order=$sort_order", $total_users, $board_config['topics_per_page'], $start);
 
 	//
 	//
@@ -1479,19 +1479,6 @@ function username_search()
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
 
-			if ( $row['user_viewemail'] || $acl->get_acl_admin() )
-			{
-				$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
-
-				$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
-				$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
-			}
-			else
-			{
-				$email_img = '&nbsp;';
-				$email = '&nbsp;';
-			}
-
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
 			$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
 			$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
@@ -1503,30 +1490,9 @@ function username_search()
 				'JOINED' => $joined,
 				'POSTS' => $posts, 
 				'ACTIVE' => $active, 
-				'AVATAR_IMG' => $poster_avatar,
 				'PROFILE_IMG' => $profile_img, 
 				'PROFILE' => $profile, 
-				'SEARCH_IMG' => $search_img,
-				'SEARCH' => $search,
-				'PM_IMG' => $pm_img,
-				'PM' => $pm,
-				'EMAIL_IMG' => $email_img,
-				'EMAIL' => $email,
-				'WWW_IMG' => $www_img,
-				'WWW' => $www,
-				'ICQ_STATUS_IMG' => $icq_status_img,
-				'ICQ_IMG' => $icq_img, 
-				'ICQ' => $icq, 
-				'AIM_IMG' => $aim_img,
-				'AIM' => $aim,
-				'MSN_IMG' => $msn_img,
-				'MSN' => $msn,
-				'YIM_IMG' => $yim_img,
-				'YIM' => $yim,
-
-				'S_ROW_COUNT' => $i, 
-				
-				'U_VIEWPROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+				'S_ROW_COUNT' => $i)				
 			);
 
 			$i++;
