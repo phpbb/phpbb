@@ -26,7 +26,6 @@ class acm
 	var $modified = FALSE;
 
 	var $sql_rowset = array();
-	var $sql_rowset_index = array();
 
 	function acm()
 	{
@@ -173,7 +172,6 @@ class acm
 
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 		$this->sql_rowset[$query_id] = $rowset;
-		$this->sql_rowset_index[$query_id] = 0;
 		$db->query_result = $query_id;
 
 		return true;
@@ -189,7 +187,6 @@ class acm
 			$lines = array();
 			$query_id = 'Cache id #' . count($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
-			$this->sql_rowset_index[$query_id] = 0;
 			$db->query_result = $query_id;
 
 			while ($row = $db->sql_fetchrow($result))
@@ -217,17 +214,7 @@ class acm
 
 	function sql_fetchrow($query_id)
 	{
-		//return array_shift($this->sql_rowset[$query_id]);
-
-		if (!isset($this->sql_rowset[$query_id][$this->sql_rowset_index[$query_id]]))
-		{
-			return false;
-		}
-
-		$row = $this->sql_rowset[$query_id][$this->sql_rowset_index[$query_id]];
-		++$this->sql_rowset_index[$query_id];
-
-		return $row;
+		return array_shift($this->sql_rowset[$query_id]);
 	}
 }
 ?>
