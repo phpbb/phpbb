@@ -181,11 +181,11 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		
 		if($members[$x]['user_website'] != "")
 		{
-			$url = "<a href=\"" . stripslashes($members[$x]['user_website']) . "\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
+			$website = "<a href=\"" . stripslashes($members[$x]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
 		}
 		else
 		{
-			$url = "&nbsp;";
+			$website = "&nbsp;";
 		}
 		
 		if(!($x % 2))
@@ -206,7 +206,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			"JOINED" => $joined,
 			"POSTS" => $posts,
 			"EMAIL" => $email,
-			"WEBSITE" => $url)
+			"WEBSITE" => $website)
 		);
 	}
 	
