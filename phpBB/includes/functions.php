@@ -199,11 +199,11 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 	return;
 }
 
-function make_jumpbox($action, $forum_id = false)
+function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 {
 	global $auth, $template, $user, $db, $nav_links, $phpEx;
 
-	$boxstring = '<input type="hidden" name="sid" value="' . $user->session_id . '" /><select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">-----------------</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -269,6 +269,12 @@ function make_jumpbox($action, $forum_id = false)
 	}
 
 	$boxstring .= '</select>';
+
+	$extra_form_fields['sid'] = $user->session_id;
+	foreach ($extra_form_fields as $key => $val)
+	{
+		$boxstring .= '<input type="hidden" name="' . $key . '" value="' . htmlspecialchars($val) . '" />';
+	}
 
 	$template->assign_vars(array(
 		'L_GO' => $user->lang['Go'],

@@ -23,6 +23,8 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 {
 	global $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
 
+	$visible_forums = 0;
+
 	if (!$root_data)
 	{
 		$root_data = array('forum_id' => 0);
@@ -148,6 +150,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			unset($hold);
 		}
 
+		++$visible_forums;
 		$forum_id = $row['forum_id'];
 
 		$unread_topics = ($user->data['user_id'] && $row['lastread_time'] < $row['forum_last_post_time'] ) ? TRUE : FALSE;
@@ -237,5 +240,10 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'U_VIEWFORUM'		=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id']
 		));
 	}
+
+	$template->assign_vars(array(
+		'S_HAS_SUBFORUM'	=>	($visible_forums) ? TRUE : FALSE,
+		'L_SUBFORUM'		=>	($visible_forums == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
+	));
 }
 ?>

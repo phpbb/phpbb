@@ -102,14 +102,9 @@ generate_forum_nav($forum_data);
 // Moderators
 $forum_moderators = array();
 
-// Do we have subforums? if so, let's include this harmless file
+// Do we have subforums?
 if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 {
-	$template->assign_vars(array(
-		'S_HAS_SUBFORUM'	=>	TRUE,
-		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
-	));
-
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	display_forums($forum_data);
 }
