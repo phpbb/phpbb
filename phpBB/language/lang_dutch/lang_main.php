@@ -530,7 +530,7 @@ $lang['Current_password'] = "Huidige wachtwoord";
 $lang['New_password'] = "Nieuwe wachtwoord";
 $lang['Confirm_password'] = "Bevestig wachtwoord";
 $lang['password_if_changed'] = "Geef alleen een wachtwoord op als je het wilt wijzigen";
-$lang['password_confirm_if_changed'] = "Je hoeft alleen je wachtwoord te bevestigen als je het veranderd";
+$lang['password_confirm_if_changed'] = "Je hoeft alleen je wachtwoord te bevestigen als je het verandert.";
 
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Laat een kleine afbeelding onder je naam zien in ieder bericht. Je kan maar één afbeelding tegelijkertijd gebruiken, de breedte mag niet meer dan %d pixels zijn, de hoogte moet onder de %d pixels blijven. De maximale bestandsgrootte is %dKB";
