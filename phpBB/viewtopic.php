@@ -42,7 +42,7 @@ $user->start();
 // Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
 {
-	if ($_GET['view'] == 'newest')
+	if ($_GET['view'] == 'newest' || $_GET['view'] == 'latest')
 	{
 		if ($user->session_id)
 		{
@@ -94,38 +94,6 @@ if (isset($_GET['view']) && empty($post_id))
 		}
 	}
 }
-
-if ($user->data['user_id'] != ANONYMOUS)
-{
-	if (isset($_POST['rating']))
-	{
-		$sql = "SELECT rating
-			FROM " . TOPICS_RATINGS_TABLE . "
-			WHERE topic_id = $topic_id
-				AND user_id = " . $user->data['user_id'];
-		$result = $db->sql_query($sql);
-
-		$rating = ($row = $db->sql_fetchrow($result)) ? $row['rating'] : '';
-
-		if (empty($_POST['rating_value']) && $rating != '')
-		{
-		}
-		else
-		{
-			$new_rating = intval($_POST['rating']);
-
-			$sql = ($rating != '') ? "UPDATE " . TOPICS_RATING_TABLE . " SET rating = $new_rating WHERE user_id = " . $user->data['user_id'] . " AND topic_id = $topic_id" : "INSERT INTO " . TOPICS_RATING_TABLE . " (topic_id, user_id, rating) VALUES ($topic_id, " . $user->data['user_id'] . ", $new_rating)";
-		}
-	}
-	else if (isset($_POST['castvote']))
-	{
-		if (!isset($_POST['vote_id']))
-		{
-			trigger_error($user->lang['No_vote']);
-		}
-	}
-}
-
 
 // Look at this query ... perhaps a re-think? Perhaps store topic ids rather
 // than last/first post ids and have a redirect at the top of this page
@@ -415,6 +383,8 @@ $template->assign_block_vars('navlinks', array(
 $forum_moderators = array();
 get_moderators($forum_moderators, $forum_id);
 
+$server_path = (($config['cookie_secure']) ? 'https://' : 'http://' ) . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
+
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
@@ -423,7 +393,7 @@ $template->assign_vars(array(
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> sprintf($user->lang['Page_of'], (floor($start / $config['posts_per_page']) + 1), ceil($topic_replies / $config['posts_per_page'])),
+	'PAGE_NUMBER' 	=> on_page($topic_replies, $config['posts_per_page'], $start),
 	'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
 
@@ -460,9 +430,12 @@ $template->assign_vars(array(
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
 	'U_VIEW_TOPIC' 			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'],
+	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
+	'U_FORUM'				=> $server_path,
 	'U_VIEW_FORUM' 			=> $view_forum_url,
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url,
+	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $_GET['highlight'] . "&amp;view=print",
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
@@ -926,7 +899,7 @@ $page_title = $user->lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'viewtopic_body.html')
+	'body' => (isset($_GET['view']) && $_GET['view'] == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
 );
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 

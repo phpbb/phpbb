@@ -217,6 +217,7 @@ $lang = array_merge($lang, array(
 	'View_topic' => 'View topic',
 	'Guest' => 'Guest',
 	'POST_SUBJECT' => 'Post subject',
+	'PRINT_TOPIC' => 'Printable version',
 	'View_next_topic' => 'View next topic',
 	'View_previous_topic' => 'View previous topic',
 	'Submit_vote' => 'Submit Vote',

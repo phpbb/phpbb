@@ -19,7 +19,12 @@
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
 	<tr align="right">
-		<td class="catHead" colspan="2" height="28"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}" class="nav">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}" class="nav">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</span></td>
+		<td class="catHead" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><span class="nav">&nbsp;<a class="nav" href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a></span></td>
+				<td align="right"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}" class="nav">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}" class="nav">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</span></td>
+			</tr>
+		</table></td>
 	</tr>
 	<!-- IF S_HAS_POLL_OPTIONS -->
 	<tr>
@@ -144,7 +149,7 @@
 
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}<!-- IF S_SELECT_RATING --><br /><form method="post" action="{S_TOPIC_ACTION}">{L_RATE_TOPIC}: {S_SELECT_RATING}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></form><!-- ENDIF --></span></td>
+		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}</span></td>
 		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}">{L_QUICK_MOD}: {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></span></td>
 	</tr>
 </table>
