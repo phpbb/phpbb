@@ -306,7 +306,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 					"LAST_POST" => $last_post,
 					"MODERATORS" => $moderators_links,
 
-					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;" . $forum_rows[$j]['forum_posts']))
+					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 				);
 
 				$count++;

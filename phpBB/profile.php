@@ -58,12 +58,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"body" => "profile_view_body.tpl",
 			"jumpbox" => "jumpbox.tpl")
 		);
+
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
+			"L_GO" => $lang['Go'], 
+			"L_JUMP_TO" => $lang['Jump_to'], 
+			"L_SELECT_FORUM" => $lang['Select_forum'], 
 			"JUMPBOX_LIST" => $jumpbox,
 			"SELECT_NAME" => POST_FORUM_URL)
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
 		//
 		// End header
 		//
@@ -99,21 +104,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			// Replace the @ with 'at'. Some anti-spam mesures.
 			$email_addr = str_replace("@", " at ", $profiledata['user_email']);
 			$email = "<a href=\"mailto:$email_addr\">$email_addr</a>";
-			$email_img = "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . stripslashes($profiledata['username']) . "\" border=\"0\"></a>";
+			$email_img = "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . stripslashes($profiledata['username']) . "\" border=\"0\" /></a>";
 		}
 		else
 		{
 			$email = $lang['Hidden_email'];
-			$email_img = $lang['Hidden_email'];
+			$email_img = "";
 		}
 
-		$avatar_img = ( !empty($profiledata['user_avatar']) ) ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\">" : "&nbsp;";
+		$avatar_img = ( !empty($profiledata['user_avatar']) ) ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']) . "\" border=\"0\" alt=\"\" />" : "&nbsp;";
 
 		if($members[$i]['user_icq'])
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&img=5\" border=\"0\"></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -121,18 +126,18 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$icq_add_img = "&nbsp;";
 		}
 
-		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
 
-		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
 
-		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\"></a>";
-		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\">" . $lang['Search_user_posts'] . "</a>";
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
+		$search = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\">" . $lang['Search_user_posts'] . "</a>";
 
-		$www_img = ($profiledata['user_website']) ? "<img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$www_img = ($profiledata['user_website']) ? "<a href=\"" . stripslashes($profiledata['user_website']) . "\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
 
-		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $profiledata['user_id']) . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $profiledata['user_id']) . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
 		$template->assign_vars(array(
 			"USERNAME" => stripslashes($profiledata['username']),
@@ -147,17 +152,17 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"SEARCH_IMG" => $search_img, 
 			"ICQ_ADD_IMG" => $icq_add_img, 
 			"ICQ_STATUS_IMG" => $icq_status_img,
-			"AIM" => ( ($profiledata['user_aim']) ? stripslashes($profiledata['user_aim']) : "" ),
+			"AIM" => ( ($profiledata['user_aim']) ? stripslashes($profiledata['user_aim']) : "&nbsp;" ),
 			"AIM_IMG" => $aim_img, 
-			"MSN" => ( ($profiledata['user_msnm']) ? stripslashes($profiledata['user_msnm']) : "" ),
+			"MSN" => ( ($profiledata['user_msnm']) ? stripslashes($profiledata['user_msnm']) : "&nbsp;" ),
 			"MSN_IMG" => $msnm_img, 
-			"YIM" => ( ($profiledata['user_yim']) ? stripslashes($profiledata['user_yim']) : "" ),
+			"YIM" => ( ($profiledata['user_yim']) ? stripslashes($profiledata['user_yim']) : "&nbsp;" ),
 			"YIM_IMG" => $yim_img, 
-			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "" ),
+			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "&nbsp;" ),
 			"WEBSITE_IMG" => $www_img, 
-			"LOCATION" => ( ($profiledatas['user_from']) ? stripslashes($profiledata['user_from']) : "" ),
-			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "" ),
-			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "" ),
+			"LOCATION" => ( ($profiledatas['user_from']) ? stripslashes($profiledata['user_from']) : "&nbsp;" ),
+			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "&nbsp;" ),
+			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "&nbsp;" ),
 			"AVATAR_IMG" => $avatar_img,
 
 			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'],
@@ -176,8 +181,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_INTERESTS" => $lang['Interests'],
 
-			"U_SEARCH_USER" => append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1"),
-			"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
+			"U_SEARCH_USER" => append_sid("search.$phpEx?a=" . urlencode($profiledata['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1"),
 
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
@@ -215,17 +219,22 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"body" => "agreement.tpl",
 					"jumpbox" => "jumpbox.tpl")
 				);
+
 				$jumpbox = make_jumpbox();
 				$template->assign_vars(array(
+					"L_GO" => $lang['Go'], 
+					"L_JUMP_TO" => $lang['Jump_to'], 
+					"L_SELECT_FORUM" => $lang['Select_forum'], 
 					"JUMPBOX_LIST" => $jumpbox,
 					"SELECT_NAME" => POST_FORUM_URL)
 				);
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
 				$template->assign_vars(array(
 					"COPPA" => $coppa,
 
-					"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&agreed=true"),
-					"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&agreed=true&coppa=true"))
+					"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
+					"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
 				);
 				$template->pparse("body");
 
@@ -803,10 +812,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		$bbcode_status =  ($board_config['allow_bbcode']) ? $lang['ON'] : $lang['OFF'];
 		$smilies_status =  ($board_config['allow_smilies']) ? $lang['ON'] : $lang['OFF'];
 
-		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="' . $coppa . '">';
+		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 		if($mode == "editprofile")
 		{
-			$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '">';
+			$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 		}
 			
 		$template->set_filenames(array(
@@ -816,6 +825,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
+			"L_GO" => $lang['Go'], 
+			"L_JUMP_TO" => $lang['Jump_to'], 
+			"L_SELECT_FORUM" => $lang['Select_forum'], 
 			"JUMPBOX_LIST" => $jumpbox,
 			"SELECT_NAME" => POST_FORUM_URL)
 		);
@@ -833,22 +845,22 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"LOCATION" => stripslashes($location),
 			"WEBSITE" => stripslashes($website),
 			"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
-			"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
-			"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "", 
-			"HIDE_USER_YES" => (!$allowviewonline) ? "CHECKED" : "",
-			"HIDE_USER_NO" => ($allowviewonline) ? "CHECKED" : "", 
-			"NOTIFY_PM_YES" => ($notifypm) ? "CHECKED" : "", 
-			"NOTIFY_PM_NO" => (!$notifypm) ? "CHECKED" : "", 
-			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
-			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
-			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+			"VIEW_EMAIL_YES" => ($viewemail) ? "checked=\"checked\"" : "",
+			"VIEW_EMAIL_NO" => (!$viewemail) ? "checked=\"checked\"" : "", 
+			"HIDE_USER_YES" => (!$allowviewonline) ? "checked=\"checked\"" : "",
+			"HIDE_USER_NO" => ($allowviewonline) ? "checked=\"checked\"" : "", 
+			"NOTIFY_PM_YES" => ($notifypm) ? "checked=\"checked\"" : "", 
+			"NOTIFY_PM_NO" => (!$notifypm) ? "checked=\"checked\"" : "", 
+			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "checked=\"checked\"" : "",
+			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
+			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
-			"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\">" : "",
+			"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\" alt=\"\" />" : "",
 			"AVATAR_SIZE" => $board_config['avatar_filesize'], 
 			"LANGUAGE_SELECT" => language_select($user_lang),
 			"THEME_SELECT" => theme_select($user_theme),

@@ -1,33 +1,34 @@
-<table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
+
+<form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
 	</tr>
 </table>
 
 <table width="98%" cellpadding="1" cellspacing="0" border="0" align="center">
-	<tr><form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post">
+	<tr>
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_REGISTRATION_INFO}</b></span><br><span class="gensmall">{L_ITEMS_REQUIRED}</span>&nbsp;</th>
+				<td class="cat" colspan="2"><span class="cattitle"><b>{L_REGISTRATION_INFO}</b></span><br /><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 			</tr>
 			<tr>
-				<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</b><br>{L_USER_UNIQ}</td>
+				<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *<br />{L_USER_UNIQ}</td>
 				<td class="row2"><input type="text" name="username" size="35" maxlength="40" value="{USERNAME}"></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</b></td>
+				<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</td>
 				<td class="row2"><input type="text" name="email" size="35" maxlength="255" value="{EMAIL}"></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_PASSWORD}: *</b></span><br /><span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
+				<td class="row1"><span class="gen">{L_PASSWORD}: *</span><br /><span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 				<td class="row2"><input type="password" name="password" size="35" maxlength="100" value="{PASSWORD}"></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_CONFIRM} {L_PASSWORD}: * </b></span><br /><span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
+				<td class="row1"><span class="gen">{L_CONFIRM} {L_PASSWORD}: * </span><br /><span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 				<td class="row2"><input type="password" name="password_confirm" size="35" maxlength="100" value="{PASSWORD_CONFIRM}"></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="2"><span class="cattitle"><b>{L_PROFILE_INFO}</b></span><br><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
+				<td class="cat" colspan="2"><span class="cattitle"><b>{L_PROFILE_INFO}</b></span><br /><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
@@ -62,7 +63,7 @@
 				<td class="row2"><input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}"></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_SIGNATURE}:</b></span><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}<br><br>{L_HTML_IS} <u>{HTML_STATUS}</u><br>{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br>{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
+				<td class="row1"><span class="gen">{L_SIGNATURE}:</span><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}<br /><br />{L_HTML_IS} <u>{HTML_STATUS}</u><br />{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
 				<td class="row2"><textarea name="signature" rows="6" cols="45">{SIGNATURE}</textarea></td>
 			</tr>
 			<tr>
@@ -123,8 +124,8 @@
 			<tr>
 				<td class="row1" colspan="2" align="center"><table width="70%" cellspacing="2" cellpadding="0" border="0">
 					<tr>
-						<td width="65%"><span class="gen"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br>{AVATAR}<br><input type="checkbox" name="avatardel">&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+						<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
+						<td align="center"><span class="gensmall">{L_CURRENT_IMAGE}</span><br />{AVATAR}<br /><input type="checkbox" name="avatardel">&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -134,13 +135,13 @@
 				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
+				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
 				<td class="row2"><input type="text" name="avatarurl" size="40"></td>
 			</tr>
 			<!-- END avatarupload -->
 			<!-- BEGIN avatarremote -->
 			<tr>
-				<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
+				<td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span><br /><span class="gensmall">{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
 				<td class="row2"><input type="text" name="avatarremoteurl" size="40"></td>
 			</tr>
 			<!-- END avatarremote -->
@@ -155,8 +156,8 @@
 			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;&nbsp;<input type="reset" value="{L_RESET}"></td>
 			</tr>
 		</table></td>
-	</form></tr>
-</table>
+	</tr>
+</table></form>
 
 <!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE || $S_ALLOW_AVATAR_LOCAL eq TRUE || $S_ALLOW_AVATAR_REMOTE eq TRUE -->
 <!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
