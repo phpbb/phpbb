@@ -133,7 +133,7 @@ class session
 
 		// Pull bot information from DB and loop through it
 		$sql = 'SELECT user_id, bot_agent, bot_ip 
-			FROM phpbb_bots 
+			FROM ' . BOTS_TABLE . '  
 			WHERE bot_active = 1';
 		$result = $db->sql_query($sql);
 
