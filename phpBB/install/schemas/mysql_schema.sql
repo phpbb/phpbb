@@ -400,6 +400,55 @@ CREATE TABLE phpbb_privmsgs (
    KEY privmsgs_to_userid (privmsgs_to_userid)
 );
 
+# Table: 'phpbb_profile_fields'
+CREATE TABLE phpbb_profile_fields (
+   field_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   field_name varchar(50) NOT NULL default '',
+   field_desc varchar(255) NOT NULL default '',
+   field_type mediumint(8) unsigned default NULL,
+   field_ident varchar(20) NOT NULL default '',
+   field_length varchar(20) NOT NULL default '0',
+   field_minlen varchar(255) NOT NULL default '0',
+   field_maxlen varchar(255) NOT NULL default '0',
+   field_novalue varchar(255) NOT NULL default '0',
+   field_default_value varchar(255) NOT NULL default '0',
+   field_validation varchar(20) NOT NULL default '',
+   field_required tinyint(1) NOT NULL default '0',
+   field_show_on_reg tinyint(1) unsigned NOT NULL default '0',
+   field_hide tinyint(1) unsigned NOT NULL default '0',
+   field_active tinyint(1) NOT NULL default '0',
+   field_order tinyint(4) unsigned NOT NULL default '0',
+   PRIMARY KEY  (field_id),
+   KEY field_type (field_type),
+   KEY field_order (field_order)
+);
+
+# Table: 'phpbb_profile_fields_data
+CREATE TABLE phpbb_profile_fields_data (
+   user_id mediumint(8) unsigned NOT NULL default '0',
+   PRIMARY KEY  (user_id)
+);
+
+# Table: 'phpbb_profile_fields_lang'
+CREATE TABLE phpbb_profile_fields_lang (
+   field_id mediumint(8) unsigned NOT NULL default '0',
+   lang_id mediumint(8) unsigned NOT NULL default '0',
+   option_id mediumint(8) unsigned NOT NULL default '0',
+   field_type tinyint(4) NOT NULL default '0',
+   value varchar(255) NOT NULL default '',
+   PRIMARY KEY  (field_id, lang_id, option_id)
+);
+
+# Table: 'phpbb_profile_lang'
+CREATE TABLE phpbb_profile_lang (
+   field_id mediumint(8) unsigned NOT NULL default '0',
+   lang_id tinyint(4) NOT NULL default '1',
+   lang_name varchar(255) NOT NULL default '',
+   lang_explain text NOT NULL,
+   lang_default_value varchar(255) NOT NULL default '',
+   PRIMARY KEY  (field_id, lang_id)
+);
+
 # Table: 'phpbb_ranks'
 CREATE TABLE phpbb_ranks (
    rank_id smallint(5) UNSIGNED NOT NULL auto_increment,
