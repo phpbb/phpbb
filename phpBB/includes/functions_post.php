@@ -150,7 +150,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	// Check username
 	if ( !empty($username) )
 	{
-		$username = htmlspecialchars(trim(strip_tags($username)));
+		$username = trim(strip_tags($username));
 
 		if ( !$userdata['session_logged_in'] || ( $userdata['session_logged_in'] && $username != $userdata['username'] ) )
 		{
@@ -161,6 +161,10 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 			{
 				$error_msg .= ( !empty($error_msg) ) ? '<br />' . $result['error_msg'] : $result['error_msg'];
 			}
+		}
+		else
+		{
+			$username = '';
 		}
 	}
 
