@@ -85,13 +85,11 @@ $s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['
 // Get basic (usernames + totals) online
 // situation
 //
-$user_forum_sql = ( !empty($forum_id) ) ? "AND ( u.user_session_page = $forum_id 
-	OR s.session_page = $forum_id)" : '';
+$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page = $forum_id" : '';
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
-		AND ( s.session_time >= ".( time() - 300 ) . " 
-			OR u.user_session_time >= " . ( time() - 300 ) . " )
+		AND s.session_time >= ".( time() - 300 ) . "
 		$user_forum_sql 
 	ORDER BY u.username ASC, s.session_ip ASC";
 if( !($result = $db->sql_query($sql)) )
