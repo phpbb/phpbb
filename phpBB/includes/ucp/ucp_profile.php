@@ -149,7 +149,7 @@ class ucp_profile extends ucp
 					$validate = array(
 						'match'	=> array(
 							'icq'		=> ($data['icq']) ? '#^[0-9]+$#i' : '', 
-							'website'	=> ($data['website']) ? '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]+#i' : '', 
+							'website'	=> ($data['website']) ? '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i' : '', 
 						),
 					);
 					$this->validate_data($data, $validate);
@@ -384,22 +384,26 @@ class ucp_profile extends ucp
 
 					if (!sizeof($this->error))
 					{
-						$sql_ary = array(
-							'user_avatar'			=> $data['filename'], 
-							'user_avatar_type'		=> $data['type'], 
-							'user_avatar_width'		=> $data['width'], 
-							'user_avatar_height'	=> $data['height'], 
-						);
-
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
-
-						// Delete old avatar if present
-						if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
+						// Do we actually have any data to update?
+						if (sizeof($data))
 						{
-							$this->avatar_delete();
+							$sql_ary = array(
+								'user_avatar'			=> $data['filename'], 
+								'user_avatar_type'		=> $data['type'], 
+								'user_avatar_width'		=> $data['width'], 
+								'user_avatar_height'	=> $data['height'], 
+							);
+
+							$sql = 'UPDATE ' . USERS_TABLE . ' 
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+
+							// Delete old avatar if present
+							if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
+							{
+								$this->avatar_delete();
+							}
 						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
@@ -485,8 +489,6 @@ class ucp_profile extends ucp
 
 		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile.html');
 	}
-
-
 }
 
 ?>
