@@ -62,7 +62,7 @@ function request_var($var_name, $default)
 	}
 }
 
-function set_config($config_name, $config_value, $is_dynamic = FALSE)
+function set_config($config_name, $config_value, $is_dynamic = false)
 {
 	global $db, $cache, $config;
 
@@ -73,8 +73,10 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 
 	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
 	{
-		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
-			VALUES ('" . $db->sql_escape($config_name) . "', '" . $db->sql_escape($config_value) . "')";
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'config_name'	=> $config_name,
+			'config_value'	=> $config_value,
+			'is_dynamic'	=> ($is_dynamic) ? 1 : 0));
 		$db->sql_query($sql);
 	}
 
@@ -801,8 +803,6 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 
 	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
-//	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
-//	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 
 	$template->assign_vars(array(
 		$tpl_prefix . 'BASE_URL'	=> $base_url,
