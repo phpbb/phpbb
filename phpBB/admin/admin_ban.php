@@ -146,7 +146,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 							$ip_2_counter = 256;
 							$ip_2_fragment = 256;
 
-							$banlist[] = "'$ip_1_counter.'";
+							$banlist[] = "'$ip_1_counter.*'";
 						}
 
 						while ( $ip_2_counter <= $ip_2_end )
@@ -159,7 +159,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 								$ip_3_counter = 256;
 								$ip_3_fragment = 256;
 
-								$banlist[] = "'$ip_1_counter.$ip_2_counter.'";
+								$banlist[] = "'$ip_1_counter.$ip_2_counter.*'";
 							}
 
 							while ( $ip_3_counter <= $ip_3_end )
@@ -172,7 +172,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 									$ip_4_counter = 256;
 									$ip_4_fragment = 256;
 
-									$banlist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.'";
+									$banlist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.*'";
 								}
 
 								while ( $ip_4_counter <= $ip_4_end )
@@ -199,9 +199,9 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 						}
 					}
 				}
-				else if ( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ban_list[$i])) )
+				else if ( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ban_list[$i])) || preg_match('/^[a-f0-9:]+\*?$/i', trim($ban_list[$i])) )
 				{
-					$banlist[] = '\'' . str_replace('*', '', trim($ban_list[$i])) . '\'';
+					$banlist[] = '\'' . trim($ban_list[$i]) . '\'';
 				}
 			}
 			break;
