@@ -5,6 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
+{META}
 <title>{PAGE_TITLE}</title>
 <style type="text/css">
 <!--
