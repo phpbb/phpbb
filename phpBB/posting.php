@@ -1058,7 +1058,7 @@ if( $submit && $mode != "vote" )
 	}
 
 	$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
-	if( ( $mode == "newtopic" || $mode == "editpost" ) && empty($post_subject) )
+	if( ( $mode == "newtopic" || ( $mode == "editpost" && $is_first_post_topic ) ) && empty($post_subject) )
 	{
 		$error = TRUE;
 		if( !empty($error_msg) )
