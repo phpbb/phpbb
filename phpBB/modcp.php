@@ -865,8 +865,8 @@ switch($mode)
 			"L_THIS_POST_IP" => $lang['This_posts_IP'],
 			"L_OTHER_IPS" => $lang['Other_IP_this_user'],
 			"L_OTHER_USERS" => $lang['Users_this_IP'],
-			"L_SEARCH_POSTS" => $lang['Search_user_posts'], 
 			"L_LOOKUP_IP" => $lang['Lookup_IP'], 
+			"L_SEARCH" => $lang['Search'],
 
 			"SEARCH_IMG" => $images['icon_search'], 
 
@@ -931,6 +931,7 @@ switch($mode)
 				"ROW_COLOR" => "#" . $row_color, 
 				"ROW_CLASS" => $row_class, 
 				"USERNAME" => $username,
+				"L_SEARCH_POSTS" => sprintf($lang['Search_user_posts'], $username), 
 
 				"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
 				"U_SEARCHPOSTS" => append_sid("search.$phpEx?search_author=" . urlencode($username) . "&amp;showresults=topics"))
