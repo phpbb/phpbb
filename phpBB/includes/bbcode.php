@@ -95,17 +95,17 @@ function prepare_bbcode_template($bbcode_tpl)
 	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', $bbcode_tpl['img']);
 
 	// We do URLs in several different ways..
-	$bbcode_tpl['url1'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
-	$bbcode_tpl['url1'] = str_replace('{DESCRIPTION}', '\\1\\2', $bbcode_tpl['url1']);
+	$bbcode_tpl['url1'] = str_replace('{URL}', '\1\2', $bbcode_tpl['url']);
+	$bbcode_tpl['url1'] = str_replace('{DESCRIPTION}', '\1\2', $bbcode_tpl['url1']);
 
 	$bbcode_tpl['url2'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
 	$bbcode_tpl['url2'] = str_replace('{DESCRIPTION}', '\\1', $bbcode_tpl['url2']);
 
 	$bbcode_tpl['url3'] = str_replace('{URL}', '\\1\\2', $bbcode_tpl['url']);
-	$bbcode_tpl['url3'] = str_replace('{DESCRIPTION}', '\\3', $bbcode_tpl['url3']);
+	$bbcode_tpl['url3'] = str_replace('{DESCRIPTION}', '\\6', $bbcode_tpl['url3']);
 
 	$bbcode_tpl['url4'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
-	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\2', $bbcode_tpl['url4']);
+	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\6', $bbcode_tpl['url4']);
 
 	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
 
@@ -198,19 +198,19 @@ function bbencode_second_pass($text, $uid)
 	$replacements[] = $bbcode_tpl['img'];
 
 	// [url]xxxx://www.phpbb.com[/url] code..
-	$patterns[] = "#\[url\]([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+\(\)]+)\[/url\]#si";
+	$patterns[] = "#\[url\]([a-z0-9]+?://){1}([\w\-]+\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)\[/url\]#is";
 	$replacements[] = $bbcode_tpl['url1'];
 
 	// [url]www.phpbb.com[/url] code.. (no xxxx:// prefix).
-	$patterns[] = "#\[url\]([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+\(\)]+)\[/url\]#si";
+	$patterns[] = "#\[url\]((www|ftp)\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*?)?)\[/url\]#si";
 	$replacements[] = $bbcode_tpl['url2'];
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
-	$patterns[] = "#\[url=([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+\(\)]+)\](.*?)\[/url\]#si";
+	$patterns[] = "#\[url=([a-z0-9]+://)([\w\-]+\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*?)?)\](.*?)\[/url\]#si";
 	$replacements[] = $bbcode_tpl['url3'];
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[] = "#\[url=([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+\(\)]+)\](.*?)\[/url\]#si";
+	$patterns[] = "#\[url=((www|ftp)\.([\w\-]+\.)*?[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)\](.*?)\[/url\]#si";
 	$replacements[] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
@@ -282,13 +282,10 @@ function bbencode_first_pass($text, $uid)
 	$text = preg_replace("#\[i\](.*?)\[/i\]#si", "[i:$uid]\\1[/i:$uid]", $text);
 
 	// [img]image_url_here[/img] code..
-	$text = preg_replace("#\[img\](http(s)?://)([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/img\]#si", "[img:$uid]\\1\\3[/img:$uid]", $text);
+	$text = preg_replace("#\[img\](http://)([^ \r\n\t<\"]*?)\[/img\]#si", "[img:$uid]\\1\\2[/img:$uid]", $text);
 
 	// Remove our padding from the string..
-	$text = substr($text, 1);
-
-
-	return $text;
+	return substr($text, 1);;
 
 } // bbencode_first_pass()
 
@@ -615,24 +612,22 @@ function make_clickable($text)
 {
 
 	// pad it with a space so we can match things at the start of the 1st line.
-	$ret = " " . $text;
+	$ret = ' ' . $text;
 
 	// matches an "xxxx://yyyy" URL at the start of a line, or after a space.
 	// xxxx can only be alpha characters.
-	// yyyy is anything up to the first space, newline, or comma.
-	$ret = preg_replace("#([\n ])([a-z]+?)://([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)#i", "\\1<a href=\"\\2://\\3\" target=\"_blank\">\\2://\\3</a>", $ret);
+	// yyyy is anything up to the first space, newline, comma, double quote or <
+	$ret = preg_replace("#([\t\r\n ])([a-z0-9]+?){1}://([\w\-]+\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)#i", '\1<a href="\2://\3" target="_blank">\2://\3</a>', $ret);
 
-	// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+	// matches a "www|ftp.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 	// Must contain at least 2 dots. xxxx contains either alphanum, or "-"
-	// yyyy contains either alphanum, "-", or "."
-	// zzzz is optional.. will contain everything up to the first space, newline, or comma.
-	// This is slightly restrictive - it's not going to match stuff like "forums.foo.com"
-	// This is to keep it from getting annoying and matching stuff that's not meant to be a link.
-	$ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
+	// zzzz is optional.. will contain everything up to the first space, newline, 
+	// comma, double quote or <.
+	$ret = preg_replace("#([\t\r\n ])(www|ftp)\.(([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)#i", '\1<a href="http://\2.\3" target="_blank">\2.\3</a>', $ret);
 
 	// matches an email@domain type address at the start of a line, or after a space.
 	// Note: Only the followed chars are valid; alphanums, "-", "_" and or ".".
-	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)?[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
+	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
 
 	// Remove our padding..
 	$ret = substr($ret, 1);
