@@ -602,7 +602,7 @@ switch ($mode)
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2">Edit Style</th>
+		<th colspan="2"><?php echo $user->lang['EDIT_STYLE']; ?></th>
 	</tr>
 <?php
 
@@ -619,11 +619,11 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b>Style Name:</b></td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_NAME']; ?>:</b></td>
 		<td class="row2"><input class="post" type="text" name="style_name" maxlength="30" size="30" value="<?php echo $style_name; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b>Style Copyright:</b></td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_COPYRIGHT']; ?>:</b></td>
 		<td class="row2"><?php
 	
 				echo ($action == 'edit' || $action == 'install') ? '<b>' . $style_copyright . '</b>' : '<input class="post" type="text" name="style_copyright" maxlength="60" size="30" value="' . $style_copyright . '" />';
@@ -631,7 +631,7 @@ switch ($mode)
 ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b>Template set:</b></td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_TEMPLATE']; ?>:</b></td>
 		<td class="row2"><?php
 	
 		echo ($action == 'install') ? "<b>$template_name</b>" : '<select name="template_id">' . $template_options . '</select>';
@@ -639,7 +639,7 @@ switch ($mode)
 ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b>Theme set:</b></td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_THEME']; ?>:</b></td>
 		<td class="row2"><?php
 	
 		echo ($action == 'install') ? "<b>$theme_name</b>" : '<select name="theme_id">' . $theme_options . '</select>';
@@ -647,7 +647,7 @@ switch ($mode)
 ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b>Imageset:</b></td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_IMAGESET']; ?>:</b></td>
 		<td class="row2"><?php
 	
 		echo ($action == 'install') ? "<b>$imageset_name</b>" : '<select name="imageset_id">' . $imageset_options . '</select>';
@@ -655,8 +655,8 @@ switch ($mode)
 ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b>Active:</b></td>
-		<td class="row2"><input type="radio" name="style_active" value="1"<?php echo $active_yes; ?> /> Yes &nbsp; <input type="radio" name="style_active" value="0"<?php echo $active_no; ?> /> No</td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_ACTIVE']; ?>:</b></td>
+		<td class="row2"><input type="radio" name="style_active" value="1"<?php echo $active_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="style_active" value="0"<?php echo $active_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
@@ -665,8 +665,8 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b>Make default style:</b></td>
-		<td class="row2"><input type="radio" name="default_style" value="1"<?php echo $style_default_yes; ?> /> Yes &nbsp; <input type="radio" name="default_style" value="0"<?php echo $style_default_no; ?> /> No</td>
+		<td class="row1"><b><?php echo $user->lang['STYLE_DEFAULT']; ?>:</b></td>
+		<td class="row2"><input type="radio" name="default_style" value="1"<?php echo $style_default_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="default_style" value="0"<?php echo $style_default_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
@@ -694,12 +694,12 @@ switch ($mode)
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th nowrap="nowrap">Style name</th>
-		<th nowrap="nowrap">Used by</th>
-		<th nowrap="nowrap" colspan="4">Options</th>
+		<th nowrap="nowrap"><?php echo $user->lang['STYLE_NAME']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['STYLE_USED_BY']; ?></th>
+		<th nowrap="nowrap" colspan="4"><?php echo $user->lang['OPTIONS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="6"><b>Installed styles</b></td>
+		<td class="row3" colspan="6"><b><?php echo $user->lang['INSTALLED_STYLE']; ?></b></td>
 	</tr>
 <?php
 
@@ -734,9 +734,9 @@ switch ($mode)
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a><?php echo ($config['default_style'] == $row['style_id']) ? ' *' : ''; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['DELETE']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['EXPORT']; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview"><?php echo $user->lang['PREVIEW']; ?></a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -745,7 +745,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row3" colspan="6"><b>Uninstalled styles</b></td>
+		<td class="row3" colspan="6"><b><?php echo $user->lang['UNINSTALLED_STYLE']; ?></b></td>
 	</tr>
 <?php
 
@@ -777,7 +777,7 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1"><?php echo $cfg['name']; ?></td>
-		<td class="row1" colspan="5" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>">Install</a></td>
+		<td class="row1" colspan="5" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
 	</tr>
 <?php
 
@@ -788,7 +788,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" colspan="6" align="center">No uninstalled themes detected</td>
+		<td class="row1" colspan="6" align="center"><?php echo $user->lang['NO_UNINSTALLED_STYLE']; ?></td>
 	</tr>
 <?php
 
@@ -797,7 +797,7 @@ switch ($mode)
 
 ?>
 <tr>
-		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="6" align="right"><?php echo $user->lang['CREATE_STYLE']; ?>: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 
@@ -915,15 +915,15 @@ switch ($mode)
 						{
 							if (!empty($$img))
 							{
-								$test_ary[] = preg_replace('#^"styles/imagesets/' . $imageset_path . '/(\{LANG\}/)?(.*?)".*$#', '\2', $$img);
+								$test_ary[] = preg_replace('#^"styles/' . $imageset_path . '/imageset/(\{LANG\}/)?(.*?)".*$#', '\2', $$img);
 							}
 						}
 					}
 
-					$dp = @opendir("{$phpbb_root_path}styles/imagesets/$imageset_path");
+					$dp = @opendir("{$phpbb_root_path}styles/$imageset_path/imageset/");
 					while ($file = readdir($dp))
 					{
-						if (is_file("{$phpbb_root_path}styles/imagesets/$imageset_path/$file"))
+						if (is_file("{$phpbb_root_path}styles/$imageset_path/imageset/$file"))
 						{
 							if (!in_array($file, $test_ary))
 							{
@@ -953,7 +953,7 @@ switch ($mode)
 				}
 
 				// Grab list of potential images
-				$imagesetlist = filelist($phpbb_root_path . 'styles/imagesets/' . $imageset_path);
+				$imagesetlist = filelist("{$phpbb_root_path}styles/$imageset_path/imageset");
 
 				$imagesetlist_options = '';
 				foreach ($imagesetlist as $path => $img_ary)
@@ -985,21 +985,21 @@ switch ($mode)
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
-				<th colspan="2">Preview</th>
+				<th colspan="2"><?php echo $user->lang['EDIT_IMAGESET']; ?></th>
 			</tr>
 			<tr>
 				<td class="row1" colspan="2" align="center"><?php echo (!empty($$imgname)) ? '<img src=' . str_replace('"styles/', '"../styles/', str_replace('{LANG}', $user->img_lang, $$imgname)) . ' vspace="5" />' : ''; ?></td>
 			</tr>
 			<tr>
-				<th width="40%">Parameter</th>
-				<th>Value</th>
+				<th width="40%"><?php echo $user->lang['IMAGE_PARAMETER']; ?></th>
+				<th><?php echo $user->lang['IMAGE_VALUE']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Image:</b></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['IMAGE']; ?>:</b></td>
 				<td class="row2"><select name="imgpath"><?php echo $imagesetlist_options; ?></select></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Dimensions:</b><br /><span class="gensmall">Dimensions are optional, set to zero to ignore.</span></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['DIMENSIONS']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['DIMENSIONS_EXPLAIN']; ?></span></td>
 				<td class="row2"><input class="post" type="text" name="imgwidth" maxlength="4" size="2" value="<?php echo (!empty($imgwidth)) ? $imgwidth : '0'; ?>" /> X <input class="post" type="text" name="imgheight" maxlength="4" size="2" value="<?php echo (!empty($imgheight)) ? $imgheight : '0'; ?>" /></td>
 			</tr>
 			<tr>
@@ -1413,7 +1413,7 @@ function viewsource(url)
 				break;
 
 			case 'edit':
-				$tplcols = (isset($_POST['tplcols'])) ? max(20, intval($_POST['tplcols'])) : 76;
+				$tplcols = (isset($_POST['tplcols'])) ? max(20, intval($_POST['tplcols'])) : 80;
 				$tplrows = (isset($_POST['tplrows'])) ? max(5, intval($_POST['tplrows'])) : 20;
 				$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
 				$tpldata = (!empty($_POST['tpldata'])) ? stripslashes($_POST['tpldata']) : ''; // NB : STRIPSLASHED!
@@ -1474,7 +1474,7 @@ function viewsource(url)
 						@unlink("{$phpbb_root_path}cache/tpl_{$template_name}_$tplname.$phpEx");
 
 						$error[] = $user->lang['TEMPLATE_UPDATED'];
-						add_log('admin', 'LOG_EDIT_TEMPLATE', $template_name);
+						add_log('admin', 'LOG_EDIT_TEMPLATE', $template_name, $tplname);
 					}
 
 					$test_ary = array();
@@ -1564,20 +1564,35 @@ function viewsource(url)
 
 <p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_TEMPLATE']; ?>: <select name="tplname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $tpl_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
 	<tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
+		<td><table class="bg" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<td class="cat">Columns: <input class="post" type="text" name="tplcols" size="3" maxlength="3" value="<?php echo $tplcols; ?>" /> &nbsp;Rows: <input class="post" type="text" name="tplrows" size="3" maxlength="3" value="<?php echo $tplrows; ?>" />&nbsp; <input class="btnlite" type="submit" value="Update" /></td>
+				<td class="cat"><?php echo $user->lang['TEXT_COLUMNS']; ?>: <input class="post" type="text" name="tplcols" size="3" maxlength="3" value="<?php echo $tplcols; ?>" /> &nbsp;<?php echo $user->lang['TEXT_ROWS']; ?>: <input class="post" type="text" name="tplrows" size="3" maxlength="3" value="<?php echo $tplrows; ?>" />&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['UPDATE']; ?>" /></td>
 			</tr>
 			<tr>
-				<th>Raw HTML</th>
+				<th><?php echo $user->lang['RAW_HTML']; ?></th>
 			</tr>
+<?php
+
+				if (sizeof($error))
+				{
+
+
+?>
 			<tr>
-				<td class="row2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="tpldata"><?php echo htmlentities($tpldata); ?></textarea></td>
+				<td class="row3" align="center"><?php echo implode('<br />', $error); ?></td>
+			</tr>
+<?php
+
+				}
+
+?>
+			<tr>
+				<td class="row2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="tpldata"><?php echo htmlentities($tpldata); ?></textarea></td>
 			</tr>
 			<tr>
 				<td class="cat" align="center"><input class="btnlite" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
@@ -1938,7 +1953,7 @@ function csspreview()
 
 ?>
 
-<h3>Note</h3>
+<h3><?php echo $user->lang['SHOW_RAW_CSS_NOTE']; ?></h3>
 
 <p><?php echo $user->lang['SHOW_RAW_CSS_EXPLAIN']; ?></p>
 <?php
@@ -1960,7 +1975,7 @@ function csspreview()
 
 ?>
 			<tr>
-				<th colspan="2">Raw CSS</th>
+				<th colspan="2"><?php echo $user->lang['RAW_CSS']; ?></th>
 			</tr>
 <?php
 
@@ -1982,8 +1997,8 @@ function csspreview()
 
 ?>
 			<tr>
-				<th>Parameter</th>
-				<th>Value</th>
+				<th><?php echo $user->lang['CSS_PARAMETER']; ?></th>
+				<th><?php echo $user->lang['CSS_VALUE']; ?></th>
 			</tr>
 <?php
 
@@ -1994,21 +2009,21 @@ function csspreview()
 
 ?>
 			<tr>
-				<td class="row3" colspan="2"><b>Background</b></td>
+				<td class="row3" colspan="2"><b><?php echo $user->lang['BACKGROUND']; ?></b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('background_color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
-				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="background_color" value="<?php echo $background_color; ?>" size="8" maxlength="14"  onchange="document.all.stylebgcolor.bgColor=this.form.background_color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $background_color; ?>" id="stylebgcolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['BACKGROUND_COLOUR']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['COLOUR_EXPLAIN']; ?></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="background_color" value="<?php echo $background_color; ?>" size="8" maxlength="14"  onchange="document.all.stylebgcolor.bgColor=this.form.background_color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $background_color; ?>" id="stylebgcolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td><td class="gensmall"> &nbsp; [ <a href="swatch.php" onclick="swatch('background_color');return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a> ]</td></tr></table></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Image:</b></td>
+				<td class="row1"><b><?php echo $user->lang['BACKGROUND_IMAGE']; ?>:</b></td>
 				<td class="row2"><select name="background_image"><?php echo $bg_imglist ?></select></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Repeat background:</b></td>
+				<td class="row1"><b><?php echo $user->lang['BACKGROUND_REPEAT']; ?>:</b></td>
 				<td class="row2"><select name="background_repeat"><?php
 
-					foreach (array('' => '------', 'none' => 'No', 'repeat-x' => 'Horizontally Only', 'repeat-y' => 'Vertically Only', 'both' => 'Both Directions') as $cssvalue => $cssrepeat)
+					foreach (array('' => '------', 'none' => $user->lang['REPEAT_NO'], 'repeat-x' => $user->lang['REPEAT_X'], 'repeat-y' => $user->lang['REPEAT_Y'], 'both' => $user->lang['REPEAT_ALL']) as $cssvalue => $cssrepeat)
 					{
 						echo '<option value="' . $cssvalue . '"' . (($background_repeat == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssrepeat . '</option>';
 					}
@@ -2018,18 +2033,18 @@ function csspreview()
 
 
 			<tr>
-				<td class="row3" colspan="2"><b>Foreground</b></td>
+				<td class="row3" colspan="2"><b><?php echo $user->lang['FOREGROUND']; ?></b></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
-				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="color" value="<?php echo $color; ?>" size="8" maxlength="14" onchange="document.all.stylecolor.bgColor=this.form.color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $color; ?>" id="stylecolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['FONT_COLOUR']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['COLOUR_EXPLAIN']; ?> <a href="swatch.php" onclick="swatch('color');return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a></span></td>
+				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="color" value="<?php echo $color; ?>" size="8" maxlength="14" onchange="document.all.stylecolor.bgColor=this.form.color.value" /></td><td>&nbsp;</td><td bgcolor="<?php echo $color; ?>" id="stylecolor" style="border:solid 1px black;"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td><td class="gensmall"> &nbsp; [ <a href="swatch.php" onclick="swatch('color');return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a> ]</td></tr></table></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>Font:</b> <br /><span class="gensmall">You can specify multiple fonts seperated by commas</span></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['FONT_FACE']; ?>:</b> <br /><span class="gensmall"><?php echo $user->lang['FONT_FACE_EXPLAIN']; ?></span></td>
 				<td class="row2"><input class="post" type="text" name="font_family" value="<?php echo $font_family; ?>" size="40" maxlength="255" /></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Size:</b></td>
+				<td class="row1"><b><?php echo $user->lang['FONT_SIZE']; ?>:</b></td>
 				<td class="row2"><input class="post" type="text" name="font_size" value="<?php echo $font_size; ?>" size="3" maxlength="3" /> <select name="font_size_units"><?php
 
 					foreach (array('pt', 'px', 'em', '%') as $units)
@@ -2040,19 +2055,19 @@ function csspreview()
 ?></select></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Bold:</b></td>
+				<td class="row1"><b><?php echo $user->lang['BOLD']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="font_weight" value="bold"<?php echo (!empty($font_weight) && $font_weight == 'bold') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="font_weight" value="normal"<?php echo (!empty($font_weight) && $font_weight == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="font_weight" value=""<?php echo (empty($font_weight)) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Italic:</b></td>
+				<td class="row1"><b><?php echo $user->lang['ITALIC']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="font_style" value="italic"<?php echo (!empty($font_style) && $font_style == 'italic') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="font_style" value="normal"<?php echo (!empty($font_style) && $font_style == 'normal') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="font_style" value=""<?php echo (empty($font_style)) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Underline:</b></td>
+				<td class="row1"><b><?php echo $user->lang['UNDERLINE']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="text_decoration" value="underline"<?php echo (!empty($text_decoration) && $text_decoration == 'underline') ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="text_decoration" value="none"<?php echo (!empty($text_decoration) && $text_decoration == 'none') ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['NO']; ?> &nbsp; <input type="radio" name="text_decoration" value=""<?php echo (empty($text_decoration)) ? ' checked="checked"' : ''; ?>/> <?php echo $user->lang['UNSET']; ?></td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Line spacing:</b></td>
+				<td class="row1"><b><?php echo $user->lang['LINE_SPACING']; ?>:</b></td>
 				<td class="row2"><input class="post" type="text" name="line_height" value="<?php echo $line_height; ?>" size="3" maxlength="3" /> <select name="line_height_units"><?php
 
 					foreach (array('pt', 'px', 'em', '%') as $units)
@@ -2079,18 +2094,18 @@ function csspreview()
 	</tr>
 </table>
 
-<h1>Custom Class</h1>
+<h1><?php echo $user->lang['CUSTOM_CLASS']; ?></h1>
 
-<p>You can add additional classes to this theme if you wish. You must provide the actual CSS class name below, it must be the same as that you have or will use in your template. Please remember that class names may contain only alphanumeric characters, periods (.), colons (:) and number/hash/pound (#). The new class will be added to the Custom Class category in the select box above.</p>
+<p><?php echo $user->lang['CUSTOM_CLASS_EXPLAIN']; ?></p>
 
 <table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
-				<th colspan="2">Add Custom Class</td>
+				<th colspan="2"><?php echo $user->lang['CUSTOM_CLASS']; ?></td>
 			</tr>
 			<tr>
-				<td class="row1" width="40%"><b>CSS class name:</b></td>
+				<td class="row1" width="40%"><b><?php echo $user->lang['CSS_CLASS_NAME']; ?>:</b></td>
 				<td class="row2"><input class="post" type="text" name="customclass" value="" maxlength="15" size="15" /></td>
 			</tr>
 			<tr>
@@ -2202,11 +2217,11 @@ function front($type, $options)
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>Theme name</th>
-		<th colspan="<?php echo sizeof($options); ?>">Options</th>
+		<th><?php echo $user->lang[$l_prefix . '_NAME']; ?></th>
+		<th colspan="<?php echo sizeof($options); ?>"><?php echo $user->lang['OPTIONS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b>Installed themes</b></td>
+		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b><?php echo $user->lang['INSTALLED_' . $l_prefix]; ?></b></td>
 	</tr>
 <?php
 
@@ -2246,7 +2261,7 @@ function front($type, $options)
 
 ?>
 	<tr>
-		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b>Uninstalled themes</b></td>
+		<td class="row3" colspan="<?php echo sizeof($options) + 1; ?>"><b><?php echo $user->lang['UNINSTALLED_' . $l_prefix]; ?></b></td>
 	</tr>
 <?php
 
@@ -2280,7 +2295,7 @@ function front($type, $options)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $cfg['name']; ?></td>
-		<td class="<?php echo $row_class; ?>" colspan="<?php echo sizeof($options); ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>">Install</a></td>
+		<td class="<?php echo $row_class; ?>" colspan="<?php echo sizeof($options); ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;name=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
 	</tr>
 <?php
 
@@ -2291,7 +2306,7 @@ function front($type, $options)
 
 ?>
 	<tr>
-		<td class="row1" colspan="<?php echo sizeof($options) + 1; ?>" align="center">No uninstalled themes detected</td>
+		<td class="row1" colspan="<?php echo sizeof($options) + 1; ?>" align="center"><?php echo $user->lang['NO_UNINSTALLED_' . $l_prefix]; ?></td>
 	</tr>
 <?php
 
@@ -2300,7 +2315,7 @@ function front($type, $options)
 
 ?>
 	<tr>
-		<td class="cat" colspan="<?php echo sizeof($options) + 1; ?>" align="right">Create new theme: <input class="post" type="text" name="<?php echo $type; ?>_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="<?php echo sizeof($options) + 1; ?>" align="right"><?php echo $user->lang['CREATE_' . $l_prefix]; ?>: <input class="post" type="text" name="<?php echo $type; ?>_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -2425,7 +2440,7 @@ function remove($type, $id, $name, $path, $storedb = false)
 
 ?>
 	<tr>
-		<td class="row1" width="40%"><b>Update XXXXXX to:</b><br /><span class="gensmall">Select XXXXXX to replace this one if used by styles.</span></td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['REPLACE_' . $l_prefix]; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['REPLACE_' . $l_prefix . '_EXPLAIN']; ?></span></td>
 		<td class="row2"><select name="newid"><?php echo $options; ?></select></td>
 	</tr>
 	<tr>
@@ -3080,7 +3095,7 @@ function details($type, $mode, $action, $id)
 ?>
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_LOCATION']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang[$l_type . '_LOCATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="storedb" value="0"<?php echo $storedb_no; ?> /> Filesystem&nbsp;&nbsp;<input type="radio" name="storedb" value="1"<?php echo $storedb_yes; ?> />Database</td>
+		<td class="row2"><input type="radio" name="storedb" value="0"<?php echo $storedb_no; ?> /> <?php echo $user->lang['STORE_FILESYSTEM']; ?>&nbsp;&nbsp;<input type="radio" name="storedb" value="1"<?php echo $storedb_yes; ?> /> <?php echo $user->lang['STORE_DATABASE']; ?></td>
 	</tr>
 <?php
 
@@ -3100,13 +3115,13 @@ function details($type, $mode, $action, $id)
 		}
 		closedir($dp);
 
-		$store_options = '<option value="">No import</option>' . $store_options;
+		$store_options = '<option value="">' . $user->lang['NO_IMPORT'] . '</option>' . $store_options;
 
 		$sql = "SELECT {$type}_id, {$type}_name 
 			FROM $table";
 		$result = $db->sql_query($sql);
 
-		$basis_options = '<option value="">No Basis</option>';
+		$basis_options = '<option value="">' . $user->lang['NO_BASIS'] . '</option>';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$selected = (!empty($_POST['basis']) && $_POST['basis'] == $row[$type . '_id']) ? ' selected="selected"' : '';
