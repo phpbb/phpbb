@@ -90,8 +90,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		}
 
 		$headers = chop($headers);
-		$cc = explode(',', $cc);
-		$bcc = explode(',', $bcc);
+		$cc = explode(', ', $cc);
+		$bcc = explode(', ', $bcc);
 	}
 
 	if (trim($subject) == '')
@@ -103,8 +103,6 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	{
 		message_die(GENERAL_ERROR, "Email message was blank", "", __LINE__, __FILE__);
 	}
-
-	$mail_to_array = explode(',', $mail_to);
 
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
@@ -146,17 +144,12 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	// Specify each user to send to and build to header.
 	$to_header = '';
 
-	@reset($mail_to_array);
-	while(list(, $mail_to_address) = each($mail_to_array))
+	// Add an additional bit of error checking to the To field.
+	$mail_to = (trim($mail_to) == '') ? 'Undisclosed-recipients:;' : trim($mail_to);
+	if (preg_match('#[^ ]+\@[^ ]+#', $mail_to))
 	{
-		// Add an additional bit of error checking to the To field.
-		$mail_to_address = ($mail_to_address == '') ? 'Undisclosed-recipients:;' : '<' . trim($mail_to_address) . '>';
-		if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
-		{
-			fputs($socket, "RCPT TO: $mail_to_address\r\n");
-			server_parse($socket, "250", __LINE__);
-		}
-		$to_header .= (($to_header != '') ? ', ' : '') . "$mail_to_address";
+		fputs($socket, "RCPT TO: <$mail_to>\r\n");
+		server_parse($socket, "250", __LINE__);
 	}
 
 	// Ok now do the CC and BCC fields...
@@ -167,7 +160,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$bcc_address = trim($bcc_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address))
 		{
-			fputs($socket, "RCPT TO: $bcc_address\r\n");
+			fputs($socket, "RCPT TO: <$bcc_address>\r\n");
 			server_parse($socket, "250", __LINE__);
 		}
 	}
@@ -179,7 +172,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$cc_address = trim($cc_address);
 		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address))
 		{
-			fputs($socket, "RCPT TO: $cc_address\r\n");
+			fputs($socket, "RCPT TO: <$cc_address>\r\n");
 			server_parse($socket, "250", __LINE__);
 		}
 	}
@@ -194,7 +187,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fputs($socket, "Subject: $subject\r\n");
 
 	// Now the To Header.
-	fputs($socket, "To: $to_header\r\n");
+	fputs($socket, "To: $mail_to\r\n");
 
 	// Now any custom headers....
 	fputs($socket, "$headers\r\n\r\n");

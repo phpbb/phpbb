@@ -46,25 +46,19 @@ class emailer
 	}
 
 	// Sets an email address to send to
-	function email_address($address, $realname = '')
+	function email_address($address)
 	{
-		$pos = sizeof($this->addresses['to']);
-		$this->addresses['to'][$pos]['email'] = trim($address);
-		$this->addresses['to'][$pos]['name'] = trim($realname);
+		$this->addresses['to'] = trim($address);
 	}
 
-	function cc($address, $realname = '')
+	function cc($address)
 	{
-		$pos = sizeof($this->addresses['cc']);
-		$this->addresses['cc'][$pos]['email'] = trim($address);
-		$this->addresses['cc'][$pos]['name'] = trim($realname);
+		$this->addresses['cc'][] = trim($address);
 	}
 
-	function bcc($address, $realname = '')
+	function bcc($address)
 	{
-		$pos = sizeof($this->addresses['bcc']);
-		$this->addresses['bcc'][$pos]['email'] = trim($address);
-		$this->addresses['bcc'][$pos]['name'] = trim($realname);
+		$this->addresses['bcc'][] = trim($address);
 	}
 
 	function replyto($address)
@@ -80,7 +74,7 @@ class emailer
 	// set up subject for mail
 	function set_subject($subject = '')
 	{
-		$this->subject = trim($subject);
+		$this->subject = trim(preg_replace('#[\n\r]+#s', '', $subject));
 	}
 
 	// set up extra mail headers
@@ -191,27 +185,13 @@ class emailer
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
-		$to = $cc = $bcc = '';
-		// Build to, cc and bcc strings
-		@reset($this->addresses);
-		while (list($type, $address_ary) = each($this->addresses))
-		{
-			@reset($address_ary);
-			while (list(, $which_ary) = each($address_ary))
-			{
-				if ($type != 'to')
-				{
-					$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
-				}
-				else
-				{
-					$$type .= (($$type != '') ? ',' : '') . $which_ary['email'];
-				}
-			}
-		}
+		$to = $this->addresses['to'];
+
+		$cc = (count($this->addresses['cc'])) ? implode(', ', $this->addresses['cc']) : '';
+		$bcc = (count($this->addresses['bcc'])) ? implode(', ', $this->addresses['bcc']) : '';
 
 		// Build header
-		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\n" : '') . (($this->from != '') ? "From: <$this->from>\n" : "From: <" . $board_config['board_email'] . ">\n") . "Return-Path: <" . $board_config['board_email'] . ">\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc:$cc\n" : '')  . (($bcc != '') ? "Bcc:$bcc\n" : ''); 
+		$this->extra_headers = (($this->replyto != '') ? "Reply-to: $this->replyto\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )

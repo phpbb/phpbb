@@ -165,6 +165,16 @@ if (
 	}
 
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
+
+	$sql = "SELECT config_value
+		FROM " . CONFIG_TABLE . "
+		WHERE config_name = 'default_dateformat'";
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not select default dateformat', '', __LINE__, __FILE__, $sql);
+	}
+	$row = $db->sql_fetchrow($result);
+	$board_config['default_dateformat'] = $row['config_value'];
 	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
 
 	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
@@ -621,11 +631,11 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
 				}
 				
-				$emailer->from($board_config['board_email']);
-				$emailer->replyto($board_config['board_email']);
-		
 				while ($row = $db->sql_fetchrow($result))
 				{
+					$emailer->from($board_config['board_email']);
+					$emailer->replyto($board_config['board_email']);
+					
 					$emailer->email_address(trim($row['user_email']));
 					$emailer->use_template("admin_activate", $row['user_lang']);
 					$emailer->set_subject($lang['New_account_subject']);
