@@ -21,8 +21,7 @@
 
 function display_forums($root_data = '', $display_moderators = TRUE)
 {
-	global $config, $db, $template, $auth, $user;
-	global $phpEx, $SID, $forum_moderators;
+	global $config, $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
 
 	$visible_forums = 0;
 
@@ -64,7 +63,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	$result = $db->sql_query($sql);
 
 	$branch_root_id = $root_data['forum_id'];
-	$forum_rows = $subforums = $forum_moderators = array();
+	$forum_rows = $subforums = $forum_moderators = $mark_forums = array();
 	$forum_ids = array($root_data['forum_id']);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -100,11 +99,10 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$forum_rows[$forum_id] = $row;
 			$forum_ids[] = $forum_id;
 
-			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
+			if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
 			{
 				$branch_root_id = $forum_id;
 			}
-
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 		}
 		elseif ($row['forum_type'] != FORUM_CAT)
@@ -139,73 +137,17 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	}
 	$db->sql_freeresult();
 
-/*
-	if (isset($tracking_topics) && $user->data['user_id'] != ANONYMOUS)
-	{
-		$min_forum_time = base_convert(min($tracking_topics[$forum_id]), 36, 10) + $config['board_startdate'];
-		$max_forum_time = base_convert(max($tracking_topics[$forum_id]), 36, 10) + $config['board_startdate'];
-
-
-		// $mark_time_forum && $mark_time_topic
-		$sql = "SELECT topic_id, topic_last_post_time  
-			FROM " . TOPICS_TABLE . " 
-			WHERE forum_id = $forum_id
-				AND topic_last_post_time > $min_forum_time";//AND topic_last_post_time < $max_forum_time
-		$result = $db->sql_query($sql);
-
-		$mark_time = 0;
-		if ($row2 = $db->sql_fetchrow($result))
-		{
-			do
-			{
-				$mtopic_id = base_convert($row2['topic_id'], 10, 36);
-				$tracking_topics[$forum_id][$mtopic_id] = base_convert($tracking_topics[$forum_id][$mtopic_id], 36, 10);
-				$tracking_topics[$forum_id][0] = base_convert($tracking_topics[$forum_id][0], 36, 10);
-
-				echo $row2['topic_id'] . " :: " . $tracking_topics[$forum_id][$mtopic_id] . " :: " . $tracking_topics[$forum_id][0] . " :: " . $row2['topic_last_post_time'] . " :: " . $row['post_time'] . "<br />"; 
-
-				if ((($row2['topic_id'] != $topic_id && 
-						($tracking_topics[$forum_id][$mtopic_id] >= $row2['topic_last_post_time'] || 
-							$tracking_topics[$forum_id][0] >= $row2['topic_last_post_time'])) || 
-					($row2['topic_id'] == $topic_id && $row['post_time'] <= $row2['topic_last_post_time'])) && 
-					!isset($mark_read))
-				{
-					$mark_read = true;
-				}
-				else
-				{
-					$mark_read = false;
-				}
-				$mark_time = max($mark_time, $row2['topic_last_post_time']);
-			}
-			while ($row2 = $db->sql_fetchrow($result));
-		}
-		$db->sql_freeresult($result);
-
-		if ($mark_read)
-		{
-			markread('mark', $forum_id, false, $mark_time);
-			echo "HERE :: $mark_time :: " . time();
-		}
-		else
-		{
-			echo "HERE2";
-		}
-	}
-*/
-
 	// Grab moderators ... if necessary
 	if ($display_moderators)
 	{
 		get_moderators($forum_moderators, $forum_ids);
 	}
 
-
 	// Loop through the forums
 	$root_id = $root_data['forum_id'];
 	foreach ($forum_rows as $row)
 	{
-		if ($row['parent_id'] == $root_id)
+		if ($row['parent_id'] == $root_id && !$row['parent_id'])
 		{
 			if ($row['forum_type'] == FORUM_CAT)
 			{
@@ -217,7 +159,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				unset($hold);
 			}
 		}
-		elseif (!empty($hold))
+		else if (!empty($hold))
 		{
 			$template->assign_block_vars('forumrow', array(
 				'S_IS_CAT'			=>	TRUE,
