@@ -253,12 +253,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			}
 		}
 	}
-	else if ( empty($password) && empty($password_confirm) )
-	{
-		$error = TRUE;
-		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
-	}
-	else 
+	else if ( ( empty($password) && !empty($password_confirm) ) || ( !empty($password) && empty($password_confirm) ) || ( empty($password) && empty($password_confirm) && $mode == 'register' ) )
 	{
 		$error = TRUE;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
