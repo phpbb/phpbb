@@ -142,17 +142,19 @@ class session {
 			$this->gc($current_time);
 		}
 
-		// Grab user data
-		$sql = "SELECT *
-			FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id";
+		// Grab user data ... join on session if it exists for session time
+		$sql = "SELECT u.*, s.session_time
+			FROM ( " . USERS_TABLE . " u
+			LEFT JOIN " . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id )
+			WHERE u.user_id = $user_id
+			ORDER BY s.session_time DESC";
 		$result = $db->sql_query($sql);
 
 		$userdata = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// Check autologin request, is it valid?
-		if ( $userdata['user_password'] != $autologin || !$userdata['user_active'] || $user_id == ANONYMOUS )
+		if ( $userdata['user_password'] != $autologin || !$userdata['user_active'] || !$user_id )
 		{
 			$autologin = '';
 			$userdata['user_id'] = $user_id = ANONYMOUS;
@@ -180,27 +182,30 @@ class session {
 		}
 		$db->sql_freeresult($result);
 
+		// Is there an existing session? If so, grab last visit time from that
+		$userdata['session_last_visit'] = ( $userdata['session_time'] ) ? $userdata['session_time'] : ( ( $userdata['user_lastvisit'] ) ? $userdata['user_lastvisit'] : time() );
+
 		// Create or update the session
 		$db->sql_return_on_error(true);
 
 		$sql = "UPDATE " . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_last_visit = " . $userdata['user_lastvisit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page'
+			SET session_user_id = $user_id, session_last_visit = " . $userdata['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page'
 			WHERE session_id = '" . $this->session_id . "'";
-		if ( !($result = $db->sql_query($sql)) || !$db->sql_affectedrows() )
+		if ( !$db->sql_query($sql) || !$db->sql_affectedrows() )
 		{
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($user_ip));
 
 			$sql = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page)
-				VALUES ('" . $this->session_id . "', $user_id, " . intval($userdata['user_lastvisit']) . ", $current_time, $current_time, '$user_ip', '$this->browser', '$this->page')";
+				VALUES ('" . $this->session_id . "', $user_id, " . $userdata['session_last_visit'] . ", $current_time, $current_time, '$user_ip', '$this->browser', '$this->page')";
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
 
 		$userdata['session_id'] = $session_id;
 
-		$sessiondata['autologinid'] = ( $autologin && $user_id != ANONYMOUS ) ? $autologin : '';
+		$sessiondata['autologinid'] = ( $autologin && $user_id ) ? $autologin : '';
 		$sessiondata['userid'] = $user_id;
 
 		$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
@@ -251,55 +256,40 @@ class session {
 		setcookie($board_config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 	}
 
-	// This just won't work correctly as it stands ... if a user has more than one session in
-	// the DB and gc subsequently runs, updating their user_lastvisit time it will screw up
-	// marking of forums, etc. since it will be reflected immediately in the users current session
-	//
-	// One way around this would be to store the last visit time within each session and use
-	// that rather than user_lastvisit in the relevant places. However, the 'problem' still
-	// persists of a user creating a new session (after leaving the board) before gc has run
-	// and not having their "true" last visit time be used (i.e. their user_lastvisit won't
-	// have yet been updated). This behaviour seems to be that of vB and our users seemed to
-	// dislike this approach when a similar issue arose during 2.0.0 development ... could
-	// possibly check sessions table before creating new session to see if user is already
-	// listed ... if they are then use the last session_time from there ... adds another
-	// query during create though
-
 	// Garbage collection
 	function gc(&$current_time)
 	{
 		global $db, $board_config, $user_ip;
 
-		$sql = "SELECT *
+		// Get expired sessions, only most recent for each user
+		$sql = "SELECT session_user_id, MAX(session_time) AS recent_time
 			FROM " . SESSIONS_TABLE . "
 			WHERE session_time < " . ( $current_time - $board_config['session_length'] ) . "
-			ORDER BY session_user_id, session_time
+			GROUP BY session_user_id
 			LIMIT 10";
 		$result = $db->sql_query($sql);
 
-		$del_session_id = '';
+		$del_user_id = '';
 		$del_sessions = 0;
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $row['session_user_id'] )
+			if ( $row['user_session_id'] )
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_lastvisit = " . $row['session_time'] . ", user_session_page = '" . $row['session_page'] . "'
+					SET user_lastvisit = " . $row['recent_time'] . "
 					WHERE user_id = " . $row['session_user_id'];
 				$db->sql_query($sql);
 			}
 
-			$del_session_id .= ( ( $del_session_id != '' ) ? ', ' : '' ) . '\'' . $row['session_id'] . '\'';
+			$del_user_id .= ', \'' . $row['session_user_id'] . '\'';
 			$del_sessions++;
 		}
 
-		if ( $del_session_id != '' )
-		{
-			// Delete expired sessions
-			$sql = "DELETE FROM " . SESSIONS_TABLE . "
-				WHERE session_id IN ($del_session_id)";
-			$db->sql_query($sql);
-		}
+		// Delete expired sessions
+		$sql = "DELETE FROM " . SESSIONS_TABLE . "
+			WHERE session_user_id IN ($del_user_id)
+				AND session_time < " . ( $current_time - $board_config['session_length'] );
+		$db->sql_query($sql);
 
 		if ( $del_sessions < 10 )
 		{
@@ -333,9 +323,7 @@ class session {
 			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
 		}
 
-		//
 		// Set up style
-		//
 		$style = ( !$board_config['override_user_style'] && $userdata['user_id'] ) ? $userdata['user_style'] : $board_config['default_style'];
 
 		$sql = "SELECT t.template_path, t.poll_length, t.pm_box_length, c.css_data, c.css_external, i.*
@@ -427,7 +415,24 @@ class user
 		{
 			include($this->lang_path . '/lang_admin.' . $phpEx);
 		}
+/*
+		if ( is_array($lang_set) )
+		{
+			include($this->lang_path . '/common.' . $phpEx);
 
+			$lang_set = explode(',', $lang_set);
+			foreach ( $lang_set as $lang_file )
+			{
+				include($this->lang_path . '/' . trim($lang_file) . '.' . $phpEx);
+			}
+			unset($lang_set);
+		}
+		else
+		{
+			include($this->lang_path . '/common.' . $phpEx);
+			include($this->lang_path . '/' . trim($lang_set) . '.' . $phpEx);
+		}
+*/
 		// Set up style
 		$style = ( $style ) ? $style : ( ( !$board_config['override_user_style'] && $userdata['user_id'] ) ? $userdata['user_style'] : $board_config['default_style'] );
 
