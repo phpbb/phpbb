@@ -16,7 +16,6 @@ function login_db(&$username, &$password)
 	if ( $row = $db->sql_fetchrow($result) )
 	{
 		$db->sql_freeresult($result);
-
 		if ( md5($password) == $row['user_password'] && $row['user_active'] )
 		{
 			return $row;

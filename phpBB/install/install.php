@@ -581,15 +581,15 @@ else
 	$check_extensions = array();
 	$suffix = ( (defined('PHP_OS')) && (eregi('win', PHP_OS)) ) ? '.dll' : '.so';
 
-	for ($i = 0; $i < count($check_extensions); $i++)
+	foreach ($check_extensions as $extension)
 	{
-		if (!@extension_loaded($check_extensions[$i]))
+		if (!@extension_loaded($extension))
 		{
 			if ( (!@ini_get('safe_mode')) && (@ini_get('enable_dl')) )
 			{
-				if (@dl($check_extensions[$i] . $suffix))
+				if (@dl($extension . $suffix))
 				{
-					$load_extensions .= ($load_extensions == '') ? $check_extensions[$i] . $suffix : ',' . $check_extensions[$i] . $suffix;
+					$load_extensions .= ($load_extensions == '') ? $extension . $suffix : ',' . $extension . $suffix;
 				}
 			}
 		}

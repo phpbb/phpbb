@@ -586,10 +586,9 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 	{
 		if ( $show_results == 'posts' )
 		{
-			$sql = "SELECT pt.post_text, pt.bbcode_uid, pt.post_subject, p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid
-				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt
+			$sql = "SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid
+				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p 
 				WHERE p.post_id IN ($search_results)
-					AND pt.post_id = p.post_id
 					AND f.forum_id = p.forum_id
 					AND p.topic_id = t.topic_id
 					AND p.poster_id = u.user_id";

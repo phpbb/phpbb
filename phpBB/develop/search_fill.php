@@ -33,7 +33,7 @@ $synonym_array = file($phpbb_root_path . "language/lang_english/search_synonyms.
 // Fetch a batch of posts_text entries
 //
 $sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
-	FROM ". POSTS_TEXT_TABLE;
+	FROM ". POSTS_TABLE;
 if ( !($result = $db->sql_query($sql)) ) 
 {
 	$error = $db->sql_error();
@@ -56,7 +56,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchcount++;
 	
 	$sql = "SELECT * 
-		FROM " . POSTS_TEXT_TABLE . " 
+		FROM " . POSTS_TABLE . " 
 		WHERE post_id 
 			BETWEEN $batchstart 
 				AND $batchend";

@@ -263,61 +263,51 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	
 	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);	
 	
-	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig)
-		VALUES ($new_topic_id, $forum_id, $user_id, '$post_username', $current_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig)";
+	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_approved, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
+		VALUES ($new_topic_id, $forum_id, $user_id, 0, 0, '$post_username', $current_time, '$user_ip', 1, '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig, '$post_subject', '$post_message')";
 	$result = $db->sql_query($sql);
 	
-	if($result)
+	if ($result)
 	{
 		$new_post_id = $db->sql_nextid();
 	
-		$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text)
-			VALUES ($new_post_id, '$post_subject', '$post_message')";
-	
+		$sql = "UPDATE " . TOPICS_TABLE . "
+			SET topic_last_post_id = $new_post_id";
+		if($mode == "reply")
+		{
+			$sql .= ", topic_replies = topic_replies + 1 ";
+		}
+		$sql .= " WHERE topic_id = $new_topic_id";
+
 		if($db->sql_query($sql))
 		{
-			$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_last_post_id = $new_post_id";
-			if($mode == "reply")
+			$sql = "UPDATE " . FORUMS_TABLE . "
+				SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
+			if($mode == "newtopic")
 			{
-				$sql .= ", topic_replies = topic_replies + 1 ";
+				$sql .= ", forum_topics = forum_topics + 1";
 			}
-			$sql .= " WHERE topic_id = $new_topic_id";
+			$sql .= " WHERE forum_id = $forum_id";
 	
 			if($db->sql_query($sql))
 			{
-				$sql = "UPDATE " . FORUMS_TABLE . "
-					SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
-				if($mode == "newtopic")
-				{
-					$sql .= ", forum_topics = forum_topics + 1";
-				}
-				$sql .= " WHERE forum_id = $forum_id";
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_posts = user_posts + 1
+					WHERE user_id = " . $user_id;
 	
-				if($db->sql_query($sql))
+				if($db->sql_query($sql, END_TRANSACTION))
 				{
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_posts = user_posts + 1
-						WHERE user_id = " . $user_id;
-	
-					if($db->sql_query($sql, END_TRANSACTION))
-					{
-						// SUCCESS.
-						return true;
-					}
-					else
-					{
-						message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
-					}
+					// SUCCESS.
+					return true;
 				}
 				else
 				{
-					message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 			else
 			{
-				message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 			}
 		}
 		else
@@ -329,14 +319,13 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 					WHERE post_id = $new_post_id";
 				$db->sql_query($sql);
 			}
-			message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
 		}
 	}
 	else
 	{
 		message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 	}	
-
 }
 
 
@@ -470,8 +459,4 @@ function make_user($username)
 
 }
 
-
-
- 
-  
 ?>

@@ -43,7 +43,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 				lr.user_id = " . $user->data['user_id'] . " 
 				AND (f.forum_id = lr.forum_id OR f.forum_id = -lr.forum_id)
 				AND lr.lastread_time >= f.forum_last_post_time)";
-
 		// Temp fix for index
 		//$where_sql .= ' GROUP BY f.forum_id';
 	}
@@ -154,7 +153,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$forum_id = $row['forum_id'];
 
 		$unread_topics = ($user->data['user_id'] && $row['lastread_time'] < $row['forum_last_post_time'] ) ? TRUE : FALSE;
-
 		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
 		$folder_alt = ($unread_topics) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 

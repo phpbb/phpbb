@@ -24,36 +24,36 @@
 class parse_message
 {
 	var $bbcode_tpl = null;
+	var $message_mode = 0; // introduce constant or string ? 'posting'/'pm'
 
+	function parse_message($message_type)
+	{
+		$this->message_mode = $message_type;
+	}
+	
 	function parse(&$message, $html, $bbcode, $uid, $url, $smilies)
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $_FILE;
 
 		$warn_msg = '';
 
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
-		$match = array();
-		$replace = array();
-
-		$match[] = '#sid=[a-z0-9]*?&?#';
-		$replace[] = '';
-		$match[] = "#([\r\n][\s]+){3,}#";
-		$replace[] = "\n\n";
+		$match = array('#sid=[a-z0-9]*?&?#', "#([\r\n][\s]+){3,}#");
+		$replace = array('', "\n\n");
 
 		$message = trim(preg_replace($match, $replace, $message));
 
 		// Message length check
 		if (!strlen($message) || ($config['max_post_chars'] && strlen($message) > intval($config['max_post_chars'])))
 		{
-			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . (!strlen($message)) ? $user->lang['Too_few_chars'] : $user->lang['Too_many_chars'];
+			$warn_msg .= (($warn_msg != '') ? '<br />' : '') . (!strlen($message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 		}
 
 		// Smiley check
 		if (intval($config['max_post_smilies']) && $smilies )
 		{
-			$sql = "SELECT code
-				FROM " . SMILIES_TABLE;
+			$sql = "SELECT code	FROM " . SMILIES_TABLE;
 			$result = $db->sql_query($sql);
 
 			$match = 0;
@@ -66,7 +66,7 @@ class parse_message
 
 				if ($match > intval($config['max_post_smilies']))
 				{
-					$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $user->lang['Too_many_smilies'];
+					$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $user->lang['TOO_MANY_SMILIES'];
 					break;
 				}
 			}
@@ -82,7 +82,7 @@ class parse_message
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->html($message, $html);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->bbcode($message, $bbcode, $uid);
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->emoticons($message, $smilies);
-		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, $url);
+		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->magic_url($message, trim($url));
 		$warn_msg .= (($warn_msg != '') ? '<br />' : '') . $this->attach($_FILE);
 
 		return $warn_msg;
@@ -154,7 +154,8 @@ class parse_message
 	{
 		global $db, $user;
 
-		$result = $db->sql_query('SELECT * FROM ' . SMILIES_TABLE);
+		$sql = "SELECT * FROM " . SMILIES_TABLE;
+		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -162,7 +163,7 @@ class parse_message
 			do
 			{
 				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" alt="' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
 
@@ -173,13 +174,9 @@ class parse_message
 		return;
 	}
 
-	// Based off of Acyd Burns Mod
 	function attach($file_ary)
 	{
 		global $config;
-
-		$allowed_ext = explode(',', $config['attach_ext']);
-
 
 	}
 }
@@ -453,7 +450,7 @@ function generate_smilies($mode)
 
 	if ($mode == 'window')
 	{
-		$page_title = $user->lang['Review_topic'] . " - $topic_title";
+		$page_title = $user->lang['TOPIC_REVIEW'] . " - $topic_title";
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(

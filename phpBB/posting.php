@@ -22,18 +22,22 @@
 // TODO for 2.2:
 // 
 // * deletion of posts/polls
-// * topic review additions, quoting, etc.?
+// * topic review additions -> quoting from previous posts ?
 // * post preview (poll preview too?)
-// * check for reply since started posting upon submission?
+// * check for reply since started posting upon submission and display of 'between-posts' to allow re-defining of post
 // * hidden form element containing sid to prevent remote posting - Edwin van Vliet
-// * attachments -> Acyd Burns Mod functionality
+// * Attachments
 // * bbcode parsing -> see functions_posting.php
 // * lock topic option within posting
 // * multichoice polls
 // * permission defined ability for user to add poll options
 // * Spellcheck? aspell? or some such?
+// * Posting approval
+// * Report to Admin Checkbox/Button for Moderation ?
+// * After Submit got clicked, disable the button (prevent double-posts), could be solved in a more elegant way
 
 define('IN_PHPBB', true);
+
 if (count($_POST))
 {
 	define('NEED_SID', true);
@@ -71,7 +75,7 @@ if (!empty($_REQUEST['cancel']))
 switch ($mode)
 {
 	case 'post':
-		if (empty($forum_id))
+		if (!$forum_id)
 		{
 			trigger_error($user->lang['NO_FORUM']);
 		}
@@ -82,7 +86,7 @@ switch ($mode)
 		break;
 
 	case 'reply':
-		if (empty($topic_id))
+		if (!$topic_id)
 		{
 			trigger_error($user->lang['NO_TOPIC']);
 		}
@@ -96,7 +100,7 @@ switch ($mode)
 	case 'quote':
 	case 'edit':
 	case 'delete':
-		if (empty($post_id))
+		if (!$post_id)
 		{
 			trigger_error($user->lang['NO_POST']);
 		}
@@ -109,7 +113,7 @@ switch ($mode)
 		break;
 
 	case 'topicreview':
-		if (!isset($topic_id))
+		if (!$topic_id)
 		{
 			trigger_error($user->lang['NO_TOPIC']);
 		}
@@ -138,9 +142,9 @@ if ($sql != '')
 if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 {
 	$sql = "SELECT topic_id
-		FROM " . TOPICS_WATCH_TABLE . "
-		WHERE topic_id = " . intval($topic_id) . "
-			AND user_id = " . $user->data['user_id'];
+	FROM " . TOPICS_WATCH_TABLE . "
+	WHERE topic_id = " . intval($topic_id) . "
+	AND user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
 	$notify_set = ($db->sql_fetchrow($result)) ? true : false;
@@ -150,8 +154,8 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 if ($mode == 'edit' && !empty($poll_start))
 {
 	$sql = "SELECT *
-		FROM phpbb_poll_results
-		WHERE topic_id = " . intval($topic_id);
+	FROM phpbb_poll_results
+	WHERE topic_id = " . intval($topic_id);
 	$result = $db->sql_query($sql);
 
 	$poll_options = array();
@@ -198,6 +202,7 @@ if (isset($_REQUEST['post']))
 {
 	// If replying/quoting and last post id has changed
 	// give user option of continuing submit or return to post
+	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && intval($topic_last_post_id) != intval($topic_cur_post_id))
 	{
 
@@ -205,7 +210,7 @@ if (isset($_REQUEST['post']))
 
 	$err_msg = '';
 	$current_time = time();
-	$parse_msg = new parse_message();
+	$parse_msg = new parse_message(0);
 	$search = new fulltext_search();
 
 	// Grab relevant submitted data
@@ -713,6 +718,7 @@ $template->assign_vars(array(
 	'S_NOTIFY_ALLOWED' 	=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
+	'S_LOCK_TOPIC_ALLOWED' => (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_gets('m_lock', 'a_', intval($forum_id)))) ? true : false,
 
 	'S_DISPLAY_REVIEW'	=> ($mode == 'reply' || $mode == 'quote') ? true : false,
 	'S_TOPIC_ID' 		=> intval($topic_id),

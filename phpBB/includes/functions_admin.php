@@ -232,9 +232,9 @@ function prune($forum_id, $prune_date, $sql_topics = '')
 
 			$pruned_posts = $db->sql_affectedrows();
 
-			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
+/*			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
 				WHERE post_id IN ($sql_posts)";
-			$db->sql_query($sql);
+			$db->sql_query($sql);*/
 
 			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
 				WHERE post_id IN ($sql_posts)";
