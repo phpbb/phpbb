@@ -60,9 +60,7 @@ $guests_online = 0;
 $online_userlist = '';
 
 $prev_user_id = 0;
-$prev_user_ip = '';
-
-$reading_sql = '';
+$prev_user_ip = $reading_sql = '';
 if (!empty($_REQUEST['f']))
 {
 	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_REQUEST['f']) . '%\'';
@@ -70,7 +68,7 @@ if (!empty($_REQUEST['f']))
 
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
-	WHERE s.session_time >= ".(time() - 300) . "
+	WHERE s.session_time >= " . (time() - 300) . "
 		$reading_sql
 		AND u.user_id = s.session_user_id
 	ORDER BY u.username ASC, s.session_ip ASC";
@@ -91,12 +89,12 @@ while ($row = $db->sql_fetchrow($result))
 
 			if ($row['user_allow_viewonline'])
 			{
-				$user_online_link = '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
+				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
 				$logged_visible_online++;
 			}
 			else
 			{
-				$user_online_link = '<a href="' . "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
+				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
 				$logged_hidden_online++;
 			}
 
