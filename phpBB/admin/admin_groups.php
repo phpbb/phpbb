@@ -69,6 +69,7 @@ else if( isset($updategroup) )
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
 	switch($mode)
+	{
 		case 'update':
 		
 		break;
@@ -84,6 +85,7 @@ else if( isset($updategroup) )
 		case 'default':
 		message_die(GENERAL_ERROR, $lang['Group_mode_not_selected']);
 		break;
+	}
 }
 else
 {
