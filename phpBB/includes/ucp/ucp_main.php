@@ -31,7 +31,7 @@ class ucp_main extends ucp
 		$submodules['FRONT']	= "i=$id&amp;mode=front";
 		$submodules['WATCHED']	= "i=$id&amp;mode=watched";
 
-		$this->subsection($submodules, $submode);
+		$this->menu($id, $submodules, $submode);
 		unset($submodules);
 
 		switch ($submode)
@@ -152,8 +152,8 @@ class ucp_main extends ucp
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
-						'S_ROW_COUNT'			=> $i, 
-						'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false, 
+						'S_ROW_COUNT'		=> $i, 
+						'S_USER_POSTED'		=> (!empty($row['mark_type'])) ? true : false, 
 
 						'U_VIEW_TOPIC'	=> $view_topic_url)
 					);
@@ -163,7 +163,6 @@ class ucp_main extends ucp
 				$db->sql_freeresult($result);
 
 				//TODO
-/*
 				$sql_and = '';
 				$sql = 'SELECT COUNT(post_id) AS total_posts
 					FROM ' . POSTS_TABLE . '
@@ -184,7 +183,7 @@ class ucp_main extends ucp
 						$post_count_sql";
 				$result = $db->sql_query($sql);
 
-				$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+				$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
 				$db->sql_freeresult($result);
 
 				$sql = "SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
@@ -237,9 +236,15 @@ class ucp_main extends ucp
 				}
 				unset($active_t_row);
 
-				$template->assign_vars(show_profile($row));
+//				$template->assign_vars(show_profile($row));
 
 				$template->assign_vars(array(
+					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
+					'RANK_TITLE'		=> $rank_title, 
+					'KARMA'				=> (!empty($row['user_karma'])) ? $user->data['user_karma'] : 0, 
+					'JOINED'			=> $user->format_date($user->data['user_regdate'], $user->lang['DATE_FORMAT']),
+					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
+					'POSTS'				=> ($data['user_posts']) ? $data['user_posts'] : 0,
 					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
 					'ACTIVE_FORUM'		=> $active_f_name, 
@@ -252,13 +257,12 @@ class ucp_main extends ucp
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
-					'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
 					'S_GROUP_OPTIONS'	=> $group_options, 
 
 					'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 					'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 				);
-*/
+
 				break;
 
 			case 'watched':
@@ -385,15 +389,14 @@ class ucp_main extends ucp
 
 
 				// Subscribed Topics
-				$sql_t_tracking = ($config['load_db_lastread'] || $config['load_db_track']) ? 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')' : '';
-				$sql_f_tracking = ($config['load_db_lastread']) ? 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
+				$sql_from = ($config['load_db_lastread'] || $config['load_db_track']) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t';
+//				$sql_f_tracking = ($config['load_db_lastread']) ? 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
 
 				$sql_t_select = ($config['load_db_lastread'] || $config['load_db_track']) ? ', tt.mark_type, tt.mark_time' : '';
-				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
+//				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
 
 				$sql = "SELECT t.* $sql_f_select $sql_t_select 
-					FROM ((" . TOPICS_TABLE . " t
-						$sql_f_tracking) $sql_t_tracking), " . TOPICS_WATCH_TABLE . ' tw
+					FROM $sql_from, " . TOPICS_WATCH_TABLE . ' tw
 					WHERE tw.user_id = ' . $user->data['user_id'] . '
 						AND t.topic_id = tw.topic_id 
 					ORDER BY t.topic_last_post_time DESC';

@@ -32,7 +32,7 @@ class ucp_prefs extends ucp
 		$submodules['VIEW']		= "i=$id&amp;mode=view";
 		$submodules['POST']		= "i=$id&amp;mode=post";
 
-		$this->subsection($submodules, $submode);
+		$this->menu($id, $submodules, $submode);
 		unset($submodules);
 
 		switch($submode)
@@ -49,7 +49,7 @@ class ucp_prefs extends ucp
 						), 
 						'int'	=> array('dst', 'style'),
 						'float' => array('tz'),
-						'bool'	=> array('viewemail', 'hideonline', 'notifypm', 'popuppm')
+						'bool'	=> array('viewemail', 'massemail', 'hideonline', 'notifypm', 'popuppm')
 					);
 					$data = $this->normalise_data($_POST, $normalise);
 
@@ -64,8 +64,9 @@ class ucp_prefs extends ucp
 					if (!sizeof($this->error))
 					{
 						$sql_ary = array(
-							'user_allow_viewemail'	=> $data['viewemail'],
-							'user_allow_viewonline'	=> !$data['hideonline'],
+							'user_allow_viewemail'	=> $data['viewemail'], 
+							'user_allow_massemail'	=> $data['massemail'], 
+							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'], 
 							'user_notify_pm'		=> $data['notifypm'],
 							'user_popup_pm'			=> $data['popuppm'],
 							'user_dst'				=> $data['dst'],
@@ -90,9 +91,12 @@ class ucp_prefs extends ucp
 					unset($data);
 				}
 
-				$view_email = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
+				$viewemail = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
 				$view_email_yes = ($viewemail) ? ' checked="checked"' : '';
 				$view_email_no = (!$viewemail) ? ' checked="checked"' : '';
+				$massemail = (isset($massemail)) ? $massemail : $user->data['user_allow_massemail'];
+				$mass_email_yes = ($massemail) ? ' checked="checked"' : '';
+				$mass_email_no = (!$massemail) ? ' checked="checked"' : '';
 				$hideonline = (isset($hideonline)) ? $hideonline : !$user->data['user_allow_viewonline'];
 				$hide_online_yes = ($hideonline) ? ' checked="checked"' : '';
 				$hide_online_no = (!$hideonline) ? ' checked="checked"' : '';
@@ -116,6 +120,8 @@ class ucp_prefs extends ucp
 
 					'VIEW_EMAIL_YES'	=> $view_email_yes, 
 					'VIEW_EMAIL_NO'		=> $view_email_no, 
+					'ADMIN_EMAIL_YES'	=> $mass_email_yes, 
+					'ADMIN_EMAIL_NO'	=> $mass_email_no, 
 					'HIDE_ONLINE_YES'	=> $hide_online_yes, 
 					'HIDE_ONLINE_NO'	=> $hide_online_no, 
 					'NOTIFY_PM_YES'		=> $notify_pm_yes, 
@@ -129,7 +135,9 @@ class ucp_prefs extends ucp
 
 					'S_LANG_OPTIONS'	=> language_select($lang), 
 					'S_STYLE_OPTIONS'	=> style_select($style),
-					'S_TZ_OPTIONS'		=> tz_select($tz))
+					'S_TZ_OPTIONS'		=> tz_select($tz),
+					'S_CAN_HIDE_ONLINE'	=> true, 	
+					)
 				);
 				break;
 
@@ -143,7 +151,7 @@ class ucp_prefs extends ucp
 							'sk'	=> '1,1', 
 							'sd'	=> '1,1', 
 						),
-						'int'	=> array('st'), 
+						'int'	=> array('st', 'minkarma'), 
 						'bool'	=> array('images', 'flash', 'smilies', 'sigs', 'avatars', 'wordcensor'), 
 					);
 					$data = $this->normalise_data($_POST, $normalise);
@@ -159,7 +167,8 @@ class ucp_prefs extends ucp
 							'user_viewcensors'	=> ($auth->acl_get('u_chgcensors')) ? $data['wordcensor'] : $user->data['user_viewcensors'],
 							'user_sortby_type'	=> $data['sk'],
 							'user_sortby_dir'	=> $data['sd'],
-							'user_show_days'	=> $data['st'],
+							'user_show_days'	=> $data['st'], 
+							'user_min_karma'	=> $data['minkarma'], 
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -189,6 +198,14 @@ class ucp_prefs extends ucp
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = '';
 				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
+
+				$s_min_karma_options = '';
+				$minkarma = (isset($minkarma)) ? $minkarma : $user->data['user_min_karma'];
+				for ($i = -5; $i < 6; $i++)
+				{
+					$selected = ($i == $minkarma) ? ' selected="selected"' : '';
+					$s_min_karma_options .= "<option value=\"$i\"$selected>$i</option>";
+				}
 
 				$images = (isset($images)) ? $images : $user->data['user_viewimg'];
 				$images_yes = ($images) ? ' checked="checked"' : '';
@@ -225,6 +242,7 @@ class ucp_prefs extends ucp
 					'DISABLE_CENSORS_YES'	=> $wordcensor_yes, 
 					'DISABLE_CENSORS_NO'	=> $wordcensor_no,
 
+					'S_MIN_KARMA_OPTIONS'	=> $s_min_karma_options, 
 					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false, 
 					'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 					'S_SELECT_SORT_KEY'		=> $s_sort_key, 

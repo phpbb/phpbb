@@ -92,7 +92,7 @@ class ucp_register extends ucp
 					'email_confirm'		=> $data['email'], 
 				), 
 				'match'		=> array(
-					'username'	=> '#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#iu', 
+					'username'	=> '#^' . preg_replace('#/{1}#', '\\', $config['allow_name_chars']) . '$#iu', 
 				), 
 				'function'	=> array(
 					'username'	=> 'validate_username', 
@@ -146,7 +146,7 @@ class ucp_register extends ucp
 					$config['require_activation'] == USER_ACTIVATION_SELF || 
 					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
 				{
-					$user_actkey = $this->gen_rand_string(10);
+					$user_actkey = gen_rand_string(10);
 					$key_len = 54 - (strlen($server_url));
 					$key_len = ($key_len > 6) ? $key_len : 6;
 					$user_actkey = substr($user_actkey, 0, $key_len);
@@ -324,7 +324,7 @@ class ucp_register extends ucp
 			}
 			$db->sql_freeresult($result);
 
-			$code = $this->gen_rand_string(6);
+			$code = gen_rand_string(6);
 			$confirm_id = md5(uniqid($user_ip));
 
 			$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 

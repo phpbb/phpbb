@@ -25,7 +25,7 @@ class ucp_profile extends ucp
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submode = ($_REQUEST['mode']) ? htmlspecialchars($_REQUEST['mode']) : 'reg_details';
+		$submode = (isset($_GET['mode'])) ? htmlspecialchars($_GET['mode']) : 'reg_details';
 		$error = '';
 
 		$submodules['REG_DETAILS']	= "i=$id&amp;mode=reg_details";
@@ -33,7 +33,7 @@ class ucp_profile extends ucp
 		$submodules['SIGNATURE']	= "i=$id&amp;mode=signature";       
 		$submodules['AVATAR']		= "i=$id&amp;mode=avatar";                               
 
-		$this->subsection($submodules, $submode);
+		$this->menu($id, $submodules, $submode);
 		unset($submodules);
 
 		switch ($submode)
@@ -66,7 +66,7 @@ class ucp_profile extends ucp
 							'email_confirm'		=> ($data['email'] != $user->data['user_email']) ? $data['email'] : '', 
 						),
 						'match'		=> array(
-							'username'	=> ($data['username'] != $user->data['username']) ? '#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#iu' : '', 
+							'username'	=> ($data['username'] != $user->data['username']) ? '#^' . preg_replace('#/{1}#', '\\', $config['allow_name_chars']) . '$#iu' : '', 
 						), 
 						'function'	=> array(
 							'username'	=> ($data['username'] != $user->data['username']) ? 'validate_username' : '', 
@@ -91,7 +91,7 @@ class ucp_profile extends ucp
 						// Need to update config, forum, topic, posting, messages, etc.
 						if ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') & $config['allow_namechange'])
 						{
-							$this->update_username($user->data['username'], $data['username']);
+							update_username($user->data['username'], $data['username']);
 						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
@@ -349,13 +349,12 @@ class ucp_profile extends ucp
 				// Can we upload? 
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || @ini_get('file_uploads') == 'On')) ? true : false;
 
-
 				if (isset($_POST['submit']))
 				{
 					$data = array();
 					if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
 					{
-						$this->avatar_upload($data);
+						avatar_upload($data);
 					}
 					else if (!empty($_POST['uploadurl']) && $can_upload)
 					{
@@ -366,7 +365,7 @@ class ucp_profile extends ucp
 						);
 						$data = $this->normalise_data($_POST, $normalise);
 
-						$this->avatar_upload($data);
+						avatar_upload($data);
 					}
 					else if (!empty($_POST['remotelink']) && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 					{
@@ -379,7 +378,7 @@ class ucp_profile extends ucp
 						);
 						$data = $this->normalise_data($_POST, $normalise);
 
-						$this->avatar_remote($data);
+						avatar_remote($data);
 					}
 					else if (!empty($_POST['delete']) && $auth->acl_get('u_chgavatar'))
 					{
@@ -406,7 +405,7 @@ class ucp_profile extends ucp
 							// Delete old avatar if present
 							if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
 							{
-								$this->avatar_delete();
+								avatar_delete();
 							}
 						}
 

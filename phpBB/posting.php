@@ -109,7 +109,8 @@ switch ($mode)
 		$sql = 'SELECT t.*, f.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
-				AND f.forum_id IN (t.forum_id, $forum_id)";
+				AND (f.forum_id = t.forum_id 
+					OR f.forum_id = $forum_id)";
 
 		$forum_validate = $topic_validate = true;
 		break;
@@ -131,7 +132,8 @@ switch ($mode)
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
-				AND f.forum_id IN (t.forum_id, $forum_id)";
+				AND (f.forum_id = t.forum_id 
+					OR f.forum_id = $forum_id)";
 
 		$forum_validate = $topic_validate = $post_validate = true;
 		break;
@@ -667,10 +669,9 @@ if ($submit || $preview || $refresh)
 	if (($username != '' && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username != ''))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		$ucp = new ucp();
 		$username = strip_tags(htmlspecialchars($username));
 
-		if (($result = $ucp->validate_username($username)) != false)
+		if (($result = validate_username($username)) != false)
 		{
 			$error[] = $result;
 		}
