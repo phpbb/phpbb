@@ -105,7 +105,7 @@ $mode_types = array("joindate", "username", "location", "posts", "email", "websi
 $select_sort_mode = "<select name=\"mode\">";
 for($i = 0; $i < count($mode_types_text); $i++)
 {
-	$selected = ($mode == $mode_types[$i]) ? " selected" : "";
+	$selected = ($mode == $mode_types[$i]) ? " selected=\"selected\"" : "";
 	$select_sort_mode .= "<option value=\"" . $mode_types[$i] . "\"$selected>" . $mode_types_text[$i] . "</option>";
 }
 $select_sort_mode .= "</select>";
@@ -113,11 +113,11 @@ $select_sort_mode .= "</select>";
 $select_sort_order = "<select name=\"order\">";
 if($sort_order == "ASC")
 {
-	$select_sort_order .= "<option value=\"ASC\" selected>" . $lang['Ascending'] . "</option><option value=\"DESC\">" . $lang['Descending'] . "</option>";
+	$select_sort_order .= "<option value=\"ASC\" selected=\"selected\">" . $lang['Ascending'] . "</option><option value=\"DESC\">" . $lang['Descending'] . "</option>";
 }
 else
 {
-	$select_sort_order .= "<option value=\"ASC\">" . $lang['Ascending'] . "</option><option value=\"DESC\" selected>" . $lang['Descending'] . "</option>";
+	$select_sort_order .= "<option value=\"ASC\">" . $lang['Ascending'] . "</option><option value=\"DESC\" selected=\"selected\">" . $lang['Descending'] . "</option>";
 }
 $select_sort_order .= "</select>";
 
@@ -137,6 +137,9 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 	$jumpbox = make_jumpbox();
 	$template->assign_vars(array(
+		"L_GO" => $lang['Go'], 
+		"L_JUMP_TO" => $lang['Jump_to'], 
+		"L_SELECT_FORUM" => $lang['Select_forum'], 
 		"JUMPBOX_LIST" => $jumpbox,
 		"SELECT_NAME" => POST_FORUM_URL)
 	);
@@ -167,7 +170,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		$username = stripslashes($members[$i]['username']);
 		$user_id = $members[$i]['user_id'];
 
-		$from = stripslashes($members[$i]['user_from']);
+		$from = (!empty($members[$i]['user_from'])) ? stripslashes($members[$i]['user_from']) : "&nbsp;";
 
 		$joined = create_date($board_config['default_dateformat'], $members[$i]['user_regdate'], $board_config['default_timezone']);
 
@@ -175,7 +178,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		
 		if($members[$i]['user_avatar'] != "" && $user_id != ANONYMOUS)
 		{
-			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\">";
+			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" />";
 		}
 		else
 		{
@@ -185,26 +188,18 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		if( !empty($members[$i]['user_viewemail']) )
 		{
 			$altered_email = str_replace("@", " at ", $members[$i]['user_email']);
-			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
+			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\" /></a>";
 		}
 		else
 		{
 			$email_img = "&nbsp;";
 		}
 
-		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\" /></a>";
 		
 		if($members[$i]['user_website'] != "")
 		{
-			if(!eregi("^http\:\/\/", $members[$i]['user_website']))
-			{
-				$website_url = "http://" . stripslashes($members[$i]['user_website']);
-			}
-			else
-			{
-				$website_url = stripslashes($members[$i]['user_website']);
-			}
-			$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\"/></a>";
+			$www_img = "<a href=\"" . stripslashes($members[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
 		}
 		else
 		{
@@ -213,9 +208,9 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		if($members[$i]['user_icq'])
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" border=\"0\"></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -223,27 +218,22 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$icq_add_img = "&nbsp;";
 		}
 
-		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
 
-		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
 
-		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\"></a>";
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search'] . "\" /></a>";
 
-		if(!($i % 2))
-		{
-			$row_color = "#" . $theme['td_color1'];
-		}
-		else
-		{
-			$row_color = "#" . $theme['td_color2'];
-		}
+		$row_color = "#" . ( (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2']);
+		$row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars("memberrow", array(
-			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $user_id), 
+			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id), 
 			
-			"ROW_COLOR" => $row_color,
+			"ROW_COLOR" => $row_color, 
+			"ROW_CLASS" => $row_class, 
 			"USERNAME" => $username,
 			"FROM" => $from,
 			"JOINED" => $joined,
@@ -277,7 +267,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$total = $db->sql_fetchrow($count_result);
 			$total_members = $total['total'];
 
-			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&order=$sort_order", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
+			$pagination = generate_pagination("memberlist.$phpEx?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start)."&nbsp;";
 		}
 	}
 	else
