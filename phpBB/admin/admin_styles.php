@@ -464,6 +464,8 @@ switch($mode)
 				
 				$style_id = $HTTP_GET_VARS['style_id'];
 				
+				$selected_names = array();
+				$selected_values = array();
 				// 
 				// Fetch the Theme Info from the db
 				//
@@ -490,7 +492,22 @@ switch($mode)
 				
 				$selected_names = $db->sql_fetchrow($result);
 
-				$selected = array_merge($selected_values, $selected_names);
+				//$selected = array_merge($selected_values, $selected_names);
+				if(count($selected_values))
+				{
+					while(list($key, $val) = each($selected_values))
+					{
+						$selected[$key] = $val;
+					}
+				}
+
+				if($selected_names)
+				{
+					while(list($key, $val) = each($selected_names))
+					{
+						$selected[$key] = $val;
+					}
+				}
 				
 				$s_hidden_fields = '<input type="hidden" name="style_id" value="' . $style_id . '" />';
 			}
