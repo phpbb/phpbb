@@ -563,14 +563,14 @@ $lang = array_merge($lang, array(
 
 	'UPDATE' => 'Update',
 
-	'Forum_delete_explain' => 'The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.',
+	'Forum_delete_explain' => 'The form below will allow you to delete a forum and decide where you want to put all topics (or forums) it contained.',
 	'Move_and_Delete' => 'Move and Delete',
 	'Move_posts_to' => 'Move posts to',
 	'Move_subforums_to' => 'Move subforums to',
 	'Delete_all_posts' => 'Delete all posts',
 	'Delete_subforums' => 'Delete subforums and associated posts',
 	'No_destination_forum' => 'You have not specified a forum to move content to',
-	'Forums_updated' => 'Forum and Category information updated successfully',
+	'FORUM_UPDATED' => 'Forum informations updated successfully',
 	'Forum_deleted' => 'Forum successfully deleted',
 	'Click_return_forumadmin' => 'Click %sHere%s to return to Forum Administration',
 
