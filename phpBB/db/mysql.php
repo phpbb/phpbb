@@ -122,8 +122,13 @@ class sql_db
 		if ($query != '')
 		{
 			global $cache;
-			if (!$expire_time || !$cache->sql_load($query))
+			if (!$expire_time || !$cache->sql_load($query, $expire_time))
 			{
+				if ($expire_time)
+				{
+					$cache_result = true;
+				}
+
 				$this->query_result = false;
 				$this->num_queries++;
 
@@ -179,16 +184,16 @@ class sql_db
 
 				$this->open_queries[] = $this->query_result;
 			}
+
+			if (!empty($cache_result))
+			{
+				$cache->sql_save($query, $this->query_result);
+				@mysql_free_result(array_pop($this->open_queries));
+			}
 		}
 		else
 		{
 			return false;
-		}
-
-		if ($expire_time && $this->query_result)
-		{
-			$cache->sql_save($query, $this->query_result);
-			@mysql_free_result(array_pop($this->open_queries));
 		}
 
 		return ( $this->query_result) ? $this->query_result : false;
