@@ -402,7 +402,7 @@ CREATE TABLE phpbb_topics (
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
-   topic_moved_id int4,
+   topic_moved_id DEFAULT '0' NOT NULL int4,
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
