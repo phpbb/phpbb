@@ -62,6 +62,7 @@ define(QUERY_ERROR, 3);
 define(SESSION_CREATE, 4);
 define(NO_TOPICS, 5);
 define(GENERAL_ERROR, 6);
+define(LOGIN_FAILED, 7);
 
 // Session data
 $session_cookie = "phpBBsession";
