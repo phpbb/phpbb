@@ -727,7 +727,7 @@ switch($mode)
 	break;
 	default:
 		
-		$sql = "SELECT themes_id, template_name, style_name FROM phpbb_themes ORDER BY template_name";
+		$sql = "SELECT themes_id, template_name, style_name FROM ".THEMES_TABLE." ORDER BY template_name";
 		if(!$result = $db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, "Could not get style information!", "Error", __LINE__, __FILE__, $sql);
