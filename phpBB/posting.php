@@ -794,11 +794,8 @@ if (!sizeof($error) && $preview)
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		$extensions = $update_count = array();
 		
-		$template->assign_block_vars('postrow', array(
-			'S_HAS_ATTACHMENTS'	=> TRUE)
-		);
-
-		display_attachments($message_parser->attachment_data, $update_count, TRUE);
+		$template->assign_block_var('S_HAS_ATTACHMENTS', TRUE);
+		display_attachments('attachment', $message_parser->attachment_data, $update_count, TRUE);
 	}
 }
 

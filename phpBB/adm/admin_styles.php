@@ -163,7 +163,7 @@ switch ($mode)
 				'viewforum_body.html', 'viewforum_subforum.html', 
 			),
 			'topic'		=> array(
-				'viewtopic_attach_body.html', 'viewtopic_body.html', 'viewtopic_print.html',
+				'attachment.html', 'viewtopic_body.html', 'viewtopic_print.html',
 			),
 			'group'		=> array(
 				'gcp_body.html', 'gcp_pending_info.html', 'gcp_user_body.html', 

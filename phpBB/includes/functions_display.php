@@ -287,13 +287,52 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 }
 
 // Display Attachments
-function display_attachments($attachment_data, &$update_count, $force_physical = false)
+function display_attachments($blockname, $attachment_data, &$update_count, $force_physical = false)
 {
-	global $extensions, $template;
+	global $extensions, $template, $cache, $attachment_tpl;
 	global $config, $user, $phpbb_root_path, $phpEx, $SID, $censors;
 
+//	$starttime = explode(' ', microtime());
+//	$starttime = $starttime[1] + $starttime[0];
+	
 	$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
+	$blocks = array(WM_CAT => 'WM_STREAM', RM_CAT => 'RM_STREAM', THUMB_CAT => 'THUMBNAIL', IMAGE_CAT => 'IMAGE');
 
+	if (!isset($attachment_tpl))
+	{
+		if ($cache->exists('attachment_tpl'))
+		{
+			$attachment_tpl = $cache->get('attachment_tpl');
+		}
+		else
+		{
+			$attachment_tpl = array();
+
+			// Generate Template
+			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/attachment.html';
+			if (!($fp = @fopen($template_filename, 'rb')))
+			{
+				trigger_error('Could not load attachment template');
+			}
+			$attachment_template = fread($fp, filesize($template_filename));
+			@fclose($fp);
+
+			// replace \ with \\ and then ' with \'.
+			$attachment_template = str_replace('\\', '\\\\', $attachment_template);
+			$attachment_template = str_replace("'", "\'", $attachment_template);
+			
+			preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#s', $attachment_template, $tpl);
+			
+			foreach ($tpl[1] as $num => $block_name)
+			{
+				$attachment_tpl[$block_name] = $tpl[2][$num];
+			}
+			unset($tpl);
+
+			$cache->put('attachment_tpl', $attachment_tpl);
+		}
+	}
+	
 	if (empty($censors))
 	{
 		$censors = array();
@@ -338,11 +377,14 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		{
 			$denied = TRUE;
 
-			$template->assign_block_vars('postrow.attachment', array(
-				'IS_DENIED'		=> TRUE,
+			$template_array['VAR'] = array('{L_DENIED}');
+			$template_array['VAL'] = array(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 
-				'L_DENIED'		=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']))
-			);
+			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl['DENIED']);
+			// Replace {L_*} lang strings
+			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+
+			$template->assign_block_vars('postrow.attachment', array('SHOW_ATTACHMENT' => $tpl));
 		} 
 
 		if (!$denied)
@@ -395,9 +437,8 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
 
-					$additional_array = array(
-						'THUMB_IMG' => $thumb_source
-					);
+					$additional_array['VAR'][] = '{THUMB_IMG}';
+					$additional_array['VAL'][] = $thumb_source;
 					break;
 
 				// Windows Media Streams
@@ -414,10 +455,10 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
-					$additional_array = array(
-						'U_FORUM' => generate_board_url(),
-						'ATTACH_ID' => $attachment['attach_id']
-					);
+					$additional_array['VAR'][] = '{U_FORUM}';
+					$additional_array['VAL'][] = generate_board_url();
+					$additional_array['VAR'][] = '{ATTACH_ID}';
+					$additional_array['VAL'][] = $attachment['attach_id'];
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
@@ -447,28 +488,26 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 
 			$l_download_count = ($attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
 
-			$template_array = array_merge($additional_array, array(
-//				'IS_FLASH'		=> ($display_cat == SWF_CAT) ? true : false,
-				'IS_WM_STREAM'	=> ($display_cat == WM_CAT) ? true : false,
-				'IS_RM_STREAM'	=> ($display_cat == RM_CAT) ? true : false,
-				'IS_THUMBNAIL'	=> ($display_cat == THUMB_CAT) ? true : false,
-				'IS_IMAGE'		=> ($display_cat == IMAGE_CAT) ? true : false,
-				'DOWNLOAD_NAME' => $display_name,
-				'FILESIZE'		=> $filesize,
-				'SIZE_VAR'		=> $size_lang,
-				'COMMENT'		=> $comment,
-
-				'U_DOWNLOAD_LINK' => $download_link,
-
-				'UPLOAD_IMG' => $upload_image,
-
-				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
-				'L_DOWNLOAD_COUNT'		=> $l_download_count)
+			$current_block = ($display_cat) ? $blocks[$display_cat] : 'FILE';
+			
+			$template_array['VAR'] = array_merge($additional_array['VAR'], array(
+				'{DOWNLOAD_NAME}', '{FILESIZE}', '{SIZE_VAR}', '{COMMENT}', '{U_DOWNLOAD_LINK}', '{UPLOAD_IMG}', '{L_DOWNLOADED_VIEWED}', '{L_DOWNLOAD_COUNT}')
 			);
 
-			$template->assign_block_vars('postrow.attachment', $template_array);
+			$template_array['VAL'] = array_merge($additional_array['VAL'], array(
+				$display_name, $filesize, $size_lang, $comment, $download_link, $upload_image, $l_downloaded_viewed, $l_download_count)
+			);
+
+			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl[$current_block]);
+			// Replace {L_*} lang strings
+			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+
+			$template->assign_block_vars($blockname, array('DISPLAY_ATTACHMENT' => $tpl));
 		}
 	}
+
+//	$mtime = explode(' ', microtime());
+//	$totaltime = $mtime[0] + $mtime[1] - $starttime;
 }
 
 ?>

@@ -1232,7 +1232,7 @@ foreach ($rowset as $i => $row)
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
 	{
-		display_attachments($attachments[$row['post_id']], $update_count);
+		display_attachments('postrow.attachment', $attachments[$row['post_id']], $update_count);
 	}
 
 	$prev_post_id = $row['post_id'];
