@@ -642,7 +642,6 @@ if( !empty($mode) )
 				}
 				$db->sql_freeresult($result);
 				
-				
 				include($phpbb_root_path . "includes/prune.$phpEx");
 				prune($from_id, 0, true); // Delete everything from forum
 			}
@@ -680,7 +679,7 @@ if( !empty($mode) )
 			// Alter Mod level if appropriate - 2.0.4
 			$sql = "SELECT ug.user_id 
 				FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
-				WHERE a.forum_id <> $forum_id 
+				WHERE a.forum_id <> $from_id 
 					AND a.auth_mod = 1
 					AND ug.group_id = a.group_id";
 			if( !$result = $db->sql_query($sql) )
@@ -699,8 +698,8 @@ if( !empty($mode) )
 
 				$sql = "SELECT ug.user_id 
 					FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
-					WHERE a.forum_id = $forum_id 
-						AND a.auth_mod = 1
+					WHERE a.forum_id = $from_id 
+						AND a.auth_mod = 1 
 						AND ug.group_id = a.group_id
 						AND ug.user_id NOT IN ($user_ids)";
 				if( !$result2 = $db->sql_query($sql) )
