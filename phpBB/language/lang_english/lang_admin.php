@@ -241,6 +241,42 @@ $lang['acl_admin_styles'] = 'Styles';
 $lang['acl_admin_backup'] = 'Backups';
 $lang['acl_admin_clearlogs'] = 'Clear Admin Log';
 
+$lang['acl_mod_edit'] = 'Edit posts';
+$lang['acl_mod_delete'] = 'Delete posts';   
+$lang['acl_mod_move'] = 'Move posts';   
+$lang['acl_mod_lock'] = 'Lock topics';   
+$lang['acl_mod_split'] = 'Split topics';   
+$lang['acl_mod_merge'] = 'Merge topics';   
+$lang['acl_mod_approve'] = 'Approve posts';   
+$lang['acl_mod_unrate'] = 'Un-rate topics';   
+$lang['acl_mod_auth'] = 'Set permissions'; 
+
+$lang['acl_forum_list'] = 'See forum';  
+$lang['acl_forum_read'] = 'Read forum';
+$lang['acl_forum_post'] = 'Post in forum';   
+$lang['acl_forum_reply'] = 'Reply to posts';   
+$lang['acl_forum_edit'] = 'Edit own posts';   
+$lang['acl_forum_delete'] = 'Delete own posts';   
+$lang['acl_forum_poll'] = 'Create polls';   
+$lang['acl_forum_vote'] = 'Vote in polls';  
+$lang['acl_forum_announce'] = 'Post announcements';   
+$lang['acl_forum_sticky'] = 'Post stickies';   
+$lang['acl_forum_attach'] = 'Attach files';   
+$lang['acl_forum_download'] = 'Download files';   
+$lang['acl_forum_html'] = 'Post HTML';   
+$lang['acl_forum_bbcode'] = 'Post BBCode';   
+$lang['acl_forum_smilies'] = 'Post smilies';   
+$lang['acl_forum_img'] = 'Post images';   
+$lang['acl_forum_flash'] = 'Post Flash';  
+$lang['acl_forum_sigs'] = 'Use signatures';   
+$lang['acl_forum_search'] = 'Search the forum';   
+$lang['acl_forum_email'] = 'Email topics';   
+$lang['acl_forum_rate'] = 'Rate topics';   
+$lang['acl_forum_print'] = 'Print topics';   
+$lang['acl_forum_ignoreflood'] = 'Ignore flood limit';   
+$lang['acl_forum_ignorequeue'] = 'Ignore mod queue'; 
+
+
 $lang['Select_a_User'] = 'Select a User';
 $lang['Select_a_Group'] = 'Select a Group';
 $lang['Select_a_Forum'] = 'Select a Forum';
