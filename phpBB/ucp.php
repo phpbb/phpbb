@@ -33,6 +33,12 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
+
+// This small snippet is required to let admins login if the board is disabled...
+if ($_REQUEST['mode'] == 'login')
+{
+	define('IN_LOGIN', true);
+}
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
 
@@ -273,7 +279,6 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		define('IN_LOGIN', true);
 		login_box("ucp.$phpEx$SID&amp;mode=login", '', '', true);
 
 		$redirect = request_var('redirect', "index.$phpEx$SID");

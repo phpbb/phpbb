@@ -36,7 +36,7 @@ $user->setup('admin');
 // Did user forget to login? Give 'em a chance to here ...
 if ($user->data['user_id'] == ANONYMOUS)
 {
-	login_box("{$phpbb_root_path}adm/index.$phpEx$SID", '', $user->lang['LOGIN_ADMIN']);
+	login_box("./adm/index.$phpEx$SID", '', $user->lang['LOGIN_ADMIN']);
 }
 
 $auth->acl($user->data);
