@@ -70,7 +70,7 @@ if(isset($HTTP_GET_VARS['view']))
 			if($sub_result = $db->sql_query($sub_query))
 			{
 				$result = $db->sql_fetchrow($sub_result);
-				echo $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+			        $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
 							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
 							FROM ".TOPICS_TABLE." t, ".TOPICS_TABLE." t2, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
 							WHERE t.topic_time ".$operator." ".$result['topic_time']." 
