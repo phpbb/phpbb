@@ -417,7 +417,8 @@ Backups completed ok.<P>
 			$forum_id     = $row['forum_id'];
 			$topic_status = $row['topic_status'];
 			$topic_notify = $row['topic_notify'];
-
+		        $forum_id     = $row['forum_id'];
+		   
 			$sql = "insert topics (topic_id, topic_title, topic_poster, topic_time, topic_views, forum_id, topic_status, topic_notify)
 					  values ($topic_id, '$topic_title', $topic_poster, $topic_time, $topic_views, $forum_id, $topic_status, $topic_notify)";
 			mysql_query($sql, $db);

@@ -43,10 +43,6 @@ if(!$result = $db->sql_query($sql))
 	error_die($db, QUERY_ERROR);
 }
 
-$pagetype = "viewforum";
-$page_title = "View Forum - $forum_name";
-include('page_header.'.$phpEx);
-
 //
 // Add checking for private forums here!!
 //
@@ -71,6 +67,9 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
      $forum_moderators .= ", ";
    $forum_moderators .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_row[$x]["user_id"]."\">".$forum_row[$x]["username"]."</a>";
 }
+$pagetype = "viewforum";
+$page_title = "View Forum - $forum_name";
+include('page_header.'.$phpEx);
 
 $template->set_block("body", "topicrow", "topics");
 

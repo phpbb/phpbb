@@ -24,10 +24,18 @@
 
 function error_die($db, $error_code = "", $error_msg = "") 
 {
-   global $template, $phpEx;
+   global $template, $phpEx, $default_lang;
 
    if(!$template->get("overall_header"))
      {
+	if(!empty($default_lang))
+	  {
+	     include('language/lang_'.$default_lang.'.'.$phpEx);
+	  }
+	else
+	  {
+	     include('language/lang_english.'.$phpEx);
+	  }
 	include('page_header.'.$phpEx);
      }
    if(!$error_msg)
