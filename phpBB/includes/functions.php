@@ -219,7 +219,7 @@ function init_userprefs($userdata)
 	{
 		$board_config['default_dateformat'] = $userdata['user_dateformat'];
 	}
-	if(isset($userdata['user_timezone']))
+	if($userdata['user_timezone'])
 	{
 		$board_config['default_timezone'] = $userdata['user_timezone'];
 	}
