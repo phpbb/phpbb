@@ -308,7 +308,7 @@ else if( $mode == "read" )
 		// users ... hopefully!
 		//
 		$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
-			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . addslashes($privmsg['privmsgs_subject']) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', " . $privmsg['privmsgs_enable_html'] . ", " . $privmsg['privmsgs_enable_bbcode'] . ", " . $privmsg['privmsgs_enable_smilies'] . ", " .  $privmsg['privmsgs_attach_sig'] . ")";
+			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . addslashes(str_replace("\'", "''", $privmsg['privmsgs_subject'])) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', " . $privmsg['privmsgs_enable_html'] . ", " . $privmsg['privmsgs_enable_bbcode'] . ", " . $privmsg['privmsgs_enable_smilies'] . ", " .  $privmsg['privmsgs_attach_sig'] . ")";
 		if( !$pm_sent_status = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Could not insert private message sent info.", "", __LINE__, __FILE__, $sql);
@@ -318,7 +318,7 @@ else if( $mode == "read" )
 			$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
 			$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_bbcode_uid, privmsgs_text)
-				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_bbcode_uid'] . "', '" . addslashes($privmsg['privmsgs_text']) . "')";
+				VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_bbcode_uid'] . "', '" . addslashes(str_replace("\'", "''", $privmsg['privmsgs_text'])) . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not insert private message sent text.<BR>$sql", "", __LINE__, __FILE__, $sql);
@@ -888,7 +888,7 @@ else if( $submit || $refresh || $mode != "" )
 
 			$sql = "SELECT user_id, user_notify_pm, user_email, user_lang 
 				FROM " . USERS_TABLE . "
-				WHERE username = '" . $to_username . "'
+				WHERE username = '" . str_replace("\'", "''", $to_username) . "'
 					AND user_id <> " . ANONYMOUS;
 			if(!$result = $db->sql_query($sql))
 			{
@@ -1001,12 +1001,12 @@ else if( $submit || $refresh || $mode != "" )
 			//
 
 			$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
-				VALUES (" . PRIVMSGS_NEW_MAIL . ", '$privmsg_subject', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', $html_on, $bbcode_on, $smilies_on, $attach_sig)";
+				VALUES (" . PRIVMSGS_NEW_MAIL . ", '" . str_replace("\'", "''", $privmsg_subject) . "', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', $html_on, $bbcode_on, $smilies_on, $attach_sig)";
 		}
 		else
 		{
 			$sql_info = "UPDATE " . PRIVMSGS_TABLE . "
-				SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$privmsg_subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_enable_html = $html_on, privmsgs_enable_bbcode = $bbcode_on, privmsgs_enable_smilies = $smilies_on, privmsgs_attach_sig = $attach_sig 
+				SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '" . str_replace("\'", "''", $privmsg_subject) . "', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_enable_html = $html_on, privmsgs_enable_bbcode = $bbcode_on, privmsgs_enable_smilies = $smilies_on, privmsgs_attach_sig = $attach_sig 
 				WHERE privmsgs_id = $privmsg_id";
 		}
 
@@ -1021,12 +1021,12 @@ else if( $submit || $refresh || $mode != "" )
 				$privmsg_sent_id = $db->sql_nextid();
 
 				$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_bbcode_uid, privmsgs_text)
-					VALUES ($privmsg_sent_id, '" . $bbcode_uid . "', '$privmsg_message')";
+					VALUES ($privmsg_sent_id, '" . $bbcode_uid . "', '" . str_replace("\'", "''", $privmsg_message) . "')";
 			}
 			else
 			{
 				$sql = "UPDATE " . PRIVMSGS_TEXT_TABLE . "
-					SET privmsgs_text = '$privmsg_message', privmsgs_bbcode_uid = '$bbcode_uid' 
+					SET privmsgs_text = '" . str_replace("\'", "''", $privmsg_message) . "', privmsgs_bbcode_uid = '$bbcode_uid' 
 					WHERE privmsgs_text_id = $privmsg_id";
 			}
 
