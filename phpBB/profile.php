@@ -349,7 +349,7 @@ switch($mode)
 				$password = $userdata['password'];
 			}
 			
-			if($allow_namechange)
+			if($board_config['allow_namechange'])
 			{
 				if(!validate_username($username))
 				{
@@ -365,10 +365,8 @@ switch($mode)
 			{
 					
 				$sql = "UPDATE ".USERS_TABLE." 
-				set username = '$username', user_password = '$password', user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', 
-				user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = '$viewemail', user_aim = '$aim', user_yim = '$yim', 
-				user_msnm = '$msn', user_attachsig = '$attachsig', user_desmile = '$allowsmilies', user_html = '$allowhtml', user_bbcode = '$allowbbcode', user_timezone = '$user_timezone', 
-				user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = '$user_theme' WHERE user_id = '$user_id'";
+					SET username = '$username', user_password = '$password', user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = '$viewemail', user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = '$attachsig', user_desmile = '$allowsmilies', user_html = '$allowhtml', user_bbcode = '$allowbbcode', user_timezone = '$user_timezone', user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = '$user_theme' 
+					WHERE user_id = '$user_id'";
 				
 				if($result = $db->sql_query($sql))
 				{		
@@ -396,79 +394,111 @@ switch($mode)
 				$template->pparse("reg_header");
 			}
 		}
+		else
+		{
+			$user_id = $userdata['user_id'];
+			$username = $userdata['username'];
+			$email = $userdata['user_email'];
+			$password = "";
+			$password_confirm = "";
 
-			$template->set_filenames(array(
-				"body" => "profile_add_body.tpl"));
-			$template->assign_vars(array(
-				"COPPA" => 0,
-				"MODE" => $mode,
-				"USER_ID" => $userdata['user_id'],
-				"USERNAME" => $userdata['username'],
-				"EMAIL" => $userdata['user_email'],
-				"YIM" => $userdata['user_yim'],
-				"ICQ" => $userdata['user_icq'],
-				"MSN" => $userdata['user_msnm'],
-				"AIM" => $userdata['user_aim'],
-				"OCCUPATION" => $userdata['user_occ'],
-				"SIGNATURE" => str_replace("<br>", "\n", $userdata['user_sig']),
-				"INTERESTS" => $userdata['user_interests'],
-				"LOCATION" => $userdata['user_from'],
-				"WEBSITE" => $userdata['user_website'],
-				"VIEW_EMAIL_YES" => ($userdata['user_viewemail']) ? "CHECKED" : "",
-				"VIEW_EMAIL_NO" => (!$userdata['user_viewemail']) ? "CHECKED" : "",
-				"ALWAYS_ADD_SIGNATURE_YES" => ($userdata['user_attachsig']) ? "CHECKED" : "",
-				"ALWAYS_ADD_SIGNATURE_NO" => (!$userdata['user_attachsig']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_BBCODE_YES" => ($userdata['user_bbcode']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_BBCODE_NO" => (!$userdata['user_bbcode']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_HTML_YES" => ($userdata['user_html']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_HTML_NO" => (!$userdata['user_html']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_SMILIES_YES" => ($userdata['user_desmile']) ? "CHECKED" : "",
-				"ALWAYS_ALLOW_SMILIES_NO" => (!$userdata['user_desmile']) ? "CHECKED" : "",
-				"LANGUAGE_SELECT" => language_select($userdata['user_lang']),
-				"THEME_SELECT" => theme_select($userdata['user_theme']),
-				"TIMEZONE_SELECT" => tz_select($userdata['user_timezone']),
-				"DATE_FORMAT" => $userdata['user_dateformat'],
-				"TEMPLATE_SELECT" => template_select($userdata['user_template']),
+			$icq = $userdata['user_icq'];
+			$aim = $userdata['user_aim'];
+			$msn = $userdata['user_msnm'];
+			$yim = $userdata['user_yim'];
 
-				"L_PASSWORD_IF_CHANGED" => $l_password_if_changed,
-				"L_PASSWORD_CONFIRM_IF_CHANGED" => $l_password_confirm_if_changed,
-				"L_SUBMIT" => $l_submit,
-				"L_ICQ_NUMBER" => $l_icq_number,
-				"L_MESSENGER" => $l_messenger,
-				"L_YAHOO" => $l_yahoo,
-				"L_WEBSITE" => $l_website,
-				"L_AIM" => $l_aim,
-				"L_LOCATION" => $l_from,
-				"L_OCCUPATION" => $l_occupation,
-				"L_BOARD_LANGUAGE" => $l_boardlang,
-				"L_BOARD_THEME" => $l_boardtheme,
-				"L_BOARD_TEMPLATE" => $l_boardtemplate,
-				"L_TIMEZONE" => $l_timezone,
-				"L_DATE_FORMAT" => $l_date_format,
-				"L_DATE_FORMAT_EXPLANATION" => $l_date_format_explanation,
-				"L_YES" => $l_yes,
-				"L_NO" => $l_no,
-				"L_INTERESTS" => $l_interests,
-				"L_USER_UNIQUE" => $l_useruniq,
-				"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
-				"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
-				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
-				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
-				"L_SIGNATURE" => $l_signature,
-				"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
-				"L_PREFERENCES" => $l_preferences,
-				"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
-				"L_ITEMS_REQUIRED" => $l_itemsreq,
-				"L_REGISTRATION_INFO" => $l_reginfo,
-				"L_PROFILE_INFO" => $l_profile_info,
-				"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
-				"L_CONFIRM" => $l_confirm,
-				"L_EMAIL_ADDRESS" => $l_emailaddress));
+			$website = $userdata['user_website'];
+			$location = $userdata['user_from'];
+			$occupation = $userdata['user_occ'];
+			$interests = $userdata['user_interests'];
+			$signature = str_replace("<br>", "\n", $userdata['user_sig']);
 
-			$template->pparse("body");
-			include('includes/page_tail.'.$phpEx);
+			$viewemail = $userdata['user_viewemail'];
+			$attachsig = $userdata['user_attachsig'];
+			$allowhtml = $userdata['user_html'];
+			$allowbbcode = $userdata['user_bbcode'];
+			$allowsmilies = $userdata['user_desmile'];
+
+			$user_theme = $userdata['user_theme'];
+			$user_lang = $userdata['user_lang'];
+			$user_timezone = $userdata['user_timezone'];
+			$user_template = $userdata['user_template'];
+			$user_dateformat = $userdata['user_dateformat'];
+		}
+
+		$template->set_filenames(array(
+			"body" => "profile_add_body.tpl"));
+		$template->assign_vars(array(
+			"COPPA" => 0,
+			"MODE" => $mode,
+			"USER_ID" => $userdata['user_id'],
+			"USERNAME" => $username,
+			"EMAIL" => $email,
+			"YIM" => $yim,
+			"ICQ" => $icq,
+			"MSN" => $msn,
+			"AIM" => $aim,
+			"OCCUPATION" => $occupation,
+			"INTERESTS" => $interests,
+			"LOCATION" => $location,
+			"WEBSITE" => $website,
+			"SIGNATURE" => $signature,
+			"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
+			"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
+			"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
+			"ALWAYS_ADD_SIGNATURE_NO" => (!$attachsig) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_BBCODE_YES" => ($allowbbcode) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_BBCODE_NO" => (!$allowbbcode) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_HTML_YES" => ($allowhtml) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_HTML_NO" => (!$allowhtml) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "CHECKED" : "",
+			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "CHECKED" : "",
+			"LANGUAGE_SELECT" => language_select($user_lang),
+			"THEME_SELECT" => theme_select($user_theme),
+			"TIMEZONE_SELECT" => tz_select($user_timezone),
+			"DATE_FORMAT" => $user_dateformat,
+			"TEMPLATE_SELECT" => template_select($user_template),
+
+			"L_PASSWORD_IF_CHANGED" => $l_password_if_changed,
+			"L_PASSWORD_CONFIRM_IF_CHANGED" => $l_password_confirm_if_changed,
+			"L_SUBMIT" => $l_submit,
+			"L_ICQ_NUMBER" => $l_icq_number,
+			"L_MESSENGER" => $l_messenger,
+			"L_YAHOO" => $l_yahoo,
+			"L_WEBSITE" => $l_website,
+			"L_AIM" => $l_aim,
+			"L_LOCATION" => $l_from,
+			"L_OCCUPATION" => $l_occupation,
+			"L_BOARD_LANGUAGE" => $l_boardlang,
+			"L_BOARD_THEME" => $l_boardtheme,
+			"L_BOARD_TEMPLATE" => $l_boardtemplate,
+			"L_TIMEZONE" => $l_timezone,
+			"L_DATE_FORMAT" => $l_date_format,
+			"L_DATE_FORMAT_EXPLANATION" => $l_date_format_explanation,
+			"L_YES" => $l_yes,
+			"L_NO" => $l_no,
+			"L_INTERESTS" => $l_interests,
+			"L_USER_UNIQUE" => $l_useruniq,
+			"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
+			"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
+			"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
+			"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
+			"L_SIGNATURE" => $l_signature,
+			"L_SIGNATURE_EXPLAIN" => $l_sigexplain,
+			"L_PREFERENCES" => $l_preferences,
+			"L_PUBLIC_VIEW_EMAIL" => $l_publicmail,
+			"L_ITEMS_REQUIRED" => $l_itemsreq,
+			"L_REGISTRATION_INFO" => $l_reginfo,
+			"L_PROFILE_INFO" => $l_profile_info,
+			"L_PROFILE_INFO_NOTICE" => $l_profile_info_notice,
+			"L_CONFIRM" => $l_confirm,
+			"L_EMAIL_ADDRESS" => $l_emailaddress));
+
+		$template->pparse("body");
+		include('includes/page_tail.'.$phpEx);
 
 		break;
+
 	case 'register':
 
 		$username = (!empty($HTTP_POST_VARS['username'])) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : "";
