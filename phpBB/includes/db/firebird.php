@@ -3,7 +3,7 @@
  *                                 mysql.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
+ *   copyright            :(C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
@@ -15,7 +15,7 @@
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *  (at your option) any later version.
  *
  ***************************************************************************/
 
@@ -46,7 +46,7 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 
-		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password) : @ibase_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password) : @ibase_connect($this->server, $this->user, $this->password);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -61,7 +61,7 @@ class sql_db
 
 		if (count($this->open_queries))
 		{
-			foreach ($this->open_queries as $query_id)
+			foreach($this->open_queries as $query_id)
 			{
 				@ibase_free_query($query_id);
 			}
@@ -82,11 +82,10 @@ class sql_db
 
 	function sql_transaction($status = 'begin')
 	{
-		switch ($status)
+		switch($status)
 		{
 			case 'begin':
 				$this->transaction = true;
-				$result = ibase_trans();
 				break;
 
 			case 'commit':
@@ -136,6 +135,11 @@ class sql_db
 					$this->sql_error($query);
 				}
 
+				if (!$this->transaction)
+				{
+					@ibase_commit();
+				}
+
 				if (!empty($_GET['explain']))
 				{
 					$endtime = explode(' ', microtime());
@@ -145,7 +149,7 @@ class sql_db
 
 					if ($this->query_result)
 					{
-						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
+						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" .($endtime - $curtime) . "</b>\n</pre>";
 					}
 					else
 					{
@@ -160,7 +164,7 @@ class sql_db
 						$html_table = FALSE;
 						if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
 						{
-							while ($row = mysql_fetch_assoc($result))
+							while($row = mysql_fetch_assoc($result))
 							{
 								if (!$html_table && count($row))
 								{
@@ -205,7 +209,7 @@ class sql_db
 			$this->query_result = false;
 			$this->num_queries++;
 
-			$query .= ' ROWS ' . $total . ((!empty($offset)) ? ' TO ' . $offset : '');
+			$query .= ' ROWS ' . $total .((!empty($offset)) ? ' TO ' . $offset : '');
 
 			return $this->sql_query($query, $expire_time);
 		}
@@ -227,7 +231,7 @@ class sql_db
 		$values = array();
 		if ($query == 'INSERT')
 		{
-			foreach ($assoc_ary as $key => $var)
+			foreach($assoc_ary as $key => $var)
 			{
 				$fields[] = $key;
 
@@ -241,16 +245,16 @@ class sql_db
 				}
 				else
 				{
-					$values[] = (is_bool($var)) ? intval($var) : $var;
+					$values[] =(is_bool($var)) ? intval($var) : $var;
 				}
 			}
 
-			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			$query = '(' . implode(', ', $fields) . ') VALUES(' . implode(', ', $values) . ')';
 		}
 		else if ($query == 'UPDATE')
 		{
 			$values = array();
-			foreach ($assoc_ary as $key => $var)
+			foreach($assoc_ary as $key => $var)
 			{
 				if (is_null($var))
 				{
@@ -262,7 +266,7 @@ class sql_db
 				}
 				else
 				{
-					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+					$values[] =(is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
 				}
 			}
 			$query = implode(', ', $values);
@@ -279,7 +283,7 @@ class sql_db
 
 	function sql_affectedrows()
 	{
-		return 0;// ??
+		return 0;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -301,11 +305,11 @@ class sql_db
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
@@ -323,32 +327,33 @@ class sql_db
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+
+		if ($query_id)
 		{
-			if($rownum > -1)
+			if ($rownum > -1)
 			{
 				$result = @mysql_result($query_id, $rownum, $field);
 			}
 			else
 			{
-				if(empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
+				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
 				{
-					if($this->sql_fetchrow())
+					if ($this->sql_fetchrow())
 					{
 						$result = $this->row[$query_id][$field];
 					}
 				}
 				else
 				{
-					if($this->rowset[$query_id])
+					if ($this->rowset[$query_id])
 					{
 						$result = $this->rowset[$query_id][$field];
 					}
-					else if($this->row[$query_id])
+					else if ($this->row[$query_id])
 					{
 						$result = $this->row[$query_id][$field];
 					}
@@ -369,21 +374,33 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? @mysql_data_seek($query_id, $rownum) : false;
+		for($i = 1; $i < $rownum; $i++)
+		{
+			if (!$this->sql_fetchrow($query_id))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	function sql_nextid()
 	{
-		$query = "SELECT currval('" . $tablename[1] . "_id_seq') AS last_value";
-		$temp_q_id =  @ibase_query($this->db_connect_id, $query);
-		if( !$temp_q_id )
+		if ($this->query_result)
 		{
-			return false;
+			$query = "SELECT Gen_ID('" . $tablename[1] . "_id_seq',1) AS last_value 
+				FROM RDB\$DATABASE";
+			if (!($temp_q_id =  @ibase_query($this->db_connect_id, $query)))
+			{
+				return false;
+			}
+
+			$temp_result = @ibase_fetch_object($temp_q_id);
+			$this->sql_freeresult($temp_q_id);
+
+			return ($temp_result) ? $temp_result->last_value : false;
 		}
-
-		$temp_result = @pg_fetch_array($temp_q_id, 0, PGSQL_ASSOC);
-
-		return ( $temp_result ) ? $temp_result['last_value'] : false;
 	}
 
 	function sql_freeresult($query_id = false)
@@ -393,7 +410,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? @mysql_free_result($query_id) : false;
+		return ($query_id) ? @ibase_free_result($query_id) : false;
 	}
 
 	function sql_escape($msg)
@@ -410,15 +427,15 @@ class sql_db
 				$this->sql_transaction('rollback');
 			}
 
-			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-			$this_page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
+			$this_page =(!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+			$this_page .= '&' .((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
 
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . $this_page . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @ibase_errmsg() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . $this_page .(($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
 			trigger_error($message, E_USER_ERROR);
 		}
 
-		$result['message'] = @mysql_error();
-		$result['code'] = @mysql_errno();
+		$result['message'] = @ibase_errmsg();
+		$result['code'] = '';
 
 		return $result;
 	}

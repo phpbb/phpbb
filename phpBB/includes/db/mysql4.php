@@ -33,9 +33,7 @@ class sql_db
 	var $sql_report = '';
 	var $sql_time = 0;
 
-	//
 	// Constructor
-	//
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
 	{
 		$this->open_queries = array();
@@ -60,9 +58,7 @@ class sql_db
 		$this->sql_error('');
 	}
 
-	//
 	// Other base methods
-	//
 	function sql_close()
 	{
 		if (!$this->db_connect_id)
@@ -97,17 +93,17 @@ class sql_db
 		{
 			case 'begin':
 				$this->transaction = true;
-				$result = mysql_query('BEGIN', $this->db_connect_id);
+				$result = @mysql_query('BEGIN', $this->db_connect_id);
 				break;
 
 			case 'commit':
 				$this->transaction = false;
-				$result = mysql_query('COMMIT', $this->db_connect_id);
+				$result = @mysql_query('COMMIT', $this->db_connect_id);
 				break;
 
 			case 'rollback':
 				$this->transaction = false;
-				$result = mysql_query('ROLLBACK', $this->db_connect_id);
+				$result = @mysql_query('ROLLBACK', $this->db_connect_id);
 				break;
 
 			default:
@@ -117,9 +113,7 @@ class sql_db
 		return $result;
 	}
 
-	//
 	// Base query method
-	//
 	function sql_query($query = '', $expire_time = 0)
 	{
 		if ($query != '')
@@ -284,12 +278,10 @@ class sql_db
 		return $query;
 	}
 
-	//
 	// Other query methods
 	//
 	// NOTE :: Want to remove _ALL_ reliance on sql_numrows from core code ...
 	//         don't want this here by a middle Milestone
-	//
 	function sql_numrows($query_id = false)
 	{
 		if (!$query_id)
@@ -412,8 +404,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-//		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
-		return mysql_escape_string(stripslashes($msg));
+		return @mysql_escape_string(stripslashes($msg));
 	}
 
 	function sql_error($sql = '')
