@@ -412,6 +412,7 @@ $lang += array(
 	'acl_f_postcount'	=> 'Increment post counter',
 	'acl_f_moderate'	=> 'Posts are moderated',
 
+	'acl_u_hideonline'	=> 'Can hide online status', 
 	'acl_u_viewonline'	=> 'Can view all online',
 	'acl_u_viewprofile'	=> 'Can view profiles',
 	'acl_u_sendemail'	=> 'Can send emails',
@@ -979,7 +980,8 @@ $lang += array(
 
 // Styling
 $lang += array(
-	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
+	'STYLES'			=> 'Styles', 
+	'STYLES_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
 	'STYLE_NAME'			=> 'Style name', 
 	'STYLE_USED_BY'			=> 'Used by', 
 	'STYLE_ACTIVATE'		=> 'Activate', 
@@ -1010,7 +1012,7 @@ $lang += array(
 	'STYLE_IMPORT_BASIS'	=> 'Import style from store', 
 
 	'STYLE_EXPORT'			=> 'Export Style', 
-	'STYLE_EXPORT_EXPLAIN'	=> 'Here you can export a style in the form of an archive. A style does not need to contain all elements but it must contain at least two. For example if you have created a new theme and imageset for a commonly used template you could simply export the theme and imageset and ommit the template. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
+	'STYLE_EXPORT_EXPLAIN'	=> 'Here you can export a style in the form of an archive. A style does not need to contain all elements but it must contain at least one. For example if you have created a new theme and imageset for a commonly used template you could simply export the theme and imageset and ommit the template. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
 	'INCLUDE_TEMPLATE'		=> 'Include template', 
 	'INCLUDE_THEME'			=> 'Include theme', 
 	'INCLUDE_IMAGESET'		=> 'Include imageset', 
@@ -1104,7 +1106,8 @@ $lang += array(
 	'THEME_LOCATION_EXPLAIN'=> 'Images are always stored on the filesystem.', 
 
 	'EDIT_THEME'			=> 'Edit theme', 
-	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
+	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. The raw mode allows you add additional parameters such as borders, etc. Only set parameters you need else leave them blank or unset. Default classes used by this theme are coloured red in the select box. You may also add additional "custom" classes should your template or style make use of them.', 
+	'SELECTED_THEME'		=> 'Selected theme', 
 	'SELECT_CLASS'			=> 'Select class', 
 	'SHOW_RAW_CSS'			=> 'Show CSS', 
 	'HIDE_RAW_CSS'			=> 'Hide CSS', 
@@ -1158,7 +1161,7 @@ $lang += array(
 	'CSS_SIZE'			=> 'Size',	
 	'CSS_CODE'			=> 'Code',
 	'CSS_QUOTE'			=> 'Quote',
-	'CSS_flash'			=> 'Flash',
+	'CSS_FLASH'			=> 'Flash',
 	'CSS_SYNTAXBG'		=> 'Syntax Background', 
 	'CSS_SYNTAXCOMMENT'	=> 'Syntax Comments',
 	'CSS_SYNTAXDEFAULT'	=> 'Syntax Default',
@@ -1170,11 +1173,11 @@ $lang += array(
 	'CSS_ANCHOR_ACTIVE'	=> 'Active',
 	'CSS_ANCHOR_VISITED'=> 'Visited',
 	'CSS_ANCHOR_HOVER'	=> 'Hover', 
-	'BACKGROUND'		=> 'Background', 
+
 	'CSS_PARAMETER'		=> 'Parameter', 
 	'CSS_VALUE'			=> 'Value', 
 	'RAW_CSS'			=> 'Raw CSS', 
-	'' => '', 
+	'BACKGROUND'		=> 'Background', 
 	'BACKGROUND_COLOUR' => 'Background colour', 
 	'BACKGROUND_IMAGE'	=> 'Background image', 
 	'BACKGROUND_REPEAT' => 'Repeat background', 
@@ -1198,7 +1201,8 @@ $lang += array(
 	'CSS_CLASS_NAME'		=> 'CSS class name', 
 	'CUSTOM_CLASS'			=> 'Custom Class', 
 
-	'THEME_UPDATED'			=> 'Theme updated successfully',
+	'THEME_CLASS_ADDED'		=> 'Custom class added successfully', 
+	'THEME_UPDATED'			=> 'Class updated successfully',
 	'THEME_ADDED_DB'		=> 'New theme added to database', 
 	'THEME_ADDED'			=> 'New theme added on filesystem', 
 	'THEME_DETAILS_UPDATE'	=> 'Theme details updated', 
@@ -1271,6 +1275,7 @@ $lang += array(
 	'THEME_ERR_COPY_LONG'		=> 'The copyright can be no longer than 60 characters', 
 	'THEME_ERR_ARCHIVE'			=> 'Please select an archive method', 
 	'THEME_ERR_NOT_THEME'		=> 'The archive you specified does not contain a valid theme.', 
+	'THEME_ERR_CLASS_CHARS'		=> 'Only alphanumeric characters plus ., : and # are valid in class names.', 
 	'IMAGESET_ERR_STYLE_NAME'	=> 'You must supply a name for this imageset', 
 	'IMAGESET_ERR_NAME_CHARS'	=> 'The imageset name can only contain alphanumeric characters, -, +, _ and space',  
 	'IMAGESET_ERR_NAME_LONG'	=> 'The imageset name can be no longer than 30 characters', 

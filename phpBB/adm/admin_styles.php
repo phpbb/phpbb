@@ -672,6 +672,7 @@ function viewsource(url)
 			case 'edit':
 				// General parameters
 				$class = (isset($_POST['classname'])) ? htmlspecialchars($_POST['classname']) : '';
+				$customclass = (!empty($_POST['customclass'])) ? htmlspecialchars($_POST['customclass']) : '';
 
 				$txtcols = (isset($_POST['txtcols'])) ? max(20, intval($_POST['txtcols'])) : 76;
 				$txtrows = (isset($_POST['txtrows'])) ? max(5, intval($_POST['txtrows'])) : 10;
@@ -686,10 +687,10 @@ function viewsource(url)
 						'table',  'th', '.cat',  '.catdiv',  'td',  '.row1',  '.row2',  '.row3',  '.spacer',  'hr', 
 					),
 					'forms'		=> array(
-						'form',  'input',  'select',  '.textarea',  '.post',  '.btnlite', '.btnmain', '.btnbbcode',
+						'form',  'input',  'select',  'textarea',  '.post',  '.btnlite', '.btnmain', '.btnbbcode',
 					), 
 					'bbcode'	=> array(
-						'.b', '.u', '.i', '.color', '.size', '.code', '.quote', 'flash', '.syntaxbg',  '.syntaxcomment', '.syntaxdefault', '.syntaxhtml', '.syntaxkeyword', '.syntaxstring',
+						'.b', '.u', '.i', '.color', '.size', '.code', '.quote', '.flash', '.syntaxbg',  '.syntaxcomment', '.syntaxdefault', '.syntaxhtml', '.syntaxkeyword', '.syntaxstring',
 					), 
 					'custom'	=> array(),
 				);
@@ -747,20 +748,23 @@ function viewsource(url)
 					}
 
 					// Pull out list of "custom" tags
-					if (preg_match_all('#([a-z\.:]+?) {.*?}#si', $stylesheet, $matches))
+					$class_used = $test_ary = array();
+					if (preg_match_all('/^([a-z0-9\.:#>]+?)[ \t]*?\{.*?\}/msi', $stylesheet, $matches))
 					{
-						$test_ary = array();
 						foreach ($base_classes as $category => $class_ary)
 						{
-							$test_ary += $class_ary;
+							$test_ary = array_merge($test_ary, $class_ary);
 						}
 
-						$matches = preg_replace('#^\.#', '', $matches[1]);
-						foreach ($matches as $value)
+						foreach ($matches[1] as $value)
 						{
 							if (!in_array($value, $test_ary))
 							{
-//								$base_classes['custom'][] = $value;
+								$base_classes['custom'][] = $value;
+							}
+							else
+							{
+								$class_used[] = $value;
 							}
 						}
 						unset($matches);
@@ -778,14 +782,14 @@ function viewsource(url)
 					$css_element = array();
 					if (!empty($_POST['rawcss']) && (!empty($_POST['hidecss']) || !empty($_POST['preview']) || $update))
 					{
-						$css_element = preg_replace("#;[\r\n]*#s", "\n", stripslashes($_POST['rawcss']));
+						$css_element = trim(stripslashes(htmlspecialchars(preg_replace("#;[\r\n]*#s", "\n", $_POST['rawcss']))));
 						$css_element = explode("\n", $css_element);
 					}
 					else if (($showcss && !empty($_POST['showcss'])) || !empty($_POST['preview']) || $update)
 					{
 						if (!empty($_POST['cssother']))
 						{
-							$css_element = explode('; ', stripslashes($_POST['cssother']));
+							$css_element = explode(';', stripslashes(htmlspecialchars(trim($_POST['cssother']))));
 						}
 
 						foreach ($match_elements as $type => $match_ary)
@@ -800,18 +804,38 @@ function viewsource(url)
 							}
 						}
 					}
-					else if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet, $matches))
+					else if (preg_match('#^' . $class . '[ \t]*?\{(.*?)\}#ms', $stylesheet, $matches))
 					{
-						$css_element = explode('; ', ltrim(substr($matches[1], 0, -2)));
+						$css_element = explode(';', substr(trim($matches[1]), 0, -1));
 					}
 
+					$css_element = preg_replace('#^\s*(.*?)\s*$#', '\1', $css_element);
+
 					// User wants to submit data ...
-					if ($update)
-					{
-						$updated_element = implode('; ', $css_element) . ';';
-						if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
+					if ($update || $customclass)
+					{	
+						if ($update)
 						{
-							$stylesheet = preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
+							$updated_element = trim(implode('; ', $css_element)) . ';';
+							if (preg_match('#^' . $class . '[ \t]*?\{(.*?)\}#ms', $stylesheet))
+							{
+								$stylesheet = preg_replace('#^(' . $class . '[ \t]*?\{).*?(\})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
+							}
+							$error[] = $user->lang['THEME_UPDATED'];
+						}
+						else
+						{
+							// Check custom class name is valid
+							if (!preg_match('/^[a-z0-9#:\.]+$/i', $customclass))
+							{
+								$error[] = $user->lang['THEME_ERR_CLASS_CHARS'];
+							}
+							else
+							{
+								$stylesheet .= "\n$customclass { }";
+								$base_classes['custom'][] = $customclass;
+								$error[] = $user->lang['THEME_CLASS_ADDED'];
+							}
 						}
 
 						// Where is the CSS stored?
@@ -839,8 +863,6 @@ function viewsource(url)
 						}
 
 						$cache->destroy('sql', STYLES_CSS_TABLE);
-
-						$error[] = $user->lang['THEME_UPDATED'];
 						add_log('admin', 'LOG_EDIT_THEME', $theme_name);
 					}
 
@@ -871,7 +893,7 @@ function viewsource(url)
 								{
 									foreach ($css_element as $key => $element)
 									{
-										if (preg_match('#^' . preg_quote($match, '#') . ': (.*?)$#', $element, $matches))
+										if (preg_match('#^' . preg_quote($match, '#') . ':[ \t]*?(.*?)$#', $element, $matches))
 										{
 											switch ($type)
 											{
@@ -921,10 +943,12 @@ function viewsource(url)
 					$class_options .= '<option class="sep">' . $user->lang['CSS_CAT_' . strtoupper($category)] . '</option>';
 					foreach ($class_ary as $class_name)
 					{
+						$used = (in_array($class_name, $class_used) || $category == 'custom') ? ' style="color:red"' : '';
 						$selected = ($class_name == $class) ? ' selected="selected"' : '';
-						$class_options .= '<option value="' . $class_name . '"' . $selected . '>' . (($category == 'custom') ? $class_name : $user->lang['CSS_' . str_replace('.', '', strtoupper($class_name))]) . '</option>';
+						$class_options .= '<option' . $used . ' value="' . $class_name . '"' . $selected . '>' . (($category == 'custom') ? $class_name : $user->lang['CSS_' . str_replace('.', '', strtoupper($class_name))]) . '</option>';
 					}
 				}
+				unset($class_used);
 
 				// Grab list of potential images for class backgrounds
 				$imglist = filelist("{$phpbb_root_path}styles/$theme_path/theme");
@@ -980,6 +1004,7 @@ function csspreview()
 
 <p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
 
+<p><?php echo $user->lang['SELECTED_THEME']; ?>: <b><?php echo $theme_name; ?></b></p>
 <?php 
 
 				if ($showcss)
@@ -1013,9 +1038,9 @@ function csspreview()
 			</tr>
 <?php
 
-					if (sizeof($error) && $update)
+					if (sizeof($error) && ($update || $customclass))
 					{
-						echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+						echo '<tr><td class="row1" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
 					}
 
 ?>
@@ -1036,9 +1061,9 @@ function csspreview()
 			</tr>
 <?php
 
-					if (sizeof($error) && $update)
+					if (sizeof($error) && ($update || $customclass))
 					{
-						echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+						echo '<tr><td class="row1" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
 					}
 
 ?>
@@ -2579,12 +2604,14 @@ function install($type, $action, $id)
 		$imageset_id = (!empty($_POST['imageset_id'])) ? intval($_POST['imageset_id']) : 0;
 		$basis		 = (isset($_POST['basis'])) ? intval($_POST['basis']) : 0;
 
-		if ($basis || $update)
+		// If we have a basis  or we're editing we want some additional info ... else
+		// we need nothing 
+		if ($basis || ($update && $action != 'add'))
 		{
 			switch ($type)
 			{
 				case 'style':
-					$sql_select = ($action != 'details') ? 'style_name, template_id, theme_id, imageset_id' : 'style_name';
+					$sql_select = ($action != 'edit') ? 'style_name, template_id, theme_id, imageset_id' : 'style_name';
 					break;
 				case 'template':
 					$sql_select = 'template_id, template_name, template_path, template_storedb';
