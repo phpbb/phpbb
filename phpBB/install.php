@@ -111,8 +111,8 @@ $available_dbms = array(
 		"VALUE" => "mssql"
 	),
 	array(
-		"LABEL" => "ODBC - MS Access",
-		"VALUE" => "odbc:msaccess"
+		"LABEL" => "MS Access [ ODBC ]",
+		"VALUE" => "msaccess"
 	)
 );
 
@@ -432,26 +432,20 @@ else
 	// out some additional instruction_textions later on what to do after installation
 	// for the odbc DBMS.
 	//
-	if( ereg(':', $dbms) )
-	{
-		$dbms = explode(':', $dbms);
-		$dbhost = $dbms[1] . ':' . $dbhost;
-		$dbms = $dbms[0];
-	}
-	else if( isset($dbms) ) 
+	if( isset($dbms) ) 
 	{
 		include($phpbb_root_path.'includes/db.'.$phpEx);
 	}
 
-	$dbms_schema = 'db/' . $dbms.'_schema.sql';
-	$dbms_basic = 'db/' . $dbms . '_basic.sql';
+	$dbms_schema = 'db/schemas/' . $dbms.'_schema.sql';
+	$dbms_basic = 'db/schemas/' . $dbms . '_basic.sql';
 
 	$remove_remarks = ( $dbms == 'mysql' ) ? 'remove_remarks' : 'remove_comments';
 	$delimiter = ( $dbms == 'mssql' ) ? 'GO' : ';'; 
 
 	if( $install_step == 1 )
 	{
-		if($dbms != 'odbc' && $upgrade != 1)
+		if( $dbms != 'msaccess' && $upgrade != 1 )
 		{
 			//
 			// Ok we have the db info go ahead and read in the relevant schema
@@ -473,12 +467,13 @@ else
 					$error = $db->sql_error();
 	
 					$template->assign_block_vars("switch_error_install", array());
-						$template->assign_vars(array(
+
+					$template->assign_vars(array(
 						"L_ERROR_TITLE" => $lang['Installer_Error'],
 						"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
 					);
 					$template->pparse('body');
-					die();
+					exit;
 				}
 			}
 	
@@ -504,7 +499,7 @@ else
 						"L_ERROR" => $lang['Install_db_error'] . "<br />" . $error["message"])
 					);
 					$template->pparse('body');
-					die();
+					exit;
 				}
 			}
 			//
