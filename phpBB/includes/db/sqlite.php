@@ -43,7 +43,7 @@ class sql_db
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? sqlite_popen($this->server, 0, $error) : sqlite_open($this->server, 0, $error);
+		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0, $error) : @sqlite_open($this->server, 0, $error);
 
 		return ($this->db_connect_id) ? true : $error;
 	}
@@ -56,7 +56,7 @@ class sql_db
 			return false;
 		}
 
-		return sqlite_close($this->db_connect_id);
+		return @sqlite_close($this->db_connect_id);
 	}
 
 	function sql_return_on_error($fail = false)
@@ -75,17 +75,17 @@ class sql_db
 		{
 			case 'begin':
 				$this->transaction = true;
-				$result = sqlite_query('BEGIN', $this->db_connect_id);
+				$result = @sqlite_query('BEGIN', $this->db_connect_id);
 				break;
 
 			case 'commit':
 				$this->transaction = false;
-				$result = sqlite_query('COMMIT', $this->db_connect_id);
+				$result = @sqlite_query('COMMIT', $this->db_connect_id);
 				break;
 
 			case 'rollback':
 				$this->transaction = false;
-				$result = sqlite_query('ROLLBACK', $this->db_connect_id);
+				$result = @sqlite_query('ROLLBACK', $this->db_connect_id);
 				break;
 
 			default:
@@ -122,7 +122,7 @@ class sql_db
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
 
-				if (!($this->query_result = sqlite_query($query, $this->db_connect_id)))
+				if (!($this->query_result = @sqlite_query($query, $this->db_connect_id)))
 				{
 					$this->sql_error($query);
 				}
@@ -149,9 +149,9 @@ class sql_db
 					if (preg_match('#^SELECT#', $query))
 					{
 						$html_table = FALSE;
-						if ($result = sqlite_query("EXPLAIN $query", $this->db_connect_id))
+						if ($result = @sqlite_query("EXPLAIN $query", $this->db_connect_id))
 						{
-							while ($row = sqlite_fetch_array($result, SQLITE_ASSOC))
+							while ($row = @sqlite_fetch_array($result, @sqlite_ASSOC))
 							{
 								if (!$html_table && count($row))
 								{
@@ -274,12 +274,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? sqlite_num_rows($query_id) : false;
+		return ($query_id) ? @sqlite_num_rows($query_id) : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ($this->db_connect_id) ? sqlite_changes($this->db_connect_id) : false;
+		return ($this->db_connect_id) ? @sqlite_changes($this->db_connect_id) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -296,7 +296,7 @@ class sql_db
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
+		return ($query_id) ? @sqlite_fetch_array($query_id, @sqlite_ASSOC) : false;
 	}
 
 	function sql_fetchrowset($query_id = 0)
@@ -309,7 +309,7 @@ class sql_db
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = sqlite_fetch_array($query_id, SQLITE_ASSOC))
+			while($this->rowset[$query_id] = @sqlite_fetch_array($query_id, @sqlite_ASSOC))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -330,7 +330,7 @@ class sql_db
 
 		if($query_id)
 		{
-			return ($rownum > -1) ? ((sqlite_seek($query_id, $rownum)) ? sqlite_column($query_id, $field) : false) : sqlite_column($query_id, $field);
+			return ($rownum > -1) ? ((@sqlite_seek($query_id, $rownum)) ? @sqlite_column($query_id, $field) : false) : @sqlite_column($query_id, $field);
 		}
 	}
 
@@ -341,12 +341,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? sqlite_seek($query_id, $rownum) : false;
+		return ($query_id) ? @sqlite_seek($query_id, $rownum) : false;
 	}
 
 	function sql_nextid()
 	{
-		return ($this->db_connect_id) ? sqlite_last_insert_rowid($this->db_connect_id) : false;
+		return ($this->db_connect_id) ? @sqlite_last_insert_rowid($this->db_connect_id) : false;
 	}
 
 	function sql_freeresult($query_id = false)
@@ -356,7 +356,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return sqlite_escape_string(stripslashes($msg));
+		return @sqlite_escape_string(stripslashes($msg));
 	}
 
 	function sql_error($sql = '')
@@ -371,13 +371,13 @@ class sql_db
 			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
 			$this_page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
 
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . sqlite_error_string(sqlite_last_error($this->db_connect_id)) . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @sqlite_error_string(@sqlite_last_error($this->db_connect_id)) . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
 			trigger_error($message, E_USER_ERROR);
 		}
 
 		$result = array(
-			'message'	=> sqlite_error_string(sqlite_last_error($this->db_connect_id)),
-			'code'		=> sqlite_last_error($this->db_connect_id)
+			'message'	=> @sqlite_error_string(@sqlite_last_error($this->db_connect_id)),
+			'code'		=> @sqlite_last_error($this->db_connect_id)
 		);
 
 		return $result;
