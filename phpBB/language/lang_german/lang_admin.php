@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_admin.php [german]
+ *                            lang_admin.php [German]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -68,7 +68,7 @@ $lang['Forum_stats'] = "Forum Statistiken";
 $lang['Admin_Index'] = "Admin Index";
 $lang['Preview_forum'] = "Forumsvorschau";
 
-$lang['Click_return_admin_index'] = "Klicke %shier%s um zum Admin Index zurück zu kehren";
+$lang['Click_return_admin_index'] = "Klicke %shier%s, um zum Admin Index zurück zu kehren";
 
 $lang['Statistic'] = "Statistik";
 $lang['Value'] = "Wert";
@@ -182,16 +182,16 @@ $lang['User_auth_updated'] = "Benutzerberechtigungen aktualisiert";
 $lang['Group_auth_updated'] = "Gruppenberechtigungen aktualisiert";
 
 $lang['Auth_updated'] = "Befugnisse wurden aktualisiert";
-$lang['Click_return_userauth'] = "Klicke %shier%s um zu den Benutzerrechten zurück zu kehren";
-$lang['Click_return_groupauth'] = "Klicke %shier%s um zu den Gruppenrechten zurück zu kehren";
-$lang['Click_return_forumauth'] = "Klicke %shier%s um zu den Forenberechtigungen zurück zu kehren";
+$lang['Click_return_userauth'] = "Klicke %shier%s, um zu den Benutzerrechten zurück zu kehren";
+$lang['Click_return_groupauth'] = "Klicke %shier%s, um zu den Gruppenrechten zurück zu kehren";
+$lang['Click_return_forumauth'] = "Klicke %shier%s, um zu den Forenberechtigungen zurück zu kehren";
 
 
 //
 // Banning
 //
 $lang['Ban_control'] = "Sperren";
-$lang['Ban_explain'] = "Hier kannst Du Benutzer bannen. Du kannst entweder einen bestimmten User oder eine IP-Adresse oder Hostnamen. Durch diese Methode kann der Benutzer die Startseite des Forums nicht aufrufen. Um den Benutzer daran zu hindern, sich unter einem anderen Namen anzumelnden, kannst Du auch bestimmte EMail-Adressen sperren. Eine EMail-Sperre verhindert nur das Registrieren, nicht das Posten eines Benuters!";
+$lang['Ban_explain'] = "Hier kannst Du Benutzer bannen. Du kannst entweder einen bestimmten User, eine IP-Adresse oder Hostnamen sperren. Durch diese Methode kann der Benutzer die Startseite des Forums nicht aufrufen. Um den Benutzer daran zu hindern, sich unter einem anderen Namen anzumelden, kannst Du auch bestimmte EMail-Adressen sperren. Eine EMail-Sperre verhindert nur das Registrieren, nicht das Posten eines Benutzers!";
 $lang['Ban_explain_warn'] = "Bitte beachte, dass, wenn Du mehrere IP Adressen eingibst, alle Adressen zwischen dem Anfang und dem Ende der Sperrliste hinzugefügt werden. Versuche die Anzahl der Adressen klein zu halten, indem Du Wildcards einsetzt, wo es möglich ist. Am besten wäre es, eine konkrete IP-Adresse anzugeben.";
 
 $lang['Select_username'] = "Wähle einen Benutzernamen";
@@ -206,7 +206,7 @@ $lang['IP_hostname'] = "IP Adressen oder Hostname";
 $lang['Ban_IP_explain'] = "Um mehrere verschiedene IPs oder Hostnamen anzugeben, trenne sie mit Kommata von einander. Um eine Spanne von IP Adressen anzugeben, trenne den Anfang und das Ende mit einem Bindestrich (-), benutze * für eine Wildcard";
 
 $lang['Ban_email'] = "Eine oder mehrere E-Mail Adressen bannen";
-$lang['Ban_email_explain'] = "Um mehrere verschiedene E-Mail Adressen anzugeben, trenne sie mit Kommata von einander. Für einen allgmeinen Benuternamen, benutze ein * (z.B. *@hotmail.de)";
+$lang['Ban_email_explain'] = "Um mehrere verschiedene E-Mail Adressen anzugeben, trenne sie mit Kommata von einander. Für einen allgmeinen Benutzernamen, benutze ein * (z.B. *@hotmail.de)";
 
 $lang['Unban_username'] = "Einen oder mehrere Benutzer entsperren";
 $lang['Unban_username_explain'] = "Mit einer Kombination aus Tastatur und Maus kannst Du auch mehrere Benutzer auf einmal entsperren";
@@ -230,7 +230,7 @@ $lang['Ban_update_sucessful'] = "Die Banliste wurde aktualisiert";
 $lang['General_Config'] = "Allgemeine Konfiguration";
 $lang['Config_explain'] = "Hier kannst Du die allgemeinen Einstellungen Deines Forums ändern. Für Benutzer- und Foreneinstellungen nutze bitte die Links auf der linken Seite.";
 
-$lang['Click_return_config'] = "Klicke %shier%s um zur allgemeinen Konfiguration zurück zu kehren";
+$lang['Click_return_config'] = "Klicke %shier%s, um zur allgemeinen Konfiguration zurück zu kehren";
 
 $lang['General_settings'] = "Allgemeine Boardeinstellungen";
 $lang['Site_name'] = "Name der Seite";
@@ -238,6 +238,9 @@ $lang['Site_desc'] = "Beschreibung der Seite";
 $lang['Board_disable'] = "Board deaktivieren";
 $lang['Board_disable_explain'] = "Hiermit sperrst Du das Forum für alle Benutzer. <b>Logg Dich nach dem Deaktivieren nicht aus oder Du kannst das Forum nicht reaktivieren!</b>";
 $lang['Acct_activation'] = "Account-Freischaltung aktivieren";
+$lang['Acc_None'] = "Keine"; // These three entries are the type of activation
+$lang['Acc_User'] = "Per E-Mail";
+$lang['Acc_Admin'] = "Durch den Admin";
 
 $lang['Abilities_settings'] = "Standard Benutzer- und Foreneinstellungen";
 $lang['Max_poll_options'] = "Maximale Anzahl der Umfrageoptionen";
@@ -250,7 +253,7 @@ $lang['Posts_per_page'] = "Beiträge pro Seite";
 $lang['Hot_threshold'] = "Beiträge, die ein Thema braucht, um ein 'Hot Topic' zu werden";
 $lang['Default_style'] = "Standard-Style";
 $lang['Override_style'] = "Style überschreiben";
-$lang['Override_style_explain'] = "Vom Benuter gewähltes Style überschreiben";
+$lang['Override_style_explain'] = "Vom Benutzer gewähltes Style überschreiben";
 $lang['Default_language'] = "Standard-Sprache";
 $lang['Date_format'] = "Datumsformat";
 $lang['System_timezone'] = "Zeitzone";
@@ -355,7 +358,7 @@ $lang['Edit_Category_explain'] = "Hier kannst Du den Kategoriennamen bestimmen";
 
 $lang['Forums_updated'] = "Forums- und Kategorieninformationen wurden geändert";
 
-$lang['Click_return_forumadmin'] = "Klick %shier%s um zur Forumsadministration zurück zu kehren";
+$lang['Click_return_forumadmin'] = "Klick %shier%s, um zur Forumsadministration zurück zu kehren";
 
 
 //
@@ -383,13 +386,13 @@ $lang['smile_conflicts'] = " Was tun, wenn Konflikte auftreten?";
 $lang['del_existing_smileys'] = "Aktuelle Smilies vor dem Import löschen";
 $lang['import_smile_pack'] = "Smiley-Paket importieren";
 $lang['export_smile_pack'] = "Smiley-Paket erstellen";
-$lang['export_smiles'] = "Um aus Deinen jetztigen Smilies ein Paket zu erstellen, klicke %shier%s , um das Paket gezippt herunterzuladen. Achte darauf, die .pak-Erweiterung am Ende beizubehalten. Dann erstelle eine Zip-Datei mit allen benutzten Smilies und der .pak-Datei.";
+$lang['export_smiles'] = "Um aus Deinen jetztigen Smilies ein Paket zu erstellen, klicke %shier%s, , um das Paket gezippt herunterzuladen. Achte darauf, die .pak-Erweiterung am Ende beizubehalten. Dann erstelle eine Zip-Datei mit allen benutzten Smilies und der .pak-Datei.";
 
 $lang['smiley_add_success'] = "Der Smiley wurde hinzugefügt";
 $lang['smiley_edit_success'] = "Der Smiley wurde geändert";
 $lang['smiley_import_success'] = "Das Smiley-Paket wurde installiert";
 $lang['smiley_del_success'] = "Der Smiley wurde gelöscht";
-$lang['Click_return_smileadmin'] = "Klick %shier%s um zur Smiley-Verwaltung zurück zu kehren";
+$lang['Click_return_smileadmin'] = "Klick %shier%s, um zur Smiley-Verwaltung zurück zu kehren";
 
 
 //
@@ -402,14 +405,14 @@ $lang['Look_up_user'] = "Benutzer auswählen";
 
 $lang['Admin_user_fail'] = "Benutzerprofil konnte nicht geändert werden";
 $lang['Admin_user_updated'] = "Benutzerprofil geändert";
-$lang['Click_return_useradmin'] = "Klick %shier%s um zur Benuteradministration zurück zu kehren";
+$lang['Click_return_useradmin'] = "Klick %shier%s, um zur Benutzeradministration zurück zu kehren";
 
 $lang['User_delete'] = "Diesen Benutzer löschen";
 $lang['User_delete_explain'] = "Klicke hier, um den Benutzer zu löschen - diese Aktion kann nicht rückgängig gemacht werden.";
 $lang['User_deleted'] = "Benutzer wurde gelöscht";
 
 $lang['User_status'] = "Benutzer ist atkiv";
-$lang['User_allowpm'] = "Darf Private nachrichten verschicken";
+$lang['User_allowpm'] = "Darf Private Nachrichten verschicken";
 $lang['User_allowavatar'] = "Darf einen Avatar benutzen";
 
 $lang['Admin_avatar_explain'] = "Hier kannst Du den Avatar des Benutzers ansehen und löschen";
@@ -444,8 +447,8 @@ $lang['No_group_name'] = "Bitte gib einen Gruppennamen an";
 $lang['No_group_moderator'] = "Bitte gib einen Gruppenleiter an";
 $lang['No_group_mode'] = "Du musst einen Status für diese Gruppe angeben (offen/geschlossen)";
 $lang['delete_group_moderator'] = "Alten Gruppenleiter entfernen?";
-$lang['delete_moderator_explain'] = "Wenn Du den Gruppenleiter wechseln möchtest, wähle die entsprechende Option, um den alten Leiter zu entfernen. Ansonsten wähle die Option nicht und der Benuter wird ein reguläres Mitglied der Gruppe.";
-$lang['return_group_admin'] = "Klicke %shier%s um zur Gruppenadministration zurück zu kehren.";
+$lang['delete_moderator_explain'] = "Wenn Du den Gruppenleiter wechseln möchtest, wähle die entsprechende Option, um den alten Leiter zu entfernen. Ansonsten wähle die Option nicht und der Benutzer wird ein reguläres Mitglied der Gruppe.";
+$lang['return_group_admin'] = "Klicke %shier%s, um zur Gruppenadministration zurück zu kehren.";
 $lang['Select_group'] = "Gruppe wählen";
 $lang['Look_up_group'] = "Gruppe finden";
 
@@ -481,7 +484,7 @@ $lang['Word_updated'] = "Die Wortzensur wurde aktualisiert";
 $lang['Word_added'] = "Die Wortzensur wurde eingerichtet";
 $lang['Word_removed'] = "Die Wortzensur wurde entfernt";
 
-$lang['Click_return_wordadmin'] = "Klicke %shier%s um zur Wortzensur-Administration zurück zu kehren";
+$lang['Click_return_wordadmin'] = "Klicke %shier%s, um zur Wortzensur-Administration zurück zu kehren";
 
 
 //
@@ -494,7 +497,7 @@ $lang['Recipients'] = "Empfänger";
 $lang['All_users'] = "Alle Benutzer";
 
 $lang['Email_successfull'] = "Die Nachricht wurde gesendet";
-$lang['Click_return_massemail'] = "Klicke %shier%s um zur Massen E-Mail zurück zu kehren";
+$lang['Click_return_massemail'] = "Klicke %shier%s, um zur Massen E-Mail zurück zu kehren";
 
 
 //
@@ -560,7 +563,7 @@ $lang['Rank_updated'] = "Die Ranginformationen wurden aktualisiert";
 $lang['Rank_added'] = "Der Rang wurde hinzugefügt";
 $lang['Rank_removed'] = "Der Rang wurde gelöscht";
 
-$lang['Click_return_rankadmin'] = "Klick %shier%s um zur Rank Administration zurück zu kehren";
+$lang['Click_return_rankadmin'] = "Klick %shier%s, um zur Rank Administration zurück zu kehren";
 
 
 //
@@ -575,7 +578,7 @@ $lang['Delete_disallow_explain'] = "Du kannst einen verbotenen Namen entfernen, 
 
 $lang['Add_disallow'] = "Hinzufügen";
 $lang['Add_disallow_title'] = "Einen verbotenen Namen hinzufügen";
-$lang['Add_disallow_explain'] = "Du kannst ein * benutzen, um jegliche Benuternamen zu verbieten";
+$lang['Add_disallow_explain'] = "Du kannst ein * benutzen, um jegliche Benutzernamen zu verbieten";
 
 $lang['No_disallowed'] = "Keine verbotenen Benutzernamen";
 
@@ -583,7 +586,7 @@ $lang['Disallowed_deleted'] = "Der verbotene Benutzername ist nun wieder gestatt
 $lang['Disallow_successful'] = "Der verbotene Benutzername wurde hinzugefügt";
 $lang['Disallowed_already'] = "Der angebene Benuztername kann nicht verboten werden. Er existiert entweder schon oder stimmt mit einem existierenden überein";
 
-$lang['Click_return_disallowadmin'] = "Klicke %shier%s um zum Verbot der Benutzernamen zurück zu kehren";
+$lang['Click_return_disallowadmin'] = "Klicke %shier%s, um zum Verbot der Benutzernamen zurück zu kehren";
 
 
 //
@@ -622,7 +625,7 @@ $lang['No_themes'] = "Das gewählte Template hat keine verfügbaren Themes. Um ein
 $lang['No_template_dir'] = "Konnte das Template-Verzeichnis nicht öffnen. Es ist eventuell unlesbar oder existiert nicht (mehr).";
 $lang['Cannot_remove_style'] = "Du kannst den gewählten Style nicht entfernen, da er zum Forumsstandard gehört. Du kannst jedoch einen anderen Forumsstandard wählen und es erneut versuchen.";
 
-$lang['Click_return_styleadmin'] = "Klicke %shier%s um zur Styles Administration zurück zu kehren";
+$lang['Click_return_styleadmin'] = "Klicke %shier%s, um zur Styles Administration zurück zu kehren";
 
 $lang['Theme_settings'] = "Theme Einstellungen";
 $lang['Theme_element'] = "Theme Element";

@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            lang_bbcode.php [german]
+ *                            lang_bbcode.php [German]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
