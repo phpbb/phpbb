@@ -36,6 +36,7 @@
 		  <tr align="center"> 
 			<td colspan="2"> 
 			  <input type="hidden" name="forward_page" value="{FORWARD_PAGE}" />
+			  <input type="hidden" name="login" value="login" />
 			  <input type="submit" name="submit" class="mainoption" value="{L_LOGIN}" />
 			</td>
 		  </tr>
