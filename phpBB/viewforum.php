@@ -155,7 +155,7 @@ if($total_topics)
 	  }
 	$topic_poster = stripslashes($topic_rowset[$x]["username"]);
 	$views = $topic_rowset[$x]["topic_views"];
-	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
+	$last_post_time = create_date($date_format, $topic_rowset[$x]["post_time"], $sys_timezone);
 	$last_post_user = $topic_rowset[$x]["user2"];
 	$folder_img = "<img src=\"images/folder.gif\">";
 	$template->assign_block_vars(
@@ -167,7 +167,7 @@ if($total_topics)
 		 "REPLIES" => $replies,
 		 "TOPIC_TITLE" => $topic_title,
 		 "VIEWS" => $views,
-		 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
+		 "LAST_POST" => $last_post_time . "<br />$l_by <a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
      }
 
    $count = 1;

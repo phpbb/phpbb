@@ -126,7 +126,7 @@ for($x = 0; $x < $total_posts; $x++)
 {
 	$poster = stripslashes($postrow[$x]["username"]);
 	$poster_id = $postrow[$x]["user_id"];
-	$post_date = date($date_format, $postrow[$x]["post_time"]);
+	$post_date = create_date($date_format, $postrow[$x]["post_time"], $sys_timezone);
 	$poster_posts = $postrow[$x]["user_posts"];
 	$poster_from = ($postrow[$x]["user_from"]) ? "$l_from: ".$postrow[$x]["user_from"] : "";
 	$poster_joined = $postrow[$x]["user_regdate"];
@@ -206,22 +206,34 @@ for($x = 0; $x < $total_posts; $x++)
 	
 	$message = make_clickable($message);
 	
-	$message = str_replace("\n", "<BR>", $message);
+	$message = str_replace("\n", "<br />", $message);
 	
 	if(!($x % 2))
 	{
-		$color = "#DDDDDD";
+		if(isset($theme))
+		{
+			$color = "#".$theme['td_color1'];
+		}
+		else
+		{
+			$color = "#DDDDDD";
+		}
 	}
 	else
 	{
-		$color = "#CCCCCC";
+		if(isset($theme))
+		{
+			$color = "#".$theme['td_color2'];
+		}
+		else
+		{
+			$color = "#CCCCCC";
+		}
 	}
 	
-	$message = eregi_replace("\[addsig]$", "<BR>_________________<BR>" . nl2br($user_sig), $message);
+	$message = eregi_replace("\[addsig]$", "<br />_________________<br />" . nl2br($user_sig), $message);
 	
 	$template->assign_block_vars("postrow", array("TOPIC_TITLE" => $topic_title,
-		"L_POSTED" => $l_posted,
-		"L_JOINED" => $l_joined,
 		"POSTER_NAME" => $poster,
 		"POSTER_RANK" => $poster_rank,
 		"RANK_IMAGE" => $rank_image,

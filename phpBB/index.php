@@ -127,16 +127,15 @@ if($total_categories)
 				$topics = $forum_rows[$j]["forum_topics"];
 				if($forum_rows[$j]["username"] != "" && $forum_rows[$j]["post_time"] > 0)
 				{
-				   $last_post_time = date($date_format, $forum_rows[$j]["post_time"]);
-				   $last_post = $last_post_time."<br>by ";
-				   $last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"];
-				   $last_post .= "\">".$forum_rows[$j]["username"]."</a>";
-				   $last_post .= "&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\">";
-				   $last_post .= "<img src=\"images/last_post_icon.gif\" width=\"15\" height=\"10\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post_time = create_date($date_format, $forum_rows[$j]["post_time"], $sys_timezone);
+					$last_post = $last_post_time."<br>by ";
+					$last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"];
+					$last_post .= "\">".$forum_rows[$j]["username"]."</a>&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\"><img src=\"images/latest_reply.gif\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{
 					$last_post = "No Posts";
+					$forum_rows[$j]["forum_name"] = stripslashes($forum_rows[$j]["forum_name"]);
 				}
 
 				if($row_color == "#DDDDDD")
