@@ -258,7 +258,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
-	login_box($user->cur_page, '', $user->lang['LOGIN_VIEWFORUM']);
+	login_box($user->cur_page, '', $user->lang['LOGIN_VIEWTOPIC']);
 }
 
 // Forum is passworded ... check whether access has been granted to this
@@ -272,17 +272,16 @@ if ($forum_password)
 if (isset($_GET['e']))
 {
 	$jump_to = (int) $_GET['e'];
-
-	$redirect_url = str_replace('&e=' . $jump_to, '', $_SERVER['REQUEST_URI']) . (($jump_to) ? '#' . $jump_to : '');
+	$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id";
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($redirect_url)), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
+		login_box($redirect_url . "&p=$post_id&e=$jump_to", '', $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
 	else if ($jump_to > 0)
 	{
 		// We direct the already logged in user to the correct post...
-		redirect(preg_replace('#^' . $config['script_path'] . '#', '', $redirect_url));
+		redirect($redirect_url . ((!$post_id) ? "&p=$jump_to" : "&p=$post_id") . "#$jump_to");
 	}
 }
 
