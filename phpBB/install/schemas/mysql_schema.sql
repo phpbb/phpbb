@@ -279,7 +279,6 @@ CREATE TABLE phpbb_posts (
    poster_ip varchar(40) NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    post_approved tinyint(1) DEFAULT '1' NOT NULL,
-   post_checksum varchar(32) NOT NULL,
    post_username varchar(30),
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
@@ -303,6 +302,7 @@ CREATE TABLE phpbb_posts (
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid varchar(10) NOT NULL,
+   post_checksum varchar(32) NOT NULL,
    post_subject varchar(60),
    post_text text,
    PRIMARY KEY (post_id)
