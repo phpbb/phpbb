@@ -181,6 +181,22 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	//
 	if( $mode == "viewprofile" )
 	{
+
+		if( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
+		{
+			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+		}
+		$profiledata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL]);
+
+		$sql = "SELECT *
+			FROM " . RANKS_TABLE . "
+			ORDER BY rank_special, rank_min";
+		if(!$ranks_result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
+		}
+		$ranksrow = $db->sql_fetchrowset($ranksresult);
+		
 		//
 		// Output page header and
 		// profile_view template
@@ -203,17 +219,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
 		//
 		// End header
 		//
-
-		if( empty($HTTP_GET_VARS[POST_USERS_URL]) )
-		{
-			// CHANGE THIS!
-			message_die(GENERAL_ERROR, "You must supply the user ID number of the user you want to view", "", __LINE__, __FILE__);
-		}
-		$profiledata = get_userdata_from_id($HTTP_GET_VARS[POST_USERS_URL]);
 
 		//
 		// Calculate the number of days this user has been a member ($memberdays)
@@ -257,6 +265,33 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$avatar_img = "&nbsp;";
 		}
 
+		$poster_rank = "";
+		$rank_image = "";
+
+		if( $profiledata['user_rank'] )
+		{
+			for($j = 0; $j < count($ranksrow); $j++)
+			{
+				if( $profiledata['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
+				{
+					$poster_rank = $ranksrow[$j]['rank_title'];
+					$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
+				}
+			}
+		}
+		else
+		{
+			for($j = 0; $j < count($ranksrow); $j++)
+			{
+				if( $profiledata['user_posts'] > $ranksrow[$j]['rank_min'] && $profiledata['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
+				{
+					$poster_rank = $ranksrow[$j]['rank_title'];
+					$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
+				}
+			}
+		}
+
+
 		if( !empty($profiledata['user_icq']) )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $profiledata['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
@@ -298,6 +333,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$template->assign_vars(array(
 			"USERNAME" => $profiledata['username'],
 			"JOINED" => create_date($board_config['default_dateformat'], $profiledata['user_regdate'], $board_config['board_timezone']),
+			"POSTER_RANK" => $poster_rank,
+			"RANK_IMAGE" => $rank_image,
 			"POSTS_PER_DAY" => $posts_per_day,
 			"POSTS" => $profiledata['user_posts'],
 			"PERCENTAGE" => $percentage . "%",
@@ -321,7 +358,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"INTERESTS" => ( ($profiledata['user_interests']) ? $profiledata['user_interests'] : "&nbsp;" ),
 			"AVATAR_IMG" => $avatar_img,
 
-			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'],
+			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'], 
+			"L_POSTER_RANK" => $lang['Poster_rank'], 
 			"L_PER_DAY" => $lang['posts_per_day'],
 			"L_OF_TOTAL" => $lang['of_total'],
 			"L_CONTACT" => $lang['Contact'],
