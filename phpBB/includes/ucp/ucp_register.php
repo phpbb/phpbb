@@ -7,11 +7,11 @@
 // STARTED   : Mon May 19, 2003
 // COPYRIGHT : © 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
-class ucp_register extends module 
+class ucp_register extends module
 {
 	function ucp_register($id, $mode)
 	{
@@ -41,26 +41,26 @@ class ucp_register extends module
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
-				$coppa_birthday = $user->format_date(mktime($now['hours'] + $user->data['user_dst'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday'] - 1, $now['year'] - 13), $user->lang['DATE_FORMAT']); 
+				$coppa_birthday = $user->format_date(mktime($now['hours'] + $user->data['user_dst'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday'] - 1, $now['year'] - 13), $user->lang['DATE_FORMAT']);
 				unset($now);
 
 				$template->assign_vars(array(
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=0", 
-					'U_COPPA_YES'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=1", 
+					'U_COPPA_NO'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=0",
+					'U_COPPA_YES'		=> "ucp.$phpEx$SID&amp;mode=register&amp;coppa=1",
 
-					'S_SHOW_COPPA'		=> true, 
+					'S_SHOW_COPPA'		=> true,
 					'S_REGISTER_ACTION'	=> "ucp.$phpEx$SID&amp;mode=register")
 				);
 			}
 			else
 			{
 				$template->assign_vars(array(
-					'L_AGREEMENT'		=> $user->lang['UCP_AGREEMENT'], 
+					'L_AGREEMENT'		=> $user->lang['UCP_AGREEMENT'],
 
-					'S_SHOW_COPPA'		=> false, 
+					'S_SHOW_COPPA'		=> false,
 					'S_REGISTER_ACTION'	=> "ucp.$phpEx$SID&amp;mode=register")
 				);
 			}
@@ -72,14 +72,14 @@ class ucp_register extends module
 		if ($submit)
 		{
 			$var_ary = array(
-				'username'			=> (string) '', 
-				'password_confirm'	=> (string) '', 
-				'new_password'		=> (string) '', 
-				'cur_password'		=> (string) '', 
-				'email'				=> (string) '', 
+				'username'			=> (string) '',
+				'password_confirm'	=> (string) '',
+				'new_password'		=> (string) '',
+				'cur_password'		=> (string) '',
+				'email'				=> (string) '',
 				'email_confirm'		=> (string) '',
 				'confirm_code'		=> (string) '',
-				'lang'				=> (string) $config['default_lang'], 
+				'lang'				=> (string) $config['default_lang'],
 				'tz'				=> (float) $config['board_timezone'],
 			);
 
@@ -92,13 +92,13 @@ class ucp_register extends module
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
-				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
-				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']), 
+				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
-					array('string', false, 6, 60), 
+					array('string', false, 6, 60),
 					array('email')),
-				'email_confirm'		=> array('string', false, 6, 60), 
-				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6), 
+				'email_confirm'		=> array('string', false, 6, 60),
+				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6),
 				'tz'				=> array('num', false, -13, 13),
 				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
 			);
@@ -124,12 +124,12 @@ class ucp_register extends module
 				}
 				else
 				{
-					$sql = 'SELECT code 
-						FROM ' . CONFIRM_TABLE . " 
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
+					$sql = 'SELECT code
+						FROM ' . CONFIRM_TABLE . "
+						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
 							AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 					$result = $db->sql_query($sql);
-		
+
 					if ($row = $db->sql_fetchrow($result))
 					{
 						if ($row['code'] != $confirm_code)
@@ -139,14 +139,14 @@ class ucp_register extends module
 						}
 						else
 						{
-							$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
-								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
+							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
+								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
 									AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 							$db->sql_query($sql);
 						}
 					}
 					else
-					{		
+					{
 						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 						$wrong_confirm = true;
 					}
@@ -164,7 +164,7 @@ class ucp_register extends module
 				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
 
 				$sql = 'SELECT group_id
-					FROM ' . GROUPS_TABLE . " 
+					FROM ' . GROUPS_TABLE . "
 					WHERE group_name = '$group_name'
 						AND group_type = " . GROUP_SPECIAL;
 				$result = $db->sql_query($sql);
@@ -177,8 +177,8 @@ class ucp_register extends module
 
 				$group_id = $row['group_id'];
 
-				if (($coppa || 
-					$config['require_activation'] == USER_ACTIVATION_SELF || 
+				if (($coppa ||
+					$config['require_activation'] == USER_ACTIVATION_SELF ||
 					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
 				{
 					$user_actkey = gen_rand_string(10);
@@ -192,30 +192,30 @@ class ucp_register extends module
 					$user_type = USER_NORMAL;
 					$user_actkey = '';
 				}
-		
+
 				// Begin transaction ... should this screw up we can rollback
 				$db->sql_transaction();
-		
+
 				$sql_ary = array(
-					'username'			=> $username, 
+					'username'			=> $username,
 					'user_password'		=> md5($new_password),
-					'user_email'		=> $email, 
-					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email), 
-					'group_id'			=> (int) $group_id, 
+					'user_email'		=> $email,
+					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email),
+					'group_id'			=> (int) $group_id,
 					'user_timezone'		=> (float) $tz,
 					'user_lang'			=> $lang,
 					'user_allow_pm'		=> 1,
 					'user_type'			=> $user_type,
-					'user_actkey'		=> $user_actkey, 
-					'user_ip'			=> $user->ip, 
+					'user_actkey'		=> $user_actkey,
+					'user_ip'			=> $user->ip,
 					'user_regdate'		=> time(),
 				);
 
 				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				$db->sql_query($sql);
-				
+
 				$user_id = $db->sql_nextid();
-		
+
 				// Insert Custom Profile Fields
 				if (sizeof($cp_data))
 				{
@@ -301,7 +301,7 @@ class ucp_register extends module
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
 						$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
-							FROM ' . USERS_TABLE . ' 
+							FROM ' . USERS_TABLE . '
 							WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
 						$result = $db->sql_query($sql);
 
@@ -315,7 +315,7 @@ class ucp_register extends module
 							$messenger->assign_vars(array(
 								'USERNAME'		=> $row['username'],
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-				
+
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
@@ -346,8 +346,8 @@ class ucp_register extends module
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
 		{
-			$sql = 'SELECT session_id 
-				FROM ' . SESSIONS_TABLE; 
+			$sql = 'SELECT session_id
+				FROM ' . SESSIONS_TABLE;
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -358,15 +358,15 @@ class ucp_register extends module
 					$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
 				}
 				while ($row = $db->sql_fetchrow($result));
-			
-				$sql = 'DELETE FROM ' .  CONFIRM_TABLE . ' 
+
+				$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
 					WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
 				$db->sql_query($sql);
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT COUNT(session_id) AS attempts 
-				FROM ' . CONFIRM_TABLE . " 
+			$sql = 'SELECT COUNT(session_id) AS attempts
+				FROM ' . CONFIRM_TABLE . "
 				WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
 			$result = $db->sql_query($sql);
 
@@ -388,12 +388,12 @@ class ucp_register extends module
 				'code'			=> (string) $code)
 			);
 			$db->sql_query($sql);
-			
-			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : '<img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
+
+			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6\" alt=\"\" title=\"\" />";
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
-		// 
+		//
 		$l_reg_cond = '';
 		switch ($config['require_activation'])
 		{
@@ -413,23 +413,23 @@ class ucp_register extends module
 
 		//
 		$template->assign_vars(array(
-			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '', 
+			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> (isset($username)) ? $username : '',
 			'PASSWORD'			=> (isset($password)) ? $password : '',
 			'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '',
 			'EMAIL'				=> (isset($email)) ? $email : '',
 			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',
-			'CONFIRM_IMG'		=> $confirm_image, 
+			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'), 
-			'L_ITEMS_REQUIRED'		=> $l_reg_cond, 
-			'L_USERNAME_EXPLAIN'	=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
-			'L_NEW_PASSWORD_EXPLAIN'=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
+			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+			'L_ITEMS_REQUIRED'		=> $l_reg_cond,
+			'L_USERNAME_EXPLAIN'	=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+			'L_NEW_PASSWORD_EXPLAIN'=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
-			'S_LANG_OPTIONS'	=> language_select($lang), 
+			'S_LANG_OPTIONS'	=> language_select($lang),
 			'S_TZ_OPTIONS'		=> tz_select($tz),
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
-			'S_COPPA'			=> $coppa, 
+			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;mode=register")
 		);
@@ -439,7 +439,7 @@ class ucp_register extends module
 
 		// Generate profile fields -> Template Block Variable profile_fields
 		$cp->generate_profile_fields('register', $user->get_iso_lang_id(), $cp_error);
-		
+
 		//
 		$this->display($user->lang['REGISTER'], 'ucp_register.html');
 	}
