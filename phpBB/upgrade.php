@@ -1831,7 +1831,8 @@ if ( !empty($next) )
 				FORUMS_TABLE => array("forum_access", "forum_moderator", "forum_type"), 
 				PRIVMSGS_TABLE => array("msg_text"), 
 				RANKS_TABLE => array("rank_max"), 
-				SMILIES_TABLE => array("emotion")
+				SMILIES_TABLE => array("emotion"),
+				TOPICS_TABLE => array("topic_notify")
 			);
 
 			while( list($table, $field_data) = each($fields) )
