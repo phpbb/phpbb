@@ -11,7 +11,6 @@
 	</tr>
 </table>
 
-<!-- if the forum is postable output the viewforum listing -->
 <!-- IF S_IS_POSTABLE -->
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
@@ -26,7 +25,6 @@
 <!-- INCLUDE viewforum_subforum.html -->
 <!-- ENDIF -->
 
-<!-- if the forum is postable output the viewforum listing -->
 <!-- IF S_IS_POSTABLE -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0">
 	<tr>
@@ -41,6 +39,15 @@
 		<th align="center" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
+	<!-- IF topicrow.S_TOPIC_TYPE_SWITCH eq 1 -->
+	<tr>
+		<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_ANNOUNCEMENTS}</b></td>
+	</tr>
+	<!-- ELSEIF topicrow.S_TOPIC_TYPE_SWITCH eq 0 -->
+	<tr>
+		<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_TOPICS}</b></td>
+	</tr>
+	<!-- ENDIF -->
 	<tr>
 		<td class="row1" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<!-- IF S_TOPIC_ICONS -->
