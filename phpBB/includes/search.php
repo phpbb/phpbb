@@ -195,7 +195,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 						break;
 					default:
 						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-							VALUES ('" . $word[$i] . "', 0)"; 
+							VALUES ('" . $word[$i] . "')"; 
 						if( !($result = $db->sql_query($sql)) )
 						{
 							message_die(GENERAL_ERROR, "Couldn't insert new word", "", __LINE__, __FILE__, $sql);
