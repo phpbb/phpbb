@@ -49,7 +49,7 @@ class sql_db
 		} 
 		else
 		{
-			$this->db_connect_id = @mysql_connect($this->server, $this->user, $this->password);
+			echo $this->db_connect_id = @mysql_connect($this->server, $this->user, $this->password);
 		}
 		if($this->db_connect_id)
 		{
@@ -59,12 +59,16 @@ class sql_db
 				$dbselect = @mysql_select_db($this->dbname);
 				if(!$dbselect)
 				{
-					mysql_close($this->db_connect_id);
+					@mysql_close($this->db_connect_id);
 					$this->db_connect_id = $dbselect;
 				}
 			}
+			return $this->db_connect_id;
 		}
-		return $this->db_connect_id;
+		else
+		{
+			return false;
+		}
 	}
 
 	//
