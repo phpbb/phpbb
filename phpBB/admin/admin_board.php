@@ -22,13 +22,13 @@
 if (!empty($setmodules))
 {
 	$file = basename(__FILE__);
-	$module['GENERAL']['Cookie_settings'] = ($auth->acl_get('a_cookies')) ? "$file$SID&amp;mode=cookie" : '';
-	$module['GENERAL']['Board_defaults'] = ($auth->acl_get('a_defaults')) ? "$file$SID&amp;mode=default" : '';
-	$module['GENERAL']['Board_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=setting" : '';
-	$module['GENERAL']['Avatar_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=avatar" : '';
-	$module['GENERAL']['Email_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
-	$module['GENERAL']['Server_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
-	$module['GENERAL']['Auth_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
+	$module['GENERAL']['COOKIE_SETTINGS'] = ($auth->acl_get('a_cookies')) ? "$file$SID&amp;mode=cookie" : '';
+	$module['GENERAL']['BOARD_DEFAULTS'] = ($auth->acl_get('a_defaults')) ? "$file$SID&amp;mode=default" : '';
+	$module['GENERAL']['BOARD_SETTINGS'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=setting" : '';
+	$module['GENERAL']['AVATAR_SETTINGS'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=avatar" : '';
+	$module['GENERAL']['EMAIL_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
+	$module['GENERAL']['SERVER_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
+	$module['GENERAL']['AUTH_SETTINGS'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
 	return;
 }
 
@@ -46,31 +46,31 @@ $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 switch ($mode)
 {
 	case 'cookie':
-		$l_title = 'Cookie_settings';
+		$l_title = 'COOKIE_SETTINGS';
 		$which_auth = 'a_cookies';
 		break;
 	case 'default':
-		$l_title = 'Board_defaults';
+		$l_title = 'BOARD_DEFAULTS';
 		$which_auth = 'a_defaults';
 		break;
 	case 'avatar':
-		$l_title = 'Avatar_settings';
+		$l_title = 'AVATAR_SETTINGS';
 		$which_auth = 'a_board';
 		break;
 	case 'setting':
-		$l_title = 'Board_settings';
+		$l_title = 'BOARD_SETTINGS';
 		$which_auth = 'a_board';
 		break;
 	case 'email':
-		$l_title = 'Email_settings';
+		$l_title = 'EMAIL_SETTINGS';
 		$which_auth = 'a_server';
 		break;
 	case 'server':
-		$l_title = 'Server_settings';
+		$l_title = 'SERVER_SETTINGS';
 		$which_auth = 'a_server';
 		break;
 	case 'auth':
-		$l_title = 'Auth_settings';
+		$l_title = 'AUTH_SETTINGS';
 		$which_auth = 'a_server';
 		break;
 	default:
@@ -105,7 +105,7 @@ while ($row = $db->sql_fetchrow($result))
 if (isset($_POST['submit']))
 {
 	// Re-cache config data
-	config_config($new);
+	$cache->put('config', $config);
 
 	add_admin_log('log_' . $mode . '_config');
 	trigger_error($user->lang['Config_updated']);
@@ -117,7 +117,7 @@ page_header($user->lang[$l_title]);
 
 <h1><?php echo $user->lang[$l_title]; ?></h1>
 
-<p><?php echo $user->lang[$l_title . '_explain']; ?></p>
+<p><?php echo $user->lang[$l_title . '_EXPLAIN']; ?></p>
 
 <form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
@@ -150,7 +150,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Cookie_secure']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Cookie_secure_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="cookie_secure" value="0"<?php echo $cookie_secure_no; ?> /><?php echo $user->lang['Disabled']; ?>&nbsp; &nbsp;<input type="radio" name="cookie_secure" value="1"<?php echo $cookie_secure_yes; ?> /><?php echo $user->lang['Enabled']; ?></td>
+		<td class="row2"><input type="radio" name="cookie_secure" value="0"<?php echo $cookie_secure_no; ?> /><?php echo $user->lang['DISABLED']; ?>&nbsp; &nbsp;<input type="radio" name="cookie_secure" value="1"<?php echo $cookie_secure_yes; ?> /><?php echo $user->lang['ENABLED']; ?></td>
 	</tr>
 <?php
 
@@ -351,7 +351,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Private_Messaging']; ?>: </td>
-		<td class="row2"><input type="radio" name="privmsg_disable" value="0" <?php echo $privmsg_on; ?> /><?php echo $user->lang['Enabled']; ?>&nbsp; &nbsp;<input type="radio" name="privmsg_disable" value="1" <?php echo $privmsg_off; ?> /><?php echo $user->lang['Disabled']; ?></td>
+		<td class="row2"><input type="radio" name="privmsg_disable" value="0" <?php echo $privmsg_on; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="privmsg_disable" value="1" <?php echo $privmsg_off; ?> /><?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Boxes_max']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Boxes_max_explain']; ?></span></td>
@@ -411,11 +411,11 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Enable_email']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Enable_email_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="email_enable" value="1" <?php echo $email_yes; ?> /> <?php echo $user->lang['Enabled']; ?>&nbsp;&nbsp;<input type="radio" name="email_enable" value="0" <?php echo $email_no; ?> /> <?php echo $user->lang['Disabled']; ?></td>
+		<td class="row2"><input type="radio" name="email_enable" value="1" <?php echo $email_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="email_enable" value="0" <?php echo $email_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Board_email_form']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Board_email_form_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['Enabled']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['Disabled']; ?></td>
+		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['Admin_email']; ?>: </td>
