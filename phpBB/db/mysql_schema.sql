@@ -144,6 +144,7 @@ CREATE TABLE phpbb_posts (
    poster_id int(10) DEFAULT '0' NOT NULL,
    post_time int(10) DEFAULT '0' NOT NULL,
    poster_ip int(10) DEFAULT '0' NOT NULL,
+   bbcode_uid varchar(10) DEFAULT '' NOT NULL,
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id),
