@@ -1,26 +1,26 @@
 <?php
-/***************************************************************************  
- *                                profile.php 
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *                                profile.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
 include('extension.inc');
 include('common.'.$phpEx);
@@ -37,19 +37,19 @@ init_userprefs($userdata);
 switch($mode)
 {
 	case 'viewprofile':
-	
-	
+
+
 	break;
 	case 'editprofile':
-	
+
 	break;
 	case 'register':
 
 		$pagetype = "register";
 		$page_title = "$l_register";
 		include('includes/page_header.'.$phpEx);
-		
-		if(!isset($agreed)) 
+
+		if(!isset($agreed))
 		{
 			$template->pparse("body");
 			include('includes/page_tail.'.$phpEx);
@@ -83,12 +83,12 @@ switch($mode)
 					$error_msg .= $l_mismatch;
 				}
 			}
-			
+
 			if(isset($submit) && !$error)
 			{
 				// The AUTO_INCREMENT field in MySQL v3.23 dosan't work correctly when there is a row with
 				// -1 in that field so we have to explicitly get the next user ID.
-				$sql = "SELECT max(user_id) AS total FROM users";
+				$sql = "SELECT max(user_id) AS total FROM ".USERS_TABLE;
    			if($result = $db->sql_query($sql))
    			{
    				$user_id_row = $db->sql_fetchrow($result);
@@ -99,8 +99,8 @@ switch($mode)
    			else
    			{
 				error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
-   			} 
-   			
+   			}
+
 				$md_pass = md5($password);
 				$sql = "INSERT INTO ".USERS_TABLE." (
 				       user_id,
@@ -115,7 +115,7 @@ switch($mode)
 						 user_intrest,
 						 user_sig,
 						 user_viewemail,
-					    user_theme,   
+					    user_theme,
 					    user_aim,
 					    user_yim,
 					    user_msnm,
@@ -172,12 +172,12 @@ switch($mode)
 						$msg = $l_coppa;
 						$email_msg = $l_welcomecoppa;
 					}
-					else 
+					else
 					{
 						$msg = $l_accountadded;
 						$email_msg = $l_welcomeemail;
 					}
-					if(!$coppa) 
+					if(!$coppa)
 					{
 						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
 					}
@@ -193,7 +193,7 @@ switch($mode)
 						$error_msg .= "<br>Query: $sql";
 					}
 				}
-		
+
 			}
 			if($error)
 			{

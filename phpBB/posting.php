@@ -1,48 +1,48 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                                 posting.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$                                                           
- *                                                            
- * 
- ***************************************************************************/ 
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
-  
-if($submit && !$preview) 
+
+if($submit && !$preview)
 {
-   switch($mode) 
+   switch($mode)
      {
       case 'newtopic':
 	echo "Dave likes to submit<br>";
-	
+
 	break;
       case 'reply':
-	
+
 	break;
       case 'editpost':
-	
+
 	break;
      }
 }
-else 
+else
 {
-   
+
    switch($mode)
      {
       case 'newtopic':
@@ -50,10 +50,10 @@ else
 			{
 				error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 			}
-			
+
 			$pagetype = "newtopic";
 			$page_title = " $l_postnew";
-			$sql = "SELECT forum_name, forum_access FROM forums WHERE forum_id = '$forum_id'";
+			$sql = "SELECT forum_name, forum_access FROM ".FORUMS_TABLE." WHERE forum_id = '$forum_id'";
 			if(!$result = $db->sql_query($sql))
 			{
 				error_die(SQL_QUERY, "Could not obtain forum/forum access information.", __LINE__, __FILE__);
@@ -61,7 +61,7 @@ else
 			$forum_info = $db->sql_fetchrowset($result);
 			$forum_name = stripslashes($forum_info[0]["forum_name"]);
 			$forum_access = $forum_info[0]["forum_access"];
-			
+
 			if($forum_access == ANONALLOWED)
 			{
 				$about_posting = "$l_anonusers $l_inthisforum $l_anonhint";
@@ -74,7 +74,7 @@ else
 			{
 				$about_posting = "$l_modusers $l_inthisforum";
 			}
-				
+
 			include('includes/page_header.'.$phpEx);
 			if($user_logged_in)
 			{
@@ -96,7 +96,7 @@ else
 			{
 				$html_status = $l_htmlis . " " . $l_on;
 				$html_toggle = '<input type="checkbox" name="disable_html" ';
-				if($disable_html) 
+				if($disable_html)
 				{
 					$html_toggle .= 'checked';
 				}
@@ -120,29 +120,29 @@ else
 			{
 				$bbcode_status = $l_bbcodeis . " " . $l_off;
 			}
-			
+
 			$smile_toggle = '<input type="checkbox" name="disable_smile" ';
 			if($disable_smile)
 			{
 				$smile_toggle .= "checked";
 			}
 			$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
-			
+
 			$sig_toggle = '<input type="checkbox" name="attach_sig" ';
 			if($attach_sig || $userdata["attach_sig"] == 1)
 			{
 				$sig_toggle .= "checked";
 			}
 			$sig_toggle .= "> $l_attachsig";
-			
+
 			$notify_toggle = '<input type="checkbox" name="notify" ';
 			if($notify || $userdata["always_notify"] == 1)
 			{
 				$notify_toggle .= "checked";
 			}
 			$notify_toggle .= "> $l_notify";
-			
-			
+
+
 			$template->assign_vars(array("L_ABOUTPOST" => $l_aboutpost,
 											"L_SUBJECT" => $l_subject,
 											"L_MESSAGEBODY" => $l_body,
@@ -167,10 +167,10 @@ else
 			include('includes/page_tail.'.$phpEx);
 	break;
       case 'reply':
-	
+
 	break;
       case 'editpost':
-	
+
 	break;
      }
 }
