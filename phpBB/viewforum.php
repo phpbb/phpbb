@@ -57,14 +57,13 @@ init_userprefs($userdata);
 if(isset($forum_id))
 {
 	$sql = "SELECT forum_name, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
-		FROM ".FORUMS_TABLE." 
+		FROM " . FORUMS_TABLE . " 
 		WHERE forum_id = $forum_id";
 }
 else
 {
 	message_die(GENERAL_MESSAGE, "You have reached this page in error, please go back and try again");
 }
-
 if(!$result = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
@@ -88,15 +87,11 @@ $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 {
 	//
-	// Ooopss, user is not authed
-	// to read this forum ...
+	// The user is not authed to read this forum ...
 	//
-	include('includes/page_header.'.$phpEx);
-
 	$msg = $lang['Sorry_auth'] . $is_auth['auth_read_type'] . $lang['can_read'] . $lang['this_forum'];
 
 	message_die(GENERAL_MESSAGE, $msg);
-
 }
 //
 // End of auth check
@@ -155,11 +150,9 @@ else
 }
 
 //
-// Generate a 'Show posts in previous x days'
-// select box. If the postdays var is POSTed
-// then get it's value, find the number of topics
-// with dates newer than it (to properly handle
-// pagination) and alter the main query
+// Generate a 'Show posts in previous x days' select box. If the postdays var is POSTed
+// then get it's value, find the number of topics with dates newer than it (to properly
+// handle pagination) and alter the main query
 //
 $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
 $previous_days_text = array($lang['All_Topics'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
@@ -171,7 +164,7 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	$min_post_time = time() - ($post_days * 86400);
 
 	$sql = "SELECT COUNT(*) AS forum_topics
-		FROM ".TOPICS_TABLE."
+		FROM " . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
 			AND topic_time > $min_post_time";
 
@@ -229,6 +222,7 @@ $total_topics = $db->sql_numrows($t_result);
 //
 $post_new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
 $template->assign_vars(array(
+	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
 	"U_POST_NEW_TOPIC" => $post_new_topic_url,
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=".$forum_id."&start=$start")));
@@ -418,9 +412,9 @@ if($total_topics)
 	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
 
 	$template->assign_vars(array(
-		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
-		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']),
+		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
+		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
+		"TOTAL_PAGES" => ceil( $topics_count / $board_config['topics_per_page'] ),
 
 		"S_AUTH_LIST" => $s_auth_can,
 
