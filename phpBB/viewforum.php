@@ -562,6 +562,10 @@ if( $total_topics )
 		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 
 		$views = $topic_rowset[$i]['topic_views'];
+		
+		$row_color = ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = ( !($i%2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
 
 		$template->assign_block_vars("topicrow", array(
 			"FORUM_ID" => $forum_id,
@@ -575,6 +579,8 @@ if( $total_topics )
 			"TOPIC_TYPE" => $topic_type,
 			"VIEWS" => $views,
 			"LAST_POST" => $last_post,
+			"ROW_COLOR" => $row_color,
+			"ROW_CLASS" => $row_class,
 
 			"U_VIEW_TOPIC" => $view_topic_url)
 		);
