@@ -159,6 +159,7 @@ $table_prefix = ( !empty($HTTP_POST_VARS['prefix']) ) ? $HTTP_POST_VARS['prefix'
 $ftp_path = ( !empty($HTTP_POST_VARS['ftp_path']) ) ? $HTTP_POST_VARS['ftp_path'] : "";
 $ftp_user = ( !empty($HTTP_POST_VARS['ftp_user']) ) ? $HTTP_POST_VARS['ftp_user'] : "";
 $ftp_pass = ( !empty($HTTP_POST_VARS['ftp_pass']) ) ? $HTTP_POST_VARS['ftp_pass'] : "";
+$upgrade = ( !empty($HTTP_POST_VARS['upgrade']) ) ? $HTTP_POST_VARS['upgrade']: '';
 
 include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
 include($phpbb_root_path.'includes/constants.'.$phpEx);
@@ -172,6 +173,12 @@ include($phpbb_root_path.'includes/sessions.'.$phpEx);
 include($phpbb_root_path.'language/lang_' . $language . '/lang_main.'.$phpEx);
 
 $template = new Template($phpbb_root_path . "templates/" . $default_template);
+
+if( $upgrade == 1 )
+{
+	require('upgrade.'.$phpEx);
+	$install_step = 1;
+}
 
 //
 // Load default template for install
@@ -359,6 +366,19 @@ else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
 	}
 	$dbms_options .= '</select>';
 
+	$upgrade_option = '<select name="upgrade"';
+	$upgrade_option .= 'onchange="if(this.options[this.selectedIndex].value==1)
+		{
+			document.install_form.dbms.selectedIndex=0;
+			document.install_form.dbms.disabled=1;
+		}
+		else
+		{
+			document.install_form.dbms.disabled=0;
+		}">';
+	$upgrade_option .= '<option value="0">'.$lang['Install'].'</option>';
+	$upgrade_option .= '<option value="1">'.$lang['Upgrade'].'</option></select>';
+	
 	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
 
 	$template->assign_block_vars("switch_stage_one_install", array());
@@ -376,7 +396,7 @@ else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
 		"L_DB_USER" => $lang['Database'] . ' ' . $lang['Username'], 
 		"L_DB_PASSWORD" => $lang['Database'] . ' ' . $lang['Password'], 
 		"L_DB_PREFIX" => $lang['Table_Prefix'], 
-
+		"L_UPGRADE" => $lang['Install_Method'],
 		"L_ADMIN_USERNAME" => $lang['Administrator'] . ' ' . $lang['Username'], 
 		"L_ADMIN_PASSWORD" => $lang['Administrator'] . ' ' . $lang['Password'], 
 		"L_ADMIN_CONFIRM_PASSWORD" => $lang['Confirm'] . ' ' . $lang['Password'], 
@@ -391,7 +411,8 @@ else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
 
 		"S_LANG_SELECT" => $lang_options, 
 		"S_DBMS_SELECT" => $dbms_options, 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields,
+		"S_UPGRADE_SELECT" => $upgrade_option,
 		"S_FORM_ACTION" => "install.$phpEx")
 	);
 
@@ -429,7 +450,7 @@ else
 
 	if( $install_step == 1 )
 	{
-		if($dbms != 'odbc')
+		if($dbms != 'odbc' && $upgrade != 1)
 		{
 			//
 			// Ok we have the db info go ahead and read in the relevant schema

@@ -116,7 +116,7 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 				<td><br /><br /></td>
 			</tr>
 			<tr>
-				<td width="100%"><form action="{S_FORM_ACTION}" method="post"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
+				<td width="100%"><form action="{S_FORM_ACTION}" name="install_form" method="post"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
 					<!-- BEGIN switch_stage_one_install -->
 					<tr>
 						<th colspan="2">{L_INITIAL_CONFIGURATION}</th>
@@ -128,6 +128,10 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 					<tr>
 						<td class="row1" align="right"><span class="gen">{L_DBMS}: </span></td>
 						<td class="row2">{S_DBMS_SELECT}</td>
+					</tr>
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_UPGRADE}:</span></td>
+						<td class="row2">{S_UPGRADE_SELECT}</td>
 					</tr>
 					<!-- tr>
 						<td class="row1" align="right"><span class="gen">{L_DOMAIN_NAME}: </span></td>

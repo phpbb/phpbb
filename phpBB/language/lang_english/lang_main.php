@@ -1091,6 +1091,9 @@ $lang['ftp_username'] = "Your FTP Username:";
 $lang['ftp_password'] = "Your FTP Password:";
 $lang['Transfer_config'] = "Start Transfer";
 $lang['ftp_info'] = "Enter Your FTP Information";
+$lang['Install'] = "Install";
+$lang['Upgrade'] = "Upgrade";
+$lang['Install_Method'] = 'Choose your installation method';
 
 //
 // Ranks admin
