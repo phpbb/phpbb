@@ -81,13 +81,13 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		// Remove duplicate user_id from session table
 		// if IP is different ... 
 		//
-		if( ( $login || $autologin ) && $user_id != ANONYMOUS )
+/*		if( ( $login || $autologin ) && $user_id != ANONYMOUS )
 		{
 			$sql_delete_same_user = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_ip <> '$user_ip'
 					AND session_user_id = $user_id";
 			$result = $db->sql_query($sql_delete_same_user);
-		}
+		}*/
 	
 		//
 		// Try and pull the last time stored
@@ -108,8 +108,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			
 			$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
-				VALUES
-				('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
+				VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -141,10 +140,12 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		$sessiondata['userid'] = $user_id;
 		$sessiondata['sessionstart'] = $current_time;
 		$sessiondata['sessiontime'] = $current_time;
-		$serialised_cookiedata = serialize($sessiondata);
-		setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
-		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
+		$serialised_cookiedata = serialize($sessiondata);
+
+		setcookie($cookiename, $serialised_cookiedata, ($current_time + $cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+
+		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
 	}
 
 	return $session_id;
@@ -239,8 +240,10 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					//
 					$userdata['session_time'] = $current_time;
 					$sessiondata['sessiontime'] = $current_time;
+
 					$serialised_cookiedata = serialize($sessiondata);
-					setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
+
+					setcookie($cookiename, $serialised_cookiedata, ($current_time + $cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
 					return $userdata;
 				}
@@ -264,9 +267,9 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 
 	if(isset($sessiondata['userid']) && isset($sessiondata['autologinid']))
 	{
-		$sql = "SELECT u.*
-			FROM " . USERS_TABLE . " u
-			WHERE u.user_id = " . $sessiondata['userid'];
+		$sql = "SELECT *
+			FROM " . USERS_TABLE . " 
+			WHERE user_id = " . $sessiondata['userid'];
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
@@ -390,7 +393,7 @@ function append_sid($url)
 {
 	global $SID;
 
-	if(!empty($SID) && !eregi("^http:", $url) && !eregi("sid=", $url))
+	if(!empty($SID) && !eregi("sid=", $url))
 	{
 		$url = ereg_replace("[&?]+$", "", $url);
 		$url .= ( (strpos($url, "?") != false) ?  "&" : "?" ) . $SID;

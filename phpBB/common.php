@@ -111,7 +111,11 @@ else
 	$board_config['board_email'] = stripslashes(str_replace("<br />", "\n", $config['email_sig']));
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
 	$board_config['flood_interval'] = $config['flood_interval'];
-	$board_config['post_mod_time'] = $config['post_mod_time'];
+	$board_config['session_length'] = $config['session_length'];
+	$board_config['cookie_name'] = $config['cookie_name'];
+	$board_config['cookie_path'] = $config['cookie_path'];
+	$board_config['cookie_domain'] = $config['cookie_domain'];
+	$board_config['cookie_secure'] = $config['cookie_secure'];
 	$board_config['avatar_filesize'] = $config['avatar_filesize'];
 	$board_config['avatar_max_width'] = $config['avatar_max_width'];
 	$board_config['avatar_max_height'] = $config['avatar_max_height'];

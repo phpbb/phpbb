@@ -22,20 +22,53 @@
  * 
  ***************************************************************************/ 
 
-// Session data
-$cookiename = "phpbb2";
-$cookiedomain = "";
-$cookiepath = "";
-$cookiesecure = "";
-$cookielife = 31536000;
-$session_length = 300;
+//putenv('SYBASE=/usr/freetds');
+//dl('sybase_ct.so');
 
 // DB connection config
-$dbms = "mysql";
-$dbhost = "localhost";
+
+/*
+//
+// ODBC - Access (remote)
+//
+$dbms = "odbc";
+$dbhost = "msaccess:odbctest";
 $dbname = "";
 $dbuser = "";
-$dbpasswd = "";
+$dbpasswd = "efx2KarizonaD";
+*/
+
+
+//
+// MSSQL 
+//
+$dbms = "mssql";
+$dbhost = "Typhoon";
+$dbname = "dev_starstreak_net";
+$dbuser = "devhttp";
+$dbpasswd = "efx2KarizonaD";
+
+
+//
+// MySQL (local)
+//
+$dbms = "mysql";
+$dbhost = "localhost";
+$dbname = "dev_starstreak_net";
+$dbuser = "devhttp";
+$dbpasswd = "efx2KarizonaD";
+
+
+/*
+//
+// PostgreSQL (local)
+//
+$dbms = "postgres";
+$dbhost = "";
+$dbname = "dev_starstreak_net";
+$dbuser = "devhttp";
+$dbpasswd = "efx2KarizonaD";
+*/
 
 // DB table prefix
 $table_prefix = "phpbb_";
