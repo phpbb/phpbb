@@ -75,17 +75,30 @@ if($mode == "read")
 		if($folder == "inbox")
 		{
 			$user_to_sql = "AND pm.privmsgs_to_userid = " . $userdata['user_id'];
-			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid";
+			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid"; 
+			$sql_type = "AND (pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
+		}
+		else if($folder == "outbox")
+		{
+			$user_to_sql = "AND u.user_id = pm.privmsgs_to_userid";
+			$user_from_sql = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'];
+			$sql_type = "AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+		}
+		else if($folder == "sentbox")
+		{
+			$user_to_sql = "AND u.user_id = pm.privmsgs_to_userid";
+			$user_from_sql = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'];
+			$sql_type = "AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL;
 		}
 		else if($folder == "savebox")
 		{
 			$user_to_sql = "AND ( (pm.privmsgs_to_userid = " . $userdata['user_id'] . " AND u.user_id = pm.privmsgs_from_userid) ";
 			$user_from_sql = "OR (u.user_id = pm.privmsgs_to_userid AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . ") )";
+			$sql_type = "AND pm.privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 		}
 		else
 		{
-			$user_to_sql = "AND u.user_id = pm.privmsgs_to_userid";
-			$user_from_sql = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'];
+			// Error out
 		}
 	}
 	else
@@ -94,33 +107,23 @@ if($mode == "read")
 
 	}
 
-	include('includes/page_header.'.$phpEx);
-
-	//
-	// Load templates
-	//
-	$template->set_filenames(array(
-		"body" => "privmsgs_read_body.tpl",
-		"jumpbox" => "jumpbox.tpl")
-	);
-	$jumpbox = make_jumpbox();
-	$template->assign_vars(array(
-		"JUMPBOX_LIST" => $jumpbox,
-		"SELECT_NAME" => POST_FORUM_URL)
-	);
-	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
 	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text 
 		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u  
 		WHERE pm.privmsgs_id = $privmsgs_id 
 			AND pmt.privmsgs_text_id = pm.privmsgs_id 
 			$user_to_sql 
-			$user_from_sql";
+			$user_from_sql 
+			$sql_type";
 	if(!$pm_status = $db->sql_query($sql))
 	{
 		error_die(SQL_QUERY, "Could not query private message post information.", __LINE__, __FILE__);
 	}
 	$privmsg = $db->sql_fetchrow($pm_status);
+
+	if(!$privmsg['privmsgs_id'])
+	{
+		header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+	}
 
 	if($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL && $folder == "inbox")
 	{
@@ -175,6 +178,23 @@ if($mode == "read")
 	$post_reply_mesg_url = ($folder == "inbox") ? "<a href=\"privmsg.$phpEx?mode=reply&" . POST_POST_URL . "=$privmsgs_id\"><img src=\"templates/PSO/images/reply.gif\" border=\"1\"></a>" : "";
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"mark[]\" value=\"$privmsgs_id\">";
+
+
+	include('includes/page_header.'.$phpEx);
+
+	//
+	// Load templates
+	//
+	$template->set_filenames(array(
+		"body" => "privmsgs_read_body.tpl",
+		"jumpbox" => "jumpbox.tpl")
+	);
+	$jumpbox = make_jumpbox();
+	$template->assign_vars(array(
+		"JUMPBOX_LIST" => $jumpbox,
+		"SELECT_NAME" => POST_FORUM_URL)
+	);
+	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 	$template->assign_vars(array(
 		"INBOX" => $inbox_url, 
