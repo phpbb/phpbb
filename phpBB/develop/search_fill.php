@@ -10,7 +10,16 @@ function clean_words($entry, &$search, &$replace)
 	static $later_match =   array("-", "~", "+", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "*", "!");
 	static $later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " " , " ", " ", " ", " ",  " ", " ", " ");
 
+	static $sgml_match = array("&nbsp;", "&szlig;", "&agrave;", "&aacute;", "&acirc;", "&atilde;", "&auml;", "&aring;", "&aelig;", "&ccedil;", "&egrave;", "&eacute;", "&ecirc;", "&euml;", "&igrave;", "&iacute;", "&icirc;", "&iuml;", "&eth;", "&ntilde;", "&ograve;", "&oacute;", "&ocirc;", "&otilde;", "&ouml;", "&oslash;", "&ugrave;", "&uacute;", "&ucirc;", "&uuml;", "&yacute;", "&thorn;", "&yuml;");
+	static $sgml_replace = array(" ", "s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
+
+	static $accent_match = array("ß", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "þ", "ÿ");
+	static $accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "y", "t", "y");
+
 	$entry = " " . strip_tags(strtolower($entry)) . " ";
+
+	$entry = str_replace($sgml_match, $sgml_match, $entry);
+	$entry = str_replace($accent_match, $accent_replace, $entry);
 
 	// Replace line endings by a space
 	$entry = preg_replace("/[\n\r]/is", " ", $entry); 
@@ -62,9 +71,7 @@ function remove_common($percent, $delete_common = 0)
 {
 	global $db;
 	
-	$sql = "
-		SELECT
-			COUNT(DISTINCT post_id) as total_posts
+	$sql = "SELECT COUNT(DISTINCT post_id) as total_posts
 	   FROM " . SEARCH_MATCH_TABLE;
 	$result = $db->sql_query($sql); 
 	if( !$result )
@@ -75,19 +82,12 @@ function remove_common($percent, $delete_common = 0)
 	$total_posts = $db->sql_fetchrow($result);
 	$total_posts = $total_posts['total_posts'];
 	
-	$common_threshold = floor($total_posts * ($percent/100));
+	$common_threshold = floor($total_posts * ( $percent / 100 ));
 
-	$sql = "
-		SELECT 
-			word_id, 
-			count(word_id) AS word_occur 
-		FROM 
-			".SEARCH_MATCH_TABLE."
-		GROUP BY 
-			word_id
-		HAVING
-			word_occur > $common_threshold
-		";
+	$sql = "SELECT word_id 
+		FROM " . SEARCH_MATCH_TABLE . "
+		GROUP BY word_id
+		HAVING count(word_id) > $common_threshold";
 	$result = $db->sql_query($sql); 
 	if( !$result )
 	{
@@ -177,9 +177,7 @@ for ($j = 0; $j < count($synonym_list); $j++)
 // Fetch a batch of posts_text entries
 //
 $sql = "
-	SELECT 
-		count(*) as total,
-		max(post_id) as max_post_id 
+	SELECT count(*) as total, max(post_id) as max_post_id 
 	FROM ". POSTS_TEXT_TABLE;
 if(!$result = $db->sql_query($sql)) 
 {
@@ -201,10 +199,10 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchcount++;
 	
 	$sql = "SELECT *
-		FROM " .
-			POSTS_TEXT_TABLE ."
-		WHERE 
-			post_id BETWEEN $batchstart AND $batchend";
+		FROM " . POSTS_TEXT_TABLE ."
+		WHERE post_id 
+			BETWEEN $batchstart 
+				AND $batchend";
 	if(!$posts_result = $db->sql_query($sql))
 	{
 		$error = $db->sql_error();
@@ -299,11 +297,11 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 			while(list($junk, $row) = each($selected_words))
 			{
 				$comma = ($sql_insert != '')? ', ': '';
-				$sql_insert .= "$comma($post_id, ".$row['word_id'].", ".$word_count[$row['word_text']]." ,0)";
+				$sql_insert .= "$comma($post_id, ".$row['word_id'].", 0)";
 			}
 			
 			$sql = "INSERT INTO ".SEARCH_MATCH_TABLE."
-				(post_id, word_id, word_count, title_match)
+				(post_id, word_id, title_match)
 				VALUES
 				$sql_insert
 				";
