@@ -3,7 +3,7 @@
 <head>
 {META}
 <meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}"  />
-<link rel="stylesheet" href="../{T_HEAD_STYLESHEET}" type="text/css" />
+<link rel="stylesheet" href="../templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css" />
 <style type="text/css">
 <!--
 
