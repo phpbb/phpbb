@@ -10,7 +10,8 @@
   </table>
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
-	  <th height="25" class="thCornerL">&nbsp;</th>
+	  <th height="25" class="thCornerL">#</th>
+	  <th class="thTop">&nbsp;</th>
 	  <th class="thTop">{L_USERNAME}</th>
 	  <th class="thTop">{L_EMAIL}</th>
 	  <th class="thTop">{L_FROM}</th>
@@ -20,6 +21,7 @@
 	</tr>
 	<!-- BEGIN memberrow -->
 	<tr> 
+	  <td class="{memberrow.ROW_CLASS}" align="center"><span class="gen">&nbsp;{memberrow.ROW_NR}&nbsp;</span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
 	  <td class="{memberrow.ROW_CLASS}" align="center"><span class="gen"><a href="{memberrow.U_VIEWPROFILE}" class="gen">{memberrow.USERNAME}</a></span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
@@ -30,7 +32,7 @@
 	</tr>
 	<!-- END memberrow -->
 	<tr> 
-	  <td class="catbottom" colspan="7" height="28">&nbsp;</td>
+	  <td class="catbottom" colspan="8" height="28">&nbsp;</td>
 	</tr>
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">

@@ -238,6 +238,7 @@ for($i = 0; $i < count($members); $i++)
 	$template->assign_block_vars("memberrow", array(
 		"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
 
+		"ROW_NR" => $i + $HTTP_GET_VARS['start'] + 1,
 		"ROW_COLOR" => "#" . $row_color,
 		"ROW_CLASS" => $row_class,
 		"USERNAME" => $username,
