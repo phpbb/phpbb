@@ -679,6 +679,7 @@ $lang['Full_backup'] = "Full backup";
 $lang['Structure_backup'] = "Structure Only backup";
 $lang['Data_backup'] = "Data only backup";
 $lang['Additional_tables'] = "Additional tables";
+$lang['Gzip_compress'] = "Gzip compress file";
 $lang['Select_file'] = "Select a file";
 $lang['Start_Restore'] = "Start Restore";
 $lang['Restore_success'] = "The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.";

@@ -28,10 +28,6 @@
 *	adapted from the unoficial phpMyAdmin 2.2.0.
 ***************************************************************************/
 
-//
-// Do the setmodules stuff for the admin control panel.
-//
-
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -41,11 +37,35 @@ if($setmodules == 1)
 	return;
 }
 
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+// 
+// End session management
+//
+
+//
+// Is user logged in? If yes are they an admin?
+//
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=admin/");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+}
+
 //
 // Set VERBOSE to 1  for debugging info..
 //
 define("VERBOSE", 0);
-
 
 //
 // Increase maximum execution time, but don't complain about it if it isn't 
@@ -727,21 +747,6 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
 	
-	if( $perform == 'backup' 
-			&& ( isset($HTTP_POST_VARS['backupstart']) || isset($HTTP_GET_VARS['backupstart']) )
-			&& !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) 
-			)
-	{
-		// We want to warn the user before the download starts.. This part of the script
-		// needs a META header so we can't include the header yet.
-		$no_page_header = TRUE;
-	}
-	//
-	// Include required files, get $phpEx and check permissions
-	//
-	require('pagestart.inc');
-
-
 	switch($perform)
 	{
 		case 'backup':
@@ -753,13 +758,15 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					case 'oracle':
 						$db_type = "Oracle";
 						break;
-					case 'ofbc':
+					case 'odbc':
 						$db_type = "ODBC";
 						break;
 					case 'mssql':
 						$db_type = "MSSQL";
 						break;
 				}
+
+				include('page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -775,10 +782,13 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				break;
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'session', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'words');
+			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'session', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'words');
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
+
 			$backup_type = (isset($HTTP_POST_VARS['backup_type'])) ? $HTTP_POST_VARS['backup_type'] : ( (isset($HTTP_GET_VARS['backup_type'])) ? $HTTP_GET_VARS['backup_type'] : "" );
+
+			$gzipcompress = (!empty($HTTP_POST_VARS['gzipcompress'])) ? $HTTP_POST_VARS['gzipcompress'] : ( (!empty($HTTP_GET_VARS['gzipcompress'])) ? $HTTP_GET_VARS['gzipcompress'] : 0 );
 
 			if(!empty($additional_tables)) 
 			{
@@ -800,11 +810,13 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 			if( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']))
 			{
+				include('page_header_admin.'.$phpEx);
+
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
 				);
 
-				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\"><input type=\"hidden\" name=\"drop\" value=\"1\"><input type=\"hidden\" name=\"perform\" value=\"$perform\">";
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
 					"L_DATABASE_BACKUP" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
@@ -814,7 +826,10 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 					"L_DATA_BACKUP" => $lang['Data_backup'],
 					"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
 					"L_START_BACKUP" => $lang['Start_backup'],
-					"L_BACKUP_OPTIONS" => $lang['Backup_options'],
+					"L_BACKUP_OPTIONS" => $lang['Backup_options'], 
+					"L_GZIP_COMPRESS" => $lang['Gzip_compress'], 
+					"L_NO" => $lang['No'], 
+					"L_YES" => $lang['Yes'], 
 
 					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.$phpEx"))
@@ -826,13 +841,12 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			}
 			else if( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
 			{
-
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
 				);
 				
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=".quotemeta($additional_tables)."&backup_type=$backup_type&drop=1&backupstart=1&startdownload=1\">", 
+					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">", 
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'], 
 					"MESSAGE_TEXT" => $lang['Backup_download'])
@@ -881,11 +895,36 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			//
 			// move forward with sending the file across...
 			//
-			header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
-			header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
 			header("Pragma: no-cache");
 
-			echo $backup_sql;
+			$do_gzip_compress = FALSE;
+			if( $gzipcompress )
+			{
+				$phpver = phpversion();
+
+				if($phpver >= "4.0")
+				{
+					if(extension_loaded("zlib"))
+					{
+						$do_gzip_compress = TRUE;
+					}
+				}
+			}
+
+			if($do_gzip_compress)
+			{
+				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql.gz\"");
+				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
+
+				echo gzencode($backup_sql);
+			}
+			else
+			{
+				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
+				header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
+
+				echo $backup_sql;
+			}
 
 			exit;
 
@@ -897,6 +936,8 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// 
 				// Define Template files...
 				//
+				include('page_header_admin.'.$phpEx);
+
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_restore_body.tpl")
 				);
@@ -925,6 +966,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				//
 				if($backup_file == "none")
 				{
+					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Backup file upload failed");
 				}
 				//
@@ -943,6 +985,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				}
 				else
 				{
+					include('page_header_admin.'.$phpEx);
 					message_die(GENERAL_ERROR, "Trouble Accessing uploaded file");
 				}
 
@@ -970,11 +1013,14 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
 							{
+								include('page_header_admin.'.$phpEx);
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, mysql_error() ."<br>". $sql);
 							}
 						}
 					}
 				}
+
+				include('page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
