@@ -27,7 +27,7 @@ if ( !defined('IN_PHPBB') )
 
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-function prune($forum_id, $prune_date, $prune_all = false;)
+function prune($forum_id, $prune_date, $prune_all = false)
 {
 	global $db, $lang;
 
