@@ -220,6 +220,14 @@
 		<td class="row2"><input type="text" name="smtp_host" value="{SMTP_HOST}" size="25" maxlength="50" /></td>
 	</tr>
 	<tr>
+		<td class="row1">{L_SMTP_USERNAME}<br /><span class="gensmall">{L_SMTP_USERNAME_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" name="smtp_username" value="{SMTP_USERNAME}" size="25" maxlength="255" /></td>
+	</tr>
+	<tr>
+		<td class="row1">{L_SMTP_PASSWORD}<br /><span class="gensmall">{L_SMTP_PASSWORD_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" name="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="255" /></td>
+	</tr>
+	<tr>
 		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
 		</td>
 	</tr>

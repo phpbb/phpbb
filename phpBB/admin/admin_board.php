@@ -205,6 +205,10 @@ $template->assign_vars(array(
 	"L_USE_SMTP" => $lang['Use_SMTP'],
 	"L_USE_SMTP_EXPLAIN" => $lang['Use_SMTP_explain'],
 	"L_SMTP_SERVER" => $lang['SMTP_server'], 
+	"L_SMTP_USERNAME" => $lang['SMTP_username'], 
+	"L_SMTP_USERNAME_EXPLAIN" => $lang['SMTP_username_explain'], 
+	"L_SMTP_PASSWORD" => $lang['SMTP_password'], 
+	"L_SMTP_PASSWORD_EXPLAIN" => $lang['SMTP_password_explain'], 
 	"L_SUBMIT" => $lang['Submit'], 
 	"L_RESET" => $lang['Reset'], 
 	
