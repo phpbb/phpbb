@@ -71,7 +71,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_quote_depth', '3');
