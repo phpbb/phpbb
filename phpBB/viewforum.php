@@ -443,7 +443,11 @@ if( $total_topics )
 {
 	for($i = 0; $i < $total_topics; $i++)
 	{
+		$topic_id = $topic_rowset[$i]['topic_id'];
+
 		$topic_title = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
+
+		$replies = $topic_rowset[$i]['topic_replies'];
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
@@ -465,38 +469,6 @@ if( $total_topics )
 			$topic_type .= $lang['Topic_Poll'] . " ";
 		}
 		
-		$topic_id = $topic_rowset[$i]['topic_id'];
-
-		$replies = $topic_rowset[$i]['topic_replies'];
-
-		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
-		{
-			$total_pages = ceil(($replies+1)/$board_config['posts_per_page']);
-			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
-
-			$times = 1;
-			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
-			{
-				$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
-				if( $times == 1 && $total_pages > 4 )
-				{
-					$goto_page .= ' ... ';
-					$times = $total_pages - 3;
-					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-				}
-				else if ( $times < $total_pages )
-				{
-					$goto_page .= ', ';
-				}
-				$times++;
-			}
-			$goto_page .= ' ] ';
-		}
-		else
-		{
-			$goto_page = '';
-		}
-
 		if( $topic_rowset[$i]['topic_status'] == TOPIC_MOVED )
 		{
 			$topic_type = $lang['Topic_Moved'] . " ";
@@ -603,6 +575,34 @@ if( $total_topics )
 				$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
 				$newest_post_img = '';
 			}
+		}
+
+		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
+		{
+			$total_pages = ceil(($replies+1)/$board_config['posts_per_page']);
+			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
+
+			$times = 1;
+			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+			{
+				$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+				if( $times == 1 && $total_pages > 4 )
+				{
+					$goto_page .= ' ... ';
+					$times = $total_pages - 3;
+					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+				}
+				else if ( $times < $total_pages )
+				{
+					$goto_page .= ', ';
+				}
+				$times++;
+			}
+			$goto_page .= ' ] ';
+		}
+		else
+		{
+			$goto_page = '';
 		}
 		
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
