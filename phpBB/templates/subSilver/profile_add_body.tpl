@@ -18,7 +18,7 @@
 	</tr>
 	<tr> 
 		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
-		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="40" value="{USERNAME}" /></td>
+		<td class="row2"><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="25" value="{USERNAME}" /></td>
 	</tr>
 	<tr> 
 		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
