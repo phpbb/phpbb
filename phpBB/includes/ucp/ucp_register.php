@@ -25,7 +25,7 @@ class ucp_register extends module
 
 		// Do not alter this first one to use request_var!
 		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$confirm_id = request_var('confirm_id', 0);
+		$confirm_id = request_var('confirm_id', '');
 		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -115,7 +115,7 @@ class ucp_register extends module
 					$sql = 'SELECT code 
 						FROM ' . CONFIRM_TABLE . " 
 						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
-							AND session_id = '" . $db->sql_escape($user->data['session_id']) . "'";
+							AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 					$result = $db->sql_query($sql);
 		
 					if ($row = $db->sql_fetchrow($result))
@@ -128,7 +128,7 @@ class ucp_register extends module
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
 								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "' 
-									AND session_id = '" . $db->sql_escape($user->data['session_id']) . "'";
+									AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 							$db->sql_query($sql);
 						}
 					}
@@ -327,7 +327,7 @@ class ucp_register extends module
 
 			$sql = 'SELECT COUNT(session_id) AS attempts 
 				FROM ' . CONFIRM_TABLE . " 
-				WHERE session_id = '$user->session_id'";
+				WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -343,7 +343,7 @@ class ucp_register extends module
 			$confirm_id = md5(uniqid($user_ip));
 
 			$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-				VALUES ('$confirm_id', '$user->session_id', '$code')";
+				VALUES ('$confirm_id', '" . $db->sql_escape($user->session_id) . "', '$code')";
 			$db->sql_query($sql);
 			
 			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : '<img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
