@@ -135,5 +135,5 @@ define('TOPICS_TABLE', $table_prefix.'topics');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
-
+define('PRUNE_TABLE', $table_prefix.'forum_prune');
 ?>

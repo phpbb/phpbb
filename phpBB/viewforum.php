@@ -56,7 +56,7 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id
+	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id, f.prune_enable, f.prune_next
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
 		WHERE f.forum_id = $forum_id 
 			AND aa.auth_mod = 1
@@ -91,6 +91,7 @@ if(!$forum_row)
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
 
+
 if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 {
 	//
@@ -113,6 +114,21 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 }
 //
 // End of auth check
+//
+
+//
+// Do the forum Prune
+//
+if(($is_auth['auth_mod'] || ($is_auth['auth_admin'})) && ($board_config['prune_enable']))
+{
+	if(($forum_row[0]['prune_next'] < time()) && ($forum_row[0]['prune_enable']))
+	{
+		include('includes/prune.php');
+		auto_prune($forum_id);
+	}
+}
+//
+// End of forum prune
 //
 
 $forum_name = stripslashes($forum_row[0]['forum_name']);

@@ -6,11 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
-<<<<<<< common.php
  *   $Id$
-=======
- *   $Id$
->>>>>>> 1.24
  *
  *
  ***************************************************************************/
@@ -125,7 +121,7 @@ else
 	$board_config['avatar_max_width'] = $config['avatar_max_width'];
 	$board_config['avatar_max_height'] = $config['avatar_max_height'];
 	$board_config['avatar_path'] = $config['avatar_path'];
+	$board_config['prune_enable'] = $config['prune_enable'];
 }
 include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
-
 ?>

@@ -114,7 +114,8 @@ CREATE TABLE phpbb_config (
    default_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    system_timezone int(11) DEFAULT '0' NOT NULL,
    sys_template varchar(100) DEFAULT 'Default' NOT NULL,
-   PRIMARY KEY (config_id),
+   prune_enable tinyint(1) DEFAULT '1' NOT NULL,
+	PRIMARY KEY (config_id),
    UNIQUE selected (selected)
 );
 
@@ -145,6 +146,19 @@ CREATE TABLE phpbb_forum_access (
    PRIMARY KEY (forum_id, user_id)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_forum_prune'
+#
+DROP TABLE IF EXISTS phpbb_forum_prune;
+
+CREATE TABLE phpbb_forum_prune (
+	prune_id int(10) NOT NULL auto_increment,
+	forum_id int(11) NOT NULL,
+	prune_days int(3) NOT NULL,
+	prune_freq int(3) NOT NULL,
+	PRIMARY KEY(prune_id)
+);
 
 # --------------------------------------------------------
 #
@@ -174,7 +188,9 @@ CREATE TABLE phpbb_forums (
    auth_votecreate tinyint(4) DEFAULT '0' NOT NULL,
    auth_vote tinyint(4) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(4) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (forum_id),
+   prune_next int(11),
+	prune_enable tinyint(1) DEFAULT '1' NOT NULL,
+	PRIMARY KEY (forum_id),
    KEY forum_id (forum_id),
    KEY forums_order (forum_order),
    KEY cat_id (cat_id)
