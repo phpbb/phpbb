@@ -165,6 +165,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	if($userdata['session_logged_in'])
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND au.forum_id = $forum_id" : "";
+
 		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user  
 			FROM ".AUTH_ACCESS_TABLE." au, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
@@ -259,12 +260,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 					break;
 
 				case AUTH_ACL:
-					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : $is_admin;
+					$auth_user[$key] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : $is_admin;
 					$auth_user[$key . '_type'] = $lang['Users_granted_access'];
 					break;
 		
 				case AUTH_MOD:
-					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : $is_admin;
+					$auth_user[$key] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : $is_admin;
 					$auth_user[$key . '_type'] = $lang['Moderators'];
 					break;
 	
@@ -298,12 +299,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						break;
 
 					case AUTH_ACL:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
 						break;
 		
 					case AUTH_MOD:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
 						break;
 	
@@ -325,14 +326,14 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	if($forum_id != AUTH_LIST_ALL)
 	{
-		$auth_user['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		$auth_user['auth_mod'] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	}
 	else
 	{
 		for($k = 0; $k < count($f_access); $k++)
 		{
 			$f_forum_id = $f_access[$k]['forum_id'];
-			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
+			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
 	}
 
@@ -363,29 +364,36 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 	$single_user = 0;
 	$auth_user = 0;
 
-	for($j = 0; $j < count($u_access); $j++)
+	if(count($u_access))
 	{
-		if(!$single_user)
+		for($j = 0; $j < count($u_access); $j++)
 		{
-			$single_user = $u_access[$j]['group_single_user'];
-			
-			$result = 0;
-			switch($type)
+			if(!$single_user)
 			{
-				case AUTH_ACL:
-					$result = $u_access[$j][$key];
+				$single_user = $u_access[$j]['group_single_user'];
+			
+				$result = 0;
+				switch($type)
+				{
+					case AUTH_ACL:
+						$result = $u_access[$j][$key];
 
-				case AUTH_MOD:
-					$result = $result || $u_access[$j]['auth_mod'];
+					case AUTH_MOD:
+						$result = $result || $u_access[$j]['auth_mod'];
 
-				case AUTH_ADMIN:
-					$result = $result || $is_admin;
-					break;
+					case AUTH_ADMIN:
+						$result = $result || $is_admin;
+						break;
+				}
+
+				$auth_user = (!$single_user) ? ( $auth_user || $result ) : $result;
+
 			}
-
-			$auth_user = (!$single_user) ? ( $auth_user || $result ) : $result;
-
 		}
+	}
+	else
+	{
+		$auth_user = $is_admin;
 	}
 	
 	return $auth_user;
