@@ -438,7 +438,7 @@ $forum_moderators = array();
 get_moderators($forum_moderators, $forum_id);
 
 // This is only used for print view so ...
-$server_path = (!$view) ? '' : (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
+$server_path = (!$view) ? '' : generate_board_url() . '/';
 
 // Replace naughty words in title
 if (sizeof($censors))
@@ -456,7 +456,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
-	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
+	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
@@ -669,53 +669,68 @@ if (!empty($poll_start))
 	unset($voted_id);
 }
 
-
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = FALSE;
-$limit = $config['posts_per_page'];
+$sql_limit = $config['posts_per_page'];
+
 if ($start > $total_posts / 2)
 {
 	$store_reverse = TRUE;
 
 	if ($start + $config['posts_per_page'] > $total_posts)
 	{
-		$limit = min($config['posts_per_page'], max(1, $total_posts - $start));
+		$sql_limit = min($config['posts_per_page'], max(1, $total_posts - $start));
 	}
 
-	$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
-	$start = max(0, $total_posts - $limit - $start);
+	// Select the sort order
+	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
+	$sql_start = max(0, $total_posts - $sql_limit - $start);
 }
 else
 {
 	// Select the sort order
-	$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+	$sql_start = $start;
 }
 
 // Container for user details, only process once
-$user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
+$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
 $has_attachments = $display_notice = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
-$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
-	FROM ((' . POSTS_TABLE . ' p 
-	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . " u)  
+$sql = 'SELECT p.post_id
+	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql{0} == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
-		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
+		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
+		" . (($sort_by_sql{0} == 'u') ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
-		AND u.user_id = p.poster_id
-	ORDER BY $sort_order";
-$result = $db->sql_query_limit($sql, $limit, $start);
+	ORDER BY $sql_sort_order";
+$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
-if (!$row = $db->sql_fetchrow($result))
+$i = ($store_reverse) ? $sql_limit - 1 : 0;
+while ($row = $db->sql_fetchrow($result))
+{
+	$post_list[$i] = $row['post_id'];
+	($store_reverse) ? --$i : ++$i;
+}
+
+if (empty($post_list))
 {
 	trigger_error($user->lang['NO_TOPIC']);
 }
 
+$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
+	FROM ((' . POSTS_TABLE . ' p 
+	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . ' u)  
+	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
+		AND u.user_id = p.poster_id';
+$result = $db->sql_query($sql);
+
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
-do
+while ($row = $db->sql_fetchrow($result))
 {
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
@@ -756,58 +771,29 @@ do
 		}
 	}
 
-	if ($store_reverse)
-	{
-		array_unshift($rowset, array(
-			'post_id'			=> $row['post_id'],
-			'post_time'			=> $row['post_time'],
-			'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
-			'user_id'			=> $row['user_id'],
-			'topic_id'			=> $row['topic_id'],
-			'forum_id'			=> $row['forum_id'],
-			'post_subject'		=> $row['post_subject'],
-			'post_edit_count'	=> $row['post_edit_count'],
-			'post_edit_time'	=> $row['post_edit_time'],
-			'icon_id'			=> $row['icon_id'],
-			'post_attachment'	=> $row['post_attachment'],
-			'post_approved'		=> $row['post_approved'],
-			'post_reported'		=> $row['post_reported'],
-			'post_text'			=> $row['post_text'],
-			'post_encoding'		=> $row['post_encoding'],
-			'bbcode_uid'		=> $row['bbcode_uid'],
-			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
-			'enable_html'		=> $row['enable_html'],
-			'enable_smilies'	=> $row['enable_smilies'],
-			'enable_sig'		=> $row['enable_sig'],
-			'friend'			=> $row['friend'], 
-		));
-	}
-	else
-	{
-		$rowset[] = array(
-			'post_id'			=> $row['post_id'],
-			'post_time'			=> $row['post_time'],
-			'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
-			'user_id'			=> $row['user_id'],
-			'topic_id'			=> $row['topic_id'],
-			'forum_id'			=> $row['forum_id'],
-			'post_subject'		=> $row['post_subject'],
-			'post_edit_count'	=> $row['post_edit_count'],
-			'post_edit_time'	=> $row['post_edit_time'],
-			'icon_id'			=> $row['icon_id'],
-			'post_attachment'	=> $row['post_attachment'],
-			'post_approved'		=> $row['post_approved'],
-			'post_reported'		=> $row['post_reported'],
-			'post_text'			=> $row['post_text'],
-			'post_encoding'		=> $row['post_encoding'],
-			'bbcode_uid'		=> $row['bbcode_uid'],
-			'bbcode_bitfield'	=> $row['bbcode_bitfield'],
-			'enable_html'		=> $row['enable_html'],
-			'enable_smilies'	=> $row['enable_smilies'],
-			'enable_sig'		=> $row['enable_sig'], 
-			'friend'			=> $row['friend'], 
-		);
-	}
+	$rowset[$row['post_id']] = array(
+		'post_id'			=> $row['post_id'],
+		'post_time'			=> $row['post_time'],
+		'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
+		'user_id'			=> $row['user_id'],
+		'topic_id'			=> $row['topic_id'],
+		'forum_id'			=> $row['forum_id'],
+		'post_subject'		=> $row['post_subject'],
+		'post_edit_count'	=> $row['post_edit_count'],
+		'post_edit_time'	=> $row['post_edit_time'],
+		'icon_id'			=> $row['icon_id'],
+		'post_attachment'	=> $row['post_attachment'],
+		'post_approved'		=> $row['post_approved'],
+		'post_reported'		=> $row['post_reported'],
+		'post_text'			=> $row['post_text'],
+		'post_encoding'		=> $row['post_encoding'],
+		'bbcode_uid'		=> $row['bbcode_uid'],
+		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
+		'enable_html'		=> $row['enable_html'],
+		'enable_smilies'	=> $row['enable_smilies'],
+		'enable_sig'		=> $row['enable_sig'], 
+		'friend'			=> $row['friend'], 
+	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
@@ -1038,8 +1024,10 @@ $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
 
 // Output the posts
-foreach ($rowset as $i => $row)
+//foreach ($rowset as $i => $row)
+for ($i = 0; $i < count($post_list); ++$i)
 {
+	$row =& $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
 
 	// Three situations can prevent a post being display:
@@ -1214,7 +1202,7 @@ foreach ($rowset as $i => $row)
 		'U_REPORT'			=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 		'U_MCP_REPORT'		=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
-		'U_MCP_DETAILS'	=>	"mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
+		'U_MCP_DETAILS'		=>	"mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total) ? $rowset[$i + 1]['post_id'] : '', 

@@ -4,7 +4,7 @@
 <table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td align="left" valign="bottom"><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- IF MODERATORS --><br /><span class="gensmall"><b>{L_MODERATORS}: {MODERATORS}</b></span><!-- ENDIF --></td>
-		<td class="gensmall" align="right" valign="bottom">{MCP}</td>
+		<td class="gensmall" align="right" valign="bottom"><!-- IF U_MCP -->[ <a href="{U_MCP}">{L_MCP}</a> ]<!-- ENDIF --></td>
 	</tr>
 	<tr>
 		<td colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -177,7 +177,7 @@
 						<tr valign="middle">
 							<!-- IF postrow.S_POST_UNAPPROVED -->
 							<td width="5">{UNAPPROVED_IMG}</td>
-							<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_NOT_APPROVED}</a></b>&nbsp;</td>
+							<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></b>&nbsp;</td>
 							<!-- ENDIF -->
 							<!-- IF postrow.S_POST_REPORTED -->
 							<td width="5">{REPORTED_IMG}</td>
