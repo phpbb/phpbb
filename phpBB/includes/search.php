@@ -115,12 +115,10 @@ function add_search_words($post_id, $post_text, $post_title = "")
 	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $synonym_array));
 
 	$word = array();
-	$word_text_sql = array();
 	while( list($word_in, $search_matches) = @each($search_raw_words) )
 	{
 		if( !empty($search_matches) )
 		{
-			$word_text_sql[$word_in] = "";
 			for ($i = 0; $i < count($search_matches); $i++)
 			{ 
 				$search_matches[$i] = trim($search_matches[$i]);
@@ -128,7 +126,6 @@ function add_search_words($post_id, $post_text, $post_title = "")
 				if( $search_matches[$i] != "" ) 
 				{
 					$word[] = $search_matches[$i]; 
-					$word_text_sql[$word_in] .= ( ( $word_text_sql[$word_in] != "" ) ? ", " : "" ) . "'" . $search_matches[$i] . "'";
 				} 
 			}
 		}
@@ -139,12 +136,14 @@ function add_search_words($post_id, $post_text, $post_title = "")
 		sort($word);
 
 		$prev_word = "";
+		$word_text_sql = "";
 		$temp_word = array();
 		for($i = 0; $i < count($word); $i++)
 		{
 			if ( $word[$i] != $prev_word )
 			{
 				$temp_word[] = $word[$i];
+				$word_text_sql .= ( ( $word_text_sql != "" ) ? ", " : "" ) . "'" . $word[$i] . "'";
 			}
 			$prev_word = $word[$i];
 		}
