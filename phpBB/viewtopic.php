@@ -457,7 +457,7 @@ if( isset($HTTP_GET_VARS['highlight']) )
 	{
 		if( trim($words[$i]) != "" )
 		{
-			$highlight_match[] = "#\b(\/?)(" . str_replace("\*", ".*?", $words[$i]) . ")(?!(.*?".">.*?<)|(.*?\">)|((1)?".">))\b#i";
+			$highlight_match[] = "#\b(\/?)(" . str_replace("*", ".*?", $words[$i]) . ")(?!(.*?".">.*?<)|(.*?\">)|((1)?".">))\b#i";
 			$highlight_replace[] = '<span style="color:#' . $theme['fontcolor3'] . '"><b>\2</b></span>';
 		}
 	}
@@ -668,28 +668,40 @@ if( !empty($forum_row['topic_vote']) )
 		WHERE vd.topic_id = $topic_id
 			AND vr.vote_id = vd.vote_id
 		ORDER BY vr.vote_option_id ASC";
-	if( !$result = $db->sql_query($sql) )
+	if( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain vote data for this topic", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( $vote_options = $db->sql_numrows($result) )
+	if( $row = $db->sql_fetchrow($result) )
 	{
-		$vote_info = $db->sql_fetchrowset($result);
+		$poll_id = $row['vote_id'];
+		$poll_title = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $row['vote_text']) : $row['vote_text'];
+		$poll_length = $row['vote_length'];
+		$poll_start = $row['vote_start'];
 
-		$vote_id = $vote_info[0]['vote_id'];
-		$vote_title = $vote_info[0]['vote_text'];
+		$option_id = array();
+		$option_text = array();
+		$option_result = array();
+
+		do
+		{
+			$option_id[] = $row['vote_option_id'];
+			$option_text[] = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $row['vote_option_text']) : $row['vote_option_text'];
+			$option_result[] = $row['vote_result'];
+		}
+		while ( $row = $db->sql_fetchrow($result) );
 
 		$sql = "SELECT vote_id
 			FROM " . VOTE_USERS_TABLE . "
-			WHERE vote_id = $vote_id
+			WHERE vote_id = $poll_id 
 				AND vote_user_id = " . $userdata['user_id'];
-		if( !$result = $db->sql_query($sql) )
+		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain user vote data for this topic", "", __LINE__, __FILE__, $sql);
 		}
 
-		$user_voted = ( $db->sql_numrows($result) ) ? TRUE : 0;
+		$user_voted = ( $row = $db->sql_fetchrow($result) ) ? true : 0;
 
 		if( isset($HTTP_GET_VARS['vote']) || isset($HTTP_POST_VARS['vote']) )
 		{
@@ -700,46 +712,37 @@ if( !empty($forum_row['topic_vote']) )
 			$view_result = 0;
 		}
 
-		$poll_expired = ( $vote_info[0]['vote_length'] ) ? ( ( $vote_info[0]['vote_start'] + $vote_info[0]['vote_length'] < time() ) ? TRUE : 0 ) : 0;
+		$poll_expired = ( $poll_length ) ? ( ( $poll_start + $poll_length < time() ) ? TRUE : 0 ) : 0;
 
 		if( $user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_row['topic_status'] == TOPIC_LOCKED )
 		{
-
-			$template->set_filenames(array(
-				"pollbox" => "viewtopic_poll_result.tpl")
-			);
-
 			$vote_results_sum = 0;
-
 			for($i = 0; $i < $vote_options; $i++)
 			{
 				$vote_results_sum += $vote_info[$i]['vote_result'];
 			}
 
+			$template->set_filenames(array(
+				"pollbox" => "viewtopic_poll_result.tpl")
+			);
+
 			$vote_graphic = 0;
 			$vote_graphic_max = count($images['voting_graphic']);
 
-			for($i = 0; $i < $vote_options; $i++)
+			for($i = 0; $i < count($option_id); $i++)
 			{
-				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info[$i]['vote_result'] / $vote_results_sum : 0;
-				$vote_graphic_length = round($vote_percent * $board_config['vote_graphic_length']);
-
-				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
-				$vote_graphic = ($vote_graphic < $vote_graphic_max - 1) ? $vote_graphic + 1 : 0;
-
-				if( count($orig_word) )
-				{
-					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
-				}
+				$vote_percent = ( $vote_results_sum > 0 ) ? $option_result[$i] / $vote_results_sum : 0;
 
 				$template->assign_block_vars("poll_option", array(
-					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'],
-					"POLL_OPTION_RESULT" => $vote_info[$i]['vote_result'],
-					"POLL_OPTION_PERCENT" => sprintf("%.1d%%", ($vote_percent * 100)),
+					"POLL_OPTION_CAPTION" => $option_text[$i],
+					"POLL_OPTION_RESULT" => $option_result[$i], 
+					"POLL_OPTION_PERCENT" => sprintf("%.1d%%", ( $vote_percent * 100 )),
 
-					"POLL_OPTION_IMG" => $vote_graphic_img,
-					"POLL_OPTION_IMG_WIDTH" => $vote_graphic_length)
+					"POLL_OPTION_IMG" => $images['voting_graphic'][$vote_graphic],
+					"POLL_OPTION_IMG_WIDTH" => round($vote_percent * $board_config['vote_graphic_length']))
 				);
+
+				$vote_graphic = ( $vote_graphic < $vote_graphic_max - 1 ) ? $vote_graphic + 1 : 0;
 			}
 
 			$template->assign_vars(array(
@@ -754,16 +757,11 @@ if( !empty($forum_row['topic_vote']) )
 				"pollbox" => "viewtopic_poll_ballot.tpl")
 			);
 
-			for($i = 0; $i < $vote_options; $i++)
+			for($i = 0; $i < count($option_id); $i++)
 			{
-				if( count($orig_word) )
-				{
-					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
-				}
-
 				$template->assign_block_vars("poll_option", array(
-					"POLL_OPTION_ID" => $vote_info[$i]['vote_option_id'],
-					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'])
+					"POLL_OPTION_ID" => $option_id[$i],
+					"POLL_OPTION_CAPTION" => $option_text[$i])
 				);
 			}
 
@@ -777,20 +775,14 @@ if( !empty($forum_row['topic_vote']) )
 			$s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '"><input type="hidden" name="mode" value="vote">';
 		}
 
-		if( count($orig_word) )
-		{
-			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
-		}
-
 		$template->assign_vars(array(
-			"POLL_QUESTION" => $vote_title,
+			"POLL_QUESTION" => $poll_title,
 
 			"S_HIDDEN_FIELDS" => ( !empty($s_hidden_fields) ) ? $s_hidden_fields : "",
 			"S_VOTE_ACTION" => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
 		);
 
 		$template->assign_var_from_handle("POLL_DISPLAY", "pollbox");
-
 	}
 }
 
