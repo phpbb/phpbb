@@ -22,6 +22,7 @@
  ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
+include('functions/bbcode.'.$phpEx);
 
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
@@ -84,7 +85,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, r.rank_title, r.rank_image, p.post_time, p.post_id, pt.post_text
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
 	FROM ".POSTS_TABLE." p
 	LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id
 	LEFT JOIN ".RANKS_TABLE." r ON (u.user_rank = r.rank_id) 
@@ -146,6 +147,7 @@ for($x = 0; $x < $total_posts; $x++)
 	}
 	
 	$message = stripslashes($postrow[$x]["post_text"]);
+	$bbcode_uid = $postrow[$x]['bbcode_uid'];
 	
 	if(!$allow_html)
 	{
@@ -154,7 +156,10 @@ for($x = 0; $x < $total_posts; $x++)
 	if($allow_bbcode)
 	{
 		// do bbcode stuff here
+		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
+	
+	$message = str_replace("\n", "<BR>", $message);
 	
 	if(!($x % 2))
 	{

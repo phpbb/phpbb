@@ -30,12 +30,12 @@ define("BBCODE_UID_LEN", 10);
  * a thread. Assumes the message is already first-pass encoded, and has the required
  * "[uid:...]" tag as the very first thing in the text.
  */
-function bbencode_second_pass(&$text)
+function bbencode_second_pass($text, $uid)
 {
 	
-	$uid_tag_length = strpos($text, ']') + 1;
-	$uid = substr($text, 5, BBCODE_UID_LEN);
-	$text = substr($text, $uid_tag_length);
+	//$uid_tag_length = strpos($text, ']') + 1;
+	//$uid = substr($text, 5, BBCODE_UID_LEN);
+	//$text = substr($text, $uid_tag_length);
 	
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
@@ -46,7 +46,7 @@ function bbencode_second_pass(&$text)
 	{
 		// Remove padding, return.
 		$text = substr($text, 1);
-		return TRUE;	
+		return $text;
 	}
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
@@ -108,18 +108,25 @@ function bbencode_second_pass(&$text)
 	// Remove our padding from the string..
 	$text = substr($text, 1);
 
-	return TRUE;
+	return $text;
 	
 } // bbencode_second_pass()
 
 
 
-function bbencode_first_pass($text)
+function make_bbcode_uid()
 {
 	// Unique ID for this message..
 	$uid = md5(uniqid(rand()));
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 	
+	return $uid;
+}
+
+
+
+function bbencode_first_pass($text, $uid)
+{
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = " " . $text;
@@ -156,7 +163,7 @@ function bbencode_first_pass($text)
 	$text = substr($text, 1);
 
 	// Add the uid tag to the start of the string..
-	$text = '[uid=' . $uid . ']' . $text;
+	//$text = '[uid=' . $uid . ']' . $text;
 	
 	return $text;
 	
@@ -354,7 +361,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
  * by this format: [code:1:$uid] ... [/code:1:$uid]
  * Other tags are in this format: [code:$uid] ... [/code:$uid]
  */
-function bbencode_second_pass_code(&$text, $uid)
+function bbencode_second_pass_code($text, $uid)
 {
 	
 	$code_start_html = '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Code:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><PRE>';
