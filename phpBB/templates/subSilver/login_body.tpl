@@ -1,5 +1,5 @@
  
-<form action="{S_LOGIN_ACTION}" method="post">
+<form action="{S_LOGIN_ACTION}" method="post" target="_top">
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
@@ -25,7 +25,7 @@
 		  <tr> 
 			<td align="right"><span class="gen">{L_PASSWORD}:</span></td>
 			<td> 
-			  <input type="password" name="password" size="25" maxlength="25" />
+			  <input type="password" name="password" size="25" maxlength="32" />
 			</td>
 		  </tr>
 		  <tr align="center"> 

@@ -26,9 +26,9 @@ define('IN_PHPBB', 1);
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 // ---------------
 // Begin functions
@@ -68,7 +68,7 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	unset($setmodules);
 
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/index_navigate.tpl")
@@ -116,12 +116,12 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	$template->pparse("body");
 
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 }
 elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 {
 
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/index_body.tpl")
@@ -132,6 +132,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		"L_ADMIN_INTRO" => $lang['Admin_intro'],
 		"L_FORUM_STATS" => $lang['Forum_stats'],
 		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
+		"L_USERNAME" => $lang['Username'],
 		"L_LOCATION" => $lang['Location'],
 		"L_LAST_UPDATE" => $lang['Last_updated'],
 		"L_IP_ADDRESS" => $lang['IP_Address'],
@@ -331,7 +332,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		WHERE s.session_logged_in = " . TRUE . " 
 			AND u.user_id = s.session_user_id 
 			AND u.user_id <> " . ANONYMOUS . " 
-			AND u.user_session_time >= " . ( time() - 300 ) . " 
+			AND s.session_time >= " . ( time() - 300 ) . " 
 		ORDER BY u.user_session_time DESC";
 	if(!$result = $db->sql_query($sql))
 	{
@@ -454,7 +455,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 					"FORUM_LOCATION" => $location,
 					"IP_ADDRESS" => $reg_ip, 
 
-					"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$reg_ip", 
+					"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$reg_ip", 
 					"U_USER_PROFILE" => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
 					"U_FORUM_LOCATION" => append_sid($location_url))
 				);
@@ -546,7 +547,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 				"FORUM_LOCATION" => $location,
 				"IP_ADDRESS" => $guest_ip, 
 
-				"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$guest_ip", 
+				"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$guest_ip", 
 				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
@@ -561,7 +562,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 	$template->pparse("body");
 
-	include('page_footer_admin.'.$phpEx);
+	include('./page_footer_admin.'.$phpEx);
 
 }
 else
@@ -583,6 +584,7 @@ else
 
 	$template->pparse("body");
 
+	$db->sql_close();
 	exit;
 
 }
