@@ -48,10 +48,10 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			echo $sql_users = "SELECT username 
+			$sql_users = "SELECT username 
 				FROM ".USERS_TABLE." 
 				WHERE LOWER(username) = '".strtolower($username)."'";
-			echo $sql_disallow = "SELECT disallow_username 
+			$sql_disallow = "SELECT disallow_username 
 				FROM ".DISALLOW_TABLE." 
 				WHERE disallow_username = '$username'";
 
