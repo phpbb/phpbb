@@ -30,7 +30,6 @@ class sql_db
 	var $query_result;
 	var $return_on_error = false;
 	var $transaction = false;
-	var $sql_report = '';
 	var $sql_time = 0;
 	var $num_queries = 0;
 	var $open_queries = array();
@@ -119,70 +118,23 @@ class sql_db
 		if ($query != '')
 		{
 			global $cache;
-		
+
+			// DEBUG
+			$this->sql_report('start', $query);
+
 			$this->query_result = ($max_age && method_exists($cache, 'sql_load')) ? $cache->sql_load($query, $max_age) : false;
 
 			if (!$this->query_result)
 			{
 				$this->num_queries++;
 
-				if (!empty($_GET['explain']))
-				{
-					global $starttime;
-
-					$curtime = explode(' ', microtime());
-					$curtime = $curtime[0] + $curtime[1] - $starttime;
-				}
-
 				if (($this->query_result = @mysql_query($query, $this->db_connect_id)) === false)
 				{
 					$this->sql_error($query);
 				}
 
-				if (!empty($_GET['explain']))
-				{
-					$endtime = explode(' ', microtime());
-					$endtime = $endtime[0] + $endtime[1] - $starttime;
-
-					$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
-
-					if ($this->query_result)
-					{
-						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
-					}
-					else
-					{
-						$error = $this->sql_error();
-						$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
-					}
-
-					$this->sql_time += $endtime - $curtime;
-
-					if (preg_match('/^SELECT/', $query))
-					{
-						$html_table = FALSE;
-						if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
-						{
-							while ($row = mysql_fetch_assoc($result))
-							{
-								if (!$html_table && count($row))
-								{
-									$html_table = TRUE;
-									$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
-									$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
-								}
-								$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
-							}
-						}
-
-						if ($html_table)
-						{
-							$this->sql_report .= '</table><br>';
-						}
-					}
-
-					$this->sql_report .= "<hr>\n";
-				}
+				// DEBUG
+				$this->sql_report('stop', $query);
 
 				if (preg_match('/^SELECT/', $query))
 				{
@@ -194,6 +146,11 @@ class sql_db
 					$cache->sql_save($query, $this->query_result);
 					@mysql_free_result(array_pop($this->open_queries));
 				}
+			}
+			else
+			{
+				// DEBUG
+				$this->sql_report('fromcache', $query);
 			}
 		}
 		else
@@ -216,7 +173,7 @@ class sql_db
 				$total = -1;
 			}
 
-			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
 			return $this->sql_query($query, $max_age); 
 		} 
@@ -429,6 +386,149 @@ class sql_db
 		return $result;
 	}
 
+	// DEBUG
+	function sql_report($mode, $query = '')
+	{
+		if (empty($_GET['explain']))
+		{
+			return;
+		}
+
+		global $db, $cache, $starttime, $phpbb_root_path;
+		static $curtime, $query_hold, $html_hold;
+		static $sql_report = '';
+		static $cache_num_queries = 0;
+
+		if (!$query && !empty($query_hold))
+		{
+			$query = $query_hold;
+		}
+
+		switch ($mode)
+		{
+			case 'display':
+				if (!empty($cache))
+				{
+						$cache->unload();
+				}
+				$db->sql_close();
+
+				$mtime = explode(' ', microtime());
+				$totaltime = $mtime[0] + $mtime[1] - $starttime;
+
+				echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/subSilver.css" type="text/css"><style type="text/css">' . "\n";
+				echo 'th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }' . "\n";
+				echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') }' . "\n";
+				echo '</style><title>' . $msg_title . '</title></head><body>';
+				echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '"><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td><td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">SQL Report</span> &nbsp; &nbsp; &nbsp;</td></tr></table><br clear="all"/><table border="0" width="95%" align="center"><tr><td class="row1" colspan="2"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries." . (($cache_num_queries) ? " (plus $cache_num_queries " . (($cache_num_queries == 1) ? 'query' : 'queries') . ' returning results from cache)' : '') . '</b></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td width="20%" nowrap="nowrap">Time spent on MySQL queries:</td><td>' . round($this->sql_time, 5) . '</td></tr><tr><td>Time spent on PHP:</td><td>' . round($totaltime - $this->sql_time, 5) . '</td></tr></table><br /><table border="0" align="center" width="95%"><tr><td>';
+
+				echo $sql_report;
+
+				echo '</td></tr></table><br /></body></html>';
+
+				exit;
+			break;
+
+			case 'start':
+				$curtime = explode(' ', microtime());
+				$curtime = $curtime[0] + $curtime[1] - $starttime;
+
+				$query_hold = $query;
+				$html_hold = '';
+
+				$explain_query = $query;
+				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+				elseif (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+
+				if (preg_match('/^SELECT/', $explain_query))
+				{
+					$html_table = FALSE;
+
+					if ($result = mysql_query("EXPLAIN $explain_query", $this->db_connect_id))
+					{
+						while ($row = mysql_fetch_assoc($result))
+						{
+							if (!$html_table && count($row))
+							{
+								$html_table = TRUE;
+								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">';
+								$html_hold .= "<tr>\n";
+								
+								foreach (array_keys($row) as $val)
+								{
+									$html_hold .= '<th><b>' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</b></th>';
+								}
+								$html_hold .= "\n</tr>\n";
+							}
+							$html_hold .= "<tr>\n";
+
+							$class = 'row1';
+							foreach (array_values($row) as $val)
+							{
+								$class = ($class == 'row1') ? 'row2' : 'row1';
+								$html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
+							}
+							$html_hold .= "\n</tr>\n";
+						}
+					}
+
+					if ($html_table)
+					{
+						$html_hold .= '</table><br>';
+					}
+				}
+			break;
+
+			case 'fromcache':
+				$endtime = explode(' ', microtime());
+				$endtime = $endtime[0] + $endtime[1] - $starttime;
+
+				$sql_report .= "<pre><b>Query results obtained from the cache</b>\n\nQuery:\t" . preg_replace('/\t(AND|OR)(\W)/', "\t  \$1\$2", preg_replace('/(.*)/e', "wordwrap('\$1', 120, '\n\t       ')", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)))) . "\n\n";
+
+				$sql_report .= "Time before:\t$curtime\nTime after:\t$endtime\nTime elapsed:\t<b>" . ($endtime - $curtime) . "</b>\t(from cache)\n";
+
+				$s = explode(' ', microtime());
+				mysql_query($query, $this->db_connect_id);
+				$e = explode(' ', microtime());
+
+				$sql_report .= "\t\t<b>" . ($e[0] + $e[1] - $s[0] - $s[1]) . "</b>\t(from DB)\n</pre>";
+
+				$cache_num_queries++;
+			break;
+
+			case 'stop':
+				$endtime = explode(' ', microtime());
+				$endtime = $endtime[0] + $endtime[1] - $starttime;
+
+				$sql_report .= "\n<hr />\n<pre>Query#{$this->num_queries}:\t" . preg_replace('/\t(AND|OR)(\W)/', "\t  \$1\$2", preg_replace('/(.*)/e', "wordwrap('\$1', 120, '\n\t       ')", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)))) . "\n\n";
+
+				if ($this->query_result)
+				{
+					if (preg_match('/^(UPDATE|DELETE)/', $query))
+					{
+						$sql_report .= "Affected rows: <b>" . $this->sql_affectedrows($this->query_result) . "</b>\n\n";
+					}
+					$sql_report .= "Time before:  $curtime\nTime after:   $endtime\nTime elapsed: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
+				}
+				else
+				{
+					$error = $this->sql_error();
+					$sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
+				}
+
+				$sql_report .= $html_hold;
+
+				$this->sql_time += $endtime - $curtime;
+
+			break;
+		}
+	}
 } // class sql_db
 
 } // if ... define
