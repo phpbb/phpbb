@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-$lang = array_merge($lang, array(
+$lang += array(
 	'ADMIN_TITLE'	=> 'Administration Panel',
 	'ADMIN'			=> 'Administration',
 	'LOGIN_ADMIN'	=> 'You must be a registered, logged in user before attempting to administer the board.', 
@@ -185,7 +185,7 @@ $lang = array_merge($lang, array(
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
 
-
+	'LOG_EDIT_TEMPLATE'	=> '<b>Edited template</b><br />&#187; %s [%s]', 
 	'LOG_CLEAR_TPLCACHE'=> '<b>Cleared template cache</b><br />&#187; %s', 
 
 
@@ -649,14 +649,21 @@ $lang = array_merge($lang, array(
 	'KARMA_SETTINGS_EXPLAIN'=> 'Here you can enable and disable the user Karma rating system. You can also modify the weighting factors used to derive each users karma.', 
 
 	'CONFIG_UPDATED'	=> 'Configuration updated successfully', 
+);
 
-
+// Avatars
+$lang += array(
 	'AVATARS_GALLERY'	=> 'Avatar Gallery', 
 	'AVATARS_PERSONAL'	=> 'Personal Avatars', 
+);
 
+// PHP info
+$lang += array(
 	'PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.', 
+);
 
-
+// Forum admin
+$lang += array(
 	'FORUM_ADMIN_EXPLAIN'	=> 'In phpBB 2.2 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
 	'FORUM_EDIT_EXPLAIN'	=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_DELETE'			=> 'Delete Forum',
@@ -726,8 +733,10 @@ $lang = array_merge($lang, array(
 	'FORUM_UPDATED'				=> 'Forum informations updated successfully.', 
 	'REDIRECT_ACL'				=> 'To set permissions for this forum click %sHERE%s.', 
 	'FORUM_DELETED'				=> 'Forum successfully deleted',
+);
 
-
+// Smiley and topic icons
+$lang += array(
 	'ICONS_EXPLAIN'	=> 'From this page you can add, remove and edit the icons users may add to their topics or posts. These icons are generally displayed next to topic titles on the forum listing, or the post subjects in topic listings. You can also install and create new packages of icons.',
 	'SMILE_EXPLAIN' => 'Smilies or emoticons are typically small, sometimes animated images used to convey an emotion or feeling. From this page you can add, remove and edit the emoticons users can use in their posts and private messages. You can also install and create new packages of smilies.',
 	'IMPORT_SMILE'	=> 'Install smilies pak',
@@ -783,8 +792,10 @@ $lang = array_merge($lang, array(
 	'ICONS_EDITED' => 'The icon has been updated successfully.',
 	'ICONS_ADDED' => 'The icon has been added successfully.',
 	'ICONS_IMPORTED' => 'The icons pack has been installed successfully.',
-	
+);
 
+// User admin
+$lang += array(
 	'User_admin' => 'User Administration',
 	'User_admin_explain' => 'Here you can change your user\'s information and certain specific options. To modify the users permissions please use the user and group permissions system.',
 	'LOOK_UP_USER' => 'Look up user',
@@ -799,8 +810,10 @@ $lang = array_merge($lang, array(
 	'Admin_avatar_explain' => 'Here you can see and delete the users current avatar.',
 	'User_special' => 'Special admin-only fields',
 	'User_special_explain' => 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.',
+);
 
-
+// Group admin
+$lang += array(
 	'GROUP_MANAGE_EXPLAIN' => 'From this panel you can administer all your usergroups, you can; delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
 	'USER_DEF_GROUPS' => 'User defined groups', 
 	'USER_DEF_GROUPS_EXPLAIN' => 'These are groups created by you or another admin on this board. You can modify, delete or otherwise alter these. You can also define group wide settings which affect each and every member of the group.', 
@@ -849,16 +862,20 @@ $lang = array_merge($lang, array(
 	'GROUP_UPDATED' => 'Group preferences updated successfully.', 
 	'GROUP_USERS_ADDED' => 'New users added to group successfully.', 
 	'GROUP_MODS_ADDED' => 'New group moderators added successfully.', 
+);
 
-
+// Forum Pruning
+$lang += array(
 	'FORUM_PRUNE_EXPLAIN' => 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
 	'PRUNE_NOT_POSTED' => 'Days since last posted',
 
 	'TOPICS_PRUNED' => 'Topics pruned',
 	'POSTS_PRUNED' => 'Posts pruned',
 	'PRUNE_SUCCESS' => 'Pruning of forums was successful',
+);
 
-
+// Word censors
+$lang += array(
 	'WORDS_TITLE' => 'Word Censoring',
 	'WORDS_EXPLAIN' => 'From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.',
 	'WORD' => 'Word',
@@ -871,8 +888,10 @@ $lang = array_merge($lang, array(
 	'WORD_UPDATED' => 'The selected word censor has been successfully updated',
 	'WORD_ADDED' => 'The word censor has been successfully added',
 	'WORD_REMOVED' => 'The selected word censor has been successfully removed', 
+);
 
-
+// Mass email
+$lang += array(
 	'MASS_EMAIL_EXPLAIN'	=> 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
 	'COMPOSE'				=> 'Compose',
 	'RECIPIENTS'			=> 'Recipients',
@@ -880,8 +899,10 @@ $lang = array_merge($lang, array(
 	'NO_EMAIL_SUBJECT'		=> 'You must specify a subject for your message.', 
 	'NO_EMAIL_MESSAGE'		=> 'You must enter a message.', 
 	'EMAIL_SENT'			=> 'Your message has been queued for sending.', 
+);
 
-
+// Ranks
+$lang += array(
 	'RANKS_EXPLAIN' => 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility',
 	'ADD_RANK' => 'Add new rank',
 	'RANK_TITLE' => 'Rank Title',
@@ -895,8 +916,10 @@ $lang = array_merge($lang, array(
 	'RANK_ADDED' => 'The rank was successfully added.',
 	'RANK_REMOVED' => 'The rank was successfully deleted.',
 	'NO_UPDATE_RANKS' => 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
+);
 
-
+// Disallowed names
+$lang += array(
 	'Disallow_control' => 'Username Disallow Control',
 	'Disallow_explain' => 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
 	'Delete_disallow' => 'Delete',
@@ -909,15 +932,30 @@ $lang = array_merge($lang, array(
 	'Disallowed_deleted' => 'The disallowed username has been successfully removed',
 	'Disallow_successful' => 'The disallowed username has been successfully added',
 	'Disallowed_already' => 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present',
+);
 
-
+// Styling
+$lang += array(
 	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
+	'STYLE_NAME'			=> 'Style name', 
+	'STYLE_COPYRIGHT'		=> 'Style copyright', 
+	'STYLE_USED_BY'			=> 'Used by', 
 	'STYLE_ACTIVATE'		=> 'Activate', 
 	'STYLE_DEACTIVATE'		=> 'Deactivate', 
-	'EDIT_STYLE'			=> 'Edit Style', 
-	'EDIT_STYLE_EXPLAIN'	=> 'Using the form below you can modify this existing style. You may alter the combination of template, theme and imageset which define the style itself. You may also deactivate the style and alter its name.', 
-	'STYLE_ADDED'			=> 'Style added successfully', 
-	'STYLE_EDITED'			=> 'Style edited successfully', 
+	'CREATE_STYLE'			=> 'Create new style', 
+	'INSTALLED_STYLE'		=> 'Installed styles', 
+	'UNINSTALLED_STYLE'		=> 'Uninstalled styles', 
+	'NO_UNINSTALLED_STYLE'	=> 'No uninstalled styles detected', 
+
+	'EDIT_STYLE'		=> 'Edit Style', 
+	'EDIT_STYLE_EXPLAIN'=> 'Using the form below you can modify this existing style. You may alter the combination of template, theme and imageset which define the style itself. You may also deactivate the style and alter its name.', 
+	'STYLE_ACTIVE'		=> 'Active', 
+	'STYLE_DEFAULT'		=> 'Make default style', 
+	'STYLE_IMAGESET'	=> 'Imageset', 
+	'STYLE_THEME'		=> 'Theme', 
+	'STYLE_TEMPLATE'	=> 'Template', 
+	'STYLE_ADDED'		=> 'Style added successfully', 
+	'STYLE_EDITED'		=> 'Style edited successfully', 
 
 	'STYLE_ERR_STYLE_NAME'	=> 'You must supply a name for this style', 
 	'STYLE_ERR_NAME_LONG'	=> 'The style name can be no longer than 30 characters', 
@@ -926,10 +964,21 @@ $lang = array_merge($lang, array(
 	'STYLE_ERR_NO_IDS'		=> 'You must select a template, theme and imageset for this style', 
 	'STYLE_ERR_NAME_CHARS'	=> 'The style name can only contain alphanumeric characters, -, +, _ and space',  
 
-	'TEMPLATES'				=> 'Templates', 
-	'TEMPLATES_EXPLAIN'		=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
-	'EDIT_TEMPLATE'				=> 'Edit Template',
-	'EDIT_TEMPLATE_EXPLAIN'		=> 'Use this panel to edit an existing compiled template set. When you have made the required changes you can recompile the template and (or) download it. Please remember that the existing HTML templates are <b>not</b> altered, only the compiled versions are affected. Therefore you should download any altered files if you wish to keep them for future use and for archival purposes.', 
+
+	'TEMPLATES'					=> 'Templates', 
+	'TEMPLATES_EXPLAIN'			=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
+	'CREATE_TEMPLATE'			=> 'Create new template set', 
+	'INSTALLED_TEMPLATE'		=> 'Installed templates', 
+	'UNINSTALLED_TEMPLATE'		=> 'Uninstalled templates', 
+	'NO_UNINSTALLED_TEMPLATE'	=> 'No uninstalled templates detected', 
+
+	'EDIT_TEMPLATE'			=> 'Edit Template',
+	'EDIT_TEMPLATE_EXPLAIN'	=> 'Here you can edit your template set directly. Please remember that these edits are permanent and cannot be undone once submitted. If PHP can write to the template files in your styles directory any changes here will be written directly to those files. If PHP cannot write to those files they will be copied into the database and all changes will only be reflected there. Please take care when editing your template set, remember to close all replacement variable terms {XXXX} and conditional statements.', 
+	'RAW_HTML'				=> 'Raw HTML', 
+	'TEMPLATE_UPDATED'		=> 'Template updated successfully', 
+
+	'EDIT_DETAILS_TEMPLATE'			=> 'Edit template details', 
+	'EDIT_DETAILS_TEMPLATE_EXPLAIN'	=> 'Here you can edit certain templates details such as its name. You may also have the option to switch storage of the stylesheet from the filesystem to the database and vice versa. This option depends on your PHP configuration and whether your template set can be written to by the webserver.', 
 	'ADD_TEMPLATE'				=> 'Create Template', 
 	'ADD_TEMPLATE_EXPLAIN'		=> 'Here you can add a new template. Depending on your server configuration and file permissions you may have additional options here. For example you may be able to base this template set on an existing one. You may also be able to upload or import (from the store directory) a template archive. If you upload or import an archive the template name can be optionally taken from the archive name (to do this leave the template name blank).', 
 	'INSTALL_TEMPLATE'			=> 'Install Template', 
@@ -942,13 +991,13 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_LOCATION'			=> 'Store templates in', 
 	'TEMPLATE_LOCATION_EXPLAIN'	=> 'Images are always stored on the filesystem.', 
 
-
 	'TEMPLATE_CACHE'		=> 'Template Cache', 
 	'TEMPLATE_CACHE_EXPLAIN'=> 'By default phpBB caches the compiled version of its templates. This decreases the load on the server each time a page is viewed and thus may reduce the page generation time. Here you can view the cache status of each file and delete individual files or the entire cache.', 
 	'CACHE_FILENAME'		=> 'Template file', 
 	'CACHE_FILESIZE'		=> 'Filesize', 
 	'CACHE_CACHED'			=> 'Cached', 
 	'CACHE_MODIFIED'		=> 'Modified', 
+	'NO_CACHED_TPL_FILES'		=> 'No cached files for this template', 
 	'TEMPLATE_CACHE_CLEARED'=> 'Cached templates deleted', 
 
 	'TEMPLATE_EXPORT'			=> 'Export Templates', 
@@ -969,46 +1018,31 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_ERR_ARCHIVE'		=> 'Please select an archive method', 
 	'TEMPLATE_ERR_NOT_TEMPLATE'	=> 'The archive you specified does not contain a valid template set.', 
 	'ERR_TPLCACHE_READ'			=> 'Cannot read the cache directory', 
-	'NO_CACHED_TPL_FILES'		=> 'No cached files for this template', 
-
-
-	'DOWNLOAD_STORE'		=> 'Download or Store archive', 
-	'DOWNLOAD_STORE_EXPLAIN'=> 'You may directly download the archive or save it in your store/ folder.', 
-	'ARCHIVE_FORMAT'		=> 'Archive file type', 
-	'ALLOWED_FILETYPES'		=> 'Allowed filetypes', 
-	'SELECT_BASIS'			=> 'Select optional basis', 
-	'COPYRIGHT'				=> 'Copyright', 
-	'CACHE'					=> 'Cache', 
-	'EXPORT'				=> 'Export', 
-	'DETAILS'				=> 'Details', 
-	'REFRESH'				=> 'Refresh', 
-	'NO_IMAGESET'			=> 'Cannot find imageset on filesystem', 
-	'NO_THEME'				=> 'Cannot find theme on filesystem', 
-	'NO_TEMPLATE'			=> 'Cannot find template on filesystem', 
-	'NO_STYLE'				=> 'Cannot find style on filesystem', 
-	'UPLOAD_WRONG_TYPE'		=> 'Only the following filetypes are accepted: %s', 
 
 
 	'THEMES'				=> 'Themes', 
 	'THEMES_EXPLAIN'		=> 'From here you can create, install, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. The range of options open to you depends on the configuration of your server and phpBB installation, see the Manual for further details. Please note that when creating new themes the use of an existing theme as a basis is optional.', 
 	'SELECT_THEME_BASIS'	=> 'Select optional basis', 
 	'THEME_VERSION_DIFF'	=> 'This theme was designed for a version of phpBB 2.2 different from that installed you may encounter some issues in its use.', 
+	'CREATE_THEME'			=> 'Create new theme', 
+	'INSTALLED_THEME'		=> 'Installed themes', 
+	'UNINSTALLED_THEME'		=> 'Uninstalled themes', 
+	'NO_UNINSTALLED_THEME'	=> 'No uninstalled themes detected', 
 
 	'DELETE_THEME'			=> 'Delete theme', 
 	'DELETE_THEME_EXPLAIN'	=> 'Here you can remove the selected theme from the database. Additionally, if you have permission you can elect to remove the theme from the filesystem. Please note that there is no undo capability. When the theme is deleted it is gone for good. It is recommended that you first export your theme for possible future use.', 
+	'REPLACE_THEME'			=> 'Replace theme with', 
+	'REPLACE_THEME_EXPLAIN'	=> 'This theme will replace the one you are deleting in any styles that use it.', 
 	'THEME_DELETED'			=> 'Theme deleted successfully', 
 	'THEME_DELETED_FS'		=> 'Theme removed from database but some files may remain on the filesystem', 
 	'ONLY_THEME'			=> 'This is the only remaining theme, you cannot delete it',
 
-	'EDIT_THEME'			=> 'Edit theme', 
-	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
-
 	'EDIT_DETAILS_THEME'		=> 'Edit theme details', 
-	'EDIT_DETAILS_THEME_EXPLAIN'=> 'Here you can edit certain theme details such as changing its name. You may also be able to switch storage of the stylesheet from the filesystem to the database and vice versa. This option depends on your PHP configuration and whether your stylesheet can be written to by the webserver.', 
+	'EDIT_DETAILS_THEME_EXPLAIN'=> 'Here you can edit certain theme details such as its name. You may also have the option to switch storage of the stylesheet from the filesystem to the database and vice versa. This option depends on your PHP configuration and whether your stylesheet can be written to by the webserver.', 
 	'ADD_THEME'			=> 'Create Theme', 
 	'ADD_THEME_EXPLAIN'	=> 'Here you can add a new theme. Depending on your server configuration and file permissions you may have additional options here. For example you may be able to base this theme on an existing one. You may also be able to upload or import (from the store directory) a theme archive. If you upload or import an archive the theme name can be optionally taken from the archive name (to do this leave the theme name blank).', 
 	'INSTALL_THEME'			=> 'Install Theme', 
-	'INSTALL_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
+	'INSTALL_THEME_EXPLAIN'	=> 'Here you can install your selected theme. You can edit certain details if you wish or use the installation defaults.', 
 	'THEME_NAME'			=> 'Theme Name', 
 	'THEME_BASIS'			=> 'Theme Basis', 
 	'THEME_EXISTING_BASIS'	=> 'Use existing theme as basis', 
@@ -1017,9 +1051,12 @@ $lang = array_merge($lang, array(
 	'THEME_LOCATION'		=> 'Store stylesheet in', 
 	'THEME_LOCATION_EXPLAIN'=> 'Images are always stored on the filesystem.', 
 
+	'EDIT_THEME'			=> 'Edit theme', 
+	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
 	'SELECT_CLASS'			=> 'Select class', 
 	'SHOW_RAW_CSS'			=> 'Show CSS', 
 	'HIDE_RAW_CSS'			=> 'Hide CSS', 
+	'SHOW_RAW_CSS_NOTE'		=> 'Note', 
 	'SHOW_RAW_CSS_EXPLAIN'	=> 'Enter each element on a new line, ending with a ; Expand the data for each element, e.g. do not use font: use font-family:, font-weight:, etc.', 
 	'CSS_CAT_TEXT'		=> 'Text Classes', 
 	'CSS_BODY'			=> 'Body',
@@ -1041,7 +1078,6 @@ $lang = array_merge($lang, array(
 	'CSS_GENMED'		=> 'General Medium', 
 	'CSS_GENSMALL'		=> 'General Small',
 	'CSS_COPYRIGHT'		=> 'Copyright', 
-
 	'CSS_CAT_TABLES'	=> 'Tabular Classes', 
 	'CSS_TABLE'			=> 'Table', 
 	'CSS_TH'			=> 'Table Header',
@@ -1053,7 +1089,6 @@ $lang = array_merge($lang, array(
 	'CSS_ROW3'			=> 'Alternate Row 3', 
 	'CSS_SPACER'		=> 'Spacer Row', 
 	'CSS_HR'			=> 'Horizontal Rule', 
-
 	'CSS_CAT_FORMS'		=> 'Form Classes', 
 	'CSS_FORM'			=> 'Form', 
 	'CSS_INPUT'			=> 'Input', 
@@ -1063,7 +1098,6 @@ $lang = array_merge($lang, array(
 	'CSS_BTNMAIN'		=> 'Primary Buttons',
 	'CSS_BTNLITE'		=> 'Secondary Buttons',
 	'CSS_BTNBBCODE'		=> 'BBCode Buttons', 
-
 	'CSS_CAT_BBCODE'	=> 'BBCode Classes', 
 	'CSS_B'				=> 'Bold',
 	'CSS_U'				=> 'Underline',
@@ -1079,13 +1113,38 @@ $lang = array_merge($lang, array(
 	'CSS_SYNTAXHTML'	=> 'Syntax HTML',
 	'CSS_SYNTAXKEYWORD'	=> 'Syntax Keyword',
 	'CSS_SYNTAXSTRING'	=> 'Syntax String',
-
 	'CSS_CAT_CUSTOM'	=> 'Custom Classes', 
-
 	'CSS_ANCHOR_LINK'	=> 'Link',
 	'CSS_ANCHOR_ACTIVE'	=> 'Active',
 	'CSS_ANCHOR_VISITED'=> 'Visited',
-	'CSS_ANCHOR_HOVER'	=> 'Hover',
+	'CSS_ANCHOR_HOVER'	=> 'Hover', 
+	'BACKGROUND'		=> 'Background', 
+	'CSS_PARAMETER'		=> 'Parameter', 
+	'CSS_VALUE'			=> 'Value', 
+	'RAW_CSS'			=> 'Raw CSS', 
+	'' => '', 
+	'BACKGROUND_COLOUR' => 'Background colour', 
+	'BACKGROUND_IMAGE'	=> 'Background image', 
+	'BACKGROUND_REPEAT' => 'Repeat background', 
+	'REPEAT_NO'			=> 'None', 
+	'REPEAT_X'			=> 'Only horizontally', 
+	'REPEAT_Y'			=> 'Only vertically', 
+	'REPEAT_ALL'		=> 'Both directions', 
+	'FOREGROUND'		=> 'Foreground', 
+	'COLOUR_SWATCH'		=> 'Web-safe colour swatch', 
+	'COLOUR_EXPLAIN'	=> 'This is a hex-triplet of the form #RRGGBB or colour name', 
+	'FONT_COLOUR'		=> 'Font colour', 
+	'FONT_FACE'			=> 'Font face', 
+	'FONT_FACE_EXPLAIN' => 'You can specify multiple fonts seperated by commas.', 
+	'FONT_SIZE'			=> 'Font size', 
+	'UNDERLINE'			=> 'Underline', 
+	'ITALIC'			=> 'Italic', 
+	'BOLD'				=> 'Bold', 
+	'LINE_SPACING'		=> 'Line spacing', 
+	'CUSTOM_CLASS'			=> 'Custom Class', 
+	'CUSTOM_CLASS_EXPLAIN'	=> 'You can add additional classes to this theme if you wish. You must provide the actual CSS class name below, it must be the same as that you have or will use in your template. Please remember that class names may contain only alphanumeric characters, periods (.), colons (:) and number/hash/pound (#). The new class will be added to the Custom Class category in the select box above.', 
+	'CSS_CLASS_NAME'		=> 'CSS class name', 
+	'CUSTOM_CLASS'			=> 'Custom Class', 
 
 	'THEME_ERR_STYLE_NAME'	=> 'You must supply a name for this theme', 
 	'THEME_ERR_NAME_CHARS'	=> 'The theme name can only contain alphanumeric characters, -, +, _ and space',  
@@ -1107,14 +1166,34 @@ $lang = array_merge($lang, array(
 
 	'IMAGESETS'			=> 'Imagesets', 
 	'IMAGESETS_EXPLAIN'	=> 'Imagesets comprise all the button, forum, folder, etc. and other non-style specific images used by the board. Here you can edit, export or delete existing imagesets and import or activate new sets.', 
+	'CREATE_IMAGESET'			=> 'Create new imageset', 
+	'INSTALLED_IMAGESET'		=> 'Installed imagesets', 
+	'UNINSTALLED_IMAGESET'		=> 'Uninstalled imagesets', 
+	'NO_UNINSTALLED_IMAGESET'	=> 'No uninstalled imagesets detected', 
+
 	'EDIT_IMAGESET'			=> 'Edit Imageset', 
 	'EDIT_IMAGESET_EXPLAIN'	=> 'Here you can edit the individual images which define the imageset. You can also specify  dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.', 
-	'IMAGESET_NAME'			=> 'Imageset name', 
+	'IMAGE'					=> 'Image', 
+	'DIMENSIONS'			=> 'Dimensions', 
+	'DIMENSIONS_EXPLAIN'	=> 'Dimensions are optional, set to zero to ignore.', 
+	'IMAGE_PARAMETER'		=> 'Parameter', 
+	'IMAGE_VALUE'			=> 'Value', 
+
+	'EDIT_DETAILS_IMAGESET'	=> 'Edit imageset details', 
+	'EDIT_DETAILS_IMAGESET_EXPLAIN'=> 'Here you can edit certain imageset details such as its name.', 
+	'ADD_IMAGESET'			=> 'Create Imageset', 
+	'ADD_IMAGESET_EXPLAIN'	=> 'Here you can create a new imageset. Depending on your server configuration and file permissions you may have additional options here. For example you may be able to base this imageset on an existing one. You may also be able to upload or import (from the store directory) a imageset archive. If you upload or import an archive the imageset name can be optionally taken from the archive name (to do this leave the imageset name blank).', 
+	'INSTALL_IMAGESET'			=> 'Install Imageset', 
+	'INSTALL_IMAGESET_EXPLAIN'	=> 'Here you can install your selected imageset. You can edit certain details if you wish or use the installation defaults.', 
+	'IMAGESET_NAME'				=> 'Imageset Name', 
+	'IMAGESET_BASIS'			=> 'Imageset Basis', 
+	'IMAGESET_EXISTING_BASIS'	=> 'Use existing imageset as basis', 
+	'IMAGESET_UPLOAD_BASIS'		=> 'Upload a imageset', 
+	'IMAGESET_IMPORT_BASIS'		=> 'Import imageset from store', 
 
 	'IMAGESET_EXPORT'			=> 'Export Imageset', 
 	'IMAGESET_EXPORT_EXPLAIN'	=> 'Here you can export an imageset in the form of an archive. This archive will contain all the data necessary to install the set of images on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.', 
 	'IMAGESET_EXPORTED'		=> 'Imageset exported succesfully and stored in %s', 
-
 	'DELETE_IMAGESET'			=> 'Delete Imageset', 
 	'DELETE_IMAGESET_EXPLAIN'	=> 'Here you can remove the selected imageset from the database. Additionally, if you have permission you can elect to remove the set from the filesystem. Please note that there is no undo capability. When the imageset is deleted it is gone for good. It is recommended that you first export your set for possible future use.', 
 	'IMAGESET_DELETED'			=> 'Imageset set deleted successfully', 
@@ -1122,13 +1201,40 @@ $lang = array_merge($lang, array(
 	'ONLY_IMAGESET'				=> 'This is the only remaining imageset, you cannot delete it',
 
 
+	'DOWNLOAD_STORE'		=> 'Download or Store archive', 
+	'DOWNLOAD_STORE_EXPLAIN'=> 'You may directly download the archive or save it in your store/ folder.', 
+	'ARCHIVE_FORMAT'		=> 'Archive file type', 
+	'ALLOWED_FILETYPES'		=> 'Allowed filetypes', 
+	'SELECT_BASIS'			=> 'Select optional basis', 
+	'TEXT_COLUMNS'			=> 'Columns', 
+	'TEXT_ROWS'				=> 'Rows', 
+	'COPYRIGHT'				=> 'Copyright', 
+	'CACHE'					=> 'Cache', 
+	'EXPORT'				=> 'Export', 
+	'DETAILS'				=> 'Details', 
+	'REFRESH'				=> 'Refresh', 
+	'STORE_DATABASE'		=> 'Database', 
+	'STORE_FILESYSTEM'		=> 'Filesystem', 
+	'NO_IMAGESET'			=> 'Cannot find imageset on filesystem', 
+	'NO_THEME'				=> 'Cannot find theme on filesystem', 
+	'NO_TEMPLATE'			=> 'Cannot find template on filesystem', 
+	'NO_STYLE'				=> 'Cannot find style on filesystem', 
+	'NO_BASIS'				=> 'No basis',
+	'NO_IMPORT'				=> 'No import', 
+	'UPLOAD_WRONG_TYPE'		=> 'Only the following filetypes are accepted: %s', 
+);
+
+// Search indexing
+$lang += array(
 	'SEARCH_INDEX_EXPLAIN' => 'phpBB2 uses a fulltext search system. This breaks down each post into seperate words and then, if the word does not already exist it stores those words in a table. In turn the post is linked to each word it contains in this table. This allows quick searching of large databases and helps reduce load on the server compared to most other methods.</p><p>However, if the tables get out of sync for some reason or you change the minimum, maximum or disallowed list of words the tables need updating. This facility allows you to do just that.</p><p>Please be aware this procedure can take a long time, particularly on large databases. During this period your forum will be automatically shut down to prevent people posting. You can cancel the procedure at any time. Please remember this is an intensive operation and should only be carried out when absolutely necessarily. Do not run this script too often!</p>',
-	'SEARCH_INDEX_CANCEL' => 'Re-indexing of search system has been cancelled. Please note this will result in searches returning incomplete results. You can re-index the posts again at any stage.',
-	'SEARCH_INDEXING_COMPLETE' => 'Re-indexing of search system has been completed. You can re-index the posts again at any stage.',
+	'SEARCH_INDEX_CANCEL'		=> 'Re-indexing of search system has been cancelled. Please note this will result in searches returning incomplete results. You can re-index the posts again at any stage.',
+	'SEARCH_INDEXING_COMPLETE'	=> 'Re-indexing of search system has been completed. You can re-index the posts again at any stage.',
 	'START' => 'Start',
-	'STOP' => 'Stop', 
+	'STOP'	=> 'Stop', 
+);
 
-
+// Admin logs
+$lang += array(
 	'ADMIN_LOGS_EXPLAIN' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'MOD_LOGS_EXPLAIN' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'DISPLAY_LOG' => 'Display entries from previous',
@@ -1137,19 +1243,24 @@ $lang = array_merge($lang, array(
 	'SORT_DATE' => 'Date',
 	'SORT_ACTION' => 'Log action',
 	'NO_ENTRIES' => 'No log entries for this period',
+);
 
+// Events
+$lang += array(
+	'EVT_DEFINE'			=> 'Define an Event', 
+	'EVT_DEFINE_EXPLAIN'	=> 'Here you can decide what conditions are necessary for the information you previously provided to be executed. For example, if you defined a change in permissions you can decide to enable it only when a user has registered for a minimum number of days. You can define up to three trigger points. The forum selection only matters if the trigger is post count, it has no effect if days registered or karma are selected. Please note that events are user based. If you selected a usergroup the event will be executed for each user of that group.',
+	'EVT_DAYS_REG'		=> 'Days Registered', 
+	'EVT_POST_COUNT'	=> 'Post Count', 
+	'EVT_KARMA'			=> 'Karma', 
+	'EVT_AND'		=> 'AND', 
+	'EVT_OR'		=> 'OR', 
+	'EVT_NOT'		=> 'NOT', 
+	'EVT_IN'		=> 'in', 
+	'EVT_CREATED'	=> 'The event has been successfully created.', 
+);
 
-	'EVT_DEFINE' => 'Define an Event', 
-	'EVT_DEFINE_EXPLAIN' => 'Here you can decide what conditions are necessary for the information you previously provided to be executed. For example, if you defined a change in permissions you can decide to enable it only when a user has registered for a minimum number of days. You can define up to three trigger points. The forum selection only matters if the trigger is post count, it has no effect if days registered or karma are selected. Please note that events are user based. If you selected a usergroup the event will be executed for each user of that group.',
-	'EVT_DAYS_REG' => 'Days Registered', 
-	'EVT_POST_COUNT' => 'Post Count', 
-	'EVT_KARMA' => 'Karma', 
-	'EVT_AND' => 'AND', 
-	'EVT_OR' => 'OR', 
-	'EVT_NOT' => 'NOT', 
-	'EVT_IN' => 'in', 
-	'EVT_CREATED' => 'The event has been successfully created.', 
-
+// Attachments
+$lang += array(
 	'ATTACHMENTS'				=> 'Attachments',
 	'ATTACH_CONFIG_UPDATED'		=> 'Attachment configuration updated successfully',
 
@@ -1251,10 +1362,10 @@ $lang = array_merge($lang, array(
 	'EXTENSION_EXIST'			=> 'The Extension %s already exist',
 	'CANNOT_ADD_FORBIDDEN_EXTENSION' => 'The Extension %s is forbidden, you are not able to add it to the allowed Extensions',
 	'NOT_ASSIGNED'				=> 'Not assigned',
+);
 
-
-
-
+// Installation
+$lang += array(
 	'WELCOME_INSTALL'	=> 'Welcome to phpBB 2 Installation',
 
 	'INSTALL_REQUIRED'		=> 'Required', 
@@ -1267,13 +1378,13 @@ $lang = array_merge($lang, array(
 	'INSTALL_ADVICE'	=> 'Installation Compatibility', 
 	'INSTALL_ADVICE_EXPLAIN'=> 'Before proceeding with full installation phpBB will carry out some tests on your server and basic install. Please ensure you read through the results thoroughly and do not proceed until all tests are passed.', 
 	'PHP_AND_APPS'			=> 'PHP and Applications', 
-	'INSTALL_REQUIRED_PHP'	=> 'You must be running at least PHP 4.1.0 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.', 
+	'INSTALL_REQUIRED_PHP'	=> 'You must be running at least PHP 4.1.0 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice. If "safe mode" is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.', 
 	'INSTALL_OPTIONAL_PHP'	=> 'These modules or applications are optional, you do not need these to use phpBB 2.2. However if you do have them they will will enable greater functionality.', 
 	'PHP_VERSION_REQD'	=> 'PHP version >= 4.1.0',
 	'PHP_SAFE_MODE'		=> 'Safe Mode', 
 	'PHP_REQD_DB'		=> 'Supported Databases', 
 	'DLL_FIREBIRD'		=> 'Firebird 1.5+',
-	'DLL_MYSQL'			=> 'MySQL 3.23.x/4.0.x',
+	'DLL_MYSQL'			=> 'MySQL 3.23.x/4.x',
 	'DLL_MYSQL4'		=> 'MySQL 4.1+',
 	'DLL_MSSQL'			=> 'MSSQL Server 2000',
 	'DLL_MSSQL-ODBC'	=> 'MSSQL Server 2000 via ODBC',
@@ -1282,11 +1393,11 @@ $lang = array_merge($lang, array(
 	'DLL_POSTGRES'		=> 'PostgreSQL 7.x', 
 	'DLL_SQLITE'		=> 'SQLite', 
 	'DLL_MBSTRING'		=> 'Multi-byte character support', 
-	'DLL_ZLIB'			=> 'zlib Compression support', 
-	'DLL_FTP'			=> 'Remote FTP support',
-	'DLL_XML'			=> 'XML support', 
-	'DLL_MHASH'			=> 'Mhash hashing support', 
-	'APP_MAGICK'		=> 'Imagemagick support', 
+	'DLL_ZLIB'			=> 'zlib Compression support [ Visual confirmation, gz, .tar.gz, .zip ]', 
+	'DLL_FTP'			=> 'Remote FTP support [ Installation ]',
+	'DLL_XML'			=> 'XML support [ Jabber ]', 
+	'DLL_MHASH'			=> 'Mhash hashing support [ Jabber ]', 
+	'APP_MAGICK'		=> 'Imagemagick support [ Attachments ]', 
 	'NO_LOCATION'		=> 'Cannot determine location', 
 	'DIRECTORIES_AND_FILES'		=> 'Directory and file setup', 
 	'INSTALL_REQUIRED_FILES'	=> 'In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see "Not Found" you need to create the relevant file or directory. If you see "Unwriteable" you need to change the permissions on the file or directory to allow phpBB to write to it.', 
@@ -1362,6 +1473,6 @@ $lang = array_merge($lang, array(
 	'INST_ERR_FATAL_DB'			=> 'A fatal and unrecoverable database error has occured. This may be because the specified user does not have appropriate rights to CREATE TABLES or INSERT data, etc. Further information may be given below. Please contact your hosting provider in the first instance or the support forums of phpBB for further assistance.', 
 	'INST_ERR_FTP_PATH'			=> 'Could not change to the given directory, please check the path.', 
 	'INST_ERR_FTP_LOGIN'		=> 'Could not login to ftp server, check your username and password', 
-));
+);
 
 ?>
