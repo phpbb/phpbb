@@ -256,6 +256,8 @@ $lang['Acct_activation'] = 'Enable account activation';
 $lang['Acc_None'] = 'None'; // These three entries are the type of activation
 $lang['Acc_User'] = 'User';
 $lang['Acc_Admin'] = 'Admin';
+$lang['Visual_confirm'] = 'Enable visual confirmation';
+$lang['Visual_confirm_explain'] = 'Requires new users enter a random code matching an image to help prevent mass registrations.';
 
 $lang['Abilities_settings'] = 'User and Forum Basic Settings';
 $lang['Max_poll_options'] = 'Max number of poll options';

@@ -573,6 +573,8 @@ $lang['Confirm_password'] = 'Confirm password';
 $lang['Confirm_password_explain'] = 'You must confirm your current password if you wish to change it or alter your e-mail address';
 $lang['password_if_changed'] = 'You only need to supply a password if you want to change it';
 $lang['password_confirm_if_changed'] = 'You only need to confirm your password if you changed it above';
+$lang['Confirm_code'] = 'Confirmation code';
+$lang['Confirm_code_explain'] = 'Enter the code exactly as you see it in the image';
 
 $lang['Avatar'] = 'Avatar';
 $lang['Avatar_explain'] = 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, the height no greater than %d pixels, and the file size no more than %d KB.';
@@ -604,6 +606,8 @@ $lang['Profile_updated_inactive'] = 'Your profile has been updated. However, you
 $lang['Password_mismatch'] = 'The passwords you entered did not match.';
 $lang['Current_password_mismatch'] = 'The current password you supplied does not match that stored in the database.';
 $lang['Password_long'] = 'Your password must be no more than 32 characters.';
+$lang['Too_many_registers'] = 'You have made too many registration attempts. Please try again later.';
+$lang['Confirm_code_wrong'] = 'The confirmation code you entered did not match the image. Please try again.';
 $lang['Username_taken'] = 'Sorry, but this username has already been taken.';
 $lang['Username_invalid'] = 'Sorry, but this username contains an invalid character such as \'.';
 $lang['Username_disallowed'] = 'Sorry, but this username has been disallowed.';
