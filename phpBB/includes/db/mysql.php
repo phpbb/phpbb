@@ -134,7 +134,7 @@ class sql_db
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
 
-				if (!($this->query_result = @mysql_query($query, $this->db_connect_id)))
+				if (($this->query_result = @mysql_query($query, $this->db_connect_id)) === false)
 				{
 					$this->sql_error($query);
 				}

@@ -194,6 +194,11 @@ input.text {
 	font-family:	'Courier New', courier;
 }
 
+input.checkbox {
+	height:		16px;
+	width:		16px;
+}
+
 option.sep {
 	color:				white;
 	background-color:	#006699;

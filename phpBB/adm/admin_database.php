@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
-*                              admin_database.php
-*                              -------------------
-*     begin                : Thu May 31, 2001
-*     copyright            : (C) 2001 The phpBB Group
-*     email                : support@phpbb.com
-*
-*     $Id$
-*
-****************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_database.php
+// STARTED   : Thu May 31, 2001
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -27,7 +19,7 @@ if (!empty($setmodules))
 	$file_uploads = @ini_get('file_uploads');
 	if (!empty($file_uploads) && $file_uploads !== 0 && strtolower($file_uploads) != 'off' && $auth->acl_get('a_restore'))
 	{
-		$module['DB']['DB_RESTORE'] = $filename . "$SID&amp;mode=restore";
+		$module['DB']['DB_RESTORE'] = "$filenamex$SID&amp;mode=restore";
 	}
 
 	return;
@@ -38,14 +30,19 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'functions_compress.'.$phpEx);
 
-$mode = (isset($_GET['mode'])) ? $_GET['mode'] : '';
-
-// Increase maximum execution time, but don't complain about it if it isn't
-// allowed.
 @set_time_limit(1200);
 
+
+// Get some vars
+$mode = (isset($_GET['mode'])) ? htmlspecialchars($_GET['mode']) : '';
+$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
+
+
+// --------------------
 // Begin program proper
+// --------------------
 switch($mode)
 {
 	case 'backup':
@@ -54,30 +51,30 @@ switch($mode)
 			trigger_error($user->lang['NO_ADMIN']);
 		}
 
-		if (SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql')
+		$db_type = '';
+		switch (SQL_LAYER)
 		{
-			switch (SQL_LAYER)
-			{
-				case 'oracle':
-					$db_type = 'Oracle';
-					break;
-				case 'odbc':
-					$db_type = 'ODBC';
-					break;
-				case 'mssql':
-					$db_type = 'MSSQL';
-					break;
-			}
-
-			trigger_error($user->lang['Backups_not_supported']);
-			break;
+			case 'oracle':
+				$db_type = 'Oracle';
+				break;
+			case 'odbc':
+				$db_type = 'ODBC';
+				break;
+			case 'mssql':
+				$db_type = 'MSSQL';
+				break;
 		}
 
-		$additional_tables = (isset($_POST['tables'])) ? $_POST['tables'] : ((isset($_GET['tables'])) ? $_GET['tables'] : '');
-		$backup_type = (isset($_POST['type'])) ? $_POST['type'] : ((isset($_GET['type'])) ? $_GET['type'] : '');
-		$search = (!empty($_POST['search'])) ? intval($_POST['search']) : ((!empty($_GET['search'])) ? intval($_GET['search']) : 0);
-		$store_path = (isset($_POST['store'])) ? $_POST['store'] : ((isset($_GET['store'])) ? $_GET['store'] : '');
-		$compress = (!empty($_POST['compress'])) ? $_POST['compress'] : ((!empty($_GET['compress'])) ? $_GET['compress'] : 'none');
+		if ($db_type)
+		{
+			trigger_error($user->lang['Backups_not_supported']);
+		}
+
+		$additional_tables	= (isset($_REQUEST['tables'])) ? htmlspecialchars($_REQUEST['tables']) : '';
+		$backup_type		= (isset($_REQUEST['type'])) ? intval($_REQUEST['type']) : false;
+		$search				= (!empty($_REQUEST['search'])) ? true : false;
+		$store				= (!empty($_REQUEST['store'])) ? true : false;
+		$compress			= (isset($_REQUEST['compress'])) ? htmlspecialchars($_REQUEST['compress']) : '';
 
 		if (!isset($_POST['backupstart']) && !isset($_GET['backupstart']))
 		{
@@ -89,34 +86,34 @@ switch($mode)
 
 <p><?php echo $user->lang['Backup_explain']; ?></p>
 
-<form method="post" action="<?php echo "admin_database.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_database.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['Backup_options']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Backup_type']; ?>: </td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['Backup_type']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="type" value="full"  checked="checked" /> <?php echo $user->lang['Full_backup']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="structure" /> <?php echo $user->lang['Structure_only']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="data" /> <?php echo $user->lang['Data_only']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Include_search_index']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Include_search_index_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="search" value="0" /> <?php echo $user->lang['NO']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?></td>
+		<td class="row1"><b><?php echo $user->lang['Additional_tables']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['Additional_tables_explain']; ?></span></td>
+		<td class="row2"><input class="post" type="text" name="tables" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Additional_tables']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Additional_tables_explain']; ?></span></td>
-		<td class="row2"><input type="text" name="tables" size="40" /></td>
+		<td class="row1"><b><?php echo $user->lang['INC_SEARCH_INDEX']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['INC_SEARCH_INDEX_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="search" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="0" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Store_local']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Store_local_explain']; ?></span></td>
-		<td class="row2"><input type="text" name="store" size="40" /></td>
+		<td class="row1"><b><?php echo $user->lang['DOWNLOAD_STORE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DOWNLOAD_STORE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="store" value="0" checked="checked" /> <?php echo $user->lang['EXPORT_DOWNLOAD']; ?>&nbsp;&nbsp;<input type="radio" name="store" value="1" /> <?php echo $user->lang['EXPORT_STORE']; ?></td>
 	</tr>
 <?php
 
-			if (extension_loaded('zlib') || extension_loaded('bz2'))
+			if (@extension_loaded('zlib') || extension_loaded('bz2'))
 			{
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['Compress_file']; ?>: </td>
+		<td class="row1"><b><?php echo $user->lang['Compress_file']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $user->lang['NONE']; ?><?php
 
 				if (extension_loaded('zlib'))
@@ -175,15 +172,11 @@ switch($mode)
 			unset($additional_tables);
 		}
 
-		//
 		// Enable output buffering
-		//
 		@ob_start();
 		@ob_implicit_flush(0);
 
-		//
 		// Build the sql script file...
-		//
 		echo "#\n";
 		echo "# phpBB Backup Script\n";
 		echo "# Dump of tables for $dbname\n";
@@ -228,11 +221,9 @@ switch($mode)
 			}
 		}
 
-		//
 		// Flush the buffer, send the file
-		//
 		switch ($compress)
-		{
+		{/*
 			case 'gzip':
 				$extension = 'sql.gz';
 				$contents = gzencode(ob_get_contents());
@@ -251,7 +242,7 @@ switch($mode)
 				$extension = 'bz2';
 				$contents = bzcompress(ob_get_contents());
 				ob_end_clean();
-				break;
+				break;*/
 
 			default:
 				$extension = 'sql';
@@ -294,15 +285,13 @@ switch($mode)
 	case 'restore':
 		if (!$auth->acl_get('a_restore'))
 		{
-			trigger_error($user->lang['No_admin']);
+			trigger_error($user->lang['NO_ADMIN']);
 		}
 
 		if (isset($_POST['restorestart']))
 		{
-			//
 			// Handle the file upload ....
 			// If no file was uploaded report an error...
-			//
 			if (!empty($_POST['local']))
 			{
 				$file_tmpname = './../' . str_replace('\\\\', '/', $_POST['local']);
@@ -310,7 +299,7 @@ switch($mode)
 			}
 			else
 			{
-				$filename = (!empty($HTTP_POST_FILES['backup_file']['name'])) ? $HTTP_POST_FILES['backup_file']['name'] : '';
+				$filename = (!empty($_POST['backup_file']['name'])) ? $HTTP_POST_FILES['backup_file']['name'] : '';
 				$file_tmpname = ($HTTP_POST_FILES['backup_file']['tmp_name'] != 'none') ? $HTTP_POST_FILES['backup_file']['tmp_name'] : '';
 			}
 
@@ -999,123 +988,6 @@ function output_table_content($content)
 	echo $content ."\n";
 	return;
 }
-
-
-//
-// Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, Marc Delisle
-// http://www.phpmyadmin.net/
-//
-// Based on work by Eric Mueller and Denis125
-// Official ZIP file format: http://www.pkware.com/appnote.txt
-//
-class zipfile
-{
-	var $datasec      = array();
-	var $ctrl_dir     = array();
-	var $eof_ctrl_dir = "\x50\x4b\x05\x06\x00\x00\x00\x00";
-	var $old_offset   = 0;
-
-	function unix_to_dos_time($unixtime = 0)
-	{
-		$timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
-
-		if ($timearray['year'] < 1980)
-		{
-			$timearray['year']    = 1980;
-			$timearray['mon']     = 1;
-			$timearray['mday']    = 1;
-			$timearray['hours']   = 0;
-			$timearray['minutes'] = 0;
-			$timearray['seconds'] = 0;
-		}
-
-		return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16) |
-				($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
-	}
-
-	function add_file($data, $name, $time = 0)
-	{
-		$name     = str_replace('\\', '/', $name);
-
-		$dtime    = dechex($this->unix_to_dos_time($time));
-		$hexdtime = '\x' . $dtime[6] . $dtime[7]
-				  . '\x' . $dtime[4] . $dtime[5]
-				  . '\x' . $dtime[2] . $dtime[3]
-				  . '\x' . $dtime[0] . $dtime[1];
-		eval('$hexdtime = "' . $hexdtime . '";');
-
-		$fr   = "\x50\x4b\x03\x04";
-		$fr   .= "\x14\x00";            // ver needed to extract
-		$fr   .= "\x00\x00";            // gen purpose bit flag
-		$fr   .= "\x08\x00";            // compression method
-		$fr   .= $hexdtime;             // last mod time and date
-
-		$unc_len = strlen($data);
-		$crc     = crc32($data);
-		$zdata   = gzcompress($data);
-		$zdata   = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
-		$c_len   = strlen($zdata);
-		$fr      .= pack('V', $crc);             // crc32
-		$fr      .= pack('V', $c_len);           // compressed filesize
-		$fr      .= pack('V', $unc_len);         // uncompressed filesize
-		$fr      .= pack('v', strlen($name));    // length of filename
-		$fr      .= pack('v', 0);                // extra field length
-		$fr      .= $name;
-
-		// "file data" segment
-		$fr .= $zdata;
-
-		// "data descriptor" segment (optional but necessary if archive is not
-		// served as file)
-		$fr .= pack('V', $crc);                 // crc32
-		$fr .= pack('V', $c_len);               // compressed filesize
-		$fr .= pack('V', $unc_len);             // uncompressed filesize
-
-		// add this entry to array
-		$this -> datasec[] = $fr;
-		$new_offset        = strlen(implode('', $this->datasec));
-
-		// now add to central directory record
-		$cdrec = "\x50\x4b\x01\x02";
-		$cdrec .= "\x00\x00";                // version made by
-		$cdrec .= "\x14\x00";                // version needed to extract
-		$cdrec .= "\x00\x00";                // gen purpose bit flag
-		$cdrec .= "\x08\x00";                // compression method
-		$cdrec .= $hexdtime;                 // last mod time & date
-		$cdrec .= pack('V', $crc);           // crc32
-		$cdrec .= pack('V', $c_len);         // compressed filesize
-		$cdrec .= pack('V', $unc_len);       // uncompressed filesize
-		$cdrec .= pack('v', strlen($name)); // length of filename
-		$cdrec .= pack('v', 0);             // extra field length
-		$cdrec .= pack('v', 0);             // file comment length
-		$cdrec .= pack('v', 0);             // disk number start
-		$cdrec .= pack('v', 0);             // internal file attributes
-		$cdrec .= pack('V', 32);            // external file attributes - 'archive' bit set
-
-		$cdrec .= pack('V', $this -> old_offset); // relative offset of local header
-		$this -> old_offset = $new_offset;
-
-		$cdrec .= $name;
-
-		// optional extra field, file comment goes here
-		// save to central directory
-		$this -> ctrl_dir[] = $cdrec;
-	}
-
-	function file()
-	{
-		$data    = implode('', $this -> datasec);
-		$ctrldir = implode('', $this -> ctrl_dir);
-
-		return $data . $ctrldir . $this -> eof_ctrl_dir .
-			pack('v', sizeof($this -> ctrl_dir)) .  // total # of entries "on this disk"
-			pack('v', sizeof($this -> ctrl_dir)) .  // total # of entries overall
-			pack('V', strlen($ctrldir)) .           // size of central dir
-			pack('V', strlen($data)) .              // offset to start of central dir
-			"\x00\x00";                             // .zip file comment length
-	}
-}
-
 //
 // End Functions
 // -----------------------------------------------

@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                            functions_admin.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : © 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : functions_admin.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001,2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 // Simple version of jumpbox, just lists authed forums
 function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true)
@@ -1362,7 +1354,7 @@ function split_sql_file($sql, $delimiter)
 // and group names must be carried through for the moderators table
 function cache_moderators()
 {
-	global $db;
+	global $db, $cache;
 
 	// Clear table
 	$sql = (SQL_LAYER != 'sqlite') ? 'TRUNCATE ' . MODERATOR_TABLE : 'DELETE FROM ' . MODERATOR_TABLE;
@@ -1448,6 +1440,8 @@ function cache_moderators()
 				}
 		}
 	}
+
+	$cache->destroy(MODERATOR_TABLE);
 }
 
 // Logging functions

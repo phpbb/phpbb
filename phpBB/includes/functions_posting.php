@@ -29,6 +29,8 @@ function generate_smilies($mode)
 
 	if ($mode == 'window')
 	{
+		$user->setup(false);
+
 		page_header($user->lang['SMILIES'] . ' - ' . $topic_title);
 
 		$template->set_filenames(array(
@@ -555,7 +557,8 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 			}
 		}
 	}
-	return '';
+
+	return;
 }
 
 // Delete File
@@ -568,14 +571,13 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 
 	if (file_exists($filename))
 	{
-		$filesys = eregi_replace('/','\\', $filename);
+		$filesys = str_replace('/','\\', $filename);
 		$deleted = @system("del $filesys");
 
 		if (file_exists($filename)) 
 		{
 			@chmod($filename, 0777);
-			$deleted = @unlink($filename);
-			if (!$deleted)
+			if (!($deleted = @unlink($filename)))
 			{
 				$deleted = @system("del $filename");
 			}
@@ -590,8 +592,8 @@ function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 function get_img_size_format($width, $height)
 {
 	// Change these two values to define the Thumbnail Size
-	$max_width = 300;
-	$max_height = 85;
+	$max_width = 400;
+	$max_height = 200;
 	
 	if ($height > $max_height) 
 	{
@@ -673,8 +675,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 
 	$new_size = get_img_size_format($size[0], $size[1]);
 
-	$tmp_path = '';
-	$old_file = '';
+	$tmp_path = $old_file = '';
 
 	$used_imagick = FALSE;
 
@@ -682,7 +683,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 	{
 		if (is_array($size) && count($size) > 0) 
 		{
-			@exec($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 75 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' ' . $source . ' +profile "*" ' . $new_file);
+			passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_size[0] . 'x' . $new_size[1] . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $new_file) . '"');
 			if (file_exists($new_file))
 			{
 				$used_imagick = TRUE;

@@ -569,15 +569,11 @@ function create_group($action, $group_id, &$type, &$name, &$desc, &$colour, &$ra
 	return (sizeof($error)) ? $error : false;
 }
 
-
+// Call with: user_id_ary or username_ary set ... if both false entire group
+// will be set default
 function set_default_group($id, $user_id_ary, $username_ary, &$name, &$colour, &$rank, $avatar, $avatar_type)
 {
 	global $db;
-
-	if (!is_array($$which_ary))
-	{
-		$$which_ary = array($$which_ary);
-	}
 
 	if (is_array($user_id_ary) || is_array($username_ary))
 	{
@@ -656,37 +652,108 @@ function set_default_group($id, $user_id_ary, $username_ary, &$name, &$colour, &
 	return false;
 }
 
-// TODO
-// approve group
+// Call with: user_id_ary or username_ary set ... if both false entire group
+// will be approved
 function approve_user($group_id, $user_id_ary, $username_ary, &$group_name) 
 {
 	global $db;
 
-	$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
+	if (is_array($user_id_ary) || is_array($username_ary))
+	{
+		$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
 
-	$sql = 'SELECT user_id, username 
-		FROM ' . USERS_TABLE . " 
-		WHERE $sql_where";
+		$sql = 'SELECT user_id, username 
+			FROM ' . USERS_TABLE . " 
+			WHERE $sql_where";
+	}
+	else
+	{
+		$sql = 'SELECT u.user_id, u.username 
+			FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . "  
+			WHERE ug.group_id = $group_id
+				AND u.user_id = ug.user_id";
+	}
 	$result = $db->sql_query($sql);
 
 	$usernames = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$username_ary[] = $row['username'];
-		$user_id_ary[] = $row['user_id'];
+		$user_id_ary[]	= $row['user_id'];
 	}
 	$db->sql_freeresult($result);
 		
-	$sql = 'UPDATE ' . USER_GROUP_TABLE . ' 
+	$sql = 'UPDATE ' . USER_GROUP_TABLE . " 
 		SET user_pending = 0 
-		WHERE user_id IN (' . implode(', ', $user_id_ary) . ")
-			AND group_id = $group_id";
+		WHERE group_id = $group_id 
+			AND user_id IN (" . implode(', ', $user_id_ary) . ')';
 	$db->sql_query($sql);
 
 	add_log('admin', 'LOG_GROUP_APPROVE', $group_name, implode(', ', $username_ary));
 
 	unset($username_ary);
 	unset($user_id_ary);
+
+	return false;
+}
+
+// If user_id or username_ary are set users are deleted, else group is
+// removed. Setting action to demote true will demote leaders to users 
+// (if appropriate), deleting leaders removes them from group as with
+// normal users
+function remove_from_group($type, $id, $user_id_ary, $username_ary, &$group_name)
+{
+	global $db;
+
+	// Delete or demote individuals if data exists, else delete group
+	if (is_array($user_id_ary) || is_array($username_ary))
+	{
+		$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
+
+		$sql = 'SELECT user_id, username 
+			FROM ' . USERS_TABLE . " 
+			WHERE $sql_where";
+		$result = $db->sql_query($sql);
+
+		$usernames = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$username_ary[] = $row['username'];
+			$user_id_ary[]	= $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		switch ($type)
+		{
+			case 'demote':
+				$sql = 'UPDATE ' . USER_GROUP_TABLE . "
+					SET group_leader = 0 
+					WHERE $sql_where";
+				$db->sql_query($sql);
+				break;
+
+			default:
+				$sql = 'SELECT g.group_id, g.group_name, u.user_id 
+					FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g 
+					WHERE u.user_id IN ' . implode(', ', $user_id_ary) . " 
+						AND ug.group_id <> $group_id 
+						AND g.group_type = " . GROUP_SPECIAL . '  
+					GROUP BY u.user_id';
+				break;
+		}
+	}
+	else
+	{
+	}
+
+	if (!function_exists('add_log'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	}
+
+	$log = ($action == 'demote') ? 'LOG_GROUP_DEMOTED' : (($action == 'deleteusers') ? 'LOG_GROUP_REMOVE' : 'LOG_GROUP_DELETED');
+	add_log('admin', $log, $name, implode(', ', $username_ary));
 
 	return false;
 }

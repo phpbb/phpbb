@@ -296,6 +296,22 @@ class Jabber
 		}
 	}
 
+	function SendPresence($type = NULL, $to = NULL, $status = NULL, $show = NULL, $priority = NULL)
+	{
+		$xml = '<presence';
+		$xml .= ($to) ? " to='$to'" : '';
+		$xml .= ($type) ? " type='$type'" : '';
+		$xml .= ($status || $show || $priority) ? ">\n" : " />\n";
+
+		$xml .= ($status) ? " <status>$status</status>\n" : '';
+		$xml .= ($show) ? "	<show>$show</show>\n" : '';
+		$xml .= ($priority) ? "	<priority>$priority</priority>\n" : '';
+
+		$xml .= ($status || $show || $priority) ? "</presence>\n" : '';
+
+		return ($this->SendPacket($xml)) ? TRUE : FALSE;
+	}
+
 	function SendError($to, $id = NULL, $error_number, $error_message = NULL)
 	{
 		$xml = "<iq type='error' to='$to'";

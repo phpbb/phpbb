@@ -34,17 +34,20 @@ if (!empty($setmodules))
 define('IN_PHPBB', 1);
 // Include files
 $phpbb_root_path = '../';
-require($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
+
 // Set mode
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'main';
+$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
+$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : 'main';
+
 
 // Begin program
 if (isset($_POST['username']) || isset($_REQUEST['u']))
 {
 	// Grab relevant userdata
-	if(isset($_REQUEST['u']))
+	if (isset($_REQUEST['u']))
 	{
 		$user_id = intval($_REQUEST['u']);
 
@@ -71,35 +74,24 @@ if (isset($_POST['username']) || isset($_REQUEST['u']))
 
 		$db->sql_transaction();
 
-		$sql = "UPDATE " . POSTS_TABLE . "
-			SET poster_id = " . ANONYMOUS . ", post_username = '$username'
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET poster_id = ' . ANONYMOUS . " 
 			WHERE poster_id = $user_id";
 		$db->sql_query($sql);
 
-		$sql = "UPDATE " . TOPICS_TABLE . "
-			SET topic_poster = " . ANONYMOUS . "
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+			SET topic_poster = ' . ANONYMOUS . "
 			WHERE topic_poster = $user_id";
 		$db->sql_query($sql);
 
-		$sql = "DELETE FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id";
-		$db->sql_query($sql);
+		$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE);
 
-		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-			WHERE user_id = $user_id";
-		$db->sql_query($sql);
-
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE user_id = $user_id";
-		$db->sql_query($sql);
-
-		$sql = "DELETE FROM " . FORUMS_WATCH_TABLE . "
-			WHERE user_id = $user_id";
-		$db->sql_query($sql);
-
-		$sql = "DELETE FROM " . ACL_USERS_TABLE . "
-			WHERE user_id = $user_id";
-		$db->sql_query($sql);
+		foreach ($table_ary as $table)
+		{
+			$sql = "DELETE FROM $table 
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+		}
 
 		$db->sql_transaction('commit');
 
@@ -114,11 +106,11 @@ if (isset($_POST['username']) || isset($_REQUEST['u']))
 
 <form method="post" action="admin_users.<?php echo $phpEx . $SID; ?>&amp;mode=<?php echo $mode; ?>&amp;u=<?php echo $userdata['user_id']; ?>"><table width="90%" cellspacing="3" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right"><b>Main</b> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=profile">Profile</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=pref">Preferences</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=avatar">Avatar</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;mode=permissions">Permissions</a></td>
+		<td align="right"><b>Main</b> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;action=profile">Profile</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;action=pref">Preferences</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;action=avatar">Avatar</a> | <a href="admin_users.<?php echo $phpEx . $SID; ?>&amp;u=<?php echo $userdata['user_id']; ?>&amp;action=permissions">Permissions</a></td>
 	</tr>
 <?php
 
-	switch ($mode)
+	switch ($action)
 	{
 		case 'main':
 

@@ -71,9 +71,9 @@ class session
 		}
 
 		// Load limit check (if applicable)
-		if (doubleval($config['limit_load']) && @file_exists('/proc/loadavg'))
+		if (@file_exists('/proc/loadavg'))
 		{
-			if ($load = @file('/proc/loadavg'))
+			if ($config['limit_load'] && $load = @file('/proc/loadavg'))
 			{
 				list($this->load) = explode(' ', $load[0]);
 
@@ -398,6 +398,8 @@ class user extends session
 	var $lang_path;
 	var $img_lang;
 
+	var $keyoptions = array('viewimg', 'notify', 'notify_pm', 'popup_pm', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'attachsig', 'allowhtml', 'allowbbcode', 'allowsmile', 'allowavatar', 'allow_pm', 'allow_email', 'allow_viewonline', 'allow_viewemail', 'allow_massemail');
+
 	function setup($lang_set = false, $style = false)
 	{
 		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path;
@@ -538,6 +540,45 @@ class user extends session
 			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme['primary'][$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
 		}
 		return $imgs[$img];
+	}
+
+	// Start code for checking/setting option bit field for user table (if we go that way)
+	// TODO
+	// array_search begone
+	// set values, blah, everything else
+	function option_set($key, $value = false)
+	{
+		if (is_array($key))
+		{
+			if (is_array($value))
+			{
+				$return = array();
+				foreach ($key as $k)
+				{
+					$return[$key] = ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
+				}
+				return $return;
+			}
+			else
+			{
+				$return = array();
+				foreach ($key as $k)
+				{
+					$return[$key] = ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
+				}
+				return $return;
+			}
+		}
+		else
+		{
+			if ($value !== false)
+			{
+			}
+			else
+			{
+				return ($user->data['user_options'] & pow(2, array_search($key, $this->keyoptions))) ? true : false;
+			}
+		}
 	}
 }
 

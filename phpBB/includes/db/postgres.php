@@ -35,12 +35,9 @@ class sql_db
 	var $rownum = array();
 	var $num_queries = 0;
 
-	//
-	// Constructor
-	//
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
 	{
-		$this->connect_string = "";
+		$this->connect_string = '';
 
 		if ($sqluser)
 		{
@@ -363,7 +360,6 @@ class sql_db
 
 	function sql_error($sql = '')
 	{
-
 		if (!$this->return_on_error)
 		{
 			if ($this->transaction)

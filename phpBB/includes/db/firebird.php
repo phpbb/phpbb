@@ -43,7 +43,7 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->server = $sqlserver;
 
-		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password) : @ibase_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id =($this->persistency) ? @ibase_pconnect($this->server, $this->user, $this->password, false, false, 3) : @ibase_connect($this->server, $this->user, $this->password, false, false, 3);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -130,6 +130,12 @@ class sql_db
 				if (($this->query_result = ibase_query($query, $this->db_connect_id)) === FALSE)
 				{
 					$this->sql_error($query);
+				}
+
+				if (!$this->transaction && (strpos($query, 'INSERT') === 0 || strpos($query, 'UPDATE') === 0))
+				{
+					echo $query;
+					ibase_commit();
 				}
 
 				if (!empty($_GET['explain']))
@@ -415,7 +421,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtoupper(@ini_get('magic_quotes_sybase')) == 'ON') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\\\'', '\'\'', $msg);
+		return (@ini_get('magic_quotes_sybase') || strtolower(@ini_get('magic_quotes_sybase')) == 'on') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\'', '\'\'', stripslashes($msg));
 	}
 
 	function sql_error($sql = '')

@@ -1,23 +1,18 @@
 <?php
-/***************************************************************************
- *                              ucp_profile.php
- *                            -------------------
- *   begin                : Saturday, Feb 21, 2003
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_styles.php
+// STARTED   : Thu Aug 7 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// TODO
+// Check birthday for date in past
 
 class ucp_profile extends ucp
 {

@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                               functions.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : functions.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001,2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 function set_config($config_name, $config_value, $is_dynamic = FALSE)
 {
@@ -697,10 +689,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
-//	$page_string = '<a href="javascript:goto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
+//	$page_string = '<a href="javascript:goto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 
 //	$template->assign_var('BASE_URL', $base_url);
+//	$template->assign_var('PER_PAGE', $per_page);
 
 	return $page_string;
 }
@@ -944,10 +937,6 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
 	}
 
-	$sql = 'DELETE FROM ' . CONFIRM_TABLE . ' 
-		WHERE confirm_time < ' . (time() - $config['session_length']);
-//	$db->sql_query($sql);
-
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err, 
 		'LOGIN_EXPLAIN'		=> $login_explain, 
@@ -994,6 +983,9 @@ function login_forum_box(&$forum_data)
 
 	if (!empty($_POST['password']))
 	{
+		// TODO
+		// Remove old valid sessions
+
 		if ($_POST['password'] == $forum_data['forum_password'])
 		{
 			$sql = 'INSERT INTO phpbb_forum_access (forum_id, user_id, session_id)

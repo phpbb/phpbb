@@ -60,7 +60,6 @@ else
 	$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
 }
 
-
 // Grab basic data for group, if group_id is set and exists
 if ($group_id)
 {
@@ -85,24 +84,6 @@ switch ($mode)
 		// Which page?
 		switch ($action)
 		{
-			case 'delete':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
-
-
-				break;
-
-			case 'deleteusers':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
-
-
-				break;
-
 			case 'approve':
 				if (!$group_id)
 				{
@@ -121,6 +102,45 @@ switch ($mode)
 
 				set_default_group($group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, false, false);
 				trigger_error($user->lang['GROUP_DEFS_UPDATED']);
+				break;
+	
+			case 'delete':
+			case 'deleteusers':
+			case 'demote':
+				if (!$group_id)
+				{
+					trigger_error($user->lang['NO_GROUP']);
+				}
+
+				if ($error = remove_from_group($action, $group_id, $mark_ary, false, $group_name))
+				{
+					trigger_error($user->lang[$error]);
+				}
+
+				$message = ($action == 'demote') ? 'GROUP_MODS_DEMOTED' : (($action == 'deleteusers') ? 'GROUP_USERS_REMOVE' : 'GROUP_DELETED');
+				trigger_error($user->lang[$message]);
+				break;
+
+			case 'addleaders':
+			case 'addusers':
+				if (!$group_id)
+				{
+					trigger_error($user->lang['NO_GROUP']);
+				}
+
+				if (!$name_ary)
+				{
+					trigger_error($user->lang['NO_USERS']);
+				}
+
+				// Add user/s to group
+				if ($error = add_to_group($action, $group_id, false, $name_ary, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
+				{
+					trigger_error($user->lang[$error]);
+				}
+
+				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+				trigger_error($user->lang[$message]);
 				break;
 
 			case 'edit':
@@ -259,6 +279,9 @@ function swatch()
 		<td class="row1"><select name="group_rank"><?php echo $rank_options; ?></select></td>
 	</tr>
 	<!-- tr>
+		<th colspan="2"><?php echo $user->lang['GROUP_AVATAR']; ?></th>
+	</tr>
+	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_AVATAR']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['GROUP_AVATAR_EXPLAIN']; ?></span></td>
 		<td class="row1">&nbsp;</td>
 	</tr -->
@@ -269,30 +292,6 @@ function swatch()
 <?php
 
 				break;
-
-
-			case 'addleaders':
-			case 'addusers':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
-
-				if (!$name_ary)
-				{
-					trigger_error($user->lang['NO_USERS']);
-				}
-
-				// Add user/s to group
-				if ($error = add_to_group($action, $group_id, false, $name_ary, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
-				{
-					trigger_error($user->lang[$error]);
-				}
-
-				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($user->lang[$message]);
-				break;
-
 
 			// Show list of leaders, existing and pending members
 			case 'list':
@@ -410,7 +409,7 @@ function swatch()
 ?>
 
 	<tr>
-		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="default">Default</option><option value="delete">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="default">Default</option><option value="demote">Demote</option><option value="delete">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
 	</tr>
 </table>
 
@@ -706,100 +705,19 @@ function hidebox(id)
 		adm_page_footer();
 		break;
 
-
-
-
+	// Setting groupwide preferences
 	case 'prefs':
 		adm_page_header($user->lang['GROUP_PREFS']);
 
-
-		adm_page_footer();
-		break;
-
-
-
-	default:
-		trigger_error($user->lang['NO_MODE']);
-}
-
-exit;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-	case 'add':
-
-
-		break;
-
-
-
-
-
-
-	case 'delete':
-		// TODO:
-		// Need to offer ability to demote moderators or remove from group
-		break;
-
-
-
-
-
-	case 'approve':
-		break;
-
-
-
-
-
-
-
-
-
-
-
-adm_page_footer();
-
-
-
-
-
-	case 'prefs':
-
-			}
-			else
-			{
-				$user_lang = (!empty($_POST['user_lang'])) ? htmlspecialchars($_POST['user_lang']) : '';
-				$user_tz = (isset($_POST['user_tz'])) ? doubleval($_POST['user_tz']) : '';
-				$user_dst = (isset($_POST['user_dst'])) ? intval($_POST['user_dst']) : '';
-			}
+		if ($update)
+		{
+		}
+		else
+		{
+			$user_lang = (!empty($_POST['user_lang'])) ? htmlspecialchars($_POST['user_lang']) : '';
+			$user_tz = (isset($_POST['user_tz'])) ? doubleval($_POST['user_tz']) : '';
+			$user_dst = (isset($_POST['user_dst'])) ? intval($_POST['user_dst']) : '';
+		}
 
 ?>
 <h1><?php echo $user->lang['GROUP_SETTINGS']; ?></h1>
@@ -829,18 +747,13 @@ adm_page_footer();
 
 <?php
 
-*/
+		adm_page_footer();
+		break;
 
-
-function delete_group()
-{
-
+	default:
+		trigger_error($user->lang['NO_MODE']);
 }
 
-function remove_from_group($type, $id, $user_id)
-{
-
-}
-
+exit;
 
 ?>
