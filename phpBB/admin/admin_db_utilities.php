@@ -28,6 +28,10 @@
 *	adapted from the unoficial phpMyAdmin 2.2.0.
 ***************************************************************************/
 
+//
+// Do the setmodules stuff for the admin control panel.
+//
+
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
@@ -143,6 +147,9 @@ function get_table_def_postgres($table, $crlf)
 	global $drop, $db;
 
 	$schema_create = "";
+	//
+	// Get a listing of the fields, with their associated types, etc.
+	//
 
 	$field_query = "SELECT a.attnum, a.attname AS field, t.typename as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
 		FROM pg_class c, pg_attribute a, pg_type t
@@ -164,10 +171,17 @@ function get_table_def_postgres($table, $crlf)
 		$schema_create .= "DROP TABLE $table;$crlf";
 	} // end if
 
+	//
+	// Ok now we actually start building the SQL statements to restore the tables
+	//
+
 	$schema_create .= "CREATE TABLE $table($crlf";
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		//
+		// Get the data from the table
+		//
 		$sql_get_default = "SELECT d.adsrc AS rowdefault
 			FROM pg_attrdef d, pg_class c
 			WHERE (c.relname = '$table') 
@@ -220,6 +234,9 @@ function get_table_def_postgres($table, $crlf)
 		$schema_create .= ", $crlf";
 
 	}
+	//
+	// Get the listing of primary keys.
+	//
 
 	$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
 		FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia 
@@ -300,7 +317,10 @@ function get_table_def_postgres($table, $crlf)
 		include('page_header_admin.'.$phpEx);
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
 	}
-
+	
+	//
+	// Add the constraints to the sql file.
+	//
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$schema_create .= '	CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['rcsrc'] . ",$crlf";
@@ -316,6 +336,9 @@ function get_table_def_postgres($table, $crlf)
 		$schema_create .= $index_create;
 	}
 
+	//
+	// Ok now we've built all the sql return it to the calling function.
+	//
 	return (stripslashes($schema_create));
 
 }
@@ -454,6 +477,10 @@ function get_table_content_postgres($table, $handler)
 {
 	global $db;
 
+	//
+	// Grab all of the data from current table.
+	//
+
 	$result = $db->sql_query("SELECT * FROM $table");
 
 	if (!$result)
@@ -477,7 +504,9 @@ function get_table_content_postgres($table, $handler)
 		unset($schema_vals);
 		unset($schema_fields);
 		unset($schema_insert);
-
+		// 
+		// Build the SQL statement to recreate the data.
+		//
 		for($i = 0; $i < $i_num_fields; $i++)
 		{
 			$strVal = $row[$aryName[$i]];
@@ -519,6 +548,10 @@ function get_table_content_postgres($table, $handler)
 		$schema_fields = ereg_replace(",$", "", $schema_fields);
 		$schema_fields = ereg_replace("^ ", "", $schema_fields);
 
+		//
+		// Take the ordered fields and their associated data and build it
+		// into a valid sql statement to recreate that field in the data.
+		//
 		$schema_insert = "INSERT INTO $table ($schema_fields) VALUES($schema_vals);";
 
 		$handler(trim($schema_insert));
@@ -528,11 +561,16 @@ function get_table_content_postgres($table, $handler)
 
 }// end function get_table_content_postgres...
 
+//
+// This function is for getting the data from a mysql table.
+//
 
 function get_table_content_mysql($table, $handler)
 {
 	global $db;
-
+	//
+	// Grab the data from the table.
+	//
 	$result = $db->sql_query("SELECT * FROM $table");
 
 	if (!$result)
@@ -552,26 +590,44 @@ function get_table_content_mysql($table, $handler)
 
 	$handler($schema_insert);
 
+	//
+	// Loop through the resulting rows and build the sql statement.
+	//
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$table_list = '(';
 		$num_fields = $db->sql_numfields($result);
-
+		//
+		// Grab the list of field names.
+		//
 		for ($j = 0; $j < $num_fields; $j++)
 		{
 			$table_list .= $db->sql_fieldname($j, $result) . ', ';
 		}
-
+		//
+		// Get rid of the last comma
+		//
 		$table_list = ereg_replace(', $', '', $table_list);
 		$table_list .= ')';
-		
+		//
+		// Start building the SQL statement.
+		//
 		$schema_insert = "INSERT INTO $table $table_list VALUES(";
-
+		//
+		// Loop through the rows and fill in data for each column
+		//
 		for ($j = 0; $j < $num_fields; $j++)
 		{
 			if(!isset($row[$j]))
 			{
-				$schema_insert .= ' NULL, ';
+				//
+				// If there is no data for the column set it to null.
+				// There was a problem here with an extra space causing the
+				// sql file not to reimport if the last column was null in 
+				// any table.  Should be fixed now :) JLH
+				//
+				$schema_insert .= ' NULL,';
 			} 
 			elseif ($row[$j] != '') 
 			{
@@ -582,9 +638,14 @@ function get_table_content_mysql($table, $handler)
 				$schema_insert .= '\'\',';
 			}
 		}
-
+		//
+		// Get rid of the the last comma.  
+		//
 		$schema_insert = ereg_replace(',$', '', $schema_insert);
 		$schema_insert .= ');';
+		//
+		// Go ahead and send the insert statement to the handler function.
+		//
 		$handler(trim($schema_insert));
 
 	}
