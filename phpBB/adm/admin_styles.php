@@ -265,11 +265,11 @@ switch ($mode)
 
 <p><?php echo $user->lang['MANAGE_STYLE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th nowrap="nowrap">Style name</th>
 		<th nowrap="nowrap">Used by</th>
-		<th nowrap="nowrap" colspan="4">&nbsp;</th>
+		<th nowrap="nowrap" colspan="4">Options</th>
 	</tr>
 <?php
 
@@ -310,9 +310,6 @@ switch ($mode)
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
-		else
-		{
-		}
 		$db->sql_freeresult($result);
 
 
@@ -337,6 +334,36 @@ switch ($mode)
 
 		switch ($action)
 		{
+			case 'add':
+			case 'details':
+
+
+				adm_page_header($user->lang['EDIT_IMAGESET']);
+
+?>
+<form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$imageset_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th>Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Imageset name:</b></td>
+				<td class="row2"><input class="post" type="text" name="imageset_name" value="<?php echo $imageset_name; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Copyright:</b></td>
+				<td class="row2"><input class="post" type="text" name="imageset_copyright" value="<?php echo $imageset_copyright; ?>" maxlength="30" size="25" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table></form>
+<?php
+
+				adm_page_footer();
+				break;
+
 			case 'edit':
 
 				$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($imgname) : '';
@@ -444,24 +471,6 @@ switch ($mode)
 <p><?php echo $user->lang['EDIT_IMAGESET_EXPLAIN']; ?></p>
 
 <form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$imageset_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
-	<!-- tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th>Parameter</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Theme name:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Copyright:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /></td>
-			</tr>
-		</table>
-		
-		<br clear="all" /><br /></td>
-	</tr -->
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="imgname" onchange="this.form.submit(); "><?php echo $img_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
@@ -506,10 +515,10 @@ switch ($mode)
 
 <p><?php echo $user->lang['MANAGE_IMAGESET_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>Imageset name</th>
-		<th colspan="2">&nbsp;</th>
+		<th colspan="3">Options</th>
 	</tr>
 <?php
 
@@ -526,6 +535,7 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['imageset_id']; ?>"><?php echo $row['imageset_name']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=details&amp;id=" . $row['imageset_id']; ?>">Details</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['imageset_id']; ?>">Delete</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['imageset_id']; ?>">Export</a>&nbsp;</td>
 	</tr>
@@ -534,15 +544,12 @@ switch ($mode)
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
-		else
-		{
-		}
 		$db->sql_freeresult($result);
 
 
 ?>
 	<tr>
-		<td class="cat" colspan="3">&nbsp;</td>
+		<td class="cat" colspan="4" align="right">Create new imageset: <input class="post" type="text" name="imageset_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newimageset" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 
@@ -560,6 +567,44 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'preview':
+				break;
+
+			case 'add':
+			case 'details':
+
+				// Output the page
+				adm_page_header($user->lang['EDIT_TEMPLATE']);
+
+?>
+
+<h1><?php echo $user->lang['EDIT_TEMPLATE']; ?></h1>
+
+<p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$template_id"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th>Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Template name:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $template_name; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Copyright:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $template_copyright; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table></form>
+<?php
+
+				adm_page_footer();
 				break;
 
 			case 'edit':
@@ -657,16 +702,6 @@ switch ($mode)
 					}
 				}
 
-/*				if (isset($_POST['tpl_download']))
-				{
-					header("Content-Type: text/html; name=\"" . $tplname . ".html\"");
-					header("Content-disposition: attachment; filename=" . $tplname . ".html");
-					echo $str;
-					exit;
-
-				}
-*/
-
 
 				// Generate list of template options
 				$tpl_options = '';
@@ -711,7 +746,7 @@ switch ($mode)
 
 <p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table cellspacing="1" cellpadding="1" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_TEMPLATE']; ?>: <select name="tplname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $tpl_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
@@ -752,10 +787,10 @@ switch ($mode)
 
 <p><?php echo $user->lang['MANAGE_TEMPLATE_EXPLAIN']; ?></p>
 
-<form name="templates" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="templates" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2">Template name</th>
-		<th colspan="3">&nbsp;</th>
+		<th colspan="3">Template name</th>
+		<th colspan="4">Options</th>
 	</tr>
 <?php
 
@@ -773,6 +808,8 @@ switch ($mode)
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=edit&amp;id=" . $row['template_id']; ?>"><?php echo $row['template_name']; ?></a></td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=bbcode&amp;id=" . $row['template_id']; ?>">BBCode</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=cache&amp;id=" . $row['template_id']; ?>">Cache</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=details&amp;id=" . $row['template_id']; ?>">Details</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=delete&amp;id=" . $row['template_id']; ?>">Delete</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=export&amp;id=" . $row['template_id']; ?>">Export</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=preview&amp;id=" . $row['template_id']; ?>">Preview</a>&nbsp;</td>
@@ -790,7 +827,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">&nbsp;</td>
+		<td class="cat" colspan="7" align="right">Create new template: <input class="post" type="text" name="template_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtemplate" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -815,6 +852,48 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'preview':
+				break;
+
+			case 'add':
+			case 'details':
+
+				// Output the page
+				adm_page_header($user->lang['EDIT_THEME']);
+
+?>
+
+<h1><?php echo $user->lang['EDIT_THEME']; ?></h1>
+
+<p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th>Parameter</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Theme name:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="row1" width="40%"><b>Copyright:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table></form>
+<?php
+
+				adm_page_footer();
+				break;
+
+			case 'add':
+
 				break;
 
 			case 'edit':
@@ -1283,24 +1362,6 @@ function csspreview()
 ?>
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id&amp;showcss=$showcss"; ?>" onsubmit="return csspreview()"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
-	<!-- tr>
-		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th>Parameter</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Theme name:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Copyright:</b></td>
-				<td class="row2"><input class="post" type="text" name="theme_copyright" value="<?php echo $theme_copyright; ?>" maxlength="30" size="25" /></td>
-			</tr>
-		</table>
-		
-		<br clear="all" /><br /></td>
-	</tr -->
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != ''){ csspreview(); this.form.submit(); }"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
@@ -1488,10 +1549,10 @@ function csspreview()
 
 <p><?php echo $user->lang['THEMES_EXPLAIN']; ?></p>
 
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>Theme name</th>
-		<th colspan="3">&nbsp;</th>
+		<th colspan="4">Options</th>
 	</tr>
 <?php
 
@@ -1514,6 +1575,7 @@ function csspreview()
 				echo sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>');
 
 ?></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=details&amp;id=" . $row['theme_id']; ?>">Details</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
@@ -1523,15 +1585,41 @@ function csspreview()
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
-		else
-		{
-		}
 		$db->sql_freeresult($result);
 
 
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="5" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+	</tr>
+</table></form>
+
+<p>If you have uploaded a new theme to your themes/ folder it will be listed here. Before it can be used you need to install it using the form below.</p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2">Install theme</th>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2" align="center">No new themes detected</td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><!-- input class="btnmain" type="submit" name="install" value="Install" /--></td>
+	</tr>
+</table></form>
+
+<p>You may upload additional themes using the form below. Once uploaded the theme will immediately be available for use, editing, etc.</p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2">Upload Theme</th>
+	</tr>
+	<tr>
+		<td class="row1"><b>Theme file:</b><br /><span class="gensmall">File types: .zip, .tar.gz</span></td>
+		<td class="row2"><input class="btnmain" type="file" name="upload" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="install" value="Upload" /></td>
 	</tr>
 </table></form>
 
