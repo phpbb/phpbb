@@ -48,6 +48,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path','imag
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path','images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path','images/smiles');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path','images/icons');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path','images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path','images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('privmsg_disable','0');
@@ -166,6 +167,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_post', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_reply', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_quote', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_edit', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_lock', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_delete', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_poll', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_vote', 1);
