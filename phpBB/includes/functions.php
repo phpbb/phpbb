@@ -336,7 +336,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
-	$right = $cat_right = $padding = 0;
+	$right = $padding = 0;
 	$padding_store = array('0' => 0);
 	$display_jumpbox = false;
 	$iteration = 0;
@@ -387,11 +387,6 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		}
 
 		$right = $row['right_id'];
-
-		if ($row['right_id'] - $row['left_id'] > 1)
-		{
-			$cat_right = max($cat_right, $row['right_id']);
-		}
 
 		$template->assign_block_vars('jumpbox_forums', array(
 			'FORUM_ID'		=> $row['forum_id'],
@@ -1709,7 +1704,7 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
@@ -1797,7 +1792,6 @@ function page_footer()
 	}
 
 	$template->assign_vars(array(
-		'PHPBB_VERSION'	=> $config['version'],
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
 		'U_ACP' => ($auth->acl_get('a_') && $user->data['user_id'] != ANONYMOUS) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
