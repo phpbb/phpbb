@@ -73,6 +73,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 	$ban_end = ( !empty($HTTP_POST_VARS['banlength']) ) ? $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ) : 0;
 	$ban_reason = ( isset($HTTP_POST_VARS['banreason']) ) ? $HTTP_POST_VARS['banreason'] : '';
 	$ban_list = array_unique(explode("\n", $HTTP_POST_VARS['ban']));
+	$ban_list_log = implode(', ', $ban_list);
 
 	$banlist = array();
 
@@ -288,7 +289,7 @@ if ( isset($HTTP_POST_VARS['bansubmit']) )
 		//
 		// Update log
 		//
-		add_admin_log('log_ban_' . $mode, str_replace('\'', '', implode(', ', $banlist)), $ban_reason);
+		add_admin_log('log_ban_' . $mode, $ban_list_log, $ban_reason);
 	}
 
 	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . "admin_ban.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
