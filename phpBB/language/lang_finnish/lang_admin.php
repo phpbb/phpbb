@@ -467,6 +467,7 @@ $lang['reset_group_changes'] = "Resetoi muutokset";
 $lang['No_group_name'] = "Ryhm‰lle on annettava nimi";
 $lang['No_group_moderator'] = "Ryhm‰lle on m‰‰ritett‰v‰ moderaattori";
 $lang['No_group_mode'] = "Ryhm‰lle on m‰‰ritelt‰v‰ onko se avoin vai suljettu";
+$lang['No_group_action'] = "Toimintoa ei ole m‰‰ritelty";
 $lang['delete_group_moderator'] = "Poistetaanko ryhm‰n entinen moderaattori?";
 $lang['delete_moderator_explain'] = "Jos muutat ryhm‰n moderaattoria laita rasti t‰h‰n ruutuun poistaaksesi vanhan moderaattoritiedon. Muussa tapauksessa ‰l‰ laita raksia ja k‰ytt‰j‰st‰ tulee tavallinen ryhm‰n j‰sen.";
 $lang['Click_return_groupsadmin'] = "Klikkaa %st‰st‰%s palataksesi ryhm‰n hallintaan.";
@@ -542,6 +543,7 @@ $lang['No_assigned_rank'] = "Erikoistitteleit‰ ei asetettu";
 $lang['Rank_updated'] = "Tittelin p‰ivitys onnistui";
 $lang['Rank_added'] = "Tittelin lis‰ys onnistui";
 $lang['Rank_removed'] = "Tittelin poisto onnistui";
+$lang['No_update_ranks'] = "Titteli on poistettu mutta k‰ytt‰j‰tietoja, joilla titteli oli, ei ole p‰ivitetty. N‰iden k‰ytt‰jien tiedot on muutettava k‰sin";
 
 $lang['Click_return_rankadmin'] = "Klikkaa %st‰st‰%s palataksesi Tittelien hallintaan";
 
