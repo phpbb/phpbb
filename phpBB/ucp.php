@@ -321,16 +321,16 @@ switch ($mode)
 			// We destroy the session here, the user will be logged out nevertheless
 			$user->destroy();
 
-			meta_refresh(3, "{$phpbb_root_path}index.$phpEx");
+			meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");
 
-			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx\">", '</a>');
+			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx$SID\">", '</a>');
 			trigger_error($message);
 		}
 		else
 		{
 			confirm_box(false, 'DELETE_COOKIES', '');
 		}
-		redirect("index.$phpEx");
+		redirect("index.$phpEx$SID");
 		break;
 }
 
@@ -340,7 +340,7 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		redirect("index.$phpEx");
+		redirect("index.$phpEx$SID");
 	}
 	
 	login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_UCP']);

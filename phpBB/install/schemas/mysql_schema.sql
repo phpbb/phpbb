@@ -98,6 +98,7 @@ CREATE TABLE phpbb_bbcodes (
   PRIMARY KEY  (bbcode_id)
 );
 
+# Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -755,9 +756,6 @@ CREATE TABLE phpbb_styles_imageset (
   poll_center varchar(200) DEFAULT '' NOT NULL,
   poll_right varchar(200) DEFAULT '' NOT NULL, 
   attach_progress_bar varchar(200) DEFAULT '' NOT NULL,
-  karma_left varchar(200) DEFAULT '' NOT NULL, 
-  karma_center varchar(200) DEFAULT '' NOT NULL, 
-  karma_right varchar(200) DEFAULT '' NOT NULL, 
   user_icon1 varchar(200) DEFAULT '' NOT NULL, 
   user_icon2 varchar(200) DEFAULT '' NOT NULL, 
   user_icon3 varchar(200) DEFAULT '' NOT NULL, 

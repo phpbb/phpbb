@@ -977,9 +977,10 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				}
 			}
 
-			$sql = 'SELECT DISTINCT(post_id)
+			$sql = 'SELECT DISTINCT(post_msg_id)
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+				WHERE post_msg_id IN (' . implode(', ', $post_ids) . ')
+					AND in_message = 0';
 
 			$post_ids = array();
 			$result = $db->sql_query($sql);

@@ -268,15 +268,17 @@ if ($forum_password)
 if (isset($_GET['e']))
 {
 	$jump_to = (int) $_GET['e'];
-	$redirect_url = htmlspecialchars(str_replace('&e=' . $jump_to, '', $_SERVER['REQUEST_URI'])) . (($jump_to) ? '#' . $jump_to : '');
+
+	$redirect_url = str_replace('&e=' . $jump_to, '', $_SERVER['REQUEST_URI']) . (($jump_to) ? '#' . $jump_to : '');
+
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', $redirect_url), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
+		login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($redirect_url)), '', $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
 	else if ($jump_to > 0)
 	{
 		// We direct the already logged in user to the correct post...
-		redirect($redirect_url);
+		redirect(preg_replace('#^' . $config['script_path'] . '#', '', $redirect_url));
 	}
 }
 

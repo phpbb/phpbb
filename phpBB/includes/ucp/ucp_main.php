@@ -163,6 +163,8 @@ class ucp_main extends module
 
 				if ($post_count_sql)
 				{
+					// NOTE: The following three queries could be a problem for big boards
+					
 					// Grab all the relevant data
 					$sql = 'SELECT COUNT(p.post_id) AS num_posts   
 						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
