@@ -256,12 +256,10 @@ function language_select($default, $select_name = "language", $dirname="language
 	$user = array();
 	while ( $file = readdir($dir) )
 	{
-		if ( preg_match('#^lang_#', $file) && !is_file($dirname . '/' . $file) && !is_link($dirname . '/' . $file) )
+		if ( file_exists($dirname . '/' . $file . '/iso.txt') )
 		{
-			$filename = trim(str_replace('lang_', '', $file));
-			$displayname = preg_replace('/^(.*?)_(.*)$/', '\\1 [ \\2 ]', $filename);
-			$displayname = preg_replace('/\[(.*?)_(.*)\]/', '[ \\1 - \\2 ]', $displayname);
-			$user->lang[$displayname] = $filename;
+			list($displayname) = file($dirname . '/' . $file . '/iso.txt');
+			$lang[$displayname] = $dirname . '/' . $file;
 		}
 	}
 
@@ -271,7 +269,7 @@ function language_select($default, $select_name = "language", $dirname="language
 	@reset($user);
 
 	$user_select = '<select name="' . $select_name . '">';
-	foreach ( $user as $displayname => $filename )
+	foreach ( $lang as $displayname => $filename )
 	{
 		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
 		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';

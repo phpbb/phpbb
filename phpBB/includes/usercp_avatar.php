@@ -128,8 +128,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			return;
 		}
 
-		$avatar_filesize = $file_data1[1]; 
-		$avatar_filetype = $file_data2[1]; 
+		$avatar_filesize = $file_data1[1];
+		$avatar_filetype = $file_data2[1];
 
 		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize'] )
 		{
@@ -184,7 +184,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 	if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 	{
-		$new_filename = uniqid($user_ip) . $imgtype;
+		$new_filename = uniqid() . $imgtype;
 
 		if ( $mode == 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' )
 		{
@@ -253,7 +253,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 			{
 				if( preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $sub_file) )
 				{
-					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . '/' . $sub_file; 
+					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . '/' . $sub_file;
 					$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
 
 					$avatar_col_count++;
@@ -299,7 +299,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		for($j = 0; $j < count($avatar_images[$category][$i]); $j++)
 		{
 			$template->assign_block_vars('avatar_row.avatar_column', array(
-				"AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j], 
+				"AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
 				"AVATAR_NAME" => $avatar_name[$category][$i][$j])
 			);
 
@@ -317,16 +317,16 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	{
 		$s_hidden_vars .= '<input type="hidden" name="' . $params[$i] . '" value="' . str_replace('"', '&quot;', $$params[$i]) . '" />';
 	}
-	
-	$template->assign_vars(array(
-		'L_AVATAR_GALLERY' => $lang['Avatar_gallery'], 
-		'L_SELECT_AVATAR' => $lang['Select_avatar'], 
-		'L_RETURN_PROFILE' => $lang['Return_profile'], 
-		'L_CATEGORY' => $lang['Select_category'], 
 
-		'S_CATEGORY_SELECT' => $s_categories, 
-		'S_COLSPAN' => $s_colspan, 
-		'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=$mode"), 
+	$template->assign_vars(array(
+		'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
+		'L_SELECT_AVATAR' => $lang['Select_avatar'],
+		'L_RETURN_PROFILE' => $lang['Return_profile'],
+		'L_CATEGORY' => $lang['Select_category'],
+
+		'S_CATEGORY_SELECT' => $s_categories,
+		'S_COLSPAN' => $s_colspan,
+		'S_PROFILE_ACTION' => append_sid("profile.$phpEx?mode=$mode"),
 		'S_HIDDEN_FIELDS' => $s_hidden_vars)
 	);
 
