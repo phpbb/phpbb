@@ -10,13 +10,13 @@
 			<tr>
 		        <td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
 					<tr>
-						<td>&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE3}">{INBOX_FOLDER}&nbsp;&nbsp;&nbsp;{SENT_FOLDER}</font></td>
-						<td align="right"><a href="{U_POST_REPLY_MSG}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_MSG}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td>&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE3}">{INBOX}&nbsp;&nbsp;&nbsp;{SENTBOX}&nbsp;&nbsp;&nbsp;{OUTBOX}&nbsp;&nbsp;&nbsp;{SAVEBOX}</font></td>
+						<td align="right">{S_POST_REPLY_MSG}&nbsp;&nbsp;{S_POST_NEW_MSG}</td>
 					</tr>
       			</table></td>
 			</tr>
 			<tr>
-				<td width="20%" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_FROM}</b></font></td>
+				<td width="20%" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_FROM_OR_TO}</b></font></td>
 				<td bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_MESSAGE}</b></font></td>
 			</tr>
 			<tr bgcolor="{T_TD_COLOR2}">
@@ -40,7 +40,7 @@
 			<tr>
 				<td colspan="2" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td width="140" align="left" valign="middle" nowrap><a href="{U_POST_REPLY_MSG}"><img src="templates/PSO/images/reply.gif" border="1"></a>&nbsp;&nbsp;<a href="{U_POST_NEW_MSG}"><img src="templates/PSO/images/post.gif" border="1"></a></td>
+						<td width="140" align="left" valign="middle" nowrap>{S_POST_NEW_MSG}&nbsp;&nbsp;{S_POST_REPLY_MSG}</td>
 					</tr>
 				</table></td>
 			</tr>
