@@ -6,7 +6,11 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
+<<<<<<< posting.php
  *   $Id$
+=======
+ *   $Id$
+>>>>>>> 1.35
  *
  *
  ***************************************************************************/
@@ -663,8 +667,10 @@ switch($mode)
 		break;
 
 	case 'editpost':
+
 		$page_title = " $l_editpost";
 		$section_title = $l_editpostin;
+
 		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
 			if(isset($HTTP_POST_VARS['delete_post']))
@@ -690,13 +696,13 @@ switch($mode)
 					}
 				}
 				
-				$sql = "UPDATE ".POSTS_TEXT_TABLE." SET post_text = '$message', post_subject = '$subject' WHERE post_id = ".$HTTP_POST_VARS[POST_POST_URL];
+				$sql = "UPDATE ".POSTS_TEXT_TABLE." SET post_text = '$message', post_subject = '$subject' WHERE post_id = $post_id";
 				if($db->sql_query($sql))
 				{
 					if($is_first_post)
 					{
 						// Update topics table here, set notification level and such
-						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' WHERE topic_id = ".$HTTP_POST_VARS[POST_TOPIC_URL];
+						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' WHERE topic_id = $new_topic_id";
 						if(!$db->sql_query($sql))
 						{
 							if(SQL_LAYER != "mysql")
@@ -746,7 +752,7 @@ switch($mode)
 							//
 							include('includes/page_header.'.$phpEx);
 
-							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 							$template->set_filenames(array(
 								"reg_header" => "error_body.tpl"
@@ -783,7 +789,7 @@ switch($mode)
 						//
 						include('includes/page_header.'.$phpEx);
 
-						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 						$template->set_filenames(array(
 							"reg_header" => "error_body.tpl"
@@ -813,15 +819,16 @@ switch($mode)
 		else if(!$preview)
 		{
 			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+
 			if(!empty($post_id))
 			{
 
-   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type
-   						FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt
-   						WHERE (p.post_id = '$post_id')
-   							AND pt.post_id = p.post_id
-   							AND (p.topic_id = t.topic_id)
-   							AND (p.poster_id = u.user_id)";
+	   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type
+   					FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt
+   					WHERE (p.post_id = '$post_id')
+   						AND pt.post_id = p.post_id
+   						AND (p.topic_id = t.topic_id)
+   						AND (p.poster_id = u.user_id)";
 
 				if($result = $db->sql_query($sql))
 				{
@@ -851,60 +858,58 @@ switch($mode)
 						$attach_sig = TRUE;
 					}
 					$message = eregi_replace("\[addsig]$", "", $message);
+
+					// Removes UID from BBEncoded entries
+					$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+
+					// This has not been implemented yet!
+					//$message = desmile($message);
+
 					$message = str_replace("<br />", "\n", $message);
 
-					// These have not been implemented yet!
-					/*
-					$message = bbdecode($message);
-					$message = desmile($message);
-					 */
+	   				$message = undo_htmlspecialchars($message);
 
-   				$message = undo_htmlspecialchars($message);
+   					// Special handling for </textarea> tags in the message, which can break the editing form..
+   					$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
-   				// Special handling for </textarea> tags in the message, which can break the editing form..
-   				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
-
-   				if($is_first_post)
-   				{
-   					$notify_show = TRUE;
-   					if($postrow['topic_notify'])
+   					if($is_first_post)
    					{
-   						$notify = TRUE;
-   					}
+   						$notify_show = TRUE;
+   						if($postrow['topic_notify'])
+   						{
+   							$notify = TRUE;
+   						}
 						$subject = stripslashes($postrow['topic_title']);
 						switch($postrow['topic_type'])
 						{
 							case ANNOUCE:
 								$is_annouce = TRUE;
-							break;
+								break;
 							case STICKY:
 								$is_stuck = TRUE;
-							break;
+								break;
 						}
-						
 					}
-					
-					
-   			}
-   			else
-   			{
-   				if(DEBUG)
-   				{
-   					$error = $db->error();
-   					error_die(QUERY_ERROR, "Error get post information. <br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-   				}
-   				else
-   				{
-   					error_die(QUERY_ERROR);
-   				}
-   			}
-   		}
-   		else
-   		{
-   			error_die(GENERAL_ERROR, "Sorry, no there is no such post");
-   		}
+				}
+	   			else
+				{
+					if(DEBUG)
+					{
+						$error = $db->error();
+						error_die(QUERY_ERROR, "Error get post information. <br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+	   				}
+					else
+					{
+						error_die(QUERY_ERROR);
+	   				}
+				}
+	   		}
+			else
+			{
+				error_die(GENERAL_ERROR, "Sorry, no there is no such post");
+	   		}
 		}
-	break;
+		break;
 } // end switch
 
 //
