@@ -231,8 +231,10 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 			if( preg_match("/^(3\.23|4\.)/", $version) )
 			{
+				$db_name = ( preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/", $version) ) ? "`$dbname`" : $dbname;
+
 				$sql = "SHOW TABLE STATUS 
-					FROM " . $dbname;
+					FROM " . $db_name;
 				if(!$result = $db->sql_query($sql))
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtain table information.", "", __LINE__, __FILE__, $sql);
