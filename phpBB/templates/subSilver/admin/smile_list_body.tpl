@@ -20,6 +20,6 @@
 	</tr>
 	<!-- END smiles -->
 	<tr>
-		<td class="catBottom" colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" value="{L_SMILEY_ADD}" class="mainoption" />{S_IMPORT}{S_EXPORT}
+		<td class="catBottom" colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="add" value="{L_SMILEY_ADD}" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pack" value="{L_IMPORT_PACK}">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pack" value="{L_EXPORT_PACK}"></td>
 	</tr>
 </table></form>

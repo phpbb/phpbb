@@ -299,36 +299,39 @@ $lang['Forums_updated'] = "Forum and Category information updated successfully";
 
 $lang['Click_return_forumadmin'] = "Click %sHere%s to return to Forum Administration";
 
+
 //
 // Smiley Management
 //
-$lang['smiley_return'] = "Return to smiley listing";
-$lang['smiley_del_success'] = "The smiley was successfully removed";
 $lang['smiley_title'] = "Smiles Editing Utility";
+$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
+
+$lang['smiley_config'] = "Smiley Configuration";
 $lang['smiley_code'] = "Smiley Code";
 $lang['smiley_url'] = "Smiley Image File";
 $lang['smiley_emot'] = "Smiley Emotion";
-$lang['smiley_add_success'] = "The smiley was successfully added";
-$lang['smiley_edit_success'] = "The smiley was successfully updated";
 $lang['smile_add'] = "Add a new Smiley";
-$lang['smile_desc'] = "From this page you can add, remove and edit the emoticons or smileys your users can use in their posts and private messages.";
-$lang['smiley_config'] = "Smiley Configuration";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Emotion";
-$lang['Select_pak'] = "Select Pak File";
+
+$lang['Select_pak'] = "Select Pack (.pak) File";
 $lang['replace_existing'] = "Replace Existing Smiley";
 $lang['keep_existing'] = "Keep Existing Smiley";
-$lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the proper Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
+$lang['smiley_import_inst'] = "You should unzip the smiley package and upload all files to the appropriate Smiley directory for your installation.  Then select the correct information in this form to import the smiley pack.";
 $lang['smiley_import'] = "Smiley Pack Import";
-$lang['choose_smile_pak'] = "Choose the correct Smile Pack .pak file";
+$lang['choose_smile_pak'] = "Choose a Smile Pack .pak file";
 $lang['import'] = "Import Smileys";
 $lang['smile_conflicts'] = "What should be done in case of conflicts";
-$lang['del_existing_smileys'] = "Delete all existing smileys before import";
+$lang['del_existing_smileys'] = "Delete existing smileys before import";
 $lang['import_smile_pack'] = "Import Smiley Pack";
 $lang['export_smile_pack'] = "Create Smiley Pack";
-$lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, <a href='admin_smilies.php?mode=export&send_file=1'>Click Here</a> to download the smiles.pak file.  Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
-$lang['smiley_import_success'] = "The smiley pack was imported successfully!";
+$lang['export_smiles'] = "To create a smiley pack from your currently installed smileys, click %sHere%s to download the smiles.pak file. Name this file appropriately making sure to keep the .pak file extension.  Then create a zip file containing all of your smiley images plus this .pak configuration file.";
 
+$lang['smiley_add_success'] = "The Smiley was successfully added";
+$lang['smiley_edit_success'] = "The Smiley was successfully updated";
+$lang['smiley_import_success'] = "The Smiley Pack was imported successfully!";
+$lang['smiley_del_success'] = "The Smiley was successfully removed";
+$lang['Click_return_smileadmin'] = "Click %sHere%s to return to Smiley Administration";
 
 //
 // User Management
