@@ -22,12 +22,12 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['Forums']['PERMISSIONS'] = ($auth->acl_get('a_auth')) ? $filename . $SID . '&amp;mode=forums' : '';
-	$module['Forums']['MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=moderators' : '';
-	$module['Forums']['SUPER_MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=supermoderators' : '';
-	$module['General']['ADMINISTRATORS'] = ($auth->acl_get('a_authadmins')) ? $filename . $SID . '&amp;mode=administrators' : '';
-	$module['Users']['PERMISSIONS'] = ($auth->acl_get('a_authusers')) ? $filename . $SID . '&amp;mode=users' : '';
-	$module['Groups']['PERMISSIONS'] = ($auth->acl_get('a_authgroups')) ? $filename . $SID . '&amp;mode=groups' : '';
+	$module['FORUM']['PERMISSIONS'] = ($auth->acl_get('a_auth')) ? $filename . $SID . '&amp;mode=forums' : '';
+	$module['FORUM']['MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=moderators' : '';
+	$module['FORUM']['SUPER_MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=supermoderators' : '';
+	$module['GENERAL']['ADMINISTRATORS'] = ($auth->acl_get('a_authadmins')) ? $filename . $SID . '&amp;mode=administrators' : '';
+	$module['USER']['PERMISSIONS'] = ($auth->acl_get('a_authusers')) ? $filename . $SID . '&amp;mode=users' : '';
+	$module['GROUP']['PERMISSIONS'] = ($auth->acl_get('a_authgroups')) ? $filename . $SID . '&amp;mode=groups' : '';
 
 	return;
 }
@@ -333,6 +333,9 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 
 	if (!empty($entries))
 	{
+
+
+
 		// Founder only operations ... these operations can
 		// only be altered by someone with founder status
 		$founder_sql = (!$userdata['user_founder']) ? ' AND founder_only <> 1' : '';
@@ -361,6 +364,9 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 		{
 			$where_sql .= (($where_sql != '') ? ', ' : '') . (($_POST['type'] == 'user' && !empty($_POST['new'])) ? '\'' . $value . '\'' : intval($value));
 		}
+
+
+
 
 		$ug = '';;
 		$ug_hidden = '';
@@ -659,6 +665,10 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 			}
 		}
 
+
+
+
+
 		if ($auth->acl_gets('a_events', 'a_cron'))
 		{
 			$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
@@ -691,6 +701,10 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 <?php
 
 		}
+
+
+
+
 
 ?>
 	<tr>
@@ -734,6 +748,8 @@ if (!empty($forum_id) || !empty($group_id) || !empty($username) ||
 
 		page_footer();
 	}
+
+
 
 
 
@@ -904,6 +920,7 @@ switch ($mode)
 		break;
 
 	case 'groups':
+		// Generate list of groups
 		$sql = "SELECT group_id, group_name    
 			FROM " . GROUPS_TABLE . " 
 			ORDER BY group_type DESC";

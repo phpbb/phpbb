@@ -22,13 +22,13 @@
 if (!empty($setmodules))
 {
 	$file = basename(__FILE__);
-	$module['General']['Cookie_settings'] = ($auth->acl_get('a_cookies')) ? "$file$SID&amp;mode=cookie" : '';
-	$module['General']['Board_defaults'] = ($auth->acl_get('a_defaults')) ? "$file$SID&amp;mode=default" : '';
-	$module['General']['Board_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=setting" : '';
-	$module['General']['Avatar_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=avatar" : '';
-	$module['General']['Email_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
-	$module['General']['Server_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
-	$module['General']['Auth_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
+	$module['GENERAL']['Cookie_settings'] = ($auth->acl_get('a_cookies')) ? "$file$SID&amp;mode=cookie" : '';
+	$module['GENERAL']['Board_defaults'] = ($auth->acl_get('a_defaults')) ? "$file$SID&amp;mode=default" : '';
+	$module['GENERAL']['Board_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=setting" : '';
+	$module['GENERAL']['Avatar_settings'] = ($auth->acl_get('a_board')) ? "$file$SID&amp;mode=avatar" : '';
+	$module['GENERAL']['Email_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=email" : '';
+	$module['GENERAL']['Server_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=server" : '';
+	$module['GENERAL']['Auth_settings'] = ($auth->acl_get('a_server')) ? "$file$SID&amp;mode=auth" : '';
 	return;
 }
 

@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['Forums']['Prune']   = basename(__FILE__) . $SID . '&amp;mode=forums';
+	$module['FORUM']['PRUNE']   = basename(__FILE__) . $SID . '&amp;mode=forums';
 
 	return;
 }

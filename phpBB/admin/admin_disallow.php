@@ -21,14 +21,14 @@
 
 define('IN_PHPBB', 1);
 
-if(!empty($setmodules))
+if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_names'))
 	{
 		return;
 	}
 
-	$module['Users']['Disallow'] = basename(__FILE__) . $SID;
+	$module['USER']['DISALLOW'] = basename(__FILE__) . $SID;
 
 	return;
 }

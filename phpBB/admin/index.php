@@ -82,13 +82,13 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 	<tr>
 		<td width="100%"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
-				<th class="menu" height="25">&#0187; <?php echo $user->lang['Return_to']; ?></th>
+				<th class="menu" height="25">&#0187; <?php echo $user->lang['RETURN_TO']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $user->lang['Admin_Index']; ?></a></td>
+				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $user->lang['ADMIN_INDEX']; ?></a></td>
 			</tr>
 			<tr>
-				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $user->lang['Forum_index']; ?></a></td>
+				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $user->lang['FORUM_INDEX']; ?></a></td>
 			</tr>
 <?php
 
@@ -97,7 +97,7 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 		@ksort($module);
 		foreach ($module as $cat => $action_ary)
 		{
-			$cat = (empty($user->lang[$cat . '_cat'])) ? $user->lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
+			$cat = (!empty($user->lang[$cat . '_CAT'])) ? $user->lang[$cat . '_CAT'] : preg_replace('#_#', ' ', $cat);
 
 ?>
 			<tr>

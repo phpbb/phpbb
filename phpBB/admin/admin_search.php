@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['DB']['Search_indexing'] = basename(__FILE__) . $SID;
+	$module['DB']['SEARCH_INDEX'] = basename(__FILE__) . $SID;
 
 	return;
 }
@@ -64,8 +64,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 			if ($load > 3)
 			{
-				header("Location: admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batch_count");
-				exit;
+				redirect("admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batch_count");
 			}
 		}
 	}
@@ -99,22 +98,16 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 	if (!isset($_GET['batchstart']))
 	{
-		//
 		// Take board offline
-		//
 		set_config('board_disable', 1);
 
-		//
 		// Empty existing tables
-		//
 		$db->sql_query("TRUNCATE " . SEARCH_TABLE);
 		$db->sql_query("TRUNCATE " . SEARCH_WORD_TABLE);
 		$db->sql_query("TRUNCATE " . SEARCH_MATCH_TABLE);
 	}
 
-	//
 	// Fetch a batch of posts_text entries
-	//
 	$sql = "SELECT COUNT(*) AS total, MAX(post_id) AS max_post_id, MIN(post_id) AS min_post_id
 		FROM " . POSTS_TEXT_TABLE;
 	$result = $db->sql_query($sql);
@@ -271,19 +264,18 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 	if (($batchstart + $batchsize) < $max_post_id)
 	{
-		header("Location: admin_search.$phpEx$SID&batchstart=" . ($batchstart + $batchsize) . "&batchcount=$batch_count");
-		exit;
+		redirect("Location: admin_search.$phpEx$SID&batchstart=" . ($batchstart + $batchsize) . "&batchcount=$batch_count");
 	}
 	else
 	{
 		set_config('board_disable', 0);
-		page_header($user->lang['Search_indexing']);
+		page_header($user->lang['SEARCH_INDEX']);
 
 ?>
 
-<h1><?php echo $user->lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['SEARCH_INDEX']; ?></h1>
 
-<p><?php echo $user->lang['Search_indexing_complete']; ?></p>
+<p><?php echo $user->lang['SEARCH_INDEX_COMPLETE']; ?></p>
 
 <?php
 
@@ -297,13 +289,13 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 else if (isset($_POST['cancel']))
 {
 	set_config('board_disable', 0);
-	page_header($user->lang['Search_indexing']);
+	page_header($user->lang['SEARCH_INDEX']);
 
 ?>
 
-<h1><?php echo $user->lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['SEARCH_INDEX']; ?></h1>
 
-<p><?php echo $user->lang['Search_indexing_cancel']; ?></p>
+<p><?php echo $user->lang['SEARCH_INDEX_CANCEL']; ?></p>
 
 <?php
 
@@ -312,17 +304,17 @@ else if (isset($_POST['cancel']))
 }
 else
 {
-	page_header($user->lang['Search_indexing']);
+	page_header($user->lang['Search_index']);
 
 ?>
 
-<h1><?php echo $user->lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['SEARCH_INDEX']; ?></h1>
 
-<p><?php echo $user->lang['Search_indexing_explain']; ?></p>
+<p><?php echo $user->lang['SEARCH_INDEX_EXPLAIN']; ?></p>
 
 <form method="post" action="<?php echo "admin_search.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
-		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $user->lang['Start']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $user->lang['Cancel']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $user->lang['START']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 

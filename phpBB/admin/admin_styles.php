@@ -8,10 +8,10 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['Styles']['Edit_Style'] = $filename . "$SID&amp;mode=newstyle";
-	$module['Styles']['Edit_Template'] = $filename . "$SID&amp;mode=edittemplate";
-	$module['Styles']['Edit_Theme'] = $filename . "$SID&amp;mode=edittheme";
-	$module['Styles']['Edit_Imageset'] = $filename . "$SID&amp;mode=editimageset";
+	$module['STYLE']['EDIT_STYLE'] = $filename . "$SID&amp;mode=newstyle";
+	$module['STYLE']['EDIT_TEMPLATE'] = $filename . "$SID&amp;mode=edittemplate";
+	$module['STYLE']['EDIT_THEME'] = $filename . "$SID&amp;mode=edittheme";
+	$module['STYLE']['EDIT_IMAGESET'] = $filename . "$SID&amp;mode=editimageset";
 
 	return;
 }

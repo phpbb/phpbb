@@ -22,12 +22,12 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['DB']['DB_Backup'] = ($auth->acl_get('a_backup')) ? $filename . "$SID&amp;mode=backup" : '';
+	$module['DB']['DB_BACKUP'] = ($auth->acl_get('a_backup')) ? $filename . "$SID&amp;mode=backup" : '';
 
 	$file_uploads = @ini_get('file_uploads');
 	if (!empty($file_uploads) && $file_uploads !== 0 && strtolower($file_uploads) != 'off' && @phpversion() != '4.0.4pl1' && $auth->acl_get('a_restore'))
 	{
-		$module['DB']['DB_Restore'] = $filename . "$SID&amp;mode=restore";
+		$module['DB']['DB_RESTORE'] = $filename . "$SID&amp;mode=restore";
 	}
 
 	return;

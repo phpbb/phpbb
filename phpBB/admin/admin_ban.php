@@ -29,9 +29,9 @@ if (!empty($setmodules))
 	}
 
 	$filename = basename(__FILE__);
-	$module['Users']['Ban_users'] = $filename . "$SID&amp;mode=user";
-	$module['Users']['Ban_emails'] = $filename . "$SID&amp;mode=email";
-	$module['Users']['Ban_ips'] = $filename . "$SID&amp;mode=ip";
+	$module['USER']['BAN_USERS'] = $filename . "$SID&amp;mode=user";
+	$module['USER']['BAN_EMAILS'] = $filename . "$SID&amp;mode=email";
+	$module['USER']['BAN_IPS'] = $filename . "$SID&amp;mode=ip";
 
 	return;
 }
@@ -302,7 +302,7 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 		add_admin_log($log_entry . $mode, $ban_reason, $ban_list_log);
 	}
 
-	trigger_error($user->lang['Ban_update_sucessful']);
+	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
 
 }
 else if (isset($_POST['unbansubmit']))
@@ -322,7 +322,7 @@ else if (isset($_POST['unbansubmit']))
 		add_admin_log('log_unban_' . $mode, sizeof($_POST['unban']));
 	}
 
-	trigger_error($user->lang['Ban_update_sucessful']);
+	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
 }
 
 //
@@ -340,7 +340,7 @@ $db->sql_query($sql);
 //
 // Ban length options
 //
-$ban_end_text = array(0 => $user->lang['Permanent'], 30 => $user->lang['30_Mins'], 60 => $user->lang['1_Hour'], 360 => $user->lang['6_Hours'], 1440 => $user->lang['1_Day'], 10080 => $user->lang['7_Days'], 20160 => $user->lang['2_Weeks'], 40320 => $user->lang['1_Month'], -1 => $user->lang['Other']);
+$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['OTHER'] . ' -&gt; ');
 
 $ban_end_options = '';
 foreach ($ban_end_text as $length => $text)
@@ -354,13 +354,13 @@ foreach ($ban_end_text as $length => $text)
 switch ($mode)
 {
 	case 'user':
-		$l_title = $user->lang['Ban_users'];
+		$l_title = $user->lang['BAN_USERS'];
 		break;
 	case 'email':
-		$l_title = $user->lang['Ban_emails'];
+		$l_title = $user->lang['BAN_EMAILS'];
 		break;
 	case 'ip':
-		$l_title = $user->lang['Ban_ips'];
+		$l_title = $user->lang['BAN_IPS'];
 		break;
 }
 
@@ -371,13 +371,24 @@ page_header($l_title);
 
 ?>
 
-<p><?php echo $user->lang['Ban_explain']; ?></p>
+<p><?php echo $user->lang['BAN_EXPLAIN']; ?></p>
 
 <?php
 
 switch ($mode)
 {
 	case 'user':
+
+		$field = 'username';
+		$l_ban_title = $user->lang['BAN_USERS'];
+		$l_ban_explain = $user->lang['BAN_USERNAME_EXPLAIN'];
+		$l_ban_exclude_explain = $user->lang['BAN_USER_EXCLUDE_EXPLAIN'];
+		$l_unban_title = $user->lang['UNBAN_USERNAME'];
+		$l_unban_explain = $user->lang['UNBAN_USERNAME_EXPLAIN'];
+		$l_ban_cell = $user->lang['USERNAME'];
+		$l_no_ban_cell = $user->lang['NO_BANNED_USERS'];
+		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
+
 		$sql = "SELECT b.*, u.user_id, u.username
 			FROM " . BANLIST_TABLE . " b, " . USERS_TABLE . " u
 			WHERE (b.ban_end >= " . time() . "
@@ -386,105 +397,65 @@ switch ($mode)
 				AND b.ban_userid <> 0
 				AND u.user_id <> " . ANONYMOUS . "
 			ORDER BY u.user_id ASC";
-		$result = $db->sql_query($sql);
-
-		$banned_options = '';
-		$banned_length = '';
-		$banned_options = '';
-		if ($row = $db->sql_fetchrow($result))
-		{
-			do
-			{
-
-				$banned_options .=  '<option' . (($row['ban_exclude']) ? ' style="color:red"' : '') . ' value="' . $row['ban_id'] . '">' . $row['username'] . '</option>';
-				$banned_length .= (($banned_length != '') ? ', ' : '') . '\'' . ($ban_end_text[(($row['ban_end'] - $row['ban_start']) / 60)]) . '\'';
-				$banned_reasons .= (($banned_reasons != '') ? ', ' : '') . '\'' . addslashes($row['ban_reason']) . '\'';
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-		$db->sql_freeresult($result);
-
-		$l_ban_title = $user->lang['Ban_users'];
-		$l_ban_explain = $user->lang['Ban_username_explain'];
-		$l_ban_exclude_explain = $user->lang['BAN_USER_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang['Unban_username'];
-		$l_unban_explain = $user->lang['Unban_username_explain'];
-		$l_ban_cell = $user->lang['USERNAME'];
-		$l_no_ban_cell = $user->lang['No_banned_users'];
-		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../memberlist.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740\');return false;" />';
-
 		break;
 
 	case 'ip':
+
+		$field = 'ban_ip';
+		$l_ban_title = $user->lang['BAN_IPS'];
+		$l_ban_explain = $user->lang['BAN_IP_EXPLAIN'];
+		$l_ban_exclude_explain = $user->lang['BAN_IP_EXCLUDE_EXPLAIN'];
+		$l_unban_title = $user->lang['UNBAN_IP'];
+		$l_unban_explain = $user->lang['UNBAN_IP_EXPLAIN'];
+		$l_ban_cell = $user->lang['IP_HOSTNAME'];
+		$l_no_ban_cell = $user->lang['NO_BANNED_IP'];
+		$s_submit_extra = '';
 
 		$sql = "SELECT *
 			FROM " . BANLIST_TABLE . "
 			WHERE (ban_end >= " . time() . "
 					OR ban_end = 0)
 				AND ban_ip <> ''";
-		$result = $db->sql_query($sql);
-
-		$banned_reasons = '';
-		$banned_length = '';
-		$banned_options = '';
-		if ($row = $db->sql_fetchrow($result))
-		{
-			do
-			{
-				$banned_options .= '<option value="' . $row['ban_id'] . '">' . $row['ban_ip'] . '</option>';
-				$banned_length .= (($banned_length != '') ? ', ' : '') . '\'' . ($ban_end_text[(($row['ban_end'] - $row['ban_start']) / 60)]) . '\'';
-				$banned_reasons .= (($banned_reasons != '') ? ', ' : '') . '\'' . addslashes($row['ban_reason']) . '\'';
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-		$db->sql_freeresult($result);
-
-		$l_ban_title = $user->lang['Ban_ips'];
-		$l_ban_explain = $user->lang['Ban_IP_explain'];
-		$l_ban_exclude_explain = $user->lang['BAN_IP_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang['Unban_IP'];
-		$l_unban_explain = $user->lang['Unban_IP_explain'];
-		$l_ban_cell = $user->lang['IP_hostname'];
-		$l_no_ban_cell = $user->lang['No_banned_ip'];
-		$s_submit_extra = '';
-
 		break;
 
 	case 'email':
+
+		$field = 'ban_email';
+		$l_ban_title = $user->lang['BAN_EMAILS'];
+		$l_ban_explain = $user->lang['BAN_EMAIL_EXPLAIN'];
+		$l_ban_exclude_explain = $user->lang['BAN_EMAIL_EXCLUDE_EXPLAIN'];
+		$l_unban_title = $user->lang['UNBAN_EMAIL'];
+		$l_unban_explain = $user->lang['UNBAN_EMAIL_EXPLAIN'];
+		$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+		$l_no_ban_cell = $user->lang['NO_BANNED_EMAIL'];
+		$s_submit_extra = '';
 
 		$sql = "SELECT *
 			FROM " . BANLIST_TABLE . "
 			WHERE (ban_end >= " . time() . "
 					OR ban_end = 0)
 				AND ban_email <> ''";
-		$result = $db->sql_query($sql);
-
-		$banned_options = '';
-		$banned_length = '';
-		$banned_options = '';
-		if ($row = $db->sql_fetchrow($result))
-		{
-			do
-			{
-				$banned_options .= '<option value="' . $row['ban_id'] . '">' . $row['ban_email'] . '</option>';
-				$banned_length .= (($banned_length != '') ? ', ' : '') . '\'' . ($ban_end_text[(($row['ban_end'] - $row['ban_start']) / 60)]) . '\'';
-				$banned_reasons .= (($banned_reasons != '') ? ', ' : '') . '\'' . addslashes($row['ban_reason']) . '\'';
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-		$db->sql_freeresult($result);
-
-		$l_ban_title = $user->lang['Ban_emails'];
-		$l_ban_explain = $user->lang['Ban_email_explain'];
-		$l_ban_exclude_explain = $user->lang['BAN_EMAIL_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang['Unban_email'];
-		$l_unban_explain = $user->lang['Unban_email_explain'];
-		$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
-		$l_no_ban_cell = $user->lang['No_banned_email'];
-		$s_submit_extra = '';
-
 		break;
 }
+$result = $db->sql_query($sql);
+
+$banned_options = '';
+$ban_length = $ban_reasons = array();
+if ($row = $db->sql_fetchrow($result))
+{
+	do
+	{
+
+		$banned_options .=  '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
+
+		$time_length = (!empty($row['ban_end'])) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
+		$ban_length[$row['ban_id']] = (!empty($ban_end_text[$time_length])) ? $ban_end_text[$time_length] : $user->lang['OTHER'] . ' -> ' . gmdate('Y-m-d', $row['ban_end']);
+
+		$ban_reasons[$row['ban_id']] = addslashes($row['ban_reason']);
+	}
+	while ($row = $db->sql_fetchrow($result));
+}
+$db->sql_freeresult($result);
 
 ?>
 
@@ -494,8 +465,38 @@ switch ($mode)
 
 <script language="Javascript" type="text/javascript">
 <!--
-	var ban_length = new Array(<?php echo $banned_length; ?>);
-	var ban_reasons = new Array(<?php echo $banned_reasons; ?>);
+
+var ban_length = new Array();
+<?php
+
+	if (sizeof($ban_length))
+	{
+		foreach ($ban_length as $ban_id => $length)
+		{
+			echo "ban_length['$ban_id'] = \"$length\";\n";
+		}
+	}
+
+?>
+
+var ban_reason = new Array();
+<?php
+
+	if (sizeof($ban_reasons))
+	{
+		foreach ($ban_reasons as $ban_id => $reason)
+		{
+			echo "ban_reason['$ban_id'] = \"$reason\";\n";
+		}
+	}
+?>
+
+function display_details(option)
+{
+	document.forms[0].unbanreason.value = ban_reason[option];
+	document.forms[0].unbanlength.value = ban_length[option];
+}
+
 //-->
 </script>
 
@@ -508,7 +509,7 @@ switch ($mode)
 		<td class="row1"><textarea cols="40" rows="3" name="ban"></textarea></td>
 	</tr>
 	<tr>
-		<td class="row2" width="45%"><?php echo $user->lang['Ban_length']; ?>:</td>
+		<td class="row2" width="45%"><?php echo $user->lang['BAN_LENGTH']; ?>:</td>
 		<td class="row1"><select name="banlength"><?php echo $ban_end_options; ?></select>&nbsp; <input type="text" name="banlengthother" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
@@ -516,11 +517,11 @@ switch ($mode)
 		<td class="row1"><input type="radio" name="banexclude" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="banexclude" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row2" width="45%"><?php echo $user->lang['Ban_reason']; ?>:</td>
+		<td class="row2" width="45%"><?php echo $user->lang['BAN_REASON']; ?>:</td>
 		<td class="row1"><input type="text" name="banreason" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
+		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" />&nbsp; <input type="RESET" value="<?php echo $user->lang['RESET']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
 	</tr>
 </table>
 
@@ -532,15 +533,24 @@ switch ($mode)
 	<tr>
 		<th colspan="2"><?php echo $l_unban_title; ?></th>
 	</tr>
-	<tr>
 <?php
 
 	if ($banned_options != '')
 	{
 
 ?>
-		<td class="row1" width="45%"><?php echo $l_ban_cell; ?>: <br /></td>
-		<td class="row1"> <select name="unban[]" multiple="multiple" size="5"><?php echo $banned_options; ?></select></td>
+	<tr>
+		<td class="row2" width="45%"><?php echo $l_ban_cell; ?>: <br /></td>
+		<td class="row1"> <select name="unban[]" multiple="multiple" size="5" onchange="display_details(this.options[this.selectedIndex].value)"><?php echo $banned_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row2" width="45%"><?php echo $user->lang['BAN_REASON']; ?>:</td>
+		<td class="row1"><input type="text" name="unbanreason" size="40" /></td>
+	</tr>
+	<tr>
+		<td class="row2" width="45%"><?php echo $user->lang['BAN_LENGTH']; ?>:</td>
+		<td class="row1"><input type="text" name="unbanlength" size="40" /></td>
+	</tr>
 <?php
 
 	}
@@ -548,13 +558,14 @@ switch ($mode)
 	{
 
 ?>
+	<tr>
 		<td class="row1" colspan="2" align="center"><?php echo $l_no_ban_cell;  ?></td>
+	</tr>
 <?php
 
 	}
 
 ?>
-	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="mainoption" /></td>
 	</tr>

@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['Users']['Ranks'] = basename(__FILE__) . $SID;
+	$module['USER']['RANKS'] = basename(__FILE__) . $SID;
 	return;
 }
 

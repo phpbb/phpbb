@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['General']['Mass_Email'] = basename(__FILE__) . $SID;
+	$module['GENERAL']['MASS_EMAIL'] = basename(__FILE__) . $SID;
 
 	return;
 }

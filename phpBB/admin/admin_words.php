@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['Posts']['Word_Censor'] = basename(__FILE__) . $SID;
+	$module['POST']['WORD_CENSOR'] = basename(__FILE__) . $SID;
 	return;
 }
 

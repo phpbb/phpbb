@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['Users']['Prune_users'] = basename(__FILE__) . $SID;
+	$module['USER']['PRUNE_USERS'] = basename(__FILE__) . $SID;
 
 	return;
 }
@@ -66,13 +66,13 @@ if (isset($_POST['prune']))
 
 ?>
 
-<h1><?php echo $user->lang['Prune_users']; ?></h1>
+<h1><?php echo $user->lang['PRUNE_USERS']; ?></h1>
 
-<p><?php echo $user->lang['Prune_users_explain']; ?></p>
+<p><?php echo $user->lang['PRUNE_USERS_EXPLAIN']; ?></p>
 
 <?php
 
-		page_message($user->lang['Confirm'], $l_message, false);
+		page_message($user->lang['CONFIRM'], $l_message, false);
 		page_footer();
 
 	}

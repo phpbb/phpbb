@@ -27,8 +27,8 @@ if (!empty($setmodules))
 	}
 
 	$filename = basename(__FILE__);
-	$module['Posts']['Emoticons'] = $filename . $SID . '&amp;type=emoticons';
-	$module['Posts']['Topic_icons'] = $filename . $SID . '&amp;type=icons';
+	$module['POST']['EMOTICONS'] = $filename . $SID . '&amp;type=emoticons';
+	$module['POST']['TOPIC_ICONS'] = $filename . $SID . '&amp;type=icons';
 
 	return;
 }

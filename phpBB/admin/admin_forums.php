@@ -26,7 +26,7 @@ if (!empty($setmodules))
 		return;
 	}
 
-	$module['Forums']['Manage'] = basename(__FILE__) . $SID;
+	$module['FORUM']['MANAGE'] = basename(__FILE__) . $SID;
 	return;
 }
 
