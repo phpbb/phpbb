@@ -339,27 +339,21 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 	{
 		for($j = 0; $j < count($u_access); $j++)
 		{
-			if(!$single_user)
+			$result = 0;
+			switch($type)
 			{
-				$single_user = $u_access[$j]['group_single_user'];
+				case AUTH_ACL:
+					$result = $u_access[$j][$key];
 
-				$result = 0;
-				switch($type)
-				{
-					case AUTH_ACL:
-						$result = $u_access[$j][$key];
+				case AUTH_MOD:
+					$result = $result || $u_access[$j]['auth_mod'];
 
-					case AUTH_MOD:
-						$result = $result || $u_access[$j]['auth_mod'];
-
-					case AUTH_ADMIN:
-						$result = $result || $is_admin;
-						break;
-				}
-
-				$auth_user = (!$single_user) ? ( $auth_user || $result ) : $result;
-
+				case AUTH_ADMIN:
+					$result = $result || $is_admin;
+					break;
 			}
+
+			$auth_user = $auth_user || $result;
 		}
 	}
 	else
