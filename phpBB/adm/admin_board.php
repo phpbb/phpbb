@@ -34,7 +34,8 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 
 // Get mode
-$mode = request_var('mode', '');
+$mode	= request_var('mode', '');
+$action	= request_var('action', '');
 $submit = (isset($_POST['submit'])) ? true : false;
 
 // Check permissions/set title
@@ -109,6 +110,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	$default_config[$config_name] = $config_value;
 	$new[$config_name] = request_var($config_name, $default_config[$config_name]);
+
 	if ($config_name == 'bump_interval' && $submit)
 	{
 		$new['bump_interval'] = request_var('bump_interval', 0) . request_var('bump_type', '');
@@ -195,22 +197,22 @@ adm_page_header($user->lang[$l_title]);
 
 <p><?php echo $user->lang[$l_title . '_EXPLAIN']; ?></p>
 
-<?php
-if (sizeof($error))
-{
-?>
-	<h2 style="color:red"><?php echo $user->lang['WARNING']; ?></h2>
-
-	<p><?php echo implode('<br />', $error); ?></p>
-<?php
-}
-?>
-
 <form action="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode"; ?>" method="post"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang[$l_title]; ?></th>
 	</tr>
 <?php
+
+if (sizeof($error))
+{
+
+?>
+	<tr>
+		<td class="row3" colspan="2" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
+	</tr>
+<?php
+
+}
 
 // Output relevant page
 switch ($mode)
@@ -219,7 +221,7 @@ switch ($mode)
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		
-		if (isset($_POST['search_imagick']))
+		if ($action == 'imgmagick')
 		{
 			$new['img_imagick'] = search_imagemagick();
 		}
@@ -253,89 +255,82 @@ switch ($mode)
 ?>
 
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['UPLOAD_DIR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['UPLOAD_DIR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_dir" class="post" value="<?php echo $new['upload_dir'] ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['DISPLAY_ORDER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
-		<td class="row2">
-		<table border=0 cellpadding=0 cellspacing=0>
-			<tr>
-				<td><input type="radio" name="display_order" value="0" <?php echo $display_order_no; ?> /> <?php echo $user->lang['DESCENDING']; ?></td>
-            </tr>
-	        <tr>
-		         <td><input type="radio" name="display_order" value="1" <?php echo $display_order_yes; ?> /> <?php echo $user->lang['ASCENDING']; ?></td>
-            </tr>
-		</table></td>
+		<td class="row1"><b><?php echo $user->lang['DISPLAY_ORDER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="display_order" value="0" <?php echo $display_order_no; ?> /> <?php echo $user->lang['DESCENDING']; ?> &nbsp; <input type="radio" name="display_order" value="1" <?php echo $display_order_yes; ?> /> <?php echo $user->lang['ASCENDING']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_MAX_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize" class="post" value="<?php echo $new['max_filesize']; ?>" /> <?php echo $select_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_QUOTA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_QUOTA_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['ATTACH_QUOTA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_QUOTA_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="8" maxlength="15" name="attachment_quota" class="post" value="<?php echo $new['attachment_quota']; ?>" /> <?php echo $select_quota_size_mode; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['ATTACH_MAX_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize" class="post" value="<?php echo $new['max_filesize']; ?>" /> <?php echo $select_size_mode; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize_pm" class="post" value="<?php echo $new['max_filesize_pm']; ?>" /> <?php echo $select_pm_size_mode; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['MAX_ATTACHMENTS'] ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['MAX_ATTACHMENTS'] ?>: </b></td>
 		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments" class="post" value="<?php echo $new['max_attachments']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['MAX_ATTACHMENTS_PM'] ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['MAX_ATTACHMENTS_PM'] ?>: </b></td>
 		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments_pm" class="post" value="<?php echo $new['max_attachments_pm']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<tr>
 	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
 	</tr>
 	<tr>
-	  <td align="center" colspan="2" class="row3"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></td>
+	  <td class="row3" colspan="2" align="center"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['DISPLAY_INLINED']; ?>:<br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['DISPLAY_INLINED']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="img_display_inlined" value="1" <?php echo $display_inlined_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0" <?php echo $display_inlined_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 	
 	// Check Thumbnail Support
-	if ($new['img_imagick'] == '' && !count(get_supported_image_types()))
+	if (!$new['img_imagick'] && !count(get_supported_image_types()))
 	{
 		$new['img_create_thumbnail'] = '0';
 	}
 	else
 	{
+
 ?>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['CREATE_THUMBNAIL']; ?>:<br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['CREATE_THUMBNAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="img_create_thumbnail" value="1" <?php echo $create_thumbnail_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0" <?php echo $create_thumbnail_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="7" maxlength="15" name="img_min_thumb_filesize" value="<?php echo $new['img_min_thumb_filesize']; ?>" class="post" /> <?php echo $user->lang['BYTES']; ?></td>
 	</tr>
 <?php
+
 	}
+
 ?>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['IMAGICK_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" /></td>
+		<td class="row1"><b><?php echo $user->lang['IMAGICK_PATH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" />&nbsp;&nbsp;<span class="gensmall">[ <a href="<?php echo "admin_board.$phpEx$SID&amp;mode=$mode&amp;action=imgmagick"; ?>"><?php echo $user->lang['SEARCH_IMAGICK']; ?></a> ]</span></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /></td>
+		<td class="row1"><b><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> px X <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /> px</td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /></td>
+		<td class="row1"><b><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> px X <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /> px</td>
 	</tr>
 	
 <?php
+
 		break;
 
 	case 'cookie':
@@ -345,7 +340,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['COOKIE_DOMAIN']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['COOKIE_DOMAIN']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" maxlength="255" name="cookie_domain" value="<?php echo $new['cookie_domain']; ?>" /></td>
 	</tr>
 	<tr>
@@ -375,7 +370,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ALLOW_LOCAL']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['ALLOW_LOCAL']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_local_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_local_no; ?>  /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
@@ -437,7 +432,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['DEFAULT_STYLE']; ?></td>
+		<td class="row1"><b><?php echo $user->lang['DEFAULT_STYLE']; ?></td>
 		<td class="row2"><select name="default_style"><?php echo $style_select; ?></select></td>
 	</tr>
 	<tr>
@@ -505,7 +500,7 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="allow_attachments" value="1" <?php echo $attachments_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0" <?php echo $attachments_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ALLOW_PM_ATTACHMENTS']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['ALLOW_PM_ATTACHMENTS']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="allow_pm_attach" value="1" <?php echo $pm_attach_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0" <?php echo $pm_attach_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
@@ -578,7 +573,7 @@ switch ($mode)
 		}
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['SITE_NAME']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['SITE_NAME']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="sitename" value="<?php echo htmlentities($new['sitename']); ?>" /></td>
 	</tr>
 	<tr>
@@ -682,15 +677,15 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['EMAIL_PACKAGE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EMAIL_PACKAGE_SIZE_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['EMAIL_PACKAGE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EMAIL_PACKAGE_SIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="5" maxlength="5" name="email_package_size" value="<?php echo $new['email_package_size']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['CONTACT_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['CONTACT_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CONTACT_EMAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="board_contact" value="<?php echo $new['board_contact']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['ADMIN_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ADMIN_EMAIL_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['ADMIN_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ADMIN_EMAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="board_email" value="<?php echo $new['board_email']; ?>" /></td>
 	</tr>
 	<tr>
@@ -809,7 +804,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['LIMIT_LOAD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['LIMIT_LOAD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
 	</tr>
 	<tr>
@@ -908,7 +903,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $user->lang['AUTH_METHOD']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['AUTH_METHOD']; ?>: </b></td>
 		<td class="row2"><select name="auth_method"><?php echo $auth_select; ?></select></td>
 	</tr>
 <?php
@@ -978,7 +973,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<?php echo ($mode == 'attach') ? '<input type="submit" name="search_imagick" value="' . $user->lang['SEARCH_IMAGICK'] . '" class="btnlite" />&nbsp;&nbsp;' : ''; ?><input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 </table></form>
 
@@ -1001,7 +996,7 @@ function search_imagemagick()
 
 		foreach ($locations as $location)
 		{
-			if (file_exists($location . 'convert' . $exe) && is_executable($location . 'convert' . $exe))
+			if (file_exists($location . 'convert' . $exe) && @is_readable($location . 'convert' . $exe) && @filesize($location . 'convert' . $exe) > 80000)
 			{
 				$imagick = str_replace('\\', '/', $location);
 				continue;
@@ -1030,24 +1025,27 @@ function test_upload(&$error, $upload_dir, $create_directory = false)
 	{
 		if (!file_exists($upload_dir))
 		{
-			@mkdir($upload_dir, 0755);
+			@mkdir($upload_dir, 0777);
 			@chmod($upload_dir, 0777);
 		}
 	}
-		
+
 	if (!file_exists($upload_dir))
 	{
-		$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $real_upload_dir);
+		$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $real_upload_dir);
+		return;
 	}
 	
-	if (!count($error) && !is_dir($upload_dir))
+	if (!is_dir($upload_dir))
 	{
-		$error[] = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $real_upload_dir);
+		$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $real_upload_dir);
+		return;
 	}
 	
-	if (!count($error) && !is_writable($upload_dir))
+	if (!is_writable($upload_dir))
 	{
-		$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $real_upload_dir);
+		$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $real_upload_dir);
+		return;
 	}
 }
 
