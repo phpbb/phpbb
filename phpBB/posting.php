@@ -955,7 +955,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 		header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
 	}
-	else if(!$preview)
+	else
 	{
 		if( !empty($post_id) )
 		{
@@ -975,47 +975,52 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 					message_die(GENERAL_MESSAGE, $lang['Sorry_edit_own_posts']);
 				}
 
-				$subject = stripslashes(trim($postrow['post_subject']));
-				$message = stripslashes(trim($postrow['post_text']));
-
-				if(eregi("\[addsig]$", $message))
+				if(!$preview)
 				{
-					$message = eregi_replace("\[addsig]$", "", $message);
-					$attach_sig = TRUE;
-				}
-				else
-				{
-					$attach_sig = 0;
-				}
+					$subject = stripslashes(trim($postrow['post_subject']));
+					$message = stripslashes(trim($postrow['post_text']));
 
-				// Removes UID from BBCode entries
-				$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
-
-				$message = str_replace("<br />", "\n", $message);
-
-   				$message = undo_htmlspecialchars($message);
-				
-				// Special handling for </textarea> tags in the message, which can break the editing form..
-				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
-
-				if($is_first_post)
-				{
-					$notify_show = TRUE;
-					if($postrow['topic_notify'])
+					if(eregi("\[addsig]$", $message))
 					{
-						$notify = TRUE;
+						$message = eregi_replace("\[addsig]$", "", $message);
+
+						$user_sig = ($postrow['user_sig'] != "") ? $postrow['user_sig'] : "";
+						$attach_sig = ($postrow['user_sig'] != "") ? TRUE : 0;
 					}
-					$subject = stripslashes($postrow['topic_title']);
-
-					switch($postrow['topic_type'])
+					else
 					{
-						case POST_ANNOUNCE:
-							$is_announce = TRUE;
-							break;
+						$attach_sig = 0;
+					}
 
-						case POST_STICKY:
-							$is_sticky = TRUE;
-							break;
+					// Removes UID from BBCode entries
+					$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+
+					$message = str_replace("<br />", "\n", $message);
+
+   					$message = undo_htmlspecialchars($message);
+				
+					// Special handling for </textarea> tags in the message, which can break the editing form..
+					$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+
+					if($is_first_post)
+					{
+						$notify_show = TRUE;
+						if($postrow['topic_notify'])
+						{
+							$notify = TRUE;
+						}
+						$subject = stripslashes($postrow['topic_title']);
+
+						switch($postrow['topic_type'])
+						{
+							case POST_ANNOUNCE:
+								$is_announce = TRUE;
+								break;
+
+							case POST_STICKY:
+								$is_sticky = TRUE;
+								break;
+						}
 					}
 				}
 			}
@@ -1069,6 +1074,20 @@ if(empty($username))
 }
 
 //
+// Define a signature, this is in practice only used for 
+// preview but doing this here allows us to use it as a
+// check for attach_sig later
+//
+if( $mode == "editpost" )
+{
+	$user_sig = ($postrow['user_sig'] != "") ? $postrow['user_sig'] : "";
+}
+else
+{
+	$user_sig = ($userdata['user_sig'] != "") ? $userdata['user_sig'] : "";
+}
+
+//
 // Start: Preview Post
 //
 if($preview && !$error)
@@ -1094,8 +1113,6 @@ if($preview && !$error)
 	//
 	// Finalise processing as per viewtopic
 	//
-	$user_sig = ($userdata['user_sig'] != "") ? $userdata['user_sig'] : "";
-
 	if( !$html_on )
 	{
 		if($user_sig != "")
@@ -1105,16 +1122,16 @@ if($preview && !$error)
 		$preview_message = htmlspecialchars($preview_message);
 	}
 
+	if($user_sig != "")
+	{
+		$sig_uid = make_bbcode_uid();
+		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
+		$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+	}
+
 	if($bbcode_on)
 	{
 		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
-
-		if($user_sig != "")
-		{
-			$sig_uid = make_bbcode_uid();
-			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
-			$user_sig = bbencode_second_pass($user_sig, $sig_uid);
-		}
 
 		//
 		// This compensates for bbcode's rather agressive (but I guess necessary) 
@@ -1253,9 +1270,10 @@ else
 }
 
 //
-// Signature toggle selection
+// Signature toggle selection - only show if
+// the user has a signature
 //
-if($attach_sig)
+if( $user_sig != "" )
 {
 	$template->assign_block_vars("signature_checkbox", array());
 }
