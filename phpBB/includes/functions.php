@@ -787,9 +787,7 @@ function smilies_pass($message)
 
 	for($i = 0; $i < count($smilies); $i++)
 	{
-		$orig[] = "'([\s\.\>\
-\(])" . preg_quote($smilies[$i]['code']) . "([\<\s\\).\
-])'si";
+		$orig[] = "'(\W)" . preg_quote($smilies[$i]['code']) . "(\W)'si";
 		$repl[] = '\1<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '">\2';
 	}
 
