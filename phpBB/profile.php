@@ -1429,9 +1429,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$username = $row['username'];
 				$user_actkey = generate_activation_key();
 				$user_password = generate_password();
-
+				
 				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_active = 0, user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+					SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
 					WHERE user_id = " . $row['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{

@@ -40,6 +40,7 @@ if(!isset($HTTP_GET_VARS['start']))
 }
 
 $page_title = $lang['Group_Control_Panel'];
+$is_moderator = FALSE;
 
 //
 // First, joining a group
@@ -157,6 +158,7 @@ else if( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending'
 //
 else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
+
 	//
 	// Include page header here because we might need to send a header redirect from the unsub section
 	//
@@ -164,10 +166,35 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
 
 	//
+	// For security, get the ID of the group moderator.
+	//
+	$sql = "SELECT group_moderator FROM " . GROUPS_TABLE . " WHERE group_id = $group_id";
+	
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Could not get moderator information", $lang['Error'], __LINE__, __FILE__, $sql);
+	}
+	
+	$row = $db->sql_fetchrow($result);
+	$group_moderator = $row['group_moderator'];
+	
+	if($group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN)
+	{
+		$is_moderator = TRUE;
+	}
+	
+		
+	//
 	// Handle Additions, removals, approvals and denials
 	//
 	if(isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) || $HTTP_POST_VARS['add'] || $HTTP_POST_VARS['remove'])
 	{
+
+		if(!$is_moderator)
+		{
+			message_die(GENERAL_ERROR, $lang['Not_group_moderator'], $lang['Error']);
+		}
+		
 
 		$members = $HTTP_POST_VARS['member'];
 
@@ -307,7 +334,7 @@ else if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GR
 	//
 	// END approve or deny
 	//
-
+	
 
 	$start = ( isset($HTTP_GET_VARS['start']) ) ? $HTTP_GET_VARS['start'] : 0;
 

@@ -558,6 +558,7 @@ $lang['Deny_selected'] = "Deny Selected";
 $lang['Not_logged_in'] = "You must be logged in to join a group.";
 $lang['Remove_selected'] = "Remove Selected";
 $lang['Add_member'] = "Add Member";
+$lang['Not_group_moderator'] = "You are not this groups moderator therefor you cannot preform that action.";
 
 $lang['This_open_group'] = "This is an open group, click to request membership";
 $lang['This_closed_group'] = "This is a closed group, no more users accepted";
