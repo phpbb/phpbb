@@ -153,30 +153,23 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $auto_crea
 	//
 	// Create or update the session
 	//
-	if( !$auto_create )
-	{
-		$sql = "UPDATE " . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_start = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_time = $current_time, session_page = $page_id, session_logged_in = $login 
-			WHERE session_id = '" . $session_id . "' 
-				AND session_ip = '$user_ip'";
-		$result = $db->sql_query($sql);
-		if(!$result)
-		{
-			message_die(CRITICAL_ERROR, "Error updating current session : session_begin", "", __LINE__, __FILE__, $sql);
-		}
-	}
-	else
-	{
-		mt_srand( (double) microtime() * 1000000);
-		$session_id = md5(uniqid(mt_rand()));
+	$sql_update = "UPDATE " . SESSIONS_TABLE . "
+		SET session_user_id = $user_id, session_start = $current_time, session_last_visit = " . $sessiondata['lastvisit'] . ", session_time = $current_time, session_page = $page_id, session_logged_in = $login
+		WHERE session_id = '" . $session_id . "' 
+			AND session_ip = '$user_ip'";
+	$result = $db->sql_query($sql_update);
 
-		$sql = "INSERT INTO " . SESSIONS_TABLE . "
+	if(!$result || !$db->sql_affectedrows())
+	{
+		$session_id = md5(uniqid($user_ip));
+
+		$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
 			(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
 			VALUES ('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql_insert);
 		if(!$result)
 		{
-			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", "", __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, "Error creating new session : session_begin", __LINE__, __FILE__, $sql);
 		}
 	}
 
@@ -272,7 +265,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					$sql = "UPDATE " . SESSIONS_TABLE . " 
 						SET session_time = $current_time, session_page = $thispage_id 
 						WHERE session_id = '" . $userdata['session_id'] . "' 
-							AND session_user_id = " . $userdata['user_id'] . " 
 							AND session_ip = '$user_ip'";
 				}
 				else
@@ -281,8 +273,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 						SET user_session_time = $current_time, user_session_page = $thispage_id 
 						WHERE user_id = " . $userdata['user_id'];
 				}
-				$result = $db->sql_query($sql);
-				if( !$result )
+				if( !$db->sql_query($sql) )
 				{
 					message_die(CRITICAL_ERROR, "Error updating sessions table : session_pagestart", "", __LINE__, __FILE__, $sql);
 				}
