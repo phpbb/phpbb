@@ -54,7 +54,7 @@ INSERT INTO phpbb_config VALUES ('gzip_compress','1');
 INSERT INTO phpbb_config VALUES ('record_online_users','0');
 INSERT INTO phpbb_config VALUES ('record_online_date','0');
 INSERT INTO phpbb_config VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config VALUES ('version', 'RC-3');
+INSERT INTO phpbb_config VALUES ('version', 'RC-4');
 INSERT INTO phpbb_config VALUES ('server_name', 'www.yourdomain.tld');
 INSERT INTO phpbb_config VALUES ('server_port', '80');
 
