@@ -62,8 +62,6 @@ if(!$onlinerow)
 }
 
 $template->assign_vars(array(
-	"POST_FORUM_URL" => POST_FORUM_URL,
-	"POST_USER_URL" => POST_USERS_URL,
 	"L_WHOSONLINE" => $l_whosonline,
 	"L_USERNAME" => $l_username,
 	"L_LOCATION" => $l_forum_location,

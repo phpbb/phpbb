@@ -24,8 +24,11 @@
 
 define(HEADER_INC, TRUE);
 
+//
 // Parse and show the overall header.
-$template->set_filenames(array("overall_header" => "overall_header.tpl",
+//
+$template->set_filenames(array(
+	"overall_header" => "overall_header.tpl",
 	"overall_footer" => "overall_footer.tpl"));
 
 //
@@ -34,7 +37,7 @@ $template->set_filenames(array("overall_header" => "overall_header.tpl",
 if($userdata['session_logged_in'])
 {
 	$logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
-	$logged_in_status .= " [<A HREF=\"login.php?submit=logout\">Logout</A>]";
+	$logged_in_status .= " [<A HREF=\"login.$phpEx?submit=logout\">Logout</A>]";
 }
 else
 {
@@ -61,6 +64,7 @@ $template->assign_vars(array(
 	"SITENAME" => $sitename,
 	"PHPEX" => $phpEx,
 	"PHPSELF" => $PHP_SELF,
+
 	"L_USERNAME" => $l_username,
 	"L_PASSWORD" => $l_password,
 	"L_WELCOMETO" => $l_welcometo,
@@ -87,7 +91,12 @@ $template->assign_vars(array(
 	"L_THEFORUMS" => $l_theforums,
 	"L_NONEWPOSTS" => $l_nonewposts,
 	"L_NEWPOSTS" => $l_newposts,
+
 	"S_TIMEZONE" => $s_timezone,
+	"S_FORUMS_URL" => POST_FORUM_URL,
+	"S_TOPICS_URL" => POST_TOPIC_URL,
+	"S_USERS_URL" => POST_USERS_URL,
+
 	"PAGE_TITLE" => $page_title,
 	"LOGIN_STATUS" => $logged_in_status,
 	"META_INFO" => $meta_tags));
@@ -122,11 +131,12 @@ switch($pagetype)
 			"jumpbox" => "jumpbox.tpl",
 			"footer" => "viewforum_footer.tpl"));
 		$jumpbox = make_jumpbox();
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-			"JUMPBOX_ACTION" => "viewforum.".$phpEx,
-			"SELECT_NAME" => POST_FORUM_URL,
+		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
+		    "SELECT_NAME" => POST_FORUM_URL));
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		$template->assign_vars(array(
 			"FORUM_ID" => $forum_id,
 			"FORUM_NAME" => $forum_name,
 			"MODERATORS" => $forum_moderators));
@@ -140,11 +150,12 @@ switch($pagetype)
 			"jumpbox" => "jumpbox.tpl",
 			"footer" => "viewtopic_footer.tpl"));
 		$jumpbox = make_jumpbox();
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
 		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-		    "SELECT_NAME" => POST_FORUM_URL,
+		    "SELECT_NAME" => POST_FORUM_URL));
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		$template->assign_vars(array(
 			"FORUM_ID" => $forum_id,
 		    "FORUM_NAME" => $forum_name,
 		    "TOPIC_ID" => $topic_id,
@@ -154,16 +165,18 @@ switch($pagetype)
 		break;
 
 	case 'viewonline':
-		$template->set_filenames(array("header" => "viewonline_header.tpl",
+		$template->set_filenames(array(
+			"header" => "viewonline_header.tpl",
 			"body" => "viewonline_body.tpl",
 			"jumpbox" => "jumpbox.tpl",
 			"footer" => "viewonline_footer.tpl"));
 		$jumpbox = make_jumpbox();
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-			"JUMPBOX_ACTION" => "viewforum.".$phpEx,
-			"SELECT_NAME" => POST_FORUM_URL,
+		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
+		    "SELECT_NAME" => POST_FORUM_URL));
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		$template->assign_vars(array(
 			"TOTAL_POSTS" => $total_posts,
 			"TOTAL_USERS" => $total_users,
 			"POST_USER_URL" => POST_USERS_URL,
@@ -181,11 +194,12 @@ switch($pagetype)
 			"header" => "newtopic_header.tpl",
 			"body" => "posting_body.tpl"));
 		$jumpbox = make_jumpbox();
-		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-			"JUMPBOX_ACTION" => "viewforum.".$phpEx,
-			"SELECT_NAME" => POST_FORUM_URL,
+		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
+		    "SELECT_NAME" => POST_FORUM_URL));
+		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		$template->assign_vars(array(
 			"L_POSTNEWIN" => $l_postnewin,
 			"FORUM_ID" => $forum_id,
 			"FORUM_NAME" => $forum_name));

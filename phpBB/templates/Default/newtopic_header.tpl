@@ -7,7 +7,7 @@
 	        <tr>
                   <td align="center" style="{font-size: 8pt;}">
                     {L_POSTNEWIN}<br>
-	            <a href="viewforum.{PHPEX}?forum_id={FORUM_ID}">{FORUM_NAME}</a>
+	            <a href="viewforum.{PHPEX}?{S_FORUMS_URL}={FORUM_ID}">{FORUM_NAME}</a>
 	          </td>
 	        </tr>
 	      </table>

@@ -9,9 +9,9 @@
 	      <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
 	        <tr>
 	          <td align="left" style="{font-size: 8pt;}">
-	            <a href="posting.{PHPEX}?mode=newtopic&forum_id={FORUM_ID}">
+	            <a href="posting.{PHPEX}?mode=newtopic&{S_FORUMS_URL}={FORUM_ID}">
 	            <img src="images/newpost.jpg" height="50" width="125" alt="Post New Topic" border="0"></a>&nbsp;
-                    <a href="posting.{PHPEX}?mode=reply&forum_id={FORUM_ID}&topic_id={TOPIC_ID}">
+                    <a href="posting.{PHPEX}?mode=reply&{S_TOPICS_URL}={TOPIC_ID}">
                     <img src="images/reply.jpg" height="50" width="125" alt="Reply to this topic" border="0">
 	            </a>
 	          </td>

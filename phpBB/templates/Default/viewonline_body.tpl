@@ -12,7 +12,7 @@
 				</tr>
 				<!-- BEGIN userrow -->
 				<tr bgcolor="{userrow.ROW_COLOR}" class="tablebody">
-					<td width="35%">&nbsp;<a href="profile.{PHPEX}?mode=viewprofile&{POST_USER_URL}={userrow.USER_ID}">{userrow.USERNAME}</a>&nbsp;</td>
+					<td width="35%">&nbsp;<a href="profile.{PHPEX}?mode=viewprofile&{S_USERS_URL}={userrow.USER_ID}">{userrow.USERNAME}</a>&nbsp;</td>
 					<td width="25%" align="center">&nbsp;{userrow.LASTUPDATE}&nbsp;</td>
 					<td width="40%">&nbsp;<a href="{userrow.LOCATION_URL}">&nbsp;{userrow.LOCATION}</a>&nbsp;</td>
 				</tr>

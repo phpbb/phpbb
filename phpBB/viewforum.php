@@ -158,16 +158,16 @@ if($total_topics)
 	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
 	$last_post_user = $topic_rowset[$x]["user2"];
 	$folder_img = "<img src=\"images/folder.gif\">";
-	$template->assign_block_vars("topicrow", array("FORUM_ID" => $forum_id,
-				 "POST_TOPIC_URL" => POST_TOPIC_URL,
-				 "TOPIC_ID" => $topic_id,
-				 "FOLDER" => $folder_img, 
-				 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
-				 "GOTO_PAGE" => $goto_page,
-				 "REPLIES" => $replies,
-				 "TOPIC_TITLE" => $topic_title,
-				 "VIEWS" => $views,
-				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
+	$template->assign_block_vars(
+		"topicrow", array("FORUM_ID" => $forum_id,
+		 "TOPIC_ID" => $topic_id,
+		 "FOLDER" => $folder_img, 
+		 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
+		 "GOTO_PAGE" => $goto_page,
+		 "REPLIES" => $replies,
+		 "TOPIC_TITLE" => $topic_title,
+		 "VIEWS" => $views,
+		 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
      }
 
    $count = 1;

@@ -15,7 +15,7 @@
 	        <!-- BEGIN topicrow -->
 	        <tr bgcolor="#DDDDDD" class="tablebody">
 	          <td width="5%" align="center" valign="middle">{topicrow.FOLDER}</td>
-                  <td><a href="viewtopic.{PHPEX}?{topicrow.POST_TOPIC_URL}={topicrow.TOPIC_ID}&{topicrow.REPLIES}">{topicrow.TOPIC_TITLE}</a>{topicrow.GOTO_PAGE}</td>
+                  <td><a href="viewtopic.{PHPEX}?{S_TOPICS_URL}={topicrow.TOPIC_ID}&{topicrow.REPLIES}">{topicrow.TOPIC_TITLE}</a>{topicrow.GOTO_PAGE}</td>
                   <td width="5%" align="center" valign="middle">{topicrow.REPLIES}</td>
                   <td width="10%" align="center" valign="middle">{topicrow.TOPIC_POSTER}</td>
 	          <td width="5%" align="center" valign="middle">{topicrow.VIEWS}</td>
@@ -28,18 +28,16 @@
 	</table>
     </td>
   </tr>
-  <tr>
-    <td>
-     <table border="0" align="center" width="100%" bgcolor="#000000" cellpadding="0" cellspacing="1">
-      <tr>
-        <td>
-          <table border="0" width="100%" cellpadding="3" cellspacing="1">
-           <tr bgcolor="#CCCCCC" class="tablebody">
-             <td align="right">{PAGINATION}</td>
-           </tr>
-          </table>
-        </td>
-       </tr>
-      </table>
-	</td>
-</tr>
+  
+	<tr>
+		<td align="center" bgcolor="#000000"><table border="0" width="100%" cellpadding="0" cellspacing="1">
+			<tr>
+				<td bgcolor="#CCCCCC"><table border="0" width="100%" cellpadding="3" cellspacing="1">
+					<tr class="tablebody">
+						<td align="left"><b>{S_TIMEZONE}</b></td>
+						<td align="right">{PAGINATION}</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table></td>
+	</tr>

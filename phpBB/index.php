@@ -108,7 +108,6 @@ if($total_categories)
 		$template->assign_block_vars("catrow",
 			array(
 				"CAT_ID" => $category_rows[$i]["cat_id"],
-				"POST_FORUM_URL" => POST_FORUM_URL,
 				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])
 			)
 		);
