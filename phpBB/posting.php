@@ -123,13 +123,13 @@ function remove_common($percent, $word_id_list = array())
 			}
 			$word_id_sql .= $word_id_list[$i]['word_id'];
 		}
-		$word_id_sql = " AND sl.word_id IN ($word_id_sql)";
+		$word_id_sql = " AND w.word_id IN ($word_id_sql)";
 
-		$sql = "SELECT sl.word_id, SUM(sm.word_count) AS post_occur_count 
-			FROM phpbb_search_wordlist sl, phpbb_search_wordmatch sm 
-			WHERE sl.word_id = sm.word_id 
+		$sql = "SELECT w.word_id, SUM(m.word_count) AS post_occur_count 
+			FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+			WHERE w.word_id = m.word_id 
 				$word_id_sql 
-			GROUP BY sl.word_id 
+			GROUP BY w.word_id 
 			ORDER BY post_occur_count DESC";
 		if( !$result = $db->sql_query($sql) )
 		{
@@ -156,7 +156,7 @@ function remove_common($percent, $word_id_list = array())
 			{
 				if( ( $rowset[$i]['post_occur_count'] / $row['total_posts'] ) >= $percent )
 				{
-					$sql = "DELETE FROM phpbb_search_wordlist 
+					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
 						WHERE word_id = " . $rowset[$i]['word_id'];
 					$result = $db->sql_query($sql); 
 					if( !$result )
@@ -164,7 +164,7 @@ function remove_common($percent, $word_id_list = array())
 						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
 					}
 
-					$sql = "DELETE FROM phpbb_search_wordmatch 
+					$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
 						WHERE word_id = " . $rowset[$i]['word_id'];
 					$result = $db->sql_query($sql); 
 					if( !$result )
@@ -194,7 +194,6 @@ function remove_old_words($post_id)
 	if( $result = $db->sql_query($sql) )
 	{
 		$row = $db->sql_fetchrow($result);
-//		print_r($row);
 
 		$search_text = clean_words($row['post_text'], $stopword_array, $synonym_array);
 		$search_matches = split_words($search_text);
@@ -244,7 +243,7 @@ function remove_old_words($post_id)
 			}
 
 			$sql = "SELECT word_id, word_text  
-				FROM phpbb_search_wordlist
+				FROM " . SEARCH_WORD_TABLE . " 
 				WHERE word_text IN ($sql_in)";
 			$result = $db->sql_query($sql);
 			if( !$result )
@@ -255,8 +254,6 @@ function remove_old_words($post_id)
 			if( $word_check_count = $db->sql_numrows($result) )
 			{
 				$check_words = $db->sql_fetchrowset($result);
-
-//				print_r($check_words);
 
 				$word_id_sql = "";
 				for($i = 0; $i < count($check_words); $i++ )
@@ -270,7 +267,7 @@ function remove_old_words($post_id)
 				$word_id_sql = "word_id IN ($word_id_sql)";
 
 				$sql = "SELECT word_id, COUNT(post_id) AS post_occur_count 
-					FROM phpbb_search_wordmatch  
+					FROM " . SEARCH_MATCH_TABLE . "   
 					WHERE $word_id_sql 
 					GROUP BY word_id 
 					ORDER BY post_occur_count DESC";
@@ -283,14 +280,11 @@ function remove_old_words($post_id)
 				{
 					$rowset = $db->sql_fetchrowset($result);
 
-//					print_r($rowset);
-
 					for($i = 0; $i < $post_count; $i++)
 					{
-//						echo $rowset[$i]['post_occur_count'] . "<BR>";
 						if( $rowset[$i]['post_occur_count'] == 1 )
 						{
-							$sql = "DELETE FROM phpbb_search_wordlist 
+							$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
 								WHERE word_id = " . $rowset[$i]['word_id'];
 							$result = $db->sql_query($sql); 
 							if( !$result )
@@ -301,7 +295,7 @@ function remove_old_words($post_id)
 					}
 				}
 
-				$sql = "DELETE FROM phpbb_search_wordmatch 
+				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
 					WHERE post_id = $post_id";
 				$result = $db->sql_query($sql); 
 				if( !$result )
@@ -374,7 +368,7 @@ function add_search_words($post_id, $text)
 		}
 
 		$sql = "SELECT word_id, word_text  
-			FROM phpbb_search_wordlist
+			FROM " . SEARCH_WORD_TABLE . " 
 			WHERE word_text IN ($sql_in)";
 		$result = $db->sql_query($sql);
 		if( !$result )
@@ -407,7 +401,7 @@ function add_search_words($post_id, $text)
 
 				if( $new_match )
 				{
-					$sql = "INSERT INTO phpbb_search_wordlist (word_text) 
+					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . "  (word_text) 
 						VALUES ('". addslashes($word[$j]) . "')"; 
 					$result = $db->sql_query($sql); 
 					if( !$result )
@@ -418,7 +412,7 @@ function add_search_words($post_id, $text)
 					$word_id = $db->sql_nextid();
 				}
 				
-				$sql = "INSERT INTO phpbb_search_wordmatch (post_id, word_id, word_count, title_match) 
+				$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, word_count, title_match) 
 					VALUES ($post_id, $word_id, " . $word_count[$word[$j]] . ", 0)"; 
 				$result = $db->sql_query($sql); 
 				if( !$result )

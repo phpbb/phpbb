@@ -307,7 +307,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				$match_word = str_replace("*", "%", $match_word_list[$i]);
 
 				$sql = "SELECT m.post_id, m.word_count  
-					FROM phpbb_search_wordlist w, phpbb_search_wordmatch m 
+					FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
 					WHERE w.word_text LIKE '$match_word' 
 						AND m.word_id = w.word_id 
 					ORDER BY m.post_id, m.word_count DESC";

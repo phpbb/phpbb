@@ -20,10 +20,6 @@
  *
  ***************************************************************************/
 
-//
-// Constants
-//
-
 // Debug Level
 define(DEBUG, 1); // Debugging on
 //define(DEBUG, 0); // Debugging off
@@ -89,7 +85,6 @@ define(CRITICAL_ERROR, 204);
 define(PRIVMSGS_READ_MAIL, 0);
 define(PRIVMSGS_NEW_MAIL, 1);
 define(PRIVMSGS_SENT_MAIL, 2);
-define(PRIVMSGS_SAVED_MAIL, 3);
 define(PRIVMSGS_SAVED_IN_MAIL, 3);
 define(PRIVMSGS_SAVED_OUT_MAIL, 4);
 
@@ -160,6 +155,8 @@ define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('PRUNE_TABLE', $table_prefix.'forum_prune');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SEARCH_TABLE', $table_prefix.'search_results');
+define('SEARCH_WORD_TABLE', $table_prefix.'search_wordlist');
+define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');
