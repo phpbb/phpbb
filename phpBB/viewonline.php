@@ -86,7 +86,7 @@ if($online_count)
 	for($i = 0; $i < $online_count; $i++)
 	{
 
-		if(!(ix % 2))
+		if(!($i % 2))
 		{
 			$row_color = "#".$theme['td_color1'];
 		}
