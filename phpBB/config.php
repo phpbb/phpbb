@@ -56,7 +56,7 @@ define(SQL_CONNECT, 1);
 define(BANNED, 2);
 define(QUERY_ERROR, 3);
 define(SESSION_CREATE, 4);
-
+define(NO_TOPICS, 5);
 
 // Session data
 $session_cookie = "phpBBsession";
