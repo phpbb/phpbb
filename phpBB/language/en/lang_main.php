@@ -496,7 +496,7 @@ $lang = array(
 	'STOP_WATCHING_TOPIC'	=> 'Unsubscribe Topic',
 	'START_WATCHING_TOPIC'	=> 'Subscribe Topic',
 	'NOT_WATCHING_TOPIC'	=> 'You are no longer subscribed to this topic.',
-	'NOW_WATCHING_TOPIC'	=> 'You have subscribed to receive updates on this topic.',
+	'ARE_WATCHING_TOPIC'	=> 'You have subscribed to receive updates on this topic.',
 
 	'ALREADY_VOTED'			=> 'You have already voted in this poll and may not change your selection.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.', 
@@ -584,6 +584,7 @@ $lang = array(
 	'USER_CANNOT_QUOTE'		=> 'You cannot quote posts in this forum',
 	'USER_CANNOT_EDIT'		=> 'You cannot edit posts in this forum',
 	'USER_CANNOT_DELETE'	=> 'You cannot delete posts in this forum',
+	'USER_CANNOT_POST'		=> 'You cannot report posts in this forum',
 	'CANNOT_POST_STICKY'	=> 'Sorry but you cannot post sticky topics.', 
 	'CANNOT_POST_ANNOUNCE'	=> 'Sorry but you cannot post announcements.', 
 	'CANNOT_POST_NEWS'		=> 'Sorry but you cannot post news topics.', 
@@ -1090,7 +1091,7 @@ $lang = array(
 	'Search_keywords' => 'Search for Keywords',
 	'Search_keywords_explain' => 'You can use <u>AND</u> to define words which must be in the results, <u>OR</u> to define words which may be in the result and <u>NOT</u> to define words which should not be in the result. Use * as a wildcard for partial matches',
 	'Search_author' => 'Search for Author',
-	'Search_author_explain' => 'Use * as a wildcard for partial matches',
+	'SEARCH_AUTHOR_EXPLAIN' => 'Use * as a wildcard for partial matches',
 	'Last_active' => 'Last active',
 	'SELECT_MARKED' => 'Select Marked',
 	'Search_for_any' => 'Search for any terms or use query as entered',
@@ -1166,6 +1167,8 @@ $lang = array(
 	'REPORT_TOTAL'				=> 	'In total there is <b>1</b> report to review',
 	'REPORTER'					=>	'Reporter',
 	'REPORT_TIME'				=>	'Report time',
+	'ALL_REPORTS'				=>	'All reports',
+	'REPORT_PRIORITY'		=>	'Priority',
 
 	'ALL_FORUMS'	=>	'All forums',
 	'LOOK_UP_FORUM'	=>	'Select a forum',
@@ -1203,6 +1206,8 @@ $lang = array(
 	'SELECT_TOPIC'				=>	'Select topic',
 	'TOPIC_NUMBER_IS'			=>	'Topic #%d is %s',
 	'POST_DETAILS'				=>	'Post details',
+	'POST_OPTIONS'				=>	'Post options',
+	'CHANGE_POSTER'			=>	'Change poster',
 
 	'DELETE_POSTS'				=>	'Delete posts',
 	'CONFIRM_DELETE_POST'		=>	'Are you sure you want to delete this post?',
@@ -1285,19 +1290,19 @@ $lang = array(
 	'NO_SUBJECT'				=>	'&lt;No subject&gt;',
 
 
-	'logm_lock'				=>	'<b>Locked topic</b>',
-	'logm_unlock'			=>	'<b>Unlocked topic</b>',
-	'logm_move'				=>	'<b>Moved topic</b> from %s',
-	'logm_fork'				=>	'<b>Copied topic</b> from %s',
-	'logm_split'			=>	'<b>Split topic</b> from topic %s',
+	'logm_lock'					=>	'<b>Locked topic</b>',
+	'logm_unlock'				=>	'<b>Unlocked topic</b>',
+	'logm_move'					=>	'<b>Moved topic</b> from %s',
+	'logm_fork'					=>	'<b>Copied topic</b> from %s',
+	'logm_split'					=>	'<b>Split topic</b> from topic %s',
 	'logm_delete_topic'		=>	'<b>Deleted topic</b> %s',
 	'logm_delete_post'		=>	'<b>Deleted post</b> %s',
 	'logm_delete_posts'		=>	'<b>Deleted posts</b> %s',
 	'logm_approve_topic'	=>	'<b>Approved topic</b>',
 	'logm_approve_post'		=>	'<b>Approved post</b> %s',
-	'logm_unapprove_topic'	=>	'<b>Unapproved topic</b>',
+	'logm_unapprove_topic'=>	'<b>Unapproved topic</b>',
 	'logm_unapprove_post'	=>	'<b>Unapproved post</b> %s',
-	'logm_merge'			=>	'<b>Merged posts</b> from topic %s',
+	'logm_merge'				=>	'<b>Merged posts</b> from topic %s',
 	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
 	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
 	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
@@ -1315,20 +1320,23 @@ $lang = array(
 	'EMPTY_REPORT'			=>	'You must enter a description when selecting this reason',
 
 	'REPORT_NOTIFY'			=>	'Notify me',
-	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when report is read.',
+	'REPORT_NOTIFY_EXPLAIN'	=>	'Informs you when your report is dealt with',
 
 	'POST_REPORTED_SUCCESS'	=>	'This post has been successfully reported',
-	'ALREADY_REPORTED'		=>	'You have already reported this post',
-	'EDIT_REPORT'			=>	'Click %sHere%s to edit your report',
+	'ALREADY_REPORTED'		=>	'This post has already been reported',
 
 	'REPORT_REASONS' => array(
 		'TITLE' => array(
-			'WAREZ'	=>	'Warez',
-			'OTHER'	=>	'Other'
+			'WAREZ'		=>	'Warez',
+			'SPAM'			=>	'Spam',
+			'OFF_TOPIC'	=>	'Off-topic',
+			'OTHER'			=>	'Other'
 		),
 		'DESCRIPTION' => array(
-			'WAREZ'	=>	'The post contains links to illegal or pirated software',
-			'OTHER'	=>	'The reported post does not fit into any other category, please use the description field'
+			'WAREZ'		=>	'The post contains links to illegal or pirated software',
+			'SPAM'			=>	'The reported post has for only purpose to advertise for a website or another product',
+			'OFF_TOPIC'	=>	'The reported post is off topic',
+			'OTHER'			=>	'The reported post does not fit into any other category, please use the description field'
 		)
 	)
 );
