@@ -219,7 +219,7 @@ $lang['Use_SMTP'] = "Use SMTP for delivery";
 $lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a server instead of the local mail function";
 $lang['SMTP_server'] = "SMTP Server Address";
 
-$lang['Disable_privmsg'] = "Disable Private Messaging";
+$lang['Disable_privmsg'] = "Private Messaging";
 $lang['Inbox_limits'] = "Max posts in Inbox";
 $lang['Sentbox_limits'] = "Max posts in Sentbox";
 $lang['Savebox_limits'] = "Max posts in Savebox";
