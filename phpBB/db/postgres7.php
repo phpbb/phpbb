@@ -274,7 +274,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id], PGSQL_ASSOC);
+			$this->row = @pg_fetch_array($query_id, $this->rownum[$query_id]);
 			if($this->row)
 			{
 				$this->rownum[$query_id]++;
