@@ -394,7 +394,7 @@ function session_end($session_id, $user_id)
 		}
 	}
 
-	$sessiondata['userid'] = ANONYMOUS
+	$sessiondata['userid'] = ANONYMOUS;
 
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename . '_data', $serialised_cookiedata, ($current_time + 31536000), $cookiepath, $cookiedomain, $cookiesecure);
