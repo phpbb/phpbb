@@ -178,6 +178,7 @@ $l_locktopic	= "Lock this $l_topic";
 $l_unlocktopic	= "Unlock this $l_topic";
 $l_movetopic	= "Move this $l_topic";
 $l_deletetopic	= "Delete this $l_topic";
+$l_nomoretopics = "There are no more topics in this view.";
 
 // Functions
 $l_loggedinas	= "Logged in as";
@@ -240,7 +241,7 @@ $l_faxinfo = "
 	Fax Number: +1-604-742-1770<br>
 ";
 $l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>$l_mailingaddress<br>Or fax it to: <br>$l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
-$l_welcomesubj	= "Welcome to $sitename Forums";
+$l_welcomesubj	= "Welcome to ".$board_config['sitename']." Forums";
 $l_welcomemail	= "
 $l_welcomesubj,
 

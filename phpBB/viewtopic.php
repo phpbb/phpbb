@@ -43,26 +43,166 @@ if(!isset($topic_id))
    error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
 
-$sql = "SELECT t.topic_title, t.topic_status, t.topic_replies,
-		f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-	FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-	WHERE t.topic_id = $topic_id
-		AND f.forum_id = t.forum_id
-		AND fm.forum_id = t.forum_id
-		AND u.user_id = fm.user_id";
+// 
+// Start: 'Next newest topic' & 'Next oldest topic' functionality
+//
+if(isset($HTTP_GET_VARS['view']))
+{
+	if($HTTP_GET_VARS['view'] == 'newer')
+	{
+		// Get next 'newest' topic insted of this topic
+		switch($dbms)
+		{
+			case 'oracle':
+				$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+							FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+							WHERE t.topic_id = 
+							(select topic_id from ".TOPICS_TABLE." WHERE topic_time > (select topic_time from ".TOPICS_TABLE." where topic_id = $topic_id) AND ROWNUM < 2 ORDER BY topic_time DESC)
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
+			break;
+			case 'mssql':
+			case 'odbc':
+			case 'postgres':
+				$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+							FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+							WHERE t.topic_id in
+							(select min(topic_id) from ".TOPICS_TABLE." WHERE topic_time > (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
+			break;
+			default:
+				// And now the stupid MySQL case...I wish they would get around to implementing subselectes...
+				$sub_query = "SELECT topic_time FROM ".TOPICS_TABLE." WHERE topic_id = $topic_id";
+				if($sub_result = $db->sql_query($sub_query))
+				{
+					$resultset = $db->sql_fetchrowset($sub_result);
+					$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+								f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+								FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+								WHERE t.topic_time > ".$resultset[0]['topic_time']."
+								AND f.forum_id = t.forum_id
+								AND fm.forum_id = t.forum_id
+								AND u.user_id = fm.user_id";
+					$db->sql_freeresult($sub_result);
+				}
+				else
+				{
+					if(DEBUG)
+					{
+						$dberror = $db->sql_error();
+						error_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", __LINE__, __FILE__);
+					}
+					else
+					{
+						error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+					}
+				}
+			break;
+		}
+	}
+	if($HTTP_GET_VARS['view'] == 'older')
+	{
+		// Get next 'oldest' topic insted of this topic
+		switch($dbms)
+		{
+			case "oracle":
+				$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+							FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+							WHERE t.topic_id = 
+							(select min(topic_id) from ".TOPICS_TABLE." WHERE topic_time < (select topic_time from ".TOPICS_TABLE." where topic_id = $topic_id) AND ROWNUM < 2 ORDER BY topic_time DESC)
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
+			break;
+			case "postgres":
+				$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+							f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+							FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+							WHERE t.topic_id in
+							(select topic_id from ".TOPICS_TABLE." WHERE topic_time < (select topic_time as t_time from ".TOPICS_TABLE." where topic_id = $topic_id))
+							AND f.forum_id = t.forum_id
+							AND fm.forum_id = t.forum_id
+							AND u.user_id = fm.user_id";
+			break;
+			default:
+				$sub_query = "SELECT topic_time FROM ".TOPICS_TABLE." WHERE topic_id = $topic_id";
+				if($sub_result = $db->sql_query($sub_query))
+				{
+					$resultset = $db->sql_fetchrowset($sub_result);
+					$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+								f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+								FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+								WHERE t.topic_time < ".$resultset[0]['topic_time']."
+								AND f.forum_id = t.forum_id
+								AND fm.forum_id = t.forum_id
+								AND u.user_id = fm.user_id";
+					$db->sql_freeresult($sub_result);
+				}
+				else
+				{
+					if(DEBUG)
+					{
+						$dberror = $db->sql_error();
+						error_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", __LINE__, __FILE__);
+					}
+					else
+					{
+						error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+					}
+				}
+			break;
+		}
+	}
+}
+//
+// End.
+//
+else
+{
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies,
+			f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
+			FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+			WHERE t.topic_id = $topic_id
+			AND f.forum_id = t.forum_id
+			AND fm.forum_id = t.forum_id
+			AND u.user_id = fm.user_id";
+}
 
 if(!$result = $db->sql_query($sql))
 {
-   error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+	if(DEBUG)
+	{
+		$dberror = $db->sql_error();
+		error_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", __LINE__, __FILE__);
+	}
+	else
+	{
+   	error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+  	}
 }
 if(!$total_rows = $db->sql_numrows($result))
 {
-   error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+	if(isset($HTTP_GET_VARS['view']))
+	{
+		error_die(GENERAL_ERROR, $l_nomoretopics);
+	}
+	else
+	{
+   	error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+   }
 }
 $forum_row = $db->sql_fetchrowset($result);
 $topic_title = $forum_row[0]['topic_title'];
 $forum_id = $forum_row[0]['forum_id'];
 $forum_name = stripslashes($forum_row[0]['forum_name']);
+// If we're viewing a 'newer' or 'older' topic the current topic_id is unreliable
+$topic_id = $forum_row[0]['topic_id'];
 
 //
 // Start session management
@@ -128,8 +268,8 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 $new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
 $reply_topic_url = append_sid("posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id");
 $view_forum_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=$forum_id");
-$view_older_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=older");
-$view_newer_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=newer");
+$view_older_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=newer");
+$view_newer_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=older");
 $template->assign_vars(array(
 	"U_POST_NEW_TOPIC" => $new_topic_url,
 	"U_VIEW_FORUM" => $view_forum_url,

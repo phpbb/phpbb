@@ -639,7 +639,8 @@ switch($mode)
 					
 					if(!$coppa)
 					{
-						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
+						$email_msg .= "\r\n" . $board_config['board_email'];
+						mail($email, $l_welcomesubj, $email_msg, "From: ".$board_config['board_email_from']."\r\n");
 					}
 
 					$template->set_filenames(array(
