@@ -1822,7 +1822,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 							);
 
-							$message = $lang['Vote_cast'] . "<br /><br />" . sprintf($lang['Click_view_message'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+							$message = $lang['Vote_cast'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 
 							message_die(GENERAL_MESSAGE, $message);
 						}
