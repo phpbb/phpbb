@@ -313,7 +313,7 @@ function setup_style($style)
 	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
-	$template = new Template($phpbb_root_path . $template_path . $template_name, $board_config, $db);
+	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
 	if ( $template )
 	{
