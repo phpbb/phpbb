@@ -37,7 +37,7 @@ $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC
 // Whois requested
 if ($mode == 'whois')
 {
-	include($phpbb_root_path.'includes/functions_admin.'.$phpEx);
+	include($phpbb_root_path.'includes/functions_user.'.$phpEx);
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
@@ -47,7 +47,8 @@ if ($mode == 'whois')
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$whois = ipwhois($row['session_ip']);
+		$whois = user_ipwhois($row['session_ip']);
+
 		$whois = preg_replace('#(\s+?)([\w\-\._\+]+?@[\w\-\.]+?)(\s+?)#s', '\1<a href="mailto:\2">\2</a>\3', $whois);
 		$whois = preg_replace('#(\s+?)(http://.*?)(\s+?)#s', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
 
