@@ -33,14 +33,16 @@
 
 <p>Remember that users are also granted access via usergroups so be sure to check group auth control when assigning and changing access rights!</p>
 
-
 <h2>Username: {USERNAME}</h2>
-<p>This user is {USERTYPE} and {USER_GROUP_LIST}</p>
+<p>This user is {USERTYPE} and {USER_GROUP_LIST}
 
+<form method="post" action="{S_USER_AUTH_ACTION}">
+<input type="checkbox" name="makeadmin" value="1"{S_ADMIN_CHECK_SELECTED}> Checked if user should be an Administrator<br> 
+<input type="checkbox" name="makesupermod" value="1"{S_SUPERMOD_CHECK_SELECTED}> Checked if user should be a Super Moderator</p>
 
-<h3>Restricted Forums</h3>
+<h3>Access to Forums</h3>
 
-<p>These forums need users to be granted specific access for one or more auth fields. Please keep in mind that when you grant access you are giving a user the maximum rights to the forum. So, if this forum has auth fields set for admin only access the user will be made an admin! So think before granting rights!</p>
+<p>The following table lists all forums on you board. Different colour rows indicate different levels of authorisation required for a user to do one or more basic function, eg. view, read, post, reply. By design Administrators have access to and are moderators of every forum (you cannot alter individual settings for Administrators, you must first set them as users by unchecking the box above)</p>
 
 <div align="center"><table cellspacing="1" cellpadding="4" border="0">
 	<tr>
@@ -48,16 +50,19 @@
 		<th>Simple Access Control</th>
 		<th>Moderator</th>
 	</tr>
-	<!-- BEGIN restrictedforums -->
+	<!-- BEGIN forums -->
 	<tr>
-		<td class="{restrictedforums.ROW_CLASS}">{restrictedforums.FORUM_NAME}</td>
-		<td class="{restrictedforums.ROW_CLASS}">{restrictedforums.SELECT_GRANT_LIST}</td>
-		<td class="{restrictedforums.ROW_CLASS}">{restrictedforums.SELECT_MOD_LIST}</td>
+		<td class="{forums.ROW_CLASS}">{forums.FORUM_NAME}</td>
+		<td class="{forums.ROW_CLASS}">{forums.SELECT_GRANT_LIST}</td>
+		<td class="{forums.ROW_CLASS}">{forums.SELECT_MOD_LIST}</td>
 	</tr>
-	<!-- END restrictedforums -->
+	<!-- END forums -->
+	<tr>
+		<td colspan="3" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Request Update">&nbsp;&nbsp;&nbsp;<input type="reset" value="Reset Changes"></td>
+	</tr>
 </table></div>
 
-<br clear="all">
+</form>
 
 <div align="center"><p>The colour coded rows in the table indicate the access level required to view, read, post or reply in the forum.</p>
 

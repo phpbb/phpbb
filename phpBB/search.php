@@ -312,7 +312,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 	// Limit to search to accessible
 	// forums
 	//
-	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 	
 	//
 	// Start building appropriate SQL query
@@ -355,7 +355,7 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 
 			if($searchforum != "all")
 			{
-				$sql .= ($is_auth_ary[$searchforum]['auth_view']) ? " AND (f.forum_id = '$searchforum')" : "";
+				$sql .= ($is_auth_ary[$searchforum]['auth_read']) ? " AND (f.forum_id = '$searchforum')" : "";
 			}
 
 			while(list($key, $value) = each($is_auth_ary))
@@ -493,12 +493,13 @@ if(!$result)
 	error_die(QUERY_ERROR, "Couldn't obtain forum_name/forum_id", __LINE__, __FILE__);
 }
 
-$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = "<option value=\"all\">".$lang['All']."</option>";
+
 while($row = $db->sql_fetchrow($result))
 {
-	if($is_auth_ary[$row['forum_id']]['auth_view'])
+	if($is_auth_ary[$row['forum_id']]['auth_read'])
 	{
 		$s_forums .= "<option value=\"".$row['forum_id']."\">".$row['forum_name']."</option>";
 	}

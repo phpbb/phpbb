@@ -56,21 +56,11 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-/*
 	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
-		WHERE f.forum_id = $forum_id
+		WHERE f.forum_id = $forum_id 
 			AND aa.auth_mod = 1
-			AND aa.forum_id = f.forum_id
-			AND ug.group_id = aa.group_id
-			AND u.user_id = ug.user_id";
-*/
-	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.*
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa, ".AUTH_FORUMS_TABLE." fa
-		WHERE f.forum_id = $forum_id
-			AND fa.forum_id = f.forum_id
-			AND aa.auth_mod = 1
-			AND aa.forum_id = f.forum_id
+			AND ( aa.forum_id = f.forum_id  OR aa.forum_id = 0 )
 			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id";
 }

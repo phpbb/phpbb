@@ -29,31 +29,187 @@ $auth_field_match = array(
 );
 $forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_votecreate", "auth_vote", "auth_attachments");
 
+//
+//
+//
+$adv = (isset($HTTP_GET_VARS['adv'])) ? $HTTP_GET_VARS['adv'] : -1;
 
-//
-//
-//
-if(isset($HTTP_GET_VARS['adv']))
+if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 {
-	$adv = $HTTP_GET_VARS['adv'];
+	$user_id = $HTTP_POST_VARS[POST_USERS_URL];
+
+	//
+	// This is where things become fun ...
+	//
+	// We have to do a pile of cross-checking
+	// to ensure what the admin has requested
+	// for a user doesn't conflict with
+	// permissions already assigned. If they
+	// do we warn the admin and give them 
+	// options ... where possible
+	//
+	
+	//
+	// Get group_id for this user_id
+	//
+	$sql_groupid = "SELECT group_id 
+		FROM " . USER_GROUP_TABLE . "
+		WHERE user_id = $user_id";
+	if(!$result = $db->sql_query($sql_groupid))
+	{
+		// Error no such user/group
+	}
+	list($group_id) = $db->sql_fetchrow($result);
+
+	//
+	// Carry out requests
+	//
+	if( !$HTTP_POST_VARS['makeadmin'] && $HTTP_POST_VARS['curadmin'] )
+	{
+		//
+		// Delete any entries granting moderator
+		// status in auth_access
+		//
+		$sql_unmod = "DELETE FROM " . AUTH_ACCESS_TABLE . "     
+			WHERE group_id = $group_id";
+		if(!$result = $db->sql_query($sql_unmod))
+		{
+			// Error, couldn't delete entries
+		}
+
+		$sql_userlevel = "UPDATE " . USERS_TABLE . " 
+			SET user_level = " . USER . " 
+			WHERE user_id = $user_id";
+		if(!$result = $db->sql_query($sql_userlevel))
+		{
+			// Error, couldn't set user level
+		}
+	
+		header("Location: userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+
+	}
+	else if( $HTTP_POST_VARS['makeadmin'] && !$HTTP_POST_VARS['curadmin'] )
+	{
+		//
+		// Need to switch on admin
+		// level, this also requires
+		// we remove this user from all
+		// auth fields(?)
+		//
+		$sql_userlevel = "UPDATE " . USERS_TABLE . " 
+			SET user_level = " . ADMIN . " 
+			WHERE user_id = $user_id";
+		if(!$result = $db->sql_query($sql_userlevel))
+		{
+			// Error, couldn't set user level
+		}
+
+		//
+		// Delete any entries in auth_access, they
+		// are unrequired if user is becoming an 
+		// admin
+		//
+		$sql_unmod = "DELETE FROM " . AUTH_ACCESS_TABLE . "     
+			WHERE aa.group_id = $group_id";
+		if(!$result = $db->sql_query($sql_unmod))
+		{
+			// Error, couldn't delete entries
+		}
+
+		//
+		// Remove user from any groups
+		//
+		$sql_rmgrp = "DELETE FROM " . USER_GROUP_TABLE . "     
+			WHERE user_id = $user_id 
+				AND group_id <> $group_id";
+		if(!$result = $db->sql_query($sql_rmgrp))
+		{
+			// Error, couldn't delete entries
+		}
+
+	
+		$sql_mod = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_mod)  
+			VALUES ($group_id, 0, 1)";
+		if(!$result = $db->sql_query($sql_mod))
+		{
+			// Error, couldn't delete entries
+		}
+
+		header("Location: userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+
+	}
+	else
+	{
+		//
+		// Pull all the group info
+		// for this user
+		//
+		$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, g.group_single_user  
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
+			WHERE ug.user_id = $user_id 
+				AND g.group_id = ug.group_id 
+				AND aa.group_id = ug.group_id 
+				AND g.group_single_user <> 1";
+		$au_result = $db->sql_query($sql);
+
+		$num_u_access = $db->sql_numrows($au_result);
+		if($num_u_access)
+		{
+			$u_access = $db->sql_fetchrowset($au_result);
+		}
+
+		header("Location: userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
+
+	}
+
 }
-else
+else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 {
-	$adv = -1;
-}
+	//
+	// Default user selection box
+	// This should be altered on the final
+	// system to list users via an alphabetical
+	// selection system ... otherwise this
+	// could get 'cumbersome' for boards
+	// with several thousand users!
+	//
 
+	$sql = "SELECT user_id, username  
+		FROM ".USERS_TABLE;
+	$u_result = $db->sql_query($sql);
+	$user_list = $db->sql_fetchrowset($u_result);
 
-if(isset($HTTP_GET_VARS[POST_USERS_URL]))
-{
+	$select_list = "<select name=\"" . POST_USERS_URL . "\">";
+	for($i = 0; $i < count($user_list); $i++)
+	{
+		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
+	}
+	$select_list .= "</select>";
 
 	$template->set_filenames(array(
-		"body" => "admin/userauth_body.tpl"));
+		"body" => "admin/userauth_select_body.tpl"));
+
+	$template->assign_vars(array(
+		"S_USERAUTH_ACTION" => append_sid("userauth.$phpEx"), 
+		"S_USERS_SELECT" => $select_list, 
+		
+		"U_FORUMAUTH" => append_sid("forumauth.$phpEx"))
+	);
+
+	$template->pparse("body");
+
+	exit;
+
+}
+
+	$template->set_filenames(array(
+		"body" => "admin/userauth_body.tpl")
+	);
 
 	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
 
-	$sql = "SELECT f.forum_id, f.forum_name, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_announce, fa.auth_sticky, fa.auth_votecreate, fa.auth_vote, fa.auth_attachments 
-		FROM " . FORUMS_TABLE . " f, ".AUTH_FORUMS_TABLE." fa 
-		WHERE fa.forum_id = f.forum_id";
+	$sql = "SELECT forum_id, forum_name, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments 
+		FROM " . FORUMS_TABLE;
 	$fa_result = $db->sql_query($sql);
 	$forum_access = $db->sql_fetchrowset($fa_result);
 
@@ -89,7 +245,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 	$u_result = $db->sql_query($sql);
 	$userinf = $db->sql_fetchrowset($u_result);
 
-	$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, g.group_single_user  
+	$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, aa.auth_admin, g.group_single_user  
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
 		WHERE ug.user_id = $user_id 
 			AND g.group_id = ug.group_id 
@@ -103,7 +259,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 		$u_access = $db->sql_fetchrowset($au_result);
 	}
 
-	$is_admin = ($userinf[0]['user_level'] == ADMIN) ? 1 : 0;
+	$is_admin = ($userinf[0]['user_level'] == ADMIN && $userinf[0]['user_id'] != ANONYMOUS) ? 1 : 0;
 
 	for($i = 0; $i < count($forum_access); $i++)
 	{
@@ -113,7 +269,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 		for($j = 0; $j < count($forum_auth_fields); $j++)
 		{
 			$key = $forum_auth_fields[$j];
-			$value = $f_access[$i][$key];
+			$value = $forum_access[$i][$key];
 
 			switch($value)
 			{
@@ -126,11 +282,11 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 					break;
 
 				case AUTH_ACL:
-					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
 					break;
 		
 				case AUTH_MOD:
-					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
 					break;
 	
 				case AUTH_ADMIN:
@@ -145,7 +301,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 		//
 		// Is user a moderator?
 		//
-		$auth_user[$f_forum_id]['auth_mod'] = ($user_id != ANONYMOUS && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		$auth_user[$f_forum_id]['auth_mod'] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	}
 
 	while(list($forumkey, $user_ary) = each($auth_user))
@@ -154,40 +310,9 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 		while(list($fieldkey, $value) = each($user_ary))
 		{
 			$simple_auth[$forumkey] = $simple_auth[$forumkey] && $value;
-
 		}
 	}
 	reset($auth_user);
-
-	$t_username .= $userinf[0]['username'];
-	$t_usertype = ($userinf[0]['user_level'] == ADMIN) ? "an <b>Administrator</b>" : "a <b>User</b>";
-
-	for($i = 0; $i < count($userinf); $i++)
-	{
-		if(!$userinf[$i]['group_single_user'])
-		{
-			$group_name[] = $userinf[$i]['group_name'];
-			$group_id[] = $userinf[$i]['group_name'];
-		}
-	}
-	
-	if(count($group_name))
-	{
-		$t_usergroup_list = "belongs to the following groups; ";
-		for($i = 0; $i < count($userinf); $i++)
-		{
-			$t_usergroup_list .= $group_name[$i];
-			if($i < count($group_name) - 1)
-			{
-				$t_usergroup_list .= ", ";
-			}
-		}
-	}
-	else
-	{
-		$t_usergroup_list = "belongs to no usergroups.";
-	}
-
 
 	$i = 0;
 	if($adv == -1)
@@ -207,11 +332,11 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 				$optionlist_grant = "<select name=\"simple[$forumkey]\">";
 				if($allowed)
 				{
-					$optionlist_grant .= "<option value=\"1\" selected>Allow Access</option><option value=\"0\">Disallow Access</option>";
+					$optionlist_grant .= "<option value=\"1\" selected>Allowed Access</option>";
 				}
 				else
 				{
-					$optionlist_grant .= "<option value=\"1\">Allow Access</option><option value=\"0\" selected>Disallow Access</option>";
+					$optionlist_grant .= "<option value=\"1\">Allowed Access</option><option value=\"0\" selected>Disallowed Access</option>";
 				}
 				$optionlist_grant .= "</select>";
 			}
@@ -221,11 +346,11 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 			}
 			if($user_ary['auth_mod'])
 			{
-				$optionlist_mod = "<option value=\"1\">Remove Moderator</option><option value=\"0\" selected>Make Moderator</option>";
+				$optionlist_mod = "<option value=\"1\" selected>Is a Moderator</option>";
 			}
 			else
 			{
-				$optionlist_mod = "<option value=\"1\" selected>Remove Moderator</option><option value=\"0\">Make Moderator</option>";
+				$optionlist_mod = "<option value=\"1\">Is a Moderator</option><option value=\"0\" selected>Is not a Moderator</option>";
 			}
 			switch($basic_auth_level[$forumkey])
 			{
@@ -246,7 +371,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 					break;
 			}
 
-			$template->assign_block_vars("restrictedforums", array(
+			$template->assign_block_vars("forums", array(
 				"ROW_CLASS" => $row_class,
 				"FORUM_NAME" => $forum_access[$i]['forum_name'],
 
@@ -260,8 +385,7 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 	{
 		while(list($forumkey, $user_ary) = each($auth_user))
 		{
-			echo "<tr>\n";
-			echo "\t<td bgcolor=\"#DDDDDD\"><a href=\"userauth.php?" . POST_FORUM_URL . "=$forumkey&" . POST_USERS_URL . "=$user_id\">" . $f_access[$i]['forum_name'] . "</a></td>\n";
+			echo "\t<td bgcolor=\"#DDDDDD\"><a href=\"userauth.$phpEx?" . POST_FORUM_URL . "=$forumkey&" . POST_USERS_URL . "=$user_id\">" . $f_access[$i]['forum_name'] . "</a></td>\n";
 			while(list($fieldkey, $value) = each($user_ary))
 			{
 				$can_they = ($auth_user[$forumkey][$fieldkey]) ? "Yes" : "No";
@@ -273,55 +397,53 @@ if(isset($HTTP_GET_VARS[POST_USERS_URL]))
 	}
 	reset($auth_user);
 
+	$t_username .= $userinf[0]['username'];
+	$t_usertype = ($is_admin) ? "an <b>Administrator</b>" : "a <b>User</b>";
+
+	for($i = 0; $i < count($userinf); $i++)
+	{
+		if(!$userinf[$i]['group_single_user'])
+		{
+			$group_name[] = $userinf[$i]['group_name'];
+			$group_id[] = $userinf[$i]['group_id'];
+		}
+	}
+	
+	if(count($group_name))
+	{
+		$t_usergroup_list = "belongs to the following groups; ";
+		for($i = 0; $i < count($userinf); $i++)
+		{
+			$t_usergroup_list .= "<a href=\"groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id[$i] . "\">" . $group_name[$i] . "</a>";
+			if($i < count($group_name) - 1)
+			{
+				$t_usergroup_list .= ", ";
+			}
+		}
+	}
+	else
+	{
+		$t_usergroup_list = "belongs to no usergroups.";
+	}
+
+	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\">";
+	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
+	$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_GROUPS_URL . "\" value=\"" . "\">";
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_username, 
 		"USERTYPE" => $t_usertype, 
 		
+		"S_ADMIN_CHECK_SELECTED" => (($is_admin) ? " checked" : ""), 
+
+		"S_USER_AUTH_ACTION" => append_sid("userauth.$phpEx"),
+		"S_HIDDEN_FIELDS" => $s_hidden_fields,
+
 		"USER_GROUP_LIST" => $t_usergroup_list)
 	);
 
 	$template->pparse("body");
 
-
-}
-else
-{
-
-	//
-	// Default user selection box
-	// This should be altered on the final
-	// system to list users via an alphabetical
-	// selection system ... otherwise this
-	// could get 'cumbersome' for boards
-	// with several thousand users!
-	//
-
-	$sql = "SELECT user_id, username  
-		FROM ".USERS_TABLE;
-	$u_result = $db->sql_query($sql);
-	$user_list = $db->sql_fetchrowset($u_result);
-
-	$select_list = "<select name=\"" . POST_USERS_URL . "\">";
-	for($i = 0; $i < count($user_list); $i++)
-	{
-		$select_list .= "<option value=\"" . $user_list[$i]['user_id'] . "\">" . $user_list[$i]['username'] . "</option>";
-	}
-	$select_list .= "</select>";
-
-	$template->set_filenames(array(
-		"body" => "admin/userauth_select_body.tpl"));
-
-	$template->assign_vars(array(
-		"S_USERAUTH_ACTION" => append_sid("userauth.$phpEx"), 
-		"S_USERS_SELECT" => $select_list, 
-		
-		"U_FORUMAUTH" => append_sid("forumauth.$phpEx"))
-	);
-
-	$template->pparse("body");
-
-}
-
+	exit;
 
 ?>

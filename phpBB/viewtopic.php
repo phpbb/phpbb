@@ -139,7 +139,7 @@ else
 	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
 	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
-/*
+
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
 	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
@@ -147,16 +147,6 @@ else
 		WHERE $join_sql
 			AND f.forum_id = t.forum_id
 			$order_sql";
-*/
-	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_announce, fa.auth_sticky, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
-
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_announce, fa.auth_sticky, fa.auth_delete, fa.auth_votecreate, fa.auth_vote" . $count_sql . "
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".AUTH_FORUMS_TABLE." fa
-		WHERE $join_sql
-			AND f.forum_id = t.forum_id
-			AND fa.forum_id = f.forum_id
-			$order_sql";
-
 
 // This closes out the opening braces above
 // Needed for the view/next query
@@ -456,6 +446,8 @@ for($x = 0; $x < $total_posts; $x++)
 
 	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
 
+	$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL. "=$poster_id") . "\"><img src=\"". $images['privmsg'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\"></a>";
+
 	$email_img = ($postrow[$x]['user_viewemail'] == 1) ? "<a href=\"mailto:".$postrow[$x]['user_email']."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
 
 	$www_img = ($postrow[$x]['user_website']) ? "<a href=\"".$postrow[$x]['user_website']."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
@@ -554,6 +546,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message,
 		"PROFILE_IMG" => $profile_img,
+		"PM_IMG" => $pm_img,
 		"EMAIL_IMG" => $email_img,
 		"WWW_IMG" => $www_img,
 		"ICQ_STATUS_IMG" => $icq_status_img,

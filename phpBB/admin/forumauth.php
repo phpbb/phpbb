@@ -38,8 +38,7 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
-//	$forum_sql = "WHERE forum_id = $forum_id";
-	$forum_sql = "AND f.forum_id = $forum_id";
+	$forum_sql = "WHERE forum_id = $forum_id";
 }
 else
 {
@@ -60,8 +59,7 @@ if(isset($HTTP_POST_VARS['submit']))
 {
 	if(!empty($forum_id))
 	{
-//		$sql = "UPDATE " . FORUMS_TABLE . " SET ";
-		$sql = "UPDATE " . AUTH_FORUMS_TABLE . " SET ";
+		$sql = "UPDATE " . FORUMS_TABLE . " SET ";
 
 		if(isset($HTTP_POST_VARS['simpleauth']))
 		{
@@ -79,8 +77,7 @@ if(isset($HTTP_POST_VARS['submit']))
 		}
 		else
 		{
-//			$sql = "UPDATE " . FORUMS_TABLE . " SET ";
-			$sql = "UPDATE " . AUTH_FORUMS_TABLE . " SET ";
+			$sql = "UPDATE " . FORUMS_TABLE . " SET ";
 
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
@@ -122,36 +119,12 @@ if(isset($HTTP_POST_VARS['submit']))
 //
 // Start output
 //
-/*$sql = "SELECT *
+$sql = "SELECT *
 	FROM ".FORUMS_TABLE." 
 	$forum_sql 
-	ORDER BY forum_id ASC";*/
-$sql = "SELECT f.forum_id, f.forum_name, fa.* 
-	FROM " . FORUMS_TABLE . " f, ".AUTH_FORUMS_TABLE." fa 
-	WHERE fa.forum_id = f.forum_id 
-	$forum_sql
-	ORDER BY f.forum_id ASC";
+	ORDER BY forum_id ASC";
 $f_result = $db->sql_query($sql);
 $forum_rows = $db->sql_fetchrowset($f_result);
-
-$sql = "SELECT f.forum_id, u.username, u.user_id   
-	FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa 
-	WHERE aa.forum_id = f.forum_id 
-		AND aa.auth_mod = 1 
-		AND ug.group_id = aa.group_id 
-		AND u.user_id = ug.user_id 
-	ORDER BY f.forum_id, u.user_id";
-if(!$q_forum_mods = $db->sql_query($sql))
-{
-	error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
-}
-$forum_mods_list = $db->sql_fetchrowset($q_forum_mods);
-
-for($i = 0; $i < count($forum_mods_list); $i++)
-{
-	$forum_mods['forum_'.$forum_mods_list[$i]['forum_id'].'_name'][] = $forum_mods_list[$i]['username'];
-	$forum_mods['forum_'.$forum_mods_list[$i]['forum_id'].'_id'][] = $forum_mods_list[$i]['user_id'];
-}
 
 //
 // Show data

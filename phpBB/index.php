@@ -173,21 +173,12 @@ if($total_categories)
 		default:
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
-/*
+
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
 				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
 				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id )
-				$limit_forums
-				ORDER BY f.cat_id, f.forum_order";
-*/
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote
-				FROM ((( ".FORUMS_TABLE." f
-				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
-				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
-				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id )
-				LEFT JOIN ".AUTH_FORUMS_TABLE." af ON af.forum_id = f.forum_id
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -214,7 +205,7 @@ if($total_categories)
 	//
 	$sql = "SELECT f.forum_id, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
-		WHERE aa.forum_id = f.forum_id
+		WHERE ( aa.forum_id = f.forum_id OR aa.forum_id = 0 )
 			AND aa.auth_mod = 1
 			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id
