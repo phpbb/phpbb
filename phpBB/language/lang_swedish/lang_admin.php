@@ -21,25 +21,25 @@
  ***************************************************************************/
 
 //  *************************************
-//  Swedish Translation by:
-//	
-//	Marcus Svensson
+//  Original swedish Translation by:
+//
+//  Marcus Svensson
 //  admin@world-of-war.com
 //  http://www.world-of-war.com
-//	-------------------------------------
-// 	Janåke Rönnblom
-//	jan-ake.ronnblom@skeria.skelleftea.se
-//	-------------------------------------
-//	Bruce
-//	bruce@webway.se
+//      -------------------------------------
+//      Janåke Rönnblom
+//      jan-ake.ronnblom@skeria.skelleftea.se
+//      -------------------------------------
+//      Bruce
+//      bruce@webway.se
 //  *************************************
 
 //  *************************************
 //  Maintained and kept up-to-date by:
-//  
-//  Marcus Svensson
-//  admin@world-of-war.com
-//  http://www.world-of-war.com
+//
+//  Fredrik Poller
+//  fredrik.poller@bonetmail.com
+//  http://fredrik.bamze.net/
 //  *************************************
 
 //
@@ -61,11 +61,11 @@ $lang['Permissions'] = "Rättigheter";
 $lang['Manage'] = "Hantering";
 $lang['Disallow'] = "Förbjuda namn";
 $lang['Prune'] = "Reducera";
-$lang['Mass_Email'] = "Mass Email";
+$lang['Mass_Email'] = "Mass-Email";
 $lang['Ranks'] = "Ranker";
 $lang['Smilies'] = "Smilies";
 $lang['Ban_Management'] = "Bannlys";
-$lang['Word_Censor'] = "Ord Censur";
+$lang['Word_Censor'] = "Ordcensur";
 $lang['Export'] = "Exportera";
 $lang['Create_new'] = "Skapa";
 $lang['Add_new'] = "Lägg till";
@@ -80,12 +80,12 @@ $lang['Admin'] = "Administration";
 $lang['Not_admin'] = "Du har inte rättighet att administrera detta forum";
 $lang['Welcome_phpBB'] = "Välkommen till phpBB";
 $lang['Admin_intro'] = "Tack för att du har valt phpBB som din forumlösning. Den här sidan ger dig en snabb överblick över all möjlig statistik om ditt forum. Du kan komma tillbaka till den här sidan genom att klicka på <u>Administrations Index</u> länken på den vänstra sidan. För att komma tillbaka till indexet till forumet tryck på phpBB logon, som finns i den vänstra panelen. De övriga länkarna på vänster hand låter dig kontrollera alla aspekter på hur ditt forum presenteras, varje sidan har intruktioner på hur du använder verktygen.";
-$lang['Main_index'] = "Forum index";
-$lang['Forum_stats'] = "Forum statistik";
-$lang['Admin_Index'] = "Admin index";
+$lang['Main_index'] = "Forumindex";
+$lang['Forum_stats'] = "Forumstatistik";
+$lang['Admin_Index'] = "Adminindex";
 $lang['Preview_forum'] = "Förhandsgranska forum";
 
-$lang['Click_return_admin_index'] = "Klicka %shär%s för att återvända till Admin Index";
+$lang['Click_return_admin_index'] = "Klicka %shär%s för att återvända till Adminindex";
 
 $lang['Statistic'] = "Statistik";
 $lang['Value'] = "Värde";
@@ -98,7 +98,7 @@ $lang['Users_per_day'] = "Användare per dag";
 $lang['Board_started'] = "Forumstart";
 $lang['Avatar_dir_size'] = "Avatarkatalogens storlek";
 $lang['Database_size'] = "Databasstorlek";
-$lang['Gzip_compression'] ="Gzip komprimering";
+$lang['Gzip_compression'] ="Gzip-komprimering";
 $lang['Not_available'] = "Inte tillgänglig";
 
 $lang['ON'] = "PÅ"; // This is for GZip compression
@@ -108,14 +108,14 @@ $lang['OFF'] = "AV";
 //
 // DB Utils
 //
-$lang['Database_Utilities'] = "Databas Verktyg";
+$lang['Database_Utilities'] = "Databasverktyg";
 
 $lang['Restore'] = "Återställ";
 $lang['Backup'] = "Backup";
 $lang['Restore_explain'] = "Detta kommer att utföra en fullständig återställning av alla phpBB tabeller från en sparad fil. Om din server stödjer det kan du ladda upp en gzip komprimerad text fil vilken kommer att dekomprimeras. <b>WARNING</b>Detta kommer att skriva över all existerande data. Återställningen kan ta en lång tid att utföra men lämna inte denna sida förrän den är färdig.";
 $lang['Backup_explain'] = "Här kan du ta backup på alla din phpBB relaterade data. Om du har andra egna tabeller i samma databas som phpBB som du också vill säkerhetskopiera så ange deras namn separerad med komman i \"Övriga tabeller\" textrutan nedanför Om din server stöjder det kan du också gzip komprimera filen för att minska storleken innan du laddar ner den.";
 
-$lang['Backup_options'] = "Backup alternativ";
+$lang['Backup_options'] = "Backupalternativ";
 $lang['Start_backup'] = "Starta backup";
 $lang['Full_backup'] = "Fullständig backup";
 $lang['Structure_backup'] = "Enbart backup av strukturen";
@@ -154,7 +154,7 @@ $lang['Forum_auth_explain'] = "Här kan du ändra auktorisionsnivåer för varje for
 
 $lang['Simple_mode'] = "Enkelt läge";
 $lang['Advanced_mode'] = "Avancerat läge";
-$lang['Moderator_status'] = "Moderator status";
+$lang['Moderator_status'] = "Moderatorstatus";
 
 $lang['Allowed_Access'] = "Tillåt Access";
 $lang['Disallowed_Access'] = "Neka Access";
@@ -199,7 +199,7 @@ $lang['Simple_Permission'] = "Enkla Rättigheter";
 $lang['User_Level'] = "Användarnivå"; 
 $lang['Auth_User'] = "Användare";
 $lang['Auth_Admin'] = "Administratör";
-$lang['Group_memberships'] = "Grupp medlemskap";
+$lang['Group_memberships'] = "Gruppmedlemskap";
 $lang['Usergroup_members'] = "Den här gruppen har följande medlemmar";
 
 $lang['Forum_auth_updated'] = "Forumrättigeheter är uppdaterade";
@@ -229,13 +229,13 @@ $lang['Ban_IP'] = "Bannlys en eller flera IP adresser eller värdnamn";
 $lang['IP_hostname'] = "IP adresser eller värdnamn";
 $lang['Ban_IP_explain'] = "För att specifiera flera olika IP adresser eller värdnamn skilj dem åt med kommatecken. För att specifiera en rad olika IP adresser separera början och slutet med ett bindesstreck(-), för att specifiera ett wildcard använd *";
 
-$lang['Ban_email'] = "Bannlys en eller flera epost adresser";
+$lang['Ban_email'] = "Bannlys en eller flera epost-adresser";
 $lang['Ban_email_explain'] = "För att specificera mer än en epostadress, skilj dem åt med kommatecken. För att specifiera ett wildcard namn använd *, till exempel *@hotmail.com";
 
 $lang['Unban_username'] = "Häv en eller flera bannlysta användare";
 $lang['Unban_username_explain'] = "Du kan ta bort flera bannlysningar samtidigt genom att använda den ändamålsenliga kombinationen av mus och tangenbord för din dator och webläsare.";
 
-$lang['Unban_IP'] = "Häv en eller flera bannlysta IP adresser";
+$lang['Unban_IP'] = "Häv en eller flera bannlysta IP-adresser";
 $lang['Unban_IP_explain'] = "Du kan ta bort flera bannlysningar av IP adresser samtidigt genom att använda den ändamålsenliga kombinationen av mus och tangenbord för din dator och webläsare.";
 
 $lang['Unban_email'] = "Häv en eller flera bannlysta epost adresser";
@@ -257,15 +257,15 @@ $lang['Config_explain'] = "Formuläret här ger dig möjlighet att ändra alla allmä
 
 $lang['Click_return_config'] = "Klicka %shär%s för att återvända till Generell Konfiguration";
 
-$lang['General_settings'] = "Generella Forum Inställningar";
-$lang['Server_name'] = "Domän Namn";
+$lang['General_settings'] = "Generella Foruminställningar";
+$lang['Server_name'] = "Domännamn";
 $lang['Server_name_explain'] = "Domännamnet som forumet körs från";
-$lang['Script_path'] = "Skript sökväg";
+$lang['Script_path'] = "Skriptsökväg";
 $lang['Script_path_explain'] = "Sökvägen där phpBB2 är placerat under domännamnet (domännamn.com/sökväg)";
-$lang['Server_port'] = "Server Port";
+$lang['Server_port'] = "Serverport";
 $lang['Server_port_explain'] = "Porten som servern körs på, vanligtvis 80, ändra bara om porten är annorlunda";
-$lang['Site_name'] = "Site namn";
-$lang['Site_desc'] = "Site beskrivning";
+$lang['Site_name'] = "Sitenamn";
+$lang['Site_desc'] = "Sitebeskrivning";
 $lang['Board_disable'] = "Stäng av forumet";
 $lang['Board_disable_explain'] = "Detta gör forumet otillgängligt för användarna. Logga inte ut när du har deaktiverat forumet, du kommer inte att kunna logga in igen!";
 $lang['Acct_activation'] = "Aktivera konto aktivation";
@@ -273,26 +273,26 @@ $lang['Acc_None'] = "Ingen"; // These three entries are the type of activation
 $lang['Acc_User'] = "Användare";
 $lang['Acc_Admin'] = "Administratör";
 
-$lang['Abilities_settings'] = "Användar och forum grund inställningar";
+$lang['Abilities_settings'] = "Användar och forumgrundinställningar";
 $lang['Max_poll_options'] = "Maximalt antal av val för omröstningar";
-$lang['Flood_Interval'] = "Flood Interval";
+$lang['Flood_Interval'] = "Floodinterval";
 $lang['Flood_Interval_explain'] = "Antal sekunder en användare måste vänta mellan inläggen"; 
 $lang['Board_email_form'] = "Eposta användare via forumet";
 $lang['Board_email_form_explain'] = "Användare skickar epost till varandra via forumet";
 $lang['Topics_per_page'] = "Ämnen per sida";
 $lang['Posts_per_page'] = "Inlägg per sida";
 $lang['Hot_threshold'] = "Antal inlägg för populäritet";
-$lang['Default_style'] = "Standard stil";
+$lang['Default_style'] = "Standardstil";
 $lang['Override_style'] = "Åsidosätt användarstil";
-$lang['Override_style_explain'] = "Ersätter användarens stil med standard stilen";
-$lang['Default_language'] = "Standard språk";
-$lang['Date_format'] = "Datum format";
+$lang['Override_style_explain'] = "Ersätter användarens stil med standardstilen";
+$lang['Default_language'] = "Standardspråk";
+$lang['Date_format'] = "Datumformat";
 $lang['System_timezone'] = "Systemets tidszon";
-$lang['Enable_gzip'] = "Aktivera GZip Kompression";
-$lang['Enable_prune'] = "Aktivera forum reducering";
+$lang['Enable_gzip'] = "Aktivera GZip-komprimering";
+$lang['Enable_prune'] = "Aktivera forumreducering";
 $lang['Allow_HTML'] = "Tillåt HTML";
 $lang['Allow_BBCode'] = "Tillåt BBCode";
-$lang['Allowed_tags'] = "Tillåtna HTML taggar";
+$lang['Allowed_tags'] = "Tillåtna HTML-taggar";
 $lang['Allowed_tags_explain'] = "Separera taggarna med komma";
 $lang['Allow_smilies'] = "Tillåt smilies";
 $lang['Smilies_path'] = "Smilies sökväg";
@@ -302,35 +302,35 @@ $lang['Max_sig_length'] = "Maximal längd på  signaturen";
 $lang['Max_sig_length_explain'] = "Maximalt antal tecken i användarens signatur";
 $lang['Allow_name_change'] = "Tillåt ändring av användarnamn";
 
-$lang['Avatar_settings'] = "Avatar inställningar";
-$lang['Allow_local'] = "Aktivera galleri avatars";
-$lang['Allow_remote'] = "Aktivera fjärr avatars";
+$lang['Avatar_settings'] = "Avatarinställningar";
+$lang['Allow_local'] = "Aktivera galleri-avatars";
+$lang['Allow_remote'] = "Aktivera fjärr-avatars";
 $lang['Allow_remote_explain'] = "Gör det möjligt att länka till avatarer på andra websiter";
-$lang['Allow_upload'] = "Aktivera Avatar uppladdning";
-$lang['Max_filesize'] = "Maximal Avatar filstorlek";
+$lang['Allow_upload'] = "Aktivera Avataruppladdning";
+$lang['Max_filesize'] = "Maximal Avatarfilstorlek";
 $lang['Max_filesize_explain'] = "För avatarer som laddas upp";
-$lang['Max_avatar_size'] = "Maximal Avatar storlek";
+$lang['Max_avatar_size'] = "Maximal Avatarstorlek";
 $lang['Max_avatar_size_explain'] = "(Höjd x Bredd i pixels)";
-$lang['Avatar_storage_path'] = "Avatar sökväg";
+$lang['Avatar_storage_path'] = "Avatarsökväg";
 $lang['Avatar_storage_path_explain'] = "Sökväg under din phpBB root katalog, e.g. images/avatars";
 $lang['Avatar_gallery_path'] = "Avatar galleriets sökväg";
 $lang['Avatar_gallery_path_explain'] = "Sökväg under din phpBB root katalog för för-laddade bilder, e.g. images/avatars/gallery";
 
-$lang['COPPA_settings'] = "COPPA inställningar";
-$lang['COPPA_fax'] = "COPPA fax nummer";
-$lang['COPPA_mail'] = "COPPA postadress";
+$lang['COPPA_settings'] = "COPPA-inställningar";
+$lang['COPPA_fax'] = "COPPA-faxnummer";
+$lang['COPPA_mail'] = "COPPA-postadress";
 $lang['COPPA_mail_explain'] = "Detta är postadress dit föräldrar ska skicka registreringsforumlären för COPPA";
 
-$lang['Email_settings'] = "Epost inställningar";
-$lang['Admin_email'] = "Admin epost adress";
-$lang['Email_sig'] = "Epost signatur";
+$lang['Email_settings'] = "Epostinställningar";
+$lang['Admin_email'] = "Adminepostadress";
+$lang['Email_sig'] = "Epostsignatur";
 $lang['Email_sig_explain'] = "Denna text kommer att bifogas i all epost som forumet skickar.";
-$lang['Use_SMTP'] = "Använd SMTP server för epost";
+$lang['Use_SMTP'] = "Använd SMTP-server för epost";
 $lang['Use_SMTP_explain'] = "Säg ja om du vill eller måste skicka epost via en angiven server istället för via den lokala epost funktionen";
-$lang['SMTP_server'] = "SMTP server Adress";
-$lang['SMTP_username'] = "SMTP Användarnamn";
+$lang['SMTP_server'] = "SMTP-serveradress";
+$lang['SMTP_username'] = "SMTP-användarnamn";
 $lang['SMTP_username_explain'] = "Skriv endast in ett användarnamn om din smtp server behöver det";
-$lang['SMTP_password'] = "SMTP Lösenord";
+$lang['SMTP_password'] = "SMTP-lösenord";
 $lang['SMTP_password_explain'] = "Skriv endast in ett lösenord om din smtp server behöver det";
 
 $lang['Disable_privmsg'] = "Privat Meddelandehantering";
@@ -338,12 +338,12 @@ $lang['Inbox_limits'] = "Max inlägg i Inlådan";
 $lang['Sentbox_limits'] = "Max inlägg i Skickade brev";
 $lang['Savebox_limits'] = "Max inlägg i Sparade brev";
 
-$lang['Cookie_settings'] = "Cookie inställningar"; 
+$lang['Cookie_settings'] = "Cookieinställningar"; 
 $lang['Cookie_settings_explain'] = "Detta styr hur cookien som skickas till webläsaren är definerad. I de flesta fall så är standard inställningarna tillräckliga. Om du behöver ändra dessa så gör det med varsamhet, felaktiga inställningar kan hindra användare från att logga in";
-$lang['Cookie_domain'] = "Cookie domän";
-$lang['Cookie_name'] = "Cookie namn";
-$lang['Cookie_path'] = "Cookie sökväg";
-$lang['Cookie_secure'] = "Cookie säkerhet [ https ]";
+$lang['Cookie_domain'] = "Cookiedomän";
+$lang['Cookie_name'] = "Cookienamn";
+$lang['Cookie_path'] = "Cookiesökväg";
+$lang['Cookie_secure'] = "Cookiesäkerhet [ https ]";
 $lang['Cookie_secure_explain'] = "Om servern körs via SSL aktivera det här, annars låt det vara avaktiverat";
 $lang['Session_length'] = "Sessionslängd [ sekunder ]";
 
@@ -351,7 +351,7 @@ $lang['Session_length'] = "Sessionslängd [ sekunder ]";
 //
 // Forum Management
 //
-$lang['Forum_admin'] = "Forum Administration";
+$lang['Forum_admin'] = "Forumadministration";
 $lang['Forum_admin_explain'] = "Från denna panel kan du  addera, radera, editera, sortera  och omsynkronisera katagorier och forum";
 $lang['Edit_forum'] = "Editera forum";
 $lang['Create_forum'] = "Skapa nytt forum";
@@ -359,7 +359,7 @@ $lang['Create_category'] = "Skapa ny kategori";
 $lang['Remove'] = "Radera";
 $lang['Action'] = "Action";
 $lang['Update_order'] = "Uppdatera sorteringsordning";
-$lang['Config_updated'] = "Forum konfigurationen är uppdaterad";
+$lang['Config_updated'] = "Forumkonfigurationen är uppdaterad";
 $lang['Edit'] = "Editera";
 $lang['Delete'] = "Radera";
 $lang['Move_up'] = "Flytta upp";
@@ -372,10 +372,10 @@ $lang['Move_contents'] = "Flytta allt innehåll";
 $lang['Forum_delete'] = "Radera forum";
 $lang['Forum_delete_explain'] = "Forumläret under låter dig radera ett forum (eller kategori) och tala om var du vill flytta alla ämnen (eller forum) som det innehöll.";
 
-$lang['Forum_settings'] = "Generella forum inställningar";
-$lang['Forum_name'] = "Forum namm";
+$lang['Forum_settings'] = "Generella foruminställningar";
+$lang['Forum_name'] = "Forumnamm";
 $lang['Forum_desc'] = "Beskrivning";
-$lang['Forum_status'] = "Forum status";
+$lang['Forum_status'] = "Forumstatus";
 $lang['Forum_pruning'] = "Auto-reducering";
 
 $lang['prune_freq'] = 'Sök efter gamla ämnen varje';
@@ -394,41 +394,43 @@ $lang['Forums_updated'] = "Forum och kategori-information är uppdaterad";
 
 $lang['Must_delete_forums'] = "Du måste radera alla forum innan du kan radera denna kategori";
 
-$lang['Click_return_forumadmin'] = "Klicka %shär%s för att återgå till Forum Administration";
+$lang['Click_return_forumadmin'] = "Klicka %shär%s för att återgå till Forumadministration";
 
+$lang['Status_locked'] = 'Låst';
+$lang['Status_unlocked'] = 'Ej låst';
 
 //
 // Smiley Management
 //
-$lang['smiley_title'] = "Smiles editering";
+$lang['smiley_title'] = "Smileseditering";
 $lang['smile_desc'] = "På denna sida kan du lägga till, radera och redigera emoticons eller smileys som dina användare kan använda i inlägg och privata meddelanden.";
 
-$lang['smiley_config'] = "Smiley konfiguration";
-$lang['smiley_code'] = "Smiley kod";
-$lang['smiley_url'] = "Smiley bildfil";
-$lang['smiley_emot'] = "Smiley Emotion";
+$lang['smiley_config'] = "Smileykonfiguration";
+$lang['smiley_code'] = "Smileykod";
+$lang['smiley_url'] = "Smileybildfil";
+$lang['smiley_emot'] = "Smileyemotion";
 $lang['smile_add'] = "Lägg till en ny Smiley";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Emotion";
 
-$lang['Select_pak'] = "Välj paket (.pak) fil";
+$lang['Select_pak'] = "Välj paketfil (.pak)";
 $lang['replace_existing'] = "Ersätt befintlig Smiley";
 $lang['keep_existing'] = "Behåll befintlig Smiley";
 $lang['smiley_import_inst'] = "Du bör packa upp (unzip) smiley paketet och ladda upp alla filer till avsedd smiley katalog för din installation.  Sen sätter du rätt information i detta formulär och importerar smiley paketet.";
-$lang['smiley_import'] = "Smiley paket import";
-$lang['choose_smile_pak'] = "Välj en Smile Pack .pak fil";
+$lang['smiley_import'] = "Smileypaket import";
+$lang['choose_smile_pak'] = "Välj en Smilepackfil (.pak)";
 $lang['import'] = "Importera Smileys";
 $lang['smile_conflicts'] = "Vad ska göras om det finns konflikter";
 $lang['del_existing_smileys'] = "Radera befintlig smileys före import";
-$lang['import_smile_pack'] = "Importera Smiley paket";
-$lang['export_smile_pack'] = "Skapa Smiley paket";
-$lang['export_smiles'] = "För att skapa ett smiley paket från dina installerade smileys, klicka %shär%s för att ladda ner smiles.pak filen. Ge filen ett passande namn och se till att behålla .pak tillägget.  Skapa sen en zip fil som innehåller alla dina smileys bilder plus din .pak konfigurations fil.";
+$lang['import_smile_pack'] = "Importera Smileypaket";
+$lang['export_smile_pack'] = "Skapa Smileypaket";
+$lang['export_smiles'] = "För att skapa ett smileypaket från dina installerade smileys, klicka %shär%s för att ladda ner smiles.pak filen. Ge filen ett passande namn och se till att behålla .pak tillägget.  Skapa sen en zip fil som innehåller alla dina smileys bilder plus din .pak konfigurations fil.";
 
 $lang['smiley_add_success'] = "Smileyn adderades.";
 $lang['smiley_edit_success'] = "Smileyn uppdaterades";
-$lang['smiley_import_success'] = "Smiley paketet är importerat!";
+$lang['smiley_import_success'] = "Smileypaketet är importerat!";
 $lang['smiley_del_success'] = "Smileyn togs bort";
-$lang['Click_return_smileadmin'] = "Klicka %shär%s för att återgå Smiley Administration";
+$lang['Click_return_smileadmin'] = "Klicka %shär%s för att återgå Smileyadministration";
 
 
 //
@@ -461,7 +463,7 @@ $lang['User_special_explain'] = "Dessa fält kan inte ändras av användarna.  Här 
 // Group Management
 //
 $lang['No_group_action'] = 'Inget alternativ angavs'; 
-$lang['Group_administration'] = "Grupp administration";
+$lang['Group_administration'] = "Gruppadministration";
 $lang['Group_admin_explain'] = "Via denna panel kan du administrera alla dina användaregrupper, du kan; radera, skapa nya och redigera existerande grupper. Du kan välja moderatorer, ändra öppen/stängd status och sätta gruppnamn och beskrivning";
 $lang['Error_updating_groups'] = "Det uppstod ett fel när grupperna skulle uppdateras";
 $lang['Updated_group'] = "Gruppen är uppdaterad";
@@ -469,10 +471,10 @@ $lang['Added_new_group'] = "Den nya gruppen är skapad";
 $lang['Deleted_group'] = "Gruppen är raderad";
 $lang['New_group'] = "Skapa ny grupp";
 $lang['Edit_group'] = "Redigera grupp";
-$lang['group_name'] = "Grupp namn";
-$lang['group_description'] = "Grupp beskrivning";
-$lang['group_moderator'] = "Grupp moderator";
-$lang['group_status'] = "Grupp status";
+$lang['group_name'] = "Gruppnamn";
+$lang['group_description'] = "Gruppbeskrivning";
+$lang['group_moderator'] = "Gruppmoderator";
+$lang['group_status'] = "Gruppstatus";
 $lang['group_open'] = "Öppen grupp";
 $lang['group_closed'] = "Stängd grupp";
 $lang['group_hidden'] = "Dold grupp";
@@ -483,9 +485,9 @@ $lang['reset_group_changes'] = "Återställ ändringar";
 $lang['No_group_name'] = "Du måste ange ett namn på gruppen";
 $lang['No_group_moderator'] = "Du åste ange en moderator för gruppen";
 $lang['No_group_mode'] = "Du måste ange ett läge för gruppen, öppen eller stängd";
-$lang['delete_group_moderator'] = "Radera den gamla grupp moderatorn?";
-$lang['delete_moderator_explain'] = "Om du ändrar grupp moderator, klicka i rutan för att radera den gamla moderatorn från gruppen.  Annars klicka inte i rutan så kommer den gamla moderatorn att bli en normal medlem i gruppen";
-$lang['Click_return_groupsadmin'] = "Klicka %shär%s för att återgå till grupp administration.";
+$lang['delete_group_moderator'] = "Radera den gamla gruppmoderatorn?";
+$lang['delete_moderator_explain'] = "Om du ändrar gruppmoderator, klicka i rutan för att radera den gamla moderatorn från gruppen.  Annars klicka inte i rutan så kommer den gamla moderatorn att bli en normal medlem i gruppen";
+$lang['Click_return_groupsadmin'] = "Klicka %shär%s för att återgå till gruppadministration.";
 $lang['Select_group'] = "Välj en grupp";
 $lang['Look_up_group'] = "Slå upp en grupp";
 
@@ -493,7 +495,7 @@ $lang['Look_up_group'] = "Slå upp en grupp";
 //
 // Prune Administration
 //
-$lang['Forum_Prune'] = "Forum reducering";
+$lang['Forum_Prune'] = "Forumreducering";
 $lang['Forum_Prune_explain'] = "Detta kommer att radera alla ämnen där inga nya inlägg har skrivits inom det antal dagar du angett. Om du inte anger ett nummer så kommer alla ämnen att raderas. Det kommer inte att radera ämnen inom vilka omröstningar fortfarande är aktiva och det kommer inte heller att ta bort tillkännagivelser. Du behöver radera dessa ämnen manuellt";
 $lang['Do_Prune'] = "Reducera";
 $lang['All_Forums'] = "Alla forum";
@@ -540,7 +542,7 @@ $lang['Click_return_massemail'] = "Klicka %shär%s för att återgå till mass epost
 //
 // Ranks admin
 //
-$lang['Ranks_title'] = "Titel Administration";
+$lang['Ranks_title'] = "Titeladministration";
 $lang['Ranks_explain'] = "Via detta forumlär kan du skapa nya, redigera, visa och ta bort titlar. Du kan också skapa speciella titlar som kan tilldelas till en användare via användaradministration.";
 
 $lang['Add_new_rank'] = "Lägg till en ny titel";
@@ -549,7 +551,7 @@ $lang['Rank_title'] = "Namn på titel";
 $lang['Rank_special'] = "sätt som speciell titel";
 $lang['Rank_minimum'] = "Minimum antal inlägg";
 $lang['Rank_maximum'] = "Maximum antal inlägg";
-$lang['Rank_image'] = "Titel bild (relativt till phpBB2 root katalogen)";
+$lang['Rank_image'] = "Titelbild (relativt till phpBB2 root katalogen)";
 $lang['Rank_image_explain'] = "Använda denna för att tala om vilken bild som ska associeras med titeln";
 
 $lang['Must_select_rank'] = "Du måste välja en titel";
@@ -588,7 +590,7 @@ $lang['Click_return_disallowadmin'] = "Klicka %shär%s för att återgå till Förbju
 //
 // Styles Admin
 //
-$lang['Styles_admin'] = "Stil Administration";
+$lang['Styles_admin'] = "Stiladministration";
 $lang['Styles_explain'] = "Genom denna kontrollpanel kan du lägga till, radera och hantera stilar (mallar och teman) som är tillgängliga för dina användare";
 $lang['Styles_addnew_explain'] = "Följande lista innehåller alla teman som är tillgängliga för de mallar som du har. Artiklarna på denna lista har ännu inte blivit installerade i phpBB databasen. För att installera ett tema klicka på install länken brevid en post.";
 
@@ -624,8 +626,8 @@ $lang['Style_exists'] = "Stilen finns redan, gå tillbaka ovh välj ett annat namn
 
 $lang['Click_return_styleadmin'] = "Klicka %shär%s för att återgå till Stiladministration";
 
-$lang['Theme_settings'] = "Tema inställningar";
-$lang['Theme_element'] = "Tema Element";
+$lang['Theme_settings'] = "Temainställningar";
+$lang['Theme_element'] = "Temaelement";
 $lang['Simple_name'] = "Enkelt namn";
 $lang['Value'] = "Värde";
 $lang['Save_Settings'] = "Spara inställningar";
@@ -633,7 +635,7 @@ $lang['Save_Settings'] = "Spara inställningar";
 $lang['Stylesheet'] = "CSS Stylesheet";
 $lang['Background_image'] = "Background Image";
 $lang['Background_color'] = "Background Colour";
-$lang['Theme_name'] = "Tema namn";
+$lang['Theme_name'] = "Temanamn";
 $lang['Link_color'] = "Link Colour";
 $lang['Text_color'] = "Text Colour";
 $lang['VLink_color'] = "Visited Link Colour";
@@ -678,9 +680,9 @@ $lang['img_pm_size'] = "Privat meddelande status storlek [px]";
 //
 $lang['Welcome_install'] = "Välkommen till phpBB 2 installationen";
 $lang['Initial_config'] = "Grundläggande  konfiguration";
-$lang['DB_config'] = "Databas konfiguration";
-$lang['Admin_config'] = "Admin konfiguration";
-$lang['continue_upgrade'] = "När du har laddat ner din config fil till din lokala maskin kan du välja \"Fortsätta uppgraderingen\" knappen nedan för att fortsätta uppgraderingsprocessen. Vänta med att ladda upp config filen tills uppgraderingsprocessen är färdig.";
+$lang['DB_config'] = "Databaskonfiguration";
+$lang['Admin_config'] = "Adminkonfiguration";
+$lang['continue_upgrade'] = "När du har laddat ner din configfil till din lokala maskin kan du välja \"Fortsätta uppgraderingen\" knappen nedan för att fortsätta uppgraderingsprocessen. Vänta med att ladda upp config filen tills uppgraderingsprocessen är färdig.";
 $lang['upgrade_submit'] = "Fortsätta uppgraderingen";
 
 $lang['Installer_Error'] = "Ett fel har uppstått under installationen";
@@ -694,22 +696,22 @@ $lang['Inst_Step_0'] = "Tack för att du valt phpBB 2. För att fullborda installa
 $lang['Start_Install'] = "Starta installationen";
 $lang['Finish_Install'] = "Avsluta installationen";
 
-$lang['Default_lang'] = "Standard språk i forumet";
-$lang['DB_Host'] = "Databas server värdname / DSN";
-$lang['DB_Name'] = "Ditt databas namn";
-$lang['DB_Username'] = "Databas användarnamn";
-$lang['DB_Password'] = "Databas lösenord";
+$lang['Default_lang'] = "Standardspråk i forumet";
+$lang['DB_Host'] = "Databasserver värdnamn / DSN";
+$lang['DB_Name'] = "Ditt databasnamn";
+$lang['DB_Username'] = "Databasanvändarnamn";
+$lang['DB_Password'] = "Databaslösenord";
 $lang['Database'] = "Din Databas";
 $lang['Install_lang'] = "Välj språk för installation";
 $lang['dbms'] = "Databas Typ";
 $lang['Table_Prefix'] = "Prefix för tabler i databasen";
-$lang['Admin_Username'] = "Administratör användarnamn";
-$lang['Admin_Password'] = "Administratör lösenord";
-$lang['Admin_Password_confirm'] = "Administratör lösenord [ bekräfta ]";
+$lang['Admin_Username'] = "Administratöranvändarnamn";
+$lang['Admin_Password'] = "Administratörlösenord";
+$lang['Admin_Password_confirm'] = "Administratörlösenord [ bekräfta ]";
 
 $lang['Inst_Step_2'] = "Din administratörs användare har skapats. Vid detta tillfälle är din grundinstallation färdig. Du kommer nu att skickas till en sida där du har möjlighet att administrera din nya installation. Var god kontrollera dina Allmäna inställningar och gör nödvändiga ändringar. Tack för att du valt phpBB 2.";
 
-$lang['Unwriteable_config'] = "Din config fil är icke skrivbar för tillfället. En kopia av config filen kommer att skickas till dig när du klickar på kanppen nedan. Du bör ladda upp denna fil till samma katalog som phpBB 2. När detta är gjort bör du logga in med ditt administratör användarnamn och lösenord (som du angav i ett tidigare formulär) och besöka admin kontrollpanelen (en länk kommer att finns längst ner på varje sida när du väl har logga int) för att kontrollera den allmänna konfigurationen. Tack för att du valt phpBB 2.";
+$lang['Unwriteable_config'] = "Din configfil är icke skrivbar för tillfället. En kopia av config filen kommer att skickas till dig när du klickar på kanppen nedan. Du bör ladda upp denna fil till samma katalog som phpBB 2. När detta är gjort bör du logga in med ditt administratör användarnamn och lösenord (som du angav i ett tidigare formulär) och besöka admin kontrollpanelen (en länk kommer att finns längst ner på varje sida när du väl har logga int) för att kontrollera den allmänna konfigurationen. Tack för att du valt phpBB 2.";
 $lang['Download_config'] = "Ladda ner konfiguration";
 
 $lang['ftp_choose'] = "Välj nedladdningsmetod";
@@ -719,8 +721,8 @@ $lang['ftp_info'] = "Ange din FTP information";
 $lang['Attempt_ftp'] = "Försöker skriva config filen till rätt ställe via ftp";
 $lang['Send_file'] = "Skicka filen till mig så fixar jag det manuellt via ftp";
 $lang['ftp_path'] = "FTP sökväg till phpBB 2";
-$lang['ftp_username'] = "Ditt FTP användarnamn";
-$lang['ftp_password'] = "Ditt FTP lösenord";
+$lang['ftp_username'] = "Ditt FTP-användarnamn";
+$lang['ftp_password'] = "Ditt FTP-lösenord";
 $lang['Transfer_config'] = "Starta överföring";
 $lang['NoFTP_config'] = "Försöket att ftp:a config filen misslyckades. Ladda hem filen och ftp:a upp filen manuellt.";
 
