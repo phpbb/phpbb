@@ -77,7 +77,7 @@ switch ($mode)
 			trigger_error('NO_TOPIC');
 		}
 
-		$sql = 'SELECT t.*, f.*
+		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND (f.forum_id = t.forum_id 
@@ -92,7 +92,7 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
-		$sql = 'SELECT p.*, t.*, f.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield 
+		$sql = 'SELECT f.*, t.*, p.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield 
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
@@ -872,19 +872,19 @@ generate_smilies('inline', $forum_id);
 posting_gen_inline_attachments($message_parser);
 
 
-// Do show topic icons and topic type selection only in first post.
-$topic_type_toggle = $s_topic_icons = false;
+// Do show topic type selection only in first post.
+$topic_type_toggle = false;
 
 if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 {
 	$topic_type_toggle = posting_gen_topic_types($forum_id, $topic_type);
-
-	if ($enable_icons)
-	{
-		$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
-	}
 }
 
+$s_topic_icons = false;
+if ($enable_icons)
+{
+	$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
+}
 
 $html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->optionget('html') : 1);
 $bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->optionget('bbcode') : 1);
