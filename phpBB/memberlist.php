@@ -265,9 +265,7 @@ switch ($mode)
 		}
 
 		$post_count_sql = (sizeof($sql_forums)) ? 'AND f.forum_id IN (' . implode(', ', $sql_forums) . ')' : '';
-		unset($sql_forums);
-		unset($f_postcount_ary);
-		unset($auth2);
+		unset($sql_forums, $f_postcount_ary, $auth2);
 
 		// Grab all the relevant data
 		$sql = 'SELECT COUNT(p.post_id) AS num_posts   
@@ -280,30 +278,52 @@ switch ($mode)
 		$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
-			WHERE p.poster_id = $user_id 
-				AND f.forum_id = p.forum_id 
-				$post_count_sql
-			GROUP BY f.forum_id, f.forum_name  
-			ORDER BY num_posts DESC"; 
-		$result = $db->sql_query_limit($sql, 1);
+		// Change post_count_sql to an forum_id array the user is able to see
+		$f_forum_ary = $auth->acl_getf('f_read');
 
-		$active_f_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$sql_forums = array();
+		foreach ($f_forum_ary as $forum_id => $allow)
+		{
+			if ($allow)
+			{
+				$sql_forums[] = $forum_id;
+			}
+		}
 
-		$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
-			WHERE p.poster_id = $user_id 
-				AND t.topic_id = p.topic_id  
-				AND f.forum_id = t.forum_id 
-				$post_count_sql
-			GROUP BY t.topic_id, t.topic_title  
-			ORDER BY num_posts DESC";
-		$result = $db->sql_query_limit($sql, 1);
+		$post_count_sql = (sizeof($sql_forums)) ? 'AND f.forum_id IN (' . implode(', ', $sql_forums) . ')' : '';
+		unset($sql_forums, $f_forum_ary);
+		
+		if ($post_count_sql)
+		{
+			$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
+				WHERE p.poster_id = $user_id 
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id, f.forum_name  
+				ORDER BY num_posts DESC"; 
+			$result = $db->sql_query_limit($sql, 1);
 
-		$active_t_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			$active_f_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
+				WHERE p.poster_id = $user_id 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id, t.topic_title  
+				ORDER BY num_posts DESC";
+			$result = $db->sql_query_limit($sql, 1);
+
+			$active_t_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$active_f_row = $active_t_row = array();
+		}
 
 		// Do the relevant calculations 
 		$memberdays = max(1, round((time() - $member['user_regdate']) / 86400));
@@ -876,7 +896,7 @@ function show_profile($data)
 		}
 	}
 
-	$email = (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email')) ? ((!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $row['user_email']) : '';
+	$email = (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email')) ? ((!empty($config['board_email_form'])) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : 'mailto:' . $data['user_email']) : '';
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
@@ -905,7 +925,7 @@ function show_profile($data)
 		'U_ICQ'			=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
 		'U_AIM'			=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&.src=pg' : '',
-		'U_MSN'			=> ($data['user_msn']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
+		'U_MSN'			=> ($data['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msn&amp;u=$user_id" : '',
 		'U_JABBER'		=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
 
 		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
