@@ -94,6 +94,22 @@ TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: u
 						<th colspan="2">{L_ADMIN_CONFIGURATION}</th>
 					</tr>
 					<tr>
+						<td class="row1" align="right"><span class="gen">{L_ADMIN_EMAIL}: </span></td>
+						<td class="row2"><input type="text" name="board_email" /></td>
+					</tr> 
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_SERVER_NAME}: </span></td>
+						<td class="row2"><input type="text" name="server_name" value="{SERVER_NAME}" /></td>
+					</tr> 
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_SERVER_PORT}: </span></td>
+						<td class="row2"><input type="text" name="server_port" value="{SERVER_PORT}" /></td>
+					</tr>
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_SCRIPT_PATH}: </span></td>
+						<td class="row2"><input type="text" name="script_path" value="{SCRIPT_PATH}" /></td>
+					</tr>
+					<tr>
 						<td class="row1" align="right"><span class="gen">{L_ADMIN_USERNAME}: </span></td>
 						<td class="row2"><input type="text" name="admin_name" value="{ADMIN_USERNAME}" /></td>
 					</tr>
@@ -146,15 +162,15 @@ TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: u
 					<!-- END switch_ftp_option -->
 					<!-- BEGIN switch_common_install -->
 					<tr> 
-					  <td class="cat" align="center" colspan="2">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
+					  <td class="catbottom" align="center" colspan="2">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
 					</tr>
 					<!-- END switch_common_install -->
 					<!-- BEGIN switch_upgrade_install -->
 					<tr>
-						<td class="cat" align="center" colspan="2">{L_UPGRADE_INST}</td>
+						<td class="catbottom" align="center" colspan="2">{L_UPGRADE_INST}</td>
 					</tr>
 					<tr>
-						<td class="cat" align="center" colspan="2"><input type="submit" name="upgrade_now" value="{L_UPGRADE_SUBMIT}" /></td>
+						<td class="catbottom" align="center" colspan="2"><input type="submit" name="upgrade_now" value="{L_UPGRADE_SUBMIT}" /></td>
 					</tr>
 					<!-- END switch_upgrade_install -->
 				</table></form></td>

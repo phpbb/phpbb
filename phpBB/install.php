@@ -232,6 +232,11 @@ $ftp_path = ( !empty($HTTP_POST_VARS['ftp_path']) ) ? $HTTP_POST_VARS['ftp_path'
 $ftp_user = ( !empty($HTTP_POST_VARS['ftp_user']) ) ? $HTTP_POST_VARS['ftp_user'] : "";
 $ftp_pass = ( !empty($HTTP_POST_VARS['ftp_pass']) ) ? $HTTP_POST_VARS['ftp_pass'] : "";
 
+$server_name = ( !empty($HTTP_POST_VARS['server_name']) ) ? $HTTP_POST_VARS['server_name'] : "";
+$server_port = ( !empty($HTTP_POST_VARS['server_port']) ) ? $HTTP_POST_VARS['server_port'] : "";
+$board_email = ( !empty($HTTP_POST_VARS['board_email']) ) ? $HTTP_POST_VARS['board_email'] : "";
+$script_path = ( !empty($HTTP_POST_VARS['script_path']) ) ? $HTTP_POST_VARS['script_path'] : "";
+
 if( @file_exists('config.'.$phpEx) )
 {
 	include('config.'.$phpEx);
@@ -426,6 +431,10 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 			$s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
 			$s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
 			$s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+			$s_hidden_fields .= '<input type="hidden" name="server_port" value="'.$server_port.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="server_name" value="'.$server_name.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="script_path" value="'.$script_path.'" />';
+			$s_hidden_fields .= '<input type="hidden" name="board_email" value="'.$board_email.'" />';
 			$template->assign_block_vars("switch_upgrade_install", array());
 			$template->assign_vars(array(
 				"L_UPGRADE_INST" => $lang['continue_upgrade'],
@@ -504,8 +513,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 	}
 }
 else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || $dbhost == "" )  && !defined("PHPBB_INSTALLED") )
-{
-	//
+{	//
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
 	// process.
@@ -515,6 +523,33 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_
 	// Step 0 gather the pertinant info for database setup...
 	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
 	//
+
+	//
+	// Guess at some basic info used for install..
+	//
+	
+	if ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']) )
+	{
+		$server_name = ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+	}
+	else if ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']) )
+	{
+		$server_name = ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+	}
+	else
+	{
+		$server_name = '';
+	}
+	if ( !empty($HTTP_SERVER_VARS['SERVER_PORT']) || !empty($HTTP_ENV_VARS['SERVER_PORT']) )
+	{
+		$server_port = ( !empty($HTTP_SERVER_VARS['SERVER_PORT']) ) ? $HTTP_SERVER_VARS['SERVER_PORT'] : $HTTP_ENV_VARS['SERVER_PORT'];
+	}
+	else
+	{
+		$server_port = '80';
+	}
+	$script_path = preg_replace('/install\.'.$phpEx.'/i', '', $HTTP_SERVER_VARS['PHP_SELF']);
+
 	$instruction_text = $lang['Inst_Step_0'];
 
 	if( (($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) && $install_step != '0') || (empty($HTTP_POST_VARS['admin_pass1']) && !empty($dbhost)))
@@ -559,7 +594,14 @@ else if( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_
 		"L_ADMIN_PASSWORD" => $lang['Admin_Password'], 
 		"L_ADMIN_CONFIRM_PASSWORD" => $lang['Admin_Password_confirm'], 
 		"L_SUBMIT" => $lang['Start_Install'], 
-
+		"L_ADMIN_EMAIL" => $lang['Admin_email'],
+		"L_SERVER_NAME" => $lang['Server_name'],
+		"L_SERVER_PORT" => $lang['Server_port'],
+		"L_SCRIPT_PATH" => $lang['Script_path'],
+		
+		"SCRIPT_PATH" => $script_path,
+		"SERVER_PORT" => $server_port,
+		"SERVER_NAME" => $server_name,
 		"DB_PREFIX" => ( !empty($table_prefix) ) ? $table_prefix : "phpbb_", 
 		"DB_HOST" => ( $dbhost != "" ) ? $dbhost : "", 
 		"DB_USER" => ( $dbuser != "" ) ? $dbuser : "", 
@@ -758,11 +800,52 @@ else
 			{
 				$error .= "Could not insert default_lang :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $server_name . "' 
+				WHERE config_name = 'server_name'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $server_port . "' 
+				WHERE config_name = 'server_port'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $server_path . "' 
+				WHERE config_name = 'server_path'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $board_email . "' 
+				WHERE config_name = 'board_email'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
+			$sql = "UPDATE " . $table_prefix . "config
+				SET config_value = '" . $server_name . "' 
+				WHERE config_name = 'cookie_domain'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update Board info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
+			}
+			
 
 			$admin_pass_md5 = ( $confirm && $userdata['user_level'] == ADMIN ) ? $admin_pass1 : md5($admin_pass1);
 
 			$sql = "UPDATE " . $table_prefix . "users 
-				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_md5) . "', user_lang = '" . str_replace("\'", "''", $language) . "' 
+				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_md5) . "', user_lang = '" . str_replace("\'", "''", $language) . "', user_email='" . str_replace("\'", "''", $board_email) . "'
 				WHERE username = 'Admin'";
 			$result = $db->sql_query($sql);
 			if( !$result )
@@ -871,6 +954,10 @@ else
 					$s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
 					$s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
 					$s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+					$s_hidden_fields .= '<input type="hidden" name="server_port" value="'.$server_port.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="server_name" value="'.$server_name.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="script_path" value="'.$script_path.'" />';
+					$s_hidden_fields .= '<input type="hidden" name="board_email" value="'.$board_email.'" />';
 
 					$template->assign_block_vars("switch_upgrade_install", array());
 					$template->assign_vars(array(

@@ -1805,6 +1805,27 @@ if ( !empty($next) )
 				VALUES ('board_startdate', " . $row['oldest_time']  . ")";
 			query($sql, "Couldn't insert board_startdate");
 
+			$sql = "UPDATE " . $table_prefix . "config 
+				SET config_value = '" . $server_name . "' 
+				WHERE config_name = 'server_name' 
+					OR config_name = 'cookie_domain'";
+			query($sql, "Couldn't insert Board Server domain");
+
+			$sql = "UPDATE " . $table_prefix . "config 
+				SET config_value = '" . $server_port . "'
+				WHERE config_name = 'server_port'";
+			query($sql, "Couldn't insert Board server port");
+			
+			$sql = "UPDATE " . $table_prefix . "config 
+				SET config_value = '" . $board_email . "'
+				WHERE config_name = 'board_email'";
+			query($sql, "Couldn't insert Board admin email");
+			
+			$sql = "UPDATE " . $table_prefix . "config 
+				SET config_value = '" . $script_path . "'
+				WHERE config_name = 'script_path'";
+			query($sql, "Couldn't insert Board admin email");
+			
 			//
 			// Change session table to HEAP if MySQL version matches
 			//
