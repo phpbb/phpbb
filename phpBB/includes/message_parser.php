@@ -1084,7 +1084,7 @@ class parse_message extends bbcode_firstpass
 // Parses a given message and updates/maintains the fulltext tables
 class fulltext_search
 {
-	function split_words($mode, &$text, &$stopped_words)
+	function split_words($mode, $text, &$stopped_words)
 	{
 		global $user, $config;
 
@@ -1121,17 +1121,19 @@ class fulltext_search
 		// New lines, carriage returns
 		$match[] = "#[\n\r]+#";
 		// NCRs like &nbsp; etc.
-		$match[] = '#&[\#a-z0-9]+?;#i';
+		$match[] = '#&amp;[\#a-z0-9]+?;#i';
 		// URL's
 		$match[] = '#\b[\w]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?#';
 		// BBcode
-		$match[] = '#\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]#';
-		$match[] = '#\[\/?url(=.*?)?\]#';
-		$match[] = '#\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]#';
+		$match[] = '#\[img:[a-z0-9]{5,}\].*?\[\/img:[a-z0-9]{5,}\]#';
+		$match[] = '#\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{5,}(\:[a-z0-9]+)?=?.*?\]#';
+		$match[] = '#<!\-\-(.*?)\-\->#is';
 		// Sequences < min_search_chars & < max_search_chars
-		$match[] = '#\b([a-z0-9]{1,' . $config['min_search_chars'] . '}|[a-z0-9]{' . $config['max_search_chars'] . ',})\b#is';
+		$match[] = '#\b([\S]{1,' . $config['min_search_chars'] . '}|[\S]{' . $config['max_search_chars'] . ',})\b#is';
 
-		$text = str_replace($match, ' ', ' ' . strtolower($text) . ' ');
+		$replace = array('', '', '', '', '', '', '');
+
+		$text = preg_replace($match, $replace, ' ' . strtolower($text) . ' ');
 		$text = str_replace(' and ', ' + ', $text);
 		$text = str_replace(' not ', ' - ', $text);
 
@@ -1155,7 +1157,7 @@ class fulltext_search
 		return $text;
 	}
 
-	function add($mode, $post_id, $message, $subject)
+	function add($mode, $post_id, &$message, &$subject)
 	{
 		global $config, $db;
 
@@ -1228,6 +1230,7 @@ class fulltext_search
 			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 			unset($unique_add_words);
 
+			$db->sql_return_on_error(true);
 			if (sizeof($new_words))
 			{
 				switch (SQL_LAYER)
@@ -1255,6 +1258,7 @@ class fulltext_search
 						break;
 				}
 			}
+			$db->sql_return_on_error(false);
 			unset($new_words);
 		}
 
