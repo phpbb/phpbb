@@ -280,7 +280,7 @@ $template->assign_vars(array(
 	'L_LOGIN_LOGOUT' 	=> $l_login_logout,
 	'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 
-	'U_PRIVATEMSGS'	=> 'privmsg.'.$phpEx.$SID.'&amp;folder=inbox',
+	'U_PRIVATEMSGS'	=> 'ucp.'.$phpEx.$SID.'&amp;mode=pm&amp;folder=inbox',
 	'U_MEMBERLIST' 	=> 'memberlist.'.$phpEx.$SID,
 	'U_VIEWONLINE' 	=> 'viewonline.'.$phpEx.$SID,
 	'U_MEMBERSLIST' => 'memberlist.'.$phpEx.$SID,
@@ -294,7 +294,6 @@ $template->assign_vars(array(
 	'U_FAQ' 		=> 'faq.'.$phpEx.$SID,
 	'U_SEARCH_SELF'	=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
 	'U_SEARCH_NEW' 	=> 'search.'.$phpEx.$SID.'&amp;search_id=newposts',
-	'U_PRIVATEMSGS_POPUP'	=> 'privmsg.'.$phpEx.$SID.'&amp;mode=newpm',
 	'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 
 	'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
