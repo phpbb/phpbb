@@ -1,50 +1,51 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- $Id$ -->
+	<!-- $Id$ -->
 
-<form action="{S_LOGIN_ACTION}" method="post">
+	<div id="pagecontent">
 
-<table class="tablebg" width="100%" cellspacing="1" align="center">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
-
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="1" align="center">
-	<tr> 
-		<th>{L_LOGIN}</th>
-	</tr>
-	<tr>
-		<td class="row3" align="center"><span class="gensmall">{L_LOGIN_FORUM}</td>
-	</tr>
-	<tr> 
-		<td class="row1" align="center"><table cellspacing="1" cellpadding="4" border="0">
-
-			<!-- IF LOGIN_ERROR -->
-			<tr>
-				<td class="gensmall" colspan="2" align="center"><span class="error">{LOGIN_ERROR}</span></td>
-			</tr>
-			<!-- ENDIF -->
-
+		<form name="login" method="post" action="{S_LOGIN_ACTION}"><table class="tablebg" width="100%" cellspacing="1" align="center">
 			<tr> 
-				<td class="gensmall"><b>{L_PASSWORD}:</b></td>
-				<td><input class="post" type="password" name="password" size="25" maxlength="25" tabindex="2" /></td>
+				<th>{L_LOGIN}</th>
 			</tr>
-		</table></td>
-	</tr>
-	<tr> 
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="3" /></td>
-	</tr>
-</table></form>
+			<tr>
+				<td class="row3" align="center"><span class="gensmall">{L_LOGIN_FORUM}</td>
+			</tr>
+			<tr> 
+				<td class="row1" align="center"><table cellspacing="1" cellpadding="4" border="0">
 
-<br clear="all" />
+					<!-- IF LOGIN_ERROR -->
+					<tr>
+						<td class="gensmall" colspan="2" align="center"><span class="error">{LOGIN_ERROR}</span></td>
+					</tr>
+					<!-- ENDIF -->
 
-<table class="tablebg" width="100%" cellspacing="1" align="center">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
+					<tr> 
+						<td class="gensmall"><b>{L_PASSWORD}:</b></td>
+						<td><input class="post" type="password" name="password" size="25" maxlength="25" tabindex="2" /></td>
+					</tr>
+				</table></td>
+			</tr>
+			<tr> 
+				<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="3" /></td>
+			</tr>
+		</table></form>
+
+	</div>
+
+	<br clear="all" />
+
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
+
+	<br clear="all" />
+
+	<div align="right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

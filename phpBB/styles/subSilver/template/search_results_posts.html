@@ -2,15 +2,8 @@
 
 <!-- $Id$ -->
 
+
 <form method="post" action="{S_SEARCH_ACTION}">
-
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
-
-<br clear="all" />
 
 <table width="100%" cellspacing="1">
 	<tr>
@@ -34,7 +27,7 @@
 	<!-- IF searchresults.S_IGNORE_POST -->
 		<td class="gensmall" colspan="2" height="25" align="center">{searchresults.L_IGNORE_POST}</td>
 	<!-- ELSE -->
-		<td class="topictitle" colspan="2" height="25"><a name="{searchresults.POST_ID}"></a>&nbsp;{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a><span> &nbsp; {L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></td>
+		<td colspan="2" height="25"><p class="topictitle"><a name="{searchresults.POST_ID}"></a>&nbsp;{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a> &nbsp; {L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></p></td>
 	</tr>
 	<tr class="row1">
 		<td width="150" align="center" valign="middle"><b class="postauthor">{searchresults.POSTER_NAME}</b></td>
@@ -64,13 +57,16 @@
 
 <div class="nav" style="float:left">{PAGE_NUMBER}&nbsp;[ {TOTAL_TOPICS} ]</div><div class="nav" style="float:right">{PAGINATION}</div>
 
-<br clear="all" /><br />
+	<br clear="all" /><br />
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
 
 <br clear="all" />
 

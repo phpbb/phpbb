@@ -1,70 +1,58 @@
-<!-- $ Id: $ -->
 <!-- INCLUDE mcp_header.html -->
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0">
-<form method="post" name="mcp" action="{S_MCP_ACTION}">
-	<tr>
-		<th width="4%" height="28" nowrap="nowrap">&nbsp;</th>
-		<th nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
-		<th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
-		<th width="17%" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
-		<th width="5%" nowrap="nowrap">&nbsp;{L_SELECT}&nbsp;</th>
-	</tr>
-	<tr align="center">
-		<td class="cat" colspan="6" height="28">
-			<!--<!-- IF S_CAN_DELETE --><input type="submit" name="mode[delete_topic]" class="btnlite" value="{L_DELETE}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_MOVE --><input type="submit" name="mode[move]" class="btnlite" value="{L_MOVE}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_FORK --><input type="submit" name="mode[fork]" class="btnlite" value="{L_FORK}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_LOCK --><input type="submit" name="mode[lock]" class="btnlite" value="{L_LOCK}" /> &nbsp;<input type="submit" name="mode[unlock]" class="btnlite" value="{L_UNLOCK}" /> &nbsp;<!-- ENDIF -->
-			<!-- IF S_CAN_SYNC --><input type="submit" name="mode[resync]" class="btnlite" value="{L_RESYNC}" />&nbsp;<!-- ENDIF -->-->
+		<!-- $ Id: $ -->
 
-			<select name="mode">
-				<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
-				<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
-				<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
-				<!-- IF S_CAN_LOCK --><option value="lock">{L_LOCK}</option><option value="unlock">{L_UNLOCK}</option><!-- ENDIF -->
-				<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
-			</select>
-			<input class="btnmain" type="submit" value="{L_SUBMIT}" />
-		</td>
-	</tr>
-	<!-- BEGIN topicrow -->
-	<tr>
-		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td class="row1" width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr class="topictitle">
-				<!-- IF topicrow.S_SELECT_TOPIC -->
-				<td nowrap="nowrap">[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT}</a> ]&nbsp;</td>
-				<!-- ENDIF -->
-				<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_TOPIC_REPORTED -->
-				<td align="left" valign="middle">
-					<!-- IF topicrow.S_TOPIC_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF -->
-				</td>
-				<!-- ENDIF -->
-				<td width="100%">{topicrow.ATTACH_ICON_IMG}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<form method="post" name="mcp" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<td class="cat" colspan="6" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 			</tr>
-		</table></td>
-		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
-		<td class="row1" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{topicrow.LAST_POST_TIME}</span></td>
-		<td class="row2" align="center" valign="middle"><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" {topicrow.S_TOPIC_CHECKED}/></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="8" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
-	</tr>
-	<!-- END topicrow -->
-	<tr>
-		<td colspan="6" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
-	</tr>
-</form>
-</table>
+			<tr>
+				<th width="4%" nowrap="nowrap">&nbsp;</th>
+				<th nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+				<th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+				<th width="17%" nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
+				<th width="5%" nowrap="nowrap">&nbsp;{L_MARK}&nbsp;</th>
+			</tr>
+			<!-- BEGIN topicrow -->
+			<tr>
+				<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
+				<!-- IF S_TOPIC_ICONS -->
+				<!-- td class="row1" width="25" align="center">{topicrow.TOPIC_ICON_IMG}</td -->
+				<!-- ENDIF -->
+				<td class="row1">
+					<!-- IF topicrow.S_SELECT_TOPIC -->
+						[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT}</a> ]&nbsp;
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_UNAPPROVED -->
+						<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_REPORTED -->
+						<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+				</td>
+				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
+				<td class="row1" width="120" align="center"><p class="topicdetails">{topicrow.LAST_POST_TIME}</p></td>
+				<td class="row2" align="center"><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" {topicrow.S_TOPIC_CHECKED}/></td>
 
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr>
-		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
-		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
-	</tr>
-</table>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td class="row1" colspan="8" height="28" align="center"><p class="gen">{L_NO_TOPICS}</p></td>
+			</tr>
+			<!-- END topicrow -->
+			<tr>
+				<td class="cat" colspan="6" align="right">
+					<select name="mode">
+						<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
+						<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
+						<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
+						<!-- IF S_CAN_LOCK --><option value="lock">{L_LOCK}</option><option value="unlock">{L_UNLOCK}</option><!-- ENDIF -->
+						<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
+					</select>
+					<input class="btnmain" type="submit" value="{L_SUBMIT}" />
+				</td>
+			</tr>
+		</table></form>
 
 <!-- INCLUDE mcp_footer.html -->

@@ -1,70 +1,73 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- $Id$ -->
+	<!-- $Id$ -->
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
+	<div id="pagecontent">
 
-<br clear="all" />
+		<table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<th>{L_FAQ_TITLE}</th>
+			</tr>
+			<tr>
+				<td class="row1">
+					<!-- BEGIN faq_block_link -->
+					<span class="gen"><b>{faq_block_link.BLOCK_TITLE}</b></span><br />
+					<!-- BEGIN faq_row_link -->
+					<span class="gen"><a class="postlink" href="{faq_block_link.faq_row_link.U_FAQ_LINK}">{faq_block_link.faq_row_link.FAQ_LINK}</a></span><br />
+					<!-- END faq_row_link -->
+					<br />
+					<!-- END faq_block_link -->
+				</td>
+			</tr>
+			<tr>
+				<td class="cat">&nbsp;</td>
+			</tr>
+		</table>
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th>{L_FAQ_TITLE}</th>
-	</tr>
-	<tr>
-		<td class="row1">
-			<!-- BEGIN faq_block_link -->
-			<span class="gen"><b>{faq_block_link.BLOCK_TITLE}</b></span><br />
-			<!-- BEGIN faq_row_link -->
-			<span class="gen"><a class="postlink" href="{faq_block_link.faq_row_link.U_FAQ_LINK}">{faq_block_link.faq_row_link.FAQ_LINK}</a></span><br />
-			<!-- END faq_row_link -->
-			<br />
-			<!-- END faq_block_link -->
-		</td>
-	</tr>
-	<tr>
-		<td class="cat">&nbsp;</td>
-	</tr>
-</table>
+		<br clear="all" />
 
-<br clear="all" />
+		<!-- BEGIN faq_block -->
+		<table class="tablebg" width="100%" cellspacing="1">
+			<tr> 
+				<td class="cat" align="center"><h4>{faq_block.BLOCK_TITLE}</h4></td>
+			</tr>
+			<!-- BEGIN faq_row --> 
+			<tr>
+			
+			<!-- IF faq_block.faq_row.S_ROW_COUNT is even -->
+				<td class="row1" valign="top">
+			<!-- ELSE -->
+				<td class="row2" valign="top">
+			<!-- ENDIF -->
+					<p class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>&#187; {faq_block.faq_row.FAQ_QUESTION}</b></p>
 
-<!-- BEGIN faq_block -->
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr> 
-		<td class="cat" align="center"><span class="cattitle">{faq_block.BLOCK_TITLE}</span></td>
-	</tr>
-	<!-- BEGIN faq_row --> 
-	<tr>
-	
-	<!-- IF faq_block.faq_row.S_ROW_COUNT is even -->
-		<td class="row1" valign="top">
-	<!-- ELSE -->
-		<td class="row2" valign="top">
-	<!-- ENDIF -->
-			<span class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b><br />{faq_block.faq_row.FAQ_ANSWER}<br /><a class="postlink" href="#Top">{L_BACK_TO_TOP}</a></span>
-		</td>
-	</tr>
-	<tr>
-		<td class="spacer" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<!-- END faq_row -->
-</table>
+					<p class="postbody">{faq_block.faq_row.FAQ_ANSWER}</p>
+					
+					<p class="gensmall"><a href="#Top">{L_BACK_TO_TOP}</a></p>
+				</td>
+			</tr>
+			<tr>
+				<td class="spacer" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+			</tr>
+			<!-- END faq_row -->
+		</table>
 
-<br clear="all" />
-<!-- END faq_block -->
+		<br clear="all" />
+		<!-- END faq_block -->
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
+	</div>
 
-<br clear="all" />
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
 
-<div style="float:right"><!-- INCLUDE jumpbox.html --></div>
+	<br clear="all" />
+
+	<div align="right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

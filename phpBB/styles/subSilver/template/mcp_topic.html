@@ -1,10 +1,9 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table class="tablebg" width="100%" cellspacing="1"  cellpadding="2" border="0">
-<form name="mcp" method="post" action="{S_MCP_ACTION}">
-<!-- IF S_CAN_SPLIT -->
+<form name="mcp" method="post" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
+	<!-- IF S_CAN_SPLIT -->
 	<tr>
-		<th colspan="3" height="28" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
+		<th colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
@@ -30,7 +29,7 @@
 	<!-- ENDIF -->
 	<!-- IF S_CAN_MERGE -->
 	<tr>
-		<th colspan="3" height="28" nowrap="nowrap">{L_MERGE_TOPIC}</th>
+		<th colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
@@ -46,7 +45,7 @@
 	<!-- ENDIF -->
 	<!-- ENDIF -->
 	<tr>
-		<th colspan="3" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+		<th colspan="3"  nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span</td>

@@ -1,155 +1,153 @@
 <!-- INCLUDE overall_header.html -->
 
-<form method="post" action="{S_PROFILE_ACTION}"><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left"><a class="nav" href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
-	</tr>
-</table>
+	<!-- $Id$ -->
 
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="2" border="0" align="center">
-	<tr> 
-		<th colspan="2" height="28" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
-	</tr>
-	<tr> 
-		<td class="cat" width="40%" height="28" align="center"><b class="gen">{L_USER_PRESENCE}</b></td>
-		<td class="cat" width="60%" align="center"><b class="gen">{L_USER_FORUM}</b></td>
-	</tr>
-	<tr> 
-		<td class="row1" align="center" valign="top"><table cellspacing="1" cellpadding="2" border="0">
-			<tr>
-				<td class="gen" align="center"><!-- IF USER_COLOR neq '' --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
-			</tr>
-			<tr>
-				<td align="center">{KARMA_IMG}</td>
-			</tr>
-			<!-- IF RANK -->
-			<tr>
-				<td class="postdetails" align="center">{RANK}</td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF RANK_IMG -->
-			<tr>
-				<td align="center">{RANK_IMG}</td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF AVATAR_IMG -->
-			<tr>
-				<td align="center">{AVATAR_IMG}</td>
-			</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td align="center">{ONLINE_IMG}</td>
-			</tr>
-			<!-- IF S_USER_LOGGED_IN -->
-			<tr>
-				<td class="genmed" align="center">[ <a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> ]</td>
-			</tr>
-			<!-- ENDIF -->
-		</table></td>
-		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
-			<tr> 
-				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_JOINED}: </td>
-				<td width="100%"><b class="gen">{JOINED}</b></td>
-			</tr>
-			<tr> 
-				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_VISITED}: </td>
-				<td width="100%"><b class="gen">{VISITED}</td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-				<td valign="top"><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
-			</tr>
-			<tr>
-				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
-				<td><!-- IF ACTIVE_FORUM_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
-			</tr>
-			<tr>
-				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
-				<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="gensmall">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr> 
-		<td class="cat" height="28" align="center"><b class="gen">{L_CONTACT_USER}</b></td>
-		<td class="cat" height="28" align="center"><b class="gen">{L_ABOUT_USER}</b></td>
-	</tr>
-	<tr> 
-		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
-			<tr> 
-				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
-				<td class="row1" valign="middle" width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_PM}: </td>
-				<td valign="middle"><!-- IF U_PM --><a href="{U_PM}">{PM_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_MSNM}: </td>
-				<td valign="middle"><!-- IF U_MSN --><a href="{U_MSN}" onclick="im_popup('{U_MSN}', 550, 320); return false">{MSN_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_YIM}: </td>
-				<td valign="middle"><!-- IF U_YIM --><a href="{U_YIM}" onclick="im_popup('{U_YIM}', 780, 550); return false">{YIM_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_AIM}: </td>
-				<td valign="middle"><!-- IF U_AIM --><a href="{U_AIM}" onclick="im_popup('{U_AIM}', 550, 320); return false">{AIM_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_ICQ}: </td>
-				<td valign="top"><!-- IF U_ICQ --><script language="JavaScript" type="text/javascript"><!-- 
+	<div id="pagecontent">
 
-		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
-			document.write(' <a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a>');
-		else
-			document.write('<div style="position:relative"><div style="position:absolute"><a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_IMG}</a></div><div style="position:absolute;left:3px;top:-1px"><a href="{U_ICQ}" onclick="im_popup(\'{U_ICQ}\', 550, 320); return false">{ICQ_STATUS_IMG}</a></div></div>');
-		  
-				//--></script><noscript><a href="{U_ICQ}">{ICQ_IMG}</a></noscript><!-- ENDIF --></td>
+		<table class="tablebg" width="100%" cellspacing="1">
+			<tr> 
+				<th colspan="2" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
 			</tr>
 			<tr> 
-				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_JABBER}: </td>
-				<td valign="middle"><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="im_popup('{U_JABBER}', 550, 320); return false">{JABBER_IMG}</a><!-- ENDIF --></td>
+				<td class="cat" width="40%" align="center"><h4>{L_USER_PRESENCE}</h4></td>
+				<td class="cat" width="60%" align="center"><h4>{L_USER_FORUM}</h4></td>
 			</tr>
-		</table></td>
-		<td class="row1" valign="top"><table cellspacing="1" cellpadding="2" border="0">
+			<tr> 
+				<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
+					<tr>
+						<td class="gen" align="center"><!-- IF USER_COLOR --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
+					</tr>
+					<tr>
+						<td align="center">{KARMA_IMG}</td>
+					</tr>
+					<!-- IF RANK -->
+					<tr>
+						<td class="postdetails" align="center">{RANK}</td>
+					</tr>
+					<!-- ENDIF -->
+					<!-- IF RANK_IMG -->
+					<tr>
+						<td align="center">{RANK_IMG}</td>
+					</tr>
+					<!-- ENDIF -->
+					<!-- IF AVATAR_IMG -->
+					<tr>
+						<td align="center">{AVATAR_IMG}</td>
+					</tr>
+					<!-- ENDIF -->
+					<tr>
+						<td align="center">{ONLINE_IMG}</td>
+					</tr>
+					<!-- IF S_USER_LOGGED_IN -->
+					<tr>
+						<td class="genmed" align="center">[ <a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> ]</td>
+					</tr>
+					<!-- ENDIF -->
+				</table></td>
+				<td class="row1"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_JOINED}: </td>
+						<td width="100%"><b class="gen">{JOINED}</b></td>
+					</tr>
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_VISITED}: </td>
+						<td width="100%"><b class="gen">{VISITED}</td>
+					</tr>
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
+						<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+					</tr>
+					<tr>
+						<td class="gen" align="right" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
+						<td><!-- IF ACTIVE_FORUM_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					</tr>
+					<tr>
+						<td class="gen" align="right" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
+						<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="gensmall">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					</tr>
+				</table></td>
+			</tr>
+			<tr> 
+				<td class="cat" align="center"><h4>{L_CONTACT_USER}</h4></td>
+				<td class="cat" align="center"><h4>{L_ABOUT_USER}</h4></td>
+			</tr>
+			<tr> 
+				<td class="row1"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
+						<td class="row1" width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_PM}: </td>
+						<td><!-- IF U_PM --><a href="{U_PM}">{PM_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_MSNM}: </td>
+						<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="im_popup('{U_MSN}', 550, 320); return false">{MSN_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_YIM}: </td>
+						<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="im_popup('{U_YIM}', 780, 550); return false">{YIM_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_AIM}: </td>
+						<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="im_popup('{U_AIM}', 550, 320); return false">{AIM_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_ICQ}: </td>
+						<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="im_popup('{U_ICQ}', 550, 320); return false">{ICQ_IMG}</a><!-- ENDIF --></td>
+					</tr>
+					<tr> 
+						<td class="gen" nowrap="nowrap" align="right">{L_JABBER}: </td>
+						<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="im_popup('{U_JABBER}', 550, 320); return false">{JABBER_IMG}</a><!-- ENDIF --></td>
+					</tr>
+				</table></td>
+				<td class="row1"><table cellspacing="1" cellpadding="2" border="0">
+					<tr>
+						<td class="gen" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
+						<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
+					</tr>
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_LOCATION}: </td>
+						<td><b class="genmed">{LOCATION}</b></td>
+					</tr>
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
+						<td><b class="genmed">{OCCUPATION}</b></td>
+					</tr>
+					<tr> 
+						<td class="gen" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
+						<td><b class="genmed">{INTERESTS}</b></td>
+					</tr>
+					<tr> 
+						<td class="genmed" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
+						<td><!-- IF U_WWW --><a class="genmed" href="{U_WWW}" target="_userwww">{U_WWW}</a><!-- ENDIF --></td>
+					</tr>
+				</table></td>
+			</tr>
 			<tr>
-				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
-				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
+				<td class="cat" colspan="2" align="center"><h4>{L_SIGNATURE}</h4></td>
 			</tr>
-			<tr> 
-				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_LOCATION}: </td>
-				<td><b class="gen">{LOCATION}</b></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
-				<td><b class="gen">{OCCUPATION}</b></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
-				<td><b class="gen">{INTERESTS}</b></td>
-			</tr>
-			<tr> 
-				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
-				<td><!-- IF U_WWW --><a href="{U_WWW}" target="_userwww">{WWW_IMG}</a><!-- ENDIF --></td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" height="28" align="center"><b class="gen">{L_SIGNATURE}</b></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2"><table cellspacing="0" cellpadding="10" border="0" align="center">
 			<tr>
-				<td class="postbody">{SIGNATURE}</td>
+				<td class="row1" colspan="2"><div class="postbody" style="padding: 10px;">{SIGNATURE}</div></td>
 			</tr>
-		</table></td>
-	</tr>
-</table></form>
+		</table></form>
 
-<table width="95%" cellspacing="0" cellpadding="0" border="0" align="center">
-	<tr> 
-		<td align="right"><!-- INCLUDE jumpbox.html --></td>
-	</tr>
-</table>
+	</div>
+
+	<br clear="all" />
+
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
+
+	<br clear="all" />
+
+	<div style="float: right;"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

@@ -67,9 +67,9 @@
 				<!-- ELSE -->
 				<th colspan="2">&nbsp;{L_TOPICS}&nbsp;</th>
 				<!-- ENDIF -->
-				<th width="100">&nbsp;{L_AUTHOR}&nbsp;</th>
-				<th width="50">&nbsp;{L_REPLIES}&nbsp;</th>
-				<th width="50">&nbsp;{L_VIEWS}&nbsp;</th>
+				<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+				<th>&nbsp;{L_REPLIES}&nbsp;</th>
+				<th>&nbsp;{L_VIEWS}&nbsp;</th>
 				<th>&nbsp;{L_LAST_POST}&nbsp;</th>
 			</tr>
 
@@ -86,25 +86,22 @@
 			<!-- ENDIF -->
 
 			<tr>
-				<td class="row1" width="40" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
+				<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
 				<!-- IF S_TOPIC_ICONS -->
-				<td class="row1" align="center">{topicrow.TOPIC_ICON_IMG}</td>
+				<td class="row1" width="25" align="center">{topicrow.TOPIC_ICON_IMG}</td>
 				<!-- ENDIF -->
-				<td class="row1" width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-					<tr>
-						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_TOPIC_REPORTED -->
-						<td align="left" valign="middle">
-							<!-- IF topicrow.S_TOPIC_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->
-							<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF -->
-						</td>
-						<!-- ENDIF -->
-						<td width="100%">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <p class="topictitle"><a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
-					</tr>
-				</table></td>
-				<td class="row2" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
-				<td class="row1" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
-				<td class="row2" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
-				<td class="row1" align="center" nowrap="nowrap">
+				<td class="row1">
+					<!-- IF topicrow.S_TOPIC_UNAPPROVED -->
+						<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_REPORTED -->
+						<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
+				<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
+				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
+				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
+				<td class="row1" width="120" align="center">
 					<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">
 					<!-- IF forumrow.U_LAST_POSTER -->

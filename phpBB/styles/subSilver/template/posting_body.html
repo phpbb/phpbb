@@ -43,29 +43,32 @@ function checkForm()
 </script>
 <script language="javascript" type="text/javascript" src="styles/subSilver/template/editor.js"></script>
 
-<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"{S_FORM_ENCTYPE}>
+	<!-- IF S_FORUM_RULES -->
+	<p class="forumrules">
+		<!-- IF U_FORUM_RULES -->
+		<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
+		<!-- ELSE -->
+		{L_FORUM_RULES}
+		<!-- ENDIF -->
+	</p>
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-	<!-- IF RULES_LINK -->
-	<tr>
-		<td class="row2"><span class="nav"><a href="">Forum Rules</a></span></td>
-	</tr>
-	<!-- ELSEIF RULES_TEXT -->
-	<tr>
-	</tr>
+	<br clear="all" />
 	<!-- ENDIF -->
-</table>
 
-<br clear="all" />
+	<div id="pageheader">
+		<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- ENDIF --></h2>
 
-<div><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- ENDIF --></div>
-<div class="gensmall" style="float:left"><!-- IF MODERATORS --><b >{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --></div>
-<div class="gensmall" style="float:right"><!-- IF U_MCP -->[ <a href="{U_MCP}">{L_MCP}</a> ]<!-- ENDIF --></div>
+		<!-- IF MODERATORS -->
+			<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
+		<!-- ENDIF -->
+		<!-- IF U_MCP -->
+			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<!-- ENDIF -->
+	</div>
 
-<br clear="all" /><br />
+	<br clear="all" /><br />
+
+	<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)"{S_FORM_ENCTYPE}>
 
 <!-- IF S_DRAFT_LOADED -->
 <table class="tablebg" width="100%" cellspacing="1">

@@ -1,5 +1,6 @@
-<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
+
+	<!-- $Id$ -->
 
 <script language="javascript" type="text/javascript" defer="defer">
 <!--
@@ -13,86 +14,79 @@ function marklist(form_name, status)
 //-->
 </script>
 
-<table width="95%" cellspacing="0" cellpadding="2" border="0" align="center">
-	<tr valign="top">
-		<td colspan="2"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-			<!-- IF TOPIC_TITLE -->
-			<tr>
-				<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></td>
-			</tr>
-			<!-- ELSEIF FORUM_NAME -->
-			<tr>
-				<td class="titles" colspan="2" align="left" valign="bottom"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF PAGINATION -->
-			<tr>
-				<td valign="bottom" class="gensmall">{MODERATORS}</td>
-				<td align="right" valign="bottom" nowrap="nowrap"><b class="gensmall">{PAGINATION}</b></td>
-			</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td class="nav" colspan="2" align="left" valign="middle"><!-- IF S_FORUM_NAV --><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> -> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --><!-- ENDIF --></td>
-			</tr>
-		</table></td>
-</tr>
-<tr valign="top">
-	<td width="20%"><form method="post" name="jumpbox" action="{S_JUMPBOX_ACTION}"{S_FORM_ENCTYPE}><table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="left">
-		<tr>
-			<th height="28">{L_JUMPBOX}</th>
-		</tr>
-		<tr>
-			<td class="row1"><!-- INCLUDE mcp_jumpbox.html --></td>
-		</tr>
-	</table></form>
+	<!-- IF TOPIC_TITLE or FORUM_NAME -->
+	<div id="pageheader">
+		<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- ENDIF --></h2>
 
-	<br clear="all" /><br clear="all" />
-
-	<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="left">
-		<tr>
-			<th height="28">{L_OPTIONS}</th>
-		</tr>
-		<!-- BEGIN mcp_section -->
-		<tr>
-			<!-- IF mcp_section.S_SELECTED -->
-			<td class="row1" height="28"><b class="nav">{mcp_section.L_TITLE}</b>
-				<table width="100%" cellspacing="0" cellpadding="0" border="0">
-				<!-- BEGIN mcp_subsection -->
-					<tr>
-						<td class="nav">&#187;</td>
-						<td class="nav" height="20"><!-- IF mcp_section.mcp_subsection.S_SELECTED --><b>{mcp_section.mcp_subsection.L_TITLE}</b><!-- ELSE --><a href="{mcp_section.mcp_subsection.U_TITLE}">{mcp_section.mcp_subsection.L_TITLE}</a><!-- ENDIF --></td>
-					</tr>
-				<!-- END mcp_subsection -->
-				</table>
-			<!-- ELSE -->
-			<td class="row2" height="25" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{mcp_section.U_TITLE}'" style="cursor: pointer"><a class="nav" href="{mcp_section.U_TITLE}">{mcp_section.L_TITLE}</a>
-			<!-- ENDIF -->
-			</td>
-		</tr>
-		<!-- END mcp_section -->
-	</table></td>
-	<td width="80%">
-		<!-- IF MESSAGE -->
-		<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th height="28"><b>{L_MESSAGE}</b></th>
-			</tr>
-			<tr> 
-				<td class="row1" align="center"><br /><span class="gen">{MESSAGE}<br /><br /><!-- BEGIN return_links -->{return_links.MESSAGE_LINK}<br /><br /><!-- END return_links --></span></td>
-			</tr>
-		</table>
-
-		<br />
+		<!-- IF MODERATORS -->
+			<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
 		<!-- ENDIF -->
-		<!-- IF CONFIRM_MESSAGE -->
-		<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><form method="post" name="jumpbox" action="{S_CONFIRM_ACTION}"{S_FORM_ENCTYPE}>
-			<tr>
-				<th height="28"><b>{L_PLEASE_CONFIRM}</b></th>
-			</tr>
-			<tr> 
-				<td class="row1" align="center"><span class="gen"><br />{CONFIRM_MESSAGE}<br /><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{L_YES}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /><br /><br /></span></td>
-			</tr>
-		</form></table>
-
-		<br />
+		<!-- IF U_MCP -->
+			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
 		<!-- ENDIF -->
+	</div>
+
+	<br clear="all" />
+	<!-- ENDIF -->
+
+	<div id="pagecontent">
+
+
+<!-- {PAGINATION} -->
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tr>
+		<td width="20%" valign="top">
+
+			<table class="tablebg" width="100%" cellspacing="1">
+				<tr>
+					<th>{L_OPTIONS}</th>
+				</tr>
+				<!-- BEGIN mcp_section -->
+				<tr>
+					<!-- IF mcp_section.S_SELECTED -->
+					<td class="row1"><b class="nav">{mcp_section.L_TITLE}</b>
+
+						<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+						<!-- BEGIN mcp_subsection -->
+						<li>&#187; <!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{mcp_section.mcp_subsection.L_TITLE}</b><!-- ELSE --><a href="{mcp_section.mcp_subsection.U_TITLE}">{mcp_section.mcp_subsection.L_TITLE}</a><!-- ENDIF --></li>
+						<!-- END mcp_subsection -->
+						</ul>
+
+					<!-- ELSE -->
+					<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{mcp_section.U_TITLE}'"><a class="nav" href="{mcp_section.U_TITLE}">{mcp_section.L_TITLE}</a>
+					<!-- ENDIF -->
+					</td>
+				</tr>
+				<!-- END mcp_section -->
+			</table>
+
+		</td>
+		<td><img src="images/spacer.gif" width="4" alt="" /></td>
+		<td width="80%" valign="top">
+
+			<!-- IF MESSAGE -->
+			<table class="tablebg" width="100%" cellspacing="1">
+				<tr>
+					<th>{L_MESSAGE}</th>
+				</tr>
+				<tr> 
+					<td class="row1" align="center"><br /><span class="gen">{MESSAGE}<br /><br /><!-- BEGIN return_links -->{return_links.MESSAGE_LINK}<br /><br /><!-- END return_links --></span></td>
+				</tr>
+			</table>
+
+			<br />
+			<!-- ENDIF -->
+
+			<!-- IF CONFIRM_MESSAGE -->
+			<table class="tablebg" width="100%" cellspacing="1"><form name="confirm" method="post" action="{S_CONFIRM_ACTION}"{S_FORM_ENCTYPE}>
+				<tr>
+					<th><b>{L_PLEASE_CONFIRM}</b></th>
+				</tr>
+				<tr> 
+					<td class="row1" align="center"><span class="gen"><br />{CONFIRM_MESSAGE}<br /><br />{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="confirm" value="{L_YES}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="{L_NO}" /><br /><br /></span></td>
+				</tr>
+			</form></table>
+
+			<br />
+			<!-- ENDIF -->
