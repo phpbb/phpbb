@@ -144,7 +144,8 @@ $lang['Memberlist'] = "Memberlist";
 $lang['FAQ'] = "FAQ";
 $lang['Usergroups'] = "Usergroups";
 $lang['Last_Post'] = "Last Post";
-$lang['Moderator'] = "Moderator/s";
+$lang['Moderator'] = "Moderator";
+$lang['Moderators'] = "Moderators";
 
 
 //
@@ -749,11 +750,11 @@ $lang['Sorry_auth_delete'] = "Sorry but only %s can delete posts in this forum";
 $lang['Sorry_auth_vote'] = "Sorry but only %s can vote in polls in this forum"; 
 
 // These replace the %s in the above strings
-$lang['Anonymous_Users'] = "<b>anonymous users</b>";
-$lang['Registered_Users'] = "<b>registered users</b>";
-$lang['Users_granted_access'] = "<b>users granted special access</b>";
-$lang['Moderators'] = "<b>moderators</b>";
-$lang['Administrators'] = "<b>administrators</b>";
+$lang['Auth_Anonymous_Users'] = "<b>anonymous users</b>";
+$lang['Auth_Registered_Users'] = "<b>registered users</b>";
+$lang['Auth_Users_granted_access'] = "<b>users granted special access</b>";
+$lang['Auth_Moderators'] = "<b>moderators</b>";
+$lang['Auth_Administrators'] = "<b>administrators</b>";
 
 $lang['Not_Moderator'] = "You are not a moderator of this forum";
 $lang['Not_Authorised'] = "Not Authorised";

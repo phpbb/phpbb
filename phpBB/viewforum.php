@@ -371,6 +371,7 @@ $template->assign_vars(array(
 	"FOLDER_ANNOUNCE_IMG" => $images['folder_announce'],
 	"FOLDER_ANNOUNCE_NEW_IMG" => $images['folder_announce_new'],
 
+	"L_MODERATOR" => ( $total_mods == 1 ) ? $lang['Moderator'] : $lang['Moderators'], 
 	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
 	"L_POST_NEW_TOPIC" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
 

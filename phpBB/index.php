@@ -251,6 +251,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 		"FORUM_NEW_IMG" => $images['forum_new'],
 		"FORUM_LOCKED_IMG" => $images['forum_locked'],
 
+		"L_MODERATOR" => $lang['Moderators'], 
 		"L_FORUM_LOCKED" => $lang['Forum_is_locked'],
 		"L_MARK_FORUMS_READ" => $lang['Mark_all_forums'], 
 
@@ -379,9 +380,18 @@ if($total_categories = $db->sql_numrows($q_categories))
 					}
 				}
 
-				if($moderators_links == "")
+				if( $moderators_links == "" )
 				{
 					$moderators_links = "&nbsp;";
+				}
+
+				if( $mods > 0 )
+				{
+					$l_moderators = ( $mods == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
+				}
+				else
+				{
+					$l_moderators = "&nbsp;";
 				}
 
 				$row_color = ( !($count % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
@@ -397,6 +407,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 					"TOPICS" => $forum_rows[$j]['forum_topics'],
 					"LAST_POST" => $last_post,
 					"MODERATORS" => $moderators_links,
+
+					"L_MODERATOR" => $l_moderators, 
 
 					"U_VIEWFORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 				);

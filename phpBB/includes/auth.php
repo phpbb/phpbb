@@ -56,7 +56,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 {
 	global $db, $lang;
 
-	switch($type)
+	switch( $type )
 	{
 		case AUTH_ALL:
 			$a_sql = "a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate";
@@ -124,7 +124,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// If f_access has been passed, or auth is needed to return an array of forums
 	// then we need to pull the auth information on the given forum (or all forums)
 	//
-	if($f_access == -1)
+	if( $f_access == -1 )
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE a.forum_id = $forum_id" : "";
 
@@ -139,7 +139,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		}
 		else
 		{
-			if(!$db->sql_numrows($af_result))
+			if( !$db->sql_numrows($af_result) )
 			{
 				message_die(GENERAL_ERROR, "No forum access control lists exist!", "", __LINE__, __FILE__, $sql);
 			}
@@ -157,37 +157,24 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	$auth_user = array();
 
-	if($userdata['session_logged_in'])
+	if( $userdata['session_logged_in'] )
 	{
 		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND a.forum_id = $forum_id" : "";
 
-/*		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user
-			FROM " . AUTH_ACCESS_TABLE . " au, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g
-			WHERE ug.user_id = " . $userdata['user_id'] . "
-				AND g.group_id = ug.group_id
-				AND (
-					( au.user_id = ug.user_id
-						AND g.group_id = 0 )
-					OR
-					( au.group_id = ug.group_id
-						AND g.group_id <> 0 )
-					)
-				$forum_match_sql";*/
-		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod, g.group_single_user
-			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g
+		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod 
+			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
 				AND ug.user_pending = 0 
-				AND g.group_id = ug.group_id
 				AND a.group_id = ug.group_id
 				$forum_match_sql";
 		$a_result = $db->sql_query($sql);
-		if(!$a_result)
+		if( !$a_result )
 		{
 			message_die(GENERAL_ERROR, "Failed obtaining forum access control lists", "", __LINE__, __FILE__, $sql);
 		}
 
 		$num_u_access = $db->sql_numrows($a_result);
-		if($num_u_access)
+		if( $num_u_access )
 		{
 			if($forum_id != AUTH_LIST_ALL)
 			{
@@ -195,7 +182,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			}
 			else
 			{
-				while($u_row = $db->sql_fetchrow($a_result))
+				while( $u_row = $db->sql_fetchrow($a_result) )
 				{
 					$u_access[$u_row['forum_id']][] = $u_row;
 				}
@@ -203,7 +190,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		}
 	}
 
-	$is_admin = ($userdata['user_level'] == ADMIN && $userdata['session_logged_in']) ? TRUE : 0;
+	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = array();
 
@@ -233,35 +220,35 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		// be assigned). If the row does represent a single user then forget any previous group results
 		// and instead set the auth to whatever the OR'd contents of the access levels are.
 		//
-		if($forum_id != AUTH_LIST_ALL)
+		if( $forum_id != AUTH_LIST_ALL )
 		{
 			$value = $f_access[$key];
 
-			switch($value)
+			switch( $value )
 			{
 				case AUTH_ALL:
 					$auth_user[$key] = TRUE;
-					$auth_user[$key . '_type'] = $lang['Anonymous_users'];
+					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_users'];
 					break;
 
 				case AUTH_REG:
 					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? TRUE : 0;
-					$auth_user[$key . '_type'] = $lang['Registered_Users'];
+					$auth_user[$key . '_type'] = $lang['Auth_Registered_Users'];
 					break;
 
 				case AUTH_ACL:
 					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
-					$auth_user[$key . '_type'] = $lang['Users_granted_access'];
+					$auth_user[$key . '_type'] = $lang['Auth_Users_granted_access'];
 					break;
 
 				case AUTH_MOD:
 					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
-					$auth_user[$key . '_type'] = $lang['Moderators'];
+					$auth_user[$key . '_type'] = $lang['Auth_Moderators'];
 					break;
 
 				case AUTH_ADMIN:
 					$auth_user[$key] = $is_admin;
-					$auth_user[$key . '_type'] = $lang['Administrators'];
+					$auth_user[$key . '_type'] = $lang['Auth_Administrators'];
 					break;
 
 				default:
@@ -276,31 +263,31 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
 
-				switch($value)
+				switch( $value )
 				{
 					case AUTH_ALL:
 						$auth_user[$f_forum_id][$key] = TRUE;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Anonymous_users'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_users'];
 						break;
 
 					case AUTH_REG:
 						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? TRUE : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Registered_Users'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Registered_Users'];
 						break;
 
 					case AUTH_ACL:
 						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Users_granted_access'];
 						break;
 
 					case AUTH_MOD:
 						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Moderators'];
 						break;
 
 					case AUTH_ADMIN:
 						$auth_user[$f_forum_id][$key] = $is_admin;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Administrators'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Administrators'];
 						break;
 
 					default:
@@ -314,9 +301,9 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	//
 	// Is user a moderator?
 	//
-	if($forum_id != AUTH_LIST_ALL)
+	if( $forum_id != AUTH_LIST_ALL )
 	{
-		$auth_user['auth_mod'] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		$auth_user['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	}
 	else
 	{
@@ -324,7 +311,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		{
 			$f_forum_id = $f_access[$k]['forum_id'];
 
-			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in']) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
+			$auth_user[$f_forum_id]['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
 	}
 
@@ -335,7 +322,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 {
 	$auth_user = 0;
 
-	if(count($u_access))
+	if( count($u_access) )
 	{
 		for($j = 0; $j < count($u_access); $j++)
 		{

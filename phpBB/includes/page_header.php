@@ -269,7 +269,6 @@ $template->assign_vars(array(
 	"L_VIEWS" => $lang['Views'],
 	"L_POSTS" => $lang['Posts'],
 	"L_LASTPOST" => $lang['Last_Post'],
-	"L_MODERATOR" => $lang['Moderator'],
 	"L_NO_NEW_POSTS" => $lang['No_new_posts'],
 	"L_NEW_POSTS" => $lang['New_posts'],
 	"L_NO_NEW_POSTS_HOT" => $lang['No_new_posts_hot'],

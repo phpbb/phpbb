@@ -30,7 +30,7 @@
 	<td class="row1" align="center" valign="middle" height="50">{catrow.forumrow.FOLDER}</td>
 	<td class="row1" width="100%" height="50"><span class="forumlink"> <a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink">{catrow.forumrow.FORUM_NAME}</a><br />
 	  </span> <span class="genmed">{catrow.forumrow.FORUM_DESC}<br />
-	  </span><span class="gensmall">{L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
+	  </span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
 	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
 	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
 	<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
