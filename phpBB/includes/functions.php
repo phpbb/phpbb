@@ -268,4 +268,23 @@ function create_date($format, $gmepoch, $tz)
 {
 	return (gmdate($format, $gmepoch + (3600 * $tz)));
 }
+
+//
+// Append $SID to a url
+// Borrowed from phplib
+//
+function append_sid($url)
+{
+	global $SID;
+
+	if(!empty($SID) && !eregi("^http:", $url) && !eregi("sid=", $url))
+	{
+		$url = ereg_replace("[&?]+$", "", $url);
+		$url .= ( strpos($url, "?") != false ?  "&" : "?" ) . $SID;
+	}
+
+	return($url);
+
+}
+
 ?>

@@ -94,7 +94,7 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 	if($x > 0)
 		$forum_moderators .= ", ";
 	
-	$forum_moderators .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]["user_id"]."\">".$forum_row[$x]["username"]."</a>";
+	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]["user_id"])."\">".$forum_row[$x]["username"]."</a>";
 }
 
 if(!isset($start))
@@ -120,7 +120,7 @@ $total_topics = $db->sql_numrows($t_result);
 // Post URL generation for 
 // templating vars
 //
-$post_new_topic_url = "posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id";
+$post_new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
 $template->assign_vars(array(
 	"U_POST_NEW_TOPIC" => $post_new_topic_url));
 
@@ -150,7 +150,7 @@ if($total_topics)
 				{
 					if(($i + $board_config['posts_per_page']) >= ($replies + 1)) 
 					{
-						$goto_page.=" ... <a href=\"viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i\">$times</a>";
+						$goto_page.=" ... <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i")."\">$times</a>";
 					}
 				}
 				else 
@@ -159,7 +159,7 @@ if($total_topics)
 					{
 						$goto_page.= ", ";
 					}
-					$goto_page.= "<a href=\"viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i\">$times</a>";
+					$goto_page.= "<a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i")."\">$times</a>";
 				}
 				$times++;
 			}
@@ -172,14 +172,14 @@ if($total_topics)
 
 		$folder_img = "<img src=\"".$images['folder']."\">";
 
-		$view_topic_url = "viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies;
+		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
 
 		$topic_poster = stripslashes($topic_rowset[$x]["username"]);
-		$topic_poster_profile_url = "profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"];
+		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"]);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]["post_time"], $board_config['default_timezone']);
 		$last_post_user = $topic_rowset[$x]["user2"];
-		$last_post_profile_url = "profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"];
+		$last_post_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]);
 
 		$views = $topic_rowset[$x]["topic_views"];
 
@@ -206,7 +206,7 @@ if($total_topics)
 	{
 		if($next < $topics_count)
 		{
-			$pagination = "<a href=\"viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$next\">$l_nextpage</a> | ";
+			$pagination = "<a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$next")."\">$l_nextpage</a> | ";
 		}
 		for($x = 0; $x < $topics_count; $x++)
 		{
@@ -218,7 +218,7 @@ if($total_topics)
 				}
 				else
 				{
-					$pagination .= " <a href=\"viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$x\">$count</a> ";
+					$pagination .= " <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$x")."\">$count</a> ";
 				}
 				$count++;
 				if(!($count % 20))

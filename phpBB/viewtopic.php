@@ -127,11 +127,11 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 // Post, reply and other URL generation for 
 // templating vars
 //
-$new_topic_url = "posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id";
-$reply_topic_url = "posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id";
-$view_forum_url = "viewforum.".$phpEx."?".POST_FORUM_URL."=$forum_id";
-$view_older_topic_url = "viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=older";
-$view_newer_topic_url = "viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=newer";
+$new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
+$reply_topic_url = append_sid("posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id");
+$view_forum_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=$forum_id");
+$view_older_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=older");
+$view_newer_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&view=newer");
 $template->assign_vars(array(
 	"U_POST_NEW_TOPIC" => $new_topic_url,
 	"U_VIEW_FORUM" => $view_forum_url,
@@ -180,7 +180,7 @@ for($x = 0; $x < $total_posts; $x++)
 		$poster_rank = "";
 	}
 
-	$profile_img = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
+	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
 	$email_img = ($postrow[$x]["user_viewemail"] == 1) ? "<a href=\"mailto:".$postrow[$x]["user_email"]."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
 	$www_img = ($postrow[$x]["user_website"]) ? "<a href=\"".$postrow[$x]["user_website"]."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
 
@@ -199,14 +199,14 @@ for($x = 0; $x < $total_posts; $x++)
 	$msn_img = ($postrow[$x]["user_msnm"]) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
 	$yim_img = ($postrow[$x]["user_yim"]) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]["user_yim"]."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
 	
-	$edit_img = "<a href=\"posting.$phpEx?mode=editpost&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
-	$quote_img = "<a href=\"posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
-	$pmsg_img = "<a href=\"priv_msgs.$phpEx?mode=send\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
+	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
+	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
+	$pmsg_img = "<a href=\"".append_sid("priv_msgs.$phpEx?mode=send")."\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
 	
 	if($is_moderator)
 	{
-		$ip_img = "<a href=\"topicadmin.$phpEx?mode=viewip&user_id=".$poster_id."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
-		$delpost_img = "<a href=\"topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]["post_id"]."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
+		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&user_id=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
+		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]["post_id"])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 	
 	$message = stripslashes($postrow[$x]["post_text"]);
@@ -298,7 +298,7 @@ if($total_replies > $board_config['posts_per_page'])
 	$last_page = $start - $board_config['posts_per_page'];
 	if($start > 0)
 	{
-		$pagination .= "<a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$last_page\">$l_prevpage</a> ";
+		$pagination .= "<a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$last_page")."\">$l_prevpage</a> ";
 	}
 	
 	for($x = 0; $x < $total_replies; $x += $board_config['posts_per_page'])
@@ -317,7 +317,7 @@ if($total_replies > $board_config['posts_per_page'])
 		}
 		else
 		{
-			$pagination .= "<a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$x\">$times</a>";
+			$pagination .= "<a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$x")."\">$times</a>";
 		}
 		$times++;
 	}
@@ -325,7 +325,7 @@ if($total_replies > $board_config['posts_per_page'])
 	if(($start + $board_config['posts_per_page']) < $total_replies)
 	{
 		$next_page = $start + $board_config['posts_per_page'];
-		$pagination .=  " <a href=\"$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$next_page\">$l_nextpage</a>";
+		$pagination .=  " <a href=\"".append_sid("$PHP_SELF?".POST_TOPIC_URL."=$topic_id&start=$next_page")."\">$l_nextpage</a>";
 	}
 	$pagination .= " )";
 }

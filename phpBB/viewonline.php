@@ -171,7 +171,7 @@ if($online_count)
 		}
 		else
 		{
-			$location_url = "viewforum.".$phpEx."?".POST_FORUM_URL."=".$onlinerow[$i]['forum_id'];
+			$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$onlinerow[$i]['forum_id']);
 			$location = $onlinerow[$i]['forum_name'];
 		}
 
@@ -192,8 +192,8 @@ if($online_count)
 					"LOGGED_ON" => $logged_on,
 					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
 					"LOCATION" => $location,
-					"U_USER_PROFILE" => "profile.".$phpEx."?mode=viewprofile&".POST_USERS_URL."=".$onlinerow[$i]['user_id'],
-					"U_FORUM_LOCATION" => $location_url
+					"U_USER_PROFILE" => append_sid("profile.".$phpEx."?mode=viewprofile&".POST_USERS_URL."=".$onlinerow[$i]['user_id']),
+					"U_FORUM_LOCATION" => append_sid($location_url)
 				)
 			);
 		}

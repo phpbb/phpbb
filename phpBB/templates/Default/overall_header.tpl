@@ -19,9 +19,14 @@
 .tablebody {							
 	font-size: 8pt;
 }
+.tablefooter {
+	background: #C9C9D8;
+	color:	#000000;
+	font-size:	8pt;
+}
 .catheader {							
 	font-size: 8pt;				
-	background: #CCCCCC;
+	background: #C5C9CD;
 	color: #000000;
 }
 TD {
@@ -43,20 +48,20 @@ A:Hover {
 		<td bgcolor="#000000"><table width="100%" cellpadding="0" cellspacing="1" border="0">
 			<tr>
 				<td bgcolor="#CCCCCC"><table width="100%" cellspacing="1" cellpadding="3" border="0">
-					<tr class="tablebody"><form method="POST" action="login.{PHPEX}">
-						<td align="left" valign="top"><a href="index.php"><img src="images/title.jpg" height="55" width="450" border="0"></a></td>
-						<td align="right">{L_USERNAME} : <input type="text" name="username"><br>{L_PASSWORD} : <input type="password" name="password"><br>{L_LOG_ME_IN}<input type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="Login"></td>
+					<tr class="tablebody"><form method="post" action="{S_LOGIN_ACTION}">
+						<td align="left" valign="top"><a href="{U_INDEX}"><img src="images/title.jpg" height="55" width="450" border="0"></a></td>
+						<td align="right">{L_USERNAME} : <input type="text" name="username"><br>{L_PASSWORD} : <input type="password" name="password"><br>{L_LOG_ME_IN}<input type="checkbox" name="autologin">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{L_LOGIN}"></td>
 					</tr></form>
 					<tr class="tablebody">
 						<td colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td align="left" valign="bottom">{L_WELCOMETO} {SITENAME}<br>{LOGIN_STATUS}</td>
-								<td align="right" valign="bottom">[<a href="profile.{PHPEX}?mode=register">{L_REGISTER}</a>]&nbsp;
-								[<a href="profile.{PHPEX}?mode=editprofile">{L_PROFILE}</a>]&nbsp;
-								[<a href="search.{PHPEX}">{L_SEARCH}</a>]&nbsp;
-								[<a href="priv_msg.{PHPEX}?mode=read">{L_PRIVATEMSGS}</a>]&nbsp;
-								[<a href="memberlist.{PHPEX}">{L_MEMBERLIST}</a>]&nbsp;
-								[<a href="faq.{PHPEX}">{L_FAQ}</a>]</td>
+								<td align="right" valign="bottom">[<a href="{U_REGISTER}">{L_REGISTER}</a>]&nbsp;
+								[<a href="{U_PROFILE}">{L_PROFILE}</a>]&nbsp;
+								[<a href="{U_SEARCH}">{L_SEARCH}</a>]&nbsp;
+								[<a href="{U_PRIVATEMSGS}">{L_PRIVATEMSGS}</a>]&nbsp;
+								[<a href="{U_MEMBERSLIST}">{L_MEMBERLIST}</a>]&nbsp;
+								[<a href="{U_FAQ}">{L_FAQ}</a>]</td>
 							</tr>
 						</table></td>
 					</tr>

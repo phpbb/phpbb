@@ -37,7 +37,7 @@ $template->set_filenames(array(
 if($userdata['session_logged_in'])
 {
 	$logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
-	$logged_in_status .= " [<a href=\"login.$phpEx?submit=logout\">Logout</a>]";
+	$logged_in_status .= " [<a href=\"".append_sid("login.$phpEx?submit=logout")."\">Logout</a>]";
 
 	$u_login_logout = "login.$phpEx?submit=logout";
 	$l_login_logout = "$l_logout : ".$userdata["username"]."";
@@ -86,7 +86,7 @@ while($row = $db->sql_fetchrow($result))
 {
 	if($row['session_logged_in'])
 	{
-		$userlist_ary[] = "<a href=\"profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id'] . "\">" . $row['username'] . "</a>";
+		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
 		$logged_online++;
 	}
 	else
@@ -114,6 +114,7 @@ $template->assign_vars(array(
 
 	"L_USERNAME" => $l_username,
 	"L_PASSWORD" => $l_password,
+	"L_LOGIN" => $l_login,
 	"L_LOG_ME_IN" => $l_log_me_in,
 	"L_WELCOMETO" => $l_welcometo,
 	"L_INDEX" => $l_indextitle,
@@ -150,20 +151,23 @@ $template->assign_vars(array(
 
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 
-	"U_INDEX" => "index.".$phpEx,
-	"U_REGISTER" => "profile.".$phpEx."?mode=register",
-	"U_PROFILE" => "profile.".$phpEx."?mode=editprofile",
-	"U_PRIVATEMSGS" => "priv_msgs.".$phpEx."?mode=read",
-	"U_SEARCH" => "search.".$phpEx,
-	"U_MEMBERLIST" => "memberlist.".$phpEx,
-	"U_FAQ" => "faq.".$phpEx,
-	"U_VIEWONLINE" => "viewonline.$phpEx",
-	"U_LOGIN_LOGOUT" => $u_login_logout,
+	"U_INDEX" => append_sid("index.".$phpEx),
+	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
+	"U_PROFILE" => append_sid("profile.".$phpEx."?mode=editprofile"),
+	"U_PRIVATEMSGS" => append_sid("priv_msgs.".$phpEx."?mode=read"),
+	"U_SEARCH" => append_sid("search.".$phpEx),
+	"U_MEMBERLIST" => append_sid("memberlist.".$phpEx),
+	"U_FAQ" => append_sid("faq.".$phpEx),
+	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
+	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_FORUMS_URL" => POST_FORUM_URL,
 	"S_TOPICS_URL" => POST_TOPIC_URL,
 	"S_USERS_URL" => POST_USERS_URL,
+	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
+	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
+	"S_PROFILE_ACTION" => append_sid("profile.$phpEx"),
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],
@@ -217,13 +221,18 @@ switch($pagetype)
 		$template->set_filenames(array(
 			"header" => "index_header.tpl",
 			"body" => "index_body.tpl",
-			"footer" => "index_footer.tpl"));
+			"footer" => "index_footer.tpl")
+		);
 		$template->assign_vars(array(
 			"TOTAL_POSTS" => $total_posts,
 			"TOTAL_USERS" => $total_users,
 			"NEWEST_USER" => $newest_user,
 			"NEWEST_UID" => $newest_uid,
-			"USERS_BROWSING" => $users_browsing));
+			"USERS_BROWSING" => $users_browsing,
+
+			"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
+		);
+
 		$template->pparse("header");
 		break;
 
@@ -232,18 +241,20 @@ switch($pagetype)
 			"header" => "viewforum_header.tpl",
 			"body" => "viewforum_body.tpl",
 			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewforum_footer.tpl"));
+			"footer" => "viewforum_footer.tpl")
+		);
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-		    "SELECT_NAME" => POST_FORUM_URL));
+		    "SELECT_NAME" => POST_FORUM_URL)
+		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"FORUM_ID" => $forum_id,
 			"FORUM_NAME" => $forum_name,
 			"MODERATORS" => $forum_moderators,
-			"USERS_BROWSING" => $users_browsing));
+			"USERS_BROWSING" => $users_browsing)
+		);
 		$template->pparse("header");
 		break;
 		
@@ -252,12 +263,13 @@ switch($pagetype)
 			"header" => "viewtopic_header.tpl",
 			"body" => "viewtopic_body.tpl",
 			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewtopic_footer.tpl"));
+			"footer" => "viewtopic_footer.tpl")
+		);
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-		    "SELECT_NAME" => POST_FORUM_URL));
+		    "SELECT_NAME" => POST_FORUM_URL)
+		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"FORUM_ID" => $forum_id,
@@ -265,7 +277,8 @@ switch($pagetype)
 		    "TOPIC_ID" => $topic_id,
 		    "TOPIC_TITLE" => $topic_title,
 			"POST_FORUM_URL" => POST_FORUM_URL,
-			"USERS_BROWSING" => $users_browsing));
+			"USERS_BROWSING" => $users_browsing)
+		);
 		$template->pparse("header");
 		break;
 
@@ -274,19 +287,23 @@ switch($pagetype)
 			"header" => "viewonline_header.tpl",
 			"body" => "viewonline_body.tpl",
 			"jumpbox" => "jumpbox.tpl",
-			"footer" => "viewonline_footer.tpl"));
+			"footer" => "viewonline_footer.tpl")
+		);
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-		    "SELECT_NAME" => POST_FORUM_URL));
+		    "SELECT_NAME" => POST_FORUM_URL)
+		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"TOTAL_POSTS" => $total_posts,
 			"TOTAL_USERS" => $total_users,
 			"POST_USER_URL" => POST_USERS_URL,
 			"NEWEST_USER" => $newest_user,
-			"NEWEST_UID" => $newest_uid));
+			"NEWEST_UID" => $newest_uid,
+			
+			"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
+		);
 		$template->pparse("header");
 		break;
 
@@ -294,17 +311,19 @@ switch($pagetype)
 		$template->set_filenames(array(
 			"header" => "newtopic_header.tpl",
 			"jumpbox" => "jumpbox.tpl",
-			"body" => "posting_body.tpl"));
+			"body" => "posting_body.tpl")
+		);
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
 			"JUMPBOX_LIST" => $jumpbox,
-		    "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-		    "SELECT_NAME" => POST_FORUM_URL));
+		    "SELECT_NAME" => POST_FORUM_URL)
+		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 		$template->assign_vars(array(
 			"L_POSTNEWIN" => $l_postnewin,
 			"FORUM_ID" => $forum_id,
-			"FORUM_NAME" => $forum_name));
+			"FORUM_NAME" => $forum_name)
+		);
 		$template->pparse("header");
 		break;
 
@@ -314,20 +333,27 @@ switch($pagetype)
 			$coppa = (!isset($HTTP_POST_VARS['coppa'])) ? FALSE : TRUE;
 
 			$template->set_filenames(array(
-				"body" => "agreement.tpl"));
+				"body" => "agreement.tpl")
+			);
 			$template->assign_vars(array(
-				"COPPA" => $coppa));
+				"COPPA" => $coppa,
+				
+				"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&agreed=true"),
+				"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&agreed=true&coppa=true"))
+			);
 		}
 		else
 		{
 			$template->set_filenames(array(
-				"body" => "profile_add_body.tpl"));
+				"body" => "profile_add_body.tpl")
+			);
 		}
 		break;
 		
 	case 'profile':
 		$template->set_filenames(array(
-			"body" => "profile_view_body.tpl"));
+			"body" => "profile_view_body.tpl")
+		);
    break;
 }
 

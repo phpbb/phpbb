@@ -1,5 +1,5 @@
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
-	<tr><form action="{PHP_SELF}" method="POST">
+	<tr><form action="{S_PROFILE_ACTION}" method="post">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
 				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_REGISTRATION_INFO}</b></font> <font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">[{L_ITEMS_REQUIRED}]</font>&nbsp;</td>

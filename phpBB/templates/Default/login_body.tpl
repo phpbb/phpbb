@@ -2,7 +2,7 @@
 	<td><br clear="all" /><br />
 	
 <table border="0" align="center" width="60%" bgcolor="#000000" cellpadding="0" cellspacing="1">
-    <tr><form action="{PHP_SELF}" method="post">
+    <tr><form action="{S_LOGIN_ACTION}" method="post">
 	    <td><table border="0" width="100%" cellpadding="3" cellspacing="1">
 			<tr class="tableheader">
 				<td colspan="2" align="center"><b>Please enter your username and password to login</b></td>

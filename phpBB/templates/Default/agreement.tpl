@@ -21,9 +21,9 @@
 				<br>
 				The owners of phpBB.com and the moderators of this forum have the right to remove, edit, move or close any thread for any reason.<br>
 				<br>
-				<div align="center" style="{font-weight: bold;}"><a href="profile.{PHPEX}?mode=register&agreed=true">I Agree to these terms (and am over 13 years of age)</a>&nbsp;&nbsp;
-				<a href="profile.{PHPEX}?mode=register&agreed=true&coppa=true">I Agree to these terms (and am <b>under</b> 13 years of age)</a>&nbsp;&nbsp;
-				<a href="index.{PHPEX}">I do not agree to these terms</a></div>
+				<div align="center" style="{font-weight: bold;}"><a href="{U_AGREE_OVER13}">I Agree to these terms (and am over 13 years of age)</a>&nbsp;&nbsp;
+				<a href="{U_AGREE_UNDER13}">I Agree to these terms (and am <b>under</b> 13 years of age)</a>&nbsp;&nbsp;
+				<a href="{U_INDEX}">I do not agree to these terms</a></div>
 	        	</td>
 	       </table>
 	      </td>

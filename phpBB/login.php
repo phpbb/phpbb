@@ -59,13 +59,13 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 				if($session_id)
 				{
-					if($forward_page)
+					if(!empty($HTTP_POST_VARS['forward_page']))
 					{
-						header("Location: $forward_page");
+						header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
 					}
 					else
 					{
-						header("Location: index.$phpEx");
+						header(append_sid("Location: index.$phpEx"));
 					}
 				}
 				else
@@ -89,24 +89,24 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		{
 			session_end($userdata["session_id"], $userdata["user_id"]);
 		}
-		if($forward_page)
+		if(!empty($HTTP_POST_VARS['forward_page']))
 		{
-			header("Location: $forward_page");
+			header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
 		}
 		else
 		{
-			header("Location: index.$phpEx");
+			header(append_sid("Location: index.$phpEx"));
 		}
 	}
 	else
 	{
-		if($forward_page)
+		if(!empty($HTTP_POST_VARS['forward_page']))
 		{
-			header("Location: $forward_page");
+			header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
 		}
 		else
 		{
-			header("Location: index.$phpEx");
+			header(append_sid("Location: index.$phpEx"));
 		}
 	}
 }
@@ -131,13 +131,12 @@ else
 	$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
 
 	$template->assign_vars(array(
-		"L_USERNAME" => $l_username,
-		"L_PASSWORD" => $l_password,
 		"L_SEND_PASSWORD" => $l_resend_password,
-		"L_LOGIN" => $l_login,
-		"U_SEND_PASSWORD" => "sendpassword.".$phpEx,
+
 		"FORWARD_PAGE" => $forward_page,
-		"USERNAME" => $username
+		"USERNAME" => $username,
+
+		"U_SEND_PASSWORD" => append_sid("sendpassword.".$phpEx)
 		)
 	);
 

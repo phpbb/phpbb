@@ -1,5 +1,5 @@
 <tr>
-  <td><form action="{PHP_SELF}" method="POST">
+  <td><form action="{S_PROFILE_ACTION}" method="POST">
    <table border="0" align="center" width="100%" bgcolor="#000000" cellpadding="0" cellspacing="1">
     <tr>
       <td>

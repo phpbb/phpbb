@@ -111,7 +111,7 @@ if($total_categories)
 			array(
 				"CAT_ID" => $category_rows[$i]["cat_id"],
 				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"]),
-				"U_VIEWCAT" => "index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']
+				"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id'])
 			)
 		);
 
@@ -129,8 +129,8 @@ if($total_categories)
 				{
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]["post_time"], $board_config['default_timezone']);
 					$last_post = $last_post_time."<br>by ";
-					$last_post .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"];
-					$last_post .= "\">".$forum_rows[$j]["username"]."</a>&nbsp;<a href=\"viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id']."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"]);
+					$last_post .= "\">".$forum_rows[$j]["username"]."</a>&nbsp;<a href=\"".append_sid("viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id'])."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{
@@ -158,7 +158,7 @@ if($total_categories)
 					{
 						$moderators_links .= "<br>";
 					}
-					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
+					$moderators_links .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods])."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
 				}
 
 				$template->assign_block_vars("catrow.forumrow", 
@@ -172,7 +172,7 @@ if($total_categories)
 						"LAST_POST" => $last_post,
 						"MODERATORS" => $moderators_links,
 
-						"U_VIEWFORUM" => "viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts'])
+						"U_VIEWFORUM" => append_sid("viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts']))
 					);
 //						"LAST_POST_USER" => "$forum_rows[$j]["username"]",
 //						"U_LAST_POST_USER_PROFILE" => "profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]["user_id"]",
