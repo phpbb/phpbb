@@ -71,7 +71,6 @@ define('USER_ACTIVATION_NONE', 0);
 define('USER_ACTIVATION_SELF', 1);
 define('USER_ACTIVATION_ADMIN', 2);
 define('USER_ACTIVATION_DISABLE', 3);
-define('USER_ACTIVATION_SELF_ADMIN', 4);
 
 define('AVATAR_UPLOAD', 1);
 define('AVATAR_REMOTE', 2);
@@ -167,6 +166,7 @@ define('BOTS_TABLE', $table_prefix.'bots');
 define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
+define('CUSTOM_PROFILE_DATA', $table_prefix.'profile_fields_data');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('DRAFTS_TABLE', $table_prefix.'drafts');
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');
