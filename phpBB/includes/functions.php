@@ -486,7 +486,7 @@ function validate_username($username)
 						OR LOWER(g.group_name) = '" . strtolower($username) . "' )";
 			$sql_disallow = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
-				WHERE disallow_username = '$username'";
+				WHERE '$username' LIKE disallow_username";
 			if($result = $db->sql_query($sql_users))
 			{
 				if($db->sql_numrows($result) > 0)
@@ -513,7 +513,7 @@ function validate_username($username)
 				UNION
 				SELECT disallow_username, NULL
 					FROM " . DISALLOW_TABLE . "
-					WHERE disallow_username = '$username'";
+					WHERE '$username' LIKE disallow_username";
 			if($result = $db->sql_query($sql))
 			{
 				if($db->sql_numrows($result) > 0)

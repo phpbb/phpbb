@@ -139,7 +139,7 @@ $lang['None'] = "None";
 $lang['online'] = "online";
 
 $lang['You_last_visit'] = "You last visited on";
-
+$lang['Add'] = "Add";
 $lang['Welcome_to'] = "Welcome to"; // Followed by site name
 $lang['Register'] = "Register";
 $lang['Profile'] = "Profile";
@@ -1095,6 +1095,20 @@ $lang['Add_new_rank'] = "Add new rank";
 $lang['Rank_image'] = "Rank Image";
 $lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. You can specify either a relative or absolute path to the image";
 $lang['return_rank_admin'] = "to return to rank admin";
+
+//
+// Disallow Username Admin
+//
+$lang['disallowed_deleted'] = "The disallowed username has successfully been removed";
+$lang['disallowed_already'] = "The username you are trying to disallow has already been disallowed, or a user currently exists that this would disallow";
+$lang['disallow_successful'] = "The disallowed username has successfully been added";
+$lang['Disallow_control'] = "Username Disallow Control";
+$lang['disallow_instructs'] = "Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of '*'.  Please note that you will not be allowed to specify a username to disallow if that username has already been registered.  You must first delete that username, and then disallow it.";
+$lang['del_disallow'] = "Remove a Disallowed Username";
+$lang['del_disallow_explain'] = "You can remove a disallowed username by selecting the username from this list and clicking submit";
+$lang['add_disallow'] = "Add a disallowed username";
+$lang['add_disallow_explain'] = "You can disallow a username using the wildcard character '*' to match any character";
+$lang['no_disallowed'] = "No Disallowed Usernames";
 
 //
 // That's all Folks!
