@@ -287,7 +287,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_status] [smallint] NOT NULL ,
 	[topic_type] [smallint] NOT NULL ,
 	[topic_vote] [smallint] NOT NULL ,
-	[topic_last_post_id] [int] NULL ,
+	[topic_last_post_id] [int] NOT NULL ,
 	[topic_moved_id] [int] NULL 
 ) ON [PRIMARY]
 GO
@@ -560,7 +560,8 @@ ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_replies] DEFAULT (0) FOR [topic_replies],
 	CONSTRAINT [DF_phpbb_topics_topic_status] DEFAULT (0) FOR [topic_status],
 	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type],
-	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote]
+	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote], 
+	CONSTRAINT [DF_phpbb_topics_topic_moved_id] DEFAULT (0) FOR topic_moved_id
 GO
 
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
