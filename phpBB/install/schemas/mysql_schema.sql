@@ -497,7 +497,7 @@ CREATE TABLE phpbb_ratings (
   post_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
   rating tinyint(4) NOT NULL,  
-  PRIMARY KEY (post_id, user_id), 
+  KEY post_id (post_id), 
   KEY user_id (user_id)
 );
 
@@ -881,7 +881,7 @@ CREATE TABLE phpbb_users (
    user_aim varchar(255) DEFAULT '' NOT NULL,
    user_yim varchar(255) DEFAULT '' NOT NULL,
    user_msnm varchar(255) DEFAULT '' NOT NULL,
-   user_jabber varhcar(255) DEFAULT '' NOT NULL, 
+   user_jabber varchar(255) DEFAULT '' NOT NULL, 
    user_website varchar(100) DEFAULT '' NOT NULL,
    user_actkey varchar(32) DEFAULT '' NOT NULL,
    user_newpasswd varchar(32) DEFAULT '' NOT NULL,
