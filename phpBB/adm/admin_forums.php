@@ -81,7 +81,8 @@ if (isset($_POST['update']))
 
 		case 'edit':
 			$forum_data = array(
-				'forum_id'		=>	$forum_id
+				'forum_id'		=>	$forum_id,
+				'parent_id'		=>	$parent_id
 			);
 
 			// No break here
@@ -1311,10 +1312,10 @@ function delete_forum_content($forum_id)
 		
 			while ($row = $db->sql_fetchrow($result))
 			{
-				phpbb_unlink($row['physical_filename'], 'file', $config['use_ftp_upload']);
+				phpbb_unlink($row['physical_filename'], 'file');
 				if ($row['thumbnail'])
 				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
+					phpbb_unlink($row['physical_filename'], 'thumbnail');
 				}
 			}
 			$db->sql_freeresult($result);
@@ -1371,10 +1372,10 @@ function delete_forum_content($forum_id)
 			{
 				$attach_ids[] = $row['attach_id'];
 
-				phpbb_unlink($row['physical_filename'], 'file', $config['use_ftp_upload']);
+				phpbb_unlink($row['physical_filename'], 'file');
 				if ($row['thumbnail'])
 				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
+					phpbb_unlink($row['physical_filename'], 'thumbnail');
 				}
 			}
 			$db->sql_freeresult($result);
