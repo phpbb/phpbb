@@ -53,7 +53,10 @@
 			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {PM_IMG} {EMAIL_IMG} 
 			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
 
-		document.write('<div style="position:relative"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
+		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
+			document.write('{ICQ_ADD_IMG}');
+		else
+			document.write('<div style="position:relative"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
 		  
 		  //--></script><noscript>{ICQ_ADD_IMG}</noscript></td>
 		  </tr>
