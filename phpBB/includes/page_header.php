@@ -64,16 +64,11 @@ $template->set_filenames(array(
 //
 if($userdata['session_logged_in'])
 {
-	$logged_in_status = $lang['You_are_logged_in'] . " <b>" . $userdata["username"] . "</b>.";
-	$logged_in_status .= " [<a href=\"" . append_sid("login.$phpEx?submit=logout") . "\">" . $lang['Logout'] . "</a>]";
-
 	$u_login_logout = "login.$phpEx?submit=logout";
 	$l_login_logout = $lang['Logout'] . " : " . $userdata["username"] . "";
 }
 else
 {
-	$logged_in_status = $lang['You_are_not_logged_in'];
-
 	$u_login_logout = "login.$phpEx";
 	$l_login_logout = $lang['Login'];
 }
@@ -121,7 +116,7 @@ while($row = $db->sql_fetchrow($result))
 $userlist = "";
 for($i = 0; $i < $logged_visible_online; $i++)
 {
-	$userlist .= ($i ==  $logged_visible_online - 1 && $logged_visible_online > 1) ? " and " : "";
+	$userlist .= ($i ==  $logged_visible_online - 1 && $logged_visible_online > 1) ? " " . $lang['and'] . " " : "";
 	$userlist .= $userlist_ary[$i];
 	$userlist .= ($i < $logged_visible_online - 2) ? ", " : "";
 }
@@ -151,17 +146,17 @@ if($userdata['session_logged_in'])
 	{
 		$new_messages = $pm_result['new_messages'];
 
-		$l_message_new = ($new_messages == 1) ? "message" : "messages";
-		$l_privmsgs_text = "You have $new_messages new $l_message_new";
+		$l_message_new = ($new_messages == 1) ? $lang['message'] : $lang['messages'];
+		$l_privmsgs_text = $lang['You_have'] . " $new_messages " . $lang['new'] . " $l_message_new";
 	}
 	else
 	{
-		$l_privmsgs_text = "You have no new messages";
+		$l_privmsgs_text = $lang['No_new_pm'];
 	}
 }
 else
 {
-	$l_privmsgs_text = "To check your private messages you must login";
+	$l_privmsgs_text = $lang['Login_check_pm'];
 }
 
 //
@@ -172,9 +167,8 @@ else
 $template->assign_vars(array(
 	"SITENAME" => $board_config['sitename'],
 	"PAGE_TITLE" => $page_title,
-	"LOGIN_STATUS" => $logged_in_status,
 	"META_INFO" => $meta_tags,
-	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s and $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
+	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s ". $lang['and'] . " $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
 	"LOGGED_IN_USER_LIST" => $userlist,
 
 	"L_USERNAME" => $lang['Username'],
@@ -199,6 +193,7 @@ $template->assign_vars(array(
 	"L_MODERATOR" => $lang['Moderator'],
 	"L_NONEWPOSTS" => $lang['No_new_posts'],
 	"L_NEWPOSTS" => $lang['New_posts'],
+	"L_TOPIC_IS_LOCKED" => $lang['Topic_is_locked'], 
 	"L_POSTED" => $lang['Posted'],
 	"L_JOINED" => $lang['Joined'],
 	"L_AUTO_LOGIN" => $lang['Log_me_in'],

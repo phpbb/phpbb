@@ -105,9 +105,9 @@ $join_sql_table = (!isset($post_id)) ? "" : "" . POSTS_TABLE . " p, " . POSTS_TA
 $join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 $count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 
-$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
+$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
 	FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
@@ -150,7 +150,7 @@ init_userprefs($userdata);
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
 
-if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
+if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 {
 	//
 	// The user is not authed to read this forum ...
@@ -426,21 +426,16 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if($postrow[$i]['post_edit_count'])
 	{
-		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['default_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " " . $lang['times_in_total'] . "</font>";
+		$l_edit_total = ($postrow[$i]['post_edit_count'] == 1) ? $lang['time_in_total'] : $lang['times_in_total'];
+
+		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['default_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " $l_edit_total</font>";
 	}
 
 	//
 	// Again this will be handled by the templating
 	// code at some point
 	//
-	if(!($i % 2))
-	{
-		$color = "#" . $theme['td_color1'];
-	}
-	else
-	{
-		$color = "#" . $theme['td_color2'];
-	}
+	$color = (!($i % 2)) ? "#" . $theme['td_color1'] : "#" . $theme['td_color2'];
 
 	$template->assign_block_vars("postrow", array(
 		"POSTER_NAME" => $poster,

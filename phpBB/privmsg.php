@@ -175,7 +175,7 @@ if($mode == "read")
 	$savebox_url = "<img src=\"images/msg_savebox.gif\" border=\"0\">&nbsp;<a href=\"" . append_sid("privmsg.$phpEx?folder=savebox") . "\"><b>" . $lang['Saved'] . "</b></a>";
 
 	$post_new_mesg_url = "<a href=\"privmsg.$phpEx?mode=post\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
-	$post_reply_mesg_url = ($folder == "inbox") ? "<a href=\"privmsg.$phpEx?mode=reply&" . POST_POST_URL . "=$privmsgs_id\"><img src=\"templates/PSO/images/reply.gif\" border=\"1\"></a>" : "";
+	$post_reply_mesg_url = ($folder == "inbox") ? "<a href=\"" . append_sid("privmsg.$phpEx?mode=reply&" . POST_POST_URL . "=$privmsgs_id") . "\"><img src=\"templates/PSO/images/reply.gif\" border=\"1\"></a>" : "";
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"mark[]\" value=\"$privmsgs_id\">";
 
@@ -239,7 +239,7 @@ if($mode == "read")
 
 	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "";
 
-	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "";
+	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "";
 
 	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "";
 
@@ -435,7 +435,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 		$privmsg = $db->sql_fetchrow($pm_reply_status);
 
-		$subject = $lang['Re'] . ":"  . stripslashes($privmsg['privmsgs_subject']);
+		$subject = ( (strstr("Re:", $privmsg['privmsgs_subject'])) ? $lang['Re'] . ":" : "" ) . stripslashes($privmsg['privmsgs_subject']);
 
 		$to_username = stripslashes($privmsg['username']);
 		$to_userid = $privmsg['user_id'];
@@ -1063,7 +1063,7 @@ $outbox_url .= ($folder != "outbox") ? "<a href=\"" . append_sid("privmsg.$phpEx
 $savebox_url =  "<img src=\"images/msg_savebox.gif\" border=\"0\">&nbsp;";
 $savebox_url .= ($folder != "savebox") ? "<a href=\"" . append_sid("privmsg.$phpEx?folder=savebox") . "\"><b>" . $lang['Saved'] . "</b></a>" : "<b>" . $lang['Saved'] . "</b>";
 
-$post_new_mesg_url = "<a href=\"privmsg.$phpEx?mode=post\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
+$post_new_mesg_url = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post") . "\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
 
 //
 // General SQL to obtain messages

@@ -7,7 +7,6 @@
  *     email                : support@phpbb.com
  *
  *     $Id$
- *     $Id$
  *
  *  ***************************************************************************/
 
@@ -88,7 +87,10 @@ $lang['Yes'] = "Yes";
 $lang['No'] = "No";
 
 $lang['Private_messaging'] = "Send a Private Message";
-$lang['Click_index'] = "Click <a href=\"index.$phpEx\">HERE</a> to return to the index";
+
+$lang['and'] = "and"; // used within a sentence in various places
+
+$lang['Admin_panel'] = "Go to Administration Panel";
 
 $lang['You'] = "You"; // This is followed by the auth results for a given function (see below)
 $lang['can'] = "<b>can</b>";
@@ -200,7 +202,8 @@ $lang['Delete_post'] = "Delete this post";
 $lang['Edited_by'] = "Last edited by"; // followed by -> [username] on ...
 $lang['on'] = "on";
 $lang['edited'] = "edited"; // followed by -> [num] times in total
-$lang['times_in_total'] = "time/s in total";
+$lang['time_in_total'] = "time in total";
+$lang['times_in_total'] = "times in total";
 
 $lang['Lock_topic'] = "Lock this topic";
 $lang['Unlock_topic'] = "Unlock this topic";
@@ -262,6 +265,13 @@ $lang['to_return_topic'] = "to return to the topic";
 //
 // Private Messaging
 //
+$lang['You_have'] = "You have"; // followed by "x new message/s"
+$lang['new'] = "new"; // see above
+$lang['message'] = "message"; // see above
+$lang['messages'] = "messages"; // see above
+$lang['No_new_pm'] = "You have no new messages";
+$lang['Login_check_pm'] = "Login to check your private messages";
+
 $lang['Inbox'] = "Inbox";
 $lang['Sent'] = "Sent";
 $lang['Outbox'] = "Outbox";
