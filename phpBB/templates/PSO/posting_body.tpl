@@ -24,7 +24,7 @@ function insertCode(formObj, selectObj){
 				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{SUBJECT_INPUT}</font></td>
 			</tr>
 			<tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_MESSAGEBODY}</b></font><br><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{HTML_STATUS}<br>{BBCODE_STATUS}</font></td>
+				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_MESSAGE_BODY}</b></font><br><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{HTML_STATUS}<br>{BBCODE_STATUS}</font></td>
 				<td bgcolor="{T_TD_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{MESSAGE_INPUT}</font></td>
