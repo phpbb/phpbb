@@ -45,6 +45,13 @@
 				<!-- END forumrow -->
 				<!-- END catrow -->
 				<tr class="catheader">
+					<td colspan="6"><b><a href="{U_PRIVATEMSGS}">Private Messages</a></b></td>
+				</tr>
+				<tr style="background-color:#DEDEDE">
+					<td align="center"><img src="images/mailbox.gif"></td>
+					<td colspan="5">{L_PRIVATE_MESSAGE_INFO}</font></td>
+				</tr>
+				<tr class="catheader">
 					<td colspan="6"><a href="{U_VIEWONLINE}">Who is Online</a></td>
 				</tr>
 				<tr style="background-color:#DEDEDE">
