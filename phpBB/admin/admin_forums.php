@@ -109,6 +109,55 @@ function get_list($mode, $id, $select)
 	return($catlist);
 }
 
+function renumber_order($mode, $cat=FALSE)
+{
+	global $db;
+	
+	switch($mode)
+	{
+		case 'category':
+			$table = CATEGORIES_TABLE;
+			$idfield = 'cat_id';
+			$orderfield = 'cat_order';
+			$cat = FALSE;
+			break;
+		case 'forum':
+			$table = FORUMS_TABLE;
+			$idfield = 'forum_id';
+			$orderfield = 'forum_order';
+			$catfield = 'cat_id';
+			break;
+		default:
+			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+	}
+	
+	$sql = "SELECT * FROM $table";
+	if( $cat != FALSE)
+	{
+		$sql .= " WHERE $catfield = '$cat'";
+	}
+	$sql .= " ORDER BY $orderfield ASC";
+
+	
+	if( !$result = $db->sql_query($sql) )
+	{  
+		message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
+	}
+	
+	$i = 10;
+	$inc = 10;
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$sql = "UPDATE $table SET $orderfield = $i WHERE $idfield = ".$row["$idfield"];
+		if( !$db->sql_query($sql) )
+		{  
+			message_die(GENERAL_ERROR, "Couldn't update order fields", "", __LINE__, __FILE__, $sql);
+		}
+		$i += 10;
+	}
+	
+}
+
 //
 // Include required files, get $phpEx and check permissions
 //
@@ -415,8 +464,29 @@ if(isset($mode))  // Are we supposed to do something?
 			$template->pparse("body");
 			break;
 		case 'cat_order':
+			$move = $HTTP_GET_VARS['move'];
+			$cat_id = $HTTP_GET_VARS['cat_id'];
+			$sql = "UPDATE ".CATEGORIES_TABLE." SET cat_order = cat_order + $move WHERE cat_id = $cat_id";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
+			}
+			renumber_order('category');
+			$show_index = TRUE;
+			break;
 		case 'forum_order':
-			message_die(GENERAL_ERROR, "Sorry, not implemented yet");
+			$move = $HTTP_GET_VARS['move'];
+			$forum_id = $HTTP_GET_VARS['forum_id'];
+			$forum_info = get_info('forum', $forum_id);
+			$cat_id = $forum_info['cat_id'];
+			
+			$sql = "UPDATE ".FORUMS_TABLE." SET forum_order = forum_order + $move WHERE forum_id = $forum_id";
+			if( !$result = $db->sql_query($sql) )
+			{  
+				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
+			}
+			renumber_order('forum', $forum_info['cat_id']);
+			$show_index = TRUE;
 			break;
 		default:
 			print "Oops! Wrong mode..";
@@ -483,8 +553,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 					"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
 					"CAT_EDIT" => "<a href='$PHP_SELF?mode=editcat&cat_id=$cat_id'>Edit</a>",
 					"CAT_DELETE" => "<a href='$PHP_SELF?mode=deletecat&cat_id=$cat_id'>Delete</a>",
-					"CAT_UP" => "<a href='$PHP_SELF?mode=cat_order&pos=1&cat_id=$cat_id'>Move up</a>",
-					"CAT_DOWN" => "<a href='$PHP_SELF?mode=cat_order&pos=-1&forum_id=$cat_id'>Move down</a>",
+					"CAT_UP" => "<a href='$PHP_SELF?mode=cat_order&move=-15&cat_id=$cat_id'>Move up</a>",
+					"CAT_DOWN" => "<a href='$PHP_SELF?mode=cat_order&move=15&cat_id=$cat_id'>Move down</a>",
 					"U_VIEWCAT" => append_sid("index.$phpEx?viewcat=$cat_id"),
 					"U_ADDFORUM" => append_sid("$PHP_SELF?mode=addforum&cat_id=$cat_id"),
 					"ADDFORUM" => "Add Forum")
@@ -510,8 +580,8 @@ if($total_categories = $db->sql_numrows($q_categories))
 				"U_VIEWFORUM" => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&" . $forum_rows[$j]['forum_posts']),
 				"FORUM_EDIT" => "<a href='".append_sid("$PHP_SELF?mode=editforum&forum_id=$forum_id")."'>Edit</a>",
 				"FORUM_DELETE" => "<a href='".append_sid("$PHP_SELF?mode=deleteforum&forum_id=$forum_id")."'>Delete</a>",
-				"FORUM_UP" => "<a href='".append_sid("$PHP_SELF?forum_mode=order&pos=1&forum_id=$forum_id")."'>Move up</a>",
-				"FORUM_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&pos=-1&forum_id=$forum_id")."'>Move down</a>",
+				"FORUM_UP" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=-15&forum_id=$forum_id")."'>Move up</a>",
+				"FORUM_DOWN" => "<a href='".append_sid("$PHP_SELF?mode=forum_order&move=15&forum_id=$forum_id")."'>Move down</a>",
 				"FORUM_SYNC" => "<a href='".append_sid("$PHP_SELF?mode=forum_sync&forum_id=$forum_id")."'>Sync</a>")
 			);
 		} // for ... forums
