@@ -102,7 +102,7 @@ if( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 	if ( !$userdata['session_logged_in'] )
 	{
 		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : "" );
-		header("Location: " . append_sid("posting.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
+		header("Location: " . append_sid("login.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
 	}
 	//
 	// The user is not authed to read this forum ...
