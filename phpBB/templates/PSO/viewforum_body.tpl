@@ -66,6 +66,13 @@
 				<td><span class="gensmall">{L_TOPIC_IS_LOCKED}</span></td>
 			</tr>
 			<tr>
+				<td width="20" align="center"><img src="images/folder_new_hot.gif" alt="{L_NEWPOSTS_HOT}" /></td>
+				<td><span class="gensmall">{L_NEWPOSTS_HOT}</span></td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="images/folder_hot.gif" alt="{L_NONEWPOSTS_HOT}" /></td>
+				<td><span class="gensmall">{L_NONEWPOSTS_HOT}</span></td>
+			</tr>
+			<tr>
 				<td colspan="8"><br /><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 			</tr>
 			<tr>

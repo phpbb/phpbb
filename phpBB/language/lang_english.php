@@ -157,6 +157,8 @@ $lang['theforums'] = "the forums";
 
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
+$lang['No_new_posts_hot'] = "No new posts [ Popular ]";
+$lang['New_posts_hot'] = "New posts [ Popular ]";
 $lang['Topic_is_locked'] = "Topic is locked";
 $lang['Forum_is_locked'] = "Forum is locked";
 $lang['Joined'] = "Joined";
@@ -211,6 +213,8 @@ $lang['Display_posts'] = "Display posts from previous";
 $lang['All_Posts'] = "All Posts";
 $lang['Newest_First'] = "Newest First";
 $lang['Oldest_First'] = "Oldest First";
+
+$lang['Return_to_top'] = "Return to top";
 
 $lang['Read_profile'] = "Read profile of"; // Followed by username of poster
 $lang['Send_email'] = "Send email to "; // Followed by username of poster

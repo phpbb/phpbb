@@ -410,7 +410,8 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'],
+	"L_DISPLAY_POSTS" => $lang['Display_posts'], 
+	"L_RETURN_TO_TOP" => $lang['Return_to_top'], 
 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,

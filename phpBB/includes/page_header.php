@@ -211,6 +211,8 @@ $template->assign_vars(array(
 	"L_MODERATOR" => $lang['Moderator'],
 	"L_NONEWPOSTS" => $lang['No_new_posts'],
 	"L_NEWPOSTS" => $lang['New_posts'],
+	"L_NONEWPOSTS_HOT" => $lang['No_new_posts_hot'],
+	"L_NEWPOSTS_HOT" => $lang['New_posts_hot'],
 	"L_TOPIC_IS_LOCKED" => $lang['Topic_is_locked'], 
 	"L_POSTED" => $lang['Posted'],
 	"L_JOINED" => $lang['Joined'],

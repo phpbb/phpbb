@@ -27,7 +27,7 @@
 						<td valign="top"><span class="gen"><b>{postrow.POSTER_NAME}</b></span><br /><span class="gensmall">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_FROM}</span><br /><br /></td>
 					</tr>
 					<tr>
-						<td valign="bottom"><span class="gensmall"><a href="#top">Back to top</a></span></td>
+						<td valign="bottom"><span class="gensmall"><a href="#top">{L_RETURN_TO_TOP}</a></span></td>
 					</tr>
 				</table></td>
 				<td width="78%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
