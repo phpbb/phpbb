@@ -146,6 +146,7 @@ class session
 			{
 				$bot = $row['user_id'];
 			}
+			
 			if ($row['bot_ip'] && (!$row['bot_agent'] || $bot))
 			{
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
@@ -186,10 +187,20 @@ class session
 		$db->sql_freeresult($result);
 
 		// Check autologin request, is it valid?
-		if (empty($this->data) || ($this->data['user_password'] != $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
+		if ($this->data === false || ($this->data['user_password'] != $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
 		{
 			$autologin = '';
 			$this->data['user_id'] = $user_id = ANONYMOUS;
+
+			$sql = 'SELECT u.*, g.*
+				FROM ' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g
+				WHERE u.user_id = ' . ANONYMOUS;
+			$result = $db->sql_query($sql);
+	
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$this->data['session_time'] = 0;
 		}
 
 		// If we're a bot then we'll re-use an existing id if available
@@ -456,7 +467,14 @@ class session
 	{
 		global $config;
 
-		setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+		if ($config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
+		{
+			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
+		}
+		else
+		{
+			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+		}
 	}
 }
 
@@ -1100,6 +1118,35 @@ class auth
 			{
 				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
 			}
+		}
+		$db->sql_freeresult($result);
+
+		return $hold_ary;
+	}
+
+	function acl_group_raw_data($group_id = false, $opts = false, $forum_id = false)
+	{
+		global $db;
+
+		$sql_group = ($group_id) ? ((!is_array($group_id)) ? "group_id = $group_id" : 'group_id IN (' . implode(', ', $group_id) . ')') : '';
+		$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_opts = ($opts) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
+
+		$hold_ary = array();
+
+		// Grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
+		$sql = 'SELECT a.group_id, ao.auth_option, a.forum_id, a.auth_setting
+			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a
+			WHERE ao.auth_option_id = a.auth_option_id
+				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
+				$sql_forum
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$hold_ary[$row['group_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
 		}
 		$db->sql_freeresult($result);
 

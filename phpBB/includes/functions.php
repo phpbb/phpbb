@@ -687,6 +687,11 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 			$type = TRACK_POSTED;
 
 		case 'topic':
+			if (!isset($type))
+			{
+				$type = TRACK_NORMAL;
+			}
+		
 			$forum_id =	(int) $forum_id[0];
 
 			// Mark a topic as read
@@ -735,10 +740,15 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 					}
 				}
 
-				if (base_convert($tracking[$forum_id][0], 36, 10) < $current_time)
+				if (isset($tracking[$forum_id]) && base_convert($tracking[$forum_id][0], 36, 10) < $current_time)
 				{
 					$tracking[$forum_id][base_convert($topic_id, 10, 36)] = base_convert($current_time - $config['board_startdate'], 10, 36);
 
+					$user->set_cookie('track', serialize($tracking), time() + 31536000);
+				}
+				else if (!isset($tracking[$forum_id]))
+				{
+					$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
 					$user->set_cookie('track', serialize($tracking), time() + 31536000);
 				}
 				unset($tracking);
@@ -1389,7 +1399,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (defined('DEBUG_EXTRA'))
 			{
 				// Remove me
-				if (!strstr($errfile, '/cache/') && !strstr($errfile, 'template.php'))
+				if (!strstr($errfile, 'cache') && !strstr($errfile, 'template.php'))
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
 				}

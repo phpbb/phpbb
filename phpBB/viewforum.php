@@ -69,12 +69,6 @@ else
 				$sql_lastread = $lastread_select = '';
 
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
-
-				if (!isset($tracking_topics[$forum_id]) && $user->data['user_id'] != ANONYMOUS)
-				{
-					markread('mark', $forum_id);
-					redirect("viewforum.$phpEx$SID&amp;f=$forum_id");
-				}
 			}
 
 			$sql_from = ($sql_lastread) ? '((' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ")) $sql_lastread)" : '(' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . '))';
