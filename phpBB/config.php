@@ -31,9 +31,9 @@
 // MySQL
 //
 $dbms = "mysql";
-$dbhost = "";
-$dbname = "";
-$dbuser = "";
+$dbhost = "localhost";
+$dbname = "phpbb2";
+$dbuser = "root";
 $dbpasswd = "";
 */
 

@@ -19,9 +19,7 @@
 			<tr>
 				<td class="row1">Move everything to:</td>
 				<td class="row2">
-					<select name="to_id">
-					{S_TO_IDS}
-					</select>
+					{S_SELECT_TO}
 				</td>
 			</tr>
 			<tr>
