@@ -157,7 +157,7 @@ if($mode == "read")
 				VALUES ($privmsg_sent_id, '" . stripslashes($privmsg['privmsgs_text']) . "')";
 			if(!$pm_sent_text_status = $db->sql_query($sql))
 			{
-				error_die(SQL_QUERY, "Could not insert private message sent text.", __LINE__, __FILE__);
+				error_die(SQL_QUERY, "Could not insert private message sent text.<BR>$sql", __LINE__, __FILE__);
 			}
 		}
 	}
