@@ -7,41 +7,49 @@
 	<tr>
 		<td class="row1"><div style="overflow: auto; width: 100%; height: 300px; border: 1px;">
 
-<script language="javascript" type="text/javascript" src="styles/subSilver/template/editor.js"></script>
-
 <script language="JavaScript" type="text/javascript">
 <!--
 
-var parent_form_name = 'post';
-var parent_text_name = 'message';
-
 function insert_quote(text) {
-	if (window.parent.document.forms[parent_form_name].elements[parent_text_name].createTextRange && window.parent.document.forms[parent_form_name].elements[parent_text_name].caretPos) 
+	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) 
 	{
-		var caretPos = window.parent.document.forms[parent_form_name].elements[parent_text_name].caretPos;
+		var caretPos = document.forms[form_name].elements[text_name].caretPos;
 		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
-		window.parent.document.forms[parent_form_name].elements[parent_text_name].focus();
+		document.forms[form_name].elements[text_name].focus();
 	} else {
-	window.parent.document.forms[parent_form_name].elements[parent_text_name].value += text;
-	window.parent.document.forms[parent_form_name].elements[parent_text_name].focus();
+		document.forms[form_name].elements[text_name].value += text;
+		document.forms[form_name].elements[text_name].focus();
 	}
 }
 
 function addquote(post_id, username) {
 
-	var text_name = 'message_' + post_id;
-
+	var message_name = 'message_' + post_id;
+	var theSelection = '';
+	
+	// Get text selection - not only the post content :(
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
-		theSelection = document.selection.createRange().text; // Get text selection - does not consider the div only!
+		theSelection = document.selection.createRange().text;
 	}
-
-	if (!theSelection)
+	else if (window.getSelection)
 	{
-		eval("theSelection = document.all." + text_name + ".innerText;");
+		theSelection = window.getSelection();
 	}
 
-	if (theSelection)
+	if (theSelection == '')
+	{
+		if (document.all)
+		{
+			eval("theSelection = document.all." + message_name + ".innerText;");
+		}
+		else
+		{
+			eval("theSelection = document.getElementById('" + message_name + "').firstChild.nodeValue;");
+		}
+	}
+
+	if (theSelection != '')
 	{
 		insert_quote('[quote="' + username + '"]' + theSelection + '[/quote]');
 	}
