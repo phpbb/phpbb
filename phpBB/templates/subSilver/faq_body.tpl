@@ -31,7 +31,7 @@
 	</tr>
 	<!-- BEGIN faq_row -->  
 	<tr> 
-		<td align="left" valign="top" class="{faq_block.faq_row.ROW_CLASS}"><span class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b></span><br /><span class="postbody">{faq_block.faq_row.FAQ_ANSWER} <a href="#Top" class="postlink">Top</a></span></td>
+		<td align="left" valign="top" class="{faq_block.faq_row.ROW_CLASS}"><span class="postbody"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b></span><br /><span class="postbody">{faq_block.faq_row.FAQ_ANSWER}<br /><a href="#Top" class="postlink">{L_BACK_TO_TOP}</a></span></td>
 	</tr>
 	<tr>
 		<td height="1" class="spaceRow"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
