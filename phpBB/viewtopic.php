@@ -625,7 +625,7 @@ if ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_icq']))
 			{
-				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+				$user_cache[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" alt="" title="" /></a>';
 				$user_cache[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
 				$user_cache[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 			}
@@ -849,7 +849,7 @@ if ($row = $db->sql_fetchrow($result))
 			'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
 			'EDITED_MESSAGE'=> $l_edited_by,
 
-			'RATING'		=>		$rating, 
+			'RATING'		=> $rating, 
 
 			'MINI_POST_IMG' => $mini_post_img,
 			'EDIT_IMG' 		=> $edit_img,

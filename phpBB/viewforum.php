@@ -476,8 +476,6 @@ if ($forum_data['forum_postable'])
 
 			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_row['topic_last_post_id'] . '#' . $topic_row['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
-
-
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID' 			=> $forum_id,
