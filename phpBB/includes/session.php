@@ -18,7 +18,6 @@ class session
 	var $browser = '';
 	var $ip = '';
 	var $page = '';
-	var $cur_page = '';
 	var $current_page_filename = '';
 	var $load;
 
@@ -782,7 +781,7 @@ class user extends session
 		return $imgs[$img . $suffix];
 	}
 
-	// Start code for checking/setting option bit field for user table (if we go that way)
+	// Start code for checking/setting option bit field for user table
 	function optionget($key, $data = false)
 	{
 		if (!isset($this->keyvalues[$key]))

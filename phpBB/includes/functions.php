@@ -1038,7 +1038,8 @@ function meta_refresh($time, $url)
 // Build Confirm box
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html')
 {
-	global $user, $template, $_POST, $SID, $db;
+	global $user, $template, $db;
+	global $SID, $phpEx;
 
 	if (isset($_POST['cancel']))
 	{
@@ -1087,17 +1088,20 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
 	if (request_var('confirm_key', ''))
 	{
-//		$user->cur_page = preg_replace('#^(.*?)[&|\?]act_key=[A-Z0-9]{10}(.*?)#', '\1\2', str_replace('&amp;', '&', $user->cur_page));
-		// Need to adjust...
-		trigger_error('Hacking attempt');
+		// This should not occur, therefore we cancel the operation to safe the user
+		return false;
 	}
+
+	// re-add $SID
+	$u_action = (strpos($user->page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&", $user->page) . '&' : $user->page . '?';
+	$u_action .= 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> $user->lang[$title],
 		'MESSAGE_TEXT'		=> $user->lang[$title . '_CONFIRM'],
 
 		'YES_VALUE'			=> $user->lang['YES'],
-		'S_CONFIRM_ACTION'	=> $user->cur_page . ((strpos($user->cur_page, '?') !== false) ? '&' : '?') . 'confirm_key=' . $confirm_key,
+		'S_CONFIRM_ACTION'	=> $u_action,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 	);
 
