@@ -31,12 +31,12 @@ class session
 	// Called at each page start ... checks for, updates and/or creates a session
 	function start($update = true)
 	{
-		global $SID, $db, $config;
+		global $phpEx, $SID, $db, $config;
 
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
-		$this->page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-		$this->page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
+		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
+		$this->page = preg_replace('#^.*?/?([a-z]+?)\.' . $phpEx . '\?sid=.*?(&.*)?$#', '\1\2', $this->page);
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
