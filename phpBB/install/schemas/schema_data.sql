@@ -368,9 +368,8 @@ INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image
 
 # -- Bots
 INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 1, 'Googlebot', 3, 'Googlebot/', '216.239.46.,64.68.8');
-INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (2, 1, 'Fastcrawler', 4, 'FAST-WebCrawler/', '66.77.73.');
-INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (3, 1, 'Alexa ia_archiver', 5, 'ia_archiver', '66.28.250.,209.237.238.');
-INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (4, 1, 'Inktomi', 6, 'Slurp', '216.35.116.');
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (3, 1, 'Alexa', 5, 'ia_archiver', '66.28.250.,209.237.238.');
+INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (4, 1, 'Inktomi', 6, 'Slurp/', '216.35.116.,66.196.');
 
 # MSSQL IDENTITY phpbb_bots OFF #
 
