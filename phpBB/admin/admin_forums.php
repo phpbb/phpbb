@@ -612,7 +612,7 @@ if( !empty($mode) )
 				// Delete polls in this forum
 				$sql = "SELECT v.vote_id 
 					FROM " . VOTE_DESC_TABLE . " v, " . TOPICS_TABLE . " t 
-					WHERE t.forum_id = $forum_id 
+					WHERE t.forum_id = $from_id 
 						AND v.topic_id = t.topic_id";
 				if (!($result = $db->sql_query($sql)))
 				{
