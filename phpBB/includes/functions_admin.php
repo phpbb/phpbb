@@ -81,7 +81,7 @@ function sync($type, $id)
 				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE  . " t 
 				WHERE p.forum_id = $id 
 					AND t.topic_id = p.topic_id 
-					AND t.topic_status <> " . TOPIC_MOVED;
+					AND t.topic_status <> " . ITEM_MOVED;
 			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
@@ -98,7 +98,7 @@ function sync($type, $id)
 			$sql = "SELECT COUNT(topic_id) AS total
 				FROM " . TOPICS_TABLE . "
 				WHERE forum_id = $id 
-					AND topic_status <> " . TOPIC_MOVED;
+					AND topic_status <> " . ITEM_MOVED;
 			$result = $db->sql_query($sql);
 
 			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( ( $row['total'] ) ? $row['total'] : 0 ) : 0;

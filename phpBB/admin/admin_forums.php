@@ -257,6 +257,91 @@ switch ($mode)
 	break;
 
 	case 'remove':
+		if (empty($HTTP_POST_VARS['submit']))
+		{
+			//
+			// wasn't this form submitted? is anyone trying to remotely delete forums
+			//
+			message_die(ERROR, 'Did not submit');
+		}
+
+		$action_subforums = (!empty($HTTP_POST_VARS['action_subforums'])) ? $HTTP_POST_VARS['action_subforums'] : '';
+		$action_posts = (!empty($HTTP_POST_VARS['action_posts'])) ? $HTTP_POST_VARS['action_posts'] : '';
+
+		$row = get_forum_info($HTTP_GET_VARS['f']);
+		extract($row);
+
+		if ($action_posts == 'delete')
+		{
+			delete_forum_content($forum_id);
+		}
+		elseif ($action_posts == 'move')
+		{
+			if (empty($HTTP_POST_VARS['posts_to_id']))
+			{
+				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
+
+				message_die(ERROR, $message);
+			}
+
+			move_forum_content($forum_id, $HTTP_POST_VARS['posts_to_id']);
+		}
+
+		if ($action_subforums == 'delete')
+		{
+			$forum_ids = array($forum_id);
+			$rows = get_forum_branch($forum_id, 'children', 'descending', FALSE);
+			foreach ($rows as $row)
+			{
+				$forum_ids[] = $row['forum_id'];
+				delete_forum_content($row['forum_id']);
+			}
+
+			$diff = count($forum_ids) * 2;
+			$db->sql_query('DELETE FROM ' . FORUMS_TABLE . ' WHERE forum_id IN (' . implode(', ', $forum_ids) . ')');
+		}
+		elseif ($action_subforums == 'move')
+		{
+			if (empty($HTTP_POST_VARS['subforums_to_id']))
+			{
+				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
+
+				message_die(ERROR, $message);
+			}
+
+			$result = $db->sql_query('SELECT forum_id FROM ' . FORUMS_TABLE . " WHERE parent_id = $forum_id");
+			while ($row = $db->sql_fetchrow($result))
+			{
+				move_forum($row['forum_id'], $HTTP_POST_VARS['subforums_to_id']);
+			}
+			$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET parent_id = ' . $HTTP_POST_VARS['subforums_to_id'] . " WHERE parent_id = $forum_id");
+
+			$diff = 2;
+			$db->sql_query('DELETE FROM ' . FORUMS_TABLE . " WHERE forum_id = $forum_id");
+		}
+		else
+		{
+			$diff = 2;
+			$db->sql_query('DELETE FROM ' . FORUMS_TABLE . " WHERE forum_id = $forum_id");
+		}
+
+		//
+		// Resync tree
+		//
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET right_id = right_id - $diff
+				WHERE left_id < $right_id AND right_id > $right_id";
+		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET left_id = left_id - $diff, right_id = right_id - $diff
+				WHERE left_id > $right_id";
+		$db->sql_query($sql);
+
+		$return_id = (!empty($HTTP_POST_VARS['subforums_to_id'])) ? $HTTP_POST_VARS['subforums_to_id'] : $parent_id;
+		$message = $lang['Forum_deleted'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $return_id. '">', '</a>');
+
+		message_die(MESSAGE, $message);
 	break;
 
 	case 'forum_sync':
@@ -437,6 +522,7 @@ switch ($mode)
 	break;
 
 	case 'delete':
+		page_header($lang['Forum_delete']);
 		extract(get_forum_info($HTTP_GET_VARS['f']));
 
 		$subforums_id = array();
@@ -482,11 +568,11 @@ switch ($mode)
 ?>
 	<tr> 
 	  <td class="row1"><?php echo $lang['Action'] ?></td>
-	  <td class="row1"><input type="radio" name="action_forums" value="delete" checked="checked" /> <?php echo $lang['Delete_subforums'] ?></td>
+	  <td class="row1"><input type="radio" name="action_subforums" value="delete" checked="checked" /> <?php echo $lang['Delete_subforums'] ?></td>
 	</tr>
 	<tr> 
 	  <td class="row1"></td>
-	  <td class="row1"><input type="radio" name="action_forums" value="move" /> <?php echo $lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
+	  <td class="row1"><input type="radio" name="action_subforums" value="move" /> <?php echo $lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
 	</tr>
 <?php
 	}
@@ -881,6 +967,7 @@ function delete_forum_content($forum_id)
 	$db->sql_query('DELETE FROM ' . ACL_GROUPS_TABLE . " WHERE forum_id = $forum_id");
 	$db->sql_query('DELETE FROM ' . ACL_PREFETCH_TABLE . " WHERE forum_id = $forum_id");
 	$db->sql_query('DELETE FROM ' . LOG_MOD_TABLE . " WHERE forum_id = $forum_id");
+	$db->sql_query('DELETE FROM ' . FORUMS_WATCH_TABLE . " WHERE forum_id = $forum_id");
 
 	$ids = array();
 	$result = $db->sql_query('SELECT post_id FROM ' . POSTS_TABLE . " WHERE forum_id = $forum_id");

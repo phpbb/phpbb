@@ -201,7 +201,7 @@ class sql_db
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
-				if ($var == NULL)
+				if (is_null($var)
 				{
 					$values[] = "$key = NULL";
 				}

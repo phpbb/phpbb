@@ -566,7 +566,10 @@ $lang['Move_subforums_to'] = 'Move subforums to';
 $lang['Delete_all_posts'] = 'Delete all posts';
 $lang['Delete_subforums'] = 'Delete subforums and associated posts';
 
+$lang['No_destination_forum'] = 'You have not specified a forum to move content to';
+
 $lang['Forums_updated'] = 'Forum and Category information updated successfully';
+$lang['Forum_deleted'] = 'Forum successfully deleted';
 $lang['Click_return_forumadmin'] = 'Click %sHere%s to return to Forum Administration';
 
 
