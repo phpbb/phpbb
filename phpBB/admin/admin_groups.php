@@ -44,6 +44,18 @@ else
 	$group_id = "";
 }
 
+//
+// Mode setting
+//
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "";
+}
+
 if( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 {
 	//
