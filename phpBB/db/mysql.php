@@ -216,12 +216,7 @@ class sql_db
 
 	function sql_affectedrows()
 	{
-		if ( !$query_id )
-		{
-			$query_id = $this->query_result;
-		}
-
-		return ( $query_id ) ? @mysql_affected_rows($query_id) : false;
+		return ( $this->db_connect_id ) ? @mysql_affected_rows($this->db_connect_id) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
