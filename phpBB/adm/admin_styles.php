@@ -1850,6 +1850,23 @@ function csspreview()
 
 				if ($theme_id)
 				{
+					$sql = 'SELECT theme_id, theme_name 
+						FROM ' . STYLES_CSS_TABLE . ' 
+						WHERE theme_id <> ' . $theme_id . ' 
+						ORDER BY theme_id';
+					$result = $db->sql_query($sql);
+		
+					$theme_options = '';
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$theme_options .= '<option value="' . $row['theme_id'] . '">' . $row['theme_name'] . '</option>';
+					}
+
+					if ($theme_options == '')
+					{
+						trigger_error($user->lang['ONLY_THEME']);
+					}
+
 					$sql = 'SELECT * 
 						FROM ' . STYLES_CSS_TABLE . "
 						WHERE theme_id = $theme_id";
@@ -1864,6 +1881,11 @@ function csspreview()
 					if (isset($_POST['update']))
 					{
 						$sql = 'DELETE FROM ' . STYLES_CSS_TABLE . ' 
+							WHERE theme_id = ' . $theme_id;
+						$db->sql_query($sql);
+
+						$sql = 'UPDATE ' . STYLES_TABLE . ' 
+							SET theme_id = ' . intval($_POST['newtheme']) . '
 							WHERE theme_id = ' . $theme_id;
 						$db->sql_query($sql);
 
@@ -1930,6 +1952,10 @@ function csspreview()
 					}
 
 ?>
+	<tr>
+		<td class="row1" width="40%"><b>Update styles to:</b><br /><span class="gensmall">Select theme to replace this one if used by styles.</span></td>
+		<td class="row2"><select name="newtheme"><?php echo $theme_options; ?></select></td>
+	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['DELETE']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
 	</tr>
