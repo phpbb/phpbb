@@ -883,9 +883,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					if($result = $db->sql_query($sql))
 					{
 						$sql = "INSERT INTO ".GROUPS_TABLE." 
-							(group_name, group_note) 
+							(group_name, group_note, single_user) 
 							VALUES 
-							('$username', 'Personal User')";
+							('$username', 'Personal User', 1)";
 						if($result = $db->sql_query($sql))
 						{
 							$group_id = $db->sql_nextid();
