@@ -945,6 +945,26 @@ $lang['Mass_email_explain'] = "Here you can email a message to either all of you
 $lang['Compose'] = "Compose";
 
 //
+// Install Process
+//
+$lang['Installer_Error'] = "An error has occured during installation.";
+$lang['Previous_Install'] = "A previous installtion has been detected.";
+$lang['Inst_Step_0'] = "Thank you for choosing phpBB version 2.  Please select your chosen database server, and enter the information for your database server host, database name, username, and password. NOTE: The database should already exist.";
+$lang['Start_Install'] = "Start Install";
+$lang['DB_Host'] = "Database Server Hostname";
+$lang['DB_Name'] = "Your Database Name";
+$lang['Database'] = "Your Database";
+$lang['Install_lang'] = "Choose Language for Installation";
+$lang['dbms'] = "Database Type";
+$lang['Inst_Step_1'] = "Your database tables have been created and filled with some basic default data.  Please enter your chosen phpBB Admin Username and Password.";
+$lang['Create_User'] = "Create User";
+$lang['Inst_Step_2'] = "Your admin username has been created.  At this point your installation is basically completed, you will now be taken to a screen which will allow you to specify some basic default settings for your board.";
+$lang['Finish_Install'] = "Finish Installation";
+$lang['Install_db_error'] = "An error occured trying to update the database";
+$lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
+
+
+//
 // End
 // -------------------------------------------------
 
