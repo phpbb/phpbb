@@ -1217,14 +1217,10 @@ else
 				}
 			}
 			while( $row = $db->sql_fetchrow($result) );
-		}
-		else
-		{
-			message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
-		}
 
-		$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
-		$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
+			$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
+			$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
+		}
 	}
 
 	//
