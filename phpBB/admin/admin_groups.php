@@ -45,8 +45,9 @@ if (!$auth->acl_get('a_group') )
 
 
 // Check and set some common vars
-$action = (isset($_REQUEST['action']))? $_REQUEST['action'] : ((isset($_POST['addgroup'])) ? 'addgroup' : '');
-$group_id = (isset($_REQUEST['g']))? intval($_REQUEST['g']) : '';
+$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : ((isset($_POST['addgroup'])) ? 'addgroup' : '');
+$group_id = (isset($_REQUEST['g'])) ? intval($_REQUEST['g']) : '';
+$start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 
 // Which page?
 page_header($user->lang['MANAGE']);
@@ -70,6 +71,7 @@ switch ($action)
 			{
 				trigger_error($user->lang['NO_GROUP']);
 			}
+			$db->sql_freeresult($result);
 		}
 		
 		// Did we submit?
@@ -214,6 +216,7 @@ switch ($action)
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
+		$db->sql_freeresult($result);
 
 		$type_open = ($group_type == GROUP_OPEN) ? ' checked="checked"' : '';
 		$type_closed = ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
@@ -240,8 +243,8 @@ function swatch()
 	</tr>
 <?php
 
-	if ($error != '')
-	{
+		if ($error != '')
+		{
 
 ?>
 	<tr>
@@ -249,25 +252,25 @@ function swatch()
 	</tr>
 <?php
 
-	}
+		}
 
 ?>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_NAME']; ?>:</td>
 		<td class="row1"><?php 
 	
-	if ($group_type != GROUP_SPECIAL)
-	{
+		if ($group_type != GROUP_SPECIAL)
+		{
 		
 ?><input type="text" name="group_name" value="<?php echo (!empty($group_name)) ? $group_name : ''; ?>" size="40" maxlength="40" /><?php
 	
-	}
-	else
-	{
+		}
+		else
+		{
 		
 ?><b><?php echo (!empty($user->lang['G_' . $group_name])) ? $user->lang['G_' . $group_name] : $group_name; ?></b><?php
 	
-	}
+		}
 	
 ?></td>
 	</tr>
@@ -277,8 +280,8 @@ function swatch()
 	</tr>
 <?php
 
-	if ($group_type != GROUP_SPECIAL)
-	{
+		if ($group_type != GROUP_SPECIAL)
+		{
 
 ?>
 	<tr>
@@ -287,7 +290,7 @@ function swatch()
 	</tr>
 <?php
 
-	}
+		}
 
 ?>
 	<tr>
@@ -310,6 +313,12 @@ function swatch()
 	</tr>
 </table></form>
 
+<?php
+
+		if ($action != 'addgroup')
+		{
+
+?>
 <h1><?php echo $user->lang['GROUP_SETTINGS']; ?></h1>
 
 <p><?php echo $user->lang['GROUP_SETTINGS_EXPLAIN']; ?></p>
@@ -333,12 +342,12 @@ function swatch()
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php
 
-	if ($group_type == GROUP_SPECIAL)
-	{
+			if ($group_type == GROUP_SPECIAL)
+			{
 
 ?><input type="hidden" name="group_type" value="<?php echo GROUP_SPECIAL; ?>" /><?php
 
-	}
+			}
 
 ?><input class="mainoption" type="submit" name="submitprefs" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
@@ -346,29 +355,219 @@ function swatch()
 
 <?php
 
+		}
+
 		break;
 
 	case 'add':
 		break;
 
 	case 'delete':
+	case 'deletegroup':
 		break;
 
 	case 'list':
+
+		$sql = "SELECT * 
+			FROM " . GROUPS_TABLE . " 
+			WHERE group_id = $group_id";
+		$result = $db->sql_query($sql);
+
+		if (!extract($db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_GROUP']);
+		}
+		$db->sql_freeresult($result);
 
 ?>
 
 <h1><?php echo $user->lang['GROUP_MEMBERS']; ?></h1>
 
-<p><?php echo $user->lang['GROUP_LIST_EXPLAIN']; ?></p>
+<p><?php echo $user->lang['GROUP_MEMBERS_EXPLAIN']; ?></p>
 
-<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=list"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+<?php
+
+		if ($group_type != GROUP_SPECIAL)
+		{
+
+?>
+<h1><?php echo $user->lang['GROUP_MODS']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_MODS_EXPLAIN']; ?></p>
+
+<form name="mods" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=list"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $user->lang['']; ?></th>
+		<th><?php echo $user->lang['USERNAME']; ?></th>
+		<th><?php echo $user->lang['JOINED']; ?></th>
+		<th><?php echo $user->lang['POSTS']; ?></th>
+		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
+	</tr>
+<?php
+
+			// Group moderators
+			$sql = "SELECT u.user_id, u.username 
+				FROM " . USERS_TABLE . " u, " . GROUPS_MODERATOR_TABLE . " gm 
+				WHERE gm.group_id = $group_id 
+				ORDER BY u.user_id";
+			$result = $db->sql_query($sql);
+
+			$db->sql_freeresult($result);
+
+			if ($row = $db->sql_fetchrow($result) )
+			{
+				do
+				{
+	
+
+				}
+				while ($row = $db->sql_fetchrow($result) );
+
+?>
+
+<?php 
+
+			}
+			else
+			{
+
+?>
+	<tr>
+		<td class="row3" colspan="4" align="center"><?php echo $user->lang['GROUPS_NO_MODS']; ?></td>
+	</tr>
+<?php
+
+			}
+
+?>
+	<tr>
+		<td class="cat" colspan="4" align="right"></td>
 	</tr>
 </table></form>
 
 <?php
+
+			// Pending users
+			$sql = "SELECT u.user_id, u.username
+				FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
+				WHERE ug.user_pending = 1 
+					AND u.user_id = ug.user_id
+				ORDER BY ug.group_id, u.user_id";
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result) )
+			{
+
+?>
+<h1><?php echo $user->lang['GROUP_PENDING']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_PENDING_EXPLAIN']; ?></p>
+
+<form name="pending" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=list"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $user->lang['USERNAME']; ?></th>
+		<th><?php echo $user->lang['JOINED']; ?></th>
+		<th><?php echo $user->lang['POSTS']; ?></th>
+		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
+	</tr>
+<?php
+
+				do
+				{
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>"><a href="../ucp.<?php echo "$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']; ?>" target="_profile"><?php echo $row['username']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['user_posts']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="checkbox" name="mark[<?php echo $row['user_id']; ?>]" /></td>
+	</tr>
+<?php
+
+				}
+				while ($row = $db->sql_fetchrow($result) );
+
+?>
+</table></form>
+
+<?php
+
+			}
+			$db->sql_freeresult($result);
+		}
+
+		$sql = "SELECT COUNT(user_id) AS total_members 
+			FROM " . USER_GROUP_TABLE . " 
+			WHERE group_id = $group_id";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		$total_members = $row['total_members'];
+
+		// Existing members
+		$sql = "SELECT u.user_id, u.username, u.user_regdate, u.user_posts 
+			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug 
+			WHERE ug.group_id = $group_id 
+				AND ug.user_pending = 0  
+				AND u.user_id = ug.user_id
+			ORDER BY u.username 
+			LIMIT $start, " . $config['topics_per_page'];
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result) )
+		{
+
+?>
+<h1><?php echo $user->lang['GROUP_LIST']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_LIST_EXPLAIN']; ?></p>
+
+<?php
+
+?>
+<form name="list" method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=list"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $user->lang['USERNAME']; ?></th>
+		<th><?php echo $user->lang['JOINED']; ?></th>
+		<th><?php echo $user->lang['POSTS']; ?></th>
+		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
+	</tr>
+<?php
+
+			do
+			{
+
+				$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>"><a href="../ucp.<?php echo "$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']; ?>" target="_profile"><?php echo $row['username']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['user_posts']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="checkbox" name="mark[<?php echo $row['user_id']; ?>]" /></td>
+	</tr>
+<?php
+
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+?>
+	<tr>
+		<td class="cat" colspan="4" align="right"><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['DELETE_MARKED']; ?>" /> </td>
+	</tr>
+</table>
+
+<table width="80%" cellspacing="1" cellpadding="0" border="0" align="center">
+	<tr>
+		<td valign="top"><?php echo on_page($total_members, $config['topics_per_page'], $start); ?></td>
+		<td align="right"><b><span class="gensmall"><a href="javascript:marklist('list', true);" class="gensmall"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('list', false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></span></b>&nbsp;<br /><span class="nav"><?php echo generate_pagination("admin_groups.$phpEx$SID&amp;action=list&amp;g=$group_id", $total_members, $config['topics_per_page'], $start); ?></span></td>
+	</tr>
+</table></form>
+
+<?php
+
+		}
+		$db->sql_freeresult($result);
 
 		break;
 
@@ -392,25 +591,6 @@ function swatch()
 		<th><?php echo $user->lang['ACTION']; ?></th>
 	</tr>
 <?php
-
-		$sql = "SELECT ug.group_id, u.user_id, u.username
-			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-			WHERE ug.user_pending = 1 
-				AND g.group_type = " . GROUP_SPECIAL . " 
-				AND u.user_id = ug.user_id
-			ORDER BY ug.group_id, u.user_id";
-		$result = $db->sql_query($sql);
-
-		$pending = array();
-		if ($row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				$pending[$row['group_id']][] = $row;
-			}
-			while ($row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
 
 		$sql = "SELECT group_id, group_name, group_type 
 			FROM " . GROUPS_TABLE . "
@@ -488,6 +668,9 @@ function swatch()
 		$db->sql_freeresult($result);
 
 ?>
+	<tr>
+		<td class="cat" colspan="2">&nbsp;</td>
+	</tr>
 </table></form>
 
 <?php
@@ -495,6 +678,23 @@ function swatch()
 		break;
 
 }
+
+?>
+
+<script language="Javascript" type="text/javascript">
+<!--
+function marklist(match, status)
+{
+	len = eval('document.' + match + '.length');
+	for (i = 0; i < len; i++)
+	{
+		eval('document.' + match + '.elements[i].checked = ' + status);
+	}
+}
+//-->
+</script>
+
+<?php
 
 page_footer();
 
