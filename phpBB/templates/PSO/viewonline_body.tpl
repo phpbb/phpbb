@@ -8,7 +8,7 @@
 	<tr>
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-				<td colspan="3" bgcolor="{T_TH_COLOR2}" align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>There are {ACTIVE_USERS} logged in users and {GUEST_USERS} guest users browsing this board.</b></font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">This data is based on users active over the past five minutes.</font></td>
+				<td colspan="3" bgcolor="{T_TH_COLOR2}" align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{TOTAL_USERS_ONLINE}</b></font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">This data is based on users active over the past five minutes.</font></td>
 			</tr>
 			<tr>
 				<td width="35%" bgcolor="{T_TH_COLOR3}" align="center">&nbsp;<font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_USERNAME}</font>&nbsp;</td>
