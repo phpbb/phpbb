@@ -1159,13 +1159,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Topic Notification
-	if (!$post_data['notify_set'] && $post_data['notify'])
+	if (($post_data['notify_set'] == 0 || $post_data['notify_set'] == -1) && $post_data['notify'])
 	{
 		$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
 			VALUES (" . $user->data['user_id'] . ", " . $post_data['topic_id'] . ")";
 		$db->sql_query($sql);
 	}
-	else if ($post_data['notify_set'] && !$post_data['notify'])
+	else if ($post_data['notify_set'] == 1 && !$post_data['notify'])
 	{
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 			WHERE user_id = " . $user->data['user_id'] . "

@@ -283,8 +283,12 @@ if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 			AND user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
-	$notify_set = ($db->sql_fetchrow($result)) ? true : false;
+	$notify_set = ($db->sql_fetchrow($result)) ? 1 : 0;
 	$db->sql_freeresult($result);
+}
+else
+{
+	$notify_set = -1;
 }
 
 // Collect general Permissions to be used within the complete page
@@ -526,6 +530,10 @@ if ($submit || $preview || $refresh)
 
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
 
+	// Faster than crc32
+	$check_value = (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+	$status_switch = (isset($_POST['status_switch']) && intval($_POST['status_switch']) != $check_value) ? true : false;
+
 	if ($poll_delete && (($mode == 'edit' && !empty($poll_options) && empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete']))
 	{
 		// Delete Poll
@@ -564,7 +572,7 @@ if ($submit || $preview || $refresh)
 	$current_time = time();
 
 	// If replying/quoting and last post id has changed
-	// give user option to continu submit or return to post
+	// give user option to continue submit or return to post
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $topic_cur_post_id != $topic_last_post_id)
 	{
@@ -621,7 +629,7 @@ if ($submit || $preview || $refresh)
 					'POSTER_NAME' 		=> $poster,
 					'POST_DATE' 		=> $user->format_date($row['post_time']),
 					'POST_SUBJECT' 		=> $post_subject,
-					'MESSAGE' 			=> nl2br($message),
+					'MESSAGE' 			=> str_replace("\n", '<br />', $message),
 
 					'S_ROW_COUNT'		=> $i++)
 				);
@@ -638,8 +646,7 @@ if ($submit || $preview || $refresh)
 	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
-	// TODO: parse message if any of enable_* switches has changed
-	if ($mode != 'edit' || $message_md5 != $post_checksum)
+	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch)
 	{
 		// Parse message
 		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status))
@@ -658,9 +665,9 @@ if ($submit || $preview || $refresh)
 	if ($mode != 'edit' && !$preview && !$refresh && !$perm['f_ignoreflood'])
 	{
 		// Flood check
-		$sql = "SELECT MAX(post_time) AS last_post_time
-			FROM " . POSTS_TABLE . "
-			WHERE " . (($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '" . $user->ip . "'" : "poster_id = " . $user->data['user_id']);
+		$sql = 'SELECT MAX(post_time) AS last_post_time
+			FROM ' . POSTS_TABLE . '
+			WHERE ' . (($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '" . $user->ip . "'" : 'poster_id = ' . $user->data['user_id']);
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -755,10 +762,10 @@ if ($submit || $preview || $refresh)
 		{
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_status = ' . $change_topic_status . '
-				WHERE topic_id = ' . $topic_id . '
-					AND topic_moved_id = 0';
+			$sql = 'UPDATE ' . TOPICS_TABLE . "
+				SET topic_status = $change_topic_status
+				WHERE topic_id = $topic_id
+					AND topic_moved_id = 0";
 			$db->sql_query($sql);
 			
 			add_log('mod', $forum_id, $topic_id, 'logm_' . (($change_topic_status == ITEM_LOCKED) ? 'lock' : 'unlock'));
@@ -937,7 +944,7 @@ $bbcode_checked = (isset($enable_bbcode)) ? !$enable_bbcode : ((intval($config['
 $smilies_checked = (isset($enable_smilies)) ? !$enable_smilies : ((intval($config['allow_smilies'])) ? !$user->data['user_allowsmile'] : 1);
 $urls_checked = (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked = $enable_sig;
-$notify_checked = (isset($notify_set)) ? $notify_set : (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0);
+$notify_checked = (isset($notify)) ? $notify : (($notify_set == -1) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : $notify_set);
 $lock_topic_checked = (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked = (isset($post_lock)) ? $post_lock : $post_edit_locked;
 
@@ -974,8 +981,9 @@ generate_forum_nav($forum_data);
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . time() . '" />';
+$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 
-$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments']) ? '' : 'enctype="multipart/form-data"';
+$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$perm['f_attach']) ? '' : 'enctype="multipart/form-data"';
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
