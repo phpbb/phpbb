@@ -133,6 +133,8 @@ function generate_forum_nav(&$forum_data)
 // Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
 function get_forum_parents($forum_data)
 {
+	global $db;
+
 	$forum_parents = array();
 	if ($forum_data['parent_id'] > 0)
 	{
