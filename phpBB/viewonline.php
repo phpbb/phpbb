@@ -246,7 +246,7 @@ if( count($onlinerow_reg) )
 
 	if( $hidden_users == 0 )
 	{
-		echo $l_h_user_s = $lang['Hidden_users_zero_online'];
+		$l_h_user_s = $lang['Hidden_users_zero_online'];
 	}
 	else if( $hidden_users == 1 )
 	{
