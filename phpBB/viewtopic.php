@@ -159,6 +159,7 @@ if ( !($forum_data = $db->sql_fetchrow($result)) )
 	message_die(MESSAGE, 'Topic_post_not_exist');
 }
 
+
 //
 // Configure style, language, etc.
 //
@@ -168,6 +169,7 @@ $session->configure($userdata);
 $forum_id = $forum_data['forum_id'];
 
 $acl = new auth('forum', $userdata, $forum_id);
+
 
 //
 // Start auth check
@@ -293,14 +295,7 @@ else
 }
 
 $select_post_order = '<select name="postorder">';
-if ( $post_time_order == 'ASC' )
-{
-	$select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
-}
-else
-{
-	$select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
-}
+$select_post_order .= ( $post_time_order == 'ASC' ) ? '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>' : '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
 $select_post_order .= '</select>';
 
 //
@@ -410,15 +405,12 @@ obtain_word_list($orig_word, $replacement_word);
 $s_forum_rules = '';
 get_forum_rules('topic', $s_forum_rules, $forum_id);
 
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'lock') ) ? ( ( $forum_data['topic_status'] == TOPIC_UNLOCKED ) ? '<a href="' . "modcp.$phpEx?t=$topic_id&amp;mode=lock" . '"><img src="' . $theme['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="' . "modcp.$phpEx$SID&amp;t=$topic_id&amp;mode=unlock" . '"><img src="' . $theme['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;' ) : '';
-
-$topic_mod = ( $acl->get_acl($forum_id, 'mod', 'delete') ) ? '<a href="' . "modcp.$phpEx$SID&amp;t=$topic_id&amp;mode=delete" . '"><img src="' . $theme['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;' : '';
-
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'move') ) ? '<a href="' . "modcp.$phpEx$SID&amp;t=$topic_id&amp;mode=move". '"><img src="' . $theme['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;' : '';
-
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'split') ) ? '<a href="' . "modcp.$phpEx$SID&amp;t=$topic_id&amp;mode=split" . '"><img src="' . $theme['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;' : '';
-
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'merge') ) ? '<a href="' . "modcp.$phpEx$SID&amp;t=$topic_id&amp;mode=merge" . '"><img src="' . $theme['topic_mod_merge'] . '" alt="' . $lang['Merge_topic'] . '" title="' . $lang['Merge_topic'] . '" border="0" /></a>&nbsp;' : '';
+$topic_mod = '';
+$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'lock') ) ? ( ( $forum_data['topic_status'] == TOPIC_UNLOCKED ) ? '<option value="lock">' . $lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $lang['Unlock_topic'] . '</option>' ) : '';
+$topic_mod = ( $acl->get_acl($forum_id, 'mod', 'delete') ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
+$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'move') ) ? '<option value="move">' . $lang['Move_topic'] . '</option>' : '';
+$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'split') ) ? '<option value="split">' . $lang['Split_topic'] . '</option>' : '';
+$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'merge') ) ? '<option value="merge">' . $lang['Merge_topic'] . '</option>' : '';
 
 //
 // If we've got a hightlight set pass it on to pagination.
@@ -519,6 +511,7 @@ $template->assign_vars(array(
 	'L_GOTO_PAGE' => $lang['Goto_page'], 
 	'L_SORT_BY' => $lang['Sort_by'], 
 	'L_RATE_TOPIC' => $lang['Rate_topic'], 
+	'L_QUICK_MOD' => $lang['Quick_mod'], 
 
 	'S_TOPIC_LINK' => 't', 
 	'S_SELECT_SORT_DIR' => $select_sort_dir, 
@@ -527,7 +520,8 @@ $template->assign_vars(array(
 	'S_SELECT_RATING' => $rating, 
 	'S_TOPIC_ACTION' => "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start", 
 	'S_AUTH_LIST' => $s_forum_rules,
-	'S_TOPIC_ADMIN' => $topic_mod,
+	'S_TOPIC_MOD' => ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
+	'S_MOD_ACTION' => "modcp.$phpEx$SID", 
 	'S_WATCH_TOPIC' => $s_watching_topic,
 
 	'U_VIEW_TOPIC' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], 
@@ -700,29 +694,34 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$poster_from = ( $postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Location'] . ': ' . $postrow[$i]['user_from'] : '';
 
-	$poster_joined = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : '';
-
-	if ( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS && $postrow[$i]['user_allowavatar'] && !isset($poster_details[$poster_id]) )
+	if ( !isset($poster_details[$poster_id]['joined']) )
 	{
-		switch( $postrow[$i]['user_avatar_type'] )
+		$poster_details[$poster_id]['joined'] = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : '';
+	}
+
+	if ( !isset($poster_details[$poster_id]) )
+	{
+		if ( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS && $postrow[$i]['user_allowavatar'] )
 		{
-			case USER_AVATAR_UPLOAD:
-				$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
-				break;
-			case USER_AVATAR_REMOTE:
-				$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
-				break;
-			case USER_AVATAR_GALLERY:
-				$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
-				break;
+			switch( $postrow[$i]['user_avatar_type'] )
+			{
+				case USER_AVATAR_UPLOAD:
+					$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
+					break;
+				case USER_AVATAR_REMOTE:
+					$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
+					break;
+				case USER_AVATAR_GALLERY:
+					$poster_details[$poster_id]['avatar'] = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $postrow[$i]['user_avatar'] . '" width="' . $postrow[$i]['user_avatar_width'] . '" height="' . $postrow[$i]['user_avatar_height'] . '" border="0" alt="" />' : '';
+					break;
+			}
+		}
+		else
+		{
+			$poster_details[$poster_id]['avatar'] = '';
 		}
 	}
 
-	//
-	// Define the little post icon
-	//
-	$mini_post_img = ( $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read ) ? create_img($theme['goto_post_new'], $lang['New_post']) : create_img($theme['goto_post'], $lang['Post']);
-	
 	//
 	// Generate ranks, set them to empty string initially.
 	//
@@ -761,93 +760,95 @@ for($i = 0; $i < $total_posts; $i++)
 		$poster_rank = $lang['Guest'];
 	}
 
-	$temp_url = '';
-
-	if ( $poster_id != ANONYMOUS )
+	if ( !isset($poster_details[$poster_id]['profile']) && $poster_id != ANONYMOUS )
 	{
 		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
-		$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+		$poster_details[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
+		$poster_details[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
 		$temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$poster_id";
-		$pm_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
-		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+		$poster_details[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
+		$poster_details[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 		if ( !empty($postrow[$i]['user_viewemail']) || $acl->get_acl($forum_id, 'mod') )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $postrow[$i]['user_email'];
 
-			$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
-			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+			$poster_details[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
+			$poster_details[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
 		}
 		else
 		{
-			$email_img = '';
-			$email = '';
+			$poster_details[$poster_id]['email_img'] = '';
+			$poster_details[$poster_id]['email'] = '';
 		}
 
-		$www_img = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
-		$www = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+		$poster_details[$poster_id]['www_img'] = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
+		$poster_details[$poster_id]['www'] = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
 		if ( !empty($postrow[$i]['user_icq']) )
 		{
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+			$poster_details[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
+			$poster_details[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
+			$poster_details[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . $lang['ICQ'] . '</a>';
 		}
 		else
 		{
-			$icq_status_img = '';
-			$icq_img = '';
-			$icq = '';
+			$poster_details[$poster_id]['icq_status_img'] = '';
+			$poster_details[$poster_id]['icq_img'] = '';
+			$poster_details[$poster_id]['icq'] = '';
 		}
 
-		$aim_img = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
-		$aim = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+		$poster_details[$poster_id]['aim_img'] = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
+		$poster_details[$poster_id]['aim'] = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
-		$msn_img = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
-		$msn = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+		$poster_details[$poster_id]['msn_img'] = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
+		$poster_details[$poster_id]['msn'] = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$yim_img = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
-		$yim = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+		$poster_details[$poster_id]['yim_img'] = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
+		$poster_details[$poster_id]['yim'] = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+
+		if ( $acl->get_acl($forum_id, 'forum', 'search') )
+		{
+			$temp_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($postrow[$i]['username']) .'"&amp;showresults=posts';
+			$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
+			$search ='<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
+		}
+		else
+		{
+			$search_img = '';
+			$search = '';
+		}
+
 	}
 	else
 	{
-		$profile_img = '';
-		$profile = '';
-		$pm_img = '';
-		$pm = '';
-		$email_img = '';
-		$email = '';
-		$www_img = '';
-		$www = '';
-		$icq_status_img = '';
-		$icq_img = '';
-		$icq = '';
-		$aim_img = '';
-		$aim = '';
-		$msn_img = '';
-		$msn = '';
-		$yim_img = '';
-		$yim = '';
+		$poster_details[$poster_id]['profile_img'] = '';
+		$poster_details[$poster_id]['profile'] = '';
+		$poster_details[$poster_id]['pm_img'] = '';
+		$poster_details[$poster_id]['pm'] = '';
+		$poster_details[$poster_id]['email_img'] = '';
+		$poster_details[$poster_id]['email'] = '';
+		$poster_details[$poster_id]['www_img'] = '';
+		$poster_details[$poster_id]['www'] = '';
+		$poster_details[$poster_id]['icq_status_img'] = '';
+		$poster_details[$poster_id]['icq_img'] = '';
+		$poster_details[$poster_id]['icq'] = '';
+		$poster_details[$poster_id]['aim_img'] = '';
+		$poster_details[$poster_id]['aim'] = '';
+		$poster_details[$poster_id]['msn_img'] = '';
+		$poster_details[$poster_id]['msn'] = '';
+		$poster_details[$poster_id]['search_img'] = '';
+		$poster_details[$poster_id]['search'] = '';
 	}
 
+	//
+	// Non-user specific images/text
+	//
 	$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $postrow[$i]['post_id'];
 	$quote_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_quote'], $lang['Reply_with_quote']) . '</a>';
 	$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
-
-	if ( $acl->get_acl($forum_id, 'forum', 'search') )
-	{
-		$temp_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($postrow[$i]['username']) .'"&amp;showresults=posts';
-		$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
-		$search ='<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
-	}
-	else
-	{
-		$search_img = '';
-		$search = '';
-	}
 
 	if ( ( $userdata['user_id'] == $poster_id && $acl->get_acl($forum_id, 'forum', 'edit') ) || $acl->get_acl($forum_id, 'mod', 'edit') )
 	{
@@ -885,18 +886,15 @@ for($i = 0; $i < $total_posts; $i++)
 		$delpost = '';
 	}
 
-	$post_subject = ( $postrow[$i]['post_subject'] != '' ) ? $postrow[$i]['post_subject'] : '';
-
-	$message = $postrow[$i]['post_text'];
-	$bbcode_uid = $postrow[$i]['bbcode_uid'];
-
-	$user_sig = ( $postrow[$i]['enable_sig'] && $postrow[$i]['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow[$i]['user_sig'] : '';
-	$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
-
+	//
+	// Parse the message and subject
 	//
 	// Note! The order used for parsing the message _is_ important, moving things around could break
 	// output
 	//
+	$post_subject = ( $postrow[$i]['post_subject'] != '' ) ? $postrow[$i]['post_subject'] : '';
+	$message = $postrow[$i]['post_text'];
+	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -904,11 +902,6 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if ( !$acl->get_acl($forum_id, 'forum', 'html') )
 	{
-		if ( $user_sig != '' && $userdata['user_allowhtml'] )
-		{
-			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-		}
-
 		if ( $postrow[$i]['enable_html'] && $acl->get_acl($forum_id, 'forum', 'bbcode') )
 		{
 			$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
@@ -918,19 +911,6 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Parse message and/or sig for BBCode if reqd
 	//
-	if ( $user_sig != '' && $user_sig_bbcode_uid != '' && !isset($poster_details[$poster_id]['sig']) && $acl->get_acl($forum_id, 'forum', 'sigs') )
-	{
-		$poster_details[$poster_id]['sig'] = bbencode_second_pass($user_sig, $user_sig_bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img'));
-		$poster_details[$poster_id]['sig'] = make_clickable($poster_details[$poster_id]['sig']);
-
-		if ( $postrow[$i]['user_allowsmile'] )
-		{
-			$poster_details[$poster_id]['sig'] =  smilies_pass($poster_details[$poster_id]['sig']);
-		}
-
-		$poster_details[$poster_id]['sig'] = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $poster_details[$poster_id]['sig']);
-	}
-
 	if ( $bbcode_uid != '' )
 	{
 		$message = ( $acl->get_acl($forum_id, 'forum', 'bbcode') ) ? bbencode_second_pass($message, $bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img')) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
@@ -991,11 +971,11 @@ for($i = 0; $i < $total_posts; $i++)
 					}
 					else if ( $hold_string == '<!-- #sh -->' )
 					{
-						$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
+						$hold_string = str_replace('<!-- #sh -->', '<b class="search">', $hold_string);
 					}
 					else if ( $hold_string == '<!-- #eh -->' )
 					{
-						$hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
+						$hold_string = str_replace('<!-- #eh -->', '</b>', $hold_string);
 					}
 
 					$temp_message .= $hold_string;
@@ -1015,7 +995,7 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 		else
 		{
-			$message = preg_replace($highlight_match, '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>', $message);
+			$message = preg_replace($highlight_match, '<b class="search">\1</b>', $message);
 		}
 	}
 
@@ -1024,11 +1004,6 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if ( count($orig_word) )
 	{
-		if ( $user_sig != '' )
-		{
-			$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
-		}
-
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
@@ -1038,7 +1013,7 @@ for($i = 0; $i < $total_posts; $i++)
 		$message = smilies_pass($message);
 	}
 
-	$message = str_replace("\n", "\n<br />\n", $message);
+	$message = nl2br($message);
 
 	//
 	// Editing information
@@ -1055,6 +1030,48 @@ for($i = 0; $i < $total_posts; $i++)
 	}
 
 	//
+	// Signature
+	//
+	if ( !isset($poster_details[$poster_id]['sig']) )
+	{
+		$user_sig = ( $postrow[$i]['enable_sig'] && $postrow[$i]['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow[$i]['user_sig'] : '';
+		$user_sig_bbcode_uid = $postrow[$i]['user_sig_bbcode_uid'];
+
+		if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $acl->get_acl($forum_id, 'forum', 'sigs') )
+		{
+			if ( !$acl->get_acl($forum_id, 'forum', 'html') && $userdata['user_allowhtml'] )
+			{
+				$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
+			}
+
+			$poster_details[$poster_id]['sig'] = bbencode_second_pass($user_sig, $user_sig_bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img'));
+
+			$poster_details[$poster_id]['sig'] = make_clickable($poster_details[$poster_id]['sig']);
+
+			if ( $postrow[$i]['user_allowsmile'] )
+			{
+				$poster_details[$poster_id]['sig'] =  smilies_pass($poster_details[$poster_id]['sig']);
+			}
+
+			if ( count($orig_word) )
+			{
+				$user_sig = preg_replace($orig_word, $replacement_word, $user_sig);
+			}
+
+			$poster_details[$poster_id]['sig'] = '<br />_________________<br />' . nl2br($poster_details[$poster_id]['sig']);
+		}
+		else
+		{
+			$poster_details[$poster_id]['sig'] = '';
+		}
+	}
+
+	//
+	// Define the little post icon
+	//
+	$mini_post_img = ( $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read ) ? create_img($theme['goto_post_new'], $lang['New_post']) : create_img($theme['goto_post'], $lang['Post']);
+
+	//
 	// Again this will be handled by the templating
 	// code at some point
 	//
@@ -1062,36 +1079,18 @@ for($i = 0; $i < $total_posts; $i++)
 		'POSTER_NAME' => $poster,
 		'POSTER_RANK' => $poster_details[$poster_id]['rank_title'],
 		'RANK_IMAGE' => $poster_details[$poster_id]['rank_image'],
-		'POSTER_JOINED' => $poster_joined,
+		'POSTER_JOINED' => $poster_details[$poster_id]['joined'],
 		'POSTER_POSTS' => $poster_posts,
 		'POSTER_FROM' => $poster_from,
 		'POSTER_AVATAR' => $poster_details[$poster_id]['avatar'],
 		'POST_DATE' => $post_date,
+
 		'POST_SUBJECT' => $post_subject,
 		'MESSAGE' => $message, 
 		'SIGNATURE' => $poster_details[$poster_id]['sig'], 
 		'EDITED_MESSAGE' => $l_edited_by, 
 
 		'MINI_POST_IMG' => $mini_post_img, 
-		'PROFILE_IMG' => $profile_img, 
-		'PROFILE' => $profile, 
-		'SEARCH_IMG' => $search_img,
-		'SEARCH' => $search,
-		'PM_IMG' => $pm_img,
-		'PM' => $pm,
-		'EMAIL_IMG' => $email_img,
-		'EMAIL' => $email,
-		'WWW_IMG' => $www_img,
-		'WWW' => $www,
-		'ICQ_STATUS_IMG' => $icq_status_img,
-		'ICQ_IMG' => $icq_img, 
-		'ICQ' => $icq, 
-		'AIM_IMG' => $aim_img,
-		'AIM' => $aim,
-		'MSN_IMG' => $msn_img,
-		'MSN' => $msn,
-		'YIM_IMG' => $yim_img,
-		'YIM' => $yim,
 		'EDIT_IMG' => $edit_img,
 		'EDIT' => $edit,
 		'QUOTE_IMG' => $quote_img,
@@ -1100,6 +1099,26 @@ for($i = 0; $i < $total_posts; $i++)
 		'IP' => $ip, 
 		'DELETE_IMG' => $delpost_img, 
 		'DELETE' => $delpost, 
+
+		'PROFILE_IMG' => $poster_details[$poster_id]['profile_img'], 
+		'PROFILE' => $poster_details[$poster_id]['profile'], 
+		'SEARCH_IMG' => $poster_details[$poster_id]['search_img'],
+		'SEARCH' => $poster_details[$poster_id]['search'],
+		'PM_IMG' => $poster_details[$poster_id]['pm_img'],
+		'PM' => $poster_details[$poster_id]['pm'],
+		'EMAIL_IMG' => $poster_details[$poster_id]['email_img'],
+		'EMAIL' => $poster_details[$poster_id]['email'],
+		'WWW_IMG' => $poster_details[$poster_id]['www_img'],
+		'WWW' => $poster_details[$poster_id]['www'],
+		'ICQ_STATUS_IMG' => $poster_details[$poster_id]['icq_status_img'],
+		'ICQ_IMG' => $poster_details[$poster_id]['icq_img'], 
+		'ICQ' => $poster_details[$poster_id]['icq'], 
+		'AIM_IMG' => $poster_details[$poster_id]['aim_img'],
+		'AIM' => $poster_details[$poster_id]['aim'],
+		'MSN_IMG' => $poster_details[$poster_id]['msn_img'],
+		'MSN' => $poster_details[$poster_id]['msn'],
+		'YIM_IMG' => $poster_details[$poster_id]['yim_img'],
+		'YIM' => $poster_details[$poster_id]['yim'],
 
 		'L_MINI_POST_ALT' => $mini_post_alt, 
 
