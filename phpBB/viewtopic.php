@@ -130,11 +130,11 @@ $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.top
 		$order_sql";
 $result = $db->sql_query($sql);
 
-if (!extract($db->sql_fetchrow($result)))
+if (!$topic_data = $db->sql_fetchrow($result))
 {
 	trigger_error('Topic_post_not_exist');
 }
-
+extract($topic_data);
 
 
 
@@ -335,52 +335,8 @@ if (sizeof($censors))
 }
 
 
-
-// Navigation links ... common to several scripts so we need
-// to look at centralising this ... major issue is variable naming
-// complicated particularly by viewtopic ...
-if ($parent_id > 0)
-{
-	if (empty($forum_parents))
-	{
-		$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE left_id < ' . $left_id . '
-				  AND right_id > ' . $right_id . '
-				ORDER BY left_id ASC';
-
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_parents[$row['forum_id']] = $row['forum_name'];
-		}
-
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
-				WHERE parent_id = " . $parent_id;
-		$db->sql_query($sql);
-	}
-	else
-	{
-		$forum_parents = unserialize($forum_parents);
-	}
-}
-
-
-
-// Build navigation links
-foreach ($forum_parents as $parent_forum_id => $parent_name)
-{
-	$template->assign_block_vars('navlinks', array(
-		'FORUM_NAME'	=>	$parent_name,
-		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
-	));
-}
-$template->assign_block_vars('navlinks', array(
-	'FORUM_NAME'	=>	$forum_name,
-	'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id
-));
-
+// Navigation links
+generate_forum_nav($topic_data);
 
 
 // Moderators

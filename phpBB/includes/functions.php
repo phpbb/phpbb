@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function set_config($config_name, $config_value)
+function set_config($config_name, $config_value, $is_dynamic = TRUE)
 {
 	global $db, $cache, $config;
 
@@ -41,8 +41,11 @@ function set_config($config_name, $config_value)
 	}
 
 	$config[$config_name] = $config_value;
-	$cache->put('config', $config);
 
+	if (!$is_dynamic)
+	{
+		$cache->put('config', $config);
+	}
 }
 
 function get_userdata($user)
@@ -100,7 +103,7 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 // list if currently null, assign basic forum info to template
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template;
+	global $db, $user, $template, $phpEx, $SID;
 
 	// Get forum parents
 	$forum_parents = array();
@@ -683,10 +686,9 @@ function obtain_word_list(&$censors)
 				$censors['replace'][] = $row['replacement'];
 			}
 			while ($row = $db->sql_fetchrow($result));
-
-			$cache->put('word_censors', $censors);
 		}
 		$db->sql_freeresult($result);
+		$cache->put('word_censors', $censors);
 	}
 
 	return true;
@@ -697,7 +699,11 @@ function obtain_icons(&$icons)
 {
 	global $db, $cache;
 
-	if (!($icons = $cache->get('icons')))
+	if ($cache->exists('icons'))
+	{
+		$icons = $cache->get('icons');
+	}
+	else
 	{
 		// Topic icons
 		$sql = "SELECT *
