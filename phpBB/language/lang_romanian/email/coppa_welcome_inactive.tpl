@@ -1,53 +1,51 @@
-Subject: WH.RO: Bun venit la {SITENAME}
-Charset: iso-8859-1
+Subject: Bine ati venit in forumurile {SITENAME}
 
 {WELCOME_MSG}
 
-In conformitate cu COPPA contul este inactiv.
+Conform actului COPPA contul dumneavoastra este deocamdata inactiv.
 
-Please print this message out and have your parent or guardian sign and date it. Then fax it to:
+Va rugam sa tipariti acest mesaj si sa cereti parintelui sau tutorelui dumneavoastra sa-l semneze si sa-l dateze. Apoi trimiteti-l prin fax catre:
 
 {FAX_INFO}
 
-OR mail it to:
+sau trimiteti-l prin posta la:
 
 {MAIL_INFO}
 
------------------------------- CUT HERE ------------------------------
-Permission to Participate at {SITENAME}
+------------------------------ TAIE AICI ------------------------------
+Permisiune de participare la {SITENAME}
 
-Username: {USERNAME}
-Password: {PASSWORD}
+Nume utilizator: {USERNAME}
+Parola: {PASSWORD}
 Email: {EMAIL_ADDRESS}
 
-ICQ Number: {ICQ}
-AIM Address: {AIM}
+Numar ICQ: {ICQ}
+Adresa AIM: {AIM}
 MSN Messenger: {MSN}
 Yahoo Messenger: {YIM}
-Web Site: {WEB_SITE}
-From: {FROM}
-Occupation: {OCC}
-Interests: {INTERESTS}
+Pagina Web: {WEB_SITE}
+De la: {FROM}
+Ocupatie: {OCC}
+Interese: {INTERESTS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO {SITENAME} TO STORE THIS INFORMATION. 
-I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT I MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM {SITENAME} AT ANY TIME.
+AM REVAZUT INFORMATIILE OFERITE DE COPILUL MEU SI PRIN ACEASTA II PERMIT {SITENAME} SA STOCHEZE ACEASTA INFORMATIE.
+SUNT DE ACORD CU FAPTUL CA ACEASTA INFORMATIE POATE FI SCHIMBATA ORICAND PRIN INTRODUCEREA UNEI PAROLE.
+AM INTELES CA POT CERE CA ACEASTA INFORMATIE SA FIE STEARSA ORICAND DIN BAZA DE DATE A {SITENAME}.
+
+Parinte sau tutore 
+(numele): _____________________
+
+(semnatura): __________________ 
+
+Data: _______________
+
+------------------------------ TAIE AICI ------------------------------
 
 
-Parent or Guardian 
-(print your name here): _____________________
+Indata ce administratorul va primi formularul de mai sus prin fax sau posta, contul dumneavoastra va fi activat.
 
-(sign here): __________________ 
+Incercati sa nu va uitati parola deoarece aceasta a fost stocata codat in baza noastra de date si nu o putem recupera pentru dumneavoastra. Daca totusi o uitati, veti putea cere o parola noua care va fi activata la fel cum a fost activat acest cont de utilizator.
 
-Date: _______________
-
------------------------------- CUT HERE ------------------------------
-
-
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
-
-Thank you for registering.
+Va multumim pentru inregistrare.
 
 {EMAIL_SIG}

@@ -1,10 +1,9 @@
-Subject: WH.RO Cererea ta a fost aprobata
-Charset: iso-8859-1
+Subject: Cererea dumneavoastra de aderare a fost aprobata
 
 Felicitari,
 
-Cererea de a te alatura membrilor grupului "{GROUP_NAME}" pe {SITENAME} a fost aprobata.
-Urmeaza linkul de mai jos pentru informatii suplimentare.
+Cererea dumneavoastra de a va alatura grupului "{GROUP_NAME}" pe {SITENAME} a fost aprobata.
+Folositi legatura de mai jos pentru a vedea informatiile referitoare la apartenenta la grupuri.
 
 {U_GROUPCP}
 

@@ -1,10 +1,12 @@
 <?php
 /***************************************************************************
- *                            lang_main.php [romanian]
+ *                            lang_main.php [romana fara diacritice]
  *                              -------------------
- *     begin                : Sat Dec 16 2000
- *     copyright            : (C) 2001 The phpBB Group
- *     email                : support@phpbb.com
+ *     begin                : Sat Sep 7 2002
+ *     copyright 1          : (C) Daniel Tanasie
+ *     copyright 2          : (C) Bogdan Toma
+ *     email     1          : danielt@mgbd.ro
+ *     email     2          : bog_tom@yahoo.com
  *
  *     $Id$
  *
@@ -20,7 +22,7 @@
  ***************************************************************************/
 
 //
-// translated by phpBB@xayk.net
+// Add your details here if wanted, e.g. Name, username, email address, website
 //
 
 //
@@ -31,7 +33,7 @@
 // varies ... give it your best guess!
 //
 
-$lang['ENCODING'] = 'iso-8859-1';
+$lang['ENCODING'] = 'iso-8859-2';
 $lang['DIRECTION'] = 'ltr';
 $lang['LEFT'] = 'left';
 $lang['RIGHT'] = 'right';
@@ -40,7 +42,7 @@ $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date f
 // This is optional, if you would like a _SHORT_ message output
 // along with our copyright message indicating you are the translator
 // please add it here.
-$lang['TRANSLATION_INFO'] = 'tradus de <a href="mailto:phpBB@xayk.net">xayk</a>';
+$lang['TRANSLATION_INFO'] = 'Varianta în limba românã: <a href="http://members.lycos.co.uk/rophpbb">Romanian phpBB online community</a>';
 
 //
 // Common, these terms are used
@@ -54,32 +56,32 @@ $lang['Replies'] = 'Raspunsuri';
 $lang['Views'] = 'Vizualizari';
 $lang['Post'] = 'Mesaj';
 $lang['Posts'] = 'Mesaje';
-$lang['Posted'] = 'Publicat';
-$lang['Username'] = 'Utilizator';
+$lang['Posted'] = 'Trimis';
+$lang['Username'] = 'Nume de utilizator';
 $lang['Password'] = 'Parola';
 $lang['Email'] = 'Email';
-$lang['Poster'] = 'Autor';
+$lang['Poster'] = 'Poster';
 $lang['Author'] = 'Autor';
 $lang['Time'] = 'Timp';
 $lang['Hours'] = 'Ore';
 $lang['Message'] = 'Mesaj';
 
-$lang['1_Day'] = 'O Zi';
+$lang['1_Day'] = '1 Zi';
 $lang['7_Days'] = '7 Zile';
 $lang['2_Weeks'] = '2 Saptamani';
-$lang['1_Month'] = 'O Luna';
+$lang['1_Month'] = '1 Luna';
 $lang['3_Months'] = '3 Luni';
 $lang['6_Months'] = '6 Luni';
-$lang['1_Year'] = 'Un An';
+$lang['1_Year'] = '1 An';
 
-$lang['Go'] = 'Go';
-$lang['Jump_to'] = 'Mergi la';
+$lang['Go'] = 'Du-te';
+$lang['Jump_to'] = 'Salt la';
 $lang['Submit'] = 'Trimite';
-$lang['Reset'] = 'Sterge';
+$lang['Reset'] = 'Reseteaza';
 $lang['Cancel'] = 'Renunta';
-$lang['Preview'] = 'Previzualizare';
-$lang['Confirm'] = 'Confirma';
-$lang['Spellcheck'] = 'Spellcheck';
+$lang['Preview'] = 'Previzualizeaza';
+$lang['Confirm'] = 'Confirmare';
+$lang['Spellcheck'] = 'Verifica';
 $lang['Yes'] = 'Da';
 $lang['No'] = 'Nu';
 $lang['Enabled'] = 'Activat';
@@ -88,213 +90,214 @@ $lang['Error'] = 'Eroare';
 
 $lang['Next'] = 'Urmatorul';
 $lang['Previous'] = 'Anteriorul';
-$lang['Goto_page'] = 'Mergi la pagina';
-$lang['Joined'] = 'Inscris in';
+$lang['Goto_page'] = 'Du-te la pagina';
+$lang['Joined'] = 'Conectat la';
 $lang['IP_Address'] = 'Adresa IP';
 
-$lang['Select_forum'] = 'Alege un forum';
-$lang['View_latest_post'] = 'Vezi ultimul mesaj';
-$lang['View_newest_post'] = 'Vezi cel mai nou mesaj';
+$lang['Select_forum'] = 'Alegeti un forum';
+$lang['View_latest_post'] = 'Vizualizarea celui mai vechi mesaj';
+$lang['View_newest_post'] = 'Vizualizarea celui cel mai nou mesaj';
 $lang['Page_of'] = 'Pagina <b>%d</b> din <b>%d</b>'; // Replaces with: Page 1 of 2 for example
 
-$lang['ICQ'] = 'ICQ #';
-$lang['AIM'] = 'AIM';
-$lang['MSNM'] = 'MSN Messenger';
-$lang['YIM'] = 'Yahoo Messenger';
+$lang['ICQ'] = 'Numarul ICQ';
+$lang['AIM'] = 'Adresa AIM';
+$lang['MSNM'] = 'Codul MSN Messenger';
+$lang['YIM'] = 'Codul Yahoo Messenger';
 
-$lang['Forum_Index'] = '%s Forum Index';  // eg. sitename Forum Index, %s can be removed if you prefer
+$lang['Forum_Index'] = 'Pagina de start a forumului %s';  // eg. sitename Forum Index, %s can be removed if you prefer
 
-$lang['Post_new_topic'] = 'Publica un nou topic';
-$lang['Reply_to_topic'] = 'Raspunde la topic';
-$lang['Reply_with_quote'] = 'Raspunde cu quote';
+$lang['Post_new_topic'] = 'Creaza un subiect nou';
+$lang['Reply_to_topic'] = 'Raspunde la subiect';
+$lang['Reply_with_quote'] = 'Raspunde cu citat (quote)';
 
-$lang['Click_return_topic'] = 'Apasa %sAICI%s pentru a te reintoarce la topic'; // %s's here are for uris, do not remove!
-$lang['Click_return_login'] = 'Apasa %sAICI%s pentru a reincerca';
-$lang['Click_return_forum'] = 'Apasa %sAICI%s pentru a te reintoarce in forum';
-$lang['Click_view_message'] = 'Apasa %sAICI%s pentru a-ti vedea mesajul';
-$lang['Click_return_modcp'] = 'Apasa %sAICI%s pentru a te intoarce in Control Panel-ul Moderatorului';
-$lang['Click_return_group'] = 'Apasa %sAICI%s pentru a te intoarce la informatiile despre grup';
+$lang['Click_return_topic'] = 'Apasati %saici%s pentru a reveni la subiect'; // %s's here are for uris, do not remove!
+$lang['Click_return_login'] = 'Apasati %saici%s pentru a incerca din nou';
+$lang['Click_return_forum'] = 'Apasati %saici%s pentru a reveni la forum';
+$lang['Click_view_message'] = 'Apasati %saici%s pentru a vizualiza mesajul';
+$lang['Click_return_modcp'] = 'Apasati %saici%s pentru a reveni la sectiunea Panoul de Control al Moderatorului';
+$lang['Click_return_group'] = 'Apasati %saici%s pentru a reveni la informatiile grupului';
 
-$lang['Admin_panel'] = 'Mergi in Control Panel-ul de Administrare';
+$lang['Admin_panel'] = 'Panoul Administratorului';
 
-$lang['Board_disable'] = 'Sorry but this board is currently unavailable, please try again later';
+$lang['Board_disable'] = 'Ne pare rau dar aceasta facilitate nu este momentan disponibila; va rugam incercati mai tarziu';
 
 
 //
 // Global Header strings
 //
-$lang['Registered_users'] = 'Membri:';
-$lang['Browsing_forum'] = 'Membri online pe forum:';
-$lang['Online_users_zero_total'] = 'In total sunt <b>zero</b> utilizatori online :: ';
-$lang['Online_users_total'] = 'In total sunt <b>%d</b> utilizatori online :: ';
-$lang['Online_user_total'] = '<b>Un</b> singur utilizator e online :: ';
-$lang['Reg_users_zero_total'] = '0 Membri, ';
-$lang['Reg_users_total'] = '%d Membri, ';
-$lang['Reg_user_total'] = '%d Membru, ';
-$lang['Hidden_users_zero_total'] = '0 Invizibili si ';
-$lang['Hidden_user_total'] = '%d Invizibil si ';
-$lang['Hidden_users_total'] = '%d Invizibili si ';
+$lang['Registered_users'] = 'Utilizatori inregistrati:';
+$lang['Browsing_forum'] = 'Utilizatori ce navigheaza in acest forum:';
+$lang['Online_users_zero_total'] = 'In total aici sunt <b>0</b> utilizatori conectati : ';
+$lang['Online_users_total'] = 'In total aici sunt <b>%d</b> utilizatori conectati : ';
+$lang['Online_user_total'] = 'In total aici este <b>%d</b> utilizator conectat : ';
+$lang['Reg_users_zero_total'] = '0 Inregistrati, ';
+$lang['Reg_users_total'] = '%d Inregistrati, ';
+$lang['Reg_user_total'] = '%d Inregistrati, ';
+$lang['Hidden_users_zero_total'] = '0 Ascunsi si ';
+$lang['Hidden_user_total'] = '%d Ascunsi si ';
+$lang['Hidden_users_total'] = '%d Ascunsi si ';
 $lang['Guest_users_zero_total'] = '0 Vizitatori';
 $lang['Guest_users_total'] = '%d Vizitatori';
 $lang['Guest_user_total'] = '%d Vizitator';
-$lang['Record_online_users'] = 'Numarul cel mai mare de utilizatori simultan online a fost <b>%s</b> (%s)'; // first %s = number of users, second %s is the date.
+$lang['Record_online_users'] = 'Cei mai multi utilizatori conectati au fost <b>%s</b> la data de %s'; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = '%sAdministrator%s';
 $lang['Mod_online_color'] = '%sModerator%s';
 
-$lang['You_last_visit'] = 'Ultima vizita: %s'; // %s replaced by date/time
-$lang['Current_time'] = 'Data curenta: %s'; // %s replaced by time
+$lang['You_last_visit'] = 'Ultima dumneavoastra vizita a fost %s'; // %s replaced by date/time
+$lang['Current_time'] = 'Acum este: %s'; // %s replaced by time
 
-$lang['Search_new'] = 'Vezi mesajele publicate de la ultima ta vizita';
-$lang['Search_your_posts'] = 'Vezi mesaje publicate de tine';
-$lang['Search_unanswered'] = 'Vezi mesajele fara raspuns';
+$lang['Search_new'] = 'Vizualizarea mesajelor scrise de la ultima dumneavoastra vizita';
+$lang['Search_your_posts'] = 'Vizualizarea mesajelor dumneavoastra';
+$lang['Search_unanswered'] = 'Vizualizarea mesajelor la care nu s-a raspuns';
 
 $lang['Register'] = 'Inregistrare';
 $lang['Profile'] = 'Profil';
-$lang['Edit_profile'] = 'Editeaza-ti profilul';
-$lang['Search'] = 'Cauta';
+$lang['Edit_profile'] = 'Editare profil';
+$lang['Search'] = 'Cautare';
 $lang['Memberlist'] = 'Lista membrilor';
 $lang['FAQ'] = 'FAQ';
-$lang['BBCode_guide'] = 'Ghid BBCode';
-$lang['Usergroups'] = 'Grupuri';
-$lang['Last_Post'] = 'Ultimul Mesaj';
+$lang['BBCode_guide'] = 'Ghid pentru codul BB';
+$lang['Usergroups'] = 'Grupuri de utilizatori';
+$lang['Last_Post'] = 'Ultimul mesaj';
 $lang['Moderator'] = 'Moderator';
 $lang['Moderators'] = 'Moderatori';
 
 
 //
 // Stats block text
-$lang['Posted_articles_zero_total'] = 'Nu a fost publicat nici un mesaj'; // Number of posts
-$lang['Posted_articles_total'] = 'Au fost publicate <b>%d</b> mesaje'; // Number of posts
-$lang['Posted_article_total'] = 'A fost publicat un singur mesaj'; // Number of posts
-$lang['Registered_users_zero_total'] = 'Nu avem nici un membru'; // # registered users
-$lang['Registered_users_total'] = 'Exista <b>%d</b> membri'; // # registered users
-$lang['Registered_user_total'] = 'Exista un singur membru'; // # registered users
-$lang['Newest_user'] = 'Cel mai nou membru este <b>%s%s%s</b>'; // a href, username, /a 
+//
+$lang['Posted_articles_zero_total'] = 'Utilizatorii nostri au scris un numar de <b>0</b> articole'; // Number of posts
+$lang['Posted_articles_total'] = 'Utilizatorii nostri au scris un numar de <b>%d</b> articole'; // Number of posts
+$lang['Posted_article_total'] = 'Utilizatorii nostri au scris un numar de <b>%d</b> articol'; // Number of posts
+$lang['Registered_users_zero_total'] = 'Avem <b>0</b> utilizatori inregistrati'; // # registered users
+$lang['Registered_users_total'] = 'Avem <b>%d</b> utilizatori inregistrati'; // # registered users
+$lang['Registered_user_total'] = 'Avem <b>%d</b> utilizator inregistrat'; // # registered users
+$lang['Newest_user'] = 'Cel mai nou utilizator inregistrat este: <b>%s%s%s</b>'; // a href, username, /a
 
-$lang['No_new_posts_last_visit'] = 'Nici un mesaj nou de la ultima vizita';
-$lang['No_new_posts'] = 'Nici un mesaj nou';
+$lang['No_new_posts_last_visit'] = 'Nu sunt mesaje noi de la ultima ta vizita';
+$lang['No_new_posts'] = 'Nu sunt mesaje noi';
 $lang['New_posts'] = 'Mesaje noi';
 $lang['New_post'] = 'Mesaj nou';
-$lang['No_new_posts_hot'] = 'Nici un mesaj nou [ Popular ]';
+$lang['No_new_posts_hot'] = 'Nu sunt mesaje noi [ Popular ]';
 $lang['New_posts_hot'] = 'Mesaje noi [ Popular ]';
-$lang['No_new_posts_locked'] = 'Nici un mesaj nou [ Blocat ]';
-$lang['New_posts_locked'] = 'Mesaje noi [ Blocat ]';
-$lang['Forum_is_locked'] = 'Forumul e blocat';
+$lang['No_new_posts_locked'] = 'Nu sunt mesaje noi [ Inchis ]';
+$lang['New_posts_locked'] = 'Mesaje noi [ Inchis ]';
+$lang['Forum_is_locked'] = 'Forumul este inchis';
 
 
 //
 // Login
 //
-$lang['Enter_password'] = 'Introduceti userul si parola';
-$lang['Login'] = 'Login';
-$lang['Logout'] = 'Logout';
+$lang['Enter_password'] = 'Va rugam introduceti un nume de utilizator si o parola pentru a va autentifica';
+$lang['Login'] = 'Intrare';
+$lang['Logout'] = 'Iesire';
 
-$lang['Forgotten_password'] = 'Am uitat parola';
+$lang['Forgotten_password'] = 'Mi-am uitat parola';
 
-$lang['Log_me_in'] = 'Login automat';
+$lang['Log_me_in'] = 'Autentifica-ma automat la fiecare vizita';
 
-$lang['Error_login'] = 'Ai furnizat un utilizator dezactivat sau inexistent sau o parola invalida';
+$lang['Error_login'] = 'Ati introdus un nume de utilizator incorect sau inactiv sau o parola gresita';
 
 
 //
 // Index page
 //
-$lang['Index'] = 'Index';
+$lang['Index'] = 'Pagina de start';
 $lang['No_Posts'] = 'Nici un mesaj';
-$lang['No_forums'] = 'Nu exista nici un forum';
+$lang['No_forums'] = 'Nu exista forumuri';
 
-$lang['Private_Message'] = 'Mesaj Privat';
-$lang['Private_Messages'] = 'Mesaje Private';
-$lang['Who_is_Online'] = 'Cine e Online';
+$lang['Private_Message'] = 'Mesaj privat';
+$lang['Private_Messages'] = 'Mesaje private';
+$lang['Who_is_Online'] = 'Cine este conectat';
 
-$lang['Mark_all_forums'] = 'Seteaza toate forumurile ca citite';
-$lang['Forums_marked_read'] = 'Toate forumurile au fost setate ca fiind citite';
+$lang['Mark_all_forums'] = 'Marcheaza toate forumurile ca fiind citite';
+$lang['Forums_marked_read'] = 'Toate forumurile au fost marcate ca fiind citite';
 
 
 //
 // Viewforum
 //
-$lang['View_forum'] = 'View Forum';
+$lang['View_forum'] = 'Vezi forum';
 
 $lang['Forum_not_exist'] = 'Forumul selectat nu exista';
-$lang['Reached_on_error'] = 'Ai ajuns in aceasta pagina datorita unei erori';
+$lang['Reached_on_error'] = 'Ati gasit aceasta pagina datorita unei erori';
 
-$lang['Display_topics'] = 'Display topics from previous';
-$lang['All_Topics'] = 'Toate Subiectele';
+$lang['Display_topics'] = 'Afiseaza subiectul pentru previzualizare';
+$lang['All_Topics'] = 'Toate subiectele';
 
 $lang['Topic_Announcement'] = '<b>Anunt:</b>';
-$lang['Topic_Sticky'] = '<b>Sticky:</b>';
+$lang['Topic_Sticky'] = '<b>Lipicios (Sticky):</b>';
 $lang['Topic_Moved'] = '<b>Mutat:</b>';
-$lang['Topic_Poll'] = '<b>[ Sondaj ]</b>';
+$lang['Topic_Poll'] = '<b>[ Chestionar ]</b>';
 
-$lang['Mark_all_topics'] = 'Marcheaza toate subiectele ca citite';
+$lang['Mark_all_topics'] = 'Marcheaza toate subiectele ca fiind citite';
 $lang['Topics_marked_read'] = 'Toate subiectele au fost marcate ca fiind citite';
 
-$lang['Rules_post_can'] = '<b>Poti</b> publica subiecte noi';
-$lang['Rules_post_cannot'] = '<b>Nu poti</b> publica subiecte noi';
-$lang['Rules_reply_can'] = '<b>Poti</b> raspunde la subiectele existente';
-$lang['Rules_reply_cannot'] = '<b>Nu poti</b> raspunde la subiectele existente';
-$lang['Rules_edit_can'] = '<b>Poti</b> modifica propriile mesaje';
-$lang['Rules_edit_cannot'] = '<b>Nu poti</b> modifica propriile mesaje';
-$lang['Rules_delete_can'] = '<b>Poti</b> sterge propriile mesaje';
-$lang['Rules_delete_cannot'] = '<b>Nu poti</b> sterge propriile mesaje';
-$lang['Rules_vote_can'] = '<b>Poti</b> vota in sondaje';
-$lang['Rules_vote_cannot'] = '<b>Nu poti</b> vota in sondaje';
-$lang['Rules_moderate'] = '<b>Poti</b> fi %smoderator%s'; // %s replaced by a href links, do not remove! 
+$lang['Rules_post_can'] = '<b>Puteti</b> crea un subiect nou in acest forum';
+$lang['Rules_post_cannot'] = '<b>Nu puteti</b> crea un subiect nou in acest forum';
+$lang['Rules_reply_can'] = '<b>Puteti</b> raspunde la subiectele acestui forum';
+$lang['Rules_reply_cannot'] = '<b>Nu puteti</b> raspunde in subiectele acestui forum';
+$lang['Rules_edit_can'] = '<b>Puteti</b> modifica mesajele proprii din acest forum';
+$lang['Rules_edit_cannot'] = '<b>Nu puteti</b> modifica mesajele proprii din acest forum';
+$lang['Rules_delete_can'] = '<b>Puteti</b> sterge mesajele proprii din acest forum';
+$lang['Rules_delete_cannot'] = '<b>Nu puteti</b> sterge mesajele proprii din acest forum';
+$lang['Rules_vote_can'] = '<b>Puteti</b> vota in chestionarele din acest forum';
+$lang['Rules_vote_cannot'] = '<b>Nu puteti</b> vota in chestionarele din acest forum';
+$lang['Rules_moderate'] = '<b>Puteti</b> %smodera acest forum%s'; // %s replaced by a href links, do not remove!
 
-$lang['No_topics_post_one'] = 'Nu sunt mesaje in acest forum<br />Apasa pe <b>Subiect nou</b> pentru a publica un mesaj';
+$lang['No_topics_post_one'] = '<br />Nu este nici un mesaj in acest forum<br /><br />Apasati pe butonul <b>Subiect nou</b> din aceasta pagina pentru a scrie un mesaj';
 
 
 //
 // Viewtopic
 //
-$lang['View_topic'] = 'Vezi subiect';
+$lang['View_topic'] = 'Vizualizare subiect';
 
 $lang['Guest'] = 'Vizitator';
-$lang['Post_subject'] = 'Post subject';
-$lang['View_next_topic'] = 'Vezi subiectul urmator';
-$lang['View_previous_topic'] = 'Vezi subiectul anterior';
-$lang['Submit_vote'] = 'Voteaza';
-$lang['View_results'] = 'Vezi rezultate';
+$lang['Post_subject'] = 'Titlul subiectului';
+$lang['View_next_topic'] = 'Subiectul urmator';
+$lang['View_previous_topic'] = 'Subiectul anterior';
+$lang['Submit_vote'] = 'Trimite votul';
+$lang['View_results'] = 'Vizualizare rezultate';
 
-$lang['No_newer_topics'] = 'Nu sunt subiecte mai recente in acest forum';
-$lang['No_older_topics'] = 'Nu sunt subiecte mai vechi in acest forum';
-$lang['Topic_post_not_exist'] = 'Subiectul sau sesajul cautat nu exista';
+$lang['No_newer_topics'] = 'Nu sunt subiecte noi in acest forum';
+$lang['No_older_topics'] = 'Nu sunt subiecte vechi in acest forum';
+$lang['Topic_post_not_exist'] = 'Nu exista subiectul sau mesajul cerut';
 $lang['No_posts_topic'] = 'Nu exista mesaje in acest subiect';
 
-$lang['Display_posts'] = 'Arata mesajele de cel mult';
+$lang['Display_posts'] = 'Afiseaza mesajele pentru a le previzualiza';
 $lang['All_Posts'] = 'Toate mesajele';
-$lang['Newest_First'] = 'Noi Primele';
-$lang['Oldest_First'] = 'Vechi Primele';
+$lang['Newest_First'] = 'Primele, cele mai noi mesaje';
+$lang['Oldest_First'] = 'Primele, cele mai vechi mesaje';
 
-$lang['Back_to_top'] = 'La inceput';
+$lang['Back_to_top'] = 'Sus';
 
-$lang['Read_profile'] = 'Vezi profilul userilor'; 
-$lang['Send_email'] = 'Trimite email la utilizator';
-$lang['Visit_website'] = 'Viziteaza websitul';
-$lang['ICQ_status'] = 'ICQ Status';
-$lang['Edit_delete_post'] = 'Modifica/Sterge mesajul';
-$lang['View_IP'] = 'Vezi IP-ul';
-$lang['Delete_post'] = 'Sterge mesajul';
+$lang['Read_profile'] = 'Vezi profilul utilizatorului';
+$lang['Send_email'] = 'Trimite email utilizatorului';
+$lang['Visit_website'] = 'Viziteaza site-ul autorului';
+$lang['ICQ_status'] = 'Statutul ICQ';
+$lang['Edit_delete_post'] = 'Modifica/Sterge acest mesaj';
+$lang['View_IP'] = 'IP-ul autorului';
+$lang['Delete_post'] = 'Sterge acest mesaj';
 
 $lang['wrote'] = 'a scris'; // proceeds the username and is followed by the quoted text
-$lang['Quote'] = 'Citeaza'; // comes before bbcode quote output.
+$lang['Quote'] = 'Citat'; // comes before bbcode quote output.
 $lang['Code'] = 'Cod'; // comes before bbcode code output.
 
-$lang['Edited_time_total'] = 'Ultima modificare de %s la %s, modificat de %d ori in total'; // Last edited by me on 12 Oct 2001, edited 1 time in total
-$lang['Edited_times_total'] = 'Last edited by %s on %s, edited %d times in total'; // Last edited by me on 12 Oct 2001, edited 2 times in total
+$lang['Edited_time_total'] = 'Ultima modificare efectuata de catre %s la %s, modificat de %d data in total'; // Last edited by me on 12 Oct 2001, edited 1 time in total
+$lang['Edited_times_total'] = 'Ultima modificare efectuata %s la %s, modificat de %d ori in total'; // Last edited by me on 12 Oct 2001, edited 2 times in total
 
-$lang['Lock_topic'] = 'Blocheaza acest subiect';
-$lang['Unlock_topic'] = 'Deblocheaza acest subiect';
+$lang['Lock_topic'] = 'Inchide acest subiect';
+$lang['Unlock_topic'] = 'Deschide acest subiect';
 $lang['Move_topic'] = 'Muta acest subiect';
 $lang['Delete_topic'] = 'Sterge acest subiect';
-$lang['Split_topic'] = 'Imparte acest subiect';
+$lang['Split_topic'] = 'Desparte acest subiect';
 
-$lang['Stop_watching_topic'] = 'Nu mai urmari acest subiect';
-$lang['Start_watching_topic'] = 'Urmareste raspunsurile acest subiect';
-$lang['No_longer_watching'] = 'Nu mai urmaresti acest subiect';
-$lang['You_are_watching'] = 'Urmaresti mesajele aparute la acest subiect';
+$lang['Stop_watching_topic'] = 'Opreste urmarirea acestui subiect';
+$lang['Start_watching_topic'] = 'Marcheaza acest subiect pentru urmarirea raspunsurilor';
+$lang['No_longer_watching'] = 'Ati oprit urmarirea acestui subiect';
+$lang['You_are_watching'] = 'Acest subiect este marcat pentru urmarire';
 
 $lang['Total_votes'] = 'Voturi totale';
 
@@ -302,478 +305,477 @@ $lang['Total_votes'] = 'Voturi totale';
 // Posting/Replying (Not private messaging!)
 //
 $lang['Message_body'] = 'Corpul mesajului';
-$lang['Topic_review'] = 'Topic review';
+$lang['Topic_review'] = 'Previzualizare revizie';
 
-$lang['No_post_mode'] = 'Nu este specificat nici un modul de publicare'; // If posting.php is called without a mode (newtopic/reply/delete/etc, shouldn't be shown normaly)
+$lang['No_post_mode'] = 'Nu a fost specificat modul de trimitere a mesajului'; // If posting.php is called without a mode (newtopic/reply/delete/etc, shouldn't be shown normaly)
 
-$lang['Post_a_new_topic'] = 'Publica un subiect nou';
+$lang['Post_a_new_topic'] = 'Creaza un nou subiect';
 $lang['Post_a_reply'] = 'Raspunde';
-$lang['Post_topic_as'] = 'Publica mesajul ca';
-$lang['Edit_Post'] = 'Modifica mesaj';
+$lang['Post_topic_as'] = 'Creaza un mesaj la';
+$lang['Edit_Post'] = 'Modifica';
 $lang['Options'] = 'Optiuni';
 
 $lang['Post_Announcement'] = 'Anunt';
-$lang['Post_Sticky'] = 'Sticky';
+$lang['Post_Sticky'] = 'Lipicios (Sticky)';
 $lang['Post_Normal'] = 'Normal';
 
-$lang['Confirm_delete'] = 'Esti sigur ca vrei sa stergi acest mesaj?';
-$lang['Confirm_delete_poll'] = 'Esti sigur ca poti sterge acest sondaj?';
+$lang['Confirm_delete'] = 'Sunteti sigur ca vreti sa stergeti acest mesaj?';
+$lang['Confirm_delete_poll'] = 'Sunteti sigur ca vreti sa stergeti acest chestionar?';
 
-$lang['Flood_Error'] = 'Nu mai poti publica inca un mesaj asa de repede. Incearca putin mai tarziu.';
-$lang['Empty_subject'] = 'Trebuie sa completezi campul de subiect';
-$lang['Empty_message'] = 'Trebuie sa scri ceva in corpul mesajului';
-$lang['Forum_locked'] = 'Forum blocat. Nu poti publica mesaje noi si nici modifica mesaje existente';
-$lang['Topic_locked'] = 'Subiect blocat. Nu poti publica mesaje noi si nici modifica mesajele existente.';
-$lang['No_post_id'] = 'Trebuie sa selectezi un mesaj pt. modificare';
-$lang['No_topic_id'] = 'Trebuie sa alegi un subiect la care sa raspunzi';
-$lang['No_valid_mode'] = 'Poti doar edita raspunsurile si cita mesaje. Intoarce-te si reincearca.';
-$lang['No_such_post'] = 'Nu exista un asemenea mesaj. Intoarce-te si reincearca.';
-$lang['Edit_own_posts'] = 'Poti sa modifici doar propriile mesaje';
-$lang['Delete_own_posts'] = 'Poti sa stergi doar propriile mesaje';
-$lang['Cannot_delete_replied'] = 'Nu poti sterge mesaje la care exista un raspuns';
-$lang['Cannot_delete_poll'] = 'Nu poti sterge un sondaj activ';
-$lang['Empty_poll_title'] = 'Trebuie sa completezi titlul sondajului';
-$lang['To_few_poll_options'] = 'Trebuie sa completezi cel putin doua optiuni in sondaj';
-$lang['To_many_poll_options'] = 'Ai incercat sa introduci prea multe optiuni in sondaj';
-$lang['Post_has_no_poll'] = 'Acest mesaj nu are sondaj';
-$lang['Already_voted'] = 'Ai votat deja in acest sondaj';
-$lang['No_vote_option'] = 'Trebuie sa alegi o optiune cand votezi';
+$lang['Flood_Error'] = 'Nu puteti sa trimiteti un mesaj nou la un interval atat de scurt dupa anteriorul; va rugam, incearcati mai tarziu.';
+$lang['Empty_subject'] = 'Trebuie specificat titlul';
+$lang['Empty_message'] = 'Trebuie sa scrieti un mesaj';
+$lang['Forum_locked'] = 'Acest forum este inchis, nu se pot scrie, crea, raspunde sau modifica subiecte';
+$lang['Topic_locked'] = 'Acest subiect este inchis, nu se pot crea sau raspunde la mesaje';
+$lang['No_post_id'] = 'Trebuie sa selectati un mesaj pentru modificare';
+$lang['No_topic_id'] = 'Trebuie sa selectati un mesaj pentru a da un raspuns la';
+$lang['No_valid_mode'] = 'Puteti doar sa adaugati, sa modificati, sa citati sau sa raspundeti la mesaje; reveniti si incercati din nou';
+$lang['No_such_post'] = 'Aici nu este nici un mesaj, reveniti si incercati din nou';
+$lang['Edit_own_posts'] = 'Scuze dar puteti modifica doar mesajele dumneavoastra';
+$lang['Delete_own_posts'] = 'Scuze dar puteti sterge doar mesajele dumneavoastra';
+$lang['Cannot_delete_replied'] = 'Scuze dar nu puteti sterge mesaje la care s-a raspuns deja';
+$lang['Cannot_delete_poll'] = 'Scuze dar nu puteti sterge un chestionar aflat in derulare';
+$lang['Empty_poll_title'] = 'Trebuie sa introduceti un titlu pentru chestionar';
+$lang['To_few_poll_options'] = 'Trebuie sa introduceti cel putin doua optiuni de vot in chestionar';
+$lang['To_many_poll_options'] = 'Ati incercat sa introduceti prea multe optiuni de vot in chestionar';
+$lang['Post_has_no_poll'] = 'Acest mesaj nu are chestionar';
+$lang['Already_voted'] = 'Ati votat deja in acest chestionar';
+$lang['No_vote_option'] = 'Trebuie sa specificati o optiune la votare';
 
-$lang['Add_poll'] = 'Adauga un Sondaj';
-$lang['Add_poll_explain'] = 'Daca nu vrei sa adaugi un sondaj lasa campurile goale';
-$lang['Poll_question'] = 'Intrebarea sondajului';
-$lang['Poll_option'] = 'Optiune';
+$lang['Add_poll'] = 'Adauga un chestionar';
+$lang['Add_poll_explain'] = 'Daca nu vreti sa adaugati un chestionar la mesajul dumneavoastra, lasati campurile necompletate';
+$lang['Poll_question'] = 'Chestionar';
+$lang['Poll_option'] = 'Optiunile chestionarului';
 $lang['Add_option'] = 'Adauga o optiune';
-$lang['Update'] = 'Modifica';
+$lang['Update'] = 'Actualizeaza';
 $lang['Delete'] = 'Sterge';
-$lang['Poll_for'] = 'Pastreaza sondajul activ timp de';
+$lang['Poll_for'] = 'Ruleaza chestionarul pentru';
 $lang['Days'] = 'Zile'; // This is used for the Run poll for ... Days + in admin_forums for pruning
-$lang['Poll_for_explain'] = '[ 0 sau nimic pt. o perioada nelimitata ]';
-$lang['Delete_poll'] = 'Sterge Sondaj';
+$lang['Poll_for_explain'] = '[ Introduceti 0 sau lasati necompletat pentru un chestionar nelimitat in timp ]';
+$lang['Delete_poll'] = 'Sterge chestionarul';
 
-$lang['Disable_HTML_post'] = 'Dezactiveaza HTML';
-$lang['Disable_BBCode_post'] = 'Dezactiveaza BBCode';
-$lang['Disable_Smilies_post'] = 'Dezactiveaza Smilies';
+$lang['Disable_HTML_post'] = 'Dezactiveaza codul HTML in acest mesaj';
+$lang['Disable_BBCode_post'] = 'Dezactiveaza codul BBCode in acest mesaj';
+$lang['Disable_Smilies_post'] = 'Dezactiveaza zambetele in acest mesaj';
 
-$lang['HTML_is_ON'] = 'HTML e <u>ACTIV</u>';
-$lang['HTML_is_OFF'] = 'HTML e <u>INACTIV</u>';
-$lang['BBCode_is_ON'] = '%sBBCode%s e <u>ACTIV</u>'; // %s are replaced with URI pointing to FAQ
-$lang['BBCode_is_OFF'] = '%sBBCode%s e <u>INACTIV</u>';
-$lang['Smilies_are_ON'] = 'Smilies sunt <u>ACTIVE</u>';
-$lang['Smilies_are_OFF'] = 'Smilies sunt <u>INACTIVE</u>';
+$lang['HTML_is_ON'] = 'Codul HTML este <u>Activat</u>';
+$lang['HTML_is_OFF'] = 'Codul HTML este <u>Dezactivat</u>';
+$lang['BBCode_is_ON'] = '%sCodulBB%s este <u>Activat</u>'; // %s are replaced with URI pointing to FAQ
+$lang['BBCode_is_OFF'] = '%sCodul%s este <u>Dezactivat</u>';
+$lang['Smilies_are_ON'] = 'Zambetele sunt <u>Activate</u>';
+$lang['Smilies_are_OFF'] = 'Zambetele sunt <u>Dezactivate</u>';
 
-$lang['Attach_signature'] = 'Ataseaza semnatura';
-$lang['Notify'] = 'Anunta-ma cand cineva raspunde';
+$lang['Attach_signature'] = 'Adauga semnatura (semnatura poate fi schimbata din Profil)';
+$lang['Notify'] = 'Anunta-ma cand apare un raspuns';
 $lang['Delete_post'] = 'Sterge acest mesaj';
 
-$lang['Stored'] = 'Mesajul a fost introdus';
-$lang['Deleted'] = 'Mesajul a fost sters';
-$lang['Poll_delete'] = 'Sondajul a fost sters';
-$lang['Vote_cast'] = 'Votul a fost inregistrat';
+$lang['Stored'] = 'Mesajul a fost introdus cu succes';
+$lang['Deleted'] = 'Mesajul a fost sters cu succes';
+$lang['Poll_delete'] = 'Chestionarul a fost sters cu succes';
+$lang['Vote_cast'] = 'Votul a fost acceptat';
 
-$lang['Topic_reply_notification'] = 'Informare: Raspuns la Subiect';
+$lang['Topic_reply_notification'] = 'Anunt de raspuns la mesaj';
 
-$lang['bbcode_b_help'] = 'Bold text: [b]text[/b]  (alt+b)';
-$lang['bbcode_i_help'] = 'Italic text: [i]text[/i]  (alt+i)';
-$lang['bbcode_u_help'] = 'Underline text: [u]text[/u]  (alt+u)';
-$lang['bbcode_q_help'] = 'Quote text: [quote]text[/quote]  (alt+q)';
-$lang['bbcode_c_help'] = 'Code display: [code]code[/code]  (alt+c)';
-$lang['bbcode_l_help'] = 'List: [list]text[/list] (alt+l)';
-$lang['bbcode_o_help'] = 'Ordered list: [list=]text[/list]  (alt+o)';
-$lang['bbcode_p_help'] = 'Insert image: [img]http://image_url[/img]  (alt+p)';
-$lang['bbcode_w_help'] = 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)';
-$lang['bbcode_a_help'] = 'Close all open bbCode tags';
-$lang['bbcode_s_help'] = 'Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000';
-$lang['bbcode_f_help'] = 'Font size: [size=x-small]small text[/size]';
+$lang['bbcode_b_help'] = "Text ingrosat (bold): [b]text[/b]  (alt+b)";
+$lang['bbcode_i_help'] = "Text inclinat (italic): [i]text[/i]  (alt+i)";
+$lang['bbcode_u_help'] = "Text subliniat: [u]text[/u]  (alt+u)";
+$lang['bbcode_q_help'] = "Text citat: [quote]text[/quote]  (alt+q)";
+$lang['bbcode_c_help'] = "Cod sursa: [code]cod sursa[/code]  (alt+c)";
+$lang['bbcode_l_help'] = "Lista: [list]text[/list] (alt+l)";
+$lang['bbcode_o_help'] = "Lista ordonata: [list=]text[/list]  (alt+o)";
+$lang['bbcode_p_help'] = "Insereaza imagine: [img]http://image_url[/img]  (alt+p)";
+$lang['bbcode_w_help'] = "Insereaza URL: [url]http://url[/url] sau [url=http://url]URL text[/url]  (alt+w)";
+$lang['bbcode_a_help'] = "Inchide toate tag-urile de cod BB deschise";
+$lang['bbcode_s_help'] = "Culoare text: [color=red]text[/color]  Sfat: poti folosi si color=#FF0000";
+$lang['bbcode_f_help'] = "Marime font: [size=x-small]text marunt[/size]";
 
-$lang['Emoticons'] = 'Emoticons';
-$lang['More_emoticons'] = 'Mai multe Emoticons';
+$lang['Emoticons'] = 'Iconite emotive';
+$lang['More_emoticons'] = 'Alte iconite emotive';
 
-$lang['Font_color'] = 'Culoare';
-$lang['color_default'] = 'Default';
-$lang['color_dark_red'] = 'Dark Red';
-$lang['color_red'] = 'Red';
-$lang['color_orange'] = 'Orange';
-$lang['color_brown'] = 'Brown';
-$lang['color_yellow'] = 'Yellow';
-$lang['color_green'] = 'Green';
-$lang['color_olive'] = 'Olive';
-$lang['color_cyan'] = 'Cyan';
-$lang['color_blue'] = 'Blue';
-$lang['color_dark_blue'] = 'Dark Blue';
-$lang['color_indigo'] = 'Indigo';
-$lang['color_violet'] = 'Violet';
-$lang['color_white'] = 'White';
-$lang['color_black'] = 'Black';
+$lang['Font_color'] = "Culoare text";
+$lang['color_default'] = "Implicita";
+$lang['color_dark_red'] = "Rosu inchis";
+$lang['color_red'] = "Rosu";
+$lang['color_orange'] = "Oranj";
+$lang['color_brown'] = "Maro";
+$lang['color_yellow'] = "Galben";
+$lang['color_green'] = "Verde";
+$lang['color_olive'] = "Masliniu";
+$lang['color_cyan'] = "Cyan";
+$lang['color_blue'] = "Albastru";
+$lang['color_dark_blue'] = "Albastru inchis";
+$lang['color_indigo'] = "Indigo";
+$lang['color_violet'] = "Violet";
+$lang['color_white'] = "Alb";
+$lang['color_black'] = "Negru";
 
-$lang['Font_size'] = 'Marime';
-$lang['font_tiny'] = 'Minuscul';
-$lang['font_small'] = 'Mic';
-$lang['font_normal'] = 'Normal';
-$lang['font_large'] = 'Mare';
-$lang['font_huge'] = 'Imens';
+$lang['Font_size'] = "Marime text";
+$lang['font_tiny'] = "Marunta";
+$lang['font_small'] = "Mica";
+$lang['font_normal'] = "Normala";
+$lang['font_large'] = "Mare";
+$lang['font_huge'] = "Imensa";
 
-$lang['Close_Tags'] = 'Inchide Tagurile';
-$lang['Styles_tip'] = 'Tip: Stilul poate fi aplicat rapid pe textul selectat';
+$lang['Close_Tags'] = 'Inchide tag-uri';
+$lang['Styles_tip'] = 'Sfat: Stilurile pot fi aplicate imediat textului selectat';
 
 
 //
 // Private Messaging
 //
-$lang['Private_Messaging'] = 'Private Messaging';
+$lang['Private_Messaging'] = 'Mesagerie privata';
 
-$lang['Login_check_pm'] = 'Autentifica-te pentru a-ti vedea mesajele private';
-$lang['New_pms'] = 'Ai %d mesaje noi'; // You have 2 new messages
-$lang['New_pm'] = 'Ai %d messaj nou'; // You have 1 new message
-$lang['No_new_pm'] = 'Nu ai nici un mesaj nou';
-$lang['Unread_pms'] = 'Ai You have %d unread messages';
-$lang['Unread_pm'] = 'You have %d unread message';
-$lang['No_unread_pm'] = 'You have no unread messages';
-$lang['You_new_pm'] = 'A new private message is waiting for you in your Inbox';
-$lang['You_new_pms'] = 'New private messages are waiting for you in your Inbox';
-$lang['You_no_new_pm'] = 'No new private messages are waiting for you';
+$lang['Login_check_pm'] = 'Autentificare pentru mesaje private';
+$lang['New_pms'] = 'Aveti %d mesaje noi'; // You have 2 new messages
+$lang['New_pm'] = 'Aveti %d mesaj nou'; // You have 1 new message
+$lang['No_new_pm'] = 'Nu aveti mesaje noi';
+$lang['Unread_pms'] = 'Aveti %d mesaje necitite';
+$lang['Unread_pm'] = 'Aveti %d mesaj necitit';
+$lang['No_unread_pm'] = 'Nu aveti mesaje necitite';
+$lang['You_new_pm'] = 'Un mesaj nou privat asteapta in dosarul cu mesaje';
+$lang['You_new_pms'] = 'Mai multe mesaje noi asteapta in dosarul cu mesaje';
+$lang['You_no_new_pm'] = 'Nu sunt mesaje noi in asteptare in dosarul cu mesaje';
 
 $lang['Unread_message'] = 'Mesaj necitit';
 $lang['Read_message'] = 'Mesaj citit';
 
-$lang['Read_pm'] = 'Citeste mesaj';
-$lang['Post_new_pm'] = 'Publica mesaj';
-$lang['Post_reply_pm'] = 'Raspunde la mesaj';
-$lang['Post_quote_pm'] = 'Citeaza mesaj';
-$lang['Edit_pm'] = 'Modifica Mesaj';
+$lang['Read_pm'] = 'Mesaj citit';
+$lang['Post_new_pm'] = 'Scrie mesaj';
+$lang['Post_reply_pm'] = 'Retrimite mesajul';
+$lang['Post_quote_pm'] = 'Comenteaza mesajul';
+$lang['Edit_pm'] = 'Modifica mesajul';
 
-$lang['Inbox'] = 'Mesaje primite';
-$lang['Outbox'] = 'Mesaje ce vor fi trimise';
-$lang['Savebox'] = 'Mesaje salvate';
-$lang['Sentbox'] = 'Mesaje trimise';
-$lang['Flag'] = 'Flag';
+$lang['Inbox'] = 'Dosarul cu mesaje';
+$lang['Outbox'] = 'Dosarul cu mesaje in curs de trimitere';
+$lang['Savebox'] = 'Dosarul cu mesaje salvate';
+$lang['Sentbox'] = 'Dosarul cu mesaje trimise';
+$lang['Flag'] = 'Marcaj';
 $lang['Subject'] = 'Subiect';
-$lang['From'] = 'De La';
+$lang['From'] = 'De la';
 $lang['To'] = 'La';
 $lang['Date'] = 'Data';
-$lang['Mark'] = 'Selecteaza';
+$lang['Mark'] = 'Marcat';
 $lang['Sent'] = 'Trimis';
 $lang['Saved'] = 'Salvat';
-$lang['Delete_marked'] = 'Sterge Selectatele';
-$lang['Delete_all'] = 'Sterge Tot';
-$lang['Save_marked'] = 'Salveaza Selectatele'; 
-$lang['Save_message'] = 'Salveaza Mesaj';
-$lang['Delete_message'] = 'Sterge Mesaj';
+$lang['Delete_marked'] = 'Sterge mesajele marcate';
+$lang['Delete_all'] = 'Sterge toate mesajele';
+$lang['Save_marked'] = 'Salveaza mesajele marcate';
+$lang['Save_message'] = 'Salveaza mesajul';
+$lang['Delete_message'] = 'Sterge mesajul';
 
-$lang['Display_messages'] = 'Afiseaza mesajele de cel mult'; // Followed by number of days/weeks/months
-$lang['All_Messages'] = 'Toate Mesajele';
+$lang['Display_messages'] = 'Afiseaza mesajele din urma'; // Followed by number of days/weeks/months
+$lang['All_Messages'] = 'Toate mesajele';
 
-$lang['No_messages_folder'] = 'Nu ai nici un mesaj in acest director';
+$lang['No_messages_folder'] = 'Nu aveti mesaje noi in acest dosar';
 
-$lang['PM_disabled'] = 'Nu se pot trimite mesaje private (optiune dezactivata de administrator)';
-$lang['Cannot_send_privmsg'] = 'Nu poti trimite mesaje private (optiune dezactivata de administrator)';
-$lang['No_to_user'] = 'Trebuie sa completezi numele membrului caruia vrei sa-i trimiti mesajul';
-$lang['No_such_user'] = 'Nu exista un asemenea membru';
+$lang['PM_disabled'] = 'Mesajele private au fost dezactivate de pe acest panou';
+$lang['Cannot_send_privmsg'] = 'Scuze dar administratorul va impiedica in trimiterea mesajelor private';
+$lang['No_to_user'] = 'Trebuie specificat un nume de utilizator pentru a putea trimite mesajul';
+$lang['No_such_user'] = 'Scuze dar acest utilizator nu exista';
 
-$lang['Disable_HTML_pm'] = 'Dezactiveaza HTML in acest mesaj';
-$lang['Disable_BBCode_pm'] = 'Dezactiveaza BBCode in acest mesaj';
-$lang['Disable_Smilies_pm'] = 'Dezactiveaza Smilies in acest mesaj';
+$lang['Disable_HTML_pm'] = "Deactiveaza codul HTML in acest mesaj";
+$lang['Disable_BBCode_pm'] = "Deactiveaza codul BB in acest mesaj";
+$lang['Disable_Smilies_pm'] = "Deactiveaza zambetele in acest mesaj";
 
 $lang['Message_sent'] = 'Mesajul a fost trimis';
 
-$lang['Click_return_inbox'] = 'Apasa %sAICI%s pentru a te intoarce in directorul de Mesaje Primite';
-$lang['Click_return_index'] = 'Apasa %sAICI%s pentru a te intoarce in Index';
+$lang['Click_return_inbox'] = "Apasati %saici%s pentru a reveni la dosarul cu mesaje";
+$lang['Click_return_index'] = "Apasati %saici%s pentru a reveni la Pagina de start a forumului";
 
-$lang['Send_a_new_message'] = 'Trimite un nou mesaj privat';
-$lang['Send_a_reply'] = 'Raspunde la un mesaj privat';
-$lang['Edit_message'] = 'Modifica mesajul privat';
+$lang['Send_a_new_message'] = "Trimite un nou mesaj privat";
+$lang['Send_a_reply'] = "Raspunde la un mesaj privat";
+$lang['Edit_message'] = "Modifica un mesaj privat";
 
-$lang['Notification_subject'] = 'Ai primit un nou mesaj privat';
+$lang['Notification_subject'] = 'Un nou mesaj privat a sosit';
 
-$lang['Find_username'] = 'Cauta un utilizator';
-$lang['Find'] = 'Cauta';
-$lang['No_match'] = 'N-am gasit nimic';
+$lang['Find_username'] = "Cauta un utilizator";
+$lang['Find'] = "Cauta";
+$lang['No_match'] = "Nu a fost gasit nici un utilizator";
 
-$lang['No_post_id'] = 'Nu ai specificat ID-ul mesajului';
-$lang['No_such_folder'] = 'Nu exista un asemenea director';
-$lang['No_folder'] = 'Nu ai specificat nici un director';
+$lang['No_post_id'] = "ID-ul mesajului nu a fost specificat";
+$lang['No_such_folder'] = "Directorul specificat nu exista";
+$lang['No_folder'] = "Nu a fost specificat directorul";
 
-$lang['Mark_all'] = 'Selecteaza tot';
-$lang['Unmark_all'] = 'Deselecteaza tot';
+$lang['Mark_all'] = "Marcheaza toate";
+$lang['Unmark_all'] = "Demarcheaza toate";
 
-$lang['Confirm_delete_pm'] = 'Sigur vrei sa stergi mesajul?';
-$lang['Confirm_delete_pms'] = 'Sigur vrei sa stergi aceste mesaje?';
+$lang['Confirm_delete_pm'] = "Sunteti sigur ca vreti sa stergeti acest mesaj?";
+$lang['Confirm_delete_pms'] = "Sunteti sigur ca vreti sa stergeti aceste mesaje?";
 
-$lang['Inbox_size'] = 'Mesaje primite: %d%% plin'; // eg. Your Inbox is 50% full
-$lang['Sentbox_size'] = 'Mesaje trimise: %d%% plin'; 
-$lang['Savebox_size'] = 'Mesaje salvate: %d%% plin'; 
+$lang['Inbox_size'] = "Dosarul dumneavoastra cu mesaje este %d%% plin"; // eg. Your Inbox is 50% full
+$lang['Sentbox_size'] = "Dosarul dumneavoastra cu mesaje trimise este %d%% plin";
+$lang['Savebox_size'] = "Dosarul dumneavoastra cu mesaje salvate este %d%% plin";
 
-$lang['Click_view_privmsg'] = 'Apasa %sAICI%s pentru a vedea mesajele primite';
-
+$lang['Click_view_privmsg'] = "Apasati %saici%s pentru a ajunge la dosarul dumneavoastra cu mesaje";
 
 //
 // Profiles/Registration
 //
-$lang['Viewing_user_profile'] = 'Vizualizare profil :: %s'; // %s is username 
+$lang['Viewing_user_profile'] = 'Vezi profilul : %s'; // %s is username
 $lang['About_user'] = 'Totul despre %s'; // %s is username
 
 $lang['Preferences'] = 'Preferinte';
-$lang['Items_required'] = 'Campurile marcate cu * sunt obligatorii';
-$lang['Registration_info'] = 'INREGISTRARE';
-$lang['Profile_info'] = 'DATE';
-$lang['Profile_info_warn'] = 'Aceste informatii vor fi publice';
-$lang['Avatar_panel'] = 'Avatar control panel';
-$lang['Avatar_gallery'] = 'Galeria Avatar';
+$lang['Items_required'] = 'Ce este marcat cu * este obligatoriu';
+$lang['Registration_info'] = 'Informatii de inregistrare';
+$lang['Profile_info'] = 'Informatii despre profil';
+$lang['Profile_info_warn'] = 'Aceste informatii vor fi facute publice';
+$lang['Avatar_panel'] = 'Panoul de control al imaginilor asociate';
+$lang['Avatar_gallery'] = 'Galeria de imagini';
 
-$lang['Website'] = 'Website';
-$lang['Location'] = 'Localitate';
+$lang['Website'] = 'Site Web';
+$lang['Location'] = 'Locatie';
 $lang['Contact'] = 'Contact';
-$lang['Email_address'] = 'Adresa email';
+$lang['Email_address'] = 'Adresa de email';
 $lang['Email'] = 'Email';
 $lang['Send_private_message'] = 'Trimite mesaj privat';
 $lang['Hidden_email'] = '[ Ascuns ]';
-$lang['Search_user_posts'] = 'Cauta mesaje ale acestui membru';
-$lang['Interests'] = 'Pasiuni';
-$lang['Occupation'] = 'Ocupatie'; 
-$lang['Poster_rank'] = 'Poster rank';
+$lang['Search_user_posts'] = 'cauta mesaje scrise de acest utilizator';
+$lang['Interests'] = 'Interese';
+$lang['Occupation'] = 'Ocupatia';
+$lang['Poster_rank'] = 'Rangul utilizatorului';
 
-$lang['Total_posts'] = 'Total mesaje';
+$lang['Total_posts'] = 'Numarul total de mesaje';
 $lang['User_post_pct_stats'] = '%.2f%% din total'; // 1.25% of total
 $lang['User_post_day_stats'] = '%.2f mesaje pe zi'; // 1.5 posts per day
-$lang['Search_user_posts'] = 'Cauta toate mesajele membrului %s'; // Find all posts by username
+$lang['Search_user_posts'] = 'Cauta toate mesajele lui %s'; // Find all posts by username
 
-$lang['No_user_id_specified'] = 'Nu exista utilizatorul';
-$lang['Wrong_Profile'] = 'Nu poti modifica un profil ce nu iti apartine.';
+$lang['No_user_id_specified'] = 'Scuze dar acest utilizator nu exista';
+$lang['Wrong_Profile'] = 'Nu puteti modifica un profil daca nu este propriul dumneavoastra profil.';
 
-$lang['Only_one_avatar'] = 'Un ziongur tip poate fi specificat';
-$lang['File_no_data'] = 'Fisierul specificat este gol sau nu exista';
-$lang['No_connection_URL'] = 'Conectarea la URL-ul specificat nu s-a putut realiza';
-$lang['Incomplete_URL'] = 'URL-ul specificat este incomplet';
-$lang['Wrong_remote_avatar_format'] = 'URL-ul nu este valid';
-$lang['No_send_account_inactive'] = 'Parola nu poate fi trimisa deoarece contul este inactiv. Contactati admin-ul pt. informatii suplimentare.';
+$lang['Only_one_avatar'] = 'Se poate specifica doar un tip de imagine asociata';
+$lang['File_no_data'] = 'Fisierul specificat de URL-ul dumneavoastra nu contine informatii';
+$lang['No_connection_URL'] = 'Conexiunea nu poate fi facuta la URL-ul specificat';
+$lang['Incomplete_URL'] = 'URL-ul introdus este incomplet';
+$lang['Wrong_remote_avatar_format'] = 'URL-ul catre imaginea asociata nu este valid';
+$lang['No_send_account_inactive'] = 'Scuze, dar parola dumneavoastra nu mai poate fi folosita deoarece contul este inactiv. Te rog contacteaza administratorul forumului pentru mai multe informatii';
 
-$lang['Always_smile'] = 'Foloseste Smilies';
-$lang['Always_html'] = 'Foloseste HTML';
-$lang['Always_bbcode'] = 'Foloseste BBCode';
-$lang['Always_add_sig'] = 'Ataseaza semnatura';
-$lang['Always_notify'] = 'Anunta-ma cad se raspune mesajelor mele';
-$lang['Always_notify_explain'] = 'Trimite email cand cineva raspunde la un topic propriu.';
+$lang['Always_smile'] = 'Folosesc intotdeauna zambete';
+$lang['Always_html'] = 'Folosesc intotdeauna cod HTML';
+$lang['Always_bbcode'] = 'Folosesc intotdeauna cod BB';
+$lang['Always_add_sig'] = 'Adauga intotdeauna semnatura mea la mesaje';
+$lang['Always_notify'] = 'Anunta-ma intotdeauna de raspunsuri la mesajele mele';
+$lang['Always_notify_explain'] = 'Trimite-mi un email cand cineva raspunde la mesajele mele. Optiunea poate fi schimbata la fiecare mesaj nou.';
 
-$lang['Board_style'] = 'Stil';
-$lang['Board_lang'] = 'Limba';
+$lang['Board_style'] = 'Stilul interfetei';
+$lang['Board_lang'] = 'Limba interfetei';
 $lang['No_themes'] = 'Nici o tema in baza de date';
-$lang['Timezone'] = 'Timezone';
+$lang['Timezone'] = 'Timpul zonal';
 $lang['Date_format'] = 'Formatul datei';
-$lang['Date_format_explain'] = 'Sintaxa e identica cu sintaxa din PHP a functiei <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a>';
+$lang['Date_format_explain'] = 'Sintaxa utilizata este identica cu cea folosita de functia PHP <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a>';
 $lang['Signature'] = 'Semnatura';
-$lang['Signature_explain'] = 'Bloc de text ce poate si adaugat la fiecare mesaj pe care il publici. Limita este de %d caractere';
-$lang['Public_view_email'] = 'Arata adresa mea de email';
+$lang['Signature_explain'] = 'Acesta este un bloc de text care poate fi adaugat mesajelor scrise de dumneavoastra. Limita este de %d caractere';
+$lang['Public_view_email'] = 'Afiseaza intotdeauna adresa mea de email';
 
 $lang['Current_password'] = 'Parola curenta';
 $lang['New_password'] = 'Parola noua';
-$lang['Confirm_password'] = 'Confirma parola';
-$lang['Confirm_password_explain'] = 'Trebuie sa confirmi parola daca doresti sa o schimbi sau sa modifici adresa de email';
-$lang['password_if_changed'] = 'Trebuie sa introduci parola doar daca doresti sa o schimbi';
-$lang['password_confirm_if_changed'] = 'Trebuie sa confirmi parola doar daca doresti sa o schimbi';
+$lang['Confirm_password'] = 'Confirmati parola';
+$lang['Confirm_password_explain'] = 'Trebuie sa confirmati parola curenta daca vreti sa o schimbati sau vreti sa aveti alta adresa de email';
+$lang['password_if_changed'] = 'Este necesar sa specificati parola daca vreti sa o schimbati';
+$lang['password_confirm_if_changed'] = 'Este necesar sa confirmati parola daca ati schimbat-o anterior';
 
-$lang['Avatar'] = 'Avatar';
-$lang['Avatar_explain'] = 'Afiseaza o mica imagine la fiecare mesaj. O singura imagine poate fi afisata la un moment dat, latimea nu poate fi mai mare decat %d pixeli, inaltimea nu poate fi mai mare decat %d pixeli si fisierul nu poate fi mai mare decat %dkB.';
-$lang['Upload_Avatar_file'] = 'Copiaza imagiea de pe propriul calculator';
-$lang['Upload_Avatar_URL'] = 'Copiaza imaginea de la un URL';
-$lang['Upload_Avatar_URL_explain'] = 'Introdu URL cu imaginea (imaginea va fi copiata).';
-$lang['Pick_local_Avatar'] = 'Alege imaginea din galerie';
-$lang['Link_remote_Avatar'] = 'Link catre imagine externa';
-$lang['Link_remote_Avatar_explain'] = 'Introdu link catre imaginea dorita.';
-$lang['Avatar_URL'] = 'URL-ul imaginii \'Avata\'';
-$lang['Select_from_gallery'] = 'Alege o imagine din galerie';
-$lang['View_avatar_gallery'] = 'Arata galeria';
+$lang['Avatar'] = 'Imagine asociata (Avatar)';
+$lang['Avatar_explain'] = 'Afiseaza o imagine micuta sub detaliile dumneavoastra din mesaje. Doar o imagine poate fi afisata in acelasi timp, marimea ei nu poate fi mai mare de %d pixeli ca inaltime si %d ca latime si marimea fisierului poate fi cel mult de %dko.';
+$lang['Upload_Avatar_file'] = 'Incarcati de pe calculatorul dumneavoastra imaginea asociata';
+$lang['Upload_Avatar_URL'] = 'Incarcati cu un URL imaginea asociata';
+$lang['Upload_Avatar_URL_explain'] = 'Introduceti URL-ul locului unde este imaginea asociatar pentru a fi copiata pe acest site.';
+$lang['Pick_local_Avatar'] = 'Alegeti o imagine asociata din galerie';
+$lang['Link_remote_Avatar'] = 'Legatura spre un alt site ce contine imagini asociate';
+$lang['Link_remote_Avatar_explain'] = 'Introduceti URL-ul locului unde este imaginea asociata pentru a face o legatura la ea.';
+$lang['Avatar_URL'] = 'URL-ul imaginii asociate';
+$lang['Select_from_gallery'] = 'Alegeti o imagine asociata din galerie';
+$lang['View_avatar_gallery'] = 'Arata galeria de imagini asociate';
 
-$lang['Select_avatar'] = 'Alege imagine';
-$lang['Return_profile'] = 'Renunta la imagine';
-$lang['Select_category'] = 'Alege categoria';
+$lang['Select_avatar'] = 'Alegeti o imagine asociata';
+$lang['Return_profile'] = 'Renuntati la imaginea asociata';
+$lang['Select_category'] = 'Alegeti o categorie';
 
-$lang['Delete_Image'] = 'Sterge Imaginea';
-$lang['Current_Image'] = 'Imaginea Curenta';
+$lang['Delete_Image'] = 'Stergeti imaginea';
+$lang['Current_Image'] = 'Imaginea curenta';
 
-$lang['Notify_on_privmsg'] = 'Anunta-ma cand apar mesaje private noi';
-$lang['Popup_on_privmsg'] = 'Anunt \'pop up\' la mesaje private noi'; 
-$lang['Popup_on_privmsg_explain'] = 'Unele templaturi vor deschide o fereastra pentru a te informa despre mesajele private noi'; 
-$lang['Hide_user'] = 'Ascunde prezenta mea online';
+$lang['Notify_on_privmsg'] = 'Atentioneaza-ma cand primesc un mesaj privat nou';
+$lang['Popup_on_privmsg'] = 'Deschide o fereastra cand primesc un mesaj privat nou';
+$lang['Popup_on_privmsg_explain'] = 'Unele sabloane pot deschide o fereastra noua pentru a va informa de faptul ca ati primit un mesaj privat nou';
+$lang['Hide_user'] = 'Ascundeti indicatorul de conectare';
 
-$lang['Profile_updated'] = 'Profilul a fost salvat';
-$lang['Profile_updated_inactive'] = 'Profilul a fost salvat dar modificarile facute au fost substantiale si contul este inactiv. Verifica-ti emailul pentru a vedea cum poti reactiva contul. In cazul in care reactivarea contului trebuie facuta de catre administrator ascteapta ca acesta sa activeze contul';
+$lang['Profile_updated'] = 'Profilul dumneavoastra a fost actualizat';
+$lang['Profile_updated_inactive'] = 'Profilul dumneavoastra a fost actualizat, dar deoarece au fost modificate detalii importante contul este momentan inactiv. Verificati-va email-ul pentru a afla cum iti va fi reactivat contul sau daca este necesara interventia administratorului asteptati pana ce acesta va va reactiva contul.';
 
-$lang['Password_mismatch'] = 'Parola introdusa nu se potriveste';
-$lang['Current_password_mismatch'] = 'Parola introdusa nu se potriveste cy cea existenta in baza de date';
-$lang['Password_long'] = 'Parola trebuie sa fie mai mica de 32 caractere';
-$lang['Username_taken'] = 'Acest username este deja ales';
-$lang['Username_invalid'] = 'Numele ales contine caractere invalide ex: \'';
-$lang['Username_disallowed'] = 'Nu este permis un astfel de nume';
-$lang['Email_taken'] = 'Un alt membru foloseste adresa de email specificata';
-$lang['Email_banned'] = 'Adresa de email nu poate fi folosita (interzisa de administrator)';
-$lang['Email_invalid'] = 'Adresa email invalida';
-$lang['Signature_too_long'] = 'Semnatura este prea lunga';
-$lang['Fields_empty'] = 'Trebuie completate atoate campurile cerute';
-$lang['Avatar_filetype'] = 'Imaginea trebuie sa aiba extensia .jpg, .gif sau .png';
-$lang['Avatar_filesize'] = 'Imaginea trebuie sa fie mai mica decat %d kB'; // The avatar image file size must be less than 6 kB
-$lang['Avatar_imagesize'] = 'Imaginea trebuie sa aiba latimea mai mica de %dx%d pixeli'; 
+$lang['Password_mismatch'] = 'Parolele introduse nu sunt valide';
+$lang['Current_password_mismatch'] = 'Parola furnizata de dumneavoastra nu este gasita in baza de date';
+$lang['Password_long'] = 'Parola nu trebuie sa depaseasca 32 de caractere';
+$lang['Username_taken'] = 'Scuze, dar numele de utilizator introdus, exista deja';
+$lang['Username_invalid'] = 'Scuze, dar numele de utilizator introdus contine caractere gresite, ca de exemplu: \'';
+$lang['Username_disallowed'] = 'Scuze, dar acest nume de utilizator a fost interzis';
+$lang['Email_taken'] = 'Scuze, dar adresa de email introdusa este deja folosita de un alt utilizator';
+$lang['Email_banned'] = 'Scuze, dar aceasta adresa de email a fost interzisa';
+$lang['Email_invalid'] = 'Scuze, dar aceasta adresa de email nu este corecta';
+$lang['Signature_too_long'] = 'Semnatura dumneavoastra este prea lunga';
+$lang['Fields_empty'] = 'Trebuie sa completati campurile obligatorii';
+$lang['Avatar_filetype'] = 'Imaginile asociater trebuie sa fie de tipul: .jpg, .gif sau .png';
+$lang['Avatar_filesize'] = 'Imaginile asociate trebuie sa fie mai mici de: %d kB'; // The avatar image file size must be less than 6 kB
+$lang['Avatar_imagesize'] = 'Imaginile asociate trebuie sa fie mai mici de %d pixeli pe latime si %d pixeli pe inaltime';
 
-$lang['Welcome_subject'] = 'Bine ai venit la forumul %s'; // Welcome to my.com forums
-$lang['New_account_subject'] = 'Cont nou';
-$lang['Account_activated_subject'] = 'Cont Activat';
+$lang['Welcome_subject'] = 'Bine ati venit pe forumul %s '; // Welcome to my.com forums
+$lang['New_account_subject'] = 'Cont nou de utilizator';
+$lang['Account_activated_subject'] = 'Contul a fost activat';
 
-$lang['Account_added'] = 'Multumim pentru inregistrare. Contul a fost creeat.';
-$lang['Account_inactive'] = 'Contul a fost creeat dar necesita confirmare. Modalitatea de confirmare a fost trimisa prin email la adresa specificata la inregistrare.';
-$lang['Account_inactive_admin'] = 'Contul a fost creeat. Activarea trebuie aprobata de catre administrator. Veti fi informat prin email cand contul a fost aprobat.';
-$lang['Account_active'] = 'Contul a fost activat. Va multumim pentru inregistrare';
+$lang['Account_added'] = 'Va multumim pentru inregistrare, contul a fost creat. Puteti sa va autentificati cu numele de utilizator si parola';
+$lang['Account_inactive'] = 'Contul a fost creat. Acest forum necesita activarea contului, o cheie de activare a fost trimisa pe adresa de email furnizata de dumneavoastra. Va rugam sa va verificati casuta de email pentru mai multe informatii.';
+$lang['Account_inactive_admin'] = 'Contul a fost creat. Acest forum necesita activarea contului de catre administrator. Veti fi informat prin email cand contul va fi activat.';
+$lang['Account_active'] = 'Contul a fost activat. Multumim pentru inregistrare.';
 $lang['Account_active_admin'] = 'Contul a fost activat';
-$lang['Reactivate'] = 'Reactiveaza contul!';
+$lang['Reactivate'] = 'Reactivati-va contul!';
 $lang['Already_activated'] = 'Contul a fost deja activat';
-$lang['COPPA'] = 'Contul a fost creeat dar inca nu a fost aprobat. Detalii v-au fort trimise prin email.';
+$lang['COPPA'] = 'Contul a fost creat dar trebuie sa fie aprobat, verificati-va, va rugam, casuta de email.';
 
-$lang['Registration'] = 'Termeni de Inregistrare';
-$lang['Reg_agreement'] = 'Cu toate ca administratorii si moderatorii acestui forum vor incerca sa modifice/interzica eventualele mesaje ce nu se inscriu in scopul acestui forum este totusi imposibil ca fiecare mesaj sa fie analizat. Toate mesajele publicate aici sunt pareri personale ale autorilor mesajelor si nu ale administratorilor sau moderatorilor (exceptie facand mesajele publicate de catre acestia).<br /><br />Odata cu inregistrarea va angajati sa nu publicati material ce nu se incadreaza in scopul acestui forum, respectiv material ce incalca legea. Publicarea unor astfel de materiale va duce la interziceerea dreptului de a publica. Adresa IP a tuturor mesajelor este inregistrata. Esti de acord ca administratori si moderatorii acestui forum pot modifica, sterge, bloca orice subiect, in orice moment in cazurile in care cred ei de cuviinta. Toate informatiile introduse la inregistrare vor si introduse in baza de date. Aceste informatii nu vor fi divulgate unor terte parti fara acordul dv.<br /><br />Acest forum foloseste cookie-uri pentru a stoca informatii pe calculatorul dv. Aceste cookie-uri nu contin informatiile introduse de dv. ci doar informatii pentru personalizarea forumului. Adresa de email introdusa este folosita doar pentru emailul de confirmare si pentru a primi parola in cazul in care o uitati.';
+$lang['Registration'] = 'Termenii acordului de inregistrare';
+$lang['Reg_agreement'] = 'Intotdeauna administratorii si moderatorii acestui forum vor incerca sa indeparteze sau sa modifice orice material deranjant cat mai repede posibil; este imposibil sa parcurga fiecare mesaj in parte. Din acest motiv trebuie sa stiti ca toate mesajele exprima punctul de vedere si opiniile autorilor si nu ale administratorilor,
+moderatorilor sau a web master-ului (exceptie facand mesajele scrise chiar de catre ei) si de aceea ei nu pot fi facuti responsabili.<br /><br />Trebuie sa fiti de acord sa nu publicati mesaje cu continut abuziv, obscen, vulgar, calomnios, de ura, amenintator, sexual sau orice alt material ce poate viola legile aflate in vigoare. Daca publicati astfel de materiale puteti fi imediat si pentru totdeauna indepartat din forum (si firma care va ofera accesul la Internet va fi anuntata). Adresele IP ale tuturor mesajelor trimise sunt stocate pentru a fi de ajutor in rezolvarea unor astfel de incalcari ale regulilor. Trebuie sa fiti de acord ca webmaster-ul, administratorul si moderatorii acestui forum au dreptul de a sterge, modifica sau inchide orice subiect, oricand cred ei ca acest lucru se impune. Ca utilizator, trebuie sa fiti de acord ca orice informatie introdusa de dumneavoastra sa fie stocata in baza de date. Aceste informatii nu vor fi aratate unei terte persoane fara consimtamantul webmaster-ului, administratorului si moderatorilor care nu pot fi facuti responsabili de atacurile de furt sau de vandalism care pot sa duca la compromiterea datelor.<br /><br />Acest forum utilizeaza fisierele tip cookie pentru a stoca informatiile pe calculatorul dumneavoastra. Aceste fisiere cookie nu contin informatii despre alte aplicatii ci ele sunt folosite doar pentru usurarea navigarii pe forum. Adresele de email sunt utilizate doar pentru confirmarea inregistrarii dumneavoastra ca utilizator si pentru parola (si pentru trimiterea unei noi parole daca ati uitat-o pe cea curenta).<br /><br />Prin apasarea pe butonul de inregistrare se considera ca sunteti de acord cu aceste conditii.';
 
-$lang['Agree_under_13'] = 'Sunt de acord cu cele scrise mai sus';
-$lang['Agree_over_13'] = 'Sunt de acord cu cele scrise mai sus';
-$lang['Agree_not'] = 'Nu sunt de acord cu ce scrie mai sus';
+$lang['Agree_under_13'] = 'Sunt de acord cu aceste conditii si declar ca am <b>sub</b> 13 ani';
+$lang['Agree_over_13'] = 'Sunt de acord cu aceste conditii si declar ca am <b>peste</b> 13 ani';
+$lang['Agree_not'] = 'Nu sunt de acord cu aceste conditii';
 
-$lang['Wrong_activation'] = 'Cheia de activare nu se potriveste cu cheia din baza de date';
-$lang['Send_password'] = 'Trimite-mi o parola noua'; 
-$lang['Password_updated'] = 'Ti-am trimis o parola noua prin email impreuna cu modalitatea de activare a acestei parole';
-$lang['No_email_match'] = 'Adresa email nu se potriveste cu cea din baza de date pentru acel utilizator';
-$lang['New_password_activation'] = 'Activarea noii parole';
-$lang['Password_activated'] = 'Contul a fost reactivat. Autentificarea se face cu parola primita in email';
+$lang['Wrong_activation'] = 'Cheia de activare furnizata nu se regaseste in baza de date';
+$lang['Send_password'] = 'Trimiteti-mi o parola noua';
+$lang['Password_updated'] = 'O parola noua a fost creata, va rugam verificati-va casuta de email pentru informatiile de activare';
+$lang['No_email_match'] = 'Adresa de email furnizata nu corespunde celei asociate acestui utilizator';
+$lang['New_password_activation'] = 'Activarea parolei noi';
+$lang['Password_activated'] = 'Contul dumneavoastra a fost reactivat. La autentificare utilizati parola trimisa in la adresa de email primita';
 
-$lang['Send_email_msg'] = 'Trimite un email';
-$lang['No_user_specified'] = 'Nu a fost specificat nici un membru';
-$lang['User_prevent_email'] = 'Acest membru nu doreste sa primeasca emailuri. Incearca sa-i trimiti un mesaj privat';
-$lang['User_not_exist'] = 'Acest utilizator nu exista';
-$lang['CC_email'] = 'Trimite-ti o copie al acestui email';
-$lang['Email_message_desc'] = 'Acest mesaj va fi trimis plain text, nu include HTML sau BBCode.';
-$lang['Flood_email_limit'] = 'Nu poti trimite un nou email in acest moment. Incearca mai tarziu';
-$lang['Recipient'] = 'Destinatar';
-$lang['Email_sent'] = 'Emailul a fost trimis';
-$lang['Send_email'] = 'Trimite email';
-$lang['Empty_subject_email'] = 'Trebuie sa completezi subiectul';
-$lang['Empty_message_email'] = 'Trebuie sa scri ceva in corbul mesajului';
+$lang['Send_email_msg'] = "Trimite un email";
+$lang['No_user_specified'] = "Nu a fost specificat utilizatorul";
+$lang['User_prevent_email'] = "Acest utilizator nu doreste sa primeasca mesaje. Incearcati sa-i trimiteti un mesaj privat";
+$lang['User_not_exist'] = "Acest utilizator nu exista";
+$lang['CC_email'] = "Trimiteti-va o copie";
+$lang['Email_message_desc'] = "Acest mesaj va fi trimis in mod text, nu include cod HTML sau cod BB. Adresa de intoarcere pentru acest mesaj va fi setata catre adresa dumneavoastra de email.";
+$lang['Flood_email_limit'] = "Nu puteti trimite inca un email in acest moment, incearcati mai tarziu.";
+$lang['Recipient'] = "Recipient";
+$lang['Email_sent'] = "Mesajul a fost trimis";
+$lang['Send_email'] = "Trimite un mesaj";
+$lang['Empty_subject_email'] = "Trebuie specificat un subiect pentru mesaj";
+$lang['Empty_message_email'] = "Trebuie introdus continut in mesaj";
 
 
 //
 // Memberslist
 //
-$lang['Select_sort_method'] = 'Selecteaza ordinea de sortare';
+$lang['Select_sort_method'] = 'Selectati metoda de sortare';
 $lang['Sort'] = 'Sorteaza';
-$lang['Sort_Top_Ten'] = 'Top 10 Autori';
-$lang['Sort_Joined'] = 'Data de inscriere';
-$lang['Sort_Username'] = 'Username';
-$lang['Sort_Location'] = 'Localitate';
-$lang['Sort_Posts'] = 'Total mesaje';
+$lang['Sort_Top_Ten'] = 'Top 10 utilizatori';
+$lang['Sort_Joined'] = 'Data inregistrarii';
+$lang['Sort_Username'] = 'Nume utilizator';
+$lang['Sort_Location'] = 'Locatia';
+$lang['Sort_Posts'] = 'Numar total de mesaje';
 $lang['Sort_Email'] = 'Email';
-$lang['Sort_Website'] = 'Website';
-$lang['Sort_Ascending'] = 'Crescator';
-$lang['Sort_Descending'] = 'Descrescator';
+$lang['Sort_Website'] = 'Site Web';
+$lang['Sort_Ascending'] = 'Ascendent';
+$lang['Sort_Descending'] = 'Descendent';
 $lang['Order'] = 'Ordine';
 
 
 //
 // Group control panel
 //
-$lang['Group_Control_Panel'] = 'Control Panel pentru grupuri';
-$lang['Group_member_details'] = 'Detalii pentru grup';
-$lang['Group_member_join'] = 'Intra intr-un Grup';
+$lang['Group_Control_Panel'] = 'Panoul de control al gupurilor';
+$lang['Group_member_details'] = 'Detalii ale membrilor grupului';
+$lang['Group_member_join'] = 'Aderati la un grup';
 
-$lang['Group_Information'] = 'Informatii despre Grup';
+$lang['Group_Information'] = 'Informatii despre grup';
 $lang['Group_name'] = 'Numele grupului';
 $lang['Group_description'] = 'Descrierea grupului';
-$lang['Group_membership'] = 'Grup info';
-$lang['Group_Members'] = 'Membri Grupului';
-$lang['Group_Moderator'] = 'Moderatorul Grpuluilui';
-$lang['Pending_members'] = 'Membri in Asteptare';
+$lang['Group_membership'] = 'Membrii grupului';
+$lang['Group_Members'] = 'Membrii grupului';
+$lang['Group_Moderator'] = 'Moderatorul grupului';
+$lang['Pending_members'] = 'Membrii in asteptare';
 
-$lang['Group_type'] = 'Tipul Grupului';
-$lang['Group_open'] = 'Grup Deschis';
-$lang['Group_closed'] = 'Grup Inchis';
-$lang['Group_hidden'] = 'Grup Invizibil';
+$lang['Group_type'] = 'Tipul grupului';
+$lang['Group_open'] = 'Grup deschis';
+$lang['Group_closed'] = 'Grup inchis';
+$lang['Group_hidden'] = 'Grup ascuns';
 
-$lang['Current_memberships'] = 'Grupuri in care esti membru';
-$lang['Non_member_groups'] = 'Grupuri in care nu esti membru';
-$lang['Memberships_pending'] = 'Aprobare necesara pt. a deveni membru';
+$lang['Current_memberships'] = 'Membrii curenti ai grupului';
+$lang['Non_member_groups'] = 'Membrii care nu fac parte din grupuri';
+$lang['Memberships_pending'] = 'Membrii in asteptare';
 
-$lang['No_groups_exist'] = 'Nu exista nici un grup';
-$lang['Group_not_exist'] = 'That user group does not exist';
+$lang['No_groups_exist'] = 'Nu exista grupuri';
+$lang['Group_not_exist'] = 'Acest grup de utilizatori nu exista';
 
-$lang['Join_group'] = 'Intra in Grup';
-$lang['No_group_members'] = 'Acest grup nu are membri';
-$lang['Group_hidden_members'] = 'Acest grup e invizibvil, nu ii poti vedea alte informatii';
-$lang['No_pending_group_members'] = 'Acest grup nu are utilizatori ce asteapta aprobarea pt. a deveni membri';
-$lang['Group_joined'] = 'Ai devenit trimis cererea<br />Vei fi informat cand cererea iti va fi aprobata de moderatorul grupului';
-$lang['Group_request'] = 'A fost facuta o cerere de acceptare in grup';
-$lang['Group_approved'] = 'Cererea a fost aprobata';
-$lang['Group_added'] = 'Ai devenit membru al acestui grup'; 
-$lang['Already_member_group'] = 'Esti deja membru al grupului';
-$lang['User_is_member_group'] = 'Utilizatorul e deja membru al grupului';
-$lang['Group_type_updated'] = 'S-a efectuat schimbarea de tip a grupului';
+$lang['Join_group'] = 'Adera la grup';
+$lang['No_group_members'] = 'Acest grup nu are membrii';
+$lang['Group_hidden_members'] = 'Acest grup este ascuns, nu-i puteti vedea membrii';
+$lang['No_pending_group_members'] = 'Acest grup nu are membrii in asteptare';
+$lang['Group_joined'] = 'Inscrierea la acest grup a fost facuta cu succes.<br />Veti fi anuntat cand cererea dumneavoastra va fi aprobata de moderatorul grupului';
+$lang['Group_request'] = 'A fost depusa o cerere de aderare la grupul dumneavoastra';
+$lang['Group_approved'] = 'Cererea dumneavoastra de aderare la grup a fost aprobata';
+$lang['Group_added'] = 'Ati fost acceptat la acest grup de utilizatori';
+$lang['Already_member_group'] = 'Sunteti deja membru al acestui grup';
+$lang['User_is_member_group'] = 'Utilizatorul este deja membru al acestui grup';
+$lang['Group_type_updated'] = 'Modificarea tipului de grup s-a realizat cu succes';
 
-$lang['Could_not_add_user'] = 'Membrul ales nu exista';
-$lang['Could_not_anon_user'] = 'Nu poti face membru un utilizator anonim';
+$lang['Could_not_add_user'] = 'Utilizatorul selectat nu exista';
+$lang['Could_not_anon_user'] = 'Un Anonim nu poate fi facut membru de grup';
 
-$lang['Confirm_unsub'] = 'Esti sigur ca vrei sa parasesti grupul?';
-$lang['Confirm_unsub_pending'] = 'Nu ti-a fost inca aprobata cererea de a deveni membru al acestui grup. Esti sigur ca vrei sa-ti retragi cererea?';
+$lang['Confirm_unsub'] = 'Sunteti sigur ca vreti sa parasiti acest grup?';
+$lang['Confirm_unsub_pending'] = 'Cererea dumneavoastra de aderare la acest grup nu a fost inca aprobata, sunteti sigur ca vreti sa-l parasiti?';
 
-$lang['Unsub_success'] = 'Ai parasit acest grup.';
+$lang['Unsub_success'] = 'Dorinta dumneavoastra de parasire a grupului a fost indeplinita.';
 
-$lang['Approve_selected'] = 'Acepta selectatii';
-$lang['Deny_selected'] = 'Nu accepta selectatii';
-$lang['Not_logged_in'] = 'Trebuie sa fi autentificat pt. a intra intr-un grup.';
-$lang['Remove_selected'] = 'Sterge selectatii';
+$lang['Approve_selected'] = 'Aproba selectiile';
+$lang['Deny_selected'] = 'Respinge selectiile';
+$lang['Not_logged_in'] = 'Trebuie sa fiti autentificat pentru a adera la grup.';
+$lang['Remove_selected'] = 'Sterge selectiile';
 $lang['Add_member'] = 'Adauga membru';
-$lang['Not_group_moderator'] = 'Nu esti moderatorul acestui grup.';
+$lang['Not_group_moderator'] = 'Nu sunteti moderator in acest grup; prin urmare nu puteti efectua aceste actiuni.';
 
-$lang['Login_to_join'] = 'Autentifica-te pentru a te alatura sau modifica lista de membri ai grupului.';
-$lang['This_open_group'] = 'Grupul este descshis. Apasa pentru a face o cerere de acceptare.';
-$lang['This_closed_group'] = 'Grup inchis. Nu sunt acceptati membrii noi.';
-$lang['This_hidden_group'] = 'Grup invizibil. Adaugarea automata de membri nu este permisa.';
-$lang['Member_this_group'] = 'Esti membru al acestui grup.';
-$lang['Pending_this_group'] = 'Astepti sa devi membru al acestui grup.';
-$lang['Are_group_moderator'] = 'Esti moderator al acestui grup.';
-$lang['None'] = 'Nimeni';
+$lang['Login_to_join'] = 'Autentificati-va pentru a adera la grup sau pentru a organiza membrii';
+$lang['This_open_group'] = 'Acesta este un grup deschis, apasati aici pentru a deveni membru';
+$lang['This_closed_group'] = 'Acesta este un grup inchis, nu mai accepta noi membrii';
+$lang['This_hidden_group'] = 'Acesta este un grup ascuns, cererile de aderare automate nu sunt acceptate';
+$lang['Member_this_group'] = 'Sunteti membru al acestui grup';
+$lang['Pending_this_group'] = 'Cererea de membru al acestui grup este in asteptare';
+$lang['Are_group_moderator'] = 'Sunteti moderatorul grupului';
+$lang['None'] = 'Nu';
 
-$lang['Subscribe'] = 'Aboneaza';
-$lang['Unsubscribe'] = 'Dezaboneaza';
-$lang['View_Information'] = 'Vezi informatii';
-
+$lang['Subscribe'] = "Inscriere";
+$lang['Unsubscribe'] = "Parasire";
+$lang['View_Information'] = "Vizualizare informatii";
 
 //
 // Search
 //
-$lang['Search_query'] = 'Cauta';
-$lang['Search_options'] = 'Optiuni';
+$lang['Search_query'] = 'Interogare de cautare';
+$lang['Search_options'] = 'Optiuni de cautare';
 
-$lang['Search_keywords'] = 'Cauta Cuvinte Cheie';
-$lang['Search_keywords_explain'] = 'Poti folosi <u>AND</u> pentru a defini cuvinte ce trebuie sa existe in rezultat, <u>OR</u> pentru a defini cuvinte ce pot fi in rezultat si <u>NOT</u> pentru a defini cuvinte ce nu trebuie sa existe in rezultat. Foloseste * ca \'wildcard\' pentru rezultate partiale';
-$lang['Search_author'] = 'Cauta dupa Author';
-$lang['Search_author_explain'] = 'Foloseste * ca \'wildcard\' pentru rezultate partiale';
+$lang['Search_keywords'] = 'Cauta dupa cuvintele cheie';
+$lang['Search_keywords_explain'] = 'Puteti folosi <u>AND</u> pentru a defini cuvintele ce trebuie sa fie in rezultate, <u>OR</u> pentru a defini cuvintele care pot sa fie in rezultat, si <u>NOT</u> pentru a defini cuvintele care nu trebuie sa fie in rezultate. Se poate utiliza * pentru parti de cuvinte.';
+$lang['Search_author'] = 'Cauta dupa autor';
+$lang['Search_author_explain'] = 'Utilizati * pentru parti de cuvinte';
 
-$lang['Search_for_any'] = 'Cauta orice cuvant';
-$lang['Search_for_all'] = 'Cauta toate cuvintele';
-$lang['Search_title_msg'] = 'Cauta in subiect si in corpul mesajului';
-$lang['Search_msg_only'] = 'Cauta doar in corpul mesajului';
+$lang['Search_for_any'] = "Cauta dupa oricare dintre termeni sau utilizeaza o interogare ca intrare";
+$lang['Search_for_all'] = "Cauta dupa toti termenii";
+$lang['Search_title_msg'] = "Cauta in titlul subiectelor si in textele mesajelor";
+$lang['Search_msg_only'] = "Cauta doar in textele mesajelor";
 
-$lang['Return_first'] = 'Returneaza primele '; // followed by xxx characters in a select box
-$lang['characters_posts'] = 'caractere din mesaj';
+$lang['Return_first'] = 'Intoarce primele'; // followed by xxx characters in a select box
+$lang['characters_posts'] = 'de caractere ale mesajelor';
 
-$lang['Search_previous'] = 'Cauta in rezultate anterioare'; // followed by days, weeks, months, year, all in a select box
+$lang['Search_previous'] = 'Cauta in urma'; // followed by days, weeks, months, year, all in a select box
 
-$lang['Sort_by'] = 'Ordonate dupa';
-$lang['Sort_Time'] = 'Data Publicarii';
-$lang['Sort_Post_Subject'] = 'Subiect';
-$lang['Sort_Topic_Title'] = 'Title';
+$lang['Sort_by'] = 'Sorteaza dupa';
+$lang['Sort_Time'] = 'Data mesajului';
+$lang['Sort_Post_Subject'] = 'Subiectul mesajului';
+$lang['Sort_Topic_Title'] = 'Titlul subiectului';
 $lang['Sort_Author'] = 'Autor';
 $lang['Sort_Forum'] = 'Forum';
 
 $lang['Display_results'] = 'Afiseaza rezultatele ca';
-$lang['All_available'] = 'Toate';
-$lang['No_searchable_forums'] = 'Nu ai permisiunea de a cauta in nici un forum';
+$lang['All_available'] = 'Disponibile toate';
+$lang['No_searchable_forums'] = 'nu aveti drepturi de cautare in nici un forum de pe acest site';
 
-$lang['No_search_match'] = 'Nici un subiect sau mesaj nu a indeplinit conditia cautata';
-$lang['Found_search_match'] = 'A fost gasit un rezultat'; // eg. Search found 1 match
-$lang['Found_search_matches'] = 'Au fost gasite %d rezultate'; // eg. Search found 24 matches
+$lang['No_search_match'] = 'Nici un subiect sau mesaj nu indeplineste criteriul introdus la cautare';
+$lang['Found_search_match'] = 'Cautarea a gasit %d rezultat'; // eg. Search found 1 match
+$lang['Found_search_matches'] = 'Cautarea a gasit %d rezultate'; // eg. Search found 24 matches
 
 $lang['Close_window'] = 'Inchide fereastra';
 
@@ -782,108 +784,108 @@ $lang['Close_window'] = 'Inchide fereastra';
 // Auth related entries
 //
 // Note the %s will be replaced with one of the following 'user' arrays
-$lang['Sorry_auth_announce'] = 'Nu poti publica decat %s mesaje in acest forum';
-$lang['Sorry_auth_sticky'] = 'Nu poti publica decat %s mesaje sticky in acest forum'; 
-$lang['Sorry_auth_read'] = 'Nu poti citi decat %s subiecte din acest forum'; 
-$lang['Sorry_auth_post'] = 'Nu poti publica decat %s subiecte in acest forum'; 
-$lang['Sorry_auth_reply'] = 'Nu poti raspunde decat la %s mesaje in acest forum'; 
-$lang['Sorry_auth_edit'] = 'Nu poti modifica decat %s mesaje in acest forum'; 
-$lang['Sorry_auth_delete'] = 'Nu poti sterge decat %s mesaje in acest forum'; 
-$lang['Sorry_auth_vote'] = 'Nu poti vota in sondaje decat de %s ori in acest forum'; 
+$lang['Sorry_auth_announce'] = 'Ne pare rau dar doar %s poate pune anunturi in acest forum';
+$lang['Sorry_auth_sticky'] = 'Ne pare rau dar doar %s poate pune mesaje lipicioase (sticky) in acest forum';
+$lang['Sorry_auth_read'] = 'Ne pare rau dar doar %s poate citi subiectele din acest forum';
+$lang['Sorry_auth_post'] = 'Ne pare rau dar doar %s poate scrie subiecte in acest forum';
+$lang['Sorry_auth_reply'] = 'Ne pare rau dar doar %s poate replica in acest forum';
+$lang['Sorry_auth_edit'] = 'Ne pare rau dar doar %s poate modifica un mesaj in acest forum';
+$lang['Sorry_auth_delete'] = 'Ne pare rau dar doar %s poate sterge un mesaj din acest forum';
+$lang['Sorry_auth_vote'] = 'Ne pare rau dar doar %s poate vota in chestionarele din acest forum';
 
 // These replace the %s in the above strings
-$lang['Auth_Anonymous_Users'] = '<b>anonimi</b>';
-$lang['Auth_Registered_Users'] = '<b>membri</b>';
-$lang['Auth_Users_granted_access'] = '<b>utilizatori cu drepturi speciale</b>';
+$lang['Auth_Anonymous_Users'] = '<b>utilizator anonim</b>';
+$lang['Auth_Registered_Users'] = '<b>utilizator inregistrat</b>';
+$lang['Auth_Users_granted_access'] = '<b>utilizatori cu drepturi speciale de acces</b>';
 $lang['Auth_Moderators'] = '<b>moderatori</b>';
 $lang['Auth_Administrators'] = '<b>administratori</b>';
 
-$lang['Not_Moderator'] = 'Nu esti moderatori in acest forum';
-$lang['Not_Authorised'] = 'NEAUTORIZAT';
+$lang['Not_Moderator'] = 'Dumneavoastra nu sunteti moderator in acest forum';
+$lang['Not_Authorised'] = 'Nu sunteti autorizat';
 
-$lang['You_been_banned'] = 'Ti s-a interzis accesul in acest forum<br />Contacteaza administratorul pentru mai multe informatii';
+$lang['You_been_banned'] = 'Accesul dumneavoastra in acest forum este blocat<br />Va rugam sa contactati webmaster-ul sau administratorul pentru mai multe informatii';
 
 
 //
 // Viewonline
 //
-$lang['Reg_users_zero_online'] = 'Nu exista nici un membru si '; // There ae 5 Registered and
-$lang['Reg_users_online'] = 'Exista %d Membrii si '; // There ae 5 Registered and
-$lang['Reg_user_online'] = 'Esista un singur membru si '; // There ae 5 Registered and
-$lang['Hidden_users_zero_online'] = 'Nici un membru online'; // 6 Hidden users online
-$lang['Hidden_users_online'] = '%d Membrii online'; // 6 Hidden users online
-$lang['Hidden_user_online'] = '%d Membru online'; // 6 Hidden users online
-$lang['Guest_users_online'] = 'Exista %d Vizitatori online'; // There are 10 Guest users online
-$lang['Guest_users_zero_online'] = 'Nu exista Vizitatori online'; // There are 10 Guest users online
-$lang['Guest_user_online'] = 'Exista un Vizitator online'; // There is 1 Guest user online
-$lang['No_users_browsing'] = 'Nu exista nici un utilizator pe acest forum';
+$lang['Reg_users_zero_online'] = 'Sunt 0 utilizatori inregistrati si '; // There ae 5 Registered and
+$lang['Reg_users_online'] = 'Sunt %d utilizatori inregistrati si '; // There ae 5 Registered and
+$lang['Reg_user_online'] = 'Sunt %d utilizatori inregistrati si '; // There ae 5 Registered and
+$lang['Hidden_users_zero_online'] = '0 utilizatori ascunsi conectati'; // 6 Hidden users online
+$lang['Hidden_users_online'] = '%d utilizatori ascunsi conectati'; // 6 Hidden users online
+$lang['Hidden_user_online'] = '%d utilizatori ascunsi conectati'; // 6 Hidden users online
+$lang['Guest_users_online'] = 'Sunt %d utilizatori vizitatori conectati'; // There are 10 Guest users online
+$lang['Guest_users_zero_online'] = 'Sunt 0 utilizatori vizitatori conectati'; // There are 10 Guest users online
+$lang['Guest_user_online'] = 'Este %d utilizator vizitator conectat'; // There is 1 Guest user online
+$lang['No_users_browsing'] = 'Nici un utilizator nu navigheaza acum in acest forum';
 
-$lang['Online_explain'] = 'Aceste date sunt calculate in functie de utilizatorii activi din ultimele 5 minute';
+$lang['Online_explain'] = 'Aceste date se bazeaza pe utilizatorii activi de peste 5 minute';
 
-$lang['Forum_Location'] = 'Localizarea Forumului';
-$lang['Last_updated'] = 'Ultima Modificare';
+$lang['Forum_Location'] = 'Situatia forumului';
+$lang['Last_updated'] = 'Ultima imbunatatire';
 
-$lang['Forum_index'] = 'Forum index';
+$lang['Forum_index'] = 'Pagina de start a forumului';
 $lang['Logging_on'] = 'Autentificare';
-$lang['Posting_message'] = 'Publicare mesaj';
-$lang['Searching_forums'] = 'Cautare in forum';
-$lang['Viewing_profile'] = 'Vizualizare profil';
-$lang['Viewing_online'] = 'Cine e online';
-$lang['Viewing_member_list'] = 'Vizualizare lista membrilor';
-$lang['Viewing_priv_msgs'] = 'Vizualizare mesajele private';
-$lang['Viewing_FAQ'] = 'Vizualizare FAQ';
+$lang['Posting_message'] = 'Scrie un mesaj';
+$lang['Searching_forums'] = 'Cauta in forumuri';
+$lang['Viewing_profile'] = 'Vezi profilul';
+$lang['Viewing_online'] = 'Vezi cine este conectat';
+$lang['Viewing_member_list'] = 'Vezi lista cu membri';
+$lang['Viewing_priv_msgs'] = 'Vezi mesajele private';
+$lang['Viewing_FAQ'] = 'Vezi lista cu intrebari/raspunsuri (FAQ)';
 
 
 //
 // Moderator Control Panel
 //
-$lang['Mod_CP'] = 'Moderator Control Panel';
-$lang['Mod_CP_explain'] = 'Folosind formularul de mai jos poti efectua operatii de moderare in masa. (blocare, deblocare, mutare, stergere)';
+$lang['Mod_CP'] = 'Panoul de control al moderatorului';
+$lang['Mod_CP_explain'] = 'Utilizand formularul de mai jos puteti efectua operatii de moderare masiva in forum. Puteti inchide, deschide, muta sau sterge orice numar de subiecte.';
 
 $lang['Select'] = 'Selecteaza';
 $lang['Delete'] = 'Sterge';
 $lang['Move'] = 'Muta';
-$lang['Lock'] = 'Blocheaza';
-$lang['Unlock'] = 'Deblocheaza';
+$lang['Lock'] = 'Inchide';
+$lang['Unlock'] = 'Deschide';
 
-$lang['Topics_Removed'] = 'Subiectele selectate au fost sterse.';
-$lang['Topics_Locked'] = 'Subiectele selectate au fost blocate';
+$lang['Topics_Removed'] = 'Subiectele selectate au fost cu succes sterse din baza de date.';
+$lang['Topics_Locked'] = 'Subiectele selectate au fost inchise';
 $lang['Topics_Moved'] = 'Subiectele selectate au fost mutate';
-$lang['Topics_Unlocked'] = 'Subiectele selectate au fost deblocate';
+$lang['Topics_Unlocked'] = 'Subiectele selectate au fost deschise';
 $lang['No_Topics_Moved'] = 'Nici un subiect nu a fost mutat';
 
-$lang['Confirm_delete_topic'] = 'Sigur vrei sa stergi?';
-$lang['Confirm_lock_topic'] = 'Esti sigur ca vrei sa blochezi subiectele selectate?';
-$lang['Confirm_unlock_topic'] = '100% vrei sa deblochezi subiectele selectate?';
-$lang['Confirm_move_topic'] = 'Esti sigur ca vrei sa muti subiectele selectate?';
+$lang['Confirm_delete_topic'] = "Sunteti sigur ca vreti sa stergeti subiectul/subiectele selectate?";
+$lang['Confirm_lock_topic'] = "Sunteti sigur ca vreti sa inchideti subiectul/subiectele selectate?";
+$lang['Confirm_unlock_topic'] = "Sunteti sigur ca vreti sa deschideti subiectul/subiectele selectate?";
+$lang['Confirm_move_topic'] = "Sunteti sigur ca vreti sa mutati subiectul/subiectele selectate?";
 
-$lang['Move_to_forum'] = 'Muta in forum';
-$lang['Leave_shadow_topic'] = 'Lasa subiectul \'shadow\' si in vechiul forum.';
+$lang['Move_to_forum'] = 'Muta forumul';
+$lang['Leave_shadow_topic'] = 'Pastreaza o umbra a subiectului in vechiul forum.';
 
-$lang['Split_Topic'] = 'Imparte Subiectul - Control Panel';
-$lang['Split_Topic_explain'] = 'Folosind formularul de mai jos poti imparti un subiect in doua, fie selectand individual mesajele fie rapand subiectul in doua dupa un anumit mesaj';
+$lang['Split_Topic'] = 'Panoul de control a impartirii subiectelor';
+$lang['Split_Topic_explain'] = 'Utilizand formularul de mai jos puteti imparti un subiect in doua, pe rand sau incepand de la cel deja selectat';
 $lang['Split_title'] = 'Titlul noului subiect';
-$lang['Split_forum'] = 'Forum pentru noul subiect';
-$lang['Split_posts'] = 'Imparte mesajele selectate';
-$lang['Split_after'] = 'Imparte de la mesajul selectat';
-$lang['Topic_split'] = 'Impartirea subiectului s-a efectuat';
+$lang['Split_forum'] = 'Forum pentru un subiect nou';
+$lang['Split_posts'] = 'Imparte mesajele alese';
+$lang['Split_after'] = 'Imparte mesajul ales';
+$lang['Topic_split'] = 'Subiectul selectat a fost impartit cu succes';
 
-$lang['Too_many_error'] = 'Ai selectat prea multe mesaje. Poti selecta un singur mesaj dupa care poti imparti subiectul!';
+$lang['Too_many_error'] = 'Ati selectat prea multe mesaje. Puteti sa selectati doar un mesaj la care sa impartiti subiectul!';
 
-$lang['None_selected'] = 'Nu ai selectat nici un subiect pe care sa executi operatia. Mergi inapoi si selecteaza cel putin un subiect.';
+$lang['None_selected'] = 'Nu ati selectat nici un subiect pentru a efectua aceasta operatie. Va rugam intoarceti-va si selectati cel putin un subiect.';
 $lang['New_forum'] = 'Forum nou';
 
-$lang['This_posts_IP'] = 'IP for this post';
-$lang['Other_IP_this_user'] = 'Alte adrese IP de la care trimite mesaje acest utilizator';
-$lang['Users_this_IP'] = 'Utilizatori ce trimit mesaje de la acest IP';
-$lang['IP_info'] = 'Informatii despre IP';
-$lang['Lookup_IP'] = 'Cauta IP';
+$lang['This_posts_IP'] = 'IP-ul mesajului';
+$lang['Other_IP_this_user'] = 'Alte adrese IP de la care acest utilizator a trimis mesaje';
+$lang['Users_this_IP'] = 'Utilizatori care au trimis mesaje de la acest IP';
+$lang['IP_info'] = 'Informatii IP';
+$lang['Lookup_IP'] = 'Vizualizare IP';
 
 
 //
 // Timezones ... for display on each page
 //
-$lang['All_times'] = 'Timpul afisat este setat %s'; // eg. All times are GMT - 12 Hours (times from next block)
+$lang['All_times'] = 'Data este %s'; // eg. All times are GMT - 12 Hours (times from next block)
 
 $lang['-12'] = 'GMT - 12 Ore';
 $lang['-11'] = 'GMT - 11 Ore';
@@ -899,7 +901,7 @@ $lang['-3'] = 'GMT - 3 Ore';
 $lang['-2'] = 'GMT - 2 Ore';
 $lang['-1'] = 'GMT - 1 Ore';
 $lang['0'] = 'GMT';
-$lang['1'] = 'GMT + O Ora';
+$lang['1'] = 'GMT + 1 Ora';
 $lang['2'] = 'GMT + 2 Ore';
 $lang['3'] = 'GMT + 3 Ore';
 $lang['3.5'] = 'GMT + 3.5 Ore';
@@ -928,11 +930,11 @@ $lang['tz']['-6'] = 'GMT - 6 Ore';
 $lang['tz']['-5'] = 'GMT - 5 Ore';
 $lang['tz']['-4'] = 'GMT - 4 Ore';
 $lang['tz']['-3.5'] = 'GMT - 3.5 Ore';
-$lang['tz']['-3'] = 'GMT - 3 Ore';
+$lang['tz']['-3'] = 'GMT - 3 Ores';
 $lang['tz']['-2'] = 'GMT - 2 Ore';
 $lang['tz']['-1'] = 'GMT - 1 Ore';
 $lang['tz']['0'] = 'GMT';
-$lang['tz']['1'] = 'GMT + O Ora';
+$lang['tz']['1'] = 'GMT + 1 Ora';
 $lang['tz']['2'] = 'GMT + 2 Ore';
 $lang['tz']['3'] = 'GMT + 3 Ore';
 $lang['tz']['3.5'] = 'GMT + 3.5 Ore';
@@ -957,36 +959,36 @@ $lang['datetime']['Wednesday'] = 'Miercuri';
 $lang['datetime']['Thursday'] = 'Joi';
 $lang['datetime']['Friday'] = 'Vineri';
 $lang['datetime']['Saturday'] = 'Sambata';
-$lang['datetime']['Sun'] = 'D';
-$lang['datetime']['Mon'] = 'L';
-$lang['datetime']['Tue'] = 'Ma';
-$lang['datetime']['Wed'] = 'Mi';
-$lang['datetime']['Thu'] = 'J';
-$lang['datetime']['Fri'] = 'V';
-$lang['datetime']['Sat'] = 'S';
+$lang['datetime']['Sun'] = 'Dum';
+$lang['datetime']['Mon'] = 'Lun';
+$lang['datetime']['Tue'] = 'Mar';
+$lang['datetime']['Wed'] = 'Mie';
+$lang['datetime']['Thu'] = 'Joi';
+$lang['datetime']['Fri'] = 'Vin';
+$lang['datetime']['Sat'] = 'Sam';
 $lang['datetime']['January'] = 'Ianuarie';
 $lang['datetime']['February'] = 'Februarie';
 $lang['datetime']['March'] = 'Martie';
 $lang['datetime']['April'] = 'Aprilie';
 $lang['datetime']['May'] = 'Mai';
-$lang['datetime']['June'] = 'Junie';
-$lang['datetime']['July'] = 'Julie';
+$lang['datetime']['June'] = 'Iunie';
+$lang['datetime']['July'] = 'Iulie';
 $lang['datetime']['August'] = 'August';
 $lang['datetime']['September'] = 'Septembrie';
-$lang['datetime']['October'] = 'Octombrie';
+$lang['datetime']['October'] = 'Octobrie';
 $lang['datetime']['November'] = 'Noiembrie';
 $lang['datetime']['December'] = 'Decembrie';
-$lang['datetime']['Jan'] = 'Jan';
+$lang['datetime']['Jan'] = 'Ian';
 $lang['datetime']['Feb'] = 'Feb';
 $lang['datetime']['Mar'] = 'Mar';
 $lang['datetime']['Apr'] = 'Apr';
 $lang['datetime']['May'] = 'Mai';
-$lang['datetime']['Jun'] = 'Jun';
-$lang['datetime']['Jul'] = 'Jul';
+$lang['datetime']['Jun'] = 'Iun';
+$lang['datetime']['Jul'] = 'Iul';
 $lang['datetime']['Aug'] = 'Aug';
 $lang['datetime']['Sep'] = 'Sep';
 $lang['datetime']['Oct'] = 'Oct';
-$lang['datetime']['Nov'] = 'Nov';
+$lang['datetime']['Nov'] = 'Noi';
 $lang['datetime']['Dec'] = 'Dec';
 
 //
@@ -994,12 +996,12 @@ $lang['datetime']['Dec'] = 'Dec';
 // specific failure on a page)
 //
 $lang['Information'] = 'Informatii';
-$lang['Critical_Information'] = 'Informatii Critice';
+$lang['Critical_Information'] = 'Informatii primejdioase';
 
-$lang['General_Error'] = 'Eroare Generala';
-$lang['Critical_Error'] = 'Eroare Critica';
-$lang['An_error_occured'] = 'Eroare !';
-$lang['A_critical_error'] = 'Eroare Critica !';
+$lang['General_Error'] = 'Eroare generala';
+$lang['Critical_Error'] = 'Eroare primejdioasa';
+$lang['An_error_occured'] = 'A aparut o eroare';
+$lang['A_critical_error'] = 'A aparut o eroare primejdioasa';
 
 //
 // That's all Folks!

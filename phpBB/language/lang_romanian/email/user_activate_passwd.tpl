@@ -1,16 +1,17 @@
-Subject: WH.RO: Parola noua
-Charset: iso-8859-1
+Subject: Activarea parolei noi
 
 Buna {USERNAME}
 
-Primesti acest email datorita faptului ca ai cerut generarea unei noi parole pentru contul de la {SITENAME}. Daca nu ai cerut acest lucru ignora acest email. Daca tot primesti acest mesaj fara contacteaza administratorul forumului.
+Ati primit acest mesaj deoarece dumneavoastra (sau cineva pretinzand a fi dumneavoastra) ati(a) cerut sa va fie trimisa o noua parola pentru contul dumneavoastra de pe {SITENAME}. Daca nu ati cerut acest lucru, atunci va rugam sa-l ignorati, iar daca îl primiti de mai multe ori va rugam sa contactati administratorul forumului.
 
-Pentru a putea folosi parola noua trebuie sa o activezi. Activarea se face urmand linkul de mai jos.
+Pentru a va folosi noua parola trebuie s-o activati folosind legatura de mai jos:
 
 {U_ACTIVATE}
 
-In cazul in care tranzactia se termina cu succes parola va fi: {PASSWORD}
+Daca totul este în regula, veti putea sa va autentificati folosind urmatoarea parola:
 
-Poti schimba parola modificand-o din profil. Daca intampini dificultati contacteaza administratorul forumului.
+Parola: {PASSWORD}
+
+Evident, puteti schimba aceasta parola din pagina Profil. Daca întampinati dificultati, va rugam sa contactati administratorul forumului.
 
 {EMAIL_SIG}

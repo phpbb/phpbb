@@ -1,12 +1,11 @@
-Subject: WH.RO: Mesaj Privat
-Charset: iso-8859-1
+Subject: Ati primit un nou mesaj privat
 
-Salut {USERNAME},
+Buna {USERNAME},
 
-Ai primit un nou mesaj privat pe contul de la "{SITENAME}" (ai cerut sa fi informat de acest lucru). Poti vedea mesajul la:
+Ati primit un mesaj nou privat pe site-ul {SITENAME} si ati cerut sa fiti anuntat daca se intampla acest lucru. Puteti sa vedeti mesajul privat folosind urmatoarea legatura:
 
 {U_INBOX}
 
-Poti oricand sa alegi sa nu fi informat (optiune in profil).
+Nu uitati ca puteti intotdeauna sa alegeti sa nu fiti anuntat de mesajele noi prin schimbarea setarii corespunzatoare din profilul dumneavoastra.
 
 {EMAIL_SIG}

@@ -1,12 +1,12 @@
-Charset: iso-8859-1
 
-Acesta este un mesaj trimis de catre administratorul sitului "{SITENAME}". Daca asest mesaj este spam sau daca contine orice material pe care il considerati abuziv sau ofensator va rugam contactati administratorul forumului la adresa:
+
+Urmatorul mesaj v-a fost trimis de catre un administrator al "{SITENAME}". Daca acest mesaj este spam, contine comentarii abuzive sau are vreun continut ofensiv, va rugam sa contactati webmaster-ul forumului la urmatoarea adresa:
 
 {BOARD_EMAIL}
 
-Incrudeti in totalitate acest email (mai ales headerele). 
+Va rugam sa includeti acest email (mai ales header-ele).
 
-Mesajul trimis catre dv:
-~~~~~~~~~~~~~~~~~~~~~~~~
+Urmeaza mesajul care va este adresat:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

@@ -1,17 +1,16 @@
-Subject: WH.RO: Bun venit la {SITENAME}
-Charset: iso-8859-1
+Subject: Bine ati venit in forumurile {SITENAME}
 
 {WELCOME_MSG}
 
-Pastreaza acest email. Informatiile necesare pt. autentificare sunt:
+Va rugam sa pastrati acest mesaj. Informatia pentru contul dumneavoastra urmeaza aici:
 
-----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
-----------------------------
+--------------------------------------
+Nume utilizator : {USERNAME}
+Parola          : {PASSWORD}
+--------------------------------------
 
-Nu uita ca parola este criptata in baza noastra de date nu nu o sa ti-o putem primite in cazul in care o uiti. In cazul in care o vei uita poti cere sa ti se schimbe parola cu o noua parola, in acest caz contul va fi reactivat in acelasi fel ca si acum.
+Incercati sa nu va uitati parola deoarece aceasta a fost stocata codat in baza noastra de date si nu o putem recupera pentru dumneavoastra. Daca totusi o uitati, veti putea cere o parola noua care va fi activata la fel cum a fost activat acest cont de utilizator.
 
-Multumim pentru inregistrare.
+Va multumim pentru inregistrare.
 
 {EMAIL_SIG}

@@ -1,19 +1,18 @@
-Subject: WH.RO: Bun venit In forumul {SITENAME}
-Charset: iso-8859-1
+Subject: Bine ati venit in forumurile {SITENAME}
 
 {WELCOME_MSG}
 
-Pastreaza acest email. Iata datele de autentificare:
+Va rugam sa pastrati acest mesaj. Informatia pentru contul dumneavoastra urmeaza aici:
 
-----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
-----------------------------
+--------------------------------------
+Nume utilizator : {USERNAME}
+Parola          : {PASSWORD}
+--------------------------------------
 
-Contul este curent inactiv si andminstratorul forumului va trebui sa activeze contul inainte sa te poti loga. Vei primi un alt email cand contul va fi activ.
+Contul dumneavoastra este deocamdata inactiv. Va fi nevoie ca administratorul forumului sa vi-l activeze inainte sa va puteti autentifica. Veti primi un alt mesaj când se va intampla acest lucru.
 
-Nu uita ca parola este criptata in baza noastra de date nu nu o sa ti-o putem primite in cazul in care o uiti. In cazul in care o vei uita poti cere sa ti se schimbe parola cu o noua parola, in acest caz contul va fi reactivat in acelasi fel ca si acum.
+Incearcati sa nu va uitati parola deoarece aceasta a fost stocata codat in baza noastra de date si nu o putem recupera pentru dumneavoastra. Daca totusi o veti uita, veti putea cere o parola noua care va fi activata la fel cum a fost activat acest cont de utilizator.
 
-Multumim pentru inregistrare.
+Va multumim pentru inregistrare.
 
 {EMAIL_SIG}

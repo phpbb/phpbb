@@ -1,9 +1,8 @@
-Subject: WH.RO: Reactiveaza contul
-Charset: iso-8859-1
+Subject: Reactivati-va contul
 
 Buna {USERNAME},
 
-Contul tau de la "{SITENAME}" a fost dezactivat, probabil datorita unor schimbari la profil. Pentru a reactiva contul trebuie sa urmezi linkul de mai jos:
+Contul dumneavoastra pe "{SITENAME}" a fost dezactivat, cel mai probabil datorita unor modificari facute profilului dumneavoastra. Pentru a va reactiva contul, va rugam sa folositi legatura de mai jos:
 
 {U_ACTIVATE}
 

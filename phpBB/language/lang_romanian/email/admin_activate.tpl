@@ -1,9 +1,8 @@
-Subject: WH.RO: Cont nou
-Charset: iso-8859-1
+Subject: Cont de utilizator nou
 
-Buna ziua,
+Buna,
 
-Contul detinut de userul "{USERNAME}" a fost dezactivat sau tocmai a fost creeat. Ar trebui sa verificati detaliile (daca e necesar) si sa-l activati folosind urmatorul link:
+Contul "{USERNAME}" a fost deactivat sau creat. Ar trebui sa verificati detaliile acestui utilizator (daca este necesar) si sa-l activati folosind aceasta legatura:
 
 {U_ACTIVATE}
 

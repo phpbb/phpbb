@@ -1,13 +1,12 @@
-Subject: WH.RO: Raspuns la subiect - {TOPIC_TITLE}
-Charset: iso-8859-1
+Subject: Notificare de raspuns la subiectul - {TOPIC_TITLE}
 
 Buna {USERNAME},
 
-Ai primit acest email datorita faptului ca urmaresti subiectul "{TOPIC_TITLE}" la {SITENAME}. Acest subiect are un singur raspuns de la ultima vizita. Poti folosi linkul pentru a vedea raspunsurile. Nu vei mai primi nici o notificare la acest subiect pana nu vei vizita pagina.
+Primiti acest mesaj deoarece urmariti subiectul "{TOPIC_TITLE}" pentru raspunsuri la {SITENAME}. Acest subiect a primit cel putin un raspuns de la ultima dumneavoastra vizita. Puteti sa vizualizati raspunsurile urmând legatura de mai jos. Nu va vom mai anunta de raspunsuri noi pâna nu vizitati subiectul.
 
 {U_TOPIC}
 
-Daca nu mai doresti sa urmaresti subiectul apasa "Nu mai urmari acest subiect" de la sfarsitul paginii de mai sus sau urmand linkul de mai jos:
+Daca nu mai doriti sa urmariti acest subiect, puteti sa folositi legatura "Opreste urmarirea acestui subiect" care poate fi gasita in josul paginii sau folositi urmatoarea legatura:
 
 {U_STOP_WATCHING_TOPIC}
 
