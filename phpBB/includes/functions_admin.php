@@ -1653,42 +1653,44 @@ if (class_exists(auth))
 			$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 			$id_field  = $ug_type . '_id';
 
+			$sql_ary = array();
 			foreach ($forum_id as $forum)
 			{
 				foreach ($auth as $auth_option => $setting)
 				{
 					$auth_option_id = $option_ids[$auth_option];
 
-					if (!empty($cur_auth[$forum]))
+					switch ($setting)
 					{
-						if ($setting == ACL_UNSET && isset($cur_auth[$forum][$auth_option_id]))
-						{
+						case ACL_UNSET:
 							$sql_ary[] = "DELETE FROM $table 
 								WHERE forum_id = $forum
 									AND auth_option_id = $auth_option_id
 									AND $id_field = $ug_id";
-						}
-						else
-						{
-							$sql_ary[] = (!isset($cur_auth[$forum][$auth_option_id])) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($ug_id, $forum, $auth_option_id, $setting)" : (($cur_auth[$forum][$auth_option_id] != $setting) ? "UPDATE " . $table . " SET auth_setting = $setting WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '');
-						}
-					}
-					else
-					{
-						$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($ug_id, $forum, $auth_option_id, $setting)";
+							break;
+
+						default:
+							if (isset($cur_auth[$forum][$auth_option_id]) && $cur_auth[$forum][$auth_option_id] != $setting)
+							{
+								$sql_ary[] = "UPDATE " . $table . " 
+									SET auth_setting = $setting 
+									WHERE $id_field = $ug_id 
+										AND forum_id = $forum 
+										AND auth_option_id = $auth_option_id";
+							}
+							else if (!isset($cur_auth[$forum][$auth_option_id]))
+							{
+								$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) 
+									VALUES ($ug_id, $forum, $auth_option_id, $setting)";
+							}
 					}
 				}
 			}
-			unset($forum_id);
-			unset($user_auth);
+			unset($cur_auth);
 
 			foreach ($sql_ary as $sql)
 			{
-				if ($sql != '')
-				{
-					$result = $db->sql_query($sql);
-					$db->sql_freeresult($result);
-				}
+				$result = $db->sql_query($sql);
 			}
 			unset($sql_ary);
 
