@@ -152,30 +152,37 @@ function remove_common($percent, $word_id_list = array())
 			$row = $db->sql_fetchrow($result);
 
 			$words_removed = 0;
-
+			$word_id_sql = "";
 			for($i = 0; $i < $post_count; $i++)
 			{
 				if( ( $rowset[$i]['post_occur_count'] / $row['total_posts'] ) >= $percent )
 				{
-					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-						WHERE word_id = " . $rowset[$i]['word_id'];
-					$result = $db->sql_query($sql); 
-					if( !$result )
+					if( $word_id_sql != "" )
 					{
-						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+						$word_id_sql .= ", ";
 					}
-
-					$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
-						WHERE word_id = " . $rowset[$i]['word_id'];
-					$result = $db->sql_query($sql); 
-					if( !$result )
-					{
-						message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
-					}
+					$word_id_sql .= $rowset[$i]['word_id'];
 
 					$words_removed++;
 				}
 			}
+
+			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
+				WHERE word_id IN ($word_id_sql)";
+			$result = $db->sql_query($sql); 
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
+				WHERE word_id IN ($word_id_sql)";
+			$result = $db->sql_query($sql); 
+			if( !$result )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete word match entry", "", __LINE__, __FILE__, $sql);
+			}
+		
 		}
 	}
 
@@ -281,18 +288,25 @@ function remove_old_words($post_id)
 				{
 					$rowset = $db->sql_fetchrowset($result);
 
+					$word_id_sql = "";
 					for($i = 0; $i < $post_count; $i++)
 					{
 						if( $rowset[$i]['post_occur_count'] == 1 )
 						{
-							$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-								WHERE word_id = " . $rowset[$i]['word_id'];
-							$result = $db->sql_query($sql); 
-							if( !$result )
+							if( $word_id_sql != "" )
 							{
-								message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+								$word_id_sql .= ", ";
 							}
+							$word_id_sql .= $rowset[$i]['word_id'];
 						}
+					}
+
+					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
+						WHERE word_id IN ($word_id_sql)";
+					$result = $db->sql_query($sql); 
+					if( !$result )
+					{
+						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
 					}
 				}
 
