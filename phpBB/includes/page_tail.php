@@ -37,7 +37,7 @@ if (defined('DEBUG'))
 	if (!empty($_REQUEST['explain']) && $auth->acl_get('a_'))
 	{
 		echo $db->sql_report;
-		echo "<pre><b>Page generated in $totaltime seconds with " . $db->num_queries . " queries,\nspending " . $db->sql_time . ' doing MySQL queries and ' . ($totaltime - $db->sql_time) . ' doing PHP things.</b></pre>';
+		echo "<pre><b>Page generated in $totaltime seconds with " . $db->num_queries . " queries,\nspending " . $db->sql_time . ' doing SQL queries and ' . ($totaltime - $db->sql_time) . ' doing PHP things.</b></pre>';
 
 		exit;
 	}
