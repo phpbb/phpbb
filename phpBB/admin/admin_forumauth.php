@@ -1,9 +1,32 @@
 <?php
+/***************************************************************************  
+ *                            admin_forumauth.php 
+ *                            -------------------                         
+ *   begin                : Saturday, Feb 13, 2001 
+ *   copyright            : (C) 2001 The phpBB Group        
+ *   email                : support@phpbb.com                           
+ *                                                          
+ *   $Id$                                                           
+ *                                                            
+ * 
+ ***************************************************************************/ 
 
-if($setmodules==1)
+
+/***************************************************************************  
+ *                                                     
+ *   This program is free software; you can redistribute it and/or modify    
+ *   it under the terms of the GNU General Public License as published by   
+ *   the Free Software Foundation; either version 2 of the License, or  
+ *   (at your option) any later version.                      
+ *                                                          
+ * 
+ ***************************************************************************/ 
+
+if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Auth']['forums']   = $filename;
+	$module['Auth']['Forums']   = $filename;
+
 	return;
 }
 
@@ -14,26 +37,27 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-//$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-//init_userprefs($userdata);
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
 //
 // End session management
 //
 
-/*$simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 0, 3, 3, 0, 0, 0), 
-	1  => array(0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3), 
-	2  => array(0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
-	3  => array(1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
-	4  => array(0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
-	5  => array(2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
-	6  => array(0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-	7  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3), 
-	8  => array(0, 0, 3, 0, 0, 0, 3, 3, 3, 3, 3), 
-	9  => array(0, 0, 3, 1, 0, 0, 3, 3, 3, 3, 3)
-);*/
+//
+// Check user permissions
+//
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=/admin");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+}
 
-
+//
+// Start program - define vars
+//
 $simple_auth_ary = array(
 	0  => array(0, 0, 0, 0, 1, 0, 3, 3), 
 	1  => array(0, 0, 0, 0, 3, 3, 3, 3), 
@@ -49,16 +73,30 @@ $simple_auth_ary = array(
 
 $simple_auth_types = array("Public", "Test Restricted", "Registered", "Registered [Hidden]", "Private", "Private [Hidden]", "Moderators", "Moderators [Hidden]", "Moderator Post + All Reply", "Moderator Post + Reg Reply");
 
-
 $forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
-//, "auth_votecreate", "auth_vote", "auth_attachments"
 $forum_auth_levels = array("ALL", "REG", "ACL", "MOD", "ADMIN");
 $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
+
+// Future Stuff
+/*$simple_auth_ary = array(
+	0  => array(0, 0, 0, 0, 1, 0, 3, 3, 0, 0, 0), 
+	1  => array(0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3), 
+	2  => array(0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
+	3  => array(1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
+	4  => array(0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
+	5  => array(2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
+	6  => array(0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+	7  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3), 
+	8  => array(0, 0, 3, 0, 0, 0, 3, 3, 3, 3, 3), 
+	9  => array(0, 0, 3, 1, 0, 0, 3, 3, 3, 3, 3)
+);*/
+//, "auth_votecreate", "auth_vote", "auth_attachments"
 
 
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
 	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
+
 	$forum_sql = "AND forum_id = $forum_id";
 }
 else
@@ -78,6 +116,8 @@ else
 
 if(isset($HTTP_POST_VARS['submit']))
 {
+	$sql = "";
+
 	if(!empty($forum_id))
 	{
 		$sql = "UPDATE " . FORUMS_TABLE . " SET ";
@@ -85,6 +125,7 @@ if(isset($HTTP_POST_VARS['submit']))
 		if(isset($HTTP_POST_VARS['simpleauth']))
 		{
 			$simple_ary = $simple_auth_ary[$HTTP_POST_VARS['simpleauth']];
+
 			for($i = 0; $i < count($simple_ary); $i++)
 			{
 				$sql .= $forum_auth_fields[$i] . " = " . $simple_ary[$i];
@@ -98,11 +139,10 @@ if(isset($HTTP_POST_VARS['submit']))
 		}
 		else
 		{
-			$sql = "UPDATE " . FORUMS_TABLE . " SET ";
-
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
 				$value = $HTTP_POST_VARS[$forum_auth_fields[$i]];
+
 				if($forum_auth_fields[$i] != 'auth_view')
 				{
 					if($HTTP_POST_VARS['auth_view'] > $value)
@@ -121,11 +161,11 @@ if(isset($HTTP_POST_VARS['submit']))
 
 		}
 
-		if(strlen($sql))
+		if($sql != "")
 		{
 			if(!$db->sql_query($sql))
 			{
-				error_die(QUERY_ERROR, "Couldn't update auth table!", __LINE__, __FILE__);
+				message_die(GENERAL_ERROR, "Couldn't update auth table!", "", __LINE__, __FILE__, $sql);
 			}
 		}
 
@@ -136,9 +176,10 @@ if(isset($HTTP_POST_VARS['submit']))
 	}
 }
 
-
 //
-// Start output
+// Get required information, either all forums if
+// no id was specified or just the requsted if it
+// was
 //
 $sql = "SELECT f.*
 	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
@@ -146,280 +187,164 @@ $sql = "SELECT f.*
 	$forum_sql 
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
 $f_result = $db->sql_query($sql);
+
 $forum_rows = $db->sql_fetchrowset($f_result);
 
 //
-// Show data
+// Page header
 //
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>phpBB - auth testing</title>
-<style type="text/css">
-<!--
-	P {font-family:Verdana,serif;font-size:8pt}
+$template_header = "admin/page_header.tpl";
+include('page_header_admin.'.$phpEx);
 
-	H1 {font-family:Arial,Helvetica,sans-serif;font-size:14pt;}
-	H2 {font-family:Arial,Helvetica,sans-serif;font-size:12pt;}
+if(empty($forum_id))
+{
+	//
+	// Output the selection table if no forum id was
+	// specified
+	//
+	$template->set_filenames(array(
+		"body" => "admin/forum_auth_select_body.tpl")
+	);
 
-	TH {font-family:Verdana,serif;font-size:8pt}
-	TD {font-family:Verdana,serif;font-size:8pt}
-
-	SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
-	INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
-//-->
-</style>
-</head>
-<body bgcolor="#FFFFFF" text="#000000">
-
-<h1>Forum Authorisation Control</h1>
-
-<?php
-
-	if(!empty($forum_id))
-	{
-
-?>
-<h2>Forum : <?php echo $forum_rows[0]['forum_name']; ?></h2>
-<?php
-
-	}
-
-?>
-
-<div align="center"><table cellspacing="1" cellpadding="4" border="0">
-<?php
-
+	$select_list = "<select name=\"" . POST_FORUM_URL . "\">";
 	for($i = 0; $i < count($forum_rows); $i++)
 	{
-		$forum_name[$i] = "<a href=\"" . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_rows[$i]['forum_id']) . "\">" . $forum_rows[$i]['forum_name'] . "</a>";
+		$select_list .= "<option value=\"" . $forum_rows[$i]['forum_id'] . "\">" . $forum_rows[$i]['forum_name'] . "</option>";
+	}
+	$select_list .= "</select>";
 
-		reset($simple_auth_ary);
-		while(list($key, $auth_levels) = each($simple_auth_ary))
+	$template->assign_vars(array(
+		"S_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx"), 
+		"S_FORUMS_SELECT" => $select_list)
+	);
+
+}
+else
+{
+	//
+	// Output the authorisation details if an id was
+	// specified
+	//
+	$template->set_filenames(array(
+		"body" => "admin/forum_auth_body.tpl")
+	);
+
+	$forum_name = $forum_rows[0]['forum_name'];
+
+	reset($simple_auth_ary);
+	while(list($key, $auth_levels) = each($simple_auth_ary))
+	{
+		$matched = 1;
+		for($k = 0; $k < count($auth_levels); $k++)
 		{
-			$matched = 1;
-			for($k = 0; $k < count($auth_levels); $k++)
+			$matched_type = $key;
+
+			if($forum_rows[0][$forum_auth_fields[$k]] != $auth_levels[$k])
 			{
-				$matched_type = $key;
-				if($forum_rows[$i][$forum_auth_fields[$k]] != $auth_levels[$k])
-				{
-					$matched = 0;
-				}
+				$matched = 0;
 			}
-			if($matched)
-				break;
+		}
+		if($matched)
+			break;
+	}
+
+	//
+	// If we didn't get a match above then we
+	// automatically switch into 'advanced' mode
+	//
+	if($adv == -1 && !$matched)
+	{
+		$adv = 1;
+	}
+
+	$s_column_span == 0;
+
+	if( $adv <= 0 )
+	{
+		$simple_auth = "&nbsp;<select name=\"simpleauth\">";
+
+		for($j = 0; $j < count($simple_auth_types); $j++)
+		{
+			if($matched_type == $j)
+			{
+				$simple_auth .= "<option value=\"$j\" selected>";
+				$simple_auth .= $simple_auth_types[$j];
+				$simple_auth .= "</option>";
+			}
+			else 
+			{
+				$simple_auth .= "<option value=\"$j\">" . $simple_auth_types[$j] . "</option>";
+			}
 		}
 
+		$simple_auth .= "</select>&nbsp;";
+
+		$template->assign_block_vars("forum_auth_titles", array(
+			"CELL_TITLE" => "Simple Mode")
+		);
+		$template->assign_block_vars("forum_auth_data", array(
+			"S_AUTH_LEVELS_SELECT" => $simple_auth)
+		);
+
+		$s_column_span++;
+	}
+	else
+	{
 		//
-		// If we've got a custom setup
-		// then we jump into advanced
-		// mode by default
+		// Output values of individual 
+		// fields
 		//
-		if($adv == -1 && !$matched)
-		{
-			$adv = 1;
-		}
-		
-		if($adv <= 0 || empty($forum_id))
-		{
-
-			//
-			// Determine whether the current
-			// forum auth fields match a preset 'simple'
-			// type
-			//
-
-			$simple_auth[$i] = (isset($forum_id)) ? "&nbsp;<select name=\"simpleauth\">" : "";
-			if(!$matched && empty($forum_id))
-			{
-				$simple_auth[$i] .= "Custom";
-				$matched_type = -1;
-			}
-			for($j = 0; $j < count($simple_auth_types); $j++)
-			{
-				if($matched_type == $j)
-				{
-					$simple_auth[$i] .= (isset($forum_id)) ? "<option value=\"$j\" selected>" : "";
-					$simple_auth[$i] .= $simple_auth_types[$j];
-					$simple_auth[$i] .= (isset($forum_id)) ? "</option>" : "";
-				}
-				else if(isset($forum_id))
-				{
-					$simple_auth[$i] .= "<option value=\"$j\">".$simple_auth_types[$j]."</option>";
-				}
-			}
-			$simple_auth[$i] .= (isset($forum_id)) ? "</select>&nbsp;" : "";
-
-		}
-
-		if($adv == 1 || empty($forum_id))
-		{
-
-			//
-			// Output values of individual 
-			// fields
-			//
-
-			for($j = 0; $j < count($forum_auth_fields); $j++)
-			{
-				$custom_auth[$i][$j] = (isset($forum_id)) ? "&nbsp;<select name=\"".$forum_auth_fields[$j]."\">" : "";
-				for($k = 0; $k < count($forum_auth_levels); $k++)
-				{
-					if($forum_rows[$i][$forum_auth_fields[$j]] == $forum_auth_const[$k])
-					{
-						$custom_auth[$i][$j] .= (isset($forum_id)) ? "<option value=\"" . $forum_auth_const[$k] . "\" selected>" : "";
-						if(empty($forum_id))
-						{
-							if($forum_auth_levels[$k] == "ACL" || $forum_auth_levels[$k] == "MOD" || $forum_auth_levels[$k] == "ADMIN")
-							{
-								$custom_auth[$i][$j] .= "<a href=\"userauth.php?" . POST_FORUM_URL . "=" . $forum_rows[$i]['forum_id'] . "&auth=" . $forum_auth_fields[$j] . "\">";
-							}
-						}
-						$custom_auth[$i][$j] .= $forum_auth_levels[$k];
-						if(empty($forum_id))
-						{
-							if($forum_auth_levels[$k] == "ACL" || $forum_auth_levels[$k] == "MOD" || $forum_auth_levels[$k] == "ADMIN")
-							{
-								$custom_auth[$i][$j] .= "</a>";
-							}
-						}
-						$custom_auth[$i][$j] .= (isset($forum_id)) ? "</option>" : "";
-					}
-					else if(isset($forum_id))
-					{
-						$custom_auth[$i][$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $forum_auth_levels[$k]."</option>";
-					}
-				}
-				$custom_auth[$i][$j] .= (isset($forum_id)) ? "</select>&nbsp;" : "";
-			}
-
-		}
-	}
-
-?>
-	<tr><form method="post" action="admin_forumauth.php">
-<?php
-
-	if(empty($forum_id))
-	{
-
-?>
-		<th bgcolor="#CCCCCC">Forum Title</th>
-<?php
-
-	}
-
-	if($adv <= 0  || empty($forum_id))
-	{
-
-?>
-		<th bgcolor="#CCCCCC">Simple Auth</th>
-<?php
-
-	}
-
-	if($adv == 1 || empty($forum_id))
-	{
 		for($j = 0; $j < count($forum_auth_fields); $j++)
 		{
-			echo "<th bgcolor=\"#CCCCCC\">".preg_replace("/auth_/", "", $forum_auth_fields[$j])."</th>\n";
+			$custom_auth[$j] = "&nbsp;<select name=\"" . $forum_auth_fields[$j] . "\">";
+
+			for($k = 0; $k < count($forum_auth_levels); $k++)
+			{
+				if($forum_rows[0][$forum_auth_fields[$j]] == $forum_auth_const[$k])
+				{
+					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\" selected>";
+					$custom_auth[$j] .= $forum_auth_levels[$k];
+					$custom_auth[$j] .= "</option>";
+				}
+				else 
+				{
+					$custom_auth[$j] .= "<option value=\"" . $forum_auth_const[$k] . "\">". $forum_auth_levels[$k] . "</option>";
+				}
+			}
+			$custom_auth[$j] .= "</select>&nbsp;";
+
+			$template->assign_block_vars("forum_auth_titles", array(
+				"CELL_TITLE" => ucfirst(preg_replace("/auth_/", "", $forum_auth_fields[$j])))
+			);
+			$template->assign_block_vars("forum_auth_data", array(
+				"S_AUTH_LEVELS_SELECT" => $custom_auth[$j])
+			);
+
+			$s_column_span++;
 		}
 	}
 
-?>
-	</tr>
-<?php
+	$switch_mode = "admin_forumauth.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&adv=";
+	$switch_mode .= ($adv <= 0 ) ? "1" : "0";
+	$switch_mode_text = ($adv <= 0 ) ? "Advanced Mode" : "Simple Mode";
+	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
-	for($i = 0; $i < count($forum_rows); $i++)
-	{
+	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
-		unset($moderators_links);
-		for($mods = 0; $mods < count($forum_mods['forum_' . $forum_rows[$i]['forum_id'] . '_id']); $mods++)
-		{
-			if(isset($moderators_links))
-			{
-				$moderators_links .= ", ";
-			}
-			if(!($mods % 2) && $mods != 0)
-			{
-				$moderators_links .= "<br>";
-			}
-			$moderators_links .= "<a href=\"".append_sid("../profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $forum_mods['forum_'.$forum_rows[$i]['forum_id'] . '_id'][$mods]) . "\">" . $forum_mods['forum_'.$forum_rows[$i]['forum_id'] . '_name'][$mods] . "</a>";
-		}
+	$template->assign_vars(array(
+		"FORUM_NAME" => $forum_name, 
 
-		echo "<tr>\n";
+		"U_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
+		"U_SWITCH_MODE" => $u_switch_mode,
 
-		if(empty($forum_id))
-		{
-			echo "<td align=\"center\" bgcolor=\"#DDDDDD\">".$forum_name[$i]."</td>\n";
+		"S_COLUMN_SPAN" => $s_column_span, 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+	);
 
-			$colspan = 2;
-		}
+}
 
-		if($adv <= 0  || empty($forum_id))
-		{
-			echo "<td align=\"center\" bgcolor=\"#DDDDDD\">".$simple_auth[$i]."</td>\n";
+$template->pparse("body");
 
-			$colspan ++;
-		}
-
-		if($adv == 1 || empty($forum_id))
-		{
-			for($j = 0; $j < count($custom_auth[$i]); $j++)
-			{
-				echo "<td align=\"center\" bgcolor=\"#DDDDDD\">".$custom_auth[$i][$j]."</td>\n";
-
-				$colspan++;
-			}
-		}
-
-		echo "</tr>\n";
-
-	}
-
-	if(isset($forum_id))
-	{
-
-		$switch_mode = "admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=";
-		$switch_mode .= ($adv <= 0 ) ? "1" : "0";
-
-		$switch_mode_text = ($adv <= 0 ) ? "Advanced Mode" : "Simple Mode";
+include('page_footer_admin.'.$phpEx);
 
 ?>
-		<tr>
-			<td colspan="<?php echo $colspan; ?>"><table width="100%" cellspacing="0" cellpadding="4" border="0">
-				<tr>
-					<td align="center"><a href="<?php echo $switch_mode ?>">Switch to <?php echo $switch_mode_text; ?></a></td>
-				</tr>
-				<tr>
-					<td align="center"><input type="hidden" name="<?php echo POST_FORUM_URL; ?>" value="<?php echo $forum_id; ?>"><input type="submit" name="submit" value="Submit Changes">&nbsp;&nbsp;<input type="reset" value="Reset to Initial"></td>
-				</tr>
-				<tr>
-					<td align="center"><a href="admin_forumauth.php">Return to Forum Auth Index</a></td>
-				</tr>
-			</table></td>
-		</tr>
-<?php
-
-	}
-
-?>
-	</form></tr>
-</table></div>
-
-<?php
-
-?>
-<center>
-<p><a href="userauth.php">User Authorisation Admin</a></p>
-
-<font face="Verdana,serif" size="1">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0</a></font>
-<br clear="all">
-<font face="Verdana,serif" size="1">
-Copyright &copy; 2001 phpBB Group, All Rights Reserved</font>
-<br>
-
-</body>
-</html>

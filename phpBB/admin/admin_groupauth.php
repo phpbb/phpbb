@@ -1,9 +1,31 @@
 <?php
+/***************************************************************************  
+ *                            admin_groupauth.php 
+ *                            -------------------                         
+ *   begin                : Saturday, Feb 13, 2001 
+ *   copyright            : (C) 2001 The phpBB Group        
+ *   email                : support@phpbb.com                           
+ *                                                          
+ *   $Id$                                                           
+ *                                                            
+ * 
+ ***************************************************************************/ 
+
+
+/***************************************************************************  
+ *                                                     
+ *   This program is free software; you can redistribute it and/or modify    
+ *   it under the terms of the GNU General Public License as published by   
+ *   the Free Software Foundation; either version 2 of the License, or  
+ *   (at your option) any later version.                      
+ *                                                          
+ * 
+ ***************************************************************************/ 
 
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Auth']['groups'] = $filename;
+	$module['Auth']['Groups'] = $filename;
 
 	return;
 }
@@ -20,7 +42,18 @@ init_userprefs($userdata);
 //
 // End session management
 //
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=/admin");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+}
 
+//
+// Start program - define vars
+//
 $auth_field_match = array(
 	"auth_view" => AUTH_VIEW,
 	"auth_read" => AUTH_READ,
@@ -30,6 +63,15 @@ $auth_field_match = array(
 	"auth_delete" => AUTH_DELETE,
 	"auth_sticky" => AUTH_STICKY, 
 	"auth_announce" => AUTH_ANNOUNCE);
+
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+$forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
+
+//
+// Future stuff
+//
+//, "auth_votecreate", "auth_vote", "auth_attachments", "auth_allow_html", "auth_allow_bbcode", "auth_allow_smilies"
+//
 /*	, 
 	"auth_vote" => AUTH_VOTE,
 	"auth_votecreate" => AUTH_VOTECREATE,
@@ -39,9 +81,6 @@ $auth_field_match = array(
 	"auth_allow_bbcode" => AUTH_ALLOW_BBCODE
 	"auth_allow_smilies" => AUTH_ALLOW_SMILIES
 );*/
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
-//, "auth_votecreate", "auth_vote", "auth_attachments", "auth_allow_html", "auth_allow_bbcode", "auth_allow_smilies"
-$forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
 
 // ----------
 // Start Functions
@@ -370,8 +409,12 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	}
 	$select_list .= "</select>";
 
+	$template_header = "admin/page_header.tpl";
+	include('page_header_admin.'.$phpEx);
+
 	$template->set_filenames(array(
-		"body" => "admin/ug_auth_select_body.tpl"));
+		"body" => "admin/ug_auth_select_body.tpl")
+	);
 
 	$template->assign_vars(array(
 		"L_USER_OR_GROUP" => "Group", 
@@ -384,7 +427,7 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 
 	$template->pparse("body");
 
-	exit;
+	include('page_footer_admin.'.$phpEx);
 
 }
 
@@ -392,6 +435,8 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 //
 // Front end
 //
+$template_header = "admin/page_header.tpl";
+include('page_header_admin.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "admin/ug_auth_body.tpl")
@@ -652,6 +697,6 @@ if($adv == -1)
 
 $template->pparse("body");
 
-exit;
+include('page_footer_admin.'.$phpEx);
 
 ?>

@@ -32,34 +32,33 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
 init_userprefs($userdata);
 // 
-// End sessionmanagement
+// End session management
 //
 
 //
-// Start Auth check
+// Is user logged in? If yes are they an admin?
 //
-if($userdata['user_level'] != ADMIN)
+if( !$userdata['session_logged_in'] )
 {
-	message_die(CRITICAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised'], __LINE__, __FILE__);
+	header("Location: ../login.$phpEx?forward_page=/admin/");
 }
-//
-// End Auth check
-//
-		
-
-
-if ($pane == 'top')
+else if( $userdata['user_level'] != ADMIN )
 {
-	$page_title = $lang['View_topic'] ." - $topic_title";
-	$pagetype = "viewtopic";
+	message_die(GENERAL_MESSAGE, "You are not authorised to administer this board");
+}
 
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+//
+// Generate relevant output
+//
+if( $HTTP_GET_VARS['pane'] == 'top' )
+{
+
+	$template_header = "admin/overall_header.tpl";
+	include('page_header_admin.'.$phpEx);
 
 }
-elseif ($pane == 'left')
+elseif( $HTTP_GET_VARS['pane'] == 'left' )
 {
-	$pagetype = "noheader";
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 	print "<BASE TARGET=\"main\">";
 	$dir = opendir(".");
 
@@ -73,61 +72,69 @@ elseif ($pane == 'left')
 		}
 	}
 
+	while( list($cat, $action_array) = each($module) )
+	{
+		print "<H3>$cat</H3>\n";
+		print "<ul>\n";
+		
+		while( list($action, $file) = each($action_array) )
+		{
+			print "<li><a href=\"$file\">$action</a></li>\n";
+		}
+		
+		print "</ul>\n";
+	}
+
+	/*
 	$template->set_filenames(array(
 		"body" => "admin/navigate.tpl")
 	);
-					
-
+	
 	while( list($cat, $action_array) = each($module) )
 	{
 		$template->assign_block_vars("catrow", array(
 			"CATNAME" => $cat)
 		);
-		while( list($action, $file) = each($action_array) )
+		while( list($action, $file)	= each($action_array) )
 		{
 			$template->assign_block_vars("catrow.actionrow", array(
-				"ACTIONNAME"	=> $action,
-				"FILE"			=> $file)
+				"ACTIONNAME" => $action,
+				"FILE" => $file)
 			);
 		}
 	}
 	//var_dump($module);
-	
+
 	$template->pparse("body");
+	*/
 
 	$setmodules = 0;
 }
-elseif ($pane == 'right')
+elseif( $HTTP_GET_VARS['pane'] == 'right' )
 {
 
-	echo "This the right pane ;)";
+	echo "This a right pane ;)";
 
 }
 else
 { 
+	//
+	// Generate frameset
+	//
+	$template->set_filenames(array(
+		"body" => "admin/index_frameset.tpl")
+	);
+
+	$template->assign_vars(array(
+		"S_FRAME_HEADER" => "index.$phpEx?pane=top",
+		"S_FRAME_NAV" => "index.$phpEx?pane=left",
+		"S_FRAME_MAIN" => "index.$phpEx?pane=right",
+		)
+	);
+
+	$template->pparse("body");
 	
-// Generate frameset
-
-?>
-<html>
-<head>
-<title>Admin</title>
-</head>
-
-<frameset rows="150,*" border="0" frameborder="0">
-	<frame src="index.<?php echo $phpEx?>?pane=top" name="top" SCROLLING="NO">
-	<frameset cols="150,*" border="0" frameborder="0">
-		<frame src="index.<?php echo $phpEx?>?pane=left" name="nav">
-		<frame src="index.<?php echo $phpEx?>?pane=right" name="main">
-	</frameset>
-</frameset>
-<noframes>
-	<body bgcolor="#FFFFFF">
-	Sorry, your browser doesn't seem to support Frames..
-</body>
-</noframes>
-</html>
-<?
+	exit;
 
 }
 

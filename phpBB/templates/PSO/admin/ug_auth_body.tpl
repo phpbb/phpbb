@@ -1,41 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>phpBB - auth testing</title>
-<script language="JavaScript" type="text/javascript">
-<!--
-function open_new_window(strURL){
-	weblinkswin = window.open(strURL, "_weblinks", "LEFT=2,HEIGHT=400,resizable=yes,scrollbars=yes,TOP=2,WIDTH=740");
-}
-//-->
-</script>
-<style type="text/css">
-<!--
-	P {font-family:Verdana,serif;font-size:8pt}
-
-	H1 {font-family:Arial,Helvetica,sans-serif;font-size:14pt;text-align:center}
-	H2 {font-family:Arial,Helvetica,sans-serif;font-size:12pt;}
-	H3 {font-family:Arial,Helvetica,sans-serif;font-size:10pt;}
-
-	TH {background-color:#CCCCCC;font-family:Verdana,serif;font-size:8pt}
-	TD {font-family:Verdana,serif;font-size:8pt}
-
-	TD.row1 {background-color:#DDDDDD}
-	TD.row2 {background-color:#EEEEEE}
-
-	TD.row1authuser {background-color:#FF8888}
-	TD.row2authuser {background-color:#EE8888}
-
-	TD.row1authgroup {background-color:#77FF77}
-	TD.row2authgroup {background-color:#66EE66}
-
-	SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
-	INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
-//-->
-</style>
-</head>
-<body bgcolor="#FFFFFF" text="#000000">
 
 <h1>{L_USER_OR_GROUP} Authorisation Control</h1>
 
@@ -45,7 +7,7 @@ function open_new_window(strURL){
 
 <p>{USER_GROUP_MEMBERSHIPS}</p>
 
-<h3>Access to Forums</h3>
+<h2>Access to Forums</h2>
 
 <p>Remember that there are two possible places for controlling access to forums, user and group auth control. Removing access rights from a user will not affect any rights granted via group membership. You will be warned if you remove access rights from a user (or group) but access is still granted via membership of a group (or via individual user rights)</p>
 
@@ -69,19 +31,3 @@ function open_new_window(strURL){
 </table></div>
 
 </form>
-
-<center>
-
-<p><a href="{U_USER_OR_GROUP}">{L_USER_OR_GROUP} Authorisation Admin</a></p>
-<p><a href="{U_FORUMAUTH}">Forum Authorisation Admin</a></p>
-
-<font face="Verdana,serif" size="1">Powered By <a href="http://www.phpbb.com/" target="_phpbb">phpBB 2.0</a></font>
-
-<br clear="all">
-
-<font face="Verdana,serif" size="1">
-Copyright &copy; 2001 phpBB Group, All Rights Reserved</font>
-<br>
-
-</body>
-</html>
