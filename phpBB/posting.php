@@ -295,145 +295,17 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 	// Do we need to confirm ?
 	if ($confirm)
 	{
-		// Specify our post mode
-		$post_mode = ($topic_first_post_id == $topic_last_post_id) ? 'delete_topic' : (($topic_first_post_id == $post_id) ? 'delete_first_post' : (($topic_last_post_id == $post_id) ? 'delete_last_post' : 'delete'));
-
-		$sql_data = array();
-		$delete_error = '';
-
-		$db->sql_transaction();
-
-		if (!delete_posts('post_id', array($post_id), false))
-		{
-			// Try to delete topic, we may had an previous error causing inconsistency
-			if ($post_mode = 'delete_topic')
-			{
-				delete_topics('topic_id', array($topic_id), false);
-			}
-			trigger_error($user->lang['ALREADY_DELETED']);
-		}
-
-		$db->sql_transaction('commit');
-
-		$parent_sql = array();
-
-		// Collect the necessary informations for updating the tables
-		switch ($post_mode)
-		{
-			case 'delete_topic':
-				delete_topics('topic_id', array($topic_id), false);
-				set_config('num_topics', $config['num_topics'] - 1, true);
-
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
-				$sql_data['forum'] .= ($topic_approved) ? ', forum_topics = forum_topics - 1' : '';
-				$update = update_last_post_information('forum', $forum_id, $parent_sql);
-				if (sizeof($update))
-				{
-					$sql_data['forum'] .= ', ' . implode(', ', $update);
-				}
-				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
-				break;
-
-			case 'delete_first_post':
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username 
-					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-					WHERE p.topic_id = $topic_id 
-						AND p.poster_id = u.user_id 
-					ORDER BY p.post_time ASC";
-				$result = $db->sql_query_limit($sql, 1);
-
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
-				$sql_data['topic'] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
-				$sql_data['topic'] .= ', topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
-
-				$next_post_id = (int) $row['post_id'];
-				break;
-			
-			case 'delete_last_post':
-				$sql = 'SELECT post_id
-					FROM ' . POSTS_TABLE . '
-					WHERE topic_id = ' . $topic_id . ' ' .
-						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
-					ORDER BY post_time DESC';
-				$result = $db->sql_query_limit($sql, 1);
-
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
-				$update = update_last_post_information('forum', $forum_id, $parent_sql);
-				if (sizeof($update))
-				{
-					$sql_data['forum'] .= ', ' . implode(', ', $update);
-				}
-				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
-				$update = update_last_post_information('topic', $topic_id);
-				if (sizeof($update))
-				{
-					$sql_data['topic'] .= ', ' . implode(', ', $update);
-				}
-				$next_post_id = (int) $row['post_id'];
-				break;
-			
-			case 'delete':
-				$sql = 'SELECT post_id
-					FROM ' . POSTS_TABLE . '
-					WHERE topic_id = ' . $topic_id . ' ' .
-						(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . "
-						AND post_time > $post_time
-					ORDER BY post_time ASC";
-				$result = $db->sql_query_limit($sql, 1);
-
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
-				$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($post_approved) ? ', topic_replies = topic_replies - 1' : '');
-				$next_post_id = (int) $row['post_id'];
-		}
-				
-		$sql_data['user'] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
-		set_config('num_posts', $config['num_posts'] - 1, TRUE);
-
-		$db->sql_transaction();
-
-		if (isset($sql_data['forum']) && $sql_data['forum'] != '')
-		{
-			$sql = 'UPDATE ' . FORUMS_TABLE . ' 
-				SET ' . $sql_data['forum'] . "
-				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
-		}
-
-		if (isset($sql_data['topic']) && $sql_data['topic'] != '')
-		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-				SET ' . $sql_data['topic'] . "
-				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
-		}
-
-		if (isset($sql_data['user']) && $sql_data['user'] != '')
-		{
-			$sql = 'UPDATE ' . USERS_TABLE . ' 
-				SET ' . $sql_data['user'] . ' 
-				WHERE user_id = ' . $poster_id;
-			$db->sql_query($sql);
-		}
-
-		if (sizeof($parent_sql))
-		{
-			foreach ($parent_sql as $sql)
-			{
-				$db->sql_query($sql);
-			}
-		}
-
-		$db->sql_transaction('commit');
-
+		$data = array(
+			'topic_first_post_id' => $topic_first_post_id,
+			'topic_last_post_id' => $topic_last_post_id,
+			'topic_approved' => $topic_approved,
+			'post_approved' => $post_approved,
+			'post_time' => $post_time,
+			'poster_id' => $poster_id
+		);
+		
+		$next_post_id = delete_post($mode, $post_id, $topic_id, $forum_id, $data);
+	
 		if ($topic_first_post_id == $topic_last_post_id)
 		{
 			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
@@ -448,6 +320,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 		meta_refresh(3, $meta_info);
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 		trigger_error($message);
+
 	}
 	else
 	{
@@ -1653,6 +1526,151 @@ function phpbb_strtolower($string)
 	return $new_string;
 }
 
+// Delete Post
+function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
+{
+	global $db, $user, $config, $auth, $phpEx, $SID;
+
+	// Specify our post mode
+	$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'delete_topic' : (($data['topic_first_post_id'] == $post_id) ? 'delete_first_post' : (($data['topic_last_post_id'] == $post_id) ? 'delete_last_post' : 'delete'));
+	$sql_data = $parent_sql = array();
+	$next_post_id = 0;
+
+	$db->sql_transaction();
+
+	if (!delete_posts('post_id', array($post_id), false))
+	{
+		// Try to delete topic, we may had an previous error causing inconsistency
+		if ($post_mode = 'delete_topic')
+		{
+			delete_topics('topic_id', array($topic_id), false);
+		}
+		trigger_error($user->lang['ALREADY_DELETED']);
+	}
+
+	$db->sql_transaction('commit');
+
+	// Collect the necessary informations for updating the tables
+	switch ($post_mode)
+	{
+		case 'delete_topic':
+			delete_topics('topic_id', array($topic_id), false);
+			set_config('num_topics', $config['num_topics'] - 1, true);
+
+			$sql_data['forum'] = 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
+			$sql_data['forum'] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
+			$update = update_last_post_information('forum', $forum_id, $parent_sql);
+			if (sizeof($update))
+			{
+				$sql_data['forum'] .= ', ' . implode(', ', $update);
+			}
+			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			break;
+
+		case 'delete_first_post':
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username 
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+				WHERE p.topic_id = $topic_id 
+					AND p.poster_id = u.user_id 
+				ORDER BY p.post_time ASC";
+			$result = $db->sql_query_limit($sql, 1);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+			$sql_data['topic'] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data['topic'] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+
+			$next_post_id = (int) $row['post_id'];
+			break;
+			
+		case 'delete_last_post':
+			$sql = 'SELECT post_id
+				FROM ' . POSTS_TABLE . "
+				WHERE topic_id = $topic_id " .
+					(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
+				ORDER BY post_time DESC';
+			$result = $db->sql_query_limit($sql, 1);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+			$update = update_last_post_information('forum', $forum_id, $parent_sql);
+			if (sizeof($update))
+			{
+				$sql_data['forum'] .= ', ' . implode(', ', $update);
+			}
+			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$update = update_last_post_information('topic', $topic_id);
+			if (sizeof($update))
+			{
+				$sql_data['topic'] .= ', ' . implode(', ', $update);
+			}
+			$next_post_id = (int) $row['post_id'];
+			break;
+			
+		case 'delete':
+			$sql = 'SELECT post_id
+				FROM ' . POSTS_TABLE . "
+				WHERE topic_id = $topic_id " . 
+					(($auth->acl_get('m_approve')) ? 'AND post_approved = 1' : '') . '
+					AND post_time > ' . $data['post_time'] . '
+				ORDER BY post_time ASC';
+			$result = $db->sql_query_limit($sql, 1);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$next_post_id = (int) $row['post_id'];
+	}
+				
+	$sql_data['user'] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
+	set_config('num_posts', $config['num_posts'] - 1, TRUE);
+
+	$db->sql_transaction();
+
+	if (isset($sql_data['forum']) && $sql_data['forum'] != '')
+	{
+		$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+			SET ' . $sql_data['forum'] . "
+			WHERE forum_id = $forum_id";
+		$db->sql_query($sql);
+	}
+
+	if (isset($sql_data['topic']) && $sql_data['topic'] != '')
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET ' . $sql_data['topic'] . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
+	}
+
+	if (isset($sql_data['user']) && $sql_data['user'] != '')
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . ' 
+			SET ' . $sql_data['user'] . ' 
+			WHERE user_id = ' . $data['poster_id'];
+		$db->sql_query($sql);
+	}
+
+	if (sizeof($parent_sql))
+	{
+		foreach ($parent_sql as $sql)
+		{
+			$db->sql_query($sql);
+		}
+	}
+
+	$db->sql_transaction('commit');
+
+	return $next_post_id;
+}
+
+
 // Submit Post
 function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data)
 {
@@ -2006,8 +2024,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		$sql_data['topic']['stat'] = implode(', ', update_last_post_information('topic', $data['topic_id']));
 	}
 
-	if (!$auth->acl_get('f_moderate', $data['forum_id']))
-	{
+	// ASHE, do we update total post count or not?
+//	if (!$auth->acl_get('f_moderate', $data['forum_id']))
+//	{
 		if ($post_mode == 'post')
 		{
 			set_config('num_topics', $config['num_topics'] + 1, true);
@@ -2018,7 +2037,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		{
 			set_config('num_posts', $config['num_posts'] + 1, true);
 		}
-	}
+//	}
 
 	// Update forum stats
 	$db->sql_transaction();
