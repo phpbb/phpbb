@@ -92,8 +92,8 @@ if($total_categories)
 	
 	for($i = 0; $i < count($forum_mods_list); $i++)
 	{
-		$forum_mods[$forum_mods_list[$i]["forum_id"]]["username"][] = $forum_mods_list[$i]["username"];
-		$forum_mods[$forum_mods_list[$i]["forum_id"]]["user_id"][] = $forum_mods_list[$i]["user_id"];
+		$forum_mods["forum_".$forum_mods_list[$i]["forum_id"]."_name"][] = $forum_mods_list[$i]["username"];
+		$forum_mods["forum_".$forum_mods_list[$i]["forum_id"]."_id"][] = $forum_mods_list[$i]["user_id"];
 	}
 
 	for($i = 0; $i < $total_categories; $i++)
@@ -134,7 +134,7 @@ if($total_categories)
 				}
 
 				unset($moderators_links);
-				for($mods = 0; $mods < count($forum_mods[$forum_rows[$j]["forum_id"]]); $mods++)
+				for($mods = 0; $mods < count($forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"]); $mods++)
 				{
 					if(isset($moderators_links))
 					{
@@ -144,7 +144,7 @@ if($total_categories)
 					{
 						$moderators_links .= "<br>";
 					}
-					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_mods[$forum_rows[$j]["forum_id"]]["user_id"][$mods]."\">".$forum_mods[$forum_rows[$j]["forum_id"]]["username"][$mods]."</a>";
+					$moderators_links .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_id"][$mods]."\">".$forum_mods["forum_".$forum_rows[$j]["forum_id"]."_name"][$mods]."</a>";
 				}
 
 				$template->set_var(array("FOLDER" => $folder_image,
