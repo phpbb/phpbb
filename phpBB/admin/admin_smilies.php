@@ -150,7 +150,7 @@ switch($mode)
 			"L_SUBMIT" => $lang['Submit_changes'],
 			"L_RESET" => $lang['Reset_changes'],
 
-			"SMILEY_IMG" => $phpbb_root_path . '/' . $board_config['smilies_path'] . '/' . $smiley_edit_img, 
+			"SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img, 
 
 			"S_SMILEY_ACTION" => append_sid("admin_smilies.$phpEx"),
 			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
