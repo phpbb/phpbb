@@ -21,44 +21,24 @@
  ***************************************************************************/
 
 define('IN_PHPBB', 1);
-
-//
-// Load default header
-//
 $no_page_header = TRUE;
 $phpbb_root_path = "../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
-
-// ---------------
-// Begin functions
-//
-function inarray($needle, $haystack)
-{ 
-	for($i = 0; $i < sizeof($haystack); $i++ )
-	{ 
-		if( $haystack[$i] == $needle )
-		{ 
-			return true; 
-		} 
-	} 
-	return false; 
-}
-//
-// End functions
-// -------------
 
 //
 // Generate relevant output
 //
 if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 {
-	$dir = @opendir(".");
+	$update = false;
+	require('pagestart.' . $phpEx);
+
+	$dir = @opendir('.');
 
 	$setmodules = 1;
 	while( $file = @readdir($dir) )
 	{
-		if( preg_match("/^admin_.*?\." . $phpEx . "$/", $file) )
+		if( preg_match('/^admin_.*?\.' . $phpEx . '$/', $file) )
 		{
 			include($file);
 		}
@@ -71,26 +51,26 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/index_navigate.tpl")
+		'body' => 'admin/index_navigate.tpl')
 	);
 
 	$template->assign_vars(array(
-		"U_FORUM_INDEX" => append_sid("../index.$phpEx"),
-		"U_ADMIN_INDEX" => append_sid("index.$phpEx?pane=right"),
+		'U_FORUM_INDEX' => append_sid("../index.$phpEx"),
+		'U_ADMIN_INDEX' => "index.$phpEx$SID&amp;pane=right",
 
-		"L_FORUM_INDEX" => $lang['Main_index'],
-		"L_ADMIN_INDEX" => $lang['Admin_Index'], 
-		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
+		'L_FORUM_INDEX' => $lang['Main_index'],
+		'L_ADMIN_INDEX' => $lang['Admin_Index'], 
+		'L_PREVIEW_FORUM' => $lang['Preview_forum'])
 	);
 
 	ksort($module);
 
 	while( list($cat, $action_array) = each($module) )
 	{
-		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
+		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace('/_/', ' ', $cat);
 
-		$template->assign_block_vars("catrow", array(
-			"ADMIN_CATEGORY" => $cat)
+		$template->assign_block_vars('catrow', array(
+			'ADMIN_CATEGORY' => $cat)
 		);
 
 		ksort($action_array);
@@ -101,14 +81,14 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace("/_/", " ", $action);
+			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
-			$template->assign_block_vars("catrow.modulerow", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class, 
+			$template->assign_block_vars('catrow.modulerow', array(
+				'ROW_COLOR' => "#" . $row_color,
+				'ROW_CLASS' => $row_class, 
 
-				"ADMIN_MODULE" => $action,
-				"U_ADMIN_MODULE" => append_sid($file))
+				'ADMIN_MODULE' => $action,
+				'U_ADMIN_MODULE' => append_sid($file))
 			);
 			$row_count++;
 		}
@@ -120,51 +100,53 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 }
 elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 {
+	$update = true;
+	require('pagestart.' . $phpEx);
 
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
-		"body" => "admin/index_body.tpl")
+		'body' => 'admin/index_body.tpl')
 	);
 
 	$template->assign_vars(array(
-		"L_WELCOME" => $lang['Welcome_phpBB'],
-		"L_ADMIN_INTRO" => $lang['Admin_intro'],
-		"L_FORUM_STATS" => $lang['Forum_stats'],
-		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
-		"L_LOCATION" => $lang['Location'],
-		"L_LAST_UPDATE" => $lang['Last_updated'],
-		"L_IP_ADDRESS" => $lang['IP_Address'],
-		"L_STATISTIC" => $lang['Statistic'],
-		"L_VALUE" => $lang['Value'],
-		"L_NUMBER_POSTS" => $lang['Number_posts'],
-		"L_POSTS_PER_DAY" => $lang['Posts_per_day'],
-		"L_NUMBER_TOPICS" => $lang['Number_topics'],
-		"L_TOPICS_PER_DAY" => $lang['Topics_per_day'],
-		"L_NUMBER_USERS" => $lang['Number_users'],
-		"L_USERS_PER_DAY" => $lang['Users_per_day'],
-		"L_BOARD_STARTED" => $lang['Board_started'],
-		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'],
-		"L_DB_SIZE" => $lang['Database_size'], 
-		"L_FORUM_LOCATION" => $lang['Forum_Location'],
-		"L_STARTED" => $lang['Login'],
-		"L_GZIP_COMPRESSION" => $lang['Gzip_compression'])
+		'L_WELCOME' => $lang['Welcome_phpBB'],
+		'L_ADMIN_INTRO' => $lang['Admin_intro'],
+		'L_FORUM_STATS' => $lang['Forum_stats'],
+		'L_WHO_IS_ONLINE' => $lang['Who_is_Online'],
+		'L_LOCATION' => $lang['Location'],
+		'L_LAST_UPDATE' => $lang['Last_updated'],
+		'L_IP_ADDRESS' => $lang['IP_Address'],
+		'L_STATISTIC' => $lang['Statistic'],
+		'L_VALUE' => $lang['Value'],
+		'L_NUMBER_POSTS' => $lang['Number_posts'],
+		'L_POSTS_PER_DAY' => $lang['Posts_per_day'],
+		'L_NUMBER_TOPICS' => $lang['Number_topics'],
+		'L_TOPICS_PER_DAY' => $lang['Topics_per_day'],
+		'L_NUMBER_USERS' => $lang['Number_users'],
+		'L_USERS_PER_DAY' => $lang['Users_per_day'],
+		'L_BOARD_STARTED' => $lang['Board_started'],
+		'L_AVATAR_DIR_SIZE' => $lang['Avatar_dir_size'],
+		'L_DB_SIZE' => $lang['Database_size'], 
+		'L_FORUM_LOCATION' => $lang['Forum_Location'],
+		'L_STARTED' => $lang['Login'],
+		'L_GZIP_COMPRESSION' => $lang['Gzip_compression'])
 	);
 
 	//
 	// Get forum statistics
 	//
 	$total_posts = get_db_stat('postcount');
-	$total_users = get_db_stat('usercount');
 	$total_topics = get_db_stat('topiccount');
+	$total_users = $board_config['num_users'];
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
 	$boarddays = ( time() - $board_config['board_startdate'] ) / 86400;
 
-	$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
-	$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
-	$users_per_day = sprintf("%.2f", $total_users / $boarddays);
+	$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
+	$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
+	$users_per_day = sprintf('%.2f', $total_users / $boarddays);
 
 	$avatar_dir_size = 0;
 
@@ -172,9 +154,9 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	{
 		while( $file = @readdir($avatar_dir) )
 		{
-			if( $file != "." && $file != ".." )
+			if( $file != '.' && $file != '..' )
 			{
-				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
+				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . '/' . $file);
 			}
 		}
 		@closedir($avatar_dir);
@@ -186,15 +168,15 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		//
 		if($avatar_dir_size >= 1048576)
 		{
-			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
+			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
 		}
 		else if($avatar_dir_size >= 1024)
 		{
-			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
+			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . ' KB';
 		}
 		else
 		{
-			$avatar_dir_size = $avatar_dir_size . " Bytes";
+			$avatar_dir_size = $avatar_dir_size . ' Bytes';
 		}
 
 	}
@@ -225,7 +207,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if( preg_match("/^mysql/", SQL_LAYER) )
+	if( preg_match('/^mysql/', SQL_LAYER) )
 	{
 		$sql = "SELECT VERSION() AS mysql_version";
 		if($result = $db->sql_query($sql))
@@ -233,9 +215,9 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			$row = $db->sql_fetchrow($result);
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23|4\.)/", $version) )
+			if( preg_match('/^(3\.23|4\.)/', $version) )
 			{
-				$db_name = ( preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/", $version) ) ? "`$dbname`" : $dbname;
+				$db_name = ( preg_match('/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/', $version) ) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
@@ -246,7 +228,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 					$dbsize = 0;
 					for($i = 0; $i < count($tabledata_ary); $i++)
 					{
-						if( $tabledata_ary[$i]['Type'] != "MRG_MyISAM" )
+						if( $tabledata_ary[$i]['Type'] != 'MRG_MyISAM' )
 						{
 							if( $table_prefix != "" )
 							{
@@ -273,7 +255,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			$dbsize = $lang['Not_available'];
 		}
 	}
-	else if( preg_match("/^mssql/", SQL_LAYER) )
+	else if( preg_match('/^mssql/', SQL_LAYER) )
 	{
 		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
 			FROM sysfiles"; 
@@ -295,29 +277,29 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	{
 		if( $dbsize >= 1048576 )
 		{
-			$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
+			$dbsize = sprintf('%.2f MB', ( $dbsize / 1048576 ));
 		}
 		else if( $dbsize >= 1024 )
 		{
-			$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
+			$dbsize = sprintf('%.2f KB', ( $dbsize / 1024 ));
 		}
 		else
 		{
-			$dbsize = sprintf("%.2f Bytes", $dbsize);
+			$dbsize = sprintf('%.2f Bytes', $dbsize);
 		}
 	}
 
 	$template->assign_vars(array(
-		"NUMBER_OF_POSTS" => $total_posts,
-		"NUMBER_OF_TOPICS" => $total_topics,
-		"NUMBER_OF_USERS" => $total_users,
-		"START_DATE" => $start_date,
-		"POSTS_PER_DAY" => $posts_per_day,
-		"TOPICS_PER_DAY" => $topics_per_day,
-		"USERS_PER_DAY" => $users_per_day,
-		"AVATAR_DIR_SIZE" => $avatar_dir_size,
-		"DB_SIZE" => $dbsize, 
-		"GZIP_COMPRESSION" => ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF'])
+		'NUMBER_OF_POSTS' => $total_posts,
+		'NUMBER_OF_TOPICS' => $total_topics,
+		'NUMBER_OF_USERS' => $total_users,
+		'START_DATE' => $start_date,
+		'POSTS_PER_DAY' => $posts_per_day,
+		'TOPICS_PER_DAY' => $topics_per_day,
+		'USERS_PER_DAY' => $users_per_day,
+		'AVATAR_DIR_SIZE' => $avatar_dir_size,
+		'DB_SIZE' => $dbsize, 
+		'GZIP_COMPRESSION' => ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF'])
 	);
 	//
 	// End forum statistics
@@ -326,7 +308,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	//
 	// Get users online information.
 	//
-	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_logged_in, s.session_ip, s.session_start 
+	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_ip, s.session_start 
 		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 		WHERE s.session_logged_in = " . TRUE . " 
 			AND u.user_id = s.session_user_id 
@@ -339,7 +321,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	}
 	$onlinerow_reg = $db->sql_fetchrowset($result);
 
-	$sql = "SELECT session_page, session_logged_in, session_time, session_ip, session_start   
+	$sql = "SELECT session_page, session_time, session_ip, session_start   
 		FROM " . SESSIONS_TABLE . "
 		WHERE session_logged_in = 0
 			AND session_time >= " . ( time() - 300 ) . "
@@ -446,17 +428,17 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 				$reg_ip = $onlinerow_reg[$i]['session_ip'];
 
 				$template->assign_block_vars("reg_user_row", array(
-					"ROW_COLOR" => "#" . $row_color,
-					"ROW_CLASS" => $row_class,
-					"USERNAME" => $username, 
-					"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']), 
-					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
-					"FORUM_LOCATION" => $location,
-					"IP_ADDRESS" => $reg_ip, 
+					'ROW_COLOR' => "#" . $row_color,
+					'ROW_CLASS' => $row_class,
+					'USERNAME' => $username, 
+					'STARTED' => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']), 
+					'LASTUPDATE' => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
+					'FORUM_LOCATION' => $location,
+					'IP_ADDRESS' => $reg_ip, 
 
-					"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$reg_ip", 
-					"U_USER_PROFILE" => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
-					"U_FORUM_LOCATION" => append_sid($location_url))
+					'U_WHOIS_IP' => "http://www.samspade.org/t/ipwhois?a=$reg_ip", 
+					'U_USER_PROFILE' => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
+					'U_FORUM_LOCATION' => append_sid($location_url))
 				);
 			}
 		}
@@ -537,17 +519,17 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 			$guest_ip = $onlinerow_guest[$i]['session_ip'];
 
-			$template->assign_block_vars("guest_user_row", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
-				"USERNAME" => $lang['Guest'],
-				"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']), 
-				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
-				"FORUM_LOCATION" => $location,
-				"IP_ADDRESS" => $guest_ip, 
+			$template->assign_block_vars('guest_user_row', array(
+				'ROW_COLOR' => "#" . $row_color,
+				'ROW_CLASS' => $row_class,
+				'USERNAME' => $lang['Guest'],
+				'STARTED' => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']), 
+				'LASTUPDATE' => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
+				'FORUM_LOCATION' => $location,
+				'IP_ADDRESS' => $guest_ip, 
 
-				"U_WHOIS_IP" => "http://www.samspade.org/t/ipwhois?a=$guest_ip", 
-				"U_FORUM_LOCATION" => append_sid($location_url))
+				'U_WHOIS_IP' => "http://www.samspade.org/t/ipwhois?a=$guest_ip", 
+				'U_FORUM_LOCATION' => append_sid($location_url))
 			);
 		}
 
@@ -555,17 +537,20 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	else
 	{
 		$template->assign_vars(array(
-			"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
+			'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'])
 		);
 	}
 
-	$template->pparse("body");
+	$template->pparse('body');
 
 	include('page_footer_admin.'.$phpEx);
 
 }
 else
 {
+	$update = false;
+	require('pagestart.' . $phpEx);
+
 	//
 	// Generate frameset
 	//
@@ -574,17 +559,15 @@ else
 	);
 
 	$template->assign_vars(array(
-		"S_FRAME_NAV" => append_sid("index.$phpEx?pane=left"),
-		"S_FRAME_MAIN" => append_sid("index.$phpEx?pane=right"))
+		'S_FRAME_NAV' => "index.$phpEx$SID&amp;pane=left",
+		'S_FRAME_MAIN' => "index.$phpEx$SID&amp;pane=right")
 	);
 
-	header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
-	header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	header ('Expires: ' . gmdate("D, d M Y H:i:s", time()) . ' GMT');
+	header ('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
 
 	$template->pparse("body");
-
 	exit;
-
 }
 
 ?>
