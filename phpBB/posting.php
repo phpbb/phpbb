@@ -32,14 +32,14 @@ $topic_id	= (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : false;
 $forum_id	= (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : false;
 $lastclick	= (isset($_POST['lastclick'])) ? intval($_POST['lastclick']) : 0;
 
-$submit		= (isset($_POST['post'])) ? true : false;
-$preview	= (isset($_POST['preview'])) ? true : false;
-$save		= (isset($_POST['save'])) ? true : false;
-$cancel		= (isset($_POST['cancel'])) ? true : false;
-$confirm	= (isset($_POST['confirm'])) ? true : false;
-$delete		= (isset($_POST['delete'])) ? true : false;
+$submit		= (isset($_POST['post'])) ? TRUE : FALSE;
+$preview	= (isset($_POST['preview'])) ? TRUE : FALSE;
+$save		= (isset($_POST['save'])) ? TRUE : FALSE;
+$cancel		= (isset($_POST['cancel'])) ? TRUE : FALSE;
+$confirm	= (isset($_POST['confirm'])) ? TRUE : FALSE;
+$delete		= (isset($_POST['delete'])) ? TRUE : FALSE;
 
-$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']);
+$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) ||  isset($_POST['draft_save']) || $save;
 
 if ($delete && !$preview && !$refresh && $submit)
 {
@@ -167,16 +167,16 @@ if ($sql != '')
 	$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 
-	$message_parser->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim(strip_tags($_POST['filecomment'])) : '';
+	$message_parser->filename_data['filecomment'] = (isset($_POST['filecomment'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['filecomment']))) : '';
 	$message_parser->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 
 	// Get Attachment Data
 	$message_parser->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 
-	// Make sure we do not add slashes twice...
+	// 
 	foreach ($message_parser->attachment_data as $pos => $var)
 	{
-		$message_parser->attachment_data[$pos]['comment'] = stripslashes($message_parser->attachment_data[$pos]['comment']);
+		$message_parser->attachment_data[$pos]['comment'] = trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($message_parser->attachment_data[$pos]['comment'])));
 	}
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
@@ -211,12 +211,24 @@ if ($sql != '')
 		$enable_sig		= ($config['allow_sig'] && $user->data['user_attachsig']) ? true : false;
 		$enable_smilies	= ($config['allow_smilies'] && $user->data['user_allowsmile']) ? true : false;
 		$enable_bbcode	= ($config['allow_bbcode'] && $user->data['user_allowbbcode']) ? true : false;
-		$enable_urls	= true;
+		$enable_urls	= TRUE;
 	}
 
-	$enable_magic_url = false;
-}
+	$enable_magic_url = $drafts = FALSE;
 
+	// User owns some drafts?
+	if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+	{
+		$sql = 'SELECT draft_id
+			FROM ' . DRAFTS_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'];
+		$result = $db->sql_query_limit($sql, 1);
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$drafts = TRUE;
+		}
+	}
+}
 
 // Notify user checkbox
 if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
@@ -439,17 +451,59 @@ $img_status		= ($config['allow_img'] && $auth->acl_get('f_img', $forum_id)) ? tr
 $flash_status	= ($config['allow_flash'] && $auth->acl_get('f_flash', $forum_id)) ? true : false;
 
 
+// Save Draft
+if (($save || isset($_POST['draft_save']))&& $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+{
+	if (isset($_POST['draft_title_update']) && intval($_POST['draft_id']) && trim($_POST['draft_title']) != '')
+	{
+		$sql = 'UPDATE ' . DRAFTS_TABLE . "
+			SET title = '" . $db->sql_escape(trim(htmlspecialchars($_POST['draft_title']))) . "'
+			WHERE draft_id = " . intval($_POST['draft_id']) . " 
+				AND user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$subject	= (!empty($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
+		$message	= (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
+
+		if ($message != '')
+		{
+			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'user_id' => $user->data['user_id'],
+				'topic_id' => $topic_id,
+				'save_time' => time(),
+				'title' => $subject,
+				'post_subject' => $subject,
+				'post_message' => $message));
+			$db->sql_query($sql);
+
+			$drafts = TRUE;
+
+			$template->assign_var('DRAFT_ID', $db->sql_nextid());
+		}
+		else
+		{
+			$save = FALSE;
+		}
+
+		unset($subject);
+		unset($message);
+	}
+}
+
+
 if ($submit || $preview || $refresh)
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
-	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(strip_tags($_POST['subject']))) : '';
+	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
 
 	if (strcmp($subject, strtoupper($subject)) == 0 && $subject != '')
 	{
 		$subject = phpbb_strtolower($subject);
 	}
 	
-	$message_parser->message = (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
+	$message_parser->message = (!empty($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
 	
 	$username			= (!empty($_POST['username'])) ? trim($_POST['username']) : ((!empty($username)) ? $username : '');
 	$topic_type			= (!empty($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
@@ -933,9 +987,9 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 	}
 }
 
-$html_checked		= (isset($enable_html)) ? !$enable_html : ((intval($config['allow_html'])) ? !$user->data['user_allowhtml'] : 1);
-$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : ((intval($config['allow_bbcode'])) ? !$user->data['user_allowbbcode'] : 1);
-$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : ((intval($config['allow_smilies'])) ? !$user->data['user_allowsmile'] : 1);
+$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->data['user_allowhtml'] : 1);
+$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->data['user_allowbbcode'] : 1);
+$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->data['user_allowsmile'] : 1);
 $urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked		= $enable_sig;
 $notify_checked		= (isset($notify)) ? $notify : (($notify_set == -1) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : $notify_set);
@@ -1029,7 +1083,9 @@ $template->assign_vars(array(
 	'S_LOCK_POST_CHECKED'	=> ($lock_post_checked) ? 'checked="checked"' : '',
 	'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? 'checked="checked"' : '',
 	'S_TYPE_TOGGLE'			=> $topic_type_toggle,
-	'S_SAVE_ALLOWED'		=> ($auth->acl_get('f_save', $forum_id)) ? true : false,
+	'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS) ? true : false,
+	'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS && $drafts) ? true : false,
+	'S_DRAFT_SAVED'			=> $save,
 	'S_FORM_ENCTYPE'		=> $form_enctype,
 
 	'S_POST_ACTION' 		=> $s_action,
@@ -1059,13 +1115,13 @@ else if ($mode == 'edit' && !empty($poll_last_vote) && ($auth->acl_get('f_poll',
 }
 
 // Attachment entry
-if ($auth->acl_get('f_attach', $forum_id) || $auth->acl_get('m_edit', $forum_id))
+if ($auth->acl_get('f_attach', $forum_id) && $config['allow_attachments'] && $form_enctype != '')
 {
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> true)
 	);
 
-	if (count($message_parser->attachment_data))
+	if (sizeof($message_parser->attachment_data))
 	{
 		$template->assign_vars(array(
 			'S_HAS_ATTACHMENTS'	=> true)
@@ -1087,7 +1143,7 @@ if ($auth->acl_get('f_attach', $forum_id) || $auth->acl_get('m_edit', $forum_id)
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> $attach_row['real_filename'],
 				'ATTACH_FILENAME'	=> $attach_row['physical_filename'],
-				'FILE_COMMENT'		=> stripslashes(htmlspecialchars($attach_row['comment'])),
+				'FILE_COMMENT'		=> $attach_row['comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'ASSOC_INDEX'		=> $count,
 
@@ -1100,7 +1156,7 @@ if ($auth->acl_get('f_attach', $forum_id) || $auth->acl_get('m_edit', $forum_id)
 	}
 
 	$template->assign_vars(array(
-		'FILE_COMMENT'	=> stripslashes(htmlspecialchars($message_parser->filename_data['filecomment'])),
+		'FILE_COMMENT'	=> $message_parser->filename_data['filecomment'], 
 		'FILESIZE'		=> $config['max_filesize'],
 		'FILENAME'		=> $message_parser->filename_data['filename'])
 	);
@@ -1283,13 +1339,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			if ($attach_row['attach_id'] != '-1')
 			{
 				// update entry in db if attachment already stored in db and filespace
-				$attach_sql = array(
-					'comment' => trim($attach_row['comment'])
-				);
-			
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
-					SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' 
-					WHERE attach_id = ' . (int) $attach_row['attach_id'];
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . " 
+					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
+					WHERE attach_id = " . (int) $attach_row['attach_id'];
 				$db->sql_query($sql);
 			}
 			else
@@ -1298,7 +1350,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				$attach_sql = array(
 					'physical_filename'	=> $attach_row['physical_filename'],
 					'real_filename'		=> $attach_row['real_filename'],
-					'comment'			=> trim($attach_row['comment']),
+					'comment'			=> $attach_row['comment'],
 					'extension'			=> $attach_row['extension'],
 					'mimetype'			=> $attach_row['mimetype'],
 					'filesize'			=> $attach_row['filesize'],

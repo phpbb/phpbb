@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                               ucp_main.php
- *                            -------------------
- *   begin                : Saturday, Feb 21, 2003
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : ucp_main.php
+// STARTED   : Sat Feb 21, 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class ucp_main extends ucp
 {
@@ -30,6 +22,7 @@ class ucp_main extends ucp
 		// Setup internal subsection display
 		$submodules['FRONT']	= "i=$id&amp;mode=front";
 		$submodules['WATCHED']	= "i=$id&amp;mode=watched";
+		$submodules['DRAFTS']	= "i=$id&amp;mode=drafts";
 
 		$this->menu($id, $submodules, $submode);
 		unset($submodules);
@@ -526,13 +519,166 @@ class ucp_main extends ucp
 				$db->sql_freeresult($result);
 
 				break;
+
+			case 'drafts':
+
+				$edit = (isset($_REQUEST['edit'])) ? true : false;
+				$submit = (isset($_POST['submit'])) ? true : false;
+				$draft_id = ($edit) ? intval($_REQUEST['edit']) : 0;
+
+				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
+				$draft_title = $post_subject = $post_message = '';
+
+				if ($_POST['delete'])
+				{
+					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : false;
+
+					if ($drafts)
+					{
+						$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
+							WHERE draft_id IN ($drafts) 
+								AND user_id = " .$user->data['user_id'];
+						$db->sql_query($sql);
+
+						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						trigger_error($message);
+					}
+				}
+
+				if ($submit && $edit)
+				{
+					$draft_title = (isset($_POST['draft_title'])) ? trim(htmlspecialchars($_POST['draft_title'])) : '';
+					$post_subject = (isset($_POST['subject'])) ? trim(htmlspecialchars($_POST['subject'])) : '';
+					$post_message = (isset($_POST['message'])) ? trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), htmlspecialchars($_POST['message']))) : '';
+
+					if ($post_message != '' && $draft_title != '')
+					{
+						$draft_row = array(
+							'title' => $draft_title,
+							'post_subject' => $post_subject,
+							'post_message' => $post_message
+						);
+
+						$sql = 'UPDATE ' . DRAFTS_TABLE . ' 
+							SET ' . $db->sql_build_array('UPDATE', $draft_row) . " 
+							WHERE draft_id = $draft_id
+								AND user_id = " . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						trigger_error($message);
+					}
+					else
+					{
+						$template->assign_var('ERROR', ($post_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_title == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+					}
+				}
+
+				$sql = 'SELECT *
+					FROM ' . DRAFTS_TABLE . '
+					WHERE user_id = ' . $user->data['user_id'] . ' ' .
+						(($edit) ? "AND draft_id = $draft_id" : '') . '
+						ORDER BY save_time DESC';
+				$result = $db->sql_query($sql);
+				
+				$draftrows = $topic_ids = $topic_rows = array();
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ($row['topic_id'])
+					{
+						$topic_ids[] = (int) $row['topic_id'];
+					}
+					$draftrows[] = $row;
+				}
+				$db->sql_freeresult($result);
+				
+				if (sizeof($topic_ids))
+				{
+					$sql = 'SELECT topic_id, forum_id, topic_title
+						FROM ' . TOPICS_TABLE . '
+						WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$topic_rows[$row['topic_id']] = $row;
+					}
+					$db->sql_freeresult($result);
+				}
+				unset($topic_ids);
+
+				if (sizeof($draftrows))
+				{
+					$template->assign_vars(array(
+						'S_DRAFT_ROWS' => true,
+						'S_EDIT_DRAFT' => $edit)
+					);
+		
+					$row_count = 0;
+					foreach ($draftrows as $draft)
+					{
+						$title = $draft['title'];
+						if (strlen($title) > 30)
+						{
+							$title = substr($title, 0, 27) . '...';
+						}
+						
+						if (isset($topic_rows[$draft['topic_id']]))
+						{
+							$view_topic_url = ($auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id'])) ? "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'] : '';
+						}
+						else
+						{
+							$view_topic_url = '';
+						}
+						$topic_title = ($view_topic_url != '') ? $topic_rows[$draft['topic_id']]['topic_title'] : '';
+
+						if (strlen($topic_title) > 30)
+						{
+							$topic_title = substr($topic_title, 0, 27) . '...';
+						}
+
+						$template_row = array(
+							'DRAFT_ID' => $draft['draft_id'],
+							'DATE' => $user->format_date($draft['save_time']),
+							'TITLE' => $title,
+							'TOPIC_TITLE' => ($view_topic_url != '') ? $topic_title : '',
+
+							'DRAFT_TITLE' => ($submit) ? $draft_title : $draft['title'],
+							'POST_MESSAGE' => ($submit) ? $post_message : $draft['post_message'],
+							'POST_SUBJECT' => ($submit) ? $post_subject : $draft['post_subject'],
+
+							'U_VIEW_TOPIC' => $view_topic_url,
+							'U_VIEW_EDIT' => "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode&amp;edit=" . $draft['draft_id'],
+
+							'S_ROW_COUNT' => $row_count++,
+							'S_HIDDEN_FIELDS' => $s_hidden_fields
+						);
+						
+						if ($edit)
+						{
+							$template->assign_vars($template_row);
+						}
+						else
+						{
+							$template->assign_block_vars('draftrow', $template_row);
+						}
+					}
+				}
+
+				break;
 		}
 
 
 		$template->assign_vars(array( 
 			'L_TITLE'	=> $user->lang['UCP_' . strtoupper($submode)],
 
-			'S_DISPLAY_MARK_ALL'				=> ($submode == 'watched') ? true : false, 
+			'S_DISPLAY_MARK_ALL'				=> ($submode == 'watched' || ($submode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
 			'S_DISPLAY_' . strtoupper($submode)	=> true, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
 			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode")

@@ -157,6 +157,7 @@ define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
+define('DRAFTS_TABLE', $table_prefix.'drafts');
 define('EXTENSIONS_TABLE', $table_prefix.'extensions');
 define('EXTENSION_GROUPS_TABLE', $table_prefix.'extension_groups');
 define('FORUMS_TABLE', $table_prefix.'forums');
@@ -169,7 +170,6 @@ define('LANG_TABLE', $table_prefix.'lang');
 define('LOG_TABLE', $table_prefix.'log');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
 define('POSTS_TABLE', $table_prefix.'posts');
-define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
 define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('RANKS_TABLE', $table_prefix.'ranks');

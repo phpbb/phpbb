@@ -133,6 +133,19 @@ CREATE TABLE phpbb_disallow (
    PRIMARY KEY (disallow_id)
 );
 
+# Table: 'phpbb_drafts'
+CREATE TABLE phpbb_drafts (
+  draft_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  save_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+  title varchar(60) DEFAULT '' NOT NULL,
+  post_subject varchar(60),
+  post_message text DEFAULT '' NOT NULL,
+  PRIMARY KEY (draft_id),
+  KEY user_id (user_id,save_time)
+);
+
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
   extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,

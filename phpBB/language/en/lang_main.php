@@ -628,7 +628,14 @@ $lang += array(
 	'FLASH_IS_OFF' 		=> '[flash] is <u>ON</u>',
 	'ATTACH_SIG' 		=> 'Attach a signature (signatures can be altered via the UCP)',
 	'NOTIFY_REPLY' 		=> 'Send me an email when a reply is posted',
+
 	'SAVE' 				=> 'Save',
+	'LOAD'				=> 'Load',
+	'DRAFT_SAVED'		=> 'Post contents successfully saved as draft.<br />You are able to load this draft to posts you make, or view and edit them within your User Control Panel.',
+	'ENTER_DRAFT_TITLE'	=> 'Enter draft title',
+	'DRAFT_TITLE_EXPLAIN' => 'Now you are able to change the draft title directly. At the moment the draft title is similar to the post subject.',
+
+	'UPDATE'			=> 'Update',
 
 	'POST_STORED' 		=> 'Your message has been posted successfully',
 	'POST_STORED_MOD'	=> 'Your message has been saved but requires approval',
@@ -697,6 +704,19 @@ $lang += array(
 	'UNWATCHED_FORUMS'	=> 'You are no longer watching the selected forums.',
 	'UNWATCHED_TOPICS'	=> 'You are no longer watching the selected topics.',
 	'UNWATCHED_FORUMS_TOPICS'=> 'You are no longer watching the selected forums or topics.',
+
+	'UCP_DRAFTS'		=> 'Saved drafts',
+	'DRAFTS_EXPLAIN'	=> 'Here you can view, edit and delete your saved drafts.',
+	'VIEW_EDIT'			=> 'View/Edit',
+	'DRAFT_TITLE'		=> 'Draft Title',
+	'SAVE_DATE'			=> 'Saved at',
+	'NEW_OR_DELETED_TOPIC' => 'New topic or deleted',
+	'EDIT_DRAFT_EXPLAIN' => 'Here you are able to edit your draft.',
+	'DRAFTS_DELETED'	=> 'All selected drafts were successfully deleted.',
+	'DRAFT_UPDATED'		=> 'Draft successfully updated.',
+	'EMPTY_DRAFT_TITLE' => 'You must enter a draft title',
+	'EMPTY_DRAFT'		=> 'You must enter a message to submit your changes',
+	'BACK_TO_DRAFTS'	=> 'Back to saved drafts',
 
 
 	'UCP_PROFILE'		=> 'Profile', 

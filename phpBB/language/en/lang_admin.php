@@ -445,6 +445,7 @@ $lang += array(
 	'acl_u_chgpasswd'	=> 'Can change password',
 	'acl_u_chgcensors'	=> 'Can disable word censors',
 	'acl_u_search'		=> 'Can search board',
+	'acl_u_savedrafts'	=> 'Can save drafts'
 );
 
 // User pruning

@@ -323,8 +323,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
 		$display_name = $attachment['real_filename']; 
-		$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
-		$comment = htmlspecialchars(str_replace("\\'", "'", $comment));
+		$comment = str_replace("\n", '<br />', $attachment['comment']);
 
 		$denied = FALSE;
 			

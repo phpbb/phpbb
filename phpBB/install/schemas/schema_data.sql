@@ -235,6 +235,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgpasswd', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgcensors', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_savedrafts', 1);
 
 
 # MSSQL IDENTITY phpbb_styles ON #
