@@ -26,12 +26,9 @@
 //
 // For questions and comments use: yoichi01@rr.iij4u.or.jp
 //
-//Final touches by sorrydaijin@hotmail.com
+// Final touches by sorrydaijin@hotmail.com
+//
 
-
-
-
-setlocale(LC_ALL, "ja_JP.SJIS");
 $lang['ENCODING'] = "shift_jis";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
