@@ -205,7 +205,7 @@ function guess_lang()
 			{
 				if (preg_match('#' . $match . '#i', trim($accept_lang_ary[$i])))
 				{
-					if (file_exists(@realpath($phpbb_root_path . 'language/lang_' . $lang)))
+					if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lang)))
 					{
 						return $lang;
 					}
@@ -435,7 +435,7 @@ else
 }
 
 // Open config.php ... if it exists
-if (@file_exists(@realpath('config.'.$phpEx)))
+if (@file_exists(@phpbb_realpath('config.'.$phpEx)))
 {
 	include($phpbb_root_path.'config.'.$phpEx);
 }

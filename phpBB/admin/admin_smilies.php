@@ -72,7 +72,7 @@ $dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 
 while($file = @readdir($dir))
 {
-	if( !@is_dir(realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
+	if( !@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
 	{
 		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
 

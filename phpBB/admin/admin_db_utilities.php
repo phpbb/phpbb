@@ -903,7 +903,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if( file_exists(realpath($backup_file_tmpname)) )
+				if( file_exists(phpbb_realpath($backup_file_tmpname)) )
 				{
 					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip(\-compressed)?)|(application\/octet-stream)$/is", $backup_file_type) )
 					{
