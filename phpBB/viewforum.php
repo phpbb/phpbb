@@ -312,6 +312,7 @@ if ($forum_data['forum_postable'])
 		foreach ($row_ary as $row)
 		{
 			$topic_id = $row['topic_id'];
+			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			// Type and folder
 			$topic_type = '';

@@ -174,7 +174,7 @@ function get_forum_parents($forum_data)
 // Obtain list of moderators of each forum
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db;
+	global $config, $template, $db, $phpEx, $SID;
 
 	// Have we disabled the display of moderators? If so, then return
 	// from whence we came ... 
@@ -618,9 +618,9 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $post_id = 0)
 				SET $type_update forum_id = $forum_id, mark_time = " . time() . "
 				WHERE topic_id = $topic_id
 					AND user_id = " . $user->data['user_id'];
-			$db->sql_query($sql);
+			$result = $db->sql_query($sql);
 
-			if ($db->sql_affectedrows($result) == 0)
+			if (!$db->sql_affectedrows($result))
 			{
 				// Couldn't update. Row probably doesn't exist. Insert one.
 				if(isset($type) && $type = 1)
@@ -908,10 +908,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	switch ($errno)
 	{
 		case E_WARNING:
-//			if (defined('DEBUG'))
-//			{
-//				echo "PHP Warning on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b>";
-//			}
+			if (defined('DEBUG_EXTRA'))
+			{
+//				echo "PHP Warning on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
+			}
 			break;
 
 		case E_NOTICE:

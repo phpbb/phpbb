@@ -1166,7 +1166,7 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 function topic_review($topic_id, $is_inline_review = false)
 {
 	global $user, $auth, $db, $template, $bbcode;
-	global $censors, $config, $phpbb_root_path, $phpEx;
+	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
 
 	// Define censored word matches
 	if (empty($censors))

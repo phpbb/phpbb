@@ -21,7 +21,8 @@
 
 function display_forums($root_data = '', $display_moderators = TRUE)
 {
-	global $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators;
+	global $db, $template, $auth, $user;
+	global $config, $phpEx, $SID, $forum_moderators;
 
 	$visible_forums = 0;
 
@@ -48,7 +49,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	else
 	{
 		$lastread_select = '';
-		$lastread_sql = '';
+		$sql_lastread = '';
 
 		// Cookie based tracking
 	}
@@ -238,7 +239,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		}
 		else
 		{
-			$last_post = $user->lang['NO_POSTS'];
+			$last_post_time = $last_poster = $last_poster_url = $last_post_url = '';
 		}
 
 		//
@@ -262,7 +263,6 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			'TOPICS'			=>	$row['forum_topics'],
 			'LAST_POST_TIME'	=>	$last_post_time,
 			'LAST_POSTER'		=>	$last_poster,
-			'LAST_POST'			=>	$last_post,
 			'MODERATORS'		=>	$moderators_list,
 			'SUBFORUMS'			=>	$subforums_list,
 
