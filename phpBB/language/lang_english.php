@@ -297,9 +297,21 @@ $l_titletext	= "Title & Text";
 $l_search	= "Search";
 $l_nomatches	= "No records match that query. Please broaden your search.";
 
-// Whosonline
+
+// Viewonline
 $l_whosonline	= "Who's online?";
 $l_nousers	= "No Users are currently browsing the forums";
+$l_forum_location = "Location in the forum";
+$l_last_updated = "Last Updated";
+$l_forum_index = "Forum Index";
+$l_loggin_on = "Logging on";
+$l_searching = "Searching the forum";
+$l_registering = "Registering";
+$l_viewing_profiles = "Viewing member profiles";
+$l_viewing_members = "Viewing member list";
+$l_altering_profile = "Altering their profile";
+$l_viewing_online = "Viewing who is online";
+$l_viewing_faq = "Viewing the board FAQ";
 
 
 // Editpost

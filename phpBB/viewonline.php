@@ -48,6 +48,7 @@ $sql = "SELECT u.username, u.user_id, f.forum_name, f.forum_id, s.session_page, 
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	LEFT JOIN ".FORUMS_TABLE." f ON f.forum_id = s.session_page
 	WHERE u.user_id = s.session_user_id
+		AND s.session_time >= ".(time()-300)."
 	ORDER BY s.session_time DESC";
 $result = $db->sql_query($sql);
 if(!$result)
@@ -66,11 +67,14 @@ $template->assign_vars(array(
 	"POST_USER_URL" => POST_USERS_URL,
 	"L_WHOSONLINE" => $l_whosonline,
 	"L_USERNAME" => $l_username,
-	"L_LOCATION" => $l_location,
-	"L_LAST_UPDATE" => "Last Updated",
-	"L_LOGGED_ON" => "Logged On"
+	"L_LOCATION" => $l_forum_location,
+	"L_LAST_UPDATE" => $l_last_updated
 	)
 );
+
+
+$active_users = 0;
+$guest_users = 0;
 
 $online_count = $db->sql_numrows($result);
 if($online_count)
@@ -87,59 +91,60 @@ if($online_count)
 			$row_color = "#DDDDDD";
 		}
 
-		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
+		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED && $onlinerow[$i]['session_logged_in'])
 		{
 			$username = $onlinerow[$i]['username'];
-			if($onlinerow[$i]['session_logged_in'])
-			{
-				$loggedon = "&nbsp;$l_yes&nbsp;";
-			}
-			else
-			{
-				$loggedon = "&nbsp;$l_no&nbsp;";
-			}
+			$active_users++;
 		}
 		else
 		{
-			$username = "$l_anonymous";
-			$loggedon = "&nbsp;-&nbsp;";
+			$guest_users++;
 		}
 
-		if($onlinerow[$i]['forum_name'] == "")
+		if($onlinerow[$i]['forum_name'] == "" && $onlinerow[$i]['session_logged_in'])
 		{
 			switch($onlinerow[$i]['session_page'])
 			{
 				case PAGE_INDEX:
-					$location = "Forum Index";
+					$location = $l_forum_index;
+					$location_url = "index.".$phpEx;
 					break;
 				case PAGE_LOGIN:
-					$location = "Logging On";
+					$location = $l_logging_on;
+					$location_url = "index.".$phpEx;
 					break;
 				case PAGE_SEARCH:
-					$location = "Topic Search";
+					$location = $l_searching;
+					$location_url = "search.".$phpEx;
 					break;
 				case PAGE_REGISTER:
-					$location = "Registering";
+					$location = $l_registering;
+					$location_url = "index.".$phpEx;
 					break;
 				case PAGE_VIEWPROFILE:
-					$location = "Viewing Profiles";
+					$location = $l_viewing_profiles;
+					$location_url = "index.".$phpEx;
 					break;
 				case PAGE_ALTERPROFILE:
-					$location = "Altering Profile";
+					$location = $l_altering_profile;
+					$location_url = "index.".$phpEx;
 					break;
 				case PAGE_VIEWONLINE:
-					$location = "Viewing Who's Online";
+					$location = $l_viewing_online;
+					$location_url = "viewonline.".$phpEx;
 					break;
 				case PAGE_VIEWMEMBERS:
-					$location = "Viewing Memberlist";
+					$location = $l_viewing_members;
+					$location_url = "memberlist.".$phpEx;
 					break;
 				case PAGE_FAQ:
-					$location = "Viewing FAQ";
+					$location = $l_viewing_faq;
+					$location_url = "faq.".$phpEx;
 					break;
 				default:
-					$location = "Forum Index";
+					$location = $l_forum_index;
+					$location_url = "index.".$phpEx;
 			}
-			$location_url = "index.".$phpEx;
 		}
 		else
 		{
@@ -147,18 +152,26 @@ if($online_count)
 			$location = $onlinerow[$i]['forum_name'];
 		}
 
-		$template->assign_block_vars("userrow", 
-			array("ROW_COLOR" => $row_color,
-				"USER_ID" => $onlinerow[$i]['user_id'],
-				"USERNAME" => $username,
-				"LOGGEDON" => $loggedon,
-				"LASTUPDATE" => create_date($date_format, $onlinerow[$i]['session_time'], $sys_timezone),
-				"LOCATION" => $location,
-				"LOCATION_URL" => $location_url
-			)
-		);
+		if($onlinerow[$i]['session_logged_in'])
+		{
+			$template->assign_block_vars("userrow", 
+				array("ROW_COLOR" => $row_color,
+					"USER_ID" => $onlinerow[$i]['user_id'],
+					"USERNAME" => $username,
+					"LASTUPDATE" => create_date($date_format, $onlinerow[$i]['session_time'], $sys_timezone),
+					"LOCATION" => $location,
+					"LOCATION_URL" => $location_url
+				)
+			);
+		}
 
 	}
+
+	$template->assign_vars(array(
+		"L_ACTIVE_USERS" => $active_users,
+		"L_GUEST_USERS" => $guest_users
+		)
+	);
 
 	$template->pparse("body");
 }
