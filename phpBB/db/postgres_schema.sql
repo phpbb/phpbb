@@ -13,6 +13,7 @@ CREATE SEQUENCE phpbb_forums_id_seq start 1 increment 1 maxvalue 2147483647 minv
 CREATE SEQUENCE phpbb_posts_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_privmsgs_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_ranks_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+CREATE SEQUENCE phpbb_search_wordlist_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_smilies_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_themes_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_topics_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
@@ -246,6 +247,30 @@ CREATE TABLE phpbb_search_results (
   CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (search_id)
 );
 CREATE  INDEX session_id_phpbb_search_results ON phpbb_search_results (session_id);
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_search_wordlist
+-------------------------------------------------------- */
+CREATE TABLE phpbb_search_wordlist (
+  word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL, 
+  word_text varchar(100) NOT NULL default '',
+  word_weight int2 NOT NULL default '0',
+  CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (word_id),
+)
+CREATE  INDEX word_text_phpbb_search_wordlist ON phpbb_search_wordlist (word_text);
+
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_search_wordmatch
+-------------------------------------------------------- */
+CREATE TABLE phpbb_search_wordmatch (
+  post_id int4 NOT NULL default '0',
+  word_id int4 NOT NULL default '0',
+  word_count int2 NOT NULL default '0',
+  title_match int2 NOT NULL default '0'
+) 
+CREATE  INDEX word_id_phpbb_search_wordmatch ON phpbb_search_wordmatch (word_id);
 
 
 /* --------------------------------------------------------

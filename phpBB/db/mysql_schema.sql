@@ -268,6 +268,34 @@ CREATE TABLE phpbb_search_results (
 
 # --------------------------------------------------------
 #
+# Table structure for table `phpbb_search_wordlist`
+#
+DROP TABLE IF EXISTS phpbb_search_wordlist;
+CREATE TABLE phpbb_search_wordlist (
+  word_id int(11) NOT NULL auto_increment,
+  word_text varchar(100) NOT NULL default '',
+  word_weight tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (word_id),
+  KEY word_text (word_text)
+)
+
+
+# --------------------------------------------------------
+#
+# Table structure for table `phpbb_search_wordmatch`
+#
+DROP TABLE IF EXISTS phpbb_search_wordmatch;
+CREATE TABLE phpbb_search_wordmatch (
+  post_id int(11) NOT NULL default '0',
+  word_id int(11) NOT NULL default '0',
+  word_count smallint(6) NOT NULL default '0',
+  title_match tinyint(1) NOT NULL default '0',
+  KEY word_id (word_id)
+) 
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_session'
 #
 # Note that if you're running 3.23.x you may want to make
