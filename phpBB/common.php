@@ -25,56 +25,10 @@ if ( !defined('IN_PHPBB') )
 }
 
 //
-function unset_vars(&$var)
-{
-	while (list($var_name, $null) = @each($var))
-	{
-		unset($GLOBALS[$var_name]);
-	}
-	return;
-}
-
-//
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
-$ini_val = (@phpversion() >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
-
-// Unset globally registered vars - PHP5 ... hhmmm
-if (@$ini_val('register_globals') == '1' || strtolower(@$ini_val('register_globals')) == 'on')
-{
-	$var_prefix = 'HTTP';
-	$var_suffix = '_VARS';
-	
-	$test = array('_GET', '_POST', '_SERVER', '_COOKIE', '_ENV');
-
-	foreach ($test as $var)
-	{
-		if (is_array(${$var_prefix . $var . $var_suffix}))
-		{
-			unset_vars(${$var_prefix . $var . $var_suffix});
-			@reset(${$var_prefix . $var . $var_suffix});
-		}
-
-		if (is_array(${$var}))
-		{
-			unset_vars(${$var});
-			@reset(${$var});
-		}
-	}
-
-	if (is_array(${'_FILES'}))
-	{
-		unset_vars(${'_FILES'});
-		@reset(${'_FILES'});
-	}
-
-	if (is_array(${'HTTP_POST_FILES'}))
-	{
-		unset_vars(${'HTTP_POST_FILES'});
-		@reset(${'HTTP_POST_FILES'});
-	}
-}
+// The following code (unsetting globals) was contributed by Matt Kavanagh
 
 // PHP5 with register_long_arrays off?
 if (!isset($HTTP_POST_VARS) && isset($_POST))
@@ -85,6 +39,60 @@ if (!isset($HTTP_POST_VARS) && isset($_POST))
 	$HTTP_COOKIE_VARS = $_COOKIE;
 	$HTTP_ENV_VARS = $_ENV;
 	$HTTP_POST_FILES = $_FILES;
+
+	// _SESSION is the only superglobal which is conditionally set
+	if (isset($_SESSION))
+	{
+		$HTTP_SESSION_VARS = $_SESSION;
+	}
+}
+
+if (@phpversion() < '4.0.0')
+{
+	// PHP3 path; in PHP3, globals are _always_ registered
+	
+	// We 'flip' the array of variables to test like this so that
+	// we can validate later with isset($test[$var]) (no in_array())
+	$test = array('HTTP_GET_VARS' => NULL, 'HTTP_POST_VARS' => NULL, 'HTTP_COOKIE_VARS' => NULL, 'HTTP_SERVER_VARS' => NULL, 'HTTP_ENV_VARS' => NULL, 'HTTP_POST_FILES' => NULL);
+
+	// Loop through each input array
+	@reset($test);
+	while (list($input,) = @each($test))
+	{
+		while (list($var,) = @each($$input))
+		{
+			// Validate the variable to be unset
+			if (!isset($test[$var]) && $var != 'test' && $var != 'input')
+			{
+				unset($$var);
+			}
+		}
+	}
+}
+else if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+{
+	// PHP4+ path
+	
+	// Not only will array_merge give a warning if a parameter
+	// is not an array, it will actually fail. So we check if
+	// HTTP_SESSION_VARS has been initialised.
+	if (!isset($HTTP_SESSION_VARS))
+	{
+		$HTTP_SESSION_VARS = array();
+	}
+
+	// Merge all into one extremely huge array; unset
+	// this later
+	$input = array_merge($HTTP_GET_VARS, $HTTP_POST_VARS, $HTTP_COOKIE_VARS, $HTTP_SERVER_VARS, $HTTP_SESSION_VARS, $HTTP_ENV_VARS, $HTTP_POST_FILES);
+
+	unset($input['input']);
+	
+	while (list($var,) = @each($input))
+	{
+		unset($$var);
+	}
+   
+	unset($input);
 }
 
 //

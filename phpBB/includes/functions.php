@@ -74,6 +74,16 @@ function get_db_stat($mode)
 	return false;
 }
 
+// added at phpBB 2.0.11 to properly format the username
+function phpbb_clean_username($username)
+{
+	$username = htmlspecialchars(rtrim(trim($username), "\\"));
+	$username = substr(str_replace("\\'", "'", $username), 0, 25);
+	$username = str_replace("'", "\\'", $username);
+
+	return $username;
+}
+
 //
 // Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
 //
@@ -83,9 +93,7 @@ function get_userdata($user, $force_str = false)
 
 	if (intval($user) == 0 || $force_str)
 	{
-		$user = trim(htmlspecialchars($user));
-		$user = substr(str_replace("\\'", "'", $user), 0, 25);
-		$user = str_replace("'", "\\'", $user);
+		$user = phpbb_clean_username($user);
 	}
 	else
 	{

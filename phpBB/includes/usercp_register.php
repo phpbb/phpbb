@@ -21,6 +21,19 @@
  *
  ***************************************************************************/
 
+/*
+
+	This code has been modified from its original form by psoTFX @ phpbb.com
+	Changes introduce the back-ported phpBB 2.2 visual confirmation code. 
+
+	NOTE: Anyone using the modified code contained within this script MUST include
+	a relevant message such as this in usercp_register.php ... failure to do so 
+	will affect a breach of Section 2a of the GPL and our copyright
+
+	png visual confirmation system : (c) phpBB Group, 2003 : All Rights Reserved
+
+*/
+
 if ( !defined('IN_PHPBB') )
 {
 	die("Hacking attempt");
@@ -94,6 +107,7 @@ if (
 	}
 
 	$strip_var_list = array('username' => 'username', 'email' => 'email', 'icq' => 'icq', 'aim' => 'aim', 'msn' => 'msn', 'yim' => 'yim', 'website' => 'website', 'location' => 'location', 'occupation' => 'occupation', 'interests' => 'interests');
+	$strip_var_list['confirm_code'] = 'confirm_code';
 
 	// Strip all tags from data ... may p**s some people off, bah, strip_tags is
 	// doing the job but can still break HTML output ... have no choice, have
@@ -250,6 +264,57 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Fields_empty'];
+		}
+	}
+
+	if ($board_config['enable_confirm'] && $mode == 'register')
+	{
+		if (empty($HTTP_POST_VARS['confirm_id']))
+		{
+			$error = TRUE;
+			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
+		}
+		else
+		{
+			$confirm_id = htmlspecialchars($HTTP_POST_VARS['confirm_id']);
+			if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id))
+			{
+				$confirm_id = '';
+			}
+			
+			$sql = 'SELECT code 
+				FROM ' . CONFIRM_TABLE . " 
+				WHERE confirm_id = '$confirm_id' 
+					AND session_id = '" . $userdata['session_id'] . "'";
+			if (!($result = $db->sql_query($sql)))
+			{
+				message_die(GENERAL_ERROR, 'Could not obtain confirmation code', __LINE__, __FILE__, $sql);
+			}
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['code'] != $confirm_code)
+				{
+					$error = TRUE;
+					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
+				}
+				else
+				{
+					$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
+						WHERE confirm_id = '$confirm_id' 
+							AND session_id = '" . $userdata['session_id'] . "'";
+					if (!$db->sql_query($sql))
+					{
+						message_die(GENERAL_ERROR, 'Could not delete confirmation code', __LINE__, __FILE__, $sql);
+					}
+				}
+			}
+			else
+			{		
+				$error = TRUE;
+				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
+			}
+			$db->sql_freeresult($result);
 		}
 	}
 
@@ -835,6 +900,83 @@ else
 		$template->assign_block_vars('switch_namechange_disallowed', array());
 	}
 
+
+	// Visual Confirmation
+	$confirm_image = '';
+	if (!empty($board_config['enable_confirm']) && $mode == 'register')
+	{
+		$sql = 'SELECT session_id 
+			FROM ' . SESSIONS_TABLE; 
+		if (!($result = $db->sql_query($sql)))
+		{
+			message_die(GENERAL_ERROR, 'Could not select session data', '', __LINE__, __FILE__, $sql);
+		}
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$confirm_sql = '';
+			do
+			{
+				$confirm_sql .= (($confirm_sql != '') ? ', ' : '') . "'" . $row['session_id'] . "'";
+			}
+			while ($row = $db->sql_fetchrow($result));
+		
+			$sql = 'DELETE FROM ' .  CONFIRM_TABLE . " 
+				WHERE session_id NOT IN ($confirm_sql)";
+			if (!$db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, 'Could not delete stale confirm data', '', __LINE__, __FILE__, $sql);
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(session_id) AS attempts 
+			FROM ' . CONFIRM_TABLE . " 
+			WHERE session_id = '" . $userdata['session_id'] . "'";
+		if (!($result = $db->sql_query($sql)))
+		{
+			message_die(GENERAL_ERROR, 'Could not obtain confirm code count', '', __LINE__, __FILE__, $sql);
+		}
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['attempts'] > 3)
+			{
+				message_die(GENERAL_MESSAGE, $lang['Too_many_registers']);
+			}
+		}
+		$db->sql_freeresult($result);
+		
+		$confirm_chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+		list($usec, $sec) = explode(' ', microtime()); 
+		mt_srand($sec * $usec); 
+
+		$max_chars = count($confirm_chars) - 1;
+		$code = '';
+		for ($i = 0; $i < 6; $i++)
+		{
+			$code .= $confirm_chars[mt_rand(0, $max_chars)];
+		}
+
+		$confirm_id = md5(uniqid($user_ip));
+
+		$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
+			VALUES ('$confirm_id', '". $userdata['session_id'] . "', '$code')";
+		if (!$db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, 'Could not insert new confirm code information', '', __LINE__, __FILE__, $sql);
+		}
+
+		unset($code);
+		
+		$confirm_image = (@extension_loaded('zlib')) ? '<img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id") . '" alt="" title="" />' : '<img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=1") . '" alt="" title="" /><img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=2") . '" alt="" title="" /><img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=3") . '" alt="" title="" /><img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=4") . '" alt="" title="" /><img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=5") . '" alt="" title="" /><img src="' . append_sid("profile.$phpEx?mode=confirm&amp;id=$confirm_id&amp;c=6") . '" alt="" title="" />';
+		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
+
+		$template->assign_block_vars('switch_confirm', array());
+	}
+
+
 	//
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....
@@ -848,6 +990,7 @@ else
 		'NEW_PASSWORD' => $new_password,
 		'PASSWORD_CONFIRM' => $password_confirm,
 		'EMAIL' => $email,
+		'CONFIRM_IMG' => $confirm_image, 
 		'YIM' => $yim,
 		'ICQ' => $icq,
 		'MSN' => $msn,
@@ -941,6 +1084,10 @@ else
 		'L_PROFILE_INFO' => $lang['Profile_info'],
 		'L_PROFILE_INFO_NOTICE' => $lang['Profile_info_warn'],
 		'L_EMAIL_ADDRESS' => $lang['Email_address'],
+
+		'L_CONFIRM_CODE_IMPAIRED'	=> sprintf($lang['Confirm_code_impaired'], '<a href="mailto:' . $board_config['board_email'] . '">', '</a>'), 
+		'L_CONFIRM_CODE'			=> $lang['Confirm_code'], 
+		'L_CONFIRM_CODE_EXPLAIN'	=> $lang['Confirm_code_explain'], 
 
 		'S_ALLOW_AVATAR_UPLOAD' => $board_config['allow_avatar_upload'],
 		'S_ALLOW_AVATAR_LOCAL' => $board_config['allow_avatar_local'],

@@ -29,7 +29,7 @@ if ( !defined('IN_PHPBB') )
 
 if ( isset($HTTP_POST_VARS['submit']) )
 {
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : '';
+	$username = ( !empty($HTTP_POST_VARS['username']) ) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
 	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : '';
 
 	$sql = "SELECT user_id, username, user_email, user_active, user_lang 

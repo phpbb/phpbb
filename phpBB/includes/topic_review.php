@@ -30,9 +30,9 @@ function topic_review($topic_id, $is_inline_review)
 
 	if ( !$is_inline_review )
 	{
-		if ( !isset($topic_id) )
+		if ( !isset($topic_id) || !$topic_id)
 		{
-			message_die(GENERAL_MESSAGE, 'Topic_not_exist');
+			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 		}
 
 		//

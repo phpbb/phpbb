@@ -483,7 +483,7 @@ $highlight_match = $highlight = '';
 if (isset($HTTP_GET_VARS['highlight']))
 {
 	// Split words and phrases
-	$words = explode(' ', trim(htmlspecialchars(urldecode($HTTP_GET_VARS['highlight']))));
+	$words = explode(' ', trim(htmlspecialchars($HTTP_GET_VARS['highlight'])));
 
 	for($i = 0; $i < sizeof($words); $i++)
 	{

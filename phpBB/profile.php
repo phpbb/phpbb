@@ -100,6 +100,17 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
 		exit;
 	}
+	else if ( $mode == 'confirm' )
+	{
+		// Visual Confirmation
+		if ( $userdata['session_logged_in'] )
+		{
+			exit;
+		}
+
+		include($phpbb_root_path . 'includes/usercp_confirm.'.$phpEx);
+		exit;
+	}
 	else if ( $mode == 'sendpassword' )
 	{
 		include($phpbb_root_path . 'includes/usercp_sendpasswd.'.$phpEx);
