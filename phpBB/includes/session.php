@@ -79,15 +79,8 @@ class session {
 			if ( isset($userdata['user_id']) )
 			{
 				// Validate IP length according to admin ... has no effect on IPv6
-				$ip_check_s = explode('.', $userdata['session_ip']);
-				$ip_check_u = explode('.', $user_ip);
-
-				$u_ip = $s_ip = '';
-				for($i = 0; $i < $board_config['ip_check']; $i++)
-				{
-					$u_ip .= $ip_check_u[$i] . '.';
-					$s_ip .= $ip_check_s[$i] . '.';
-				}
+				$s_ip = implode('.', array_slice(explode('.', $userdata['session_ip']), 0, $board_config['ip_check']));
+				$u_ip = implode('.', array_slice(explode('.', $user_ip), 0, $board_config['ip_check']));
 
 				if ( $u_ip == $s_ip )
 				{
