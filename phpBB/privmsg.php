@@ -1900,9 +1900,30 @@ else if ( $folder == "sentbox" )
 //
 if ( $folder != "outbox" )
 {
-	$inbox_limit_pct = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100);
-	$inbox_limit_img_length = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']);
-	$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total;
+	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	{
+		$inbox_limit_pct = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100);
+	}
+	else
+	{
+		$inbox_limit_pct = 100;
+	}
+	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	{
+		$inbox_limit_img_length = round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']);
+	}
+	else
+	{
+		$inbox_limit_img_length = $board_config['privmsg_graphic_length'];
+	}
+	if ( $board_config['max_' . $folder . '_privmsgs'] > 0 )
+	{
+		$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total;
+	}
+	else
+	{
+		$inbox_limit_remain = 0;
+	}
 
 	$template->assign_block_vars("box_size_notice", array());
 
