@@ -35,11 +35,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	//
 	$message = trim($message);
 
-	if( !$html_on )
-	{
-		$message = htmlspecialchars($message);
-	}
-/*	else if($html_on)
+	if( $html_on )
 	{
 		$start = -1;
 		$end = 0;
@@ -62,7 +58,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 						$match_tag = trim($board_config['allow_html_tags'][$i]);
 						list($match_tag_split) = explode(" ", $match_tag);
 
-						if( preg_match("/^((\/$match_tag_split$)|($match_tag))[ \=]+/i", substr($message, $start + 1, $length - 2) . " ") )
+						if( preg_match("/^((\/" . $match_tag_split . ")|(" . $match_tag . "))[ \=]+/i", trim(substr($message, $start + 1, $length - 2)) . " ") )
 						{
 							$tagallowed = 1;
 						}
@@ -70,14 +66,14 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 					if($length && !$tagallowed) 
 					{
-						$message = str_replace(substr($message, $start, $length), "", $message);
+						$message = str_replace(substr($message, $start, $length), htmlspecialchars(substr($message, $start, $length)), $message);
 					}
 				}
 				$start = -1;
 			}
 		}
 	}
-*/
+
 	if($bbcode_on)
 	{
 		$message = bbencode_first_pass($message, $bbcode_uid);

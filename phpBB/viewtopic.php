@@ -480,7 +480,6 @@ for($i = 0; $i < $total_posts; $i++)
 			$user_sig = htmlspecialchars($user_sig);
 		}
 		$message = htmlspecialchars($message);
-//		$message = str_replace('&amp;', '&', $message);
 	}
 
 	if($board_config['allow_bbcode'] && $bbcode_uid != "")
@@ -493,6 +492,20 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 
 		$message = bbencode_second_pass($message, $bbcode_uid);
+
+		//
+		// This compensates for bbcode's rather agressive (but I guess necessary) 
+		// HTML handling
+		//
+		if(!$postrow[$i]['enable_html'] || ($postrow[$i]['enable_html'] && !$board_config['allow_html']) )
+		{
+			$message = preg_replace("'&amp;'", "&", $message);
+		}
+	}
+	else
+	{
+		// Removes UID from BBCode entries
+		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
 	$message = make_clickable($message);

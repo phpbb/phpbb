@@ -65,13 +65,41 @@ else
 
 $mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : ( (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "");
 
-$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
-$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
-$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
-$attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
+//
+// Set toggles for various options
+//
+if(!$board_config['allow_html'])
+{
+	$html_on = 0;
+}
+else
+{
+	$html_on = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
+}
 
-$notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
-$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
+if(!$board_config['allow_bbcode'])
+{
+	$bbcode_on = 0;
+}
+else
+{
+	$bbcode_on = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
+}
+
+if(!$board_config['allow_smilies'])
+{
+	$smilies_on = 0;
+}
+else
+{
+	$smilies_on = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
+}
+
+$attach_sig = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
+
+$notify = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['always_notify'];
+
+$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : 0;
 
 if( isset($HTTP_POST_VARS['topictype']) )
 {
@@ -92,10 +120,10 @@ else
 {
 	$topic_type = POST_NORMAL;
 }
+
 //
-// Here we do various lookups to find topic_id, forum_id, post_id
-// etc. Doing it here prevents spoofing (eg. faking forum_id, 
-// topic_id or post_id). 
+// Here we do various lookups to find topic_id, forum_id, post_id etc. 
+// Doing it here prevents spoofing (eg. faking forum_id, topic_id or post_id
 //
 if( $mode != "newtopic" )
 {
@@ -157,9 +185,9 @@ if( $mode != "newtopic" )
 
 		if( $mode == "editpost" )
 		{
-			$is_first_post = ($check_row['post_id'] == $post_id) ? TRUE : FALSE; 
-			$is_last_post = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : FALSE; 
-			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : FALSE; 
+			$is_first_post = ($check_row['post_id'] == $post_id) ? TRUE : 0; 
+			$is_last_post = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : 0; 
+			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : 0; 
 		}
 		else
 		{
@@ -168,8 +196,8 @@ if( $mode != "newtopic" )
 				$topic_id = $check_row['topic_id'];
 			}
 
-			$is_first_post = FALSE;
-			$is_last_post = FALSE;
+			$is_first_post = 0;
+			$is_last_post = 0;
 		}
 	}
 	else
@@ -187,7 +215,7 @@ else
 		$check_row = $db->sql_fetchrow($result);
 
 		$is_first_post = TRUE;
-		$is_last_post = FALSE;
+		$is_last_post = 0;
 		$topic_status = TOPIC_UNLOCKED;
 		$forum_status = $check_row['forum_status'];
 	}
@@ -198,7 +226,7 @@ else
 }
 
 //
-// Is topic locked?
+// Is topic or forum locked?
 //
 if($forum_status == FORUM_LOCKED)
 {
@@ -304,11 +332,11 @@ if(!$is_auth[$is_auth_type])
 //
 // Clear error check
 //
-$error = FALSE;
+$error = 0;
 $error_msg = "";
 
 //
-// Prepare our message and subject on a 'submit'
+// Prepare our message and subject on a 'submit' (inc. preview)
 //
 if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_UNLOCKED )
 {
@@ -375,24 +403,16 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 	{
 		if(!$error && !$preview)
 		{
-			$smile_on = ($disable_smilies || !$board_config['allow_smilies']) ? 0 : TRUE;
-			$html_on = ($disable_html || !$board_config['allow_html']) ? 0 : TRUE;
-
-			if($disable_bbcode || !$board_config['allow_bbcode'])
-			{
-				$bbcode_on = 0;
-			}
-			else
+			if($bbcode_on)
 			{
 				$bbcode_uid = make_bbcode_uid();
-				$bbcode_on = TRUE;
 			}
 
 			//
-			// prepare_message returns a bbcode parsed
-			// html parsed and slashed result ...
+			// prepare_message returns a bbcode parsed html parsed and slashed result 
+			// ... note that we send NOT'ed version of the disable vars to the function
 			//
-			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smile_on, $bbcode_uid);
+			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 
 			if( $attach_sig )
 			{
@@ -452,7 +472,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 		if($mode == "reply" || ( $mode == "newtopic" && $result ) )
 		{
 			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies) 
-				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smile_on)";
+				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smilies_on)";
 			if($mode == "reply")
 			{
 				$result = $db->sql_query($sql, BEGIN_TRANSACTION);
@@ -853,7 +873,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 			}
 
 			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smile_on" . $edited_sql . "  
+				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on" . $edited_sql . "  
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
@@ -965,11 +985,11 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				}
 				else
 				{
-					$attach_sig = FALSE;
+					$attach_sig = 0;
 				}
 
 				// Removes UID from BBCode entries
-				$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+				$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 
 				$message = str_replace("<br />", "\n", $message);
 
@@ -1064,25 +1084,63 @@ if($preview && !$error)
 			break;
 	}
 
-	$preview_smile_on = ($disable_smilies) ? FALSE : TRUE;
-	$preview_html_on = ($disable_html) ? FALSE : TRUE;
-	$preview_html_on = TRUE;
-
-	if($disable_bbcode)
+	if($bbcode_on)
 	{
-		$preview_bbcode_on = FALSE;
+		$bbcode_uid = make_bbcode_uid();
+	}
+
+	$preview_message = stripslashes(prepare_message($message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+
+	//
+	// Finalise processing as per viewtopic
+	//
+	$user_sig = ($userdata['user_sig'] != "") ? $userdata['user_sig'] : "";
+
+	if( !$html_on )
+	{
+		if($user_sig != "")
+		{
+			$user_sig = htmlspecialchars($user_sig);
+		}
+		$preview_message = htmlspecialchars($preview_message);
+	}
+
+	if($bbcode_on)
+	{
+		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
+
+		if($user_sig != "")
+		{
+			$sig_uid = make_bbcode_uid();
+			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
+			$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+		}
+
+		//
+		// This compensates for bbcode's rather agressive (but I guess necessary) 
+		// HTML handling
+		//
+		if( !$html_on )
+		{
+			$preview_message = preg_replace("'&amp;'", "&", $preview_message);
+		}
 	}
 	else
 	{
-		$bbcode_uid = make_bbcode_uid();
-		$preview_bbcode_on = TRUE;
+		// Removes UID from BBCode entries
+		$preview_message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $preview_message);
 	}
 
-	$preview_message = stripslashes(prepare_message($message, $preview_html_on, $preview_bbcode_on, $preview_smile_on, $bbcode_uid));
-	if(!$disable_bbcode)
+	if($smilies_on)
 	{
-		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
+		$preview_message = smilies_pass($preview_message);
 	}
+
+	if($attach_sig && $user_sig != "")
+	{
+		$preview_message = $preview_message . "<br /><br />_________________<br />" . $user_sig;
+	}
+
 	$preview_message = make_clickable($preview_message);
 	$preview_message = str_replace("\n", "<br />", $preview_message);
 
@@ -1090,10 +1148,10 @@ if($preview && !$error)
 		"preview" => "posting_preview.tpl")
 	);
 	$template->assign_vars(array(
-		"TOPIC_TITLE" => stripslashes($subject), 
-		"POST_SUBJECT" => stripslashes($subject), 
 		"ROW_COLOR" => "#" . $theme['td_color1'],
 		"ROW_CLASS" => $theme['td_class1'], 
+		"TOPIC_TITLE" => stripslashes($subject), 
+		"POST_SUBJECT" => stripslashes($subject), 
 		"POSTER_NAME" => stripslashes($username),
 		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 		"MESSAGE" => $preview_message,
@@ -1104,7 +1162,7 @@ if($preview && !$error)
 	$template->pparse("preview");
 }
 //
-// End: Preview Post
+// End Preview Post
 //
 
 //
@@ -1116,8 +1174,8 @@ if( empty($forum_id) )
 }
 
 $sql = "SELECT forum_name
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_id = $forum_id";
+	FROM " . FORUMS_TABLE . "
+	WHERE forum_id = $forum_id";
 if(!$result = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Could not obtain forum information.", "", __LINE__, __FILE__, $sql);
@@ -1125,153 +1183,16 @@ if(!$result = $db->sql_query($sql))
 $forum_info = $db->sql_fetchrow($result);
 $forum_name = stripslashes($forum_info['forum_name']);
 
-if($userdata['session_logged_in'])
-{
-	$username_input = stripslashes($userdata["username"]);
-	$password_input = "";
-}
-else
-{
-	$username_input = '<input type="text" name="username" value="' . $username . '" size="25" maxlength="50">';
-	$password_input = '<input type="password" name="password" size="25" maxlength="40">';
-}
-$subject_input = '<input type="text" name="subject" value="' . stripslashes($subject) . '" size="50" maxlength="255">';
-$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">' . $message . '</textarea>';
-
-if($board_config['allow_html'])
-{
-	$html_status = $lang['ON'];
-	$html_toggle = '<input type="checkbox" name="disable_html" ';
-	if($disable_html)
-	{
-		$html_toggle .= 'checked';
-	}
-	$html_toggle .= "> " . $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'];
-}
-else
-{
-	$html_status = $lang['OFF'];
-}
-
-if($board_config['allow_bbcode'])
-{
-	$bbcode_status = $lang['ON'];
-	$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
-	if($disable_bbcode)
-	{
-		$bbcode_toggle .= "checked";
-	}
-	$bbcode_toggle .= "> " . $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'];
-}
-else
-{
-	$bbcode_status = $lang['OFF'];
-}
-
-if($board_config['allow_smilies'])
-{
-	$smilies_status = $lang['ON'];
-	$smile_toggle = '<input type="checkbox" name="disable_smile" ';
-	if($disable_smilies)
-	{
-		$smile_toggle .= "checked";
-	}
-	$smile_toggle .= "> " . $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'];
-}
-else
-{
-	$smilies_status = $lang['OFF'];
-}
-
-
-$sig_toggle = '<input type="checkbox" name="attach_sig" ';
-if($attach_sig)
-{
-	$sig_toggle .= "checked";
-}
-$sig_toggle .= "> " . $lang['Attach_signature'];
-
-$topic_type_radio = '';
-if($mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post ) )
-{
-	if($is_auth['auth_announce'])
-	{
-		$announce_toggle = '<input type="radio" name="topictype" value="announce"';
-		if($is_announce)
-		{
-			$announce_toggle .= ' checked';
-		}
-		$announce_toggle .= '> ' . $lang['Post_Announcement'] . '&nbsp;&nbsp;';
-	}
-
-	if($is_auth['auth_sticky'])
-	{
-		$sticky_toggle = '<input type="radio" name="topictype" value="sticky"';
-		if($is_sticky)
-		{
-			$sticky_toggle .= ' checked';
-		}
-		$sticky_toggle .= '> ' . $lang['Post_Sticky'] . '&nbsp;&nbsp;';
-	}
-
-	if( $is_auth['auth_announce'] || $is_auth['auth_sticky'] )
-	{
-		$topic_type_toggle = '&nbsp;' . $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="normal"';
-		if(!$is_announce && !$is_sticky)
-		{
-			$topic_type_toggle .= ' checked';
-		}
-		$topic_type_toggle .= '> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $sticky_toggle . $announce_toggle;
-	}
-}
-
-if($mode == "newtopic" || ($mode == "editpost" && $notify_show))
-{
-	$notify_toggle = '<input type="checkbox" name="notify" ';
-	if($notify)
-	{
-		$notify_toggle .= "checked";
-	}
-	$notify_toggle .= "> " . $lang['Notify'];
-}
-
-//
-// Display delete toggle?
-//
-if($mode == 'editpost' && ( $is_last_post || $is_auth['auth_mod'] ) )
-{
-	$delete_toggle = '<input type="checkbox" name="delete"> ' . $lang['Delete_post'];
-}
-
-//
-// Define hidden fields
-//
-$hidden_form_fields = "";
-if($mode == "newtopic")
-{
-	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\">";
-}
-else if($mode == "reply" || $mode == "quote")
-{
-	//
-	// Reset mode to reply if quote is in effect
-	// to allow proper handling by submit/preview
-	//
-	$mode = "reply";
-	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\">";
-}
-else if($mode == "editpost")
-{
-	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\"><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\">";
-}
-$hidden_form_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\">";
-
 $template->set_filenames(array(
 	"body" => "posting_body.tpl",
 	"jumpbox" => "jumpbox.tpl")
 );
+
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
 	"JUMPBOX_LIST" => $jumpbox,
 	"SELECT_NAME" => POST_FORUM_URL)
 );
@@ -1286,21 +1207,189 @@ $template->assign_vars(array(
 	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 );
 
+//
+// Generate form data
+//
+$display_username = ($userdata['session_logged_in']) ? stripslashes($userdata["username"]) : "";
+$display_subject = ($subject != "") ? stripslashes($subject) : "";
+
+//
+// HTML toggle selection
+//
+if($board_config['allow_html'])
+{
+	$html_status = $lang['ON'];
+	$template->assign_block_vars("html_checkbox", array());
+}
+else
+{
+	$html_status = $lang['OFF'];
+}
+
+//
+// BBCode toggle selection
+//
+if($board_config['allow_bbcode'])
+{
+	$bbcode_status = $lang['ON'];
+	$template->assign_block_vars("bbcode_checkbox", array());
+}
+else
+{
+	$bbcode_status = $lang['OFF'];
+}
+
+//
+// Smilies toggle selection
+//
+if($board_config['allow_smilies'])
+{
+	$smilies_status = $lang['ON'];
+	$template->assign_block_vars("smilies_checkbox", array());
+}
+else
+{
+	$smilies_status = $lang['OFF'];
+}
+
+//
+// Signature toggle selection
+//
+if($attach_sig)
+{
+	$template->assign_block_vars("signature_checkbox", array());
+}
+
+//
+// Notify selection
+//
+if($mode == "newtopic" || $preview || ( $mode == "editpost" && $notify_show ) )
+{
+	$template->assign_block_vars("notify_checkbox", array());
+}
+
+//
+// Delete selection
+//
+if($mode == 'editpost' && !$preview && ( $is_last_post || $is_auth['auth_mod'] ) )
+{
+	$template->assign_block_vars("delete_checkbox", array());
+}
+
+//
+// Topic type selection
+//
+$topic_type_radio = '';
+if($mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post ) )
+{
+	$template->assign_block_vars("type_toggle", array());
+
+	if($is_auth['auth_announce'])
+	{
+		$announce_toggle = '<input type="radio" name="topictype" value="announce"';
+		if($is_announce)
+		{
+			$announce_toggle .= ' checked';
+		}
+		$announce_toggle .= ' /> ' . $lang['Post_Announcement'] . '&nbsp;&nbsp;';
+	}
+
+	if($is_auth['auth_sticky'])
+	{
+		$sticky_toggle = '<input type="radio" name="topictype" value="sticky"';
+		if($is_sticky)
+		{
+			$sticky_toggle .= ' checked';
+		}
+		$sticky_toggle .= ' /> ' . $lang['Post_Sticky'] . '&nbsp;&nbsp;';
+	}
+
+	if( $is_auth['auth_announce'] || $is_auth['auth_sticky'] )
+	{
+		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="normal"';
+		if(!$is_announce && !$is_sticky)
+		{
+			$topic_type_toggle .= ' checked';
+		}
+		$topic_type_toggle .= ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $sticky_toggle . $announce_toggle;
+	}
+}
+
+//
+// Define hidden fields
+//
+$hidden_form_fields = "";
+if($mode == "newtopic")
+{
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\" />";
+}
+else if($mode == "reply" || $mode == "quote")
+{
+	//
+	// Reset mode to reply if quote is in effect
+	// to allow proper handling by submit/preview
+	//
+	$mode = "reply";
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\" />";
+}
+else if($mode == "editpost")
+{
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\" /><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\" />";
+}
+$hidden_form_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\" />";
+
+//
+// User not logged in so offer up a username
+// field box
+//
+if( !$userdata['session_logged_in'] )
+{
+	$template->assign_block_vars("anon_user", array());
+}
+
+//
+// Here we check (if we're editing or replying)
+// whether the post has html/bbcode/smilies disabled
+// if it does then we modify the status vars appropriately
+//
+if( !$preview && $mode == "editpost" )
+{
+	if($postrow['enable_html'] && $board_config['allow_html'])
+	{
+		$html_on = TRUE;
+	}
+	else
+	{
+		$html_on = 0;
+	}
+	if($postrow['enable_bbcode'] && $board_config['allow_bbcode'])
+	{
+		$bbcode_on = TRUE;
+	}
+	else
+	{
+		$bbcode_on = 0;
+	}
+	if($postrow['enable_smilies'] && $board_config['allow_smilies'])
+	{
+		$smilies_on = TRUE;
+	}
+	else
+	{
+		$smilies_on = 0;
+	}
+}
+
+//
+// Output the data to the template
+//
 $template->assign_vars(array(
-	"USERNAME_INPUT" => $username_input,
-	"PASSWORD_INPUT" => $password_input,
-	"SUBJECT_INPUT" => $subject_input,
-	"MESSAGE_INPUT" => $message_input,
+	"USERNAME" => $display_username,
+	"SUBJECT" => $display_subject,
+	"MESSAGE" => $message,
 	"HTML_STATUS" => $html_status,
-	"HTML_TOGGLE" => $html_toggle,
-	"SMILIES_STATUS" => $smilies_status, 
-	"SMILE_TOGGLE" => $smile_toggle,
-	"SIG_TOGGLE" => $sig_toggle,
-	"NOTIFY_TOGGLE" => $notify_toggle,
-	"DELETE_TOGGLE" => $delete_toggle,
-	"TYPE_TOGGLE" => $topic_type_toggle,
-	"BBCODE_TOGGLE" => $bbcode_toggle,
 	"BBCODE_STATUS" => $bbcode_status,
+	"SMILIES_STATUS" => $smilies_status,
 
 	"L_SUBJECT" => $lang['Subject'],
 	"L_MESSAGE_BODY" => $lang['Message_body'],
@@ -1314,6 +1403,19 @@ $template->assign_vars(array(
 	"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
 	"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
+	"L_DISABLE_HTML" => $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'], 
+	"L_DISABLE_BBCODE" => $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'], 
+	"L_DISABLE_SMILIES" => $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'], 
+	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
+	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
+	"L_DELETE_POST" => $lang['Delete_post'], 
+
+	"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "", 
+	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 
+	"S_SMILIES_CHECKED" => (!$smilies_on) ? "checked=\"checked\"" : "", 
+	"S_SIGNATURE_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "", 
+	"S_NOTIFY_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "", 
+	"S_TYPE_TOGGLE" => $topic_type_toggle, 
 	"S_TOPIC_ID" => $topic_id, 
 
 	"S_POST_ACTION" => append_sid("posting.$phpEx"),

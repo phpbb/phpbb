@@ -364,7 +364,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 function bbencode_second_pass_code($text, $uid)
 {
 	// If HTML is turned on we undo any HTML special chars that were created by the viewtopic code.
-	$text = undo_htmlspecialchars($text);
+//	$text = undo_htmlspecialchars($text);
 
 	$code_start_html = '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Code:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><PRE>';
 	$code_end_html =  '</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE>';
