@@ -87,7 +87,7 @@ class emailer
 	// set up extra mail headers
 	function extra_headers($headers)
 	{
-		$this->extra_headers .= trim($headers) . "\r\n";
+		$this->extra_headers .= trim($headers) . "\n";
 	}
 
 	function use_template($template_file, $template_lang = '')
@@ -178,7 +178,7 @@ class emailer
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -196,14 +196,16 @@ class emailer
 		while (list($type, $address_ary) = each($this->addresses))
 		{
 			@reset($address_ary);
-			while (list($which_ary) = each($address_ary))
+			while (list(, $which_ary) = each($address_ary))
 			{
 				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
 			}
 		}
 
 		// Build header
-		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $board_config['board_email'] . ">\r\n") . "Return-Path: <" . $board_config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
+		$this->extra_headers = (($this->replyto != '') ? "Reply-to: <$this->replyto>\n" : '') . (($this->from != '') ? "From: <$this->from>\n" : "From: <" . $board_config['board_email'] . ">\n") . "Return-Path: <" . $board_config['board_email'] . ">\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\n" . (($cc != '') ? "Cc:$cc\n" : '')  . (($bcc != '') ? "Bcc:$bcc\n" : '') . trim($this->extra_headers); 
+
+		$to = ($to == '') ? "<Undisclosed-recipients:;>" : $to;
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )
@@ -217,7 +219,7 @@ class emailer
 		}
 		else
 		{
-			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
+			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
 		}
 
 		// Did it work?
@@ -253,7 +255,7 @@ class emailer
 		$str = chunk_split(base64_encode($str), $length, $spacer);
 
 		// remove trailing spacer and add start and end delimiters
-		$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+		$str = preg_replace('#' . phpbb_preg_quote($spacer) . '$#', '', $str);
 
 		return $start . $str . $end;
 	}

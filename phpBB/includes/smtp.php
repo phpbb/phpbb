@@ -26,21 +26,21 @@ define('SMTP_INCLUDED', 1);
 // by SirSir to allow multiline responses when 
 // using SMTP Extensions
 //
-function server_parse($socket, $response) 
+function server_parse($socket, $response, $line = __LINE__) 
 { 
-   while ( substr($server_response,3,1) != ' ' ) 
-   { 
-      if( !( $server_response = fgets($socket, 256) ) ) 
-      { 
-         message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", __LINE__, __FILE__); 
-      } 
-   } 
+	while (substr($server_response, 3, 1) != ' ') 
+	{
+		if (!($server_response = fgets($socket, 256))) 
+		{ 
+			message_die(GENERAL_ERROR, "Couldn't get mail server response codes", "", $line, __FILE__); 
+		} 
+	} 
 
-   if( !( substr($server_response, 0, 3) == $response ) ) 
-   { 
-      message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__); 
-   } 
-} 
+	if (!(substr($server_response, 0, 3) == $response)) 
+	{ 
+		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", $line, __FILE__); 
+	} 
+}
 
 // Replacement or substitute for PHP's mail command
 function smtpmail($mail_to, $subject, $message, $headers = '')
@@ -56,7 +56,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		{
 			if (sizeof($headers) > 1)
 			{
-				$headers = join("\r\n", $headers);
+				$headers = join("\n", $headers);
 			}
 			else
 			{
@@ -114,34 +114,34 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	}
 
 	// Wait for reply
-	server_parse($socket, "220");
+	server_parse($socket, "220", __LINE__);
 
 	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
 	// This improved as provided by SirSir to accomodate
 	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
 	{ 
 		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n");
-		server_parse($socket, "250");
+		server_parse($socket, "250", __LINE__);
 
 		fputs($socket, "AUTH LOGIN\r\n");
-		server_parse($socket, "334");
+		server_parse($socket, "334", __LINE__);
 
 		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
-		server_parse($socket, "334");
+		server_parse($socket, "334", __LINE__);
 
 		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
-		server_parse($socket, "235");
+		server_parse($socket, "235", __LINE__);
 	}
 	else
 	{
 		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
-		server_parse($socket, "250");
+		server_parse($socket, "250", __LINE__);
 	}
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
 	fputs($socket, "MAIL FROM: <" . $board_config['board_email'] . ">\r\n");
-	server_parse($socket, "250");
+	server_parse($socket, "250", __LINE__);
 
 	// Specify each user to send to and build to header.
 	@reset($mail_to_array);
@@ -152,10 +152,11 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
 		{
 			fputs($socket, "RCPT TO: $mail_to_address\r\n");
-			server_parse($socket, "250");
+			server_parse($socket, "250", __LINE__);
 		}
 		$to_header .= (($to_header !='') ? ', ' : '') . "$mail_to_address";
 	}
+
 	// Ok now do the CC and BCC fields...
 	@reset($bcc);
 	while(list(, $bcc_address) = each($bcc))
@@ -165,7 +166,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address))
 		{
 			fputs($socket, "RCPT TO: $bcc_address\r\n");
-			server_parse($socket, "250");
+			server_parse($socket, "250", __LINE__);
 		}
 	}
 
@@ -177,7 +178,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address))
 		{
 			fputs($socket, "RCPT TO: $cc_address\r\n");
-			server_parse($socket, "250");
+			server_parse($socket, "250", __LINE__);
 		}
 	}
 
@@ -185,13 +186,12 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fputs($socket, "DATA\r\n");
 
 	// This is the last response code we look for until the end of the message.
-	server_parse($socket, "354");
+	server_parse($socket, "354", __LINE__);
 
 	// Send the Subject Line...
 	fputs($socket, "Subject: $subject\r\n");
 
 	// Now the To Header.
-	$to_header = ($to_header == '') ? "<Undisclosed-recipients:;>" : $to_header;
 	fputs($socket, "To: $to_header\r\n");
 
 	// Now any custom headers....
@@ -202,7 +202,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Ok the all the ingredients are mixed in let's cook this puppy...
 	fputs($socket, ".\r\n");
-	server_parse($socket, "250");
+	server_parse($socket, "250", __LINE__);
 
 	// Now tell the server we are done and close the socket...
 	fputs($socket, "QUIT\r\n");

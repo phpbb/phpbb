@@ -675,7 +675,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					{
 						$emailer->use_template('topic_notify', $user_lang);
 		
-						for ($i = 0; $i < count($bcc); $i++)
+						for ($i = 0; $i < count($bcc_list); $i++)
 						{
 							$emailer->bcc($bcc_list[$i]);
 						}
