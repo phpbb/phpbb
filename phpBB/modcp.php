@@ -667,73 +667,97 @@ switch( $mode )
 		{
 			$posts = $HTTP_POST_VARS['post_id_list'];
 
-			$sql = "SELECT poster_id, topic_id, post_time
-				FROM " . POSTS_TABLE . "
-				WHERE post_id = " . intval($posts[0]);
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
-			}
-
-			$post_rowset = $db->sql_fetchrow($result);
-			$first_poster = $post_rowset['poster_id'];
-			$topic_id = $post_rowset['topic_id'];
-			$post_time = $post_rowset['post_time'];
-
-			$post_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
-			if ( empty($post_subject) )
-			{
-				message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
-			}
-
-			$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
-			$topic_time = time();
-
-			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
-				VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not insert new topic', '', __LINE__, __FILE__, $sql);
-			}
-
-			$new_topic_id = $db->sql_nextid();
-
 			if( !empty($HTTP_POST_VARS['split_type_all']) )
 			{
 				$post_id_sql = '';
 				for($i = 0; $i < count($posts); $i++)
 				{
-					$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . intval($posts[$i]);
+					$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($posts[$i]);
 				}
 
-				$sql = "UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
-					WHERE post_id IN ($post_id_sql)";
+				$sql = "SELECT post_id, poster_id, topic_id, post_time
+					FROM " . POSTS_TABLE . "
+					WHERE post_id IN ($post_id_sql) 
+					ORDER BY post_time ASC";
 			}
 			else if( !empty($HTTP_POST_VARS['split_type_beyond']) )
 			{
-				$sql = "UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id, forum_id = $new_forum_id
+				$sql = "SELECT post_id, poster_id, topic_id, post_time
+					FROM " . POSTS_TABLE . "
 					WHERE post_time >= $post_time
-						AND topic_id = $topic_id";
+						AND topic_id = $topic_id 
+					ORDER BY post_time ASC";
 			}
 
-			if( !$db->sql_query($sql, END_TRANSACTION) )
+			if (!($result = $db->sql_query($sql)))
 			{
-				message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
 			}
 
-			sync('topic', $new_topic_id);
-			sync('topic', $topic_id);
-			sync('forum', $new_forum_id);
-			sync('forum', $forum_id);
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$first_poster = $row['poster_id'];
+				$topic_id = $row['topic_id'];
+				$post_time = $row['post_time'];
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">')
-			);
+				$user_id_sql = '';
+				$post_id_sql = '';
+				do
+				{
+					$user_id_sql .= (($user_id_sql != '') ? ', ' : '') . intval($row['poster_id']);
+					$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($row['post_id']);;
+				}
+				while ($row = $db->sql_fetchrow($result));
 
-			$message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
-			message_die(GENERAL_MESSAGE, $message);
+				$post_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
+				if (empty($post_subject))
+				{
+					message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
+				}
+
+				$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
+				$topic_time = time();
+
+				$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
+					VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
+				if (!($db->sql_query($sql, BEGIN_TRANSACTION)))
+				{
+					message_die(GENERAL_ERROR, 'Could not insert new topic', '', __LINE__, __FILE__, $sql);
+				}
+
+				$new_topic_id = $db->sql_nextid();
+
+				// Update topic watch table, switch users whose posts
+				// have moved, over to watching the new topic
+				$sql = "UPDATE " . TOPICS_WATCH_TABLE . " 
+					SET topic_id = $new_topic_id 
+					WHERE topic_id = $topic_id 
+						AND user_id IN($user_id_sql)";
+				if (!$db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, 'Could not update topics watch table', '', __LINE__, __FILE__, $sql);
+				}
+
+				$sql = 	"UPDATE " . POSTS_TABLE . "
+					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
+					WHERE post_id IN ($post_id_sql)";
+				if (!$db->sql_query($sql, END_TRANSACTION))
+				{
+					message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
+				}
+
+				sync('topic', $new_topic_id);
+				sync('topic', $topic_id);
+				sync('forum', $new_forum_id);
+				sync('forum', $forum_id);
+
+				$template->assign_vars(array(
+					'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">')
+				);
+
+				$message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+				message_die(GENERAL_MESSAGE, $message);
+			}
 		}
 		else
 		{
