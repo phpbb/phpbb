@@ -250,8 +250,7 @@ function bbencode_first_pass($text, $uid)
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
-
-	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\\"[^"]*?\\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
+	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\".*?\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = array();
@@ -365,7 +364,6 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 		message_die(GENERAL_ERROR, "Unsupported operation for bbcode_first_pass_pda().");
 	}
 
-
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
 	while ($curr_pos && ($curr_pos < strlen($text)))
@@ -380,29 +378,29 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			$found_start = false;
 			$which_start_tag = "";
 			$start_tag_index = -1;
+
 			for ($i = 0; $i < $open_tag_count; $i++)
 			{
 				// Grab everything until the first "]"...
-				$possible_start = substr($text, $curr_pos, strpos($text, "]", $curr_pos + 1) - $curr_pos + 1);
+				$possible_start = substr($text, $curr_pos, strpos($text, ']', $curr_pos + 1) - $curr_pos + 1);
 
 				//
 				// We're going to try and catch usernames with "[' characters.
 				//
-				if( preg_match('/\[quote\=\\\\"/si', $possible_start) && !preg_match('/\[quote=\\\\"[^"]*\\\\"\]/si', $possible_start) )
+				if( preg_match('#\[quote=\\\"#si', $possible_start, $match) && !preg_match('#\[quote=\\\"(.*?)\\\"\]#si', $possible_start) )
 				{
-					//
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
-					//
-					$possible_start = substr($text, $curr_pos, strpos($text, "\"]", $curr_pos + 1) - $curr_pos + 2);
+					if ($close_pos = strpos($text, '"]', $curr_pos + 9))
+					{
+						$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 2);
+					}
 				}
-				//
-				// Now compare, either using regexp or not.
 
+				// Now compare, either using regexp or not.
 				if ($open_is_regexp)
 				{
 					$match_result = array();
-					// PREG regexp comparison.
 					if (preg_match($open_tag[$i], $possible_start, $match_result))
 					{
 						$found_start = true;
@@ -431,12 +429,12 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				$match = array("pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index);
 				bbcode_array_push($stack, $match);
 				//
-            // Rather than just increment $curr_pos
-            // Set it to the ending of the tag we just found
-            // Keeps error in nested tag from breaking out
-            // of table structure..
-            //
-            $curr_pos = $curr_pos + strlen($possible_start);
+				// Rather than just increment $curr_pos
+				// Set it to the ending of the tag we just found
+				// Keeps error in nested tag from breaking out
+				// of table structure..
+				//
+				$curr_pos += strlen($possible_start);
 			}
 			else
 			{
@@ -484,7 +482,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 							{
 								$code_entities_match = array('#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#');
 								$code_entities_replace = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;');
-								$between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
+								$between_tags = htmlentities($between_tags);
 							}
 							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
@@ -519,8 +517,8 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						{
 							$match = bbcode_array_pop($stack);
 							$curr_pos = $match['pos'];
-							bbcode_array_push($stack, $match);
-							++$curr_pos;
+//							bbcode_array_push($stack, $match);
+//							++$curr_pos;
 						}
 						else
 						{
