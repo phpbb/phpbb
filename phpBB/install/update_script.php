@@ -38,77 +38,71 @@ define('AUTH_ADMIN', 5);
 define('ANONYMOUS', 1);
 
 $auth_map = array(
-	'auth_view' => 'list',
-	'auth_read' => 'read',
-	'auth_post' => 'post',
-	'auth_reply' => 'reply',
-	'auth_edit' => 'edit',
-	'auth_delete' => 'delete',
-	'auth_pollcreate' => 'poll',
-	'auth_vote' => 'vote',
-	'auth_announce' => 'announce',
-	'auth_sticky' => 'sticky',
-	'auth_attachments' => 'attach',
-	'auth_download' => 'download',
+	'auth_view' => 'forum_list',
+	'auth_read' => 'forum_read',
+	'auth_post' => 'forum_post',
+	'auth_reply' => 'forum_reply',
+	'auth_edit' => 'forum_edit',
+	'auth_delete' => 'forum_delete',
+	'auth_pollcreate' => 'forum_poll',
+	'auth_vote' => 'forum_vote',
+	'auth_announce' => 'forum_announce',
+	'auth_sticky' => 'forum_sticky',
+	'auth_attachments' => 'forum_attach',
+	'auth_download' => 'forum_download',
 );
 
 $auth_options = array(
-	'forum' => array(
-		'list',
-		'read',
-		'post',
-		'reply',
-		'edit',
-		'delete',
-		'poll',
-		'vote',
-		'announce',
-		'sticky',
-		'attach',
-		'download',
-		'html',
-		'bbcode',
-		'smilies',
-		'img',
-		'flash',
-		'sigs',
-		'search',
-		'email',
-		'rate',
-		'print',
-		'ignoreflood',
-		'ignorequeue'
-	)
+	'forum_list',
+	'forum_read',
+	'forum_post',
+	'forum_reply',
+	'forum_edit',
+	'forum_delete',
+	'forum_poll',
+	'forum_vote',
+	'forum_announce',
+	'forum_sticky',
+	'forum_attach',
+	'forum_download',
+	'forum_html',
+	'forum_bbcode',
+	'forum_smilies',
+	'forum_img',
+	'forum_flash',
+	'forum_sigs',
+	'forum_search',
+	'forum_email',
+	'forum_rate',
+	'forum_print',
+	'forum_ignoreflood',
+	'forum_ignorequeue'
 );
 
 $auth_mod_options = array(
-	'mod' => array(
-		'edit',
-		'delete',
-		'move',
-		'lock',
-		'split',
-		'merge',
-		'approve',
-		'unrate',
-		'auth'
-	)
+	'mod_edit',
+	'mod_delete',
+	'mod_move',
+	'mod_lock',
+	'mod_split',
+	'mod_merge',
+	'mod_approve',
+	'mod_unrate',
+	'mod_auth'
 );
 
 $auth_admin_options = array(
-	'admin' => array(
-		'general',
-		'user',
-		'group',
-		'forum',
-		'post',
-		'ban',
-		'auth',
-		'email',
-		'styles',
-		'backup',
-		'clearlogs'
-	)
+	'admin_general',
+	'admin_user',
+	'admin_group',
+	'admin_forum',
+	'admin_post',
+	'admin_ban',
+	'admin_auth',
+	'admin_email',
+	'admin_styles',
+	'admin_backup',
+	'admin_clearlogs'
 );
 
 $new_groups = array(
@@ -654,16 +648,13 @@ switch ( $this_version )
 		$all_options = array_merge($auth_options, array_merge($auth_mod_options, $auth_admin_options));
 		$option_ids = array();
 
-		foreach ( $all_options as $type => $option_ary )
+		foreach ( $all_options as $value )
 		{
-			foreach ( $option_ary as $option )
-			{
-				$sql = "INSERT INTO " . $table_prefix . "auth_options (auth_type, auth_option)
-					VALUES ('$type', '$option')";
-				$db->sql_query($sql);
+			$sql = "INSERT INTO " . $table_prefix . "auth_options (auth_value)
+				VALUES ('$value')";
+			$db->sql_query($sql);
 
-				$option_ids[$type][$option] = $db->sql_nextid();
-			}
+			$option_ids[$value] = $db->sql_nextid();
 		}
 
 		foreach ( $new_groups as $k => $sql )
@@ -714,13 +705,13 @@ switch ( $this_version )
 				switch ( $forum[$k] )
 				{
 					case AUTH_ALL:
-						$group_acl[$guest_id][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
-						$group_acl[$reg_inactive_id][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
-						$group_acl[$reg_id][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+						$group_acl[$guest_id][$forum['forum_id']][$v] = ACL_ALLOW;
+						$group_acl[$reg_inactive_id][$forum['forum_id']][$v] = ACL_ALLOW;
+						$group_acl[$reg_id][$forum['forum_id']][$v] = ACL_ALLOW;
 						break;
 
 					case AUTH_REG:
-						$group_acl[$reg_id][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+						$group_acl[$reg_id][$forum['forum_id']][$v] = ACL_ALLOW;
 						break;
 
 					case AUTH_ACL:
@@ -730,7 +721,7 @@ switch ( $this_version )
 							{
 								if ( !empty($access[$k]) )
 								{
-									$group_acl[$access['group_id']][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+									$group_acl[$access['group_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
@@ -741,14 +732,14 @@ switch ( $this_version )
 							{
 								if ( !empty($access[$k]) )
 								{
-									$user_acl[$access['user_id']][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+									$user_acl[$access['user_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
 						break;
 
 					case AUTH_MOD:
-						$group_acl[$super_mod_id][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+						$group_acl[$super_mod_id][$forum['forum_id']][$v] = ACL_ALLOW;
 
 						foreach( $group_access as $forum_id => $access )
 						{
@@ -756,7 +747,7 @@ switch ( $this_version )
 							{
 								if ( !empty($access[$k]) )
 								{
-									$group_acl[$access['group_id']][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+									$group_acl[$access['group_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
@@ -767,7 +758,7 @@ switch ( $this_version )
 							{
 								if ( !empty($access[$k]) )
 								{
-									$user_acl[$access['user_id']][$forum['forum_id']]['forum'][$v] = ACL_ALLOW;
+									$user_acl[$access['user_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
@@ -785,17 +776,18 @@ switch ( $this_version )
 		$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 			SELECT $admin_id, 0, auth_option_id, " . ACL_ALLOW . "
 				FROM " . $table_prefix . "auth_options
-				WHERE auth_type LIKE 'admin' AND auth_option NOT LIKE 'clearlogs'";
+				WHERE auth_value LIKE 'admin_%'
+					AND auth_value NOT LIKE 'admin_clearlogs'";
 
 		$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 			SELECT $admin_id, 0, auth_option_id, " . ACL_PERMIT . "
 				FROM " . $table_prefix . "auth_options
-				WHERE auth_type LIKE 'forum'";
+				WHERE auth_value LIKE 'forum_%'";
 
 		$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 			SELECT $admin_id, 0, auth_option_id, " . ACL_PERMIT . "
 				FROM " . $table_prefix . "auth_options
-				WHERE auth_type LIKE 'mod'";
+				WHERE auth_value LIKE 'mod_%'";
 
 		//
 		// Do Moderators
@@ -807,11 +799,12 @@ switch ( $this_version )
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['user_id'] . ", $forum_id, auth_option_id, " . ACL_ALLOW . "
 						FROM " . $table_prefix . "auth_options
-						WHERE auth_type LIKE 'mod' AND auth_option NOT LIKE 'auth'";
+						WHERE auth_value LIKE 'mod_%'
+							AND auth_value NOT LIKE 'mod_auth'";
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['user_id'] . ", $forum_id, auth_option_id, " . ACL_PERMIT . "
 						FROM " . $table_prefix . "auth_options
-						WHERE auth_type LIKE 'forum'";
+						WHERE auth_value LIKE 'forum_%'";
 			}
 		}
 
@@ -822,11 +815,12 @@ switch ( $this_version )
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['group_id'] . ", $forum_id, auth_option_id, " . ACL_ALLOW . "
 						FROM " . $table_prefix . "auth_options
-						WHERE auth_type LIKE 'mod' AND auth_option NOT LIKE 'auth'";
+						WHERE auth_value LIKE 'mod_%'
+							AND auth_value NOT LIKE 'mod_auth'";
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['group_id'] . ", $forum_id, auth_option_id, " . ACL_PERMIT . "
 						FROM " . $table_prefix . "auth_options
-						WHERE auth_type LIKE 'forum'";
+						WHERE auth_value LIKE 'forum_%'";
 			}
 		}
 
@@ -837,13 +831,10 @@ switch ( $this_version )
 		{
 			foreach ( $user_acl_ary as $forum_id => $auth )
 			{
-				foreach ( $auth as $auth_type => $auth_option_ary )
+				foreach ( $auth as $auth_value => $allow )
 				{
-					foreach ( $auth_option_ary as $auth_option => $allow )
-					{
-						$auth_option_id = $option_ids[$auth_type][$auth_option];
-						$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
-					}
+					$auth_option_id = $option_ids[$auth_value];
+					$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
 				}
 			}
 		}
@@ -852,13 +843,10 @@ switch ( $this_version )
 		{
 			foreach ( $group_acl_ary as $forum_id => $auth )
 			{
-				foreach ( $auth as $auth_type => $auth_option_ary )
+				foreach ( $auth as $auth_value => $allow )
 				{
-					foreach ( $auth_option_ary as $auth_option => $allow )
-					{
-						$auth_option_id = $option_ids[$auth_type][$auth_option];
-						$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id,  $auth_option_id, $allow)";
-					}
+					$auth_option_id = $option_ids[$auth_value];
+					$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id,  $auth_option_id, $allow)";
 				}
 			}
 		}
@@ -911,7 +899,7 @@ switch ( $this_version )
 			$forum_id = $row['forum_id'];
 
 			$sql_ary[] = "UPDATE " . $table_prefix . "forums
-				SET forum_last_poster_id = " . ( ( $row['user_id'] ) ? $row['user_id'] : ANONYMOUS ) . ", forum_last_poster_name = '" . $row['post_username'] . "', forum_last_post_time = " . $row['post_time'] . "
+				SET forum_last_poster_id = " . ( ( $row['user_id'] ) ? $row['user_id'] : ANONYMOUS ) . ", forum_last_poster_name = '" . addslashes($row['post_username']) . "', forum_last_post_time = " . $row['post_time'] . "
 				WHERE forum_id = $forum_id";
 
 			$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
@@ -926,7 +914,7 @@ switch ( $this_version )
 			while ( $row2 = $db->sql_fetchrow($result2) )
 			{
 				$sql_ary[] = "UPDATE " . $table_prefix . "topics
-					SET topic_first_poster_name = '" . $row2['post_username'] . "', topic_last_poster_id = " . ( ( $row2['id2'] ) ? $row2['id2'] : ANONYMOUS ) . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . $row2['post_username2'] . "'
+					SET topic_first_poster_name = '" . addslashes($row2['post_username']) . "', topic_last_poster_id = " . ( ( $row2['id2'] ) ? $row2['id2'] : ANONYMOUS ) . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . addslashes($row2['post_username2']) . "'
 					WHERE topic_id = " . $row2['topic_id'];
 			}
 			$db->sql_freeresult($result2);
