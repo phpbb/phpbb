@@ -91,17 +91,29 @@ if($online_count)
 			$row_color = "#DDDDDD";
 		}
 
-		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED && $onlinerow[$i]['session_logged_in'])
+		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
 		{
-			$username = $onlinerow[$i]['username'];
-			$active_users++;
+			if($onlinerow[$i]['session_logged_in'])
+			{
+				$username = $onlinerow[$i]['username'];
+				$logged_on = TRUE;
+				$active_users++;
+			}
+			else
+			{
+				$username = $onlinerow[$i]['username'];
+				$logged_on = FALSE;
+				$guest_users++;
+			}
 		}
 		else
 		{
+			$username = $l_anonymous;
+			$logged_on = FALSE;
 			$guest_users++;
 		}
 
-		if($onlinerow[$i]['forum_name'] == "" && $onlinerow[$i]['session_logged_in'])
+		if($onlinerow[$i]['forum_name'] == "")
 		{
 			switch($onlinerow[$i]['session_page'])
 			{
@@ -152,12 +164,21 @@ if($online_count)
 			$location = $onlinerow[$i]['forum_name'];
 		}
 
-		if($onlinerow[$i]['session_logged_in'])
+		//
+		// What would be nice here is to let
+		// the template designer decide whether
+		// to display all users, registered users
+		// or just logged in users ... but we need
+		// if... constructs in the templating system
+		// for that ...
+		//
+		if($logged_on)
 		{
 			$template->assign_block_vars("userrow", 
 				array("ROW_COLOR" => $row_color,
 					"USER_ID" => $onlinerow[$i]['user_id'],
 					"USERNAME" => $username,
+					"LOGGED_ON" => $logged_on,
 					"LASTUPDATE" => create_date($date_format, $onlinerow[$i]['session_time'], $sys_timezone),
 					"LOCATION" => $location,
 					"LOCATION_URL" => $location_url
