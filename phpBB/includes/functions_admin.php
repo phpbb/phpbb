@@ -169,11 +169,9 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 			preg_match('#\.' . $type . '$#i', $fname) &&  
 			filesize($rootdir . $dir . '/' . $fname))
 		{
-			$matches[] = array('path' => $dir, 'file' => $fname);
+			$matches[$dir][] = $fname;
 		}
-		else if ($fname != '.' && $fname != '..' && 
-			!is_file($rootdir . $dir . '/' . $fname) && 
-			!is_link($rootdir . $dir . '/' . $fname))
+		else if ($fname{0} != '.' && is_dir($rootdir . $dir . '/' . $fname))
 		{
 			filelist($rootdir, $dir . '/'. $fname, $type);
 		}
