@@ -688,20 +688,6 @@ class auth_admin extends auth
 		$this->acl_clear_prefetch();
 	}
 
-	function acl_clear_prefetch($user_id = false)
-	{
-		global $db;
-
-		$where_sql = ($user_id) ? "WHERE user_id = $user_id" : '';
-
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_permissions = ''
-			$where_sql";
-		$db->sql_query($sql);
-
-		return;
-	}
-
 	// Add a new option to the list ... $options is a hash of form ->
 	// $options = array(
 	//	'local'		=> array('option1', 'option2', ...),
@@ -802,58 +788,7 @@ class auth_admin extends auth
 			$result = $db->sql_query($sql);
 		}
 
-		$this->acl_cache_options($options);
-	}
-
-	function acl_cache_options($options = false)
-	{
-		global $db, $cache;
-
-		$options = array();
-
-		if (!$options)
-		{
-			$sql = "SELECT auth_value, is_global, is_local
-				FROM " . ACL_OPTIONS_TABLE . "
-				ORDER BY is_global, is_local, auth_value";
-			$result = $db->sql_query($sql);
-
-			$global = $local = 0;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!empty($row['is_global']))
-				{
-					$options['global'][$row['auth_value']] = $global++;
-				}
-				if (!empty($row['is_local']))
-				{
-					$options['local'][$row['auth_value']] = $local++;
-				}
-			}
-			$db->sql_freeresult($result);
-		}
-
-/*
-		// Re-cache options
-		$cache_str = "\$acl_options = array(\n";
-		foreach ($options as $type => $options_ary)
-		{
-			$cache_str .= "\t'$type' => array(\n";
-			foreach ($options_ary as $option_value => $option_id)
-			{
-				$cache_str .= "\t\t'$option_value' => " . $option_id . ",\n";
-			}
-			$cache_str .= "\t),\n";
-		}
-		$cache_str .= ");";
-
-		config_cache_write('\$acl_options = array\(.*?\);', $cache_str);
-		$this->acl_clear_prefetch();
-*/
-		$cache->put('acl_options', $options);
-		$this->acl_clear_prefetch();
-
-		return $options;
+		$cache->destroy('acl_options');
 	}
 }
 
