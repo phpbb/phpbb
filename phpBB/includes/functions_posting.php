@@ -154,7 +154,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
-	$message = nl2br($message);
+	$message = str_replace("\n", '<br />', $message);
 
 	// Signature
 	$user_sig = ($sig && $config['allow_sig']) ? trim($user->data['user_sig']) : '';
@@ -166,22 +166,22 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 		}
 
-		$user_sig = (empty($user->data['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
+		$user_sig = (empty($user->data['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $user_sig);
 
 		if (sizeof($censors))
 		{
 			$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
 		}
 
-		$user_sig = '<br />_________________<br />' . nl2br($user_sig);
+		$user_sig = '<br />_________________<br />' . str_replace("\n", '<br />', $user_sig);
 	}
 	else
 	{
 		$user_sig = '';
 	}
 		
-	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
-	
+//	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
+
 	$message .= $user_sig;
 
 	return $message;
@@ -959,7 +959,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'enable_magic_url' 	=> $post_data['enable_urls'],
 		'bbcode_uid'		=> $bbcode_uid,
 		'bbcode_bitfield'	=> $post_data['bbcode_bitfield'],
-		'post_edit_locked'	=> $post_data['post_edit_locked']
+		'post_edit_locked'	=> $post_data['post_edit_locked'],
+		'post_text' 		=> $message
 	);
 
 	if ($mode != 'edit')
@@ -971,7 +972,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		$post_sql = array_merge($post_sql, array(
 			'post_checksum' => $post_data['message_md5'],
-			'post_text' 	=> $message, 
 			'post_encoding' => $user->lang['ENCODING'])
 		);
 	}

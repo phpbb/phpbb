@@ -646,7 +646,7 @@ if ($submit || $preview || $refresh)
 	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
-	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch)
+	if ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
 	{
 		// Parse message
 		if ($result = $message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status))
@@ -802,6 +802,7 @@ if ($submit || $preview || $refresh)
 			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 		);
 		
+		echo ";<pre>".$message_parser->message."</pre>";
 		submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data);
 	}	
 
