@@ -263,6 +263,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 	if ($auto_sync)
 	{
 		sync('forum', 'forum_id', $forum_ids, TRUE);
+		sync('topic_reported', $where_type, $where_ids);
 	}
 
 	return $return;
@@ -329,7 +330,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 //
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
 {
-	global $db;
+	global $db, $dbms;
 
 	if (is_array($where_ids))
 	{
@@ -340,12 +341,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		$where_ids = array($where_ids);
 	}
 
-	if ($mode == 'approved' || $mode == 'reported')
-	{
-		$where_sql = "WHERE t.$where_type IN (" . implode(', ', $where_ids) . ')';
-		$where_sql_and = $where_sql . "\n\tAND";
-	}
-	else
+	if ($mode == 'forum' || $mode == 'topic')
 	{
 		if (!$where_type)
 		{
@@ -358,10 +354,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 	}
+	else
+	{
+		$where_sql = "WHERE t.$where_type IN (" . implode(', ', $where_ids) . ')';
+		$where_sql_and = $where_sql . "\n\tAND";
+	}
 
 	switch ($mode)
 	{
-		case 'approved':
+		case 'topic_approved':
 			$sql = 'SELECT t.topic_id, p.post_approved
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				$where_sql_and p.post_id = t.topic_first_post_id
@@ -387,6 +388,75 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$db->sql_query($sql);
 		break;
 
+		case 'post_attachment':
+			$post_ids = array();
+
+			switch ($dbms)
+			{
+				default:
+					$sql = 'SELECT t.post_id, t.post_attachment, COUNT(a.attachment_id) AS attachments
+						FROM ' . POSTS_TABLE . ' t
+						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON t.post_id = a.post_id
+						$where_sql
+						GROUP BY t.post_id";
+
+					$result = $db->sql_query($sql);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						if (($row['post_attachment'] && !$row['attachments']) || ($row['attachments'] && !$row['post_attachment']))
+						{
+							$post_ids[] = $row['post_id'];
+						}
+					}
+			}
+
+			if (!count($post_ids))
+			{
+				return;
+			}
+
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_attachment = 1 - post_attachment
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			$db->sql_query($sql);
+		break;
+
+		case 'topic_attachment':
+			$topic_ids = array();
+
+			switch ($dbms)
+			{
+				default:
+					$sql = 'SELECT t.topic_id, t.topic_attachment, COUNT(a.attachment_id) AS attachments
+						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON p.post_id = a.post_id
+						$where_sql_and t.topic_id = p.topic_id
+							AND	((t.topic_attachment = 1 AND attachments = 0)
+							OR	 (t.topic_attachment = 0 AND attachments > 0))
+						GROUP BY t.topic_id";
+
+					$result = $db->sql_query($sql);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						if (($row['topic_attachment'] && !$row['attachments'])
+						 || ($row['attachments'] && !$row['topic_attachment']))
+						{
+							$topic_ids[] = $row['topic_id'];
+						}
+					}
+			}
+
+			if (count($topic_ids))
+			{
+				return;
+			}
+
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_attachment = 1 - topic_attachment
+				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+			$db->sql_query($sql);
+		break;
+
 		case 'reported':
 			$topic_data = $topic_ids = $post_ids = array();
 
@@ -398,7 +468,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					LEFT JOIN ' . REPORTS_TABLE . " r ON r.post_id = t.post_id
 					$where_sql
 						AND	((t.post_reported = 1 AND r.post_id IS NULL)
-						OR	 (t.post_reported = 0 AND r.post_id > 0))";
+						OR	 (t.post_reported = 0 AND r.post_id > 0))
+					GROUP p.post_id";
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -816,7 +887,20 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$topic_data[$row['topic_id']]['reported'] = 1;
 				}
 
-				// Resync topic_attachment as well?
+				// This routine assumes that post_attachment values are correct
+				// if they are not, use sync('post_attachment') instead
+				$fieldnames[] = 'attachment';
+				$sql = 'SELECT t.topic_id, p.post_id
+					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+					$where_sql_and p.topic_id = t.topic_id
+						AND p.post_attachment = 1
+					GROUP t.topic_id";
+
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_data[$row['topic_id']]['attachment'] = 1;
+				}
 			}
 
 			foreach ($topic_data as $topic_id => $row)
