@@ -113,7 +113,7 @@
 				<td class="row2">{TIMEZONE_SELECT}</td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_DATE_FORMAT}:</span><br /><span class="gensmall">{L_DATE_FORMAT_EXPLANATION}</span></td>
+				<td class="row1"><span class="gen">{L_DATE_FORMAT}:</span><br /><span class="gensmall">{L_DATE_FORMAT_EXPLAIN}</span></td>
 				<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 			</tr>
 			<tr>

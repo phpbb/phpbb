@@ -253,8 +253,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		}
 		else
 		{
-			$email = $lang['Hidden'];
-			$email_img = $lang['Hidden'];
+			$email = $lang['Hidden_email'];
+			$email_img = $lang['Hidden_email'];
 		}
 
 		if($members[$i]['user_icq'])

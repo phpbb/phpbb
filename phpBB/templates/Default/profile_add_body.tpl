@@ -59,18 +59,6 @@
 					<td bgcolor="#CCCCCC"><input type="text" name="interests" size="35" maxlength="150" value="{INTERESTS}"></td>
 				</tr>
 				<tr class="tablebody">
-					<td bgcolor="#DDDDDD"><b>{L_AVATAR}:</b><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{L_AVATAR_EXPLAIN}</font></td>
-					<td bgcolor="#CCCCCC"><table cellspacing="2" cellpadding="0" border="0">
-						<tr class="tablebody">
-							<td align="center">{L_CURRENT_IMAGE}</font></td>
-							<td rowspan="2" valign="bottom">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{L_UPLOAD_IMAGE}:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{L_DELETE_IMAGE}:<input type="checkbox" name="avatardel"></td>
-						</tr>
-						<tr class="tablebody">
-							<td align="center">&nbsp;{AVATAR}&nbsp;</td>
-						</tr>
-					</table></td>
-				</tr>
-				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_SIGNATURE}:</b><br><font style="{font-size: 8pt;}">{L_SIGNATURE_EXPLAIN}</font></td>
 					<td bgcolor="#CCCCCC"><textarea name="signature" rows="6" cols="45">{SIGNATURE}</textarea></td>
 				</tr>
@@ -125,6 +113,41 @@
 					<td bgcolor="#DDDDDD" width="30%"><b>{L_DATE_FORMAT}:</b><br /><font style="{font-size: 8pt;}">{L_DATE_FORMAT_EXPLANATION}</font></td>
 					<td bgcolor="#CCCCCC"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 				</tr>
+				<tr class="tableheader">
+					<td colspan="2"><b>{L_AVATAR_PANEL}</b></td>
+				</tr>
+				<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE || $S_ALLOW_AVATAR_LOCAL eq TRUE || $S_ALLOW_AVATAR_REMOTE eq TRUE -->
+				<tr class="tablebody">
+					<td bgcolor="#CCCCCC" colspan="2" align="center"><table width="70%" cellspacing="2" cellpadding="0" border="0">
+						<tr>
+							<td width="65%">{L_AVATAR_EXPLAIN}</td>
+							<td align="center">{L_CURRENT_IMAGE}<br>{AVATAR}<br><input type="checkbox" name="avatardel">&nbsp;{L_DELETE_AVATAR}</td>
+						</tr>
+					</table></td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF $S_ALLOW_AVATAR_UPLOAD eq TRUE -->
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
+					<td bgcolor="#CCCCCC"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}"><input type="file" name="avatar"></td>
+				</tr>
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD">{L_UPLOAD_AVATAR_URL}:<br>{L_UPLOAD_AVATAR_URL_EXPLAIN}</td>
+					<td bgcolor="#CCCCCC"><input type="text" name="avatarurl" size="40"></td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF $S_ALLOW_AVATAR_REMOTE eq TRUE -->
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD">{L_LINK_REMOTE_AVATAR}:<br>{L_LINK_REMOTE_AVATAR_EXPLAIN}</td>
+					<td bgcolor="#CCCCCC"><input type="text" name="avatarremoteurl" size="40"></td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF $S_ALLOW_AVATAR_LOCAL eq TRUE -->
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD">{L_AVATAR_GALLERY}:</td>
+					<td bgcolor="#CCCCCC"><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}"></td>
+				</tr>
+				<!-- ENDIF -->
 				<tr class="tableheader">
 				   	<td align="center" colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;</td>
 				</tr>
