@@ -135,8 +135,8 @@ class acm
 				{
 					unlink($this->cache_dir . $entry);
 				}
-				@closedir($dir);
 			}
+			@closedir($dir);
 		}
 		elseif (isset($this->vars[$var_name]))
 		{
