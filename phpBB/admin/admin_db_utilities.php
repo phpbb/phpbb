@@ -376,7 +376,7 @@ function get_table_def_mysql($table, $crlf)
 	// Ok lets grab the fields...
 	//
 	$result = $db->sql_query($field_query);
-	if(!result)
+	if(!$result)
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	}

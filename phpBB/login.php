@@ -98,7 +98,8 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				else
 				{
 					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
-
+					$redirect = str_replace("?", "&", $redirect);
+					
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
 					);
@@ -112,6 +113,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		else
 		{
 			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+			$redirect = str_replace("?", "&", $redirect);
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
@@ -176,7 +178,6 @@ else
 			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
-
 				$forward_match = explode('&', $forward_to);
 
 				if(count($forward_match) > 1)
@@ -194,7 +195,6 @@ else
 							$forward_page .= $forward_match[$i];
 						}
 					}
-
 					$forward_page = $forward_match[0] . '?' . $forward_page;
 				}
 				else
