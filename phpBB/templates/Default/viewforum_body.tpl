@@ -46,7 +46,7 @@
               <td width="5%" align="center" valign="middle">{topicrow.REPLIES}</td>
               <td width="10%" align="center" valign="middle">{topicrow.TOPIC_POSTER}</td>
 	          <td width="5%" align="center" valign="middle">{topicrow.VIEWS}</td>
-	          <td width="15%" align="center" valign="middle">{topicrow.LAST_POST_TIME}<br />{L_BY} <a href="{topicrow.U_LAST_POST_USER_PROFILE}">{topicrow.LAST_POST_USER}</a></td>
+	          <td width="15%" align="center" valign="middle">{topicrow.LAST_POST}</td>
            </tr>
 	        <!-- END topicrow -->
 	       </table>

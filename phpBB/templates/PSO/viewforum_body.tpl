@@ -31,7 +31,7 @@
 				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{topicrow.REPLIES}</font></td>
 				<td bgcolor="{T_TD_COLOR2}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}">{topicrow.TOPIC_POSTER}</a></font></td>
 				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{topicrow.VIEWS}</font></td>
-				<td bgcolor="{T_TD_COLOR2}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{topicrow.LAST_POST_TIME}<br />{L_BY} <a href="{topicrow.U_LAST_POST_USER_PROFILE}">{topicrow.LAST_POST_USER}</a></font></td>
+				<td bgcolor="{T_TD_COLOR2}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{topicrow.LAST_POST}</font></td>
 			</tr>
 		    <!-- END topicrow -->
 			<tr>

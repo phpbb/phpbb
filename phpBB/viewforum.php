@@ -358,10 +358,10 @@ if($total_topics)
 			}
 //		}
 
-		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
+		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);
 
 		$topic_poster = stripslashes($topic_rowset[$x]['username']);
-		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['user_id']);
+		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL."=" . $topic_rowset[$x]['user_id']);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]['post_time'], $board_config['default_timezone']);
 
@@ -374,7 +374,9 @@ if($total_topics)
 			$last_post_user = $topic_rowset[$x]['user2'];
 		}
 
-		$last_post_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['id2']);
+		$last_post = $last_post_time . "<br />by ";
+		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $topic_rowset[$x]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
+		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$x]['topic_last_post_id']) . "#" . $topic_rowset[$x]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 
 		$views = $topic_rowset[$x]['topic_views'];
 
@@ -388,11 +390,9 @@ if($total_topics)
 			"TOPIC_TITLE" => $topic_title,
 			"TOPIC_TYPE" => $topic_type,
 			"VIEWS" => $views,
-			"LAST_POST_TIME" => $last_post_time,
-			"LAST_POST_USER" => $last_post_user,
+			"LAST_POST" => $last_post,
 
 			"U_VIEW_TOPIC" => $view_topic_url,
-			"U_LAST_POST_USER_PROFILE" => $last_post_profile_url,
 			"U_TOPIC_POSTER_PROFILE" => $topic_poster_profile_url)
 		);
 	}
