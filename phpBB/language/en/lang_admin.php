@@ -897,14 +897,18 @@ $lang = array_merge($lang, array(
 
 
 	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
-	'STYLE_ACTIVATE'	=> 'Activate', 
-	'STYLE_DEACTIVATE'	=> 'Deactivate', 
+	'STYLE_ACTIVATE'		=> 'Activate', 
+	'STYLE_DEACTIVATE'		=> 'Deactivate', 
+	'EDIT_STYLE'			=> 'Edit Style', 
+	'EDIT_STYLE_EXPLAIN'	=> 'Using the form below you can modify this existing style. You may alter the combination of template, theme and imageset which define the style itself. You may also deactivate the style and alter its name.', 
 
+	'MANAGE_TEMPLATE_EXPLAIN'	=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
+	'EDIT_TEMPLATE'			=> 'Edit Template',
+	'EDIT_TEMPLATE_EXPLAIN' => 'Use this panel to edit an existing compiled template set. When you have made the required changes you can recompile the template and (or) download it. Please remember that the existing HTML templates are <b>not</b> altered, only the compiled versions are affected. Therefore you should download any altered files if you wish to keep them for future use and for archival purposes.', 
+	'SELECT_TEMPLATE'		=> 'Select template', 
 
-	'SELECT_TEMPLATE'	=> 'Select template', 
-
-	'THEMES'			=> 'Themes', 
-	'THEMES_EXPLAIN'	=> 'From here you can add, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. To manage templates, imagesets or styles please see the navigation menu.', 
+	'THEMES'				=> 'Themes', 
+	'THEMES_EXPLAIN'		=> 'From here you can add, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. To manage templates, imagesets or styles please see the navigation menu.', 
 	'EDIT_THEME'			=> 'Edit Theme', 
 	'EDIT_THEME_EXPLAIN'	=> 'Here you can edit the selected theme, changing colours, images, etc. You can switch between a simplified interface where you can set basic colours, etc. and a more advanced "raw CSS" mode. Using the raw mode you can style additional CSS elements such as borders, etc. You only need set the parameters you need, e.g. if you do not want a background image leave that parameter unset. You may also add additional "custom" classes should your template or style make use of them.', 
 	'SELECT_CLASS'			=> 'Select class', 
@@ -983,12 +987,6 @@ $lang = array_merge($lang, array(
 
 
 
-	'Edit_style' => 'Edit Styles',
-	'Style' => 'Style',
-	'Styles_admin' => 'Styles Administration',
-	'Styles_explain' => 'Using this facility you can add, remove and manage styles. Styles are a combination of a template, theme (CSS) and imageset.',
-	'Edit_template' => 'Edit Template',
-	'Edit_template_explain' => 'Use this panel to edit an existing compiled template set. When you have made the required changes you can recompile the template and (or) download it. Please remember that the existing HTML templates are <b>not</b> altered, only the compiled versions are affected. Therefore you should download any altered files if you wish to keep them for future use and for archival purposes.',
 	'Select_template' => 'Select template',
 	'Template' => 'Select template',
 	'Download' => 'Download',

@@ -46,13 +46,11 @@ switch ($mode)
 		{
 			case 'activate':
 			case 'deactivate':
+				// TODO ... reset user_styles if their style is deactivated
 				$sql = 'UPDATE ' . STYLES_TABLE . '
 					SET style_active = ' . (($action == 'activate') ? 1 : 0) . ' 
 					WHERE style_id = ' . $style_id;
 				$db->sql_query($sql);
-				break;
-
-			case 'preview':
 				break;
 
 			case 'edit':
@@ -68,8 +66,9 @@ switch ($mode)
 						WHERE style_id = $style_id";
 					$result = $db->sql_query($sql);
 
-					if ($style_data = $db->sql_fetchrow($result))
+					if (!extract($db->sql_fetchrow($result)))
 					{
+						die("ERROR");
 					}
 					$db->sql_freeresult($result);
 				}
@@ -84,7 +83,7 @@ switch ($mode)
 					$result = $db->sql_query($sql);
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$selected = ($row[$field . '_id'] == $style_data[$field . '_id']) ? ' selected="selected"' : '';
+						$selected = ($row[$field . '_id'] == ${$field . '_id'}) ? ' selected="selected"' : '';
 						${$field . '_options'} .= '<option value="' . $row[$field . '_id'] . '"' . $selected . '>' . $row[$field . '_name'] . '</option>';
 					}
 					$db->sql_freeresult($result);
@@ -100,12 +99,9 @@ switch ($mode)
 
 <p><?php echo $user->lang['EDIT_STYLE_EXPLAIN']; ?></p>
 
-<p>Selected Style: <b><?php echo $style_data['style_name']; ?></b></p>
-
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>&nbsp;</th>
-		<th>&nbsp;</th>
+		<th colspan="2">Edit Style</th>
 	</tr>
 	<tr>
 		<td class="row1">Style Name</td>
@@ -113,7 +109,11 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1">Style Copyright</td>
-		<td class="row2"><!-- input class="post" type="text" name="style_name" maxlength="255" size="40" /--></td>
+		<td class="row2"><?php
+	
+				echo ($action == 'edit') ? '<b>' . $style_copyright . '</b>' : '<input class="post" type="text" name="style_name" maxlength="255" size="40" value="' . $style_copyright . '" />';
+
+?></td>
 	</tr>
 	<tr>
 		<td class="row1">Template set:</td>
@@ -128,8 +128,8 @@ switch ($mode)
 		<td class="row2"><select name="imageset_id"><?php echo $imageset_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1">Active:</td>
-		<td class="row2"></td>
+		<td class="row1">Status:</td>
+		<td class="row2"><input type="radio" name="style_active" value="0"<?php echo (!$style_active) ? ' checked="checked"' : ''; ?> /> Inactive &nbsp; <input type="radio" name="style_active" value="1"<?php echo ($style_active) ? ' checked="checked"' : ''; ?> /> Active</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
@@ -161,7 +161,7 @@ switch ($mode)
 	<tr>
 		<th nowrap="nowrap">Style name</th>
 		<th nowrap="nowrap">Used by</th>
-		<th nowrap="nowrap">&nbsp;</th>
+		<th nowrap="nowrap" colspan="4">&nbsp;</th>
 	</tr>
 <?php
 
@@ -192,7 +192,10 @@ switch ($mode)
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a><?php echo ($config['default_style'] == $row['style_id']) ? ' *' : ''; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo (!empty($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : '0'; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$stylevis&amp;id=" . $row['style_id']; ?>"><?php echo $user->lang['STYLE_' . strtoupper($stylevis)]; ?></a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "{$phpbb_root_path}index.$phpEx$SID&amp;style=" . $row['style_id']; ?>" target="_stylepreview">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -207,7 +210,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="3" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newstyle" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newstyle" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 
@@ -233,7 +236,7 @@ switch ($mode)
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>Imageset name</th>
-		<th>&nbsp;</th>
+		<th colspan="2">&nbsp;</th>
 	</tr>
 <?php
 
@@ -250,7 +253,8 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['imageset_id']; ?>"><?php echo $row['imageset_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['imageset_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['imageset_id']; ?>">Export</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['imageset_id']; ?>">Delete</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['imageset_id']; ?>">Export</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -265,7 +269,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2">&nbsp;</td>
+		<td class="cat" colspan="3">&nbsp;</td>
 	</tr>
 </table></form>
 <?php 
@@ -523,13 +527,13 @@ switch ($mode)
 
 
 				//
-				adm_page_header($user->lang['Edit_template']);
+				adm_page_header($user->lang['EDIT_TEMPLATE']);
 
 ?>
 
-<h1><?php echo $user->lang['Edit_template']; ?></h1>
+<h1><?php echo $user->lang['EDIT_TEMPLATE']; ?></h1>
 
-<p><?php echo $user->lang['Edit_template_explain']; ?></p>
+<p><?php echo $user->lang['EDIT_TEMPLATE_EXPLAIN']; ?></p>
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;id=$template_id&amp;action=$action"; ?>"><table cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
@@ -565,17 +569,17 @@ switch ($mode)
 				break;
 		}
 
-		adm_page_header($user->lang['EDIT_TEMPLATE']);
+		adm_page_header($user->lang['MANAGE_TEMPLATE']);
 
 ?>
-<h1><?php echo $user->lang['Edit_template']; ?></h1>
+<h1><?php echo $user->lang['MANAGE_TEMPLATE']; ?></h1>
 
-<p><?php echo $user->lang['Edit_template_explain']; ?></p>
+<p><?php echo $user->lang['MANAGE_TEMPLATE_EXPLAIN']; ?></p>
 
 <form name="templates" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>Template name</th>
-		<th>&nbsp;</th>
+		<th colspan="2">Template name</th>
+		<th colspan="3">&nbsp;</th>
 	</tr>
 <?php
 
@@ -592,7 +596,10 @@ switch ($mode)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=edit&amp;id=" . $row['template_id']; ?>"><?php echo $row['template_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=bbcode&amp;id=" . $row['template_id']; ?>">BBCode</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=delete&amp;id=" . $row['template_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=export&amp;id=" . $row['template_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=preview&amp;id=" . $row['template_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=bbcode&amp;id=" . $row['template_id']; ?>">BBCode</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=delete&amp;id=" . $row['template_id']; ?>">Delete</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=export&amp;id=" . $row['template_id']; ?>">Export</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=templates&amp;action=preview&amp;id=" . $row['template_id']; ?>">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -607,8 +614,8 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="right">&nbsp;</td>
-	</tr><!-- Create new theme: <input class="post" type="text" name="template_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" />-->
+		<td class="cat" colspan="5" align="right">&nbsp;</td>
+	</tr>
 </table></form>
 
 <?php
@@ -1308,7 +1315,7 @@ function csspreview()
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th>Theme name</th>
-		<th>&nbsp;</th>
+		<th colspan="3">&nbsp;</th>
 	</tr>
 <?php
 
@@ -1331,7 +1338,9 @@ function csspreview()
 				echo sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>');
 
 ?></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -1346,7 +1355,7 @@ function csspreview()
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="4" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
