@@ -301,12 +301,11 @@ function setup_style($style)
 			message_die(CRITICAL_ERROR, "Couldn't open $template_name template config file");
 		}
 
-		if ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) )
+		$img_lang = ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
+
+		while( list($key, $value) = @each($images) )
 		{
-			while( list($key, $value) = @each($images) )
-			{
-				$images[$key] = str_replace("{LANG}", 'lang_' . $board_config['default_lang'], $value);
-			}
+			$images[$key] = str_replace("{LANG}", 'lang_' . $img_lang, $value);
 		}
 	}
 
