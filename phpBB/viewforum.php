@@ -41,8 +41,8 @@ if (!$forum_id)
 // Grab appropriate forum data
 if ($user->data['user_id'] == ANONYMOUS)
 {
-	$sql = 'SELECT * 
-		FROM ' . FORUMS_TABLE . ' 
+	$sql = 'SELECT *
+		FROM ' . FORUMS_TABLE . '
 		WHERE forum_id = ' . $forum_id;
 }
 else
@@ -246,7 +246,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	$template->assign_vars(array(
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $topics_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start), 
+		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 		'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count),
 		'MOD_CP' 		=> ($auth->acl_gets('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view\">", '</a>') : '', 
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
@@ -287,10 +287,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$icons = array();
 	obtain_icons($icons);
 
-
 	// Grab all topic data
-	$total_topics = 0;
-	$rowset = array();
+	$rowset = $announcement_list = $topic_list = array();
 
 	switch (SQL_LAYER)
 	{
@@ -304,23 +302,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
 
- 	// If the user is trying to reach late pages, start searching from the end
-	$store_reverse = FALSE;
-	$limit = $config['topics_per_page'];
-
-	if ($start > $topics_count / 2)
-	{
-		$store_reverse = TRUE;
-
-		if ($start + $config['topics_per_page'] > $topics_count)
-		{
-			$limit = min($config['topics_per_page'], max(1, $topics_count - $start));
-		}
-
-		$sql_sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sql_sort_order);
-		$start = max(0, $topics_count - $limit - $start);
-	}
-
+	// Obtain announcements
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from 
 		WHERE t.forum_id IN ($forum_id, 0)
@@ -328,20 +310,35 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		ORDER BY $sql_sort_order";
 	$result = $db->sql_query($sql);
 
-	while($row = $db->sql_fetchrow($result))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($store_reverse)
-		{
-			array_unshift($rowset, $row);
-		}
-		else
-		{
-			$rowset[] = $row;
-		}
-		$total_topics++;
+		$rowset[$row['topic_id']] = $row;
+		$announcement_list[] = $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
+	// If the user is trying to reach late pages, start searching from the end
+	$store_reverse = FALSE;
+	$sql_limit = $config['topics_per_page'];
+
+	if ($start > $topics_count / 2)
+	{
+		$store_reverse = TRUE;
+
+		if ($start + $config['topics_per_page'] > $topics_count)
+		{
+			$sql_limit = min($config['topics_per_page'], max(1, $topics_count - $start));
+		}
+
+		$sql_sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sql_sort_order);
+		$sql_start = max(0, $topics_count - $sql_limit - $start);
+	}
+	else
+	{
+		$sql_start = $start;
+	}
+
+	// Obtain other topics
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from
 		WHERE t.forum_id = $forum_id 
@@ -349,24 +346,26 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			$sql_approved 
 			$sql_limit_time
 		ORDER BY t.topic_type DESC, $sql_sort_order";
-	$result = $db->sql_query_limit($sql, $limit, $start);
+	$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 	while($row = $db->sql_fetchrow($result))
 	{
-		if ($store_reverse)
-		{
-			array_unshift($rowset, $row);
-		}
-		else
-		{
-			$rowset[] = $row;
-		}
-		$total_topics++;
+		$rowset[$row['topic_id']] = $row;
+		$topic_list[] = $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
+	if ($store_reverse)
+	{
+		$topic_list = array_merge($announcement_list, array_reverse($topic_list));
+	}
+	else
+	{
+		$topic_list = array_merge($announcement_list, $topic_list);
+	}
+
 	// Okay, lets dump out the page ...
-	if ($total_topics)
+	if (count($topic_list))
 	{
 		if ($config['load_db_lastread'])
 		{
@@ -380,9 +379,9 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		$mark_forum_read = true;
 
 		$i = $s_type_switch = 0;
-		foreach ($rowset as $key => $row)
+		foreach ($topic_list as $topic_id)
 		{
-			$topic_id = $row['topic_id'];
+			$row =& $rowset[$topic_id];
 
 			if ($config['load_db_lastread'])
 			{
