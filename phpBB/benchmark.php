@@ -197,7 +197,7 @@ function create_forum($catid, $forum){
     $forum_id = mysql_insert_id($db->db_connect_id);
       // Sorry, no error checking. We just assume that if the forum can be
       // created the moderator can be assigned too :)
-      $sql = "INSERT INTO forum_mods (forum_id, user_id) VALUES ('$forum_id', '1')";
+      $sql = "INSERT INTO ".FORUM_MODS_TABLE." (forum_id, user_id) VALUES ('$forum_id', '1')";
       $result = $db->sql_query($sql);
     return $forum_id;
   }
