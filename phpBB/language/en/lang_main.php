@@ -257,8 +257,15 @@ $lang = array(
 	'NEW_POSTS_LOCKED'	=> 'New posts [ Locked ]',
 	'FORUM_LOCKED'		=> 'Forum Locked', 
 
-	'YOU_LAST_VISIT'	=> 'You last visited on %s',
-	'CURRENT_TIME'		=> 'The time now is %s',
+	'YOU_LAST_VISIT'	=> 'Last visit on %s',
+	'CURRENT_TIME'		=> 'The time is %s',
+
+	'SEARCH_NEW'		=> 'View new posts',
+	'SEARCH_SELF'		=> 'View your posts',
+	'SEARCH_UNANSWERED' => 'View unanswered posts',
+	
+	'MARK_FORUMS_READ'	=> 'Mark Forums Read',
+	'FORUMS_MARKED'		=> 'All forums have been marked read',
 
 	'LOGIN'			=> 'Login', 
 	'LOGOUT_USER'	=> 'Logout [ %s ]', 
@@ -273,15 +280,12 @@ $lang = array(
 	'LAST_POST'		=> 'Last Post',
 	'MODERATOR'		=> 'Moderator',
 	'MODERATORS'	=> 'Moderators',
-	'New_pms'		=> '<b>%d</b> new messages',
-	'New_pm'		=> '<b>%d</b> new message',
-	'No_new_pm'		=> '<b>0</b> new messages',
-	'Unread_pms'	=> '<b>%d</b> unread messages',
-	'Unread_pm'		=> '<b>%d</b> unread message',
-	'No_unread_pm'	=> '<b>0</b> unread messages',
-	'You_new_pm'	=> 'A new private message is waiting for you in your Inbox',
-	'You_new_pms'	=> 'New private messages are waiting for you in your Inbox',
-	'You_no_new_pm' => 'No new private messages are waiting for you',
+	'NEW_PMS'		=> '<b>%d</b> new messages',
+	'NEW_PM'		=> '<b>%d</b> new message',
+	'NO_NEW_PM'		=> '<b>0</b> new messages',
+	'UNREAD_PMS'	=> '<b>%d</b> unread messages',
+	'UNREAD_PM'		=> '<b>%d</b> unread message',
+	'NO_UNREAD_PM'	=> '<b>0</b> unread messages',
 
 	'LEGEND'				=> 'Legend', 
 	'REGISTERED_USERS'		=> 'Registered Users:',
@@ -289,8 +293,8 @@ $lang = array(
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
 
 	'GUEST' => 'Guest',
-	'ACP' => 'Administration Control Panel',
-	'MCP' => 'Moderator Control Panel',
+	'ACP'	=> 'Administration Control Panel',
+	'MCP'	=> 'Moderator Control Panel',
 
 	'LOGIN_FORUM'	=> 'To view or post in this forum you must enter a password.', 
 	'WRONG_PASSWORD'=> 'You entered an incorrect password.', 
@@ -314,13 +318,7 @@ $lang = array(
 	'REDIRECTS'		=> 'Total redirects', 
 	'WHO_IS_ONLINE'	=> 'Who is Online',
 	'BIRTHDAYS'		=> 'Birthdays', 
-
-	'SEARCH_NEW'		=> 'View posts since last visit',
-	'SEARCH_SELF'		=> 'View your posts',
-	'SEARCH_UNANSWERED' => 'View unanswered posts',
-	
-	'MARK_FORUMS_READ'	=> 'Mark Forums Read',
-	'FORUMS_MARKED'		=> 'All forums have been marked read',
+	'STATISTICS'	=> 'Statistics', 
 
 	'CONGRATULATIONS'	=> 'Congratulations to', 
 	'NO_BIRTHDAYS'		=> 'No birthdays today', 
@@ -343,9 +341,9 @@ $lang = array(
 	'TOTAL_POSTS_OTHER'		=> 'Total posts <b>%d</b>',
 	'TOTAL_TOPICS_ZERO'		=> 'Total topics <b>0</b>',
 	'TOTAL_TOPICS_OTHER'	=> 'Total topics <b>%d</b>',
-	'TOTAL_USERS_ZERO'		=> 'Total users <b>0</b>',
-	'TOTAL_USERS_OTHER'		=> 'Total users <b>%d</b>',
-	'NEWEST_USER'			=> 'Newest user <b>%s%s%s</b>',
+	'TOTAL_USERS_ZERO'		=> 'Total members <b>0</b>',
+	'TOTAL_USERS_OTHER'		=> 'Total members <b>%d</b>',
+	'NEWEST_USER'			=> 'Our newest member <b>%s%s%s</b>',
 
 
 	'POST_STICKY' 		=> 'Sticky',
@@ -427,6 +425,7 @@ $lang = array(
 	'NOT_WATCHING_FORUM'	=> 'You no subscribe to updates on this forum',
 	'ARE_WATCHING_FORUM'	=> 'You have subscribed to receive updates on this forum',
 
+	'TOTAL_ATTACHMENTS'	=> '%d Attachments', 
 	'VIEW_FORUM_TOPIC'	=> '1 Topic',
 	'VIEW_FORUM_TOPICS'	=> '%d Topics',
 );
@@ -474,9 +473,10 @@ $lang += array(
 	'POST_REPORTED'		=> 'Click to view reports',
 	'POST_UNAPPROVED'	=> 'Click to approve post',
 
-	'WROTE'	=> 'wrote',
-	'QUOTE'	=> 'Quote',
-	'CODE'	=> 'Code',
+	'WROTE'			=> 'wrote',
+	'QUOTE'			=> 'Quote',
+	'CODE'			=> 'Code',
+	'ATTACHMENTS'	=> 'Attachments', 
 
 	'QUICK_MOD'			=>	'Quick-mod tools',
 	'LOCK_TOPIC'		=>	'Lock Topic',
@@ -956,6 +956,10 @@ $lang += array(
 // ucp_pm
 $lang += array(
 	'Private_Messaging' => 'Private Messaging',
+	'YOU_NEW_PM'		=> 'A new private message is waiting for you in your Inbox',
+	'YOU_NEW_PMS'		=> 'New private messages are waiting for you in your Inbox',
+	'YOU_NO_NEW_PM'		=> 'No new private messages are waiting for you',
+
 	'Unread_message' => 'Unread message',
 	'Read_message' => 'Read message',
 	'Read_pm' => 'Read message',
