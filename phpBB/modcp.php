@@ -191,7 +191,7 @@ switch($mode)
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		if($confirm)
+		if ( $confirm )
 		{
 			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
 
@@ -328,12 +328,12 @@ switch($mode)
 			if( !empty($topic_id) )
 			{
 				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$l_redirect = sprintf($lang['Click_return_forum'], "<a href=\"$redirect_page\">", "</a>");
+				$l_redirect = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 			else
 			{
-				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$l_redirect = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
+				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$l_redirect = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
 			$template->assign_vars(array(
@@ -344,7 +344,7 @@ switch($mode)
 		}
 		else
 		{
-		// Not confirmed, show confirmation message
+			// Not confirmed, show confirmation message
 		
 			if( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
 			{
@@ -415,7 +415,8 @@ switch($mode)
 
 				$sql_select = "SELECT * 
 					FROM " . TOPICS_TABLE . " 
-					WHERE topic_id IN ($topic_list)";
+					WHERE topic_id IN ($topic_list) 
+						AND topic_moved_id = 0";
 
 				if( !$result = $db->sql_query($sql_select, BEGIN_TRANSACTION) )
 				{
@@ -423,6 +424,7 @@ switch($mode)
 				}
 
 				$row = $db->sql_fetchrowset($result);
+				$db->sql_freeresult($result);
 
 				for($i = 0; $i < count($row); $i++)
 				{
@@ -471,15 +473,15 @@ switch($mode)
 			if( !empty($topic_id) )
 			{
 				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-				$message .= sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
+				$message .= sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 			else
 			{
 				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-				$message .= sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
+				$message .= sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
-			$message = $message . "<br \><br \>" . sprintf($lang['Click_return_forum'], "<a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id") . "\">", "</a>");
+			$message = $message . "<br \><br \>" . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id") . '">', '</a>');
 
 			$template->assign_vars(array(
 				"META" => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -552,7 +554,8 @@ switch($mode)
 
 		$sql = "UPDATE " . TOPICS_TABLE . " 
 			SET topic_status = " . TOPIC_LOCKED . " 
-			WHERE topic_id IN ($topic_id_sql)";
+			WHERE topic_id IN ($topic_id_sql) 
+				AND topic_moved_id = 0";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
@@ -561,12 +564,12 @@ switch($mode)
 		if( !empty($topic_id) )
 		{
 			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-			$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
+			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
 			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-			$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
+			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
 		$template->assign_vars(array(
@@ -592,7 +595,8 @@ switch($mode)
 
 		$sql = "UPDATE " . TOPICS_TABLE . " 
 			SET topic_status = " . TOPIC_UNLOCKED . " 
-			WHERE topic_id IN ($topic_id_sql)";
+			WHERE topic_id IN ($topic_id_sql) 
+				AND topic_moved_id = 0";
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Could not update topics table!", "Error", __LINE__, __FILE__, $sql);
@@ -601,12 +605,12 @@ switch($mode)
 		if( !empty($topic_id) )
 		{
 			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
-			$message = sprintf($lang['Click_return_topic'], "<a href=\"$redirect_page\">", "</a>");
+			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
 			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-			$message = sprintf($lang['Click_return_modcp'], "<a href=\"$redirect_page\">", "</a>");
+			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
 		$template->assign_vars(array(
@@ -694,7 +698,7 @@ switch($mode)
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 			);
 
-			$message = $lang['Topic_split'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+			$message = $lang['Topic_split'] . "<br /><br />" . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
@@ -968,20 +972,6 @@ switch($mode)
 			"S_MODCP_ACTION" => append_sid("modcp.$phpEx"))
 		);
 
-		$sql = "SELECT t.*, u.username, u.user_id, p.post_time
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p
-			WHERE t.forum_id = $forum_id
-				AND t.topic_poster = u.user_id
-				AND p.post_id = t.topic_last_post_id
-			ORDER BY t.topic_type DESC, p.post_time DESC
-			LIMIT $start, " . $board_config['topics_per_page'];
-
-		if(!$t_result = $db->sql_query($sql))
-		{
-	   		message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
-		}
-		$topic_rowset = $db->sql_fetchrowset($t_result);
-
 		//
 		// Set template files
 		//
@@ -996,43 +986,62 @@ switch($mode)
 		$replacement_word = array();
 		obtain_word_list($orig_word, $replacement_word);
 
-		for($i = 0; $i < count($topic_rowset); $i++)
+		$sql = "SELECT t.*, u.username, u.user_id, p.post_time
+			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p
+			WHERE t.forum_id = $forum_id
+				AND t.topic_poster = u.user_id
+				AND p.post_id = t.topic_last_post_id
+			ORDER BY t.topic_type DESC, p.post_time DESC
+			LIMIT $start, " . $board_config['topics_per_page'];
+
+		if ( !($result = $db->sql_query($sql)) )
+		{
+	   		message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+		}
+
+		while ( $row = $db->sql_fetchrow($result) )
 		{
 			$topic_title = "";
 
-			if( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED )
+			if ( $row['topic_status'] == TOPIC_LOCKED )
 			{
-				$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
+				$folder_img = $images['folder_locked'];
+				$folder_alt = $lang['Topic_locked'];
 			}
 			else
 			{
-				if( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE )
+				if ( $row['topic_type'] == POST_ANNOUNCE )
 				{
-					$folder_image = "<img src=\"" . $images['folder_announce'] . "\">";
+					$folder_img = $images['folder_announce'];
+					$folder_alt = $lang['Announcement'];
 				}
-				else if( $topic_rowset[$i]['topic_type'] == POST_STICKY )
+				else if ( $row['topic_type'] == POST_STICKY )
 				{
-					$folder_image = "<img src=\"" . $images['folder_sticky'] . "\">";
+					$folder_img = $images['folder_sticky'];
+					$folder_alt = $lang['Sticky'];
 				}
 				else 
 				{
-					$folder_image = "<img src=\"" . $images['folder'] . "\">";
+					$folder_img = $images['folder'];
+					$folder_alt = $lang['No_new_posts'];
 				}
 			}
 
-			$topic_id = $topic_rowset[$i]['topic_id'];
-			$topic_type = $topic_rowset[$i]['topic_type'];
-			$topic_status = $topic_rowset[$i]['topic_status'];
+			$folder_image = '<img src="' . $folder_img . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" />';
+
+			$topic_id = $row['topic_id'];
+			$topic_type = $row['topic_type'];
+			$topic_status = $row['topic_status'];
 			
-			if($topic_type == POST_ANNOUNCE)
+			if ( $topic_type == POST_ANNOUNCE )
 			{
 				$topic_type = $lang['Topic_Announcement'] . " ";
 			}
-			else if($topic_type == POST_STICKY)
+			else if ( $topic_type == POST_STICKY )
 			{
 				$topic_type = $lang['Topic_Sticky'] . " ";
 			}
-			else if($topic_status == TOPIC_MOVED)
+			else if ( $topic_status == TOPIC_MOVED )
 			{
 				$topic_type = $lang['Topic_Moved'] . " ";
 			}
@@ -1041,21 +1050,21 @@ switch($mode)
 				$topic_type = "";		
 			}
 	
-			if( $topic_rowset[$i]['topic_vote'] )
+			if ( $row['topic_vote'] )
 			{
 				$topic_type .= $lang['Topic_Poll'] . " ";
 			}
 	
-			$topic_title = $topic_rowset[$i]['topic_title'];
-			if( count($orig_word) )
+			$topic_title = $row['topic_title'];
+			if ( count($orig_word) )
 			{
 				$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 			}
 
 			$u_view_topic = append_sid("modcp.$phpEx?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id");
-			$topic_replies = $topic_rowset[$i]['topic_replies'];
+			$topic_replies = $row['topic_replies'];
 
-			$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
 
 			$template->assign_block_vars("topicrow", array(
 				"U_VIEW_TOPIC" => $u_view_topic,
