@@ -28,12 +28,16 @@ class sql_db
 {
 
 	var $db_connect_id;
-	var $query_result;
-	var $query_resultset;
-	var $query_numrows;
+	var $result;
+
 	var $next_id;
-	var $row;
-	var $row_index;
+
+	var $num_rows;
+	var $current_row;
+	var $field_names;
+	var $field_types;
+	var $result_rowset;
+
 	var $num_queries = 0;
 
 	//
@@ -42,29 +46,14 @@ class sql_db
 	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $persistency = true)
 	{
 		$this->persistency = $persistency;
+		$this->server = $sqlserver;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
 		$this->dbname = $database;
 
-		$this->server = $sqlserver;
+		$this->db_connect_id = ($this->persistency) ? odbc_pconnect($this->server, $this->user, $this->password) : odbc_connect($this->server, $this->user, $this->password);
 
-		if($this->persistency)
-		{
-			$this->db_connect_id = odbc_pconnect($this->server, $this->user, $this->password);
-		}
-		else
-		{
-			$this->db_connect_id = odbc_connect($this->server, $this->user, $this->password);
-		}
-
-		if($this->db_connect_id)
-		{
-			return $this->db_connect_id;
-		}
-		else
-		{
-			return false;
-		}
+		return ( $this->db_connect_id ) ? $this->db_connect_id : false;
 	}
 	//
 	// Other base methods
@@ -73,12 +62,21 @@ class sql_db
 	{
 		if($this->db_connect_id)
 		{
-			if($this->query_result)
+			if( $this->in_transaction )
 			{
-				@odbc_free_result($this->query_result);
+				@odbc_commit($this->db_connect_id);
 			}
-			$result = @odbc_close($this->db_connect_id);
-			return $result;
+
+			if( count($this->result_rowset) )
+			{
+				unset($this->result_rowset);
+				unset($this->field_names);
+				unset($this->field_types);
+				unset($this->num_rows);
+				unset($this->current_row);
+			}
+
+			return @odbc_close($this->db_connect_id);
 		}
 		else
 		{
@@ -86,111 +84,120 @@ class sql_db
 		}
 	}
 
-
 	//
 	// Query method
 	//
 	function sql_query($query = "", $transaction = FALSE)
 	{
-		//
-		// Remove any pre-existing queries
-		//
-		unset($this->query_result);
-		unset($this->row);
-		if($query != "")
+		if( $query != "" )
 		{
 			$this->num_queries++;
 
-			if(!eregi("^INSERT ",$query))
+			if( $transaction == BEGIN_TRANSACTION )
 			{
-				if(eregi("LIMIT", $query))
+				if( !odbc_autocommit($this->db_connect_id, false) )
 				{
-					preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
-
-					$query = $limits[1];
-					if($limits[3])
-					{
-						$row_offset = $limits[2];
-						$num_rows = $limits[3];
-					}
-					else
-					{
-						$row_offset = 0;
-						$num_rows = $limits[2];
-					}
-
-					$this->query_result = odbc_exec($this->db_connect_id, $query);
-
-					$query_limit_offset = $row_offset;
-					$this->result_numrows[$this->query_result] = $num_rows;
+					return false;
 				}
-				else
-				{
-					$this->query_result = odbc_exec($this->db_connect_id, $query);
+				$this->in_transaction = TRUE;
+			}
 
-					$row_offset = 0;
-					$this->result_numrows[$this->query_result] = 5E6;
+			if( preg_match("/^SELECT(.*?)(LIMIT ([0-9]+)[, ]*([0-9]+)*)?$/s", $query, $limits) )
+			{
+				$query = $limits[1];
+
+				if( !empty($limits[2]) )
+				{
+					$row_offset = ( $limits[4] ) ? $limits[3] : "";
+					$num_rows = ( $limits[4] ) ? $limits[4] : $limits[3];
+
+					$query = "TOP " . ( $row_offset + $num_rows ) . $query;
 				}
 
-				$result_id = $this->query_result;
-				if($this->query_result && eregi("^SELECT", $query))
+				$this->result = odbc_exec($this->db_connect_id, "SELECT $query"); 
+
+				if( $this->result )
 				{
-
-					for($i = 1; $i < odbc_num_fields($result_id)+1; $i++)
+					if( empty($this->field_names[$this->result]) )
 					{
-						$this->result_field_names[$result_id][] = odbc_field_name($result_id, $i);
-					}
-
-					$i =  $row_offset + 1;
-					$k = 0;
-					while(odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
-					{
-
-						for($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
+						for($i = 1; $i < odbc_num_fields($this->result) + 1; $i++)
 						{
-							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = odbc_result($result_id, $j);
+							$this->field_names[$this->result][] = odbc_field_name($this->result, $i);
+							$this->field_types[$this->result][] = odbc_field_type($this->result, $i);
 						}
-						$i++;
-						$k++;
 					}
 
-					$this->result_numrows[$result_id] = $k;
-					$this->row_index[$result_id] = 0;
+					$this->current_row[$this->result] = 0;
+					$this->result_rowset[$this->result] = array();
+
+					$row_outer = ( isset($row_offset) ) ? $row_offset + 1 : 1;
+					$row_outer_max = ( isset($num_rows) ) ? $num_rows + 1 : 1E9;
+					$row_inner = 0;
+
+					while( odbc_fetch_row($this->result, $row_outer) && $row_outer < $row_outer_max )
+					{
+						for($j = 0; $j < count($this->field_names[$this->result]); $j++)
+						{
+							$this->result_rowset[$this->result][$row_inner][$this->field_names[$this->result][$j]] = stripslashes(odbc_result($this->result, $j + 1));
+						}
+
+						$row_outer++;
+						$row_inner++;
+					}
+
+					$this->num_rows[$this->result] = count($this->result_rowset[$this->result]);	
 				}
-				else
+
+			}
+			else if( eregi("^INSERT ", $query) )
+			{
+				$this->result = odbc_exec($this->db_connect_id, str_replace("\'", "''", $query));
+
+				if( $this->result )
 				{
-					$this->result_numrows[$result_id] = @odbc_num_rows($result_id);
-					$this->row_index[$result_id] = 0;
+					$result_id = odbc_exec($this->db_connect_id, "SELECT @@IDENTITY");
+					if( $result_id )
+					{
+						if( odbc_fetch_row($result_id) )
+						{
+							$this->next_id[$this->db_connect_id] = odbc_result($result_id, 1);	
+							$this->affected_rows[$this->db_connect_id] = odbc_num_rows($this->result);
+						}
+					}
 				}
 			}
 			else
 			{
-				if(eregi("^(INSERT|UPDATE) ", $query))
+				$this->result = odbc_exec($this->db_connect_id, str_replace("\'", "''", $query));
+
+				if( $this->result )
 				{
-					$query = preg_replace("/\\\'/s", "''", $query);
+					$this->affected_rows[$this->db_connect_id] = odbc_num_rows($this->result);
 				}
-				$this->query_result = odbc_exec($this->db_connect_id, $query);
-
-				if($this->query_result)
-				{
-					$sql_id = "SELECT @@IDENTITY";
-
-					$id_result = odbc_exec($this->db_connect_id, $sql_id);
-					if($id_result)
-					{
-						$row_result = odbc_fetch_row($id_result);
-						if($row_result)
-						{
-							$this->next_id[$this->query_result] = odbc_result($id_result, 1);
-						}
-					}
-				}
-
-				$this->query_limit_offset[$this->query_result] = 0;
-				$this->result_numrows[$this->query_result] = 0;
 			}
 
-			return $this->query_result;
+			if( !$this->result )
+			{
+				if( $this->in_transaction )
+				{
+					odbc_rollback($this->db_connect_id);
+					odbc_autocommit($this->db_connect_id, true);
+					$this->in_transaction = FALSE;
+				}
+
+				return false;
+			}
+
+			if( $transaction == END_TRANSACTION && $this->in_transaction )
+			{
+				odbc_commit($this->db_connect_id);
+				odbc_autocommit($this->db_connect_id, true);
+				$this->in_transaction = FALSE;
+			}
+
+			odbc_free_result($this->result);
+
+			return $this->result;
 		}
 		else
 		{
@@ -203,142 +210,92 @@ class sql_db
 	//
 	function sql_numrows($query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id ) 
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			return $this->result_numrows[$query_id];
-		}
-		else
-		{
-			return false;
-		}
+
+		return ( $query_id ) ? $this->num_rows[$query_id] : false;
 	}
-	function sql_affectedrows($query_id = 0)
-	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			return $this->result_numrows[$query_id];
-		}
-		else
-		{
-			return false;
-		}
-	}
+
 	function sql_numfields($query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			$result = count($this->result_field_names[$query_id]);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
+
+		return ( $query_id ) ? count($this->field_names[$query_id]) : false;
 	}
+
 	function sql_fieldname($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			$result = $this->result_field_names[$query_id][$offset];
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
+
+		return ( $query_id ) ? $this->field_names[$query_id][$offset] : false;
 	}
+
 	function sql_fieldtype($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			$result = @odbc_field_type($query_id, $offset);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
+
+		return ( $query_id ) ? $this->field_types[$query_id][$offset] : false;
 	}
+
 	function sql_fetchrow($query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
+
+		if( $query_id )
 		{
-			if($this->row_index[$query_id] < $this->result_numrows[$query_id])
-			{
-				$result = $this->result_rowset[$query_id][$this->row_index[$query_id]];
-				$this->row_index[$query_id]++;
-				return $result;
-			}
-			else
-			{
-				return false;
-			}
+			return ( $this->num_rows[$query_id] && $this->current_row[$query_id] < $this->num_rows[$query_id] ) ? $this->result_rowset[$query_id][$this->current_row[$query_id]++] : false;
 		}
 		else
 		{
 			return false;
 		}
 	}
+
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
+
+		if( $query_id )
 		{
-			$this->row_index[$query_id] = $this->result_numrows[$query_id];
-			return $this->result_rowset[$query_id];
+			return ( $this->num_rows[$query_id] ) ? $this->result_rowset[$query_id] : false;
 		}
 		else
 		{
 			return false;
 		}
 	}
+
 	function sql_fetchfield($field, $row = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			if($row < $this->result_numrows[$query_id])
-			{
-				if($row == -1)
-				{
-					$getrow = $this->row_index[$query_id]-1;
-				}
-				else
-				{
-					$getrow = $row;
-				}
 
-				return $this->result_rowset[$query_id][$getrow][$this->result_field_names[$query_id][$field]];
+		if( $query_id )
+		{
+			if( $row < $this->num_rows[$query_id] )
+			{
+				$getrow = ( $row == -1 ) ? $this->current_row[$query_id] - 1 : $row;
+
+				return $this->result_rowset[$query_id][$getrow][$this->field_names[$query_id][$field]];
 
 			}
 			else
@@ -351,15 +308,17 @@ class sql_db
 			return false;
 		}
 	}
+
 	function sql_rowseek($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
+
+		if( $query_id )
 		{
-			$this->row_index[$query_id] = 0;
+			$this->current_row[$query_id] = $offset - 1;
 			return true;
 		}
 		else
@@ -367,43 +326,39 @@ class sql_db
 			return false;
 		}
 	}
-	function sql_nextid($query_id = 0)
+
+	function sql_nextid()
 	{
-		if(!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-		if($query_id)
-		{
-			return $this->next_id[$query_id];
-		}
-		else
-		{
-			return false;
-		}
+		return ( $this->next_id[$this->db_connect_id] ) ? $this->next_id[$this->db_connect_id] : false;
 	}
+
+	function sql_affectedrows()
+	{
+		return ( $this->affected_rows[$this->db_connect_id] ) ? $this->affected_rows[$this->db_connect_id] : false;
+	}
+
 	function sql_freeresult($query_id = 0)
 	{
-		if(!$query_id)
+		if( !$query_id )
 		{
-			$query_id = $this->query_result;
+			$query_id = $this->result;
 		}
-		if($query_id)
-		{
-			$result = @odbc_free_result($query_id);
-			return $result;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	function sql_error($query_id = 0)
-	{
-//		$result['code'] = @odbc_error($this->db_connect_id);
-//		$result['message'] = @odbc_errormsg($this->db_connect_id);
 
-		return "";
+		unset($this->num_rows[$query_id]);
+		unset($this->current_row[$query_id]);
+		unset($this->result_rowset[$query_id]);
+		unset($this->field_names[$query_id]);
+		unset($this->field_types[$query_id]);
+
+		return true;
+	}
+
+	function sql_error()
+	{
+		$error['code'] = odbc_error($this->db_connect_id);
+		$error['message'] = odbc_errormsg($this->db_connect_id);
+
+		return $error;
 	}
 
 } // class sql_db
