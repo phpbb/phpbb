@@ -113,7 +113,11 @@ $template->assign_vars(array(
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("../login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("../viewforum.$phpEx"),
-	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
+	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']), 
+	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
+	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
+	"S_CONTENT_DIR_LEFT" => $lang['LEFT'], 
+	"S_CONTENT_DIR_RIGHT" => $lang['RIGHT'], 
 
 	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
 	"T_BODY_BACKGROUND" => $theme['body_background'],

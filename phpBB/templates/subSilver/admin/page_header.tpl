@@ -2,7 +2,7 @@
 <html>
 <head>
 {META}
-<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}"  />
 <link rel="stylesheet" href="../templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css" />
 <style type="text/css">
 <!--
