@@ -57,7 +57,8 @@ A:Hover {
 							<tr>
 								<td align="left" valign="bottom">{L_WELCOMETO} {SITENAME}<br>{LOGIN_STATUS}</td>
 								<td align="right" valign="bottom">[<a href="{U_REGISTER}">{L_REGISTER}</a>]&nbsp;
-								[<a href="{U_PROFILE}">{L_PROFILE}</a>]&nbsp;
+								[<a href="{U_PROFILE}">{L_PROFILE}</a>]&nbsp; 
+								[<a href="{U_GROUP_CP}">{L_USERGROUPS}</a>]&nbsp;
 								[<a href="{U_SEARCH}">{L_SEARCH}</a>]&nbsp;
 								[<a href="{U_PRIVATEMSGS}">{L_PRIVATEMSGS}</a>]&nbsp;
 								[<a href="{U_MEMBERSLIST}">{L_MEMBERLIST}</a>]&nbsp;

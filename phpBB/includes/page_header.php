@@ -245,7 +245,7 @@ $template->assign_vars(array(
 	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
-	"U_GROUP_ADMIN" => append_sid("groupadmin.".$phpEx),
+	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),

@@ -49,7 +49,7 @@ INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 					<tr>
 						<td><span class="gensmall"><a href="{U_FAQ}">{L_FAQ}</a>&nbsp;|&nbsp;<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>&nbsp;|&nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a>&nbsp;|&nbsp<a href="{U_SEARCH}">{L_SEARCH}</a></span></td>
 						<td align="center"><span class="gensmall">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</span></td>
-						<td align="right"><span class="gensmall"><a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_ADMIN}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></span></td>
+						<td align="right"><span class="gensmall"><a href="{U_PROFILE}">{L_PROFILE}</a>&nbsp;|&nbsp;<a href="{U_GROUP_CP}">{L_USERGROUPS}</a>&nbsp;|&nbsp;<a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></span></td>
 					</tr>
 {S_LOGINBOX}
 				</table></td>
