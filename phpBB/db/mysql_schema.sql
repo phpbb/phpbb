@@ -90,6 +90,7 @@ DROP TABLE IF EXISTS phpbb_config;
 CREATE TABLE phpbb_config (
    config_id int(10) NOT NULL auto_increment,
    board_disable tinyint(1) DEFAULT '0' NOT NULL, 
+   board_startdate int(11), 
    sitename varchar(100),
    cookie_name char(20),
    cookie_path char(25),
