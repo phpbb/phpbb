@@ -174,7 +174,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$au_result = $db->sql_query($sql);
 		if(!$au_result)
 		{
-			error_die(QUERY_ERROR, "Failed obtaining forum access control lists");
+			message_die(QUERY_ERROR, "Failed obtaining forum access control lists");
 		}
 
 		$num_u_access = $db->sql_numrows($au_result);
@@ -188,7 +188,17 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			{
 				while($u_row = $db->sql_fetchrow($au_result))
 				{
-					$u_access[$u_row['forum_id']] = $u_row;
+					if($u_row['forum_id'])
+					{
+						$u_access[$u_row['forum_id']] = $u_row;
+					}
+					else
+					{
+						for($i = 0; $i < count($f_access); $i++)
+						{
+							$u_access[$f_access[$i]['forum_id']] = $u_row;
+						}
+					}
 				}
 			}
 		}
@@ -249,12 +259,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 					break;
 
 				case AUTH_ACL:
-					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : $is_admin;
 					$auth_user[$key . '_type'] = $lang['Users_granted_access'];
 					break;
 		
 				case AUTH_MOD:
-					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+					$auth_user[$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : $is_admin;
 					$auth_user[$key . '_type'] = $lang['Moderators'];
 					break;
 	
@@ -288,12 +298,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						break;
 
 					case AUTH_ACL:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
 						break;
 		
 					case AUTH_MOD:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin) : $is_admin;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
 						break;
 	
