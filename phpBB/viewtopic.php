@@ -139,12 +139,11 @@ if (!$topic_data = $db->sql_fetchrow($result))
 	trigger_error('NO_TOPIC');
 }
 extract($topic_data);
-
+$forum_id = intval($forum_id);
 
 // Configure style, language, etc.
 $user->setup(false, intval($forum_style));
 $auth->acl($user->data, intval($forum_id));
-
 
 // Start auth check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
@@ -257,7 +256,6 @@ if (isset($_GET['highlight']))
 // Forum rules listing
 $s_forum_rules = '';
 gen_forum_rules('topic', $forum_id);
-
 
 // Quick mod tools
 $topic_mod = '';

@@ -53,6 +53,8 @@ $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : false;
 $topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : false;
 $forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : false;
 
+$submit = (!empty($_POST['post'])) ? true : false;
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if (!empty($_REQUEST['cancel']))
 {
@@ -73,9 +75,9 @@ switch ($mode)
 			trigger_error($user->lang['NO_FORUM']);
 		}
 
-		$sql = 'SELECT forum_id, forum_name, forum_parents, forum_status, forum_postable, enable_icons, enable_post_count, enable_moderate 
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $forum_id;
+		$sql = "SELECT forum_id, forum_name, parent_id, forum_parents, forum_status, forum_postable, enable_icons, enable_post_count, enable_moderate 
+			FROM " . FORUMS_TABLE . "
+			WHERE forum_id = " . $forum_id;
 		break;
 
 	case 'reply':
@@ -84,7 +86,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_TOPIC']);
 		}
 
-		$sql = 'SELECT t.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
+		$sql = 'SELECT t.*, f.forum_id, f.forum_name, f.parent_id, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE t.topic_id = ' . $topic_id . '
 				AND f.forum_id = t.forum_id';
@@ -98,7 +100,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_POST']);
 		}
 
-		$sql = 'SELECT t.*, p.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
+		$sql = 'SELECT t.*, p.*, f.forum_id, f.forum_name, f.parent_id, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . $post_id . '
 				AND t.topic_id = p.topic_id
@@ -184,14 +186,22 @@ if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $p
 	trigger_error($user->lang['CANNOT_EDIT_TIME']);
 }
 
+// Do we want to edit our post ?
+if ( ($mode == 'edit') && (!$auth->acl_get('m_edit', 'a_', intval($forum_id))) )
+{
+	if ( ($user->data['user_id'] != $poster_id) )
+	{
+		trigger_error($user->lang['USER_CANNOT_EDIT']);
+	}
+}
+
 // PERMISSION CHECKS
 // -----------------
-
 
 // --------------
 // PROCESS SUBMIT
 
-if (isset($_REQUEST['post']))
+if ($submit)
 {
 	// If replying/quoting and last post id has changed
 	// give user option of continuing submit or return to post
@@ -232,7 +242,7 @@ if (isset($_REQUEST['post']))
 		// Parse message
 		$bbcode_uid = (!empty($bbcode_uid)) ? $bbcode_uid : '';
 
-		if(($result = $parse_msg->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
+		if (($result = $parse_msg->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -270,7 +280,7 @@ if (isset($_REQUEST['post']))
 	// Parse subject
 	if (($subject = trim(htmlspecialchars(strip_tags($subject)))) == '' && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
 	{
-		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Empty_subject'];
+		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['EMPTY_SUBJECT'];
 	}
 
 	// Process poll options
@@ -284,15 +294,15 @@ if (isset($_REQUEST['post']))
 
 		if (sizeof($poll_options) == 1)
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Too_few_poll_options'];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['TOO_FEW_POLL_OPTIONS'];
 		}
 		else if (sizeof($poll_options) > intval($config['max_poll_options']))
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Too_many_poll_options'];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['TOO_MANY_POLL_OPTIONS'];
 		}
 		else if (sizeof($poll_options) < $poll_options_size)
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['No_delete_poll_options'];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['NO_DELETE_POLL_OPTIONS'];
 		}
 
 		$poll_subject = (!empty($poll_subject)) ? trim(htmlspecialchars(strip_tags($poll_subject))) : '';
@@ -305,20 +315,20 @@ if (isset($_REQUEST['post']))
 		$auth_option = '';
 		switch ($topic_type)
 		{
-			case POST_NEWS;
-				$auth_option = 'news';
+			case POST_NEWS:
+				$auth_option = 'NEWS';
 				break;
-			case POST_ANNOUNCE;
-				$auth_option = 'announce';
+			case POST_ANNOUNCE:
+				$auth_option = 'ANNOUNCE';
 				break;
-			case POST_STICKY;
-				$auth_option = 'sticky';
+			case POST_STICKY:
+				$auth_option = 'STICKY';
 				break;
 		}
 
 		if (!$auth->acl_gets('f_' . $auth_option, 'm_', 'a_', intval($forum_id)))
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['Cannot_post_' . $auth_option];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['CANNOT_POST_' . $auth_option];
 		}
 	}
 
@@ -534,35 +544,43 @@ if (isset($_REQUEST['post']))
 // -----------
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
 
-$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
-$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
+if ($mode != 'post')
+{
+	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
+	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 
-$match = array(
-	'#<!\-\- b \-\-><b>(.*?)</b><!\-\- b \-\->#s',
-	'#<!\-\- u \-\-><u>(.*?)</u><!\-\- u \-\->#s',
-	'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-	'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-	'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-	'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
-	'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-);
+	$match = array(
+		'#<!\-\- b \-\-><b>(.*?)</b><!\-\- b \-\->#s',
+		'#<!\-\- u \-\-><u>(.*?)</u><!\-\- u \-\->#s',
+		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+		'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
+		'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+	);
 
-$replace = array(
-	'[b]\1[/b]',
-	'[u]\1[/u]',
-	'\1',
-	'\1',
-	'\1',
-	$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
-	'\1',
-);
+	$replace = array(
+		'[b]\1[/b]',
+		'[u]\1[/u]',
+		'\1',
+		'\1',
+		'\1',
+		$server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '\1', trim($config['script_path'])) . '/\1',
+		'\1',
+	);
 
-$post_text = preg_replace($match, $replace, $post_text);
-$poll_options = preg_replace($match, $replace, $poll_options);
+	if (empty($censors))
+	{
+		$censors = array();
+		obtain_word_list($censors);
+	}
+
+	$post_text = preg_replace($match, $replace, $post_text);
+	$poll_options = preg_replace($match, $replace, $poll_options);
+}
 
 // DECODE TEXT
 // -------------------
-
 
 // -----------------------------
 // MAIN POSTING PAGE BEGINS HERE
@@ -574,61 +592,34 @@ get_moderators($moderators, intval($forum_id));
 generate_smilies('inline');
 
 // Topic icons
-$s_topic_icons = false;
-if (!empty($enable_icons))
-{
-	// Grab icons
-	$icons = array();
-	obtain_icons($icons);
+$s_topic_icons = generate_topic_icons($mode, intval($enable_icons));
 
-	if (sizeof($icons))
-	{
-		$s_topic_icons = true;
-
-		foreach ($icons as $id => $data)
-		{
-			if ($data['display'])
-			{
-				$template->assign_block_vars('topic_icon', array(
-					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $config['icons_path'] . '/' . $data['img'],
-					'ICON_WIDTH'	=> $data['width'],
-					'ICON_HEIGHT' 	=> $data['height'],
-
-					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
-				);
-			}
-		}
-	}
-}
-
-// Topic type selection ... only for first post in topic?
+// Topic type selection ... only for first post in topic.
 $topic_type_toggle = '';
-if ($mode == 'post' || $mode == 'edit')
+if ( ($mode == 'post') || (($mode == 'edit') && (intval($post_id) == intval($topic_first_post_id))) )
 {
-	if ($auth->acl_gets('f_sticky', 'm_', 'a_', intval($forum_id)))
+	$topic_types = array(
+		'sticky' => array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
+		'announce' => array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT')
+	);
+	
+	@reset($topic_types);
+	while (list($auth_key, $topic_value) = each($topic_types))
 	{
-		$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . POST_STICKY . '"';
-		if (intval($topic_type) == POST_STICKY)
+		if ($auth->acl_gets('f_' . $auth_key, 'm_', 'a_', intval($forum_id)))
 		{
-			$topic_type_toggle .= ' checked="checked"';
+			$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . $topic_value['const'] . '"';
+			if (intval($topic_type) == $topic_value['const'])
+			{
+				$topic_type_toggle .= ' checked="checked"';
+			}
+			$topic_type_toggle .= ' /> ' . $user->lang[$topic_value['lang']] . '&nbsp;&nbsp;';
 		}
-		$topic_type_toggle .= ' /> ' . $user->lang['POST_STICKY'] . '&nbsp;&nbsp;';
-	}
-
-	if ($auth->acl_gets('f_announce', 'm_', 'a_', intval($forum_id)))
-	{
-		$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . POST_ANNOUNCE . '"';
-		if (intval($topic_type) == POST_ANNOUNCE)
-		{
-			$topic_type_toggle .= ' checked="checked"';
-		}
-		$topic_type_toggle .= ' /> ' . $user->lang['POST_ANNOUNCEMENT'] . '&nbsp;&nbsp;';
 	}
 
 	if ($topic_type_toggle != '')
 	{
-		$topic_type_toggle = $user->lang['POST_TOPIC_AS'] . ': <input type="radio" name="topic_type" value="' . POST_NORMAL .'"' . ((intval($topic_type) == POST_NORMAL) ? ' checked="checked"' : '') . ' /> ' . $user->lang['POST_NORMAL'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = (($mode == 'edit') ? $user->lang['CHANGE_TOPIC_TO'] : $user->lang['POST_TOPIC_AS']) . ': <input type="radio" name="topic_type" value="' . POST_NORMAL . '"' . ((intval($topic_type) == POST_NORMAL) ? ' checked="checked"' : '') . ' /> ' . $user->lang['POST_NORMAL'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 
@@ -654,6 +645,7 @@ switch ($mode)
 		$page_title = $user->lang['POST_TOPIC'];
 		break;
 
+	case 'quote':
 	case 'reply':
 		$page_title = $user->lang['POST_REPLY'];
 		$s_action .= '&amp;t=' . intval($topic_id);
@@ -665,10 +657,15 @@ switch ($mode)
 		break;
 }
 
-
 // Build navigation links
+$forum_data = array(
+	'parent_id' => intval($parent_id),
+	'forum_parents' => $forum_parents,
+	'forum_name' => $forum_name,
+	'forum_id' => intval($forum_id),
+	'forum_desc' => ''
+);
 generate_forum_nav($forum_data);
-
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
@@ -678,11 +675,11 @@ $template->assign_vars(array(
 	'USERNAME' 			=> $post_username,
 	'SUBJECT' 			=> (!empty($topic_title)) ? $topic_title : $post_subject,
 	'MESSAGE' 			=> trim($post_text),
-	'HTML_STATUS' 		=> ($html_status) ? $user->lang['HTML_is_ON'] : $user->lang['HTML_is_OFF'],
-	'BBCODE_STATUS' 	=> ($bbcode_status) ? sprintf($user->lang['BBCode_is_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCode_is_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
-	'SMILIES_STATUS' 	=> ($smilies_status) ? $user->lang['Smilies_are_ON'] : $user->lang['Smilies_are_OFF'],
-	'IMG_STATUS' 		=> ($img_status) ? $user->lang['Images_are_ON'] : $user->lang['Images_are_OFF'],
-	'FLASH_STATUS' 		=> ($flash_status) ? $user->lang['Flash_is_ON'] : $user->lang['Flash_is_OFF'],
+	'HTML_STATUS' 		=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
+	'BBCODE_STATUS' 	=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+	'SMILIES_STATUS' 	=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+	'IMG_STATUS' 		=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+	'FLASH_STATUS' 		=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'MODERATORS' 		=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
 
 	'L_POST_A' 				=> $page_title,
@@ -742,10 +739,8 @@ if ($auth->acl_gets('f_attach', 'm_edit', 'a_', $forum_id))
 	);
 }
 
-
 // Output page ...
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
@@ -831,7 +826,7 @@ function topic_review($topic_id, $is_inline_review = false)
 			if($poster_id == ANONYMOUS && $row['post_username'] != '')
 			{
 				$poster = $row['post_username'];
-				$poster_rank = $user->lang['Guest'];
+				$poster_rank = $user->lang['GUEST'];
 			}
 
 			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
@@ -840,7 +835,7 @@ function topic_review($topic_id, $is_inline_review = false)
 
 			if ($row['enable_smilies'])
 			{
-				$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+				$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
 			}
 
 			if (count($orig_word))
@@ -868,15 +863,15 @@ function topic_review($topic_id, $is_inline_review = false)
 	$db->sql_freeresult($result);
 
 	$template->assign_vars(array(
-		'L_MESSAGE' 	=> $user->lang['Message'],
-		'L_POSTED' 		=> $user->lang['Posted'],
-		'L_POST_SUBJECT'=> $user->lang['Post_subject'],
-		'L_TOPIC_REVIEW'=> $user->lang['Topic_review'])
+		'L_MESSAGE' 	=> $user->lang['MESSAGE'],
+		'L_POSTED' 		=> $user->lang['POSTED'],
+		'L_POST_SUBJECT'=> $user->lang['POST_SUBJECT'],
+		'L_TOPIC_REVIEW'=> $user->lang['TOPIC_REVIEW'])
 	);
 
 	if (!$is_inline_review)
 	{
-		$page_title = $user->lang['Topic_review'] . ' - ' . $topic_title;
+		$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(

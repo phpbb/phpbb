@@ -507,4 +507,43 @@ function generate_smilies($mode)
 	}
 }
 
+// Generate Topic Icons
+function generate_topic_icons($mode, $enable_icons)
+{
+	global $template, $config;
+
+	if (!$enable_icons)
+	{
+		return (false);
+	}
+	
+	$result = false;
+
+	// Grab icons
+	$icons = array();
+	obtain_icons($icons);
+
+	if (sizeof($icons))
+	{
+		$result = true;
+
+		foreach ($icons as $id => $data)
+		{
+			if ($data['display'])
+			{
+				$template->assign_block_vars('topic_icon', array(
+					'ICON_ID'		=> $id,
+					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
+					'ICON_WIDTH'	=> $data['width'],
+					'ICON_HEIGHT' 	=> $data['height'],
+
+					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
+				);
+			}
+		}
+	}
+
+	return ($result);
+}
+
 ?>

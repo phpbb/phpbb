@@ -195,7 +195,7 @@ function gen_forum_rules($mode, &$forum_id)
 	foreach ($rules as $rule)
 	{
 		$template->assign_block_vars('rules', array(
-			'RULE' => ($auth->acl_gets('f_' . $rule, 'm_', 'a_', $forum_id)) ? $user->lang['RULES_' . strtoupper($rule) . '_CAN'] : $user->lang['RULES_' . strtoupper($rule) . '_CANNOT'])
+			'RULE' => ($auth->acl_gets('f_' . $rule, 'm_', 'a_', intval($forum_id))) ? $user->lang['RULES_' . strtoupper($rule) . '_CAN'] : $user->lang['RULES_' . strtoupper($rule) . '_CANNOT'])
 		);
 	}
 
