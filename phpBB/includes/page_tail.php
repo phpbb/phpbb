@@ -47,7 +47,7 @@ else
 }
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0 CVS",
+	"PHPBB_VERSION" => "2.0 " . $board_config['version'],
 	"TRANSLATION_INFO" => ( isset($lang['TRANSLATION_INFO']) ) ? $lang['TRANSLATION_INFO'] : "", 
 	"ADMIN_LINK" => $admin_link)
 );

@@ -30,7 +30,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0 CVS", 
+	"PHPBB_VERSION" => "2.0 " . $board_config['version'], 
 	"TRANSLATION_INFO" => $lang['TRANSLATION_INFO'])
 );
 
