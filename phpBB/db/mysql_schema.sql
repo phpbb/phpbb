@@ -1,7 +1,7 @@
 #
 # phpBB2 - MySQL schema
 #
-# $id: mysql_schema.sql,v 1.10 2001/04/19 17:26:24 psotfx Exp $
+# $id:  Exp $
 #
 
 
@@ -46,7 +46,7 @@ CREATE TABLE phpbb_config (
    allow_bbcode tinyint(3),
    allow_sig tinyint(3),
    allow_namechange tinyint(3),
-   selected int(2) DEFAULT 0 NOT NULL,
+   selected int(2) DEFAULT '0' NOT NULL,
    posts_per_page int(11),
    hot_threshold int(11),
    topics_per_page int(11),
@@ -54,11 +54,11 @@ CREATE TABLE phpbb_config (
    override_themes tinyint(3),
    email_sig varchar(255),
    email_from varchar(100),
-   default_theme int(11) DEFAULT 1 NOT NULL,
+   default_theme int(11) DEFAULT '1' NOT NULL,
    default_lang varchar(255),
-   default_dateformat varchar(14) DEFAULT d M Y H:m NOT NULL,
-   system_timezone int(11) DEFAULT 0 NOT NULL,
-   sys_template varchar(100) DEFAULT Default NOT NULL,
+   default_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
+   system_timezone int(11) DEFAULT '0' NOT NULL,
+   sys_template varchar(100) DEFAULT 'Default' NOT NULL,
    PRIMARY KEY (config_id),
    UNIQUE selected (selected)
 );
@@ -112,7 +112,7 @@ CREATE TABLE phpbb_forums (
    forum_desc text,
    forum_access tinyint(3),
    cat_id int(11),
-   forum_order int(11) DEFAULT 1 NOT NULL,
+   forum_order int(11) DEFAULT '1' NOT NULL,
    forum_type tinyint(4),
    forum_posts int(11) NOT NULL,
    forum_topics tinyint(4) NOT NULL,
@@ -344,17 +344,17 @@ CREATE TABLE phpbb_users (
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
-   user_posts int(11) DEFAULT 0,
+   user_posts int(11) DEFAULT '0',
    user_attachsig tinyint(3),
    user_desmile tinyint(3),
    user_html tinyint(3),
    user_bbcode tinyint(3),
-   user_rank int(11) DEFAULT 0,
+   user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
-   user_level int(11) DEFAULT 1,
+   user_level int(11) DEFAULT '1',
    user_lang varchar(255),
-   user_timezone int(11) DEFAULT 0 NOT NULL,
-   user_dateformat varchar(14) DEFAULT d M Y H:m NOT NULL,
+   user_timezone int(11) DEFAULT '0' NOT NULL,
+   user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
    user_notify tinyint(3),
