@@ -477,8 +477,16 @@ if($total_topics || $total_announcements)
 			}
 			else
 			{
-				$folder = $images['folder'];
-				$folder_new = $images['folder_new'];
+				if($replies >= $board_config['hot_threshold'])
+				{
+					$folder = $images['folder_hot'];
+					$folder_new = $images['folder_new_hot'];
+				}
+				else
+				{
+					$folder = $images['folder'];
+					$folder_new = $images['folder_new'];
+				}
 			}
 
 			if(empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'])
