@@ -237,6 +237,12 @@ $lang['Config_explain'] = "The form below will allow you to customize all the ge
 $lang['Click_return_config'] = "Click %sHere%s to return to General Configuration";
 
 $lang['General_settings'] = "General Board Settings";
+$lang['Server_name'] = "Domain Name";
+$lang['Server_name_explain'] = "The domain name this board runs from";
+$lang['Script_path'] = "Script path";
+$lang['Script_path_explain'] = "The path where phpBB2 is located relative to the domain name";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "The port your server is running on, usually 80, only change if different";
 $lang['Site_name'] = "Site name";
 $lang['Site_desc'] = "Site description";
 $lang['Board_disable'] = "Disable board";
@@ -312,12 +318,13 @@ $lang['Sentbox_limits'] = "Max posts in Sentbox";
 $lang['Savebox_limits'] = "Max posts in Savebox";
 
 $lang['Cookie_settings'] = "Cookie settings"; 
-$lang['Cookie_settings_explain'] = "These control how the cookie sent to browsers is defined. In most cases the default should be sufficient. If you need to change these do so with care, incorrect settings can prevent users logging in.";
-$lang['Cookie_name'] = "Cookie name";
+$lang['Cookie_settings_explain'] = "These details define how cookies are sent to your users browsers. In most cases the default values for the cookie settings should be sufficient but if you need to change them do so with care, incorrect settings can prevent users logging in";
 $lang['Cookie_domain'] = "Cookie domain";
+$lang['Cookie_name'] = "Cookie name";
 $lang['Cookie_path'] = "Cookie path";
+$lang['Cookie_secure'] = "Cookie secure";
+$lang['Cookie_secure_explain'] = "If your server is running via SSL set this to enabled else leave as disabled";
 $lang['Session_length'] = "Session length [ seconds ]";
-$lang['Cookie_secure'] = "Cookie secure [ https ]";
 
 
 //
