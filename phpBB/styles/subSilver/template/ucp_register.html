@@ -54,6 +54,13 @@
 		<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
 	</tr>
 
+	<!-- BEGIN profile_fields -->
+	<tr> 
+		<td class="row1" width="35%"><b class="genmed">{profile_fields.LANG_NAME}: </b><!-- IF profile_fields.LANG_EXPLAIN --><br /><span class="gensmall">{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></td>
+		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall" style="color:red">{profile_fields.ERROR}</span><!-- ENDIF --></td>
+	</tr>
+	<!-- END profile_fields -->
+
 	<!-- IF S_CONFIRM_CODE -->
 	<tr> 
 		<th colspan="2" height="28" valign="middle">{L_CONFIRMATION}</th>
