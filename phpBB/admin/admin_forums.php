@@ -33,6 +33,22 @@ if($setmodules==1)
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
 
+$forum_auth_ary = array(
+	"auth_view" => AUTH_ALL, 
+	"auth_read" => AUTH_ALL, 
+	"auth_post" => AUTH_ALL, 
+	"auth_reply" => AUTH_ALL, 
+	"auth_edit" => AUTH_REG, 
+	"auth_delete" => AUTH_REG, 
+	"auth_sticky" => AUTH_REG, 
+	"auth_announce" => AUTH_MOD, 
+	"auth_vote" => AUTH_REG, 
+	"auth_pollcreate" => AUTH_REG
+);
+
+//
+// Mode setting
+//
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
@@ -352,9 +368,21 @@ if( !empty($mode) )
 			$max_id = $row['max_id'];
 			$next_id = $max_id + 1;
 
+			//
+			// Default permissions of public :: 
+			//
+			$field_sql = "";
+			$value_sql = "";
+			while( list($field, $value) = each($forum_auth_ary) )
+			{
+				$field_sql .= ", $field";
+				$value_sql .= ", $value";
+
+			}
+
 			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable)
-				VALUES ('" . $next_id . "', '" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . ")";
+			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable" . $field_sql . ")
+				VALUES ('" . $next_id . "', '" . $HTTP_POST_VARS['forumname'] . "', " . intval($HTTP_POST_VARS['cat_id']) . ", '" . $HTTP_POST_VARS['forumdesc'] . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . $value_sql . ")";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
