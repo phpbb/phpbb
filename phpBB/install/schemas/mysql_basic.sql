@@ -81,6 +81,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '2.0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_last_gc', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
+
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20020430]');
 
 
