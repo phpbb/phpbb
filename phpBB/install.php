@@ -116,6 +116,12 @@ $available_dbms = array(
 	)
 );
 
+//
+// Uncomment the following line to completely disable the ftp option...
+//
+
+// define('NO_FTP', true);
+
 /***************************************************************************
 *		
 *						End Install Customization Section
@@ -150,6 +156,9 @@ $admin_pass1 = ( !empty($HTTP_POST_VARS['admin_pass1']) ) ? $HTTP_POST_VARS['adm
 $admin_pass2 = ( !empty($HTTP_POST_VARS['admin_pass2']) ) ? $HTTP_POST_VARS['admin_pass2'] : "";
 
 $table_prefix = ( !empty($HTTP_POST_VARS['prefix']) ) ? $HTTP_POST_VARS['prefix'] : "";
+$ftp_path = ( !empty($HTTP_POST_VARS['ftp_path']) ) ? $HTTP_POST_VARS['ftp_path'] : "";
+$ftp_user = ( !empty($HTTP_POST_VARS['ftp_user']) ) ? $HTTP_POST_VARS['ftp_user'] : "";
+$ftp_pass = ( !empty($HTTP_POST_VARS['ftp_pass']) ) ? $HTTP_POST_VARS['ftp_pass'] : "";
 
 include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
 include($phpbb_root_path.'includes/constants.'.$phpEx);
@@ -198,7 +207,7 @@ if( defined("PHPBB_INSTALLED") )
 	$template->pparse('body');
 	exit;
 }
-else if( !empty($HTTP_POST_VARS['send_file']) )
+else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1 )
 {
 	header("Content-Type: text/x-delimtext; name=\"config.php\"");
 	header("Content-disposition: attachment; filename=config.php");
@@ -211,6 +220,116 @@ else if( !empty($HTTP_POST_VARS['send_file']) )
 	echo $HTTP_POST_VARS['config_data'];
 
 	exit;
+}
+else if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 2 )
+{
+	//
+	// Ok we couldn't write the config file so let's try ftping it.
+	//
+	if ( get_magic_quotes_gpc() )
+	{
+		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	}
+	$s_hidden_fields = '<input type="hidden" name="config_data" value="'.htmlspecialchars($HTTP_POST_VARS['config_data']).'" />';
+	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
+	$template->assign_block_vars("ftp_file", array());
+	$template->assign_block_vars("common_install", array());
+	$template->assign_vars(array(
+				"L_INSTRUCTION_TEXT" => $lang['ftp_instructs'],
+				"L_FTP_INFO" => $lang['ftp_info'],
+				"L_FTP_PATH" => $lang['ftp_path'],
+				"L_FTP_PASS" => $lang['ftp_password'],
+				"L_FTP_USER" => $lang['ftp_username'],
+				"L_SUBMIT" => $lang['Transfer_config'],
+				"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+				"S_FORM_ACTION" => "install.$phpEx")
+	);
+	$template->pparse("body");
+	exit;
+}
+else if( !empty($HTTP_POST_VARS['ftp_file']) )
+{
+	//
+	// Here we'll actually send the file...
+	//
+	if ( get_magic_quotes_gpc() )
+	{
+		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	}
+	$conn_id = ftp_connect('localhost');
+	$login_result = ftp_login($conn_id, "$ftp_user", "$ftp_pass");
+	if( (!$conn_id) || (!$login_result) )
+	{
+		//
+		// Error couldn't get connected... Go back to option to send file...
+		//
+		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
+		$template->assign_block_vars("common_install", array());
+		if ( $dbms == 'odbc' )
+		{
+			//
+			// Output the instruction_textions for the odbc...
+			//
+			$s_hidden_fields .= '<input type="hidden" name="install_step" value="3" />';
+			$lang['NoFTP_config'] = $lang['ODBC_Instructs'] . '<br />' . $lang['NoFTP_config'];	
+		}
+		$template->assign_vars(array(
+			"L_INSTRUCTION_TEXT" => $lang['NoFTP_config'],
+			"L_SUBMIT" => $lang['Download_config'],
+			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_FORM_ACTION" => "install.$phpEx")
+		);
+		$template->pparse('body');
+		exit();
+	}
+	else
+	{
+		//
+		// Write out a temp file...
+		//
+		$tmpfname = tempnam('/tmp', 'cfg');
+		@unlink($tmpfname); // unlink for safety on php4.0.3+
+		$fp = @fopen($tmpfname, 'w');
+		@fwrite($fp, $HTTP_POST_VARS['config_data']);
+		@fclose($fp);
+		//
+		// Now ftp it across.
+		//
+		@ftp_chdir($conn_id, $ftp_dir);
+		$res = ftp_put($conn_id, 'config.php', $tmpfname, FTP_ASCII);
+		@ftp_quit($conn_id);
+		unlink($tmpfname);
+		
+		//
+		// Ok we are basically done with the install process let's go on 
+		// and let the user configure their board now.
+		// We are going to do this by calling the admin_board.php from the
+		// normal board admin section.
+		//
+		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/" />';
+		$s_hidden_fields .= '<input type="hidden" name="submit" value="Login" />';
+		if ( $dbms == 'odbc' )
+		{
+			//
+			// Output the instruction_textions for the odbc...
+			//
+			$lang['Inst_Step_2'] = $lang['ODBC_Instructs'] . '<br />' . $lang['Inst_Step_2'];
+		}
+		$template->assign_block_vars("common_install", array());
+		$template->assign_vars(array(
+			"L_INSTRUCTION_TEXT" => $lang['Inst_Step_2'],
+			"L_SUBMIT" => $lang['Finish_Install'],
+
+			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_FORM_ACTION" => "login.$phpEx")
+		);
+		
+		$template->pparse('body');
+		exit();
+	}
 }
 else if( empty($install_step) || $admin_pass1 != $admin_pass2 || $dbhost == "" )
 {
@@ -450,16 +569,29 @@ else
 			// to get around that...
 			//
 			$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';			
+			if( extension_loaded('ftp') && !defined('NO_FTP') )
+			{
+				$template->assign_block_vars('ftp_option', array());
+				$lang['Unwriteable_config'] .= '<p>'.$lang['ftp_option'].'</p>';
+				$template->assign_vars(array(
+					"L_CHOOSE_FTP" => $lang['ftp_choose'],
+					"L_ATTEMPT_FTP" => $lang['Attempt_ftp'],
+					"L_SEND_FILE" => $lang['Send_file'])
+				);
+			}
+			else
+			{
+				$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
+			}
 			if ( $dbms == 'odbc' )
 			{
 				//
 				// Output the instruction_textions for the odbc...
 				//
-				$template->assign_block_vars("common_install", array());
+				// $template->assign_block_vars("common_install", array());
 	
 				$s_hidden_fields .= '<input type="hidden" name="install_step" value="3" />';
-				$lang['Unwritable_config'] = $lang['ODBC_Instructs'] . '<br />' . $lang['Unwritable_config'];	
+				$lang['Unwriteable_config'] = $lang['ODBC_Instructs'] . '<p>' . $lang['Unwriteable_config'] . '</p>';	
 			}
 
 			$template->assign_vars(array(

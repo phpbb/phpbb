@@ -177,9 +177,39 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 						<th>{L_ERROR_TITLE}</th>
 					</tr>
 					<tr>
-						<td class="row1" align="center"><span class="gen">{L_ERROR}</span></th>
+						<td class="row1" align="center"><span class="gen">{L_ERROR}</span></td>
 					</tr>
 					<!-- END error_install -->
+					<!-- BEGIN ftp_file -->
+					<tr>
+						<th colspan="2">{L_FTP_INFO}</th>
+					</tr>
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_FTP_PATH}</span></td>
+						<td class="row2"><input type="text" name="ftp_dir"></td>
+					</tr>
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_FTP_USER}</span></td>
+						<td class="row2"><input type="text" name="ftp_user"></td>
+					</tr>
+					<tr>
+						<td class="row1" align="right"><span class="gen">{L_FTP_PASS}</span></td>
+						<td class="row2"><input type="password" name="ftp_pass"></td>
+					</tr>
+					<!-- END ftp_file -->
+					<!-- BEGIN ftp_option -->
+					<tr>
+						<th colspan="2">{L_CHOOSE_FTP}</th>
+					</tr>
+					<tr>
+						<td class="row1" align="right" width="50%"><span class="gen">{L_ATTEMPT_FTP}</span></td>
+						<td class="row2"><input type="radio" name="send_file" value="2"></td>
+					</tr>
+					<tr>
+						<td class="row1" align="right" width="50%"><span class="gen">{L_SEND_FILE}</span></td>
+						<td class="row2"><input type="radio" name="send_file" value="1"></td>
+					</tr>
+					<!-- END ftp_option -->
 					<!-- BEGIN common_install -->
 					<tr> 
 					  <td class="cat" align="center" colspan="2">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" value="{L_SUBMIT}" /></td>
