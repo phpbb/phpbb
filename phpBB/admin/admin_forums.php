@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 
+define('IN_PHPBB', 1);
+
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
@@ -32,6 +34,7 @@ if( !empty($setmodules) )
 //
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
+include($phpbb_root_dir . 'includes/functions_admin.'.$phpEx);
 
 $forum_auth_ary = array(
 	"auth_view" => AUTH_ALL, 

@@ -20,7 +20,12 @@
  *
  ***************************************************************************/
 
-define(HEADER_INC, TRUE);
+if ( !defined('IN_PHPBB') )
+{
+	die("Hacking attempt");
+}
+
+define('HEADER_INC', true);
 
 //
 // gzip_compression

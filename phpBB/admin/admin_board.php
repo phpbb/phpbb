@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+define('IN_PHPBB', 1);
+
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
@@ -23,9 +25,10 @@ if( !empty($setmodules) )
 //
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
+include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
 
 //
-//
+// Pull all config data
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
