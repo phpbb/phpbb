@@ -357,18 +357,9 @@ class ucp extends user
 	{
 		global $config, $db, $user;
 
-		$avatar = explode(':', $user->data['user_avatar']);
-		$avatar_type = array_shift($avatar);
-
-		if ($avatar_type != 'upload')
+		if (@file_exists('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']))
 		{
-			return;
-		}
-
-		$avatar = implode('', $avatar);
-		if (@file_exists('./' . $config['avatar_path'] . '/' . $avatar))
-		{
-			@unlink('./' . $config['avatar_path'] . '/' . $avatar);
+			@unlink('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']);
 		}
 	}
 
@@ -387,11 +378,16 @@ class ucp extends user
 			return true;
 		}
 
-		if (!($data['width'] || $data['height']) && ($config['avatar_max_width'] || $config['avatar_max_height']))
+		if ((!($data['width'] || $data['height']) || $data['remotelink'] != $user->data['user_avatar']) && ($config['avatar_max_width'] || $config['avatar_max_height']))
 		{
 			list($width, $height) = @getimagesize($data['remotelink']);
 
-			if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
+			if (!$width || !$height)
+			{
+				$this->error[] = $user->lang['AVATAR_NO_SIZE'];
+				return true;
+			}
+			else if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 			{
 				$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
 				return true;
@@ -526,6 +522,7 @@ class ucp extends user
 		$filesize = filesize('./' . $config['avatar_path'] . '/' . $data['filename']);
 		if (!$filesize || $filesize > $config['avatar_filesize'])
 		{
+			@unlink('./' . $config['avatar_path'] . '/' . $data['filename']);
 			$this->error[] =  sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
 			return true;
 		}

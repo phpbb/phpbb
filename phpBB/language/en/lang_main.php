@@ -720,7 +720,8 @@ $lang = array(
 	'AVATAR_URL_INVALID'	=> 'The URL you specified is invalid.', 
 	'AVATAR_NOT_UPLOADED'	=> 'Avatar could not be uploaded.', 
 	'AVATAR_WRONG_SIZE'		=> 'The avatar must be at most %1$d pixels wide and %2$d pixels high.', 
-	'AVATAR_WRONG_FILESIZE'	=> 'The avatar must be between 0 and %d bytes.',
+	'AVATAR_WRONG_FILESIZE'	=> 'The avatar must be between 0 and %d bytes.', 
+	'AVATAR_NO_SIZE'		=> 'Could not obtain width or height of linked avatar, please enter them manually.', 
 
 	'PROFILE_UPDATED'	=> 'Your profile has been updated.', 
 

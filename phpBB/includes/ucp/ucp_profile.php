@@ -361,6 +361,7 @@ class ucp_profile extends ucp
 							)
 						);
 						$data = $this->normalise_data($_POST, $normalise);
+
 						$this->avatar_upload($data);
 					}
 					else if (!empty($_POST['remotelink']))
@@ -373,12 +374,12 @@ class ucp_profile extends ucp
 							)
 						);
 						$data = $this->normalise_data($_POST, $normalise);
+
 						$this->avatar_remote($data);
 					}
 					else if (!empty($_POST['delete']))
 					{
 						$data['filename'] = $data['width'] = $data['height'] = '';
-						$this->avatar_delete();
 					}
 
 					if (!sizeof($this->error))
@@ -395,8 +396,11 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						// Delete an existing avatar if present
-						$this->avatar_delete();
+						// Delete old avatar if present
+						if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
+						{
+							$this->avatar_delete();
+						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
@@ -450,7 +454,7 @@ class ucp_profile extends ucp
 					'AVATAR'		=> $avatar_img, 
 					'AVATAR_SIZE'	=> $config['avatar_filesize'], 
 					'AVATAR_URL'	=> (isset($uploadurl)) ? $uploadurl : '', 
-					'AVATAR_REMOTE'	=> (isset($remotelink)) ? $remotelink : (($user->data['user_avatar_type'] == AVATAR_REMOTE) ? $avatar_img : ''), 
+					'AVATAR_REMOTE'	=> (isset($remotelink)) ? $remotelink : (($user->data['user_avatar_type'] == AVATAR_REMOTE) ? $user->data['user_avatar'] : ''), 
 					'WIDTH'			=> (isset($width)) ? $width : $user->data['user_avatar_width'], 
 					'HEIGHT'		=> (isset($height)) ? $height : $user->data['user_avatar_height'], 
 
