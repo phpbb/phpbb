@@ -3,7 +3,7 @@
  *                            functions_admin.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
+ *   copyright            : © 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
@@ -1358,18 +1358,19 @@ function cache_moderators()
 	global $db;
 
 	// Clear table
-	$db->sql_query('TRUNCATE ' . MODERATOR_TABLE);
+	$sql = (SQL_LAYER != 'sqlite') ? 'TRUNCATE ' . MODERATOR_TABLE : 'DELETE FROM ' . MODERATOR_TABLE;
+	$db->sql_query($sql);
 
 	// Holding array
 	$m_sql = array();
 	$user_id_sql = '';
 
-	$sql = "SELECT a.forum_id, u.user_id, u.username
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
+	$sql = 'SELECT a.forum_id, u.user_id, u.username
+		FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_USERS_TABLE . ' a,  ' . USERS_TABLE . "  u
 		WHERE o.auth_option = 'm_'
 			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_setting = " . ACL_YES . " 
-			AND u.user_id = a.user_id";
+			AND a.auth_setting = " . ACL_YES . ' 
+			AND u.user_id = a.user_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1382,8 +1383,8 @@ function cache_moderators()
 	// Remove users who have group memberships with DENY moderator permissions
 	if ($user_id_sql)
 	{
-		$sql = "SELECT a.forum_id, ug.user_id
-			FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . USER_GROUP_TABLE . "  ug
+		$sql = 'SELECT a.forum_id, ug.user_id
+			FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . USER_GROUP_TABLE . "  ug
 			WHERE o.auth_option = 'm_'
 				AND a.auth_option_id = o.auth_option_id
 				AND a.auth_setting = " . ACL_NO . " 
@@ -1398,13 +1399,13 @@ function cache_moderators()
 		$db->sql_freeresult($result);
 	}
 
-	$sql = "SELECT a.forum_id, g.group_name, g.group_id
-		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
+	$sql = 'SELECT a.forum_id, g.group_name, g.group_id
+		FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . GROUPS_TABLE . "  g
 		WHERE o.auth_option = 'm_'
 			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_setting = " . ACL_YES . "
+			AND a.auth_setting = " . ACL_YES . '
 			AND g.group_id = a.group_id
-			AND g.group_type NOT IN (" . GROUP_HIDDEN . ", " . GROUP_SPECIAL . ")";
+			AND g.group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1421,23 +1422,21 @@ function cache_moderators()
 			case 'mysql4':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) 
 					VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
-				$result = $db->sql_query($sql);
-				$db->sql_freeresult($result);
+				$db->sql_query($sql);
 				break;
 
 			case 'mssql':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
 					VALUES ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
-				$result = $db->sql_query($sql);
-				$db->sql_freeresult($result);
+				$db->sql_query($sql);
 				break;
 
 			default:
 				foreach ($m_sql as $k => $sql)
 				{
-					$result = $db->sql_query('INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) 
-						VALUES ($sql)");
-					$db->sql_freeresult($result);
+					$sql = 'INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) 
+						VALUES ($sql)";
+					$db->sql_query($sql);
 				}
 		}
 	}
@@ -1589,284 +1588,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	return;
 }
 
-// Event system
-// Outputs standard event definition table, storing passed
-// data in hidden fields
-function event_define()
-{
-	global $phpEx, $db, $auth, $user;
-
-	$arguments = func_get_args();
-
-	$form_action = array_shift($arguments);
-
-	$s_hidden_fields = '';
-	foreach ($arguments as $arg)
-	{
-		foreach ($arg as $name => $value)
-		{
-			if (is_array($value))
-			{
-				foreach ($value as $sub_name => $sub_value)
-				{
-					$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $sub_name .']" value="' . $sub_value . '" />';
-				}
-			}
-			else
-			{
-				$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $value . '" />';
-			}
-		}
-	}
-	unset($arguments);
-
-	$on_select = '<select name="evt_on[]">';
-	$on_list = array('days' => 'DAYS_REG', 'posts' => 'POST_COUNT', 'karma' => 'KARMA');
-	foreach ($on_list as $value => $text)
-	{
-		$on_select .= '<option value="' . $value . '">' . $user->lang['EVT_' . $text] . '</option>';
-	}
-	$on_select .= '</select>';
-
-	$andor_select = '<select name="evt_andor[]"><option value="">-----</option>';
-	$andor_list = array('and' => 'AND', 'or' => 'OR');
-	foreach ($andor_list as $value => $text)
-	{
-		$andor_select .= '<option value="' . $value . '">' . $user->lang['EVT_' . $text] . '</option>';
-	}
-	$andor_select .= '</select>';
-
-	$cond_select = '<select name="evt_cond[]">';
-	$cond_list = array('lt' => '&lt;', 'eq' => '=', 'gt' => '&gt;');
-	foreach ($cond_list as $value => $text)
-	{
-		$cond_select .= '<option value="' . $value . '">' . $text . '</option>';
-	}
-	$cond_select .= '</select>';
-
-	$forum_list = '<option value="">---------------</option>' . make_forum_select(false, false, false);
-
-	page_header($user->lang['EVT_DEFINE']);
-
-?>
-
-<h1><?php echo $user->lang['EVT_DEFINE']; ?></h1>
-
-<p><?php echo $user->lang['EVT_DEFINE_EXPLAIN']; ?></p>
-
-<form action="<?php echo $form_action . '.' . $phpEx; ?>" method="post"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th colspan="2">&nbsp;</th>
-	</tr>
-	<tr>
-		<td class="row2"><table width="100%" cellspacing="5" cellpadding="0" border="0">
-			<tr>
-				<td></td>
-				<td><?php echo $on_select; ?></td>
-				<td><?php echo $cond_select; ?></td>
-				<td><input type="text" name="evt_value[]" size="4" /></td>
-				<td><?php echo $user->lang['EVT_IN']; ?></td>
-				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
-			</tr>
-			<tr>
-				<td><?php echo $andor_select; ?></td>
-				<td><?php echo $on_select; ?></td>
-				<td><?php echo $cond_select; ?></td>
-				<td><input type="text" name="evt_value[]" size="4" /></td>
-				<td><?php echo $user->lang['EVT_IN']; ?></td>
-				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
-			</tr>
-			<tr>
-				<td><?php echo $andor_select; ?></td>
-				<td><?php echo $on_select; ?></td>
-				<td><?php echo $cond_select; ?></td>
-				<td><input type="text" name="evt_value[]" size="4" /></td>
-				<td><?php echo $user->lang['EVT_IN']; ?></td>
-				<td><select name="evt_f[]"><?php echo $forum_list; ?></select></td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input type="hidden" name="runas" value="evt" /><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
-	</tr>
-</table>
-
-<?php echo $s_hidden_fields; ?></form>
-
-<?php
-
-	page_footer();
-
-	exit;
-}
-
-// Takes input data and creates relevant Event
-function event_create()
-{
-	global $phpEx, $db, $auth, $user;
-
-	$arguments = func_get_args();
-
-	$evt_code = array_shift($arguments);
-	$type = array_shift($arguments);
-	$type_ids = array_shift($arguments);
-
-	$evt_data = '';
-	foreach ($arguments as $arg)
-	{
-		foreach ($arg as $name => $value)
-		{
-			if (is_array($value))
-			{
-				$evt_data .= "\$evt_$name = array();";
-				foreach ($value as $sub_name => $sub_value)
-				{
-					$evt_data .= '$evt_' . '$name[\'' . $sub_name . '\'] = "' . $sub_value .'";'; // Don't alter this line!
-				}
-			}
-			else
-			{
-				$evt_data .= "\$evt_$name = \"$value\";";
-			}
-		}
-	}
-	unset($arguments);
-
-	$event_sql = $having_sql = '';
-	$evt_andor = $evt_cond = $evt_on = $evt_value = '';
-	for ($i = 0; $i < sizeof($_POST['evt_on']); $i++)
-	{
-		if (empty($_POST['evt_on'][$i]) || empty($_POST['evt_value'][$i]))
-		{
-			continue;
-		}
-
-		switch ($_POST['evt_andor'][$i - 1])
-		{
-			case 'or':
-				$event_sql .= ' OR ';
-				$evt_andor .= 'or,';
-				break;
-			case 'and':
-				$event_sql .= ' AND ';
-				$evt_andor .= 'and,';
-				break;
-			default:
-				$event_sql .= ' AND (';
-				$evt_andor .= 'and,';
-		}
-
-		switch ($_POST['evt_cond'][$i])
-		{
-			case 'lt':
-				$event_cond_sql = ($_POST['evt_on'][$i] == 'days') ? '>' : '<';
-				break;
-			case 'eq':
-				$event_cond_sql = '=';
-				break;
-			case 'gt':
-				$event_cond_sql = ($_POST['evt_on'][$i] == 'days') ? '<' : '>';
-				break;
-		}
-		$evt_cond .= $_POST['evt_cond'][$i] . ',';
-
-		switch ($_POST['evt_on'][$i])
-		{
-			case 'days':
-				$event_sql .= 'u.user_regdate ' . $event_cond_sql . ' \' . (time() - ' . (intval($_POST['evt_value'][$i]) * 3600 * 24) . ') . \' ';
-				break;
-
-			case 'posts':
-				if (empty($_POST['evt_f'][$i]))
-				{
-					$event_sql .= 'u.post_count ' . $event_cond_sql . ' ' . intval($_POST['evt_value'][$i]) . ' ';
-				}
-				else
-				{
-					$event_sql .= '(p.poster_id = u.user_id AND p.forum_id = ' . intval($_POST['evt_f'][$i]) . ') ';
-					$having_sql = ' GROUP BY p.poster_id HAVING COUNT(p.post_id) > ' . intval($_POST['evt_value'][$i]);
-					$from_sql = ', \' . POSTS_TABLE . \' p';
-				}
-				break;
-
-			case 'karma':
-				$event_sql .= 'u.user_karma ' . $event_cond_sql . ' ' . intval($_POST['evt_value'][$i]) . ' ';
-				break;
-
-		}
-		$evt_on .= $_POST['evt_on'][$i] . ','; 
-		$evt_value .= $_POST['evt_value'][$i] . ',';
-	}
-
-	$sql = 'SELECT u.user_id FROM \' . USERS_TABLE . \' u' . $from_sql;
-	switch ($type)
-	{
-		case 'user':
-			$sql .= ' WHERE u.user_id IN (' . implode(', ', preg_replace('#^[\s]*?([0-9])+[\s]*?$#', '\1', $type_ids)) . ')';
-			break;
-
-		case 'group':
-			$sql .= ', \' . USER_GROUP_TABLE . \' ug WHERE ug.group_id IN (' . implode(', ', preg_replace('#^[\s]*?([0-9]+)[\s]*?$#', '\1', $type_ids)) . ') AND u.user_id = ug.user_id';
-			break;
-	}
-
-	$evt_sql = "\$sql = '" . $sql . $event_sql . " ) " . $having_sql . "';";
-
-	$sql = "INSERT INTO phpbb_22x_events (event_type, event_trigger, event_cond, event_value, event_combine, event_sql, event_code, event_data) VALUES ('$type', '$evt_on', '$evt_cond', '$evt_value', '$evt_andor', '" . $db->sql_escape($evt_sql) . "', '" . $db->sql_escape($evt_code) . "', '" . $db->sql_escape($evt_data) . "')";
-	$db->sql_query($sql);
-
-	trigger_error($user->lang['EVT_CREATED']);
-}
-
-function event_execute($mode)
-{
-	global $db;
-
-	$sql = "SELECT event_sql, event_code, event_data 
-		FROM phpbb_22x_events 
-		WHERE event_trigger LIKE '%$mode%'";
-	$result = $db->sql_query($sql);
-
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$event_sql = $event_data = $event_code = array();
-		do
-		{
-			$db->sql_return_on_error(true);
-			if (empty($row['event_sql']) || empty($row['event_data']) || empty($row['event_code']))
-			{
-				continue;
-			}
-
-			$sql = '';
-			eval($row['event_sql']);
-			$evt_result = $db->sql_query($sql);
-
-			if ($evt_row = $db->sql_fetchrow($evt_result))
-			{
-				$user_id_ary = array();
-
-				do
-				{
-					$user_id_ary[] = $evt_row['user_id'];
-				}
-				while ($evt_row = $db->sql_fetchrow($evt_result));
-				unset($evt_row);
-
-//				eval($row['event_data']);
-//				eval($row['event_code']);
-			}
-			$db->sql_freeresult($evt_result);
-			$db->sql_return_on_error(false);
-		}
-		while ($row = $db->sql_fetchrow($result));
-
-	}
-	$db->sql_freeresult($result);
-
-	return;
-}
-
 // Extension of auth class for changing permissions
 if (class_exists('auth'))
 {
@@ -1893,8 +1614,8 @@ if (class_exists('auth'))
 				}
 			}
 
-			$sql = "SELECT auth_option_id, auth_option
-				FROM " . ACL_OPTIONS_TABLE;
+			$sql = 'SELECT auth_option_id, auth_option
+				FROM ' . ACL_OPTIONS_TABLE;
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1905,7 +1626,7 @@ if (class_exists('auth'))
 
 			$sql_forum = 'AND a.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
 
-			$sql = ($ug_type == 'user') ? "SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.group_id = $ug_id";
+			$sql = ($ug_type == 'user') ? 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.user_id = $ug_id" : 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.group_id = $ug_id";
 			$result = $db->sql_query($sql);
 
 			$cur_auth = array();
@@ -1965,10 +1686,11 @@ if (class_exists('auth'))
 						{
 							case 'mysql':
 							case 'mysql4':
-								$sql = implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
+								$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
 								break;
 
 							case 'mssql':
+							case 'sqlite':
 								$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 								break;
 
@@ -1983,7 +1705,7 @@ if (class_exists('auth'))
 
 						if ($sql != '')
 						{
-							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES $sql";
+							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) $sql";
 							$db->sql_query($sql);
 						}
 						break;
@@ -2116,9 +1838,9 @@ if (class_exists('auth'))
 							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
 							break;
 						default:
-							$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
+							$sql = 'INSERT INTO ' . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
 								VALUES ($option, " . $type_sql[$type] . ")";
-							$result = $db->sql_query($sql);
+							$db->sql_query($sql);
 							$sql = '';
 					}
 				}
@@ -2126,9 +1848,9 @@ if (class_exists('auth'))
 
 			if ($sql != '')
 			{
-				$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
+				$sql = 'INSERT INTO ' . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
 					VALUES $sql";
-				$result = $db->sql_query($sql);
+				$db->sql_query($sql);
 			}
 
 			$cache->destroy('acl_options');
@@ -2136,132 +1858,6 @@ if (class_exists('auth'))
 	}
 }
 
-if (class_exists('template'))
-{
-	class template_admin extends template
-	{
-		function compile_cache_clear($template = false)
-		{
-			global $phpbb_root_path;
 
-			$template_list = array();
-
-			if (!$template)
-			{
-				$dp = opendir($phpbb_root_path . $this->cache_root);
-				while ($dir = readdir($dp)) 
-				{
-					$template_dir = $phpbb_root_path . $this->cache_root . $dir;
-					if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
-					{
-						array_push($template_list, $dir);
-					}
-				}
-				closedir($dp);
-			}
-			else
-			{
-				array_push($template_list, $template);
-			}
-
-			foreach ($template_list as $template)
-			{
-				$dp = opendir($phpbb_root_path . $this->cache_root . $template);
-				while ($file = readdir($dp))
-				{
-					unlink($phpbb_root_path . $this->cache_root . $file);
-				}
-				closedir($dp);
-			}
-
-			return;
-		}
-
-		function compile_cache_show($template)
-		{
-			global $phpbb_root_path;
-
-			$template_cache = array();
-
-			$template_dir = $phpbb_root_path . $this->cache_root . $template;
-			$dp = opendir($template_dir);
-			while ($file = readdir($dp))
-			{
-				if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
-				{
-					array_push($template_cache, $file);
-				}
-			}
-			closedir($dp);
-
-			return;
-		}
-
-		function decompile(&$_str, $savefile = false)
-		{
-			$match_tags = array(
-				'#<\?php\nif \(\$this\->security\(\)\) \{(.*)[ \n]*?\n\}\n\?>$#s', 
-				'#echo \'(.*?)\';#s', 
-
-				'#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\(\'.*?\'\);\n#s',
-				'#\/\/ (INCLUDE .*?)\n.?include(\'.*?\');[\n]?#s',
-
-				'#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#',
-				'#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#',
-				'#\/\/ (ELSE)\n\} else \{\n#',
-				'#[\n]?\/\/ (ENDIF)\n}#',
-
-				'#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#',
-				'#\}\}?\n\/\/ (END .*?)\n#',
-				'#\/\/ (BEGINELSE)[\n]+?\}\} else \{\n#',
-
-				'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(L_([A-Z0-9_])+?)\'\]\)\).*?\}\'\)\) \. \'#s', 
-
-				'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-			
-				'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-			);
-
-			$replace_tags = array(
-				'\1',
-				'\1', 
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'<!-- \1 -->',
-				'{\1}',
-				'{\1}',
-				'{\1\2\3}',
-			);
-
-			preg_match_all('#\/\/ PHP START\n(.*?)\n\/\/ PHP END\n#s', $_str, $matches);
-			$php_blocks = $matches[1];
-			$_str = preg_replace('#\/\/ PHP START\n(.*?)\/\/ PHP END\n#s', '<!-- PHP -->', $_str);
-
-			$_str = preg_replace($match_tags, $replace_tags, $_str);
-			$text_blocks = preg_split('#<!-- PHP -->#s', $_str);
-
-			$_str = '';
-			for ($i = 0; $i < count($text_blocks); $i++)
-			{
-				$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
-			}
-
-			$tmpfile = '';
-			if ($savefile)
-			{
-				$tmpfile = tmpfile();
-				fwrite($tmpfile, $_str);
-			}
-
-			return $_str;
-		}
-	}
-}
 
 ?>

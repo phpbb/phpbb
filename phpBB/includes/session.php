@@ -3,7 +3,7 @@
  *                                session.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2002 The phpBB Group
+ *   copyright            : © 2002 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
@@ -265,14 +265,7 @@ class session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			// Events ... ?
-//			do_events('days');
-
-			// First page ... ?
-//			if (!empty($this->data['user_firstpage']))
-//			{
-//				redirect($userdata['user_firstpage']);
-//			}
+			// Trigger EVENT_NEW_SESSION
 		}
 
 		return true;
@@ -509,7 +502,7 @@ class user extends session
 class auth
 {
 	var $founder = false;
-	var $acl = array('global' => '', 'local' => '');
+	var $acl = array();
 	var $option = array();
 	var $acl_options = array();
 
@@ -517,13 +510,11 @@ class auth
 	{
 		global $db, $cache;
 
-		$this->founder = ($userdata['user_founder']) ? true : false;
-
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
-			$sql = "SELECT auth_option, is_global, is_local
-				FROM " . ACL_OPTIONS_TABLE . "
-				ORDER BY auth_option_id";
+			$sql = 'SELECT auth_option, is_global, is_local
+				FROM ' . ACL_OPTIONS_TABLE . '
+				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
 
 			$global = $local = 0;
@@ -544,29 +535,23 @@ class auth
 			$this->acl_clear_prefetch();
 			$this->acl_cache($userdata);
 		}
-		else if (trim($userdata['user_permissions']) == '')
+		else if (!$userdata['user_permissions'])
 		{
 			$this->acl_cache($userdata);
 		}
 
-		$global_chars = ceil(sizeof($this->acl_options['global']) / 8);
-		$local_chars = ceil(sizeof($this->acl_options['local']) / 8) + 2;
-
-		for($i = 0; $i < $global_chars; $i++)
+		foreach (explode("\n", $userdata['user_permissions']) as $f => $seq)
 		{
-			$this->acl['global'] .= str_pad(decbin(ord($userdata['user_permissions']{$i})), 8, 0, STR_PAD_LEFT);
-		}
-
-		for ($i = $global_chars; $i < strlen($userdata['user_permissions']); $i += $local_chars)
-		{
-			$forum_id = (ord($userdata['user_permissions']{$i}) << 8) + ord($userdata['user_permissions']{$i + 1});
-			$this->acl['local'][$forum_id] = '';
-			for ($j = $i + 2; $j < $i + $local_chars; $j++)
+			if ($seq)
 			{
-				$this->acl['local'][$forum_id] .= str_pad(decbin(ord($userdata['user_permissions']{$j})), 8, 0, STR_PAD_LEFT);
+				$i = 0;
+				while ($subseq = substr($seq, $i, 6))
+				{
+					$this->acl[$f] .= str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT);
+					$i += 6;
+				}
 			}
 		}
-		unset($forums);
 
 		return;
 	}
@@ -578,19 +563,19 @@ class auth
 
 		if (!isset($cache[$f][$opt]))
 		{
-			$cache[$f][$opt] = FALSE;
+			$cache[$f][$opt] = false;
 			if (isset($this->acl_options['global'][$opt]))
 			{
-				$cache[$f][$opt] = $this->acl['global']{$this->acl_options['global'][$opt]};
+				$cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
 			}
 			if (isset($this->acl_options['local'][$opt]))
 			{
-				$cache[$f][$opt] |= $this->acl['local'][$f]{$this->acl_options['local'][$opt]};
+				$cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
 			}
 		}
 
 		// Needs to change ... check founder status when updating cache?
-		return ($this->founder) ? true : $cache[$f][$opt];
+		return $cache[$f][$opt];
 	}
 
 	function acl_getf($opt)
@@ -648,114 +633,104 @@ class auth
 	{
 		global $db;
 
+		$hold_ary = array();
 		// First grab user settings ... each user has only one setting for each
 		// option ... so we shouldn't need any ACL_NO checks ... he says ...
-		$sql = "SELECT ao.auth_option, a.forum_id, a.auth_setting
-			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
-			WHERE a.user_id = " . $userdata['user_id'] . "
-				AND ao.auth_option_id = a.auth_option_id";
+		$sql = 'SELECT ao.auth_option, a.forum_id, a.auth_setting
+			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
+			WHERE a.user_id = ' . $userdata['user_id'] . '
+				AND ao.auth_option_id = a.auth_option_id
+			ORDER BY a.forum_id, ao.auth_option';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$this->acl[$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
+			$hold_ary[$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
 		}
 		$db->sql_freeresult($result);
 
 		// Now grab group settings ... users can belong to multiple groups so we grab
 		// the minimum setting for all options. ACL_NO overrides ACL_YES so act appropriatley
-		$sql = "SELECT ao.auth_option, a.forum_id, MIN(a.auth_setting) as min_setting
-			FROM " . USER_GROUP_TABLE . " ug, " . ACL_OPTIONS_TABLE . " ao, " . ACL_GROUPS_TABLE . " a 
-			WHERE ug.user_id = " . $userdata['user_id'] . "
+		$sql = 'SELECT ao.auth_option, a.forum_id, MIN(a.auth_setting) as min_setting
+			FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a 
+			WHERE ug.user_id = ' . $userdata['user_id'] . '
 				AND a.group_id = ug.group_id
 				AND ao.auth_option_id = a.auth_option_id 
-			GROUP BY ao.auth_option, a.forum_id";
+			GROUP BY ao.auth_option, a.forum_id
+			ORDER BY a.forum_id, ao.auth_option';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!isset($this->acl[$row['forum_id']][$row['auth_option']]) || (isset($this->acl[$row['forum_id']][$row['auth_option']]) && $this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO))
+			if (!isset($hold_ary[$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['forum_id']][$row['auth_option']] !== ACL_NO))
 			{
-				$this->acl[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
+				$hold_ary[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 			}
 		}
 		$db->sql_freeresult($result);
 
-		if (is_array($this->acl))
+		// If this user is founder we're going to force fill the admin options ...
+		if ($userdata['user_founder'])
 		{
-			$global_bits = 8 * ceil(sizeof($this->acl_options['global']) / 8);
-			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8);
-			$local_hold = $global_hold = '';
-
-			foreach ($this->acl as $f => $auth_ary)
+			foreach ($this->acl_options['global'] as $opt => $id)
 			{
-				if (!is_array($auth_ary))
+				if (strstr($opt, 'a_'))
 				{
-					continue;
+					$hold_ary[0][$opt] = 1;
 				}
+			}
+		}
 
-				$holding = array();
-				$option_set = array();
+		$hold_str = &$userdata['user_permissions'];
+		if (is_array($hold_ary))
+		{
+			ksort($hold_ary);
 
-				if (!$f)
-				{
-					$len = $global_bits;
-					$ary_key = 'global';
-					$hold_str = 'global_hold';
-				}
-				else
-				{
-					$len = $local_bits;
-					$ary_key = 'local';
-					$hold_str = 'local_hold';
-				}
+			$last_f = 0;
+			foreach ($hold_ary as $f => $auth_ary)
+			{
+				$ary_key = (!$f) ? 'global' : 'local';
 
-
+				$bitstring = array();
 				foreach ($this->acl_options[$ary_key] as $opt => $id)
 				{
 					if (!empty($auth_ary[$opt]))
 					{
-						$holding[$id] = 1;
+						$bitstring[$id] = 1;
 
 						$option_key = substr($opt, 0, strpos($opt, '_') + 1);
 						if (empty($holding[$this->acl_options[$ary_key][$option_key]]))
 						{
-							$holding[$this->acl_options[$ary_key][$option_key]] = 1;
+							$bitstring[$this->acl_options[$ary_key][$option_key]] = 1;
 						}
 					}
 					else
 					{
-						$holding[$id] = 0;
+						$bitstring[$id] = 0;
 					}
 				}
 
-				$$hold_str .= ($f) ? pack('C2', $f >> 8, $f) : '';
-				$bitstring = str_pad(implode('', $holding), $len, 0, STR_PAD_RIGHT);
+				$bitstring = implode('', $bitstring);
 
-				for ($i = 0; $i < $len; $i += 8)
+				$hold_str .= str_repeat("\n", $f - $last_f);
+
+				for ($i = 0; $i < strlen($bitstring); $i += 31)
 				{
-					$$hold_str .= chr(bindec(substr($bitstring, $i, 8)));
+					$hold_str .= str_pad(base_convert(substr($bitstring, $i, 31), 2, 36), 6, 0, STR_PAD_LEFT);
 				}
+
+				$last_f = $f;
 			}
-			unset($holding);
+			unset($bitstring);
 
-			if ($global_hold == '')
-			{
-				for($i = 0; $i < $global_bits; $i += 8)
-				{
-					$global_hold .= chr(0);
-				}
-			}
+			$hold_str = rtrim($hold_str);
 
-			$userdata['user_permissions'] .= $global_hold . $local_hold;
-			unset($global_hold);
-			unset($local_hold);
-
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_permissions = '" . addslashes($userdata['user_permissions']) . "'
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_permissions = '" . $db->sql_escape($hold_str) . "'
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 		}
+		unset($hold_ary);
 
 		return;
 	}
@@ -765,9 +740,9 @@ class auth
 	{
 		global $db;
 
-		$where_sql = ($user_id) ? ' WHERE user_id = ' . intval($user_id) : '';
+		$where_sql = ($user_id) ? ' WHERE user_id = ' . $user_id : '';
 
-		$sql = "UPDATE " . USERS_TABLE . "
+		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_permissions = ''
 			$where_sql";
 		$db->sql_query($sql);
@@ -798,7 +773,16 @@ class auth
 				}
 
 				$autologin = (!empty($autologin)) ? md5($password) : '';
-				return ($login['user_active']) ? $user->create($login['user_id'], $autologin, true, $viewonline) : false;
+
+				if ($login['user_active'])
+				{
+					// Trigger EVENT_LOGIN
+					return  $user->create($login['user_id'], $autologin, true, $viewonline);
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 
