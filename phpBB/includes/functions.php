@@ -864,7 +864,9 @@ function generate_board_url()
 {
 	global $config;
 
-	return (($config['cookie_secure']) ? 'https://' : 'http://') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['server_name'])) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['script_path']));
+	$path = preg_replace('#^/?(.*?)/?$#', '\1', trim($config['script_path']));
+
+	return (($config['cookie_secure']) ? 'https://' : 'http://') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['server_name'])) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) : '') . (($path) ? '/' . $path : '');
 }
 
 // Redirects the user to another page then exits the script nicely
