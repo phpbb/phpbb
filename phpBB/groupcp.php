@@ -933,7 +933,7 @@ else if( $group_id )
 		}
 	}
 
-	if( $members_count == 1 )
+	if( !$members_count )
 	{
 		//
 		// No group members
