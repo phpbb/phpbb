@@ -336,6 +336,7 @@ $lang['Add_option'] = "Add option";
 $lang['Update'] = "Update";
 $lang['Delete'] = "Delete";
 $lang['Poll_for'] = "Run poll for";
+$lang['Days'] = "Days"; // This is used for the Run poll for ... Days + in admin_forums for pruning
 $lang['Poll_for_explain'] = "[ Enter 0 or leave blank for a never ending poll ]";
 $lang['Delete_poll'] = "Delete Poll";
 
