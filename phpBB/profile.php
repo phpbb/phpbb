@@ -216,9 +216,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		// Output page header and
 		// profile_view template
 		//
-		$page_title = $lang['Viewing_profile'];
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
 		$template->set_filenames(array(
 			"body" => "profile_view_body.tpl",
 			"jumpbox" => "jumpbox.tpl")
@@ -262,8 +259,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $profiledata['user_id']) : "mailto:" . $profiledata['user_email'];
 
-			$email = "<a href=\"$email_uri\">" . $lang['Send_email'] . "</a>";
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
+			$email = '<a href="$email_uri">' . $lang['Send_email'] . '</a>';
+			$email_img = '<a href="$email_uri"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" border="0" /></a>';
 		}
 		else
 		{
@@ -276,13 +273,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			switch( $profiledata['user_avatar_type'] )
 			{
 				case USER_AVATAR_UPLOAD:
-					$avatar_img = "<img src=\"" . $board_config['avatar_path'] . "/" . $profiledata['user_avatar'] . "\" alt=\"\" />";
+					$avatar_img = '<img src="' . $board_config['avatar_path'] . '/' . $profiledata['user_avatar'] . '" alt="" />';
 					break;
 				case USER_AVATAR_REMOTE:
-					$avatar_img = "<img src=\"" . $profiledata['user_avatar'] . "\" alt=\"\" />";
+					$avatar_img = '<img src="' . $profiledata['user_avatar'] . '" alt="" />';
 					break;
 				case USER_AVATAR_GALLERY:
-					$avatar_img = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $profiledata['user_avatar'] . "\" alt=\"\" />";
+					$avatar_img = '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profiledata['user_avatar'] . '" alt="" />';
 					break;
 			}
 		}
@@ -312,7 +309,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				if( $profiledata['user_posts'] > $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
 				{
 					$poster_rank = $ranksrow[$j]['rank_title'];
-					$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
+					$rank_image = ( $ranksrow[$j]['rank_image'] ) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
 				}
 			}
 		}
@@ -320,22 +317,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		if( !empty($profiledata['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $profiledata['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-
-			//
-			// This cannot stay like this, it needs a 'proper' solution, eg a separate
-			// template for overlaying the ICQ icon, or we just do away with the icq status 
-			// display (which is after all somewhat a pain in the rear :D 
-			//
-			if( $theme['template_name'] == "subSilver" )
-			{
-				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-				$icq_status_img = "";
-			}
-			else
-			{
-				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-			}
+			$icq_status_img = '<a href="http://wwp.icq.com/' . $profiledata['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profiledata['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
+			$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" border="0" /></a>';
 		}
 		else
 		{
@@ -343,16 +326,16 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$icq_add_img = "&nbsp;";
 		}
 
-		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
+		$aim_img = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" border="0" alt="' . $lang['AIM'] . '" /></a>' : "&nbsp;";
 
-		$msnm_img = ($profiledata['user_msnm']) ? "<img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /> " . $profiledata['user_msnm'] : "&nbsp;";
+		$msnm_img = ( $profiledata['user_msnm'] ) ? '<img src="' . $images['icon_msnm'] . '" border="0" alt="' . $lang['MSNM'] . '" /> ' . $profiledata['user_msnm'] : "&nbsp;";
 
-		$yim_img = ( $profiledata['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
+		$yim_img = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" border="0" alt="' . $lang['YIM'] . '" /></a>' : "&nbsp;";
 
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search_user_posts'] . "\" /></a>";
-		$search = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics") . "\">" . $lang['Search_user_posts'] . "</a>";
+		$search_img = '<a href="' . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts") . '"><img src="' . $images['icon_search'] . '" border="0" alt="' . $lang['Search_user_posts'] . '" /></a>';
+		$search = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts") . "\">" . $lang['Search_user_posts'] . "</a>";
 
-		$www_img = ($profiledata['user_website']) ? "<a href=\"" . $profiledata['user_website'] . "\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "&nbsp;";
+		$www_img = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" border="0" /></a>' : "&nbsp;";
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $profiledata['user_id']) . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Send_private_message'] . "\" border=\"0\" /></a>";
 
@@ -371,19 +354,21 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"PM_IMG" => $pm_img,
 			"UL_SEARCH" => $search,
 			"SEARCH_IMG" => $search_img,
+			"ICQ" => ( $profiledata['user_icq'] ) ? $profiledata['user_icq'] : "&nbsp;", 
+			"ICQ_IMG" => ( $profiledata['user_icq'] ) ? $images['icon_icq'] : "&nbsp;",
 			"ICQ_ADD_IMG" => $icq_add_img,
 			"ICQ_STATUS_IMG" => $icq_status_img,
-			"AIM" => ( ($profiledata['user_aim']) ? $profiledata['user_aim'] : "&nbsp;" ),
+			"AIM" => ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $profiledata['user_aim'] . '</a>' : "&nbsp;",
 			"AIM_IMG" => $aim_img,
-			"MSN" => ( ($profiledata['user_msnm']) ? $profiledata['user_msnm'] : "&nbsp;" ),
+			"MSN" => ( $profiledata['user_msnm'] ) ? $profiledata['user_msnm'] : "&nbsp;",
 			"MSN_IMG" => $msnm_img,
-			"YIM" => ( ($profiledata['user_yim']) ? $profiledata['user_yim'] : "&nbsp;" ),
+			"YIM" => ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . $profiledata['user_yim'] . '</a>' : "&nbsp;",
 			"YIM_IMG" => $yim_img,
-			"WEBSITE" => ( ($profiledata['user_website']) ? $profiledata['user_website'] : "&nbsp;" ),
+			"WEBSITE" => ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_phpbbwebsite">' . $profiledata['user_website'] . '</a>' : "&nbsp;",
 			"WEBSITE_IMG" => $www_img,
-			"LOCATION" => ( ($profiledata['user_from']) ? $profiledata['user_from'] : "&nbsp;" ),
-			"OCCUPATION" => ( ($profiledata['user_occ']) ? $profiledata['user_occ'] : "&nbsp;" ),
-			"INTERESTS" => ( ($profiledata['user_interests']) ? $profiledata['user_interests'] : "&nbsp;" ),
+			"LOCATION" => ( $profiledata['user_from'] ) ? $profiledata['user_from'] : "&nbsp;",
+			"OCCUPATION" => ( $profiledata['user_occ'] ) ? $profiledata['user_occ'] : "&nbsp;",
+			"INTERESTS" => ( $profiledata['user_interests'] ) ? $profiledata['user_interests'] : "&nbsp;",
 			"AVATAR_IMG" => $avatar_img,
 
 			"L_VIEWING_PROFILE" => sprintf($lang['Viewing_user_profile'], $profiledata['username']), 
@@ -405,10 +390,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_INTERESTS" => $lang['Interests'],
 
-			"U_SEARCH_USER" => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=topics"),
+			"U_SEARCH_USER" => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts"),
 
 			"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 		);
+
+		$page_title = $lang['Viewing_profile'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->pparse("body");
 

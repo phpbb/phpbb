@@ -855,21 +855,7 @@ for($i = 0; $i < $total_posts; $i++)
 		if( !empty($postrow[$i]['user_icq']) )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-
-			//
-			// This cannot stay like this, it needs a 'proper' solution, eg a separate
-			// template for overlaying the ICQ icon, or we just do away with the icq status 
-			// display (which is after all somewhat a pain in the rear :D 
-			//
-			if( $theme['template_name'] == "subSilver" )
-			{
-				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "" />' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
-				$icq_status_img = "";
-			}
-			else
-			{
-				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" title=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
-			}
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" title=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -1076,6 +1062,8 @@ for($i = 0; $i < $total_posts; $i++)
 		"PM_IMG" => $pm_img,
 		"EMAIL_IMG" => $email_img,
 		"WWW_IMG" => $www_img,
+		"ICQ" => ( !empty($postrow[$i]['user_icq']) ) ? $postrow[$i]['user_icq'] : "&nbsp;", 
+		"ICQ_IMG" => ( !empty($postrow[$i]['user_icq']) ) ? $images['icon_icq'] : "&nbsp;",
 		"ICQ_STATUS_IMG" => $icq_status_img,
 		"ICQ_ADD_IMG" => $icq_add_img, 
 		"AIM_IMG" => $aim_img,
