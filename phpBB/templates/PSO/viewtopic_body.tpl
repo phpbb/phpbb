@@ -76,7 +76,7 @@
 
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td width="40%" valign="top" nowrap="nowrap"><form method="post" action="{S_POST_DAYS_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;{S_SELECT_POST_ORDER}&nbsp;<input type="submit" value="{L_GO}" /></span></form><span class="gensmall"><b>{S_TIMEZONE}</b></span><br /><br />{S_TOPIC_ADMIN}</td>
-		<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span></td>
+		<td width="40%" valign="top" nowrap="nowrap"><form method="post" action="{S_POST_DAYS_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}:&nbsp;{S_SELECT_POST_DAYS}&nbsp;{S_SELECT_POST_ORDER}&nbsp;<input type="submit" value="{L_GO}" /></span></form><span class="gensmall"><b>{S_TIMEZONE}</b><br /><br />{S_WATCH_TOPIC}</span></td>
+		<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span><br />{S_TOPIC_ADMIN}</td>
 	</tr>
 </table>

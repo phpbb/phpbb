@@ -425,6 +425,20 @@ CREATE TABLE phpbb_topics (
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_topics_watch'
+#
+DROP TABLE IF EXISTS phpbb_topics_watch;
+CREATE TABLE phpbb_topics_watch (
+  topic_id int(11),
+  user_id int(11),
+  notify_status tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (topic_id),
+  KEY user_id (user_id)
+);
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_users'
 #
 DROP TABLE IF EXISTS phpbb_users;

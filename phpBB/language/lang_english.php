@@ -233,6 +233,9 @@ $lang['Move_topic'] = "Move this topic";
 $lang['Delete_topic'] = "Delete this topic";
 $lang['Split_topic'] = "Split this topic";
 
+$lang['Stop_watching_topic'] = "Stop watching this topic";
+$lang['Start_watching_topic'] = "Watch this topic for replies";
+
 
 //
 // Posting/Replying (Not private messaging!)
@@ -286,6 +289,8 @@ $lang['Here'] = "Here";
 $lang['to_return_forum'] = "to return to the forum";
 $lang['to_view_message'] = "to view your message";
 $lang['to_return_topic'] = "to return to the topic";
+
+$lang['Topic_reply_notification'] = "Topic Reply Notification";
 
 //
 // Private Messaging
@@ -378,6 +383,9 @@ $lang['Always_smile'] = "Always enable Smilies";
 $lang['Always_html'] = "Always allow HTML";
 $lang['Always_bbcode'] = "Always allow BBCode";
 $lang['Always_add_sig'] = "Always attach my signature";
+$lang['Always_notify'] = "Always notify me of replies";
+$lang['Always_notify_explain'] = "Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post";
+
 $lang['Board_template'] = "Board Template";
 $lang['Board_theme'] = "Board Theme";
 $lang['Board_lang'] = "Board Language";
@@ -785,7 +793,6 @@ $lang['User_admin_explain'] = "Here you can change your user's information. Do n
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user.  This cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";
-
 //
 // End
 // -------------------------------------------------

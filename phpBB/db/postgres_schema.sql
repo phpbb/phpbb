@@ -419,6 +419,20 @@ CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
 
 
 /* --------------------------------------------------------
+  Table structure for table phpbb_topics_watch
+-------------------------------------------------------- */
+CREATE TABLE phpbb_topics_watch (
+  topic_id int4,
+  user_id int4,
+  notify_status int2 NOT NULL default '0',
+  CONSTRAINT phpbb_topics_watch_pkey PRIMARY KEY (topic_id),
+  KEY user_id (user_id)
+);
+CREATE  INDEX _phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
+CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
+
+
+/* --------------------------------------------------------
   Table structure for table phpbb_user_group
 -------------------------------------------------------- */
 CREATE TABLE phpbb_user_group (

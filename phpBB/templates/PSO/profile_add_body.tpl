@@ -78,6 +78,10 @@
 				<td class="row2"><input type="radio" name="hideonline" value="1" {HIDE_USER_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="hideonline" value="0" {HIDE_USER_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr>
+				<td class="row1"><span class="gen">{L_NOTIFY_ON_REPLY}:</span><br /><span class="gensmall">{L_NOTIFY_ON_REPLY_EXPLAIN}</span></td>
+				<td class="row2"><input type="radio" name="notifyreply" value="1" {NOTIFY_REPLY_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="notifyreply" value="0" {NOTIFY_REPLY_NO} /> <span class="gen">{L_NO}</span></td>
+			</tr>
+			<tr>
 				<td class="row1"><span class="gen">{L_NOTIFY_ON_PRIVMSG}:</span></td>
 				<td class="row2"><input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>

@@ -161,6 +161,92 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 //
 
 //
+// Is user watching this thread? This could potentially 
+// be combined into the above query but the LEFT JOIN causes
+// a number of problems which will probably end up in this
+// solution being practically as fast and certainly simpler!
+//
+
+if($userdata['user_id'] != ANONYMOUS)
+{
+	$can_watch_topic = TRUE;
+
+	$sql = "SELECT notify_status 
+		FROM " . TOPICS_WATCH_TABLE . " 
+		WHERE topic_id = $topic_id 
+			AND user_id = " . $userdata['user_id'];
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
+	}
+	else if( $db->sql_numrows($result) )
+	{
+		if( isset($HTTP_GET_VARS['watch']) )
+		{
+			if( !$HTTP_GET_VARS['watch'] )
+			{
+				$is_watching_topic = 0;
+
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
+				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . " 
+					WHERE topic_id = $topic_id 
+						AND user_id = " . $userdata['user_id'];
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete topic watch information", "", __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+		else
+		{
+			$is_watching_topic = TRUE;
+
+			$watch_data = $db->sql_fetchrow($result);
+
+			if( $watch_data['notify_status'] )
+			{
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
+				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . " 
+					SET notify_status = 0 
+					WHERE topic_id = $topic_id 
+						AND user_id = " . $userdata['user_id'];
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't update topic watch information", "", __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+	}
+	else
+	{
+		if( isset($HTTP_GET_VARS['watch']) )
+		{
+			if( $HTTP_GET_VARS['watch'] )
+			{
+				$is_watching_topic = TRUE;
+
+				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
+				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't insert topic watch information", "", __LINE__, __FILE__, $sql);
+				}
+			}
+		}
+		else
+		{
+			$is_watching_topic = 0;
+		}
+	}
+}
+else
+{
+	$can_watch_topic = 0;
+	$is_watching_topic = 0;
+}
+
+//
 // Generate a 'Show posts in previous x days' select box. If the postdays var is POSTed
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
@@ -264,7 +350,7 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Dump out the page header and load viewtopic body template
 //
-setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time() + 6000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 $page_title = $lang['View_topic'] ." - $topic_title";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -606,6 +692,27 @@ if( $is_auth['auth_mod'] )
 	$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split") . "\"><img src=\"" . $images['topic_mod_split'] . "\" alt = \"" . $lang['Split_topic'] . "\" border=\"0\" /></a>&nbsp;";
 }
 
+//
+// Topic watch information
+//
+if($can_watch_topic)
+{
+	if($is_watching_topic)
+	{
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=0\">" . $lang['Stop_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=0\"><img src=\"" . $images['Topic_un_watch'] . "\" alt=\"" . $lang['Stop_watching_topic'] . "\" border=\"0\"></a>";
+	}
+	else
+	{
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=1\">" . $lang['Start_watching_topic'] . "</a>";
+		$s_watching_topic_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=1\"><img src=\"" . $images['Topic_watch'] . "\" alt=\"" . $lang['Start_watching_topic'] . "\" border=\"0\"></a>";
+	}
+}
+else
+{
+	$s_watching_topic = "";
+}
+
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start),
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
@@ -617,7 +724,9 @@ $template->assign_vars(array(
 	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
 	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
 	"S_AUTH_MOD_IMG" => $s_auth_mod_img,
-	"S_TOPIC_ADMIN" => $topic_mod,
+	"S_TOPIC_ADMIN" => $topic_mod, 
+	"S_WATCH_TOPIC" => $s_watching_topic, 
+	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img, 
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],

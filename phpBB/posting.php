@@ -97,7 +97,7 @@ else
 
 $attach_sig = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
 
-$notify = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['always_notify'];
+$notify = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['user_notify'];
 
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : 0;
 
@@ -518,6 +518,105 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 							if($db->sql_query($sql, END_TRANSACTION))
 							{
 								setcookie('phpbb2_' . $forum_id . '_' . $new_topic_id, '', time() - 1, $cookiepath, $cookiedomain, $cookiesecure);
+
+								//
+								// Email users who are watching this topic
+								//
+								if($mode == "reply")
+								{
+									$sql = "SELECT u.user_id, u.username, u.user_email, t.topic_title  
+										FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u  
+										WHERE tw.topic_id = $new_topic_id 
+											AND tw.user_id <> " . $userdata['user_id'] . " 
+											AND tw.user_id <> " . ANONYMOUS . " 
+											AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
+											AND t.topic_id = tw.topic_id 
+											AND u.user_id = tw.user_id";
+									if( $result = $db->sql_query($sql) )
+									{
+										$email_set = $db->sql_fetchrowset($result);
+										$update_watched_sql = "";
+
+										for($i = 0; $i < count($email_set); $i++)
+										{
+											if($email_set[$i]['user_email'] != "")
+											{
+												$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+
+												$emailer->use_template("topic_notify");
+												$emailer->email_address($email_set[$i]['user_email']);
+												$emailer->set_subject($lang['Topic_reply_notification']);
+												$emailer->extra_headers($email_headers);
+
+												$emailer->assign_vars(array(
+													"USERNAME" => $email_set[$i]['username'], 
+													"SITENAME" => $board_config['sitename'],
+													"TOPIC_TITLE" => $email_set[$i]['topic_title'],
+													"TOPIC_URL" => "http://" . $SERVER_NAME . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id",
+													"EMAIL_SIG" => $board_config['board_email'])
+												);
+
+												$emailer->send();
+												$emailer->reset();
+
+												if($update_watched_sql != "")
+												{
+													$update_watched_sql .= " OR ";
+												}
+												$update_watched_sql .= "user_id = " . $email_set[$i]['user_id']; 
+											}
+										}
+
+										if($update_watched_sql != "")
+										{
+											$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
+												SET notify_status = " . TOPIC_WATCH_NOTIFIED . " 
+												WHERE topic_id = $new_topic_id 
+													AND $update_watched_sql";
+											$db->sql_query($sql);
+										}
+									}
+								}
+
+								//
+								// Handle notification request ... not complete
+								// only fully functional for new posts
+								//
+								if( !empty($notify) )
+								{
+									if($mode == "reply")
+									{
+										$sql = "SELECT notify_status 
+											FROM " . TOPICS_WATCH_TABLE . " 
+											WHERE topic_id = $new_topic_id 
+												AND user_id = " . $userdata['user_id'];
+										if( !$result = $db->sql_query($sql) )
+										{
+											message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
+										}
+
+										if( $db->sql_numrows($result))
+										{
+											if( !$notify )
+											{
+
+											}
+										}
+										else if( $notify )
+										{
+										}
+									}
+									else if( $notify )
+									{
+										$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+											VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
+										if( !$result = $db->sql_query($sql) )
+										{
+											message_die(GENERAL_ERROR, "Couldn't insert topic watch information", "", __LINE__, __FILE__, $sql);
+										}
+									}
+								}
+
 								//
 								// If we get here the post has been inserted successfully.
 								//
@@ -555,6 +654,12 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 				{
 					if(SQL_LAYER == "mysql")
 					{
+						$sql = "DELETE FROM " . POSTS_TABLE . " 
+							WHERE post_id = $new_post_id";
+						if( !$db->sql_query($sql) )
+						{
+							message_die(GENERAL_ERROR, "Error inserting data into posts text table and could not rollback", "", __LINE__, __FILE__, $sql);
+						}
 					}
 					// Rollback ?
 					message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
@@ -562,9 +667,6 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 			}
 			else
 			{
-				if(SQL_LAYER == "mysql")
-				{
-				}
 				// Rollback ?
 				message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 			}
@@ -1165,8 +1267,6 @@ if($preview && !$error)
 		"preview" => "posting_preview.tpl")
 	);
 	$template->assign_vars(array(
-		"ROW_COLOR" => "#" . $theme['td_color1'],
-		"ROW_CLASS" => $theme['td_class1'], 
 		"TOPIC_TITLE" => stripslashes($subject), 
 		"POST_SUBJECT" => stripslashes($subject), 
 		"POSTER_NAME" => stripslashes($username),
@@ -1432,7 +1532,7 @@ $template->assign_vars(array(
 	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 
 	"S_SMILIES_CHECKED" => (!$smilies_on) ? "checked=\"checked\"" : "", 
 	"S_SIGNATURE_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "", 
-	"S_NOTIFY_CHECKED" => ($attach_sig) ? "checked=\"checked\"" : "", 
+	"S_NOTIFY_CHECKED" => ($notify) ? "checked=\"checked\"" : "", 
 	"S_TYPE_TOGGLE" => $topic_type_toggle, 
 	"S_TOPIC_ID" => $topic_id, 
 
