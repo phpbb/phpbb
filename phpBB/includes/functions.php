@@ -86,6 +86,24 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 	}
 }
 
+// Generates an alphanumeric random string of given length
+function gen_rand_string($num_chars)
+{
+	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+	list($usec, $sec) = explode(' ', microtime()); 
+	mt_srand($sec * $usec); 
+
+	$max_chars = count($chars) - 1;
+	$rand_str = '';
+	for ($i = 0; $i < $num_chars; $i++)
+	{
+		$rand_str .= $chars[mt_rand(0, $max_chars)];
+	}
+
+	return $rand_str;
+}
+
 function get_userdata($user)
 {
 	global $db;
@@ -1087,14 +1105,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 	switch ($errno)
 	{
-		case E_WARNING:
-		case E_NOTICE:
-			if (defined('DEBUG_EXTRA'))
-			{
-//				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
-			}
-			break;
-
 		case E_USER_ERROR:
 			if (isset($db))
 			{
