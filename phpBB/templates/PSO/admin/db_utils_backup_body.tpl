@@ -33,5 +33,3 @@
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="backupstart" value="{L_START_BACKUP}" /></td>
 	</tr>
 </table></form>
-
-<br clear="all" />
