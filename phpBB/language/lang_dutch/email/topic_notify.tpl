@@ -6,6 +6,8 @@ laatste bezoek. Je kan de volgende link gebruiken om deze reactie(s) te
 bekijken. Je ontvangt geen emails meer over dit onderwerp tot je dat topic
 bekijkt.
 
+{U_TOPIC}
+
 Als je geen emals wil ontvangen kan je op "Geen abonnement meer op dit
 onderwerp" klikken onderaan dat topic. Of klik op de volgende link:
 
