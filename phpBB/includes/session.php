@@ -171,39 +171,48 @@ class session
 			$this->data['user_id'] = $user_id = ANONYMOUS;
 		}
 
-		// Is user banned? Are they excempt?
-		$banned = false;
-
-		$sql = "SELECT ban_ip, ban_userid, ban_email, ban_exclude  
-			FROM " . BANLIST_TABLE . "
-			WHERE ban_end >= $current_time
-				OR ban_end = 0";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		// Is user banned? Are they excluded?
+		if (!$this->data['user_founder'])
 		{
-			if ((
-				($row['user_id'] == $this->data['user_id']) ||
-				($row['ban_ip'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
-				($row['ban_email'] && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
-				&& !$this->data['user_founder'])
+			$banned = false;
+
+			$sql = "SELECT ban_ip, ban_userid, ban_email, ban_exclude  
+				FROM " . BANLIST_TABLE . "
+				WHERE ban_end >= $current_time
+					OR ban_end = 0";
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
 			{
-				if (!empty($row['ban_exclude']))
+				do
 				{
-					$banned = false;
-					break;
-				}
-				else
-				{
-					$banned = true; 
-				}
-			}
-		}
-		$db->sql_freeresult($result);
+					print_r($row);
+					if ((intval($row['ban_userid']) == $this->data['user_id']) ||
+					(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
+					(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
+					{
 
-		if ($banned)
-		{
-			trigger_error('You_been_banned');
+						if (!empty($row['ban_exclude']))
+						{
+							$banned = false;
+							break;
+						}
+						else
+						{
+							$banned = true; 
+						}
+					}
+				}
+				while ($row = $db->sql_fetchrow($result));
+
+
+			}
+			$db->sql_freeresult($result);
+
+			if ($banned)
+			{
+				trigger_error('You_been_banned');
+			}
 		}
 
 		// Is there an existing session? If so, grab last visit time from that
