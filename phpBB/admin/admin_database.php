@@ -25,7 +25,7 @@ if (!empty($setmodules))
 	$module['DB']['DB_BACKUP'] = ($auth->acl_get('a_backup')) ? $filename . "$SID&amp;mode=backup" : '';
 
 	$file_uploads = @ini_get('file_uploads');
-	if (!empty($file_uploads) && $file_uploads !== 0 && strtolower($file_uploads) != 'off' && @phpversion() != '4.0.4pl1' && $auth->acl_get('a_restore'))
+	if (!empty($file_uploads) && $file_uploads !== 0 && strtolower($file_uploads) != 'off' && $auth->acl_get('a_restore'))
 	{
 		$module['DB']['DB_RESTORE'] = $filename . "$SID&amp;mode=restore";
 	}
@@ -82,11 +82,11 @@ switch($mode)
 
 		if (!isset($_POST['backupstart']) && !isset($_GET['backupstart']))
 		{
-			page_header($user->lang['DB_Backup']);
+			page_header($user->lang['DB_BACKUP']);
 
 ?>
 
-<h1><?php echo $user->lang['DB_Backup']; ?></h1>
+<h1><?php echo $user->lang['DB_BACKUP']; ?></h1>
 
 <p><?php echo $user->lang['Backup_explain']; ?></p>
 
@@ -100,7 +100,7 @@ switch($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Include_search_index']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Include_search_index_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="search" value="0" /> <?php echo $user->lang['No']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="1" checked="checked" /> <?php echo $user->lang['Yes']; ?></td>
+		<td class="row2"><input type="radio" name="search" value="0" /> <?php echo $user->lang['NO']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Additional_tables']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Additional_tables_explain']; ?></span></td>
@@ -118,7 +118,7 @@ switch($mode)
 ?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Compress_file']; ?>: </td>
-		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $user->lang['None']; ?><?php
+		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $user->lang['NONE']; ?><?php
 
 				if (extension_loaded('zlib'))
 				{
@@ -381,11 +381,11 @@ switch($mode)
 		//
 		// Restore page
 		//
-		page_header($user->lang['DB_Restore']);
+		page_header($user->lang['DB_RESTORE']);
 
 ?>
 
-<h1><?php echo $user->lang['DB_Restore']; ?></h1>
+<h1><?php echo $user->lang['DB_RESTORE']; ?></h1>
 
 <p><?php echo $user->lang['Restore_explain']; ?></p>
 

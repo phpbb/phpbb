@@ -466,7 +466,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['IP_valid']; ?>: <br /><span class="gensmall"><?php echo $user->lang['IP_valid_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="ip_check" value="4" <?php echo $ip_all; ?> /> <?php echo $user->lang['All']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="3" <?php echo $ip_classc; ?> /> <?php echo $user->lang['Class_C']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="2" <?php echo $ip_classb; ?> /> <?php echo $user->lang['Class_B']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="0" <?php echo $ip_none; ?> /> <?php echo $user->lang['None']; ?>&nbsp;&nbsp;</td>
+		<td class="row2"><input type="radio" name="ip_check" value="4" <?php echo $ip_all; ?> /> <?php echo $user->lang['All']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="3" <?php echo $ip_classc; ?> /> <?php echo $user->lang['Class_C']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="2" <?php echo $ip_classb; ?> /> <?php echo $user->lang['Class_B']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="0" <?php echo $ip_none; ?> /> <?php echo $user->lang['NONE']; ?>&nbsp;&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Limit_load']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Limit_load_explain']; ?></span></td>
