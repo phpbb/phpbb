@@ -80,11 +80,29 @@ function get_forum_branch($forum_id, $type='all', $order='descending', $include_
 // We could cache this ... certainly into a DB table. Would
 // better allow the admin to decide which moderators are
 // displayed(?)
+function cache_moderators($type = false, $id = false)
+{
+
+}
+
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $SID, $db, $acl_options, $phpEx;
 
 	$forum_sql = ( $forum_id ) ? 'AND m.forum_id = ' . $forum_id : '';
+/*
+	$sql = "SELECT m.forum_id, u.user_id, u.username, g.group_id, g.group_name
+		FROM phpbb_moderators m
+		LEFT JOIN phpbb_users u ON u.user_id = m.user_id
+		LEFT JOIN phpbb_groups g ON g.group_id = m.group_id
+		WHERE m.display_on_index = 1
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	while ( $row = $db->sql_fetchrow($result) )
+	{
+		$forum_moderators[$row['forum_id']][] = ( !empty($row['user_id']) ) ? '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="groupcp.' . $phpEx . $SID . '&amp;g=' . $row['group_id'] . '">' . $row['group_name'] . '</a>';
+	}*/
 
 	$sql = "SELECT au.forum_id, u.user_id, u.username
 		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " au,  " . USERS_TABLE . "  u
@@ -130,11 +148,6 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 	$rules .= ( ( $auth->acl_get('f_edit', $forum_id) ) ? $user->lang['Rules_edit_can'] : $user->lang['Rules_edit_cannot'] ) . '<br />';
 	$rules .= ( ( $auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id) ) ? $user->lang['Rules_delete_can'] : $user->lang['Rules_delete_cannot'] ) . '<br />';
 	$rules .= ( ( $auth->acl_get('f_attach', $forum_id) ) ? $user->lang['Rules_attach_can'] : $user->lang['Rules_attach_cannot'] ) . '<br />';
-
-	if ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) )
-	{
-		$rules .= sprintf($user->lang['Rules_moderate'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
-	}
 
 	return;
 }
