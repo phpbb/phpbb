@@ -59,6 +59,7 @@ $images['latest_reply'] = "$url_images/latest_reply.gif";
 include('includes/template.inc');
 
 include('includes/error.'.$phpEx);
+include('includes/message.'.$phpEx);
 include('includes/sessions.'.$phpEx);
 include('includes/auth.'.$phpEx);
 include('includes/functions.'.$phpEx);
@@ -73,8 +74,7 @@ $user_ip = encode_ip(($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_A
 // This is also the first DB query/connect
 //
 $sql = "SELECT *
-	FROM ".CONFIG_TABLE."
-	WHERE selected = 1";
+	FROM " . CONFIG_TABLE;
 if(!$result = $db->sql_query($sql))
 {
 	//
@@ -89,16 +89,20 @@ if(!$result = $db->sql_query($sql))
 	$board_config['default_lang'] = "english";
 	$board_config['gzip_compress'] = 0;
 
-	// Our template class hasn't been instantiated
-	// so we do it here.
-	$template = new Template("templates/Default");
-
-	error_die(SQL_QUERY, "Could not query config information.", __LINE__, __FILE__);
+	message_die(SQL_QUERY, "Could not query config information", "", __LINE__, __FILE__);
 }
 else
 {
+/*
+	while($row = $db->sql_fetchrow($result))
+	{
+		$board_config[$row['config_var_name']] = stripslashes($row['config_var_value']);
+	}
+*/
+
 	$config = $db->sql_fetchrow($result);
 
+	$board_config['board_disable'] = $config['board_disable'];
 	$board_config['sitename'] = stripslashes($config['sitename']);
 	$board_config['allow_html'] = $config['allow_html'];
 	$board_config['allow_bbcode'] = $config['allow_bbcode'];
@@ -106,6 +110,7 @@ else
 	$board_config['allow_sig'] = $config['allow_sig'];
 	$board_config['allow_namechange'] = $config['allow_namechange'];
 	$board_config['allow_avatar_local'] = $config['allow_avatar_local'];
+	$board_config['allow_avatar_remote'] = $config['allow_avatar_local'];
 	$board_config['allow_avatar_upload'] = $config['allow_avatar_upload'];
 	$board_config['require_activation'] = $config['require_activation'];
 	$board_config['override_user_themes'] = $config['override_themes'];
@@ -125,8 +130,14 @@ else
 	$board_config['avatar_path'] = $config['avatar_path'];
 	$board_config['prune_enable'] = $config['prune_enable'];
 	$board_config['gzip_compress'] = $config['gzip_compress'];
+
 }
 
-include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
+include('language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+
+if($board_config['board_disable'])
+{
+	message_die(GENERAL_MESSAGE, $lang['Board_disable'], $lang['Information']);
+}
 
 ?>
