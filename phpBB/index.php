@@ -58,7 +58,7 @@ if(empty($viewcat))
 // combined with the additional UPDATE's required
 // in viewtopic may be unacceptable. So, by default
 // this code is off, however you may want to play
-// ... remember that the users table needs a 
+// ... remember that the users table needs a
 // 'user_topics_unvisited' field of type TEXT ( or
 // equiv) and you need to remove the commented
 // out code above the folder_img code in the loop
@@ -72,8 +72,8 @@ if($userdata['user_id'] != ANONYMOUS)
 
 	$last_update_time = (isset($unread_topic_list['lastupdate'])) ? $unread_topic_list['lastupdate'] : $userdata['session_last_visit'];
 
-	$sql = "SELECT forum_id, topic_id 
-		FROM " . TOPICS_TABLE . " 
+	$sql = "SELECT forum_id, topic_id
+		FROM " . TOPICS_TABLE . "
 		WHERE topic_time > $last_update_time";
 	if(!$s_topic_times = $db->sql_query($sql))
 	{
@@ -89,8 +89,8 @@ if($userdata['user_id'] != ANONYMOUS)
 
 		$unread_topic_list['lastupdate'] = time();
 
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "'
 			WHERE user_id = " . $userdata['user_id'];
 		if(!$s_topic_times = $db->sql_query($sql))
 		{
@@ -140,24 +140,24 @@ if($total_categories)
 
 	$limit_forums = "";
 	//
-	// Define appropriate SQL 
+	// Define appropriate SQL
 	//
 	switch(SQL_LAYER)
 	{
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time 
-				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af 
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
+				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
 				WHERE f.forum_last_post_id = p.post_id
-					AND p.post_id = t.topic_last_post_id 
-					AND p.poster_id = u.user_id 
-					AND af.forum_id = f.forum_id 
+					AND p.post_id = t.topic_last_post_id
+					AND p.poster_id = u.user_id
+					AND af.forum_id = f.forum_id
 					$limit_forums
 					UNION (
-						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL
 						FROM ".FORUMS_TABLE." f
 						WHERE NOT EXISTS (
-							SELECT p.post_time 
+							SELECT p.post_time
 							FROM ".POSTS_TABLE." p
 							WHERE f.forum_last_post_id = p.post_id
 						)
@@ -168,11 +168,11 @@ if($total_categories)
 
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time  
-				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af 
-				WHERE f.forum_last_post_id = p.post_id(+) 
-					AND p.post_id = t.topic_last_post_id(+) 
-					AND p.poster_id = u.user_id(+) 
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
+				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
+				WHERE f.forum_last_post_id = p.post_id(+)
+					AND p.post_id = t.topic_last_post_id(+)
+					AND p.poster_id = u.user_id(+)
 					AND af.forum_id = f.forum_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
@@ -182,7 +182,7 @@ if($total_categories)
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
 /*
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time 
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
 				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
@@ -190,12 +190,12 @@ if($total_categories)
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 */
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote
 				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
 				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id )
-				LEFT JOIN ".AUTH_FORUMS_TABLE." af ON af.forum_id = f.forum_id 
+				LEFT JOIN ".AUTH_FORUMS_TABLE." af ON af.forum_id = f.forum_id
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -226,12 +226,12 @@ if($total_categories)
 	// business (besides when it comes to 'actual' moderating
 	// a more precise auth() check is done anyway ...)
 	//
-	$sql = "SELECT f.forum_id, u.username, u.user_id   
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa 
-		WHERE aa.forum_id = f.forum_id 
-			AND aa.auth_mod = 1 
-			AND ug.group_id = aa.group_id 
-			AND u.user_id = ug.user_id 
+	$sql = "SELECT f.forum_id, u.username, u.user_id
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
+		WHERE aa.forum_id = f.forum_id
+			AND aa.auth_mod = 1
+			AND ug.group_id = aa.group_id
+			AND u.user_id = ug.user_id
 		ORDER BY f.forum_id, u.user_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
@@ -330,7 +330,7 @@ if($total_categories)
 					$gen_cat[$category_rows[$i]['cat_id']] = 1;
 				}
 
-				$template->assign_block_vars("catrow.forumrow", 
+				$template->assign_block_vars("catrow.forumrow",
 					array(
 						"FOLDER" => $folder_image,
 						"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
