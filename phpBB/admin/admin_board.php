@@ -166,6 +166,8 @@ $template->assign_vars(array(
 	"SMTP_YES" => $smtp_yes,
 	"SMTP_NO" => $smtp_no,
 	"SMTP_HOST" => $new['smtp_host'],
+	"SMTP_USERNAME" => $new['smtp_username'],
+	"SMTP_PASSWORD" => $new['smtp_password'],
 	"COPPA_MAIL" => $new['coppa_mail'],
 	"COPPA_FAX" => $new['coppa_fax'])
 );

@@ -132,6 +132,18 @@
 		<td class="row2"><input type="text" size="20" maxlength="255" name="avatar_gallery_path" value="{AVATAR_GALLERY_PATH}" /></td>
 	</tr>
 	<tr>
+	  <th class="thHead" colspan="2">COPPA Settings</th>
+	</tr>
+	<tr>
+		<td class="row1">COPPA Fax Number</td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="coppa_fax" value="{COPPA_FAX}" /></td>
+	</tr>
+	<tr>
+		<td class="row1">COPPA Mailing Address<br /><span class="gensmall">This is the mailing address where parents will send COPPA registration forms</span></td>
+		<td class="row2"><textarea name="coppa_mail" rows="5" cols="30">{COPPA_MAIL}</textarea></td>
+	</tr>
+
+	<tr>
 	  <th class="thHead" colspan="2">Email Settings</th>
 	</tr>
 	<tr>
@@ -150,6 +162,15 @@
 		<td class="row1">SMTP Server</td>
 		<td class="row2"><input type="text" name="smtp_host" value="{SMTP_HOST}" size="25" maxlength="50" /></td>
 	</tr>
+	<tr>
+		<td class="row1">SMTP Username</td>
+		<td class="row2"><input type="text" name="smtp_username" value="{SMTP_USERNAME}" size="25" maxlength="50" /></td>
+	</tr>
+	<tr>
+		<td class="row1">SMTP Password</td>
+		<td class="row2"><input type="text" name="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="50" /></td>
+	</tr>
+
 	<tr>
 		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Save Settings" class="mainoption" />
 		</td>
