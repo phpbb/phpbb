@@ -49,12 +49,13 @@ else
 //
 if( $mark_read == "forums" )
 {
+
 	$sql = "SELECT f.forum_id, t.topic_id 
 		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
 		WHERE t.forum_id = f.forum_id
 			AND p.post_id = t.topic_last_post_id
 			AND p.post_time > " . $userdata['session_last_visit'] . " 
-			AND t.topic_moved_id = NULL";
+			AND t.topic_moved_id IS NULL";
 	if(!$t_result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
@@ -238,6 +239,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Find which forums are visible for this user
 	//
+	$is_auth_ary = array();
 	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_rows);
 
 	$template->set_filenames(array(

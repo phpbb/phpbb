@@ -30,14 +30,14 @@ include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 if(isset($HTTP_GET_VARS[POST_TOPIC_URL]))
 {
-	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
+	$topic_id = intval($HTTP_GET_VARS[POST_TOPIC_URL]);
 }
 if(isset($HTTP_GET_VARS[POST_POST_URL]))
 {
-	$post_id = $HTTP_GET_VARS[POST_POST_URL];
+	$post_id = intval($HTTP_GET_VARS[POST_POST_URL]);
 }
 
-$start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 //
 // End initial var setup
 //
@@ -182,6 +182,7 @@ if(!empty($post_id))
 //
 // Start auth check
 //
+$is_auth = array();
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
@@ -922,17 +923,17 @@ for($i = 0; $i < $total_posts; $i++)
 //
 // User authorisation levels output
 //
-$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "<br />";
-$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
+$s_auth_can = $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['post_topics'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['reply_posts'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
+$s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_vote']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['vote_polls'] . "<br />";
 /*
-$s_auth_read_img = "<img src=\"" . ( ($is_auth['auth_read']) ? $image['auth_can_read'] : $image['auth_cannot_read'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "\" />";
 $s_auth_post_img = "<img src=\"" . ( ($is_auth['auth_post']) ? $image['auth_can_post'] : $image['auth_cannot_post'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['post_topics'] . "\" />";
 $s_auth_reply_img = "<img src=\"" . ( ($is_auth['auth_reply']) ? $image['auth_can_reply'] : $image['auth_cannot_reply'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['reply_posts'] . "\" />";
 $s_auth_edit_img = "<img src=\"" . ( ($is_auth['auth_edit']) ? $image['auth_can_edit'] : $image['auth_cannot_edit'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['edit_posts'] . "\" />";
 $s_auth_delete_img = "<img src=\"" . ( ($is_auth['auth_delete']) ? $image['auth_can_delete'] : $image['auth_cannot_delete'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['delete_posts'] . "\" />";
+$s_auth_delete_img = "<img src=\"" . ( ($is_auth['auth_vote']) ? $image['auth_can_vote'] : $image['auth_cannot_vote'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_vote']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['vote_polls'] . "\" />";
 */
 
 if( $is_auth['auth_mod'] )

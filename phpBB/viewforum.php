@@ -29,14 +29,14 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
-	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? intval($HTTP_GET_VARS[POST_FORUM_URL]) : intval($HTTP_POST_VARS[POST_FORUM_URL]);
 }
 else
 {
 	$forum_id = "";
 }
 
-$start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+$start = (isset($HTTP_GET_VARS['start'])) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
 {
@@ -63,7 +63,7 @@ init_userprefs($userdata);
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
-if(isset($forum_id))
+if( isset($forum_id) )
 {
 	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
@@ -91,9 +91,10 @@ $forum_row = $db->sql_fetchrow($result);
 //
 // Start auth check
 //
+$is_auth = array();
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
-if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
+if( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 {
 	//
 	// The user is not authed to read this forum ...
@@ -116,7 +117,7 @@ if( $mark_read == "topics" )
 		WHERE t.forum_id = $forum_id
 			AND p.post_id = t.topic_last_post_id 
 			AND p.post_time > " . $userdata['session_last_visit'] . " 
-			AND t.topic_moved_id = NULL 
+			AND t.topic_moved_id IS NULL 
 		LIMIT $start, " . $board_config['topics_per_page'];
 	if(!$t_result = $db->sql_query($sql))
 	{
@@ -487,13 +488,15 @@ if($total_topics)
 		if($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED)
 		{
 			$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"" . $lang['Topic_locked'] . "\" />";
+			$newest_post_img = "";
 		}
 		else if($topic_rowset[$i]['topic_status'] == TOPIC_MOVED)
 		{
 			$topic_type = $lang['Topic_Moved'] . " ";
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
+
+			$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 			$newest_post_img = "";
-			$folder_image = "";
 		}
 		else
 		{
