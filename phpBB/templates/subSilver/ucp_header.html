@@ -28,6 +28,14 @@ s_help = "{L_BBCODE_S_HELP}";
 f_help = "{L_BBCODE_F_HELP}";
 e_help = "{L_BBCODE_E_HELP}";
 
+function marklist(form_name, status)
+{
+	for (i = 0; i < document.forms[form_name].length; i++)
+	{
+		document.forms[form_name].elements[i].checked = status;
+	}
+}
+
 //-->
 </script>
 <script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>

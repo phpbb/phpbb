@@ -38,24 +38,24 @@
 			<!-- IF S_DISPLAY_REG_DETAILS -->
 			<tr> 
 				<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b></td>
-				<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" style="width:200px" name="username" size="25" maxlength="40" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
+				<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" name="username" size="30" maxlength="30" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_EMAIL_ADDRESS}: </b></td>
-				<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="255" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
+				<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="60" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF S_CHANGE_PASSWORD -->
 			<tr> 
 				<td class="row1"><b class="genmed">{L_NEW_PASSWORD}: </b><br /><span class="gensmall">{L_NEW_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="100" value="{PASSWORD}" /></td>
+				<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="255" value="{NEW_PASSWORD}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_CONFIRM_PASSWORD}: </b><br /><span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="100" value="{PASSWORD_CONFIRM}" /></td>
+				<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="255" value="{PASSWORD_CONFIRM}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_CURRENT_PASSWORD}: </b><br /><span class="gensmall">{L_CURRENT_PASSWORD_EXPLAIN}</span></td>
-				<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="100" value="{PASSWORD}" /></td>
+				<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="255" value="{CUR_PASSWORD}" /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- ENDIF -->
@@ -82,7 +82,7 @@
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_JABBER}: </b></td>
-				<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="{YIM}" /></td>
+				<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="{YIM}" /></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_WEBSITE}: </b></td>
@@ -93,16 +93,16 @@
 				<td class="row2"><input class="post" type="text" name="location" size="30" maxlength="100" value="{LOCATION}" /></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_BIRTHDAY}: </b></td>
-				<td class="row2"><span class="gensmall">Day:</span> <select name="birthday[day]">{S_BIRTHDAY_DAY_OPTIONS}</select> <span class="gensmall">Month:</span> <select name="birthday[month]">{S_BIRTHDAY_MONTH_OPTIONS}</select> <span class="gensmall">Year:</span> <select name="birthday[year]">{S_BIRTHDAY_YEAR_OPTIONS}</select></td>
-			</tr>
-			<tr> 
 				<td class="row1"><b class="genmed">{L_OCCUPATION}: </b></td>
 				<td class="row2"><textarea class="post" name="occupation" rows="3" cols="30">{OCCUPATION}</textarea></td>
 			</tr>
 			<tr> 
 				<td class="row1"><b class="genmed">{L_INTERESTS}: </b></td>
 				<td class="row2"><textarea class="post" name="interests" rows="3" cols="30">{INTERESTS}</textarea></td>
+			</tr>
+			<tr> 
+				<td class="row1"><b class="genmed">{L_BIRTHDAY}: </b></td>
+				<td class="row2"><span class="gensmall">Day:</span> <select name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> <span class="gensmall">Month:</span> <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> <span class="gensmall">Year:</span> <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></td>
 			</tr>
 			<!-- ENDIF -->
 

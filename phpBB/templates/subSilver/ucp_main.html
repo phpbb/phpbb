@@ -88,9 +88,10 @@
 			<!-- ELSE -->
 			<tr class="row2">
 			<!-- ENDIF -->
-				<td width="20" align="center" valign="middle">{forumrow.FOLDER_IMG}</td>
-				<td width="100%" class="forumtitle"><a href="{forumrow.U_VIEW_TOPIC}">{forumrow.FORUM_TITLE}</a></span></td>
-				<td class="postdetails" align="center" valign="middle" nowrap="nowrap">{forumrow.LAST_POST_TIME}<br />{forumrow.LAST_POST_AUTHOR} {forumrow.LAST_POST_IMG}</td>
+				<td width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+				<td width="100%" class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></span></td>
+				<td class="gensmall" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+				<td> <input type="checkbox" name="f[{forumrow.FORUM_ID}]" /> </td>
 			</tr>
 			<!-- BEGINELSE -->
 			<tr class="row1">
@@ -117,7 +118,7 @@
 			</tr>
 			<!-- END topicrow -->
 			<tr>
-				<td class="cat" colspan="4" height="28">&nbsp;</td>
+				<td class="cat" colspan="4" height="28" align="right"><input class="liteoption" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
 			</tr>
 			<!-- ENDIF -->
 
