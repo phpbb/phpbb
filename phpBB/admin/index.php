@@ -211,33 +211,49 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 	//
 	if(SQL_LAYER == 'mysql')
 	{
-		$sql = "SHOW TABLE STATUS FROM " . $dbname;
-		if(!$result = $db->sql_query($sql))
+		$sql = "SELECT VERSION() AS mysql_version";
+		if($result = $db->sql_query($sql))
 		{
-			message_die(GENERAL_ERROR, "Couldn't obtain table information.", "", __LINE__, __FILE__, $sql);
-		}
-		$tabledata_ary = $db->sql_fetchrowset($result);
-
-		$dbsize = 0;
-		for($i = 0; $i < count($tabledata_ary); $i++)
-		{
-			if($tabledata_ary[$i]['Type'] != "MRG_MyISAM" && strstr($tabledata_ary[$i]['Name'], $table_prefix) )
+			list($version) = $db->sql_fetchrow($result);
+			if( ereg("^3\.23", $version) )
 			{
-				$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
-			}
-		}
+				$sql = "SHOW TABLE STATUS FROM " . $dbname;
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtain table information.", "", __LINE__, __FILE__, $sql);
+				}
+				$tabledata_ary = $db->sql_fetchrowset($result);
 
-		if($dbsize >= 1048576)
-		{
-			$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
-		}
-		else if($dbsize >= 1024)
-		{
-			$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
+				$dbsize = 0;
+				for($i = 0; $i < count($tabledata_ary); $i++)
+				{
+					if($tabledata_ary[$i]['Type'] != "MRG_MyISAM" && strstr($tabledata_ary[$i]['Name'], $table_prefix) )
+					{
+						$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+					}
+				}
+
+				if($dbsize >= 1048576)
+				{
+					$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
+				}
+				else if($dbsize >= 1024)
+				{
+					$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
+				}
+				else
+				{
+					$dbsize = sprintf("%.2f Bytes", $dbsize);
+				}
+			}
+			else
+			{
+				$dbsize = $lang['Not_available'];
+			}
 		}
 		else
 		{
-			$dbsize = sprintf("%.2f Bytes", $dbsize);
+			$dbsize = $lang['Not_available'];
 		}
 	}
 	else
