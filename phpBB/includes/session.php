@@ -35,19 +35,19 @@ class session
 
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
-		$this->page = (!empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+		$this->page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
 		$this->page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$sessiondata = ( isset($_COOKIE[$config['cookie_name'] . '_data']) ) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
-			$this->session_id = ( isset($_COOKIE[$config['cookie_name'] . '_sid']) ) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
+			$sessiondata = (isset($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
+			$this->session_id = (isset($_COOKIE[$config['cookie_name'] . '_sid'])) ? $_COOKIE[$config['cookie_name'] . '_sid'] : '';
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
 			$sessiondata = '';
-			$this->session_id = ( isset($_GET['sid']) ) ? $_GET['sid'] : '';
+			$this->session_id = (isset($_GET['sid'])) ? $_GET['sid'] : '';
 			$SID = '?sid=' . $this->session_id;
 		}
 
@@ -163,8 +163,8 @@ class session
 
 		// Grab user data ... join on session if it exists for session time
 		$sql = "SELECT u.*, s.session_time
-			FROM ( " . USERS_TABLE . " u
-			LEFT JOIN " . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id )
+			FROM (" . USERS_TABLE . " u
+			LEFT JOIN " . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
 			WHERE u.user_id = $user_id
 			ORDER BY s.session_time DESC";
 		$result = $db->sql_query($sql);
@@ -300,10 +300,9 @@ class session
 		// Get expired sessions, only most recent for each user
 		$sql = "SELECT session_user_id, MAX(session_time) AS recent_time
 			FROM " . SESSIONS_TABLE . "
-			WHERE session_time < " . ( $current_time - $config['session_length'] ) . "
-			GROUP BY session_user_id
-			LIMIT 5";
-		$result = $db->sql_query($sql);
+			WHERE session_time < " . ($current_time - $config['session_length']) . "
+			GROUP BY session_user_id";
+		$result = $db->sql_query_limit($sql, 5);
 
 		$del_user_id = '';
 		$del_sessions = 0;
@@ -330,7 +329,7 @@ class session
 			// Delete expired sessions
 			$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_user_id IN ($del_user_id)
-					AND session_time < " . ( $current_time - $config['session_length'] );
+					AND session_time < " . ($current_time - $config['session_length']);
 			$db->sql_query($sql);
 		}
 
@@ -424,12 +423,12 @@ class user extends session
 		$this->lang = &$lang;
 
 /*
-		if ( is_array($lang_set) )
+		if (is_array($lang_set))
 		{
 			include($this->lang_path . '/common.' . $phpEx);
 
 			$lang_set = explode(',', $lang_set);
-			foreach ( $lang_set as $lang_file )
+			foreach ($lang_set as $lang_file)
 			{
 				include($this->lang_path . '/' . $lang_file . '.' . $phpEx);
 			}
@@ -549,7 +548,7 @@ class auth
 
 		if (!isset($acl_cache[$forum_id][$option]) && !$this->founder)
 		{
-			if (isset($this->acl_options['global'][$option]) )
+			if (isset($this->acl_options['global'][$option]))
 			{
 				$acl_cache[$forum_id][$option] = substr($this->acl['global'], $this->acl_options['global'][$option], 1);
 			}
@@ -632,7 +631,7 @@ class auth
 			unset($acl_db);
 
 			$global_bits = 8 * ceil(sizeof($this->acl_options['global']) / 8);
-			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8 );
+			$local_bits = 8 * ceil(sizeof($this->acl_options['local']) / 8);
 			$local_hold = '';
 			$global_hold = '';
 
