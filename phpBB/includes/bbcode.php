@@ -209,7 +209,7 @@ function bbencode_second_pass($text, $uid)
 	$replacements[4] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
-	$patterns[5] = "#\[email\]([a-z0-9\-_.]+?@[\w\-]+\.[\w\-\.]+\.[\w]+)\[/email\]#si";
+	$patterns[5] = "#\[email\]([a-z0-9\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)\[/email\]#si";
 	$replacements[5] = $bbcode_tpl['email'];
 
 	$text = preg_replace($patterns, $replacements, $text);
@@ -612,7 +612,7 @@ function make_clickable($text)
 
 	// matches an email@domain type address at the start of a line, or after a space.
 	// Note: Only the followed chars are valid; alphanums, "-", "_" and or ".".
-	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.[\w\-\.]+\.[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
+	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)?[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
 
 	// Remove our padding..
 	$ret = substr($ret, 1);
