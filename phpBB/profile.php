@@ -1810,7 +1810,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		$sql = "SELECT user_id, user_email, user_newpasswd 
 			FROM " . USERS_TABLE . "
-			WHERE user_actkey = '$act_key'";
+			WHERE user_actkey = '" . $HTTP_GET_VARS['act_key'] . "'";
 			if( $result = $db->sql_query($sql) )
 			{
 				if( $row = $db->sql_fetchrow($result) )
