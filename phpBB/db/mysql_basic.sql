@@ -91,3 +91,8 @@ INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '31',
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '32', ';-)', 'icon_wink.gif', 'Wink');
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '33', ':!:', 'icon_exclaim.gif', 'Exclamation');
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '34', ':?:', 'icon_question.gif', 'Question');
+INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '35', ':idea:', 'icon_idea.gif', 'Idea');
+INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '36', ':arrow:', 'icon_arrow.gif', 'Arrow');
+INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '37', ':|', 'icon_neutral.gif', 'Neutral');
+INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '38', ':-|', 'icon_neutral.gif', 'Neutral');
+INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '39', ':neutral:', 'icon_neutral.gif', 'Neutral');
