@@ -768,14 +768,14 @@ $lang = array_merge($lang, array(
 	'STOP' => 'Stop', 
 
 
-	'Admin_logs_explain' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'Mod_logs_explain' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'Display_log' => 'Display entries from previous',
-	'All_Entries' => 'All entries',
-	'Sort_ip' => 'IP address',
-	'Sort_date' => 'Date',
-	'Sort_action' => 'Log action',
-	'No_entries' => 'No log entries for this period',
+	'ADMIN_LOGS_EXPLAIN' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'MOD_LOGS_EXPLAIN' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'DISPLAY_LOG' => 'Display entries from previous',
+	'ALL_ENTRIES' => 'All entries',
+	'SORT_IP' => 'IP address',
+	'SORT_DATE' => 'Date',
+	'SORT_ACTION' => 'Log action',
+	'NO_ENTRIES' => 'No log entries for this period',
 
 
 	'EVT_DEFINE' => 'Define an Event', 
