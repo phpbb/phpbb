@@ -29,7 +29,7 @@ if ( !defined('IN_PHPBB') )
 
 if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 {
-	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
+	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? intval($HTTP_GET_VARS[POST_USERS_URL]) : intval($HTTP_POST_VARS[POST_USERS_URL]);
 }
 else
 {
