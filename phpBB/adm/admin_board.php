@@ -270,6 +270,10 @@ switch ($mode)
 		<td class="row2"><input type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $user->lang['QUOTE_DEPTH_LIMIT']; ?>: <br /><span class="gensmall"><?php echo $user->lang['QUOTE_DEPTH_LIMIT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="max_quote_depth" value="<?php echo $new['max_quote_depth']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $user->lang['ALLOW_TOPIC_NOTIFY']; ?>: </td>
 		<td class="row2"><input type="radio" name="allow_topic_notify" value="1" <?php echo $topic_notify_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_topic_notify" value="0" <?php echo $topic_notify_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>

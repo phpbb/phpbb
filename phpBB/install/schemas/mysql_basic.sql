@@ -64,6 +64,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_quote_depth', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars','255');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_chars','3');
