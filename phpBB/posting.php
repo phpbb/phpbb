@@ -524,7 +524,7 @@ if (isset($_REQUEST['post']))
 		);
 
 		$message = (!empty($enable_moderate)) ? 'POST_STORED_MOD' : 'POST_STORED';
-		$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['Click_view_message'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_id . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_forum'], '<a href="viewforum.' . $phpEx . $SID .'&p=' . intval($forum_id) . '">', '</a>');
+		$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['Click_view_message'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_id . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_forum'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . intval($forum_id) . '">', '</a>');
 		trigger_error($message);
 	} // Store message, sync counters
 

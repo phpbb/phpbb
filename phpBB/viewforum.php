@@ -139,7 +139,7 @@ if ($forum_data['forum_postable'])
 	// End handle marking posts
 
 	// Do the forum Prune
-	if ($config['prune_enable'] && $auth->acl_gets('m_prune', 'a_', $forum_id))
+	if ($config['prune_enable'] && $auth->acl_get('a_'))
 	{
 		if ($forum_data['prune_next'] < time() && $forum_data['prune_enable'])
 		{
@@ -162,9 +162,12 @@ if ($forum_data['forum_postable'])
 	$censors = array();
 	obtain_word_list($censors);
 
+
+
+
 	// Topic ordering options
-	$previous_days = array(0 => $user->lang['All_Topics'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
-	$sort_by_text = array('a' => $user->lang['Author'], 't' => $user->lang['Post_time'], 'r' => $user->lang['Replies'], 's' => $user->lang['Subject'], 'v' => $user->lang['Views']);
+	$previous_days = array(0 => $user->lang['All_Topics'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 	$sort_by = array('a' => 'u.username', 't' => 't.topic_last_post_id', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 	if (isset($_POST['sort']))
@@ -215,8 +218,10 @@ if ($forum_data['forum_postable'])
 	$select_sort .= '</select>';
 
 	$select_sort_dir = '<select name="sort_dir">';
-	$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['Ascending'] . '</option><option value="d">' . $user->lang['Descending'] . '</option>' : '<option value="a">' . $user->lang['Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Descending'] . '</option>';
+	$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
 	$select_sort_dir .= '</select>';
+
+
 
 	$post_alt = (intval($forum_data['forum_status']) == ITEM_LOCKED) ? 'Forum_locked' : 'Post_new_topic';
 
@@ -227,7 +232,7 @@ if ($forum_data['forum_postable'])
 		'PAGINATION'	=> generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> sprintf($user->lang['Page_of'], (floor( $start / $config['topics_per_page'] ) + 1), ceil( $topics_count / $config['topics_per_page'] )),
 		'MOD_CP' 		=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], '<a href="mcp.' . $phpEx . '?sid=' . $user->session_id . '&amp;f=' . $forum_id . '">', '</a>') : '', 
-		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['None'],
+		'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
 		'FOLDER_IMG' 			=> $user->img('folder', 'No_new_posts'),
 		'FOLDER_NEW_IMG' 		=> $user->img('folder_new', 'New_posts'),
@@ -461,7 +466,7 @@ if ($forum_data['forum_postable'])
 			$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
 			$topic_author = ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $topic_rowset[$i]['user_id'] . '">' : '';
-			$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? $topic_rowset[$i]['username'] : (($topic_rowset[$i]['topic_first_poster_name'] != '') ? $topic_rowset[$i]['topic_first_poster_name'] : $user->lang['Guest']);
+			$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? $topic_rowset[$i]['username'] : (($topic_rowset[$i]['topic_first_poster_name'] != '') ? $topic_rowset[$i]['topic_first_poster_name'] : $user->lang['GUEST']);
 
 			$topic_author .= ($topic_rowset[$i]['user_id'] != ANONYMOUS) ? '</a>' : '';
 
@@ -469,7 +474,7 @@ if ($forum_data['forum_postable'])
 
 			$last_post_time = $user->format_date($topic_rowset[$i]['topic_last_post_time']);
 
-			$last_post_author = ($topic_rowset[$i]['id2'] == ANONYMOUS) ? (($topic_rowset[$i]['topic_last_poster_name'] != '') ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $user->lang['Guest'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
+			$last_post_author = ($topic_rowset[$i]['id2'] == ANONYMOUS) ? (($topic_rowset[$i]['topic_last_poster_name'] != '') ? $topic_rowset[$i]['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $topic_rowset[$i]['topic_last_poster_id'] . '">' . $topic_rowset[$i]['user2'] . '</a>';
 
 			$last_post_url = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $topic_rowset[$i]['topic_last_post_id'] . '#' . $topic_rowset[$i]['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 

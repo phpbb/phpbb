@@ -144,11 +144,11 @@ function generate_forum_nav(&$forum_data)
 	}
 	$template->assign_block_vars('navlinks', array(
 		'FORUM_NAME'	=>	$forum_data['forum_name'],
-		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id
+		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_data['forum_id']
 	));
 
 	$template->assign_vars(array(
-		'FORUM_ID' 		=> $forum_id,
+		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_DESC'	=> strip_tags($forum_data['forum_desc'])
 	));
