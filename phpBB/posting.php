@@ -530,6 +530,7 @@ else if ( $submit || $confirm )
 				$topic_type = ( $topic_type != $post_data['topic_type'] && !$is_auth['auth_sticky'] && !$is_auth['auth_announce'] ) ? $post_data['topic_type'] : $topic_type;
 
 				submit_post($mode, $post_data, $return_message, $return_meta, $forum_id, $topic_id, $post_id, $poll_id, $topic_type, $bbcode_on, $html_on, $smilies_on, $attach_sig, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $poll_title), $poll_options, $poll_length);
+				if ( $error_msg == '' )
 				user_notification($mode, $post_data, $forum_id, $topic_id, $post_id, $notify_user);
 			}
 			break;
@@ -540,14 +541,14 @@ else if ( $submit || $confirm )
 			break;
 	}
 
-	if ( $mode != 'editpost' )
-	{
-		$user_id = ( $mode == 'reply' || $mode == 'newtopic' ) ? $userdata['user_id'] : $post_data['poster_id'];
-		update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
-	}
-
 	if ( $error_msg == '' )
 	{
+		if ( $mode != 'editpost' )
+		{
+			$user_id = ( $mode == 'reply' || $mode == 'newtopic' ) ? $userdata['user_id'] : $post_data['poster_id'];
+			update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
+		}
+
 		if ( $mode == 'newtopic' || $mode == 'reply' )
 		{
 			$tracking_topics = ( !empty($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
