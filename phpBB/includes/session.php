@@ -648,7 +648,7 @@ class auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (isset($this->acl[$row['forum_id']][$row['auth_option']]) && $this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO)
+			if (!isset($this->acl[$row['forum_id']][$row['auth_option']]) || (isset($this->acl[$row['forum_id']][$row['auth_option']]) && $this->acl[$row['forum_id']][$row['auth_option']] !== ACL_NO))
 			{
 				$this->acl[$row['forum_id']][$row['auth_option']] = $row['min_setting']; 
 			}
