@@ -1,5 +1,3 @@
-Subject: w迎來到 {SITENAME} 討論區
-
 {WELCOME_MSG}
 
 請妥善保留這封電子郵件. 您的帳號資料如下:

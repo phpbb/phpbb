@@ -428,7 +428,9 @@ function remove_search_post($post_id_sql)
 function username_search($search_match)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
-	global $starttime;
+	global $starttime, $gen_simple_header;
+	
+	$gen_simple_header = TRUE;
 
 	$username_list = '';
 	if ( !empty($search_match) )
@@ -459,7 +461,6 @@ function username_search($search_match)
 		$db->sql_freeresult($result);
 	}
 
-	$gen_simple_header = TRUE;
 	$page_title = $lang['Search'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

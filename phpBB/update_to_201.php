@@ -20,58 +20,64 @@ if ( !($result = $db->sql_query($sql)) )
 
 if ( $row = $db->sql_fetchrow($result) )
 {
-	if ( $row['config_value'] == 'RC-3' || $row['config_value'] == 'RC-4' )
+	if ( $row['config_value'] == 'RC-3' || $row['config_value'] == 'RC-4' || $row['config_value'] == '.0.0' )
 	{
-		$sql = array();
-		switch ( SQL_LAYER )
+		if ( $row['config_value'] == 'RC-3' )
 		{
-			case 'mysql':
-			case 'mysql4':
-				$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
-					COLUMN user_autologin_key";
-				break;
-
-			case 'mssql-odbc':
-			case 'mssql':
-			case 'msaccess':
-				$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
-					COLUMN user_autologin_key";
-				break;
-
-			default:
-				die("No DB LAYER found!");
-				break;
-		}
-
-		$errored = false;
-		for($i = 0; $i < count($sql); $i++)
-		{
-			echo "Running :: " . $sql[$i];
-			flush();
-
-			if ( !($result = $db->sql_query($sql[$i])) )
+			$sql = array();
+			switch ( SQL_LAYER )
 			{
-				$errored = true;
-				$error = $db->sql_error();
-				echo " -> <b>FAILED</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+				case 'mysql':
+				case 'mysql4':
+					$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
+						COLUMN user_autologin_key";
+					break;
+
+				case 'mssql-odbc':
+				case 'mssql':
+				case 'msaccess':
+					$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP 
+						COLUMN user_autologin_key";
+					break;
+
+				case 'postgresql':
+					$sql[] = "ALTER TABLE " . USERS_TABLE . " ALTER 
+						COLUMN user_autologin_key DROP"; 
+				default:
+					die("No DB LAYER found!");
+					break;
 			}
-			else
+
+			$errored = false;
+			for($i = 0; $i < count($sql); $i++)
 			{
-				echo " -> <b>COMPLETED</b><br /><br />\n\n";
+				echo "Running :: " . $sql[$i];
+				flush();
+
+				if ( !($result = $db->sql_query($sql[$i])) )
+				{
+					$errored = true;
+					$error = $db->sql_error();
+					echo " -> <b>FAILED (Ignoring)</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+				}
+				else
+				{
+					echo " -> <b>COMPLETED</b><br /><br />\n\n";
+				}
 			}
 		}
 
 		unset($sql);
 
 		$sql = "UPDATE " . CONFIG_TABLE . " 
-			SET config_value = '.0.0' 
+			SET config_value = '.0.1' 
 			WHERE config_name = 'version'";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			die("Couldn't update version info");
 		}
 
-		die("UPDATING COMPLETE -> 2.0.0 Final installed");
+		die("UPDATING COMPLETE -> 2.0.1 Final installed");
 	}
 }
 
@@ -300,7 +306,7 @@ for($i = 0; $i < count($sql); $i++)
 	{
 		$errored = true;
 		$error = $db->sql_error();
-		echo " -> <b>FAILED</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+		echo " -> <b>FAILED (Ignoring)</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
 	}
 	else
 	{
@@ -332,6 +338,13 @@ if( $row = $db->sql_fetchrow($result) )
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		die("Couldn't update subSilver theme");
+	}
+
+	$sql = "DELETE FROM " . THEMES_NAME_TABLE . " 
+		WHERE themes_id = $theme_id";
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		die("Couldn't delete subSilver theme names");
 	}
 
 	$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, tr_color1_name, tr_color2_name, tr_color3_name, tr_class1_name, tr_class2_name, tr_class3_name, th_color1_name, th_color2_name, th_color3_name, th_class1_name, th_class2_name, th_class3_name, td_color1_name, td_color2_name, td_color3_name, td_class1_name, td_class2_name, td_class3_name, fontface1_name, fontface2_name, fontface3_name, fontsize1_name, fontsize2_name, fontsize3_name, fontcolor1_name, fontcolor2_name, fontcolor3_name, span_class1_name, span_class2_name, span_class3_name) 
@@ -380,7 +393,7 @@ $sql = "SELECT DISTINCT u.user_id
 	WHERE aa.auth_mod = 1
 		AND ug.group_id = aa.group_id
 		AND u.user_id = ug.user_id 
-		AND u.user_level <> 1";
+		AND u.user_level <> " . ADMIN;
 if ( !$db->sql_query($sql) )
 {
 	die("Couldn't obtain moderator user ids");
@@ -396,7 +409,7 @@ if ( count($mod_user) )
 {
 	$sql = "UPDATE " . USERS_TABLE . " 
 		SET user_level = " . MOD . " 
-		WHERE user_id IN (" . implode(", ", $mod_user) . ")"; 
+		WHERE user_id IN (" . implode(', ', $mod_user) . ")"; 
 	if ( !$db->sql_query($sql) )
 	{
 		die("Couldn't update user level");

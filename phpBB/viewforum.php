@@ -34,7 +34,7 @@ if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_U
 }
 else if ( isset($HTTP_GET_VARS['forum']))
 {
-	$forum_id = $HTTP_GET_VARS['forum'];
+	$forum_id = intval($HTTP_GET_VARS['forum']);
 }
 else
 {

@@ -117,15 +117,15 @@
 		<td class="row2"><input type="radio" name="privmsg_disable" value="0" {S_PRIVMSG_ENABLED} />{L_ENABLED}&nbsp; &nbsp;<input type="radio" name="privmsg_disable" value="1" {S_PRIVMSG_DISABLED} />{L_DISABLED}</td>
 	</tr>
 	<tr>
-		<td class="row1">{L_INBOX_LIMIT}</span></td>
+		<td class="row1">{L_INBOX_LIMIT}</td>
 		<td class="row2"><input type="text" maxlength="4" size="4" name="max_inbox_privmsgs" value="{INBOX_LIMIT}" /></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_SENTBOX_LIMIT}</span></td>
+		<td class="row1">{L_SENTBOX_LIMIT}</td>
 		<td class="row2"><input type="text" maxlength="4" size="4" name="max_sentbox_privmsgs" value="{SENTBOX_LIMIT}" /></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_SAVEBOX_LIMIT}</span></td>
+		<td class="row1">{L_SAVEBOX_LIMIT}</td>
 		<td class="row2"><input type="text" maxlength="4" size="4" name="max_savebox_privmsgs" value="{SAVEBOX_LIMIT}" /></td>
 	</tr>
 	<tr>
