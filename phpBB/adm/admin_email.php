@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
-*                                admin_email.php
-*                              -------------------
-*     begin                : Thu May 31, 2001
-*     copyright            : (C) 2001 The phpBB Group
-*     email                : support@phpbb.com
-*
-*     $Id$
-*
-****************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_email.php
+// STARTED   : Thu May 31, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -50,9 +42,10 @@ if (isset($_POST['submit']))
 
 	// Error checking needs to go here ... if no subject and/or no message then skip 
 	// over the send and return to the form
-	$group_id = (isset($_POST['g'])) ? intval($_POST['g']) : 0;
-	$subject = (!empty($_POST['subject'])) ? stripslashes(trim($_POST['subject'])) : '';
-	$message = (!empty($_POST['message'])) ? stripslashes(trim($_POST['message'])) : '';
+	$group_id = request_var('g', 0);
+	$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
+	$message	= (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
+	$message	= preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
 
 	$error = array();
 	if ($subject == '')
@@ -67,7 +60,15 @@ if (isset($_POST['submit']))
 
 	if (!sizeof($error))	
 	{
-		$sql = ($group_id) ? 'SELECT u.user_email, u.username, u.user_lang FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug  WHERE ug.group_id = $group_id AND ug.user_pending <> 1 AND u.user_id = ug.user_id AND u.user_allow_massemail = 1" : 'SELECT user_email FROM ' . USERS_TABLE . ' WHERE user_allow_massemail = 1';
+		$sql = ($group_id) ? 'SELECT u.user_email, u.username, u.user_lang 
+			FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug  
+			WHERE ug.group_id = $group_id 
+				AND ug.user_pending <> 1 
+				AND u.user_id = ug.user_id 
+				AND u.user_allow_massemail = 1" : 
+		'SELECT user_email 
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_allow_massemail = 1';
 		$result = $db->sql_query($sql);
 
 		if (!($row = $db->sql_fetchrow($result)))
