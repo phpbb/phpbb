@@ -1,0 +1,81 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+phpBB 2.0 RC-1 (pre) release : 29th November 2001
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the final release of phpBB 2.0 before a Release Candidate series (it is beyond beta but not quite RC!). This version uses a database schema (layout) that has now been frozen, in other words an install or upgrade using this release will be database compatible with all future releases of 2.0 (including the soon to follow RC-1).
+
+
+Running phpBB 2.0 RC-1 (pre)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The install system should be fully operational. Upgrading from previous (1.4.x) versions of phpBB is not yet complete. If you do use it PLEASE backup your current database first! We recommend only 'advanced' users utilise upgrade at this time in case of any problems (which may well require manual fixing of the database).
+
+
+PHP compatibility issues
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Please remember that running any application on a developmental version of PHP can lead to strange/unexpected results which may appear to be bugs in the application (which may not be true). Therefore we recommend you upgrade to the newest stable version of PHP before running phpBB 2.0 (the most recent stable release of PHP is 4.0.6). If you are running a developmental version of PHP please check any bugs you find on a system running a stable release before submitting.
+
+
+Status of this version
+~~~~~~~~~~~~~~~~~~~~~~
+
+This release is effectively feature frozen, no major additions will be made from this point on (only minor or as yet incomplete features will be added). Please do not post suggestions for additional features at this time.
+
+Fully functional features (bugs are noted below):
+
+* Fully featured Templating sytem (includes subSilver template)
+* Multi-lingual capable (English supplied by default)
+* Robust and secure posting system including previews, topic review, polls and fulltext search updating
+* Notification on topic replies (including people who have not participated in topic)
+* Usergroups (each user can belong to numerous groups)
+* Individial control of forum permissions for each user, each group and each major forum operation
+* Modular Administration system (with numerous configuration options)
+* Moderator Control Panel
+* One click installation process
+* Database abstraction layers for MySQL 3.x/4.x, MSSQL 7/2000, MS Access 2000/XP and Postgresql 7.x
+* User Profile and User settings including a range of avatar options, definable timezones, dates, etc.
+* Fully linked self-contained FAQ
+* Fulltext based (boolean capable) search system
+* Private Messaging (Inbox, Sentbox, Outbox, Savebox inc. box size limits)
+* Email from board
+
+Features yet to be frozen for release:
+
+* Language files (including FAQ)
+* Template variable names
+
+Incomplete features:
+
+* Upgrading from 1.4.x to 2.0
+* Possible compatibility issues with PHP3
+
+
+Known bugs
+~~~~~~~~~~
+
+Please note the following issues, if you find additional bugs please report them to our Sourceforge bug tracker page:
+
+http://sourceforge.net/tracker/index.php?group_id=7885
+
+Please DO NOT post bug reports to our forums. 
+
+If you do post a new bug (i.e. one that isn't already listed in the bug tracker) then please include details of your server type/version (Apache 1.2.22, IIS 4, Sambar, etc.), PHP version and DB type/version (eg. MySQL 3.23.32, PostgreSQL 7.1.2, etc.) and please select the right "Group" when submitting the bug (ie. 2.0 RC-1 (pre)). 
+
+Once you have submitted a bug it would be helpful to us if you monitored it to enable us to ask you for feedback or to supply additional information (if required).
+
+Current Bug list:
+
+* Cannot post very large messages when using PostgreSQL 7.0.x (limitation of Postgresql 7.0.x)
+* Auto-login can fail to work properly under IIS (due to a known problem with IIS) 
+* Search highlighting can break URIs in posts
+* Magic URIs occuring at end of posts can cause HTML display problems
+* Posts can suddenly appear marked read even though they have not yet been visited (last visit time issue)
+* Searching for your own posts displays only those posts/topics for which you were the last poster
+* User and Group permissions admin does not properly upgrade settings if you select multiple forums under PostgreSQL 7.x
+
+
+Copyright and disclaimer
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This application is opensource software released under the GPL. Please see source code and the Docs directory for more details. This package and its contents are Copyright © 2001 phpBB Group, All Rights Reserved.
