@@ -554,6 +554,35 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
 
+        //
+        // Filtering bad words
+        //
+        $message = stripslashes($postrow[$i]['post_text']);
+
+        $sql = "SELECT * FROM  " . WORDS_TABLE;
+        if(!$words_result = $db->sql_query($sql))
+        {
+        	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
+        }
+        else
+        {       // Some performance stuff
+                if(mysql_num_rows($words_result) != 0)
+                {
+                        while($current_row = mysql_fetch_array($words_result))
+                        {
+                                $word = $current_row['word'];
+                                $replacement = $current_row['replacement'];
+
+                                $message = preg_replace("/$word/i", " $replacement", $message);
+                                $message = preg_replace("/^$words\s/i", "$replacement ", $message);
+                                $message = preg_replace("/<BR>$word$/i", "<BR>$replacement", $message);
+                                $message = preg_replace("/<BR>$words\s/i", "<BR>$replacement ", $message);
+                        }
+                }
+        }
+        
+        
+
 	if( $is_auth['auth_mod'] )
 	{
 		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
@@ -566,7 +595,6 @@ for($i = 0; $i < $total_posts; $i++)
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
 	$user_sig = stripslashes($postrow[$i]['user_sig']);
-	$message = stripslashes($postrow[$i]['post_text']);
 
 	if(!$board_config['allow_html'] || !$postrow[$i]['enable_html'])
 	{
