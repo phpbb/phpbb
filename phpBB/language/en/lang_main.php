@@ -206,6 +206,7 @@ $lang = array(
 
 	'POST_STICKY' 		=> 'Sticky',
 	'POST_ANNOUNCEMENT' => 'Announcement',
+	'POST_GLOBAL'		=> 'Global announcement',
 	'POST_FORUM_LOCKED' => 'Forum is locked',
 	'POST_TOPIC_LOCKED' => 'Topic is locked', 
 
@@ -330,6 +331,7 @@ $lang = array(
 	'DELETE_TOPIC'		=>	'Delete Topic',
 	'SPLIT_TOPIC'		=>	'Split Topic',
 	'MERGE_TOPIC'		=>	'Merge Topic',
+	'FORK_TOPIC'		=>	'Copy Topic',
 	'MAKE_NORMAL'		=>	'Make Normal',
 	'MAKE_STICKY'		=>	'Make Sticky',
 	'MAKE_ANNOUNCE'		=>	'Make Announce',
@@ -382,7 +384,6 @@ $lang = array(
 	'USER_CANNOT_QUOTE' => 'You cannot quote posts in this forum',
 	'USER_CANNOT_EDIT' => 'You cannot edit posts in this forum',
 	'USER_CANNOT_DELETE' => 'You cannot delete posts in this forum',
-	'USER_CANNOT_REPORT' => 'You cannot report posts in this forum',
 	'CANNOT_DELETE_REPLIED' => 'Sorry but you may not delete posts that have been replied to',
 	'CANNOT_DELETE_POLL' => 'Sorry but you cannot delete an active poll',
 	'EDIT_OWN_POSTS' => 'Sorry but you can only edit your own posts',
@@ -579,7 +580,7 @@ $lang = array(
 	'Always_notify' => 'Always notify me of replies',
 	'Always_notify_explain' => 'Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post',
 	'Board_style' => 'Board Style',
-	'Default_style' => 'Default style',
+	'DEFAULT_STYLE' => 'Default style',
 	'No_themes' => 'No Themes In database',
 	'Board_lang' => 'Board Language',
 	'Timezone' => 'Timezone',
@@ -963,28 +964,6 @@ $lang = array(
 		'Oct' => 'Oct',
 		'Nov' => 'Nov',
 		'Dec' => 'Dec',
-	),
-
-	'REASON'					=>	'Reason',
-	'ADDITIONAL_INFOS'			=>	'Additional infos',
-	'CAN_BE_LEFT_BLANK'			=>	'(can be left blank)',
-
-	'POST_NOT_EXIST'			=>	'The post you requested does not exist',
-
-	'REPORT_TO_ADMIN_EXPLAIN'	=>	'Using this form you can report the selected post to forum admins.',
-
-	'REPORT_NOTIFY'				=>	'Notify me when this report is reviewed',
-	'POST_REPORTED'				=>	'This post has been successfully reported',
-
-	'report_reasons' => array(
-		'title' => array(
-			'warez'	=>	'Warez',
-			'other'	=>	'Other'
-		),
-		'description' => array(
-			'warez'	=>	'The post contains links to illegal or pirated software',
-			'other'	=>	'The reported post does not fit into any other category, please use the description field'
-		)
 	)
 );
 
@@ -997,9 +976,10 @@ $lang = array_merge($lang, array(
 	'REPORTED_POSTS'	=>	'Reported posts',
 	'VIEW_FORUM'		=>	'View forum',
 	'VIEW_LOGS'			=>	'View logs',
+	'FORUM_INFO'		=>	'Forum info',
 
 	'LATEST_UNAPPROVED'	=>	'Latest 5 posts awaiting for approval',
-	'LATEST_REPORTED'	=>	'Latest 5 post reports',
+	'LATEST_REPORTED'	=>	'Latest 5 reports',
 	'LATEST_LOGS'		=>	'Latest 5 logged actions',
 
 	'UNAPPROVED_POSTS_ZERO_TOTAL'	=> 	'There are no posts waiting for approval',
@@ -1014,17 +994,32 @@ $lang = array_merge($lang, array(
 
 // ------
 // strings borrowed from lang_admin
-	'ALL_FORUMS'				=>	'All forums',
-	'LOOK_UP_FORUM'				=>	'Select a forum',
-	'IP'	=> 'User IP',
-	'ACTION'=> 'Action',
+	'ALL_FORUMS'	=>	'All forums',
+	'LOOK_UP_FORUM'	=>	'Select a forum',
+	'IP'			=>	'User IP',
+	'ACTION'		=>	'Action',
 
-	'DISPLAY_LOG' => 'Display entries from previous',
-	'ALL_ENTRIES' => 'All entries',
-	'SORT_IP' => 'IP address',
-	'SORT_DATE' => 'Date',
-	'SORT_ACTION' => 'Log action',
-	'NO_ENTRIES' => 'No log entries for this period',
+	'DISPLAY_LOG'	=>	'Display entries from previous',
+	'ALL_ENTRIES'	=>	'All entries',
+	'SORT_IP'		=>	'IP address',
+	'SORT_DATE'		=>	'Date',
+	'SORT_ACTION'	=>	'Log action',
+	'NO_ENTRIES'	=>	'No log entries for this period',
+
+	'FORUM_NAME'	=>	'Forum name',
+	'FORUM_DESC'	=>	'Description',
+	'FORUM_STYLE'	=>	'Forum style',
+	'FORUM_STATUS'	=>	'Forum status',
+	'LOCKED'		=>	'Locked',
+	'UNLOCKED'		=>	'Unlocked',
+	'FORUM_UPDATED'	=>	'Forum informations updated successfully',
+
+	'THIS_POST_IP'	=>	'IP for this post',
+	'OTHER_IPS'		=>	'Other IP addresses this user has posted from',
+	'OTHER_USERS'	=>	'Users posting from this IP',
+	'IP_INFO'		=>	'IP Information',
+	'LOOKUP_IP'		=>	'Look up IP',
+
 // ------
 	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs for:',
 
@@ -1036,6 +1031,7 @@ $lang = array_merge($lang, array(
 	'TOPIC_NUMBER_IS'			=>	'Topic #%d is %s',
 	'POST_DETAILS'				=>	'Post details',
 
+	'DELETE_POSTS'				=>	'Delete posts',
 	'CONFIRM_DELETE_POST'		=>	'Are you sure you want to delete this post?',
 	'CONFIRM_DELETE_POSTS'		=>	'Are you sure you want to delete these posts?',
 	'CONFIRM_DELETE_TOPIC'		=>	'Are you sure you want to delete this topic?',
@@ -1044,6 +1040,10 @@ $lang = array_merge($lang, array(
 	'POSTS_REMOVED'				=>	'The selected posts have been successfully removed from the database',
 	'TOPIC_REMOVED'				=>	'The selected topic has been successfully removed from the database',
 	'TOPICS_REMOVED'			=>	'The selected topics have been successfully removed from the database',
+
+	'DELETE_SHADOWS_TOPIC'		=>	'Delete shadows pointing to this topic',
+	'DELETE_SHADOWS_FORUM'		=>	'Delete shadow topics for this forum',
+	'SHADOWS_REMOVED'			=>	'Shadow topics successfully removed from the database',
 
 	'RESYNC'					=>	'Resync',
 	'TOPIC_RESYNCHRONISED'		=>	'The selected topic has been resynchronised',
@@ -1054,8 +1054,14 @@ $lang = array_merge($lang, array(
 	'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
 	'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
 	'LEAVE_SHADOW'				=>	'Leave a shadow topic in the old forum',
-	'TOPIC_MOVED'				=>	'The selected topic has been successfully moved.',
-	'TOPICS_MOVED'				=>	'The selected topics have been successfully moved.',
+	'CANNOT_MOVE_GLOBALS'		=>	'Global announcements cannot be moved',
+	'TOPIC_MOVED_SUCCESS'		=>	'The selected topic has been successfully moved',
+	'TOPICS_MOVED_SUCCESS'		=>	'The selected topics have been successfully moved',
+
+	'FORK'						=>	'Copy',
+	'FORK_EXPLAIN'				=>	'Using the form below you can leave a copy of selected thread(s) in the forum you choose. Please note that posts will automatically be approved, and attachments and polls will not be included in the copy',
+	'TOPIC_FORKED_SUCCESS'		=>	'The selected topic has been successfully copied',
+	'TOPICS_FORKED_SUCCESS'		=>	'The selected topics have been successfully copied',
 
 	'RETURN_NEW_TOPIC'			=>	'Click %sHere%s to go to the new topic',
 	'RETURN_NEW_FORUM'			=>	'Click %sHere%s to go to the destination forum',
@@ -1093,10 +1099,10 @@ $lang = array_merge($lang, array(
 
 	'LOCK'						=>	'Lock',
 	'UNLOCK'					=>	'Unlock',
-	'TOPIC_LOCKED'				=>	'The selected topic has been locked',
-	'TOPICS_LOCKED'				=>	'The selected topics have been locked',
-	'TOPIC_UNLOCKED'			=>	'The selected topic has been unlocked',
-	'TOPICS_UNLOCKED'			=>	'The selected topics have been unlocked',
+	'TOPIC_LOCKED_SUCCESS'		=>	'The selected topic has been locked',
+	'TOPICS_LOCKED_SUCCESS'		=>	'The selected topics have been locked',
+	'TOPIC_UNLOCKED_SUCCESS'	=>	'The selected topic has been unlocked',
+	'TOPICS_UNLOCKED_SUCCESS'	=>	'The selected topics have been unlocked',
 
 	'NOT_ALLOWED'				=>	'You are not allowed to perform this action.',
 	'TOPIC_TYPE_CHANGED'		=>	'Topic type successfully changed',
@@ -1108,7 +1114,8 @@ $lang = array_merge($lang, array(
 
 	'logm_lock'				=>	'<b>Locked topic</b>',
 	'logm_unlock'			=>	'<b>Unlocked topic</b>',
-	'logm_move'				=>	'<b>Moved topic</b> from forum %s',
+	'logm_move'				=>	'<b>Moved topic</b> from %s',
+	'logm_fork'				=>	'<b>Copied topic</b> from %s',
 	'logm_split'			=>	'<b>Split topic</b> from topic %s',
 	'logm_delete_topic'		=>	'<b>Deleted topic</b> %s',
 	'logm_delete_post'		=>	'<b>Deleted post</b> %s',
@@ -1118,9 +1125,34 @@ $lang = array_merge($lang, array(
 	'logm_unapprove_topic'	=>	'<b>Unapproved topic</b>',
 	'logm_unapprove_post'	=>	'<b>Unapproved post</b> %s',
 	'logm_merge'			=>	'<b>Merged posts</b> from topic %s',
-	'logm_make_announce'	=>	'<b>Topic type changed</b> to Announcement',
-	'logm_make_sticky'		=>	'<b>Topic type changed</b> to Sticky',
-	'logm_make_normal'		=>	'<b>Topic type changed</b> to Normal',
-	'logm_make_global'		=>	'<b>Topic type changed</b> to Global Announcement'
+	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
+	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
+	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
+	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement',
+
+
+//----- post reporting
+	'REASON'					=>	'Reason',
+	'ADDITIONAL_INFOS'			=>	'Additional infos',
+	'CAN_BE_LEFT_BLANK'			=>	'(can be left blank)',
+
+	'POST_NOT_EXIST'			=>	'The post you requested does not exist',
+
+	'REPORT_TO_ADMIN_EXPLAIN'	=>	'Using this form you can report the selected post to forum admins',
+	'EMPTY_REPORT'				=>	'You must enter a description when selecting this reason',
+
+	'REPORT_NOTIFY'				=>	'Notify me when this report is reviewed',
+	'POST_REPORTED_SUCCESS'		=>	'This post has been successfully reported',
+
+	'report_reasons' => array(
+		'title' => array(
+			'warez'	=>	'Warez',
+			'other'	=>	'Other'
+		),
+		'description' => array(
+			'warez'	=>	'The post contains links to illegal or pirated software',
+			'other'	=>	'The reported post does not fit into any other category, please use the description field'
+		)
+	)
 ));
 ?>
