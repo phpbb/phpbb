@@ -92,9 +92,9 @@ function get_userdata($user)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $lang, $db, $userdata, $SID, $nav_links, $phpEx;
-	
-	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+	global $template, $lang, $db, $SID, $nav_links, $phpEx;
+
+//	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
@@ -137,8 +137,11 @@ function make_jumpbox($action, $match_forum_id = 0)
 				$boxstring_forums = '';
 				for($j = 0; $j < $total_forums; $j++)
 				{
-					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
 					{
+
+//					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					{
 						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
 
