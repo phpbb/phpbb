@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              acm_file.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : acm_file.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
+// -------------------------------------------------------------
 
 class acm
 {
@@ -209,7 +201,8 @@ class acm
 		include($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx);
 
 		$query_id = 'Cache id #' . count($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
+
+		$this->sql_rowset[$query_id] =& $rowset;
 
 		return $query_id;
 	}

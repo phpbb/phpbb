@@ -1,28 +1,20 @@
 <?php
-/***************************************************************************
- *                                acm_db.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : acm_db.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
+// -------------------------------------------------------------
 
 class acm
 {
-	var $is_modified = FALSE;
 	var $vars = '';
+	var $is_modified = FALSE;
 
 	function load($var_names = '')
 	{
@@ -31,10 +23,10 @@ class acm
 
 		$sql = 'SELECT var_name, var_ts, var_data
 			FROM ' . CACHE_TABLE;
-		
+
 		if (!empty($var_names))
 		{
-			$sql .= " WHERE var_name IN ('" . implode("', '", $var_names) . "')";
+			$sql .= "\nWHERE var_name IN ('" . implode("', '", $var_names) . "')";
 		}
 
 		$result = $db->sql_query($sql);
@@ -54,7 +46,7 @@ class acm
 		unset($this->vars);
 	}
 
-	function save() 
+	function save()
 	{
 		if (!$this->is_modified)
 		{
@@ -78,7 +70,7 @@ class acm
 					$insert[] = "'$var_name', " . time() . ", '" . $db->sql_escape(serialize($var_ary['data'])) . "'";
 				}
 
-				$db->sql_query($sql);
+				$this->vars[$var_name]['is_modified'] = FALSE;
 			}
 		}
 
@@ -97,7 +89,7 @@ class acm
 						VALUES (' . implode('), (', $insert) . ')';
 					$db->sql_query($sql);
 				break;
-			
+
 				default:
 					foreach ($insert as $values)
 					{
