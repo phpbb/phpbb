@@ -60,12 +60,12 @@ if(isset($forum_id))
 }
 else 
 {
-	error_die($db, "", "You have reached this page in error, please go back and try again");
+	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
 
 if(!$result = $db->sql_query($sql))
 {
-	error_die($db, QUERY_ERROR);
+	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
 }
 
 //
@@ -76,13 +76,13 @@ if(!$result = $db->sql_query($sql))
 // If the query dosan't return any rows this isn't a valid forum. Inform the user.
 if(!$total_rows = $db->sql_numrows($result)) 
 {
-   error_die($db, "", "The forum you selected does not exist. Please go back and try again.");
+   error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 
 $forum_row = $db->sql_fetchrowset($result);
 if(!$forum_row)
 {
-	error_die($db, QUERY_ERROR);
+	error_die(SQL_QUERY, "Couldn't obtain rowset.", __LINE__, __FILE__);
 }
 
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
@@ -112,7 +112,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 	LIMIT $start, $topics_per_page";
 if(!$t_result = $db->sql_query($sql))
 {
-   error_die($db, QUERY_ERROR);
+   error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
 }
 $total_topics = $db->sql_numrows();
 
@@ -188,7 +188,7 @@ if($total_topics)
 		    }
 		  else
 		    {
-		       $pagination .= " <a href=\"viewforum.$phpEx?forum_id=$forum_id&start=$x\">$count</a> ";
+		       $pagination .= " <a href=\"viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&start=$x\">$count</a> ";
 		    }
 		  $count++;
 		  if(!($count % 20))
@@ -203,7 +203,7 @@ if($total_topics)
 }
 else
 {
-	error_die($db, NO_POSTS);
+	error_die(NO_POSTS);
 }
 			       
 include('includes/page_tail.'.$phpEx);

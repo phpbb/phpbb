@@ -48,7 +48,7 @@ $sql = "SELECT *
 	WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
-	error_die($db, SQL_CONNECT);
+	error_die(SQL_QUERY, "Could not query config information.", __LINE__, __FILE__);
 }
 else  
 {

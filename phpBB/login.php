@@ -46,7 +46,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		$result = $db->sql_query($sql);
 		if(!$result)
 		{
-			error_die($db, "Error in obtaining userdata : login");
+			error_die(SQL_QUERY, "Error in obtaining userdata : login", __LINE__, __FILE__);
 		}
 	
 		$rowresult = $db->sql_fetchrow($result);
@@ -61,17 +61,17 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 				}
 				else
 				{
-					error_die($db, "Couldn't start session : login");
+					error_die(GENERAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
 				}
 			}
 			else
 			{
-				error_die($db, LOGIN_FAILED);
+				error_die(LOGIN_FAILED);
 			}
 		}
 		else
 		{
-			error_die($db, LOGIN_FAILED);
+			error_die(LOGIN_FAILED);
 		}
 	}
 	else if($HTTP_GET_VARS['submit'] == "logout" && $userdata['session_logged_in'])

@@ -48,7 +48,7 @@ else
       case 'newtopic':
 			if(!isset($forum_id))
 			{
-				error_die($db, GENERAL_ERROR, "Sorry, no there is no such forum");
+				error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 			}
 			
 			$pagetype = "newtopic";
@@ -56,7 +56,7 @@ else
 			$sql = "SELECT forum_name, forum_access FROM forums WHERE forum_id = '$forum_id'";
 			if(!$result = $db->sql_query($sql))
 			{
-				error_die($db, QUERY_ERROR);
+				error_die(SQL_QUERY, "Could not obtain forum/forum access information.", __LINE__, __FILE__);
 			}
 			$forum_info = $db->sql_fetchrowset($result);
 			$forum_name = stripslashes($forum_info[0]["forum_name"]);

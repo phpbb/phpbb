@@ -57,8 +57,7 @@ $sql = "SELECT c.*
 	ORDER BY c.cat_order";
 if(!$q_categories = $db->sql_query($sql)) 
 {
-	$db_error = $db->sql_error();
-	error_die($db, QUERY_ERROR, $db_error["message"]);
+	error_die(SQL_QUERY, "Could not query categories list.", __LINE__, __FILE__);
 }
 
 $total_categories = $db->sql_numrows();
@@ -80,7 +79,7 @@ if($total_categories)
 		ORDER BY f.cat_id, f.forum_order";
 	if(!$q_forums = $db->sql_query($sql))
 	{
-		error_die($db, QUERY_ERROR);
+		error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
 	}
 
 	$sql = "SELECT f.forum_id, u.username, u.user_id
@@ -90,7 +89,7 @@ if($total_categories)
 		ORDER BY f.forum_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
-		error_die($db, QUERY_ERROR);
+		error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
 	}
 
 	$total_forums = $db->sql_numrows($q_forums);
@@ -105,10 +104,13 @@ if($total_categories)
 
 	for($i = 0; $i < $total_categories; $i++)
 	{
-		$template->assign_block_vars("catrow", array("CAT_ID" => $category_rows[$i]["cat_id"],
-			"PHP_SELF" => $PHP_SELF,
-			"POST_FORUM_URL" => POST_FORUM_URL,
-			"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])));
+		$template->assign_block_vars("catrow",
+			array("CAT_ID" => $category_rows[$i]["cat_id"],
+				"PHP_SELF" => $PHP_SELF,
+				"POST_FORUM_URL" => POST_FORUM_URL,
+				"CAT_DESC" => stripslashes($category_rows[$i]["cat_title"])
+			)
+		);
 		
 		for($j = 0; $j < $total_forums; $j++)
 		{
@@ -176,7 +178,7 @@ if($total_categories)
 }// if ... total_categories
 else
 {
-   error_die($db, GENERAL_ERROR, "There are no Categories or Foums on this board.");
+   error_die(GENERAL_ERROR, "There are no Categories or Foums on this board.");
 }
 $template->pparse("body");
 

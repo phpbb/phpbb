@@ -98,15 +98,7 @@ switch($mode)
    			}
    			else
    			{
-   				if(DEBUG)
-   				{
-   					$db_error = $db->sql_error();
-   					error_die($db, GENERAL_ERROR, "Error getting next user ID.<br>Reason: ".$db_error["message"]."<br>Line: ".__LINE__."<br>File: ".__FILE__);
-   				}
-   				else
-   				{
-   					error_die($db, QUERY_ERROR);
-   				}
+				error_die(SQL_QUERY, "Couldn't obtained next user_id information.", __LINE__, __FILE__);
    			} 
    			
 				$md_pass = md5($password);
@@ -189,7 +181,7 @@ switch($mode)
 					{
 						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
 					}
-					error_die($db, GENERAL_ERROR, $msg);
+					error_die(GENERAL_ERROR, $msg);
 				}
 				else
 				{
@@ -284,21 +276,21 @@ switch($mode)
 				$sql_update = "UPDATE ".USERS_TABLE." SET user_active = 1, user_actkey = '' WHERE user_id = ".$rowset[0]["user_id"];
 				if($result = $db->sql_query($sql_update))
 				{
-					error_die($db, GENERAL_ERROR, $l_nowactive);
+					error_die(GENERAL_ERROR, $l_nowactive);
 				}
 				else
 				{
-					error_die($db, QUERY_ERROR);
+					error_die(SQL_QUERY);
 				}
 			}
 			else
 			{
-				error_die($db, GENERAL_ERROR, $l_wrongactiv);
+				error_die(GENERAL_ERROR, $l_wrongactiv);
 			}
 		}
 		else
 		{
-			error_die($db, QUERY_ERROR);
+			error_die(SQL_QUERY);
 		}
 	break;
 }

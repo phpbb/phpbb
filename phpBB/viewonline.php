@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************  
- *                                index.php 
+ *                               viewonline.php
  *                            -------------------                         
  *   begin                : Saturday, Feb 13, 2001 
  *   copyright            : (C) 2001 The phpBB Group        
@@ -51,18 +51,18 @@ $sql = "SELECT u.username, u.user_id, f.forum_name, f.forum_id, s.session_page, 
 $result = $db->sql_query($sql);
 if(!$result)
 {
-	error_die($db, QUERY_ERROR);
+	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
 }
 $onlinerow = $db->sql_fetchrowset($result);
 if(!$onlinerow)
 {
-	error_die($db, QUERY_ERROR, "Couldn't fetchrow");
+	error_die(SQL_QUERY, "Couldn't fetchrow", __LINE__, __FILE__);
 }
 
 $template->assign_vars(array(
 	"PHP_SELF" => $PHP_SELF,
 	"POST_FORUM_URL" => POST_FORUM_URL,
-	"POST_USER_URL" => POST_USER_URL,
+	"POST_USER_URL" => POST_USERS_URL,
 	"L_WHOSONLINE" => $l_whosonline,
 	"L_USERNAME" => $l_username,
 	"L_LOCATION" => $l_location
@@ -158,7 +158,7 @@ if($online_count)
 }
 else
 {
-	error_die($db, GENERAL_ERROR, "There are no users currently browsing this forum");
+	error_die(GENERAL_ERROR, "There are no users currently browsing this forum");
 }
 
 include('includes/page_tail.'.$phpEx);

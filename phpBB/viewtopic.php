@@ -37,7 +37,7 @@ $is_moderator = 0;
 
 if(!isset($topic_id))
 {
-   error_die($db, GENERAL_ERROR, "You have reached this page in error, please go back and try again");
+   error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
 
 $sql = "SELECT t.topic_title, t.topic_status, t.topic_replies,
@@ -50,11 +50,11 @@ $sql = "SELECT t.topic_title, t.topic_status, t.topic_replies,
 
 if(!$result = $db->sql_query($sql))
 {
-   error_die($db, QUERY_ERROR);
+   error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
 }
 if(!$total_rows = $db->sql_numrows($result))
 {
-   error_die($db, GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+   error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 $forum_row = $db->sql_fetchrowset($result);
 $topic_title = $forum_row[0]["topic_title"];
@@ -106,18 +106,18 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 	LIMIT $start, $posts_per_page";
 if(!$result = $db->sql_query($sql))
 {
-   error_die($db, QUERY_ERROR);
+   error_die(SQL_QUERY, "Couldn't obtain post/user information.", __LINE__, __FILE__);
 }
 if(!$total_posts = $db->sql_numrows($result))
 {
-   error_die($db, GENERAL_ERROR, "Error getting post data.");
+   error_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", __LINE__, __FILE__);
 }
 $sql = "SELECT *
 	FROM ".RANKS_TABLE."
 	ORDER BY rank_min";
 if(!$ranks_result = $db->sql_query($sql))
 {
-   error_die($db, QUERY_ERROR);
+   error_die(SQL_QUERY, "Couldn't obtain ranks information.", __LINE__, __FILE__);
 }
 $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
