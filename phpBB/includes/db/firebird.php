@@ -293,9 +293,13 @@ class sql_db
 		{
 			if ($rownum > -1)
 			{
-				// NOTE: Let's see how often we use this one and how fast we can produce a working query. ;D
-				// At the moment we are not taking advantage of this feature.
-				trigger_error('ROWNUM > 0 in sql_fetchfield not supported, please file a bug report.');
+				// erm... ok, my bad, we always use zero. :/
+				for ($i = 0; $i <= $rownum; $i++)
+				{
+					$row = $this->sql_fetchrow($query_id);
+				}
+
+				return $row[$field];
 			}
 			else
 			{
