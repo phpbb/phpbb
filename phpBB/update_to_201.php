@@ -366,10 +366,10 @@ switch ( $row['config_value'] )
 					MODIFY COLUMN group_id mediumint(8) NOT NULL";
 				break;
 			case 'postgresql':
-//				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
-//					RENAME COLUMN user_timezone TO user_timezone_old";
-//				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
-//					ADD COLUMN user_timezone decimal(4)";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
+					RENAME COLUMN user_timezone TO user_timezone_old";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " 
+					ADD COLUMN user_timezone decimal(4)";
 				break;
 			case 'mssql':
 			case 'mssql-odbc':
@@ -516,6 +516,21 @@ switch ( $row['config_value'] )
 	case 'RC-3':
 	case 'RC-4':
 	case '.0.0':
+		if ( SQL_LAYER == 'postgresql' )
+		{
+			$sql = "SELECT user_id, user_timezone_old 
+				FROM " . USERS_TABLE;
+			_sql($sql, $errored, $error_ary);
+
+			while ( $row = $db->sql_fetchrow($result) )
+			{
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_timezone = " . $row['user_timezone_old'] . " 
+					WHERE user_id = " . $row['user_id'];
+				_sql($sql, $errored, $error_ary);
+			}			
+		}
+
 		$sql = "SELECT topic_id, topic_moved_id 
 			FROM " . TOPICS_TABLE . " 
 			WHERE topic_moved_id <> 0";
