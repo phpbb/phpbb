@@ -73,19 +73,25 @@ function compose_pm($id, $mode, $action)
 	switch ($action)
 	{
 		case 'post':
-		case 'reply':
-		case 'quote':
-		case 'forward':
 			if (!$auth->acl_get('u_sendpm'))
 			{
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 
+			break;
+		case 'reply':
+		case 'quote':
+		case 'forward':
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
 			}
-					
+
+			if (!$auth->acl_get('u_sendpm'))
+			{
+				trigger_error('NO_AUTH_SEND_MESSAGE');
+			}
+
 			if ($quote_post)
 			{
 				$sql = 'SELECT p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
