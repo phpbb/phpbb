@@ -586,7 +586,7 @@ CREATE TABLE phpbb_topics (
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY forum_id_type (forum_id, topic_type), 
-   KEY topic_last_post_time (topic_last_post_time),
+   KEY topic_last_post_time (topic_last_post_time)
 );
 
 # Table: 'phpbb_topic_marking'
