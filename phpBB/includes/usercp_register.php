@@ -288,6 +288,13 @@ if (isset($_POST['submit']))
 			else
 			{
 				$username_sql = "username = '" . sql_quote($username) . "', ";
+				if ($mode != 'register')
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . "
+							SET forum_last_poster_name = '" . sql_quote($username) . "'
+							WHERE forum_last_poster_id = " . $user_id;
+					$db->sql_query($sql);
+				}
 			}
 		}
 	}
@@ -359,7 +366,6 @@ if (isset($_POST['submit']))
 			'user_dateformat' => $user_dateformat,
 			'user_lang' => $user_lang,
 			'user_style' => $user_style,
-			'user_level' => 0,
 			'user_allow_pm' => 1,
 			'user_active' => $user_active,
 			'user_actkey' => $user_actkey
@@ -367,7 +373,15 @@ if (isset($_POST['submit']))
 
 		if ($mode == 'editprofile')
 		{
-			$db->sql_query_array('UPDATE ' . USERS_TABLE . ' SET WHERE user_id = ' . $user_id, &$sql_ary);
+			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $user_id);
+
+			if ($config['newest_user_id'] == $user_id)
+			{
+				$sql = 'UPDATE ' . CONFIG_TABLE . "
+						SET config_value = '" . sql_quote($username) . "'
+						WHERE config_name = 'newest_username'";
+				$db->sql_query($sql);
+			}
 
 			if ( !$user_active )
 			{

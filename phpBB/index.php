@@ -109,6 +109,8 @@ if ($cat_id == 0)
 					LEFT JOIN ' . USERS_TABLE . ' u ON f.forum_last_poster_id = u.user_id
 					ORDER BY f.left_id';
 	}
+
+	$sql = 'SELECT * FROM ' . FORUMS_TABLE . ' ORDER BY left_id';
 }
 else
 {

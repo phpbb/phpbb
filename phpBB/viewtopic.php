@@ -137,17 +137,31 @@ if ($user->data['user_id'] != ANONYMOUS)
 // page the post is on and the correct display of viewtopic)
 $join_sql_table = (!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
 $join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = " . TRUE . " AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = " . TRUE . " AND p2.post_id <= $post_id";
-$count_sql = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
+$extra_fields = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
 $order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $count_sql . "
+if ($user->data['user_id'] != ANONYMOUS)
+{
+	switch (SQL_LAYER)
+	{
+		//TODO
+		case 'oracle':
+		break;
+
+		default:
+			$extra_fields .= ', tw.notify_status';
+			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON tw.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tw.topic_id';
+	}
+}
+
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_status, f.forum_id, f.forum_style" . $extra_fields . "
 	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
 		$order_sql";
 $result = $db->sql_query($sql);
 
-if (!(extract($db->sql_fetchrow($result))))
+if (!extract($db->sql_fetchrow($result)))
 {
 	trigger_error('Topic_post_not_exist');
 }
@@ -178,7 +192,7 @@ if (!empty($post_id))
 
 $s_watching_topic = '';
 $s_watching_topic_img = '';
-watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id);
+watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
 
 // Post ordering options
 $previous_days = array(0 => $user->lang['All_Posts'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);

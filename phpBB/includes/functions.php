@@ -19,6 +19,11 @@
  *
  ***************************************************************************/
 
+function sql_addslashes($msg)
+{
+	return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+}
+
 function sql_quote($msg)
 {
 	return str_replace("\'", "''", $msg);
@@ -394,7 +399,7 @@ function tz_select($default, $select_name = 'timezone')
 }
 
 // Topic and forum watching common code
-function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id)
+function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset')
 {
 	global $template, $db, $user, $phpEx, $SID, $start;
 
@@ -407,13 +412,25 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	{
 		$can_watch = TRUE;
 
-		$sql = "SELECT notify_status
-			FROM " . $table_sql . "
-			WHERE $where_sql = $match_id
-				AND user_id = $user_id";
-		$result = $db->sql_query($sql);
+		if ($notify_status == 'unset')
+		{
+			$sql = "SELECT notify_status
+				FROM $table_sql
+				WHERE $where_sql = $match_id
+					AND user_id = $user_id";
+			$result = $db->sql_query($sql);
 
-		if ( $row = $db->sql_fetchrow($result) )
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$notify_status = $row['notify_status'];
+			}
+			else
+			{
+				$notify_status = NULL;
+			}
+		}
+
+		if (!is_null($notify_status))
 		{
 			if ( isset($_GET['unwatch']) )
 			{
@@ -438,7 +455,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 			{
 				$is_watching = TRUE;
 
-				if ( $row['notify_status'] )
+				if ($notify_status)
 				{
 					$sql = "UPDATE " . $table_sql . "
 						SET notify_status = 0

@@ -33,24 +33,8 @@ if (preg_match('/^c([0-9]+)$/', $_POST['f'], $m))
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start initial var setup
-if (isset($_GET['f']) || isset($_POST['f']))
-{
-	$forum_id = (isset($_GET['f'])) ? intval($_GET['f']) : intval($_POST['f']);
-}
-else
-{
-	$forum_id = '';
-}
-
-if (isset($_GET['mark']) || isset($_POST['mark']))
-{
-	$mark_read = (isset($_POST['mark'])) ? $_POST['mark'] : $_GET['mark'];
-}
-else
-{
-	$mark_read = '';
-}
-
+$mark_read = (!empty($_REQUEST['mark'])) ? $_REQUEST['mark'] : '';
+$forum_id = (!empty($_REQUEST['f'])) ? intval($_REQUEST['f']) : 0;
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 // End initial var setup
 
@@ -59,100 +43,176 @@ $user->start();
 
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
-if (empty($forum_id))
+if (!$forum_id)
 {
 	trigger_error('Forum_not_exist');
 }
 
-if (!$forum_branch = get_forum_branch($forum_id))
+if ($user->data['user_id'] == ANONYMOUS)
+{
+	$sql = 'SELECT * FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $forum_id;
+}
+else
+{
+	switch (SQL_LAYER)
+	{
+		//TODO
+		case 'oracle':
+		break;
+
+		default:
+			$sql = 'SELECT f.*, fw.notify_status
+					FROM ' . FORUMS_TABLE . ' f
+					LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON fw.user_id = ' . $user->data['user_id'] . ' AND f.forum_id = fw.forum_id
+					WHERE f.forum_id = ' . $forum_id;
+	}
+}
+$result = $db->sql_query($sql);
+if (!$forum_data = $db->sql_fetchrow($result))
 {
 	trigger_error('Forum_not_exist');
 }
 
 // Configure style, language, etc.
-$user->setup(false, $forum_branch['forum_style']);
+$user->setup(false, $forum_data['forum_style']);
 $auth->acl($user->data, $forum_id);
 
 // Auth check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 {
-	if (!$user->data['user_id'] != ANONYMOUS)
+	if ($user->data['user_id'] == ANONYMOUS)
 	{
 		redirect("login.$phpEx$SID&redirect=viewforum.$phpEx&f=$forum_id" . ((isset($start)) ? "&start=$start" : ''));
 	}
 
-	trigger_error($user->lang['Sorry_auth_read']);
+	trigger_error('Sorry_auth_read');
 }
 // End of auth check
 
-// Build subforums list if applicable
-//$forum_data = array();
-//$s_has_subforums = forum_nav_links($forum_id, $forum_data);
-$type = 'parent';
-$forum_rows = array();
-
-foreach ($forum_branch as $row)
+// Get forum parents
+$forum_parents = array();
+if ($forum_data['parent_id'] > 0)
 {
-	if ($type == 'parent')
+	if (empty($forum_data['forum_parents']))
 	{
-		if ($row['forum_status'] == ITEM_CATEGORY)
-		{
-			$link = 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'];
-		}
-		else
-		{
-			$link = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
-		}
+		$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE left_id < ' . $forum_data['left_id'] . '
+				  AND right_id > ' . $forum_data['right_id'] . '
+				ORDER BY left_id ASC';
 
-		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=>	$row['forum_name'],
-			'U_VIEW_FORUM'	=>	$link
-		));
-
-		if ($row['forum_id'] == $forum_id)
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$branch_root_id = 0;
-			$forum_data = $row;
-			$type = 'child';
+			$forum_parents[$row['forum_id']] = $row['forum_name'];
 		}
+		
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET forum_parents = '" . sql_addslashes(serialize($forum_parents)) . "'
+				WHERE parent_id = " . $forum_data['parent_id'];
+		$db->sql_query($sql);
 	}
 	else
 	{
-		if ($row['parent_id'] == $forum_data['forum_id'])
+		$forum_parents = unserialize($forum_data['forum_parents']);
+	}
+}
+
+// Build navigation links
+foreach ($forum_parents as $parent_forum_id => $parent_name)
+{
+	$template->assign_block_vars('navlinks', array(
+		'FORUM_NAME'	=>	$parent_name,
+		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id
+	));
+}
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=>	$forum_data['forum_name'],
+	'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id
+));
+
+
+// Get forum children
+if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
+{
+	$sql = 'SELECT *
+			FROM ' . FORUMS_TABLE . '
+			WHERE left_id > ' . $forum_data['left_id'] . ' AND left_id < ' . $forum_data['right_id'] . '
+			ORDER BY left_id ASC';
+	$result = $db->sql_query($sql);
+
+	$type = 'parent';
+	$forum_rows = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+/*
+		if ($type == 'parent')
 		{
-			// Root-level forum
-			$forum_rows[] = $row;
-			$parent_id = $row['forum_id'];
 
 			if ($row['forum_status'] == ITEM_CATEGORY)
 			{
-				$branch_root_id = $row['forum_id'];
+				$link = 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'];
 			}
 			else
 			{
-				$s_has_subforums = TRUE;
+				$link = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
 			}
-		}
-		elseif ($row['parent_id'] == $branch_root_id)
-		{
-			// Forum directly under a category
-			$forum_rows[] = $row;
-			$parent_id = $row['forum_id'];
 
-			if ($row['forum_status'] != ITEM_CATEGORY)
+			$template->assign_block_vars('navlinks', array(
+				'FORUM_NAME'	=>	$row['forum_name'],
+				'U_VIEW_FORUM'	=>	$link
+			));
+
+			if ($row['forum_id'] == $forum_id)
 			{
-				$s_has_subforums = TRUE;
+				$branch_root_id = 0;
+				$forum_data = $row;
+				$type = 'child';
 			}
 		}
-		elseif ($row['forum_status'] != ITEM_CATEGORY)
+		else
 		{
-			// Subforum
-			if ($auth->acl_get('f_list', $row['forum_id']))
+*/
+			if ($row['parent_id'] == $forum_data['forum_id'])
 			{
-				$subforums[$parent_id][] = $row;
+				// Root-level forum
+				$forum_rows[] = $row;
+				$parent_id = $row['forum_id'];
+
+				if ($row['forum_status'] == ITEM_CATEGORY)
+				{
+					$branch_root_id = $row['forum_id'];
+				}
+				else
+				{
+					$s_has_subforums = TRUE;
+				}
 			}
+			elseif ($row['parent_id'] == $branch_root_id)
+			{
+				// Forum directly under a category
+				$forum_rows[] = $row;
+				$parent_id = $row['forum_id'];
+
+				if ($row['forum_status'] != ITEM_CATEGORY)
+				{
+					$s_has_subforums = TRUE;
+				}
+			}
+			elseif ($row['forum_status'] != ITEM_CATEGORY)
+			{
+				// Subforum
+				if ($auth->acl_get('f_list', $row['forum_id']))
+				{
+					$subforums[$parent_id][] = $row;
+				}
+			}
+/*
 		}
+*/
 	}
+	$db->sql_freeresult();
 }
 
 // Topic read tracking cookie info
@@ -192,7 +252,8 @@ if ($auth->acl_gets('m_prune', 'a_', $forum_id) && $config['prune_enable'])
 // Forum rules, subscription info and word censors
 $s_watching_forum = '';
 $s_watching_forum_img = '';
-watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id);
+$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
+watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
 
 $s_forum_rules = '';
 get_forum_rules('forum', $s_forum_rules, $forum_id);
@@ -323,18 +384,6 @@ $template->assign_vars(array(
 	'U_VIEW_MODERATORS'	=> 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id,
 	'U_MARK_READ' 		=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 );
-
-// Do we have subforums? if so, let's include this harmless file
-if ($s_has_subforums)
-{
-	$template->assign_vars(array(
-		'S_HAS_SUBFORUM'	=>	TRUE,
-		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
-	));
-
-	$root_id = $forum_id;
-	include($phpbb_root_path . 'includes/forums_display.' . $phpEx);
-}
 
 // Topic icons
 $sql = "SELECT *
@@ -551,6 +600,18 @@ $nav_links['up'] = array(
 	'url' 	=> 'index.' . $phpEx . $SID,
 	'title' => sprintf($user->lang['Forum_Index'], $config['sitename'])
 );
+
+// Do we have subforums? if so, let's include this harmless file
+if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
+{
+	$template->assign_vars(array(
+		'S_HAS_SUBFORUM'	=>	TRUE,
+		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $user->lang['Subforum'] : $user->lang['Subforums']
+	));
+
+	$root_id = $forum_id;
+	include($phpbb_root_path . 'includes/forums_display.' . $phpEx);
+}
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

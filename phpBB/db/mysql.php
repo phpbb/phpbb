@@ -226,7 +226,7 @@ class sql_db
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "'" . str_replace('\\\'', '\'\'', $var) . "'";
+					$values[] = "'" . sql_quote($var) . "'";
 				}
 				else
 				{
@@ -247,7 +247,7 @@ class sql_db
 				}
 				elseif (is_string($var))
 				{
-					$values[] = "$key = '" . str_replace('\\\'', '\'\'', $var) . "'";
+					$values[] = "$key = '" . sql_quote($var) . "'";
 				}
 				else
 				{

@@ -135,8 +135,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search.$phpEx&search_id=newposts", true);
-					exit;
+					redirect("login.$phpEx?redirect=search.$phpEx&search_id=newposts");
 				}
 
 				$show_results = 'topics';
@@ -153,8 +152,7 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search.$phpEx&search_id=egosearch", true);
-					exit;
+					redirect("login.$phpEx?redirect=search.$phpEx&search_id=egosearch");
 				}
 
 				$show_results = 'topics';

@@ -222,6 +222,13 @@ switch ($mode)
 		{
 			move_forum($forum_id, $parent_id);
 		}
+		elseif ($row['forum_name'] != $_POST['forum_name'])
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET forum_parents = ""
+					WHERE left_id > ' . $row['left_id'] . ' AND right_id < ' . $row['right_id'];
+			$db->sql_query($sql);
+		}
 
 		$sql = array(
 			'forum_name'		=>	(!empty($_POST['forum_name'])) ? $_POST['forum_name'] : $row['forum_name'],
@@ -904,7 +911,7 @@ function move_forum($from_id, $to_id)
 	// Resync parents
 	//
 	$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET right_id = right_id - $diff
+			SET right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id < " . $from_data['right_id'] . " AND right_id > " . $from_data['right_id'];
 	$db->sql_query($sql);
 
@@ -912,7 +919,7 @@ function move_forum($from_id, $to_id)
 	// Resync righthand side of tree
 	//
 	$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET left_id = left_id - $diff, right_id = right_id - $diff
+			SET left_id = left_id - $diff, right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id > " . $from_data['right_id'];
 	$db->sql_query($sql);
 
@@ -924,7 +931,7 @@ function move_forum($from_id, $to_id)
 		// Resync new parents
 		//
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET right_id = right_id + $diff
+				SET right_id = right_id + $diff, forum_parents = ''
 				WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
 				  AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
 		$db->sql_query($sql);
@@ -933,7 +940,7 @@ function move_forum($from_id, $to_id)
 		// Resync the righthand side of the tree
 		//
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET left_id = left_id + $diff, right_id = right_id + $diff
+				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
 				  AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
 		$db->sql_query($sql);
@@ -960,7 +967,7 @@ function move_forum($from_id, $to_id)
 	}
 
 	$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET left_id = left_id $diff, right_id = right_id $diff
+			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
 			WHERE forum_id IN (" . implode(', ', $moved_ids) . ')';
 	$db->sql_query($sql);
 }

@@ -19,6 +19,10 @@
  *
  ***************************************************************************/
 
+// Grab all data
+extract($_GET);
+extract($_POST);
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
@@ -30,10 +34,6 @@ $user->start();
 $user->setup();
 $auth->acl($user->data);
 // End session management
-
-// Grab all data
-extract($_GET);
-extract($_POST);
 
 // Was cancel pressed? If so then redirect to the appropriate page
 if ( !empty($cancel) )
@@ -398,7 +398,7 @@ if (isset($post))
 				'forum_last_post_id' 	=> intval($post_id),
 				'forum_last_post_time' 	=> $current_time,
 				'forum_last_poster_id' 	=> intval($user->data['user_id']),
-				'forum_last_poster_name'=> ($username != '') ? $username : '',
+				'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? $username : $user->data['username'],
 			);
 			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id = ' . intval($forum_id);
 			$db->sql_query($sql);

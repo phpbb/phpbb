@@ -113,6 +113,7 @@ CREATE TABLE phpbb_forums (
    parent_id smallint(5) UNSIGNED NOT NULL,
    left_id smallint(5) UNSIGNED NOT NULL,
    right_id smallint(5) UNSIGNED NOT NULL,
+   forum_parents text,
    forum_name varchar(150) NOT NULL,
    forum_desc text,
    forum_style tinyint(4) UNSIGNED,
