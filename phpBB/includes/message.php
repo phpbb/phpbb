@@ -86,42 +86,42 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			break;
 
 		case SQL_CONNECT:
-			$msg_title = $lang['General_error'];
+			$msg_title = $lang['General_Error'];
 			$msg_text = $lang['Error_database_connect'];
 			break;
 		
 		case SQL_QUERY:
-			if(!$msg_text)
+			if($msg_text == "")
 			{
 				$msg_text = $lang['An_error_occured'];
 			}
-			if(!$msg_title)
+			if($msg_title == "")
 			{
-				$msg_title = $lang['General_error'];
+				$msg_title = $lang['General_Error'];
 			}
 			break;
 			
 		case SESSION_CREATE:
-			$msg_title = $lang['General_error'];
+			$msg_title = $lang['General_Error'];
 			$msg_text = $lang['Error_session'];
 			break;
 
 		case GENERAL_ERROR:
-			if(!$msg_text)
+			if($msg_text == "")
 			{
 				$msg_text = $lang['An_error_occured'];
 			}
-			if(!$msg_title)
+			if($msg_title == "")
 			{
-				$msg_title = $lang['General_error'];
+				$msg_title = $lang['General_Error'];
 			}
 			break;
 	}
 	if(DEBUG)
 	{
-		if($line != "" && $file != "" && $msg_code != GENERAL_MESSAGE)
+		if($err_line != "" && $err_file != "")
 		{
-			$msg_text .= "<br /><br /><u>DEBUG INFO</u></br /><br>Line: " . $err_line . "<br />File: " . $file;
+			$msg_text .= "<br /><br /><u>DEBUG INFO</u></br /><br>Line : " . $err_line . "<br />File : " . $err_file;
 		}
 	}
 

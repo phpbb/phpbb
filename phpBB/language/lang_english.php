@@ -79,6 +79,7 @@ $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
+$lang['Pages'] = "Pages"; 
 $lang['of'] = "of"; // See Page above
 $lang['Go'] = "Go";
 
@@ -323,6 +324,7 @@ $lang['You_been_banned'] = "You have been banned from this forum<br>Please conta
 $lang['No_topics_post_one'] = "There are no posts in this forum<br>Click on the <b>Post New Topic</b> link on this page to post one";
 
 $lang['General_Error'] = "General Error";
+$lang['An_error_occured'] = "An Error Occured";
 $lang['Error_database_connect'] = "Could not connect to database<br>Please check your configuration settings";
 $lang['Error_session'] = "Error creating session<br>Could not log you in, please go back and try again";
 $lang['Error_login'] = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again";

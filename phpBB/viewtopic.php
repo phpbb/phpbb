@@ -154,11 +154,11 @@ if(!$result = $db->sql_query($sql))
 	if(DEBUG)
 	{
 		$dberror = $db->sql_error();
-		message_die(SQL_QUERY, "Couldn't obtain topic information.<br>Reason: ".$dberror['message']."<br>Query: $sql", "", __LINE__, __FILE__);
+		message_die(SQL_QUERY, "Couldn't obtain topic information<br><br><b>DEBUG INFO</b><br><br>Reason : " . $dberror['message'] . "<br>Query : $sql<br>File : " . __FILE__ . "<br>Line : " .  __LINE__ . "<br>", "");
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist']);
+		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist']);
   	}
 }
 
@@ -178,7 +178,7 @@ if(!$total_rows = $db->sql_numrows($result))
 		if(DEBUG)
 		{
 			$error = $db->sql_error();
-			message_die(GENERAL_ERROR, "The forum/topic you selected does not exist.<br>Reason: ".$error['message']."<br>Query: $sql", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "The forum/topic you selected does not exist<br><br><b><u>DEBUG INFO</u></b><br><br>Reason : " . $error['message'] . "<br><br>Query : $sql<br><br>File : " . __FILE__ . "<br><br>Line : " .  __LINE__ . "<br>", "");
 		}
 		else
 		{
