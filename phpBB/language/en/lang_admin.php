@@ -211,9 +211,13 @@ $lang += array(
 	'LOG_EXPORT_IMAGESET'		=> '<b>Exported imageset</b><br />&#187; %s', 
 	'LOG_DELETE_IMAGESET'		=> '<b>Deleted imageset</b><br />&#187; %s',
 	
-	'LOG_BBCODE_ADD'				=> '<b>Added new BBCode</b><br />&#187; %s',
-	'LOG_BBCODE_EDIT'				=> '<b>Edited BBCode</b><br />&#187; %s',
-	'LOG_BBCODE_DELETE'			=> '<b>Deleted BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_ADD'		=> '<b>Added new BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_EDIT'		=> '<b>Edited BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_DELETE'		=> '<b>Deleted BBCode</b><br />&#187; %s',
+
+	'LOG_JAB_PASSCHG'	=> '<b>Jabber password changed</b>', 
+	'LOG_JAB_REGISTER'	=> '<b>Jabber account registered</b>', 
+	'LOG_JAB_CHANGED'	=> '<b>Jabber account changed</b>', 
 
 	'LOG_EMAIL_ERROR'	=> '%s', 
 	'LOG_JABBER_ERROR'	=> '%s', 
@@ -509,7 +513,7 @@ $lang += array(
 
 // Jabber settings
 $lang += array(
-	'IM_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Please note that not all servers offer all transports and changes in protocols can prevent transports from operating.', 
+	'IM_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, do not stop the script till completed!', 
 
 	'JAB_ENABLE'			=> 'Enable Jabber', 
 	'JAB_ENABLE_EXPLAIN'	=> 'Enables use of jabber messaging and notifications', 
@@ -540,6 +544,15 @@ $lang += array(
 	'YIM_USERNAME'			=> 'YIM Username', 
 	'YIM_USERNAME_EXPLAIN'	=> 'A valid username on %sYIM%s', 
 	'YIM_PASSWORD'			=> 'YIM Password', 
+
+	'JAB_PASS_CHANGED'		=> 'Jabber password changed successfully', 
+	'JAB_REGISTERED'		=> 'New account registered successfully', 
+	'JAB_CHANGED'			=> 'Jabber account changed successfully', 
+
+	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.', 
+	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s', 
+	'ERR_JAB_PASSCHG'		=> 'Could not change password', 
+	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s', 
 );
 
 // Cookie settings

@@ -12,13 +12,8 @@
 // -------------------------------------------------------------
 
 // TODO
-// Server name 
-// Username 
-// Password 
-// Resource 
 // Create new user on server
 // Advise what transports on server
-// Set cruise control time
 // Register transport usernames/passwords (links to online reg systems)
 
 if (!empty($setmodules))
@@ -38,6 +33,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
 
 // Do we have general permissions?
 if (!$auth->acl_get('a_server'))
@@ -48,21 +44,86 @@ if (!$auth->acl_get('a_server'))
 // Grab some basic parameters
 $submit = (isset($_POST['submit'])) ? true : false;
 
-/*
-				if ($result = $this->jabber->AccountRegistration($config['contact_email'], str_replace('.', '_', $config['server_name'])))
-				{
-					break;
-				}
-			}
-			if (!$result)
-			{
-				trigger_error('Could not create new user on Jabber server', E_USER_ERROR);
-			}
-*/
+$jab_enable		= request_var('jab_enable', $config['jab_enable']);
+$jab_host		= request_var('jab_host', $config['jab_host']);
+$jab_port		= request_var('jab_port', $config['jab_port']);
+$jab_username	= request_var('jab_username', $config['jab_username']);
+$jab_password	= request_var('jab_password', $config['jab_password']);
+$jab_resource	= request_var('jab_resource', $config['jab_resource']);
 
-// Pull all config data
-$sql = "SELECT *
-	FROM " . CONFIG_TABLE;
+$jabber = new jabber();
+$error = array();
+
+// Setup the basis vars for jabber connection
+$jabber->server		= $jab_host;
+$jabber->port		= ($jab_port) ? $jab_port : 5222;
+$jabber->username	= $jab_username;
+$jabber->password	= $jab_password;
+$jabber->resource	= $jab_resource;
+
+// Are changing (or initialising) a new host or username? If so run some checks and 
+// try to create account if it doesn't exist
+if ($jab_enable && ($jab_host != $config['jab_host'] || $jab_username != $config['jab_username']))
+{
+	if (!$jabber->Connect())
+	{
+		trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+	}
+
+	// First we'll try to authorise using this account, if that fails we'll
+	// try to create it.
+	if (!($result = $jabber->SendAuth()))
+	{
+		echo " >> $result";
+
+		if (($result = $jabber->AccountRegistration($config['board_email'], $config['sitename'])) <> 2)
+		{
+
+			$error[] = ($result == 1) ? $user->lang['ERR_JAB_USERNAME'] : sprintf($user->lang['ERR_JAB_REGISTER'], $result);
+		}
+		else
+		{
+			$message = $user->lang['JAB_REGISTERED'];
+			$log = 'JAB_REGISTER';
+		}
+	}
+	else
+	{
+		$message = $user->lang['JAB_CHANGED'];
+		$log = 'JAB_CHANGED';
+	}
+}
+else if ($jab_password != $config['jab_password'])
+{
+	if (!$jabber->Connect())
+	{
+		trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+	}
+
+	if (!$jabber->SendAuth())
+	{
+		trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
+	}
+	$jabber->SendPresence(NULL, NULL, 'online');
+
+	if (($result = $jabber->ChangePassword($jab_password))  <> 2)
+	{
+		$error[] = ($result == 1) ? $user->lang['ERR_JAB_PASSCHG'] : sprintf($user->lang['ERR_JAB_PASSFAIL'], $result);
+	}
+	else
+	{
+		$message = $user->lang['JAB_PASS_CHANGED'];
+		$log = 'JAB_PASSCHG';
+	}
+
+	sleep(1);
+	$jabber->Disconnect();
+}
+
+// Pull relevant config data
+$sql = 'SELECT *
+	FROM ' . CONFIG_TABLE . "
+	WHERE config_name LIKE 'jab_%'";
 $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
@@ -71,18 +132,18 @@ while ($row = $db->sql_fetchrow($result))
 	$config_value = $row['config_value'];
 
 	$default_config[$config_name] = $config_value;
-	$new[$config_name] = (isset($_POST[$config_name])) ? $_POST[$config_name] : $default_config[$config_name];
+	$new[$config_name] = (isset($_POST[$config_name])) ? request_var($config_name, '') : $default_config[$config_name];
 
-	if ($submit)
+	if ($submit && !sizeof($error))
 	{
 		set_config($config_name, $new[$config_name]);
 	}
 }
 
-if ($submit)
+if ($submit && !sizeof($error))
 {
-	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
-	trigger_error($user->lang['CONFIG_UPDATED']);
+	add_log('admin', 'LOG_' . $log);
+	trigger_error($message);
 }
 
 
@@ -110,6 +171,20 @@ $jab_yim_enable_no	= (!$new['jab_yim_enable']) ? 'checked="checked"' : '';
 	<tr>
 		<th colspan="2"><?php echo $user->lang['IM']; ?></th>
 	</tr>
+<?php
+
+	if (sizeof($error))
+	{
+
+?>
+	<tr>
+		<td class="row3" colspan="2" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></td>
+	</tr>
+<?php
+
+	}
+
+?>
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_ENABLE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['JAB_ENABLE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="jab_enable" value="1"<?php echo $jab_enable_yes; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="jab_enable" value="0"<?php echo $jab_enable_no; ?> /><?php echo $user->lang['DISABLED']; ?></td>
@@ -192,6 +267,6 @@ $jab_yim_enable_no	= (!$new['jab_yim_enable']) ? 'checked="checked"' : '';
 
 <?php
 
-		adm_page_footer();
+	adm_page_footer();
 
 ?>

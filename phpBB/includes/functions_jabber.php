@@ -250,7 +250,46 @@ class Jabber
 			}
 
 			return $return_code;
+		}
+		else
+		{
+			return 3;
+		}
+	}
 
+	function ChangePassword($new_password)
+	{
+		$packet = $this->SendIq($this->server, 'get', 'A0', 'jabber:iq:register');
+
+		if ($packet)
+		{
+			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			unset($packet);
+
+			$payload = "<username>{$this->username}</username>
+						<password>{$new_password}</password>\n";
+			$payload .= ($key) ? "<key>$key</key>\n" : '';
+
+			$packet = $this->SendIq($this->server, 'set', 'A0', 'jabber:iq:register', $payload);
+
+			if ($this->GetInfoFromIqType($packet) == 'result')
+			{
+				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
+			}
+			elseif ($this->GetInfoFromIqType($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			{
+				// "conflict" error, i.e. already registered
+				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
+				{
+					$return_code = 1;
+				}
+				else
+				{
+					$return_code = 'Error ' . $packet['iq']['#']['error'][0]['@']['code'] . ': ' . $packet['iq']['#']['error'][0]['#'];
+				}
+			}
+
+			return $return_code;
 		}
 		else
 		{
