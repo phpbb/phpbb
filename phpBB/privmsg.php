@@ -49,6 +49,7 @@ $preview = ( isset($HTTP_POST_VARS['preview']) ) ? TRUE : 0;
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 $delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : 0;
 $delete_all = ( isset($HTTP_POST_VARS['deleteall']) ) ? TRUE : 0;
+$save = ( isset($HTTP_POST_VARS['save']) ) ? TRUE : 0;
 
 $refresh = $preview || $submit_search;
 
