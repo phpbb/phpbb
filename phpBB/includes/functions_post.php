@@ -25,7 +25,7 @@ if ( !defined('IN_PHPBB') )
 	die('Hacking attempt');
 }
 
-$html_entities_match = array('#&#', '#<#', '#>#');
+$html_entities_match = array('#&[a-z]+?;#', '#<#', '#>#');
 $html_entities_replace = array('&amp;', '&lt;', '&gt;');
 
 $unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');
@@ -45,65 +45,28 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	// Clean up the message
 	//
 	$message = trim($message);
+	$message = preg_replace($html_entities_match, $html_entities_replace, $message);
 
-	if ( $html_on )
+	if ($html_on)
 	{
-		$allowed_html_tags = split(',', $board_config['allow_html_tags']);
+		// ported from 2.2
+		// If $html is true then "allowed_tags" are converted back from entity
+		// form, others remain ... note this differs from the old version where you
+		// only needed to specify the first part of the tag ... with this version
+		// you need to specify either the exact layout of the tag or use preg_
+		// pattern matches ... this should prevent users from abusing simple
+		// tags by adding styles with javascript, etc. but may complicate the lives
+		// of those who use things like flash etc. ... it also won't close tags
+		// which have previously been left in entity form, e.g. <b style="fdsfs">dfsdf</b>
+		// assuming b was in the allowed tags it would leave the <b style ...> but convert
+		// the </b> ... will look into tightening this up for 2.0.5 (and 2.2 of course)
+		$allowed_tags = split(',', $board_config['allow_html_tags']);
 
-		$end_html = 0;
-		$start_html = 1;
-		$tmp_message = '';
-		$message = ' ' . $message . ' ';
-
-		while ( $start_html = strpos($message, '<', $start_html) )
+		if (sizeof($allowed_tags))
 		{
-			$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $end_html + 1, ( $start_html - $end_html - 1 )));
-
-			if ( $end_html = strpos($message, '>', $start_html) )
-			{
-				$length = $end_html - $start_html + 1;
-				$hold_string = substr($message, $start_html, $length);
-
-				if ( ( $unclosed_open = strrpos(' ' . $hold_string, '<') ) != 1 )
-				{
-					$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($hold_string, 0, $unclosed_open - 1));
-					$hold_string = substr($hold_string, $unclosed_open - 1);
-				}
-
-				$tagallowed = false;
-				for($i = 0; $i < sizeof($allowed_html_tags); $i++)
-				{
-					$match_tag = trim($allowed_html_tags[$i]);
-					if ( preg_match('/^<\/?' . $match_tag . '(?!(\s*)style(\s*)\\=)/i', $hold_string) )
-					{
-						$tagallowed = true;
-					}
-				}
-
-				$tmp_message .= ( $length && !$tagallowed ) ? preg_replace($html_entities_match, $html_entities_replace, $hold_string) : $hold_string;
-
-				$start_html += $length;
-			}
-			else
-			{
-				$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $start_html, strlen($message)));
-
-				$start_html = strlen($message);
-				$end_html = $start_html;
-			}
+			$message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<\1\2>', $message);
 		}
-
-		if ( $end_html != strlen($message) && $tmp_message != '' )
-		{
-			$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $end_html + 1));
-		}
-
-		$message = ( $tmp_message != '' ) ? trim($tmp_message) : trim($message);
-	}
-	else
-	{
-		$message = preg_replace($html_entities_match, $html_entities_replace, $message);
-	}
+	}	
 
 	if( $bbcode_on && $bbcode_uid != '' )
 	{
