@@ -436,6 +436,14 @@ $view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topi
 $reply_img = ($forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED) ? $images['reply_locked'] : $images['reply_new'];
 $post_img = ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'];
 
+//
+// Censor topic title
+//
+if( count($orig_word) )
+{
+	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+}
+
 $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
@@ -635,6 +643,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( count($orig_word) )
 	{
+		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 		$message = preg_replace($orig_word, $replacement_word, $message);
 	}
 
