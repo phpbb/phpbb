@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************  
- *                                 
+ *                                modcp.php 
  *                            -------------------                         
  *   begin                : July 4, 2001
  *   copyright            : (C) 2001 The phpBB Group        
@@ -41,9 +41,9 @@ $page_title = "Modertator Control Panel";
 $forum_id = ($HTTP_POST_VARS[POST_FORUM_URL]) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 $topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
 
-if(empty($forum_id))
+if(empty($forum_id) || !isset($forum_id))
 {
-	$sql = "SELECT forum_id, forum_topics FROM ".TOPICS_TABLE." WHERE topic_id = ".$topic_id;
+	$sql = "SELECT f.forum_id, f.forum_topics FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f WHERE t.topic_id = ".$topic_id." AND f.forum_id = t.forum_id";
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
@@ -216,7 +216,10 @@ switch($mode)
 			message_die(GENERAL_MESSAGE, $msg);
 			
 		}
-
+		else
+		{
+			echo "Here";
+		}
 	
 	break;
 	case 'move':
