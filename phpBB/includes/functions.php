@@ -182,43 +182,44 @@ function make_jumpbox()
 	return($boxstring);
 }
 
-function make_forum_box($box_name, $default_forum = -1)
+//
+// Simple version of jumpbox, just lists authed forums
+//
+function make_forum_select($box_name)
 {
-	global $db;
+	global $db, $userdata;
 
-	$limit_forums = "";
+	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$sql = "SELECT forum_id, forum_name
-		FROM " . FORUMS_TABLE . "
+		FROM " . FORUMS_TABLE . " 
 		ORDER BY cat_id, forum_order";
-	if(!$q_forums = $db->sql_query($sql))
+	if( !$q_forums = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 	}
-	$total_forums = $db->sql_numrows($q_forums);
-	$forum_rows = $db->sql_fetchrowset($q_forums);
 
-	$boxstring = '<select name="'.$box_name.'">';
-	if($total_forums)
+	$forum_list = "";
+	while( $row = $db->sql_fetchrow($q_forums) )
 	{
-		for($y = 0; $y < $total_forums; $y++)
+		if( $is_auth_ary[$row['forum_id']]['auth_read'] )
 		{
-			$name = stripslashes($forum_rows[$y]['forum_name']);
-			$boxstring .=  "<option value=\"".$forum_rows[$y]['forum_id']."\"";
-			if($forum_rows[$y]['forum_id'] == $default_forum)
-			{
-				$boxstring .= " selected=\"selected\"";
-			}
-			$boxstring .= ">$name</option>\n";
+			$forum_list .= "<option value=\"" . $row['forum_id'] . "\">" . $row['forum_name'] . "</option>";
 		}
+	}
+
+	if( $forum_list == "" )
+	{
+		$forum_list .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
 	}
 	else
 	{
-		$boxstring .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
+		$forum_list = '<select name="' . $box_name . '">' . $forum_list . '</select>';
 	}
 
-	return($boxstring);
+	return($forum_list);
 }
+
 //
 // Initialise user settings on page load
 function init_userprefs($userdata)

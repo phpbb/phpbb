@@ -455,11 +455,10 @@ switch($mode)
 		{
 			if( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
 			{
-				message_die(GENERAL_MESSAGE, $lang['None_selected'], $lang['Error']);
+				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			$hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
-			$hidden_fields .= $lang['New_forum'] . ':  ' . make_forum_box('new_forum'). '</select><br><br>';
 
 			if( isset($HTTP_POST_VARS['topic_id_list']) )
 			{
@@ -478,17 +477,22 @@ switch($mode)
 			// Set template files
 			//
 			$template->set_filenames(array(
-				"confirm" => "confirm_body.tpl")
+				"movetopic" => "modcp_move.tpl")
 			);
 
 			$template->assign_vars(array(
 				"MESSAGE_TITLE" => $lang['Confirm'],
 				"MESSAGE_TEXT" => $lang['Confirm_move_topic'],
+
+				"L_MOVE_TO_FORUM" => $lang['Move_to_forum'], 
 				"L_YES" => $lang['Yes'],
 				"L_NO" => $lang['No'],
-				"S_CONFIRM_ACTION" => append_sid("modcp.$phpEx"),
-				"S_HIDDEN_FIELDS" => $hidden_fields));
-			$template->pparse("confirm");
+
+				"S_FORUM_BOX" => make_forum_select("new_forum"), 
+				"S_MODCP_ACTION" => append_sid("modcp.$phpEx"),
+				"S_HIDDEN_FIELDS" => $hidden_fields)
+			);
+			$template->pparse("movetopic");
 
 			include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
@@ -691,7 +695,7 @@ switch($mode)
 			$topic_time = time();
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . "
-				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote)
+				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 				VALUES ('$post_subject', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
@@ -779,7 +783,7 @@ switch($mode)
 					"S_SPLIT_ACTION" => append_sid("modcp.$phpEx"),
 					"S_HIDDEN_FIELDS" => $s_hidden_fields,
 
-					"FORUM_INPUT" => make_forum_box("new_forum_id", $forum_id))
+					"FORUM_INPUT" => make_forum_select("new_forum_id", $forum_id))
 				);
 
 				for($i = 0; $i < $total_posts; $i++)
@@ -966,6 +970,9 @@ switch($mode)
 
 		$template->pparse("viewip");
 
+		break;
+
+	case 'auth':
 		break;
 
 	default:
