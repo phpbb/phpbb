@@ -107,6 +107,7 @@ class bbcode
 		{
 			if (isset($this->bbcode_cache[$bbcode_id]) || !($this->bbcode_bitfield & pow(2, $bbcode_id)))
 			{
+				// do not try to re-cache it if it's already in
 				continue;
 			}
 			$bbcode_ids[$bbcode_id] = $bbcode_id;
@@ -207,7 +208,7 @@ class bbcode
 				case 9:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str' => array(
-							'[list:$uid]'			=>	$this->bbcode_tpl('ulist_open', $bbcode_id),
+							'[list:$uid]'			=>	$this->bbcode_tpl('ulist_open_default', $bbcode_id),
 							'[/list:u:$uid]'		=>	$this->bbcode_tpl('ulist_close', $bbcode_id),
 							'[/list:o:$uid]'		=>	$this->bbcode_tpl('olist_close', $bbcode_id),
 							'[*:$uid]'				=>	$this->bbcode_tpl('listitem', $bbcode_id),
@@ -215,7 +216,7 @@ class bbcode
 							'[/*:m:$uid]'			=>	$this->bbcode_tpl('listitem_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_ordered_list('\\1')",
+							'#\[list=([^\[]+):$uid\]#e'	=>	"\$this->bbcode_list('\\1')",
 						)
 					);
 				break;
@@ -267,19 +268,10 @@ class bbcode
 			'img'			=>	'<img src="\1" border="0" />',
 			'size'			=>	'<span style="font-size: \1px; line-height: normal">\2</span>',
 			'color'			=>	'<span style="color: \1">\2</span>',
-			'olist_open'	=>	'<ol style="list-style-type:{LIST_TYPE}">',
-			'olist_close'	=>	'</ol>',
-			'ulist_open'	=>	'<ul>',
-			'ulist_close'	=>	'</ul>',
-			'listitem'		=>	'<li>',
-			'listitem_close'=>	'</li>',
 			'email'			=>	'<a href="mailto:\1">\2</a>'
 		);
 		global $template, $user;
 
-// DEBUG - nothing but [quote] and [list] is templated.
-// Note that [quote] and [code] templates MUST be defined, there is no hardcoded equivalent
-$user->theme['bbcode_bitfield'] = bindec('100000001');
 		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & pow(2, $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
@@ -316,7 +308,6 @@ $user->theme['bbcode_bitfield'] = bindec('100000001');
 	function bbcode_tpl_replace($tpl_name, $tpl)
 	{
 		static $replacements = array(
-			'olist_open'			=>	array('{LIST_TYPE}'	=>	'\\1'),
 			'quote_username_open'	=>	array('{USERNAME}'	=>	'\\1'),
 			'color'					=>	array('{COLOR}'		=>	'\\1', 'TEXT'			=>	'\\2'),
 			'size'					=>	array('{SIZE}'		=>	'\\1', 'TEXT'			=>	'\\2'),
@@ -336,45 +327,58 @@ $user->theme['bbcode_bitfield'] = bindec('100000001');
 		return trim($tpl);
 	}
 	
-	function bbcode_ordered_list($type)
+	function bbcode_list($type)
 	{
-		if ($type == 'i')
+		if ($type == '')
 		{
+			$tpl = 'ulist_open_default';
+			$type = 'default';
+			$start = 0;
+		}
+		elseif ($type == 'i')
+		{
+			$tpl = 'olist_open';
 			$type = 'lower-roman';
 			$start = 1;
 		}
 		elseif ($type == 'I')
 		{
+			$tpl = 'olist_open';
 			$type = 'upper-roman';
 			$start = 1;
 		}
 		elseif (preg_match('#^(disc|circle|square)$#i', $type))
 		{
+			$tpl = 'ulist_open';
 			$type = strtolower($type);
 			$start = 1;
 		}
 		elseif (preg_match('#^[a-z]$#', $type))
 		{
+			$tpl = 'olist_open';
 			$type = 'lower-alpha';
 			$start = ord($type) - 96;
 		}
 		elseif (preg_match('#[A-Z]#', $type))
 		{
+			$tpl = 'olist_open';
 			$type = 'upper-alpha';
 			$start = ord($type) - 64;
 		}
 		elseif (is_numeric($type))
 		{
+			$tpl = 'olist_open';
 			$type = 'arabic-numbers';
 			$start = intval($chr);
 		}
 		else
 		{
+			$tpl = 'olist_open';
 			$type = 'arabic-numbers';
 			$start = 1;
 		}
-		
-		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl('olist_open'));
+
+		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));
 	}
 
 	function bbcode_second_pass_code($type, $code)
