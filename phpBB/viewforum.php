@@ -546,7 +546,7 @@ if($total_topics)
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
 		$topic_poster = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']) . "\">" : "";
-		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : $topic_rowset[$i]['post_username'];
+		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != "" ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
 		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? "</a>" : "";
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
