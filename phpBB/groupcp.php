@@ -195,7 +195,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		"GROUP_MODERATOR" => $moderator['username'],
 		"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
 
-		"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id")
+		"U_GROUPCP" => $protocol . $server_name . $path . "/groupcp.$phpEx?" . POST_GROUPS_URL . "=$group_id&validate=true")
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -551,6 +551,18 @@ else if( $group_id )
 	// END approve or deny
 	//
 	
+	//
+	// Did the group moderator get here through an email?
+	// If so, check to see if they are logged in.
+	//
+	if( isset($HTTP_GET_VARS['validate']) );
+	{
+		if( !$userdata['session_logged_in'] )
+		{
+			header("Location: " . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		}
+	}
+
 	//
 	// Get group details
 	//

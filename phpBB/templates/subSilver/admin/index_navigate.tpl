@@ -1,7 +1,7 @@
  
 <table width="100%" cellpadding="4" cellspacing="0" border="0" align="center">
   <tr> 
-	<td align="center" ><a href="{U_FORUM_INDEX}" target="_top"><img src="../templates/subSilver/images/logo_phpBB_med.gif" border="0" /></a></td>
+	<td align="center" ><a href="{U_FORUM_INDEX}" target="_parent"><img src="../templates/subSilver/images/logo_phpBB_med.gif" border="0" /></a></td>
   </tr>
   <tr> 
 	<td align="center" > 
@@ -13,7 +13,7 @@
 		  <td class="row1"><span class="genmed"><a href="{U_ADMIN_INDEX}" target="main" class="genmed">{L_ADMIN_INDEX}</a></span></td>
 		</tr>
 		<tr> 
-		  <td class="row1"><span class="genmed"><a href="{U_FORUM_INDEX}" target="_top" class="genmed">{L_FORUM_INDEX}</a></span></td>
+		  <td class="row1"><span class="genmed"><a href="{U_FORUM_INDEX}" target="_parent" class="genmed">{L_FORUM_INDEX}</a></span></td>
 		</tr>
 		<tr> 
 		  <td class="row1"><span class="genmed"><a href="{U_FORUM_INDEX}" target="main" class="genmed">{L_PREVIEW_FORUM}</a></span></td>
