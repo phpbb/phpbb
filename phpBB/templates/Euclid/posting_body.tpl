@@ -225,7 +225,7 @@ function storeCaret(textEl) {
 	<tr>
 		<td class="tablebg"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<td class="cat" colspan="2" height="30"><span class="cattitle"><b>{L_POST_A}</b></span></td>
+				<td class="cat" colspan="2" height="30" align="center"><span class="cattitle"><b>{L_POST_A}</b></span></td>
 	        </tr>
 			<!-- BEGIN username_select -->
 			<tr>

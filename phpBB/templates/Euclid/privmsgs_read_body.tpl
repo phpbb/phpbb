@@ -33,15 +33,22 @@
 	</tr>
 </table>
 
-<table border="0" cellpadding="1" cellspacing="0" width="98%" align="center">
+<table width="98%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-		        <td class="cat" align="right">{QUOTE_PM_IMG} {REPLY_PM_IMG} {EDIT_PM_IMG}</td>
+		        <td class="cat" height="30" align="right">{QUOTE_PM_IMG} {REPLY_PM_IMG} {EDIT_PM_IMG}</td>
 			</tr>
 			<tr>
-				<th>{BOX_NAME} :: {L_MESSAGE}</th>
+				<th height="25">{BOX_NAME} :: {L_MESSAGE}</th>
 			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" height="2"><img src="images/spacer.gif" height="2"></td>
+	</tr>
+	<tr>
+		<td class="tablebg"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<td class="row2" align="left"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
@@ -80,8 +87,15 @@
 			<tr>
 				<td class="row2" height="20" valign="middle">{PROFILE_IMG} {EMAIL_IMG} {SEARCH_IMG} {WWW_IMG} {ICQ_ADD_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}</td>
 			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" height="2"><img src="images/spacer.gif" height="2"></td>
+	</tr>
+	<tr>
+		<td class="tablebg"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<td class="cat"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<td class="cat" height="30"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td>{QUOTE_PM_IMG} {REPLY_PM_IMG} {EDIT_PM_IMG}</td>
 						<td align="right" valign="middle">{S_HIDDEN_FIELDS}<input class="liteoptiontable" type="submit" name="save" value="{L_SAVE_MSG}">&nbsp;<input class="liteoptiontable" type="submit" name="delete" value="{L_DELETE_MSG}"></td>

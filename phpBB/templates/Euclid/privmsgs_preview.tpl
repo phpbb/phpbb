@@ -1,13 +1,17 @@
-<table width="80%" border="0" cellpadding="1" cellspacing="0" align="center">
+
+<table width="98%" cellspacing="0" cellpadding="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr>
-		        <td class="cat"><table width="100%" cellspacing="0" cellpadding="0" border="0"> 
-	                <tr>
-               			<td><span class="cattitle"><b>{L_PREVIEW}</b></span></td> 
-	               </tr>
-      			</table></td>
+		        <td class="cat" height="30" align="center"><span class="cattitle">{L_PREVIEW}</span></td> 
 			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" height="2"><img src="images/spacer.gif" height="2"></td>
+	</tr>
+	<tr>
+		<td class="tablebg"><table width="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
 				<td class="row2" align="left"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
@@ -48,6 +52,9 @@
 				</table></td>
 			</tr>
 		</table></td>
+	</tr>
+	<tr>
+		<td class="cat" height="2"><img src="images/spacer.gif" height="2"></td>
 	</tr>
 </table>
 
