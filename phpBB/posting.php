@@ -1002,7 +1002,8 @@ $forum_data = array(
 	'forum_parents'	=> $forum_parents,
 	'forum_name'	=> $forum_name,
 	'forum_id'		=> $forum_id,
-	'forum_desc'	=> ''
+	'forum_type'	=> $forum_type,
+	'forum_desc'	=> $forum_desc
 );
 generate_forum_nav($forum_data);
 

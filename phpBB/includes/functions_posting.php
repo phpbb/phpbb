@@ -503,20 +503,6 @@ function create_thumbnail($source, $new_file, $mimetype)
 	return true;
 }
 
-// Check if extension is allowed to be posted within forum X
-function extension_allowed($forum_id, $extension)
-{
-	global $extensions;
-
-	if (!isset($extensions) || !is_array($extensions))
-	{
-		$extensions = array();
-		obtain_attach_extensions($extensions);
-	}
-
-	return (is_array($extensions['_allowed_'][$extension]) && !in_array($forum_id, $extensions['_allowed_'][$extension])) || !isset($extensions['_allowed_'][$extension]);
-}
-
 //
 // TODO
 //

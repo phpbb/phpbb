@@ -162,7 +162,7 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
+$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
@@ -448,10 +448,10 @@ $topic_title = censor_text($topic_title);
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
-    'FORUM_NAME' 	=> $forum_name,
+	'FORUM_NAME' 	=> $forum_name,
 	'FORUM_DESC'	=> $forum_desc,
-    'TOPIC_ID' 		=> $topic_id,
-    'TOPIC_TITLE' 	=> $topic_title,
+	'TOPIC_ID' 		=> $topic_id,
+	'TOPIC_TITLE' 	=> $topic_title,
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
@@ -1028,6 +1028,10 @@ if ($bbcode_bitfield)
 
 $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
+
+$template->assign_vars(array(
+	'S_NUM_POSTS' => count($post_list))
+);
 
 // Output the posts
 //foreach ($rowset as $i => $row)

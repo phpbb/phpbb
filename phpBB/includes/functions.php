@@ -127,15 +127,23 @@ function generate_forum_nav(&$forum_data)
 	$forum_parents = get_forum_parents($forum_data);
 
 	// Build navigation links
-	foreach ($forum_parents as $parent_forum_id => $parent_name)
+	foreach ($forum_parents as $parent_forum_id => $parent_data)
 	{
+		list($parent_name, $parent_type) = array_values($parent_data);
+
 		$template->assign_block_vars('navlinks', array(
+			'S_IS_CAT'		=>	($parent_type == FORUM_CAT) ? true : false,
+			'S_IS_LINK'		=>	($parent_type == FORUM_LINK) ? true : false,
+			'S_IS_POST'		=>	($parent_type == FORUM_POST) ? true : false,
 			'FORUM_NAME'	=>	$parent_name,
 			'U_VIEW_FORUM'	=>	"viewforum.$phpEx$SID&amp;f=$parent_forum_id")
 		);
 	}
 
 	$template->assign_block_vars('navlinks', array(
+		'S_IS_CAT'		=>	($forum_data['forum_type'] == FORUM_CAT) ? true : false,
+		'S_IS_LINK'		=>	($forum_data['forum_type'] == FORUM_LINK) ? true : false,
+		'S_IS_POST'		=>	($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=>	$forum_data['forum_name'],
 		'U_VIEW_FORUM'	=>	"viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
 	);
@@ -159,7 +167,7 @@ function get_forum_parents(&$forum_data)
 	{
 		if ($forum_data['forum_parents'] == '')
 		{
-			$sql = 'SELECT forum_id, forum_name
+			$sql = 'SELECT forum_id, forum_name, forum_type
 				FROM ' . FORUMS_TABLE . '
 				WHERE left_id < ' . $forum_data['left_id'] . '
 					AND right_id > ' . $forum_data['right_id'] . '
@@ -168,7 +176,7 @@ function get_forum_parents(&$forum_data)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_parents[$row['forum_id']] = $row['forum_name'];
+				$forum_parents[$row['forum_id']] = array($row['forum_name'], (int) $row['forum_type']);
 			}
 			$db->sql_freeresult($result);
 
@@ -285,15 +293,16 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 		return;
 	}
 
-	$boxstring = '';
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
-	$right = $cat_right = $padding_inc = 0;
-	$padding = $forum_list = $holding = '';
-	$padding_store = array('0' => '');
+	$right = $cat_right = $padding = 0;
+	$padding_store = array('0' => 0);
+	$display_jumpbox = false;
+	$iteration = 1;
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
@@ -307,10 +316,22 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 			// if the user does not have permissions to list this forum skip
 			continue;
 		}
+		
+		if (!$display_jumpbox)
+		{
+			$template->assign_block_vars('jumpbox_forums', array(
+				'FORUM_ID'		=> ($select_all) ? 0 : -1,
+				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
+				'S_FORUM_COUNT'	=> $iteration)
+			);
 
+			$iteration++;
+			$display_jumpbox = true;
+		}
+				
 		if ($row['left_id'] < $right)
 		{
-			$padding .= '&nbsp; &nbsp;';
+			$padding++;
 			$padding_store[$row['parent_id']] = $padding;
 		}
 		else if ($row['left_id'] > $right + 1)
@@ -320,35 +341,32 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 
 		$right = $row['right_id'];
 
-		$selected = ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '';
-
-		if ($row['left_id'] > $cat_right)
-		{
-			$holding = '';
-		}
-
 		if ($row['right_id'] - $row['left_id'] > 1)
 		{
 			$cat_right = max($cat_right, $row['right_id']);
+		}
 
-			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-		}
-		else
+		$template->assign_block_vars('jumpbox_forums', array(
+			'FORUM_ID'		=> $row['forum_id'],
+			'FORUM_NAME'	=> $row['forum_name'],
+			'SELECTED'		=> ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '',
+			'S_FORUM_COUNT'	=> $iteration,
+			'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
+			'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
+			'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false)
+		);
+
+		for ($i = 0; $i < $padding; $i++)
 		{
-			$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-			$holding = '';
+			$template->assign_block_vars('jumpbox_forums.level', array());
 		}
+		$iteration++;
 	}
 	$db->sql_freeresult($result);
 	unset($padding_store);
 
-	if ($boxstring)
-	{
-		$boxstring = (($select_all) ? '<option value="0">' . $user->lang['ALL_FORUMS'] : '<option value="-1">' . $user->lang['SELECT_FORUM']) . '</option><option value="-1">-----------------</option>' . $boxstring;
-	}
-
 	$template->assign_vars(array(
-		'S_JUMPBOX_OPTIONS' => $boxstring,
+		'S_DISPLAY_JUMPBOX'	=> $display_jumpbox,
 		'S_JUMPBOX_ACTION'	=> $action)
 	);
 
@@ -1129,6 +1147,20 @@ function smilie_text($text, $force_option = false)
 	global $config, $user, $phpbb_root_path;
 
 	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
+}
+
+// Check if extension is allowed to be posted within forum X
+function extension_allowed($forum_id, $extension)
+{
+	global $extensions;
+
+	if (!isset($extensions) || !is_array($extensions))
+	{
+		$extensions = array();
+		obtain_attach_extensions($extensions);
+	}
+
+	return (is_array($extensions['_allowed_'][$extension]) && !in_array($forum_id, $extensions['_allowed_'][$extension])) || !isset($extensions['_allowed_'][$extension]);
 }
 
 // Error and message handler, call with trigger_error if reqd
