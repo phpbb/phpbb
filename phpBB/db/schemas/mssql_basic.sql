@@ -43,6 +43,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
