@@ -215,27 +215,27 @@ else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2 && !defined("PH
 		$s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
 	}
 
-	page_header($lang['ftp_instructs']);
+	page_header($lang['FTP_INSTRUCTS']);
 
 ?>
 	<tr>
-		<th colspan="2"><?php echo $lang['ftp_info']; ?></th>
+		<th colspan="2"><?php echo $lang['FTP_INFO']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_path']; ?></span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['FTP_PATH']; ?></span></td>
 		<td class="row2"><input type="text" name="ftp_dir"></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_password']; ?></span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['FTP_USERNAME']; ?></span></td>
 		<td class="row2"><input type="text" name="ftp_user"></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['ftp_username']; ?></span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['FTP_PASSWORD']; ?></span></td>
 		<td class="row2"><input type="password" name="ftp_pass"></td>
 	</tr>
 <?php
 
-	page_common_form($s_hidden_fields, $lang['Transfer_config']);
+	page_common_form($s_hidden_fields, $lang['TRANSFER_CONFIG']);
 	page_footer();
 	exit;
 
@@ -254,7 +254,7 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($_POST['config_data']) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 
-		page_header($lang['NoFTP_config'], "install.$phpEx");
+		page_header($lang['NO_FTP_CONFIG'], "install.$phpEx");
 
 		if ($upgrade)
 		{
@@ -278,10 +278,10 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 		}
 		else
 		{
-			page_common_form($s_hidden_fields, $lang['Download_config']);
+			page_common_form($s_hidden_fields, $lang['DOWNLOAD_CONFIG']);
 		}
 
-		page_footer($lang['Download_config'], $s_hidden_fields);
+		page_footer($lang['DOWNLOAD_CONFIG'], $s_hidden_fields);
 		exit;
 	}
 	else
@@ -321,8 +321,8 @@ else if (!empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED"))
 		// Log user in
 		$auth->login($admin_name, $admin_pass1);
 
-		page_header($lang['Inst_Step_2'], "../adm/index.$phpEx$SID");
-		page_footer($lang['Finish_Install'], $s_hidden_fields);
+		page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
+		page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
 		exit;
 	}
 }
@@ -361,14 +361,14 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 	$script_path = preg_replace('#install\/install\.'.$phpEx.'#i', '', $_SERVER['PHP_SELF']);
 
 	// Generate installation form
-	$instruction_text = $lang['Inst_Step_0'];
+	$instruction_text = $lang['INST_STEP_0'];
 
 	if (!empty($install_step))
 	{
 		if ((($_POST['admin_pass1'] != $_POST['admin_pass2'])) ||
 			(empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language)
 		{
-			$error = $lang['Password_mismatch'];
+			$error = $lang['PASSWORD_MISMATCH'];
 		}
 
 		if ((($_POST['board_email1'] != $_POST['board_email2'])) ||
@@ -386,9 +386,9 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 		$dbms_options .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
 	}
 
-	$upgrade_option = '<option value="0">' . $lang['Install'] . '</option>';
-	$upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option>';
-	$upgrade_option .= '<option value="2">' . $lang['Update'] . '</option>';
+	$upgrade_option = '<option value="0">' . $lang['INSTALL'] . '</option>';
+	$upgrade_option .= '<option value="1">' . $lang['UPGRADE'] . '</option>';
+	$upgrade_option .= '<option value="2">' . $lang['UPDATE'] . '</option>';
 
 	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
 
@@ -396,45 +396,45 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 
 ?>
 	<tr>
-		<th colspan="2"><?php echo $lang['Initial_config']; ?></th>
+		<th colspan="2"><?php echo $lang['INITIAL_CONFIG']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="right" width="40%"><span class="gen"><?php echo $lang['Default_lang']; ?>: </span></td>
+		<td class="row1" align="right" width="40%"><span class="gen"><?php echo $lang['DEFAULT_LANG']; ?>: </span></td>
 		<td class="row2"><select name="lang"><?php echo $lang_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['dbms']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['DBMS']; ?>: </span></td>
 		<td class="row2"><select name="dbms" onchange="if (document.install_form.upgrade.options[upgrade.selectedIndex].value == 1) { document.install_form.dbms.selectedIndex=0}"><?php echo $dbms_options; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Install_Method']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['INSTALL_METHOD']; ?>: </span></td>
 		<td class="row2"><select name="upgrade" onchange="if (this.options[this.selectedIndex].value == 1) { document.install_form.dbms.selectedIndex=0; }"><?php echo $upgrade_option; ?></select></td>
 	</tr>
 	<tr>
-		<th colspan="2"><?php echo $lang['DB_config']; ?></th>
+		<th colspan="2"><?php echo $lang['DB_CONFIG']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Host']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_HOST']; ?>: </span></td>
 		<td class="row2"><input type="text" name="dbhost" value="<?php echo ($dbhost != '') ? $dbhost : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_NAME']; ?>: </span></td>
 		<td class="row2"><input type="text" name="dbname" value="<?php echo ($dbname != '') ? $dbname : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_USERNAME']; ?>: </span></td>
 		<td class="row2"><input type="text" name="dbuser" value="<?php echo ($dbuser != '') ? $dbuser : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Password']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_PASSWORD']; ?>: </span></td>
 		<td class="row2"><input type="password" name="dbpasswd" value="<?php echo ($dbpasswd != '') ? $dbpasswd : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['TABLE_PREFIX']; ?>: </span></td>
 		<td class="row2"><input type="text" name="prefix" value="<?php echo (!empty($table_prefix)) ? $table_prefix : 'phpbb_'; ?>" /></td>
 	</tr>
 	<tr>
-		<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
+		<th colspan="2"><?php echo $lang['ADMIN_CONFIG']; ?></th>
 	</tr>
 <?php
 
@@ -449,19 +449,19 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 	}
 ?>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_name']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['SERVER_NAME']; ?>: </span></td>
 		<td class="row2"><input type="text" name="server_name" value="<?php echo $server_name; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_port']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['SERVER_PORT']; ?>: </span></td>
 		<td class="row2"><input type="text" name="server_port" value="<?php echo $server_port; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Script_path']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['SCRIPT_PATH']; ?>: </span></td>
 		<td class="row2"><input type="text" name="script_path" value="<?php echo $script_path; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Username']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['ADMIN_USERNAME']; ?>: </span></td>
 		<td class="row2"><input type="text" name="admin_name" value="<?php echo ($admin_name != '') ? $admin_name : ''; ?>" /></td>
 	</tr>
 	<tr>
@@ -473,16 +473,16 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || $board_email1 
 		<td class="row2"><input type="text" name="board_email2" value="<?php echo ($board_email2 != '') ? $board_email2 : ''; ?>" /></td>
 	</tr> 
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['ADMIN_PASSWORD']; ?>: </span></td>
 		<td class="row2"><input type="password" name="admin_pass1" value="<?php echo ($admin_pass1 != '') ? $admin_pass1 : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password_confirm']; ?>: </span></td>
+		<td class="row1" align="right"><span class="gen"><?php echo $lang['ADMIN_PASSWORD_CONFIRM']; ?>: </span></td>
 		<td class="row2"><input type="password" name="admin_pass2" value="<?php echo ($admin_pass2 != '') ? $admin_pass2 : ''; ?>" /></td>
 	</tr>
 <?php
 
-	page_footer($lang['Start_Install'], $s_hidden_fields, "install.$phpEx");
+	page_footer($lang['START_INSTALL'], $s_hidden_fields, "install.$phpEx");
 
 	exit;
 }
@@ -521,7 +521,7 @@ else
 			break;
 	}
 
-	// Add additionale extension checks to this array
+	// Add additional extension checks to this array
 	$check_other = array_merge($check_other, array());
 
 	if (!extension_loaded($check_exts) && !extension_loaded($check_other))
@@ -565,8 +565,8 @@ else
 
 		if (!$loaded_extension)
 		{
-			page_header($lang['Install'], '');
-			page_error($lang['Installer_Error'], $lang['INSTALL_EXT_FAILED']);
+			page_header($lang['INSTALL'], '');
+			page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_EXT_FAILED']);
 			page_footer();
 			exit;
 		}
@@ -614,8 +614,8 @@ else
 					if (!$db->sql_query($sql))
 					{
 						$error = $db->sql_error();
-						page_header($lang['Install'], '');
-						page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
+						page_header($lang['INSTALL'], '');
+						page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
 						page_footer();
 						exit;
 					}
@@ -634,8 +634,8 @@ else
 					if (!$db->sql_query($sql))
 					{
 						$error = $db->sql_error();
-						page_header($lang['Install'], '');
-						page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
+						page_header($lang['INSTALL'], '');
+						page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
 						page_footer();
 						exit;
 					}
@@ -688,8 +688,8 @@ else
 				if (!$db->sql_query($sql))
 				{
 					$error = $db->sql_error();
-					page_header($lang['Install'], '');
-					page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
+					page_header($lang['INSTALL'], '');
+					page_error($lang['INSTALLER_ERROR'], $lang['INSTALL_DB_ERROR'] . '<br />' . $error['message']);
 					page_footer();
 					exit;
 				}
@@ -724,24 +724,24 @@ else
 
 				if (extension_loaded('ftp') && !defined('NO_FTP'))
 				{
-					page_header($lang['Unwriteable_config'] . '<p>' . $lang['ftp_option'] . '</p>');
+					page_header($lang['UNWRITEABLE_CONFIG'] . '<p>' . $lang['FTP_OPTION'] . '</p>');
 ?>
 					<tr>
-						<th colspan="2"><?php echo $lang['ftp_choose']; ?></th>
+						<th colspan="2"><?php echo $lang['FTP_CHOOSE']; ?></th>
 					</tr>
 					<tr>
-						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['Attempt_ftp']; ?></span></td>
+						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['ATTEMPT_FTP']; ?></span></td>
 						<td class="row2"><input type="radio" name="send_file" value="2"></td>
 					</tr>
 					<tr>
-						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['Send_file']; ?></span></td>
+						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['SEND_FILE']; ?></span></td>
 						<td class="row2"><input type="radio" name="send_file" value="1"></td>
 					</tr>
 <?php 
 				}
 				else
 				{
-					page_header($lang['Unwriteable_config']);
+					page_header($lang['UNWRITEABLE_CONFIG']);
 					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 				}
 
@@ -766,7 +766,7 @@ else
 				}
 				else
 				{
-					page_common_form($s_hidden_fields, $lang['Download_config']);
+					page_common_form($s_hidden_fields, $lang['DOWNLOAD_CONFIG']);
 				}
 
 				page_footer();
@@ -776,11 +776,11 @@ else
 			$result = @fputs($fp, $config_data, strlen($config_data));
 
 			@fclose($fp);
-			$upgrade_now = $lang['upgrade_submit'];
+			$upgrade_now = $lang['UPGRADE_SUBMIT'];
 		}
 
 		// First off let's check and see if we are supposed to be doing an upgrade.
-		if ($upgrade && $upgrade_now == $lang['upgrade_submit'])
+		if ($upgrade && $upgrade_now == $lang['UPGRADE_SUBMIT'])
 		{
 			define('INSTALLING', true);
 			require('upgrade.'.$phpEx);
@@ -805,8 +805,8 @@ else
 		// Log user in
 		$auth->login($admin_name, $admin_pass1);
 
-		page_header($lang['Inst_Step_2'], "../adm/index.$phpEx$SID");
-		page_footer($lang['Finish_Install'], $s_hidden_fields);
+		page_header($lang['INST_STEP_2'], "../adm/index.$phpEx$SID");
+		page_footer($lang['FINISH_INSTALL'], $s_hidden_fields);
 		exit;
 	}
 }
@@ -841,14 +841,14 @@ th		{ background-image: url('../adm/images/cellpic3.gif') }
 td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 //-->
 </style>
-<title><?php echo $lang['Welcome_install']; ?></title>
+<title><?php echo $lang['WELCOME_INSTALL']; ?></title>
 </head>
 <body>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
 		<td><img src="../adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
-		<td width="100%" background="../adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Welcome_install']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+		<td width="100%" background="../adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['WELCOME_INSTALL']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
@@ -903,10 +903,10 @@ function page_upgrade_form()
 
 ?>
 					<tr>
-						<td class="cat" colspan="2" align="center"><?php echo $lang['continue_upgrade']; ?></td>
+						<td class="cat" colspan="2" align="center"><?php echo $lang['CONTINUE_UPGRADE']; ?></td>
 					</tr>
 					<tr>
-						<td class="cat" colspan="2" align="center"><input type="submit" name="upgrade_now" value="<?php echo $lang['upgrade_submit']; ?>" /></td>
+						<td class="cat" colspan="2" align="center"><input type="submit" name="upgrade_now" value="<?php echo $lang['UPGRADE_SUBMIT']; ?>" /></td>
 					</tr>
 <?php 
 

@@ -804,7 +804,7 @@ CREATE TABLE phpbb_users (
    user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
    user_founder tinyint(1) DEFAULT '0',
-   group_id mediumint(8) DEFAULT '3' NOT NULL
+   group_id mediumint(8) DEFAULT '3' NOT NULL,
    user_permissions text NULL,
    user_ip varchar(40),
    user_regdate int(11) DEFAULT '0' NOT NULL,
