@@ -16,7 +16,7 @@
 				<td bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}">&nbsp;<b>{L_MODERATOR}</b>&nbsp;</font></td>
 			</tr>
 			<!-- BEGIN catrow -->
-			<tr align="left" valign="top">
+			<tr>
 				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b>&nbsp;</font></td>
 			</tr>
 			<!-- BEGIN forumrow -->
@@ -31,7 +31,10 @@
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br /><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b>Who is Online</b>&nbsp;</font></td>
+			</tr>
+			<tr>
+				<td colspan="6" bgcolor="{T_TD_COLOR1}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
 			</tr>
 		</table></td>
 	</tr>
