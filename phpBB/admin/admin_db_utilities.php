@@ -225,7 +225,7 @@ function get_table_def_postgresql($table, $crlf)
 			$schema_create .= ' NOT NULL';
 		}
 
-		$schema_create .= ", $crlf";
+		$schema_create .= ",$crlf";
 
 	}
 	//
@@ -278,7 +278,7 @@ function get_table_def_postgresql($table, $crlf)
 	{
 		while(list($idx_name, $props) = each($index_rows))
 		{
-			$props['column_names'] = ereg_replace(", $", "" , $props['column_name']);
+			$props['column_names'] = ereg_replace(", $", "" , $props['column_names']);
 			$index_create .= 'CREATE ' . $props['unique'] . " INDEX $idx_name ON $table (" . $props['column_names'] . ");$crlf";
 		}
 	}
