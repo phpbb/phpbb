@@ -230,6 +230,7 @@ $lang = array(
 	'RETURN_LOGIN'	=> 'Click %sHere%s to try again',
 	'RETURN_MCP'	=> 'Click %sHere%s to return to the Moderator Control Panel',
 	'RETURN_GROUP'	=> 'Click %sHere%s to return to the Group Control Panel',
+	'RETURN_UCP'	=> 'Click %sHere%s to return to the User Control Panel', 
 	'VIEW_MESSAGE'	=> 'Click %sHere%s to view your message',
 	'URL_REDIRECT'	=> 'If your browser does not support meta redirection please click %sHERE%s to be redirected.', 
 
@@ -650,7 +651,10 @@ $lang = array(
 	'WATCHED_TOPICS'	=> 'Watched Topics',
 	'NO_WATCHED_FORUMS' => 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS' => 'You are not watching any topics.',
-
+	'UNWATCH_MARKED'	=> 'Unwatch marked', 
+	'UNWATCHED_FORUMS'	=> 'You are no longer watching the selected forums.',
+	'UNWATCHED_TOPICS'	=> 'You are no longer watching the selected topics.',
+	'UNWATCHED_FORUMS_TOPICS'=> 'You are no longer watching the selected forums or topics.',
 
 
 	'UCP_PROFILE'		=> 'Profile', 
@@ -795,6 +799,7 @@ $lang = array(
 	'Email_banned' => 'Sorry but this email address has been banned',
 	'Email_invalid' => 'Sorry but this email address is invalid',
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.', 
+	'TOO_MANY_REGISTERS'	=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
 
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
@@ -807,6 +812,7 @@ $lang = array(
 	'No_email_match' => 'The email address you supplied does not match the one listed for that username',
 	'New_password_activation' => 'New password activation',
 	'Password_activated' => 'Your account has been re-activated. To logon please use the password supplied in the email you received',
+
 
 	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
 
@@ -1043,6 +1049,8 @@ $lang = array(
 	'READING_TOPIC'		=> 'Reading topic in %s',
 	'POSTING_MESSAGE'	=> 'Posting message in %s',
 	'REPLYING_MESSAGE'	=> 'Replying to message in %s',
+	'READING_GLOBAL_ANNOUNCE'	=> 'Reading global announcement', 
+	'REPLYING_GLOBAL_ANNOUNCE'	=> 'Replying to global announcement', 
 	'SEARCHING_FORUMS'	=> 'Searching forums',
 	'VIEWING_ONLINE'	=> 'Viewing who is online',
 	'VIEWING_MEMBERS'	=> 'Viewing member details',
