@@ -2,8 +2,8 @@
 
 <table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --><!-- ENDIF --></td>
-		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
+		<td><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE and MODERATORS --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --></td>
+		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE and U_MCP -->[ <a href="{U_MCP}">{L_MCP}</a> ]<!-- ENDIF --></td>
 	</tr>
 	<!-- IF TOTAL_TOPICS -->
 	<tr>
@@ -67,9 +67,9 @@
 	<!-- ENDIF -->
 
 	<tr>
-		<td class="row1" width="25" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<!-- IF S_TOPIC_ICONS -->
-		<td class="row1" width="25" align="center" valign="middle">{topicrow.TOPIC_ICON_IMG}</td>
+		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_ICON_IMG}</td>
 		<!-- ENDIF -->
 		<td class="row1" width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
