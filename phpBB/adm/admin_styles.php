@@ -447,12 +447,15 @@ switch ($mode)
 				$imagesetlist = filelist($phpbb_root_path . 'styles/imagesets/' . $imageset_path);
 
 				$imagesetlist_options = '';
-				foreach ($imagesetlist as $img)
+				foreach ($imagesetlist as $path => $img_ary)
 				{
-					$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
+					foreach ($img_ary as $img)
+					{
+						$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
 
-					$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
-					$imagesetlist_options .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+						$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
+						$imagesetlist_options .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+					}
 				}
 				$imagesetlist_options = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $imagesetlist_options;
 				unset($imagesetlist);
@@ -1199,21 +1202,21 @@ function viewsource(url)
 											$filelist = filelist($phpbb_root_path . 'styles/themes/' . $row['theme_path'], '', '*');
 
 											// Copy every file, bar CVS and the original stylesheet
-											foreach ($filelist as $file_ary)
+											foreach ($filelist as $path => $file_ary)
 											{
-												$path = $file_ary['path'];
-												$file = $file_ary['file'];
-
-												if (strstr($path, 'CVS') || $file == $row['theme_path'] . '.css')
+												foreach ($file_ary as $file)
 												{
-													continue;
-												}
+													if (strstr($path, 'CVS') || $file == $row['theme_path'] . '.css')
+													{
+														continue;
+													}
 
-												if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/$path"))
-												{
-													@mkdir("{$phpbb_root_path}styles/themes/$theme_path/$path");
+													if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/$path"))
+													{
+														@mkdir("{$phpbb_root_path}styles/themes/$theme_path/$path");
+													}
+													@copy("{$phpbb_root_path}styles/themes/" . $row['theme_path'] . "/$path/$file", "{$phpbb_root_path}styles/themes/$theme_path/$path/$file");
 												}
-												@copy("{$phpbb_root_path}styles/themes/" . $row['theme_path'] . "/$path/$file", "{$phpbb_root_path}styles/themes/$theme_path/$path/$file");
 											}
 											unset($filelist);
 										}
@@ -1607,12 +1610,15 @@ function viewsource(url)
 				$imglist = filelist($phpbb_root_path . 'styles/themes');
 
 				$bg_imglist = '';
-				foreach ($imglist as $img)
+				foreach ($imglist as $path => $img_ary)
 				{
-					$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
+					foreach ($img_ary as $img)
+					{
+						$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
 
-					$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
-					$bg_imglist .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+						$selected = (preg_match('#' . preg_quote($img) . '$#', $background_image)) ? ' selected="selected"' : '';
+						$bg_imglist .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+					}
 				}
 				$bg_imglist = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $bg_imglist;
 				unset($imglist);
@@ -1841,6 +1847,98 @@ function csspreview()
 				break;
 
 			case 'delete':
+
+				if ($theme_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_CSS_TABLE . "
+						WHERE theme_id = $theme_id";
+					$result = $db->sql_query($sql);
+
+					if (!(extract($db->sql_fetchrow($result))))
+					{
+						trigger_error($user->lang['NO_THEME']);
+					}
+					$db->sql_freeresult($result);
+
+					if (isset($_POST['update']))
+					{
+						$sql = 'DELETE FROM ' . STYLES_CSS_TABLE . ' 
+							WHERE theme_id = ' . $theme_id;
+						$db->sql_query($sql);
+
+						$onfs = 0;
+						if (!empty($_POST['deletefs']) && is_writeable("{$phpbb_root_path}styles/themes/$theme_path"))
+						{
+							$filelist = filelist("{$phpbb_root_path}styles/themes/$theme_path", '', '*');
+							krsort($filelist);
+
+							foreach ($filelist as $path => $img_ary)
+							{
+								$path = "{$phpbb_root_path}styles/themes/$theme_path$path";
+								foreach ($img_ary as $img)
+								{
+									if (!@unlink("$path/$img"))
+									{
+										$onfs = 1;
+									}
+								}
+								if (!@rmdir($path))
+								{
+									$onfs = 1;
+								}
+							}
+						}
+						else
+						{
+							$onfs = (file_exists("{$phpbb_root_path}styles/themes/$theme_path") && !is_writeable("{$phpbb_root_path}styles/themes/$theme_path")) ? 1 : 0;
+						}
+
+						add_log('admin', 'LOG_DELETE_THEME', $theme_name);
+						$message = ($onfs) ? 'THEME_DELETED_FS' : 'THEME_DELETED';
+						trigger_error($user->lang[$message]);
+					}
+
+					// Output list of themes
+					adm_page_header($user->lang['DELETE_THEME']);
+
+?>
+<h1><?php echo $user->lang['DELETE_THEME']; ?></h1>
+
+<p><?php echo $user->lang['DELETE_THEME_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang['DELETE_THEME']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang['THEME_NAME']; ?>:</b></td>
+		<td class="row2"><b><?php echo $theme_name; ?></b></td>
+	</tr>
+<?php
+
+					if (is_writeable("{$phpbb_root_path}styles/themes/$theme_path"))
+					{
+
+?>
+	<tr>
+		<td class="row1" width="40%"><b>Delete from filesystem:</b></td>
+		<td class="row2"><input type="radio" name="deletefs" value="1" /> Yes&nbsp;&nbsp;<input type="radio" name="deletefs" value="0" checked="checked" /> No</td>
+	</tr>
+<?php
+
+					}
+
+?>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['DELETE']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="cancel" value="<?php echo $user->lang['CANCEL']; ?>"; /></td>
+	</tr>
+</table></form>
+<?php
+
+					adm_page_footer();
+				}
+
 				break;
 
 			case 'export':
@@ -1901,10 +1999,12 @@ function csspreview()
 								$zip->close();
 
 								$ext = 'zip';
+								$mimetype = 'zip';
 								break;
 
 							case 'tar':
 								$ext = 'tar';
+								$mimetype = 'x-tar';
 								break;
 							
 							case 'gz':
@@ -1914,6 +2014,7 @@ function csspreview()
 									break;
 								}
 								$ext = 'tar.gz';
+								$mimetype = 'x-gzip';
 								break;
 
 							case 'bz2':
@@ -1923,6 +2024,7 @@ function csspreview()
 									break;
 								}
 								$ext = 'tar.bz2';
+								$mimetype = 'x-bzip2';
 								break;
 
 							default:
@@ -1934,8 +2036,8 @@ function csspreview()
 
 						if (empty($_POST['store']))
 						{
-							header("Pragma: no-cache");
-							header("Content-Type: application/zip; name=\"theme_$theme_path.$ext\"");
+							header('Pragma: no-cache');
+							header("Content-Type: application/$mimetype; name=\"theme_$theme_path.$ext\"");
 							header("Content-disposition: attachment; filename=theme_$theme_path.$ext");
 
 							echo implode('', file("{$phpbb_root_path}store/theme_$theme_path.$ext"));
