@@ -762,6 +762,11 @@ $lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
 // Configuration
 $lang['Config_updated'] = "Forum Configuration Updated Sucessfully";
 
+// Forum Management
+$lang['Remove'] = "Remove";
+$lang['Action'] = "Action";
+$lang['Update_order'] = "Update Order";
+
 //
 // End
 // -------------------------------------------------

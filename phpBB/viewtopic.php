@@ -36,7 +36,7 @@ function smilies_pass($message)
 
 	if(empty($smilies))
 	{
-		$sql = "SELECT code, smile_url 
+		$sql = "SELECT code, smile_url
 			FROM " . SMILIES_TABLE;
 		if($result = $db->sql_query($sql))
 		{
@@ -95,21 +95,21 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 		$sql_ordering = "DESC";
 	}
 
-	$sql = "SELECT t.topic_id 
-		FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2  
-		WHERE t2.topic_id = $topic_id 
-			AND p2.post_id = t2.topic_last_post_id 
-			AND t.forum_id = t2.forum_id 
-			AND p.post_id = t.topic_last_post_id 
-			AND p.post_time $sql_condition p2.post_time 
-			AND p.topic_id = t.topic_id 
-		ORDER BY p.post_time $sql_ordering 
+	$sql = "SELECT t.topic_id
+		FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2
+		WHERE t2.topic_id = $topic_id
+			AND p2.post_id = t2.topic_last_post_id
+			AND t.forum_id = t2.forum_id
+			AND p.post_id = t.topic_last_post_id
+			AND p.post_time $sql_condition p2.post_time
+			AND p.topic_id = t.topic_id
+		ORDER BY p.post_time $sql_ordering
 		LIMIT 1";
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
 	}
-	
+
 	list($topic_id) = $db->sql_fetchrow($result);
 	if(empty($topic_id))
 	{
@@ -205,8 +205,8 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	$min_post_time = time() - ($post_days * 86400);
 
 	$sql = "SELECT COUNT(post_id) AS num_posts
-		FROM " . POSTS_TABLE . " 
-		WHERE topic_id = $topic_id 
+		FROM " . POSTS_TABLE . "
+		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time";
 	if(!$result = $db->sql_query($sql))
 	{
@@ -268,8 +268,8 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
-		AND p.post_id = pt.post_id 
-		$limit_posts_time 
+		AND p.post_id = pt.post_id
+		$limit_posts_time
 	ORDER BY p.post_time $post_time_order
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
@@ -295,7 +295,7 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Dump out the page header and load viewtopic body template
 //
-setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $cookiepath, $cookiedomain, $cookiesecure); 
+setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $cookiepath, $cookiedomain, $cookiesecure);
 $page_title = $lang['View_topic'] ." - $topic_title";
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -306,9 +306,9 @@ $template->set_filenames(array(
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
-	"L_GO" => $lang['Go'], 
-	"L_JUMP_TO" => $lang['Jump_to'], 
-	"L_SELECT_FORUM" => $lang['Select_forum'], 
+	"L_GO" => $lang['Go'],
+	"L_JUMP_TO" => $lang['Jump_to'],
+	"L_SELECT_FORUM" => $lang['Select_forum'],
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
@@ -320,7 +320,7 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'], 
+	"L_DISPLAY_POSTS" => $lang['Display_posts'],
 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
@@ -350,13 +350,13 @@ $template->assign_vars(array(
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
 
-	"L_POSTED" => $lang['Posted'], 
-	"L_POST_SUBJECT" => $lang['Post_subject'], 
+	"L_POSTED" => $lang['Posted'],
+	"L_POST_SUBJECT" => $lang['Post_subject'],
 	"L_VIEW_NEXT_TOPIC" => $lang['View_next_topic'],
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
 
-	"IMG_POST" => $post_img, 
-	"IMG_REPLY" => $reply_img, 
+	"IMG_POST" => $post_img,
+	"IMG_REPLY" => $reply_img,
 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
@@ -422,7 +422,7 @@ for($i = 0; $i < $total_posts; $i++)
 			}
 		}
 	}
-	else 
+	else
 	{
 		for($j = 0; $j < count($ranksrow); $j++)
 		{
@@ -508,9 +508,9 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		if($user_sig != "")
 		{
-			$user_sig = strip_tags($user_sig);
+			$user_sig = htmlspecialchars($user_sig);
 		}
-		$message = strip_tags($message);
+		$message = htmlspecialchars($message);
 	}
 
 	if($board_config['allow_bbcode'])
@@ -524,6 +524,8 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
+
+
 
 	$message = make_clickable($message);
 	$message = str_replace("\n", "<br />", $message);
@@ -557,7 +559,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$template->assign_block_vars("postrow", array(
 		"ROW_COLOR" => $row_color,
-		"ROW_CLASS" => $row_class, 
+		"ROW_CLASS" => $row_class,
 		"POSTER_NAME" => $poster,
 		"POSTER_RANK" => $poster_rank,
 		"RANK_IMAGE" => $rank_image,
@@ -569,7 +571,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"POST_SUBJECT" => $post_subject,
 		"MESSAGE" => $message,
 		"PROFILE_IMG" => $profile_img,
-		"SEARCH_IMG" => $search_img, 
+		"SEARCH_IMG" => $search_img,
 		"PM_IMG" => $pm_img,
 		"EMAIL_IMG" => $email_img,
 		"WWW_IMG" => $www_img,
@@ -617,7 +619,7 @@ if( $is_auth['auth_mod'] )
 }
 
 $template->assign_vars(array(
-	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start), 
+	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start),
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
 	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 
