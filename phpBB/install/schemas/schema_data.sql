@@ -481,22 +481,6 @@ INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reas
 
 # MSSQL IDENTITY phpbb_reports_reasons OFF #
 
-
-# MSSQL IDENTITY phpbb_forbidden_extensions ON #
-
-# -- forbidden_extensions
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (1, 'php');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (2, 'php3');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (3, 'php4');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (4, 'phtml');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (5, 'pl');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (6, 'asp');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (7, 'cgi');
-INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (8, 'aspx');
-
-# MSSQL IDENTITY phpbb_forbidden_extensions OFF #
-
-
 # MSSQL IDENTITY phpbb_extension_groups ON #
 
 # -- extension_groups

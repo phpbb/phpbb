@@ -130,13 +130,6 @@ CREATE TABLE phpbb_extension_groups (
   PRIMARY KEY (group_id)
 );
 
--- Table: 'phpbb_forbidden_extensions'
-CREATE TABLE phpbb_forbidden_extensions (
-  extension_id INTEGER NOT NULL, 
-  extension VARCHAR(100) NOT NULL, 
-  PRIMARY KEY (extension_id)
-);
-
 -- Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
    forum_id INTEGER NOT NULL,

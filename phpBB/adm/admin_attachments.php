@@ -250,23 +250,16 @@ if ($submit && $mode == 'extensions')
 	{
 		if (!count($error))
 		{
-			$extension_check = array(EXTENSIONS_TABLE => 'EXTENSION_EXIST', FORBIDDEN_EXTENSIONS_TABLE => 'CANNOT_ADD_FORBIDDEN_EXTENSION');
-
-			foreach ($extension_check as $table => $error_msg)
-			{
-				$sql = "SELECT extension 
-					FROM $table";
-				$result = $db->sql_query($sql);
+			$sql = 'SELECT extension_id
+				FROM ' . EXTENSIONS_TABLE . "
+				WHERE extension = '$add_extension'";
+			$result = $db->sql_query($sql);
 			
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if ($row['extension'] == $add_extension)
-					{
-						$error[] = sprintf($user->lang[$error_msg], $add_extension);
-					}
-				}
-				$db->sql_freeresult($result);
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
 			}
+			$db->sql_freeresult($result);
 
 			if (!count($error))
 			{

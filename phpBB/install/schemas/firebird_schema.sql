@@ -216,23 +216,6 @@ CREATE TRIGGER phpbb_extension_groups_trig
 			NEW.group_id = GEN_ID(phpbb_extension_groups_gen, 1)|
 	END;
 
-# Table: 'phpbb_forbidden_extensions'
-CREATE TABLE phpbb_forbidden_extensions (
-  extension_id INTEGER NOT NULL, 
-  extension VARCHAR(100) NOT NULL, 
-  PRIMARY KEY (extension_id)
-);
-
-CREATE GENERATOR phpbb_forbidden_extensions_gen;
-SET GENERATOR phpbb_forbidden_extensions_gen TO 0;
-
-CREATE TRIGGER phpbb_forbidden_extensions_trig 
-	FOR phpbb_forbidden_extensions BEFORE INSERT
-	AS BEGIN 
-		IF (NEW.extension_id IS NULL) THEN 
-			NEW.extension_id = GEN_ID(phpbb_forbidden_extensions_gen, 1)|
-	END;
-
 # Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
    forum_id SMALLINT NOT NULL,
