@@ -1,12 +1,13 @@
 <div align="center"><table width="98%" cellspacing="0" cellpadding="4" border="0">
-	<tr>
-		<td align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}" color="{T_FONTCOLOR1}"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></font></td>
-	</tr>
+	<tr><form method="post" action="{S_MSG_DAYS_ACTION}">
+		<td align="left" valign="bottom"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+		<td align="right" valign="bottom" nowrap><span class="gensmall">{L_DISPLAY_MESSAGES}: {S_SELECT_MSG_DAYS} <input type="submit" value="Go"></span></td>
+	</form></tr>
 </table></div>
 
 <div align="center"><table width="98%" cellpadding="1" cellspacing="0" border="0">
 	<tr><form method="post" action="{S_PRIVMSGS_ACTION}">
-		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
+		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
 				<td colspan="5" bgcolor="{T_TH_COLOR2}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
