@@ -58,13 +58,15 @@ function validate_username($username)
 	}
 
 	$sql = "SELECT disallow_username
-		FROM " . DISALLOW_TABLE . "
-		WHERE disallow_username LIKE '$username'";
+		FROM " . DISALLOW_TABLE;
 	if ( $result = $db->sql_query($sql) )
 	{
-		if ( $db->sql_fetchrow($result) )
+		while( $row = $db->sql_fetchrow($result) )
 		{
-			return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
+			if ( preg_match("#\b(" . str_replace("\*", "\w*?", preg_quote($row['disallow_username'])) . ")\b#i", $username) )
+			{
+				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
+			}
 		}
 	}
 
