@@ -23,11 +23,11 @@ class ucp_register extends module
 			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
 		}
 
+		// Do not alter this first one to use request_var!
 		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
+		$confirm_id = request_var('confirm_id', 0);
 		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit	= (isset($_POST['submit'])) ? true : false;
-
-		$confirm_id = (!empty($_POST['confirm_id'])) ? $_POST['confirm_id'] : 0;
+		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		$error = $data = array();
 
@@ -254,22 +254,34 @@ class ucp_register extends module
 
 					$messenger->send(NOTIFY_EMAIL);
 
-					// TODO
-					// Email admins with user management permissions
 					if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
-						$messenger->use_template('admin_activate', $config['default_lang']);
-						$messenger->replyto($config['board_contact']);
-						$messenger->to($config['board_contact']);
+						// Grab an array of user_id's with a_user permissions ... these users
+						// can activate a user
+						$admin_ary = discover_auth(false, 'a_user', false);
 
-						$messenger->assign_vars(array(
-							'USERNAME'		=> $username,
-							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-			
-							'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&k=$user_actkey")
-						);
+						$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
+							FROM ' . USERS_TABLE . ' 
+							WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+						$result = $db->sql_query($sql);
 
-						$messenger->send(NOTIFY_EMAIL);
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$messenger->use_template('admin_activate', $row['user_lang']);
+							$messenger->replyto($config['board_contact']);
+							$messenger->to($row['user_email'], $row['username']);
+							$messenger->im($row['user_jabber'], $row['username']);
+
+							$messenger->assign_vars(array(
+								'USERNAME'		=> $row['username'],
+								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+				
+								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+							);
+
+							$messenger->send($row['user_notify_type']);
+						}
+						$db->sql_freeresult($result);
 					}
 
 					$messenger->queue->save();
@@ -288,15 +300,6 @@ class ucp_register extends module
 			}
 		}
 
-		// If an error occured we need to stripslashes on returned data
-		$username		= (isset($_POST['username'])) ? stripslashes(htmlspecialchars($_POST['username'])) : '';
-		$password		= (isset($_POST['new_password'])) ? stripslashes(htmlspecialchars($_POST['new_password'])) : '';
-		$password_confirm = (isset($_POST['password_confirm'])) ? stripslashes(htmlspecialchars($_POST['password_confirm'])) : '';
-		$email			= (isset($_POST['email'])) ? stripslashes(htmlspecialchars($_POST['email'])) : '';
-		$email_confirm	= (isset($_POST['email_confirm'])) ? stripslashes(htmlspecialchars($_POST['email_confirm'])) : '';
-		$lang			= (isset($_POST['lang'])) ? htmlspecialchars($_POST['lang']) : '';
-		$tz				= (isset($_POST['tz'])) ? intval($_POST['tz']) : $config['board_timezone'];
-
 		$s_hidden_fields = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 
 		$confirm_image = '';
@@ -309,15 +312,15 @@ class ucp_register extends module
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				$confirm_sql = '';
+				$sql_in = array();
 				do
 				{
-					$confirm_sql .= (($confirm_sql != '') ? ', ' : '') . "'" . $row['session_id'] . "'";
+					$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
 				}
 				while ($row = $db->sql_fetchrow($result));
 			
-				$sql = 'DELETE FROM ' .  CONFIRM_TABLE . " 
-					WHERE session_id NOT IN ($confirm_sql)";
+				$sql = 'DELETE FROM ' .  CONFIRM_TABLE . ' 
+					WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
 				$db->sql_query($sql);
 			}
 			$db->sql_freeresult($result);
@@ -329,7 +332,7 @@ class ucp_register extends module
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['attempts'] > 3)
+				if ($row['attempts'] >= 3)
 				{
 					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
@@ -362,15 +365,18 @@ class ucp_register extends module
 
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
 
+		$lang = (isset($lang)) ? $lang : $config['default_lang'];
+		$tz = (isset($tz)) ? $tz : $config['board_timezone'];
+
 		//
 		$template->assign_vars(array(
-			'USERNAME'			=> $username,
-			'PASSWORD'			=> $password,
-			'PASSWORD_CONFIRM'	=> $password_confirm,
-			'EMAIL'				=> $email,
-			'EMAIL_CONFIRM'		=> $email_confirm,
-			'CONFIRM_IMG'		=> $confirm_image, 
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '', 
+			'USERNAME'			=> (isset($username)) ? $username : '',
+			'PASSWORD'			=> (isset($password)) ? $password : '',
+			'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '',
+			'EMAIL'				=> (isset($email)) ? $email : '',
+			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',
+			'CONFIRM_IMG'		=> $confirm_image, 
 
 			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'), 
 			'L_ITEMS_REQUIRED'		=> $l_reg_cond, 

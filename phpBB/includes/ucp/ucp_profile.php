@@ -17,9 +17,9 @@ class ucp_profile extends module
 	{
 		global $censors, $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$preview = (!empty($_POST['preview'])) ? true : false;
-		$submit	= (!empty($_POST['submit'])) ? true : false;
-		$delete = (!empty($_POST['delete'])) ? true : false;
+		$preview	= (!empty($_POST['preview'])) ? true : false;
+		$submit		= (!empty($_POST['submit'])) ? true : false;
+		$delete		= (!empty($_POST['delete'])) ? true : false;
 		$error = $data = array();
 
 		switch ($mode)
@@ -80,6 +80,79 @@ class ucp_profile extends module
 							'user_password'	=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password']
 						);
 
+						if ($config['email_enable'] && $email != $user->data['user_email'] && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
+						{
+							include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+							$server_url = generate_board_url();
+
+							$user_actkey = gen_rand_string(10);
+							$key_len = 54 - (strlen($server_url));
+							$key_len = ($key_len > 6) ? $key_len : 6;
+							$user_actkey = substr($user_actkey, 0, $key_len);
+
+							$messenger = new messenger();
+
+							$messenger->template($email_template, $lang);
+							$messenger->subject($subject);
+
+							$messenger->replyto($user->data['board_contact']);
+							$messenger->to($email, $username);
+
+							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+							$messenger->assign_vars(array(
+								'SITENAME'		=> $config['sitename'],
+								'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
+								'USERNAME'		=> $username,
+								'PASSWORD'		=> $password_confirm,
+								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+
+								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+							);
+
+							$messenger->send(NOTIFY_EMAIL);
+
+							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+							{
+								// Grab an array of user_id's with a_user permissions
+								$admin_ary = discover_auth(false, 'a_user', false);
+
+								$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
+									FROM ' . USERS_TABLE . ' 
+									WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+								$result = $db->sql_query($sql);
+
+								while ($row = $db->sql_fetchrow($result))
+								{
+									$messenger->use_template('admin_activate', $row['user_lang']);
+									$messenger->replyto($config['board_contact']);
+									$messenger->to($row['user_email'], $row['username']);
+									$messenger->im($row['user_jabber'], $row['username']);
+
+									$messenger->assign_vars(array(
+										'USERNAME'		=> $row['username'],
+										'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+						
+										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+									);
+
+									$messenger->send($row['user_notify_type']);
+								}
+								$db->sql_freeresult($result);
+							}
+
+							$messenger->queue->save();
+
+							$sql_ary += array(
+								'user_type'		=> USER_INACTIVE,
+								'user_actkey'	=> $user_actkey
+							);
+						}
+
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
 							WHERE user_id = ' . $user->data['user_id'];
@@ -90,9 +163,6 @@ class ucp_profile extends module
 						{
 							update_username($user->data['username'], $username);
 						}
-
-						// TODO
-						// If email changed and email activation enabled, deactivate and notify
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
@@ -432,7 +502,7 @@ class ucp_profile extends module
 							// Delete old avatar if present
 							if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
 							{
-								avatar_delete();
+								avatar_delete($user->data['user_avatar']);
 							}
 						}
 
