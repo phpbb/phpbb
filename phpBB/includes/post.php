@@ -1,4 +1,4 @@
-'<?php
+<?php
 /***************************************************************************  
  *
  *                            -------------------                         
@@ -22,5 +22,33 @@
  * 
  ***************************************************************************/ 
 
+//
+// This function will prepare a posted message for 
+// entry into the database.
+//
+function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid = 0)
+{
+	$message = trim($message);
+
+	if(!$html_on)
+	{
+		$message = htmlspecialchars($message);
+	}
+
+	if($bbcode_on)
+	{
+		$message = bbencode_first_pass($message, $bbcode_uid);
+	}
+
+	if($smile_on)
+	{
+		// No smile() function yet, write one...
+		//$message = smile($message);
+	}
+
+	$message = addslashes($message);
+
+	return($message);
+}
 
 ?>

@@ -23,6 +23,7 @@
  ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
+include('includes/post.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
 
 $pagetype = "privmsgs";
@@ -37,15 +38,16 @@ init_userprefs($userdata);
 // End session management
 //
 
-$folder = (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : "inbox";
-$mode = (!empty($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "";
+$folder = (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : ( (!empty($HTTP_POST_VARS['folder'])) ? $HTTP_POST_VARS['folder'] : "inbox" );
+if(empty($HTTP_POST_VARS['cancel']))
+{
+	$mode = (!empty($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (!empty($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "" );
+}
+else
+{
+	$mode = "";
+}
 $start = (!empty($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
-
-//
-// Output page header and
-// open the index body template
-//
-include('includes/page_header.'.$phpEx);
 
 //
 // Start main
@@ -67,13 +69,13 @@ if($mode == "read")
 		$folder = $HTTP_GET_VARS['folder']; 
 		if($folder == "inbox" || $folder == "saved")
 		{
-			$user_to_sql = "AND pm.privmsgs_to_groupid = ug2.group_id AND ug2.user_id = " . $userdata['user_id'];
-			$user_from_sql = "AND pm.privmsgs_from_groupid = ug.group_id AND u.user_id = ug.user_id";
+			$user_to_sql = "AND pm.privmsgs_to_userid = " . $userdata['user_id'];
+			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid";
 		}
 		else
 		{
-			$user_to_sql = "AND pm.privmsgs_to_groupid = ug.group_id AND u.user_id = ug.user_id";
-			$user_from_sql = "AND pm.privmsgs_from_groupid = ug2.group_id AND ug2.user_id = " . $userdata['user_id'];
+			$user_to_sql = "AND u.user_id = pm.privmsgs_to_userid";
+			$user_from_sql = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'];
 		}
 	}
 	else
@@ -81,6 +83,8 @@ if($mode == "read")
 		// Error out
 
 	}
+
+	include('includes/page_header.'.$phpEx);
 
 	//
 	// Load templates
@@ -96,8 +100,8 @@ if($mode == "read")
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_date, pm.privmsgs_subject, pm.privmsgs_bbcode_uid, pmt.privmsgs_text 
-		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u, " . USER_GROUP_TABLE . " ug,  " . USER_GROUP_TABLE . " ug2
+	$sql = "SELECT u.username, u.user_id, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_sig, u.user_avatar, pm.privmsgs_id, pm.privmsgs_type, pm.privmsgs_subject, pm.privmsgs_from_userid, pm.privmsgs_to_userid, pm.privmsgs_date, pm.privmsgs_ip, pm.privmsgs_bbcode_uid, pmt.privmsgs_text 
+		FROM ".PRIVMSGS_TABLE." pm, " . PRIVMSGS_TEXT_TABLE . " pmt, ".USERS_TABLE." u  
 		WHERE pm.privmsgs_id = $privmsgs_id 
 			AND pmt.privmsgs_text_id = pm.privmsgs_id 
 			$user_to_sql 
@@ -116,6 +120,32 @@ if($mode == "read")
 		if(!$pm_upd_status = $db->sql_query($sql))
 		{
 			error_die(SQL_QUERY, "Could not update private message read status.", __LINE__, __FILE__);
+		}
+
+		//
+		// This makes a copy of the post and stores
+		// it as a SENT message from the sendee. Perhaps
+		// not the most DB friendly way but a lot easier
+		// to manage, besides the admin will be able to
+		// set limits on numbers of storable posts for
+		// users ... hopefully!
+		//
+		$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
+			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . stripslashes($privmsg['privmsgs_subject']) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
+		if(!$pm_sent_status = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
+		}
+		else
+		{
+			$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
+
+			$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
+				VALUES ($privmsg_sent_id, '" . stripslashes($privmsg['privmsgs_text']) . "')";
+			if(!$pm_sent_text_status = $db->sql_query($sql))
+			{
+				error_die(SQL_QUERY, "Could not insert private message sent text.", __LINE__, __FILE__);
+			}
 		}
 	}
 
@@ -155,17 +185,22 @@ if($mode == "read")
 
 	$poster = stripslashes($privmsg['username']);
 	$poster_id = $privmsg['user_id'];
-	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']);
-	$poster_avatar = ($privmsg['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"".$board_config['avatar_path']."/".$privmsg['user_avatar']."\">" : "";
 
-	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
-	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:".$privmsg['user_email']."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
-	$www_img = ($privmsg['user_website']) ? "<a href=\"".$privmsg['user_website']."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
+	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']);
+
+	$poster_avatar = ($privmsg['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"" . $board_config['avatar_path'] . "/" . $privmsg['user_avatar'] . "\">" : "";
+
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
+
+	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:" . $privmsg['user_email'] . "\"><img src=\"" .$images['email'] . "\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
+
+	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
 
 	if($privmsg['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/".$privmsg['user_icq']."#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=".$privmsg['user_icq']."&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=".$privmsg['user_icq']."\"><img src=\"".$images['icq']."\" alt=\"$l_icq\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $privmsg['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $privmsg['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -173,9 +208,11 @@ if($mode == "read")
 		$icq_add_img = "";
 	}
 
-	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=".$privmsg['user_aim']."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
-	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
-	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$privmsg['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
+	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "";
+
+	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msn'] . "\" border=\"0\"></a>" : "";
+
+	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "";
 
 	if($folder == "inbox")
 	{
@@ -183,8 +220,10 @@ if($mode == "read")
 	}
 
 	$post_subject = stripslashes($privmsg['privmsgs_subject']);
+
 	$message = stripslashes($privmsg['privmsgs_text']);
 	$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+
 	$user_sig = stripslashes($privmsg['user_sig']);
 
 	if(!$board_config['allow_html'])
@@ -230,10 +269,23 @@ if($mode == "read")
 	include('includes/page_tail.'.$phpEx);
 
 }
-else if($mode == "post" || $mode == "reply")
+else if($mode == "post" || $mode == "reply" || $mode == "edit")
 {
 
-	if($mode == "reply")
+	if(!$userdata['session_logged_in'])
+	{
+		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode"));
+	}
+
+	$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
+	$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
+	$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
+	$attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
+	$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
+
+	$username = (isset($HTTP_POST_VARS['username'])) ? $HTTP_POST_VARS['username'] : "";
+
+	if($mode == "reply" || $mode == "edit")
 	{
 		if(!empty($HTTP_GET_VARS[POST_POST_URL]))
 		{
@@ -246,12 +298,187 @@ else if($mode == "post" || $mode == "reply")
 		}
 	}
 
+	if!empty($HTTP_GET_VARS[POST_USERS_URL]))
+	{
+		$sql = "SELECT username 
+			FROM " . USERS_TABLE . " 
+			WHERE user_id = " . $HTTP_GET_VARS[POST_USERS_URL];
+		if(!$result = $db->sql_query($sql))
+		{
+			$error = TRUE;
+			$error_msg = $lang['No_such_user'];
+		}
+		else
+		{
+			list($username) = $db->sql_fetchrow($result);
+		}
+	}
+
+	if($HTTP_POST_VARS['submit'] || $preview)
+	{
+		//
+		// Flood control
+		//
+		if($mode != 'edit' && !$preview)
+		{
+			$sql = "SELECT MAX(privmsgs_date) AS last_post_time
+				FROM " . PRIVMSGS_TABLE . "
+				WHERE privmsgs_ip = '$user_ip'";
+			if($result = $db->sql_query($sql))
+			{
+				$db_row = $db->sql_fetchrow($result);
+				$last_post_time = $db_row['last_post_time'];
+				$current_time = get_gmt_ts();
+
+				if(($current_time - $last_post_time) < $board_config['flood_interval'])
+				{
+					$error = TRUE;
+					$error_msg = $lang['Flood_Error'];
+				}
+			}
+		}
+		//
+		// End: Flood control
+		//
+
+		$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
+		if($mode == "post" && empty($subject))
+		{
+			$error = TRUE;
+			if(isset($error_msg))
+			{
+				$error_msg .= "<br />";
+			}
+			$error_msg .= $lang['Empty_subject'];
+		}
+
+		if(!empty($HTTP_POST_VARS['message']))
+		{
+			if(!$error && !$preview)
+			{
+				$html_on = ($disable_html) ? FALSE : TRUE;
+				$bbcode_on = ($diable_bbcode) ? FALSE : TRUE;
+				$smile_on = ($disable_smilies) ? FALSE : TRUE;
+
+				$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $uid);
+
+				if($attach_sig && !empty($userdata['user_sig']))
+				{
+					$message .= "[addsig]";
+				}
+			}
+			else
+			{
+				// do stripslashes incase magic_quotes is on.
+				$message = stripslashes($HTTP_POST_VARS['message']);
+			}
+		}
+		else
+		{
+			$error = TRUE;
+			if(isset($error_msg))
+			{
+				$error_msg .= "<br />";
+			}
+			$error_msg .= $lang['Empty_msg'];
+		}
+
+		if(!empty($HTTP_POST_VARS['to_userid']))
+		{
+			$to_user_id = $HTTP_POST_VARS['to_userid'];
+		}
+		else
+		{
+			$error = TRUE;
+			if(isset($error_msg))
+			{
+				$error_msg .= "<br />";
+			}
+			$error_msg .= $lang['No_to_user'];
+		}		
+
+		if($HTTP_POST_VARS['submit'] && !$preview)
+		{
+			$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
+				VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . stripslashes($privmsg['privmsgs_subject']) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', '" . $privmsg['privmsgs_bbcode_uid'] . "')";
+			if(!$pm_sent_status = $db->sql_query($sql))
+			{
+				error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
+			}
+			else
+			{
+				$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
+
+				$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
+					VALUES ($privmsg_sent_id, '" . stripslashes($privmsg['privmsgs_text']) . "')";
+				if(!$pm_sent_text_status = $db->sql_query($sql))
+				{
+					error_die(SQL_QUERY, "Could not insert private message sent text.", __LINE__, __FILE__);
+				}
+			}
+
+
+
+
+		}
+	}
+
+	//
+	// Obtain list of groups/users is
+	// this user is a group moderator
+	//
+	if($mode == "post")
+	{
+		unset($mod_group_list);
+		$sql = "SELECT g.group_id, g.group_name, g.group_moderator, g.group_single_user, u.username 
+			FROM phpbb_groups g, phpbb_user_group ug, phpbb_users u 
+			WHERE g.group_moderator = " . $userdata['user_id'] ." 
+				AND ug.group_id = g.group_id 
+				AND u.user_id = ug.user_id";
+		if(!$group_status = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not obtain group moderator list.", __LINE__, __FILE__);
+		}
+		if($db->sql_numrows($group_status))
+		{
+			$mod_group_list = $db->sql_fetchrowset($group_status);
+		}
+	}
+
+
+
+	include('includes/page_header.'.$phpEx);
+
+	if($preview && !$error)
+	{
+		$preview_message = $message;
+		$uid = make_bbcode_uid();
+		$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $uid);
+		$preview_message = bbencode_second_pass($preview_message, $uid);
+		$preview_message = make_clickable($preview_message);
+
+		$template->set_filenames(array(
+			"preview" => "posting_preview.tpl")
+		);
+		$template->assign_vars(array(
+			"TOPIC_TITLE" => $subject, 
+			"POST_SUBJECT" => $subject, 
+			"ROW_COLOR" => "#" . $theme['td_color1'],
+			"POSTER_NAME" => $username,
+			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
+			"MESSAGE" => stripslashes(nl2br($preview_message)),
+		
+			"L_PREVIEW" => $lang['Preview'],
+			"L_POSTED" => $lang['Posted'])
+		);
+		$template->pparse("preview");
+	}
 
 	//
 	// Load templates
 	//
 	$template->set_filenames(array(
-		"body" => "posting_body.tpl",
+		"body" => "privmsgs_posting_body.tpl",
 		"jumpbox" => "jumpbox.tpl")
 	);
 	$jumpbox = make_jumpbox();
@@ -260,6 +487,93 @@ else if($mode == "post" || $mode == "reply")
 		"SELECT_NAME" => POST_FORUM_URL)
 	);
 	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+	if($board_config['allow_html'])
+	{
+		$html_status = $lang['HTML'] . $lang['is_ON'];
+		$html_toggle = '<input type="checkbox" name="disable_html" ';
+		if($disable_html)
+		{
+			$html_toggle .= 'checked';
+		}
+		$html_toggle .= "> " . $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'];
+	}
+	else
+	{
+		$html_status = $lang['HTML'] . $lang['is_OFF'];
+	}
+
+	if($board_config['allow_bbcode'])
+	{
+		$bbcode_status = $lang['BBCode'] . $lang['is_ON'];
+		$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
+		if($disable_bbcode)
+		{
+			$bbcode_toggle .= "checked";
+		}
+		$bbcode_toggle .= "> " . $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'];
+	}
+	else
+	{
+		$bbcode_status = $lang['BBCode'] . $lang['is_OFF'];
+	}
+		
+	if($board_config['allow_smilies'])
+	{
+		$smile_toggle = '<input type="checkbox" name="disable_smile" ';
+		if($disable_smilies)
+		{
+			$smile_toggle .= "checked";
+		}
+		$smile_toggle .= "> " . $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'];
+	}
+
+	$sig_toggle = '<input type="checkbox" name="attach_sig" ';
+	if($attach_sig)
+	{
+		$sig_toggle .= "checked";
+	}
+	$sig_toggle .= "> " . $lang['Attach_signature'];
+
+	if($mode == 'post')
+	{
+		$post_a = $lang['Post_a_new_topic'];
+	}
+	else if($mode == 'reply')
+	{
+		$post_a = $lang['Post_a_reply'];
+	}
+	else if($mode == 'editpost')
+	{
+		$post_a = $lang['Edit_Post'];
+	}
+
+	$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"folder\" value=\"$folder\">";
+
+	$template->assign_vars(array(
+		"SUBJECT_INPUT" => $subject_input,
+		"MESSAGE_INPUT" => $message_input,
+		"HTML_STATUS" => $html_status,
+		"HTML_TOGGLE" => $html_toggle,
+		"SMILE_TOGGLE" => $smile_toggle,
+		"SIG_TOGGLE" => $sig_toggle,
+		"ANNOUNCE_TOGGLE" => $annouce_toggle,
+		"STICKY_TOGGLE" => $sticky_toggle,
+		"NOTIFY_TOGGLE" => $notify_toggle,
+		"BBCODE_TOGGLE" => $bbcode_toggle,
+		"BBCODE_STATUS" => $bbcode_status,
+
+		"L_SUBJECT" => $lang['Subject'],
+		"L_MESSAGE_BODY" => $lang['Message_body'],
+		"L_OPTIONS" => $lang['Options'],
+		"L_PREVIEW" => $lang['Preview'],
+		"L_SUBMIT" => $lang['Submit_post'],
+		"L_CANCEL" => $lang['Cancel_post'],
+		"L_POST_A" => $post_a,
+
+		"S_POST_ACTION" => append_sid("privmsg.$phpEx"),
+		"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
+	);
 
 	$template->pparse("body");
 
@@ -270,21 +584,8 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 {
 	if(!$userdata['session_logged_in'])
 	{
-		// Error
+		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
-
-	$sql = "SELECT g.group_id 
-		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-		WHERE ug.user_id = " . $userdata['user_id'] . " 
-			AND ug.group_id = g.group_id 
-			AND g.group_single_user = 1";
-	if(!$ug_status = $db->sql_query($sql))
-	{
-		error_die(SQL_QUERY, "Could not obtain group_id information.", __LINE__, __FILE__);
-	}
-	$group_id_row = $db->sql_fetchrow($ug_status);
-
-	$group_id = $group_id_row['group_id'];
 
 	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . " 
 		WHERE ";
@@ -293,7 +594,6 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 	{
 		$delete_ary = $HTTP_POST_VARS['mark'];
 		
-
 		for($i = 0; $i < count($delete_ary); $i++)
 		{
 			$delete_sql .= "privmsgs_id = " . $delete_ary[$i] . " ";
@@ -304,23 +604,22 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		}
 
 		$delete_sql .= "AND ";
-		
 	}
 
 	switch($folder)
 	{
 		case 'inbox':
-			$delete_sql .= "privmsgs_to_groupid = $group_id AND ( 
+			$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 			break;
 		case 'outbox':
-			$delete_sql .= "privmsgs_from_groupid = $group_id AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+			$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
 			break;
 		case 'sentbox':
-			$delete_sql .= "privmsgs_from_groupid = $group_id AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+			$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
 			break;
-		case 'savedbox':
-			$delete_sql .= "( privmsgs_from_groupid = $group_id OR privmsgs_to_groupid = $group_id ) 
+		case 'savebox':
+			$delete_sql .= "( privmsgs_from_userid = " . $userdata['user_id'] . " OR privmsgs_to_userid = " . $userdata['user_id'] . " ) 
 				AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
 			break;
 	}
@@ -335,21 +634,8 @@ else if(isset($HTTP_POST_VARS['save']) && $folder != "savebox" && $folder != "ou
 {
 	if(!$userdata['session_logged_in'])
 	{
-		// Error
+		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
-
-	$sql = "SELECT g.group_id 
-		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-		WHERE ug.user_id = " . $userdata['user_id'] . " 
-			AND ug.group_id = g.group_id 
-			AND g.group_single_user = 1";
-	if(!$ug_status = $db->sql_query($sql))
-	{
-		error_die(SQL_QUERY, "Could not obtain group_id information.", __LINE__, __FILE__);
-	}
-	$group_id_row = $db->sql_fetchrow($ug_status);
-
-	$group_id = $group_id_row['group_id'];
 
 	$saved_sql = "UPDATE " . PRIVMSGS_TABLE . "  
 		SET privmsgs_type = " . PRIVMSGS_SAVED_MAIL . " 
@@ -375,11 +661,11 @@ else if(isset($HTTP_POST_VARS['save']) && $folder != "savebox" && $folder != "ou
 	switch($folder)
 	{
 		case 'inbox':
-			$saved_sql .= "privmsgs_to_groupid = $group_id AND ( 
+			$saved_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND ( 
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " )";
 			break;
 		case 'sentbox':
-			$saved_sql .= "privmsgs_from_groupid = $group_id AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+			$saved_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_READ_MAIL;
 			break;
 	}
 
@@ -391,10 +677,23 @@ else if(isset($HTTP_POST_VARS['save']) && $folder != "savebox" && $folder != "ou
 	$folder = "savebox";
 
 }
+else if($HTTP_POST_VARS['cancel'])
+{
+	$folder = "inbox";
+	$mode = "";
+
+}
 
 //
 // Default page
 //
+
+if(!$userdata['session_logged_in'])
+{
+	header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
+}
+
+include('includes/page_header.'.$phpEx);
 
 //
 // Load templates
@@ -445,81 +744,52 @@ $template->assign_vars(array(
 	"S_POST_NEW_MSG" => $post_new_mesg_url)
 );
 
+$sql_tot = "SELECT COUNT(privmsgs_id)_total FROM " . PRIVMSGS_TABLE . " ";
+$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, u.user_id, u.username FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u ";
+
 switch($folder)
 {
 	case 'inbox':
-		$sql_tot = "SELECT COUNT(pm.privmsgs_id) AS pm_total 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug  
-			WHERE ug.group_id = pm.privmsgs_to_groupid 
-				AND ug.user_id = " . $userdata['user_id'] . " 
-				AND ( pm.privmsgs_type =  " . PRIVMSGS_SENT_MAIL . " 
-					OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
+		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
+			AND ( privmsgs_type =  " . PRIVMSGS_NEW_MAIL . " 
+				OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
 
-		$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, ug.user_id, g.group_name, g.group_single_user 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g 
-			WHERE ug.group_id = pm.privmsgs_from_groupid 
-				AND g.group_id = ug.group_id 
-				AND ug2.group_id = pm.privmsgs_to_groupid 
-				AND ug2.user_id = " . $userdata['user_id'] . " 
-				AND  ( pm.privmsgs_type =  " . PRIVMSGS_SENT_MAIL . " 
-					OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " ) 
-			ORDER BY pm.privmsgs_date DESC 
-			LIMIT $start, " . $board_config['topics_per_page'];
+		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
+			AND u.user_id = pm.privmsgs_from_userid 
+			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . " 
+				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " )";
 		break;
 
 	case 'outbox':
-		$sql_tot = "SELECT COUNT(pm.privmsgs_id) AS pm_total 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug  
-			WHERE ug.group_id = pm.privmsgs_from_groupid 
-				AND ug.user_id = " . $userdata['user_id'] . "
-				AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
+			AND privmsgs_type =  " . PRIVMSGS_NEW_MAIL;
 
-		$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, ug.user_id, g.group_name, g.group_single_user 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g 
-			WHERE ug.group_id = pm.privmsgs_to_groupid 
-				AND g.group_id = ug.group_id 
-				AND ug2.group_id = pm.privmsgs_from_groupid 
-				AND ug2.user_id = " . $userdata['user_id'] . "
-				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
-			ORDER BY pm.privmsgs_date DESC 
-			LIMIT $start, " . $board_config['topics_per_page'];
-			break;
+		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
+			AND u.user_id = pm.privmsgs_to_userid 
+			AND pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL;
+		break;
 
 	case 'sentbox':
-		$sql_tot = "SELECT COUNT(pm.privmsgs_id) AS pm_total 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug  
-			WHERE ug.group_id = pm.privmsgs_from_groupid 
-				AND ug.user_id = " . $userdata['user_id'] . "
-				AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
+			AND privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
 
-		$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, ug.user_id, g.group_name, g.group_single_user 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g 
-			WHERE ug.group_id = pm.privmsgs_to_groupid 
-				AND g.group_id = ug.group_id 
-				AND ug2.group_id = pm.privmsgs_from_groupid 
-				AND ug2.user_id = " . $userdata['user_id'] . "
-				AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL . "
-			ORDER BY pm.privmsgs_date DESC 
-			LIMIT $start, " . $board_config['topics_per_page'];
+		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
+			AND u.user_id = pm.privmsgs_to_userid 
+			AND pm.privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
 		break;
 
 	case 'savebox':
-		$sql_tot = "SELECT COUNT(pm.privmsgs_id) AS pm_total 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug  
-			WHERE ug.group_id = pm.privmsgs_to_groupid 
-				AND ug.user_id = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
+		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
+			AND privmsgs_type = " . PRIVMSGS_SAVED_MAIL; 
 
-		$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, ug.user_id, g.group_name, g.group_single_user 
-			FROM " . PRIVMSGS_TABLE . " pm, " . USER_GROUP_TABLE . " ug, " . USER_GROUP_TABLE . " ug2, " . GROUPS_TABLE . " g 
-			WHERE ug.group_id = pm.privmsgs_from_groupid 
-				AND g.group_id = ug.group_id 
-				AND ug2.group_id = pm.privmsgs_to_groupid 
-				AND ug2.user_id = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_SAVED_MAIL . "
-			ORDER BY pm.privmsgs_date DESC 
-			LIMIT $start, " . $board_config['topics_per_page'];			break;
+		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
+			AND u.user_id = pm.privmsgs_from_userid 
+			AND pm.privmsgs_type = " . PRIVMSGS_SAVED_MAIL;
+		break;
 }
+
+$sql .= " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
+
 if(!$pm_tot_status = $db->sql_query($sql_tot))
 {
 	error_die(SQL_QUERY, "Could not query private message information.", __LINE__, __FILE__);
@@ -532,34 +802,27 @@ $pm_total = $db->sql_numrows($pm_tot_status);
 $pm_list = $db->sql_fetchrowset($pm_status);
 
 //
-// Okay, let's build the index
+// Okay, let's build the correct folder
 //
 
 for($i = 0; $i < count($pm_list); $i++)
 {
-
 	$privmsg_id = $pm_list[$i]['privmsgs_id'];
+
 	$flag = $pm_list[$i]['privmsgs_type'];
-	$icon_flag = ($flag == PRIVMSGS_READ_MAIL || $flag == PRIVMSGS_SENT_MAIL) ? "<img src=\"images/msg_read.gif\">" : "<img src=\"images/msg_unread.gif\">";
+	$icon_flag = ($flag == PRIVMSGS_READ_MAIL || $flag == PRIVMSGS_SAVED_MAIL || $flag == PRIVMSGS_SENT_MAIL) ? "<img src=\"images/msg_read.gif\">" : "<img src=\"images/msg_unread.gif\">";
 
 	$msg_userid = $pm_list[$i]['user_id'];
-	$msg_username = stripslashes($pm_list[$i]['group_name']);
+	$msg_username = stripslashes($pm_list[$i]['username']);
 
-	if($pm_list[$i]['group_single_user'])
-	{
-		$u_from_user_profile = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid";
-	}
-	else
-	{
-		$u_from_user_profile = "groupadmin.$phpEx?" . POST_GROUPS_URL . "=$msg_userid";
-	}
+	$u_from_user_profile = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid";
 
 	$msg_subject = stripslashes($pm_list[$i]['privmsgs_subject']);
 	$u_subject = "privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id";
 
 	$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['default_timezone']);
 
-	if($flag == PRIVMSGS_NEW_MAIL && $mode == "inbox")
+	if($flag == PRIVMSGS_NEW_MAIL && $folder == "inbox")
 	{
 		$msg_subject = "<b>" . $msg_subject . "</b>";
 		$msg_date = "<b>" . $msg_date . "</b>";
@@ -583,7 +846,7 @@ for($i = 0; $i < count($pm_list); $i++)
 } // for ... 
 
 $template->assign_vars(array(
-	"PAGINATION" => generate_pagination("privmsg.$phpEx?mode=$mode", $pm_total, $board_config['topics_per_page'], $start),
+	"PAGINATION" => generate_pagination("privmsg.$phpEx?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
 	"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
 	"TOTAL_PAGES" => ceil(($pm_total)/$board_config['topics_per_page']),
 
