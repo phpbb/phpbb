@@ -490,7 +490,7 @@ if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 
 	if($forum_row[0]['topic_status'] == UNLOCKED)
 	{
-		$topic_mod .= "<a href=\"" . append_sid("modecp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
+		$topic_mod .= "<a href=\"" . append_sid("modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&mode=lock") . "\"><img src=\"images/topic_lock.gif\" border=\"0\"></a>&nbsp;&nbsp;";
 	}
 	else
 	{
