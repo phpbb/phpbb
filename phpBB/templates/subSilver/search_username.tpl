@@ -4,6 +4,7 @@
 function refresh_username(selected_username)
 {
 	opener.document.forms['post'].username.value = selected_username;
+	opener.focus();
 }
 //-->
 </script>
