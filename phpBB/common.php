@@ -38,7 +38,7 @@ if ( !defined('PHPBB_INSTALLED') )
 //
 // Define some constants/variables
 //
-define('ANONYMOUS', -1);
+define('ANONYMOUS', 0);
 
 // User related
 define('USER_ACTIVATION_NONE', 0);
