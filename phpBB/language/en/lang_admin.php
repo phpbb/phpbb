@@ -974,6 +974,9 @@ $lang = array_merge($lang, array(
 	'STYLE_ANCHOR_VISITED'	=> 'Visited',
 	'STYLE_ANCHOR_HOVER'	=> 'Hover',
 
+	'THEME_UPDATED'			=> 'Theme updated successfully',
+
+
 
 
 	'Edit_style' => 'Edit Styles',

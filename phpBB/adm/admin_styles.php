@@ -700,7 +700,7 @@ switch ($mode)
 					}
 					$stylesheet = fread($fp, filesize($phpbb_root_path . 'styles/themes/' . $css_external));
 					fclose($fp);
-					$stylesheet = str_replace(array("\t", "\n"), " ", $stylesheet);
+//					$stylesheet = str_replace(array("\t", "\n"), " ", $stylesheet);
 
 
 					// Pull out list of "custom" tags
@@ -734,16 +734,16 @@ switch ($mode)
 					// have just selected a class. We must also cope with switching between 
 					// simple and rawcss mode
 					$css_element = array();
-					if (!empty($_POST['rawcss']) && !empty($_POST['hidecss']))
+					if (!empty($_POST['rawcss']) && (!empty($_POST['hidecss']) || !empty($_POST['preview']) || !empty($_POST['update'])))
 					{
 						$css_element = preg_replace("#;[\r\n]*#s", "\n", stripslashes($_POST['rawcss']));
 						$css_element = explode("\n", $css_element);
 					}
-					else if (($showcss && !empty($_POST['showcss'])) || !empty($_POST['preview']))
+					else if (($showcss && !empty($_POST['showcss'])) || !empty($_POST['preview']) || !empty($_POST['update']))
 					{
 						if (!empty($_POST['cssother']))
 						{
-							$css_element = explode('; ', stripslashes(substr($_POST['cssother'], 0, -2)));
+							$css_element = explode('; ', stripslashes($_POST['cssother']));
 						}
 
 						foreach ($match_elements as $type => $match_ary)
@@ -758,51 +758,198 @@ switch ($mode)
 							}
 						}
 					}
-					else if (preg_match('#^.*?' . $class . ' {(.*?)}#m', $stylesheet, $matches))
+					else if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet, $matches))
 					{
 						$css_element = explode('; ', ltrim(substr($matches[1], 0, -2)));
 					}
 
 
+					// User wants to submit data ...
+					if (!empty($_POST['update']))
+					{
+						$updated_element = implode('; ', $css_element) . ';';
+						if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
+						{
+							$stylesheet = preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
+						}
+						else
+						{
+							$stylesheet .= '';
+						}
+
+						if (!($fp = fopen($phpbb_root_path . 'styles/themes/' . $css_external, 'wb')))
+						{
+							die("ERROR");
+						}
+						$stylesheet = fwrite($fp, $stylesheet);
+						fclose($fp);
+
+						$error[] = $user->lang['THEME_UPDATED'];
+					}
+
+
+					// I guess really this needs some basic examples, pulled from subSilver
+					// to demonstrate the default classes. Other, custom classes can just use
+					// the div/span and some text? This is gonna get nasty :(
 					if (!empty($_POST['preview']))
 					{
-
+						$output = '<span class="' . str_replace('.', '', $class). '">%s</span>';
+						
 ?>
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="<?php echo $user->lang['LTR']; ?>">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $user->lang['ENCODING']; ?>">
+<meta http-equiv="Content-Style-Type" content="text/css">
 <style type="text/css">
-<!-- 
+<!--
 <?php
 
-						echo "#preview { " . str_replace("url('./../", "url('./../styles/themes/", implode('; ', $css_element)) . "; }\n";
-
+						$updated_element = implode('; ', $css_element) . ';';
+						if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
+						{
+							echo $stylesheet = str_replace("url('./../", "url('./../styles/themes/", preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet));
+						}
+						else
+						{
+							echo str_replace("url('./../", "url('./../styles/themes/", $stylesheet);
+						}
 ?>
 //-->
 </style>
 </head>
 <body>
 
-<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
+<table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center" valign="middle">
+		<td height="100" width="33%"><h1>h1</h1></td>
+		<td height="100" width="33%"><h2>h2</h2></td>
+		<td height="100" width="33%"><h3>h3</h3></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3" height="30"><a class="mainmenu" href="">mainmenu</a></td>
+	</tr>
+	<tr>
+		<td colspan="3" height="50">&nbsp;</td>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td align="left" valign="bottom"><a class="titles" href="">titles</a>
+	</tr>
+</table>
+
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="nav" width="10" align="left" valign="middle"><a href="">navlink</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="3">th</th>
+	</tr>
+	<tr>
+		<td class="cat" width="40%"><span class="cattitle">cattitle / cat</span></td>
+		<td class="catdiv" colspan="2">catdiv</td>
+	</tr>
+	<tr>
+		<td class="row1" width="40%"><a class="topictitle" href="">topictitle / row1</a></td>
+		<td class="row2"><span class="topicauthor">topicauthor / row2</span></td>
+		<td class="row1"><span class="topicdetails">topicdetails / row1</span></td>
+	</tr>
+	<tr>
+		<td class="row3" colspan="3">row3</td>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="3">spacer</td>
+	</tr>
+	<tr>
+		<td class="row1"><span class="postauthor">postauthor / row1</span></td>
+		<td class="row2"><span class="postdetails">postdetails / row2</span></td>
+		<td class="row1"><span class="postbody">postbody / row1 <span class="posthilit">posthilit</span></span></td>
+	</tr>
+</table>
+
+<br /><hr width="95%" />
+
+<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center">
+		<td><span class="gen">gen</span></td>
+		<td><span class="genmed">genmed</span></td>
+		<td><span class="gensmall">gensmall</span></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><span class="copyright">copyright <a href="">phpBB</a></span></td>
+	</tr>
+</table>
+
+<hr width="95%" /><br />
+
+<form><table width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr align="center">
+		<td><input class="btnmain" type="submit" value="input / btnmain" /></td>
+		<td><input class="btnlite" type="submit" value="input / btnlite" /></td>
+		<td><input class="btnbbcode" type="submit" value="input / btnbbcode" /></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><input class="post" type="text" value="input / post" /></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><select class="post"><option>select</option></select></td>
+	</tr>
+	<tr align="center">
+		<td colspan="3"><textarea class="post">textarea / post</textarea></td>
+	</tr>
+</table></form>
+
+<hr width="95%" /><br />
+
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="row2" align="center"><span class="postbody">postbody / <b>bold</b> <i>italic</i> <u>underline</u></span></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr>
+				<td class="quote"><b>A_N_Other wrote:</b><hr />quote</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr> 
+				<td><b class="genmed">Code:</b></td>
+			</tr>
+			<tr>
+				<td class="code">10 Print "hello"<br />20 Goto 10</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="row2"><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center">
+			<tr> 
+				<td><b class="genmed">PHP:</b></td>
+			</tr>
+			<tr>
+				<td class="code"><span class="syntaxbg"><span class="syntaxcomment">// syntaxcomment</span><br /><span class="syntaxdefault">?&gt;</span><br />&lt;<span class="syntaxhtml">HTML</span>&gt;<br /><span class="syntaxdefault">&lt;?php</span><br /><span class="syntaxkeyword">echo </span> <span class="syntaxdefault">$this = </span><span class="syntaxstring">"HELLO"</span><span class="syntaxdefault">;</span></span></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
 
 <br clear="all" />
-
-<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
-
-<br clear="all" />
-
-<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
-
-<br clear="all" />
-
-<div id="preview">Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look? Hello, this is some text. How does it look?</div>
 
 </body>
 </html>
 <?php
+	
+						exit;
 
-exit;
 
 					}
+
 
 					// Here we pull out the appropriate class entry then proceed to pull it apart,
 					// setting appropriate variables to their respective values. We only match
@@ -825,10 +972,6 @@ exit;
 										{
 											switch ($type)
 											{
-												case 'colors':
-													$$var = trim($matches[1]);
-													break;
-
 												case 'sizes':
 													if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
 													{
@@ -841,12 +984,8 @@ exit;
 													if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
 													{
 														$$var = trim($matches[1]);
+														$$var = str_replace('./', $theme_name . '/', $$var);
 													}
-													$$var = str_replace('./', $theme_name . '/', $$var);
-													break;
-
-												case 'repeat':
-													$$var = trim($matches[1]);
 													break;
 
 												default:
@@ -925,6 +1064,7 @@ function csspreview()
 	{
 		document.forms['style'].target =  '_self';
 	}
+	document.myvar='';
 
 	return true;
 }
@@ -972,7 +1112,7 @@ function csspreview()
 		<br clear="all" /><br /></td>
 	</tr -->
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="document.myvar=''; if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" onclick="document.myvar='';" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != ''){ csspreview(); this.form.submit(); }"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
@@ -988,6 +1128,14 @@ function csspreview()
 			<tr>
 				<th colspan="2">Raw CSS</th>
 			</tr>
+<?php
+
+				if (sizeof($error) && !empty($_POST['update']))
+				{
+					echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+				}
+
+?>
 			<tr>
 				<td class="row2" colspan="2" align="center"><textarea class="post" style="font-family:'Courier New', monospace;font-size:10pt;line-height:125%;" name="rawcss" rows="<?php echo $txtrows; ?>" cols="<?php echo $txtcols; ?>"><?php echo (sizeof($css_element)) ? implode(";\n", $css_element) . ';' : ''; ?></textarea></td>
 			</tr>
@@ -1003,6 +1151,14 @@ function csspreview()
 				<th>Parameter</th>
 				<th>Value</th>
 			</tr>
+<?php
+
+				if (sizeof($error) && !empty($_POST['update']))
+				{
+					echo '<tr><td class="row3" colspan="2" align="center"><span class="gen" style="color:green" align="center">' . implode('<br />', $error) . '</span></td></tr>';
+				}
+
+?>
 			<tr>
 				<td class="cat" colspan="2"><b>Background</b></td>
 			</tr>
@@ -1078,18 +1234,18 @@ function csspreview()
 
 ?>
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" onclick="document.myvar='';"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" onclick="document.myvar='preview';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" onclick="document.myvar='';" />&nbsp;&nbsp;<?php
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>"; />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" onclick="document.myvar='preview';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" />&nbsp;&nbsp;<?php
 									
 				if ($showcss)
 				{
 
-?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" onclick="document.myvar='';" /><?php
+?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" /><?php
 
 				}
 				else
 				{
 
-?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" onclick="document.myvar='';" /><?php
+?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" /><?php
 
 				}
 
@@ -1114,7 +1270,7 @@ function csspreview()
 				<td class="row2"><input class="post" type="text" name="customclass" value="" maxlength="15" size="15" /></td>
 			</tr>
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addclass" value="<?php echo $user->lang['SUBMIT']; ?>" onclick="document.myvar='';" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" onclick="document.myvar='';" /></td>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addclass" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 			</tr>
 		</table>
 	
@@ -1161,7 +1317,11 @@ function csspreview()
 
 ?>
 	<tr>
-		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id']; ?>"><?php echo $row['theme_name']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" width="100%"><?php 
+			
+				echo (is_writeable($phpbb_root_path . 'styles/themes/' . $row['css_external'])) ? sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>') : $row['theme_name'];
+
+?></td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=recreate&amp;id=" . $row['theme_id']; ?>">Regenerate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
 	</tr>
 <?php
