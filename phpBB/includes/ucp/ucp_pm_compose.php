@@ -404,7 +404,7 @@ function compose_pm($id, $mode, $action)
 
 		if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
 		{
-			$subject = phpbb_strtolower($subject);
+			$subject = strtolower($subject);
 		}
 		$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
 

@@ -29,7 +29,7 @@ $voted_id	= request_var('vote_id', 0);;
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
 $rate		= request_var('rate', 0);
-$sort_days	= request_var('st', 0);
+$sort_days	= request_var('st', ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0));
 $sort_key	= request_var('sk', 't');
 $sort_dir	= request_var('sd', 'a');
 $update		= request_var('update', false);
@@ -484,7 +484,7 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;f=$forum_id&amp;quickmod=1",
 
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
-	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id",
+	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;search_forum[]=$forum_id",
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,

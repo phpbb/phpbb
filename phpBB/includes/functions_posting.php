@@ -513,27 +513,6 @@ function decode_message(&$message, $bbcode_uid = '')
 	return;
 }
 
-// Temp Function - strtolower - borrowed from php.net
-function phpbb_strtolower($string)
-{
-	$new_string = '';
-
-	for ($i = 0; $i < strlen($string); $i++) 
-	{
-		if (ord(substr($string, $i, 1)) > 0xa0) 
-		{
-			$new_string .= strtolower(substr($string, $i, 2));
-			$i++;
-		} 
-		else 
-		{
-			$new_string .= strtolower($string{$i});
-		}
-	}
-
-	return $new_string;
-}
-
 // Generate Topic Icons for display
 function posting_gen_topic_icons($mode, $icon_id)
 {

@@ -47,7 +47,7 @@ if (!$auth->acl_get('a_search'))
 // Start indexing
 if (isset($_POST['start']) || isset($_GET['batchstart']))
 {
-	$batchsize = 200; // Process this many posts per batch
+	$batchsize = 5000; // Process this many posts per batch
 	$batchcount = request_var('batchcount', 1);
 	$batchstart = request_var('batchstart', 0);
 	$loopcount = 0;
@@ -65,39 +65,10 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 			if ($load > 3)
 			{
-				redirect("admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batchcount");
+				redirect("adm/admin_search.$phpEx$SID&batchstart=$batchstart&batchcount=$batchcount", 3);
 			}
 		}
 	}
-
-	/* Try and load stopword and synonym files
-		// Do this with the mode "admin" and the fulltext class
-	$stopword_array = array();
-	$synonym_array = array();
-
-	$dir = opendir($phpbb_root_path . 'language/');
-	while ($file = readdir($dir))
-	{
-		if (preg_match('#^lang_#', $file) && !is_file($phpbb_root_path . 'language/' . $file) && !is_link($phpbb_root_path . 'language/' . $file))
-		{
-			unset($tmp_array);
-			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_stopwords.txt');
-			if (is_array($tmp_array))
-			{
-				$stopword_array = array_unique(array_merge($stopword_array, $tmp_array));
-			}
-
-			unset($tmp_array);
-			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_synonyms.txt');
-			if (is_array($tmp_array))
-			{
-				$synonym_array = array_unique(array_merge($synonym_array, $tmp_array));
-			}
-		}
-	}
-
-	closedir($dir);
-	*/
 
 	if (!$batchstart)
 	{
@@ -135,153 +106,26 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 	{
 		do
 		{
-			$mode = 'admin';
-			$fulltext->add($mode, $row['post_id'], $row['post_text'], $row['post_subject']);
-			/*$post_id = $row['post_id'];
-
-			$search_raw_words = array();
-			$search_raw_words['text'] = split_words(clean_words('post', $row['post_text'], $stopword_array, $synonym_array));
-			$search_raw_words['title'] = split_words(clean_words('post', $row['post_subject'], $stopword_array, $synonym_array));
-
-			$word = array();
-			$word_insert_sql = array();
-			foreach ($search_raw_words as $word_in => $search_matches)
-			{
-				$word_insert_sql[$word_in] = '';
-				if (!empty($search_matches))
-				{
-					for ($i = 0; $i < count($search_matches); $i++)
-					{
-						$search_matches[$i] = trim($search_matches[$i]);
-
-						if ($search_matches[$i] != '')
-						{
-							$word[] = $search_matches[$i];
-							$word_insert_sql[$word_in] .= ($word_insert_sql[$word_in] != '') ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
-						}
-					}
-				}
-			}
-
-			if (count($word))
-			{
-				$word_text_sql = '';
-				$word = array_unique($word);
-
-				for($i = 0; $i < count($word); $i++)
-				{
-					$word_text_sql .= (($word_text_sql != '') ? ', ' : '') . "'" . $db->sql_escape($word[$i]) . "'";
-				}
-
-				$check_words = array();
-				switch(SQL_LAYER)
-				{
-					case 'postgresql':
-					case 'msaccess':
-					case 'mssql-odbc':
-					case 'oracle':
-					case 'db2':
-						$sql = "SELECT word_id, word_text
-							FROM " . SEARCH_WORD_TABLE . "
-							WHERE word_text IN ($word_text_sql)";
-						$result = $db->sql_query($sql);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$check_words[$row['word_text']] = $row['word_id'];
-						}
-						break;
-				}
-
-				$value_sql = '';
-				$match_word = array();
-				for ($i = 0; $i < count($word); $i++)
-				{
-					$new_match = true;
-					if (isset($check_words[$word[$i]]))
-					{
-						$new_match = false;
-					}
-
-					if ($new_match)
-					{
-						switch(SQL_LAYER)
-						{
-							case 'mysql':
-							case 'mysql4':
-								$value_sql .= (($value_sql != '') ? ', ' : '') . "('" . $db->sql_escape($word[$i]) . "')";
-								break;
-
-							case 'mssql':
-							case 'sqlite':
-								$value_sql .= (($value_sql != '') ? ' UNION ALL ' : '') . "SELECT '" . $db->sql_escape($word[$i]) . "'";
-								break;
-
-							default:
-								$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
-									VALUES ('" . $db->sql_escape($word[$i]) . "')";
-								$db->sql_query($sql);
-								break;
-						}
-					}
-				}
-
-				if ($value_sql != '')
-				{
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-							$sql = 'INSERT IGNORE INTO ' . SEARCH_WORD_TABLE . " (word_text)
-								VALUES $value_sql";
-							break;
-
-						case 'mssql':
-						case 'sqlite':
-							$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
-								$value_sql";
-							break;
-					}
-
-					$db->sql_query($sql);
-				}
-			}
-
-			foreach ($word_insert_sql as $word_in => $match_sql)
-			{
-				$title_match = ($word_in == 'title') ? 1 : 0;
-
-				if ($match_sql != '')
-				{
-					$sql = 'INSERT INTO ' . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
-						SELECT $post_id, word_id, $title_match
-							FROM " . SEARCH_WORD_TABLE . "
-							WHERE word_text IN ($match_sql)";
-					$db->sql_query($sql);
-				}
-			}
-			*/
+			$fulltext->add('admin', $row['post_id'], $row['post_text'], $row['post_subject']);
 		}
 		while ($row = $db->sql_fetchrow($result));
 	}
 
 	$db->sql_freeresult($result);
 
-	// Remove common words after the first 2 batches and after every 4th batch after that.
-	if ($batchcount % 4 == 3)
-	{
-//		remove_common('global', $config['common_search']);
-	}
-
 	$batchcount++;
 
 	if (($batchstart + $batchsize) < $max_post_id)
 	{
-		redirect("Location: admin_search.$phpEx$SID&batchstart=" . ($batchstart + $batchsize) . "&batchcount=$batch_count");
+		redirect("adm/admin_search.$phpEx$SID&batchstart=" . ($batchstart + $batchsize) . "&batchcount=$batchcount", 3);
 	}
 	else
 	{
 		set_config('board_disable', 0);
+
+		// search tidy
+		$fulltext->search_tidy();
+
 		adm_page_header($user->lang['SEARCH_INDEX']);
 
 ?>

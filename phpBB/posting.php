@@ -498,7 +498,7 @@ if ($submit || $preview || $refresh)
 
 	if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
 	{
-		$subject = phpbb_strtolower($subject);
+		$subject = strtolower($subject);
 	}
 
 	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
