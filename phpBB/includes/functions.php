@@ -255,7 +255,7 @@ function init_userprefs($userdata)
 	//
 	if ( !$board_config['override_user_style'] )
 	{
-		if ( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_style']) )
+		if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_style'] > 0 )
 		{
 			if ( $theme = setup_style($userdata['user_style']) )
 			{
