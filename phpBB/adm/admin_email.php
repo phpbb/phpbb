@@ -111,6 +111,7 @@ if (isset($_POST['submit']))
 
 				$messenger->replyto($config['board_email']);
 				$messenger->to($to['email'], $to['name']);
+				$messenger->im($to['jabber'], $to['name']);
 
 				$messenger->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],

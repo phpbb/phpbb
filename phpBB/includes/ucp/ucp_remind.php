@@ -21,68 +21,69 @@ class ucp_remind extends module
 
 		if ($submit)
 		{
-			$username = (!empty($_POST['username'])) ? trim($_POST['username']) : '';
-			$email = (!empty($_POST['email'])) ? trim($_POST['email']) : '';
+			$username	= request_var('username', '');
+			$email		= request_var('email', '');
 
-			$sql = 'SELECT user_id, username, user_email, user_active, user_lang
+			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_active, user_lang
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND username = '" .  . $db->sql_escape($username) . "'";
-			if ($result = $db->sql_query($sql))
+					AND username = '" . $db->sql_escape($username) . "'";
+			if (!($result = $db->sql_query($sql)))
 			{
-				if ($row = $db->sql_fetchrow($result))
-				{
-					if (!$row['user_active'])
-					{
-						trigger_error($lang['ACCOUNT_INACTIVE']);
-					}
-
-					$server_url = generate_board_url();
-					$username = $row['username'];
-
-					$user_actkey = gen_rand_string(10);
-					$key_len = 54 - strlen($server_url);
-					$key_len = ($str_len > 6) ? $key_len : 6;
-					$user_actkey = substr($user_actkey, 0, $key_len);
-					$user_password = gen_rand_string(false);
-
-					$sql = 'UPDATE ' . USERS_TABLE . "
-						SET user_newpasswd = '" . md5($user_password) . "', user_actkey = '$user_actkey'
-						WHERE user_id = " . $row['user_id'];
-					$db->sql_query($sql);
-
-					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer();
-
-					$emailer->use_template('user_activate_passwd', $row['user_lang']);
-					$emailer->to($row['user_email']);
-
-					$emailer->assign_vars(array(
-						'SITENAME'	=> $config['sitename'],
-						'USERNAME'	=> $username,
-						'PASSWORD'	=> $user_password,
-						'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
-						'U_ACTIVATE'	=> $server_url . "/ucp.$phpEx?mode=activate&k=$user_actkey")
-					);
-					$emailer->send();
-					$emailer->reset();
-
-					meta_refresh(3, "index.$phpEx$SID");
-
-					$message = $lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
-
-					trigger_error($message);
-				}
-				else
-				{
-					trigger_error($lang['NO_EMAIL']);
-				}
+				trigger_error($user->lang['NO_USER']);
 			}
-			else
+
+			if (!($row = $db->sql_fetchrow($result)))
 			{
-				trigger_error('Could not obtain user information for sendpassword', E_USER_ERROR);
+				trigger_error($lang['NO_EMAIL']);
 			}
+			$db->sql_freeresult($result);
+
+			if (!$row['user_active'])
+			{
+				trigger_error($lang['ACCOUNT_INACTIVE']);
+			}
+
+			$server_url = generate_board_url();
+			$username = $row['username'];
+
+			$key_len = 54 - strlen($server_url);
+			$key_len = ($str_len > 6) ? $key_len : 6;
+			$user_actkey = substr(gen_rand_string(10), 0, $key_len);
+			$user_password = gen_rand_string(8);
+
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_newpasswd = '" . $db->sql_escape(md5($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
+				WHERE user_id = " . $row['user_id'];
+			$db->sql_query($sql);
+
+			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+			$messenger = new messenger();
+
+			$messenger->template('user_activate_passwd', $row['user_lang']);
+			$messenger->subject($subject);
+
+			$messenger->replyto($user->data['user_email']);
+			$messenger->to($row['user_email'], $row['username']);
+			$messenger->im($row['user_jabber'], $row['username']);
+
+			$messenger->assign_vars(array(
+				'SITENAME'	=> $config['sitename'],
+				'USERNAME'	=> $username,
+				'PASSWORD'	=> $user_password,
+				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+
+				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
+			);
+
+			$messenger->send($row['user_notify_type']);
+			$messenger->queue->save();
+
+			meta_refresh(3, "index.$phpEx$SID");
+
+			$message = $user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+			trigger_error($message);
 		}
 		else
 		{
@@ -93,6 +94,8 @@ class ucp_remind extends module
 			'USERNAME'	=> $username,
 			'EMAIL'		=> $email)
 		);
+
+		$this->display($user->lang['UCP_REMIND'], 'ucp_remind.html');
 	}
 }
 

@@ -878,6 +878,14 @@ $lang += array(
 	'Wrong_activation'			=> 'The activation key you supplied does not match any in the database',
 );
 
+// ucp_remind
+$lang += array(
+	'SEND_PASSWORD'	=> 'Send password', 
+	'EMAIL_REMIND'	=> 'This must be the email address you supplied when registering.',
+
+	'PASSWORD_UPDATED'	=> 'Your password has been sent successfully to your original email address.', 
+);
+
 // ucp_prefs
 $lang += array(
 	'UCP_PREFS'	=> 'Preferences',

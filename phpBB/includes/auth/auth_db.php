@@ -14,8 +14,8 @@ function login_db(&$username, &$password)
 {
 	global $db, $config;
 
-	$sql = "SELECT user_id, username, user_password, user_email, user_active
-		FROM " . USERS_TABLE . "
+	$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_active
+		FROM ' . USERS_TABLE . "
 		WHERE username = '" . $db->sql_escape($username) . "'";
 	$result = $db->sql_query($sql);
 

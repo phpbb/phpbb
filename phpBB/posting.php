@@ -1246,7 +1246,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 			$msg_list_ary[$row['template']][$pos]['method'] = $row['method'];
 			$msg_list_ary[$row['template']][$pos]['email'] = $row['user_email'];
-			$msg_list_ary[$row['template']][$pos]['user_jabber'] = $row['user_jabber'];
+			$msg_list_ary[$row['template']][$pos]['jabber'] = $row['user_jabber'];
 			$msg_list_ary[$row['template']][$pos]['name'] = $row['username'];
 			$msg_list_ary[$row['template']][$pos]['lang'] = $row['user_lang'];
 		}
@@ -1260,6 +1260,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 				$messenger->replyto($config['board_email']);
 				$messenger->to($addr['email'], $addr['name']);
+				$messenger->im($addr['jabber'], $addr['name']);
 
 				$messenger->assign_vars(array(
 					'EMAIL_SIG'		=> $email_sig,

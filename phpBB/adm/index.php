@@ -132,37 +132,31 @@ else if ($pane == 'left')
 }
 elseif ($pane == 'right')
 {
-	if ((isset($_POST['activate']) || isset($_POST['delete'])) && !empty($_POST['mark']))
+	$activate	= (isset($_POST['activate'])) ? true : false;
+	$delete		= (isset($_POST['delete'])) ? true : false;
+	$remind		= (isset($_POST['remind'])) ? true : false;
+
+	$mark	= implode(', ', request_var('mark', 0));
+
+	if (($activate || $delete) && $mark)
 	{
 		if (!$auth->acl_get('a_user'))
 		{
 			trigger_error($user->lang['NO_ADMIN']);
 		}
 
-		if (is_array($_POST['mark']))
+		$sql = ($activate) ? 'UPDATE ' . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+		$db->sql_query($sql);
+
+		if (!$delete)
 		{
-			$in_sql = '';
-			foreach ($_POST['mark'] as $user_id)
-			{
-				$in_sql .= (($in_sql != '') ? ', ' : '') . intval($user_id);
-			}
-
-			if ($in_sql != '')
-			{
-				$sql = (isset($_POST['activate'])) ? 'UPDATE ' . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
-				$db->sql_query($sql);
-
-				if (!isset($_POST['delete']))
-				{
-					set_config('num_users', $config['num_users'] + sizeof($mark));
-				}
-
-				$log_action = (isset($_POST['activate'])) ? 'log_index_activate' : 'log_index_delete';
-				add_log('admin', $log_action, sizeof($_POST['mark']));
-			}
+			set_config('num_users', $config['num_users'] + $db->affected_rows());
 		}
+
+		$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
+		add_log('admin', $log_action, $db->affected_rows());
 	}
-	else if (isset($_POST['remind']))
+	else if ($remind && $mark)
 	{
 		if (!$auth->acl_get('a_user'))
 		{
@@ -174,55 +168,52 @@ elseif ($pane == 'right')
 			trigger_error($user->lang['EMAIL_DISABLED']);
 		}
 
-		if (is_array($_POST['mark']))
+		$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_method, user_regdate, user_actkey 
+			FROM ' . USERS_TABLE . " 
+			WHERE user_id IN ($mark)";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$in_sql = '';
-			foreach ($_POST['mark'] as $user_id)
+			// Send the messages
+			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+			$messenger = new messenger();
+
+			$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
+			$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+			$usernames = array();
+			do
 			{
-				$in_sql .= (($in_sql != '') ? ', ' : '') . intval($user_id);
-			}
+				$messenger->template('user_remind_inactive', $row['user_lang']);
 
-			if ($in_sql != '')
-			{
-				$sql = "SELECT user_id, username, user_email, user_lang, user_regdate, user_actkey 
-					FROM " . USERS_TABLE . " 
-					WHERE user_id IN ($in_sql)";
-				$result = $db->sql_query($sql);
+				$messenger->replyto($config['board_email']);
+				$messenger->to($row['user_email'], $row['username']);
+				$messenger->im($row['user_jabber'], $row['username']);
 
-				if ($row = $db->sql_fetchrow($result))
-				{
-					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer();
-	
-					$board_url = generate_board_url() . '/ucp.' . $phpEx;
-					$usernames = '';
-
-					do
-					{
-						$emailer->use_template('user_remind_inactive', $row['user_lang']);
-						$emailer->to($row['user_email'], $row['username']);
+				$messenger->assign_vars(array(
+					'EMAIL_SIG'		=> $sig,
+					'USERNAME'		=> $row['username'],
+					'SITENAME'		=> $config['sitename'],
+					'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
 					
-						$emailer->assign_vars(array(
-							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-							'USERNAME'		=> $row['username'],
-							'SITENAME'		=> $config['sitename'],
-							'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-							
-							'U_ACTIVATE'	=> $board_url . '&mode=activate&u=' . $row['user_id'] . '&k=' . $row['user_actkey'])
-						);
-					
-						$emailer->send();
-						$emailer->reset();
+					'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+				);
 
-						$usernames .= (($usernames != '') ? ', ' : '') . $row['username'];
-					}
-					while ($row = $db->sql_fetchrow($result));
+				$messenger->send($row['user_notify_type']);
 
-					add_log('admin', 'LOG_INDEX_REMIND', $usernames);
-				}
-				$db->sql_freeresult($result);
+				$usernames[] = $row['username'];
 			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$messenger->queue->save();
+			unset($email_list);
+
+			add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
+			unset($usernames);
 		}
+		$db->sql_freeresult($result);
 	}
 	else if (isset($_POST['online']))
 	{
@@ -242,27 +233,27 @@ elseif ($pane == 'right')
 			trigger_error($user->lang['NO_ADMIN']);
 		}
 
-		$sql = "SELECT COUNT(post_id) AS stat 
-			FROM " . POSTS_TABLE . "
-			WHERE post_approved = 1";
+		$sql = 'SELECT COUNT(post_id) AS stat 
+			FROM ' . POSTS_TABLE . '
+			WHERE post_approved = 1';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		set_config('num_posts', $row['stat']);
 
-		$sql = "SELECT COUNT(topic_id) AS stat
-			FROM " . TOPICS_TABLE . "
-			WHERE topic_approved = 1";
+		$sql = 'SELECT COUNT(topic_id) AS stat
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_approved = 1';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		set_config('num_topics', $row['stat']);
 
-		$sql = "SELECT COUNT(user_id) AS stat
-			FROM " . USERS_TABLE . "
-			WHERE user_active = 1";
+		$sql = 'SELECT COUNT(user_id) AS stat
+			FROM ' . USERS_TABLE . '
+			WHERE user_active = 1';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
@@ -349,7 +340,7 @@ elseif ($pane == 'right')
 	// DB size ... MySQL only
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
-	if (preg_match('/^mysql/', SQL_LAYER))
+	if (preg_match('#^mysql#', SQL_LAYER))
 	{
 		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
 
@@ -396,8 +387,8 @@ elseif ($pane == 'right')
 	}
 	else if (preg_match('#^mssql#', SQL_LAYER))
 	{
-		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
-			FROM sysfiles";
+		$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
+			FROM sysfiles';
 		$result = $db->sql_query($sql);
 
 		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];

@@ -20,8 +20,8 @@ function login_apache(&$username, &$password)
 
 	if ($php_auth_user && $php_auth_pw)
 	{
-		$sql = "SELECT user_id, username, user_password, user_email, user_active
-			FROM " . USERS_TABLE . "
+		$sql = ' user_id, username, user_password, user_passchg, user_email, user_active
+			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);
 

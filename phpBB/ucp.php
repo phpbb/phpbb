@@ -249,7 +249,7 @@ switch ($mode)
 		$ucp->module->ucp_activate();
 		break;
 
-	case 'remind':
+	case 'sendpassword':
 		$ucp->load('ucp', 'remind');
 		$ucp->module->ucp_remind();
 		break;

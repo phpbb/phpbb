@@ -34,8 +34,8 @@ function login_ldap(&$username, &$password)
 		{
 			@ldap_close($ldap);
 
-			$sql = "SELECT user_id, username, user_password, user_email, user_active
-				FROM " . USERS_TABLE . "
+			$sql ='SELECT user_id, username, user_password, user_passchg, user_email, user_active
+				FROM ' . USERS_TABLE . "
 				WHERE username = '" . $db->sql_escape($username) . "'";
 			$result = $db->sql_query($sql);
 

@@ -19,6 +19,18 @@ class messenger
 
 	var $tpl_msg = array();
 
+	function messenger()
+	{
+		global $config;
+
+		if (preg_match('#^[c-z]:\\\#i', getenv('PATH')) && !$config['smtp_delivery'] && phpversion() < '4.3')
+		{
+			// We are running on windows, force delivery to use our smtp functions since php's are broken by default
+			$config['smtp_delivery'] = 1;
+			$config['smtp_host'] = @ini_get('SMTP');
+		}
+	}
+
 	// Resets all the data (address, template file, etc etc to default
 	function reset()
 	{
@@ -45,6 +57,13 @@ class messenger
 		$pos = sizeof($this->addresses['bcc']);
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
 //		$this->addresses['bcc'][$pos]['name'] = trim($realname);
+	}
+
+	function im($address, $realname = '')
+	{
+		$pos = sizeof($this->addresses['im']);
+		$this->addresses['im'][$pos]['uid'] = trim($address);
+		$this->addresses['im'][$pos]['name'] = trim($realname);
 	}
 
 	function replyto($address)
@@ -305,16 +324,11 @@ class messenger
 		}
 
 		$addresses = array();
-		foreach ($this->addresses as $type => $address_ary)
+		foreach ($this->addresses['im'] as $type => $uid_ary)
 		{
-			foreach ($address_ary as $which_ary)
-			{
-				$addresses[] = $which_ary['email'];
-			}
+			$addresses[] = $uid_ary['uid'];
 		}
 		$addresses = array_unique($addresses);
-
-		$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
 
 		if (!$use_queue)
 		{

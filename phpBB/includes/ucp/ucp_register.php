@@ -23,10 +23,12 @@ class ucp_register extends module
 			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
 		}
 
-		$coppa = (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed = (!empty($_POST['agreed'])) ? 1 : 0;
-		$confirm_id = (!empty($_POST['confirm_id'])) ? $_POST['confirm_id'] : 0;
+		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
+		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit	= (isset($_POST['submit'])) ? true : false;
+
+		$confirm_id = (!empty($_POST['confirm_id'])) ? $_POST['confirm_id'] : 0;
+
 		$error = $data = array();
 
 		//
@@ -215,14 +217,22 @@ class ucp_register extends module
 
 				if ($config['email_enable'])
 				{
-					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer();
-				
-					$emailer->template($email_template, $lang);
-					$emailer->replyto($config['board_contact']);
-					$emailer->to($email, $username);
+					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
-					$emailer->assign_vars(array(
+					$messenger = new messenger();
+
+					$messenger->template($email_template, $lang);
+					$messenger->subject($subject);
+
+					$messenger->replyto($user->data['board_contact']);
+					$messenger->to($email, $username);
+
+					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'WELCOME_MSG'	=> sprintf($user->lang['Welcome_subject'], $config['sitename']),
 						'USERNAME'		=> $username,
@@ -234,7 +244,7 @@ class ucp_register extends module
 
 					if ($coppa)
 					{
-						$emailer->assign_vars(array(
+						$messenger->assign_vars(array(
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
 							'EMAIL_ADDRESS' => $email,
@@ -242,27 +252,27 @@ class ucp_register extends module
 						);
 					}
 
-					$emailer->send();
-					$emailer->reset();
+					$messenger->send(NOTIFY_EMAIL);
 
 					// TODO
 					// Email admins with user management permissions
 					if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
-						$emailer->use_template('admin_activate', $config['default_lang']);
-						$emailer->replyto($config['board_contact']);
-						$emailer->to($config['board_contact']);
+						$messenger->use_template('admin_activate', $config['default_lang']);
+						$messenger->replyto($config['board_contact']);
+						$messenger->to($config['board_contact']);
 
-						$emailer->assign_vars(array(
+						$messenger->assign_vars(array(
 							'USERNAME'		=> $username,
 							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 			
 							'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&k=$user_actkey")
 						);
 
-						$emailer->send();
-						$emailer->reset();
+						$messenger->send(NOTIFY_EMAIL);
 					}
+
+					$messenger->queue->save();
 				}
 
 				if ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable'])

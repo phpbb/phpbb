@@ -140,7 +140,7 @@ switch ($mode)
 					$messenger->subject($subject);
 
 					$messenger->replyto($user->data['user_email']);
-					$messenger->to($row['user_jabber'], $row['username']);
+					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
@@ -407,7 +407,7 @@ switch ($mode)
 		if (!$topic_id)
 		{
 			// Get the appropriate username, etc.
-			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber 
+			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_method 
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_active = 1";
@@ -487,9 +487,9 @@ switch ($mode)
 
 				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
-				$email_tpl = (!$topic_id) ? 'profile_send_email' : 'email_notify';
+				$email_tpl	= (!$topic_id) ? 'profile_send_email' : 'email_notify';
 				$email_lang = (!$topic_id) ? $row['user_lang'] : $email_lang;
-				$email = (!$topic_id) ? $row['user_email'] : $email;
+				$email		= (!$topic_id) ? $row['user_email'] : $email;
 
 				$messenger = new messenger();
 
@@ -498,6 +498,11 @@ switch ($mode)
 
 				$messenger->replyto($user->data['user_email']);
 				$messenger->to($email, $row['username']);
+
+				if (!$topic_id)
+				{
+					$messenger->im($row['user_jabber'], $row['username']);
+				}
 
 				if ($cc)
 				{
@@ -520,7 +525,7 @@ switch ($mode)
 					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id" : '')
 				);
 
-				$messenger->send(NOTIFY_EMAIL);
+				$messenger->send($row['user_notify_method']);
 				$messenger->queue->save();
 
 				meta_refresh(3, "index.$phpEx$SID");
