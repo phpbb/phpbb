@@ -660,9 +660,6 @@ switch ($mode)
 	break;
 }
 
-// Front end
-page_header($user->lang['Manage']);
-
 $forum_id = (!empty($_GET['f'])) ? intval($_GET['f']) : 0;
 
 if (!$forum_id)
@@ -690,9 +687,12 @@ else
 // Jumpbox
 $forum_box = make_forum_select($forum_id);
 
+// Front end
+page_header($user->lang['MANAGE']);
+
 ?>
 
-<h1><?php echo $user->lang['Manage']; ?></h1>
+<h1><?php echo $user->lang['MANAGE']; ?></h1>
 
 <p><?php echo $user->lang['Forum_admin_explain']; ?></p>
 
@@ -745,9 +745,9 @@ while ($row = $db->sql_fetchrow($result))
 		<td class="row1" width="5%" align="center" valign="middle" title="<?php echo $user->lang['TOPICS']; ?>"><span class="gen"><?php echo $row['forum_topics'] ?></span></td>
 		<td class="row2" width="5%" align="center" valign="middle" title="<?php echo $user->lang['POSTS']; ?>"><span class="gen"><?php echo $row['forum_posts'] ?></span></td>
 
-		<td class="row2" width="15%" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=move_up"><?php echo $user->lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&amp;mode=move_down"><?php echo $user->lang['Move_down'] ?></a></span></td>
+		<td class="row2" width="15%" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=move_up"><?php echo $user->lang['MOVE_UP'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&amp;mode=move_down"><?php echo $user->lang['MOVE_DOWN'] ?></a></span></td>
 
-		<td class="row2" width="20%" align="center" valign="middle" nowrap="nowrap">&nbsp;<span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=edit"><?php echo $user->lang['Edit'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=delete"><?php echo $user->lang['DELETE'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=sync"><?php echo $user->lang['Resync'] ?></a></span>&nbsp;</td>
+		<td class="row2" width="20%" align="center" valign="middle" nowrap="nowrap">&nbsp;<span class="gen"><a href="admin_forums.<?php echo $url ?>&amp;mode=edit"><?php echo $user->lang['EDIT'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=delete"><?php echo $user->lang['DELETE'] ?></a> | <a href="admin_forums.<?php echo $url ?>&amp;mode=sync"><?php echo $user->lang['Resync'] ?></a></span>&nbsp;</td>
 	</tr>
 <?php
 
