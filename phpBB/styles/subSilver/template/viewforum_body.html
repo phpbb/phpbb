@@ -5,6 +5,7 @@
 		<td><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF S_IS_POSTABLE --><!-- IF MODERATORS neq ''--><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --><!-- ENDIF --></td>
 		<td class="gensmall" align="right" valign="bottom"><!-- IF S_IS_POSTABLE -->{MOD_CP}<!-- ENDIF --></td>
 	</tr>
+	<!-- IF PAGE_NUMBER neq '' -->
 	<tr>
 		<td colspan="2"><table width="100%" cellspacing="0" border="0">
 			<tr>
@@ -14,6 +15,7 @@
 			</tr>
 		</table></td>
 	</tr>
+	<!-- ENDIF -->
 </table>
 
 <!-- IF S_IS_POSTABLE -->
