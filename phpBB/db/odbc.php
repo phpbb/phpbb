@@ -130,7 +130,7 @@ class sql_db
 			{
 				if(eregi(" LIMIT ", $query))
 				{
-					eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.\(\)]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+					preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
 	
 					$query = $limits[1];
 					if($limits[3])
