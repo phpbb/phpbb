@@ -113,7 +113,7 @@ else
 	}
 }
 
-if ( $profiledata['user_viewemail'] || $auth->get_acl_admin() )
+if ( $profiledata['user_viewemail'] || $auth->acl_get('a_') )
 {
 	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
