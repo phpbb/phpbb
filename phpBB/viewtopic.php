@@ -419,14 +419,45 @@ $replacement_word = array();
 obtain_word_list($orig_word, $replacement_word);
 
 //
+// Post, reply and other URL generation for
+// templating vars
+//
+$new_topic_url = append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
+$reply_topic_url = append_sid("posting.$phpEx?mode=reply&amp;" . POST_TOPIC_URL . "=$topic_id");
+
+$view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+
+$view_prev_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
+$view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=next");
+
+//
+// Mozilla navigation bar
+//
+$nav_links['prev'] = array(
+	'url' => $view_prev_topic_url,
+	'title' => $lang['View_previous_topic']
+);
+$nav_links['next'] = array(
+	'url' => $view_next_topic_url,
+	'title' => $lang['View_next_topic']
+);
+$nav_links['up'] = array(
+	'url' => $view_forum_url,
+	'title' => $forum_name
+);
+
+$reply_img = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$post_img = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
+$post_alt = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+
+//
 // Dump out the page header and load viewtopic body template
 //
 $topic_last_read = ( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) ) ? $HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] : 0;
 
 setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 
-$page_title = $lang['View_topic'] ." - $topic_title";
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewtopic_body.tpl",
@@ -459,26 +490,13 @@ $template->assign_vars(array(
 	"S_POST_DAYS_ACTION" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$start"))
 
 );
+
+$page_title = $lang['View_topic'] ." - $topic_title";
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 //
 // End header
 //
-
-//
-// Post, reply and other URL generation for
-// templating vars
-//
-$new_topic_url = append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
-$reply_topic_url = append_sid("posting.$phpEx?mode=reply&amp;" . POST_TOPIC_URL . "=$topic_id");
-
-$view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
-
-$view_prev_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
-$view_next_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=next");
-
-$reply_img = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt = ( $forum_row['forum_status'] == FORUM_LOCKED || $forum_row['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
-$post_img = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
-$post_alt = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
 // Censor topic title

@@ -119,6 +119,7 @@ function get_userdata($username) {
 function make_jumpbox($match_forum_id = 0)
 {
 	global $lang, $db, $SID;
+	global $nav_links, $phpEx;
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
@@ -160,6 +161,16 @@ function make_jumpbox($match_forum_id = 0)
 					{
 						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? "selected=\"selected\"" : "";
 						$boxstring .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
+
+						//
+						// Add an array to $nav_links for the Mozilla navigation bar.
+						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
+						//
+						$nav_links['chapter forum'][$forum_rows[$j]['forum_id']] = array (
+							'url' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=". $forum_rows[$j]['forum_id']),
+							'title' => $forum_rows[$j]['forum_name']
+						);
+								
 					}
 				}
 			}

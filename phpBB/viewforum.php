@@ -611,6 +611,14 @@ else
 }
 
 //
+// Mozilla navigation bar
+//
+$nav_links['up'] = array(
+	'url' => append_sid("index.".$phpEx),
+	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+);
+
+//
 // Dump out the page header and load viewforum template
 //
 $page_title = $lang['View_forum'] . " - " . $forum_row['forum_name'];

@@ -207,6 +207,27 @@ else
 }
 
 //
+// Generate HTML required for Mozilla Navigation bar
+//
+$nav_links_html = '';
+$nav_link_proto = '<link rel="%s" href="%s" title="%s" />'."\n";
+while(list($nav_item, $nav_array) = @each($nav_links) )
+{
+	if( !empty($nav_array['url']) )
+	{
+		$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nav_array['url'], $nav_array['title']);
+	}
+	else
+	{
+		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
+		while(list(,$nested_array) = each($nav_array) )
+		{  
+			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
+		}
+	}
+}	
+
+//
 // The following assigns all _common_ variables that may be used at any point
 // in a template. Note that all URL's should be wrapped in append_sid, as
 // should all S_x_ACTIONS for forms.
@@ -336,9 +357,10 @@ $template->assign_vars(array(
 	"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
 	"T_SPAN_CLASS1" => $theme['span_class1'],
 	"T_SPAN_CLASS2" => $theme['span_class2'],
-	"T_SPAN_CLASS3" => $theme['span_class3'])
+	"T_SPAN_CLASS3" => $theme['span_class3'],
+	
+	"NAV_LINKS" => $nav_links_html)
 );
-
 
 //
 // Login box?

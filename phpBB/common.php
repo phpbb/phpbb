@@ -118,6 +118,28 @@ include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
 
 //
+// Mozilla navigation bar
+// Default items that should be valid on all pages.
+// Defined here and not in page_header.php so they can be redefined in the code
+//
+$nav_links['top'] = array ( 
+	'url' => append_sid($phpbb_root_dir."index.".$phpEx),
+	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+);
+$nav_links['search'] = array ( 
+	'url' => append_sid($phpbb_root_dir."search.".$phpEx),
+	'title' => $lang['Search']
+);
+$nav_links['help'] = array ( 
+	'url' => append_sid($phpbb_root_dir."faq.".$phpEx),
+	'title' => $lang['FAQ']
+);
+$nav_links['author'] = array ( 
+	'url' => append_sid($phpbb_root_dir."memberlist.".$phpEx),
+	'title' => $lang['Memberlist']
+);
+
+//
 // Obtain and encode users IP
 //
 if(!empty($HTTP_CLIENT_IP))
