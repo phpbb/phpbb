@@ -1,10 +1,10 @@
-/* Fancy form styles for IE */
+/*  $Id$ */
 
 input {
 	text-indent: 2px;
 }
 
-input, textarea, select, input.button {
+textarea, select, input.button, input.post, input.mainoption, input.liteoption {
 	border: 1px solid; 
 }
 

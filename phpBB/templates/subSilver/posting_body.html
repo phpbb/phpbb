@@ -216,7 +216,7 @@ function checkForm()
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_QUESTION}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" name="poll_title" size="50" maxlength="255" class="post" value="{POLL_TITLE}" /></span></td>
+		<td class="row2"><input class="post" type="text" name="poll_title" size="50" maxlength="255" value="{POLL_TITLE}" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_OPTIONS}</b></span><br /><span class="gensmall">{L_POLL_OPTIONS_EXPLAIN}</span></td>
@@ -224,7 +224,7 @@ function checkForm()
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_POLL_FOR}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" name="poll_length" size="3" maxlength="3" class="post" value="{POLL_LENGTH}" /></span>&nbsp;<span class="gen"><b>{L_DAYS}</b></span> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
+		<td class="row2"><input class="post" type="text" name="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" />&nbsp;<span class="gen"><b>{L_DAYS}</b></span> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
 	</tr>
 	<!-- IF S_POLL_DELETE -->
     <tr>
@@ -243,11 +243,11 @@ function checkForm()
 
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_FILENAME}</b></span></td>
-	    <td class="row2"><input type="file" name="fileupload" size="50" maxlength="{FILESIZE}" value="{FILENAME}" class="post"></td>
+	    <td class="row2"><input class="post" type="file" name="fileupload" size="50" maxlength="{FILESIZE}" value="{FILENAME}"></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen"><b>{L_FILE_COMMENT}</b></span></td>
-	    <td class="row2"><input type="text" name="filecomment" size="40" maxlength="60" value="{FILE_COMMENT}" class="post"> &nbsp;<input type="submit" name="add_attachment" value="{L_ADD_FILE}" class="liteoption" /></td>
+	    <td class="row2"><input class="post" type="text" name="filecomment" size="40" maxlength="60" value="{FILE_COMMENT}" /> &nbsp;<input class="liteoption" type="submit" name="add_attachment" value="{L_ADD_FILE}" /></td>
 	</tr>
 	<!-- IF S_HAS_ATTACHMENTS -->
 	<tr>
@@ -260,7 +260,7 @@ function checkForm()
 		</tr>
     	<tr>
 			<td class="row1"><span class="gen"><b>{L_FILE_COMMENT}</b></span></td>
-			<td class="row2"><input type="text" name="comment_list[]" size="40" class="post" maxlength="60" value="{attach_row.FILE_COMMENT}" /></span> &nbsp;<input type="submit" name="edit_comment[{attach_row.ATTACH_FILENAME}]" value="{L_UPDATE_COMMENT}" class="liteoption" />	&nbsp;<input type="submit" name="del_attachment[{attach_row.ATTACH_FILENAME}]" value="{L_DELETE_ATTACHMENT}" class="liteoption" /></td>
+			<td class="row2"><input type="text" name="comment_list[]" size="40" class="post" maxlength="60" value="{attach_row.FILE_COMMENT}" /> &nbsp;<input type="submit" name="edit_comment[{attach_row.ATTACH_FILENAME}]" value="{L_UPDATE_COMMENT}" class="liteoption" />	&nbsp;<input type="submit" name="del_attachment[{attach_row.ATTACH_FILENAME}]" value="{L_DELETE_ATTACHMENT}" class="liteoption" /></td>
 		</tr>
 		{attach_row.S_HIDDEN}
 	<!-- END attach_row -->
