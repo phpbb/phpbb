@@ -1,20 +1,17 @@
 
 <br clear="all" />
 
-<h1>Forum Pruning</h1>
+<h1>{L_FORUM_PRUNE}</h1>
 
-<h2>Forum: {FORUM_NAME}</h2>
+<p>{L_FORUM_PRUNE_EXPLAIN}</p>
 
-<table cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr><form method="post"	action="{S_FORUMPRUNE_ACTION}">{S_HIDDEN_VARS}
-		<td>{S_PRUNE_DATA}</td>
+<h2>{L_FORUM}: {FORUM_NAME}</h2>
+
+<form method="post"	action="{S_FORUMPRUNE_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<td class="row1"> {S_PRUNE_DATA} </td>
 	</tr>
 	<tr>
-		<td align="center"><input type="submit" name="submit" value="Prune"></td>
+		<td class="cat" align="center">{S_HIDDEN_VARS}<input type="submit" name="doprune" value="{L_DO_PRUNE}"></td>
 	</tr>
-	<tr>
-		<td><span class="gensmall">Note: This will not prune announcements or sticky topics, these must be removed manually.</span></td>
-	</form></tr>
-</table>
-
-<br	clear="all" />
+</table></form>

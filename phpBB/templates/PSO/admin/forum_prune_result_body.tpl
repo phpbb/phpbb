@@ -1,21 +1,21 @@
 
 <br clear="all" />
 
-<h1>Forum Pruning</h1>
+<h1>{L_FORUM_PRUNE}</h1>
 
-<p>Here are the results from your forum pruning:</p>
+<p>{L_PRUNE_RESULT}</p>
 
 <table cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th>FORUM NAME</th>
-		<th>TOPICS PRUNED</th>
-		<th>POSTS PRUNED</th>
+		<th>{L_FORUM}</th>
+		<th>{L_TOPICS_PRUNED}</th>
+		<th>{L_POSTS_PRUNED}</th>
 	</tr>
 	<!-- BEGIN prune_results -->
 	<tr>
-		<td class="row1" align="center">{prune_results.FORUM_NAME}</td>
-		<td class="row1" align="center">{prune_results.FORUM_TOPICS}</td>
-		<td class="row1" align="center">{prune_results.FORUM_POSTS}</td>
+		<td class="{prune_results.ROW_CLASS}" align="center">{prune_results.FORUM_NAME}</td>
+		<td class="{prune_results.ROW_CLASS}" align="center">{prune_results.FORUM_TOPICS}</td>
+		<td class="{prune_results.ROW_CLASS}" align="center">{prune_results.FORUM_POSTS}</td>
 	</tr>
 	<!-- END prune_results -->
 </table>
