@@ -1760,8 +1760,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'post_attachment'	=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $bbcode_uid,
-				'post_edit_locked'	=> $data['post_edit_locked']
-			));
+				'post_edit_locked'	=> $data['post_edit_locked'])
+			);
 		break;
 	}
 	
@@ -1783,11 +1783,11 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 			if (!empty($poll['poll_options']))
 			{
-				$sql_data['topic']['sql'] += array(
+				$sql_data['topic']['sql'] = array_merge($sql_data['topic']['sql'], array(
 					'poll_title'		=> $poll['poll_title'],
 					'poll_start'		=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
 					'poll_max_options'	=> $poll['poll_max_options'], 
-					'poll_length'		=> $poll['poll_length'] * 86400
+					'poll_length'		=> $poll['poll_length'] * 86400)
 				);
 			}
 			
@@ -1846,8 +1846,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 		$data['topic_id'] = $db->sql_nextid();
 
-		$sql_data['post']['sql'] += array(
-			'topic_id' => $data['topic_id']
+		$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
+			'topic_id' => $data['topic_id'])
 		);
 		unset($sql_data['topic']['sql']);
 	}
@@ -1857,8 +1857,8 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		if ($post_mode == 'reply')
 		{
-			$sql_data['post']['sql'] += array(
-				'topic_id' => $data['topic_id']
+			$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
+				'topic_id' => $data['topic_id'])
 			);
 		}
 

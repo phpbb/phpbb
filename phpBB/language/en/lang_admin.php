@@ -1029,11 +1029,12 @@ $lang += array(
 // Forum Pruning
 $lang += array(
 	'FORUM_PRUNE_EXPLAIN' => 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
-	'PRUNE_NOT_POSTED' => 'Days since last posted',
+	'PRUNE_NOT_POSTED'	=> 'Days since last posted',
+	'PRUNE_NOT_VIEWED'	=> 'Days since last viewed',
 
-	'TOPICS_PRUNED' => 'Topics pruned',
-	'POSTS_PRUNED' => 'Posts pruned',
-	'PRUNE_SUCCESS' => 'Pruning of forums was successful',
+	'TOPICS_PRUNED'		=> 'Topics pruned',
+	'POSTS_PRUNED'		=> 'Posts pruned',
+	'PRUNE_SUCCESS'		=> 'Pruning of forums was successful',
 );
 
 // Word censors

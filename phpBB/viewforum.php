@@ -176,7 +176,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 	{
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		auto_prune($forum_id, $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
+		// TODO - include viewed too... new row necessary for auto pruning...
+		auto_prune($forum_id, 'posted', $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
 	}
 
 	// Forum rules, subscription info and word censors

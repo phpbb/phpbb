@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
-*                                admin_prune.php
-*                              -------------------
-*     begin                : Mon Jul 31, 2001
-*     copyright            : (C) 2001 The phpBB Group
-*     email                : support@phpbb.com
-*
-*     $Id$
-*
-****************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_prune.php 
+// STARTED   : Mon Jul 31, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -44,19 +36,23 @@ if (!$auth->acl_get('a_prune'))
 }
 
 // Get the forum ID for pruning
-$forum_id = (isset($_REQUEST['f'])) ? array_map('intval', $_REQUEST['f']) : 0;
+$forum_id = (isset($_REQUEST['f'])) ? array_map('intval', $_REQUEST['f']) : array();
 
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 if (isset($_POST['submit']))
 {
-	$prunedays = (isset($_POST['prunedays'])) ? intval($_POST['prunedays']) : 0;
+	$prune_posted = (isset($_POST['prune_days'])) ? intval($_POST['prune_days']) : 0;
+	$prune_viewed = (isset($_POST['prune_vieweddays'])) ? intval($_POST['prune_vieweddays']) : 0;
+	$prune_all = !$prune_posted && !$prune_viewed;
+	
 	$prune_flags = 0;
 	$prune_flags += (!empty($_POST['prune_old_polls'])) ? 2 : 0;
 	$prune_flags += (!empty($_POST['prune_announce'])) ? 4 : 0;
 	$prune_flags += (!empty($_POST['prune_sticky'])) ? 8 : 0;
 
 	// Convert days to seconds for timestamp functions...
-	$prunedate = time() - ($prunedays * 86400);
+	$prunedate_posted = time() - ($prune_posted * 86400);
+	$prunedate_viewed = time() - ($prune_viewed * 86400);
 
 	adm_page_header($user->lang['PRUNE']);
 
@@ -74,7 +70,7 @@ if (isset($_POST['submit']))
 	</tr>
 <?php
 
-	$sql_forum = ($forum_id) ? ' AND forum_id IN (' . implode(', ', $forum_id) . ')' : '';
+	$sql_forum = (sizeof($forum_id)) ? ' AND forum_id IN (' . implode(', ', $forum_id) . ')' : '';
 
 	// Get a list of forum's or the data for the forum that we are pruning.
 	$sql = 'SELECT forum_id, forum_name 
@@ -87,12 +83,34 @@ if (isset($_POST['submit']))
 	if ($row = $db->sql_fetchrow($result))
 	{
 		$prune_ids = array();
+		$p_result['topics'] = 0;
+		$p_result['posts'] = 0;
 		$log_data = '';
 		do
 		{
 			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
-				$p_result = prune($row['forum_id'], $prunedate, $prune_flags, FALSE);
+				if ($prune_all)
+				{
+					$p_result = prune($row['forum_id'], 'posted', time(), $prune_flags, false);
+				}
+				else
+				{
+					if ($prune_posted)
+					{
+						$return = prune($row['forum_id'], 'posted', $prunedate_posted, $prune_flags, false);
+						$p_result['topics'] += $return['topics'];
+						$p_result['posts'] += $return['posts'];
+					}
+					if ($prune_viewed)
+					{
+						$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
+						$p_result['topics'] += $return['topics'];
+						$p_result['posts'] += $return['posts'];
+					}
+				}
+
+				
 				$prune_ids[] = $row['forum_id'];
 
 				$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
@@ -208,6 +226,10 @@ else
 		<td class="row2"><input type="text" name="prune_days" size="4" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><?php echo $user->lang['PRUNE_NOT_VIEWED']; ?></td>
+		<td class="row2"><input type="text" name="prune_vieweddays" size="4" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><?php echo $user->lang['PRUNE_OLD_POLLS'] ?>: <br /><span class="gensmall"><?php echo $user->lang['PRUNE_OLD_POLLS_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="prune_old_polls" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_old_polls" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
@@ -220,7 +242,7 @@ else
 		<td class="row2"><input type="radio" name="prune_sticky" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="prune_sticky" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain"></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain"></td>
 	</tr>
 </table></form>
 

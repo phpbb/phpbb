@@ -741,7 +741,7 @@ class parse_message
 					}
 					else
 					{
-						delete_attachment($post_id, intval($this->attachment_data[$index]['attach_id']));
+						delete_attachments($post_id, intval($this->attachment_data[$index]['attach_id']));
 					}
 					unset($this->attachment_data[$index]);
 				}
