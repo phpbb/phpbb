@@ -136,7 +136,7 @@ class ucp_profile extends module
 									$messenger->assign_vars(array(
 										'USERNAME'		=> $row['username'],
 										'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-						
+
 										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
 									);
 

@@ -75,7 +75,7 @@ class ucp_zebra extends module
 
 				if ($add)
 				{
-					$sql = 'SELECT user_id, user_permissions   
+					$sql = 'SELECT user_id    
 						FROM ' . USERS_TABLE . ' 
 						WHERE username IN (' . $add . ')';
 					$result = $db->sql_query($sql);

@@ -225,7 +225,6 @@ function discover_auth($user_id = false, $opts = false, $forum_id = false)
 		FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
 		WHERE ao.auth_option_id = a.auth_option_id 
 			' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-			$sql_user 
 			$sql_forum 
 			$sql_opts 
 		ORDER BY a.forum_id, ao.auth_option";
@@ -243,7 +242,6 @@ function discover_auth($user_id = false, $opts = false, $forum_id = false)
 		WHERE ao.auth_option_id = a.auth_option_id 
 			AND a.group_id = ug.group_id
 			' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
-			$sql_users 
 			$sql_forum 
 			$sql_opts 
 		ORDER BY a.forum_id, ao.auth_option";
