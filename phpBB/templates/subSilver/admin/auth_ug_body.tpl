@@ -5,7 +5,14 @@
 
 <form method="post" action="{S_AUTH_ACTION}">
 
+<!-- BEGIN switch_user_auth -->
+<p>{USER_LEVEL}</p>
 <p>{USER_GROUP_MEMBERSHIPS}</p>
+<!-- END switch_user_auth -->
+
+<!-- BEGIN switch_group_auth -->
+<p>{GROUP_MEMBERSHIP}</p>
+<!-- END switch_group_auth -->
 
 <h2>{L_PERMISSIONS}</h2>
 
@@ -33,9 +40,9 @@
 	</tr>
 	<tr>
 	  <td colspan="{S_COLUMN_SPAN}" class="catBottom" align="center">{S_HIDDEN_FIELDS} 
-		<input type="submit" name="submit" value="{L_SUBMIT_CHANGES}" class="mainoption" />
+		<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />
 		&nbsp;&nbsp; 
-		<input type="reset" value="{L_RESET_CHANGES}" class="liteoption" name="reset" />
+		<input type="reset" value="{L_RESET}" class="liteoption" name="reset" />
 	  </td>
 	</tr>
   </table>

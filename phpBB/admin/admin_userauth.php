@@ -531,47 +531,51 @@ if( isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]) 
 		//
 		// Any warnings?
 		//
-		$warning_list = "";
+		$warning_list_mod = "";
 		while( list($forum_id, $group_ary) = each($warning_mod_grpid) )
 		{
 			for($i = 0; $i < count($group_ary); $i++)
 			{
 				if(!empty($valid_auth_mod_sql[$forum_id]))
 				{
-					$warning_list .= "<b><a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i]) . "\">" . $warning_mod_grpname[$forum_id][$i] . "</a></b> " . $lang['grants_moderator_status'] . " <b>" . $warning_mod_frmname[$forum_id][$i] . "</b> " . $lang['for_this_user'] . "<br />";
+					$warning_list_mod .= "<br /><a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i]) . "\">" . $warning_mod_grpname[$forum_id][$i] . "</a> -> " . $warning_mod_frmname[$forum_id][$i];
 				}
 			}
 		}
 
+		$warning_list_acl = "";
 		while( list($forum_id, $group_ary) = each($warning_prv_grpid) )
 		{
 			for($i = 0; $i < count($group_ary); $i++)
 			{
 				if( !empty($valid_auth_prv_sql[$forum_id]) )
 				{
-					$warning_list .= "<b><a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i]) . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a></b> " . $lang['grants_access_status'] . " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b> " . $lang['for_this_user'] . "<br />";
+					$warning_list_acl .= "<br /><a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i]) . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a> -> " . $warning_prv_frmname[$forum_id][$i];
 				}
 			}
 		}
 
+		$warning_list = "";
+		if( $warning_list_mod != "" )
+		{
+			$warning_list .= $lang['Conflict_mod_groupauth'] . "<br />" . $warning_list_mod;
+		}
+		if( $warning_list_acl != "" )
+		{
+			$warning_list .= $lang['Conflict_access_groupauth'] . "<br />" . $warning_list_acl;
+		}
+
 		if( $warning_list != "" )
 		{
-			$warning_list = "<br />" . $lang['Conflict_message_userauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] . " <a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id") . "\">" . $lang['HERE'] . "</a> ". $lang['return_user_auth_admin'] . "<br />";
+			$message =  $warning_list . "<br /><br />" . sprintf($lang['Click_return_userauth'], "<a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
-			include('page_header_admin.'.$phpEx);
-
-			$template->set_filenames(array(
-				"body" => "admin/admin_message_body.tpl")
-			);
-
-			$template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Conflict_warning'],
-				"MESSAGE_TEXT" => $warning_list)
-			);
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
-			header("Location: " . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
+			$message = $lang['Auth_updated'] . "<br /><br />" . sprintf($lang['Click_return_userauth'], "<a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
 }
@@ -849,7 +853,7 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 	@reset($auth_user);
 
 	$t_username .= $userinf[0]['username'];
-	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected=\"selected\">' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user" selected=\"selected\">' . $lang['User'] . '</option></select>';
+	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected=\"selected\">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected=\"selected\">' . $lang['Auth_User'] . '</option></select>';
 
 	for($i = 0; $i < count($userinf); $i++)
 	{
@@ -906,19 +910,22 @@ else if( isset($HTTP_POST_VARS['username']) || $user_id)
 	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
+	$template->assign_block_vars("switch_user_auth", array());
+
 	$template->assign_vars(array(
 		"USERNAME" => $t_username,
-		"USER_GROUP_MEMBERSHIPS" => $lang['This_user_is'] . " " . $s_user_type . " " . $lang['and_belongs_groups'] . ": " . $t_usergroup_list,
+		"USER_LEVEL" => $lang['User_Level'] . " : " . $s_user_type,
+		"USER_GROUP_MEMBERSHIPS" => $lang['Group_memberships'] . " : " . $t_usergroup_list,
 
 		"L_USER_OR_GROUPNAME" => $lang['Username'],
 		"L_USER_OR_GROUP" => $lang['User'],
 
-		"L_AUTH_TITLE" => $lang['User'] . " " . $lang['Auth_Control'],
+		"L_AUTH_TITLE" => $lang['Auth_Control_User'],
 		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'],
 		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
 		"L_PERMISSIONS" => $lang['Permissions'],
-		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
-		"L_RESET_CHANGES" => $lang['Reset_changes'],
+		"L_SUBMIT" => $lang['Submit'],
+		"L_RESET" => $lang['Reset'],
 		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
 
 		"U_USER_OR_GROUP" => append_sid("admin_userauth.$phpEx"),
@@ -958,10 +965,10 @@ else
 	);
 
 	$template->assign_vars(array(
-		"L_USER_TITLE" => $lang['User'] . " " . $lang['Auth_Control'],
+		"L_USER_TITLE" => $lang['Auth_Control_User'],
 		"L_USER_EXPLAIN" => $lang['User_auth_explain'],
-		"L_USER_SELECT" => $lang['Select_a'] . " " . $lang['User'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
+		"L_USER_SELECT" => $lang['Select_a_User'],
+		"L_LOOK_UP" => $lang['Look_up_User'],
 		"L_FIND_USERNAME" => $lang['Find_username'],
 
 		"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"), 

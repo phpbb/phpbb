@@ -39,24 +39,11 @@ $phpbb_root_dir = "./../";
 $no_page_header = TRUE;
 require('pagestart.inc');
 
-
-//
-// Set VERBOSE to 1  for debugging info..
-//
-if(DEBUG)
-{
-	define("VERBOSE", 1);
-}
-else
-{
-	define("VERBOSE", 0);
-}
-
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
 // allowed.
 //
-@set_time_limit(600);
+@set_time_limit(1200);
 
 //
 // Set form names
@@ -64,68 +51,111 @@ else
 $f_title = 'e_title';
 $f_msg = 'e_msg';
 
-if(isset($HTTP_POST_VARS['submit']))
+if( isset($HTTP_POST_VARS['submit']) )
 {
-	$group_id = $HTTP_POST_VARS[POST_GROUPS_URL];
-	if($group_id != -1)
+	$group_id = intval($HTTP_POST_VARS[POST_GROUPS_URL]);
+
+	if( $group_id != -1 )
 	{
-		$sql = 'SELECT u.user_email 
-			FROM '.USERS_TABLE.' u, '.USER_GROUP_TABLE.' g
-			WHERE u.user_id = g.user_id AND g.group_id = '.$group_id;
+		$sql = "SELECT u.user_email 
+			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " g
+			WHERE u.user_id = g.user_id 
+				AND g.group_id = $group_id";
 	}
 	else
 	{
-		$sql = 'SELECT user_email FROM '.USERS_TABLE;
+		$sql = "SELECT user_email 
+			FROM " . USERS_TABLE;
 	}
-	if(!$g_result = $db->sql_query($sql))
+
+	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Coult not select group members!", __LINE__, __FILE__, $sql);
 	}
-	$g_list = $db->sql_fetchrowset($g_result);
+	$email_list = $db->sql_fetchrowset($g_result);
 	
-	$email_headers = "From: " . $board_config['board_email'] . "\r\n";
-	$msg = stripslashes($HTTP_POST_VARS["$f_msg"]);
+	$subject = stripslashes($HTTP_POST_VARS["$f_title"]);
+	$message = stripslashes($HTTP_POST_VARS["$f_msg"]);
 	
-	$email_headers .= 'bcc: ';
-	for($i = 0;$i < count($g_list); $i++)
-	{
-		if($i != 0)
-		{
-			$email_headers.= ' ,';
-		}
-		$email_headers .= $g_list[$i]['user_email'];
-	}
-	
-	mail($board_config['board_email'],$HTTP_POST_VARS["$f_title"],$HTTP_POST_VARS["$f_msg"],$email_headers);
-	$notice = $lang['Messages'].' '.$lang['Sent'].'!';
-}	
-//Else, or if they already sent a message
+	include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+	$emailer = new emailer($board_config['smtp_delivery']);
 
-$sql = "SELECT group_id, group_name FROM ".GROUPS_TABLE.' WHERE group_single_user <> 1';
+	$email_headers = "From: " . $board_config['board_email'] . "\n";
+
+	$bcc_list = "";
+	for($i = 0; $i < count($email_list); $i++)
+	{
+		if( $bcc_list != "" )
+		{
+			$bcc_list .= ", ";
+		}
+		$bcc_list .= $email_list[$i]['user_email'];
+	}
+	$email_headers .= "Bcc: $bcc_list\n";
+	
+	$email_headers .= "Return-Path: " . $userdata['board_email'] . "\n";
+	$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
+	$email_headers .= "X-AntiAbuse: User_id - " . $userdata['user_id'] . "\n";
+	$email_headers .= "X-AntiAbuse: Username - " . $userdata['username'] . "\n";
+	$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+
+	$emailer->use_template("admin_send_email");
+	$emailer->email_address($board_config['board_email']);
+	$emailer->set_subject($subject);
+	$emailer->extra_headers($email_headers);
+
+	$emailer->assign_vars(array(
+		"SITENAME" => $board_config['sitename'], 
+		"BOARD_EMAIL" => $board_config['board_email'], 
+		"MESSAGE" => $message)
+	);
+	$emailer->send();
+	$emailer->reset();
+
+	$template->assign_vars(array(
+		"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+	);
+
+	$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_admin_index'],  "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+	message_die(GENERAL_MESSAGE, $message);
+
+}	
+
+//
+// Initial selection
+//
+
+$sql = "SELECT group_id, group_name 
+	FROM ".GROUPS_TABLE . "  
+	WHERE group_single_user <> 1";
 $g_result = $db->sql_query($sql);
 $group_list = $db->sql_fetchrowset($g_result);
 
-$select_list = '<SELECT name = "'.POST_GROUPS_URL.'">';
-$select_list .= '<OPTION value = "-1">'.$lang['All'].'</OPTION>';
+$select_list = '<select name = "' . POST_GROUPS_URL . '">';
+$select_list .= '<option value = "-1">' . $lang['All_users'] . '</option>';
 
 for($i = 0;$i < count($group_list); $i++)
 {
-	$select_list .= "<OPTION value = \"".$group_list[$i]['group_id'];
-	$select_list .= "\">".$group_list[$i]['group_name']."</OPTION>";
+	$select_list .= "<option value = \"" . $group_list[$i]['group_id'];
+	$select_list .= "\">" . $group_list[$i]['group_name'] . "</option>";
 }
-$select_list .= "</SELECT>";
+$select_list .= "</select>";
 
+//
+// Generate page
+//
 include('page_header_admin.'.$phpEx);
 
 $template->set_filenames(array(
-	"body" => "admin/user_email.tpl")
+	"body" => "admin/user_email_body.tpl")
 );
 
 $template->assign_vars(array(
 	"L_EMAIL_TITLE" => $lang['Email'],
 	"L_EMAIL_EXPLAIN" => $lang['Mass_email_explain'],
 	"L_COMPOSE" => $lang['Compose'],
-	"L_GROUP_SELECT" => $lang['Group'],
+	"L_RECIPIENTS" => $lang['Recipients'],
 	"L_EMAIL_SUBJECT" => $lang['Subject'],
 	"L_EMAIL_MSG" => $lang['Message'],
 	"L_EMAIL" => $lang['Email'],
@@ -140,4 +170,5 @@ $template->assign_vars(array(
 $template->pparse('body');
 
 include('page_footer_admin.'.$phpEx);
+
 ?>

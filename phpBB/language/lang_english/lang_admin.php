@@ -11,9 +11,12 @@ $lang['Admin'] = "Administration";
 $lang['Not_admin'] = "You are not authorised to administer this board";
 $lang['Welcome_phpBB'] = "Welcome to phpBB";
 $lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
+$lang['Main_index'] = "Forum Index";
 $lang['Forum_stats'] = "Forum Statistics";
 $lang['Admin_Index'] = "Admin Index";
 $lang['Preview_forum'] = "Preview Forum";
+
+$lang['Click_return_admin_index'] = "Click %sHere%s to return to the Admin Index";
 
 $lang['Statistic'] = "Statistic";
 $lang['Value'] = "Value";
@@ -34,10 +37,12 @@ $lang['Not_available'] = "Not available";
 // DB Utils
 //
 $lang['Database_Utilities'] = "Database Utilities";
+
 $lang['Restore'] = "Restore";
 $lang['Backup'] = "Backup";
 $lang['Restore_explain'] = "This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may upload a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.";
 $lang['Backup_explain'] = "Here you can backup all your phpBB related data. If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below. If your server supports it you may also gzip compress the file to reduce its size before download.";
+
 $lang['Backup_options'] = "Backup options";
 $lang['Start_backup'] = "Start Backup";
 $lang['Full_backup'] = "Full backup";
@@ -47,6 +52,7 @@ $lang['Additional_tables'] = "Additional tables";
 $lang['Gzip_compress'] = "Gzip compress file";
 $lang['Select_file'] = "Select a file";
 $lang['Start_Restore'] = "Start Restore";
+
 $lang['Restore_success'] = "The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.";
 $lang['Backup_download'] = "Your download will start shortly please wait till it begins";
 $lang['Backups_not_supported'] = "Sorry but database backups are not currently supported for your database system";
@@ -60,13 +66,15 @@ $lang['Restore_Error_no_file'] = "No file was uploaded";
 //
 // Auth pages
 //
-$lang['Administrator'] = "Administrator";
-$lang['User'] = "User";
-$lang['Group'] = "Group";
-$lang['Forum'] = "Forum";
-$lang['Select_a'] = "Select a"; // followed by on the entries above
-$lang['Auth_Control'] = "Authorisation Control"; // preceeded by one of the above options
-$lang['Look_up'] = "Look up"; // preceeded by one of the above options
+$lang['Select_a_User'] = "Select a User";
+$lang['Select_a_Group'] = "Select a Group";
+$lang['Select_a_Forum'] = "Select a Forum";
+$lang['Auth_Control_User'] = "User Permissions Control"; 
+$lang['Auth_Control_Group'] = "Group Permissions Control"; 
+$lang['Auth_Control_Forum'] = "Forum Permissions Control"; 
+$lang['Look_up_User'] = "Look up User"; 
+$lang['Look_up_Group'] = "Look up Group"; 
+$lang['Look_up_Forum'] = "Look up Forum"; 
 
 $lang['Group_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
 $lang['User_auth_explain'] = "Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.";
@@ -82,17 +90,11 @@ $lang['Is_Moderator'] = "Is Moderator";
 $lang['Not_Moderator'] = "Not Moderator";
 
 $lang['Conflict_warning'] = "Authorisation Conflict Warning";
-$lang['Conflict_message_userauth'] = "This user still has access/moderator rights to this forum via group membership. You may want to alter the group authorisation or remove this user the group to fully prevent them having access/moderator rights. The groups granting rights are noted below.";
-$lang['Conflict_message_groupauth'] = "The following user/s still have access/moderator rights to this forum via their user auth settings. You may want to alter the user authorisation/s to fully prevent them having access/moderator rights. The users granted rights are noted below.";
+$lang['Conflict_access_userauth'] = "This user still has access rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having access rights. The groups granting rights (and the forums involved) are noted below.";
+$lang['Conflict_mod_userauth'] = "This user still has moderator rights to this forum via group membership. You may want to alter the group permissions or remove this user the group to fully prevent them having moderator rights. The groups granting rights (and the forums involved) are noted below.";
 
-$lang['has_moderator_status'] = "has moderator status on";
-$lang['has_access_status'] = "has access status to";
-$lang['grants_access_status'] = "grants access status to";
-$lang['grants_moderator_status'] = "grants moderator status to";
-$lang['for_this_user'] = "for this user";
-
-$lang['Submit_changes'] = "Submit changes";
-$lang['Reset_changes'] = "Reset changes";
+$lang['Conflict_access_groupauth'] = "The following user (or users) still have access rights to this forum via their user permission settings. You may want to alter the user permissions to fully prevent them having access rights. The users granted rights (and the forums involved) are noted below.";
+$lang['Conflict_mod_groupauth'] = "The following user (or users) still have moderator rights to this forum via their user permissions settings. You may want to alter the user permissions to fully prevent them having moderator rights. The users granted rights (and the forums involved) are noted below.";
 
 $lang['Public'] = "Public";
 $lang['Private'] = "Private";
@@ -114,17 +116,20 @@ $lang['Pollcreate'] = "Poll create";
 $lang['Permissions'] = "Permissions";
 $lang['Simple_Permission'] = "Simple Permission";
 
-$lang['This_user_is'] = "This user is a"; // followed by User/Administrator and then next line
-$lang['and_belongs_groups'] = "and belongs to the following groups"; // followed by list of groups
-
-$lang['Group_has_members'] = "This group has the following members";
+$lang['User_Level'] = "User Level"; 
+$lang['Auth_User'] = "User";
+$lang['Auth_Admin'] = "Administrator";
+$lang['Group_memberships'] = "Usergroup memberships";
+$lang['Usergroup_members'] = "This group has the following members";
 
 $lang['Forum_auth_updated'] = "Forum permissions updated";
 $lang['User_auth_updated'] = "User permissions updated";
 $lang['Group_auth_updated'] = "Group permissions updated";
-$lang['return_forum_auth_admin'] = "to return to the forum permissions panel";
-$lang['return_group_auth_admin'] = "to return to the group permissions panel";
-$lang['return_user_auth_admin'] = "to return to the user permissions panel";
+
+$lang['Auth_updated'] = "Permissions have been updated";
+$lang['Click_return_userauth'] = "Click %sHere%s to return to User Permissions";
+$lang['Click_return_groupauth'] = "Click %sHere%s to return to Group Permissions";
+$lang['Click_return_forumauth'] = "Click %sHere%s to return to Forum Permissions";
 
 
 //
@@ -134,25 +139,32 @@ $lang['Ban_control'] = "Ban Control";
 $lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
 $lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
 
+$lang['Select_username'] = "Select a Username";
+$lang['Select_ip'] = "Select an IP";
+$lang['Select_email'] = "Select an Email address";
+
 $lang['Ban_username'] = "Ban one or more specific users";
 $lang['Ban_username_explain'] = "You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+
 $lang['Ban_IP'] = "Ban one or more IP addresses or hostnames";
 $lang['IP_hostname'] = "IP addresses or hostnames";
 $lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *";
+
 $lang['Ban_email'] = "Ban one or more email addresses";
 $lang['Ban_email_explain'] = "To specify more than one email address separate them with commas. To specify a wildcard username use *, for example *@hotmail.com";
 
 $lang['Unban_username'] = "Un-ban one more specific users";
 $lang['Unban_username_explain'] = "You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+
 $lang['Unban_IP'] = "Un-ban one or more IP addresses";
 $lang['Unban_IP_explain'] = "You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+
 $lang['Unban_email'] = "Un-ban one or more email addresses";
 $lang['Unban_email_explain'] = "You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
 
-$lang['No_banned_users'] = "No banned users";
+$lang['No_banned_users'] = "No banned usernames";
 $lang['No_banned_ip'] = "No banned IP addresses";
 $lang['No_banned_email'] = "No banned email addresses";
-$lang['No_unban'] = "Leave list unchanged";
 
 $lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
 
@@ -162,19 +174,24 @@ $lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
 //
 $lang['General_Config'] = "General Configuration";
 $lang['Config_explain'] = "The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.";
+
+$lang['Click_return_config'] = "Click %sHere%s to return to General Configuration";
+
 $lang['General_settings'] = "General Board Settings";
 $lang['Site_name'] = "Site name";
 $lang['Site_desc'] = "Site description";
+$lang['Board_disable'] = "Disable board";
+$lang['Board_disable_explain'] = "This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!";
 $lang['Acct_activation'] = "Enable account activation";
 
-$lang['Abilities_settings'] = "User/Forum Ability Settings";
+$lang['Abilities_settings'] = "User and Forum Basic Settings";
 $lang['Flood_Interval'] = "Flood Interval";
 $lang['Flood_Interval_explain'] = "Number of seconds a user must wait between posts"; 
 $lang['Board_email_form'] = "User email via board";
 $lang['Board_email_form_explain'] = "Users send email to each other via this board";
 $lang['Topics_per_page'] = "Topics Per Page";
 $lang['Posts_per_page'] = "Posts Per Page";
-$lang['Hot_threshold'] = "Hot Threshold";
+$lang['Hot_threshold'] = "Posts for Popular Threshold";
 $lang['Default_style'] = "Default Style";
 $lang['Override_style'] = "Override user style";
 $lang['Override_style_explain'] = "Replaces users style with the default";
@@ -192,37 +209,48 @@ $lang['Smilies_path'] = "Smilies Storage Path";
 $lang['Smilies_path_explain'] = "Path under your phpBB root dir, e.g. images/smilies";
 $lang['Allow_sig'] = "Allow Signatures";
 $lang['Max_sig_length'] = "Maximum signature length";
-$lang['Max_sig_length_explain'] = "Most number of characters allowed in a users signature";
-$lang['Allow_name_change'] = "Allow Name Change";
+$lang['Max_sig_length_explain'] = "Maximum number of characters in user signatures";
+$lang['Allow_name_change'] = "Allow Username changes";
+
 $lang['Avatar_settings'] = "Avatar Settings";
-$lang['Allow_local'] = "Allow local gallery avatars";
-$lang['Allow_remote'] = "Allow remote avatars";
-$lang['Allow_remote_explain'] = "Avatars linked from another website";
-$lang['Allow_upload'] = "Allow avatar uploading";
-$lang['Max_filesize'] = "Max. Avatar File Size";
+$lang['Allow_local'] = "Enable gallery avatars";
+$lang['Allow_remote'] = "Enable remote avatars";
+$lang['Allow_remote_explain'] = "Avatars linked to from another website";
+$lang['Allow_upload'] = "Enable avatar uploading";
+$lang['Max_filesize'] = "Maximum Avatar File Size";
 $lang['Max_filesize_explain'] = "For uploaded avatar files";
-$lang['Max_avatar_size'] = "Max. Avatar Size";
-$lang['Max_avatar_size_explain'] = "(height x width)";
+$lang['Max_avatar_size'] = "Maximum Avatar Dimensions";
+$lang['Max_avatar_size_explain'] = "(Height x Width in pixels)";
 $lang['Avatar_storage_path'] = "Avatar Storage Path";
 $lang['Avatar_storage_path_explain'] = "Path under your phpBB root dir, e.g. images/avatars";
 $lang['Avatar_gallery_path'] = "Avatar Gallery Path";
 $lang['Avatar_gallery_path_explain'] = "Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery";
+
 $lang['COPPA_settings'] = "COPPA Settings";
 $lang['COPPA_fax'] = "COPPA Fax Number";
 $lang['COPPA_mail'] = "COPPA Mailing Address";
 $lang['COPPA_mail_explain'] = "This is the mailing address where parents will send COPPA registration forms";
+
 $lang['Email_settings'] = "Email Settings";
 $lang['Admin_email'] = "Admin Email Address";
 $lang['Email_sig'] = "Email Signature";
 $lang['Email_sig_explain'] = "This text will be attached to all emails the board sends";
-$lang['Use_SMTP'] = "Use SMTP for delivery";
-$lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a server instead of the local mail function";
+$lang['Use_SMTP'] = "Use SMTP Server for email";
+$lang['Use_SMTP_explain'] = "Say yes if you want or have to send email via a named server instead of the local mail function";
 $lang['SMTP_server'] = "SMTP Server Address";
 
 $lang['Disable_privmsg'] = "Private Messaging";
 $lang['Inbox_limits'] = "Max posts in Inbox";
 $lang['Sentbox_limits'] = "Max posts in Sentbox";
 $lang['Savebox_limits'] = "Max posts in Savebox";
+
+$lang['Cookie_settings'] = "Cookie settings"; 
+$lang['Cookie_settings_explain'] = "These control how the cookie sent to browsers is defined. In most cases the default should be sufficient. If you need to change these do so with care, incorrect settings can prevent users logging in.";
+$lang['Cookie_name'] = "Cookie name";
+$lang['Cookie_domain'] = "Cookie domain";
+$lang['Cookie_path'] = "Cookie path";
+$lang['Session_length'] = "Session length [ seconds ]";
+$lang['Cookie_secure'] = "Cookie secure [ https ]";
 
 
 //
@@ -357,8 +385,11 @@ $lang['Word_removed'] = "The selected word censor has been successfully removed"
 //
 // Mass Email
 //
-$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients.  If you are emailing a large group of people, please be patient after submiting and DO NOT stop the page halfway through.  It is normal for amass emailing to take a long time.";
-$lang['Compose'] = "Compose";
+$lang['Mass_email_explain'] = "Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all receptients.  If you are emailing a large group of people, please be patient after submiting and <b>DO NOT</b> stop the page halfway through.  It is normal for amass emailing to take a long time.";
+$lang['Compose'] = "Compose"; 
+
+$lang['Recipients'] = "Recipients"; 
+$lang['All_users'] = "All Users";
 
 
 //

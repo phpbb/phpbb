@@ -55,19 +55,23 @@ else
 		}
 	}
 
-	if($HTTP_POST_VARS['submit'])
+	if( isset($HTTP_POST_VARS['submit']) )
 	{
-		message_die(GENERAL_MESSAGE, $lang['Config_updated']);
+		$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], "<a href=\"" . append_sid("admin_board.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");
-
-$admin_style_select = style_select($new['default_admin_style'], 'default_admin_style', "../templates");
-
 $lang_select = language_select($new['default_lang'], 'default_lang', "../language");
-
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
+
+$disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
+$disable_board_no = ( !$new['board_disable'] ) ? "checked=\"checked\"" : "";
+
+$cookie_secure_yes = ( $new['cookie_secure'] ) ? "checked=\"checked\"" : "";
+$cookie_secure_no = ( !$new['cookie_secure'] ) ? "checked=\"checked\"" : "";
 
 $html_tags = $new['allow_html_tags'];
 
@@ -129,7 +133,16 @@ $template->assign_vars(array(
 	"L_GENERAL_SETTINGS" => $lang['General_settings'],
 	"L_SITE_NAME" => $lang['Site_name'],
 	"L_SITE_DESCRIPTION" => $lang['Site_desc'],
+	"L_DISABLE_BOARD" => $lang['Board_disable'], 
+	"L_DISABLE_BOARD_EXPLAIN" => $lang['Board_disable_explain'], 
 	"L_ACCT_ACTIVATION" => $lang['Acct_activation'], 
+	"L_COOKIE_SETTINGS" => $lang['Cookie_settings'], 
+	"L_COOKIE_SETTINGS_EXPLAIN" => $lang['Cookie_settings_explain'], 
+	"L_COOKIE_NAME" => $lang['Cookie_name'], 
+	"L_COOKIE_DOMAIN" => $lang['Cookie_domain'], 
+	"L_COOKIE_PATH" => $lang['Cookie_path'], 
+	"L_SESSION_LENGTH" => $lang['Session_length'], 
+	"L_COOKIE_SECURE" => $lang['Cookie_secure'], 
 	"L_PRIVATE_MESSAGING" => $lang['Private_Messaging'], 
 	"L_INBOX_LIMIT" => $lang['Inbox_limits'], 
 	"L_SENTBOX_LIMIT" => $lang['Sentbox_limits'], 
@@ -189,9 +202,12 @@ $template->assign_vars(array(
 	"L_USE_SMTP_EXPLAIN" => $lang['Use_SMTP_explain'],
 	"L_SMTP_SERVER" => $lang['SMTP_server'], 
 	"L_SUBMIT" => $lang['Submit'], 
+	"L_RESET" => $lang['Reset'], 
 	
 	"SITENAME" => $new['sitename'],
-	"SITE_DESCRIPTION" => $new['site_desc'],
+	"SITE_DESCRIPTION" => $new['site_desc'], 
+	"S_DISABLE_BOARD_YES" => $disable_board_yes,
+	"S_DISABLE_BOARD_NO" => $disable_board_no,
 	"ACTIVATION_NONE" => USER_ACTIVATION_NONE, 
 	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"ACTIVATION_USER" => USER_ACTIVATION_SELF, 
@@ -216,6 +232,12 @@ $template->assign_vars(array(
 	"INBOX_LIMIT" => $new['max_inbox_privmsgs'], 
 	"SENTBOX_LIMIT" => $new['max_sentbox_privmsgs'],
 	"SAVEBOX_LIMIT" => $new['max_savebox_privmsgs'],
+	"COOKIE_NAME" => $new['cookie_name'], 
+	"COOKIE_DOMAIN" => $new['cookie_domain'], 
+	"COOKIE_PATH" => $new['cookie_path'], 
+	"SESSION_LENGTH" => $new['session_length'], 
+	"S_COOKIE_SECURE_ENABLED" => $cookie_secure_yes, 
+	"S_COOKIE_SECURE_DISABLED" => $cookie_secure_no, 
 	"GZIP_YES" => $gzip_yes,
 	"GZIP_NO" => $gzip_no,
 	"PRUNE_YES" => $prune_yes,

@@ -455,48 +455,52 @@ if( isset($HTTP_POST_VARS['submit']) && ( !empty($HTTP_POST_VARS[POST_GROUPS_URL
 	//
 	// Any warnings?
 	//
-	$warning_list = "";
+	$warning_list_mod = "";
 	while( list($forum_id, $user_ary) = each($warning_mod_userid) )
 	{
 		for($i = 0; $i < count($user_ary); $i++)
 		{
-			if(!empty($valid_auth_mod_sql[$forum_id]))
+			echo $user_ary[$i];
+			if( !empty($valid_auth_mod_sql[$forum_id]) )
 			{
-				$warning_list .= "<b><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_mod_username[$forum_id][$i] . "</a></b> " . $lang['has_moderator_status'] .  " <b>" . $warning_mod_frmname[$forum_id][$i] . "</b><br />";
+				$warning_list_mod .= "<br /><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_mod_username[$forum_id][$i] . "</a> -> " . $warning_mod_frmname[$forum_id][$i];
 			}
 		}
 	}
 
+	$warning_list_acl = "";
 	while( list($forum_id, $user_ary) = each($warning_prv_userid) )
 	{
 		for($i = 0; $i < count($user_ary); $i++)
 		{
-			if(!empty($valid_auth_prv_sql[$forum_id]))
+			if( !empty($valid_auth_prv_sql[$forum_id]) )
 			{
-				$warning_list .= "<b><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_prv_username[$forum_id][$i] . "</a></b> " . $lang['has_access_status'] .  " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b><br />";
+				$warning_list_acl .= "<br /><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_prv_username[$forum_id][$i] . "</a> -> " . $warning_prv_frmname[$forum_id][$i];
 			}
 		}
 	}
 
-	if($warning_list != "")
+	$warning_list = "";
+	if( $warning_list_mod != "" )
 	{
-		$warning_list = "<br />" . $lang['Conflict_message_groupauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] ." <a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">" . $lang['HERE'] . "</a> " . $lang['return_group_auth_admin'] . "<br />";
+		$warning_list .= $lang['Conflict_mod_groupauth'] . "<br />" . $warning_list_mod;
+	}
+	if( $warning_list_acl != "" )
+	{
+		$warning_list .= $lang['Conflict_access_groupauth'] . "<br />" . $warning_list_acl;
+	}
 
-		include('page_header_admin.'.$phpEx);
+	if( $warning_list != "" )
+	{
+		$message =  $warning_list . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
-		$template->set_filenames(array(
-			"body" => "admin/admin_message_body.tpl")
-		);
-
-		$template->assign_vars(array(
-			"MESSAGE_TITLE" => $lang['Conflict_warning'],
-			"MESSAGE_TEXT" => $warning_list)
-		);
+		message_die(GENERAL_MESSAGE, $message);
 	}
 	else
 	{
+		$message = $lang['Auth_updated'] . "<br /><br />" . sprintf($lang['Click_return_groupauth'], "<a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
 
-		header("Location: " . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id", true));
+		message_die(GENERAL_MESSAGE, $message);
 	}
 
 }
@@ -733,10 +737,10 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 		$optionlist_mod .= "</select>";
 
 		$row_class = ( !($i%2) ) ? "row2" : "row1";
-		$row_color = "#" . ( ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
+		$row_color = ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 
 		$template->assign_block_vars("forums", array(
-			"ROW_COLOR" => $row_color,
+			"ROW_COLOR" => "#" . $row_color,
 			"ROW_CLASS" => $row_class,
 			"FORUM_NAME" => $forum_access[$i]['forum_name'],
 
@@ -818,18 +822,19 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 	$switch_mode_text = ( !$adv ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . append_sid($switch_mode) . '">' . $switch_mode_text . '</a>';
 
+	$template->assign_block_vars("switch_group_auth", array());
+
 	$template->assign_vars(array(
 		"USERNAME" => $t_groupname,
-		"USER_GROUP_MEMBERSHIPS" => $lang['Group_has_members'] . ": " . $t_usergroup_list,
-
+		"GROUP_MEMBERSHIP" => $lang['Usergroup_members'] . ": " . $t_usergroup_list,
 
 		"L_USER_OR_GROUPNAME" => $lang['Group_name'],
-		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
-		"L_AUTH_EXPLAIN" => $lang['User_auth_explain'],
+		"L_AUTH_TITLE" => $lang['Auth_Control_Group'],
+		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'],
 		"L_MODERATOR_STATUS" => $lang['Moderator_status'],
 		"L_PERMISSIONS" => $lang['Permissions'],
-		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
-		"L_RESET_CHANGES" => $lang['Reset_changes'],
+		"L_SUBMIT" => $lang['Submit'],
+		"L_RESET" => $lang['Reset'],
 
 		"U_USER_OR_GROUP" => append_sid("admin_groupauth.$phpEx"),
 		"U_SWITCH_MODE" => $u_switch_mode,
@@ -867,10 +872,10 @@ else
 	);
 
 	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['Group'] . " " . $lang['Auth_Control'],
+		"L_AUTH_TITLE" => $lang['Auth_Control_Group'],
 		"L_AUTH_EXPLAIN" => $lang['Group_auth_explain'],
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Group'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Group'],
+		"L_AUTH_SELECT" => $lang['Select_a_Group'],
+		"L_LOOK_UP" => $lang['Look_up_Group'],
 
 		"S_AUTH_ACTION" => append_sid("admin_groupauth.$phpEx"),
 		"S_AUTH_SELECT" => $select_list)

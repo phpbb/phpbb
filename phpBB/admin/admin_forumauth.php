@@ -201,10 +201,10 @@ if( empty($forum_id) )
 	$select_list .= "</select>";
 
 	$template->assign_vars(array(
-		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'],
+		"L_AUTH_TITLE" => $lang['Auth_Control_Forum'],
 		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'],
-		"L_AUTH_SELECT" => $lang['Select_a'] . " " . $lang['Forum'],
-		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Forum'],
+		"L_AUTH_SELECT" => $lang['Select_a_Forum'],
+		"L_LOOK_UP" => $lang['Look_up_Forum'],
 
 		"S_AUTH_ACTION" => append_sid("admin_forumauth.$phpEx"),
 		"S_AUTH_SELECT" => $select_list)
@@ -328,10 +328,10 @@ else
 	$template->assign_vars(array(
 		"FORUM_NAME" => $forum_name,
 
-		"L_AUTH_TITLE" => $lang['Forum'] . " " . $lang['Auth_Control'],
+		"L_AUTH_TITLE" => $lang['Auth_Control_Forum'],
 		"L_AUTH_EXPLAIN" => $lang['Forum_auth_explain'],
-		"L_SUBMIT_CHANGES" => $lang['Submit_changes'],
-		"L_RESET_CHANGES" => $lang['Reset_changes'],
+		"L_SUBMIT" => $lang['Submit'],
+		"L_RESET" => $lang['Reset'],
 
 		"U_FORUMAUTH_ACTION" => append_sid("admin_forumauth.$phpEx?" . POST_FORUM_URL . "=$forum_id"),
 		"U_SWITCH_MODE" => $u_switch_mode,

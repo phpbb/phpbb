@@ -57,7 +57,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 		"U_FORUM_INDEX" => append_sid("../index.$phpEx"),
 		"U_ADMIN_INDEX" => append_sid("index.$phpEx?pane=right"),
 
-		"L_FORUM_INDEX" => $lang['Forum_Index'],
+		"L_FORUM_INDEX" => $lang['Main_index'],
 		"L_ADMIN_INDEX" => $lang['Admin_Index'], 
 		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
 	);
