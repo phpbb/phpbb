@@ -5,6 +5,52 @@
 #
 
 #
+# Table structure for table `phpbb_auth_groups`
+#
+DROP TABLE IF EXISTS phpbb_auth_groups;
+CREATE TABLE phpbb_auth_groups (
+  group_id mediumint(8) unsigned NOT NULL default '0',
+  forum_id mediumint(8) unsigned NOT NULL default '0',
+  auth_option_id smallint(5) unsigned NOT NULL default '0',
+  auth_allow_deny tinyint(4) NOT NULL default '1'
+)
+# --------------------------------------------------------
+
+#
+# Table structure for table `phpbb_auth_options`
+#
+DROP TABLE IF EXISTS phpbb_auth_options;
+CREATE TABLE phpbb_auth_options (
+  auth_option_id tinyint(4) NOT NULL auto_increment,
+  auth_option char(20) NOT NULL default '',
+  PRIMARY KEY  (auth_option_id,auth_option)
+)
+# --------------------------------------------------------
+
+#
+# Table structure for table `phpbb_auth_prefetch`
+#
+DROP TABLE IF EXISTS phpbb_auth_prefetch;
+CREATE TABLE phpbb_auth_prefetch (
+  user_id mediumint(8) unsigned NOT NULL default '0',
+  forum_id mediumint(8) unsigned NOT NULL default '0',
+  auth_option_id smallint(5) unsigned NOT NULL default '0',
+  auth_allow_deny tinyint(4) NOT NULL default '1')
+)
+# --------------------------------------------------------
+
+#
+# Table structure for table `phpbb_auth_users`
+#
+DROP TABLE IF EXISTS phpbb_auth_users;
+CREATE TABLE phpbb_auth_users (
+  user_id mediumint(8) unsigned NOT NULL default '0',
+  forum_id mediumint(8) unsigned NOT NULL default '0',
+  auth_option_id smallint(5) unsigned NOT NULL default '0',
+  auth_allow_deny tinyint(4) NOT NULL default '1'
+)
+
+#
 # Table structure for table 'phpbb_auth_access'
 #
 CREATE TABLE phpbb_auth_access (
@@ -45,11 +91,19 @@ CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
+   group_avatar varchar(100), 
+   group_avatar_type tinyint(4), 
    group_description varchar(255) NOT NULL,
-   group_moderator mediumint(8) DEFAULT '0' NOT NULL, 
-   group_single_user tinyint(1) DEFAULT '1' NOT NULL, 
-   PRIMARY KEY (group_id), 
-   KEY group_single_user (group_single_user)
+   PRIMARY KEY (group_id)
+);
+
+
+#
+# Table structure for table 'phpbb_groups_moderator'
+#
+CREATE TABLE phpbb_groups_moderator (
+   group_id mediumint(8) NOT NULL, 
+   user_id mediumint(8) NOT NULL 
 );
 
 
@@ -122,16 +176,22 @@ CREATE TABLE phpbb_forum_prune (
 #
 CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL,
+   parent_id smallint(5) UNSIGNED NOT NULL, 
+
    cat_id mediumint(8) UNSIGNED NOT NULL,
-   forum_name varchar(150),
-   forum_desc text,
+
+   forum_name varchar(150), 
+   forum_desc text, 
    forum_status tinyint(4) DEFAULT '0' NOT NULL, 
-   forum_order mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
-   forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_order mediumint(8) UNSIGNED DEFAULT '1' NOT NULL, 
+   forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+   forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
-   increment_post_count tinyint(1) DEFAULT '1' NOT NULL, 
-   prune_next int(11),
+   post_count_inc tinyint(1) DEFAULT '1' NOT NULL, 
+   prune_next int(11) UNSIGNED, 
+   prune_days tinyint(4) UNSIGNED NOT NULL, 
+   prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+
    prune_enable tinyint(1) DEFAULT '0' NOT NULL,
    auth_view tinyint(2) DEFAULT '0' NOT NULL,
    auth_read tinyint(2) DEFAULT '0' NOT NULL,
@@ -144,6 +204,7 @@ CREATE TABLE phpbb_forums (
    auth_vote tinyint(2) DEFAULT '0' NOT NULL,
    auth_pollcreate tinyint(2) DEFAULT '0' NOT NULL,
    auth_attachments tinyint(2) DEFAULT '0' NOT NULL,
+
    PRIMARY KEY (forum_id),
    KEY forums_order (forum_order),
    KEY cat_id (cat_id), 
@@ -293,37 +354,22 @@ CREATE TABLE phpbb_search_wordmatch (
 #
 # Table structure for table 'phpbb_sessions'
 #
-# Note that if you're running 3.23.x you may want to make
-# this table a type HEAP. This type of table is stored
-# within system memory and therefore for big busy boards
-# is likely to be noticeably faster than continually
-# writing to disk ... 
-#
-# I must admit I read about this type on vB's board.
-# Hey, I never said you cannot get basic ideas from
-# competing boards, just that I find it's best not to
-# look at any code ... !
-#
 CREATE TABLE phpbb_sessions (
-   session_id char(32) DEFAULT '' NOT NULL,
-   session_user_id mediumint(8) DEFAULT '0' NOT NULL,
-   session_start int(11) DEFAULT '0' NOT NULL,
-   session_time int(11) DEFAULT '0' NOT NULL,
-   session_ip char(40) DEFAULT '0' NOT NULL,
-   session_page int(11) DEFAULT '0' NOT NULL,
-   session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (session_id),
-   KEY session_user_id (session_user_id),
-   KEY session_id_ip_user_id (session_id, session_ip, session_user_id)
+   session_id char(32) DEFAULT '' NOT NULL, 
+   session_user_id mediumint(8) DEFAULT '0' NOT NULL, 
+   session_start int(11) DEFAULT '0' NOT NULL, 
+   session_time int(11) DEFAULT '0' NOT NULL, 
+   session_ip char(40) DEFAULT '0' NOT NULL, 
+   session_browser char(100) DEFAULT '' NOT NULL, 
+   session_page char(50) DEFAULT '0' NOT NULL, 
+   PRIMARY KEY (session_id), 
+   KEY session_user_id (session_user_id), 
+   KEY session_id_user_id (session_id, session_user_id)
 );
 
 
-# --------------------------------------------------------
-#
-# Table structure for table 'phpbb_smilies'
-#
 CREATE TABLE phpbb_smilies (
-   smilies_id smallint(5) UNSIGNED NOT NULL auto_increment,
+   smilies_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    code char(10),
    smile_url char(50),
    emoticon char(50),
@@ -435,15 +481,15 @@ CREATE TABLE phpbb_topics (
    topic_time int(11) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   topic_approved tinyint(1) DEFAULT '1' NOT NULL, 
-   topic_status tinyint(3) DEFAULT '0' NOT NULL,
-   topic_vote tinyint(1) DEFAULT '0' NOT NULL,
-   topic_type tinyint(3) DEFAULT '0' NOT NULL,
+   topic_approved tinyint(1) DEFAULT '1' NOT NULL,  
+   topic_status tinyint(3) DEFAULT '0' NOT NULL, 
+   topic_vote tinyint(1) DEFAULT '0' NOT NULL, 
+   topic_type tinyint(3) DEFAULT '0' NOT NULL, 
    increment_post_count tinyint(1) DEFAULT '1' NOT NULL, 
    topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   PRIMARY KEY (topic_id),
+   PRIMARY KEY (topic_id), 
    KEY forum_id (forum_id),
    KEY topic_moved_id (topic_moved_id),
    KEY topic_status (topic_status), 
@@ -481,7 +527,7 @@ CREATE TABLE phpbb_users (
    user_regdate int(11) DEFAULT '0' NOT NULL, 
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   user_timezone decimal(4,2) DEFAULT '0' NOT NULL,
+   user_timezone decimal(4,2) DEFAULT '0' NOT NULL, 
    user_style tinyint(4),
    user_lang char(50),
    user_dateformat char(15) DEFAULT 'd M Y H:i' NOT NULL,
@@ -503,19 +549,21 @@ CREATE TABLE phpbb_users (
    user_rank int(11) DEFAULT '0',
    user_avatar char(100),
    user_avatar_type tinyint(4) DEFAULT '0' NOT NULL, 
-   user_email char(60),
+   user_email char(60), 
+   user_sig text,
+   user_sig_bbcode_uid char(10),
+
    user_icq varchar(15),
    user_website varchar(100),
    user_from varchar(100),
-   user_sig text,
-   user_sig_bbcode_uid char(10),
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
    user_occ varchar(100),
-   user_interests varchar(255),
-   user_actkey varchar(32),
-   user_newpasswd varchar(32),
+   user_interests varchar(255), 
+
+   user_actkey varchar(32), 
+   user_newpasswd varchar(32), 
    PRIMARY KEY (user_id), 
    KEY user_session_time (user_session_time)
 );
