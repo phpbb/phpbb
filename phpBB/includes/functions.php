@@ -964,6 +964,11 @@ function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
+	//TODO
+	if ($forum_data['parent_id'])
+	{
+	}
+
 	$sql = 'SELECT * 
 		FROM phpbb_forum_access 
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
@@ -1008,16 +1013,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	switch ($errno)
 	{
 		case E_WARNING:
-			if (defined('DEBUG_EXTRA'))
-			{
-//				echo "PHP Warning on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
-			}
-			break;
-
 		case E_NOTICE:
 			if (defined('DEBUG_EXTRA'))
 			{
-				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
+//				echo "PHP Notice on line <b>$errline</b> in <b>$errfile</b> :: <b>$msg_text</b><br />";
 			}
 			break;
 

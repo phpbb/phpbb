@@ -70,8 +70,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes','4')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','address@yourdomain.com');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact','contact@yourdomain.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','address@yourdomain.tld');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact','contact@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port','25');

@@ -197,16 +197,15 @@ function update_last_post_information($type, $id)
 	{
 		case 'forum':
 			$sql_select_add = ', f.forum_parents';
-//			$sql_select_add = ', f.left_id';
 			$sql_table_add = ', ' . FORUMS_TABLE . ' f';
-			$sql_where_add = 'AND (t.forum_id = f.forum_id) AND (f.forum_id = ' . $id . ')';
+			$sql_where_add = 'AND t.forum_id = f.forum_id AND f.forum_id = ' . $id;
 			$sql_update_table = FORUMS_TABLE;
 			break;
 
 		case 'topic':
 			$sql_select_add = '';
 			$sql_table_add = '';
-			$sql_where_add = 'AND (t.topic_id = ' . $id . ')';
+			$sql_where_add = 'AND t.topic_id = ' . $id;
 			$sql_update_table = TOPICS_TABLE;
 			break;
 		default:
@@ -226,36 +225,16 @@ function update_last_post_information($type, $id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	switch ($type)
-	{
-		case 'forum':
-			// Update forums: last post info, topics, posts ... we need to update
-			// each parent too ...
-
-			$forum_ids = $id;
-			$forum_parents = get_forum_parents($row);
-
-			foreach ($forum_parents as $parent_forum_id => $parent_name)
-			{
-				$forum_ids .= ', ' . $parent_forum_id;
-			}
-		
-			$where_clause = 'forum_id IN (' . $forum_ids . ')';
-			break;
-
-		case 'topic':
-			$where_clause = 'topic_id = ' . $id;
-			break;	
-	}
-
 	$update_sql = array(
-		$type . '_last_post_id' => intval($row['post_id']),
-		$type . '_last_post_time' => intval($row['post_time']),
-		$type . '_last_poster_id' => intval($row['poster_id']),
-		$type . '_last_poster_name' => (intval($row['poster_id']) == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
+		$type . '_last_post_id'		=> (int) $row['post_id'],
+		$type . '_last_post_time'	=> (int) $row['post_time'],
+		$type . '_last_poster_id'	=> (int) $row['poster_id'],
+		$type . '_last_poster_name' => (string) ($row['poster_id'] == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
 	);
 
-	$sql = 'UPDATE ' . $sql_update_table . ' SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' WHERE ' . $where_clause;
+	$sql = 'UPDATE ' . $sql_update_table . ' 
+		SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' 
+		WHERE ' . (($type == 'forum') ? "forum_id = $id" : "topic_id = $id");
 	$db->sql_query($sql);
 }
 
@@ -1107,7 +1086,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Fulltext parse
-	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
+	if ($post_data['message_md5'] != $post_data['post_checksum'])
 	{
 		$result = $search->add($mode, $post_data['post_id'], $message, $subject);
 	}
@@ -1115,15 +1094,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	// Sync forums, topics and users ...
 	if ($mode != 'edit')
 	{
-		// Update forums: last post info, topics, posts ... we need to update
-		// each parent too ...
-		$forum_ids = $post_data['forum_id'];
-		$forum_parents = get_forum_parents($post_data);
-		foreach ($forum_parents as $parent_forum_id => $parent_name)
-		{
-			$forum_ids .= ', ' . $parent_forum_id;
-		}
-
 		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1, forum_topics_real = forum_topics_real + 1' : '';
 		$forum_sql = array(
 			'forum_last_post_id' 	=> $post_data['post_id'],
@@ -1132,7 +1102,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'forum_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : $user->data['username'],
 		);
 
-		$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' WHERE forum_id IN (' . $forum_ids . ')';
+		$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $forum_sql) . ', forum_posts = forum_posts + 1' . $forum_topics_sql . ' 
+			WHERE forum_id = ' . $post_data['forum_id'];
 		$db->sql_query($sql);
 
 		// Update topic: first/last post info, replies
@@ -1151,7 +1123,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		}
 
 		$topic_replies_sql = ($mode == 'reply' || $mode == 'quote') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . $post_data['topic_id'];
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+			SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' 
+			WHERE topic_id = ' . $post_data['topic_id'];
 		$db->sql_query($sql);
 
 		// Update user post count ... if appropriate
@@ -1173,13 +1147,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Topic Notification
-	if ((!$post_data['notify_set']) && ($post_data['notify']))
+	if (!$post_data['notify_set'] && $post_data['notify'])
 	{
 		$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
 			VALUES (" . $user->data['user_id'] . ", " . $post_data['topic_id'] . ")";
 		$db->sql_query($sql);
 	}
-	else if (($post_data['notify_set']) && (!$post_data['notify']))
+	else if ($post_data['notify_set'] && !$post_data['notify'])
 	{
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 			WHERE user_id = " . $user->data['user_id'] . "
@@ -1194,14 +1168,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$db->sql_transaction('commit');
 
 	// Send Notifications
-	if (($mode != 'edit') && ($mode != 'delete'))
+	if ($mode != 'edit' && $mode != 'delete')
 	{
 		user_notification($mode, stripslashes($post_data['subject']), $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
 	}
 
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $post_data['forum_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">')
-	);
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $post_data['forum_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id']);
 
 	$message = ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
 	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');

@@ -110,8 +110,7 @@ switch ($mode)
 			WHERE t.topic_id = " . $topic_id . "
 				AND f.forum_id = t.forum_id";
 
-		$forum_validate = true;
-		$topic_validate = true;
+		$forum_validate = $topic_validate = true;
 		break;
 		
 	case 'quote':
@@ -128,9 +127,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id";
-		$forum_validate = true;
-		$topic_validate = true;
-		$post_validate = true;
+		$forum_validate = $topic_validate = $post_validate = true;
 		break;
 
 	case 'topicreview':
@@ -361,8 +358,7 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 		$topic_sql = array();
-		$forum_update_sql = '';
-		$user_update_sql = '';
+		$forum_update_sql = $user_update_sql = '';
 		$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1';
 
 		// User tries to delete the post twice ? Exit... we do not want the topics table screwed up.
@@ -378,10 +374,6 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 			$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
 			$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
 		}
-
-		// TODO: delete common words... maybe just call search_tidy ? <- No, search tidy is intensive and should be
-		// called irregularly (at present).
-//		$search->del_words($post_id);
 
 		// Sync last post informations
 		$db->sql_transaction();
@@ -446,25 +438,22 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 			update_last_post_information('topic', $topic_id);
 		}
 		update_last_post_information('forum', $forum_id);
-		
+
 		$db->sql_transaction('commit');
 
 		if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
 		{
-			$meta_info = '<meta http-equiv="refresh" content="5; url=viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">';
-
+			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
 			$message = $user->lang['DELETED'];
 		}
 		else
 		{
-			$meta_info = '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">';
-
-			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">', '</a>');
+			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $post_data['next_post_id'] . '#' . $post_data['next_post_id'];
+			$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">', '</a>');
 		}
 
-		meta_refresh(4, $meta_info);
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
-
+		meta_refresh(3, $meta_info);
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 		trigger_error($message);
 	}
 	else
@@ -509,7 +498,7 @@ if ($submit || $preview || $refresh)
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
 	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(strip_tags($_POST['subject']))) : '';
 
-	if ((strcmp($subject, strtoupper($subject)) == 0) && ($subject != ''))
+	if (strcmp($subject, strtoupper($subject)) == 0 && $subject != '')
 	{
 		$subject = phpbb_strtolower($subject);
 	}
@@ -526,11 +515,11 @@ if ($submit || $preview || $refresh)
 	$enable_smilies 	= ($config['allow_smilies'] && empty($_POST['disable_smilies']) && $auth->acl_get('f_smilies', $forum_id)) ? TRUE : FALSE;
 	$enable_sig 		= ($config['allow_sig'] && !empty($_POST['attach_sig']) && $auth->acl_get('f_sigs', $forum_id)) ? TRUE : FALSE;
 */
-	$enable_html 		= (!intval($config['allow_html'])) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
-	$enable_bbcode 		= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
-	$enable_smilies		= (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
+	$enable_html 		= (!$config['allow_html']) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
+	$enable_bbcode 		= (!$config['allow_bbcode']) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
+	$enable_smilies		= (!$config['allow_smilies']) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$enable_sig			= (!intval($config['allow_sig'])) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
+	$enable_sig			= (!$config['allow_sig']) ? false : ((!empty($_POST['attach_sig'])) ? true : false);
 
 	$notify				= (!empty($_POST['notify'])) ? true : false;
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
@@ -562,10 +551,7 @@ if ($submit || $preview || $refresh)
 			WHERE topic_id = ' . $topic_id;
 		$db->sql_query($sql);
 
-		$poll_title = '';
-		$poll_length = '';
-		$poll_option_text = '';
-		$poll_max_options = '';
+		$poll_title = $poll_length = $poll_option_text = $poll_max_options = '';
 	}
 	else
 	{
@@ -733,8 +719,8 @@ if ($submit || $preview || $refresh)
 		$auth_option = '';
 		switch ($topic_type)
 		{
-			case POST_NEWS:
-				$auth_option = 'news';
+			case POST_GLOBAL:
+				$auth_option = 'global';
 				break;
 			case POST_ANNOUNCE:
 				$auth_option = 'announce';
@@ -846,7 +832,7 @@ if ($preview)
 
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)) ? true : false,
-			'POLL_QUESTION' => $preview_poll_title)
+			'POLL_QUESTION'		 => $preview_poll_title)
 		);
 
 		foreach ($poll_options as $option)

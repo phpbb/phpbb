@@ -84,7 +84,7 @@ class parse_message
 		}
 
 		// Smiley check
-		if (intval($config['max_post_smilies']) && $smilies )
+		if (intval($config['max_post_smilies']) && $smilies)
 		{
 			$sql = "SELECT code	
 				FROM " . SMILIES_TABLE;
@@ -304,7 +304,7 @@ class parse_message
 					$str_to = array('&#91;', '&#93;', '&#46;');
 
 					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
-				break;
+					break;
 
 				default:
 					$str_from = array('<', '>', '[', ']', '.');
@@ -361,7 +361,7 @@ class parse_message
 					$out .= $tag . ']';
 					$tok = '[';
 				}
-				elseif (preg_match('/list(=?(?:[0-9]|[a-z]|))/i', $buffer, $m))
+				elseif (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
 					array_push($close_tags, (($m[1]) ? '/list:o:' . $this->bbcode_uid : '/list:u:' . $this->bbcode_uid));
@@ -820,7 +820,7 @@ class fulltext_search
 		$words = array();
 		if ($mode == 'edit')
 		{
-			$sql = "SELECT w.word_id, w.word_text, m.title_match
+			echo $sql = "SELECT w.word_id, w.word_text, m.title_match
 				FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m
 				WHERE m.post_id = " . intval($post_id) . "
 					AND w.word_id = m.word_id";

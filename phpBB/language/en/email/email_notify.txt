@@ -1,9 +1,9 @@
 Subject: {SITENAME} - Email a friend
 Charset: iso-8859-1
 
-Hello,
+Hello {TO_USERNAME},
 
-This email was sent from "{SITENAME}" by {USERNAME} who thought you may be interested in the following topic.
+This email was sent from "{SITENAME}" by {FROM_USERNAME} who thought you may be interested in the following topic:
 
 {TOPIC_NAME}
 

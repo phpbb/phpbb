@@ -453,7 +453,7 @@ $template->assign_vars(array(
 	'U_VIEW_OLDER_TOPIC'	=> $view_prev_topic_url,
 	'U_VIEW_NEWER_TOPIC'	=> $view_next_topic_url, 
 	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print",
-	'U_EMAIL_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=email", 
+	'U_EMAIL_TOPIC'			=> "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id", 
 
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
@@ -802,9 +802,9 @@ do
 				}
 			}
 
-			if (!empty($row['user_viewemail']) || $auth->acl_gets('m_', 'a_', $forum_id))
+			if ((!empty($row['user_viewemail']) || $auth->acl_get('m_', $forum_id)) && $config['email_enable'])
 			{
-				$email_url = ($config['board_email_form'] && $config['email_enable']) ? "ucp.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
+				$email_url = ($config['board_email_form']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 				$user_cache[$poster_id]['email_img'] = '<a href="' . $email_url . '">' . $user->img('btn_email', $user->lang['SEND_EMAIL']) . '</a>';
 				$user_cache[$poster_id]['email'] = '<a href="' . $email_url . '">' . $user->lang['SEND_EMAIL'] . '</a>';
 			}

@@ -360,11 +360,11 @@ $lang = array(
 	'ALL_TOPICS'		=> 'All Topics',
 
 
-	'VIEW_TOPIC_ANNOUNCEMENT'=> 'Announcement',
-	'VIEW_TOPIC_STICKY'		=> 'Sticky',
-	'VIEW_TOPIC_MOVED'		=> 'Moved',
-	'VIEW_TOPIC_POLL'		=> 'Poll',
-	'VIEW_TOPIC_LOCKED'		=> 'Locked',
+	'VIEW_TOPIC_ANNOUNCEMENT'=> 'Announcement: ',
+	'VIEW_TOPIC_STICKY'		=> 'Sticky: ',
+	'VIEW_TOPIC_MOVED'		=> 'Moved: ',
+	'VIEW_TOPIC_POLL'		=> 'Poll: ',
+	'VIEW_TOPIC_LOCKED'		=> 'Locked: ',
 
 	'MARK_TOPICS_READ'	=> 'Mark all topics read',
 	'TOPICS_MARKED'		=> 'The topics for this forum have now been marked read',
@@ -837,12 +837,19 @@ $lang = array(
 	'SEND_EMAIL'	=> 'Send Email',
 	'NO_EMAIL'		=> 'You are not permitted to send email to this user.',
 	'CC_EMAIL'		=> 'Send a copy of this email to yourself',
-	'RECIPIENT'		=> 'Recipient',
+	'RECIPIENT'		=> 'Recipient', 
 	'EMAIL_SENT'	=> 'The email has been sent.',
 	'EMAIL_BODY_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.',
+	'EMAIL_TOPIC_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. Please note that the topic information is already included in the message. The return address for this message will be set to your email address.',
+	'REAL_NAME'			=> 'Recipient Name', 
+	'DEST_LANG'			=> 'Language', 
+	'DEST_LANG_EXPLAIN'	=> 'Select an appropriate language (if available) for the recipient of this message.', 
+
 	'FLOOD_EMAIL_LIMIT'		=> 'You cannot send another email at this time. Please try again later.',
 	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the email.',
 	'EMPTY_MESSAGE_EMAIL'	=> 'You must enter a message to be emailed.',
+	'EMPTY_ADDRESS_EMAIL'	=> 'You must provide a valid email address for the recipient.',
+	'EMPTY_NAME_EMAIL'		=> 'You must enter the real name of the recipient.',
 
 	'NO_VIEW_USERS'		=> 'You are not authorised to view the member list or profiles.', 
 	'VIEWING_PROFILE'	=> 'Profile view',
