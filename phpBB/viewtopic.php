@@ -51,6 +51,7 @@ if(!isset($topic_id) && !isset($post_id))
 // Find topic id if user requested a newer
 // or older topic
 //
+include('language/lang_english.php');
 if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
 	if($HTTP_GET_VARS["view"] == "next")
@@ -79,8 +80,7 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 		message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
 	}
 
-	list($topic_id) = $db->sql_fetchrow($result);
-	if( empty($topic_id) )
+	if( !$row = $db->sql_fetchrow($result) )
 	{
 		if($HTTP_GET_VARS["view"] == "next")
 		{
@@ -90,6 +90,10 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_older_topics']);
 		}
+	}
+	else
+	{
+		$topic_id = $row['topic_id'];
 	}
 }
 
