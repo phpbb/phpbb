@@ -25,18 +25,16 @@
 // Load/parse the footer template we need based on pagetype.
 switch($pagetype) 
 {
- case 'index':
-   $template->pparse("output", "footer");
-   break;
- case 'viewforum':
-   $jumpbox = make_jumpbox($db);
-   $template->set_var(array("PHPEX" => $phpEx,
-	   "FORUM_ID" => $forum_id,
-	   "SELECT_NAME" => "forum_id",
-	   "JUMPBOX_ACTION" => "viewforum.".$phpEx,
-	   "JUMPBOX_LIST" => $jumpbox));
-   $template->pparse("output", "footer");
-   break;
+	case 'index':
+		$template->pparse("output", "footer");
+		break;
+		
+	case 'viewforum':
+		
+		$template->set_var(array("PHPEX" => $phpEx,
+			"FORUM_ID" => $forum_id));	
+		$template->pparse("output", "footer");
+		break;
 }
 
 // Show the overall footer.

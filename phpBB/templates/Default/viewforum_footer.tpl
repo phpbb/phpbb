@@ -23,15 +23,8 @@
 	    <tr>                           
 	      <td>                          
 	        <table border="0" width="100%" bgcolor="#CCCCCC" cellpadding="1" cellspacing="1">
-	          <tr>                                
-	            <td align="right" style="{font-size: 8pt; height: 55px;}"><table cellspacing="0" cellpadding="0" border="0">
-					<tr><form method="POST" action="{JUMPBOX_ACTION}">
-						<td>Jump To:<select name="{SELECT_NAME}"><option value="-1">Select A Forum</option>
-{JUMPBOX_LIST}
-</select>
-<input type="submit" value="Go"></td>
-					</form></tr>
-				</table></td>                             
+	          <tr>
+	            <td align="right" style="{font-size: 8pt; height: 55px;}">{JUMPBOX}</td>                             
 	          </tr>                               
 	        </table>                              
 	      </td>                                    
