@@ -26,7 +26,7 @@
 				<td bgcolor="{T_TD_COLOR1}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{catrow.forumrow.TOPICS}</font></td>
 				<td bgcolor="{T_TD_COLOR2}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{catrow.forumrow.POSTS}</font></td>
 				<td bgcolor="{T_TD_COLOR1}" width="15%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{catrow.forumrow.LAST_POST}</font></td>
-				<td bgcolor="{T_TD_COLOR2}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{catrow.forumrow.MODERATORS}</td></tr>
+				<td bgcolor="{T_TD_COLOR2}" width="5%" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{catrow.forumrow.MODERATORS}</td></tr>
 			</tr>
 			<!-- END forumrow -->
 			<!-- END catrow -->
