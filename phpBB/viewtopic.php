@@ -34,7 +34,7 @@ $sort_key	= request_var('sk', 't');
 $sort_dir	= request_var('sd', 'a');
 $update		= request_var('update', false);
 
-$hilit_words		= urldecode(request_var('hilit', ''));
+$hilit_words		= request_var('hilit', '');
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
@@ -335,11 +335,11 @@ if ($hilit_words)
 	{
 		if (trim($word))
 		{
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('\*', '\w*?', preg_quote($word, '#'));
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('\*', '\w*?', preg_quote(urlencode($word), '#'));
 		}
 	}
 
-	$highlight = htmlspecialchars(urlencode($hilit_words));
+	$highlight = urlencode($hilit_words);
 }
 
 // General Viewtopic URL for return links
