@@ -659,7 +659,7 @@ $lang += array(
 	'MAX_AVATAR_SIZE'			=> 'Maximum Avatar Dimensions',
 	'MAX_AVATAR_SIZE_EXPLAIN'	=> '(Height x Width in pixels)',
 	'AVATAR_STORAGE_PATH'		=> 'Avatar Storage Path',
-	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/avatars',
+	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/avatars/upload',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar Gallery Path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery',
 );
@@ -682,7 +682,7 @@ $lang += array(
 	'BROWSER_VALID_EXPLAIN'		=> 'Enables browser validation for each session inproving security.', 
 	'ENABLE_GZIP'				=> 'Enable GZip Compression',
 	'SMILIES_PATH'				=> 'Smilies storage path',
-	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/smilies',
+	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/smiles',
 	'ICONS_PATH'				=> 'Post icons storage path',
 	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/icons',
 	'UPLOAD_ICONS_PATH'			=> 'Extension group icons storage path',

@@ -92,7 +92,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I post a topic in a forum?',
-		1 => 'Easy, click the relevant button on either the forum or topic screens. You may need to register before you can post a message, the facilities available to you are listed at the bottom of the forum and topic screens (the <i>You can post new topics, You can vote in polls, etc.<i> list)'
+		1 => 'Easy, click the relevant button on either the forum or topic screens. You may need to register before you can post a message, the facilities available to you are listed at the bottom of the forum and topic screens (the <i>You can post new topics, You can vote in polls, etc.</i> list)'
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
@@ -160,7 +160,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are Moderators?',
-		1 => 'Moderators are individuals (or groups of individuals) whose job it is to look after the running of the forums from day to day. They have the power to edit or delete posts and lock, unlock, move, delete and split topics in the forum they moderate. Generally moderators are there to prevent people going <i>off-topic<i> or posting abusive or offensive material.'
+		1 => 'Moderators are individuals (or groups of individuals) whose job it is to look after the running of the forums from day to day. They have the power to edit or delete posts and lock, unlock, move, delete and split topics in the forum they moderate. Generally moderators are there to prevent people going <i>off-topic</i> or posting abusive or offensive material.'
 	),
 	array(
 		0 => 'What are Usergroups?',
