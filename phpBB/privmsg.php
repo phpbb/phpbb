@@ -751,11 +751,12 @@ else if( ( $delete && $mark_list ) || $delete_all )
 			{
 				case 'inbox':
 					$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
-						privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . "  OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+						privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
 					break;
 
 				case 'outbox':
-					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( 
+						privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
 					break;
 
 				case 'sentbox':
