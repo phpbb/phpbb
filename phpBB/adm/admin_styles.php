@@ -1256,7 +1256,7 @@ function csspreview()
 								$imgheight = " height=\"$imgheight\"";
 							}
 
-							$imgpath = '"styles/' . $imageset_path . '/imageset/' . preg_replace('#^(.*?)/(.*?)$#', '{LANG}/\2', $imgpath)  . '"' . $imgwidth . $imgheight;
+							$imgpath = '"styles/' . $imageset_path . '/imageset/' . preg_replace('#^(.*?)/(.*?)$#', '{LANG}/\2', $imgpath)  . '" border="0"' . $imgwidth . $imgheight;
 
 							$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
 								SET $imgname = '$imgpath'
