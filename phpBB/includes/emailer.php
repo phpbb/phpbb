@@ -197,7 +197,7 @@ class emailer
 
 		if ( !$result )
 		{
-			message_die(GENERAL_ERROR, 'Failed sending email', '', __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Failed sending email :: ' . $result, '', __LINE__, __FILE__);
 		}
 
 		return true;

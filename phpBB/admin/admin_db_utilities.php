@@ -34,16 +34,10 @@ if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
-	if(@phpversion() >= '4.0.0')
-	{	
-		$file_uploads = @ini_get('file_uploads');
-	}
-	else
-	{
-		$file_uploads = @get_cfg_var('file_uploads');
-	}
 
-	if( ($file_uploads != 0 || empty($file_uploads)) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
+	$file_uploads = (@phpversion() >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
+
+	if( (empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
 	{
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
 	}
@@ -672,7 +666,6 @@ function output_table_content($content)
 //
 // Begin program proper
 //
-
 if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 {
 	$perform = (isset($HTTP_POST_VARS['perform'])) ? $HTTP_POST_VARS['perform'] : $HTTP_GET_VARS['perform'];
@@ -681,21 +674,26 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 	{
 		case 'backup':
 
-			if( SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql' )
+			$error = false;
+			switch(SQL_LAYER)
 			{
-				switch(SQL_LAYER)
-				{
-					case 'oracle':
-						$db_type = "Oracle";
-						break;
-					case 'odbc':
-						$db_type = "ODBC";
-						break;
-					case 'mssql':
-						$db_type = "MSSQL";
-						break;
-				}
+				case 'oracle':
+					$error = true;
+					break;
+				case 'db2':
+					$error = true;
+					break;
+				case 'msaccess':
+					$error = true;
+					break;
+				case 'mssql':
+				case 'mssql-odbc':
+					$error = true;
+					break;
+			}
 
+			if ($error)
+			{
 				include('./page_header_admin.'.$phpEx);
 
 				$template->set_filenames(array(
@@ -709,11 +707,10 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 				$template->pparse("body");
 
-				break;
+				include('./page_footer_admin.'.$phpEx);
 			}
 
 			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
-
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
 
@@ -780,7 +777,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				);
 
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"2;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">",
+					"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
