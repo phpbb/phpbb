@@ -296,7 +296,7 @@ class sql_db
 		{
 			$rows = @OCIFetchStatement($query_id, $results);
 			@OCIExecute($query_id, OCI_DEFAULT);
-			for($i = 0; $i <= $rows; $i++)
+			for($i = 0; $i < $rows; $i++)
 			{
 				@OCIFetchInto($query_id, $tmp_result, OCI_ASSOC+OCI_RETURN_NULLS);
 

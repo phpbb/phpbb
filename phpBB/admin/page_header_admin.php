@@ -31,22 +31,24 @@ define('HEADER_INC', true);
 // gzip_compression
 //
 $do_gzip_compress = FALSE;
-if($board_config['gzip_compress'])
+if ( $board_config['gzip_compress'] )
 {
 	$phpver = phpversion();
 
-	if($phpver >= '4.0.4pl1')
+	$useragent = (isset($_SERVER["HTTP_USER_AGENT"]) ) ? $_SERVER["HTTP_USER_AGENT"] : $HTTP_USER_AGENT;
+
+	if ( $phpver >= '4.0.4pl1' && ( strstr($useragent,'compatible') || strstr($useragent,'Gecko') ) )
 	{
-		if(extension_loaded('zlib'))
+		if ( extension_loaded('zlib') )
 		{
 			ob_start('ob_gzhandler');
 		}
 	}
-	else if($phpver > '4.0')
+	else if ( $phpver > '4.0' )
 	{
-		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
+		if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
 		{
-			if(extension_loaded('zlib'))
+			if ( extension_loaded('zlib') )
 			{
 				$do_gzip_compress = TRUE;
 				ob_start();
@@ -62,6 +64,10 @@ $template->set_filenames(array(
 	'header' => 'admin/page_header.tpl')
 );
 
+// Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
+$l_timezone = explode('.', $board_config['board_timezone']);
+$l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] != 0) ? $lang[sprintf('%.1f', $board_config['board_timezone'])] : $lang[number_format($board_config['board_timezone'])];
+
 //
 // The following assigns all _common_ variables that may be used at any point
 // in a template. Note that all URL's should be wrapped in append_sid, as
@@ -72,34 +78,12 @@ $template->assign_vars(array(
 	'PAGE_TITLE' => $page_title,
 
 	'L_ADMIN' => $lang['Admin'], 
-	'L_USERNAME' => $lang['Username'],
-	'L_PASSWORD' => $lang['Password'],
-	'L_INDEX' => $lang['Forum_Index'],
-	'L_REGISTER' => $lang['Register'],
-	'L_PROFILE' => $lang['Profile'],
-	'L_SEARCH' => $lang['Search'],
-	'L_PRIVATEMSGS' => $lang['Private_msgs'],
-	'L_MEMBERLIST' => $lang['Memberlist'],
+	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
 	'L_FAQ' => $lang['FAQ'],
-	'L_USERGROUPS' => $lang['Usergroups'],
-	'L_FORUM' => $lang['Forum'],
-	'L_TOPICS' => $lang['Topics'],
-	'L_REPLIES' => $lang['Replies'],
-	'L_VIEWS' => $lang['Views'],
-	'L_POSTS' => $lang['Posts'],
-	'L_LASTPOST' => $lang['Last_Post'],
-	'L_MODERATOR' => $lang['Moderator'],
-	'L_NONEWPOSTS' => $lang['No_new_posts'],
-	'L_NEWPOSTS' => $lang['New_posts'],
-	'L_POSTED' => $lang['Posted'],
-	'L_JOINED' => $lang['Joined'],
-	'L_AUTHOR' => $lang['Author'],
-	'L_MESSAGE' => $lang['Message'],
-	'L_BY' => $lang['by'],
 
 	'U_INDEX' => append_sid('../index.'.$phpEx),
 
-	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
+	'S_TIMEZONE' => sprintf($lang['All_times'], $l_timezone),
 	'S_LOGIN_ACTION' => append_sid('../login.'.$phpEx),
 	'S_JUMPBOX_ACTION' => append_sid('../viewforum.'.$phpEx),
 	'S_CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])), 
