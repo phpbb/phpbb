@@ -1,33 +1,25 @@
 <?php
-/***************************************************************************
- *                           admin_permissions.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : © 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_permissions.php
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['FORUM']['PERMISSIONS'] = ($auth->acl_get('a_auth')) ? $filename . $SID . '&amp;mode=forum' : '';
-	$module['FORUM']['MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=mod' : '';
-	$module['FORUM']['SUPER_MODERATORS'] = ($auth->acl_get('a_authmods')) ? $filename . $SID . '&amp;mode=supermod' : '';
-	$module['FORUM']['ADMINISTRATORS'] = ($auth->acl_get('a_authadmins')) ? $filename . $SID . '&amp;mode=admin' : '';
-	$module['USER']['PERMISSIONS'] = ($auth->acl_get('a_authusers')) ? $filename . $SID . '&amp;mode=user' : '';
-	$module['GROUP']['PERMISSIONS'] = ($auth->acl_get('a_authgroups')) ? $filename . $SID . '&amp;mode=group' : '';
+	$module['PERM']['PERMISSIONS'] = ($auth->acl_get('a_auth')) ? "$filename$SID&amp;mode=forum" : '';
+	$module['PERM']['MODERATORS'] = ($auth->acl_get('a_authmods')) ? "$filename$SID&amp;mode=mod" : '';
+	$module['PERM']['SUPER_MODERATORS'] = ($auth->acl_get('a_authmods')) ? "$filename$SID&amp;mode=supermod" : '';
+	$module['PERM']['ADMINISTRATORS'] = ($auth->acl_get('a_authadmins')) ? "$filename$SID&amp;mode=admin" : '';
+	$module['PERM']['USER_PERMS'] = ($auth->acl_get('a_authusers')) ? "$filename$SID&amp;mode=user" : '';
+	$module['PERM']['GROUP_PERMS'] = ($auth->acl_get('a_authgroups')) ? "$filename$SID&amp;mode=group" : '';
 
 	return;
 }
@@ -238,6 +230,12 @@ switch ($submit)
 				cache_moderators();
 			}
 
+			// Remove users who are now moderators or admins from everyones foes
+			// list
+			if ($mode == 'mod' || sizeof($auth_settings['mod']) || $mode == 'admin' || sizeof($auth_settings['admin']))
+			{
+				update_foes();
+			}
 
 			// Logging ... first grab user or groupnames ...
 			$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
@@ -1313,5 +1311,33 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 // Output page footer
 adm_page_footer();
+
+// ---------
+// FUNCTIONS
+//
+function update_foes()
+{
+	global $db;
+
+	$perms = array();
+	foreach (auth::acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
+	{
+		foreach ($forum_ary as $auth_option => $user_ary)
+		{
+			$perms += $user_ary;
+		}
+	}
+
+	if (sizeof($perms))
+	{
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+			WHERE zebra_id IN (' . implode(', ', $perms) . ')';
+		$db->sql_query($sql);
+	}
+	unset($perms);
+}
+//
+// FUNCTIONS
+// ---------
 
 ?>

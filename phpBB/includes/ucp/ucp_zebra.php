@@ -93,7 +93,7 @@ class ucp_zebra extends module
 						if ($mode == 'foes')
 						{
 							$perms = array();
-							foreach (discover_auth($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
+							foreach (auth::acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
 							{
 								foreach ($forum_ary as $auth_option => $user_ary)
 								{

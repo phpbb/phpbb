@@ -258,7 +258,7 @@ class ucp_register extends module
 					{
 						// Grab an array of user_id's with a_user permissions ... these users
 						// can activate a user
-						$admin_ary = discover_auth(false, 'a_user', false);
+						$admin_ary = auth::acl_get_list(false, 'a_user', false);
 
 						$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . ' 
