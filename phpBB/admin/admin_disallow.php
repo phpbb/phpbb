@@ -99,18 +99,14 @@ $sql = "SELECT *
 	FROM " . DISALLOW_TABLE;
 $result = $db->sql_query($sql);
 
+$disallow_select = '';
 if ( $row = $db->sql_fetchrow($result) )
 {
-	$disallow_select = '';
 	do
 	{
 		$disallow_select .= '<option value="' . $row['disallow_id'] . '">' . str_replace('%', '*', $row['disallow_username']) . '</option>';
 	}
 	while ( $row = $db->sql_fetchrow($result) );
-}
-else
-{
-	$disallow_select = '<option value="">' . $lang['No_disallowed'] . '</option>';
 }
 
 //
@@ -137,7 +133,7 @@ page_header($lang['Users']);
 	</tr>
 	<tr> 
 		<td class="row1"><?php echo $lang['Username']; ?><br /><span class="gensmall"><?php echo $lang['Delete_disallow_explain']; ?></span></td>
-		<td class="row2"><select name="disallowed_id"><?php echo $disallow_select; ?></select>&nbsp;<input type="submit" name="delete_name" value="<?php echo $lang['Delete']; ?>" class="liteoption" /></td>
+		<td class="row2"><?php if ( $disallow_select != '' ) { ?><select name="disallowed_id"><?php echo $disallow_select; ?></select>&nbsp;<input type="submit" name="delete_name" value="<?php echo $lang['Delete']; ?>" class="liteoption" /><?php } else { echo $lang['No_disallowed']; } ?></td>
 	</tr>
 </table></form>
 
