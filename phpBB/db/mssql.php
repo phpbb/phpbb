@@ -88,7 +88,7 @@ class sql_db
 			//
 			if( $this->in_transaction )
 			{
-				mssql_query("COMMIT", $this->db_connect_id);
+				@mssql_query("COMMIT", $this->db_connect_id);
 			}
 			$result = @mssql_close($this->db_connect_id);
 			return $result;
@@ -116,7 +116,7 @@ class sql_db
 			$this->num_queries++;
 			if($transaction == BEGIN_TRANSACTION)
 			{
-				$result = mssql_query("BEGIN TRANSACTION", $this->db_connect_id);
+				$result = @mssql_query("BEGIN TRANSACTION", $this->db_connect_id);
 				if(!$result)
 				{
 					return false;
@@ -136,9 +136,9 @@ class sql_db
 			// returns something then there's a problem. This may well be a false assumption though
 			// ... needs checking under Windows itself.
 			//
-			if(eregi("LIMIT", $query))
+			if( preg_match("/^SELECT.*?LIMIT/is", $query) )
 			{
-				preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
+				preg_match("/^SELECT(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*$/s", $query, $limits);
 
 				$query = $limits[1];
 				if($limits[3])
@@ -152,13 +152,11 @@ class sql_db
 					$num_rows = $limits[2];
 				}
 
-//				$this->query_array[] = $query;
+				$query = "SELECT TOP " . ($row_offset + $num_rows) . $query;
 
-				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
-
+//				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
-
-				@mssql_query("SET ROWCOUNT 0");
+//				@mssql_query("SET ROWCOUNT 0");
 
 				$this->query_limit_success[$this->query_result] = true;
 
@@ -177,8 +175,6 @@ class sql_db
 			}
 			else if(eregi("^INSERT ", $query))
 			{
-//				$this->query_array[] = $query;
-
 				$query = preg_replace("/\\\'/s", "''", $query);
 
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
@@ -192,7 +188,7 @@ class sql_db
 				{
 					if($this->in_transaction)
 					{
-						mssql_query("ROLLBACK", $this->db_connect_id);
+						@mssql_query("ROLLBACK", $this->db_connect_id);
 						$this->in_transaction = FALSE;
 					}
 					return false;
@@ -203,8 +199,6 @@ class sql_db
 			}
 			else
 			{
-//				$this->query_array[] = $query;
-
 				if(eregi("SELECT", $query))
 				{
 					$this->query_result = @mssql_query($query, $this->db_connect_id);
@@ -233,16 +227,16 @@ class sql_db
 				{
 					if($this->in_transaction)
 					{
-						mssql_query("ROLLBACK", $this->db_connect_id);
+						@mssql_query("ROLLBACK", $this->db_connect_id);
 						$this->in_transaction = FALSE;
 					}
 					return false;
 				}
 			}
 
-			if($transaction == END_TRANSACTION)
+			if($transaction == END_TRANSACTION && $this->in_transaction)
 			{
-				$result = mssql_query("COMMIT", $this->db_connect_id);
+				$result = @mssql_query("COMMIT", $this->db_connect_id);
 				$this->in_transaction = FALSE;
 			}
 
@@ -252,7 +246,7 @@ class sql_db
 		{
 			if($transaction == END_TRANSACTION)
 			{
-				$result = mssql_query("COMMIT", $this->db_connect_id);
+				$result = @mssql_query("COMMIT", $this->db_connect_id);
 				$this->in_transaction = FALSE;
 			}
 
