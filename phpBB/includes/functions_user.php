@@ -95,6 +95,117 @@ function user_update_name($old_name, $new_name)
 	}
 }
 
+function user_delete($mode, $user_id)
+{
+	global $config, $db, $user, $auth;
+
+	$db->sql_transaction();
+
+	switch ($mode)
+	{
+		case 'retain':
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+				SET forum_last_poster_id = ' . ANONYMOUS . " 
+				WHERE forum_last_poster_id = $user_id";
+			$db->sql_query($sql);
+
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET poster_id = ' . ANONYMOUS . " 
+				WHERE poster_id = $user_id";
+			$db->sql_query($sql);
+
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_poster = ' . ANONYMOUS . "
+				WHERE topic_poster = $user_id";
+			$db->sql_query($sql);
+
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_last_poster_id = ' . ANONYMOUS . "
+				WHERE topic_last_poster_id = $user_id";
+			$db->sql_query($sql);
+			break;
+
+		case 'remove':
+
+			if (!function_exists('delete_posts'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			}
+
+			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts 
+				FROM ' . POSTS_TABLE . " 
+				WHERE poster_id = $user_id
+				GROUP BY topic_id";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+			}
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT topic_id, topic_replies, topic_replies_real 
+				FROM ' . TOPICS_TABLE . ' 
+				WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+			$result = $db->sql_query($sql);
+
+			$del_topic_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+				{
+					$del_topic_ary[] = $row['topic_id'];
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($del_topic_ary))
+			{
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+					WHERE topic_id IN (' . implode(', ', $del_topic_ary) . ')';
+				$db->sql_query($sql);
+			}
+
+			// Delete posts, attachments, etc.
+			delete_posts('poster_id', $user_id);
+
+			break;
+	}
+
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
+
+	foreach ($table_ary as $table)
+	{
+		$sql = "DELETE FROM $table 
+			WHERE user_id = $user_id";
+		$db->sql_query($sql);
+	}
+
+	// Reset newest user info if appropriate
+	if ($config['newest_user_id'] == $user_id)
+	{
+		$sql = 'SELECT user_id, username 
+			FROM ' . USERS_TABLE . ' 
+			ORDER BY user_id DESC
+			LIMIT 1';
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			set_config('newest_user_id', $row['user_id']);
+			set_config('newest_username', $row['username']);
+		}
+		$db->freeresult($result);
+	}
+
+	set_config('num_users', $config['num_users'] - 1, TRUE);
+
+	$db->sql_transaction('commit');
+
+	return false;
+}
+
 // Flips user_type from active to inactive and vice versa, handles
 // group membership updates
 function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false)
@@ -506,6 +617,49 @@ function user_unban($mode, $ban)
 
 	return false;
 
+}
+
+// Whois facility
+function user_ipwhois($ip)
+{
+	$ipwhois = '';
+
+	$match = array(
+		'#RIPE\.NET#is'				=> 'whois.ripe.net',
+		'#whois\.apnic\.net#is'		=> 'whois.apnic.net',
+		'#nic\.ad\.jp#is'			=> 'whois.nic.ad.jp',
+		'#whois\.registro\.br#is'	=> 'whois.registro.br'
+	);
+
+	if (($fsk = @fsockopen('whois.arin.net', 43)))
+	{
+		fputs($fsk, "$ip\n");
+		while (!feof($fsk))
+		{
+			$ipwhois .= fgets($fsk, 1024);
+		}
+		@fclose($fsk);
+	}
+
+	foreach (array_keys($match) as $server)
+	{
+		if (preg_match($server, $ipwhois))
+		{
+			$ipwhois = '';
+			if (($fsk = @fsockopen($match[$server], 43)))
+			{
+				fputs($fsk, "$ip\n");
+				while (!feof($fsk))
+				{
+					$ipwhois .= fgets($fsk, 1024);
+				}
+				@fclose($fsk);
+			}
+			break;
+		}
+	}
+
+	return $ipwhois;
 }
 //
 // Data validation ... used primarily but not exclusively by
