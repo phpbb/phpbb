@@ -70,7 +70,7 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT t.*, u.username, p.post_time FROM " . TOPICS_TABLE ." t JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id WHERE t.forum_id = '$forum_id' ORDER BY topic_time DESC LIMIT $start, $topics_per_page";
+$sql = "SELECT t.*, u.username, p.post_time FROM " . TOPICS_TABLE ." t INNER JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id WHERE t.forum_id = '$forum_id' ORDER BY topic_time DESC LIMIT $start, $topics_per_page";
 if(!$t_result = $db->sql_query($sql))
 {
    error_die($db, QUERY_ERROR);
