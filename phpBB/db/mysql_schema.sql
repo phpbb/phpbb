@@ -1,7 +1,7 @@
 #
 # phpBB2 - MySQL schema
 #
-# $id:  Exp $
+# $id: mysql_schema.sql,v 1.5 2001/03/23 15:57:52 psotfx Exp $
 #
 
 
@@ -213,7 +213,7 @@ CREATE TABLE phpbb_ranks (
 DROP TABLE IF EXISTS phpbb_session;
 
 CREATE TABLE phpbb_session (
-   session_id int(11) DEFAULT '0' NOT NULL,
+   session_id char(32) DEFAULT '' NOT NULL,
    session_user_id int(11) DEFAULT '0' NOT NULL,
    session_start int(11) DEFAULT '0' NOT NULL,
    session_time int(11) DEFAULT '0' NOT NULL,
@@ -221,8 +221,8 @@ CREATE TABLE phpbb_session (
    session_page int(11) DEFAULT '0' NOT NULL,
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
-   KEY session_user_id (session_user_id),
-   KEY session_ip (session_ip)
+   INDEX session_user_id (session_user_id),
+   INDEX session_id_ip_user_id (session_id, session_ip, session_user_id)
 );
 
 

@@ -22,8 +22,6 @@
 if(!defined("SQL_LAYER"))
 {
 
-dl('odbc.so');
-
 define("SQL_LAYER","odbc");
 
 class sql_db

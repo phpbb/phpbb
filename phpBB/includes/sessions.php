@@ -85,8 +85,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		if( ( $login || $autologin ) && $user_id != ANONYMOUS && $user_id != DELETED )
 		{
 			$sql_delete_same_user = "DELETE FROM ".SESSIONS_TABLE."
-				WHERE session_user_id = $user_id
-					AND session_ip <> '$int_ip'
+				WHERE session_ip <> '$int_ip'
+					AND session_user_id = $user_id
 					AND session_logged_in = 1";
 			$result = $db->sql_query($sql_delete_same_user);
 		}
@@ -421,8 +421,8 @@ function session_end($session_id, $user_id)
 
 	$sql = "UPDATE  ".SESSIONS_TABLE."
 		SET session_logged_in = 0, session_user_id = -1, session_time = $current_time
-		WHERE (session_user_id = $user_id)
-			AND (session_id = '$session_id')";
+		WHERE (session_id = '$session_id')
+			AND (session_user_id = $user_id)";
 	$result = $db->sql_query($sql, $db);
 	if (!$result) 
 	{
