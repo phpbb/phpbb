@@ -389,7 +389,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 	else if( $search_id == "unanswered" )
 	{
 
-		$search_sql = "t.topic_replies = 0 ";
+		$search_sql = "t.topic_replies = 0 AND t.topic_moved_id = 0";
 
 		//
 		// Basic requirements
