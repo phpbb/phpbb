@@ -169,11 +169,13 @@ function avatar_delete()
 {
 	global $config, $db, $user;
 
-	if (@file_exists('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']))
+	if (file_exists('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']))
 	{
 		@unlink('./' . $config['avatar_path'] . '/' . $user->data['user_avatar']);
 	}
-}
+
+	return false;
+ }
 
 function avatar_remote(&$data)
 {
@@ -186,8 +188,7 @@ function avatar_remote(&$data)
 
 	if (!preg_match('#^(http[s]?)|(ftp)://(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}:?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
 	{
-		$this->error[] = $user->lang['AVATAR_URL_INVALID'];
-		return true;
+		return $user->lang['AVATAR_URL_INVALID'];
 	}
 
 	if ((!($data['width'] || $data['height']) || $data['remotelink'] != $user->data['user_avatar']) && ($config['avatar_max_width'] || $config['avatar_max_height']))
@@ -196,13 +197,11 @@ function avatar_remote(&$data)
 
 		if (!$width || !$height)
 		{
-			$this->error[] = $user->lang['AVATAR_NO_SIZE'];
-			return true;
+			return $user->lang['AVATAR_NO_SIZE'];
 		}
 		else if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
-			return true;
+			return sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
 		}
 
 		$data['width'] = &$width;
@@ -210,8 +209,7 @@ function avatar_remote(&$data)
 	}
 	else if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 	{
-		$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
-		return true;
+		return sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
 	}
 
 	// Set type
@@ -239,16 +237,14 @@ function avatar_upload(&$data)
 		}
 		else
 		{
-			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return true;
+			return $user->lang['AVATAR_NOT_UPLOADED'];
 		}
 	}
 	else if (preg_match('#^(http://).*?\.(jpg|jpeg|gif|png)$#i', $data['uploadurl'], $match))
 	{
 		if (empty($match[2]))
 		{
-			$this->error[] = $user->lang['AVATAR_URL_INVALID'];
-			return true;
+			return $user->lang['AVATAR_URL_INVALID'];
 		}
 
 		$url = parse_url($data['uploadurl']);
@@ -263,8 +259,7 @@ function avatar_upload(&$data)
 
 		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
 		{
-			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return true;
+			return $user->lang['AVATAR_NOT_UPLOADED'];
 		}
 
 		fputs($fsock, 'GET /' . $filename . " HTTP/1.1\r\n");
@@ -277,12 +272,11 @@ function avatar_upload(&$data)
 			$avatar_data .= fread($fsock, $config['avatar_filesize']);
 		}
 		@fclose($fsock);
-		$avatar_data = array_pop(explode("\r\n", $avatar_data));
+		$avatar_data = array_pop(explode("\r\n\r\n", $avatar_data));
 
 		if (empty($avatar_data))
 		{
-			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return true;
+			return $user->lang['AVATAR_NOT_UPLOADED'];
 		}
 		unset($url_ary);
 
@@ -291,8 +285,7 @@ function avatar_upload(&$data)
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{
-			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return true;
+			return $user->lang['AVATAR_NOT_UPLOADED'];;
 		}
 		$filesize = fwrite($fp, $avatar_data);
 		fclose($fp);
@@ -301,8 +294,7 @@ function avatar_upload(&$data)
 		if (!$filesize)
 		{
 			unlink($filename);
-			$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-			return true;
+			return $user->lang['AVATAR_NOT_UPLOADED'];
 		}
 
 		$php_move = 'copy';
@@ -312,8 +304,7 @@ function avatar_upload(&$data)
 
 	if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'] || $width < $config['avatar_min_width'] || $height < $config['avatar_min_height'] || !$width || !$height)
 	{
-		$this->error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
-		return true;
+		return sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
 	}
 
 	// Replace any chars which may cause us problems with _
@@ -323,26 +314,24 @@ function avatar_upload(&$data)
 	$data['width'] = &$width;
 	$data['height'] = &$height;
 
-	if(!$php_move($filename, './' . $config['avatar_path'] . '/' . $data['filename']))
+	if(!$php_move($filename, $phpbb_root_path . $config['avatar_path'] . '/' . $data['filename']))
 	{
 		@unlink($filename);
-		$this->error[] = $user->lang['AVATAR_NOT_UPLOADED'];
-		return true;
+		return $user->lang['AVATAR_NOT_UPLOADED'];
 	}
 	@unlink($filename);
 
-	$filesize = filesize('./' . $config['avatar_path'] . '/' . $data['filename']);
+	$filesize = @filesize($phpbb_root_path . $config['avatar_path'] . '/' . $data['filename']);
 	if (!$filesize || $filesize > $config['avatar_filesize'])
 	{
-		@unlink('./' . $config['avatar_path'] . '/' . $data['filename']);
-		$this->error[] =  sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
-		return true;
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $data['filename']);
+		return sprintf($user->lang['AVATAR_WRONG_FILESIZE'], $config['avatar_filesize']);
 	}
 
 	// Set type
 	$data['type'] = AVATAR_UPLOAD;
 
-	return;
+	return false;
 }
 
 ?>
