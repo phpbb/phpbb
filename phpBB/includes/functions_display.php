@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                           functions_display.php
- *                             ------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : functions_display.php
+// STARTED   : Thu Nov 07, 2002
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 function display_forums($root_data = '', $display_moderators = TRUE)
 {
@@ -332,6 +324,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 
 		$display_name = $attachment['real_filename']; 
 		$comment = stripslashes(trim(str_replace("\n", '<br />', $attachment['comment'])));
+		$comment = htmlspecialchars(str_replace("\\'", "'", $comment));
 
 		$denied = FALSE;
 			

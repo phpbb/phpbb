@@ -4,7 +4,7 @@
 // $Id$
 //
 // FILENAME  : message_parser.php
-// STARTED   : Sat Feb 13, 2001
+// STARTED   : Fri Feb 28, 2003
 // COPYRIGHT : © 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 

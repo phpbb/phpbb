@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                           admin_attachments.php
- *                            -------------------
- *   begin                : Sunday, Apr 20, 2003
- *   copyright            : (C) 2003 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : admin_attachments.php
+// STARTED   : Sun Apr 20, 2003
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 if (!empty($setmodules))
 {
@@ -137,8 +129,6 @@ switch ($mode)
 	case 'ext_groups':
 		$l_title = 'EXTENSION_GROUPS_TITLE';
 }
-
-// Temporary Language Variables
 
 adm_page_header($user->lang[$l_title]);
 
