@@ -256,7 +256,7 @@ class mcp_queue extends module
 					$template->assign_block_vars('postrow', array(
 						'U_VIEWFORUM'	=> "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
-						// A: To prevent the post from being hidden because of low karma or wrong encoding
+						// A: To prevent the post from being hidden because of wrong encoding or different charset
 						'U_VIEWTOPIC'	=> "viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . (($mode == 'unapproved_posts') ? '#' . $row['post_id'] : ''),
 						'U_VIEW_DETAILS'=> "mcp.$phpEx$SID&amp;i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
 						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',

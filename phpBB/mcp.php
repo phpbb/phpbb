@@ -347,6 +347,12 @@ if ($mode2)
 	unset($mode2);
 }
 
+// Make sure we are using the correct module
+if ($mode == 'approve' || $mode == 'disapprove')
+{
+	$module = 'queue';
+}
+
 // Only Moderators can go beyond this point
 if ($user->data['user_id'] == ANONYMOUS)
 {

@@ -379,24 +379,38 @@ function checkForm()
 	<!-- ENDIF -->
 
 	<!-- IF S_SHOW_ATTACH_BOX or S_SHOW_POLL_BOX -->
-	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
-	</tr>
-	<!-- ENDIF -->
-	
-	<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
-
-	<!-- IF S_SHOW_POLL_BOX -->
-		<!-- INCLUDE posting_poll_body.html -->
-	<!-- ELSEIF S_POLL_DELETE -->
 		<tr>
-			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
-			<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+			<td class="cat" colspan="2" align="center">
+				<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />
+				&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" />
+				<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->
+				<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->
+				&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" />
+			</td>
 		</tr>
+	
+		<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
+
+		<!-- IF S_SHOW_POLL_BOX -->
+			<!-- INCLUDE posting_poll_body.html -->
+		<!-- ELSEIF S_POLL_DELETE -->
+			<tr>
+				<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
+				<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+			</tr>
+		<!-- ENDIF -->
 	<!-- ENDIF -->
 
 	<tr>
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF --><!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}
+			<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />
+			&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" />
+			<!-- IF not S_SHOW_ATTACH_BOX and not S_SHOW_POLL_BOX -->
+				<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->
+				<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->
+			<!-- ENDIF -->
+			&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" />
+		</td>
 	</tr>
 </table>
 
