@@ -10,7 +10,7 @@
 	<th height="25" class="thHead">{L_IP_INFO}</th>
   </tr>
   <tr> 
-	<td class="cat" height="28"><span class="cattitle"><b>{L_THIS_POST_IP}</b></span></td>
+	<td class="catHead" height="28"><span class="cattitle"><b>{L_THIS_POST_IP}</b></span></td>
   </tr>
   <tr> 
 	<td class="row1"> 
@@ -24,7 +24,7 @@
 	</td>
   </tr>
   <tr> 
-	<td class="cat" height="28"><span class="cattitle"><b>{L_OTHER_USERS}</b></span></td>
+	<td class="catHead" height="28"><span class="cattitle"><b>{L_OTHER_USERS}</b></span></td>
   </tr>
   <!-- BEGIN userrow -->
   <tr> 
@@ -40,7 +40,7 @@
   </tr>
   <!-- END userrow -->
   <tr> 
-	<td class="cat" height="28"><span class="cattitle"><b>{L_OTHER_IPS}</b></span></td>
+	<td class="catHead" height="28"><span class="cattitle"><b>{L_OTHER_IPS}</b></span></td>
   </tr>
   <!-- BEGIN iprow -->
   <tr> 
