@@ -146,7 +146,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['COOKIE_DOMAIN']; ?>: </b></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['COOKIE_DOMAIN']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" maxlength="255" name="cookie_domain" value="<?php echo $new['cookie_domain']; ?>" /></td>
 	</tr>
 	<tr>
@@ -159,7 +159,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['COOKIE_SECURE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['COOKIE_SECURE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="cookie_secure" value="0"<?php echo $cookie_secure_no; ?> /><?php echo $user->lang['DISABLED']; ?>&nbsp; &nbsp;<input type="radio" name="cookie_secure" value="1"<?php echo $cookie_secure_yes; ?> /><?php echo $user->lang['ENABLED']; ?></td>
+		<td class="row2"><input type="radio" name="cookie_secure" value="0"<?php echo $cookie_secure_no; ?> /><?php echo $user->lang['DISABLED']; ?>&nbsp;&nbsp;<input type="radio" name="cookie_secure" value="1"<?php echo $cookie_secure_yes; ?> /><?php echo $user->lang['ENABLED']; ?></td>
 	</tr>
 <?php
 
@@ -176,7 +176,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['ALLOW_LOCAL']; ?>: </b></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ALLOW_LOCAL']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="allow_avatar_local" value="1"<?php echo $avatars_local_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_avatar_local" value="0"<?php echo $avatars_local_no; ?>  /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
@@ -220,25 +220,18 @@ switch ($mode)
 		$dst_yes = ($new['board_dst']) ? 'checked="checked"' : '';
 		$dst_no = (!$new['board_dst']) ? 'checked="checked"' : '';
 
-		$yes_no_switches = array('override_user_style', 'allow_topic_notify', 'allow_forum_notify', 'allow_html', 'allow_bbcode', 'allow_smilies', 'allow_sig', 'allow_nocensors', 'allow_namechange', 'allow_emailreuse', 'allow_attachments', 'allow_pm_attach');
+		$yes_no_switches = array('override_user_style', 'allow_topic_notify', 'allow_forum_notify', 'allow_html', 'allow_bbcode', 'allow_smilies', 'allow_sig', 'allow_nocensors', 'allow_namechange', 'allow_attachments', 'allow_pm_attach', 'board_dst');
 
 		foreach ($yes_no_switches as $switch)
 		{
-			eval('$' . str_replace('allow_', '', $switch) . '_yes = ($new[\'' . $switch . "']) ? 'checked=\"checked\"' : '';");
-			eval('$' . str_replace('allow_', '', $switch) . '_no = (!$new[\'' . $switch . "']) ? 'checked=\"checked\"' : '';");
-		}
-
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
-		$user_char_options = '';
-		foreach ($user_char_ary as $lang => $value)
-		{
-			$selected = ($new['allow_name_chars'] == $value) ? ' selected="selected"' : '';
-			$user_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$switch_var = str_replace('allow_', '', $switch);
+			${$switch_var . '_yes'} = ($new[$switch]) ? ' checked="checked"' : '';
+			${$switch_var . '_no'} = (!$new[$switch]) ? ' checked="checked"' : '';
 		}
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['DEFAULT_STYLE']; ?></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['DEFAULT_STYLE']; ?></td>
 		<td class="row2"><select name="default_style"><?php echo $style_select; ?></select></td>
 	</tr>
 	<tr>
@@ -250,7 +243,7 @@ switch ($mode)
 		<td class="row2"><select name="default_lang"><?php echo $lang_select; ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['DATE_FORMAT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DATE_FORMAT_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['DEFAULT_DATE_FORMAT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DEFAULT_DATE_FORMAT_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="default_dateformat" value="<?php echo $new['default_dateformat']; ?>" /></td>
 	</tr>
 	<tr>
@@ -259,19 +252,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SYSTEM_DST']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="board_dst" value="1" <?php echo $dst_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_dst" value="0" <?php echo $dst_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="board_dst" value="1" <?php echo $board_dst_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_dst" value="0" <?php echo $board_dst_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['CHAR_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CHAR_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="4" maxlength="6" name="max_post_chars" value="<?php echo $new['max_post_chars']; ?>" /></td>
+		<td class="row1"><b><?php echo $user->lang['BOXES_MAX']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOXES_MAX_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_boxes" value="<?php echo $new['pm_max_boxes']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['SMILIES_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMILIES_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['QUOTE_DEPTH_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['QUOTE_DEPTH_LIMIT_EXPLAIN']; ?></span</td>
-		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_quote_depth" value="<?php echo $new['max_quote_depth']; ?>" /></td>
+		<td class="row1"><b><?php echo $user->lang['BOXES_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOXES_LIMIT_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_msgs" value="<?php echo $new['pm_max_msgs']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_TOPIC_NOTIFY']; ?>: </b></td>
@@ -284,22 +273,6 @@ switch ($mode)
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_NAME_CHANGE']; ?>: </b></td>
 		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['USERNAME_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['USERNAME_LENGTH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_name_chars" value="<?php echo $new['min_name_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_name_chars" value="<?php echo $new['max_name_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['USERNAME_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['USERNAME_CHARS_EXPLAIN']; ?></span></td>
-		<td class="row2"><select name="allow_name_chars"><?php echo $user_char_options; ?></select></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['PASSWORD_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['PASSWORD_LENGTH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_pass_chars" value="<?php echo $new['min_pass_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_pass_chars" value="<?php echo $new['max_pass_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['ALLOW_EMAIL_REUSE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_EMAIL_REUSE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="allow_emailreuse" value="1" <?php echo $emailreuse_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_emailreuse" value="0" <?php echo $emailreuse_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ALLOW_ATTACHMENTS']; ?>: </b></td>
@@ -343,65 +316,67 @@ switch ($mode)
 
 	case 'setting':
 
-		$disable_board_yes = ($new['board_disable']) ? 'checked="checked"' : '';
-		$disable_board_no = (!$new['board_disable']) ? 'checked="checked"' : '';
+		$yes_no_switches = array('board_disable', 'enable_confirm', 'coppa_enable', 'privmsg_disable', 'display_last_edited', 'emailreuse');
 
-		$confirm_enabled = ($new['enable_confirm']) ? 'checked="checked"' : '';
-		$confirm_disabled = (!$new['enable_confirm']) ? 'checked="checked"' : '';
-		
-		$coppa_enable_yes = ($new['coppa_enable']) ? 'checked="checked"' : '';
-		$coppa_enable_no = (!$new['coppa_enable']) ? 'checked="checked"' : '';
+		foreach ($yes_no_switches as $switch)
+		{
+			$switch_var = str_replace('allow_', '', $switch);
+			${$switch_var . '_yes'} = ($new[$switch]) ? ' checked="checked"' : '';
+			${$switch_var . '_no'} = (!$new[$switch]) ? ' checked="checked"' : '';
+		}
 
-		$activation_none = ($new['require_activation'] == USER_ACTIVATION_NONE) ? 'checked="checked"' : '';
-		$activation_user = ($new['require_activation'] == USER_ACTIVATION_SELF) ? 'checked="checked"' : '';
-		$activation_admin = ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? 'checked="checked"' : '';
-		$activation_user_admin = ($new['require_activation'] == USER_ACTIVATION_SELF_ADMIN) ? 'checked="checked"' : '';
+		$activation_none	= ($new['require_activation'] == USER_ACTIVATION_NONE) ? 'checked="checked"' : '';
+		$activation_user	= ($new['require_activation'] == USER_ACTIVATION_SELF) ? 'checked="checked"' : '';
+		$activation_admin	= ($new['require_activation'] == USER_ACTIVATION_ADMIN) ? 'checked="checked"' : '';
 		$activation_disable = ($new['require_activation'] == USER_ACTIVATION_DISABLE) ? 'checked="checked"' : '';
 
-		$privmsg_on = (!$new['privmsg_disable']) ? 'checked="checked"' : '';
-		$privmsg_off = ($new['privmsg_disable']) ? 'checked="checked"' : '';
-
-		$prune_yes = ($new['prune_enable']) ? 'checked="checked"' : '';
-		$prune_no = (!$new['prune_enable']) ? 'checked="checked"' : '';
-
-		$display_last_edited_yes = ($new['display_last_edited']) ? 'checked="checked"' : '';
-		$display_last_edited_no = (!$new['display_last_edited']) ? 'checked="checked"' : '';
-
-		$bump_type = (string) preg_replace('#^[0-9]+([m|h|d])$#', '\1', $new['bump_interval']);
-		$bump_time = (int) preg_replace('#^([0-9]+)[m|h|d]$#', '\1', $new['bump_interval']);
+		preg_match('#^([0-9]+)([m|h|d])$#', $new['bump_interval'], $match);
+		$bump_time = $match[1];
 	
 		$s_bump_type = '';
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
 		{
-			$selected = ($type == $bump_type) ? 'selected="selected" ' : '';
+			$selected = ($type == $match[2]) ? 'selected="selected" ' : '';
 			$s_bump_type .= '<option value="' . $type . '" ' . $selected . '>' . $user->lang[$lang] . '</option>';
 		}
+
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		$user_char_options = '';
+		foreach ($user_char_ary as $lang => $value)
+		{
+			$selected = ($new['allow_name_chars'] == $value) ? ' selected="selected"' : '';
+			$user_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+		}
+
+		$pass_type_ary = array('PASS_TYPE_ANY' => '.*', 'PASS_TYPE_CASE' => '[a-zA-Z]', 'PASS_TYPE_ALPHA' => '[a-zA-Z0-9]', 'PASS_TYPE_SYMBOL' => '[a-zA-Z\W]'); 
+		$pass_char_options = '';
+		foreach ($pass_type_ary as $lang => $value)
+		{
+			$selected = ($new['allow_pass_chars'] == $value) ? ' selected="selected"' : '';
+			$pass_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+		}
+
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['SITE_NAME']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="sitename" value="<?php echo htmlentities($new['sitename']); ?>" /></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['SITE_NAME']; ?>: </b></td>
+		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="sitename" value="<?php echo $new['sitename']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SITE_DESC']; ?>: </b></td>
-		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="site_desc" value="<?php echo htmlentities($new['site_desc']); ?>" /></td>
+		<td class="row2"><input class="post" type="text" size="40" maxlength="255" name="site_desc" value="<?php echo $new['site_desc']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['BOARD_DISABLE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOARD_DISABLE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $user->lang['NO']; ?><br /><input class="post" type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
+		<td class="row1"><b><?php echo $user->lang['DISABLE_BOARD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISABLE_BOARD_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $board_disable_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $board_disable_no; ?> /> <?php echo $user->lang['NO']; ?><br /><input class="post" type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ACC_ACTIVATION']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ACC_ACTIVATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp; &nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
+		<td class="row2"><input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_NONE; ?>" <?php echo $activation_none; ?> /> <?php echo $user->lang['ACC_NONE']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_SELF; ?>" <?php echo $activation_user; ?> /> <?php echo $user->lang['ACC_USER']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_ADMIN; ?>" <?php echo $activation_admin; ?> /> <?php echo $user->lang['ACC_ADMIN']; ?>&nbsp;&nbsp;<input type="radio" name="require_activation" value="<?php echo USER_ACTIVATION_DISABLE; ?>" <?php echo $activation_disable; ?> /> <?php echo $user->lang['ACC_DISABLE']; ?></td>
 	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['VISUAL_CONFIRM']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['VISUAL_CONFIRM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="enable_confirm" value="1"<?php echo $confirm_enabled ?> /> <?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_confirm" value="0" <?php echo $confirm_disabled ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['ENABLE_COPPA']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_COPPA_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="coppa_enable" value="1" <?php echo $coppa_enable_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="coppa_enable" value="0" <?php echo $coppa_enable_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="coppa_enable" value="1" <?php echo $enable_confirm_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="coppa_enable" value="0" <?php echo $enable_confirm_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['COPPA_FAX']; ?>: </b></td>
@@ -412,16 +387,40 @@ switch ($mode)
 		<td class="row2"><textarea name="coppa_mail" rows="5" cols="40"><?php echo $new['coppa_mail']; ?></textarea></td>
 	</tr>
 	<tr>
+		<td class="row1"><b><?php echo $user->lang['VISUAL_CONFIRM']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['VISUAL_CONFIRM_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="enable_confirm" value="1"<?php echo $enable_confirm_yes ?> /> <?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="enable_confirm" value="0" <?php echo $enable_confirm_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['REG_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['REG_LIMIT_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="max_reg_attempts" value="<?php echo $new['max_reg_attempts']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['USERNAME_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['USERNAME_LENGTH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_name_chars" value="<?php echo $new['min_name_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_name_chars" value="<?php echo $new['max_name_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['USERNAME_CHARS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['USERNAME_CHARS_EXPLAIN']; ?></span></td>
+		<td class="row2"><select name="allow_name_chars"><?php echo $user_char_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['PASSWORD_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['PASSWORD_LENGTH_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="min_pass_chars" value="<?php echo $new['min_pass_chars']; ?>" /> <?php echo $user->lang['MIN_CHARS']; ?>&nbsp;&nbsp;<input class="post" type="text" size="3" maxlength="3" name="max_pass_chars" value="<?php echo $new['max_pass_chars']; ?>" /> <?php echo $user->lang['MAX_CHARS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['PASSWORD_TYPE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['PASSWORD_TYPE_EXPLAIN']; ?></span></td>
+		<td class="row2"><select name="pass_complex"><?php echo $pass_char_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['FORCE_PASS_CHANGE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORCE_PASS_CHANGE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="3" maxlength="3" name="chg_passforce" value="<?php echo $new['chg_passforce']; ?>" /> <?php echo $user->lang['DAYS']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['ALLOW_EMAIL_REUSE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_EMAIL_REUSE_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="allow_emailreuse" value="1" <?php echo $emailreuse_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_emailreuse" value="0" <?php echo $emailreuse_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
 		<td class="row1"><b><?php echo $user->lang['BOARD_PM']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOARD_PM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="privmsg_disable" value="0" <?php echo $privmsg_on; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp; &nbsp;<input type="radio" name="privmsg_disable" value="1" <?php echo $privmsg_off; ?> /><?php echo $user->lang['DISABLED']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['BOXES_MAX']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOXES_MAX_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_boxes" value="<?php echo $new['pm_max_boxes']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><b><?php echo $user->lang['BOXES_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BOXES_LIMIT_EXPLAIN']; ?></span></td>
-		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="pm_max_msgs" value="<?php echo $new['pm_max_msgs']; ?>" /></td>
+		<td class="row2"><input type="radio" name="privmsg_disable" value="0" <?php echo $privmsg_disable_no; ?> /><?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="privmsg_disable" value="1" <?php echo $privmsg_disable_yes; ?> /><?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['EDIT_TIME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EDIT_TIME_EXPLAIN']; ?></span></td>
@@ -429,7 +428,7 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['DISPLAY_LAST_EDITED']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_LAST_EDITED_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="display_last_edited" value="1" <?php echo $display_last_edited_yes; ?> /><?php echo $user->lang['YES']; ?>&nbsp; &nbsp;<input type="radio" name="display_last_edited" value="0" <?php echo $display_last_edited_no; ?> /><?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="display_last_edited" value="1" <?php echo $display_last_edited_yes; ?> /><?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="display_last_edited" value="0" <?php echo $display_last_edited_no; ?> /><?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FLOOD_INTERVAL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FLOOD_INTERVAL_EXPLAIN']; ?></span></td>
@@ -455,6 +454,18 @@ switch ($mode)
 		<td class="row1"><b><?php echo $user->lang['MAX_POLL_OPTIONS']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="max_poll_options" size="4" maxlength="4" value="<?php echo $new['max_poll_options']; ?>" /></td>
 	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['CHAR_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['CHAR_LIMIT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="6" name="max_post_chars" value="<?php echo $new['max_post_chars']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['SMILIES_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SMILIES_LIMIT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_post_smilies" value="<?php echo $new['max_post_smilies']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['QUOTE_DEPTH_LIMIT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['QUOTE_DEPTH_LIMIT_EXPLAIN']; ?></span</td>
+		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="max_quote_depth" value="<?php echo $new['max_quote_depth']; ?>" /></td>
+	</tr>
 <?php
 
 		break;
@@ -479,7 +490,7 @@ switch ($mode)
 		}
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['ENABLE_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_EMAIL_EXPLAIN']; ?></span></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ENABLE_EMAIL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ENABLE_EMAIL_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="email_enable" value="1" <?php echo $email_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="email_enable" value="0" <?php echo $email_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
@@ -548,7 +559,7 @@ switch ($mode)
 		$gzip_no = (!$new['gzip_compress']) ? 'checked="checked"' : '';
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['SERVER_NAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SERVER_NAME_EXPLAIN']; ?></span></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['SERVER_NAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SERVER_NAME_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" maxlength="255" size="40" name="server_name" value="<?php echo $new['server_name']; ?>" /></td>
 	</tr>
 	<tr>
@@ -618,11 +629,11 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['LIMIT_LOAD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['LIMIT_LOAD']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LIMIT_LOAD_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['SESSION_LENGTH']; ?>: </b></td>
+		<td class="row1"><b><?php echo $user->lang['SESSION_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SESSION_LENGTH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" maxlength="5" size="5" name="session_length" value="<?php echo $new['session_length']; ?>" /></td>
 	</tr>
 	<tr>
@@ -631,39 +642,39 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_POST_MARKING']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_POST_MARKING_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_db_track" value="1"<?php echo $load_db_track_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_db_track" value="0" <?php echo $load_db_track_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_db_track" value="1"<?php echo $load_db_track_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_db_track" value="0" <?php echo $load_db_track_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_READ_MARKING']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_READ_MARKING_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_db_lastread" value="1"<?php echo $load_db_lastread_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_db_lastread" value="0" <?php echo $load_db_lastread_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_db_lastread" value="1"<?php echo $load_db_lastread_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_db_lastread" value="0" <?php echo $load_db_lastread_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_ONLINE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_online" value="1"<?php echo $load_online_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_online" value="0" <?php echo $load_online_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_online" value="1"<?php echo $load_online_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_online" value="0" <?php echo $load_online_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_ONLINE_TRACK']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_ONLINE_TRACK_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_onlinetrack" value="1"<?php echo $load_onlinetrack_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_onlinetrack" value="0" <?php echo $load_onlinetrack_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_onlinetrack" value="1"<?php echo $load_onlinetrack_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_onlinetrack" value="0" <?php echo $load_onlinetrack_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['VIEW_ONLINE_TIME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['VIEW_ONLINE_TIME_EXPLAIN']; ?></span></td>
+		<td class="row1"><b><?php echo $user->lang['ONLINE_LENGTH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['ONLINE_LENGTH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="4" maxlength="3" name="load_online_time" value="<?php echo $new['load_online_time']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_BIRTHDAYS']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="load_birthdays" value="1"<?php echo $load_birthdays_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_birthdays" value="0" <?php echo $load_birthdays_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_birthdays" value="1"<?php echo $load_birthdays_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_birthdays" value="0" <?php echo $load_birthdays_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_MODERATORS']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="load_moderators" value="1"<?php echo $moderators_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_moderators" value="0" <?php echo $moderators_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_moderators" value="1"<?php echo $moderators_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_moderators" value="0" <?php echo $moderators_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_JUMPBOX']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="load_jumpbox" value="1"<?php echo $jumpbox_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_jumpbox" value="0" <?php echo $jumpbox_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_jumpbox" value="1"<?php echo $jumpbox_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_jumpbox" value="0" <?php echo $jumpbox_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_search" value="1"<?php echo $search_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search" value="0" <?php echo $search_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_search" value="1"<?php echo $search_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_search" value="0" <?php echo $search_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['SEARCH_INTERVAL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SEARCH_INTERVAL_EXPLAIN']; ?></span></td>
@@ -679,15 +690,15 @@ switch ($mode)
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH_UPDATE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_UPDATE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_search_upd" value="1"<?php echo $search_update_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_upd" value="0" <?php echo $search_update_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_search_upd" value="1"<?php echo $search_update_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_search_upd" value="0" <?php echo $search_update_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
-	<tr>
+	<!--tr>
 		<td class="row1"><b><?php echo $user->lang['YES_SEARCH_PHRASE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['YES_SEARCH_PHRASE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_search_phr" value="1"<?php echo $search_phrase_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_search_phr" value="0" <?php echo $search_phrase_no ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
+		<td class="row2"><input type="radio" name="load_search_phr" value="1"<?php echo $search_phrase_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_search_phr" value="0" <?php echo $search_phrase_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr-->
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['RECOMPILE_TEMPLATES']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['RECOMPILE_TEMPLATES_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="load_tplcompile" value="1"<?php echo $tplcompile_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="load_tplcompile" value="0" <?php echo $tplcompile_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row2"><input type="radio" name="load_tplcompile" value="1"<?php echo $tplcompile_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="load_tplcompile" value="0" <?php echo $tplcompile_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 
@@ -717,7 +728,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['AUTH_METHOD']; ?>: </b></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['AUTH_METHOD']; ?>: </b></td>
 		<td class="row2"><select name="auth_method"><?php echo $auth_select; ?></select></td>
 	</tr>
 <?php
@@ -757,8 +768,8 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['ENABLE_KARMA']; ?>: </b></td>
-		<td class="row2"><input type="radio" name="enable_karma" value="1"<?php echo $enable_karma_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp; &nbsp;<input type="radio" name="enable_karma" value="0" <?php echo $enable_karma_no ?> /> <?php echo $user->lang['NO']; ?></td>
+		<td class="row1" width="50%"><b><?php echo $user->lang['ENABLE_KARMA']; ?>: </b></td>
+		<td class="row2"><input type="radio" name="enable_karma" value="1"<?php echo $enable_karma_yes ?> /><?php echo $user->lang['YES'] ?>&nbsp;&nbsp;<input type="radio" name="enable_karma" value="0" <?php echo $enable_karma_no ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['MIN_RATINGS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['MIN_RATINGS_EXPLAIN']; ?></span</td>
