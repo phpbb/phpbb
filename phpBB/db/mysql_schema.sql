@@ -253,6 +253,7 @@ CREATE TABLE phpbb_topics (
    topic_poster int(10) DEFAULT '0' NOT NULL,
    topic_time int(10) DEFAULT '0' NOT NULL,
    topic_views int(10) DEFAULT '0' NOT NULL,
+   topic_replies int(10) DEFAULT '0' NOT NULL,
    forum_id int(10) DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_notify tinyint(3) DEFAULT '0',

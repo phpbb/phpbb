@@ -175,6 +175,10 @@ if($total_categories)
 	} // for ... categories
 
 }// if ... total_categories
+else
+{
+   error_die($db, GENERAL_ERROR, "There are no Categories or Foums on this board.");
+}
 $template->pparse("output", "body");
 
 include('page_tail.'.$phpEx);

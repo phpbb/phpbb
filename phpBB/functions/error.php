@@ -34,6 +34,12 @@ function error_die($db, $error_code = "", $error_msg = "")
    {
       switch($error_code)
 	{
+	 case GENERAL_ERROR:
+	   if(!$error_msg)
+	     {
+		$error_msg = "An Error Occured";
+	     }
+	   break;
 	 case SQL_CONNECT:
 	   $db_error = $db->sql_error();
 	   $error_msg = "Error: phpBB could not connect to the database. Reason: " . $db_error["message"];
