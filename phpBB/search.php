@@ -1214,7 +1214,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 					"U_VIEW_FORUM" => $forum_url, 
 					"U_VIEW_TOPIC" => $topic_url,
-					"U_TOPIC_POSTER_PROFILE" => $topic_poster_profile_url)
+					"U_TOPIC_POSTER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $searchset[$i]['user_id']))
 				);
 			}
 		}
