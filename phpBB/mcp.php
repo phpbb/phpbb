@@ -620,14 +620,13 @@ switch ($mode)
 		$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
 		$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-		$sort_key = (!empty($_REQUEST['sk'])) ? $_REQUEST['sk'] : 't';
-		$sort_dir = (!empty($_REQUEST['sd'])) ? $_REQUEST['sd'] : 'a';
+		$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
+		$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
+		$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
 
-		$limit_posts_time = '';
-		$total_posts = $topic_info['topic_replies'] + 1;
 		if ($sort_days)
 		{
 			$min_post_time = time() - ($sort_days * 86400);
@@ -641,9 +640,11 @@ switch ($mode)
 			$total_posts = ($row = $db->sql_fetchrow($result)) ? $row['num_posts'] : 0;
 			$limit_posts_time = "AND p.post_time >= $min_post_time ";
 		}
-
-		$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
+		else
+		{
+			$limit_posts_time = '';
+			$total_posts = $topic_info['topic_replies'] + 1;
+		}
 
 		$sql = 'SELECT u.username, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
@@ -651,7 +652,8 @@ switch ($mode)
 				AND p.poster_id = u.user_id
 				$limit_posts_time
 			ORDER BY $sort_order";
-		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
+//		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
+		$result = $db->sql_query_limit($sql, $start, $posts_per_page);
 
 		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
@@ -719,7 +721,6 @@ switch ($mode)
 			}
 		}
 
-		// The acl_get in this won't work properly, needs to be acl_gets - Paul
 		// Minor change to order selects for consistency with viewforum, viewtopic - Paul
 		$template->assign_vars(array(
 			'TOPIC_TITLE'		=>	$topic_info['topic_title'],
@@ -734,9 +735,9 @@ switch ($mode)
 
 			'S_FORM_ACTION'		=>	$mcp_url . '&amp;mode=' . $mode,
 			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select() . '</select>',
-			'S_CAN_SPLIT'		=>	($auth->acl_get('m_split', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
-			'S_CAN_MERGE'		=>	($auth->acl_get('m_merge', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
-			'S_CAN_DELETE'		=>	($auth->acl_get('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
+			'S_CAN_SPLIT'		=>	($auth->acl_gets('m_split', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
+			'S_CAN_MERGE'		=>	($auth->acl_gets('m_merge', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
+			'S_CAN_DELETE'		=>	($auth->acl_gets('m_delete', 'a_', $forum_id) &&($mode == 'topic_view' || $mode == 'delete')) ? TRUE : FALSE,
 			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE,
 
 			'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
@@ -1368,7 +1369,11 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 Queries are kinda tricky.
 
 - subforums: we have to be able to get post/topic counts including subforums, hence the join
+** UPDATE: I removed these joins because they cause too much load on large forums. The new logic may be slightly slower on small forums but is way more scalable.
+
 - empty topics/forums: we have to be able to resync empty topics as well as empty forums therefore we have to use a LEFT join because a full join would only return results greater than 0
+** UPDATE: not anymore needed when sync'ing forums, I'm considering the removal of the join used when sync'ing topics if possible.
+
 - approved posts and topics: I do not like to put the "*_approved = 1" condition in the left join condition but if it's put as a WHERE condition it won't return any row for empty forums. If it causes any problem it could be replaced with a group condition like "GROUP BY p.post_approved"
 
 */
@@ -1572,7 +1577,7 @@ function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALS
 		break;
 
 		case 'topic':
-			$topic_data = $post_ids = $topic_ids = $resync_forums = array();
+			$topic_data = $post_ids = $delete_ids = $resync_forums = array();
 
 			switch ($dbms)
 			{
@@ -1596,7 +1601,7 @@ function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALS
 
 				if (!$row['total_posts'])
 				{
-					$topic_ids[] = $row['topic_id'];
+					$delete_ids[] = $row['topic_id'];
 				}
 				else
 				{
@@ -1608,9 +1613,9 @@ function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALS
 				}
 			}
 
-			if (count($topic_ids))
+			if (count($delete_ids))
 			{
-//				delete_topics('topic_id', $topic_ids);
+//				delete_topics('topic_id', $delete_ids);
 			}
 			if (!count($post_ids))
 			{
@@ -1618,9 +1623,10 @@ function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALS
 				return;
 			}
 
-			$sql = 'SELECT post_id, topic_id, poster_id, post_username, post_time
-				FROM ' . POSTS_TABLE . '
-				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			$sql = 'SELECT p.post_id, p.topic_id, p.poster_id, p.post_username, p.post_time, u.username
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
+					AND u.user_id = p.poster_id';
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -1628,13 +1634,13 @@ function resync($type, $where_type = '', $where_ids = '', $resync_parents = FALS
 				{
 					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
 					$topic_data[$row['topic_id']]['poster'] = $row['poster_id'];
-					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
+					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 				}
 				if ($row['post_id'] == $topic_data[$row['topic_id']]['last_post_id'])
 				{
 					$topic_data[$row['topic_id']]['last_poster_id'] = $row['poster_id'];
 					$topic_data[$row['topic_id']]['last_post_time'] = $row['post_time'];
-					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
+					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 				}
 			}
 
