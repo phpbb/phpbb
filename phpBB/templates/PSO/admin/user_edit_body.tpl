@@ -114,12 +114,8 @@
 </table></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2"><span class="cattitle"><B>{L_SPECIAL}</b></span></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2" align="center">
-			<span class="gensmall">{L_SPECIAL_EXPLAIN}</span>
-		</td>
+		<td class="cat" colspan="2"><span 
+class="cattitle"><B>{L_SPECIAL}</b></span><br /><span class="gensmall">{L_SPECIAL_EXPLAIN}</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_STATUS}:</span></td>
