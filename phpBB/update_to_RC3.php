@@ -256,6 +256,27 @@ if ( $row = $db->sql_fetchrow($result) )
 
 print "<br />Updating config settings<br />";
 
+$sql = "INSERT INTO " . CONFIG_TABLE . "
+	(config_name, config_value) VALUES ('server_name', 'www.myserver.tld')";
+if( !$db->sql_query($sql) )
+{  
+	die("Couldn't insert config key 'record_online_date'");
+}
+
+$sql = "INSERT INTO " . CONFIG_TABLE . "
+	(config_name, config_value) VALUES ('script_path', '/phpBB2/')";
+if( !$db->sql_query($sql) )
+{  
+	die("Couldn't insert config key 'record_online_date'");
+}
+
+$sql = "INSERT INTO " . CONFIG_TABLE . "
+	(config_name, config_value) VALUES ('server_port', '80')";
+if( !$db->sql_query($sql) )
+{  
+	die("Couldn't insert config key 'record_online_date'");
+}
+
 $sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value )
 	VALUES ('version', 'RC-3')";
 if ( !$db->sql_query($sql) )
