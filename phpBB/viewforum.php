@@ -65,7 +65,7 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_pollcreate, auth_vote, prune_enable, prune_next
+	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
 	if(!$result = $db->sql_query($sql))
@@ -88,8 +88,6 @@ if(!$total_rows = $db->sql_numrows($result))
 }
 $forum_row = $db->sql_fetchrow($result);
 
-$forum_name = $forum_row['forum_name'];
-
 //
 // Start auth check
 //
@@ -106,6 +104,57 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 }
 //
 // End of auth check
+//
+
+//
+// Handle marking posts
+//
+if( $mark_read == "topics" )
+{
+	$sql = "SELECT t.topic_id, p.post_time
+		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
+		WHERE t.forum_id = $forum_id
+			AND p.post_id = t.topic_last_post_id 
+			AND p.post_time > " . $userdata['session_last_visit'] . " 
+			AND t.topic_moved_id = NULL 
+		LIMIT $start, " . $board_config['topics_per_page'];
+	if(!$t_result = $db->sql_query($sql))
+	{
+	   message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+	}
+
+	if( $mark_read_rows = $db->sql_numrows($t_result) )
+	{
+		$mark_read_list = $db->sql_fetchrowset($t_result);
+
+		for($i = 0; $i < $mark_read_rows; $i++ )
+		{
+			$topic_id = $mark_read_list[$i]['topic_id'];
+			$post_time = $mark_read_list[$i]['post_time'];
+
+			if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+			{
+				setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			}
+			else
+			{
+				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+				{
+					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+				}
+			}
+		}
+	}
+
+	$template->assign_vars(array(
+		"META" => '<meta http-equiv="refresh" content="3;url=viewforum.' . $phpEx . '?' . POST_FORUM_URL . '=' . $forum_id . '">')
+	);
+
+	$message = $lang['Topics_marked_read'] . "<br /><br />" . $lang['Click'] . " <a href=\"viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id\">" . $lang['HERE'] . "</a> " . $lang['to_return_forum'];
+	message_die(GENERAL_MESSAGE, $message);
+}
+//
+// End handle marking posts
 //
 
 //
@@ -330,7 +379,7 @@ $template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
-	"FORUM_NAME" => $forum_name,
+	"FORUM_NAME" => $forum_row['forum_name'],
 	"MODERATORS" => $forum_moderators,
 	"IMG_POST" => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
@@ -472,29 +521,13 @@ if($total_topics)
 
 			if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'] )
 			{
-				if($mark_read == "topics")
-				{
-					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-					$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
-				}
-				else
-				{
-					$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
-				}
+				$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
 			}
 			else
 			{
 				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 				{
-					if($mark_read == "topics")
-					{
-						setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-						$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
-					}
-					else
-					{
-						$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
-					}
+					$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 				else
 				{
@@ -508,19 +541,19 @@ if($total_topics)
 		$topic_poster = $topic_rowset[$i]['username'];
 		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
-
-		if($topic_rowset[$i]['id2'] == ANONYMOUS && $topic_rowset[$i]['post_username'] != '')
+		if($topic_rowset[$i]['post_time'] >= $userdata['session_last_visit'])
 		{
-			$last_post_user = $topic_rowset[$i]['post_username'];
+			$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_posts'] . "\" border=\"0\" /></a> ";
 		}
 		else
 		{
-			$last_post_user = $topic_rowset[$i]['user2'];
+			$newest_post_img = "";
 		}
 
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+
 		$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
-		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
+		$last_post .= ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? $topic_rowset[$i]['user2'] . " " : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $topic_rowset[$i]['user2'] . "</a> ";
 		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 
 		$views = $topic_rowset[$i]['topic_views'];
@@ -532,6 +565,7 @@ if($total_topics)
 			"TOPIC_POSTER" => $topic_poster,
 			"GOTO_PAGE" => $goto_page,
 			"REPLIES" => $replies,
+			"NEWEST_POST_IMG" => $newest_post_img, 
 			"TOPIC_TITLE" => $topic_title,
 			"TOPIC_TYPE" => $topic_type,
 			"VIEWS" => $views,

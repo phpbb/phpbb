@@ -278,25 +278,16 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
 				{
-					if($forum_rows[$j]['user_id'] == ANONYMOUS && $forum_rows[$j]['post_username'] != '')
-					{
-						$last_poster = $forum_rows[$j]['post_username'];
-					}
-					else
-					{
-						$last_poster = $forum_rows[$j]['username'];
-					}
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['board_timezone']);
 
 					$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
-					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
+					$last_post .= ( $forum_rows[$j]['user_id'] == ANONYMOUS ) ? $forum_rows[$j]['username'] . " " : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $forum_rows[$j]['username'] . "</a> ";
 
 					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['forum_last_post_id']) . "#" . $forum_rows[$j]['forum_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 				}
 				else
 				{
 					$last_post = $lang['No_Posts'];
-					$forum_rows[$j]['forum_name'] = $forum_rows[$j]['forum_name'];
 				}
 
 				$mod_count = 0;

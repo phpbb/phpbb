@@ -53,7 +53,41 @@ if( !isset($topic_id) && !isset($post_id) )
 //
 if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 {
-	if($HTTP_GET_VARS["view"] == "next")
+	if( $HTTP_GET_VARS["view"] == "newest" )
+	{
+		if(isset($HTTP_COOKIE_VARS[$board_config['cookie_name']]))
+		{
+			$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name']]));
+
+			$newest_time = $sessiondata['lastvisit'];
+
+			$sql = "SELECT post_id 
+				FROM " . POSTS_TABLE . " 
+				WHERE topic_id = $topic_id 
+					AND post_time >= $newest_time 
+				ORDER BY post_time ASC 
+				LIMIT 1";
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain newer/older topic information", "", __LINE__, __FILE__, $sql);
+			}
+
+			if( !($row = $db->sql_fetchrow($result)) )
+			{
+				message_die(GENERAL_MESSAGE, 'No new posts since your last visit');
+			}
+			else
+			{
+				$post_id = $row['post_id'];
+				header("Location: viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id");
+			}
+		}
+		else
+		{
+			header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+		}
+	}
+	else if($HTTP_GET_VARS["view"] == "next")
 	{
 		$sql_condition = ">";
 		$sql_ordering = "ASC";
@@ -198,6 +232,13 @@ if($userdata['user_id'] != ANONYMOUS)
 					message_die(GENERAL_ERROR, "Couldn't delete topic watch information", "", __LINE__, __FILE__, $sql);
 				}
 			}
+			
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '&amp;start=' . $start .'">')
+			);
+
+			$message = $lang['No_longer_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start\">" . $lang['HERE'] . "</a> " . $lang['to_return_topic'];
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
@@ -235,6 +276,13 @@ if($userdata['user_id'] != ANONYMOUS)
 					message_die(GENERAL_ERROR, "Couldn't insert topic watch information", "", __LINE__, __FILE__, $sql);
 				}
 			}
+
+			$template->assign_vars(array(
+				"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '&amp;start=' . $start .'">')
+			);
+
+			$message = $lang['You_are_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start\">" . $lang['HERE'] . "</a> " . $lang['to_return_topic'];
+			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
 		{
@@ -624,6 +672,18 @@ for($i = 0; $i < $total_posts; $i++)
 	}
 
 	//
+	// Define the little post icon
+	//
+	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] )
+	{
+		$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" />';
+	}
+	else
+	{
+		$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" />';
+	}
+
+	//
 	// Generate ranks
 	//
 	if( $postrow[$i]['user_id'] == ANONYMOUS )
@@ -676,16 +736,16 @@ for($i = 0; $i < $total_posts; $i++)
 
 		if( !empty($postrow[$i]['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://wwp.icq.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 
 			//
 			// This cannot stay like this, it needs a 'proper' solution, eg a separate
-			// template for overlaying the ICQ icon, or we just do away with the icq status
-			// display (which is after all somewhat a pain in the rear :D
+			// template for overlaying the ICQ icon, or we just do away with the icq status 
+			// display (which is after all somewhat a pain in the rear :D 
 			//
 			if( $theme['template_name'] == "subSilver" )
 			{
-				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>';
+				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
 				$icq_status_img = "";
 			}
 			else
@@ -818,6 +878,7 @@ for($i = 0; $i < $total_posts; $i++)
 	$template->assign_block_vars("postrow", array(
 		"ROW_COLOR" => "#" . $row_color,
 		"ROW_CLASS" => $row_class,
+		"MINI_POST_IMG" => $mini_post_img, 
 		"POSTER_NAME" => $poster,
 		"POSTER_RANK" => $poster_rank,
 		"RANK_IMAGE" => $rank_image,
@@ -834,7 +895,7 @@ for($i = 0; $i < $total_posts; $i++)
 		"EMAIL_IMG" => $email_img,
 		"WWW_IMG" => $www_img,
 		"ICQ_STATUS_IMG" => $icq_status_img,
-		"ICQ_ADD_IMG" => $icq_add_img,
+		"ICQ_ADD_IMG" => $icq_add_img, 
 		"AIM_IMG" => $aim_img,
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,

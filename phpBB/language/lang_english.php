@@ -162,6 +162,7 @@ $lang['theforums'] = "the forums";
 
 $lang['No_new_posts'] = "No new posts";
 $lang['New_posts'] = "New posts";
+$lang['New_post'] = "New post";
 $lang['No_new_posts_hot'] = "No new posts [ Popular ]";
 $lang['New_posts_hot'] = "New posts [ Popular ]";
 $lang['Topic_is_locked'] = "Topic is locked";
@@ -188,6 +189,8 @@ $lang['No_forums'] = "This board has no forums";
 $lang['Private_Messages'] = "Private Messages";
 $lang['Who_is_Online'] = "Who is Online";
 
+$lang['Forums_marked_read'] = "All forums have been marked read";
+
 //
 // Viewforum
 //
@@ -202,6 +205,9 @@ $lang['Topic_Announcement'] = "<b>Announcement:</b>";
 $lang['Topic_Sticky'] = "<b>Sticky:</b>";
 $lang['Topic_Moved'] = "<b>Moved:</b>";
 $lang['Topic_Poll'] = "<b>[ Poll ]</b>";
+
+$lang['View_newest_posts'] = "View posts since your last visit";
+$lang['Topics_marked_read'] = "The topics for this forum have now been marked read";
 
 //
 // Viewtopic
@@ -248,7 +254,8 @@ $lang['Split_topic'] = "Split this topic";
 
 $lang['Stop_watching_topic'] = "Stop watching this topic";
 $lang['Start_watching_topic'] = "Watch this topic for replies";
-
+$lang['No_longer_watching'] = "You are no longer watching this topic";
+$lang['You_are_watching'] = "You are now watching this topic";
 
 //
 // Posting/Replying (Not private messaging!)

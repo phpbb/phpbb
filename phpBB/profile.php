@@ -259,9 +259,22 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		if( !empty($profiledata['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			//
+			// This cannot stay like this, it needs a 'proper' solution, eg a separate
+			// template for overlaying the ICQ icon, or we just do away with the icq status 
+			// display (which is after all somewhat a pain in the rear :D 
+			//
+			if( $theme['template_name'] == "subSilver" )
+			{
+				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
+				$icq_status_img = "";
+			}
+			else
+			{
+				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			}
 		}
 		else
 		{
