@@ -237,7 +237,7 @@ CREATE TABLE phpbb_moderator_cache (
   display_on_index tinyint(4) NOT NULL default '1',
   KEY display_on_index (display_on_index),
   KEY forum_id (forum_id)
-)
+);
 
 
 # --------------------------------------------------------
@@ -245,7 +245,7 @@ CREATE TABLE phpbb_moderator_cache (
 # Table structure for table 'phpbb_vote_results'
 #
 CREATE TABLE phpbb_poll_results (
-  poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
+  poll_option_id tinyint(4) unsigned NOT NULL DEFAULT '0',
   topic_id mediumint(8) UNSIGNED NOT NULL,
   poll_option_text varchar(255) NOT NULL,
   poll_option_total mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
