@@ -260,28 +260,28 @@ $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('server_name', 'www.myserver.tld')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'record_online_date'");
+	die("Couldn't insert config key 'server_name'");
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('script_path', '/phpBB2/')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'record_online_date'");
+	die("Couldn't insert config key 'script_path'");
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
 	(config_name, config_value) VALUES ('server_port', '80')";
 if( !$db->sql_query($sql) )
 {  
-	die("Couldn't insert config key 'record_online_date'");
+	die("Couldn't insert config key 'server_port'");
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value )
 	VALUES ('version', 'RC-3')";
 if ( !$db->sql_query($sql) )
 {
-	die("Couldn't insert new config var");
+	die("Couldn't insert config key 'version'");
 }
 
 $sql = "INSERT INTO " . CONFIG_TABLE . "
