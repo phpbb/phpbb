@@ -30,7 +30,7 @@ $topic_id = ( isset($_GET['t']) ) ? intval($_GET['t']) : 0;
 $post_id = ( isset($_GET['p'])) ? intval($_GET['p']) : 0;
 $start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 
-if ( empty($topic_id) && empty($post_id) )
+if (empty($topic_id) && empty($post_id))
 {
 	trigger_error('Topic_post_not_exist');
 }
@@ -69,7 +69,7 @@ if (isset($_GET['view']) && empty($post_id))
 
 		redirect("index.$phpEx$SID");
 	}
-	else if ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' )
+	else if ($_GET['view'] == 'next' || $_GET['view'] == 'previous')
 	{
 		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
 		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
@@ -83,7 +83,7 @@ if (isset($_GET['view']) && empty($post_id))
 			LIMIT 1";
 		$result = $db->sql_query($sql);
 
-		if ( !($row = $db->sql_fetchrow($result)) )
+		if (!($row = $db->sql_fetchrow($result)))
 		{
 			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
 			message_die(MESSAGE, $message);
@@ -145,7 +145,7 @@ $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.top
 		$order_sql";
 $result = $db->sql_query($sql);
 
-if ( !(extract($db->sql_fetchrow($result))) )
+if (!(extract($db->sql_fetchrow($result))))
 {
 	trigger_error('Topic_post_not_exist');
 }
@@ -531,9 +531,7 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
-		//
 		// Generate ranks, set them to empty string initially.
-		//
 		if ( !isset($poster_details[$poster_id]['rank_title']) )
 		{
 			if ( $row['user_rank'] )
@@ -560,9 +558,7 @@ if ($row = $db->sql_fetchrow($result))
 			}
 		}
 
-		//
 		// Handle anon users posting with usernames
-		//
 		if ( !$poster_id && $row['post_username'] != '' )
 		{
 			$poster = $row['post_username'];
@@ -652,9 +648,7 @@ if ($row = $db->sql_fetchrow($result))
 			$poster_details[$poster_id]['search'] = '';
 		}
 
-		//
 		// Non-user specific images/text
-		//
 		$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
 		$quote_img = '<a href="' . $temp_url . '">' . $user->img('icon_quote', $user->lang['Reply_with_quote']) . '</a>';
 		$quote = '<a href="' . $temp_url . '">' . $user->lang['Reply_with_quote'] . '</a>';
@@ -702,9 +696,9 @@ if ($row = $db->sql_fetchrow($result))
 
 		// If the board has HTML off but the post has HTML
 		// on then we process it, else leave it alone
-		if ( !$auth->acl_get('f_html', $forum_id) )
+		if (!$auth->acl_get('f_html', $forum_id))
 		{
-			if ( $row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id) )
+			if ($row['enable_html'] && $auth->acl_get('f_bbcode', $forum_id))
 			{
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
 			}
@@ -717,13 +711,13 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 		// Highlight active words (primarily for search)
-		if ($highlight_match)
+/*		if ($highlight_match)
 		{
 			// This was shamelessly 'borrowed' from volker at multiartstudio dot de
 			// via php.net's annotated manual
-//			$message = substr(preg_replace('#(\>(((?>[^><]+)|(?R))*)\<)#ie', "preg_replace('/(?>($highlight_match)+)/i','<span style=\"color:red\">\\1</span>', '\\0')", '>' . $message . '<'), 1, -1);
-		}//
-
+			$message = substr(preg_replace('#(\>(((?>[^><]+)|(?R))*)\<)#ie', "preg_replace('/(?>($highlight_match)+)/i','<span style=\"color:red\">\\1</span>', '\\0')", '>' . $message . '<'), 1, -1);
+		}
+*/
 		// Replace naughty words
 		if (count($orig_word))
 		{
