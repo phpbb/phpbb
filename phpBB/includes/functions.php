@@ -270,7 +270,7 @@ function init_userprefs($userdata)
 
 	$template = new Template($phpbb_root_path . "templates/" . $board_config['board_template']);
 
-	if($template)
+	if( $template )
 	{
 		@include($phpbb_root_path . "templates/" . $board_config['board_template'] . "/" . $board_config['board_template'] . ".cfg");
 
@@ -454,51 +454,6 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 }
 
-//
-// Check to see if email address is banned
-// or already present in the DB
-//
-function validate_email($email)
-{
-	global $db;
-
-	if($email != "")
-	{
-		$sql = "SELECT ban_email
-			FROM " . BANLIST_TABLE;
-		if(!$result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
-		}
-		$ban_email_list = $db->sql_fetchrowset($result);
-		for($i = 0; $i < count($ban_email_list); $i++)
-		{
-			$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
-			if( preg_match("/^" . $match_email . "$/is", $email) )
-			{
-				return(0);
-			}
-		}
-		$sql = "SELECT user_email
-			FROM " . USERS_TABLE . "
-			WHERE user_email = '" . $email . "'";
-		if(!$result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
-		}
-		$email_taken = $db->sql_fetchrow($result);
-		if($email_taken['user_email'] != "")
-		{
-			return(0);
-		}
-
-		return(1);
-	}
-	else
-	{
-		return(0);
-	}
-}
 
 //
 // Check to see if the username has been taken, or if it is disallowed.
@@ -565,6 +520,9 @@ function validate_username($username)
 }
 
 
+//
+// Synchronise functions for forums/topics
+//
 function sync($type, $id)
 {
 	global $db;
@@ -713,13 +671,17 @@ function sync($type, $id)
 
 }
 
-function language_select($default, $select_name, $dirname="language/")
+
+//
+// Pick a language, any language ...
+//
+function language_select($default, $select_name = "language", $dirname="language/")
 {
 	global $phpEx;
 
 	$dir = opendir($dirname);
 
-	$lang_select = "<select name=\"$select_name\">\n";
+	$lang_select = "<select name=\"$select_name\">";
 	while ($file = readdir($dir))
 	{
 		if (ereg("^lang_", $file))
@@ -728,86 +690,65 @@ function language_select($default, $select_name, $dirname="language/")
 			$filename = str_replace(".$phpEx", "", $filename);
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
 			$selected = (strtolower($default) == strtolower($filename)) ? " selected=\"selected\"" : "";
-			$lang_select .= "  <option value=\"$filename\"$selected>".ucwords($displayname)."</option>\n";
+			$lang_select .= "<option value=\"$filename\"$selected>".ucwords($displayname)."</option>";
 		}
 	}
-	$lang_select .= "</select>\n";
+	$lang_select .= "</select>";
 
 	closedir($dir);
 
 	return $lang_select;
 }
 
-// NOTE: This function should check is_dir($file), however the is_dir function seems to be buggy on my
-// system so its not currently implemented that way
-// - James
-function template_select($default, $select_name = 'template', $dirname = "templates")
+
+//
+// Pick a template/theme combo, personally recommend
+// PSO - Blue but then I would ...
+//
+function style_select($default_template, $default_theme, $select_name = "style", $dirname = "templates")
 {
-	$dir = opendir($dirname);
+	global $db;
 
-	$template_select = "<select name=\"$select_name\">\n";
-	while($file = readdir($dir))
-	{
-		unset($selected);
-
-		if($file != "." && $file != ".." && $file != "CVS")
-		{
-			if($file == $default)
-			{
-				$selected = " selected=\"selected\"";
-			}
-			$template_select .= "<option value=\"$file\"$selected>$file</option>\n";
-		}
-	}
-	$template_select .= "</select>";
-
-	closedir($dir);
-
-	return($template_select);
-}
-
-function theme_select($default, $select_name = 'theme')
-{
-	global $db, $board_config, $lang;
-
-	$sql = "SELECT themes_id, themes_name
-	  			FROM " . THEMES_TABLE . "
-				WHERE themes_name LIKE '" . $board_config['board_template'] . "-%'
-	  			ORDER BY themes_name";
-	if($result = $db->sql_query($sql))
-	{
-		$num = $db->sql_numrows($result);
-		$rowset = $db->sql_fetchrowset($result);
-
-		if($num)
-		{
-			$theme_select = "<select name=\"$select_name\">\n";
-			for($i = 0; $i < $num; $i++)
-			{
-				if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
-				{
-					$selected = " selected=\"selected\"";
-				}
-				else
-				{
-					$selected = "";
-				}
-				$theme_select .= "\t<option value=\"" . $rowset[$i]['themes_id'] ."\"$selected>" . stripslashes($rowset[$i]['themes_name']) . "</option>\n";
-			}
-			$theme_select .= "</select>\n";
-		}
-		else
-		{
-			$theme_select = "<select name=\"$select_name\"><option value=\"-1\">" . $lang['No_themes'] . "</option></select>";
-		}
-	}
-	else
+	$sql = "SELECT themes_id, template_name, themes_name
+		FROM " . THEMES_TABLE . "
+		ORDER BY template_name, themes_id";
+	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't query themes table", "", __LINE__, __FILE__, $sql);
 	}
-	return($theme_select);
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$template_themes[$row['template_name']]['name'][] = $row['themes_name'];
+		$template_themes[$row['template_name']]['id'][] = $row['themes_id'];
+	}
+	
+	$dir = opendir($dirname);
+
+	$style_select = "<select name=\"$select_name\">";
+	while( $file = readdir($dir) )
+	{
+		if( $file != "." && $file != ".." && $file != "CVS" )
+		{
+			for($i = 0; $i < count($template_themes[$file]['id']); $i++)
+			{
+				$selected = ( $file == $default_template && $template_themes[$file]['id'][$i] == $default_theme ) ? " selected=\"selected\"" : "";
+
+				$style_select .= "<option value=\"" . $file . "_" . $template_themes[$file]['id'][$i] . "\"$selected>$file - " . $template_themes[$file]['name'][$i] . "</option>";
+			}
+		}
+	}
+	$style_select .= "</select>";
+
+	closedir($dir);
+
+	return($style_select);
 }
 
+
+//
+// Pick a timezone
+//
 function tz_select($default, $select_name = 'timezone')
 {
 	global $sys_timezone;
@@ -827,47 +768,43 @@ function tz_select($default, $select_name = 'timezone')
 			"-6"		=> "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City",
 			"-5"		=> "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito",
 			"-4"		=> "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
-			"-3.5"	=> "(GMT -3:30 hours) Newfoundland",
+			"-3.5"		=> "(GMT -3:30 hours) Newfoundland",
 			"-3"		=> "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
 			"-2"		=> "(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena, ",
 			"-1"		=> "(GMT -1:00 hours) Azores, Cape Verde Islands",
-			"0"		=> "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
+			"0"			=> "(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia",
 			"+1"		=> "(GMT +1:00 hours) Berlin, Brussels, Copenhagen, Madrid, Paris, Rome",
 			"+2"		=> "(GMT +2:00 hours) Kaliningrad, South Africa, Warsaw",
 			"+3"		=> "(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi",
-			"+3.5"	=> "(GMT +3:30 hours) Tehran",
+			"+3.5"		=> "(GMT +3:30 hours) Tehran",
 			"+4"		=> "(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi",
-			"+4.5"	=> "(GMT +4:30 hours) Kabul",
+			"+4.5"		=> "(GMT +4:30 hours) Kabul",
 			"+5"		=> "(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent",
-			"+5.5"	=> "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
+			"+5.5"		=> "(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi",
 			"+6"		=> "(GMT +6:00 hours) Almaty, Colombo, Dhaka",
 			"+7"		=> "(GMT +7:00 hours) Bangkok, Hanoi, Jakarta",
 			"+8"		=> "(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei",
 			"+9"		=> "(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk",
-			"+9.5"	=> "(GMT +9:30 hours) Adelaide, Darwin",
+			"+9.5"		=> "(GMT +9:30 hours) Adelaide, Darwin",
 			"+10"		=> "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vladivostok",
 			"+11"		=> "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands",
 			"+12"		=> "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island");
 
-	while(list($offset, $zone) = each($tz_array))
+	while( list($offset, $zone) = each($tz_array) )
 	{
 		$selected = ($offset == $default) ? " selected=\"selected\"" : "";
-		$tz_select .= "\t<option value=\"$offset\"$selected>$zone</option>\n";
+		$tz_select .= "\t<option value=\"$offset\"$selected>$zone</option>";
 	}
-	$tz_select .= "</select>\n";
+	$tz_select .= "</select>";
 
 	return($tz_select);
 }
 
+
 //
-// Smilies code ... would this be better tagged
-// on to the end of bbcode.php?
-//
+// Smilies code ... would this be better tagged on to the end of bbcode.php?
 // Probably so and I'll move it before B2
-// The_Systech
 //
-
-
 function smilies_pass($message)
 {
 	global $db, $board_config;
@@ -905,11 +842,11 @@ function smiley_sort($a, $b)
 	return (strlen($a['code']) > strlen($b['code'])) ? -1 : 1;
 }
 
+
 //
-// Obtain list of naughty words and build preg style
-// replacement arrays for use by the calling script,
-// note that the vars are passed as references this just makes
-// it easier to return both sets of arrays
+// Obtain list of naughty words and build preg style replacement arrays for use by the
+// calling script, note that the vars are passed as references this just makes it easier
+// to return both sets of arrays
 //
 function obtain_word_list(&$orig_word, &$replacement_word)
 {

@@ -106,12 +106,8 @@
 				<td class="row2">{LANGUAGE_SELECT}</td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_BOARD_THEME}:</span></td>
-				<td class="row2">{THEME_SELECT}</td>
-			</tr>
-			<tr>
-				<td class="row1"><span class="gen">{L_BOARD_TEMPLATE}:</span></td>
-				<td class="row2">{TEMPLATE_SELECT}</td>
+				<td class="row1"><span class="gen">{L_BOARD_STYLE}:</span></td>
+				<td class="row2">{STYLE_SELECT}</td>
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen">{L_TIMEZONE}:</span></td>

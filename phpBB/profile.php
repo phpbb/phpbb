@@ -33,6 +33,61 @@ init_userprefs($userdata);
 // End session management
 //
 
+
+//
+// Page specific functions
+//
+
+//
+// Check to see if email address is banned
+// or already present in the DB
+//
+function validate_email($email)
+{
+	global $db;
+
+	if($email != "")
+	{
+		$sql = "SELECT ban_email
+			FROM " . BANLIST_TABLE;
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain email ban information.", "", __LINE__, __FILE__, $sql);
+		}
+		$ban_email_list = $db->sql_fetchrowset($result);
+		for($i = 0; $i < count($ban_email_list); $i++)
+		{
+			$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
+			if( preg_match("/^" . $match_email . "$/is", $email) )
+			{
+				return(0);
+			}
+		}
+		$sql = "SELECT user_email
+			FROM " . USERS_TABLE . "
+			WHERE user_email = '" . $email . "'";
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
+		}
+		$email_taken = $db->sql_fetchrow($result);
+		if($email_taken['user_email'] != "")
+		{
+			return(0);
+		}
+
+		return(1);
+	}
+	else
+	{
+		return(0);
+	}
+}
+//
+// End page specific functions
+//
+
+
 //
 // Start of program proper
 //
@@ -197,10 +252,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			header(append_sid("Location: login.$phpEx?forward_page=$PHP_SELF&mode=editprofile"));
 		}
 
-		$pagetype = ($mode == "edit") ? "editprofile" : "register";
-		$page_title = ($mode == "edit") ? $lang['Edit_profile'] : $lang['Register'];
-
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+		$page_title = ($mode == "editprofile") ? $lang['Edit_profile'] : $lang['Register'];
 
 		//
 		// Start processing for output
@@ -213,6 +265,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				// Load agreement template since user has not yet
 				// agreed to registration conditions/coppa
 				//
+				include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 				$template->set_filenames(array(
 					"body" => "agreement.tpl",
 					"jumpbox" => "jumpbox.tpl")
@@ -281,10 +335,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$allowbbcode = (isset($HTTP_POST_VARS['allowbbcode'])) ? ( ($HTTP_POST_VARS['allowbbcode']) ? 1 : 0 ) : $board_config['allow_bbcode'];
 			$allowsmilies = (isset($HTTP_POST_VARS['allowsmilies'])) ? ( ($HTTP_POST_VARS['allowsmilies']) ? 1 : 0 ) : $board_config['allow_smilies'];
 
-			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
+			$user_template = ( isset($HTTP_POST_VARS['style']) ) ? substr($HTTP_POST_VARS['style'], 0, strrpos($HTTP_POST_VARS['style'], "_")) : $board_config['board_template'];
+			$user_theme = ( isset($HTTP_POST_VARS['style']) ) ? substr($HTTP_POST_VARS['style'], strrpos($HTTP_POST_VARS['style'], "_") + 1) : $board_config['default_theme'];
+
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
 			$user_timezone = (isset($HTTP_POST_VARS['timezone'])) ? $HTTP_POST_VARS['timezone'] : $board_config['board_timezone'];
-			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['board_template'];
 			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
 			$user_avatar_remoteurl = (!empty($HTTP_POST_VARS['avatarremoteurl'])) ? $HTTP_POST_VARS['avatarremoteurl'] : "";
@@ -704,20 +759,31 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							//
 							$email_headers = "From: " . $board_config['board_email'] . "\r\n";
 
+							$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+
 							$emailer->use_template("activate");
 							$emailer->email_address($email);
 							$emailer->set_subject($lang['Reactivate']);
 							$emailer->extra_headers($email_headers);
 
 							$emailer->assign_vars(array(
-								"SITENAME" => $board_config['sitename'],
-								"U_ACTIVATE" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$user_actkey",
-								"EMAIL_SIG" => $board_config['email_sig'])
+								"SITENAME" => $board_config['sitename'], 
+								"USERNAME" => $username,
+								"EMAIL_SIG" => $board_config['email_sig'], 
+
+								"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 							);
 							$emailer->send();
 							$emailer->reset();
 						}
-						message_die(GENERAL_MESSAGE, $lang['Profile_updated']);
+
+						$template->assign_vars(array(
+							"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
+						);
+
+						$message = $lang['Profile_updated'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+
+						message_die(GENERAL_MESSAGE, $message);
 					}
 					else
 					{
@@ -729,10 +795,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					//
 					// Get current date
 					//
-					$regdate = get_gmt_ts();
-
 					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_allow_pm, user_active, user_actkey)
-						VALUES ($new_user_id, '" . addslashes($username) ."', $regdate, '" . addslashes($password) ."', '" . addslashes($email) ."', '" . addslashes($icq) ."', '" . addslashes($website) ."', '" . addslashes($occupation) ."', '" . addslashes($location) ."', '" . addslashes($interests) ."', '" . addslashes($signature) ."', '$avatar_filename', $viewemail, '" . addslashes($aim) ."', '" . addslashes($yim) ."', '" . addslashes($msn) ."', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '" . addslashes($user_dateformat) ."', '" . addslashes($user_lang) ."', '" . addslashes($user_template) ."', $user_theme, 0, 1, ";
+						VALUES ($new_user_id, '$username', " . time() . ", '$password .', '$email', '$icq .', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, 1, ";
 
 					if($board_config['require_activation'] || $coppa == 1)
 					{
@@ -756,23 +820,25 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							{
 								if($board_config['require_activation'])
 								{
-									$msg = $lang['Account_inactive'];
+									$message = $lang['Account_inactive'];
 									$email_msg = "welcome_inactive";
 								}
 								else if($coppa)
 								{
-									$msg = $lang['COPPA'];
+									$message = $lang['COPPA'];
 									$email_msg = $lang['Welcome_COPPA'];
 								}
 								else
 								{
-									$msg = $lang['Account_added'];
+									$message = $lang['Account_added'];
 									$email_msg = "welcome";
 								}
 
 								if(!$coppa)
 								{
 									$email_headers = "From: " . $board_config['board_email'] . "\r\n";
+
+									$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
 									$emailer->use_template($email_msg);
 									$emailer->email_address($email);
@@ -783,14 +849,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 										"WELCOME_MSG" => $lang['Welcome_subject'],
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
-										"ACTIVATE_URL" => "http://".$SERVER_NAME.$PHP_SELF."?mode=activate&act_key=$act_key",
-										"EMAIL_SIG" => $board_config['email_sig'])
+										"EMAIL_SIG" => $board_config['email_sig'],
+										
+										"U_ACTIVATE" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/profile.$phpEx?mode=activate&act_key=$user_actkey")
 									);
 									$emailer->send();
 									$emailer->reset();
 								}
 
-								message_die(GENERAL_MESSAGE, $msg);
+								$template->assign_vars(array(
+									"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
+								);
+								
+								$message = $message . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("index.$phpEx") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_index'];
+
+								message_die(GENERAL_MESSAGE, $message);
 							}
 							else
 							{
@@ -808,17 +881,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					}
 				} // if mode == register
 			}
-			else
-			{
-				$template->set_filenames(array(
-					"reg_header" => "error_body.tpl")
-				);
-				$template->assign_vars(array(
-					"ERROR_MESSAGE" => $error_msg)
-				);
-				$template->pparse("reg_header");
-			}
-
 		}
 		else if($mode == "editprofile")
 		{
@@ -888,6 +950,19 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
 		}
 
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		if( $error )
+		{
+			$template->set_filenames(array(
+				"reg_header" => "error_body.tpl")
+			);
+			$template->assign_vars(array(
+				"ERROR_MESSAGE" => $error_msg)
+			);
+			$template->pparse("reg_header");
+		}
+
 		$template->set_filenames(array(
 			"body" => "profile_add_body.tpl",
 			"jumpbox" => "jumpbox.tpl")
@@ -936,10 +1011,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"AVATAR" => $avatar_img,
 			"AVATAR_SIZE" => $board_config['avatar_filesize'],
 			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang), 'language'),
-			"THEME_SELECT" => theme_select($user_theme, 'theme'),
+			"STYLE_SELECT" => style_select($user_template, $user_theme, 'style'),
 			"TIMEZONE_SELECT" => tz_select($user_timezone, 'timezone'),
 			"DATE_FORMAT" => stripslashes($user_dateformat),
-			"TEMPLATE_SELECT" => template_select(stripslashes($user_template), 'template'),
 			"HTML_STATUS" => $html_status,
 			"BBCODE_STATUS" => $bbcode_status,
 			"SMILIES_STATUS" => $smilies_status,
@@ -956,8 +1030,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"L_LOCATION" => $lang['From'],
 			"L_OCCUPATION" => $lang['Occupation'],
 			"L_BOARD_LANGUAGE" => $lang['Board_lang'],
-			"L_BOARD_THEME" => $lang['Board_theme'],
-			"L_BOARD_TEMPLATE" => $lang['Board_template'],
+			"L_BOARD_STYLE" => $lang['Board_style'],
 			"L_TIMEZONE" => $lang['Timezone'],
 			"L_DATE_FORMAT" => $lang['Date_format'],
 			"L_DATE_FORMAT_EXPLAIN" => $lang['Date_format_explain'],
@@ -1038,8 +1111,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 	else if($mode == "activate")
 	{
 		$sql = "SELECT user_id
-				FROM " . USERS_TABLE . "
-				WHERE user_actkey = '$act_key'";
+			FROM " . USERS_TABLE . "
+			WHERE user_actkey = '$act_key'";
 			if($result = $db->sql_query($sql))
 			{
 				if($num = $db->sql_numrows($result))

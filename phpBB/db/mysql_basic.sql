@@ -4,47 +4,7 @@
 # $Id$
 
 # -- Config
-INSERT INTO phpbb_config VALUES ('board_disable','0');
-INSERT INTO phpbb_config VALUES ('board_startdate','994190324');
-INSERT INTO phpbb_config VALUES ('sitename','yourdomain.com');
-INSERT INTO phpbb_config VALUES ('cookie_name','phpbb2mysql');
-INSERT INTO phpbb_config VALUES ('cookie_path','/');
-INSERT INTO phpbb_config VALUES ('cookie_domain','');
-INSERT INTO phpbb_config VALUES ('cookie_secure','0');
-INSERT INTO phpbb_config VALUES ('session_length','900');
-INSERT INTO phpbb_config VALUES ('allow_html','0');
-INSERT INTO phpbb_config VALUES ('allow_html_tags','b,i,u,pre');
-INSERT INTO phpbb_config VALUES ('allow_bbcode','1');
-INSERT INTO phpbb_config VALUES ('allow_smilies','1');
-INSERT INTO phpbb_config VALUES ('allow_sig','1');
-INSERT INTO phpbb_config VALUES ('allow_namechange','0');
-INSERT INTO phpbb_config VALUES ('allow_theme_create','0');
-INSERT INTO phpbb_config VALUES ('allow_avatar_local','0');
-INSERT INTO phpbb_config VALUES ('allow_avatar_remote','1');
-INSERT INTO phpbb_config VALUES ('allow_avatar_upload','1');
-INSERT INTO phpbb_config VALUES ('override_themes','0');
-INSERT INTO phpbb_config VALUES ('posts_per_page','15');
-INSERT INTO phpbb_config VALUES ('topics_per_page','50');
-INSERT INTO phpbb_config VALUES ('hot_threshold','25');
-INSERT INTO phpbb_config VALUES ('max_poll_options','10');
-INSERT INTO phpbb_config VALUES ('email_sig','Thanks, The Management');
-INSERT INTO phpbb_config VALUES ('email_from','youraddress@yourdomain.com');
-INSERT INTO phpbb_config VALUES ('smtp_delivery','0');
-INSERT INTO phpbb_config VALUES ('smtp_host','');
-INSERT INTO phpbb_config VALUES ('require_activation','0');
-INSERT INTO phpbb_config VALUES ('flood_interval','15');
-INSERT INTO phpbb_config VALUES ('avatar_filesize','6144');
-INSERT INTO phpbb_config VALUES ('avatar_max_width','80');
-INSERT INTO phpbb_config VALUES ('avatar_max_height','80');
-INSERT INTO phpbb_config VALUES ('avatar_path','images/avatars');
-INSERT INTO phpbb_config VALUES ('smilies_path','images/smiles');
-INSERT INTO phpbb_config VALUES ('default_theme','2');
-INSERT INTO phpbb_config VALUES ('default_lang','english');
-INSERT INTO phpbb_config VALUES ('default_dateformat','D M d, Y g:i a');
-INSERT INTO phpbb_config VALUES ('board_timezone','-8');
-INSERT INTO phpbb_config VALUES ('board_template','PSO');
-INSERT INTO phpbb_config VALUES ('prune_enable','1');
-INSERT INTO phpbb_config VALUES ('gzip_compress','1');
+INSERT INTO phpbb_config (config_id, board_disable, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_html_tags, allow_bbcode, allow_smilies, allow_sig, allow_namechange, allow_theme_create, allow_avatar_local, allow_avatar_remote, allow_avatar_upload, override_themes, posts_per_page, topics_per_page, hot_threshold, max_poll_options, email_sig, email_from, require_activation, flood_interval, avatar_filesize, avatar_max_width, avatar_max_height, avatar_path, smilies_path, default_theme, default_lang, default_dateformat, system_timezone, sys_template, prune_enable, gzip_compress, board_startdate, smtp_delivery, smtp_host) VALUES (1,0,'yourdomain.com','phpbb2mysql','/','','',900,'','b,i,u,pre',1,1,1,'','','',1,1,'',15,50,25,10,'Thanks, The Management','youraddress@yourdomain.com','',15,6144,80,80,'images/avatars','images/smiles',2,'english','D M d, Y g:i a',-8,'PSO',1,1,994190324,'','');
 
 # -- Categories
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 1);
@@ -84,17 +44,18 @@ INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, 'This is the subject', 'This is a demo post in the demo topic, what do you think of it?');
 
 # -- Themes
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (1,'Default-Default','','','','','','','','','','','','','','','','','','','','','CCCCCC','DDDDDD','','','','','','','',NULL,NULL,NULL,'','','','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (1,'Default','Default','','','','','','','','','','','','','','','','','','','','','CCCCCC','DDDDDD','','','','','','','',NULL,NULL,NULL,'','','','','','');
 
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (2,'PSO-Default','','','FFFFFF','000000','002266','004411','','','','','','','','','000000','D2D2D2','BCBCBC','','','','EDEDED','DEDEDE','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'','','','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (2,'Default','PSO','','','FFFFFF','000000','002266','004411','','','','','','','','','000000','D2D2D2','BCBCBC','','','','EDEDED','DEDEDE','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'','','','','','');
 
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (3,'PSO-Wheat','','','FFFFFF','000000','002266','004411','','','','','','','','','001100','E5CCA5','D4A294','','','','EBE4D9','DAD1C4','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'000000','','','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (3,'Wheat','PSO','','','FFFFFF','000000','002266','004411','','','','','','','','','001100','E5CCA5','D4A294','','','','EBE4D9','DAD1C4','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'000000','','','','','');
 
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (4,'PSO-Ocean','','','DFF5FF','000000','011001','2100cc','','','','','','','','','000000','A7C1CB','7897A8','','','','83D7CC','A0CCE0','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'','','','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (4,'Ocean','PSO','','','DFF5FF','000000','011001','2100cc','','','','','','','','','000000','A7C1CB','7897A8','','','','83D7CC','A0CCE0','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'','','','','','');
 
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (6,'PSO-Blue','','','FFFFFF','000000','417FB9','4E6172','0000AA','','','','','','','','000000','90BAE2','5195D4','','','','cde3f2','daedFd','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'000000','','','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (6,'Blue','PSO','','','FFFFFF','000000','417FB9','4E6172','0000AA','','','','','','','','000000','90BAE2','5195D4','','','','cde3f2','daedFd','','row1','row2','','verdana,serif','arial,helvetica','courier',1,2,3,'000000','','','','','');
 
-INSERT INTO phpbb_themes (themes_id, themes_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES (7,'PSO-Cool Midnight','','','444444','ECECEC','EDF2F2','DDEDED','FFFFFF','EDF2F2','','','','','','','000000','80707F','66555F','','','','60707D','667A80','','row1','row2','','Verdana,serif','Arial,Helvetica,sans-serif','courier',NULL,NULL,NULL,'ECECEC','ECECEC','ECECEC','','','');
+INSERT INTO phpbb_themes (themes_id, themes_name, template_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3) VALUES
+(7,'Cool Midnight','PSO', '','','444444','ECECEC','EDF2F2','DDEDED','FFFFFF','EDF2F2','','','','','','','000000','80707F','66555F','','','','60707D','667A80','','row1','row2','','Verdana,serif','Arial,Helvetica,sans-serif','courier',NULL,NULL,NULL,'ECECEC','ECECEC','ECECEC','','','');
 
 # -- Smilies
 INSERT INTO phpbb_smilies (smilies_id, code, smile_url, emoticon) VALUES ( '1', ':D', 'icon_biggrin.gif', 'Very Happy');

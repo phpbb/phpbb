@@ -415,8 +415,7 @@ $lang['Always_add_sig'] = "Always attach my signature";
 $lang['Always_notify'] = "Always notify me of replies";
 $lang['Always_notify_explain'] = "Sends an email when someone replies to a topic you have posted in. This can be changed whenever you post";
 
-$lang['Board_template'] = "Board Template";
-$lang['Board_theme'] = "Board Theme";
+$lang['Board_style'] = "Board Style";
 $lang['Board_lang'] = "Board Language";
 $lang['No_themes'] = "No Themes In database";
 $lang['Timezone'] = "Timezone";
@@ -452,7 +451,8 @@ $lang['Current_Image'] = "Current Image";
 $lang['Notify_on_privmsg'] = "Notify on Private Message";
 $lang['Hide_user'] = "Hide your online status";
 
-$lang['Profile_updated'] = "Your profile has been updated<br /><br />" . $lang['Click_index'];
+$lang['Profile_updated'] = "Your profile has been updated";
+$lang['to_return_index'] = "to return to the index";
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
 $lang['Invalid_username'] = "The username you requested has been taken or disallowed";
