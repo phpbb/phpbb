@@ -30,7 +30,7 @@ function request_var($var_name, $default)
 		// not generally applicable elsewhere
 		if ($type == 'string')
 		{
-			$var = trim(preg_replace("#\s{2,}#s", ' ', strtr($var, array_flip(get_html_translation_table(HTML_ENTITIES)))));
+			$var = trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), strtr($var, array_flip(get_html_translation_table(HTML_ENTITIES))))));
 		}
 
 		return $var;
