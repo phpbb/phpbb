@@ -526,8 +526,6 @@ switch ($mode)
 
 		if (count($post_id_list))
 		{
-			$log_mode = 'log_post_approved';
-
 			$sql = 'UPDATE ' . POSTS_TABLE . "
 				SET post_approved = $value
 				WHERE post_id IN (" . implode(', ', $post_id_list) . ')';
@@ -547,8 +545,6 @@ switch ($mode)
 		}
 		elseif (count($topic_id_list))
 		{
-			$log_mode = 'log_topic_approved';
-
 			$sql = 'UPDATE ' . TOPICS_TABLE . "
 				SET topic_approved = $value
 				WHERE topic_id IN (" . implode(', ', $topic_id_list) . ')';
@@ -575,7 +571,7 @@ switch ($mode)
 
 		foreach ($topic_id_list as $topic_id)
 		{
-			add_log('mod', $forum_id, $topic_id, $log_mode);
+			add_log('mod', $forum_id, $topic_id, $mode);
 		}
 		trigger_error($user->lang[$lang_str] . '<br /><br />' . $l_redirect . $return_mcp);
 	break;
@@ -816,7 +812,8 @@ switch ($mode)
 				AND p.poster_id = u.user_id
 				$limit_posts_time
 			ORDER BY $sort_order";
-		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
+//		$result = $db->sql_query_limit($sql, $posts_per_page, $start);
+		$result = $db->sql_query_limit($sql, $start, $posts_per_page);
 
 		$i = 0;
 		$has_unapproved_posts = FALSE;
@@ -1090,7 +1087,7 @@ switch ($mode)
 	case 'split_beyond':
 		$return_split = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="' . $mcp_url . '&amp;mode=split' . $url_extra . '">', '</a>');
 
-		if (!count($post_id_list))
+		if (!$post_id)
 		{
 			trigger_error($user->lang['NO_POST_SELECTED'] . $return_split);
 		}
@@ -1144,21 +1141,22 @@ switch ($mode)
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
 					$limit_posts_time
-				ORDER BY $sort_order
-				LIMIT $start, -1";
-			$result = $db->sql_query($sql);
+				ORDER BY $sort_order";
+			$result = $db->sql_query_limit($sql, -1, $start);
 
-/*
-			$sql = 'SELECT post_id
-				FROM ' . POSTS_TABLE . "
-				WHERE topic_id = $topic_id
-					AND post_id >= $post_id";
-			$result = $db->sql_query($sql);
-*/
+			$store = FALSE;
 			$post_id_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_id_list[] = $row['post_id'];
+				// Start to store post_ids as soon as we see the first post that was selected
+				if ($row['post_id'] == $post_id)
+				{
+					$store = TRUE;
+				}
+				if ($store)
+				{
+					$post_id_list[] = $row['post_id'];
+				}
 			}
 		}
 
@@ -1461,7 +1459,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 
 	if ($auto_sync)
 	{
-		resync('forum', 'forum_id', $forum_ids);
+		resync('forum', 'forum_id', $forum_ids, TRUE);
 	}
 }
 
@@ -1505,8 +1503,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 	{
 		$forum_ids[] = $row['forum_id'];
 
-		resync('topic', 'topic_id', $topic_ids);
-		resync('forum', 'forum_id', $forum_ids);
+		resync('topic', 'topic_id', $topic_ids, TRUE);
+		resync('forum', 'forum_id', $forum_ids, TRUE);
 	}
 }
 
@@ -1551,7 +1549,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 
 	if ($auto_sync)
 	{
-		resync('forum', 'forum_id', $forum_ids);
+		resync('forum', 'forum_id', $forum_ids, TRUE);
 	}
 }
 
@@ -1598,8 +1596,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 
 	if ($auto_sync)
 	{
-		resync('topic', 'topic_id', $topic_ids);
-		resync('forum', 'forum_id', $forum_ids);
+		resync('topic', 'topic_id', $topic_ids, TRUE);
+		resync('forum', 'forum_id', $forum_ids, TRUE);
 	}
 }
 
@@ -1609,19 +1607,17 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 // sync('topic', 'forum_id', array(2, 3));	<= resynch topics from forum #2 and #3
 // sync('topic');							<= resynch all topics
 //
-// Modes:
-// - 'topic', 'forum': resync post count, topic count, first/last post data and topic_approved flag
-// - 'approved': resync the topic_approved flag
-// - 'reported': resync the topic_reported flag using phpbb_posts.post_reported data
-//
-
 /* NOTES:
 
-1- This function will replace sync() in functions_admin.php asap ;)
-2- Queries are kinda tricky.
+Queries are kinda tricky.
+
+- subforums: we have to be able to get post/topic counts including subforums, hence the join
+** UPDATE: I removed these joins because they cause too much load on large forums. The new logic may be slightly slower on small forums but is way more scalable.
 
 - empty topics/forums: we have to be able to resync empty topics as well as empty forums therefore we have to use a LEFT join because a full join would only return results greater than 0
 ** UPDATE: not anymore needed when sync'ing forums, I'm considering the removal of the join used when sync'ing topics if possible.
+
+- approved posts and topics: I do not like to put the "*_approved = 1" condition in the left join condition but if it's put as a WHERE condition it won't return any row for empty forums. If it causes any problem it could be replaced with a group condition like "GROUP BY p.post_approved"
 
 */
 function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE)
@@ -1664,6 +1660,7 @@ function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALS
 			$result = $db->sql_query($sql);
 
 			$topic_ids = $approved_ids = $unapproved_ids = array();
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['topic_approved'] != $row['post_approved'])
@@ -1924,9 +1921,9 @@ function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALS
 		break;
 
 		case 'topic':
-			$topic_data = $post_ids = $approved_ids = $unapproved_ids = $resync_forums = array();
+			$topic_data = $topic_ids = $post_ids = $approved_ids = $unapproved_ids = $resync_forums = array();
 
-			$sql = 'SELECT t.*, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
+			$sql = 'SELECT t.*, p.post_approved, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				$where_sql_and p.topic_id = t.topic_id
 				GROUP BY p.topic_id, p.post_approved";
@@ -1934,30 +1931,77 @@ function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALS
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['post_approved'])
-				{
-					$row['total_posts'] = intval($row['total_posts']);
-					$row['first_post_id'] = intval($row['first_post_id']);
-					$row['last_post_id'] = intval($row['last_post_id']);
-					$row['replies'] = $row['total_posts'] - 1;
-
-					$post_ids[$row['last_post_id']] = $row['last_post_id'];
-				}
+				$row['total_posts'] = intval($row['total_posts']);
+				$row['first_post_id'] = intval($row['first_post_id']);
+				$row['last_post_id'] = intval($row['last_post_id']);
+				$row['replies'] = $row['total_posts'] - 1;
 
 				if (!isset($topic_data[$row['topic_id']]))
 				{
+					$topic_ids[] = $row['topic_id'];
 					$topic_data[$row['topic_id']] = $row;
 				}
-
-				$post_ids[$row['first_post_id']] = $row['first_post_id'];
+				else
+				{
+					if ($topic_data[$row['topic_id']]['first_post_id'] > $row['first_post_id'])
+					{
+						$topic_data[$row['topic_id']]['first_post_id'] = $row['first_post_id'];
+					}
+					if ($row['post_approved'])
+					{
+						$topic_data[$row['topic_id']]['replies'] = $row['replies'];
+						$topic_data[$row['topic_id']]['last_post_id'] = $row['last_post_id'];
+					}
+				}
 			}
 
-			if (!count($post_ids))
+			foreach ($topic_data as $topic_id => $row)
+			{
+				$post_ids[] = $row['first_post_id'];
+				if ($row['first_post_id'] != $row['last_post_id'])
+				{
+					$post_ids[] = $row['last_post_id'];
+				}
+			}
+
+			if (!count($topic_ids))
 			{
 				// If we get there, topic ids were invalid or topics did not contain any posts
 
 				delete_topics($where_type, $where_ids);
 				return;
+			}
+			else
+			{
+				if (count($where_ids))
+				{
+					// If we get there, we already have a range of topic_ids; make a diff and delete topics
+					// that didn't return any row
+					$delete_ids = array_diff($where_ids, $topic_ids);
+					if (count($delete_ids))
+					{
+						delete_topics('topic_id', $topic_ids);
+					}
+				}
+				else
+				{
+					// We're resync'ing by forum_id so we'll have to determine which topics we have to delete
+					$sql = 'SELECT topic_id
+						FROM ' . TOPICS_TABLE . "
+						$where_sql_and topic_id NOT IN (" . implode($topic_ids) . ')';
+					$result = $db->sql_query($sql);
+
+					$delete_ids = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$delete_ids[] = $row['topic_id'];
+					}
+
+					if (count($delete_ids))
+					{
+						delete_topics('topic_id', $delete_ids);
+					}
+				}
 			}
 
 			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
@@ -2044,7 +2088,7 @@ function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALS
 			}
 
 			// if some topics have been resync'ed then resync parent forums
-			if (count($resync_forums))
+			if ($resync_parents && count($resync_forums))
 			{
 				$sql = 'SELECT f.forum_id
 					FROM ' .FORUMS_TABLE . ' f, ' . FORUMS_TABLE . ' f2
@@ -2060,7 +2104,7 @@ function resync($mode, $where_type = '', $where_ids = '', $resync_parents = FALS
 				}
 				if (count($forum_ids))
 				{
-					resync('forum', 'forum_id', $forum_ids, $resync_parents);
+					resync('forum', 'forum_id', $forum_ids, FALSE);
 				}
 			}
 		break;
@@ -2195,8 +2239,6 @@ function very_temporary_lang_strings()
 		'NO_SUBJECT'				=>	'&lt;No subject&gt;',
 
 		'MOD_QUEUE'					=>	'Moderation queue',
-		'QUEUE_EMPTY'				=>	'There is no post awaiting for approval',
-		'FORUM_QUEUE_EMPTY'			=>	'There is no post awaiting for approval in this forum',
 
 		'log_topic_locked'			=>	'Locked topic',
 		'log_topic_unlocked'		=>	'Unlocked topic',

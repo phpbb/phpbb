@@ -1,9 +1,32 @@
 <!-- INCLUDE mcp_header.html -->
 
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="5" height="28"><span class="cattitle">Latest 5 posts awaiting approval</span></td>
+	</tr>
+	<tr>
+		<th>&nbsp;{L_FORUM}&nbsp;</th>
+		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th>&nbsp;{L_SUBJECT}&nbsp;</th>
+		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th>&nbsp;{L_POST_TIME}&nbsp;</th>
+	</tr>
+	<!-- BEGIN unapproved -->
+	<tr>
+		<td class="row1" width="15%"><span class="gen">{unapproved.FORUM}</span></td>
+		<td class="row2" width="18%"><span class="gen">{unapproved.TOPIC}</span></td>
+		<td class="row1"><span class="gen">{unapproved.SUBJECT}</span></td>
+		<td class="row2" align="center" width="15%" nowrap="nowrap"><span class="gen">{unapproved.AUTHOR}</span></td>
+		<td class="row1" align="center" width="10%" nowrap="nowrap"><span class="gensmall">{unapproved.POST_TIME}</span></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<!-- END unapproved -->
+</table>
+
 <br /><br />
-Moderation queue:<br />
-There are xx posts waiting to be approved<br />
-<br />
-Reported posts:<br />
-There are xx reported posts to review<br />
-<br /><br />
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr>
+		<td class="cat" colspan="2" height="28"><span class="cattitle">Latest 5 reported posts</span></td>
+	</tr>
+</table>
