@@ -1857,6 +1857,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($row['topic_replies_real'] + 1);
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real - 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics - 1' : '');
+		
+			// Update forum_ids for all posts
+			$sql = 'UPDATE ' . POSTS_TABLE . ' 
+				SET forum_id = 0 
+				WHERE topic_id = ' . $data['topic_id'];
+			$db->sql_query($sql);
 		}
 		// unglobalise
 		else if ((int)$row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
@@ -1867,6 +1873,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + ' . ($row['topic_replies_real'] + 1);
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics + 1' : '');
+
+			// Update forum_ids for all posts
+			$sql = 'UPDATE ' . POSTS_TABLE . ' 
+				SET forum_id = ' . $data['forum_id'] . ' 
+				WHERE topic_id = ' . $data['topic_id'];
+			$db->sql_query($sql);
 		}
 	}
 
