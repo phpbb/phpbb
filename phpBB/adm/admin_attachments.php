@@ -14,14 +14,14 @@
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
-	$module['POST']['ATTACHMENTS'] = ($auth->acl_get('a_attach')) ? "$filename$SID&amp;mode=manage" : '';
+	$module['POST']['ATTACHMENTS'] = ($auth->acl_get('a_attach')) ? "$filename$SID&amp;mode=ext_groups" : '';
 
 	return;
 }
 
 define('IN_PHPBB', 1);
 // Include files
-$phpbb_root_path = '../';
+$phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -32,96 +32,15 @@ if (!$auth->acl_get('a_attach'))
 }
 
 $mode = request_var('mode', '');
-$config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
-
-foreach ($config_sizes as $cfg_key => $var)
-{
-	$$var = request_var($var, '');
-}
-
-$submit = (isset($_POST['submit'])) ? TRUE : FALSE;
-$search_imagick = (isset($_POST['search_imagick'])) ? TRUE : FALSE;
+$submit = (isset($_POST['submit'])) ? true : false;
 
 $error = $notify = array();
 
-// Pull all config data
-$sql = 'SELECT *
-	FROM ' . CONFIG_TABLE;
-$result = $db->sql_query($sql);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	$config_name = $row['config_name'];
-	$config_value = $row['config_value'];
-
-	$default_config[$config_name] = $config_value;
-	$new[$config_name] = request_var($config_name, $default_config[$config_name]);
-
-	foreach ($config_sizes as $cfg_key => $var)
-	{
-		if (empty($$var) && !$submit && $config_name == $cfg_key)
-		{
-			$$var = (intval($default_config[$config_name]) >= 1048576) ? 'mb' : ((intval($default_config[$config_name]) >= 1024) ? 'kb' : 'b');
-		}
-
-		if (!$submit && $config_name == $cfg_key)
-		{
-			$new[$config_name] = ($new[$config_name] >= 1048576) ? round($new[$config_name] / 1048576 * 100) / 100 : (($new[$config_name] >= 1024) ? round($new[$config_name] / 1024 * 100) / 100 : $new[$config_name]);
-		}
-
-		if ($submit && $mode == 'manage' && $config_name == $cfg_key)
-		{
-			$old = $new[$config_name];
-			$new[$config_name] = ($$var == 'kb') ? round($new[$config_name] * 1024) : (($$var == 'mb') ? round($new[$config_name] * 1048576) : $new[$config_name]);
-		}
-	} 
-
-	if ($submit && ($mode == 'manage' || $mode == 'cats'))
-	{
-		// Update Extension Group Filesizes
-		if ($config_name == 'max_filesize')
-		{
-			$old_size = (int) $default_config[$config_name];
-			$new_size = (int) $new[$config_name];
-
-			if ($old_size != $new_size)
-			{
-				// check fir similar value of old_size in Extension Groups. If so, update these values.
-				$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-					SET max_filesize = $new_size
-					WHERE max_filesize = $old_size";
-				$db->sql_query($sql);
-			}
-		}
-
-		set_config($config_name, $new[$config_name]);
-	
-		if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
-		{
-			$new[$config_name] = $old;
-		}
-	}
-}
-
-if ($submit && ($mode == 'manage' || $mode == 'cats'))
-{
-	add_log('admin', 'LOG_ATTACH_CONFIG');
-	$notify[] = $user->lang['ATTACH_CONFIG_UPDATED'];
-}
-
 // Adjust the Upload Directory. Relative or absolute, this is the question here.
-$upload_dir = ($new['upload_dir'][0] == '/' || ($new['upload_dir'][0] != '/' && $new['upload_dir'][1] == ':')) ? $new['upload_dir'] : $phpbb_root_path . $new['upload_dir'];
+$upload_dir = ($config['upload_dir'][0] == '/' || ($config['upload_dir'][0] != '/' && $config['upload_dir'][1] == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
 
 switch ($mode)
 {
-	case 'manage':
-		$l_title = 'ATTACHMENT_CONFIG';
-		break;
-
-	case 'cats':
-		$l_title = 'MANAGE_CATEGORIES';
-		break;
-	
 	case 'extensions':
 		$l_title = 'MANAGE_EXTENSIONS';
 		break;
@@ -140,50 +59,11 @@ switch ($mode)
 
 adm_page_header($user->lang[$l_title]);
 
-// Search Imagick
-if ($search_imagick)
-{
-	$imagick = '';
-	
-	$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
-
-	if (empty($_ENV['MAGICK_HOME']))
-	{
-		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-
-		foreach ($locations as $location)
-		{
-			if (file_exists($location . 'convert' . $exe) && is_executable($location . 'convert' . $exe))
-			{
-				$imagick = str_replace('\\', '/', $location);
-				continue;
-			}
-		}
-	}
-	else
-	{
-		$imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
-	}
-
-	$new['img_imagick'] = $imagick;
-}
-
-// Check Settings
-if ($submit && $mode == 'manage')
-{
-	test_upload($error, $upload_dir, false);
-}
-
-if ($submit && $mode == 'cats')
-{
-	test_upload($error, $upload_dir . '/thumbs', true);
-}
 
 if ($submit && $mode == 'extensions')
 {
 	// Change Extensions ?
 	$extension_change_list	= (isset($_POST['extension_change_list'])) ? array_map('intval', $_POST['extension_change_list']) : array();
-	$extension_explain_list	= request_var('extension_explain_list', '');
 	$group_select_list		= (isset($_POST['group_select'])) ? array_map('intval', $_POST['group_select']) : array();
 
 	// Generate correct Change List
@@ -191,7 +71,6 @@ if ($submit && $mode == 'extensions')
 
 	for ($i = 0; $i < count($extension_change_list); $i++)
 	{
-		$extensions[$extension_change_list[$i]]['comment'] = $extension_explain_list[$i];
 		$extensions[$extension_change_list[$i]]['group_id'] = $group_select_list[$i];
 	}
 
@@ -202,12 +81,12 @@ if ($submit && $mode == 'extensions')
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['comment'] != $extensions[$row['extension_id']]['comment'] || $row['group_id'] != $extensions[$row['extension_id']]['group_id'])
+		if ($row['group_id'] != $extensions[$row['extension_id']]['group_id'])
 		{
-			$sql = "UPDATE " . EXTENSIONS_TABLE . " 
-				SET comment = '" . $db->sql_escape($extensions[$row['extension_id']]['comment']) . "', group_id = " . (int) $extensions[$row['extension_id']]['group_id'] . "
-				WHERE extension_id = " . $row['extension_id'];
-			$db->sql_query($sql);		
+			$sql = 'UPDATE ' . EXTENSIONS_TABLE . ' 
+				SET group_id = ' . (int) $extensions[$row['extension_id']]['group_id'] . '
+				WHERE extension_id = ' . $row['extension_id'];
+			$db->sql_query($sql);	
 			add_log('admin', 'LOG_ATTACH_EXT_UPDATE', $row['extension']);
 		}
 	}
@@ -240,9 +119,8 @@ if ($submit && $mode == 'extensions')
 		
 	// Add Extension ?
 	$add_extension			= strtolower(request_var('add_extension', ''));
-	$add_extension_explain	= request_var('add_extension_explain', '');
 	$add_extension_group	= request_var('add_group_select', 0);
-	$add					= (isset($_POST['add_extension_check'])) ? TRUE : FALSE;
+	$add					= (isset($_POST['add_extension_check'])) ? true : false;
 
 	if ($add_extension != '' && $add)
 	{
@@ -263,8 +141,7 @@ if ($submit && $mode == 'extensions')
 			{
 				$sql_ary = array(
 					'group_id'	=>	$add_extension_group,
-					'extension'	=>	$add_extension,
-					'comment'	=>	$add_extension_explain
+					'extension'	=>	$add_extension
 				);
 				
 				$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -305,8 +182,8 @@ if ($submit && $mode == 'ext_groups')
 		);
 		
 		$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' 
-			SET ' . $db->sql_build_array('UPDATE', $group_sql) . ' 
-			WHERE group_id = ' . $group_id;
+			SET ' . $db->sql_build_array('UPDATE', $group_sql) . " 
+			WHERE group_id = $group_id";
 		$db->sql_query($sql);
 	}
 	
@@ -348,8 +225,8 @@ if ($submit && $mode == 'ext_groups')
 	$upload_icon		= request_var('add_upload_icon', '');
 	$filesize			= request_var('add_max_filesize', 0);
 	$size_select		= request_var('add_size_select', 'b');
-	$is_allowed			= (isset($_POST['add_allowed'])) ? TRUE : FALSE;
-	$add				= (isset($_POST['add_extension_group_check'])) ? TRUE : FALSE;
+	$is_allowed			= (isset($_POST['add_allowed'])) ? true : false;
+	$add				= (isset($_POST['add_extension_group_check'])) ? true : false;
 
 	if ($extension_group != '' && $add)
 	{
@@ -514,11 +391,7 @@ if (sizeof($notify))
 <?php
 }
 
-$modes = array('manage', 'cats', 'extensions', 'ext_groups', 'orphan');
-
-$select_size_mode = size_select('size', $size);
-$select_quota_size_mode = size_select('quota_size', $quota_size);
-$select_pm_size_mode = size_select('pm_size', $pm_size);
+$modes = array('extensions', 'ext_groups', 'orphan');
 
 $s_select_mode = '<select name="mode">';
 foreach ($modes as $_mode)
@@ -534,157 +407,6 @@ $s_select_mode .= '</select>';
 	</tr>
 	</table>
 <?php
-
-// Configuration
-if ($mode == 'manage')
-{
-
-	$yes_no_switches = array('disable_mod', 'allow_pm_attach', 'display_order');
-
-	for ($i = 0; $i < count($yes_no_switches); $i++)
-	{
-		eval("\$" . $yes_no_switches[$i] . "_yes = ( \$new['" . $yes_no_switches[$i] . "']) ? 'checked=\"checked\"' : '';");
-		eval("\$" . $yes_no_switches[$i] . "_no = ( !\$new['" . $yes_no_switches[$i] . "']) ? 'checked=\"checked\"' : '';");
-	}
-
-?>
-	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
-	<tr>
-	  <th align="center" colspan="2"><?php echo $user->lang['ATTACHMENT_SETTINGS']; ?></th>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['UPLOAD_DIR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_dir" class="post" value="<?php echo $new['upload_dir'] ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['DISPLAY_ORDER']; ?>:<br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
-		<td class="row2">
-		<table border=0 cellpadding=0 cellspacing=0>
-			<tr>
-				<td><input type="radio" name="display_order" value="0" <?php echo $display_order_no; ?> /> <?php echo $user->lang['DESCENDING']; ?></td>
-            </tr>
-            <tr>
-                 <td><input type="radio" name="display_order" value="1" <?php echo $display_order_yes; ?> /> <?php echo $user->lang['ASCENDING']; ?></td>
-            </tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['ATTACH_MAX_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize" class="post" value="<?php echo $new['max_filesize']; ?>" /> <?php echo $select_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['ATTACH_QUOTA']; ?>:<br /><span class="gensmall"><?php echo $user->lang['ATTACH_QUOTA_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="attachment_quota" class="post" value="<?php echo $new['attachment_quota']; ?>" /> <?php echo $select_quota_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['ATTACH_MAX_PM_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="8" maxlength="15" name="max_filesize_pm" class="post" value="<?php echo $new['max_filesize_pm']; ?>" /> <?php echo $select_pm_size_mode; ?></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MAX_ATTACHMENTS'] ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_ATTACHMENTS_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments" class="post" value="<?php echo $new['max_attachments']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MAX_ATTACHMENTS_PM'] ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_ATTACHMENTS_PM_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments_pm" class="post" value="<?php echo $new['max_attachments_pm']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['PM_ATTACH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['PM_ATTACH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="allow_pm_attach" value="1" <?php echo $allow_pm_attach_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0" <?php echo $allow_pm_attach_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
-	</tr>
-</table>
-<?php
-}
-
-// Special Categories
-if ($mode == 'cats')
-{
-	$sql = 'SELECT group_name, cat_id
-		FROM ' . EXTENSION_GROUPS_TABLE . '
-		WHERE cat_id > 0
-		ORDER BY cat_id';
-	$result = $db->sql_query($sql);
-
-	$s_assigned_groups = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
-	}
-	$db->sql_freeresult($result);
-
-	$display_inlined_yes = ($new['img_display_inlined']) ? 'checked="checked"' : '';
-	$display_inlined_no = (!$new['img_display_inlined']) ? 'checked="checked"' : '';
-
-	$create_thumbnail_yes = ($new['img_create_thumbnail']) ? 'checked="checked"' : '';
-	$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
-
-?>
-	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
-	<tr>
-	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	<tr>
-	  <th align="center" colspan="2"><?php echo $user->lang['ASSIGNED_GROUP']; ?>: <?php echo ( (count($s_assigned_groups[IMAGE_CAT])) ? implode(', ', $s_assigned_groups[IMAGE_CAT]) : $user->lang['NONE']); ?></th>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['DISPLAY_INLINED']; ?>:<br /><span class="gensmall"><?php echo $user->lang['DISPLAY_INLINED_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="img_display_inlined" value="1" <?php echo $display_inlined_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0" <?php echo $display_inlined_no ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-<?php
-	
-	// Check Thumbnail Support
-	if ($new['img_imagick'] == '' && !count(get_supported_image_types()))
-	{
-		$new['img_create_thumbnail'] = '0';
-	}
-	else
-	{
-?>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['CREATE_THUMBNAIL']; ?>:<br /><span class="gensmall"><?php echo $user->lang['CREATE_THUMBNAIL_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="img_create_thumbnail" value="1" <?php echo $create_thumbnail_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0" <?php echo $create_thumbnail_no; ?> /> <?php echo $user->lang['NO']; ?></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MIN_THUMB_FILESIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MIN_THUMB_FILESIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="7" maxlength="15" name="img_min_thumb_filesize" value="<?php echo $new['img_min_thumb_filesize']; ?>" class="post" /> <?php echo $user->lang['BYTES']; ?></td>
-	</tr>
-<?php
-	}
-?>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['IMAGICK_PATH']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGICK_PATH_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="200" name="img_imagick" value="<?php echo $new['img_imagick']; ?>" class="post" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['MAX_IMAGE_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['MAX_IMAGE_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_max_width" value="<?php echo $new['img_max_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_max_height" value="<?php echo $new['img_max_height']; ?>" class="post" /></td>
-	</tr>
-	<tr>
-		<td class="row1" width="50%"><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> x <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /></td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="search_imagick" value="<?php echo $user->lang['SEARCH_IMAGICK']; ?>" class="btnlite" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
-	</tr>
-</table>
-
-<?php
-}
 
 // Extension Groups
 if ($mode == 'ext_groups')
@@ -857,24 +579,27 @@ if ($mode == 'ext_groups')
 		<td class="row2" align="center" valign="middle"><input type="text" size="3" maxlength="15" name="max_filesize_list[<?php echo $row['group_id']; ?>]" class="post" value="<?php echo $row['max_filesize']; ?>" /> <?php echo size_select('size_select_list[' . $row['group_id'] . ']', $size_format); ?></td>
 		<td class="row2" align="center" valign="middle"><input type="checkbox" name="group_delete_list[<?php echo $row['group_id']; ?>]" value="1" /></td>
 	</tr>
-<?
+<?php
 
 		if ($viewgroup && $viewgroup == $row['group_id'])
 		{
 			$sql = 'SELECT comment, extension 
-				FROM ' . EXTENSIONS_TABLE . '
-				WHERE group_id = ' . (int) $viewgroup;
+				FROM ' . EXTENSIONS_TABLE . "
+				WHERE group_id = $viewgroup";
 			$e_result = $db->sql_query($sql);
 
+			$assigned_extensions = array();
 			while ($e_row = $db->sql_fetchrow($e_result))
 			{
+				$assigned_extensions[] = strtoupper($e_row['extension']);
+			}
+			$db->sql_freeresult($e_result);
+
 ?>
 			<tr> 
-				<td class="row2" align="center" valign="middle"><span class="postdetails"><?php echo $e_row['extension']; ?></span></td>
-				<td class="row2" align="center" valign="middle" colspan="6"><span class="postdetails"><?php echo $e_row['comment']; ?></span></td>
+				<td class="row2" colspan="7">&nbsp;<?php echo $user->lang['ASSIGNED_EXTENSIONS'] . ' &#187; ' . ((sizeof($assigned_extensions)) ? implode(', ', $assigned_extensions) : $user->lang['NONE']); ?></td>
 			</tr>
-<?
-			}
+<?php
 		}
 	}
 ?>
@@ -892,54 +617,65 @@ if ($mode == 'extensions')
 ?>
 	<table class="bg" cellspacing="1" cellpadding="4" border="0" align="center" width="99%">
 	<tr>
-	  <th align="center" colspan="4"><?php echo $user->lang['MANAGE_EXTENSIONS']; ?></th>
+		<th align="center" colspan="3"><?php echo $user->lang['MANAGE_EXTENSIONS']; ?></th>
 	</tr>
 	<tr>
-		<td class="spacer" colspan="4" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<tr> 
-	  <th>&nbsp;<?php echo $user->lang['COMMENT']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['ADD_EXTENSION']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['ADD_EXTENSION']; ?>&nbsp;</th>
 	</tr>
 	<tr>
-	  <td class="row1" align="center" valign="middle"><input type="text" size="30" maxlength="100" name="add_extension_explain" class="post" value="<?php echo $add_extension_explain; ?>" /></td>
-	  <td class="row2" align="center" valign="middle"><input type="text" size="20" maxlength="100" name="add_extension" class="post" value="<?php echo $add_extension; ?>" /></td>
-	  <td class="row1" align="center" valign="middle"><?php echo (($submit) ? group_select('add_group_select', $add_extension_group) : group_select('add_group_select')) ?></td>
-	  <td class="row2" align="center" valign="middle"><input type="checkbox" name="add_extension_check" /></td>
+		<td class="row1" align="center" valign="middle"><input type="text" size="20" maxlength="100" name="add_extension" class="post" value="<?php echo $add_extension; ?>" /></td>
+		<td class="row2" align="center" valign="middle"><?php echo (($submit) ? group_select('add_group_select', $add_extension_group) : group_select('add_group_select')) ?></td>
+		<td class="row1" align="center" valign="middle"><input type="checkbox" name="add_extension_check" /></td>
 	</tr>
 	<tr align="right">
-		<td class="cat" colspan="4"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
+		<td class="cat" colspan="3"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" /></td>
 	</tr>
 	<tr> 
-	  <th>&nbsp;<?php echo $user->lang['COMMENT']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
-	  <th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['EXTENSION_GROUP']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['DELETE']; ?>&nbsp;</th>
 	</tr>
 
-<?
+<?php
 	$sql = 'SELECT * 
 		FROM ' . EXTENSIONS_TABLE . ' 
 		ORDER BY group_id';
 	$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	if ($row = $db->sql_fetchrow($result))
 	{
+		$old_group_id = $row['group_id'];
+		do
+		{
+			$current_group_id = $row['group_id'];
+			if ($old_group_id != $current_group_id)
+			{
+?>
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="../images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+<?php
+				$old_group_id = $current_group_id;
+			}
 ?>
 	<tr> 
-	  <input type="hidden" name="extension_change_list[]" value="<?php echo $row['extension_id']; ?>" />
-	  <td class="row1" align="center" valign="middle"><input type="text" size="30" maxlength="100" name="extension_explain_list[]" class="post" value="<?php echo $row['comment']; ?>" /></td>
-	  <td class="row2" align="center" valign="middle"><b class="gen"><?php echo $row['extension']; ?></b></td>
-	  <td class="row1" align="center" valign="middle"><?php echo group_select('group_select[]', $row['group_id']); ?></td>
-	  <td class="row2" align="center" valign="middle"><input type="checkbox" name="extension_id_list[]" value="<?php echo $row['extension_id']; ?>" /></td>
+		<input type="hidden" name="extension_change_list[]" value="<?php echo $row['extension_id']; ?>" />
+		<td class="row1" align="center" valign="middle"><b class="gen"><?php echo $row['extension']; ?></b></td>
+		<td class="row2" align="center" valign="middle"><?php echo group_select('group_select[]', $row['group_id']); ?></td>
+		<td class="row1" align="center" valign="middle"><input type="checkbox" name="extension_id_list[]" value="<?php echo $row['extension_id']; ?>" /></td>
 	</tr>
 <?
+		}
+		while ($row = $db->sql_fetchrow($result));
 	}
 ?>
 	<tr>
-		<td class="cat" colspan="4" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		<td class="cat" colspan="3" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
 	</table>
 <?
@@ -1044,66 +780,6 @@ function marklist(match, name, status)
 <?php
 
 adm_page_footer();
-
-// Test Settings
-function test_upload(&$error, $upload_dir, $create_directory = false)
-{
-	global $user;
-
-	// Does the target directory exist, is it a directory and writeable.
-	if ($create_directory)
-	{
-		if (!file_exists($upload_dir))
-		{
-			@mkdir($upload_dir, 0755);
-			@chmod($upload_dir, 0777);
-		}
-	}
-		
-	if (!file_exists($upload_dir))
-	{
-		$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $upload_dir);
-	}
-	
-	if (!count($error) && !is_dir($upload_dir))
-	{
-		$error[] = sprintf($user->lang['DIRECTORY_IS_NOT_A_DIR'], $upload_dir);
-	}
-	
-	if (!count($error))
-	{
-		if (!($fp = @fopen($upload_dir . '/0_000000.000', 'w')))
-		{
-			$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $new['upload_dir']);
-		}
-		else
-		{
-			@fclose($fp);
-			@unlink($upload_dir . '/0_000000.000');
-		}
-	}
-}
-
-// Generate select form
-function size_select($select_name, $size_compare)
-{
-	global $user;
-
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KB'], $user->lang['MB']);
-	$size_types = array('b', 'kb', 'mb');
-
-	$select_field = '<select name="' . $select_name . '">';
-
-	for ($i = 0; $i < count($size_types_text); $i++)
-	{
-		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
-		$select_field .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
-	}
-	
-	$select_field .= '</select>';
-
-	return ($select_field);
-}
 
 // Build Select for category items
 function category_select($select_name, $group_id = FALSE)
