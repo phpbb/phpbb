@@ -572,7 +572,7 @@ CREATE TABLE phpbb_search_results (
   search_id int(11) UNSIGNED DEFAULT '0' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
   search_time int(11) DEFAULT '0' NOT NULL,
-  search_array text NOT NULL,
+  search_array mediumtext NOT NULL,
   PRIMARY KEY (search_id),
   KEY session_id (session_id)
 );
