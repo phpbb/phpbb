@@ -112,13 +112,13 @@ class template
 
 
 	// Methods for loading and evaluating the templates
-	function display($handle)
+	function display($handle, $include_once = true)
 	{
 		global $user;
 
 		if ($filename = $this->_tpl_load($handle))
 		{
-			include_once($filename);
+			($include_once) ? include_once($filename) : include($filename);
 		}
 		else
 		{

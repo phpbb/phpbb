@@ -596,6 +596,42 @@ class user extends session
 		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 
+	function get_iso_lang_id()
+	{
+		global $config, $db;
+
+		if ($this->lang_id)
+		{
+			return $this->lang_id;
+		}
+
+		if (empty($this->lang_name))
+		{
+			$this->lang_name = $config['default_lang'];
+		}
+		
+		$result = $db->sql_query("SELECT lang_id FROM phpbb_lang WHERE lang_iso = '" . $this->lang_name . "'");
+		return (int) $db->sql_fetchfield('lang_id', 0, $result);
+	}
+
+	// Get profile fields for user
+	function get_profile_fields($user_id)
+	{
+		global $user, $db;
+		
+		if (isset($user->profile_fields))
+		{
+			return;
+		}
+
+		$sql = 'SELECT * FROM
+			phpbb_profile_fields_data 
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query_limit($sql, 1); 
+
+		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
+	}
+
 	function img($img, $alt = '', $width = false, $no_cache = false)
 	{
 		static $imgs;
