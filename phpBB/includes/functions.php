@@ -423,6 +423,18 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 }
 
 //
+// This does exactly what preg_quote() does in PHP 4-ish
+// If you just need the 1-parameter preg_quote call, then don't bother using this.
+//
+function phpbb_preg_quote($str, $delimiter)
+{
+	$text = preg_quote($str);
+	$text = str_replace($delimiter, "\\" . $delimiter, $text);
+	
+	return $text;
+}
+
+//
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier
 // to return both sets of arrays
