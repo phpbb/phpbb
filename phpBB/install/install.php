@@ -175,10 +175,10 @@ function guess_lang()
 		'macedonian'				=> 'mk', 
 		'dutch'						=> 'nl([_-][a-z]+)?', 
 		'norwegian'					=> 'no', 
+		'punjabi'					=> 'pa', 
 		'polish'					=> 'pl', 
 		'portuguese_brazil'			=> 'pt[_-]br', 
 		'portuguese'				=> 'pt([_-][a-z]+)?', 
-		'punjabi'					=> 'pa', 
 		'romanian'					=> 'ro([_-][a-z]+)?', 
 		'russian'					=> 'ru([_-][a-z]+)?', 
 		'slovenian'					=> 'sl([_-][a-z]+)?', 
@@ -205,7 +205,7 @@ function guess_lang()
 			{
 				if (preg_match('#' . $match . '#i', trim($accept_lang_ary[$i])))
 				{
-					if (file_exists($phpbb_root_path . 'language/lang_' . $lang))
+					if (file_exists(@realpath($phpbb_root_path . 'language/lang_' . $lang)))
 					{
 						return $lang;
 					}
@@ -584,7 +584,7 @@ else if (!empty($HTTP_POST_VARS['ftp_file']))
 		// section.
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.php" />';
+		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.'.$phpEx.'" />';
 		$s_hidden_fields .= '<input type="hidden" name="submit" value="' . $lang['Login'] . '" />';
 
 		page_header($lang['Inst_Step_2']);

@@ -122,7 +122,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 			message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
 		}
 
-		$boxstring = '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
 		$forum_rows = array();
 		while ( $row = $db->sql_fetchrow($result) )
@@ -171,7 +171,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 	}
 	else
 	{
-		$boxstring .= '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
+		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
 	if ( !empty($SID) )

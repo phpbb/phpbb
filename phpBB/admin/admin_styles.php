@@ -748,7 +748,7 @@ switch( $mode )
 				$s_hidden_fields = '<input type="hidden" name="theme_info" value="' . htmlspecialchars($theme_data) . '" />';
 				$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" /><input type="hidden" name="mode" value="export" />';
 				
-				$download_form = '<form action="' . append_sid("admin_styles.$phpEx") . '" method="post"><input type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
+				$download_form = '<form action="' . append_sid("admin_styles.$phpEx") . '" method="post"><input class="mainoption" type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
 
 				$template->set_filenames(array(
 					"body" => "message_body.tpl")

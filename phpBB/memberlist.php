@@ -107,6 +107,7 @@ $template->assign_vars(array(
 	'L_ICQ' => $lang['ICQ'], 
 	'L_JOINED' => $lang['Joined'], 
 	'L_POSTS' => $lang['Posts'], 
+	'L_PM' => $lang['Private_Message'], 
 
 	'S_MODE_SELECT' => $select_sort_mode,
 	'S_ORDER_SELECT' => $select_sort_order,

@@ -161,7 +161,7 @@ if ( $mode == 'newpm' )
 			$l_new_message = $lang['You_no_new_pm'];
 		}
 
-		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . append_sid("privmsg.".$phpEx."?folder=inbox") . '" onClick="jump_to_inbox();return false;" target="_new">', '</a>');
+		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . append_sid("privmsg.".$phpEx."?folder=inbox") . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
 	}
 	else
 	{

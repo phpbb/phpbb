@@ -168,9 +168,9 @@ else
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
-		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $lang['Days'];
+		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];
 
-		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
+		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
 		//
 		// Assign the template variables.
