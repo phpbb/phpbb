@@ -76,9 +76,16 @@ function prune($forum_id, $prune_date, $prune_all = false;)
 
 		if ( $sql_post != '' )
 		{
-			$sql = "DELETE FROM " . TOPICS_TABLE . " 
+			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
 				WHERE topic_id IN ($sql_topics)";
 			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete watched topics during prune', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . TOPICS_TABLE . " 
+				WHERE topic_id IN ($sql_topics)";
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topics during prune', '', __LINE__, __FILE__, $sql);
 			}
