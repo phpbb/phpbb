@@ -1789,7 +1789,7 @@ if ( !empty($next) )
 			$sql = "UPDATE " . $table_prefix . "config 
 				SET config_value = '" . $script_path . "'
 				WHERE config_name = 'script_path'";
-			query($sql, "Couldn't insert Board admin email");
+			query($sql, "Couldn't insert Board script path");
 			
 			//
 			// Change session table to HEAP if MySQL version matches

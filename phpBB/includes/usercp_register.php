@@ -659,6 +659,7 @@ if ( $error )
 	$occupation = htmlspecialchars(stripslashes($occupation));
 	$interests = htmlspecialchars(stripslashes($interests));
 	$signature = stripslashes($signature);
+	$signature = ( $signature_bbcode_uid != '' ) ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid\]/si", ']', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);

@@ -151,7 +151,7 @@ class emailer
 
 		$this->msg = ( isset($match[5]) ) ? trim($match[5]) : '';
 		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
-		$this->encoding = ( trim($match[4]) != '' ) ? trim($match[4]) : 'iso-8859-1';
+		$this->encoding = ( trim($match[4]) != '' ) ? trim($match[4]) : $lang['ENCODING'];
 
 		return true;
 	}
@@ -209,7 +209,7 @@ class emailer
 	{
 		$mime_boundary = "--==================_846811060==_";
 
-		$this->mailMsg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"iso-8859-1\"\n\n" . $this->mailMsg;
+		$this->mailMsg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->mailMsg;
 
 		if ($mime_filename)
 		{
