@@ -30,6 +30,14 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
+
+// Can this user view profiles/memberslist?
+if (!$auth->acl_gets('u_viewprofile', 'a_'))
+{
+	trigger_error($user->lang['NO_VIEW']);
+}
+
+
 // Grab data
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 
@@ -37,8 +45,8 @@ $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 $form = (!empty($_GET['form'])) ? $_GET['form'] : 0;
 $field = (isset($_GET['field'])) ? $_GET['field'] : 'username';
 
-$sort_key = (!empty($_REQUEST['sort_key'])) ? intval($_REQUEST['sort_key']) : 0;
-$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'd';
+$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'c';
+$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 
 $username = (!empty($_REQUEST['username'])) ? trim($_REQUEST['username']) : '';
 $email = (!empty($_REQUEST['email'])) ? trim($_REQUEST['email']) : '';
@@ -56,21 +64,35 @@ $count = (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
 $ipdomain = (!empty($_REQUEST['ip'])) ? trim($_REQUEST['ip']) : '';
 
 
+// Grab rank information for later
+$sql = "SELECT * 
+	FROM " . RANKS_TABLE . " 
+	ORDER BY rank_special, rank_min DESC";
+$result = $db->sql_query($sql, 120);
+
+$ranksrow = array();
+while ($row = $db->sql_fetchrow($result))
+{
+	$ranksrow[] = $row;
+}
+$db->sql_freeresult($result);
 
 
 // Memberlist sorting
-$sort_key_text = array($user->lang['SORT_JOINED'], $user->lang['SORT_USERNAME'], $user->lang['SORT_EMAIL'], $user->lang['SORT_LOCATION'], $user->lang['SORT_POST_COUNT'], $user->lang['SORT_LAST_ACTIVE']);
-$sort_key_fields = array('user_regdate', 'username', 'user_email', 'user_from', 'user_posts', 'user_lastvisit');
-$s_sort_key = '<select name="sort_key">';
-for($i = 0; $i < count($sort_key_text); $i++)
+$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['SORT_LAST_ACTIVE']);
+$sort_key_sql = array('a' => 'username', 'b' => 'user_from', 'c' => 'user_regdate', 'd' => 'user_posts', 'e' => 'user_email', 'f' => 'user_website', 'g' => 'user_icq', 'h' => 'user_aim', 'i' => 'user_msnm', 'j' => 'user_yim', 'k' => 'user_lastvisit');
+
+$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+$s_sort_key = '<select name="sk">';
+foreach ($sort_key_text as $key => $value)
 {
-	$selected = ($sort_key == $i) ? ' selected="selected"' : '';
-	$s_sort_key .= '<option value="' . $i . '"' . $selected . '>' . $sort_key_text[$i] . '</option>';
+	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+	$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 }
 $s_sort_key .= '</select>';
 
-$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-$s_sort_dir = '<select name="sort_dir">';
+$s_sort_dir = '<select name="sd">';
 foreach ($sort_dir_text as $key => $value)
 {
 	$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
@@ -81,10 +103,8 @@ $s_sort_dir .= '</select>';
 
 
 
-// Clear var for where sql
-$where_sql = '';
-
 // Additional sorting options for user search
+$where_sql = '';
 if ($mode == 'searchuser')
 {
 	$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
@@ -149,9 +169,13 @@ if ($mode == 'searchuser')
 		}
 	}
 }
+else
+{
+	$where_sql = ' AND user_active = 1';
+}
 
 // Sorting and order
-$order_by = $sort_key_fields[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Count the users ...
 $sql = "SELECT COUNT(user_id) AS total_users
@@ -163,7 +187,7 @@ $result = $db->sql_query($sql);
 $total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
 
 // Pagination string
-$pagination_url = ($mode == 'searchuser') ? "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;ip=" . urlencode($ipdomain)  . "&amp;sort_dir=$sort_dir&amp;sort_key=$sort_key&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select" : "memberlist.$phpEx$SID&amp;mode=$mode&amp;sort_dir=$sort_dir";
+$pagination_url = ($mode == 'searchuser') ? "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;ip=" . urlencode($ipdomain)  . "&amp;sd=$sort_dir&amp;sk=$sort_key&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select" : "memberlist.$phpEx$SID&amp;mode=$mode&amp;sk=$sort_key&amp;sd=$sort_dir";
 
 // Some search user specific data
 if ($mode == 'searchuser')
@@ -180,16 +204,6 @@ if ($mode == 'searchuser')
 		'COUNT'		=> $count,  
 		'IP'		=> $ipdomain, 
 
-		'L_RESET'			=> $user->lang['Reset'],
-		'L_ACTIVE'			=> $user->lang['Last_active'],
-		'L_SORT_BY'			=> $user->lang['Sort_by'],
-		'L_SORT_ASCENDING'	=> $user->lang['Sort_Ascending'],
-		'L_SORT_DESCENDING' => $user->lang['Sort_Descending'],
-		'L_SELECT_MARKED'	=> $user->lang['Select_marked'],
-		'L_MARK'			=> $user->lang['Mark'],
-		'L_MARK_ALL'		=> $user->lang['Mark_all'],
-		'L_UNMARK_ALL'		=> $user->lang['Unmark_all'],
-
 		'S_SEARCH_USER' 		=> true,
 		'S_FORM_NAME' 			=> $form,
 		'S_FIELD_NAME' 			=> $field,
@@ -203,7 +217,7 @@ if ($mode == 'searchuser')
 }
 
 // Do the SQL thang
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	$where_sql
@@ -231,12 +245,32 @@ if ($row = $db->sql_fetchrow($result))
 				case USER_AVATAR_UPLOAD:
 					$poster_avatar = ($config['allow_avatar_upload']) ? '<img src="' . $config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
+
 				case USER_AVATAR_REMOTE:
 					$poster_avatar = ($config['allow_avatar_remote']) ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
+
 				case USER_AVATAR_GALLERY:
 					$poster_avatar = ($config['allow_avatar_local']) ? '<img src="' . $config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
+			}
+		}
+
+		$rank_title = $rank_img = '';
+		foreach ($ranksrow as $rank)
+		{
+			if (empty($row['user_rank']) && $row['user_posts'] >= $rank['rank_min'])
+			{
+				$rank_title = $rank['rank_title'];
+				$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
+				break;
+			}
+
+			if (!empty($rank['rank_special']) && $row['user_rank'] == $rank['rank_id'])
+			{
+				$rank_title = $rank['rank_title'];
+				$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $rank_title . '" title="' . $rank_title . '" /><br />' : '';
+				break;
 			}
 		}
 
@@ -318,10 +352,12 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG'		=> $yim_img,
 			'YIM'			=> $yim,
 			'ACTIVE'		=> $row['user_last_active'],
+			'RANK_TITLE'	=> $rank, 
+			'RANK_IMG'		=> $rank_img, 
 
 			'S_ROW_COUNT'	=> $i,
 
-			'U_VIEWPROFILE'	=> "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+			'U_VIEWPROFILE'		=> "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
 		);
 
 		$i++;
@@ -331,29 +367,27 @@ if ($row = $db->sql_fetchrow($result))
 
 // Generate page
 $template->assign_vars(array(
-	'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start). '&nbsp;',
+	'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
 	'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start),
 
-	'L_EMAIL' 		=> $user->lang['Email'],
-	'L_WEBSITE'		=> $user->lang['Website'],
-	'L_FROM' 		=> $user->lang['Location'],
-	'L_ORDER' 		=> $user->lang['Order'],
-	'L_SORT' 		=> $user->lang['Sort'],
-	'L_SUBMIT' 		=> $user->lang['Sort'],
-	'L_AIM' 		=> $user->lang['AIM'],
-	'L_YIM' 		=> $user->lang['YIM'],
-	'L_MSNM' 		=> $user->lang['MSNM'],
-	'L_ICQ' 		=> $user->lang['ICQ'],
-	'L_JOINED' 		=> $user->lang['Joined'],
-	'L_POSTS' 		=> $user->lang['Posts'],
-	'L_GOTO_PAGE'	=> $user->lang['Goto_page'],
-
-	'U_FIND_MEMBER' => "memberlist.$phpEx$SID&amp;mode=searchuser", 
+	'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser", 
+	'U_SORT_USERNAME'	=> "memberlist.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_FROM'		=> "memberlist.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_JOINED'		=> "memberlist.$phpEx$SID&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_POSTS'		=> "memberlist.$phpEx$SID&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_EMAIL'		=> "memberlist.$phpEx$SID&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_WEBSITE'	=> "memberlist.$phpEx$SID&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_ICQ'		=> "memberlist.$phpEx$SID&amp;sk=g&amp;sd=" . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_AIM'		=> "memberlist.$phpEx$SID&amp;sk=h&amp;sd=" . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_MSN'		=> "memberlist.$phpEx$SID&amp;sk=i&amp;sd=" . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_YIM'		=> "memberlist.$phpEx$SID&amp;sk=j&amp;sd=" . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'), 
+	'U_SORT_ACTIVE'		=> "memberlist.$phpEx$SID&amp;sk=k&amp;sd=" . (($sort_key == 'k' && $sort_dir == 'a') ? 'd' : 'a'), 
 
 	'S_MODE_SELECT' => $s_sort_key,
 	'S_ORDER_SELECT'=> $s_sort_dir,
 	'S_MODE_ACTION' => "memberlist.$phpEx$SID&amp;mode=$mode&amp;form=$form")
 );
+
 
 // Output the page
 $page_title = $user->lang['Memberlist'];

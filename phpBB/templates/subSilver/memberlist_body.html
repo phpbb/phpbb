@@ -98,13 +98,13 @@ function marklist(status)
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
 		<th height="25" nowrap="nowrap">#</th>
+		<th nowrap="nowrap"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
+		<th nowrap="nowrap"><a class="th" href="{U_SORT_JOINED}">{L_JOINED}</a></th>
+		<th nowrap="nowrap"><a class="th" href="{U_SORT_POSTS}">{L_POSTS}</a></th>
+		<th nowrap="nowrap">{L_RANK}</th>
 		<th nowrap="nowrap">{L_SEND_MESSAGE}</th>
-		<th nowrap="nowrap">{L_USERNAME}</th>
-		<th nowrap="nowrap">{L_EMAIL}</th>
-		<th nowrap="nowrap">{L_LOCATION}</th>
-		<th nowrap="nowrap">{L_JOINED}</th>
-		<th nowrap="nowrap">{L_POSTS}</th>
-		<th nowrap="nowrap">{L_WEBSITE}</th>
+		<th nowrap="nowrap"><a class="th" href="{U_SORT_EMAIL}">{L_EMAIL}</a></th>
+		<th nowrap="nowrap"><a class="th" href="{U_SORT_WEBSITE}">{L_WEBSITE}</a></th>
 		<!-- IF S_SEARCH_USER --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
 	</tr>
 	<!-- BEGIN memberrow -->
@@ -114,12 +114,12 @@ function marklist(status)
 	<tr class="row1">
 	<!-- ENDIF -->
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-		<td class="gen" align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
 		<td class="gen" align="center"><a href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></td>
-		<td class="gen" align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
-		<td class="gen" align="center" valign="middle">{memberrow.FROM}</td>
 		<td class="gensmall" align="center" valign="middle" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center" valign="middle">{memberrow.POSTS}</td>
+		<td class="gen" align="center" valign="middle">{memberrow.RANK_IMG}</td>
+		<td class="gen" align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
+		<td class="gen" align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
 		<td class="gen" align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</td>
 		<!-- IF S_SEARCH_USER --><td align="center" valign="middle"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
 	</tr>

@@ -112,6 +112,13 @@ a.copyright:hover {
 	text-decoration: underline;
 }
 
+a.th:link, a.th:active, a.th:visited {
+	color: #FFA34F;
+}
+a.th:hover {
+	text-decoration: underline;
+}
+
 /* --------------------------- */
 
 
