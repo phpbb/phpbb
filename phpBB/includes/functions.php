@@ -26,32 +26,32 @@ function get_db_stat($mode)
 {
 	global $db;
 
-	switch($mode){
+	switch($mode)
+	{
 		case 'postcount':
 			$sql = "SELECT COUNT(post_id) AS total
 				FROM ".POSTS_TABLE;
-		break;
+			break;
 
 		case 'usercount':
 			$sql = "SELECT COUNT(user_id) AS total
-						FROM ". USERS_TABLE ."
-						WHERE user_id <> ".ANONYMOUS;
-		break;
+				FROM ". USERS_TABLE ."
+				WHERE user_id <> " . ANONYMOUS;
+			break;
 
 		case 'newestuser':
 			$sql = "SELECT user_id, username
-						FROM ".USERS_TABLE."
-						WHERE user_id <> " . ANONYMOUS. "
-						ORDER BY user_id DESC
-						LIMIT 1";
-		break;
+				FROM ".USERS_TABLE."
+				WHERE user_id <> " . ANONYMOUS . "
+				ORDER BY user_id DESC
+				LIMIT 1";
+			break;
+
 		case 'topiccount':
 			$sql = "SELECT SUM(forum_topics) AS total
-						FROM ".FORUMS_TABLE;
-		break;
-
+				FROM ".FORUMS_TABLE;
+			break;
 	}
-
 
 	if(!$result = $db->sql_query($sql))
 	{
@@ -76,13 +76,13 @@ function get_userdata_from_id($userid)
 	global $db;
 
 	$sql = "SELECT *
-		FROM ".USERS_TABLE."
+		FROM " . USERS_TABLE . "
 		WHERE user_id = $userid";
 	if(!$result = $db->sql_query($sql))
 	{
-		$userdata = array("error" => "1");
-		return ($userdata);
+		message_die(GENERAL_ERROR, "Couldn't obtain userdata for id", "", __LINE__, __FILE__, $sql);
 	}
+
 	if($db->sql_numrows($result))
 	{
 		$myrow = $db->sql_fetchrowset($result);
@@ -90,8 +90,7 @@ function get_userdata_from_id($userid)
 	}
 	else
 	{
-		$userdata = array("error" => "1");
-		return ($userdata);
+		message_die(GENERAL_ERROR, "No userdata for this user_id", "", __LINE__, __FILE__, $sql);
 	}
 }
 
@@ -100,12 +99,12 @@ function get_userdata($username) {
 	global $db;
 
 	$sql = "SELECT *
-		FROM ".USERS_TABLE."
+		FROM " . USERS_TABLE . "
 		WHERE username = '$username'
-			AND user_level != ".DELETED;
+			AND user_id <> " . ANONYMOUS;
 	if(!$result = $db->sql_query($sql))
 	{
-		$userdata = array("error" => "1");
+		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
 	}
 
 	if($db->sql_numrows($result))
@@ -115,8 +114,7 @@ function get_userdata($username) {
 	}
 	else
 	{
-		$userdata = array("error" => "1");
-		return ($userdata);
+		message_die(GENERAL_ERROR, "Tried obtaining data for a non-existent user", "", __LINE__, __FILE__, $sql);
 	}
 }
 
@@ -126,13 +124,13 @@ function make_jumpbox()
 	global $l_jumpto, $l_noforums, $l_nocategories;
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
-		FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
+		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
 		WHERE f.cat_id = c.cat_id
 		GROUP BY c.cat_id, c.cat_title, c.cat_order
 		ORDER BY c.cat_order";
 	if(!$q_categories = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Couldn't obtain category list.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Couldn't obtain category list.", "", __LINE__, __FILE__, $sql);
 	}
 
 	$total_categories = $db->sql_numrows();
@@ -147,10 +145,12 @@ function make_jumpbox()
 			ORDER BY cat_id, forum_order";
 		if(!$q_forums = $db->sql_query($sql))
 		{
-			error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 		}
 		$total_forums = $db->sql_numrows($q_forums);
 		$forum_rows = $db->sql_fetchrowset($q_forums);
+
+//		$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 		$boxstring = '';
 		for($i = 0; $i < $total_categories; $i++)
@@ -192,9 +192,13 @@ function init_userprefs($userdata)
 
 	if(!$board_config['override_user_themes'])
 	{
-		if(($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED) && isset($userdata['user_theme']))
+		if( $userdata['user_id'] != ANONYMOUS && isset($userdata['user_theme']) )
 		{
 			$theme = setuptheme($userdata['user_theme']);
+			if($theme == FALSE)
+			{
+				$theme = setuptheme($board_config['default_theme']);
+			}
 		}
 		else
 		{
@@ -206,36 +210,31 @@ function init_userprefs($userdata)
 		$theme = setuptheme($board_config['override_user_themes']);
 	}
 
-	if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
+	if( $userdata['user_id'] != ANONYMOUS )
 	{
 		if(!empty($userdata['user_lang']))
 		{
 			$board_config['default_lang'] = $userdata['user_lang'];
 		}
+
 		if(!empty($userdata['user_dateformat']))
 		{
 			$board_config['default_dateformat'] = $userdata['user_dateformat'];
 		}
+
 		if(isset($userdata['user_timezone']))
 		{
 			$board_config['default_timezone'] = $userdata['user_timezone'];
 		}
+
 		if(!empty($userdata['user_template']))
 		{
 			$board_config['default_template'] = $userdata['user_template'];
 		}
 	}
 
-	// Setup user's Template
 	$template = new Template("templates/" . $board_config['default_template']);
 
-	//
-	// This is currently worthless since all the individual
-	// language variables will only be locally defined in this
-	// function and not accessible to the board code globally.
-	// This will be fixed by moving all $l_xxxx vars into a single
-	// $lang[''] array
-	//
 	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
 	{
 		include('language/lang_'.$board_config['default_lang'].'.'.$phpEx);
@@ -253,16 +252,15 @@ function setuptheme($theme)
 	global $db;
 
 	$sql = "SELECT *
-		FROM ".THEMES_TABLE."
+		FROM " . THEMES_TABLE . "
 		WHERE themes_id = $theme";
-
 	if(!$result = $db->sql_query($sql))
 	{
-		return(0);
+		return(FALSE);
 	}
 	if(!$myrow = $db->sql_fetchrow($result))
 	{
-		return(0);
+		return(FALSE);
 	}
 	return($myrow);
 }
@@ -273,10 +271,10 @@ function generate_activation_key()
 		"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J",
 		"k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T",
 		"u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8",
-		"9","0"
-	);
+		"9","0");
 
 	$max_elements = count($chars) - 1;
+
 	srand((double)microtime()*1000000);
 
 	$act_key = '';
@@ -294,10 +292,6 @@ function encode_ip($dotquad_ip)
 	$ip_sep = explode(".", $dotquad_ip);
 	return (sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]));
 
-//	$ip_p = (!empty($dotquad_proxy_ip)) ? explode(".", $dotquad_proxy_ip) : explode(".", "0.0.0.0");
-
-//	return (sprintf("%03d.%03d.%03d.%03d:%03d.%03d.%03d.%03d", $ip[0], $ip[1], $ip[2], $ip[3], $ip_p[0], $ip_p[1], $ip_p[2], $ip_p[3]));
-
 //	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
 }
 
@@ -306,7 +300,6 @@ function decode_ip($int_ip)
 	$hexipbang = explode(".",chunk_split($int_ip, 2, "."));
 	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
 
-//	list($ip['remote'], $ip['forwarded']) = explode(":", $c_ip);
 //	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
 }
 
@@ -333,7 +326,6 @@ function get_gmt_ts()
 //
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
 {
-
 	global $lang;
 
 	$total_pages = ceil($num_items/$per_page);
@@ -431,13 +423,12 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT group_name AS username
-				FROM " . GROUPS_TABLE . "
-				WHERE LOWER(group_name) = '" . strtolower($username) . "'";
+			$sql_users = "SELECT username
+				FROM " . USERS_TABLE . "
+				WHERE LOWER(username) = '" . strtolower($username) . "'";
 			$sql_disallow = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
 				WHERE disallow_username = '$username'";
-
 			if($result = $db->sql_query($sql_users))
 			{
 				if($db->sql_numrows($result) > 0)
@@ -458,11 +449,10 @@ function validate_username($username)
 			$sql = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
 				WHERE disallow_username = '$username'
-				UNION
-				SELECT group_name AS username
-				FROM " . GROUPS_TABLE . "
-				WHERE LOWER(group_name) = '" . strtolower($username) . "'";
-
+					UNION
+				SELECT username
+				FROM " . USERS_TABLE . "
+				WHERE LOWER(username) = '" . strtolower($username) . "'";
 			if($result = $db->sql_query($sql))
 			{
 				if($db->sql_numrows($result) > 0)
@@ -475,4 +465,5 @@ function validate_username($username)
 
 	return(TRUE);
 }
+
 ?>
