@@ -124,7 +124,7 @@ function remove_common($percent, $delete_common = 0)
 
 	if( $delete_common)
 	{
-		$sql = "DELETE FROM phpbb_search_wordmatch 
+		$sql = "DELETE FROM ".SEARCH_MATCH_TABLE." 
 			WHERE word_id IN ($common_word_ids)";
 		$result = $db->sql_query($sql); 
 		if( !$result )
@@ -215,7 +215,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	if( $post_rows = $db->sql_numrows($posts_result) )
 	{
 
-	//	$sql = "LOCK TABLES phpbb_posts_text WRITE";
+	//	$sql = "LOCK TABLES ".POST_TEXT_TABLE." WRITE";
 	//	$result = $db->sql_query($sql); 
 		print "\n<p>\n<a href='$PHP_SELF?batchstart=$batchstart'>Restart from posting $batchstart</a><br>\n";
 
