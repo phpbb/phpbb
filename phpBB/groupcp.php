@@ -39,7 +39,7 @@ $server_name = trim($board_config['server_name']);
 $server_protocol = ( $board_config['cookie_secure'] ) ? "https://" : "http://";
 $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-$server_url = $server_protocol . $script_name . $server_name . $server_port;
+$server_url = $server_protocol . $server_name . $server_port . $script_name;
 
 if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
 {
