@@ -67,7 +67,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 {
 	if ( empty($HTTP_POST_VARS['confirm']) )
 	{
-		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count');
+		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'deleteposts');
 
 		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="yes" value="' . $lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="no" value="' . $lang['No'] . '" /><input type="hidden" name="confirm" value="1" />';
 
@@ -153,7 +153,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		if ( $where_sql != '' )
 		{
 			$sql = '';
-			if ( !empty($HTTP_POST_VARS['prune']) )
+			if ( !empty($HTTP_POST_VARS['delete']) )
 			{
 				if ( !empty($HTTP_POST_VARS['deleteposts']) )
 				{
