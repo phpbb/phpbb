@@ -211,7 +211,7 @@ if ($to_topic_id > 0)
 
 	if (!$row = $db->sql_fetchrow($result))
 	{
-		trigger_error($user->lang['Topic_not_exist'] . $return_mode);
+		trigger_error($user->lang['TOPIC_NOT_EXIST'] . $return_mode);
 	}
 	$db->sql_freeresult($result);
 
@@ -361,7 +361,7 @@ else
 
 	if ($not_moderator || !get_forum_list('m_', TRUE, TRUE, TRUE))
 	{
-		trigger_error('Not_Moderator');
+		trigger_error('NOT_MODERATOR');
 	}
 	else
 	{
@@ -1058,9 +1058,7 @@ switch ($mode)
 			$db->sql_query($sql);
 		}
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-		);
+		meta_refresh(3, $redirect_page);
 
 		$return_mcp = '<br /><br />' . sprintf($user->lang['RETURN_MCP'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=mod_queue">', '</a>');
 		trigger_error($user->lang[$lang_str] . '<br /><br />' . $l_redirect . $return_mcp);
@@ -1127,7 +1125,7 @@ switch ($mode)
 			{
 				if ($row['poster_id'] == ANONYMOUS)
 				{
-					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['Guest'];
+					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
 				}
 				else
 				{
@@ -1136,12 +1134,12 @@ switch ($mode)
 
 				$template->assign_block_vars($block_name, array(
 					'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
-					'FORUM'				=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
-					'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
-					'AUTHOR'			=>	$author,
-					'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
-					'POST_TIME'			=>	$user->format_date($row['post_time']),
-					'S_CHECKBOX'		=>	'<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '">'
+					'FORUM'					=>	'<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>',
+					'TOPIC'						=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
+					'AUTHOR'					=>	$author,
+					'SUBJECT'					=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
+					'POST_TIME'				=>	$user->format_date($row['post_time']),
+					'S_CHECKBOX'			=>	'<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '">'
 				));				
 			}
 		}
@@ -1160,9 +1158,7 @@ switch ($mode)
 		sync('topic', 'topic_id', $topic_id_list);
 		sync('reported', 'topic_id', $topic_id_list);
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-		);
+		meta_refresh(3, $redirect_page);
 
 		$msg = (count($topic_id_list) == 1) ? $user->lang['TOPIC_RESYNCHRONISED'] : $user->lang['TOPICS_RESYNCHRONISED'];
 		trigger_error($msg . '<br /><br />' . $l_redirect);
@@ -1204,9 +1200,7 @@ switch ($mode)
 			$log_mode = (count($post_id_list) == 1) ? 'logm_delete_post' : 'logm_delete_posts';
 			add_log('mod', $topic_data[$topic_id]['forum_id'], $topic_id, $log_mode, implode(', ', $post_id_list));
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
+			meta_refresh(3, $redirect_page);
 
 			$msg = (count($post_id_list) == 1) ? $user->lang['POST_REMOVED'] : $user->lang['POSTS_REMOVED'];
 			trigger_error($msg . '<br /><br />' . $l_redirect);
@@ -1223,7 +1217,7 @@ switch ($mode)
 		mcp_header('confirm_body.html');
 
 		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $user->lang['Confirm'],
+			'MESSAGE_TITLE' => $user->lang['CONFIRM'],
 			'MESSAGE_TEXT' => (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE'] : $user->lang['CONFIRM_DELETE_POSTS'],
 
 			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=delete_posts",
@@ -1257,10 +1251,7 @@ switch ($mode)
 				add_log('mod', $topic_data[$topic_id]['forum_id'], $topic_id, 'logm_delete_topic', $topic_data[$topic_id]['topic_title']);
 			}
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
-
+			meta_refresh(3, $redirect_page);
 			trigger_error($user->lang['TOPICS_REMOVED'] . '<br /><br />' . $l_redirect);
 		}
 
@@ -1427,7 +1418,7 @@ switch ($mode)
 		}
 		else
 		{
-			$poster = (!empty($post_info['username'])) ? $post_info['username'] : ((!$post_info['post_username']) ? $user->lang['Guest'] : $post_info['post_username']);
+			$poster = (!empty($post_info['username'])) ? $post_info['username'] : ((!$post_info['post_username']) ? $user->lang['GUEST'] : $post_info['post_username']);
 
 			$message = $post_info['post_text'];
 			$post_subject = ($post_info['post_subject'] != '') ? $post_info['post_subject'] : $topic_data['topic_title'];
@@ -1540,14 +1531,12 @@ switch ($mode)
 
 		$message .= '<br /><br />' . $l_redirect . '<br \><br \>' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
-		));
-
 		foreach ($topic_id_list as $topic_id)
 		{
 			add_log('mod', $forum_id, $topic_id, 'logm_' . $mode);
 		}
+
+		meta_refresh(3, $redirect_page);
 		trigger_error($message);
 	break;
 
@@ -1840,7 +1829,7 @@ switch ($mode)
 			{
 				if ($row['poster_id'] == ANONYMOUS)
 				{
-					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['Guest'];
+					$author = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
 				}
 				else
 				{
@@ -1910,7 +1899,7 @@ switch ($mode)
 					'U_POST_DETAILS'	=>	$mcp_url . '&amp;mode=post_details',
 					'FORUM'				=>	(!empty($row['forum_id'])) ? '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>' : $user->lang['POST_GLOBAL'],
 					'TOPIC'				=>	'<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . '">' . $row['topic_title'] . '</a>',
-					'REPORTER'			=>	($row['user_id'] == ANONYMOUS) ? $user->lang['Guest'] : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
+					'REPORTER'			=>	($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
 					'SUBJECT'			=>	'<a href="mcp.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details">' . (($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT']) . '</a>',
 					'REPORT_TIME'		=>	$user->format_date($row['report_time'])
 				));				
