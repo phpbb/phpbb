@@ -196,6 +196,7 @@ CREATE TABLE phpbb_forums (
    enable_prune tinyint(1) DEFAULT '0' NOT NULL,
    prune_next int(11) UNSIGNED,
    prune_days tinyint(4) UNSIGNED NOT NULL,
+   prune_viewed tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
    KEY left_id (left_id),
@@ -361,7 +362,8 @@ CREATE TABLE phpbb_posts (
    KEY topic_id (topic_id),
    KEY poster_ip (poster_ip),
    KEY poster_id (poster_id),
-   KEY post_approved (post_approved)
+   KEY post_approved (post_approved),
+   KEY post_time (post_time)
 );
 
 # Table: 'phpbb_privmsgs'
@@ -691,6 +693,7 @@ CREATE TABLE phpbb_users (
    user_email varchar(60) DEFAULT '' NOT NULL,
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
+   user_lastpost_time int(11) DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_karma tinyint(1) DEFAULT '0' NOT NULL,
    user_min_karma tinyint(1) DEFAULT '-5' NOT NULL,
