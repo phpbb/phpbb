@@ -80,7 +80,8 @@ if (!empty($_REQUEST['mode']))
 	switch ($mode)
 	{
 		case 'activate':
-			include($phpbb_root_path . 'ucp/usercp_activate.'.$phpEx);
+			include($phpbb_root_path . 'ucp/ucp_activate.'.$phpEx);
+			ucp_activate::main();
 			break;
 
 		case 'register':
