@@ -286,7 +286,7 @@ class sql_db
 		}
 	}
 	function sql_nextid(){
-		if($this->db_connection_id)
+		if($this->db_connect_id)
 		{
 			$result = @mysql_insert_id($this->db_connect_id);
 			return $result;
