@@ -169,6 +169,7 @@ define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('STYLES_TABLE', $table_prefix.'styles');
 define('STYLES_TPL_TABLE', $table_prefix.'styles_template');
+define('STYLES_TPLDATA_TABLE', $table_prefix.'styles_template_data');
 define('STYLES_CSS_TABLE', $table_prefix.'styles_theme');
 define('STYLES_IMAGE_TABLE', $table_prefix.'styles_imageset');
 define('TOPICS_TABLE', $table_prefix.'topics');
@@ -188,11 +189,12 @@ set_error_handler('msg_handler');
 $user		= new user();
 $auth		= new auth();
 $cache		= new acm();
-$template	= new template();
 $db			= new sql_db();
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+$template	= new template($db);
 
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
