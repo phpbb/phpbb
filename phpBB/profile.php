@@ -612,7 +612,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					if( !$error )
 					{
 						$password = md5($password);
-						$passwd_sql = "user_password = '" . str_replace("\'", "''", $password) . "', ";
+						$passwd_sql = "user_password = '$password', ";
 					}
 				}
 			}
@@ -1402,7 +1402,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == "register") ? 0 : TRUE;
 
 				$s_hidden_vars = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" /><input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . str_replace("\"", "&quot;", $user_id) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . $user_id . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="username" value="' . str_replace("\"", "&quot;", $username) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="email" value="' . str_replace("\"", "&quot;", $email) . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . str_replace("\"", "&quot;", $icq) . '" />';
@@ -1651,15 +1651,17 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			{
 				$template->assign_block_vars("avatarblock", array() );
 
-				if($board_config['allow_avatar_upload'])
+				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']) )
 				{
 					$template->assign_block_vars("avatarblock.avatarupload", array() );
 				}
+
 				if($board_config['allow_avatar_remote'])
 				{
 					$template->assign_block_vars("avatarblock.avatarremote", array() );
 				}
-				if($board_config['allow_avatar_local'])
+
+				if($board_config['allow_avatar_local'] && file_exists("./" . $board_config['avatar_gallery_path']) )
 				{
 					$template->assign_block_vars("avatarblock.avatargallery", array() );
 				}
