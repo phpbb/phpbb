@@ -27,14 +27,26 @@
 				</tr>
 				<!-- END topicrow -->
 				<tr align="right"> 
-				  <td class="catBottom" colspan="5" height="29"> {S_HIDDEN_FIELDS} 
+				  <td class="catBottom" colspan="5" height="29"> {S_HIDDEN_FIELDS}
+					<!-- IF S_CAN_DELETE -->
 					<input type="submit" name="delete" class="liteoption" value="{L_DELETE}" />
-					&nbsp; 
+					&nbsp;
+					<!-- ENDIF -->
+					<!-- IF S_CAN_MOVE -->
 					<input type="submit" name="move" class="liteoption" value="{L_MOVE}" />
 					&nbsp; 
+					<!-- ENDIF -->
+					<!-- IF S_CAN_LOCK -->
 					<input type="submit" name="lock" class="liteoption" value="{L_LOCK}" />
 					&nbsp; 
+					<!-- ENDIF -->
+					<!-- IF S_CAN_UNLOCK -->
 					<input type="submit" name="unlock" class="liteoption" value="{L_UNLOCK}" />
+					&nbsp; 
+					<!-- ENDIF -->
+					<!-- IF S_CAN_RESYNC -->
+					<input type="submit" name="resync" class="liteoption" value="{L_RESYNC}" />
+					<!-- ENDIF -->
 				  </td>
 				</tr>
 			  </table>

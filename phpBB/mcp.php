@@ -79,7 +79,7 @@ $confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
 $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
 
-$post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic');
+$post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
 foreach ($post_modes as $post_mode)
 {
 	if (isset($_POST[$post_mode]))
@@ -255,9 +255,9 @@ if (count($forum_id_list))
 		$post_id = $post_id_list[0];
 	}
 
-	$forum_info = @$forum_data[$forum_id];
-	$topic_info = @$topic_data[$topic_id];
-	$post_info = @$post_data[$post_id];
+	$forum_info = !empty($forum_data[$forum_id]) ? $forum_data[$forum_id] : array();
+	$topic_info = !empty($topic_data[$topic_id]) ? $topic_data[$topic_id] : array();
+	$post_info = !empty($post_data[$post_id]) ? $post_data[$post_id] : array();
 }
 else
 {
@@ -369,7 +369,7 @@ $tabs_mode = array(
 foreach ($tabs as $tab_name => $tab_link)
 {
 	$template->assign_block_vars('tab', array(
-		'S_IS_SELECTED'	=>	($tab_name == @$tabs_mode[$mode]) ? TRUE : FALSE,
+		'S_IS_SELECTED'	=>	(!empty($tabs_mode[$mode]) && $tab_name == $tabs_mode[$mode]) ? TRUE : FALSE,
 		'NAME'			=>	$user->lang['mod_tabs'][$tab_name],
 		'U_LINK'		=>	$tab_link
 	));
@@ -380,6 +380,66 @@ foreach ($tabs as $tab_name => $tab_link)
 //
 switch ($mode)
 {
+	case 'resync':
+		resync('topic', 'topic_id', $topic_id_list);
+
+		$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
+		$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+
+		$template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+		);
+
+		$msg = (count($topic_id_list) == 1) ? $user->lang['TOPIC_RESYNCHRONISED'] : $user->lang['TOPICS_RESYNCHRONISED'];
+		trigger_error($msg . '<br /><br />' . $l_redirect);
+	break;
+
+	case 'delete_posts':
+
+	// TODO: what happens if the user deletes the first post? Currently, the topic is resync'ed normally and topic time/topic author are updated with the new first post
+
+		if (!$post_id_list)
+		{
+			trigger_error($user->lang['None_selected']);
+		}
+
+		if ($confirm)
+		{
+			delete_posts('post_id', $post_id_list);
+
+			$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
+			$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+
+			$template->assign_vars(array(
+				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
+			);
+
+			$msg = (count($post_id_list) == 1) ? $user->lang['POST_REMOVED'] : $user->lang['POSTS_REMOVED'];
+			trigger_error($msg . '<br /><br />' . $l_redirect);
+		}
+
+		// Not confirmed, show confirmation message
+		$hidden_fields = '<input type="hidden" name="mode" value="delete_posts" />';
+		foreach ($post_id_list as $p_id)
+		{
+			$hidden_fields .= '<input type="hidden" name="post_id_list[]" value="' . $p_id . '" />';
+		}
+
+		// Set template files
+		mcp_header('confirm_body.html');
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE' => $user->lang['Confirm'],
+			'MESSAGE_TEXT' => (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE'] : $user->lang['CONFIRM_DELETE_POSTS'],
+
+			'L_YES' => $user->lang['YES'],
+			'L_NO' => $user->lang['NO'],
+
+			'S_CONFIRM_ACTION' => $mcp_url . '&amp;mode=delete_posts',
+			'S_HIDDEN_FIELDS' => $hidden_fields
+		));
+	break;
+
 	case 'delete':
 		if (!$topic_id_list)
 		{
@@ -397,7 +457,7 @@ switch ($mode)
 			}
 			else
 			{
-				$redirect_page = "mcp.$phpEx$SID&ampf=$forum_id";
+				$redirect_page = "mcp.$phpEx$SID&amp;f=$forum_id";
 				$l_redirect = sprintf($user->lang['Click_return_modcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 			}
 
@@ -465,9 +525,9 @@ switch ($mode)
 
 			'S_FORM_ACTION'		=>	$mcp_url,
 			'S_FORUM_SELECT'	=>	'<select name="new_forum_id">' . make_forum_select() . '</select>',
-			'S_ENABLE_SPLIT'	=>	($mode == 'topic_view' || $mode == 'split') ? TRUE : FALSE,
-			'S_ENABLE_MERGE'	=>	($mode == 'topic_view' || $mode == 'merge') ? TRUE : FALSE,
-			'S_ENABLE_DELETE'	=>	($mode == 'topic_view' || $mode == 'massdelete') ? TRUE : FALSE
+			'S_ENABLE_SPLIT'	=>	($auth->acl_get('m_split', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
+			'S_ENABLE_MERGE'	=>	($auth->acl_get('m_merge', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
+			'S_ENABLE_DELETE'	=>	($auth->acl_get('m_delete', $forum_id) &&($mode == 'topic_view' || $mode == 'massdelete')) ? TRUE : FALSE
 		));
 
 		$is_first_post = TRUE;
@@ -693,6 +753,12 @@ switch ($mode)
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_info['forum_name'],
 
+			'S_CAN_DELETE'	=>	$auth->acl_get('m_delete', $forum_id),
+			'S_CAN_MOVE'	=>	$auth->acl_get('m_move', $forum_id),
+			'S_CAN_LOCK'	=>	$auth->acl_get('m_lock', $forum_id),
+			'S_CAN_UNLOCK'	=>	$auth->acl_get('m_unlock', $forum_id),
+			'S_CAN_RESYNC'	=>	$auth->acl_gets('m_', 'a_', $forum_id),
+
 			'U_VIEW_FORUM' => "viewforum.$phpEx$SID&amp;f=$forum_id",
 			'S_HIDDEN_FIELDS' => '<input type="hidden" name="f" value="' . $forum_id . '">',
 			'S_MCP_ACTION' => $mcp_url
@@ -752,7 +818,7 @@ switch ($mode)
 				$topic_type = '';
 			}
 
-			if ($row['topic_vote'])
+			if (intval($row['poll_start']))
 			{
 				$topic_type .= $user->lang['Topic_Poll'] . ' ';
 			}
@@ -781,8 +847,8 @@ switch ($mode)
 
 		$template->assign_vars(array(
 			'PAGINATION' => generate_pagination("mcp.$phpEx$SID&amp;f=$forum_id", $forum_info['forum_topics'], $config['topics_per_page'], $start),
-			'PAGE_NUMBER' => sprintf($user->lang['Page_of'], (floor($start / $config['topics_per_page']) + 1), ceil($forum_info ['forum_topics'] / $config['topics_per_page'])),
-			'L_GOTO_PAGE' => $user->lang['Goto_page'])
+			'PAGE_NUMBER' => sprintf($user->lang['PAGE_OF'], (floor($start / $config['topics_per_page']) + 1), ceil($forum_info ['forum_topics'] / $config['topics_per_page'])),
+			'L_GOTO_PAGE' => $user->lang['GOTO_PAGE'])
 		);
 	break;
 
@@ -799,7 +865,7 @@ include($phpbb_root_path . 'includes/page_tail.' . $phpEx);
 //
 function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view')
 {
-	global $phpbb_root_path, $phpEx, $SID, $template, $user, $auth, $db, $config;
+	global $phpbb_root_path, $phpEx, $SID, $template, $user, $db, $config;
 	global $forum_id, $forum_info;
 
 	$forum_id = (!empty($forum_id)) ? $forum_id : FALSE;
@@ -813,7 +879,7 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 		$extra_form_fields['post_id_list'] = $_GET['post_id_list'];
 	}
 
-	$page_title = $user->lang['Mod_CP'];
+	$page_title = sprintf($user->lang['MCP'], '', '');
 	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
 	$template->set_filenames(array(
 		'body' => $template_name
@@ -992,7 +1058,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	$db->sql_query('DELETE FROM ' . RATINGS_TABLE . $where_sql);
 	$db->sql_query('DELETE FROM ' . SEARCH_MATCH_TABLE . $where_sql);
 
-	if ($auto_resync)
+	if ($auto_sync)
 	{
 		resync('topic', 'topic_id', $topic_ids);
 		resync('forum', 'forum_id', $forum_ids);
@@ -1016,11 +1082,11 @@ function resync($type, $where_type = '', $where_ids = '')
 			if (is_array($where_ids))
 			{
 				$where_ids = array_unique($where_ids);
-				$where_sql = 'WHERE ' . $where_type{0} . ".$where_type IN (" . implode(', ', $where_ids) . ') AND';
+				$where_sql = 'WHERE ' . $type{0} . ".$where_type IN (" . implode(', ', $where_ids) . ') AND';
 			}
 			else
 			{
-				$where_sql = 'WHERE ' . $where_type{0} . ".$where_type = " . intval($where_ids) . ' AND';
+				$where_sql = 'WHERE ' . $type{0} . ".$where_type = " . intval($where_ids) . ' AND';
 			}
 		break;
 	
@@ -1105,15 +1171,15 @@ function resync($type, $where_type = '', $where_ids = '')
 					$db->sql_query($sql);
 				}
 			}
-			break;
+		break;
 
 		case 'topic':
-			$sql = 'SELECT t.topic_id, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
+			$topic_data = $post_ids = $topic_ids = array();
+
+			$sql = 'SELECT t.topic_id, t.topic_time, t.topic_replies, t.topic_first_post_id, t.topic_first_poster_name, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time, COUNT(p.post_id) AS total_posts, MIN(p.post_id) AS first_post_id, MAX(p.post_id) AS last_post_id
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				$where_sql p.topic_id = t.topic_id
 				GROUP BY t.topic_id";
-
-			$topic_data = $post_ids = $topic_ids = array();
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
@@ -1136,6 +1202,7 @@ function resync($type, $where_type = '', $where_ids = '')
 
 			if (count($topic_ids))
 			{
+				echo '<pre>';print_r($topic_ids);
 				delete_topics($topic_ids);
 			}
 			if (!count($post_ids))
@@ -1144,25 +1211,27 @@ function resync($type, $where_type = '', $where_ids = '')
 				return;
 			}
 
-			$sql = 'SELECT post_id, poster_id, post_username, post_time
+			$sql = 'SELECT post_id, topic_id, poster_id, post_username, post_time
 				FROM ' . POSTS_TABLE . '
 				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-			$db->sql_query($sql);
+			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['post_id'] == $topic_data[$topic_id]['last_post_id'])
+
+				if ($row['post_id'] == $topic_data[$row['topic_id']]['last_post_id'])
 				{
 					$topic_data[$row['topic_id']]['last_poster_id'] = $row['poster_id'];
 					$topic_data[$row['topic_id']]['last_post_time'] = $row['post_time'];
 					$topic_data[$row['topic_id']]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
 				}
-				elseif ($row['post_id'] == $topic_data[$row['topic_id']]['first_post_id'])
+				if ($row['post_id'] == $topic_data[$row['topic_id']]['first_post_id'])
 				{
+					$topic_data[$row['topic_id']]['time'] = $row['post_time'];
 					$topic_data[$row['topic_id']]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : '';
 				}
 			}
 
-			$fieldnames = array('replies', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+			$fieldnames = array('time', 'replies', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
 
 			foreach ($topic_data as $topic_id => $row)
 			{
@@ -1190,16 +1259,19 @@ function resync($type, $where_type = '', $where_ids = '')
 
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql) . '
-							WHERE topid_id = ' . $topic_id;
+							WHERE topic_id = ' . $topic_id;
 					$db->sql_query($sql);
 				}
 			}
 	}
 
+	// Should we resync posts and topics totals in config table?
+	/*
 	$result = $db->sql_query('SELECT SUM(forum_topics) AS total_topics, SUM(forum_posts) AS total_posts FROM ' . FORUMS_TABLE);
 	$row = $db->sql_fetchrow($result);
 	set_config('total_posts', $row['total_posts']);
 	set_config('total_topics', $row['total_topics']);
+	*/
 }
 
 
@@ -1210,6 +1282,7 @@ function verify_data($type, $fieldname, &$need_update, &$data)
 	{
 		return;
 	}
+
 	if ($data[$fieldname] != $data[$type . '_' . $fieldname])
 	{
 		$need_update = TRUE;
@@ -1233,6 +1306,12 @@ function very_temporary_lang_strings()
 	$user->lang['Select_for_merge'] = '%sSelect%s';
 	$user->lang['Select_topic'] = 'Select topic';
 	$user->lang['Topic_number_is'] = 'Topic #%d is %s';
+	$user->lang['POST_REMOVED'] = 'The selected post has been successfully removed from the database.';
+	$user->lang['POSTS_REMOVED'] = 'The selected posts have been successfully removed from the database.';
+	$user->lang['CONFIRM_DELETE_POSTS'] = 'Are you sure you want to delete these posts?';
+	$user->lang['TOPIC_RESYNCHRONISED'] = 'The selected topic has been resynchronised';
+	$user->lang['TOPICS_RESYNCHRONISED'] = 'The selected topics have been resynchronised';
+	$user->lang['RESYNC'] = 'Resync';
 
 	$user->lang['mod_tabs'] = array(
 		'front' => 'Front Page',
