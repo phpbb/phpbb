@@ -91,7 +91,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 function split_words(&$entry, $mode = 'post')
 {
-	$rex = ( $mode == 'post' ) ? "/\b(\w[\w']*\w+|\w+?)\b/" : '/(\*?[à-ÿa-z0-9]+\*?)|\b([à-ÿa-z0-9]+)\b/';
+	$rex = ( $mode == 'post' ) ? "/\b([\w±µ-ÿ][\w±µ-ÿ']*[\w±µ-ÿ]+|[\w±µ-ÿ]+?)\b/" : '/(\*?[a-z±µ-ÿ]+\*?)|\b([a-z±µ-ÿ]+)\b/';
 	preg_match_all($rex, $entry, $split_entries);
 
 	return $split_entries[1];
@@ -259,7 +259,8 @@ function remove_common($mode, $fraction, $word_id_list = array())
 {
 	global $db;
 
-	$sql = ( $mode == 'global' ) ? "SELECT COUNT(post_id) AS total_posts FROM " . SEARCH_MATCH_TABLE . " GROUP BY post_id" : "SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE;
+	$sql = "SELECT COUNT(post_id) AS total_posts 
+		FROM " . POSTS_TABLE;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain post count', '', __LINE__, __FILE__, $sql);
@@ -459,7 +460,7 @@ function username_search($search_match)
 	);
 
 	$template->assign_vars(array(
-		'USERNAME' => ( !empty($search_match) ) ? $search_match : '', 
+		'USERNAME' => ( !empty($search_match) ) ? strip_tags($search_match) : '', 
 
 		'L_CLOSE_WINDOW' => $lang['Close_window'], 
 		'L_SEARCH_USERNAME' => $lang['Find_username'], 
