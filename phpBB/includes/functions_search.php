@@ -347,57 +347,86 @@ function remove_common($mode, $fraction, $word_id_list = array())
 	return $word_count;
 }
 
-function remove_unmatched_words()
+function remove_search_post($post_id)
 {
 	global $db;
 
-	switch(SQL_LAYER)
+	$words_removed = false;
+
+	switch( SQL_LAYER )
 	{
 		case 'mysql':
 		case 'mysql4':
-			$sql = "SELECT w.word_id 
-				FROM " . SEARCH_WORD_TABLE . " w 
-				LEFT JOIN " . SEARCH_MATCH_TABLE . " m ON m.word_id = w.word_id 
-				WHERE m.word_id IS NULL"; 
-			if( $result = $db->sql_query($sql) )
+			$sql = "SELECT word_id 
+				FROM " . SEARCH_MATCH_TABLE . " 
+				WHERE post_id = $post_id";
+			if ( $result = $db->sql_query($sql) )
 			{
-				$word_id_sql = "";
+				$word_id_sql = '';
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$word_id_sql .= ( $word_id_sql != "" ) ? ", " . $row['word_id'] : $row['word_id']; 
+					$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
 				}
 
-				if( $word_id_sql != "" )
+				$sql = "SELECT word_id 
+					FROM " . SEARCH_MATCH_TABLE . " 
+					WHERE word_id IN ($word_id_sql) 
+					GROUP BY word_id 
+					HAVING COUNT(word_id) = 1";
+				if ( $result = $db->sql_query($sql) )
 				{
-					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-						WHERE word_id IN ($word_id_sql)";
-					if( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+					$word_id_sql = '';
+					while( $row = $db->sql_fetchrow($result) )
 					{
-						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+						$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
 					}
 
-					return $db->sql_affectedrows();
+					if ( $word_id_sql != '' )
+					{
+						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_id IN ($word_id_sql)";
+						if ( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+						{
+							message_die(GENERAL_ERROR, 'Could not delete word list entry', '', __LINE__, __FILE__, $sql);
+						}
+
+						$words_removed = $db->sql_affectedrows();
+					}
 				}
 			}
 			break;
 
 		default:
 			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-				WHERE word_id NOT IN ( 
-					SELECT word_id  
-					FROM " . SEARCH_MATCH_TABLE . "  
-					GROUP BY word_id)"; 
-			if( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+				WHERE word_id IN ( 
+					SELECT word_id 
+					FROM " . SEARCH_MATCH_TABLE . " 
+					WHERE word_id IN ( 
+						SELECT word_id 
+						FROM " . SEARCH_MATCH_TABLE . " 
+						WHERE post_id = $post_id 
+					) 
+					GROUP BY word_id 
+					HAVING COUNT(word_id) = 1
+				)"; 
+			if ( !($result = $db->sql_query($sql, END_TRANSACTION)) )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete old words from word table", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete old words from word table', '', __LINE__, __FILE__, $sql);
 			}
 
-			return $db->sql_affectedrows();
+			$words_removed = $db->sql_affectedrows();
 
 			break;
 	}
 
-	return 0;
+	$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
+		WHERE post_id = $post_id";
+	if ( !($db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
+	}
+
+	return $words_removed;
 }
 
 //

@@ -252,6 +252,10 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			}
 		}
 	}
+	else if ( $mode == 'editpost' )
+	{
+		$result = remove_search_post($post_id);
+	}
 
 	if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) )
 	{
@@ -284,16 +288,6 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-	}
-
-	if ( $mode == 'editpost' )
-	{
-		$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-			WHERE post_id = $post_id";
-		if ( !($db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-		}
 	}
 
 	add_search_words($post_id, stripslashes($post_message), stripslashes($post_subject));
@@ -367,11 +361,6 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	if ( $mode == 'editpost' )
-	{
-		remove_unmatched_words();
-	}
-
 	$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">';
 	$message = $lang['Stored'] . '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 
@@ -381,7 +370,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 // Update post stats and details
 //
-function update_post_stats($mode, &$post_data, &$forum_id, &$topic_id, &$post_id)
+function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id)
 {
 	global $db, $userdata;
 
@@ -447,7 +436,7 @@ function update_post_stats($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 	}
 	else if ( $mode != 'poll_delete' )
 	{
-		$forum_update_sql .= ", forum_last_post_id = $post_id" . ( ( $mode = 'newtopic' ) ? ", forum_topics = forum_topics $sign" : "" ); 
+		$forum_update_sql .= ", forum_last_post_id = $post_id" . ( ( $mode == 'newtopic' ) ? ", forum_topics = forum_topics $sign" : "" ); 
 		$topic_update_sql = "topic_last_post_id = $post_id" . ( ( $mode == 'reply' ) ? ", topic_replies = topic_replies $sign" : ", topic_first_post_id = $post_id" );
 	}
 	else 
