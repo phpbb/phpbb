@@ -27,11 +27,40 @@ if ( !defined('INSTALLING') )
 	include('extension.inc');
 	include('config.'.$phpEx);
 	include('includes/constants.'.$phpEx);
+	include('includes/functions.'.$phpEx);
 }
 // Force the DB type to be MySQL
 $dbms = 'mysql';
 include('includes/db.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
+
+//
+// Set smiley path
+// Uncomment the following line to set the path manually
+//$smiley_path = '/forums/images/smiles/';
+if(!isset($smiley_path))
+{
+	// Did we get a path through the URL?
+	if(isset($HTTP_GET_VARS['smiley_path']))
+	{
+		$smiley_path = $HTTP_GET_VARS['smiley_path'];
+	}
+	else
+	{
+		// Check the current directory name
+		$base_dir = dirname($PHP_SELF);
+		if ($base_dir != '/phpBB2' && $base_dir != '\phpBB2')
+		{
+			// User isn't installing in the default /phpBB2/ dir, probably installing in 1.4 dir?
+			$smiley_path = $base_dir . '/images/smiles/';
+		}
+		else
+		{
+			// Fall back to the default 1.4 path
+			$smiley_path = '/phpBB/images/smiles/';
+		}
+	}
+}
 
 set_time_limit(0); // Unlimited execution time
 
@@ -81,6 +110,36 @@ function query($sql, $errormsg)
 	{
 		return $result;
 	}
+}
+
+function smiley_replace($text)
+{
+	global $db;
+	global $smiley_path;
+
+	static $search, $replace, $init;
+
+
+	// Did we get the smiley info in a previous call?
+	if($init != 1)
+	{
+		$sql = "
+			SELECT
+				DISTINCT(smile_url), 
+				code 
+			FROM ".SMILIES_TABLE." 
+			ORDER BY length(code) ASC";
+		$result = query($sql, "Unable to get list of smilies from the DB");
+		while($row = $db->sql_fetchrow($result))
+		{
+			$search_string = phpbb_preg_quote('<IMG SRC="' . $smiley_path . $row['smile_url'] .'">', '/');
+			$search[] = "/$search_string/";
+			$replace[] = $row['code'];
+		}
+		$init = 1;
+	}
+	return preg_replace($search, $replace, $text);
+	
 }
 
 function common_footer()
@@ -344,6 +403,7 @@ print "create:<br>";
 print_r($create_def);
 die;
 */
+
 
 if(isset($next))
 {
@@ -668,11 +728,20 @@ if(isset($next))
 	case 'convert_posts':
 		common_header();
 
+		// Initialize the smiley replace arrays.
+		// Not a really clean way to do this but it works.
+		// Doing this because of some table locking issues.
+		smiley_replace("init");
+
 		$sql = "ALTER TABLE ".POSTS_TABLE." 
-			ADD bbcode_uid char(10) NOT NULL,
 			ADD enable_sig tinyint(1) DEFAULT '1' NOT NULL";
-		print "Adding bbcode_uid field to ".POSTS_TABLE.".<br>\n";
-		$result = query($sql, "Couldn't get add bbcode_uid field to ".POSTS_TABLE.".");
+		print "Adding enable_sig field to ".POSTS_TABLE.".<br>\n";
+		$result = query($sql, "Couldn't add enable_sig field to ".POSTS_TABLE.".");
+		
+		$sql = "ALTER TABLE ".POSTS_TEXT_TABLE." 
+			ADD bbcode_uid char(10) NOT NULL";
+		print "Adding bbcode_uid field to ".POSTS_TEXT_TABLE.".<br>\n";
+		$result = query($sql, "Couldn't add bbcode_uid field to ".POSTS_TABLE.".");
 		
 		$sql = "
 			SELECT 
@@ -695,15 +764,13 @@ if(isset($next))
 			flush();
 			$sql = "
 				SELECT 
-					pt.*,
-					p.bbcode_uid
-				FROM "
-					.POSTS_TEXT_TABLE." pt,"
-					.POSTS_TABLE." p
-				WHERE pt.post_id = p.post_id
-				&& pt.post_id BETWEEN $batchstart AND $batchend";
+					*
+				FROM ".
+					POSTS_TEXT_TABLE."
+				WHERE
+					post_id BETWEEN $batchstart AND $batchend";
 			$result = query($sql, "Couldn't get ". POSTS_TEXT_TABLE .".post_id $batchstart to $batchend");
-			lock_tables(1, array(POSTS_TABLE, POSTS_TEXT_TABLE));
+			lock_tables(1, array(POSTS_TEXT_TABLE, POSTS_TABLE));
 			while($row = mysql_fetch_array($result))
 			{
 				if($row['bbcode_uid'] != '')
@@ -721,6 +788,7 @@ if(isset($next))
 				// make a uid
 				$uid = make_bbcode_uid();
 				// do 2.x first-pass encoding..
+				$row['post_text'] = smiley_replace($row['post_text']);
 				$row['post_text'] = bbencode_first_pass($row['post_text'], $uid);
 				$row['post_text'] = addslashes($row['post_text']);
 				
@@ -735,13 +803,13 @@ if(isset($next))
 				}
 
 				$sql = "UPDATE ".POSTS_TEXT_TABLE." 
-					SET post_text = '$checksig' 
+					SET post_text = '$checksig' , bbcode_uid = '$uid'
 					WHERE post_id = ".$row['post_id'];
 				query($sql, "Couldn't update ".POSTS_TEXT_TABLE." table with new BBcode for post_id ".$row['post_id']);
 				$sql = "UPDATE ".POSTS_TABLE." 
-					SET bbcode_uid = '$uid', enable_sig = $enable_sig
+					SET enable_sig = $enable_sig
 					WHERE post_id = ".$row['post_id'];
-				query($sql, "Couldn't update ".POSTS_TABLE." table with bbcode_uid of post_id ".$row['post_id']);
+				query($sql, "Couldn't update ".POSTS_TABLE." table with signature status for post with post_id: ".$row['post_id']);
 			}
 			lock_tables(0);
 		}
