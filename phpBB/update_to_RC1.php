@@ -18,6 +18,8 @@ switch(SQL_LAYER)
 			ADD INDEX (user_session_time)";
 		$sql[] = "ALTER TABLE " . SEARCH_TABLE . " 
 			MODIFY search_id int(11) NOT NULL";
+		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " 
+			MODIFY topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL";
 		break;
 
 	case 'postgresql':
@@ -57,21 +59,33 @@ switch(SQL_LAYER)
 		break;
 }
 
+	$errored = false;
 	for($i = 0; $i < count($sql); $i++)
 	{
-		echo "Running :: " . $sql[$i] . "<br />\n";
+		echo "Running >>> " . $sql[$i];
 
 		$result = $db->sql_query($sql[$i]);
 
 		if( !$result )
 		{
+			$errored = true;
 			$error = $db->sql_error();
-			die("Failed executing statement<br />\nError :: " . $error['message'] . "<br />\nSQL :: " . $sql[$i]);
+			echo " :: <b>FAILED</b> <u>( " . $error['message'] . " )</u><br /><br />\n\n";
 		}
-
+		else
+		{
+			echo " :: <b>COMPLETED</b><br /><br />\n\n";
+		}
 	}
 
-	echo "\n<br /><br />\nCOMPLETE! Please delete this file before continuing!<br />\n";
+	if( $errored )
+	{
+		echo "\n<br /><br />Errors occured! Please check and correct issues as required<br />\n";
+	}
+	else
+	{
+		echo "\n<br /><br />\nCOMPLETE! Please delete this file before continuing!<br />\n";
+	}
 
 ?>
 </body>
