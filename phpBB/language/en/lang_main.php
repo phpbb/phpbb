@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                           lang_main.php [ English ]
- *                              -------------------
- *     begin                : Sat Dec 16 2000
- *     copyright            : (C) 2001 The phpBB Group
- *     email                : support@phpbb.com
- *
- *     $Id$
- *
- ****************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : lang_main.php [ English ]
+// STARTED   : Sat Dec 16, 2000
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 // DEVELOPERS PLEASE NOTE 
 //
@@ -88,6 +80,7 @@ $lang = array(
 	'NEXT'		=> 'Next',
 	'PREVIOUS'	=> 'Previous',
 	'GOTO_PAGE' => 'Goto page',
+	'JUMP_PAGE'	=> 'Enter the page number you wish to goto', 
 	'START_PAGE' => 'Make my start page',
 	'JOINED'	=> 'Joined',
 	'IP_ADDRESS' => 'IP Address',
@@ -245,15 +238,14 @@ $lang = array(
 	'EMAIL_DISABLED'	=> 'Sorry but all email related functions have been disabled.', 
 	'REMOVE_INSTALL'	=> 'Please delete, move or rename the install directory.', 
 
-	'G_ADMINISTRATORS' 	=> 'ADMINISTRATORS',
-	'G_SUPER_MODERATORS'=> 'SUPER MODERATORS',
-	'G_MODERATORS' 		=> 'MODERATORS',
-	'G_REGISTERED' 		=> 'REGISTERED USERS',
-	'G_REGISTERED_COPPA'=> 'REGISTERED COPPA USERS',
-	'G_INACTIVE' 		=> 'INACTIVE USERS',
-	'G_INACTIVE_COPPA'	=> 'INACTIVE COPPA USERS',
-	'G_GUESTS' 			=> 'GUESTS',
-	'G_BANNED'			=> 'BANNED USERS', 
+	'G_ADMINISTRATORS' 	=> 'Administrators',
+	'G_SUPER_MODERATORS'=> 'Super Moderators',
+	'G_REGISTERED' 		=> 'Registered Users',
+	'G_REGISTERED_COPPA'=> 'Registered COPPA Users',
+	'G_INACTIVE' 		=> 'Unapproved Users',
+	'G_INACTIVE_COPPA'	=> 'Unapproved COPPA Users',
+	'G_GUESTS' 			=> 'Guests',
+	'G_BANNED'			=> 'Banned Users', 
 
 	'NO_NEW_POSTS'		=> 'No new posts',
 	'NEW_POSTS'			=> 'New posts',
@@ -435,9 +427,10 @@ $lang = array(
 
 	'VIEW_FORUM_TOPIC'	=> '1 Topic',
 	'VIEW_FORUM_TOPICS'	=> '%d Topics',
+);
 
-
-	// Viewtopic
+// viewtopic
+$lang += array(
 	'VIEW_TOPIC'			=> 'View topic',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.', 
 	'PRINT_TOPIC'			=> 'Print View', 
@@ -515,8 +508,10 @@ $lang = array(
 
 	'VIEW_TOPIC_POST'	=> '1 Post',
 	'VIEW_TOPIC_POSTS'	=> '%d Posts',
+);
 
-
+// posting
+$lang += array(
 	'BBCODE_B_HELP'		=> 'Bold text: [b]text[/b]  (alt+b)',
 	'BBCODE_I_HELP'		=> 'Italic text: [i]text[/i]  (alt+i)',
 	'BBCODE_U_HELP'		=> 'Underline text: [u]text[/u]  (alt+u)',
@@ -672,8 +667,10 @@ $lang = array(
 	'DOWNLOAD_NONE'			=> '0 Times',	// replace %d with count
 	'DOWNLOAD_COUNT'		=> '%d Time',	// replace %d with count
 	'DOWNLOAD_COUNTS'		=> '%d Times',	// replace %d with count
+);
 
-
+// ucp
+$lang += array(
 	'UCP'			=> 'User Control Panel',
 	'UCP_OPTIONS'	=> 'Options', 
 
@@ -891,11 +888,10 @@ $lang = array(
 
 
 	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
+);
 
-
-
-
-
+// usercp_messaging
+$lang += array(
 	'Private_Messaging' => 'Private Messaging',
 	'Unread_message' => 'Unread message',
 	'Read_message' => 'Read message',
@@ -949,9 +945,10 @@ $lang = array(
 	'Sentbox_size' => 'Your Sentbox is %d%% full',
 	'Savebox_size' => 'Your Savebox is %d%% full',
 	'Click_view_privmsg' => 'Click %sHere%s to visit your Inbox',
+);
 
-
-
+// memberslist
+$lang += array(
 	'FIND_USERNAME'			=> 'Find a member',
 	'FIND_USERNAME_EXPLAIN' => 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format yyyy-mm-dd, e.g. 2002-01-01. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself). Alternatively you can mark the users required and click the Insert Marked button.',
 	'NO_MEMBERS'	=> 'No members found for this search criteria', 
@@ -1030,8 +1027,10 @@ $lang = array(
 	'IM_NO_JABBER'		=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.', 
 	'IM_SENT_JABBER'	=> 'Your message to %1$s has been sent successfully.', 
 	'IM_JABBER_SUBJECT' => 'Message from user %1$s at %2$s',  // This needs to be part of a contact template
+);
 
-
+// gcp
+$lang += array(
 	'Group_Control_Panel' => 'Group Control Panel',
 	'Group_member_details' => 'Group Membership Details',
 	'Group_member_join' => 'Join a Group',
@@ -1084,8 +1083,10 @@ $lang = array(
 	'Subscribe' => 'Subscribe',
 	'Unsubscribe' => 'Unsubscribe',
 	'View_Information' => 'View Information',
+);
 
-
+// search
+$lang += array(
 	'Search_query' => 'Search Query',
 	'Search_options' => 'Search Options',
 	'Search_keywords' => 'Search for Keywords',
@@ -1121,33 +1122,39 @@ $lang = array(
 	'Not_Authorised'	=> 'Not Authorised',
 
 
-	'REG_USERS_ZERO_ONLINE'	=> 'There are 0 Registered users and ',
-	'REG_USERS_ONLINE'		=> 'There are %d Registered users and ',
-	'REG_USER_ONLINE'		=> 'There is %d Registered user and ',
-	'HIDDEN_USERS_ZERO_ONLINE'=> '0 Hidden users online',
-	'HIDDEN_USERS_ONLINE'	=> '%d Hidden users online',
-	'HIDDEN_USER_ONLINE'	=> '%d Hidden user online',
-	'GUEST_USERS_ONLINE'	=> 'There are %d Guest users online',
-	'GUEST_USERS_ZERO_ONLINE'=> 'There are 0 Guest users online',
-	'GUEST_USER_ONLINE'		=> 'There is %d Guest user online',
+);
 
-	'VIEW_ONLINE_TIME'	=> 'This data is based on users active over the past %d minute', // 1 minute
-	'VIEW_ONLINE_TIMES' => 'This data is based on users active over the past %d minutes', // 2 minutes, etc.
-	'FORUM_LOCATION'	=> 'Forum Location',
-	'LAST_UPDATED'		=> 'Last Updated',
-	'READING_FORUM'		=> 'Viewing topics in %s', 
-	'READING_TOPIC'		=> 'Reading topic in %s',
-	'POSTING_MESSAGE'	=> 'Posting message in %s',
-	'REPLYING_MESSAGE'	=> 'Replying to message in %s',
+// viewonline
+$lang += array(
+	'REG_USERS_ZERO_ONLINE'		=> 'There are 0 Registered users and ',
+	'REG_USERS_ONLINE'			=> 'There are %d Registered users and ',
+	'REG_USER_ONLINE'			=> 'There is %d Registered user and ',
+	'HIDDEN_USERS_ZERO_ONLINE'	=> '0 Hidden users online',
+	'HIDDEN_USERS_ONLINE'		=> '%d Hidden users online',
+	'HIDDEN_USER_ONLINE'		=> '%d Hidden user online',
+	'GUEST_USERS_ONLINE'		=> 'There are %d Guest users online',
+	'GUEST_USERS_ZERO_ONLINE'	=> 'There are 0 Guest users online',
+	'GUEST_USER_ONLINE'			=> 'There is %d Guest user online',
+
+	'VIEW_ONLINE_TIME'			=> 'This data is based on users active over the past %d minute', // 1 minute
+	'VIEW_ONLINE_TIMES'			=> 'This data is based on users active over the past %d minutes', // 2 minutes, etc.
+	'FORUM_LOCATION'			=> 'Forum Location',
+	'LAST_UPDATED'				=> 'Last Updated',
+	'READING_FORUM'				=> 'Viewing topics in %s', 
+	'READING_TOPIC'				=> 'Reading topic in %s',
+	'POSTING_MESSAGE'			=> 'Posting message in %s',
+	'REPLYING_MESSAGE'			=> 'Replying to message in %s',
 	'READING_GLOBAL_ANNOUNCE'	=> 'Reading global announcement', 
 	'REPLYING_GLOBAL_ANNOUNCE'	=> 'Replying to global announcement', 
-	'SEARCHING_FORUMS'	=> 'Searching forums',
-	'VIEWING_ONLINE'	=> 'Viewing who is online',
-	'VIEWING_MEMBERS'	=> 'Viewing member details',
-	'VIEWING_MESSAGES'	=> 'Viewing Private Messages',
-	'VIEWING_FAQ'		=> 'Viewing FAQ', 
+	'SEARCHING_FORUMS'			=> 'Searching forums',
+	'VIEWING_ONLINE'			=> 'Viewing who is online',
+	'VIEWING_MEMBERS'			=> 'Viewing member details',
+	'VIEWING_MESSAGES'			=> 'Viewing Private Messages',
+	'VIEWING_FAQ'				=> 'Viewing FAQ', 
+);
 
-
+// mcp
+$lang += array(
 	'FRONT_PAGE'		=>	'Front page',
 	'REPORTED_POSTS'	=>	'Reported posts',
 	'VIEW_FORUM'		=>	'View forum',
@@ -1294,22 +1301,24 @@ $lang = array(
 	'logm_unlock'				=>	'<b>Unlocked topic</b>',
 	'logm_move'					=>	'<b>Moved topic</b> from %s',
 	'logm_fork'					=>	'<b>Copied topic</b> from %s',
-	'logm_split'					=>	'<b>Split topic</b> from topic %s',
+	'logm_split'				=>	'<b>Split topic</b> from topic %s',
 	'logm_delete_topic'		=>	'<b>Deleted topic</b> %s',
 	'logm_delete_post'		=>	'<b>Deleted post</b> %s',
 	'logm_delete_posts'		=>	'<b>Deleted posts</b> %s',
 	'logm_approve_topic'	=>	'<b>Approved topic</b>',
 	'logm_approve_post'		=>	'<b>Approved post</b> %s',
-	'logm_unapprove_topic'=>	'<b>Unapproved topic</b>',
+	'logm_unapprove_topic'	=>	'<b>Unapproved topic</b>',
 	'logm_unapprove_post'	=>	'<b>Unapproved post</b> %s',
-	'logm_merge'				=>	'<b>Merged posts</b> from topic %s',
+	'logm_merge'			=>	'<b>Merged posts</b> from topic %s',
 	'logm_make_announce'	=>	'<b>Changed topic type</b> to Announcement',
 	'logm_make_sticky'		=>	'<b>Changed topic type</b> to Sticky',
 	'logm_make_normal'		=>	'<b>Changed topic type</b> to Normal',
 	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement',
+);
 
 
-//----- post reporting
+// report
+$lang += array(
 	'REASON'			=>	'Reason',
 	'MORE_INFO'			=>	'Further information',
 	'CAN_LEAVE_BLANK'	=>	'This can be left blank.',
@@ -1340,4 +1349,5 @@ $lang = array(
 		)
 	)
 );
+
 ?>

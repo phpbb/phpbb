@@ -30,6 +30,7 @@ Search within this search set
 Search on topic/post title only
 Relevancy?
 Stemmers?
+Find similar?
 
 */
 

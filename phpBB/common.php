@@ -24,6 +24,9 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
+$starttime = explode(' ', microtime());
+$starttime = $starttime[1] + $starttime[0];
+
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 //error_reporting(E_ALL);
 set_magic_quotes_runtime(0);

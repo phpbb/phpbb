@@ -33,7 +33,6 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
 
 
@@ -64,7 +63,7 @@ switch ($mode)
 }
 
 
-$start	= (isset($_GET['start'])) ? intval($_GET['start']) : 0;
+$start	= (isset($_GET['start'])) ? intval($_GET['start']) : ((isset($_GET['page'])) ? (intval($_GET['page']) - 1) * $config['topics_per_page'] : 0);
 $form	= (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
 $field	= (isset($_GET['field'])) ? htmlspecialchars($_GET['field']) : 'username';
 
@@ -204,6 +203,8 @@ switch ($mode)
 						set_config('jab_username', $jabber->username);
 						set_config('jab_password', $jabber->password);
 					}
+
+					$jabber->SendPresence();
 
 					// This _really_ needs to be an "email" template I think ... indeed the whole system is probably
 					// best suited "merged" with email in some way. Would enable notifications, etc. to be sent via

@@ -1,27 +1,19 @@
 <?php
-/***************************************************************************
- *                               viewforum.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : viewforum.php 
+// STARTED   : Sat Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 
@@ -31,9 +23,9 @@ $auth->acl($user->data);
 
 
 // Start initial var setup
-$forum_id = (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
-$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
-$mark_read = (!empty($_GET['mark'])) ? htmlspecialchars($_GET['mark']) : '';
+$forum_id	= (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
+$mark_read	= (!empty($_GET['mark'])) ? htmlspecialchars($_GET['mark']) : '';
+$start		= 0;
 
 $sort_days = (isset($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
@@ -154,9 +146,8 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 else
 {
 	$template->assign_var('S_HAS_SUBFORUM', FALSE);
-	get_moderators($moderators, $forum_id);
 }
-
+get_moderators($moderators, $forum_id);
 
 // Output forum listing if it is postable
 if ($forum_data['forum_type'] == FORUM_POST)
@@ -175,14 +166,20 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		trigger_error($message);
 	}
 
+	// Is a forum specific topic count required?
+	if ($forum_data['forum_topics_per_page'])
+	{
+		$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
+	}
 
-	// Do the forum Prune - cron type job ...
+	$start	= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
+
+	// Do the forum Prune thang - cron type job ...
 	if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 	{
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		auto_prune($forum_id, $forum_data['forum_flags'], $forum_data['prune_days'], $forum_data['prune_freq']);
 	}
-
 
 	// Forum rules, subscription info and word censors
 	$s_watching_forum = $s_watching_forum_img = '';
@@ -198,7 +195,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	$censors = array();
 	obtain_word_list($censors);
-
 
 	// Topic ordering options
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -245,14 +241,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	// Select the sort order
 	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
-
-	// Is a forum specific topic count required?
-	if ($forum_data['forum_topics_per_page'])
-	{
-		$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
-	}
-
 
 	// Basic pagewide vars
 	$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
@@ -377,10 +365,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				$mark_time_topic = (isset($tracking_topics[$forum_id36][$topic_id36])) ? base_convert($tracking_topics[$forum_id36][$topic_id36], 36, 10) + $config['board_startdate'] : 0;
 			}
 
-
 			// Replies
 			$replies = ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'];
-
 
 			// Topic type/folder
 			$topic_type = '';
@@ -431,8 +417,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 					$folder_new = 'folder_locked_new';
 				}
 
-
-
 				if ($user->data['user_id'] != ANONYMOUS)
 				{
 					$unread_topic = true;
@@ -450,7 +434,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				$folder_img = ($unread_topic) ? $folder_new : $folder;
 				$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
-
 				// Posted image?
 				if (!empty($row['mark_type']))
 				{
@@ -458,12 +441,10 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				}
 			}
 
-
 			if (!empty($row['poll_start']))
 			{
 				$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
 			}
-
 
 			// Goto message generation
 			if (($replies + 1) > $config['posts_per_page'])
@@ -494,7 +475,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				$goto_page = '';
 			}
 
-
 			// Generate all the URIs ...
 			$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
 
@@ -505,7 +485,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
 
 			$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
-
 
 			// This will allow the style designer to output a different header 
 			// or even seperate the list of announcements from sticky and normal
@@ -547,7 +526,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 			$i++;
-
 
 			if ($config['load_db_lastread'])
 			{

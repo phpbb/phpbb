@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 
@@ -31,10 +31,12 @@ $auth->acl($user->data);
 
 
 // Initial var setup
-$forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
-$topic_id = (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
-$post_id = (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
-$start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
+$forum_id	= (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
+$topic_id	= (isset($_GET['t'])) ? max(intval($_GET['t']), 0) : 0;
+$post_id	= (isset($_GET['p'])) ? max(intval($_GET['p']), 0) : 0;
+$start		= (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
+$view		= (isset($_GET['view'])) ? htmlspecialchars($_GET['view']) : '';
+
 
 $sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
@@ -51,9 +53,9 @@ $tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unseri
 
 // Find topic id if user requested a newer or older topic
 $unread_post_id = '';
-if (isset($_GET['view']) && !$post_id)
+if ($view && !$post_id)
 {
-	if ($_GET['view'] == 'unread')
+	if ($view == 'unread')
 	{
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
@@ -101,10 +103,10 @@ if (isset($_GET['view']) && !$post_id)
 			$unread_post_id = $post_id = $row['post_id'];
 		}
 	}
-	else if ($_GET['view'] == 'next' || $_GET['view'] == 'previous')
+	else if ($view == 'next' || $view == 'previous')
 	{
-		$sql_condition = ($_GET['view'] == 'next') ? '>' : '<';
-		$sql_ordering = ($_GET['view'] == 'next') ? 'ASC' : 'DESC';
+		$sql_condition = ($view == 'next') ? '>' : '<';
+		$sql_ordering = ($view == 'next') ? 'ASC' : 'DESC';
 
 		$sql = 'SELECT t.topic_id
 			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . " t2
@@ -117,7 +119,7 @@ if (isset($_GET['view']) && !$post_id)
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
-			$message = ($_GET['view'] == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS';
+			$message = ($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS';
 			trigger_error($message);
 		}
 		else
@@ -217,7 +219,7 @@ if ($forum_password)
 }
 
 
-/*
+
 // Not final in the slightest! Far too simplistic
 if (isset($_GET['rate']))
 {
@@ -246,7 +248,21 @@ if (isset($_GET['rate']))
 
 	// Insert rating if appropriate
 	$sql = (!$updated) ? 'INSERT INTO ' . RATINGS_TABLE . ' (user_id, post_id, rating, rating_time) VALUES (' . $user->data['user_id'] . ", $post_id, $rate, " . time() . ')' : 'UPDATE ' . RATINGS_TABLE . " SET rating = $rate, rating_time = " . time() . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id'];
-//	$db->sql_query($sql);
+	$db->sql_query($sql);
+
+	// Rating sum and count past thirty days
+	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
+		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
+		WHERE p2.post_id = $post_id
+			AND p.poster_id = p2.poster_id  
+			AND p.post_time > " . (time() - (30 * 86400)) . ' 
+			AND r.post_id = p.post_id 
+			AND r.user_id <> p2.poster_id 
+		GROUP BY p.poster_id';
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
 	// Rating sum and count since first post
 	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
@@ -264,20 +280,6 @@ if (isset($_GET['rate']))
 
 	$total_ratings = $row['total_ratings'];
 	$historic_rating = ($row['rated'] / $row['total_ratings']) * 0.30;
-
-	// Rating sum and count past thirty days
-	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
-		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
-		WHERE p2.post_id = $post_id
-			AND p.poster_id = p2.poster_id  
-			AND p.post_time > " . (time() - (30 * 86400)) . ' 
-			AND r.post_id = p.post_id 
-			AND r.user_id <> p2.poster_id 
-		GROUP BY p.poster_id';
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
 
 	$total_ratings += $row['total_ratings'];
 	$thirty_day_rating = ($row['rated'] / $row['total_ratings']) * 0.50;
@@ -322,7 +324,7 @@ if (isset($_GET['rate']))
 	$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_POST'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id\">", '</a>');
 	trigger_error($message);
 }
-*/
+
 
 
 // What is start equal to?
@@ -776,14 +778,14 @@ do
 				$user_sig = $row['user_sig'];
 				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 			}
-//'<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />'
+
 			$id_cache[] = $poster_id;
 			$user_cache[$poster_id] = array(
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 				'karma'			=> (!empty($row['user_karma'])) ? $row['user_karma'] : 0, 
-				'karma_img'		=> '',  
+				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',  
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',

@@ -1,38 +1,28 @@
 <?php
-/***************************************************************************
- *                              viewonline.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : viewonline.php
+// STARTED   : Sat Dec 16, 2000
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
-
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
 $user->setup();
 
-
 // Get and set some variables
-$start	= (isset($_GET['start'])) ? intval($_GET['start']) : ((isset($_GET['page'])) ? (intval($_GET['page']) - 1) * $config['topics_per_page'] : 0);
+$start	= (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'b';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
@@ -41,13 +31,14 @@ $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['
 $sort_key_sql = array('a' => 'username', 'b' => 'session_time', 'c' => 'session_page');
 
 // Sorting and order
-$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 
 // Forum info
-$sql = 'SELECT forum_id, forum_name
-	FROM ' . FORUMS_TABLE;
-$result = $db->sql_query($sql);
+$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
+	FROM ' . FORUMS_TABLE . '
+	ORDER BY left_id ASC';
+$result = $db->sql_query($sql, 600);
 
 while ($row = $db->sql_fetchrow($result))
 {
@@ -60,61 +51,53 @@ $db->sql_freeresult($result);
 $sql = 'SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . '
+		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . ' 
 	ORDER BY ' . $order_by;
 $result = $db->sql_query($sql);
 
-$prev_ip = '';
-$logged_visible_online = $logged_hidden_online = $guests_online = $reg_counter = $guest_counter = $prev_user = 0;
+$prev_ip = $prev_id = array();
+$logged_visible_online = $logged_hidden_online = $guests_online = $reg_counter = $guest_counter = 0;
 while ($row = $db->sql_fetchrow($result))
 {
 	$view_online = false;
 
-	if ($row['user_id'] != ANONYMOUS)
+	if ($row['user_id'] != ANONYMOUS && !in_array($row['user_id'], $prev_id))
 	{
-		$user_id = $row['user_id'];
+		$username = $row['username'];
 
-		if ($user_id != $prev_user)
+		if ($row['user_colour'])
 		{
-			$username = $row['username'];
-
-			if ($row['user_colour'])
-			{
-				$username = '<b style="color:#' . $row['user_colour'] . '">' . $username . '</b>';
-			}
-
-			if (!$row['user_allow_viewonline'] || !$row['session_allow_viewonline'])
-			{
-				$view_online = ($auth->acl_gets('u_viewonline')) ? true : false;
-				$logged_hidden_online++;
-
-				$username = '<i>' . $username . '</i>';
-			}
-			else
-			{
-				$view_online = true;
-				$logged_visible_online++;
-			}
-
-			$which_counter = 'reg_counter';
-			$which_row = 'reg_user_row';
-			$prev_user = $user_id;
+			$username = '<b style="color:#' . $row['user_colour'] . '">' . $username . '</b>';
 		}
-	}
-	else
-	{
-		if ($row['session_ip'] != $prev_ip)
+
+		if (!$row['user_allow_viewonline'] || !$row['session_allow_viewonline'])
 		{
-			$username = $user->lang['GUEST'];
+			$view_online = ($auth->acl_gets('u_viewonline')) ? true : false;
+			$logged_hidden_online++;
+
+			$username = '<i>' . $username . '</i>';
+		}
+		else
+		{
 			$view_online = true;
-			$guests_online++;
-
-			$which_counter = 'guest_counter';
-			$which_row = 'guest_user_row';
+			$logged_visible_online++;
 		}
+
+		$which_counter = 'reg_counter';
+		$which_row = 'reg_user_row';
+		$prev_id[] = $row['user_id'];
+	}
+	else if (!in_array($row['session_ip'], $prev_ip))
+	{
+		$username = $user->lang['GUEST'];
+		$view_online = true;
+		$guests_online++;
+
+		$which_counter = 'guest_counter';
+		$which_row = 'guest_user_row';
 	}
 
-	$prev_ip = $row['session_ip'];
+	$prev_ip[] = $row['session_ip'];
 
 	if ($view_online)
 	{
@@ -205,7 +188,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			'S_ROW_COUNT'	=> $$which_counter,
 
-			'U_USER_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
+			'U_USER_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
 			'U_FORUM_LOCATION'	=> $location_url)
 		);
 
@@ -213,6 +196,8 @@ while ($row = $db->sql_fetchrow($result))
 	}
 }
 $db->sql_freeresult($result);
+unset($prev_id);
+unset($prev_ip);
 
 
 // Generate reg/hidden/guest online text
@@ -243,8 +228,8 @@ unset($vars_online);
 
 
 // Grab group details for legend display
-$sql = "SELECT group_name, group_colour, group_type  
-	FROM " . GROUPS_TABLE . " 
+$sql = 'SELECT group_name, group_colour, group_type  
+	FROM ' . GROUPS_TABLE . " 
 	WHERE group_colour <> '' 
 		AND group_type <> " . GROUP_HIDDEN;
 $result = $db->sql_query($sql);
@@ -268,7 +253,6 @@ $template->assign_vars(array(
 	'U_SORT_UPDATED'	=> "viewonline.$phpEx$SID&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
 	'U_SORT_LOCATION'	=> "viewonline.$phpEx$SID&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'))
 );
-
 
 // Output the page
 page_header($user->lang['WHO_IS_ONLINE']);

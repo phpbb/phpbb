@@ -29,6 +29,16 @@ function im_popup(url, width, height)
 	window.open(url, '_contact', 'HEIGHT=' + height + ',resizable=yes,scrollbars=yes, WIDTH=' + width);
 	return false;
 }
+
+function goto()
+{
+	var page = prompt('{L_JUMP_PAGE}:', '{ON_PAGE}');
+
+	if (page !== null && !isNaN(page) && page > 0)
+	{
+		document.location.href = "{BASE_URL}&amp;start=" + ((page * {PER_PAGE}) - 1);
+	}
+}
 //-->
 </script>
 </head>
