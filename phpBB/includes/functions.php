@@ -264,13 +264,14 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 	global $auth, $template, $user, $db, $nav_links, $phpEx, $SID;
 
 	$boxstring = '';
-	$sql = 'SELECT forum_id, forum_name, forum_type, left_id, right_id
+	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 600);
 
-	$right = $cat_right = 0;
+	$right = $cat_right = $padding_inc = 0;
 	$padding = $forum_list = $holding = '';
+	$padding_store = array('0' => '');
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
@@ -287,11 +288,12 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 
 		if ($row['left_id'] < $right)
 		{
-			$padding .= '&nbsp; &nbsp;';
+			$padding .= '&nbsp; &nbsp; &nbsp;';
+			$padding_store[$row['parent_id']] = $padding;
 		}
 		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = substr($padding, 0, -13 * ($row['left_id'] - $right + 1));
+			$padding = $padding_store[$row['parent_id']];
 		}
 
 		$right = $row['right_id'];
@@ -307,11 +309,11 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 		{
 			$cat_right = max($cat_right, $row['right_id']);
 
-			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
+			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 		}
 		else
 		{
-			$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '- ' . $row['forum_name'] . '</option>';
+			$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 			$holding = '';
 		}
 
@@ -321,6 +323,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 		);
 	}
 	$db->sql_freeresult($result);
+	unset($padding_store);
 
 	if ($boxstring != '')
 	{

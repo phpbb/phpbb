@@ -24,12 +24,12 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 {
 	global $db, $user, $auth;
 
-	$right = $cat_right = 0;
-	$forum_list = $padding = $holding = '';
-
 	$acl = ($ignore_acl) ? '' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel');
 	$rowset = get_forum_list($acl, false, $ignore_nonpost, true);
 
+	$right = $cat_right = 0;
+	$forum_list = $padding = $holding = '';
+	$padding_store = array('0' => '');
 	foreach ($rowset as $row)
 	{
 		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || 
@@ -40,11 +40,12 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		if ($row['left_id'] < $right)
 		{
-			$padding .= '&nbsp; &nbsp;';
+			$padding .= '&nbsp; &nbsp; &nbsp;';
+			$padding_store[$row['parent_id']] = $padding;
 		}
 		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = substr($padding, 0, -13 * ($row['left_id'] - $right + 1));
+			$padding = $padding_store[$row['parent_id']];
 		}
 
 		$right = $row['right_id'];
@@ -60,12 +61,11 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		{
 			$cat_right = max($cat_right, $row['right_id']);
 
-			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . '+ ' . $row['forum_name'] . '</option>';
+			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 		}
 		else
 		{
-			$sep = ($row['right_id'] - $row['left_id'] > 1) ? '+ ' : '- ';
-			$forum_list .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $sep . $row['forum_name'] . '</option>';
+			$forum_list .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 			$holding = '';
 		}
 	}
@@ -88,7 +88,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 	{
 		// This query is identical to the jumpbox one
 		$expire_time = ($no_cache) ? 0 : 120;
-		$sql = 'SELECT forum_id, forum_name, forum_type, left_id, right_id
+		$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, left_id, right_id
 			FROM ' . FORUMS_TABLE . '
 			ORDER BY left_id ASC';
 		$result = $db->sql_query($sql, $expire_time);
