@@ -54,6 +54,8 @@ $images['posticon'] = "$url_images/posticon.gif";
 $images['folder'] = "$url_images/folder.gif";
 $images['new_folder'] = "$url_images/red_folder.gif";
 $images['latest_reply'] = "$url_images/latest_reply.gif";
+$images['locked_folder'] = "$url_images/folder_lock.gif";
+
 
 include('includes/template.inc');
 

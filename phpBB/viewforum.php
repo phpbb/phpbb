@@ -361,14 +361,22 @@ if($total_topics)
 //		}
 //		else
 //		{
-			if($userdata['session_start'] == $userdata['session_time'])
-			{
-				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+			if($topic_rowset[$x]['topic_status'] == TOPIC_LOCKED)
+			{	
+				$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
 			}
 			else
 			{
-				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				if($userdata['session_start'] == $userdata['session_time'])
+				{
+					$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				}
+				else
+				{
+					$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				}
 			}
+			
 //		}
 
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&" . $replies);

@@ -212,7 +212,7 @@ switch($mode)
 				}
 			}
 							
-			$msg = $lang['Topics_Removed'] .= "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+			$msg = $lang['Topics_Removed'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
 			message_die(GENERAL_MESSAGE, $msg);
 			
 		}
@@ -224,11 +224,55 @@ switch($mode)
 	
 	break;
 	case 'lock':
-		echo 'Lock';
+		if($HTTP_POST_VARS['preform_op'])
+		{
+			$topics = $HTTP_POST_VARS['preform_op'];
+			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_LOCKED . " WHERE ";
+			for($x = 0; $x < count($topics); $x++)
+			{
+				if($x > 0)
+				{
+					$sql .= " OR ";
+				}
+				$sql .= "topic_id = " . $topics[$x];
+			}
+			
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			}
+			else
+			{
+				$msg = $lang['Topics_Locked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				message_die(GENERAL_MESSAGE, $msg);
+			}
+		}
 	
 	break;
 	case 'unlock':
-		echo 'Unlock';
+		if($HTTP_POST_VARS['preform_op'])
+		{
+			$topics = $HTTP_POST_VARS['preform_op'];
+			$sql = "UPDATE " . TOPICS_TABLE . " SET topic_status = " . TOPIC_UNLOCKED . " WHERE ";
+			for($x = 0; $x < count($topics); $x++)
+			{
+				if($x > 0)
+				{
+					$sql .= " OR ";
+				}
+				$sql .= "topic_id = " . $topics[$x];
+			}
+			
+			if(!$result = $db->sql_query($sql))
+			{
+				message_die(GENERAL_ERROR, "Coule not update topics table!", "Error", __LINE__, __FILE__, $sql);
+			}
+			else
+			{
+				$msg = $lang['Topics_Unlocked'] . "<br />" . "<a href=\"".append_sid("modcp.$phpEx?".POST_FORUM_URL."=$forum_id")."\">". $lang['Click'] . " " . $lang['Here'] ."</a> " . $lang['Return_to_modcp'];
+				message_die(GENERAL_MESSAGE, $msg);
+			}
+		}
 		
 	break;
 	default:
@@ -246,7 +290,7 @@ switch($mode)
 			$start = 0;
 		}
 		
-		$sql = "SELECT t.topic_title, t.topic_id, t.topic_replies, u.username, u.user_id, p.post_time
+		$sql = "SELECT t.topic_title, t.topic_id, t.topic_replies, t.topic_status, t.topic_type, u.username, u.user_id, p.post_time
 					FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p 
 					WHERE t.forum_id = $forum_id
 					AND t.topic_poster = u.user_id
@@ -266,13 +310,13 @@ switch($mode)
 		{	
 			$topic_id = $topics[$x]['topic_id'];
 			$topic_title = stripslashes($topics[$x]['topic_title']);
-			$s_topic_url = append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id");
+			$u_view_topic = append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id");
 			$topic_replies = $topics[$x]['topic_replies'];
 			$last_post_time = create_date($board_config['default_dateformat'], $topics[$x]['post_time'], $board_config['default_timezone']);
 
 			
 			$template->assign_block_vars("topicrow", array(
-													"S_TOPIC_URL" => $s_topic_url,
+													"U_VIEW_TOPIC" => $u_view_topic,
 													"TOPIC_TITLE" => $topic_title,
 													"REPLIES" => $topic_replies,
 													"LAST_POST" => $last_post_time,

@@ -441,6 +441,8 @@ $lang['Move'] = "Move";
 $lang['Lock'] = "Lock";
 $lang['Unlock'] = "Unlock";
 $lang['Topics_Removed'] = "The selected topics have been successfully removed from the database.";
+$lang['Topics_Locked'] = "The selected topics have been locked";
+$lang['Topics_Unlocked'] = "The selected topics have been unlocked";
 $lang['Return_to_modcp'] = "to return to the moderator control panel";
 
 //

@@ -23,7 +23,7 @@
 	        			</tr>
 	        			<!-- BEGIN topicrow -->
 	        			<tr class="tablebody">
-	        				<td bgcolor="#CCCCCC"><a href="{topicrow.S_TOPIC_URL}">{topicrow.TOPIC_TITLE}</a></td>
+	        				<td bgcolor="#CCCCCC"><a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></td>
 	        				<td bgcolor="#DDDDDD" align="center">{topicrow.REPLIES}</td>
 	        				<td bgcolor="#CCCCCC" align="center">{topicrow.LAST_POST}</td>
 	        				<td bgcolor="#DDDDDD"><input type="checkbox" name="preform_op[]" value="{topicrow.TOPIC_ID}">{L_SELECT}</td>
