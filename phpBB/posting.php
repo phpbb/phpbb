@@ -207,7 +207,7 @@ if( $mode != "newtopic" )
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
-	else if( $mode == "editpost" )
+	else if( $mode == "editpost" || $mode == "delete" )
 	{
 		if( $post_id )
 		{
@@ -241,7 +241,7 @@ if( $mode != "newtopic" )
 		$topic_status = $check_row['topic_status'];
 		$forum_status = $check_row['forum_status'];
 
-		if( $mode == "editpost" )
+		if( $mode == "editpost" || $mode == "delete" )
 		{
 			$topic_id = $check_row['topic_id'];
 
@@ -596,7 +596,7 @@ if( $submit && $mode != "vote" )
 // still further reduced, will look at it later, possibly for
 // 2.2
 //
-if( ( $submit || $confirm ) && !$error )
+if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 {
 	$current_time = time();
 
@@ -891,7 +891,7 @@ if( ( $submit || $confirm ) && !$error )
 		//
 
 	}
-	else if( $mode == "editpost" )
+	else if( $mode == "editpost" || $mode == "delete" )
 	{
 		$sql = "SELECT poster_id
 			FROM " . POSTS_TABLE . "
@@ -902,7 +902,8 @@ if( ( $submit || $confirm ) && !$error )
 
 			if( $userdata['user_id'] != $row['poster_id'] && !$is_auth['auth_mod'])
 			{
-				$message = ( $delete ) ? $lang['Sorry_delete_own_posts'] : $lang['Sorry_edit_own_posts'];
+				$message = ( $delete || $mode == "delete" ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
+				$message .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['HERE'] . "</a> ". $lang['to_return_topic'];
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		}
@@ -914,19 +915,24 @@ if( ( $submit || $confirm ) && !$error )
 		//
 		// The user has chosen to delete a post or a poll
 		//
-		if( ( $delete || $poll_delete ) && ( ( $is_auth['auth_delete'] && $is_last_post_topic ) || $is_auth['auth_mod'] ) )
+		if( ( $delete || $mode == "delete" ) && ( ( $is_auth['auth_delete'] && !$is_last_post_topic && !$is_auth['auth_mod'] ) ) )
+		{
+			$message = $lang['Cannot_delete_replied'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['HERE'] . "</a> ". $lang['to_return_topic'];
+			message_die(GENERAL_MESSAGE, $message);
+		}
+		else if( ( $delete || $poll_delete || $mode == "delete" ) && ( ( $is_auth['auth_delete'] && $is_last_post_topic ) || $is_auth['auth_mod'] ) )
 		{
 			//
 			// Output a confirmation message if the user
 			// chose to delete this post
 			//
-			if( ( $delete || $poll_delete ) && !$confirm )
+			if( ( $delete || $poll_delete || $mode == "delete" ) && !$confirm )
 			{
 				$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="'. $topic_id . '" /><input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
 
-				$s_hidden_fields .= ( $delete ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="poll_delete" value="true" />';
+				$s_hidden_fields .= ( $delete || $mode == "delete" ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="poll_delete" value="true" />';
 
-				$l_confirm = ( ( $delete ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'] );
+				$l_confirm = ( ( $delete || $mode == "delete" ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'] );
 
 				//
 				// Output confirmation page
@@ -951,7 +957,7 @@ if( ( $submit || $confirm ) && !$error )
 				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 			}
-			else if( $confirm && ( $delete || $poll_delete ) )
+			else if( $confirm && ( $delete || $poll_delete || $mode == "delete" ) )
 			{
 				//
 				// Delete poll
@@ -1010,8 +1016,18 @@ if( ( $submit || $confirm ) && !$error )
 						message_die(GENERAL_ERROR, "Couldn't delete from vote users table", "", __LINE__, __FILE__, $sql);
 					}
 				}
+				else if( $post_has_poll && !$can_edit_poll && $poll_delete )
+				{
+					$message = $lang['Cannot_delete_poll'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
+					message_die(GENERAL_MESSAGE, $message);
+				}
+				else if( !$is_first_post_topic && $poll_delete )
+				{
+					$message = $lang['Post_has_no_poll'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
+					message_die(GENERAL_MESSAGE, $message);
+				}
 
-				if( $delete )
+				if( $delete || $mode == "delete" )
 				{
 
 					$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
