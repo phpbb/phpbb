@@ -1,0 +1,26 @@
+CODING GUIDELINES : Initials by psoTFX (July 2001)
+-----------------
+
+* The coding style is defined in the codingstandards.html file, all attempts should be made to follow it as closely as possible
+
+* All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL, MSSQL (7.0 and 2000), PostgreSQL (7.0+), Oracle8, ODBC (generalised if possible, otherwise MS Access, DB2))
+
+* All SQL commands should utilise the DataBase Abstraction Layer (DBAL)
+
+* All URL's (and form actions) _must_ be wrapped in append_sid, this ensures the session_id is propagated when cookies aren't available
+
+* The minimum amount of data should be passed via GET or POST, checking should occur within individual scripts (to prevent spoofing of information)
+
+* The auth function should be used for all authorisation checking
+
+* Sessions should be initiated on each page, as near the top as possible using the session_pagestart function (userdata should be obtained by calling the init_userprefs immediately after session initialisation)
+
+* Login checks should be forwarded to the login page (supplying a page to forward onto once check is complete if required)
+
+* All template variables should be named appropriately (using underscores for spaces), language entries should be prefixed with L_, system data with S_, urls with U_, all other variables should be presented 'as is'.
+
+* Functions used by more than page should be placed in functions.php, functions specific to one page should be placed on that page (at the top to maintain compatibility with PHP3) surrounded by comments indicating the start and end of the function block
+
+* All messages/errors should be output by the message_die function using the appropriate message type (see function for details)
+
+* No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to)
