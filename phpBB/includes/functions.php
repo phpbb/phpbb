@@ -215,7 +215,7 @@ function init_userprefs($userdata)
 	{
 		$board_config['default_lang'] = $userdata['user_lang'];
 	}
-	if($userdata['user_dateformat'] != '')
+	if($userdata['user_dateformat'])
 	{
 		$board_config['default_dateformat'] = $userdata['user_dateformat'];
 	}
