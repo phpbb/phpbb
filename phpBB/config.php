@@ -23,8 +23,9 @@
  ***************************************************************************/ 
 
 // Session data
-$session_cookie = "phpBBsession";
-$session_cookie_time = 3600; 
+$cookiename = "phpbb2";
+$cookielife = 31536000;
+$session_length = 300;
 
 // DB connection config
 $dbms = "mysql";
@@ -34,11 +35,11 @@ $dbuser = "";
 $dbpasswd = "";
 
 // Date format (needs to go into DB)
-$date_format = "M d Y h:i:s a"; // American datesformat
-//$date_format = "d-m-Y H:i:s"; // European datesformat
+//$date_format = "m-d-Y H:i:s"; // American datesformat
+$date_format = "d M Y h:i:s a"; // European datesformat
 
 // DB table prefix
-$table_prefix = "";
+$table_prefix = "phpbb_";
 
 $url_images = "images";
 $image_quote = "$url_images/quote.gif";
@@ -56,4 +57,5 @@ $image_icq = "$url_images/icq_add.gif";
 $image_aim = "$url_images/aim.gif";
 $image_yim = "$url_images/yim.gif";
 $image_msnm = "$url_images/msnm.gif";
+
 ?>
