@@ -56,14 +56,12 @@ while( list($var, $param) = @each($params) )
 	}
 }
 
-
-
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
 
 //
 // Set topic type
 //
-$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? $HTTP_POST_VARS['topictype'] : POST_NORMAL;
+$topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? intval($HTTP_POST_VARS['topictype']) : POST_NORMAL;
 
 //
 // If the mode is set to topic review then output
@@ -358,7 +356,7 @@ if ( !$is_auth[$is_auth_type] )
 //
 // Set toggles for various options
 //
-if( !$board_config['allow_html'] )
+if ( !$board_config['allow_html'] )
 {
 	$html_on = 0;
 }
@@ -367,7 +365,7 @@ else
 	$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_html'] : $userdata['user_allowhtml'] );
 }
 
-if( !$board_config['allow_bbcode'] )
+if ( !$board_config['allow_bbcode'] )
 {
 	$bbcode_on = 0;
 }
@@ -376,7 +374,7 @@ else
 	$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : ( ( $userdata['user_id'] == ANONYMOUS ) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode'] );
 }
 
-if( !$board_config['allow_smilies'] )
+if ( !$board_config['allow_smilies'] )
 {
 	$smilies_on = 0;
 }
