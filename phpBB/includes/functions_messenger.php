@@ -425,8 +425,9 @@ class queue
 
 		foreach ($this->queue_data as $object => $data_ary)
 		{
-			$package_size = $data_ary['package_size'];
+			@set_time_limit(60);
 
+			$package_size = $data_ary['package_size'];
 			$num_items = (count($data_ary['data']) < $package_size) ? count($data_ary['data']) : $package_size;
 
 			switch ($object)
@@ -436,18 +437,16 @@ class queue
 					if (!$config['email_enable'])
 					{
 						unset($this->queue_data['email']);
-						break 2;
+						continue;
 					}
-					@set_time_limit(60);
 					break;
 
 				case 'jabber':
 					if (!$config['jab_enable'])
 					{
 						unset($this->queue_data['jabber']);
-						break 2;
+						continue;
 					}
-					@set_time_limit(60);
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
 					$this->jabber = new Jabber;
@@ -461,13 +460,13 @@ class queue
 					if (!$this->jabber->Connect())
 					{
 						messenger::error('JABBER', 'Could not connect to Jabber server');
-						trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+						continue;
 					}
 
 					if (!$this->jabber->SendAuth())
 					{
 						messenger::error('JABBER', 'Could not authorise on Jabber server');
-						trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
+						continue;
 					}
 					$this->jabber->SendPresence(NULL, NULL, 'online');
 					break;
@@ -495,7 +494,7 @@ class queue
 							// Logging instead of displaying!?
 							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
 							messenger::error('MAIL', $message);
-//							trigger_error($message, E_USER_ERROR);
+							continue 2;
 						}
 						break;
 
