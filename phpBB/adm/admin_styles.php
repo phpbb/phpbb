@@ -2508,14 +2508,15 @@ function install($type, $action, $id)
 	if (($action == 'install' && $install_path) || (!empty($_FILES['upload_file']['name']) || !empty($_POST['import_file'])))
 	{
 		$root_path = ($action == 'install') ? "{$phpbb_root_path}styles/$install_path/" : "$tmp_path";
+		$cfg_path = ($type == 'style') ? "$root_path$type.cfg" : "$root_path$type/$type.cfg";
 
-		if (!($fp = @fopen("$root_path$type/$type.cfg", 'rb')))
+		if (!($fp = @fopen($cfg_path, 'rb')))
 		{
 			$error[] = $user->lang[$l_type . '_ERR_NOT_' . $l_type];
 		}
 		else
 		{
-			$installcfg = explode("\n", fread($fp, filesize("$root_path$type/$type.cfg")));
+			$installcfg = explode("\n", fread($fp, filesize($cfg_path)));
 		}
 		fclose($fp);
 	}
@@ -2575,7 +2576,7 @@ function install($type, $action, $id)
 			switch ($type)
 			{
 				case 'style':
-					$sql_select = 'style_name, template_id, theme_id, imageset_id';
+					$sql_select = ($action != 'details') ? 'style_name, template_id, theme_id, imageset_id' : 'style_name';
 					break;
 				case 'template':
 					$sql_select = 'template_id, template_name, template_path, template_storedb';
@@ -2584,7 +2585,7 @@ function install($type, $action, $id)
 					$sql_select = 'theme_id, theme_name, theme_path, theme_data, theme_storedb';
 					break;
 				case 'imageset':
-					$sql_select = 'imageset_name, imageset_path, imageset_id';
+					$sql_select = 'imageset_id, imageset_name, imageset_path';
 					break;
 			}
 
@@ -2655,7 +2656,7 @@ function install($type, $action, $id)
 						// and do the install if necessary
 						if (!${$element . '_id'})
 						{
-							$error += install_element($element, $action, $root_path, ${$element . '_id'}, $name, $copyright);
+							$error = install_element($element, $action, $root_path, ${$element . '_id'}, $name, $copyright);
 						}
 					}
 
@@ -2730,9 +2731,96 @@ function install($type, $action, $id)
 		}
 		else if ($action == 'add') 
 		{
-			// Create path if it doesn't exist
-			if ($type != 'style')
+			if ($type == 'style')
 			{
+				if (empty($style_name))
+				{
+					$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
+				}
+
+				if (strlen($style_name) > 30)
+				{
+					$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
+				}
+
+				if (!preg_match('#^[a-z0-9_\-\+\. ]+$#i', $style_name))
+				{
+					$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
+				}
+
+				if (strlen($style_copyright) > 60)
+				{
+					$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
+				}
+
+				$sql = 'SELECT style_name 
+					FROM ' . STYLES_TABLE . " 
+					WHERE style_name = '" . $db->sql_escape($style_name) . "'";
+				$result = $db->sql_query($sql);
+
+				if (extract($db->sql_fetchrow($result)))
+				{
+					$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
+				}
+				$db->sql_freeresult($result);
+
+				foreach ($element_ary as $element => $table)
+				{
+					// Zero id value ... need to install element ... run usual checks
+					// and do the install if necessary
+					if (!${$element . '_id'})
+					{
+						$error = install_element($element, $action, $root_path, ${$element . '_id'}, $name, $copyright);
+					}
+				}
+
+				if (!$template_id || !$theme_id || !$imageset_id)
+				{
+					$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+				}
+
+				if (!sizeof($error))
+				{
+					$db->sql_transaction('begin');
+
+					$sql_ary += array(
+						$type . '_name'			=> $name, 
+						$type . '_copyright'	=> $copyright, 
+					);
+					if ($type == 'style')
+					{
+						$sql_ary += array(
+							'style_active'		=> $style_active, 
+							'template_id'		=> $template_id, 
+							'theme_id'			=> $theme_id, 
+							'imageset_id'		=> $imageset_id, 
+						);
+					}
+
+					$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
+						' .  $db->sql_build_array('INSERT', $sql_ary);
+					$db->sql_query($sql);
+
+					$id = $db->sql_nextid();
+
+					if ($type == 'style' && $style_default)
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . " 
+							SET user_style = $id 
+							WHERE user_style = " . $config['default_style'];
+						$db->sql_query($sql);
+
+						set_config('default_style', $id);
+					}
+
+					$db->sql_transaction('commit');
+
+					add_log('admin', 'LOG_ADD_STYLE', $style_name);
+				}
+			}
+			else
+			{
+				// Create path if it doesn't exist
 				$storedb = 1;
 
 				umask(0);
@@ -2743,55 +2831,55 @@ function install($type, $action, $id)
 						$storedb = 0;
 					}
 				}
+
+				if ($basis && ($template_storedb || $theme_storedb))
+				{
+					$tmp_path = $phpbb_root_path . 'store/tmp_' . substr(uniqid(''), 0, 10) . '/';
+					if (!@mkdir($tmp_path, 0777))
+					{
+						trigger_error("Cannot create $tmp_path", E_USER_ERROR);
+					}
+					@chmod($tmp_path, 0777);
+
+					if (!@mkdir("$tmp_path$type", 0777))
+					{
+						trigger_error("Cannot create $tmp_path$type", E_USER_ERROR);
+					}
+					@chmod("$tmp_path$type", 0777);
+
+					switch ($type)
+					{
+						case 'theme':
+							copyfiles("{$phpbb_root_path}styles/$path/theme/", filelist("{$phpbb_root_path}styles/$path/theme/", '', '*'), "$tmp_path$type/");
+
+							$fp = fopen("$tmp_path$type/stylesheet.css", 'wb');
+							fwrite($fp, $theme_data);
+							fclose($theme_data);
+							break;
+
+						case 'template':
+							copyfiles("{$phpbb_root_path}styles/$path/$type/", filelist("{$phpbb_root_path}styles/$path/$type/", '', '*'), "$tmp_path$type/");
+						
+							$sql = 'SELECT template_filename, template_mtime, template_data 
+								FROM ' . STYLES_TPLDATA_TABLE . "
+								WHERE template_id = $basis";
+							$result = $db->sql_fetchrow($result);
+
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$fp = fopen("$tmp_path$type/" . $row['template_filename'], 'wb');
+								fwrite($fp, $row['template_data']);
+								fclose($fp);
+							}
+							$db->sql_freeresult($result);
+							break;
+					}
+				}
+
+				$root_path = ($tmp_path) ? $tmp_path : (($basis) ? $phpbb_root_path . 'styles/' . ${$type . '_path'} . '/' : '');
+
+				$error = install_element($type, $action, $root_path, $id, $name, $copyright, $storedb);
 			}
-
-			if ($basis && ($template_storedb || $theme_storedb))
-			{
-				$tmp_path = $phpbb_root_path . 'store/tmp_' . substr(uniqid(''), 0, 10) . '/';
-				if (!@mkdir($tmp_path, 0777))
-				{
-					trigger_error("Cannot create $tmp_path", E_USER_ERROR);
-				}
-				@chmod($tmp_path, 0777);
-
-				if (!@mkdir("$tmp_path$type", 0777))
-				{
-					trigger_error("Cannot create $tmp_path$type", E_USER_ERROR);
-				}
-				@chmod("$tmp_path$type", 0777);
-
-				switch ($type)
-				{
-					case 'theme':
-						copyfiles("{$phpbb_root_path}styles/$path/theme/", filelist("{$phpbb_root_path}styles/$path/theme/", '', '*'), "$tmp_path$type/");
-
-						$fp = fopen("$tmp_path$type/stylesheet.css", 'wb');
-						fwrite($fp, $theme_data);
-						fclose($theme_data);
-						break;
-
-					case 'template':
-						copyfiles("{$phpbb_root_path}styles/$path/$type/", filelist("{$phpbb_root_path}styles/$path/$type/", '', '*'), "$tmp_path$type/");
-					
-						$sql = 'SELECT template_filename, template_mtime, template_data 
-							FROM ' . STYLES_TPLDATA_TABLE . "
-							WHERE template_id = $basis";
-						$result = $db->sql_fetchrow($result);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$fp = fopen("$tmp_path$type/" . $row['template_filename'], 'wb');
-							fwrite($fp, $row['template_data']);
-							fclose($fp);
-						}
-						$db->sql_freeresult($result);
-						break;
-				}
-			}
-
-			$root_path = ($tmp_path) ? $tmp_path : (($basis) ? $phpbb_root_path . 'styles/' . ${$type . '_path'} . '/' : '');
-
-			$error = install_element($type, $action, $root_path, $id, $name, $copyright, $storedb);
 
 			if ($tmp_path)
 			{
@@ -2885,7 +2973,7 @@ function install($type, $action, $id)
 
 			if ($type != 'imageset' && sizeof($sql_ary))
 			{
-				$sql = "UPDATE $sql_from 
+				echo $sql = "UPDATE $sql_from 
 					SET " . $db->sql_build_array('UPDATE', $sql_ary) . " 
 					WHERE {$type}_id = $id";
 				$db->sql_query($sql);
@@ -2904,7 +2992,7 @@ function install($type, $action, $id)
 	// Something went wrong ... so we'll clean up any decompressed uploaded/imported archives.
 	if ($tmp_path)
 	{
-//		cleanup_folder($tmp_path);
+		cleanup_folder($tmp_path);
 	}
 
 	// Either an error occured or the user has just entered the form
