@@ -454,6 +454,8 @@ else
 		"S_NO_TOPICS" => TRUE)
 	);
 
+	$template->assign_block_vars("notopicsrow", array() );
+
 }
 
 //

@@ -34,6 +34,11 @@
 				<td class="row2" align="center" valign="middle"><span class="gensmall">{topicrow.LAST_POST}</span></td>
 			</tr>
 			<!-- END topicrow -->
+			<!-- BEGIN notopicsrow -->
+			<tr>
+				<td class="row1" colspan="6" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}{topicrow.REPLIES}</span></td>
+			</tr>
+			<!-- END notopicsrow -->
 			<tr>
 				<td class="cat" colspan="6"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
