@@ -181,6 +181,8 @@ if ($sql != '')
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	$message_parser->bbcode_uid = $row['bbcode_uid'];
+
 	$forum_id = intval($row['forum_id']);
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
@@ -483,6 +485,9 @@ if (($submit) || ($preview) || ($refresh))
 	// Check checksum ... don't re-parse message if the same
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
+		// DEBUG
+		$bbcode_uid = $message_parser->bbcode_uid;
+
 		// Parse message
 		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
 		{
@@ -596,7 +601,8 @@ if (($submit) || ($preview) || ($refresh))
 			'post_checksum'			=> $post_checksum,
 			'forum_parents'			=> $forum_parents,
 			'notify'				=> $notify,
-			'notify_set'			=> $notify_set
+			'notify_set'			=> $notify_set,
+			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield
 		);
 		
 		submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data);
@@ -620,6 +626,13 @@ if ($preview)
 	}
 
 	$post_time = $current_time;
+
+	// DEBUG
+	$bbcode_bitfield = bindec('1111111111');
+
+	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+	$bbcode = new bbcode($bbcode_uid, $bbcode_bitfield);
+
 	$preview_message = format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
@@ -627,7 +640,7 @@ if ($preview)
 	// Poll Preview
 	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_get('m_edit', $forum_id)) ))
 	{
-		decode_text($poll_title);
+		decode_text($poll_title, $bbcode_uid);
 		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);
 
 		$template->assign_vars(array(
@@ -645,8 +658,8 @@ if ($preview)
 }
 
 // Decode text for message display
-decode_text($post_text);
-decode_text($subject);
+decode_text($post_text, $bbcode_uid);
+decode_text($subject, $bbcode_uid);
 
 // Save us some processing time. ;)
 $poll_options_tmp = implode("\n", $poll_options);

@@ -25,6 +25,8 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
+// Instantiate BBCode class
+$bbcode = new bbcode();
 
 // Initial var setup
 $forum_id = (isset($_GET['f'])) ? max(intval($_GET['f']), 0) : 0;
@@ -777,7 +779,7 @@ if ($row = $db->sql_fetchrow($result))
 
 
 		// Second parse bbcode here
-
+		$bbcode->bbcode_second_pass(&$message, $bbcode_uid, $row['bbcode_bitfield']);
 
 
 		// If we allow users to disable display of emoticons

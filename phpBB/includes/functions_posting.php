@@ -125,7 +125,7 @@ function generate_topic_icons($mode, $enable_icons)
 }
 
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
-function decode_text(&$message)
+function decode_text(&$message, $bbcode_uid)
 {
 	global $config, $censors;
 
@@ -158,6 +158,7 @@ function decode_text(&$message)
 		obtain_word_list($censors);
 	}
 
+	$message = str_replace(":$bbcode_uid", '', $message);
 	$message = preg_replace($match, $replace, $message);
 
 	return;
@@ -548,7 +549,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
 function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 {
-	global $auth, $forum_id, $config, $censors, $user;
+	global $auth, $forum_id, $config, $censors, $user, $bbcode;
 
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
@@ -558,6 +559,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	}
 
 	// Second parse bbcode here
+	$message = $bbcode->bbcode_second_pass($message);
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
@@ -773,6 +775,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		'enable_smilies' 	=> $post_data['enable_smilies'],
 		'enable_magic_url' 	=> $post_data['enable_urls'],
 		'bbcode_uid'		=> $bbcode_uid,
+		'bbcode_bitfield'	=> $post_data['bbcode_bitfield']
 	);
 
 	if ($mode != 'edit' || $post_data['message_md5'] != $post_data['post_checksum'])
