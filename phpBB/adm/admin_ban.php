@@ -7,8 +7,8 @@
 // STARTED   : Tue Jul 31, 2001
 // COPYRIGHT : © 2001,2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 if (!empty($setmodules))
@@ -31,6 +31,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_user.'.$phpEx);
 
 // Do we have ban permissions?
 if (!$auth->acl_get('a_ban'))
@@ -265,7 +266,7 @@ function display_details(option)
 	</tr>
 <?php
 
-	if ($banned_options != '')
+	if ($banned_options)
 	{
 
 ?>
