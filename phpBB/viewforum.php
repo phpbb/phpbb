@@ -264,7 +264,7 @@ if ($forum_data['forum_postable'])
 
 //	if (empty($forum_data['topics_list']))
 //	{
-		$sql = 'SELECT 	t.*, lr.lastread_time, lr.lastread_type
+		$sql = 'SELECT t.*, lr.lastread_time, lr.lastread_type
 			FROM (' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id 
 				AND lr.user_id = ' . $user->data['user_id'] . ")
@@ -288,6 +288,7 @@ if ($forum_data['forum_postable'])
 				AND lr.user_id = ' . $user->data['user_id'] . ")
 			WHERE t.forum_id = $forum_id 
 				AND t.topic_approved = 1 
+				AND t.topic_type <> " . POST_ANNOUNCE . " 
 				$limit_topics_time
 			ORDER BY t.topic_type DESC, $sort_order_sql
 			LIMIT $start, " . $config['topics_per_page'];
@@ -327,7 +328,6 @@ if ($forum_data['forum_postable'])
 		$db->sql_query($sql);
 	}
 */
-
 
 	// Okay, lets dump out the page ...
 	if ($total_topics)
