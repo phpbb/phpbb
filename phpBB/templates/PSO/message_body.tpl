@@ -1,4 +1,10 @@
 
+<table width="80%" cellspacing="0" cellpadding="4" border="0" align="center">
+	<tr>
+		<td align="left"><span class="gensmall"><a href="{U_INDEX}">{SITENAME} {L_INDEX}</a></span></td>
+	</tr>
+</table>
+
 <table width="80%" cellpadding="1" cellspacing="0" border="0" align="center">
 	<tr>
 		<td class="tablebg"><table width="100%" cellpadding="4" cellspacing="1" border="0">
