@@ -39,7 +39,7 @@ if($submit)
 	  }
 	else 
 	  {
-	     $sessid = new_session($userdata[user_id], USER_IP, $session_cookie_time, $db);
+	     $sessid = new_session($userdata[user_id], $user_ip, $session_cookie_time, $db);
 	     set_session_cookie($sessid, $session_cookie_time, $session_cookie, "", "", 0);
 	     header("Location: index.$phpEx");
 	  }

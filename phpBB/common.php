@@ -26,9 +26,7 @@ include('config.'.$phpEx);
 include('includes/constants.'.$phpEx);
 
 // Find Users real IP (if possible)
-$ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
-define("USER_IP",$ip);
-unset($ip);
+$user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
 // Setup what template to use. Currently just use default
 include('includes/template.inc');
@@ -71,7 +69,7 @@ else
 include('language/lang_'.$default_lang.'.'.$phpEx);
 
 // Check if user is banned
-if(!auth("ip ban", $db, "", USER_IP))
+if(!auth("ip ban", $db, "", $user_ip))
 {
 	error_die($db, BANNED);
 }
@@ -79,7 +77,7 @@ if(!auth("ip ban", $db, "", USER_IP))
 if(isset($HTTP_COOKIE_VARS[$session_cookie])) 
 {
 	$sessid = $HTTP_COOKIE_VARS[$session_cookie];
-	$userid = get_userid_from_session($sessid, $session_cookie_time, USER_IP, $db);
+	$userid = get_userid_from_session($sessid, $session_cookie_time, $user_ip, $db);
 
 	if ($userid)
 	{
