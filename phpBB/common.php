@@ -42,14 +42,14 @@ $images['edit'] = "$url_images/icon_edit.gif";
 $images['search_icon'] = "$url_images/search_icon.gif";
 $images['profile'] = "$url_images/icon_profile.gif";
 $images['privmsg'] = "$url_images/icon_pm.gif";
-$images['email'] = "$url_images/email.gif";
+$images['email'] = "$url_images/icon_email.gif";
 $images['delpost'] = "$url_images/edit.gif";
 $images['ip'] = "$url_images/icon_ip.gif";
 $images['www'] = "$url_images/icon_www.gif";
-$images['icq'] = "$url_images/icq_add.gif";
-$images['aim'] = "$url_images/aim.gif";
-$images['yim'] = "$url_images/yim.gif";
-$images['msnm'] = "$url_images/msnm.gif";
+$images['icq'] = "$url_images/icon_icq_add.gif";
+$images['aim'] = "$url_images/icon_aim.gif";
+$images['yim'] = "$url_images/icon_yim.gif";
+$images['msnm'] = "$url_images/icon_msnm.gif";
 $images['posticon'] = "$url_images/posticon.gif";
 $images['folder'] = "$url_images/folder.gif";
 $images['new_folder'] = "$url_images/red_folder.gif";
@@ -65,9 +65,47 @@ include('includes/functions.'.$phpEx);
 include('includes/db.'.$phpEx);
 
 
+//
 // Obtain and encode users IP
-//$get_user_ip = ;
-$user_ip = encode_ip(($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR);
+//
+if(!empty($HTTP_CLIENT_IP))
+{
+	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	{
+		$client_ip = $HTTP_CLIENT_IP; 
+	}
+}
+else if(!empty($HTTP_X_FORWADED_FOR))
+{
+	if(strstr(",", $HTTP_X_FORWARDED_FOR))
+	{
+		list($client_ip) = explode(",", $HTTP_X_FORWADED_FOR);
+	}
+	else
+	{
+		$client_ip = $HTTP_X_FORWARDED_FOR;
+	}
+}
+else if(!empty($HTTP_VIA))
+{
+	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	{
+		$client_ip = $HTTP_VIA;
+	}
+}
+else if(!empty($HTTP_PROXY_USER))
+{
+	if(eregi("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+", $HTTP_PROXY_USER))
+	{
+		$client_ip = $HTTP_PROXY_USER;
+	}
+}
+else
+{
+	$client_ip = $REMOTE_ADDR;
+}
+$user_ip = encode_ip($client_ip);
+
 
 //
 // Setup forum wide options.

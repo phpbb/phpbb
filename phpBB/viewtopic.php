@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *				 						   viewtopic.php
+ *                               viewtopic.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -380,7 +380,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$aim_img = ($postrow[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "";
 
-	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msn'] . "\" border=\"0\"></a>" : "";
+	$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "";
 
 	$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "";
 	
@@ -394,9 +394,9 @@ for($i = 0; $i < $total_posts; $i++)
 	}
 	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"$l_editdelete\" border=\"0\"></a>";
 
-	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"$l_replyquote\" border=\"0\"></a>";
+	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"$l_replyquote\" border=\"0\"></a>";
 
-	if($is_auth['auth_mod'])
+	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
 		$ip_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=viewip&" . POST_USERS_URL . "=" . $poster_id) . "\"><img src=\"" . $images['ip'] . "\" alt=\"$l_viewip\" border=\"0\"></a>";
 
