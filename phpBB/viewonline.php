@@ -112,10 +112,12 @@ if( $row = $db->sql_fetchrow($result) )
 
 	$reg_counter = 0;
 	$guest_counter = 0;
-	$prev_user = "";
+	$prev_user = 0;
 
 	do
 	{
+		$view_online = 0;
+
 		if ( $row['session_logged_in'] ) 
 		{
 			$user_id = $row['user_id'];
@@ -134,19 +136,21 @@ if( $row = $db->sql_fetchrow($result) )
 					$username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
 				}
 
-				if ( !$row['user_allow_viewonline'] && $userdata['user_level'] == ADMIN )
+				if ( !$row['user_allow_viewonline'] )
 				{
-					$username = '<i>' . $username . '<i>';
+					$view_online = ( $userdata['user_level'] == ADMIN ) ? 1 : 0;
 					$hidden_users++;
+
+					$username = '<i>' . $username . '<i>';
 				}
 				else
 				{
+					$view_online = 1;
 					$registered_users++;
 				}
 
 				$last_update = $row['user_session_time'];
 				$user_page = $row['user_session_page'];
-				$view_online = $row['user_allow_viewonline'];
 
 				$which_counter = 'reg_counter';
 				$which_row = 'reg_user_row';
@@ -155,70 +159,70 @@ if( $row = $db->sql_fetchrow($result) )
 		}
 		else
 		{
+			$view_online = 1;
 			$guest_users++;
 	
 			$username = $lang['Guest'];
 			$last_update = $row['session_time'];
 			$user_page = $row['session_page'];
-			$view_online = 1;
 
 			$which_counter = 'guest_counter';
 			$which_row = 'guest_user_row';
 		}
 
-		if ( $user_page < 1 || !$is_auth_ary[$user_page]['auth_view'] )
+		if ( $view_online )
 		{
-			switch( $user_page )
+			if ( $user_page < 1 || !$is_auth_ary[$user_page]['auth_view'] )
 			{
-				case PAGE_INDEX:
-					$location = $lang['Forum_index'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_POSTING:
-					$location = $lang['Posting_message'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_LOGIN:
-					$location = $lang['Logging_on'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_SEARCH:
-					$location = $lang['Searching_forums'];
-					$location_url = "search.$phpEx";
-					break;
-				case PAGE_PROFILE:
-					$location = $lang['Viewing_profile'];
-					$location_url = "index.$phpEx";
-					break;
-				case PAGE_VIEWONLINE:
-					$location = $lang['Viewing_online'];
-					$location_url = "viewonline.$phpEx";
-					break;
-				case PAGE_VIEWMEMBERS:
-					$location = $lang['Viewing_member_list'];
-					$location_url = "memberlist.$phpEx";
-					break;
-				case PAGE_PRIVMSGS:
-					$location = $lang['Viewing_priv_msgs'];
-					$location_url = "privmsg.$phpEx";
-					break;
-				case PAGE_FAQ:
-					$location = $lang['Viewing_FAQ'];
-					$location_url = "faq.$phpEx";
-					break;
-				default:
-					$location = $lang['Forum_index'];
-					$location_url = "index.$phpEx";
+				switch( $user_page )
+				{
+					case PAGE_INDEX:
+						$location = $lang['Forum_index'];
+						$location_url = "index.$phpEx";
+						break;
+					case PAGE_POSTING:
+						$location = $lang['Posting_message'];
+						$location_url = "index.$phpEx";
+						break;
+					case PAGE_LOGIN:
+						$location = $lang['Logging_on'];
+						$location_url = "index.$phpEx";
+						break;
+					case PAGE_SEARCH:
+						$location = $lang['Searching_forums'];
+						$location_url = "search.$phpEx";
+						break;
+					case PAGE_PROFILE:
+						$location = $lang['Viewing_profile'];
+						$location_url = "index.$phpEx";
+						break;
+					case PAGE_VIEWONLINE:
+						$location = $lang['Viewing_online'];
+						$location_url = "viewonline.$phpEx";
+						break;
+					case PAGE_VIEWMEMBERS:
+						$location = $lang['Viewing_member_list'];
+						$location_url = "memberlist.$phpEx";
+						break;
+					case PAGE_PRIVMSGS:
+						$location = $lang['Viewing_priv_msgs'];
+						$location_url = "privmsg.$phpEx";
+						break;
+					case PAGE_FAQ:
+						$location = $lang['Viewing_FAQ'];
+						$location_url = "faq.$phpEx";
+						break;
+					default:
+						$location = $lang['Forum_index'];
+						$location_url = "index.$phpEx";
+				}
 			}
-		}
-		else
-		{
-			$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $user_page);
-			$location = $forum_data[$user_page];
-		}
+			else
+			{
+				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $user_page);
+				$location = $forum_data[$user_page];
+			}
 
-		if ( $view_online || $userdata['user_level'] == ADMIN )
-		{
 			$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
