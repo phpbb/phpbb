@@ -35,7 +35,9 @@ if ( $board_config['gzip_compress'] )
 {
 	$phpver = phpversion();
 
-	if ( $phpver >= '4.0.4pl1' && strstr($HTTP_USER_AGENT,'compatible') )
+	$useragent = (isset($_SERVER["HTTP_USER_AGENT"]) ) ? $_SERVER["HTTP_USER_AGENT"] : $HTTP_USER_AGENT;
+
+	if ( $phpver >= '4.0.4pl1' && ( strstr($useragent,'compatible') || strstr($useragent,'Gecko') ) )
 	{
 		if ( extension_loaded('zlib') )
 		{
