@@ -136,6 +136,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_ignoreflood', 
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_postcount', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_moderate', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_report', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_votechg', 1);
 
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_edit', 1, 1);
