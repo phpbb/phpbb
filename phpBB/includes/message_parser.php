@@ -79,37 +79,7 @@ class parse_message
 		if (!strlen($this->message) || (intval($config['max_post_chars']) && strlen($this->message) > intval($config['max_post_chars'])))
 		{
 			$this->warn_msg[] = (!strlen($this->message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
-		}
-
-		// Smiley check
-		if (intval($config['max_post_smilies']) && $smilies)
-		{
-			// NOTE: couldn't we move this to emoticons()? they both use the same rowset
-			$sql = "SELECT code	
-				FROM " . SMILIES_TABLE;
-			$result = $db->sql_query($sql);
-
-			$match = 0;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (preg_match_all('#('. preg_quote($row['code'], '#') . ')#', $this->message, $matches))
-				{
-					$match++;
-				}
-
-				if ($match > intval($config['max_post_smilies']))
-				{
-					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
-					break;
-				}
-			}
-			$db->sql_freeresult($result);
-			unset($matches);
-		}
-
-		if ($this->warn_msg)
-		{
-			return implode('<br />', $this->warn_msg);
+			return $this->warn_msg;
 		}
 
 		$this->html($html);
@@ -636,12 +606,17 @@ class parse_message
 		}
 	}
 
-	function emoticons($smile)
+	function emoticons($smilie)
 	{
-		global $db, $user, $phpbb_root_path;
+		global $db, $user, $phpbb_root_path, $config;
 
-		$sql = "SELECT * 
-			FROM " . SMILIES_TABLE;
+		if (!$smilie)
+		{
+			return;
+		}
+
+		$sql = 'SELECT * 
+			FROM ' . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -649,10 +624,22 @@ class parse_message
 			$match = $replace = array();
 			do
 			{
-				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $phpbb_root_path . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+				$match[] = '#(' . preg_quote($row['code'], '#') . ')#';
+//				$match[] = "#(?<=.\W|\W.|^\W)" . preg_quote($row['code'], '#') . "(?=.\W|\W.|\W$)#";
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			while ($row = $db->sql_fetchrow($result));
+
+			if ($config['max_post_smilies'])
+			{
+				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+
+				if ($num_matches !== FALSE && $num_matches > intval($config['max_post_smilies']))
+				{
+					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
+					return;
+				}
+			}
 
 			$this->message = preg_replace($match, $replace, ' ' . $this->message . ' ');
 		}

@@ -836,7 +836,7 @@ function obtain_attach_extensions(&$extensions)
 	}
 	else
 	{
-		// Don't count on forbidden extensions table, because it is not allowed to allow forbidden extensions at all
+		// The rule is to only allow those extensions defined. ;)
 		$sql = 'SELECT e.extension, g.*
 			FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
 			WHERE e.group_id = g.group_id

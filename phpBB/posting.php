@@ -521,7 +521,7 @@ if ($submit || $preview || $refresh)
 
 
 	// Faster than crc32
-	$check_value	= (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+	$check_value	= (($preview || $refresh) && isset($_POST['status_switch'])) ? intval($_POST['status_switch']) : (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 	$status_switch	= (isset($_POST['status_switch']) && intval($_POST['status_switch']) != $check_value) ? true : false;
 
 

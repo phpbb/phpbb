@@ -38,7 +38,7 @@ function generate_smilies($mode)
 		);
 	}
 
-	$sql = 'SELECT emoticon, code, smile_url, smile_width, smile_height
+	$sql = 'SELECT *
 		FROM ' . SMILIES_TABLE . 
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
 		ORDER BY smile_order';
