@@ -183,7 +183,16 @@ for($x = 0; $x < $total_rows; $x++)
 // Set the body template
 //
 $template->set_filenames(array(
-	"body" => "viewtopic_body.tpl"));
+	"body" => "viewtopic_body.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+		"S_JUMPBOX_ACTION" => append_sid("viewforum.".$phpEx),
+    "SELECT_NAME" => POST_FORUM_URL)
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
 $total_replies = $forum_row[0]['topic_replies'] + 1;
 
@@ -222,11 +231,12 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 // templating vars
 //
 $new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
-$reply_topic_url = append_sid("posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id");
+$reply_topic_url = append_sid("posting.".$phpEx."?mode=reply&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id");
 $view_forum_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=$forum_id");
 $view_older_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".POST_FORUM_URL."=$forum_id&view=newer");
 $view_newer_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".POST_FORUM_URL."=$forum_id&view=older");
 $template->assign_vars(array(
+	"L_POSTED" => $l_posted,
 	"U_POST_NEW_TOPIC" => $new_topic_url,
 	"FORUM_NAME" => $forum_name,
 	"TOPIC_TITLE" => $topic_title,
@@ -301,7 +311,7 @@ for($x = 0; $x < $total_posts; $x++)
 	$msn_img = ($postrow[$x]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
 	$yim_img = ($postrow[$x]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
 
-	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
+	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&".POST_POST_URL."=".$postrow[$x]['post_id']."&".POST_TOPIC_URL."=$topic_id&".POST_FORUM_URL."=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
 	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
 	$pmsg_img = "<a href=\"".append_sid("priv_msgs.$phpEx?mode=send")."\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
 
@@ -369,8 +379,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"PMSG_IMG" => $pmsg_img,
 		"IP_IMG" => $ip_img,
 		"DELPOST_IMG" => $delpost_img,
-
-		"U_POST_ID" => "#".$postrow[$x]['post_id']));
+		"U_POST_ID" => $postrow[$x]['post_id']));
 }
 
 if($total_replies > $board_config['posts_per_page'])

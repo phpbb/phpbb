@@ -85,11 +85,27 @@ function prepare_message($message, $html_on, $bbocde_on, $smile_on, $bbcode_uid 
 // Put AUTH code here
 //
 
+$error = FALSE;
 
-switch($mode)
+//
+// Prepare our message and subject on a 'submit' 
+//
+if(isset($HTTP_POST_VARS['submit']))
 {
-	case 'newtopic':
-		if(isset($HTTP_POST_VARS['submit']))
+	$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));	
+	if($mode == 'newtopic' && empty($subject))
+	{
+		$error = TRUE;
+		if(isset($error_msg))
+		{
+			$error_msg .= "<br />";
+		}
+		$error_msg .= $l_emptysubj;
+	}
+	
+	if(!empty($HTTP_POST_VARS['message']))
+	{
+		if(!$error)
 		{
 			if(isset($HTTP_POST_VARS['disable_html']) || !$board_config['allow_html'])
 			{
@@ -109,7 +125,7 @@ switch($mode)
 				$uid = make_bbcode_uid();
 				$bbocde_on = TRUE;
 			}
-
+		
 			if(isset($HTTP_POST_VARS['disable_smile']))
 			{
 				$smile_on = FALSE;
@@ -120,13 +136,38 @@ switch($mode)
 			}
 
 			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbocde_on, $smile_on, $uid);
-
+			
 			if(isset($HTTP_POST_VARS['attach_sig']) && !empty($userdata['user_sig']))
 			{
 				$message .= "[addsig]";
 			}
-			$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
-			$topic_time = gmmktime(gmdate("h, i, s, m, d, Y"));
+		}
+		else
+		{
+			// do stripslashes incase magic_quotes is on.
+			$message = stripslashes($HTTP_POST_VARS['message']);
+		}
+	}
+	else
+	{
+		$error = TRUE;
+		if(isset($error_msg))
+		{
+			$error_msg .= "<br />";
+		}
+		$error_msg .= $l_emptymsg;
+	}
+}
+
+switch($mode)
+{
+	case 'newtopic':
+		$page_title = " $l_postnew";
+		$section_title = $l_postnewin;
+		
+		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		{
+			$topic_time = get_gmt_ts();
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? $HTTP_POST_VARS['notify'] : 0;
 			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status)
 						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.")";
@@ -149,6 +190,12 @@ switch($mode)
 							$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 WHERE forum_id = $forum_id";
 							if($db->sql_query($sql))
 							{
+								if($userdata['user_id'] != ANONYMOUS)
+								{
+									$sql = "UPDATE ".USERS_TABLE." SET user_posts = user_posts + 1 WHERE user_id = ".$userdata['user_id'];
+									$db->sql_query($sql);
+								}
+
 								include('includes/page_header.'.$phpEx);
 								// If we get here the post has been inserted successfully.
 								$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id")."\">$l_here</a>
@@ -220,23 +267,216 @@ switch($mode)
 					error_die(QUERY_ERROR);
 				}
 			}
-
-
-
 		}
       else if(isset($HTTP_POST_VARS['preview']))
       {
 
 
       }
+
+		break;
+	case 'reply':
+		$page_title = " $l_reply";
+		$section_title = $l_postreplyto;
+		
+		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		{
+			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
+			$topic_time = get_gmt_ts();
+
+				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_time, poster_ip, bbcode_uid)
+						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", $topic_time, '".encode_ip($user_ip)."', '$uid')";
+
+			if($db->sql_query($sql))
+			{
+				$new_post_id = $db->sql_nextid();
+				$sql = "INSERT INTO ".POSTS_TEXT_TABLE." VALUES ($new_post_id, '".$message."')";
+				if($db->sql_query($sql))
+				{
+					$sql = "UPDATE ".TOPICS_TABLE." SET topic_last_post_id = $new_post_id, topic_replies = topic_replies + 1 WHERE topic_id = $new_topic_id";
+					if($db->sql_query($sql))
+					{
+						$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1 WHERE forum_id = $forum_id";
+						if($db->sql_query($sql))
+						{
+							if($userdata['user_id'] != ANONYMOUS)
+							{
+								
+								$sql = "UPDATE ".USERS_TABLE." SET user_posts = user_posts + 1 WHERE user_id = ".$userdata['user_id'];
+								$db->sql_query($sql);
+							}
+							include('includes/page_header.'.$phpEx);
+							// If we get here the post has been inserted successfully.
+							$msg = "$l_stored<br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=$new_topic_id#$new_post_id")."\">$l_here</a>
+  										$l_viewmsg<br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+
+							$template->set_filenames(array(
+								"reg_header" => "error_body.tpl"
+							));
+							$template->assign_vars(array(
+								"ERROR_MESSAGE" => $msg
+							));
+							$template->pparse("reg_header");
+
+							include('includes/page_tail.'.$phpEx);
+						}
+						else
+						{
+							error_die(QUERY_ERROR);
+						}
+					}
+					else
+					{
+						if(DEBUG)
+						{
+							$error = $db->sql_error();
+							error_die(QUERY_ERROR, "Error updating topics table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+						}
+						else
+						{
+							error_die(QUERY_ERROR);
+						}
+					}
+				}
+				else
+				{
+					if(DEBUG)
+					{
+						$error = $db->sql_error();
+						error_die(QUERY_ERROR, "Error inserting data into posts text table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+					}
+					else
+					{
+						error_die(QUERY_ERROR);
+					}
+				}
+			}
+			else
+			{
+				if(DEBUG)
+				{
+					$error = $db->sql_error();
+					error_die(QUERY_ERROR, "Error inserting data into posts table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+				}
+				else
+				{
+					error_die(QUERY_ERROR);
+				}
+			}
+		}
+		break;
+	case 'editpost':
+		$page_title = " $l_editpost";
+		$section_title = $l_editpostin;
+		if(isset($HTTP_POST_VARS['submit']) && !$error)
+		{
+			if(isset($HTTP_POST_VARS['delete_post']))
+			{
+				
+				
+			}
+			else
+			{
+								
+				
+				
+			}
+		}
+		else
+		{
+			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+			if(!empty($post_id))
+			{
+
+   			$sql = "SELECT p.*, pt.post_text, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify 
+   						FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt 
+   						WHERE (p.post_id = '$post_id') 
+   						AND pt.post_id = p.post_id
+   						AND (p.topic_id = t.topic_id) 
+   						AND (p.poster_id = u.user_id)";
+   						
+				if($result = $db->sql_query($sql))
+				{
+					$postrow = $db->sql_fetchrowset($result);
+					$message = stripslashes($postrow[0]['post_text']);
+					$message = eregi_replace("\[addsig]$", "\n_________________\n" . stripslashes($postrow[0]['user_sig']), $message);
+					$message = str_replace("<br />", "\n", $message);
+					
+					// These have not been implemented yet!
+					/*
+					$message = bbdecode($message);
+					$message = desmile($message);
+					 */
+					 
+   				$message = undo_htmlspecialchars($message);
+   				
+   				// Special handling for </textarea> tags in the message, which can break the editing form..
+   				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+   				
+   				// is_first_post needs functionality!
+   				if($postrow[0]['topic_notify'] && $is_first_post)
+   				{
+   					$notify = TRUE;
+   				}
+					
+					if($is_first_post)
+					{
+						$subject = stripslashes($postrow[0]['topic_title']);
+					}
+   			}
+   			else
+   			{
+   				if(DEBUG)
+   				{
+   					$error = $db->error();
+   					error_die(QUERY_ERROR, "Error get post information. <br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+   				}
+   				else
+   				{
+   					error_die(QUERY_ERROR);
+   				}
+   			}
+   		}
+   		else
+   		{
+   			error_die(GENERAL_ERROR, "Sorry, no there is no such post");
+   		}
+		}
+	break;
+} // end switch
+
+
+
+
+
+include('includes/page_header.'.$phpEx);
+
+//
+// Start: Error handling
+//
+if($error)
+{
+	$template->set_filenames(array(
+						"reg_header" => "error_body.tpl"
+	));
+	$template->assign_vars(array(
+						"ERROR_MESSAGE" => $error_msg
+	));
+	$template->pparse("reg_header");
+}
+//
+// End: error handling
+//
+
+//
+// Show the same form for each mode.
+//
 		if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
 		{
 			error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
 		}
 
-		$pagetype = "newtopic";
-		$page_title = " $l_postnew";
-
+		
 		$sql = "SELECT forum_name, forum_access
 					FROM ".FORUMS_TABLE."
 					WHERE forum_id = $forum_id";
@@ -261,8 +501,6 @@ switch($mode)
 			$about_posting = "$l_modusers $l_inthisforum";
 		}
 
-		include('includes/page_header.'.$phpEx);
-
 		$template->set_filenames(array(
 											"body" => "posting_body.tpl",
 											"jumpbox" => "jumpbox.tpl")
@@ -273,13 +511,16 @@ switch($mode)
 											"SELECT_NAME" => POST_FORUM_URL)
 									  );
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+		
+
 		$template->assign_vars(array(
-										"L_POSTNEWIN" => $l_postnewin,
+										"L_POSTNEWIN" => $section_title,
 										"FORUM_ID" => $forum_id,
 										"FORUM_NAME" => $forum_name,
 
 										"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
 									 );
+
 
 		if($userdata['session_logged_in'])
 		{
@@ -301,7 +542,7 @@ switch($mode)
 		{
 			$html_status = $l_htmlis . " " . $l_on;
 			$html_toggle = '<input type="checkbox" name="disable_html" ';
-			if($disable_html)
+			if($disable_html || $userdata['user_allowhtml'])
 			{
 				$html_toggle .= 'checked';
 			}
@@ -315,7 +556,7 @@ switch($mode)
 		{
 			$bbcode_status = $l_bbcodeis . " " . $l_on;
 			$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
-			if($disable_bbcode)
+			if($disable_bbcode || $userdata['user_allowbbcode'])
 			{
 				$bbcode_toggle .= "checked";
 			}
@@ -327,27 +568,37 @@ switch($mode)
 		}
 
 		$smile_toggle = '<input type="checkbox" name="disable_smile" ';
-		if($disable_smile)
+		if($disable_smile || $userdata['user_allowsmile'])
 		{
 			$smile_toggle .= "checked";
 		}
 		$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
 
-		$sig_toggle = '<input type="checkbox" name="attach_sig" ';
-		if($attach_sig || $userdata["attach_sig"] == 1)
+		if($mode != 'editpost')
 		{
-			$sig_toggle .= "checked";
+			$sig_toggle = '<input type="checkbox" name="attach_sig" ';
+			if($attach_sig || $userdata['user_attachsig'] == 1)
+			{
+				$sig_toggle .= "checked";
+			}
+			$sig_toggle .= "> $l_attachsig";
 		}
-		$sig_toggle .= "> $l_attachsig";
-
-		$notify_toggle = '<input type="checkbox" name="notify" ';
-		if($notify || $userdata["always_notify"] == 1)
+		
+		if($mode == 'newtopic' || ($mode == 'editpost' && $notify))
 		{
-			$notify_toggle .= "checked";
+			$notify_toggle = '<input type="checkbox" name="notify" ';
+			if($notify || $userdata["always_notify"] == 1)
+			{
+				$notify_toggle .= "checked";
+			}
+			$notify_toggle .= "> $l_notify";
 		}
-		$notify_toggle .= "> $l_notify";
 
-		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"topic_id\" value=\"$topic_id\">";
+		if($mode == 'reply' || $mode == 'editpost')
+		{
+			$topic_id = ($HTTP_GET_VARS[POST_TOPIC_URL]) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
+		}
+		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\">";
 
 		$template->assign_vars(array(
 				"L_ABOUT_POST" => $l_aboutpost,
@@ -376,14 +627,4 @@ switch($mode)
 		);
 		$template->pparse("body");
 		include('includes/page_tail.'.$phpEx);
-		break;
-	case 'reply':
-
-		break;
-	case 'editpost':
-
-		break;
-}
-
-
 ?>

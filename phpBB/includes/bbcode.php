@@ -440,6 +440,38 @@ function make_clickable($text)
 	return($ret);
 }
 
+/**
+ * Nathan Codding - Feb 6, 2001
+ * Reverses the effects of make_clickable(), for use in editpost.
+ * - Does not distinguish between "www.xxxx.yyyy" and "http://aaaa.bbbb" type URLs.
+ *
+ */
+ 
+function undo_make_clickable($text) {
+	
+	$text = preg_replace("#<!-- BBCode auto-link start --><a href=\"(.*?)\" target=\"_blank\">.*?</a><!-- BBCode auto-link end -->#i", "\\1", $text);
+	$text = preg_replace("#<!-- BBcode auto-mailto start --><a href=\"mailto:(.*?)\">.*?</a><!-- BBCode auto-mailto end -->#i", "\\1", $text);
+	
+	return $text;
+	
+}
+
+
+
+/**
+ * Nathan Codding - August 24, 2000.
+ * Takes a string, and does the reverse of the PHP standard function
+ * htmlspecialchars().
+ */
+function undo_htmlspecialchars($input) {
+	$input = preg_replace("/&gt;/i", ">", $input);
+	$input = preg_replace("/&lt;/i", "<", $input);
+	$input = preg_replace("/&quot;/i", "\"", $input);
+	$input = preg_replace("/&amp;/i", "&", $input);
+	
+	return $input;
+}
+
 
 
 /**

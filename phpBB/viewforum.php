@@ -172,7 +172,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.post_id = t.topic_last_post_id 
 		AND p.poster_id = u2.user_id 
 		$limit_posts_time
-	ORDER BY topic_time DESC
+	ORDER BY p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
 if(!$t_result = $db->sql_query($sql))
 {

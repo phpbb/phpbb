@@ -68,6 +68,7 @@ define(LOGIN_FAILED, 7);
 define(POST_TOPIC_URL, 't');
 define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
+define(POST_POST_URL, 'p');
 
 // Session parameters
 define(SESSION_METHOD_COOKIE, 100);

@@ -146,7 +146,7 @@ $l_viewingprofile = "Viewing profile of ";
 $l_hidden = "hidden";
 $l_boardtemplate = "Select Template";
 $l_date_format = "Date format";
-$l_date_format_explanation = "Only change this if you know what you are doing!";
+$l_date_format_explanation = "Only change this if you know what you are doing! (Sintax is identical to PHP <a href=\"http://www.php.net/date\">date()</a> function)";
 $l_password_if_changed = "You only need to supply a password if you want to change it.";
 $l_password_confirm_if_changed = "You only need to confirm your password if you changed it above.";
 
@@ -300,9 +300,9 @@ $l_editprefs	= "Edit Your $l_preferences";
 $l_themecookie	= "NOTE: In order to use themes you MUST have cookies enabled.";
 $l_alwayssig	= "Always attach my signature";
 $l_alwaysdisable= "Always disable"; // Only used for next three strings
-$l_alwayssmile	= "Always allow $l_smilies";
-$l_alwayshtml	= "Always allow $l_html";
-$l_alwaysbbcode	= "Always allow $l_bbcode";
+$l_alwayssmile	= "Always disable $l_smilies";
+$l_alwayshtml	= "Always disable $l_html";
+$l_alwaysbbcode	= "Always disable $l_bbcode";
 $l_boardtheme	= "Board Theme";
 $l_boardlang    = "Board Language";
 $l_nothemes	= "No Themes In database";
@@ -337,6 +337,8 @@ $l_viewing_faq = "Viewing the board FAQ";
 
 
 // Editpost
+$l_editpost = "Edit Post";
+$l_editpostin = "Editing post in:";
 $l_notedit	= "You can't edit a post that isn't yours.";
 $l_permdeny	= "You did not supply the correct $l_password or do not have permission to edit this post. $l_tryagain";
 $l_editedby	= "This $l_message was edited by:";
@@ -359,6 +361,7 @@ $l_notify	= "Notify by email when replies are posted";
 $l_postnew      = "Post New Topic";
 $l_postnewin    = "Post New Topic in:";
 $l_emptymsg	= "You must type a $l_message to post. You cannot post an empty $l_message.";
+$l_emptysubj = "You must enter a $l_subject to post a new topic. You cannot post a new topic without a subject.";
 $l_aboutpost	= "About Posting";
 $l_regusers	= "All <b>Registered</b> users";
 $l_anonusers	= "<b>Anonymous</b> users";
@@ -369,6 +372,7 @@ $l_attachsig	= "Show signature (This can be altered or added in your profile)";
 $l_cancelpost	= "Cancel Post";
 $l_preview      = "Preview Post";
 // Reply
+$l_postreplyto = "Post reply in:";
 $l_nopostlock	= "You cannot post a reply to this topic, it has been locked.";
 $l_topicreview  = "Topic Review";
 $l_notifysubj	= "A reply to your topic has been posted.";

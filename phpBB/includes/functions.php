@@ -272,6 +272,14 @@ function create_date($format, $gmepoch, $tz)
 }
 
 //
+// Create a GMT timestamp
+//
+function get_gmt_ts()
+{
+	return(gmmktime(gmdate("H, i, s, m, d, Y")));
+}
+
+//
 // Pagination routine, generates
 // page number sequence
 //
