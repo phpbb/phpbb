@@ -85,7 +85,7 @@ $lang += array(
 	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 	'DRAFT_TITLE'				=> 'Draft Title',
 
-	'EDIT_POST'					=> 'Edit',
+	'EDIT_POST'					=> 'Edit Post',
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMOTICONS'					=> 'Emoticons',
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',

@@ -75,6 +75,9 @@ if ($update)
 
 			delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
+			//
+			$auth->acl_clear_prefetch();
+
 			trigger_error($user->lang['FORUM_DELETED']);
 			break;
 
@@ -117,6 +120,9 @@ if ($update)
 			{
 				break;
 			}
+
+			// 
+			$auth->acl_clear_prefetch();
 
 			// Redirect to permissions
 			$message = ($mode == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];

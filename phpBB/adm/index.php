@@ -130,7 +130,7 @@ else if ($pane == 'left')
 elseif ($pane == 'right')
 {
 	$action = request_var('action', '');
-	$mark	= implode(', ', request_var('mark', 0));
+	$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', 0)) : '';
 
 	if ($mark)
 	{

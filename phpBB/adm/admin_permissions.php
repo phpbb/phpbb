@@ -308,7 +308,7 @@ switch ($submit)
 
 		// Do we need to recache the moderator lists? We do if the mode
 		// was mod or auth_settings['mod'] is a non-zero size array
-		if ($mode == 'mod' || sizeof($auth_settings['mod']))
+		if ($mode == 'mod' || (isset($auth_settings['mod']) && sizeof($auth_settings['mod'])))
 		{
 			cache_moderators();
 		}
@@ -738,7 +738,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 	// Grab the list of options ... if we're in deps mode we want all options, 
 	// else we skip the master options
-	$sql_founder = ($user->data['user_founder']) ? ' AND founder_only <> 1' : '';
+	$sql_founder = ($user->data['user_type'] == USER_FOUNDER) ? ' AND founder_only <> 1' : '';
 	$sql_limit_option = ($mode == 'deps') ? '' : "AND auth_option <> '" . $sql_option_mode . "_'";
 	$sql = "SELECT auth_option_id, auth_option
 		FROM " . ACL_OPTIONS_TABLE . "
@@ -760,6 +760,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 	// Now we'll build a list of preset options ...
 	$preset_options = $preset_js = $preset_update_options = '';
 	$holding = array();
+	$holding['allow'] = $holding['deny'] = $holding['inherit'] = '';
 
 	// Do we have a parent forum? If so offer option to inherit from that
 	if ($forum_data['parent_id'] != 0)
@@ -830,7 +831,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			}
 
 			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new Array();" . "\n";
-			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['yes'] . "', '" . $holding['no'] . "', '" . $holding['unset'] . "');\n";
+			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['allow'] . "', '" . $holding['deny'] . "', '" . $holding['inherit'] . "');\n";
 		}
 		while ($row = $db->sql_fetchrow($result));
 	}
@@ -841,7 +842,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 
 	// If we aren't looking @ deps then we try and grab existing sessions for
 	// the given forum and user/group
-	if (empty($auth_settings[$which_mode]))
+	if (!is_array($auth_settings) || empty($auth_settings[$which_mode]))
 	{
 		if ($which_mode == $mode)
 		{
@@ -1141,7 +1142,8 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			</tr>
 <?php
 
-	for($i = 0; $i < sizeof($auth_options); $i++)
+	$row_class = 'row2';
+	for ($i = 0; $i < sizeof($auth_options); $i++)
 	{
 		$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
@@ -1317,7 +1319,7 @@ adm_page_footer();
 //
 function update_foes()
 {
-	global $db;
+	global $db, $auth;
 
 	$perms = array();
 	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)

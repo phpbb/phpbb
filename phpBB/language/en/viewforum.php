@@ -31,6 +31,9 @@ $lang += array(
 	'ACTIVE_TOPICS'			=> 'Active Topics',
 	'ANNOUNCEMENTS'			=> 'Announcements',
 	
+	'ICON_ANNOUNCEMENT'		=> 'Announcement',
+	'ICON_STICKY'			=> 'Sticky',
+
 	'LOGIN_NOTIFY_FORUM'	=> 'You have been notified about this forum, please login to view it.',
 
 	'MARK_TOPICS_READ'		=> 'Mark Topics Read',

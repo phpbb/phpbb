@@ -123,11 +123,12 @@ $lang += array(
 	'POST_UNLOCKED_SUCCESS'	=> 'Post unlocked successsfully',
 	'POST_UNRATED_SUCCESS'	=> 'Post unrated successfully',
 
-	'READ_PROFILE'			=> 'Profile',
 	'READ_USERNOTES'		=> 'User notes',
 	'READ_WARNINGS'			=> 'User warnings',
 	'REPORTS_TOTAL'			=> 'In total there are <b>%d</b> reports to review',
 	'REPORTS_ZERO_TOTAL'	=> 'There are no reports to review',
+	'REPORT_MESSAGE'		=> 'Report this message',
+	'REPORT_MESSAGE_EXPLAIN'=> 'Use this form to report the selected message to the private message moderators and board administrators. Reporting should generally be used only if the message breaks forum rules.',
 	'REPORT_NOTIFY'			=> 'Notify me',
 	'REPORT_NOTIFY_EXPLAIN'	=> 'Informs you when your report is dealt with',
 	'REPORT_POST'			=> 'Report this post',
@@ -189,7 +190,7 @@ $lang += array(
 		),
 		'DESCRIPTION' => array(
 			'WAREZ'		=> 'The post contains links to illegal or pirated software',
-			'SPAM'		=> 'The reported post has for only purpose to advertise for a website or another product',
+			'SPAM'		=> 'The reported post has the only purpose to advertise for a website or another product',
 			'OFF_TOPIC'	=> 'The reported post is off topic',
 			'OTHER'		=> 'The reported post does not fit into any other category, please use the description field'
 		)

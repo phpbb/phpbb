@@ -345,6 +345,16 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
+		if ($query_id)
+		{
+			// If it is not found within the open queries, we try to free a cached result. ;)
+			if (!(array_search($query_id, $this->open_queries) > 0))
+			{
+				return false;
+			}
+			unset($this->open_queries[array_search($query_id, $this->open_queries)]);
+		}
+
 		return ($query_id) ? @mysql_free_result($query_id) : false;
 	}
 

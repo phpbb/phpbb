@@ -397,6 +397,8 @@ $lang += array(
 	'SELECTED_FORUM'	=> 'Selected Forum', 
 	'SELECTED_FORUMS'	=> 'Selected Forums', 
 	'WILL_SET_OPTIONS'	=> 'Will set options in', 
+	'INHERIT_PARENT'	=> 'Inherit Parent',
+	'SAVE'				=> 'Save',
 
 	'ACL_VIEW_FORUM'	=> 'Forum Options', 
 	'ACL_VIEW_MOD'		=> 'Moderator Options', 

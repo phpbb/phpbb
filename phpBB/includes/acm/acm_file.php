@@ -28,7 +28,14 @@ class acm
 	function load()
 	{
 		global $phpEx;
-		@include($this->cache_dir . 'data_global.' . $phpEx);
+		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
+		{
+			@include($this->cache_dir . 'data_global.' . $phpEx);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	function unload()
@@ -230,7 +237,13 @@ class acm
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 
+		if (!file_exists($this->cache_dir . 'sql_' . md5($query) . ".$phpEx"))
+		{
+			return false;
+		}
+
 		@include($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+
 		if (!isset($expired))
 		{
 			return FALSE;

@@ -80,6 +80,10 @@ switch ($mode)
 		$l_title = 'MESSAGE_SETTINGS';
 		$which_auth = 'a_defaults';
 		break;
+	case 'message':
+		$l_title = 'MESSAGE_SETTINGS';
+		$which_auth = 'a_defaults';
+		break;
 	default:
 		return;
 }

@@ -111,6 +111,8 @@ $lang += array(
 	'VIEWING_PROFILE'		=> 'Profile view',
 	'VISITED'				=> 'Last visited',
 
+	'WWW'					=> 'Website',
+
 	'YIM'					=> 'YIM'
 );
 
