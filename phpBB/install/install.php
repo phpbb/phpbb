@@ -493,6 +493,8 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 }
 else
 {
+	$load_extensions = '';
+
 	//
 	// Go ahead and create the DB, then populate it
 	//
@@ -534,7 +536,40 @@ else
 			);
 			$template->pparse('body');				*/
 
-			die("Error during installation: no $check_exts extension");
+			// Try to load the Extensions
+			$loaded_extension = FALSE;
+
+			if ( (!@ini_get('safe_mode')) && (@ini_get('enable_dl')) )
+			{
+				$suffix = ( (defined('PHP_OS')) && (eregi('win', PHP_OS)) ) ? '.dll' : '.so';
+
+				if (!@extension_loaded($check_exts))
+				{
+					if (@dl($check_exts . $suffix))
+					{
+						$load_extensions .= ($load_extensions == '') ? $check_exts . $suffix : ',' . $check_exts . $suffix;
+						$loaded_extension = TRUE;
+					}
+				}
+				
+				if (!$loaded_extension)				
+				{
+					if (!@extension_loaded($check_other))
+					{
+						if (@dl($check_other . $suffix))
+						{
+							$load_extensions .= ($load_extensions == '') ? $check_other . $suffix : ',' . $check_other . $suffix;
+							$loaded_extension = TRUE;
+						}
+					}
+				}
+			
+			}
+
+			if (!$loaded_extension)
+			{
+				die("Error during installation: no $check_exts extension");
+			}
 		}
 
 		include($phpbb_root_path . 'db/' . $dbms . '.' . $phpEx);
@@ -542,6 +577,24 @@ else
 		$db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 	}
 
+	// Add another Extension Checks here if you want, please do not specify the suffix
+	$check_extensions = array();
+	$suffix = ( (defined('PHP_OS')) && (eregi('win', PHP_OS)) ) ? '.dll' : '.so';
+
+	for ($i = 0; $i < count($check_extensions); $i++)
+	{
+		if (!@extension_loaded($check_extensions[$i]))
+		{
+			if ( (!@ini_get('safe_mode')) && (@ini_get('enable_dl')) )
+			{
+				if (@dl($check_extensions[$i] . $suffix))
+				{
+					$load_extensions .= ($load_extensions == '') ? $check_extensions[$i] . $suffix : ',' . $check_extensions[$i] . $suffix;
+				}
+			}
+		}
+	}
+	
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
 
@@ -694,6 +747,7 @@ else
 			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
 			$config_data .= "\$acm_type = 'file';\n";
 			$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
+			$config_data .= '$load_extensions = "' . $load_extensions . '";' . "\n\n";
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 

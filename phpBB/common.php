@@ -44,6 +44,17 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
+// Load Extensions
+if ( (isset($load_extensions)) && ($load_extensions != '') )
+{
+	$load_extensions = explode(',', $load_extensions);
+
+	for ($i = 0; $i < count($load_extensions); $i++)
+	{
+		@dl(trim($load_extensions[$i]));
+	}
+}
+
 // Include files
 require($phpbb_root_path . 'includes/acm/cache_' . $acm_type . '.'.$phpEx);
 require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
