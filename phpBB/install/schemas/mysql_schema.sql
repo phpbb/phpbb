@@ -150,6 +150,7 @@ CREATE TABLE phpbb_forums (
    forum_last_poster_name varchar(30),
    display_on_index tinyint(1) DEFAULT '1' NOT NULL,
    post_count_inc tinyint(1) DEFAULT '1' NOT NULL,
+   prune_enable tinyint(1) DEFAULT '0' NOT NULL,
    prune_next int(11) UNSIGNED,
    prune_days tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
