@@ -345,8 +345,8 @@ $template->assign_vars(array(
 	'FORUM_DESC'	=> strip_tags($forum_desc),
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
-	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
+	'PAGINATION' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : $pagination,
+	'PAGE_NUMBER' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : on_page($total_posts, $config['posts_per_page'], $start),
 	'MCP' 			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;start=$start&amp;sort_days=$sort_days&amp;sort_key=$sort_key&amp;sort_dir=$sort_dir&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : $user->lang['NONE'],
 
@@ -462,8 +462,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
-
-$result = $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
+$result = (isset($_GET['view']) && $_GET['view'] == 'print') ? $db->sql_query($sql) : $db->sql_query_limit($sql, intval($config['posts_per_page']), $start);
 
 if ($row = $db->sql_fetchrow($result))
 {
