@@ -51,12 +51,13 @@ else
 }
 $start = (!empty($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 
+$error = FALSE;
+
 //
 // Start main
 //
 if($mode == "read")
 {
-
 	if(!empty($HTTP_GET_VARS[POST_POST_URL]))
 	{
 		$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL]; 
@@ -564,7 +565,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['Empty_subject'];
 		}
 
-		if(!empty($message))
+		if( !empty($message) )
 		{
 			if(!$error && !$preview)
 			{
@@ -584,9 +585,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			}
 			else
 			{
-				// do stripslashes incase magic_quotes is on.
-				$message = stripslashes($HTTP_POST_VARS['message']);
-				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+				if(!$error)
+				{
+					// do stripslashes incase magic_quotes is on.
+					$message = stripslashes($HTTP_POST_VARS['message']);
+					$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+				}
 			}
 		}
 		else
@@ -599,7 +603,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['Empty_msg'];
 		}
 
-		if(!empty($to_username))
+		if( !empty($to_username) )
 		{
 			$sql = "SELECT user_id, username, user_notify_pm, user_email   
 				FROM " . USERS_TABLE . " 
@@ -625,9 +629,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['No_to_user'];
 		}
 
-		if(!$preview)
+		if(!$preview && !$error)
 		{
-			$msg_time = get_gmt_ts();
+			$msg_time = time();
 
 			if($mode != "edit")
 			{
@@ -743,6 +747,23 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		);
 		$template->pparse("preview");
 	}
+
+	//
+	// Start error handling
+	//
+	if($error)
+	{
+		$template->set_filenames(array(
+			"reg_header" => "error_body.tpl")
+		);
+		$template->assign_vars(array(
+			"ERROR_MESSAGE" => $error_msg)
+		);
+		$template->pparse("reg_header");
+	}
+	//
+	// End error handling
+	//
 
 	//
 	// Load templates
