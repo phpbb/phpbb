@@ -348,6 +348,8 @@ $lang['Edit_Category_explain'] = "Use this form to modify a categories name.";
 
 $lang['Forums_updated'] = "Forum and Category information updated successfully";
 
+$lang['Must_delete_forums'] = "You need to delete all forums before you can delete this category";
+
 $lang['Click_return_forumadmin'] = "Click %sHere%s to return to Forum Administration";
 
 
