@@ -669,14 +669,14 @@ switch( $mode )
 
 			$sql = "SELECT poster_id, topic_id, post_time
 				FROM " . POSTS_TABLE . "
-				WHERE post_id = " . $posts[0];
+				WHERE post_id = " . intval($posts[0]);
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
 			}
 
 			$post_rowset = $db->sql_fetchrow($result);
-			$first_poster = str_replace("\'", "''", $post_rowset['poster_id']);
+			$first_poster = $post_rowset['poster_id'];
 			$topic_id = $post_rowset['topic_id'];
 			$post_time = $post_rowset['post_time'];
 
