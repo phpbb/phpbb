@@ -76,7 +76,7 @@ define("VERBOSE", 0);
 // Pull in the functions for splitting an sql file into individual statements
 //
 
-include($phpbb_root_path . 'includes/sql_parse'.$phpEx);
+include($phpbb_root_path . 'includes/sql_parse.'.$phpEx);
 
 //
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
