@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id $
+ *     $Id$
  *
  ****************************************************************************/
 
@@ -495,7 +495,7 @@ $lang['Location'] = "Откуда";
 $lang['Contact'] = "Связь с"; // Связь с Vasya_Poopkin
 $lang['Email_address'] = "Адрес e-mail";
 $lang['Email'] = "E-mail";
-$lang['Private_message'] = "Отправить Личное сообщение";
+$lang['Send_private_message'] = "Отправить Личное сообщение";
 $lang['Hidden_email'] = "[ скрыт ]";
 $lang['Search_user_posts'] = "Искать все собщения этого пользователя";
 $lang['Interests'] = "Интересы";
@@ -542,13 +542,14 @@ $lang['password_confirm_if_changed'] = "Подтверждать пароль нужно в том случае, 
 
 $lang['Avatar'] = "Аватара";
 $lang['Avatar_explain'] = "Показывает небольшое изображение под информацией о вас в сообщениях. Может быть показано только одно изображение, шириной не более %d пикселов, высотой не более %d пикселов и объёмом не более %d кб.";
-$lang['Upload_Avatar_URL'] = "Загрузить Аватару с URL";
+$lang['Upload_Avatar_file'] = "Загрузить аватару с вашего компьютера";
+$lang['Upload_Avatar_URL'] = "Загрузить аватару с URL";
 $lang['Upload_Avatar_URL_explain'] = "Введите URL по которому находится файл с изображением, он будет скопирован на этот сайт.";
-$lang['Pick_local_Avatar'] = "Выбрать Аватару из галереи";
-$lang['Link_remote_Avatar'] = "Показывать Аватару с другого сервера";
+$lang['Pick_local_Avatar'] = "Выбрать аватару из галереи";
+$lang['Link_remote_Avatar'] = "Показывать аватару с другого сервера";
 $lang['Link_remote_Avatar_explain'] = "Введите URL изображения, на которое вы хотите сослаться.";
-$lang['Avatar_URL'] = "URL изображения Аватары";
-$lang['Select_from_gallery'] = "Выбрать Аватару из галереи";
+$lang['Avatar_URL'] = "URL изображения аватары";
+$lang['Select_from_gallery'] = "Выбрать аватару из галереи";
 $lang['View_avatar_gallery'] = "Показать галерею";
 
 $lang['Select_avatar'] = "Выберите аватару";
@@ -677,7 +678,7 @@ $lang['Could_not_anon_user'] = "Вы не можете сделать анонимного пользователя чле
 $lang['Confirm_unsub'] = "Вы уверены, что хотите выйти из этой группы?";
 $lang['Confirm_unsub_pending'] = "Вы уверены, что хотите выйти из этой группы? Ваша просьба о вступлении не была ни удовлетворена, ни отклонена!";
 
-$lang['Usub_success'] = "Вы успешно покинули эту группу.";
+$lang['Unsub_success'] = "Вы успешно покинули эту группу.";
 
 $lang['Approve_selected'] = "Одобрить выделенное";
 $lang['Deny_selected'] = "Отклонить выделенное";
