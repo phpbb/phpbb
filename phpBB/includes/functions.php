@@ -603,8 +603,14 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 
 			if ( !defined('HEADER_INC') )
 			{
-				$page = ( !defined('IN_ADMIN') ) ? 'includes/page_header.' : 'admin/page_header_admin.';
-				include($phpbb_root_path . $page . $phpEx);
+				if ( !defined('IN_ADMIN') )
+				{
+					include($phpbb_root_path . 'includes/page_header.' . $phpEx);
+				}
+				else
+				{
+					page_header();
+				}
 			}
 
 			$msg_title = ( $msg_title == '' ) ? $lang['Information'] : $msg_title;
@@ -626,8 +632,14 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 				);
 			}
 
-			$page = ( !defined('IN_ADMIN') ) ? 'includes/page_tail.' : 'admin/page_footer_admin.';
-			include($phpbb_root_path . $page . $phpEx);
+			if ( !defined('IN_ADMIN') )
+			{
+				include($phpbb_root_path . 'includes/page_footer.' . $phpEx);
+			}
+			else
+			{
+				page_footer();
+			}
 			break;
 
 		case ERROR:
