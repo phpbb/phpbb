@@ -239,6 +239,7 @@ if ($forum_data['forum_postable'])
 		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_WATCH_FORUM' 	=> $s_watching_forum,
 		'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
+
 		'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'=> "search.$phpEx$SID&amp;f=$forum_id", 
 
@@ -485,6 +486,8 @@ if ($forum_data['forum_postable'])
 				'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test, 
 				'S_TOPIC_TYPE'			=> $row['topic_type'], 
 				'S_USER_POSTED'			=> ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
+
+				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);

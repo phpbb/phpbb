@@ -77,7 +77,7 @@ if (isset($_GET['view']) && empty($post_id))
 			redirect("viewtopic.$phpEx$SID&p=" . $row['post_id'] . "#" . $row['post_id']);
 		}
 
-		redirect("index.$phpEx");
+		redirect("index.$phpEx$SID");
 	}
 	else if ($_GET['view'] == 'next' || $_GET['view'] == 'previous')
 	{
@@ -347,6 +347,7 @@ $template->assign_vars(array(
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
+
 	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
 	'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
@@ -843,11 +844,18 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
+			'S_POST_REPORTED' => (!empty($row['post_reported']) && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
+			'U_REPORT'		=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
+			'U_MCP_REPORT'	=> "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'],
+// no img yet as I could not get the subSilver to work with PSP - Ashe
+			'REPORT_IMG'	=> $user->img('icon_report', $user->lang['REPORT_TO_ADMIN']),
+
 			'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 			'L_MINI_POST_ALT'	=> $mini_post_alt,
 
 			'S_ROW_COUNT'	=> $i++,
+			'S_POST_APPROVED' => (!empty($row['post_approved'])) ? TRUE : FALSE,
 
 			'U_MINI_POST'	=> $mini_post_url,
 			'U_POST_ID' 	=> $u_post_id
