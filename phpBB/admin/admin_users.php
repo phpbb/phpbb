@@ -307,7 +307,7 @@ page_header($user->lang['Manage']);
 		<th align="center"><?php echo $user->lang['Select_a_User']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><input type="text" class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="submituser" value="<?php echo $user->lang['Look_up_user']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberslist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /></td>
+		<td class="row1" align="center"><input type="text" class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="submituser" value="<?php echo $user->lang['Look_up_user']; ?>" class="mainoption" /> <input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;" /></td>
 	</tr>
 </table></form>
 
