@@ -617,7 +617,7 @@ switch ($mode)
 			}
 
 			$total_posts = 0;
-			$new_topic_id_list = array();
+			$new_topic_id_list = $post_rows = array();
 			foreach ($topic_data as $topic_id => $topic_row)
 			{
 				$sql_ary = array(
@@ -634,14 +634,30 @@ switch ($mode)
 					'topic_first_poster_name'	=>	(string) $topic_row['topic_first_poster_name'],
 					'topic_last_poster_id'		=>	(int) $topic_row['topic_last_poster_id'],
 					'topic_last_poster_name'	=>	(string) $topic_row['topic_last_poster_name'],
-					'topic_last_post_time'		=>	(int) $topic_row['topic_last_post_time']
+					'topic_last_post_time'		=>	(int) $topic_row['topic_last_post_time'],
+					'poll_title'				=>	(string) $topic_row['poll_title'],
+					'poll_start'				=>	(int) $topic_row['poll_start'],
+					'poll_length'				=>	(int) $topic_row['poll_length']
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 				$new_topic_id = $db->sql_nextid();
 				$new_topic_id_list[$new_topic_id] = $topic_id;
 
-				$post_rows = array();
+				if ($topic_row['poll_start'])
+				{
+					$poll_rows = array();
+
+					$result = $db->sql_query('SELECT * FROM ' . POLL_OPTIONS_TABLE . ' WHERE topic_id = ' . $topic_id);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . ' (poll_option_id, topic_id, poll_option_text, poll_option_total)
+							VALUES (' . $row['poll_option_id'] . ', ' . $new_topic_id . ", '" . $db->sql_escape($row['poll_option_text']) . "', 0)";
+
+						$db->sql_query($sql);
+					}
+				}
+
 				$sql = 'SELECT *
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id
@@ -918,7 +934,7 @@ switch ($mode)
 		mcp_header('confirm_body.html');
 
 		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $user->lang['Confirm'],
+			'MESSAGE_TITLE' => $user->lang['CONFIRM'],
 			'MESSAGE_TEXT' => (count($post_id_list) == 1) ? $user->lang['CONFIRM_DELETE_POST'] : $user->lang['CONFIRM_DELETE_POSTS'],
 
 			'S_CONFIRM_ACTION' => "mcp.$phpEx$SID&amp;mode=disapprove",
@@ -1013,6 +1029,7 @@ switch ($mode)
 
 		// Resync last post infos, replies count et caetera
 		sync('topic', 'topic_id', $topic_id_list);
+		sync('topic_attachment', 'topic_id', $topic_id_list);
 
 		foreach ($user_posts as $user_id => $post_count)
 		{

@@ -1040,6 +1040,7 @@ $lang = array_merge($lang, array(
 	'OTHER_USERS'	=>	'Users posting from this IP',
 	'IP_INFO'		=>	'IP Information',
 	'LOOKUP_IP'		=>	'Look up IP',
+	'LOOKUP_ALL'	=>	'Look up all IP',
 
 // ------
 	'LOGS_CURRENT_TOPIC'		=>	'Currently viewing logs for:',
@@ -1080,7 +1081,7 @@ $lang = array_merge($lang, array(
 	'TOPICS_MOVED_SUCCESS'		=>	'The selected topics have been successfully moved',
 
 	'FORK'						=>	'Copy',
-	'FORK_EXPLAIN'				=>	'Using the form below you can leave a copy of selected thread(s) in the forum you choose. Please note that posts will automatically be approved, and attachments and polls will not be included in the copy',
+	'FORK_EXPLAIN'				=>	'Using the form below you can leave a copy of selected thread(s) in the forum you choose. Please note that posts will automatically be approved and attachments will not be included in the copy. If applicable, polls will be copied as well while corresponding votes will not',
 	'TOPIC_FORKED_SUCCESS'		=>	'The selected topic has been successfully copied',
 	'TOPICS_FORKED_SUCCESS'		=>	'The selected topics have been successfully copied',
 
