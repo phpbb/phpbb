@@ -680,7 +680,7 @@ $template->assign_vars(array(
 );
 
 // Poll entry
-if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->get_acl('a_'))
+if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_get('a_'))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
