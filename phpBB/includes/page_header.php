@@ -48,7 +48,7 @@ else
 }
 
 // Last visit date/time
-$s_last_visit = ($user->data['user_id']) ? $user->format_date($user->data['session_last_visit']) : '';
+$s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['session_last_visit']) : '';
 
 // Get users online list
 $userlist_ary = array();
@@ -120,9 +120,9 @@ while ($row = $db->sql_fetchrow($result))
 	$prev_session_ip = $row['session_ip'];
 }
 
-if (empty($online_userlist))
+if ($online_userlist == '')
 {
-	$online_userlist = $user->lang['None'];
+	$online_userlist = $user->lang['NONE'];
 }
 
 if (empty($_REQUEST['f']))
@@ -298,7 +298,7 @@ $template->assign_vars(array(
 	'U_PRIVATEMSGS_POPUP'	=> 'privmsg.'.$phpEx.$SID.'&amp;mode=newpm',
 	'U_SEARCH_UNANSWERED'	=> 'search.'.$phpEx.$SID.'&amp;search_id=unanswered',
 
-	'S_USER_LOGGED_IN' 		=> ($user->data['user_id']) ? true : false,
+	'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 	'S_USER_PM_POPUP' 		=> (!empty($user->data['user_popup_pm'])) ? true : false,
 	'S_USER_BROWSER' 		=> $user->data['session_browser'],
 	'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
