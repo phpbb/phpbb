@@ -427,11 +427,11 @@ function validate_username($username)
 		// a UNION clause which would be very nice here :(
 		// So we have to use two queries
 		case 'mysql':
-			$sql_users = "SELECT username
-				FROM ".USERS_TABLE."
-				WHERE LOWER(username) = '".strtolower($username)."'";
+			$sql_users = "SELECT group_name AS username 
+				FROM " . GROUPS_TABLE . "
+				WHERE LOWER(group_name) = '" . strtolower($username) . "'";
 			$sql_disallow = "SELECT disallow_username
-				FROM ".DISALLOW_TABLE."
+				FROM " . DISALLOW_TABLE . "
 				WHERE disallow_username = '$username'";
 
 			if($result = $db->sql_query($sql_users))
@@ -452,12 +452,12 @@ function validate_username($username)
 
 		default:
 			$sql = "SELECT disallow_username
-				FROM ".DISALLOW_TABLE."
+				FROM " . DISALLOW_TABLE . "
 				WHERE disallow_username = '$username'
 				UNION
-				SELECT username
-				FROM ".USERS_TABLE."
-				WHERE LOWER(username) = '".strtolower($username)."'";
+				SELECT group_name AS username
+				FROM " . GROUPS_TABLE . "
+				WHERE LOWER(group_name) = '" . strtolower($username) . "'";
 
 			if($result = $db->sql_query($sql))
 			{
