@@ -734,34 +734,39 @@ function bbcode_array_pop(&$stack)
 //
 function smilies_pass($message)
 {
-   static $orig, $repl;
+	static $orig, $repl;
 
-   if (!isset($orig))
-   {
-      global $db, $board_config;
-      $orig = $repl = array();
+	if (!isset($orig))
+	{
+		global $db, $board_config;
+		$orig = $repl = array();
 
-      $sql = 'SELECT code, smile_url FROM ' . SMILIES_TABLE;
-      if( !$result = $db->sql_query($sql) )
-      {
-         message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
-      }
-      $smilies = $db->sql_fetchrowset($result);
+		$sql = 'SELECT code, smile_url FROM ' . SMILIES_TABLE;
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
+		}
+		$smilies = $db->sql_fetchrowset($result);
 
-      usort($smilies, 'smiley_sort');
-      for($i = 0; $i < count($smilies); $i++)
-      {
-         $orig[] = "/(?<=.\W|\W.|^\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\W|\W.|\W$)/";
-         $repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />';
-      }
-   }
+		if (count($smilies))
+		{
+			usort($smilies, 'smiley_sort');
+		}
 
-   if (count($orig))
-   {
-      $message = preg_replace($orig, $repl, ' ' . $message . ' ');
-      $message = substr($message, 1, -1);
-   }
-   return $message;
+		for ($i = 0; $i < count($smilies); $i++)
+		{
+			$orig[] = "/(?<=.\W|\W.|^\W)" . phpbb_preg_quote($smilies[$i]['code'], "/") . "(?=.\W|\W.|\W$)/";
+			$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['smile_url'] . '" border="0" />';
+		}
+	}
+
+	if (count($orig))
+	{
+		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
+		$message = substr($message, 1, -1);
+	}
+	
+	return $message;
 }
 
 function smiley_sort($a, $b)
@@ -773,6 +778,5 @@ function smiley_sort($a, $b)
 
 	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
 }
-
 
 ?>

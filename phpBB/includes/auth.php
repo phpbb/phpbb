@@ -200,7 +200,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 			{
 				case AUTH_ALL:
 					$auth_user[$key] = TRUE;
-					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_users'];
+					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_Users'];
 					break;
 
 				case AUTH_REG:
@@ -239,7 +239,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 				{
 					case AUTH_ALL:
 						$auth_user[$f_forum_id][$key] = TRUE;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_users'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_Users'];
 						break;
 
 					case AUTH_REG:

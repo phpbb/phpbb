@@ -117,7 +117,7 @@ function validate_email($email)
 
 	if ($email != '')
 	{
-		if (preg_match('/^[a-z0-9\.\-_\+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email))
+		if (preg_match('/^[a-z0-9&.-_+]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email))
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;

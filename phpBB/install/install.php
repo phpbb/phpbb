@@ -99,7 +99,7 @@ function page_common_form($hidden, $submit)
 
 ?>
 					<tr> 
-					  <td class="catbottom" align="center" colspan="2"><?php echo $hidden; ?><input class="mainoption" type="submit" value="<?php echo $submit; ?>" /></td>
+					  <td class="catBottom" align="center" colspan="2"><?php echo $hidden; ?><input class="mainoption" type="submit" value="<?php echo $submit; ?>" /></td>
 					</tr>
 <?php
 
@@ -111,10 +111,10 @@ function page_upgrade_form()
 
 ?>
 					<tr>
-						<td class="catbottom" align="center" colspan="2"><?php echo $lang['continue_upgrade']; ?></td>
+						<td class="catBottom" align="center" colspan="2"><?php echo $lang['continue_upgrade']; ?></td>
 					</tr>
 					<tr>
-						<td class="catbottom" align="center" colspan="2"><input type="submit" name="upgrade_now" value="<?php echo $lang['upgrade_submit']; ?>" /></td>
+						<td class="catBottom" align="center" colspan="2"><input type="submit" name="upgrade_now" value="<?php echo $lang['upgrade_submit']; ?>" /></td>
 					</tr>
 <?php 
 

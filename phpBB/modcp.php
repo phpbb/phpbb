@@ -1146,7 +1146,7 @@ switch( $mode )
 		}
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id", $forum_topics, $board_config['topics_per_page'], $start),
+			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
 			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
