@@ -1,16 +1,4 @@
  
-<script language="Javascript" type="text/javascript">
-<!--
-function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
-{
-	if( icq_user_addr.length && icq_user_addr.indexOf("&nbsp;") == -1 )
-	{
-		document.write('<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" style=" background-image: url(\'' + icq_add_img + '\'); background-repeat: no-repeat"><img src="images/spacer.gif" width="3" height="18" alt = "">' + icq_status_img + '<a href="http://wwp.icq.com/scripts/search.dll?to=' + icq_user_addr + '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="{L_ICQ_NUMBER}" /></a></td></tr></table>');
-	}
-}
-//-->
-</script>
-
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
 	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
@@ -82,13 +70,14 @@ function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
 		</tr>
 		<tr> 
 		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_ICQ_NUMBER}:</span></td>
-		  <td class="row1" valign="middle"><span class="gen">
-		  <script language="JavaScript" type="text/javascript"><!-- 
+		  <td class="row1"><script language="JavaScript" type="text/javascript"><!-- 
 
-		  create_icq_subsilver('{ICQ}', '{ICQ_STATUS_IMG}', '{ICQ_IMG}');
+		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
+			document.write(' {ICQ_ADD_IMG}');
+		else
+			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_ADD_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
 		  
-		  //--></script>
-		  <noscript>{ICQ_ADD_IMG}</noscript></span></td>
+		  //--></script><noscript>{ICQ_ADD_IMG}</noscript></td>
 		</tr>
 	  </table>
 	</td>

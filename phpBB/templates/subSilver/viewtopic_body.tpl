@@ -65,7 +65,7 @@
 		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
 			document.write(' {postrow.ICQ_ADD_IMG}');
 		else
-			document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_ADD_IMG}</div><div style="position:absolute;left:3px">{postrow.ICQ_STATUS_IMG}</div></div>');
+			document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_ADD_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
 		  
 		  //--></script><noscript>{postrow.ICQ_ADD_IMG}</noscript></td>
 		</tr>
