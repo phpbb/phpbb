@@ -61,6 +61,7 @@ define(POST_TOPIC_URL, 't');
 define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
 define(POST_POST_URL, 'p');
+define(POST_GROUPS_URL, 'g');
 
 // Session parameters
 define(SESSION_METHOD_COOKIE, 100);
@@ -83,18 +84,17 @@ define(AUTH_ALL, 0);
 define(AUTH_REG, 1);
 define(AUTH_ACL, 2);
 define(AUTH_MOD, 3);
-define(AUTH_SUPERMOD, 4);
 define(AUTH_ADMIN, 5);
 
-define(AUTH_VIEW, 0);
-define(AUTH_READ, 1);
-define(AUTH_POST, 2);
-define(AUTH_REPLY, 3);
-define(AUTH_EDIT, 4);
-define(AUTH_DELETE, 5);
-define(AUTH_VOTECREATE, 6);
-define(AUTH_VOTE, 7);
-define(AUTH_ATTACH, 8);
+define(AUTH_VIEW, 1);
+define(AUTH_READ, 2);
+define(AUTH_POST, 3);
+define(AUTH_REPLY, 4);
+define(AUTH_EDIT, 5);
+define(AUTH_DELETE, 6);
+define(AUTH_VOTECREATE, 7);
+define(AUTH_VOTE, 8);
+define(AUTH_ATTACH, 9);
 define(AUTH_LIST_ALL, 10);
 
 // Table names
