@@ -1083,13 +1083,9 @@ function viewsource(url)
 			case 'preview':
 				break;
 
-
-			case 'install':
-				break;
-
-
 			case 'add':
 			case 'details':
+			case 'install':
 
 				// Do we want to edit an existing theme or are we creating a new theme
 				// or submitting an existing one?
@@ -1110,18 +1106,52 @@ function viewsource(url)
 				}
 				else
 				{
-					$theme_name = (!empty($_POST['theme_name'])) ? htmlspecialchars(stripslashes($_POST['theme_name'])) : '';
-					$theme_copyright = (!empty($_POST['theme_copyright'])) ? htmlspecialchars(stripslashes($_POST['theme_copyright'])) : '';
-					$css_storedb = (!empty($_POST['css_storedb'])) ? 1 : (($safe_mode) ? 1 : 0);
+					if ($action == 'install' && !empty($_GET['name']))
+					{
+						$theme_path = htmlspecialchars($_GET['name']);
+						if (!file_exists("{$phpbb_root_path}styles/themes/$theme_path/theme.cfg"))
+						{
+							trigger_error($user->lang['NO_THEME']);
+						}
 
-					$s_hidden_fields = (!empty($_POST['theme_basis'])) ? '<input type="hidden" name="theme_basis" value="' . intval($_POST['theme_basis']) . '" />' : '';
+						if (!($themecfg = file("{$phpbb_root_path}styles/themes/$theme_path/theme.cfg")))
+						{
+							trigger_error($user->lang['NO_THEME']);
+						}
+
+						$theme_version = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', trim($themecfg[2]));
+						$phpbbversion = preg_replace('#^2\.([0-9]+?)\.([0-9]+?).*?$#', '\1.\2', $config['version']);
+
+						if ($theme_version != $phpbbversion)
+						{
+							$error[] = $user->lang['THEME_VERSION_DIFF'];
+						}
+
+						$theme_name = trim($themecfg[0]);
+						$theme_copyright = trim($themecfg[1]);
+
+						$s_hidden_fields = '<input type="hidden" name="theme_path" value="' . trim($theme_path) . '" /><input type="hidden" name="theme_copyright" value="' . $theme_copyright . '" />';
+					}
+					else
+					{
+						$theme_name = (!empty($_POST['theme_name'])) ? htmlspecialchars(stripslashes($_POST['theme_name'])) : '';
+						
+						$theme_copyright = (!empty($_POST['theme_copyright'])) ? htmlspecialchars(stripslashes($_POST['theme_copyright'])) : '';
+						$css_storedb = (!empty($_POST['css_storedb'])) ? 1 : (($safe_mode) ? 1 : 0);
+
+						$s_hidden_fields = (!empty($_POST['theme_basis'])) ? '<input type="hidden" name="theme_basis" value="' . intval($_POST['theme_basis']) . '" />' : '';
+						if (!empty($_POST['theme_path']))
+						{
+							$s_hidden_fields .= '<input type="hidden" name="theme_path" value="' . $theme_path . '" /><input type="hidden" name="theme_copyright" value="' . $theme_copyright . '" />';
+						}
+					}
 				}
 
 
 				// Do the update thang
 				if (isset($_POST['update']))
 				{
-					$sql_where = ($action == 'add') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
+					$sql_where = ($action == 'add' || $action == 'install') ? "WHERE theme_name = '" . $db->sql_escape($theme_name) . "'" : "WHERE theme_id <> $theme_id AND theme_name = '" . $db->sql_escape($theme_name) . "'";
 					$sql = 'SELECT theme_name 
 						FROM ' . STYLES_CSS_TABLE . " 
 						$sql_where";
@@ -1156,9 +1186,9 @@ function viewsource(url)
 					if (!sizeof($error))
 					{
 						// Replace any chars which may cause us problems with _
-						$theme_path = str_replace(' ', '_', $theme_name);
+						$theme_path = ($action == 'add') ? str_replace(' ', '_', $theme_name) : htmlspecialchars($_POST['theme_path']);
 
-						if (file_exists($phpbb_root_path . 'styles/themes/' . $theme_path))
+						if ($action == 'add' && file_exists($phpbb_root_path . 'styles/themes/' . $theme_path))
 						{
 							for ($i = 1; $i < 100; $i++)
 							{
@@ -1172,7 +1202,18 @@ function viewsource(url)
 
 						$css_storedb = 1;
 						$css_data = '';
-						if (!$safe_mode && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
+						if ($action == 'install')
+						{
+							if (!is_writeable("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"))
+							{
+								$css_data = implode('', file("{$phpbb_root_path}styles/themes/$theme_path/$theme_path.css"));
+							}
+							else
+							{
+								$css_storedb = 0;
+							}
+						}
+						else if (!$safe_mode && is_writeable($phpbb_root_path . 'styles/themes') && $action == 'add')
 						{
 							umask(0);
 							if (@mkdir($phpbb_root_path . 'styles/themes/' . $theme_path, 0777))
@@ -1233,22 +1274,22 @@ function viewsource(url)
 
 						$sql_ary = array(
 							'theme_name'		=> $theme_name,
-							'theme_copyright'	=> $theme_copyright, 
 						);
-						if ($action == 'add')
+						if ($action == 'add' || $action == 'install')
 						{
 							$sql_ary = array_merge($sql_ary, array(
+								'theme_copyright'	=> $theme_copyright, 
 								'theme_path'		=> $theme_path, 
 								'css_storedb'		=> $css_storedb, 
 								'css_data'			=> ($css_storedb) ? $css_data : '', 
 							));
 						}
 
-						$sql = ($action == 'add') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
+						$sql = ($action == 'add' || $action == 'install') ? 'INSERT INTO ' . STYLES_CSS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme_id;
 						$db->sql_query($sql);
 
-						$message = ($action == 'add') ? (($css_storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
-						$log = ($action == 'add') ? (($css_storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
+						$message = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'THEME_DB_ADDED' : 'THEME_FS_ADDED') : 'THEME_DETAILS_UPDATE';
+						$log = ($action == 'add' || $action == 'install') ? (($css_storedb) ? 'LOG_ADD_THEME_DB' : 'LOG_ADD_THEME_FS') : 'LOG_EDIT_THEME_DETAILS';
 
 						add_log('admin', $log, $theme_name);
 						trigger_error($user->lang[$message]);
@@ -2170,13 +2211,16 @@ function csspreview()
 		$dp = opendir($phpbb_root_path . 'styles/themes');
 		while ($file = readdir($dp))
 		{
-			if ($file{0} != '.' && file_exists($phpbb_root_path . 'styles/themes/' . $file . '/theme.cfg'))
+			if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/themes/$file/theme.cfg"))
 			{
-				include($phpbb_root_path . 'styles/themes/' . $file . '/theme.cfg');
-				if (!in_array($themecfg['name'], $installed_themes))
+				if ($themecfg = file("{$phpbb_root_path}styles/themes/$file/theme.cfg"))
 				{
-					$new_theme_ary[$i]['path'] = $file;
-					$new_theme_ary[$i]['name'] = $themecfg['name'];
+					$theme_name = trim($themecfg[0]);
+					if (!in_array($theme_name, $installed_themes))
+					{
+						$new_theme_ary[$i]['path'] = $file;
+						$new_theme_ary[$i]['name'] = $theme_name;
+					}
 				}
 			}
 		}
