@@ -783,7 +783,7 @@ if (in_array($submit, array('options', 'presetsave', 'presetdel', 'update')) || 
 		$view_options .= '<option value="-1">Select view</option>';
 		$view_options .= (!empty($submode) && $mode != $submode) ? '<option value="' . $mode . '">' . $user->lang['ACL_VIEW_' . strtoupper($mode)] . '</option>' : '';
 		$view_ary = array(
-			'admin'		=> array('forum' => 'a_auth', 'mod' => 'a_modauth', 'supermod' => 'a_modauth'),
+			'admin'		=> array('forum' => 'a_auth', 'mod' => 'a_authmods', 'supermod' => 'a_authmods'),
 			'supermod'	=> array('forum' => 'a_auth'), 
 			'mod'		=> array('forum' => 'a_auth')
 		);
