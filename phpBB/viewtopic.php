@@ -496,7 +496,7 @@ if( isset($HTTP_GET_VARS['highlight']) )
 	//
 	// Split words and phrases
 	//
-	$words = explode(" ", $HTTP_GET_VARS['highlight']);
+	$words = explode(" ", trim(urldecode($HTTP_GET_VARS['highlight'])));
 
 	for($i = 0; $i < count($words); $i++)
 	{
@@ -1033,8 +1033,20 @@ else
 	$s_watching_topic = "";
 }
 
+//
+// If we've got a hightlight set pass it on to pagination, I get annoyed when I lose my highlight after the first page.
+//
+if(isset($HTTP_GET_VARS['highlight']))
+{
+	$pagination = generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight'], $total_replies, $board_config['posts_per_page'], $start);
+}
+else 
+{
+	$pagination = generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
+}
+
 $template->assign_vars(array(
-	"PAGINATION" => generate_pagination("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start),
+	"PAGINATION" => $pagination,
 	"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $total_replies / $board_config['posts_per_page'] )), 
 
 	"S_AUTH_LIST" => $s_auth_can,
