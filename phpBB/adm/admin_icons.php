@@ -305,7 +305,7 @@ function update_image_dimensions()
 		);
 		if ($mode == 'emoticons')
 		{
-			$img_sql = array_merge($sql, array(
+			$img_sql = array_merge($img_sql, array(
 				'emoticon'	=>	stripslashes($_POST['emotion']),
 				'code'		=>	htmlspecialchars(stripslashes($_POST['code']))
 			));
@@ -318,12 +318,12 @@ function update_image_dimensions()
 				WHERE ' . $fields . "_id = $image_id");
 			$order_old = $db->sql_fetchfield($fields . '_order', 0, $result);
 
-			if ($order_old == $smile_order)
+			if ($order_old == $image_order)
 			{
 				$no_update = TRUE;
 			}
 
-			if ($order_old > $smile_order)
+			if ($order_old > $image_order)
 			{
 				$sign = '+';
 				$where = $fields . "_order >= $image_order AND " . $fields . "_order < $order_old";
@@ -332,7 +332,7 @@ function update_image_dimensions()
 			{
 				$sign = '-';
 				$where = $fields . "_order > $order_old AND " . $fields . "_order < $image_order";
-				$sql[$fields . '_order'] = $smile_order - 1;
+				$sql[$fields . '_order'] = $image_order - 1;
 			}
 		}
 		else
@@ -608,7 +608,7 @@ function update_image_dimensions()
 
 	default:
 
-		// By default, check that smile_order is valid and fix it if necessary
+		// By default, check that image_order is valid and fix it if necessary
 		$result = $db->sql_query('SELECT * FROM ' . $table . ' ORDER BY ' . $fields . '_order');
 		if ($row = $db->sql_fetchrow($result))
 		{
