@@ -173,6 +173,11 @@ $result = $db->sql_query($sql);
 
 if (!($topic_data = $db->sql_fetchrow($result)))
 {
+	// If post_id was submitted, we try at least to display the topic as a last resort...
+	if ($post_id && $forum_id && $topic_id)
+	{
+		redirect("viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id");
+	}
 	trigger_error('NO_TOPIC');
 }
 
