@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
+if ( !defined('IN_PHPBB') && !defined('IN_ADMIN') )
 {
 	die("Hacking attempt");
 }
