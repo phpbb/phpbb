@@ -90,6 +90,7 @@ else
 	$config = $db->sql_fetchrow($result);
 
 	$board_config['board_disable'] = $config['board_disable'];
+	$board_config['board_startdate'] = $config['board_startdate'];
 	$board_config['sitename'] = stripslashes($config['sitename']);
 	$board_config['allow_html'] = $config['allow_html'];
 	$board_config['allow_bbcode'] = $config['allow_bbcode'];

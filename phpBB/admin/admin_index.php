@@ -60,8 +60,50 @@ else if( $userdata['user_level'] != ADMIN )
 
 $template->set_filenames(array("body" => "admin/admin_index_body.tpl"));
 
+//
+// Get forum statistics
+//
+$total_posts = get_db_stat('postcount');
+$total_users = get_db_stat('usercount');
+$total_topics = get_db_stat('topiccount');
+$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['default_timezone']);
 
+$boarddays = (time() - $board_config['board_startdate']) / (24*60*60);
+$posts_per_day = sprintf("%.2f", $total_posts / $boarddays);
+$topics_per_day = sprintf("%.2f", $total_topics / $boarddays);
+$users_per_day = sprintf("%.2f", $total_users / $boarddays);
+
+if($posts_per_day > $total_posts)
+{
+	$posts_per_day = $total_posts;
+}
+
+if($topics_per_day > $total_topics)
+{
+	$topics_per_day = $total_topics;
+}
+
+if($users_per_day > $total_users)
+{
+	$users_per_day = $total_users;
+}
+
+
+$template->assign_vars(array("NUMBER_OF_POSTS" => $total_posts,
+									  "NUMBER_OF_TOPICS" => $total_topics,
+									  "NUMBER_OF_USERS" => $total_users,
+									  "STARTDATE" => $start_date,
+									  "POSTS_PER_DAY" => $posts_per_day,
+									  "TOPICS_PER_DAY" => $topics_per_day,
+									  "USERS_PER_DAY" => $users_per_day));
+//
+// End forum statistics
+//
+
+
+//
 // Get users online information.
+//
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time, s.session_ip
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s 
 	WHERE u.user_id = s.session_user_id
@@ -175,6 +217,11 @@ if($online_count)
 		$host_name = gethostbyaddr($ip_address);
 		$ip_address = $ip_address . " ($host_name)";
 		
+		if(empty($username))
+		{
+			$username = $lang['Guest'];
+		}
+
 		$template->assign_block_vars("userrow", array(
 			"ROW_COLOR" => $row_color,
 			"USERNAME" => $username,

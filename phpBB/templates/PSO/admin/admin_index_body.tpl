@@ -12,6 +12,7 @@
 	Current number of topics: <b>{NUMBER_OF_TOPICS}</b><br />
 	Current number of users: <b>{NUMBER_OF_USERS}</b><br />
 	<br />
+	Board started on: <b>{STARTDATE}</b><br />
 	Posts per day: <b>{POSTS_PER_DAY}</b><br />
 	Topics per day: <b>{TOPICS_PER_DAY}</b><br />
 	Users per day: <b>{USERS_PER_DAY}</b><br />
