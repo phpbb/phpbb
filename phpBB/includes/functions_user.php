@@ -17,7 +17,7 @@
 
 // Obtain user_ids from usernames or vice versa. Returns false on
 // success else the error string
-function get_username_id_data(&$user_id_ary, &$username_ary)
+function user_get_id_name(&$user_id_ary, &$username_ary)
 {
 	global $db;
 
@@ -278,9 +278,9 @@ function validate_email($email)
 
 	if (!$config['allow_emailreuse'])
 	{
-		$sql = 'SELECT user_email
+		$sql = 'SELECT user_email_hash
 			FROM ' . USERS_TABLE . "
-			WHERE user_email = '" . $db->sql_escape($email) . "'";
+			WHERE user_email_hash = " . crc32(strtolower($email)) . strlen($email);
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -608,9 +608,7 @@ function group_delete($group_id, $group_name = false)
 		$db->sql_freeresult($result);
 	}
 
-	$batch = 100;
 	$start = 0;
-	$end = $start + $batch;
 
 	do
 	{
@@ -621,8 +619,7 @@ function group_delete($group_id, $group_name = false)
 			FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . " u
 			WHERE ug.group_id = $group_id
 				AND u.user_id = ug.user_id 
-			BETWEEN $start 
-				AND $end";
+			LIMIT $start, 200";
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -637,8 +634,6 @@ function group_delete($group_id, $group_name = false)
 			while ($row = $db->sql_fetchrow($result));
 
 			group_user_del($group_id, $user_id_ary, $username_ary, $group_name);
-
-			$end = $start + $batch;
 		}
 		else
 		{
@@ -669,7 +664,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	global $db, $auth;
 
 	// We need both username and user_id info
-	get_username_id_data($user_id_ary, $username_ary);
+	user_get_id_name($user_id_ary, $username_ary);
 
 	// Remove users who are already members of this group
 	$sql = 'SELECT user_id, group_leader  
@@ -861,7 +856,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
 
 	// We need both username and user_id info
-	get_username_id_data($user_id_ary, $username_ary);
+	user_get_id_name($user_id_ary, $username_ary);
 
 	$sql = 'SELECT * 
 		FROM ' . GROUPS_TABLE . ' 
@@ -985,7 +980,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	global $db, $auth;
 
 	// We need both username and user_id info
-	get_username_id_data($user_id_ary, $username_ary);
+	user_get_id_name($user_id_ary, $username_ary);
 
 	switch ($action)
 	{
