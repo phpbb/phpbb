@@ -583,7 +583,7 @@ else if ( $submit || $confirm )
 		}
 
 		if ($error_msg == '' && $mode != 'poll_delete')
-		{echo "HERE --> " . $post_info['topic_title'] . " \n\n";
+		{
 			user_notification($mode, $post_data, $post_info['topic_title'], $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
