@@ -380,6 +380,13 @@ if($total_topics || $total_announcements)
 		{
 			$topic_type = $lang['Topic_Sticky'] . " ";
 		}
+                else if($topic_type == TOPIC_MOVED)
+                {
+                        $topic_type = $lang['Topic_Moved'] . " ";
+                        //New topic is hidden in topic_status
+                        $topic_rowset[$i]['topic_id'] = $topic_rowset[$i]['topic_status'];
+                        $topic_rowset[$i]['topic_status'] = TOPIC_UNLOCKED;
+                }
 		else
 		{
 			$topic_type = "";
