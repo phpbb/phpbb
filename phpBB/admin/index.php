@@ -271,11 +271,8 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	}
 	else if( preg_match("/^mssql/", SQL_LAYER) )
 	{
-		$sql = "SELECT ( SELECT SUM(reserved) 
-				FROM sysindexes where indid in(0,1,255)) 
-			* low AS dbsize 
-			FROM master.dbo.spt_values 
-			WHERE number = 1 AND type = 'E'"; 
+		$sql = "SELECT ((SUM(size) * 8) * 1024) as dbsize 
+			FROM sysfiles"; 
 		if( $result = $db->sql_query($sql) )
 		{
 			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
