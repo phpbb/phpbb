@@ -137,44 +137,25 @@ function update_last_post_information($type, $id)
 {
 	global $db;
 
-	switch ($type)
-	{
-		case 'forum':
-			// Splitted query - performance gain
-			$sql = 'SELECT MAX(post_time) AS max_post_time FROM ' . POSTS_TABLE . ' 
-				WHERE post_approved = 1
-					AND forum_id = ' . $id;
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-
-			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u 
-				WHERE p.poster_id = u.user_id 
-					AND p.post_time = ' . $row['max_post_time'];
-			break;
-
-		case 'topic':
-			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
-				WHERE p.post_approved = 1 
-					AND p.poster_id = u.user_id 
-					AND p.topic_id = $id
-				ORDER BY p.post_time DESC";
-			break;
-
-		default:
-			return array();
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
 	$update_sql = array();
 
-	if ($row)
+	$sql = 'SELECT MAX(post_id) as last_post_id
+		FROM ' . POSTS_TABLE . "
+		WHERE post_approved = 1
+			AND {$type}_id = $id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+
+	if (!empty($row['last_post_id']))
 	{
+		$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+			WHERE p.poster_id = u.user_id
+				AND p.post_id = ' . $row['last_post_id'];
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
 		$update_sql[] = $type . '_last_post_id = ' . (int) $row['post_id'];
 		$update_sql[] =	$type . '_last_post_time = ' . (int) $row['post_time'];
 		$update_sql[] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
@@ -187,7 +168,7 @@ function update_last_post_information($type, $id)
 		$update_sql[] = 'forum_last_poster_id = 0';
 		$update_sql[] = "forum_last_poster_name = ''";
 	}
-	
+
 	return $update_sql;
 }
 
