@@ -728,11 +728,16 @@ function on_page($num_items, $per_page, $start)
 // to return both sets of arrays
 function obtain_word_list(&$censors)
 {
-	global $db, $cache;
+	global $db, $cache, $user;
+
+	if (!$user->data['user_viewcensors'] && !$user->data['coppa'] && $config['allow_nocensors'])
+	{
+		return;
+	}
 
 	if ($cache->exists('word_censors'))
 	{
-		$censors = $cache->get('word_censors'); // transfer to just if (!(...)) ? works fine for me
+		$censors = $cache->get('word_censors');
 	}
 	else
 	{

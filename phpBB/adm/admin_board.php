@@ -199,9 +199,9 @@ switch ($mode)
 
 	case 'default':
 
-		$style_select = style_select($new['default_style'], 'default_style', '../templates');
-		$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
-		$timezone_select = tz_select($new['board_timezone'], 'board_timezone');
+		$style_select = style_select($new['default_style']);
+		$lang_select = language_select($new['default_lang']);
+		$timezone_select = tz_select($new['board_timezone']);
 
 		$override_user_style_yes = ($new['override_user_style']) ? 'checked="checked"' : '';
 		$override_user_style_no = (!$new['override_user_style']) ? 'checked="checked"' : '';
@@ -226,6 +226,9 @@ switch ($mode)
 
 		$sig_yes = ($new['allow_sig']) ? 'checked="checked"' : '';
 		$sig_no = (!$new['allow_sig']) ? 'checked="checked"' : '';
+
+		$censors_yes = ($new['allow_nocensors']) ? 'checked="checked"' : '';
+		$censors_no = (!$new['allow_nocensors']) ? 'checked="checked"' : '';
 
 		$namechange_yes = ($new['allow_namechange']) ? 'checked="checked"' : '';
 		$namechange_no = (!$new['allow_namechange']) ? 'checked="checked"' : '';
@@ -305,6 +308,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['MAX_SIG_LENGTH']; ?>: <br /><span class="gensmall"><?php echo $user->lang['MAX_SIG_LENGTH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="5" maxlength="4" name="max_sig_chars" value="<?php echo $new['max_sig_chars']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['ALLOW_NO_CENSORS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['ALLOW_NO_CENSORS_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="allow_nocensors" value="1" <?php echo $censors_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_nocensors" value="0" <?php echo $censors_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 <?php
 

@@ -30,11 +30,13 @@
 				<th colspan="2" height="25" valign="middle">{L_TITLE}</th>
 			</tr>
 
+
 			<!-- IF ERROR -->
 			<tr>
 				<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</span></td>
 			</tr>
 			<!-- ENDIF -->
+
 
 			<!-- IF S_DISPLAY_PERSONAL -->
 			<tr> 
@@ -75,6 +77,7 @@
 			</tr>
 			<!-- ENDIF -->
 
+
 			<!-- IF S_DISPLAY_VIEW -->
 			<tr> 
 				<td class="row1"><b class="genmed">{L_VIEW_IMAGES}:</b></td>
@@ -100,7 +103,20 @@
 				<td class="row1"><b class="genmed">{L_DISABLE_CENSORS}:</b></td>
 				<td class="row2"><input type="radio" name="wordcensor" value="1"{DISABLE_CENSORS_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="wordcensor" value="0"{DISABLE_CENSORS_NO} /><span class="gen">{L_NO}</span></td>
 			</tr>
+			<tr> 
+				<td class="row1"><b class="genmed">{L_VIEW_TOPICS_DAYS}:</b></td>
+				<td class="row2">{S_SELECT_SORT_DAYS}</td>
+			</tr>
+			<tr> 
+				<td class="row1"><b class="genmed">{L_VIEW_TOPICS_KEY}:</b></td>
+				<td class="row2">{S_SELECT_SORT_KEY}</td>
+			</tr>
+			<tr> 
+				<td class="row1"><b class="genmed">{L_VIEW_TOPICS_DIR}:</b></td>
+				<td class="row2">{S_SELECT_SORT_DIR}</td>
+			</tr>
 			<!-- ENDIF -->
+
 
 			<!-- IF S_DISPLAY_POST -->
 			<tr> 
@@ -124,6 +140,7 @@
 				<td class="row2"><input type="radio" name="notify" value="1"{DEFAULT_NOTIFY_YES} /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" name="notify" value="0"{DEFAULT_NOTIFY_NO} /><span class="gen">{L_NO}</span></td>
 			</tr>
 			<!-- ENDIF -->
+
 
 			<tr>
 				<td class="cat" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" name="reset" /></td>

@@ -134,6 +134,102 @@ class ucp_prefs extends ucp
 				break;
 
 			case 'view':
+
+				if (isset($_POST['submit']))
+				{
+					$data = array();
+					$normalise = array(
+						'string'	=> array(
+							'sk'	=> '1,1', 
+							'sd'	=> '1,1', 
+						),
+						'int'	=> array('st'), 
+						'bool'	=> array('images', 'flash', 'smilies', 'sigs', 'avatars', 'wordcensor'), 
+					);
+					$data = $this->normalise_data($_POST, $normalise);
+
+					if (!sizeof($this->error))
+					{
+						$sql_ary = array(
+							'user_viewimg'		=> $data['images'],
+							'user_viewflash'	=> $data['flash'],
+							'user_viewsmilies'	=> $data['smilies'],
+							'user_viewsigs'		=> $data['sigs'],
+							'user_viewavatars'	=> $data['avatars'],
+							'user_viewcensors'	=> $data['wordcensor'],
+							'user_sortby_type'	=> $data['sk'],
+							'user_sortby_dir'	=> $data['sd'],
+							'user_show_days'	=> $data['st'],
+						);
+
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode\">", '</a>');
+						trigger_error($message);
+					}
+
+					//
+					extract($data);
+					unset($data);
+				}
+
+				$sk = (isset($sk)) ? $sk : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
+				$sd = (isset($sd)) ? $sd : ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd');
+				$st = (isset($st)) ? $st : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
+
+				// Topic ordering display
+				$limit_days = array(0 => $user->lang['ALL_TOPICS'], 0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+
+				$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+				$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
+
+				$s_limit_days = $s_sort_key = $s_sort_dir = '';
+				gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, &$s_limit_days, &$s_sort_key, &$s_sort_dir);
+
+				$images = (isset($images)) ? $images : $user->data['user_viewimg'];
+				$images_yes = ($images) ? ' checked="checked"' : '';
+				$images_no = (!$images) ? ' checked="checked"' : '';
+				$flash = (isset($flash)) ? $flash : $user->data['user_viewflash'];
+				$flash_yes = ($flash) ? ' checked="checked"' : '';
+				$flash_no = (!$flash) ? ' checked="checked"' : '';
+				$smilies = (isset($smilies)) ? $smilies : $user->data['user_viewsmilies'];
+				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
+				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
+				$sigs = (isset($sigs)) ? $sigs : $user->data['user_viewsigs'];
+				$sigs_yes = ($sigs) ? ' checked="checked"' : '';
+				$sigs_no = (!$sigs) ? ' checked="checked"' : '';
+				$avatars = (isset($avatars)) ? $avatars : $user->data['user_viewavatars'];
+				$avatars_yes = ($avatars) ? ' checked="checked"' : '';
+				$avatars_no = (!$avatars) ? ' checked="checked"' : '';
+				$wordcensor = (isset($wordcensor)) ? $wordcensor : $user->data['user_viewcensors'];
+				$wordcensor_yes = ($wordcensor) ? ' checked="checked"' : '';
+				$wordcensor_no = (!$wordcensor) ? ' checked="checked"' : '';
+
+				$template->assign_vars(array( 
+					'ERROR'				=> (sizeof($this->error)) ? implode('<br />', $this->error) : '',
+
+					'VIEW_IMAGES_YES'	=> $images_yes, 
+					'VIEW_IMAGES_NO'	=> $images_no, 
+					'VIEW_FLASH_YES'	=> $flash_yes, 
+					'VIEW_FLASH_NO'		=> $flash_no, 
+					'VIEW_SMILIES_YES'	=> $smilies_yes, 
+					'VIEW_SMILIES_NO'	=> $smilies_no, 
+					'VIEW_SIGS_YES'		=> $sigs_yes, 
+					'VIEW_SIGS_NO'		=> $sigs_no, 
+					'VIEW_AVATARS_YES'	=> $avatars_yes, 
+					'VIEW_AVATARS_NO'	=> $avatars_no,
+					'DISABLE_CENSORS_YES'=> $wordcensor_yes, 
+					'DISABLE_CENSORS_NO'=> $wordcensor_no,
+
+					'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+					'S_SELECT_SORT_KEY'		=> $s_sort_key, 
+					'S_SELECT_SORT_DIR'		=> $s_sort_dir)
+				);
+
 				break;
 
 			case 'post':

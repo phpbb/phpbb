@@ -30,14 +30,16 @@ $forum_id = (isset($_REQUEST['f'])) ? max(intval($_REQUEST['f']), 0) : 0;
 $start = (isset($_GET['start'])) ? max(intval($_GET['start']), 0) : 0;
 $mark_read = (!empty($_GET['mark'])) ? $_GET['mark'] : '';
 
-$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
-$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 't';
-$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
-
 
 // Start session
 $user->start();
 $auth->acl($user->data);
+
+
+// Put these here so we can use user defaults if set
+$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
+$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
+$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : ((!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd');
 
 
 // Check if the user has actually sent a forum ID with his/her request

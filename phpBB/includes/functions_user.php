@@ -345,29 +345,6 @@ class ucp extends user
 		
 		
 	}
-
-	function check_image_type(&$type)
-	{
-		global $user;
-
-		switch ($type)
-		{
-			case 'jpeg':
-			case 'pjpeg':
-			case 'jpg':
-				return '.jpg';
-			case 'gif':
-				return '.gif';
-			case 'png':
-				return '.png';
-			case 'bmp':
-				return '.bmp';
-		}
-
-		$this->error[] = $user->lang['INVALID_IMAGETYPE'];
-		return false;
-	}
-
 }
 
 ?>

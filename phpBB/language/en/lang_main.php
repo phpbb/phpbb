@@ -720,7 +720,10 @@ $lang = array(
 	'VIEW_SMILIES'		=> 'Display Smileys as images', 
 	'VIEW_SIGS'			=> 'Display Signatures', 
 	'VIEW_AVATARS'		=> 'Display Avatars', 
-	'DISABLE_CENSORS'	=> 'Disable Word censoring', 
+	'DISABLE_CENSORS'	=> 'Enable Word censoring', 
+	'VIEW_TOPICS_DAYS'	=> 'Display topics from previous days', 
+	'VIEW_TOPICS_KEY'	=> 'Display topics ordering by', 
+	'VIEW_TOPICS_DIR'	=> 'Display topic order direction', 
 
 	'UCP_POST'			=> 'Posting Messages',
 	'DEFAULT_SMILE'		=> 'Enable smilies by default',

@@ -600,6 +600,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG'					=> 'Allow Signatures',
 	'MAX_SIG_LENGTH'			=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'	=> 'Maximum number of characters in user signatures',
+	'ALLOW_NO_CENSORS'			=> 'Allow Disable of Censors',
+	'ALLOW_NO_CENSORS_EXPLAINS'	=> 'User can disable word censoring.',
 
 
 	'PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.', 
