@@ -133,8 +133,6 @@ function decode_text(&$message, $bbcode_uid)
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 
 	$match = array(
-		'#<!\-\- b \-\-><b>(.*?)</b><!\-\- b \-\->#s',
-		'#<!\-\- u \-\-><u>(.*?)</u><!\-\- u \-\->#s',
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
 		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
@@ -143,8 +141,6 @@ function decode_text(&$message, $bbcode_uid)
 	);
 
 	$replace = array(
-		'[b]\1[/b]',
-		'[u]\1[/u]',
 		'\1',
 		'\1',
 		'\1',
@@ -559,7 +555,7 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 	}
 
 	// Second parse bbcode here
-	$message = $bbcode->bbcode_second_pass($message);
+	$message = $bbcode->bbcode_second_pass($message, $uid);
 
 	// If we allow users to disable display of emoticons
 	// we'll need an appropriate check and preg_replace here
