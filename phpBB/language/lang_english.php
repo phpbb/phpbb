@@ -643,6 +643,7 @@ $lang['12'] = "GMT + 12" . " " . $lang['Hours'];
 //
 
 // Index
+$lang['Admin'] = "Administration";
 $lang['Not_admin'] = "You are not authorised to administer this board";
 $lang['Welcome_phpBB'] = "Welcome to phpBB";
 $lang['Admin_intro'] = "Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. You can get back to this page by clicking on the <u>Admin Index</u> link in the left pane. To return to the index of your board, click the phpBB logo also in the left pane. The other links on the left hand side of this screen will allow you to control every aspect of your forum experience, each screen will have instructions on how to use the tools.";
@@ -809,6 +810,25 @@ $lang['User_admin_explain'] = "Here you can change your user's information. Do n
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user.  This cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";
+
+// Group Management
+$lang['Group_admin_explain'] = "Here you can administer all your groups, including deleting, adding, as well as editing groups.  You may choose moderators, toggle open/closed group status, and set the name and description.";
+$lang['Error_updating_groups'] = "There was an error while updating the groups.";
+$lang['Success_updating_groups'] = "The group was updated/added successfully.";
+$lang['Group_mode_not_selected'] = "You did not select a mode. Please go back and try again.";
+$lang['Group_edit_explain'] = "Edit group:";
+$lang['group_name'] = "Group name";
+$lang['group_description'] = "Group description";
+$lang['group_moderator'] = "Group moderator";
+$lang['group_status'] = "Group status";
+$lang['group_open'] = "Open group";
+$lang['group_closed'] = "Closed group";
+$lang['New_group'] = "Click here to create a new group.";
+$lang['group_delete'] = "Delete group";
+$lang['group_delete_check'] = "Click here to delete this group.";
+$lang['submit_group_changes'] = "Submit Changes";
+$lang['reset_group_changes'] = "Reset Changes";
+
 //
 // End
 // -------------------------------------------------
