@@ -23,7 +23,7 @@ define('IN_PHPBB', 1);
 
 if( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('user') )
+	if ( !$auth->get_acl_admin('user') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 //
 //
-if ( !$acl->get_acl_admin('user') )
+if ( !$auth->get_acl_admin('user') )
 {
 	return;
 }
@@ -55,7 +55,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 }
-else 
+else
 {
 	//
 	// These could be entered via a form button
@@ -85,9 +85,9 @@ if ( $mode != '' )
 		// They want to add a new rank, show the form.
 		//
 		$rank_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
-		
+
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" />';
-		
+
 		if ( $mode == 'edit' )
 		{
 			if ( empty($rank_id) )
@@ -98,7 +98,7 @@ if ( $mode != '' )
 			$sql = "SELECT * FROM " . RANKS_TABLE . "
 				WHERE rank_id = $rank_id";
 			$result = $db->sql_query($sql);
-			
+
 			$rank_info = $db->sql_fetchrow($result);
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
 
@@ -151,7 +151,7 @@ if ( $mode != '' )
 		//
 		// Ok, they sent us our info, let's update it.
 		//
-		
+
 		$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
 		$rank_title = ( isset($HTTP_POST_VARS['title']) ) ? trim($HTTP_POST_VARS['title']) : '';
 		$special_rank = ( $HTTP_POST_VARS['special_rank'] == 1 ) ? TRUE : 0;
@@ -194,7 +194,7 @@ if ( $mode != '' )
 
 			$message = $lang['Rank_added'];
 		}
-		
+
 		$db->sql_query($sql);
 
 		$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
@@ -207,7 +207,7 @@ if ( $mode != '' )
 		//
 		// Ok, they want to delete their rank
 		//
-		
+
 		if ( isset($HTTP_POST_VARS['id']) || isset($HTTP_GET_VARS['id']) )
 		{
 			$rank_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : intval($HTTP_GET_VARS['id']);
@@ -216,15 +216,15 @@ if ( $mode != '' )
 		{
 			$rank_id = 0;
 		}
-		
+
 		if ( $rank_id )
 		{
 			$sql = "DELETE FROM " . RANKS_TABLE . "
 				WHERE rank_id = $rank_id";
 			$db->sql_query($sql);
-			
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_rank = 0 
+
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_rank = 0
 				WHERE user_rank = $rank_id";
 			$db->sql_query($sql);
 

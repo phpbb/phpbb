@@ -165,15 +165,15 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 //
 function get_forum_rules($mode, &$rules, &$forum_id)
 {
-	global $SID, $acl, $lang, $phpEx;
+	global $SID, $auth, $lang, $phpEx;
 
-	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'post') ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
-	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'reply') ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'edit') ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
-	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'delete') || $acl->get_acl($forum_id, 'mod', 'delete') ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'attach') ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'post') ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'reply') ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'edit') ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'delete') || $auth->get_acl($forum_id, 'mod', 'delete') ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->get_acl($forum_id, 'forum', 'attach') ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
 
-	if ( $acl->get_acl($forum_id, 'mod') )
+	if ( $auth->get_acl($forum_id, 'mod') )
 	{
 		$rules .= sprintf($lang['Rules_moderate'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 	}
@@ -183,7 +183,7 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $SID, $acl, $template, $lang, $db, $nav_links, $phpEx;
+	global $SID, $auth, $template, $lang, $db, $nav_links, $phpEx;
 
 //	$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
 //		FROM (( " . FORUMS_TABLE . " f
@@ -209,7 +209,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 			{
 				if ( $row['forum_left_id'] > $last_forum_right_id )
 				{
-					if ( $acl->get_acl($row['forum_id'], 'forum', 'list') )
+					if ( $auth->get_acl($row['forum_id'], 'forum', 'list') )
 					{
 						$selected = ( $row['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring .=  '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $row['forum_name'] . '</option>';
@@ -496,80 +496,41 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = '';
-	if ( $total_pages > 10 )
-	{
-		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
+	$page_string = ( $on_page == 1 ) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
 
-		for($i = 1; $i < $init_page_max + 1; $i++)
+	if ( $total_pages > 5 )
+	{
+		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
+		$end_cnt = max(min($total_pages, $on_page + 4), 6);
+
+		$page_string .= ( $start_cnt > 1 ) ? ' ... ' : ', ';
+
+		for($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
 			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-			if ( $i <  $init_page_max )
+			if ( $i < $end_cnt - 1 )
 			{
-				$page_string .= ", ";
+				$page_string .= ', ';
 			}
 		}
 
-		if ( $total_pages > 3 )
-		{
-			if ( $on_page > 1  && $on_page < $total_pages )
-			{
-				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
-
-				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
-				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
-
-				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
-				{
-					$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-					if ( $i <  $init_page_max + 1 )
-					{
-						$page_string .= ', ';
-					}
-				}
-
-				$page_string .= ( $on_page < $total_pages - 4 ) ? ' ... ' : ', ';
-			}
-			else
-			{
-				$page_string .= ' ... ';
-			}
-
-			for($i = $total_pages - 2; $i < $total_pages + 1; $i++)
-			{
-				$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-				if( $i <  $total_pages )
-				{
-					$page_string .= ", ";
-				}
-			}
-		}
+		$page_string .= ( $end_cnt < $total_pages ) ? ' ... ' : ', ';
 	}
 	else
 	{
-		for($i = 1; $i < $total_pages + 1; $i++)
+		$page_string .= ', ';
+
+		for($i = 2; $i < $total_pages; $i++)
 		{
 			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) . '">' . $i . '</a>';
-			if ( $i <  $total_pages )
+			if ( $i < $total_pages )
 			{
 				$page_string .= ', ';
 			}
 		}
 	}
 
-	if ( $add_prevnext_text )
-	{
-		if ( $on_page > 1 )
-		{
-			$page_string = ' <a href="' . $base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
-		}
-
-		if ( $on_page < $total_pages )
-		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ( $on_page * $per_page ) . '">' . $lang['Next'] . '</a>';
-		}
-
-	}
+	$page_string .= ( $on_page == $total_pages ) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . ( ( $total_pages - 1 ) * $per_page ) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ( $on_page * $per_page ) . '">' . $lang['Next'] . '</a>';
 
 	$page_string = $lang['Goto_page'] . ' ' . $page_string;
 
@@ -640,9 +601,10 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //    failures, etc.
 // -> ERROR : Use for any error, a simple page will be output
 //
+// $errno, $errstr, $errfile, $errline
 function message_die($msg_code, $msg_text = '', $msg_title = '')
 {
-	global $db, $session, $acl, $template, $board_config, $theme, $lang, $userdata, $user_ip;
+	global $db, $session, $auth, $template, $board_config, $theme, $lang, $userdata, $user_ip;
 	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
 
 	switch ( $msg_code )

@@ -44,8 +44,8 @@ foreach ($forum_rows as $row)
 		));
 		unset($stored_cat);
 	}
-	
-	if ($acl->get_acl($forum_id, 'forum', 'list'))
+
+	if ($auth->get_acl($forum_id, 'forum', 'list'))
 	{
 		switch ($forum_status)
 		{

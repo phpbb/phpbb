@@ -1,4 +1,4 @@
-<?php 
+<?php
 /***************************************************************************
  *                             admin_search.php
  *                            -------------------
@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
@@ -44,7 +44,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -113,8 +113,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 		//
 		// Take board offline
 		//
-		$sql = "UPDATE " . CONFIG_TABLE . " 
-			SET config_value = '1' 
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = '1'
 			WHERE config_name = 'board_disable'";
 		$db->sql_query($sql);
 
@@ -129,7 +129,7 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 	//
 	// Fetch a batch of posts_text entries
 	//
-	$sql = "SELECT COUNT(*) AS total, MAX(post_id) AS max_post_id, MIN(post_id) AS min_post_id 
+	$sql = "SELECT COUNT(*) AS total, MAX(post_id) AS max_post_id, MIN(post_id) AS min_post_id
 		FROM " . POSTS_TEXT_TABLE;
 	$result = $db->sql_query($sql);
 
@@ -139,18 +139,18 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT * 
-		FROM " . POSTS_TEXT_TABLE . " 
-		WHERE post_id 
-			BETWEEN $batchstart 
+	$sql = "SELECT *
+		FROM " . POSTS_TEXT_TABLE . "
+		WHERE post_id
+			BETWEEN $batchstart
 				AND $batchend";
 	$result = $db->sql_query($sql);
-	
+
 	if ( $row = $db->sql_fetchrow($result) )
 	{
 		do
 		{
-			$post_id = $row['post_id']; 
+			$post_id = $row['post_id'];
 
 			$search_raw_words = array();
 			$search_raw_words['text'] = split_words(clean_words('post', $row['post_text'], $stopword_array, $synonym_array));
@@ -164,14 +164,14 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 				if ( !empty($search_matches) )
 				{
 					for ($i = 0; $i < count($search_matches); $i++)
-					{ 
+					{
 						$search_matches[$i] = trim($search_matches[$i]);
 
-						if ( $search_matches[$i] != '' ) 
+						if ( $search_matches[$i] != '' )
 						{
 							$word[] = $search_matches[$i];
 							$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != '' ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
-						} 
+						}
 					}
 				}
 			}
@@ -194,8 +194,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 					case 'mssql-odbc':
 					case 'oracle':
 					case 'db2':
-						$sql = "SELECT word_id, word_text     
-							FROM " . SEARCH_WORD_TABLE . " 
+						$sql = "SELECT word_id, word_text
+							FROM " . SEARCH_WORD_TABLE . "
 							WHERE word_text IN ($word_text_sql)";
 						$result = $db->sql_query($sql);
 
@@ -209,7 +209,7 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 				$value_sql = '';
 				$match_word = array();
 				for ($i = 0; $i < count($word); $i++)
-				{ 
+				{
 					$new_match = true;
 					if ( isset($check_words[$word[$i]]) )
 					{
@@ -228,8 +228,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 								$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
 								break;
 							default:
-								$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-									VALUES ('" . $word[$i] . "')"; 
+								$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+									VALUES ('" . $word[$i] . "')";
 								$db->sql_query($sql);
 								break;
 						}
@@ -242,12 +242,12 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 					{
 						case 'mysql':
 						case 'mysql4':
-							$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
-								VALUES $value_sql"; 
+							$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text)
+								VALUES $value_sql";
 							break;
 						case 'mssql':
-							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-								$value_sql"; 
+							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+								$value_sql";
 							break;
 					}
 
@@ -261,10 +261,10 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 
 				if ( $match_sql != '' )
 				{
-					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
-						SELECT $post_id, word_id, $title_match  
-							FROM " . SEARCH_WORD_TABLE . " 
-							WHERE word_text IN ($match_sql)"; 
+					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
+						SELECT $post_id, word_id, $title_match
+							FROM " . SEARCH_WORD_TABLE . "
+							WHERE word_text IN ($match_sql)";
 					$db->sql_query($sql);
 				}
 			}
@@ -290,8 +290,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 	}
 	else
 	{
-		$sql = "UPDATE " . CONFIG_TABLE . " 
-			SET config_value = '0' 
+		$sql = "UPDATE " . CONFIG_TABLE . "
+			SET config_value = '0'
 			WHERE config_name = 'board_disable'";
 		$db->sql_query($sql);
 
@@ -314,8 +314,8 @@ if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 }
 else if ( isset($HTTP_POST_VARS['cancel']) )
 {
-	$sql = "UPDATE " . CONFIG_TABLE . " 
-		SET config_value = '0' 
+	$sql = "UPDATE " . CONFIG_TABLE . "
+		SET config_value = '0'
 		WHERE config_name = 'board_disable'";
 	$db->sql_query($sql);
 

@@ -161,12 +161,12 @@ if ( !(extract($db->sql_fetchrow($result))) )
 $userdata['user_style'] = ( $forum_style ) ? $forum_style : $userdata['user_style'];
 $session->configure($userdata);
 
-$acl = new acl($userdata, $forum_id);
+$auth->acl($userdata, $forum_id);
 
 //
 // Start auth check
 //
-if ( !$acl->get_acl($forum_id, 'forum', 'read') )
+if ( !$auth->get_acl($forum_id, 'forum', 'read') )
 {
 	if ( $userdata['user_id'] != ANONYMOUS )
 	{
@@ -343,11 +343,11 @@ $s_forum_rules = '';
 get_forum_rules('topic', $s_forum_rules, $forum_id);
 
 $topic_mod = '';
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'lock') ) ? ( ( $topic_status == TOPIC_UNLOCKED ) ? '<option value="lock">' . $lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $lang['Unlock_topic'] . '</option>' ) : '';
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'delete') ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'move') ) ? '<option value="move">' . $lang['Move_topic'] . '</option>' : '';
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'split') ) ? '<option value="split">' . $lang['Split_topic'] . '</option>' : '';
-$topic_mod .= ( $acl->get_acl($forum_id, 'mod', 'merge') ) ? '<option value="merge">' . $lang['Merge_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->get_acl($forum_id, 'mod', 'lock') ) ? ( ( $topic_status == TOPIC_UNLOCKED ) ? '<option value="lock">' . $lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $lang['Unlock_topic'] . '</option>' ) : '';
+$topic_mod .= ( $auth->get_acl($forum_id, 'mod', 'delete') ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->get_acl($forum_id, 'mod', 'move') ) ? '<option value="move">' . $lang['Move_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->get_acl($forum_id, 'mod', 'split') ) ? '<option value="split">' . $lang['Split_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->get_acl($forum_id, 'mod', 'merge') ) ? '<option value="merge">' . $lang['Merge_topic'] . '</option>' : '';
 
 //
 // If we've got a hightlight set pass it on to pagination.
@@ -505,7 +505,7 @@ if ( !empty($poll_start) )
 
 		$poll_expired = ( $vote_info[0]['vote_length'] ) ? ( ( $vote_info[0]['vote_start'] + $vote_info[0]['vote_length'] < time() ) ? TRUE : 0 ) : 0;
 
-		if ( $user_voted || $view_result || $poll_expired || !$acl->get_acl($forum_id, 'forum', 'vote') || $topic_status == TOPIC_LOCKED )
+		if ( $user_voted || $view_result || $poll_expired || !$auth->get_acl($forum_id, 'forum', 'vote') || $topic_status == TOPIC_LOCKED )
 		{
 			$vote_results_sum = 0;
 			for($i = 0; $i < $vote_options; $i++)
@@ -695,7 +695,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$poster_details[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
 			$poster_details[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-			if ( !empty($row['user_viewemail']) || $acl->get_acl($forum_id, 'mod') )
+			if ( !empty($row['user_viewemail']) || $auth->get_acl($forum_id, 'mod') )
 			{
 				$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 
@@ -734,7 +734,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$poster_details[$poster_id]['yim_img'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
 			$poster_details[$poster_id]['yim'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-			if ( $acl->get_acl($forum_id, 'forum', 'search') )
+			if ( $auth->get_acl($forum_id, 'forum', 'search') )
 			{
 				$temp_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($row['username']) .'"&amp;showresults=posts';
 				$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
@@ -775,7 +775,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$quote_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_quote'], $lang['Reply_with_quote']) . '</a>';
 		$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
 
-		if ( ( $userdata['user_id'] == $poster_id && $acl->get_acl($forum_id, 'forum', 'edit') ) || $acl->get_acl($forum_id, 'mod', 'edit') )
+		if ( ( $userdata['user_id'] == $poster_id && $auth->get_acl($forum_id, 'forum', 'edit') ) || $auth->get_acl($forum_id, 'mod', 'edit') )
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=editpost&amp;p=" . $row['post_id'];
 			$edit_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_edit'], $lang['Edit_delete_post']) . '</a>';
@@ -787,7 +787,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$edit = '';
 		}
 
-		if ( $acl->get_acl($forum_id, 'mod', 'ip') )
+		if ( $auth->get_acl($forum_id, 'mod', 'ip') )
 		{
 			$temp_url = "modcp.$phpEx$SID&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
 			$ip_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_ip'], $lang['View_IP']) . '</a>';
@@ -799,7 +799,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$ip = '';
 		}
 
-		if ( ( $userdata['user_id'] == $poster_id && $acl->get_acl($forum_id, 'forum', 'delete') && $forum_topic_data['topic_last_post_id'] == $row['post_id'] ) || $acl->get_acl($forum_id, 'mod', 'delete') )
+		if ( ( $userdata['user_id'] == $poster_id && $auth->get_acl($forum_id, 'forum', 'delete') && $forum_topic_data['topic_last_post_id'] == $row['post_id'] ) || $auth->get_acl($forum_id, 'mod', 'delete') )
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'];
 			$delpost_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_delete'], $lang['Delete_post']) . '</a>';
@@ -825,9 +825,9 @@ if ( $row = $db->sql_fetchrow($result) )
 		// If the board has HTML off but the post has HTML
 		// on then we process it, else leave it alone
 		//
-		if ( !$acl->get_acl($forum_id, 'forum', 'html') )
+		if ( !$auth->get_acl($forum_id, 'forum', 'html') )
 		{
-			if ( $row['enable_html'] && $acl->get_acl($forum_id, 'forum', 'bbcode') )
+			if ( $row['enable_html'] && $auth->get_acl($forum_id, 'forum', 'bbcode') )
 			{
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
 			}
@@ -838,7 +838,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		//
 		if ( $bbcode_uid != '' )
 		{
-			$message = ( $acl->get_acl($forum_id, 'forum', 'bbcode') ) ? bbencode_second_pass($message, $bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img')) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+			$message = ( $auth->get_acl($forum_id, 'forum', 'bbcode') ) ? bbencode_second_pass($message, $bbcode_uid, $auth->get_acl($forum_id, 'forum', 'img')) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 		}
 
 		if ( $row['enable_magic_url'] )
@@ -933,7 +933,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$message = preg_replace($orig_word, $replacement_word, $message);
 		}
 
-		if ( $row['enable_smilies'] && $acl->get_acl($forum_id, 'forum', 'smilies') )
+		if ( $row['enable_smilies'] && $auth->get_acl($forum_id, 'forum', 'smilies') )
 		{
 			$message = smilies_pass($message);
 		}
@@ -962,14 +962,14 @@ if ( $row = $db->sql_fetchrow($result) )
 			$user_sig = ( $row['enable_sig'] && $row['user_sig'] != '' && $board_config['allow_sig'] ) ? $row['user_sig'] : '';
 			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
 
-			if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $acl->get_acl($forum_id, 'forum', 'sigs') )
+			if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $auth->get_acl($forum_id, 'forum', 'sigs') )
 			{
-				if ( !$acl->get_acl($forum_id, 'forum', 'html') && $userdata['user_allowhtml'] )
+				if ( !$auth->get_acl($forum_id, 'forum', 'html') && $userdata['user_allowhtml'] )
 				{
 					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 				}
 
-				$poster_details[$poster_id]['sig'] = bbencode_second_pass($user_sig, $user_sig_bbcode_uid, $acl->get_acl($forum_id, 'forum', 'img'));
+				$poster_details[$poster_id]['sig'] = bbencode_second_pass($user_sig, $user_sig_bbcode_uid, $auth->get_acl($forum_id, 'forum', 'img'));
 
 				$poster_details[$poster_id]['sig'] = make_clickable($poster_details[$poster_id]['sig']);
 

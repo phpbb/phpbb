@@ -30,7 +30,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl($userdata, false, 'read');
+$auth->acl($userdata);
 //
 // End session management
 //
@@ -121,16 +121,7 @@ $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['So
 //
 // Begin core code
 //
-if ( $mode == 'searchuser' )
-{
-	//
-	// This handles the simple windowed user search functions called from various other scripts
-	//
-	username_search();
-
-	exit;
-}
-else if ( $search_keywords != '' || $search_author != '' || $search_id )
+if ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
 
@@ -143,11 +134,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			if ( $search_id == 'newposts' )
 			{
-				if ( $userdata['session_logged_in'] )
+				if ( $userdata['user_id'] )
 				{
 					$sql = "SELECT post_id
 						FROM " . POSTS_TABLE . "
-						WHERE post_time >= " . $userdata['user_lastvisit'];
+						WHERE post_time >= " . $userdata['session_last_visit'];
 				}
 				else
 				{
@@ -184,10 +175,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$sql = "SELECT user_id
 					FROM " . USERS_TABLE . "
 					WHERE username LIKE '" . str_replace("\'", "''", $search_author) . "'";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(ERROR, "Couldn't obtain list of matching users (searching for: $search_author)", "", __LINE__, __FILE__, $sql);
-				}
+				$result = $db->sql_query($sql);
 
 				$matching_userids = '';
 				if ( $row = $db->sql_fetchrow($result) )
@@ -336,12 +324,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$auth_sql = '';
 		if ( $search_forum != -1 )
 		{
-			if ( !$acl->get_acl($search_forum, 'forum', 'read') )
+			if ( !$auth->get_acl($search_forum, 'forum', 'read') )
 			{
 				message_die(MESSAGE, $lang['No_searchable_forums']);
 			}
 
-			$auth_sql = "f.forum_id = $search_forum";
+//			$auth_sql = "f.forum_id = $search_forum";
 		}
 		else
 		{
@@ -349,8 +337,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			{
 				$auth_sql = "f.cat_id = $search_cat";
 			}
-
-			$auth_ary = $acl->get_acl();
+/*
+			$auth_ary = $auth->get_acl();
 			@reset($auth_ary);
 
 			$allowed_forum_sql = '';
@@ -363,7 +351,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 
 			$auth_sql .= ( $auth_sql != '' ) ? " AND f.forum_id IN ($allowed_forum_sql) " : "f.forum_id IN ($allowed_forum_sql) ";
-		}
+*/		}
 
 		//
 		// Author name search
@@ -415,7 +403,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						GROUP BY p.topic_id";
 				}
 
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !($result = $db->sql_query($sql, false)) )
 				{
 					message_die(ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
 				}
@@ -455,7 +443,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$sql = "SELECT p.post_id
 					FROM $from_sql
 					WHERE $where_sql";
-				if ( !($result = $db->sql_query($sql)) )
+				if ( !($result = $db->sql_query($sql, false)) )
 				{
 					message_die(ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
 				}
@@ -490,7 +478,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						AND topic_moved_id = 0";
 			}
 
-			if ( !($result = $db->sql_query($sql)) )
+			if ( !($result = $db->sql_query($sql, false)) )
 			{
 				message_die(ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
 			}
@@ -650,7 +638,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		}
 		$sql .= " $sort_dir LIMIT $start, " . $per_page;
 
-		if ( !$result = $db->sql_query($sql) )
+		if ( !$result = $db->sql_query($sql, false) )
 		{
 			message_die(ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
 		}
@@ -673,22 +661,6 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		// Output header
 		//
-		$page_title = $lang['Search'];
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-		if ( $show_results == 'posts' )
-		{
-			$template->set_filenames(array(
-				'body' => 'search_results_posts.tpl')
-			);
-		}
-		else
-		{
-			$template->set_filenames(array(
-				'body' => 'search_results_topics.tpl')
-			);
-		}
-		make_jumpbox('viewforum.'.$phpEx);
 
 		$l_search_matches = ( $total_match_count == 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
 
@@ -728,9 +700,9 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		for($i = 0; $i < count($searchset); $i++)
 		{
-			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
-			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
-			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
+			$forum_url = "viewforum.$phpEx$SID&amp;f=" . $searchset[$i]['forum_id'];
+			$topic_url = "viewtopic.$phpEx$SID&amp;t=" . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active";
+			$post_url = "viewtopic.$phpEx$SID&amp;p=" . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active" . '#' . $searchset[$i]['post_id'];
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
@@ -876,11 +848,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				}
 
-				$poster = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $searchset[$i]['user_id']) . '">' : '';
-				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
-				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+				$poster = ( !$searchset[$i]['user_id'] ) ? '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
+				$poster .= ( $searchset[$i]['user_id'] ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
+				$poster .= ( $searchset[$i]['user_id'] ) ? '</a>' : '';
 
-				if ( $userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
+				if ( $userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['session_last_visit'] )
 				{
 					if ( !empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id]) )
 					{
@@ -966,7 +938,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					$times = 1;
 					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
 					{
-						$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+						$goto_page .= '<a href="' . "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$j" . '">' . $times . '</a>';
 						if ( $times == 1 && $total_pages > 4 )
 						{
 							$goto_page .= ' ... ';
@@ -1027,7 +999,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 					if ( $userdata['session_logged_in'] )
 					{
-						if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
+						if ( $searchset[$i]['post_time'] > $userdata['session_last_visit'] )
 						{
 							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
 							{
@@ -1063,7 +1035,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 									$folder_image = $folder_new;
 									$folder_alt = $lang['New_posts'];
 
-									$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+									$newest_post_img = '<a href="' . "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;view=newest" . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 								}
 								else
 								{
@@ -1075,12 +1047,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 								}
 
 							}
-							else if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
+							else if ( $searchset[$i]['post_time'] > $userdata['session_last_visit'] )
 							{
 								$folder_image = $folder_new;
 								$folder_alt = $lang['New_posts'];
 
-								$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+								$newest_post_img = '<a href="' . "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;view=newest" . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 							}
 							else
 							{
@@ -1105,18 +1077,18 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 
 
-				$topic_author = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $searchset[$i]['user_id']) . '">' : '';
-				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
+				$topic_author = ( $searchset[$i]['user_id'] ) ? '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $searchset[$i]['user_id'] . '">' : '';
+				$topic_author .= ( $searchset[$i]['user_id'] ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
 
-				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+				$topic_author .= ( $searchset[$i]['user_id'] ) ? '</a>' : '';
 
 				$first_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['topic_time'], $board_config['board_timezone']);
 
 				$last_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
-				$last_post_author = ( $searchset[$i]['id2'] == ANONYMOUS ) ? ( ($searchset[$i]['post_username2'] != '' ) ? $searchset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $searchset[$i]['id2']) . '">' . $searchset[$i]['user2'] . '</a>';
+				$last_post_author = ( $searchset[$i]['id2'] ) ? ( ($searchset[$i]['post_username2'] != '' ) ? $searchset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . "profile.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $searchset[$i]['id2'] . '">' . $searchset[$i]['user2'] . '</a>';
 
-				$last_post_url = '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $searchset[$i]['topic_last_post_id']) . '#' . $searchset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
+				$last_post_url = '<a href="' . "viewtopic.$phpEx$SID&amp;p=" . $searchset[$i]['topic_last_post_id'] . '#' . $searchset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
 				$template->assign_block_vars('searchresults', array(
 					'FORUM_NAME' => $searchset[$i]['forum_name'],
@@ -1164,7 +1136,13 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
 
-		$template->pparse('body');
+		$page_title = $lang['Search'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			'body' =>  ( $show_results == 'posts' ) ? 'search_results_posts.html' : 'search_results_topics.html')
+		);
+		make_jumpbox('viewforum.'.$phpEx);
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
@@ -1186,7 +1164,7 @@ $result = $db->sql_query($sql);
 $s_forums = '';
 while( $row = $db->sql_fetchrow($result) )
 {
-	if ( $acl->get_acl($row['forum_id'], 'forum', 'read') )
+	if ( $auth->get_acl($row['forum_id'], 'forum', 'read') )
 	{
 		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
 		if ( empty($list_cat[$row['cat_id']]) )
@@ -1294,204 +1272,5 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-//
-// Username search
-//
-function username_search()
-{
-	global $SID, $HTTP_GET_VARS, $HTTP_POST_VARS, $phpEx, $phpbb_root_path;
-	global $db, $board_config, $template, $acl, $lang, $theme;
-	global $starttime;
-
-	$form = ( !empty($HTTP_GET_VARS['form']) ) ? $HTTP_GET_VARS['form'] : 0;
-	$field = ( isset($HTTP_GET_VARS['field']) ) ? $HTTP_GET_VARS['field'] : 'username';
-	$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
-
-	$sort_by = ( !empty($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : ( ( !empty($HTTP_GET_VARS['sort_by']) ) ? $HTTP_GET_VARS['sort_by'] : '4' );
-	$sort_order = ( !empty($HTTP_POST_VARS['sort_order']) ) ? $HTTP_POST_VARS['sort_order'] : ( ( !empty($HTTP_GET_VARS['sort_order']) ) ? $HTTP_GET_VARS['sort_order'] : 'd' );
-
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : ( ( !empty($HTTP_GET_VARS['username']) ) ? $HTTP_GET_VARS['username'] : '' );
-	$email = ( !empty($HTTP_POST_VARS['email']) ) ? $HTTP_POST_VARS['email'] : ( ( !empty($HTTP_GET_VARS['email']) ) ? $HTTP_GET_VARS['email'] : '' );
-	$icq = ( !empty($HTTP_POST_VARS['icq']) ) ? intval($HTTP_POST_VARS['icq']) : ( ( !empty($HTTP_GET_VARS['icq']) ) ? $HTTP_GET_VARS['icq'] : '' );
-	$aim = ( !empty($HTTP_POST_VARS['aim']) ) ? $HTTP_POST_VARS['aim'] : ( ( !empty($HTTP_GET_VARS['aim']) ) ? $HTTP_GET_VARS['aim'] : '' );
-	$yahoo = ( !empty($HTTP_POST_VARS['yahoo']) ) ? $HTTP_POST_VARS['yahoo'] : ( ( !empty($HTTP_GET_VARS['yahoo']) ) ? $HTTP_GET_VARS['yahoo'] : '' );
-	$msn = ( !empty($HTTP_POST_VARS['msn']) ) ? $HTTP_POST_VARS['msn'] : ( ( !empty($HTTP_GET_VARS['msn']) ) ? $HTTP_GET_VARS['msn'] : '' );
-
-	$joined_select = ( !empty($HTTP_POST_VARS['joined_select']) ) ? $HTTP_POST_VARS['joined_select'] : ( ( !empty($HTTP_GET_VARS['joined_select']) ) ? $HTTP_GET_VARS['joined_select'] : 'lt' );
-	$active_select = ( !empty($HTTP_POST_VARS['active_select']) ) ? $HTTP_POST_VARS['active_select'] : ( ( !empty($HTTP_GET_VARS['active_select']) ) ? $HTTP_GET_VARS['active_select'] : 'lt' );
-	$count_select = ( !empty($HTTP_POST_VARS['count_select']) ) ? $HTTP_POST_VARS['count_select'] : ( ( !empty($HTTP_GET_VARS['count_select']) ) ? $HTTP_GET_VARS['count_select'] : 'eq' );
-	$joined = ( !empty($HTTP_POST_VARS['joined']) ) ? explode('-', $HTTP_POST_VARS['joined']) : ( ( !empty($HTTP_GET_VARS['joined']) ) ? explode('-', $HTTP_GET_VARS['joined']) : array() );
-	$active = ( !empty($HTTP_POST_VARS['active']) ) ? explode('-', $HTTP_POST_VARS['active']) : ( ( !empty($HTTP_GET_VARS['active']) ) ? explode('-', $HTTP_GET_VARS['active']) : array() );
-	$count = ( !empty($HTTP_POST_VARS['count']) ) ? intval($HTTP_POST_VARS['count']) : ( ( !empty($HTTP_GET_VARS['count']) ) ? $HTTP_GET_VARS['count'] : '' );
-
-	//
-	//
-	//
-	$sort_by_types_text = array($lang['Sort_Username'], $lang['Sort_Email'], $lang['Sort_Post_count'], $lang['Sort_Joined'], $lang['Sort_Last_active']);
-	$s_sort_by = '';
-	for($i = 0; $i < count($sort_by_types_text); $i++)
-	{
-		$selected = ( $sort_by == $i ) ? ' selected="selected"' : '';
-		$s_sort_by .= '<option value="' . $i . '"' . $selected . '>' . $sort_by_types_text[$i] . '</option>';
-	}
-
-	$sort_order_text = array('a' => $lang['Ascending'], 'd' => $lang['Descending']);
-	$s_sort_order = '';
-	foreach ( $sort_order_text as $key => $value )
-	{
-		$selected = ( $sort_order == $key ) ? ' selected="selected"' : '';
-		$s_sort_order .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-
-	$find_count = array('lt' => $lang['Less_than'], 'eq' => $lang['Equal_to'], 'gt' => $lang['More_than']);
-	$s_find_count = '';
-	foreach ( $find_count as $key => $value )
-	{
-		$selected = ( $count_select == $key ) ? ' selected="selected"' : '';
-		$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-
-	$find_time = array('lt' => $lang['Before'], 'gt' => $lang['After']);
-	$s_find_join_time = '';
-	foreach ( $find_time as $key => $value )
-	{
-		$selected = ( $joined_select == $key ) ? ' selected="selected"' : '';
-		$s_find_join_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-	$s_find_active_time = '';
-	foreach ( $find_time as $key => $value )
-	{
-		$selected = ( $active_select == $key ) ? ' selected="selected"' : '';
-		$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-
-	//
-	//
-	//
-	$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-	$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
-
-	$where_sql = '';
-	$where_sql .= ( $username ) ? " AND username LIKE '" . str_replace('*', '%', $username) ."'" : '';
-	$where_sql .= ( $email ) ? " AND user_email LIKE '" . str_replace('*', '%', $email) ."' " : '';
-	$where_sql .= ( $icq ) ? " AND user_icq LIKE '" . str_replace('*', '%', $icq) ."' " : '';
-	$where_sql .= ( $aim ) ? " AND user_aim LIKE '" . str_replace('*', '%', $aim) ."' " : '';
-	$where_sql .= ( $yahoo ) ? " AND user_yim LIKE '" . str_replace('*', '%', $yahoo) ."' " : '';
-	$where_sql .= ( $msn ) ? " AND user_msnm LIKE '" . str_replace('*', '%', $msn) ."' " : '';
-	$where_sql .= ( $joined ) ? " AND user_regdate " . $key_match[$joined_select] . " " . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
-	$where_sql .= ( $count ) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
-	$where_sql .= ( $active ) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
-
-	$order_by = $sort_by_types[$sort_by] . '  ' . ( ( $sort_order == 'a' ) ? 'ASC' : 'DESC' );
-
-	$sql = "SELECT COUNT(user_id) AS total_users
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS . "
-		$where_sql";
-	$result = $db->sql_query($sql);
-
-	$total_users = ( $row = $db->sql_fetchrow($result) ) ? $row['total_users'] : 0;
-
-	$pagination = generate_pagination("search.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;sort_order=$sort_order&amp;sort_by=$sort_by&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select", $total_users, $board_config['topics_per_page'], $start);
-
-	//
-	//
-	//
-	$page_title = $lang['Search'];
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-	$template->set_filenames(array(
-		'search_user_body' => 'search_username.html')
-	);
-
-	$template->assign_vars(array(
-		'USERNAME' => $username,
-		'EMAIL' => $email,
-		'ICQ' => $icq,
-		'AIM' => $aim,
-		'YAHOO' => $yahoo,
-		'MSNM' => $msn,
-		'JOINED' => implode('-', $joined),
-		'ACTIVE' => implode('-', $active),
-		'COUNT' => $count,
-
-		'PAGINATION' => $pagination,
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )),
-
-		'L_SEARCH_USERNAME' => $lang['Find_username'],
-		'L_SEARCH_EXPLAIN' => $lang['Find_username_explain'],
-		'L_RESET' => $lang['Reset'],
-		'L_EMAIL' => $lang['Email'],
-		'L_ICQ_NUMBER' => $lang['ICQ'],
-		'L_MESSENGER' => $lang['MSNM'],
-		'L_YAHOO' => $lang['YIM'],
-		'L_AIM' => $lang['AIM'],
-		'L_JOINED' => $lang['Joined'],
-		'L_ACTIVE' => $lang['Last_active'],
-		'L_POSTS' => $lang['Posts'],
-		'L_SORT_BY' => $lang['Sort_by'],
-		'L_SORT_ASCENDING' => $lang['Sort_Ascending'],
-		'L_SORT_DESCENDING' => $lang['Sort_Descending'],
-		'L_SELECT_MARKED' => $lang['Select_marked'],
-		'L_MARK' => $lang['Mark'],
-		'L_MARK_ALL' => $lang['Mark_all'],
-		'L_UNMARK_ALL' => $lang['Unmark_all'],
-
-		'S_FORM_NAME' => $form,
-		'S_FIELD_NAME' => $field,
-		'S_COUNT_OPTIONS' => $s_find_count,
-		'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
-		'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
-		'S_SORT_OPTIONS' => $s_sort_by,
-		'S_SORT_ORDER' => $s_sort_order,
-		'S_USERNAME_OPTIONS' => $username_list,
-		'S_SEARCH_ACTION' => "search.$phpEx$SID&amp;mode=searchuser&amp;field=$field")
-	);
-
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_email, user_lastvisit
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS . "
-		$where_sql
-		ORDER BY $order_by
-		LIMIT $start, " . $board_config['topics_per_page'];
-	$result = $db->sql_query($sql);
-
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		$i = 0;
-		do
-		{
-			$username = $row['username'];
-			$user_id = $row['user_id'];
-
-			$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
-			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
-			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : create_date($lang['DATE_FORMAT'], $row['user_lastvisit'], $board_config['board_timezone']);
-
-			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-			$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-			$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
-
-			$template->assign_block_vars('memberrow', array(
-				'ROW_NUMBER' => $i + ( $start + 1 ),
-				'USERNAME' => $username,
-				'JOINED' => $joined,
-				'POSTS' => $posts,
-				'ACTIVE' => $active,
-				'PROFILE_IMG' => $profile_img,
-				'PROFILE' => $profile)
-			);
-
-			$i++;
-		}
-		while ( $row = $db->sql_fetchrow($result) );
-	}
-
-	$template->display('search_user_body');
-
-	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-	exit;
-}
 
 ?>

@@ -124,7 +124,7 @@ else
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl($userdata, $forum_id);
+$auth->acl($userdata, $forum_id);
 //
 // End session management
 //
@@ -167,7 +167,7 @@ else
 //
 // Auth check
 //
-if ( !$acl->get_acl($forum_id, 'mod') )
+if ( !$auth->get_acl($forum_id, 'mod') )
 {
 	message_die(MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }

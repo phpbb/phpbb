@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('auth') )
+	if ( !$auth->get_acl_admin('auth') )
 	{
 		return;
 	}
@@ -46,7 +46,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('auth') )
+if ( !$auth->get_acl_admin('auth') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -101,6 +101,13 @@ switch ( $mode )
 		break;
 }
 
+//
+// Brief explanation of how things work when updating ...
+//
+// Granting someone any admin permissions grants them permissions
+// to all other options, e.g. Moderator and Forums across the board.
+// This is done via the acl class
+//
 if ( isset($HTTP_POST_VARS['update']) )
 {
 	switch ( $HTTP_POST_VARS['type'] )
@@ -116,7 +123,7 @@ if ( isset($HTTP_POST_VARS['update']) )
 
 	foreach ( $HTTP_POST_VARS['entries'] as $id )
 	{
-		$acl->$set($forum_id, $id, $HTTP_POST_VARS['option']);
+		$auth->$set($forum_id, $id, $HTTP_POST_VARS['option']);
 	}
 
 	message_die(MESSAGE, 'Permissions updated successfully');
@@ -156,7 +163,7 @@ else if ( isset($HTTP_POST_VARS['delete']) )
 
 	foreach ( $HTTP_POST_VARS['entries'] as $id )
 	{
-		$acl->$set($forum_id, $id, $option_ids);
+		$auth->$set($forum_id, $id, $option_ids);
 	}
 
 	message_die(MESSAGE, 'Permissions updated successfully');
@@ -344,9 +351,16 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	else
 	{
 
+		//
+		// Founder only operations ... these operations can
+		// only be altered by someone with founder status
+		//
+		$founder_sql = ( !$userdata['user_founder'] ) ? ' AND founder_only <> 1' : '';
+
 		$sql = "SELECT auth_option_id, auth_value
 			FROM " . ACL_OPTIONS_TABLE . "
-			WHERE auth_value LIKE '" . $type_sql . "_%'";
+			WHERE auth_value LIKE '" . $type_sql . "_%'
+				$founder_sql";
 		$result = $db->sql_query($sql);
 
 		$auth_options = array();

@@ -24,19 +24,11 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Start session management
-//
 $userdata = $session->start();
-$acl = new acl($userdata);
-//
+$auth->acl($userdata);
+$user = new user($userdata);
 // End session management
-//
-
-//
-// Configure style, language, etc.
-//
-$session->configure($userdata);
 
 //
 // Forum info
@@ -88,7 +80,7 @@ while ( $row = $db->sql_fetchrow($result) )
 
 			if ( !$row['user_allow_viewonline'] )
 			{
-				$view_online = ( $acl->get_acl_admin() ) ? true : false;
+				$view_online = ( $auth->get_acl_admin() ) ? true : false;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
@@ -136,7 +128,7 @@ while ( $row = $db->sql_fetchrow($result) )
 				preg_match('/f=([0-9]+)/', $row['session_page'], $forum_id);
 				$forum_id = $forum_id[1];
 
-				if ( $acl->get_acl($forum_id, 'forum' , 'list') )
+				if ( $auth->get_acl($forum_id, 'forum' , 'list') )
 				{
 					$location = '';
 					switch ( $on_page[1] )
@@ -193,7 +185,7 @@ while ( $row = $db->sql_fetchrow($result) )
 
 		$template->assign_block_vars("$which_row", array(
 			'USERNAME' => $username,
-			'LASTUPDATE' => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
+			'LASTUPDATE' => $user->format_date($row['session_time']),
 			'FORUM_LOCATION' => $location,
 
 			'S_ROW_COUNT' => $$which_counter,

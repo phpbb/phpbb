@@ -30,7 +30,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Set page ID for session management
 //
 $userdata = $session->start();
-$acl = new acl($userdata);
+$auth = new auth($userdata);
 
 $session->configure($userdata);
 //
@@ -60,13 +60,13 @@ if ( isset($login) || isset($logout)  )
 		//
 		// Is the board disabled? Are we an admin? No, then back to the index we go
 		//
-		if ( $board_config['board_disable'] && !$acl->get_acl_admin() )
+		if ( $board_config['board_disable'] && !$auth->get_acl_admin() )
 		{
 			header($header_location . "index.$phpEx$SID");
 			exit;
 		}
 
-		if ( new login($username, $password, $autologin) )
+		if ( !$auth->login($username, $password, $autologin) )
 		{
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')

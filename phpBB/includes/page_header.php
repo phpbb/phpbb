@@ -26,9 +26,7 @@ if ( !defined('IN_PHPBB') )
 
 define('HEADER_INC', TRUE);
 
-//
 // gzip_compression
-//
 if ( $board_config['gzip_compress'] )
 {
 	if ( extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent() )
@@ -37,35 +35,25 @@ if ( $board_config['gzip_compress'] )
 	}
 }
 
-//
 // Generate logged in/logged out status
-//
-if ( $userdata['user_id'] != ANONYMOUS )
+if ( $userdata['user_id'] )
 {
-	$u_login_logout = 'login.'.$phpEx.'?logout=true';
+	$u_login_logout = 'login.'.$phpEx. $SID . '&amp;logout=true';
 	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
 }
 else
 {
-	$u_login_logout = 'login.'.$phpEx;
+	$u_login_logout = 'login.'.$phpEx . $SID;
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = ( $userdata['user_id'] != ANONYMOUS ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : '';
+// Last visit date/time
+$s_last_visit = ( $userdata['user_id'] ) ? create_date($board_config['default_dateformat'], $userdata['session_last_visit'], $board_config['board_timezone']) : '';
 
-//
-// Get basic (usernames + totals) online
-// situation
-//
-$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page LIKE '%f=$forum_id%'" : '';
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
-	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
-	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".( time() - 300 ) . "
-		$user_forum_sql
-	ORDER BY u.username ASC, s.session_ip ASC";
-$result = $db->sql_query($sql);
+// Timezone : $user->dst
+$s_timezone = ( $userdata['user_dst'] ) ? sprintf($lang['All_times'], $lang[floatval($board_config['board_timezone'])], $lang['tz']['dst']) : sprintf($lang['All_times'], $lang[floatval($board_config['board_timezone'])], '');
 
+// Get users online list
 $userlist_ary = array();
 $userlist_visible = array();
 
@@ -76,11 +64,20 @@ $online_userlist = '';
 
 $prev_user_id = 0;
 $prev_user_ip = '';
+//  && $auth->get_acl('forum', 'read', $forum_id)
+$user_forum_sql = ( is_int($forum_id)) ? '' : "AND s.session_page LIKE '%f=$forum_id%'";
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
+	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
+	WHERE s.session_time >= ".( time() - 300 ) . "
+		$user_forum_sql
+		AND u.user_id = s.session_user_id
+	ORDER BY u.username ASC, s.session_ip ASC";
+$result = $db->sql_query($sql, false);
 
 while( $row = $db->sql_fetchrow($result) )
 {
 	// User is logged in and therefor not a guest
-	if ( $row['user_id'] != ANONYMOUS )
+	if ( $row['user_id'] )
 	{
 		// Skip multiple sessions for one user
 		if ( $row['user_id'] != $prev_user_id )
@@ -101,7 +98,7 @@ while( $row = $db->sql_fetchrow($result) )
 				$logged_hidden_online++;
 			}
 
-			if ( $row['user_allow_viewonline'] || $acl->get_acl_admin() )
+			if ( $row['user_allow_viewonline'] || $auth->get_acl_admin() )
 			{
 				$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 			}
@@ -215,17 +212,17 @@ $l_online_users .= sprintf($l_g_user_s, $guests_online);
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( $userdata['user_id'] != ANONYMOUS )
+if ( $userdata['user_id'] )
 {
 	if ( $userdata['user_new_privmsg'] )
 	{
 		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
-		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
+		if ( $userdata['user_last_privmsg'] > $userdata['session_last_visit'] )
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_last_privmsg = " . $userdata['user_lastvisit'] . "
+				SET user_last_privmsg = " . $userdata['session_last_visit'] . "
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
 
@@ -341,14 +338,14 @@ $template->assign_vars(array(
 	'U_MEMBERSLIST' => 'memberlist.'.$phpEx.$SID,
 	'U_GROUP_CP' => 'groupcp.'.$phpEx.$SID,
 
-	'S_USER_LOGGED_IN' => ( $userdata['user_id'] == ANONYMOUS ) ? false : true,
+	'S_USER_LOGGED_IN' => ( $userdata['user_id'] ) ? true : false,
 	'S_USER_PM_POPUP' => ( !empty($userdata['user_popup_pm']) ) ? true : false,
 	'S_USER_BROWSER' => $userdata['session_browser'],
 	'S_CONTENT_DIRECTION' => $lang['DIRECTION'],
 	'S_CONTENT_ENCODING' => $lang['ENCODING'],
 	'S_CONTENT_DIR_LEFT' => $lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'],
-	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[floatval($board_config['board_timezone'])]),
+	'S_TIMEZONE' => $s_timezone,
 	'S_LOGIN_ACTION' => 'login.'.$phpEx.$SID,
 
 	'T_STYLESHEET_DATA' => $theme['css_data'],

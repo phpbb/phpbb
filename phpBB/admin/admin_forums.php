@@ -21,7 +21,7 @@
 
 if (!empty($setmodules))
 {
-	if (!$acl->get_acl_admin('forum'))
+	if (!$auth->get_acl_admin('forum'))
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 //
 // Do we have forum admin permissions?
 //
-if (!$acl->get_acl_admin('forum'))
+if (!$auth->get_acl_admin('forum'))
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -535,7 +535,7 @@ switch ($mode)
 </tr>
 </table>
 </form>
-	
+
 <br clear="all" />
 <?php
 
@@ -562,10 +562,10 @@ switch ($mode)
 
 <form action="admin_forums.<?php echo $phpEx . $SID ?>&mode=remove&f=<?php echo $forum_id ?>" method="post">
   <table cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
-	<tr> 
+	<tr>
 	  <th colspan="2" class="thHead"><?php echo $lang['Forum_delete'] ?></th>
 	  </tr>
-	<tr> 
+	<tr>
 	  <td class="row1"><?php echo ($forum_status == ITEM_CATEGORY) ? $lang['Category_name'] : $lang['Forum_name'] ?></td>
 	  <td class="row1"><span class="row1"><?php echo $forum_name ?></span></td>
 	</tr>
@@ -573,11 +573,11 @@ switch ($mode)
 	if ($forum_status != ITEM_CATEGORY)
 	{
 ?>
-	<tr> 
+	<tr>
 	  <td class="row1"><?php echo $lang['Action'] ?></td>
 	  <td class="row1"><input type="radio" name="action_posts" value="delete" checked="checked" /> <?php echo $lang['Delete_all_posts'] ?></td>
 	</tr>
-	<tr> 
+	<tr>
 	  <td class="row1"></td>
 	  <td class="row1"><input type="radio" name="action_posts" value="move" /> <?php echo $lang['Move_posts_to'] ?> <select name="posts_to_id" ?><option value="0"></option><?php echo $move_posts_list ?></select></td>
 	</tr>
@@ -586,18 +586,18 @@ switch ($mode)
 	if ($right_id - $left_id > 1)
 	{
 ?>
-	<tr> 
+	<tr>
 	  <td class="row1"><?php echo $lang['Action'] ?></td>
 	  <td class="row1"><input type="radio" name="action_subforums" value="delete" checked="checked" /> <?php echo $lang['Delete_subforums'] ?></td>
 	</tr>
-	<tr> 
+	<tr>
 	  <td class="row1"></td>
 	  <td class="row1"><input type="radio" name="action_subforums" value="move" /> <?php echo $lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
 	</tr>
 <?php
 	}
 ?>
-	<tr> 
+	<tr>
 	  <td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $lang['Move_and_Delete'] ?>" class="mainoption" /></td>
 	</tr>
   </table>
@@ -705,7 +705,7 @@ while ($row = $db->sql_fetchrow($result))
 			$forum_title = htmlspecialchars($sub_row['forum_name']);
 			$forum_desc = htmlspecialchars($sub_row['forum_desc']);
 			$subforums = ($sub_row['right_id'] - $sub_row['left_id'] - 1) / 2;
-			
+
 			if ($sub_row['forum_status'] != ITEM_CATEGORY)
 			{
 				$colspan = '';

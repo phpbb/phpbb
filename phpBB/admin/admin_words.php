@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
@@ -42,7 +42,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	return;
 }
@@ -54,7 +54,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 }
-else 
+else
 {
 	//
 	// These could be entered via a form button
@@ -89,8 +89,8 @@ if( $mode != '' )
 					message_die(MESSAGE, $lang['No_word_selected']);
 				}
 
-				$sql = "SELECT * 
-					FROM " . WORDS_TABLE . " 
+				$sql = "SELECT *
+					FROM " . WORDS_TABLE . "
 					WHERE word_id = $word_id";
 				$result = $db->sql_query($sql);
 
@@ -158,7 +158,7 @@ if( $mode != '' )
 				message_die(MESSAGE, $lang['Must_specify_word']);
 			}
 
-			$sql = "DELETE FROM " . WORDS_TABLE . " 
+			$sql = "DELETE FROM " . WORDS_TABLE . "
 				WHERE word_id = $word_id";
 			$db->sql_query($sql);
 
@@ -189,8 +189,8 @@ else
 
 <?php
 
-	$sql = "SELECT * 
-		FROM " . WORDS_TABLE . " 
+	$sql = "SELECT *
+		FROM " . WORDS_TABLE . "
 		ORDER BY word";
 	$result = $db->sql_query($sql);
 

@@ -54,7 +54,7 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl($userdata, $forum_id);
+$auth->acl($userdata, $forum_id);
 //
 // End session management
 //
@@ -83,7 +83,7 @@ $session->configure($userdata);
 //
 // Auth check
 //
-if (!$acl->get_acl($forum_id, 'forum', 'read'))
+if (!$auth->get_acl($forum_id, 'forum', 'read'))
 {
 	if ( $userdata['user_id'] )
 	{
@@ -155,7 +155,7 @@ foreach ($forum_branch as $row)
 		}
 		elseif ($row['forum_status'] != ITEM_CATEGORY)
 		{
-			if ($acl->get_acl($row['forum_id'], 'forum', 'list'))
+			if ($auth->get_acl($row['forum_id'], 'forum', 'list'))
 			{
 				$subforums[$parent_id][] = $row;
 			}
@@ -195,7 +195,7 @@ if ( $mark_read == 'topics' )
 //
 // Do the forum Prune
 //
-if ( $acl->get_acl($forum_id, 'mod', 'prune') && $board_config['prune_enable'] )
+if ( $auth->get_acl($forum_id, 'mod', 'prune') && $board_config['prune_enable'] )
 {
 	if ( $forum_data['prune_next'] < time() && $forum_data['prune_enable'] )
 	{

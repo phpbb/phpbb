@@ -40,7 +40,7 @@ CREATE TABLE phpbb_auth_groups (
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
   auth_value char(20) NOT NULL,
-  auth_founder_only tinyint(1) DEFAULT '0' NOT NULL,
+  founder_only tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (auth_option_id),
   KEY auth_value (auth_value)
 );
@@ -157,7 +157,7 @@ CREATE TABLE phpbb_forums (
    KEY left_id (left_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
-
+#   forum_last_topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 
 # --------------------------------------------------------
 #
@@ -310,6 +310,7 @@ CREATE TABLE phpbb_posts (
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid varchar(10) NOT NULL,
+   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    post_checksum varchar(32) NOT NULL,
    post_subject varchar(60),
    post_text text,
@@ -412,6 +413,7 @@ CREATE TABLE phpbb_search_wordmatch (
 CREATE TABLE phpbb_sessions (
    session_id varchar(32) DEFAULT '' NOT NULL,
    session_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   session_last_visit int(11) DEFAULT '0' NOT NULL,
    session_start int(11) DEFAULT '0' NOT NULL,
    session_time int(11) DEFAULT '0' NOT NULL,
    session_ip varchar(40) DEFAULT '0' NOT NULL,

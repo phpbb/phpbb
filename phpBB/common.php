@@ -25,7 +25,7 @@ if ( !defined('IN_PHPBB') )
 }
 
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+set_magic_quotes_runtime(0);
 
 require($phpbb_root_path . 'config.'.$phpEx);
 
@@ -35,9 +35,9 @@ if ( !defined('PHPBB_INSTALLED') )
 	exit;
 }
 
-//
+//set_error_handler('message');
+
 // Define some constants/variables
-//
 define('ANONYMOUS', 0);
 
 // User related
@@ -122,6 +122,7 @@ define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
 define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
 define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 
+// If magic quotes is off, addslashes
 if ( !get_magic_quotes_gpc() )
 {
 	$HTTP_GET_VARS = slash_input_data($HTTP_GET_VARS);
@@ -135,25 +136,23 @@ $theme = array();
 $images = array();
 $lang = array();
 
-//
 // Include files
-//
 require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
 
+// Instantiate some basic classes
 $session = new session();
+$auth = new auth();
 $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-//
-// Obtain users IP, not encoded in 2.2
-//
-if ( $HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR'] != '' || $HTTP_ENV_VARS['HTTP_X_FORWARDED_FOR'] != '' )
+// Obtain users IP
+if ( $_SERVER['HTTP_X_FORWARDED_FOR'] != '' || $_ENV['HTTP_X_FORWARDED_FOR'] != '' )
 {
-	$user_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
-	$x_ip = ( !empty($HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR']) ) ? $HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR'] : $HTTP_ENV_VARS['HTTP_X_FORWARDED_FOR'];
+	$user_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : $REMOTE_ADDR );
+	$x_ip = ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_ENV['HTTP_X_FORWARDED_FOR'];
 
 	if ( preg_match('/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $x_ip, $ip_list) )
 	{
@@ -163,35 +162,29 @@ if ( $HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR'] != '' || $HTTP_ENV_VARS['HTTP_X_F
 }
 else
 {
-	$user_ip = ( !empty($HTTP_SERVER_VARS['REMOTE_ADDR']) ) ? $HTTP_SERVER_VARS['REMOTE_ADDR'] : ( ( !empty($HTTP_ENV_VARS['REMOTE_ADDR']) ) ? $HTTP_ENV_VARS['REMOTE_ADDR'] : $REMOTE_ADDR );
+	$user_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : $REMOTE_ADDR );
 }
 
-//
 // Setup forum wide options, if this fails we output a CRITICAL_ERROR since
 // basic forum information is not available
-//
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
-$result = $db->sql_query($sql);
+$result = $db->sql_query($sql, false);
 
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$board_config[$row['config_name']] = $row['config_value'];
 }
 
-//
-// Show 'Board is disabled' message if needed.
-//
+// Show 'Board is disabled' message
 if ( $board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN') )
 {
 	$message = ( !empty($board_config['board_disable_msg']) ) ? $board_config['board_disable_msg'] : 'Board_disable';
 	message_die(MESSAGE, $message, 'Information');
+	//trigger_error($message);
 }
 
-//
-// addslashes to vars if magic_quotes_gpc is off this is a security precaution
-// to prevent someone trying to break out of a SQL statement.
-//
+// addslashes to vars if magic_quotes_gpc is off
 function slash_input_data(&$data)
 {
 	if ( is_array($data) )

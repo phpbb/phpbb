@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
-*                             admin_db_utilities.php
+*                              admin_database.php
 *                              -------------------
 *     begin                : Thu May 31, 2001
 *     copyright            : (C) 2001 The phpBB Group
@@ -18,17 +18,14 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
-//
-//	Some functions are adapted phpMyAdmin 2.2.0.
-//
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
-	
+
 	$filename = basename(__FILE__);
 	$module['DB']['DB_Backup'] = $filename . "$SID&amp;mode=backup";
 
@@ -51,9 +48,9 @@ require('pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
+// Do we have DB backup/restore permissions?
 //
-//
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -64,46 +61,43 @@ if ( !$acl->get_acl_admin('general') )
 //
 @set_time_limit(1200);
 
+$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : '';
+
 //
 // Begin program proper
 //
-
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+switch( $mode )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	case 'backup':
 
-	switch( $mode )
-	{
-		case 'backup':
-
-			if ( SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql' )
+		if ( SQL_LAYER == 'oracle' || SQL_LAYER == 'odbc' || SQL_LAYER == 'mssql' )
+		{
+			switch ( SQL_LAYER )
 			{
-				switch ( SQL_LAYER )
-				{
-					case 'oracle':
-						$db_type = 'Oracle';
-						break;
-					case 'odbc':
-						$db_type = 'ODBC';
-						break;
-					case 'mssql':
-						$db_type = 'MSSQL';
-						break;
-				}
-
-				message_die(MESSAGE, $lang['Backups_not_supported']);
-				break;
+				case 'oracle':
+					$db_type = 'Oracle';
+					break;
+				case 'odbc':
+					$db_type = 'ODBC';
+					break;
+				case 'mssql':
+					$db_type = 'MSSQL';
+					break;
 			}
 
-			$additional_tables = ( isset($HTTP_POST_VARS['tables']) ) ? $HTTP_POST_VARS['tables'] : ( ( isset($HTTP_GET_VARS['tables']) ) ? $HTTP_GET_VARS['tables'] : '' );
-			$backup_type = ( isset($HTTP_POST_VARS['type']) ) ? $HTTP_POST_VARS['type'] : ( ( isset($HTTP_GET_VARS['type']) ) ? $HTTP_GET_VARS['type'] : '' );
-			$search = ( !empty($HTTP_POST_VARS['search']) ) ? intval($HTTP_POST_VARS['search']) : ( ( !empty($HTTP_GET_VARS['search']) ) ? intval($HTTP_GET_VARS['search']) : 0 );
-			$store_path = ( isset($HTTP_POST_VARS['store']) ) ? $HTTP_POST_VARS['store'] : ( ( isset($HTTP_GET_VARS['store']) ) ? $HTTP_GET_VARS['store'] : '' );
-			$compress = ( !empty($HTTP_POST_VARS['compress']) ) ? $HTTP_POST_VARS['compress'] : ( ( !empty($HTTP_GET_VARS['compress']) ) ? $HTTP_GET_VARS['compress'] : 'none' );
+			message_die(MESSAGE, $lang['Backups_not_supported']);
+			break;
+		}
 
-			if ( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']) )
-			{
-				page_header($lang['DB_Backup']);
+		$additional_tables = ( isset($HTTP_POST_VARS['tables']) ) ? $HTTP_POST_VARS['tables'] : ( ( isset($HTTP_GET_VARS['tables']) ) ? $HTTP_GET_VARS['tables'] : '' );
+		$backup_type = ( isset($HTTP_POST_VARS['type']) ) ? $HTTP_POST_VARS['type'] : ( ( isset($HTTP_GET_VARS['type']) ) ? $HTTP_GET_VARS['type'] : '' );
+		$search = ( !empty($HTTP_POST_VARS['search']) ) ? intval($HTTP_POST_VARS['search']) : ( ( !empty($HTTP_GET_VARS['search']) ) ? intval($HTTP_GET_VARS['search']) : 0 );
+		$store_path = ( isset($HTTP_POST_VARS['store']) ) ? $HTTP_POST_VARS['store'] : ( ( isset($HTTP_GET_VARS['store']) ) ? $HTTP_GET_VARS['store'] : '' );
+		$compress = ( !empty($HTTP_POST_VARS['compress']) ) ? $HTTP_POST_VARS['compress'] : ( ( !empty($HTTP_GET_VARS['compress']) ) ? $HTTP_GET_VARS['compress'] : 'none' );
+
+		if ( !isset($HTTP_POST_VARS['backupstart']) && !isset($HTTP_GET_VARS['backupstart']) )
+		{
+			page_header($lang['DB_Backup']);
 
 ?>
 
@@ -132,35 +126,35 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		<td class="row2"><input type="text" name="store" size="40" /></td>
 	</tr>
 <?php
-	
-				if ( extension_loaded('zlib') || extension_loaded('bz2') )
-				{
+
+			if ( extension_loaded('zlib') || extension_loaded('bz2') )
+			{
 
 ?>
 	<tr>
 		<td class="row1"><?php echo $lang['Compress_file']; ?>: </td>
 		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $lang['None']; ?><?php
-			
-					if ( extension_loaded('zlib') )
-					{
+
+				if ( extension_loaded('zlib') )
+				{
 
 
 ?>&nbsp;&nbsp;<input type="radio" name="compress" value="gzip" />.gz&nbsp;&nbsp;<input type="radio" name="compress" value="zip" />.zip<?php
-	
-					}
 
-					if ( extension_loaded('bz2') )
-					{
+				}
+
+				if ( extension_loaded('bz2') )
+				{
 
 ?>&nbsp;&nbsp;<input type="radio" name="compress" value="bzip" />.bz2<?php
-	
-					}
-					
+
+				}
+
 ?></td>
 	</tr>
 <?php
-	
-				}
+
+			}
 
 ?>
 	<tr>
@@ -170,229 +164,232 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 <?php
 
-				break;
+			break;
+		}
+		else if ( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
+		{
+			$meta = "<meta http-equiv=\"refresh\" content=\"0;url=admin_database.$phpEx?mode=backup&amp;type=$backup_type&amp;tables=" . quotemeta($additional_tables) . "&amp;search=$search&amp;store=" . quotemeta($store_path) . "&amp;compress=$compress&amp;backupstart=1&amp;startdownload=1\">";
 
-			}
-			else if ( !isset($HTTP_POST_VARS['startdownload']) && !isset($HTTP_GET_VARS['startdownload']) )
+			$message = ( empty($store_path) ) ? $lang['Backup_download'] : $lang['Backup_writing'];
+
+			page_header($lang['DB_Backup'], $meta);
+			page_message($lang['DB_Backup'], $message);
+			page_footer();
+		}
+
+		$tables = ( SQL_LAYER != 'postgresql' ) ? mysql_get_tables() : pg_get_tables();
+		@sort($tables);
+
+		if ( !empty($additional_tables) )
+		{
+			$additional_tables = explode(',', $additional_tables);
+
+			for($i = 0; $i < count($additional_tables); $i++)
 			{
-				$meta = "<meta http-equiv=\"refresh\" content=\"0;url=admin_database.$phpEx?mode=backup&amp;type=$backup_type&amp;tables=" . quotemeta($additional_tables) . "&amp;search=$search&amp;store=" . quotemeta($store_path) . "&amp;compress=$compress&amp;backupstart=1&amp;startdownload=1\">";
-
-				$message = ( empty($store_path) ) ? $lang['Backup_download'] : $lang['Backup_writing'];
-
-				page_header($lang['DB_Backup'], $meta);
-				page_message($lang['DB_Backup'], $message);
-				page_footer();
+				$tables[] = trim($additional_tables[$i]);
 			}
+			unset($additional_tables);
+		}
 
-			$tables = ( SQL_LAYER != 'postgresql' ) ? mysql_get_tables() : pg_get_tables();
-			@sort($tables);
+		//
+		// Enable output buffering
+		//
+		@ob_start();
+		@ob_implicit_flush(0);
 
-			if ( !empty($additional_tables) )
+		//
+		// Build the sql script file...
+		//
+		echo "#\n";
+		echo "# phpBB Backup Script\n";
+		echo "# Dump of tables for $dbname\n";
+		echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
+		echo "#\n";
+
+		if ( SQL_LAYER == 'postgresql' )
+		{
+			 echo "\n" . pg_get_sequences("\n", $backup_type);
+		}
+
+		for($i = 0; $i < count($tables); $i++)
+		{
+			$table_name = $tables[$i];
+
+			if ( SQL_LAYER != 'mysql4' )
 			{
-				$additional_tables = explode(',', $additional_tables);
-
-				for($i = 0; $i < count($additional_tables); $i++)
-				{
-					$tables[] = trim($additional_tables[$i]);
-				}
-				unset($additional_tables);
-			}
-
-			//
-			// Enable output buffering
-			//
-			@ob_start();
-			@ob_implicit_flush(0);
-
-			//
-			// Build the sql script file...
-			//
-			echo "#\n";
-			echo "# phpBB Backup Script\n";
-			echo "# Dump of tables for $dbname\n";
-			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
-			echo "#\n";
-
-			if ( SQL_LAYER == 'postgresql' )
-			{
-				 echo "\n" . pg_get_sequences("\n", $backup_type);
-			}
-
-			for($i = 0; $i < count($tables); $i++)
-			{
-				$table_name = $tables[$i];
-
-				if ( SQL_LAYER != 'mysql4' )
-				{
-					$table_def_function = "get_table_def_" . SQL_LAYER;
-					$table_content_function = "get_table_content_" . SQL_LAYER;
-				}
-				else
-				{
-					$table_def_function = "get_table_def_mysql";
-					$table_content_function = "get_table_content_mysql";
-				}
-
-				if ( $backup_type != 'data' )
-				{
-					echo "#\n# TABLE: " . $table_name . "\n#\n";
-					echo $table_def_function($table_name, "\n") . "\n";
-				}
-
-				if ( $backup_type != 'structure' )
-				{
-					//
-					// Skip search table data?
-					//
-					if ( $search || ( !$search && !preg_match('/search_word/', $table_name) ) )
-					{
-						$table_content_function($table_name, "output_table_content");
-					}
-				}
-			}
-			
-			//
-			// Flush the buffer, send the file
-			//
-			switch ( $compress )
-			{
-				case 'gzip':
-					$extension = 'sql.gz';
-					$contents = gzencode(ob_get_contents());
-					ob_end_clean();
-					break;
-
-				case 'zip':
-					$extension = 'zip';
-					$zip = new zipfile;
-					$zip->addFile(ob_get_contents(), "phpbb_db_backup.sql", time());
-					ob_end_clean();
-					$contents = $zip->file();
-					break;
-
-				case 'bzip':
-					$extension = 'bz2';
-					$contents = bzcompress(ob_get_contents());
-					ob_end_clean();
-					break;
-
-				default:
-					$extension = 'sql';
-					$contents = ob_get_contents();
-					ob_end_clean();
-			}
-
-			if ( empty($store_path) )
-			{
-				header("Pragma: no-cache");
-				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.$extension\"");
-				header("Content-disposition: attachment; filename=phpbb_db_backup.$extension");
-
-				echo $contents;
-				unset($contents);
+				$table_def_function = "get_table_def_" . SQL_LAYER;
+				$table_content_function = "get_table_content_" . SQL_LAYER;
 			}
 			else
 			{
-				if ( !($fp = fopen('./../' . $store_path . "/phpbb_db_backup.$extension", 'wb')) )
-				{
-					message_die(ERROR, 'Could not open backup file');
-				}
-
-				if ( !fwrite($fp, $contents) )
-				{
-					message_die(ERROR, 'Could not write backup file content');
-				}
-
-				fclose($fp);
-				unset($contents);
-
-				message_die(MESSAGE, $lang['Backup_success']);
+				$table_def_function = "get_table_def_mysql";
+				$table_content_function = "get_table_content_mysql";
 			}
 
-			exit;
-			break;
+			if ( $backup_type != 'data' )
+			{
+				echo "#\n# TABLE: " . $table_name . "\n#\n";
+				echo $table_def_function($table_name, "\n") . "\n";
+			}
 
-		case 'restore':
-
-			if ( isset($HTTP_POST_VARS['restorestart']) )
+			if ( $backup_type != 'structure' )
 			{
 				//
-				// Handle the file upload ....
-				// If no file was uploaded report an error...
+				// Skip search table data?
 				//
-				if ( !empty($HTTP_POST_VARS['local']) ) 
+				if ( $search || ( !$search && !preg_match('/search_word/', $table_name) ) )
 				{
-					$file_tmpname = './../' . str_replace('\\\\', '/', $HTTP_POST_VARS['local']);
-					$filename = substr($file_tmpname, strrpos($file_tmpname, '/'));
+					$table_content_function($table_name, "output_table_content");
 				}
-				else
-				{
-					$filename = ( !empty($HTTP_POST_FILES['backup_file']['name']) ) ? $HTTP_POST_FILES['backup_file']['name'] : '';
-					$file_tmpname = ( $HTTP_POST_FILES['backup_file']['tmp_name'] != 'none' ) ? $HTTP_POST_FILES['backup_file']['tmp_name'] : '';
-				}
+			}
+		}
 
-				if ( $file_tmpname == '' || $filename == '' || !file_exists($file_tmpname) )
-				{
-					message_die(MESSAGE, $lang['Restore_Error_no_file']);
-				}
+		//
+		// Flush the buffer, send the file
+		//
+		switch ( $compress )
+		{
+			case 'gzip':
+				$extension = 'sql.gz';
+				$contents = gzencode(ob_get_contents());
+				ob_end_clean();
+				break;
 
-				$ext = substr($filename, strrpos($filename, '.') + 1);
+			case 'zip':
+				$extension = 'zip';
+				$zip = new zipfile;
+				$zip->addFile(ob_get_contents(), "phpbb_db_backup.sql", time());
+				ob_end_clean();
+				$contents = $zip->file();
+				break;
 
-				if ( !preg_match('/^(sql|gz|bz2)$/', $ext) )
-				{
-					message_die(MESSAGE, $lang['Restore_Error_filename']);
-				}
+			case 'bzip':
+				$extension = 'bz2';
+				$contents = bzcompress(ob_get_contents());
+				ob_end_clean();
+				break;
 
-				if ( ( !extension_loaded('zlib') && $ext == 'gz' ) || ( !extension_loaded('zip') && $ext == 'zip' ) || ( $ext == 'bz2' && !extension_loaded('bz2') ) )
-				{
-					message_die(MESSAGE, $lang['Compress_unsupported']);
-				}
+			default:
+				$extension = 'sql';
+				$contents = ob_get_contents();
+				ob_end_clean();
+		}
 
-				$sql_query = '';
-				switch ( $ext )
-				{
-					case 'gz':
-						$fp = gzopen($file_tmpname, 'rb');
-						while ( !gzeof($fp) )
-						{
-							$sql_query .= gzgets($fp, 100000);
-						}
-						gzclose($fp);
-						break;
+		add_admin_log('log_db_backup');
 
-					case 'bz2':
-						$sql_query = bzdecompress(fread(fopen($file_tmpname, 'rb'), filesize($file_tmpname)));
-						break;
+		if ( empty($store_path) )
+		{
+			header("Pragma: no-cache");
+			header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.$extension\"");
+			header("Content-disposition: attachment; filename=phpbb_db_backup.$extension");
 
-					default;
-						$sql_query = fread(fopen($file_tmpname, 'r'), filesize($file_tmpname));
-				}
-
-				if ( $sql_query != '' )
-				{
-					// Strip out sql comments...
-					$sql_query = remove_remarks($sql_query);
-					$pieces = split_sql_file($sql_query, ';');
-
-					$sql_count = count($pieces);
-					for($i = 0; $i < $sql_count; $i++)
-					{
-						$sql = trim($pieces[$i]);
-
-						if ( !empty($sql) && $sql[0] != '#' )
-						{
-							$db->sql_query($sql);
-						}
-					}
-				}
-
-				message_die(MESSAGE, $lang['Restore_success']);
+			echo $contents;
+			unset($contents);
+		}
+		else
+		{
+			if ( !($fp = fopen('./../' . $store_path . "/phpbb_db_backup.$extension", 'wb')) )
+			{
+				message_die(ERROR, 'Could not open backup file');
 			}
 
+			if ( !fwrite($fp, $contents) )
+			{
+				message_die(ERROR, 'Could not write backup file content');
+			}
+
+			fclose($fp);
+			unset($contents);
+
+			message_die(MESSAGE, $lang['Backup_success']);
+		}
+
+		exit;
+		break;
+
+	case 'restore':
+
+		if ( isset($HTTP_POST_VARS['restorestart']) )
+		{
 			//
-			// Restore page
+			// Handle the file upload ....
+			// If no file was uploaded report an error...
 			//
-			page_header($lang['DB_Restore']);
+			if ( !empty($HTTP_POST_VARS['local']) )
+			{
+				$file_tmpname = './../' . str_replace('\\\\', '/', $HTTP_POST_VARS['local']);
+				$filename = substr($file_tmpname, strrpos($file_tmpname, '/'));
+			}
+			else
+			{
+				$filename = ( !empty($HTTP_POST_FILES['backup_file']['name']) ) ? $HTTP_POST_FILES['backup_file']['name'] : '';
+				$file_tmpname = ( $HTTP_POST_FILES['backup_file']['tmp_name'] != 'none' ) ? $HTTP_POST_FILES['backup_file']['tmp_name'] : '';
+			}
+
+			if ( $file_tmpname == '' || $filename == '' || !file_exists($file_tmpname) )
+			{
+				message_die(MESSAGE, $lang['Restore_Error_no_file']);
+			}
+
+			$ext = substr($filename, strrpos($filename, '.') + 1);
+
+			if ( !preg_match('/^(sql|gz|bz2)$/', $ext) )
+			{
+				message_die(MESSAGE, $lang['Restore_Error_filename']);
+			}
+
+			if ( ( !extension_loaded('zlib') && $ext == 'gz' ) || ( !extension_loaded('zip') && $ext == 'zip' ) || ( $ext == 'bz2' && !extension_loaded('bz2') ) )
+			{
+				message_die(MESSAGE, $lang['Compress_unsupported']);
+			}
+
+			$sql_query = '';
+			switch ( $ext )
+			{
+				case 'gz':
+					$fp = gzopen($file_tmpname, 'rb');
+					while ( !gzeof($fp) )
+					{
+						$sql_query .= gzgets($fp, 100000);
+					}
+					gzclose($fp);
+					break;
+
+				case 'bz2':
+					$sql_query = bzdecompress(fread(fopen($file_tmpname, 'rb'), filesize($file_tmpname)));
+					break;
+
+				default;
+					$sql_query = fread(fopen($file_tmpname, 'r'), filesize($file_tmpname));
+			}
+
+			if ( $sql_query != '' )
+			{
+				// Strip out sql comments...
+				$sql_query = remove_remarks($sql_query);
+				$pieces = split_sql_file($sql_query, ';');
+
+				$sql_count = count($pieces);
+				for($i = 0; $i < $sql_count; $i++)
+				{
+					$sql = trim($pieces[$i]);
+
+					if ( !empty($sql) && $sql[0] != '#' )
+					{
+						$db->sql_query($sql);
+					}
+				}
+			}
+
+			add_admin_log('log_db_restore');
+
+			message_die(MESSAGE, $lang['Restore_success']);
+		}
+
+		//
+		// Restore page
+		//
+		page_header($lang['DB_Restore']);
 
 ?>
 
@@ -404,21 +401,21 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		<th colspan="2"><?php echo $lang['Select_file']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Upload_file']; ?>: <br /><span class="gensmall"><?php 
-	
-				echo $lang['Supported_extensions']; 
+		<td class="row1"><?php echo $lang['Upload_file']; ?>: <br /><span class="gensmall"><?php
 
-				$types = ': <u>sql</u>';
-				if ( extension_loaded('zlib') )
-				{
-					$types .= ', <u>sql.gz</u>';
-				}
-				if ( extension_loaded('bz2') )
-				{
-					$types .= ', <u>bz2</u>';
-				}
+		echo $lang['Supported_extensions'];
 
-				echo $types;
+		$types = ': <u>sql</u>';
+		if ( extension_loaded('zlib') )
+		{
+			$types .= ', <u>sql.gz</u>';
+		}
+		if ( extension_loaded('bz2') )
+		{
+			$types .= ', <u>bz2</u>';
+		}
+
+		echo $types;
 
 ?></span></td>
 		<td class="row2"><input type="file" name="backup_file" /></td>
@@ -434,7 +431,11 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 <?php
 
-	}
+		break;
+
+	default:
+		exit;
+
 }
 
 page_footer();
@@ -1030,7 +1031,7 @@ function output_table_content($content)
 // Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, Marc Delisle
 // http://www.phpmyadmin.net/
 //
-// Based on work by Eric Mueller and Denis125 
+// Based on work by Eric Mueller and Denis125
 // Official ZIP file format: http://www.pkware.com/appnote.txt
 //
 class zipfile
@@ -1138,7 +1139,7 @@ class zipfile
 			pack('V', strlen($ctrldir)) .           // size of central dir
 			pack('V', strlen($data)) .              // offset to start of central dir
 			"\x00\x00";                             // .zip file comment length
-	} 
+	}
 
 }
 

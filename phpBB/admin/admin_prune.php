@@ -21,11 +21,11 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('forum') )
+	if ( !$auth->get_acl_admin('forum') )
 	{
 		return;
 	}
-	
+
 	$filename = basename(__FILE__);
 	$module['Forums']['Prune']   = $filename . $SID . '&amp;mode=forums';
 
@@ -39,12 +39,12 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_admin.'.$phpEx); 
+require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('forum') )
+if ( !$auth->get_acl_admin('forum') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -97,10 +97,10 @@ if ( isset($HTTP_POST_VARS['doprune']) )
 	{
 		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
 		sync('forum', $forum_rows[$i]['forum_id']);
-	
+
 		$template->assign_block_vars('prune_results', array(
-			'ROW_COLOR' => '#' . $row_color, 
-			'ROW_CLASS' => $row_class, 
+			'ROW_COLOR' => '#' . $row_color,
+			'ROW_CLASS' => $row_class,
 			'FORUM_NAME' => $forum_rows[$i]['forum_name'],
 			'FORUM_TOPICS' => $p_result['topics'],
 			'FORUM_POSTS' => $p_result['posts'])
@@ -161,7 +161,7 @@ else
 	{
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
-		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
+		$prune_data = $lang['Prune_topics_not_posted'] . " ";
 		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $lang['Days'];
 
 		$s_hidden_fields = '<input type="hidden" name="f" value="' . $forum_id . '">';
@@ -175,13 +175,13 @@ else
 <h2><?php echo $lang['Forum'] . ': ' . $forum_name; ?></h2>
 
 <form method="post"	action="<?php echo "admin_prune.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr> 
+	<tr>
 		<th class="th"><?php echo $lang['Forum_Prune']; ?></th>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $prune_data; ?></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="doprune" value="<?php echo $lang['Do_Prune']; ?>" class="mainoption"></td>
 	</tr>
 </table></form>

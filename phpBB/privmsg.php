@@ -82,7 +82,7 @@ if ( $cancel )
 // Start session management
 //
 $userdata = $session->start();
-$acl = new acl($userdata);
+$auth->acl($userdata);
 //
 // End session management
 //

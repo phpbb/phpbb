@@ -21,14 +21,14 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
 
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename . $SID;
-	
+
 	return;
 }
 
@@ -43,14 +43,14 @@ require('pagestart.' . $phpEx);
 //
 // Do we have general admin permissions?
 //
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	return;
 }
 
 //
 // Set some vars
-// 
+//
 $message = '';
 $subject = '';
 
@@ -80,7 +80,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 	$subject = stripslashes($HTTP_POST_VARS['subject']);
 	$message = stripslashes($HTTP_POST_VARS['message']);
-	
+
 	//
 	// Error checking needs to go here ... if no subject and/or
 	// no message then skip over the send and return to the form
@@ -102,7 +102,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$board_config['smtp_host'] = get_cfg_var('SMTP');
 		}
 		$emailer = new emailer($board_config['smtp_delivery']);
-	
+
 		$email_headers = 'From: ' . $board_config['board_email'] . "\n";
 
 		$bcc_list = '';
@@ -111,7 +111,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$bcc_list .= ( ( $bcc_list != '' ) ? ', ' : '' ) . $email_list[$i]['user_email'];
 		}
 		$email_headers .= "Bcc: $bcc_list\n";
-		
+
 		$email_headers .= 'Return-Path: ' . $userdata['board_email'] . "\n";
 		$email_headers .= 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
 		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
@@ -124,8 +124,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$emailer->extra_headers($email_headers);
 
 		$emailer->assign_vars(array(
-			'SITENAME' => $board_config['sitename'], 
-			'BOARD_EMAIL' => $board_config['board_email'], 
+			'SITENAME' => $board_config['sitename'],
+			'BOARD_EMAIL' => $board_config['board_email'],
 			'MESSAGE' => $message)
 		);
 
@@ -134,13 +134,13 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 		message_die(MESSAGE, $lang['Email_sent']);
 	}
-}	
+}
 
 //
 // Initial selection
 //
 
-$sql = "SELECT group_id, group_name 
+$sql = "SELECT group_id, group_name
 	FROM ".GROUPS_TABLE;
 $result = $db->sql_query($sql);
 
@@ -164,22 +164,22 @@ page_header($lang['Mass_Email']);
 <p><?php echo $lang['Mass_email_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_mass_email.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
-	<tr> 
+	<tr>
 		<th colspan="2"><?php echo $lang['Compose']; ?></th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" align="right"><b><?php echo $lang['Recipients']; ?></b></td>
 		<td class="row2" align="left"><?php echo $select_list; ?></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" align="right"><b><?php echo $lang['Subject']; ?></b></td>
 		<td class="row2"><span class="gen"><input type="text" name="subject" size="45" maxlength="100" tabindex="2" class="post" value="<?php echo $subject; ?>" /></span></td>
 	</tr>
-	<tr> 
-		<td class="row1" align="right" valign="top"><span class="gen"><b><?php echo $lang['Message']; ?></b></span> 
-		<td class="row2"><textarea class="post" name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3"><?php echo $message; ?></textarea></td> 
+	<tr>
+		<td class="row1" align="right" valign="top"><span class="gen"><b><?php echo $lang['Message']; ?></b></span>
+		<td class="row2"><textarea class="post" name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3"><?php echo $message; ?></textarea></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $lang['Email']; ?>" name="submit" class="mainoption" /></td>
 	</tr>
 </table></form>

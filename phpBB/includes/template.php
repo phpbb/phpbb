@@ -138,11 +138,7 @@ class Template {
 		}
 
 		$str = '';
-		while ( !feof($fp) )
-		{
-			$str .= fread($fp, 4096);
-		}
-
+		$str = fread($fp, filesize($this->files[$handle]));
 		@fclose($fp);
 
 		$this->uncompiled_code[$handle] = trim($str);
@@ -177,6 +173,7 @@ class Template {
 			echo $db->sql_report;
 			return TRUE;
 		}
+
 		$_str = '';
 
 		if (!$this->compile_load($_str, $handle, true))
@@ -186,9 +183,7 @@ class Template {
 				message_die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
 
-			//
 			// Actually compile the code now.
-			//
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 			$this->compile_write($handle, $this->compiled_code[$handle]);
 
@@ -561,9 +556,7 @@ class Template {
         return "include('" . $this->root . '/' . $tag_args . "');\n";
 	}
 
-	//
 	// This is from Smarty
-	//
 	function _parse_is_expr($is_arg, $tokens)
 	{
 		$expr_end =	0;
@@ -697,9 +690,7 @@ class Template {
 
 		$filename = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
 
-		//
 		// Recompile page if the original template is newer, otherwise load the compiled version
-		//
 		if ( file_exists($filename) && @filemtime($filename) >= @filemtime($this->files[$handle]) )
 		{
 			$_str = '';

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
@@ -44,7 +44,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have styles admin permissions?
 //
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -73,7 +73,7 @@ $l_title_explain = ( $mode == 'admin' ) ? $lang['Admin_logs_explain'] : $lang['M
 //
 // Delete entries if requested and able
 //
-if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) ) && $acl->get_acl_admin('clearlogs'))
+if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) ) && $auth->get_acl_admin('clearlogs'))
 {
 	$where_sql = '';
 	if ( isset($HTTP_POST_VARS['delmarked']) && isset($HTTP_POST_VARS['mark']) )
@@ -85,7 +85,7 @@ if ( ( isset($HTTP_POST_VARS['delmarked']) || isset($HTTP_POST_VARS['delall']) )
 		$where_sql = "WHERE log_id IN ($where_sql)";
 	}
 
-	$sql = "DELETE FROM $table_sql 
+	$sql = "DELETE FROM $table_sql
 		$where_sql";
 	$db->sql_query($sql);
 
@@ -148,7 +148,7 @@ $forum_options = '';
 if ( $mode == 'mod' )
 {
 	$sql = "SELECT forum_id, forum_name
-		FROM " . FORUMS_TABLE . " 
+		FROM " . FORUMS_TABLE . "
 		ORDER BY cat_id, forum_order";
 	$result = $db->sql_query($sql);
 
@@ -203,7 +203,7 @@ if ( $mode == 'mod' )
 	<tr>
 		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" name="sort" /></span></td>
 	</tr>
-	<tr> 
+	<tr>
 		<th width="15%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
 		<th width="15%" nowrap="nowrap"><?php echo $lang['IP']; ?></th>
 		<th width="20%" nowrap="nowrap"><?php echo $lang['Time']; ?></th>
@@ -224,7 +224,7 @@ if ( $log_count )
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
 		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
-	
+
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $log_data[$i]['username']; ?></td>
@@ -237,7 +237,7 @@ if ( $log_count )
 
 	}
 
-	if ( $acl->get_acl_admin('clearlogs') )
+	if ( $auth->get_acl_admin('clearlogs') )
 	{
 
 ?>
@@ -262,14 +262,14 @@ else
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $board_config['topics_per_page'], $start); ?></span></td>
-		<td align="right" valign="top" nowrap="nowrap"><?php 
+		<td align="right" valign="top" nowrap="nowrap"><?php
 
-	if ( $acl->get_acl_admin('clearlogs') )
+	if ( $auth->get_acl_admin('clearlogs') )
 	{
 
-		
+
 ?><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b>&nbsp;<br /><br /><?php
 
 	}

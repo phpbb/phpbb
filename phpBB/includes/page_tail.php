@@ -40,12 +40,12 @@ if (defined('DEBUG'))
 		exit;
 	}
 
-	$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $board_config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . ( ( $session->load ) ? $session->load : 'N/A') . ' | <a href="' . $_SERVER['REQUEST_URI'] . '&explain=1">Explain</a> ]', $totaltime);
+	$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $board_config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . ( ( $session->load ) ? $session->load : 'N/A') . ' | <a href="' . $_SERVER['REQUEST_URI'] . '&amp;explain=1">Explain</a> ]', $totaltime);
 }
 
 $template->assign_vars(array(
 	'PHPBB_VERSION' => $board_config['version'],
-	'ADMIN_LINK' => ( $acl->get_acl_admin() ) ? '<a href="' . "admin/index.$phpEx$SID" . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '',
+	'ADMIN_LINK' => ( $auth->get_acl_admin() ) ? '<a href="' . "admin/index.$phpEx$SID" . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '',
 	'DEBUG_OUTPUT' => ( defined('DEBUG') ) ? $debug_output : '')
 );
 

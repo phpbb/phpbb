@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('user') )
+	if ( !$auth->get_acl_admin('user') )
 	{
 		return;
 	}
@@ -46,7 +46,7 @@ require($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('user') )
+if ( !$auth->get_acl_admin('user') )
 {
 	return;
 }
@@ -127,7 +127,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		$user_avatar_filetype = ( !empty($HTTP_POST_FILES['avatar']['type']) ) ? $HTTP_POST_FILES['avatar']['type'] : '';
 
 		$user_avatar = ( empty($user_avatar_loc) ) ? $this_userdata['user_avatar'] : '';
-		$user_avatar_type = ( empty($user_avatar_loc) ) ? $this_userdata['user_avatar_type'] : '';		
+		$user_avatar_type = ( empty($user_avatar_loc) ) ? $this_userdata['user_avatar_type'] : '';
 
 		$user_status = ( !empty($HTTP_POST_VARS['user_status']) ) ? intval( $HTTP_POST_VARS['user_status'] ) : 0;
 		$user_allowpm = ( !empty($HTTP_POST_VARS['user_allowpm']) ) ? intval( $HTTP_POST_VARS['user_allowpm'] ) : 0;
@@ -155,7 +155,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			$user_lang = stripslashes($user_lang);
 			$user_dateformat = stripslashes($user_dateformat);
 
-			if ( !isset($HTTP_POST_VARS['cancelavatar'])) 
+			if ( !isset($HTTP_POST_VARS['cancelavatar']))
 			{
 				$user_avatar = $user_avatar_local;
 				$user_avatar_type = USER_AVATAR_GALLERY;
@@ -215,7 +215,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		if( $user_status == 0 )
 		{
 			// User is (made) inactive. Delete all their sessions.
-			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+			$sql = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_user_id = $user_id";
 			$db->sql_query($sql);
 		}
@@ -237,7 +237,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
 			if ( strlen($sig_length_check) > $board_config['max_sig_chars'] )
-			{ 
+			{
 				$error = TRUE;
 				$error_msg .=  ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Signature_too_long'];
 			}
@@ -388,7 +388,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 
 						if( preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) )
 						{
-							$file_size = $file_data1[1]; 
+							$file_size = $file_data1[1];
 							$file_type = $file_data2[1];
 
 							switch( $file_type )
@@ -512,7 +512,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		{
 			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_local) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 		}
-	
+
 		//
 		// Update entry in DB
 		//
@@ -520,10 +520,10 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		{
 			if( $HTTP_POST_VARS['deleteuser'] )
 			{
-				$sql = "SELECT g.group_id 
-					FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
-					WHERE ug.user_id = $user_id 
-						AND g.group_id = ug.group_id 
+				$sql = "SELECT g.group_id
+					FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g
+					WHERE ug.user_id = $user_id
+						AND g.group_id = ug.group_id
 						AND g.group_single_user = 1";
 				$result = $db->sql_query($sql);
 
@@ -533,12 +533,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 				$db->sql_transaction();
 
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET poster_id = " . ANONYMOUS . ", post_username = '$username' 
+					SET poster_id = " . ANONYMOUS . ", post_username = '$username'
 					WHERE poster_id = $user_id";
 				$db->sql_query($sql);
 
 				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_poster = " . ANONYMOUS . " 
+					SET topic_poster = " . ANONYMOUS . "
 					WHERE topic_poster = $user_id";
 				$db->sql_query($sql);
 
@@ -677,11 +677,11 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		$user_lang = $this_userdata['user_lang'];
 		$user_timezone = $this_userdata['user_timezone'];
 		$user_dateformat = $this_userdata['user_dateformat'];
-		
+
 		$user_status = $this_userdata['user_active'];
 		$user_allowavatar = $this_userdata['user_allowavatar'];
 		$user_allowpm = $this_userdata['user_allow_pm'];
-		
+
 		$COPPA = false;
 
 		$html_status =  ($this_userdata['user_allowhtml'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
@@ -727,7 +727,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 					}
 				}
 			}
-	
+
 			@closedir($dir);
 
 			if( isset($HTTP_POST_VARS['avatarcategory']) )
@@ -794,7 +794,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			$s_hidden_fields .= '<input type="hidden" name="allowbbcode" value="' . $allowbbcode . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="allowsmilies" value="' . $allowsmilies . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="hideonline" value="' . !$allowviewonline . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
+			$s_hidden_fields .= '<input type="hidden" name="style" value="' . $user_style . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . str_replace("\"", "&quot;", $user_dateformat) . '" />';
@@ -807,15 +807,15 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			$template->assign_vars(array(
 				"L_USER_TITLE" => $lang['User_admin'],
 				"L_USER_EXPLAIN" => $lang['User_admin_explain'],
-				"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
-				"L_SELECT_AVATAR" => $lang['Select_avatar'], 
-				"L_RETURN_PROFILE" => $lang['Return_profile'], 
-				"L_CATEGORY" => $lang['Select_category'], 
+				"L_AVATAR_GALLERY" => $lang['Avatar_gallery'],
+				"L_SELECT_AVATAR" => $lang['Select_avatar'],
+				"L_RETURN_PROFILE" => $lang['Return_profile'],
+				"L_CATEGORY" => $lang['Select_category'],
 				"L_GO" => $lang['Go'],
 
-				"S_OPTIONS_CATEGORIES" => $s_categories, 
-				"S_COLSPAN" => $s_colspan, 
-				"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx?mode=$mode"), 
+				"S_OPTIONS_CATEGORIES" => $s_categories,
+				"S_COLSPAN" => $s_colspan,
+				"S_PROFILE_ACTION" => append_sid("admin_users.$phpEx?mode=$mode"),
 				"S_HIDDEN_FIELDS" => $s_hidden_fields)
 			);
 		}
@@ -860,17 +860,17 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		{
 			$rank = $row['rank_title'];
 			$rank_id = $row['rank_id'];
-			
+
 			$selected = ( $this_userdata['user_rank'] == $rank_id ) ? ' selected="selected"' : '';
 			$rank_select_box .= '<option value="' . $rank_id . '"' . $selected . '>' . $rank . '</option>';
 		}
 
 		$signature = preg_replace('/\:[0-9a-z\:]*?\]/si', ']', $signature);
-		
+
 		$template->set_filenames(array(
 			"body" => "admin/user_edit_body.tpl")
 		);
-		
+
 		//
 		// Let's do an overall check for settings/versions which would prevent
 		// us from doing file uploads....
@@ -918,12 +918,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			'ALLOW_AVATAR_YES' => ($user_allowavatar) ? 'checked="checked"' : '',
 			'ALLOW_AVATAR_NO' => (!$user_allowavatar) ? 'checked="checked"' : '',
 			'USER_ACTIVE_YES' => ($user_status) ? 'checked="checked"' : '',
-			'USER_ACTIVE_NO' => (!$user_status) ? 'checked="checked"' : '', 
+			'USER_ACTIVE_NO' => (!$user_status) ? 'checked="checked"' : '',
 			'RANK_SELECT_BOX' => $rank_select_box,
 
 			'L_USER_TITLE' => $lang['User_admin'],
 			'L_USER_EXPLAIN' => $lang['User_admin_explain'],
-			'L_NEW_PASSWORD' => $lang['New_password'], 
+			'L_NEW_PASSWORD' => $lang['New_password'],
 			'L_PASSWORD_IF_CHANGED' => $lang['password_if_changed'],
 			'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
 			'L_PASSWORD_CONFIRM_IF_CHANGED' => $lang['password_confirm_if_changed'],
@@ -949,13 +949,13 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			'L_ALWAYS_ALLOW_HTML' => $lang['Always_html'],
 			'L_HIDE_USER' => $lang['Hide_user'],
 			'L_ALWAYS_ADD_SIGNATURE' => $lang['Always_add_sig'],
-			
+
 			'L_SPECIAL' => $lang['User_special'],
 			'L_SPECIAL_EXPLAIN' => $lang['User_specail_explain'],
 			'L_USER_ACTIVE' => $lang['User_status'],
 			'L_ALLOW_PM' => $lang['User_allowpm'],
 			'L_ALLOW_AVATAR' => $lang['User_allowavatar'],
-			
+
 			'L_AVATAR_PANEL' => $lang['Avatar_panel'],
 			'L_AVATAR_EXPLAIN' => $lang['Admin_avatar_explain'],
 			'L_DELETE_AVATAR' => $lang['Delete_Image'],
@@ -981,7 +981,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			'S_FORM_ENCTYPE' => $form_enctype,
 
 			'HTML_STATUS' => $html_status,
-			'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'), 
+			'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
 			'SMILIES_STATUS' => $smilies_status,
 
 			'L_DELETE_USER' => $lang['User_delete'],

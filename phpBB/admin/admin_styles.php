@@ -2,7 +2,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('styles') )
+	if ( !$auth->get_acl_admin('styles') )
 	{
 		return;
 	}
@@ -27,7 +27,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have styles admin permissions?
 //
-if ( !$acl->get_acl_admin('styles') )
+if ( !$auth->get_acl_admin('styles') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -57,8 +57,8 @@ switch ( $mode )
 
 		if ( isset($HTTP_POST_VARS['img_root']) )
 		{
-			$sql = "SELECT * 
-				FROM " . STYLES_IMAGE_TABLE . " 
+			$sql = "SELECT *
+				FROM " . STYLES_IMAGE_TABLE . "
 				WHERE imageset_path LIKE '" . $HTTP_POST_VARS['imgroot'] . "'";
 			$result = $db->sql_query($sql);
 
@@ -74,7 +74,7 @@ switch ( $mode )
 		$imageset = array('imageset_path', 'post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_profile', 'icon_pm', 'icon_delete', 'icon_ip', 'icon_quote', 'icon_search', 'icon_edit', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm', 'goto_post', 'goto_post_new', 'goto_post_latest', 'goto_post_newest', 'forum', 'forum_new', 'forum_locked', 'folder', 'folder_new', 'folder_hot', 'folder_hot_new', 'folder_locked', 'folder_locked_new', 'folder_sticky', 'folder_sticky_new', 'folder_announce', 'folder_announce_new', 'topic_watch', 'topic_unwatch', 'poll_left', 'poll_center', 'poll_right', 'rating');
 
 		$sql = "SELECT imageset_name, imageset_path
-			FROM " . STYLES_IMAGE_TABLE . " 
+			FROM " . STYLES_IMAGE_TABLE . "
 			ORDER BY imageset_name";
 		$result = $db->sql_query($sql);
 
@@ -117,7 +117,7 @@ switch ( $mode )
 		echo '<tr>';
 		echo '<th height="25">Image</th><th>Source</th><th>Width</th><th>Height</th><th>Border</th><th>&nbsp;</th>';
 		echo '</tr>';
-		
+
 		for($i = 0; $i < count($imageset); $i++)
 		{
 			$class = ( !($i%2) ) ? 'row1' : 'row2';
@@ -246,8 +246,8 @@ switch ( $mode )
 
 		if ( isset($HTTP_POST_VARS['update']) )
 		{
-			$sql = "SELECT theme_id, theme_name 
-				FROM " . STYLES_CSS_TABLE . " 
+			$sql = "SELECT theme_id, theme_name
+				FROM " . STYLES_CSS_TABLE . "
 				WHERE theme_id = $theme_id";
 			$result = $db->sql_query($sql);
 
@@ -258,8 +258,8 @@ switch ( $mode )
 				$css_data = ( !empty($HTTP_POST_VARS['css_data']) ) ? htmlentities($HTTP_POST_VARS['css_data']) : '';
 				$css_external = ( !empty($HTTP_POST_VARS['css_data']) ) ? $HTTP_POST_VARS['css_data'] : '';
 
-				$sql = "UPDATE " > STYLES_CSS_TABLE . " 
-					SET css_data = '$css_data', css_external = '$css_external' 
+				$sql = "UPDATE " > STYLES_CSS_TABLE . "
+					SET css_data = '$css_data', css_external = '$css_external'
 					WHERE theme_id = $theme_id";
 				$db->sql_query($sql);
 
@@ -271,7 +271,7 @@ switch ( $mode )
 
 		page_header($lang['Edit_theme']);
 
-		$sql = "SELECT theme_id, theme_name 
+		$sql = "SELECT theme_id, theme_name
 			FROM " . STYLES_CSS_TABLE;
 		$result = $db->sql_query($sql);
 
@@ -290,7 +290,7 @@ switch ( $mode )
 		$css_external = '';
 		if ( $theme_id )
 		{
-			$sql = "SELECT css_data, css_external  
+			$sql = "SELECT css_data, css_external
 				FROM " . STYLES_CSS_TABLE . "
 				WHERE theme_id = $theme_id";
 			$result = $db->sql_query($sql);
@@ -343,7 +343,7 @@ function get_templates($tplroot = '')
 	global $db;
 
 	$sql = "SELECT template_name, template_path
-		FROM " . STYLES_TPL_TABLE . " 
+		FROM " . STYLES_TPL_TABLE . "
 		ORDER BY template_name";
 	$result = $db->sql_query($sql);
 
@@ -353,7 +353,7 @@ function get_templates($tplroot = '')
 		$selected = ( $tplroot == $row['template_path'] ) ? ' selected="selected"' : '';
 		$tplroot_options .= '<option value="' . $row['template_path'] . '"' . $selected . '>' . $row['template_path'] . '</option>';
 	}
-	
+
 	return $tplroot_options;
 }
 

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have general permissions?
 //
-if (!$acl->get_acl_admin('general'))
+if (!$auth->get_acl_admin('general'))
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -79,7 +79,7 @@ if ($mode == 'edit' || !empty($HTTP_POST_VARS['add']) || !empty($HTTP_POST_VARS[
 				$smilies_images[] = $file;
 			}
 			elseif (preg_match('/\.pak$/i', $file))
-			{	
+			{
 				$smilies_paks[] = $file;
 			}
 		}
@@ -175,7 +175,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 			}
 		}
 
-		message_die(MESSAGE, $lang['Smilies_import_success'] . $click_return);	
+		message_die(MESSAGE, $lang['Smilies_import_success'] . $click_return);
 	}
 	else
 	{
@@ -200,7 +200,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 
 <p><?php echo $lang['Import_smilies_explain'] ?></p>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="forumline" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th class="thHead" colspan="2"><?php echo $lang['Smilies_import'] ?></th>
 	</tr>
@@ -220,7 +220,7 @@ if (isset($HTTP_POST_VARS['import_pak']))
 		</td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center"><input class="mainoption" name="import_pak" type="submit" value="<?php echo $lang['Import_smilies'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" name="import_pak" type="submit" value="<?php echo $lang['Import_smilies'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -288,7 +288,7 @@ function update_smile_dimensions()
 //-->
 </script>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create"><table class="forumline" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th class="thHead" colspan="2"><?php echo $lang['smile_config'] ?></th>
 	</tr>
@@ -313,7 +313,7 @@ function update_smile_dimensions()
 		<td class="row2"><input type="text" name="smile_emotion" /></td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center"><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -397,9 +397,9 @@ function update_smile_dimensions()
 //-->
 </script>
 
-<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=modify"><table class="forumline" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=modify"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="thHead" colspan="2"><?php echo $lang['Smile_config'] ?></th>
+		<th class="th" colspan="2"><?php echo $lang['Smile_config'] ?></th>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $lang['Smile_code'] ?></td>
@@ -430,7 +430,7 @@ function update_smile_dimensions()
 		<td class="row2"><select name="smile_order"><?php echo $order_list ?></select></td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center"><input type="hidden" name="smile_id" value="<?php echo $smile_data['smilies_id'] ?>" /><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="smile_id" value="<?php echo $smile_data['smilies_id'] ?>" /><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -458,7 +458,7 @@ function update_smile_dimensions()
 			'emoticon'			=>	stripslashes($HTTP_POST_VARS['smile_emotion']),
 			'smile_on_posting'	=>	(!empty($HTTP_POST_VARS['smile_on_posting'])) ? 1 : 0
 		);
-		
+
 		$smile_id = $HTTP_POST_VARS['smile_id'];
 		$smile_order = $HTTP_POST_VARS['smile_order'];
 

@@ -88,7 +88,7 @@ class emailer
 			$template_lang = $board_config['default_lang'];
 		}
 
-		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
+		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.txt';
 		if ( !file_exists($this->tpl_file) )
 		{
 			message_die(ERROR, 'Could not find email template file ' . $template_file);
@@ -177,7 +177,7 @@ class emailer
 		// Add date and encoding type
 		//
 		$universal_extra = "MIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\n";
-		$this->extra_headers = $universal_extra . $this->extra_headers; 
+		$this->extra_headers = $universal_extra . $this->extra_headers;
 
 		$result = ( $this->use_smtp ) ? smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers) : @mail($this->address, $this->subject, $this->msg, $this->extra_headers);
 
@@ -295,24 +295,24 @@ class emailer
 
 //
 // This function has been modified as provided
-// by SirSir to allow multiline responses when 
+// by SirSir to allow multiline responses when
 // using SMTP Extensions
 //
-function server_parse($socket, $response) 
-{ 
-   while ( substr($server_response,3,1) != ' ' ) 
-   { 
-      if( !( $server_response = fgets($socket, 256) ) ) 
-      { 
-         message_die(ERROR, 'Could not get mail server response codes'); 
-      } 
-   } 
+function server_parse($socket, $response)
+{
+   while ( substr($server_response,3,1) != ' ' )
+   {
+      if( !( $server_response = fgets($socket, 256) ) )
+      {
+         message_die(ERROR, 'Could not get mail server response codes');
+      }
+   }
 
-   if( !( substr($server_response, 0, 3) == $response ) ) 
-   { 
-      message_die(ERROR, "Ran into problems sending Mail. Response: $server_response"); 
-   } 
-} 
+   if( !( substr($server_response, 0, 3) == $response ) )
+   {
+      message_die(ERROR, "Ran into problems sending Mail. Response: $server_response");
+   }
+}
 
 /****************************************************************************
 *	Function: 		smtpmail
@@ -403,25 +403,25 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	server_parse($socket, "220");
 
 	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
-	{ 
-		// Send the RFC2554 specified EHLO. 
+	{
+		// Send the RFC2554 specified EHLO.
 		// This improved as provided by SirSir to accomodate
 		// both SMTP AND ESMTP capable servers
-		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n"); 
-		server_parse($socket, "250"); 
+		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n");
+		server_parse($socket, "250");
 
-		fputs($socket, "AUTH LOGIN\r\n"); 
-		server_parse($socket, "334"); 
-		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n"); 
-		server_parse($socket, "334"); 
-		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n"); 
-		server_parse($socket, "235"); 
-	} 
-	else 
-	{ 
-		// Send the RFC821 specified HELO. 
-		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n"); 
-		server_parse($socket, "250"); 
+		fputs($socket, "AUTH LOGIN\r\n");
+		server_parse($socket, "334");
+		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
+		server_parse($socket, "334");
+		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
+		server_parse($socket, "235");
+	}
+	else
+	{
+		// Send the RFC821 specified HELO.
+		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
+		server_parse($socket, "250");
 	}
 
 	// From this point onward most server response codes should be 250

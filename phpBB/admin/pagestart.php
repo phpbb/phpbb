@@ -31,7 +31,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 // Start session management
 //
 $userdata = $session->start($update);
-$acl = new acl($userdata);
+$auth->acl($userdata);
 //
 // End session management
 //

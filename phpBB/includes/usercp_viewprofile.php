@@ -113,7 +113,7 @@ else
 	}
 }
 
-if ( $profiledata['user_viewemail'] || $acl->get_acl_admin() )
+if ( $profiledata['user_viewemail'] || $auth->get_acl_admin() )
 {
 	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
@@ -177,9 +177,9 @@ $template->assign_vars(array(
 	'RANK_IMAGE' => $rank_image,
 	'POSTS_PER_DAY' => $posts_per_day,
 	'POSTS' => $profiledata['user_posts'],
-	'PERCENTAGE' => $percentage . '%', 
-	'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $posts_per_day), 
-	'POST_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentage), 
+	'PERCENTAGE' => $percentage . '%',
+	'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $posts_per_day),
+	'POST_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentage),
 
 	'SEARCH_IMG' => $search_img,
 	'SEARCH' => $search,
@@ -190,8 +190,8 @@ $template->assign_vars(array(
 	'WWW_IMG' => $www_img,
 	'WWW' => $www,
 	'ICQ_STATUS_IMG' => $icq_status_img,
-	'ICQ_IMG' => $icq_img, 
-	'ICQ' => $icq, 
+	'ICQ_IMG' => $icq_img,
+	'ICQ' => $icq,
 	'AIM_IMG' => $aim_img,
 	'AIM' => $aim,
 	'MSN_IMG' => $msn_img,
@@ -204,13 +204,13 @@ $template->assign_vars(array(
 	'INTERESTS' => ( $profiledata['user_interests'] ) ? $profiledata['user_interests'] : '&nbsp;',
 	'AVATAR_IMG' => $avatar_img,
 
-	'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profiledata['username']), 
-	'L_ABOUT_USER' => sprintf($lang['About_user'], $profiledata['username']), 
-	'L_AVATAR' => $lang['Avatar'], 
-	'L_POSTER_RANK' => $lang['Poster_rank'], 
-	'L_JOINED' => $lang['Joined'], 
-	'L_TOTAL_POSTS' => $lang['Total_posts'], 
-	'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profiledata['username']), 
+	'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profiledata['username']),
+	'L_ABOUT_USER' => sprintf($lang['About_user'], $profiledata['username']),
+	'L_AVATAR' => $lang['Avatar'],
+	'L_POSTER_RANK' => $lang['Poster_rank'],
+	'L_JOINED' => $lang['Joined'],
+	'L_TOTAL_POSTS' => $lang['Total_posts'],
+	'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profiledata['username']),
 	'L_CONTACT' => $lang['Contact'],
 	'L_EMAIL_ADDRESS' => $lang['Email_address'],
 	'L_EMAIL' => $lang['Email'],

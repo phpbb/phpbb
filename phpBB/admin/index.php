@@ -37,7 +37,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have any admin permissions at all?
 //
-if ( !$acl->get_acl_admin() )
+if ( !$auth->get_acl_admin() )
 {
 	message_die(MESSAGE, 'No_admin', '', true);
 }
@@ -112,20 +112,20 @@ else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 			$cat = ( !empty($lang[$cat . '_cat']) ) ? $lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
 
 ?>
-			<tr> 
+			<tr>
 				<th class="menu" height="25">&#0187; <?php echo $cat; ?></th>
 			</tr>
 <?php
 
 			@ksort($action_ary);
 
-			foreach ( $action_ary as $action => $file ) 
+			foreach ( $action_ary as $action => $file )
 			{
 				$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
 				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
 ?>
-			<tr> 
+			<tr>
 				<td class="<?php echo $cell_bg; ?>"><a class="genmed" href="<?php echo $file; ?>" target="main"><?php echo $action; ?></a></td>
 			</tr>
 <?php
@@ -167,13 +167,13 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 				if ( isset($HTTP_POST_VARS['delete']) )
 				{
-					$sql = "UPDATE " . CONFIG_TABLE . " 
-						SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . " 
+					$sql = "UPDATE " . CONFIG_TABLE . "
+						SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . "
 						WHERE config_name = 'num_users'";
 					$db->sql_query($sql);
 				}
 
-				$log_action = ( isset($HTTP_POST_VARS['activate']) ) ? 'log_index_activate' : 'log_index_delete'; 
+				$log_action = ( isset($HTTP_POST_VARS['activate']) ) ? 'log_index_activate' : 'log_index_delete';
 				add_admin_log($log_action, sizeof($HTTP_POST_VARS['mark']));
 			}
 		}
@@ -264,7 +264,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	if ( preg_match('/^mysql/', SQL_LAYER) )
 	{
 		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
-		
+
 		if ( $row = $db->sql_fetchrow($result) )
 		{
 			$version = $row['mysql_version'];
@@ -273,10 +273,10 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			{
 				$db_name = ( preg_match('/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/', $version) ) ? "`$dbname`" : $dbname;
 
-				$sql = "SHOW TABLE STATUS 
+				$sql = "SHOW TABLE STATUS
 					FROM " . $db_name;
 				$result = $db->sql_query($sql);
-				
+
 				$dbsize = 0;
 				while ( $row = $db->sql_fetchrow($result) )
 				{
@@ -308,10 +308,10 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	}
 	else if ( preg_match('/^mssql/', SQL_LAYER) )
 	{
-		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
-			FROM sysfiles"; 
+		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
+			FROM sysfiles";
 		$result = $db->sql_query($sql);
-		
+
 		$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
 	}
 	else
@@ -347,37 +347,37 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 <h1><?php echo $lang['Forum_stats']; ?></h1>
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
-	<tr> 
+	<tr>
 		<th width="25%" nowrap="nowrap" height="25"><?php echo $lang['Statistic']; ?></th>
 		<th width="25%"><?php echo $lang['Value']; ?></th>
 		<th width="25%" nowrap="nowrap"><?php echo $lang['Statistic']; ?></th>
 		<th width="25%"><?php echo $lang['Value']; ?></th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_posts']; ?>:</td>
 		<td class="row2"><b><?php echo $total_posts; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Posts_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $posts_per_day; ?></b></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_topics']; ?>:</td>
 		<td class="row2"><b><?php echo $total_topics; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Topics_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $topics_per_day; ?></b></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_users']; ?>:</td>
 		<td class="row2"><b><?php echo $total_users; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Users_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $users_per_day; ?></b></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Board_started']; ?>:</td>
 		<td class="row2"><b><?php echo $start_date; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Avatar_dir_size']; ?>:</td>
 		<td class="row2"><b><?php echo $avatar_dir_size; ?></b></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Database_size']; ?>:</td>
 		<td class="row2"><b><?php echo $dbsize; ?></b></td>
 		<td class="row1" nowrap="nowrap"><?php echo $lang['Gzip_compression']; ?>:</td>
@@ -393,7 +393,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 <p><?php echo $lang['Admin_log_index_explain']; ?></p>
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
-	<tr> 
+	<tr>
 		<th width="15%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
 		<th width="15%"><?php echo $lang['IP']; ?></th>
 		<th width="20%"><?php echo $lang['Time']; ?></th>
@@ -406,7 +406,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	for($i = 0; $i < sizeof($log_data); $i++)
 	{
 		$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
-	
+
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['username']; ?></td>
@@ -426,17 +426,17 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 <p><?php echo $lang['Inactive_users_explain']; ?></p>
 
 <form method="post" name="inactive" action="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>"><table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
-	<tr> 
+	<tr>
 		<th width="45%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
 		<th width="45%"><?php echo $lang['Joined']; ?></th>
 		<th width="5%" nowrap="nowrap"><?php echo $lang['Mark']; ?></th>
 	</tr>
 <?php
 
-	$sql = "SELECT user_id, username, user_regdate 
-		FROM " . USERS_TABLE . " 
-		WHERE user_active = 0 
-			AND user_id <> " . ANONYMOUS . " 
+	$sql = "SELECT user_id, username, user_regdate
+		FROM " . USERS_TABLE . "
+		WHERE user_active = 0
+			AND user_id <> " . ANONYMOUS . "
 		ORDER BY user_regdate ASC";
 	$result = $db->sql_query($sql);
 
@@ -479,7 +479,7 @@ elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 </table>
 
 <table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr> 
+	<tr>
 		<td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b></td>
 	</tr>
 </table></form>
@@ -506,7 +506,7 @@ else
 
 <frameset rows="60, *" border="0" framespacing="0" frameborder="NO">
 	<frame src="<?php echo "index.$phpEx$SID&amp;pane=top"; ?>" name="title" noresize marginwidth="0" marginheight="0" scrolling="NO">
-	<frameset cols="155,*" rows="*" border="2" framespacing="0" frameborder="yes"> 
+	<frameset cols="155,*" rows="*" border="2" framespacing="0" frameborder="yes">
 		<frame src="<?php echo "index.$phpEx$SID&amp;pane=left"; ?>" name="nav" marginwidth="3" marginheight="3" scrolling="yes">
 		<frame src="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>" name="main" marginwidth="0" marginheight="0" scrolling="auto">
 	</frameset>

@@ -24,6 +24,9 @@ $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
+// Get posted/get info
+$cat_id = (!empty($_GET['c'])) ? intval($_GET['c']) : 0;
+
 if (isset($_GET['mark']) || isset($_POST['mark']))
 {
 	$mark_read = (isset($_POST['mark'])) ? $_POST['mark'] : $_GET['mark'];
@@ -33,23 +36,15 @@ else
 	$mark_read = '';
 }
 
-//
 // Start session management
-//
 $userdata = $session->start();
-$acl = new acl($userdata);
-//
+$auth->acl($userdata);
 // End session management
-//
 
-//
 // Configure style, language, etc.
-//
 $session->configure($userdata);
 
-//
 // Handle marking posts
-//
 if ($mark_read == 'forums')
 {
 	if ($userdata['user_id'])
@@ -64,16 +59,13 @@ if ($mark_read == 'forums')
 	$message = $lang['Forums_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
 	message_die(MESSAGE, $message);
 }
-//
 // End handle marking posts
-//
 
+// Topic/forum marked read info
 $mark_topics = (isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
 $mark_forums = (isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'])) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'])) : array();
 
-//
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
-//
 $total_users = $board_config['num_users'];
 $newest_user = $board_config['newest_username'];
 $newest_uid = $board_config['newest_user_id'];
@@ -91,10 +83,12 @@ else
 	$l_total_user_s = $lang['Registered_users_total'];
 }
 
+// Forum moderators ... a static template var could allow us
+// to drop these queries ...
 $forum_moderators = array();
 get_moderators($forum_moderators);
 
-$cat_id = (!empty($_GET['c'])) ? intval($_GET['c']) : 0;
+// Set some vars
 $root_id = $branch_root_id = $cat_id;
 $forum_rows = $subforums = $nav_forums = array();
 
@@ -109,7 +103,7 @@ if ($cat_id == 0)
 					FROM ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . 'u
 					WHERE f.forum_last_poster_id = u.user_id(+)
 					ORDER BY f.left_id';
-		break;
+			break;
 
 		default:
 			$sql = 'SELECT f.*, u.username
@@ -122,24 +116,20 @@ else
 {
 	$is_nav = TRUE;
 
-	if (!$acl->get_acl($cat_id, 'forum', 'list'))
+	if (!$auth->get_acl($cat_id, 'forum', 'list'))
 	{
-		//
 		// TODO: Deal with hidden categories
-		//
 		message_die(ERROR, $lang['Category_not_exist']);
 	}
 
-	//
 	// NOTE: make sure that categories post count is set to 0
-	//
 	$sql = 'SELECT SUM(forum_posts) AS total
 			FROM ' . FORUMS_TABLE . '
 			WHERE post_count_inc = 1';
 
 	$result = $db->sql_query($sql);
 	$total_posts = $db->sql_fetchfield('total', 0, $result);
-	
+
 	$result = $db->sql_query('SELECT left_id, right_id, parent_id FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $cat_id);
 	$catrow = $db->sql_fetchrow($result);
 
@@ -186,9 +176,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['parent_id'] == $cat_id)
 		{
-			//
 			// Root-level forum
-			//
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
 
@@ -199,18 +187,14 @@ while ($row = $db->sql_fetchrow($result))
 		}
 		elseif ($row['parent_id'] == $branch_root_id)
 		{
-			//
 			// Forum directly under a category
-			//
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
 		}
 		elseif ($row['display_on_index'] && $row['forum_status'] != ITEM_CATEGORY)
 		{
-			//
 			// Subforum, store it for direct linking
-			//
-			if ($acl->get_acl($row['forum_id'], 'forum', 'list'))
+			if ($auth->get_acl($row['forum_id'], 'forum', 'list'))
 			{
 				$subforums[$parent_id][] = $row;
 			}
@@ -282,9 +266,7 @@ foreach ($nav_forums as $row)
 	));
 }
 
-//
 // Start output of page
-//
 $page_title = $lang['Index'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 

@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('user') )
+	if ( !$auth->get_acl_admin('user') )
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ require('pagestart.' . $phpEx);
 //
 // Do we have forum admin permissions?
 //
-if ( !$acl->get_acl_admin('user') )
+if ( !$auth->get_acl_admin('user') )
 {
 	return;
 }
@@ -75,7 +75,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 		{
 			$l_message .= ( !empty($HTTP_POST_VARS[$field]) ) ? '<input type="hidden" name="' . $field . '" value="' . urlencode($HTTP_POST_VARS[$field]) . '" />' : '';
 		}
-		
+
 		$l_message .= '</form>';
 
 		page_header($lang['Prune_users']);
@@ -90,7 +90,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 		page_message($lang['Confirm'], $l_message, false);
 		page_footer();
-		
+
 	}
 	else if ( isset($HTTP_POST_VARS['confirm']) )
 	{
@@ -128,8 +128,8 @@ if ( isset($HTTP_POST_VARS['prune']) )
 			$where_sql .= ( $active ) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
 		}
 
-		$sql = "SELECT username, user_id FROM " . USERS_TABLE . " 
-			WHERE user_id <> " . ANONYMOUS . " 
+		$sql = "SELECT username, user_id FROM " . USERS_TABLE . "
+			WHERE user_id <> " . ANONYMOUS . "
 			$where_sql";
 		$result = $db->sql_query($sql);
 
@@ -169,8 +169,8 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 					for($i = 0; $i < sizeof($user_ids); $i++)
 					{
-						$sql = "UPDATE " . POSTS_TABLE . " 
-							SET poster_id = " . ANONYMOUS . ", post_username = '" . $usernames[$i] . "' 
+						$sql = "UPDATE " . POSTS_TABLE . "
+							SET poster_id = " . ANONYMOUS . ", post_username = '" . $usernames[$i] . "'
 							WHERE user_id = " . $userids[$i];
 //						$db->sql_query($sql);
 					}
@@ -184,7 +184,7 @@ if ( isset($HTTP_POST_VARS['prune']) )
 
 				$sql = "UPDATE " . USERS_TABLE . " SET user_active = 0";
 			}
-			$sql .= " WHERE user_id <> " . ANONYMOUS . " 
+			$sql .= " WHERE user_id <> " . ANONYMOUS . "
 				$where_sql";
 //			$db->sql_query($sql);
 
@@ -233,26 +233,26 @@ page_header($lang['Prune_users']);
 <p><?php echo $lang['Prune_users_explain']; ?></p>
 
 <form method="post" name="post" action="<?php echo "admin_prune_users.$phpEx$SID"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr> 
+	<tr>
 		<th colspan="2"><?php echo $lang['Prune_users']; ?></th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><?php echo $lang['Username']; ?>: </td>
 		<td class="row2"><input class="post" type="text" name="username" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><?php echo $lang['Email']; ?>: </td>
 		<td class="row2"><input class="post" type="text" name="email" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><?php echo $lang['Joined']; ?>: <br /><span class="gensmall"><?php echo $lang['Joined_explain']; ?></span></td>
 		<td class="row2"><select name="joined_select"><?php echo $s_find_join_time; ?></select> <input class="post" type="text" name="joined" maxlength="10" size="10" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><?php echo $lang['Last_active']; ?>: <br /><span class="gensmall"><?php echo $lang['Last_active_explain']; ?></span></td>
 		<td class="row2"><select name="active_select"><?php echo $s_find_active_time; ?></select> <input class="post" type="text" name="active" maxlength="10" size="10" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><?php echo $lang['Posts']; ?>: </td>
 		<td class="row2"><select name="count_select"><?php echo $s_find_count; ?></select> <input class="post" type="text" name="count" /></td>
 	</tr>

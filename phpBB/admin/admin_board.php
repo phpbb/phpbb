@@ -21,7 +21,7 @@
 
 if ( !empty($setmodules) )
 {
-	if ( !$acl->get_acl_admin('general') )
+	if ( !$auth->get_acl_admin('general') )
 	{
 		return;
 	}
@@ -45,7 +45,7 @@ $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-if ( !$acl->get_acl_admin('general') )
+if ( !$auth->get_acl_admin('general') )
 {
 	message_die(MESSAGE, $lang['No_admin']);
 }
@@ -325,9 +325,6 @@ switch ( $mode )
 		$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
 		$activation_disable = ( $new['require_activation'] == USER_ACTIVATION_DISABLE ) ? 'checked="checked"' : '';
 
-		$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
-		$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
-
 		$privmsg_on = ( !$new['privmsg_disable'] ) ? 'checked="checked"' : '';
 		$privmsg_off = ( $new['privmsg_disable'] ) ? 'checked="checked"' : '';
 
@@ -346,18 +343,6 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Board_disable']; ?>: <br /><span class="gensmall"><?php echo $lang['Board_disable_explain']; ?></span></td>
 		<td class="row2"><input type="radio" name="board_disable" value="1" <?php echo $disable_board_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="board_disable" value="0" <?php echo $disable_board_no; ?> /> <?php echo $lang['No']; ?><br /><input type="text" name="board_disable_msg" maxlength="255" size="40" value="<?php echo $new['board_disable_msg']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Limit_load']; ?>: <br /><span class="gensmall"><?php echo $lang['Limit_load_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Limit_sessions']; ?>: <br /><span class="gensmall"><?php echo $lang['Limit_sessions_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Enable_gzip']; ?>: </td>
-		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $lang['No']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Enable_prune']; ?>: </td>
@@ -406,14 +391,6 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Max_search_chars']; ?>: <br /><span class="gensmall"><?php echo $lang['Max_search_chars_explain']; ?></span</td>
 		<td class="row2"><input type="text" size="3" maxlength="3" name="max_search_chars" value="<?php echo $new['max_search_chars']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Smilies_path']; ?>: <br /><span class="gensmall"><?php echo $lang['Smilies_path_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $lang['Icons_path']; ?>: <br /><span class="gensmall"><?php echo $lang['Icons_path_explain']; ?></span></td>
-		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $lang['Topics_per_page']; ?>: </td>
@@ -485,6 +462,13 @@ switch ( $mode )
 
 	case 'server':
 
+		$ip_all = ( $new['ip_check'] == 4 ) ? 'checked="checked"' : '';
+		$ip_classc = ( $new['ip_check'] == 3 ) ? 'checked="checked"' : '';
+		$ip_classb = ( $new['ip_check'] == 2 ) ? 'checked="checked"' : '';
+		$ip_none = ( $new['ip_check'] == 0 ) ? 'checked="checked"' : '';
+
+		$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
+		$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
 ?>
 	<tr>
 		<td class="row1"><?php echo $lang['Server_name']; ?>: <br /><span class="gensmall"><?php echo $lang['Server_name_explain']; ?></span></td>
@@ -497,6 +481,30 @@ switch ( $mode )
 	<tr>
 		<td class="row1"><?php echo $lang['Script_path']; ?>: <br /><span class="gensmall"><?php echo $lang['Script_path_explain']; ?></span></td>
 		<td class="row2"><input type="text" maxlength="255" name="script_path" value="<?php echo $new['script_path']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['IP_valid']; ?>: <br /><span class="gensmall"><?php echo $lang['IP_valid_explain']; ?></span></td>
+		<td class="row2"><input type="radio" name="ip_check" value="4" <?php echo $ip_all; ?> /> <?php echo $lang['All']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="3" <?php echo $ip_classc; ?> /> <?php echo $lang['Class_C']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="2" <?php echo $ip_classb; ?> /> <?php echo $lang['Class_B']; ?>&nbsp;&nbsp;<input type="radio" name="ip_check" value="0" <?php echo $ip_none; ?> /> <?php echo $lang['None']; ?>&nbsp;&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Limit_load']; ?>: <br /><span class="gensmall"><?php echo $lang['Limit_load_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="limit_load" value="<?php echo $new['limit_load']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Limit_sessions']; ?>: <br /><span class="gensmall"><?php echo $lang['Limit_sessions_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="4" maxlength="4" name="active_sessions" value="<?php echo $new['active_sessions']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Enable_gzip']; ?>: </td>
+		<td class="row2"><input type="radio" name="gzip_compress" value="1" <?php echo $gzip_yes; ?> /> <?php echo $lang['Yes']; ?>&nbsp;&nbsp;<input type="radio" name="gzip_compress" value="0" <?php echo $gzip_no; ?> /> <?php echo $lang['No']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Smilies_path']; ?>: <br /><span class="gensmall"><?php echo $lang['Smilies_path_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="smilies_path" value="<?php echo $new['smilies_path']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Icons_path']; ?>: <br /><span class="gensmall"><?php echo $lang['Icons_path_explain']; ?></span></td>
+		<td class="row2"><input type="text" size="20" maxlength="255" name="icons_path" value="<?php echo $new['icons_path']; ?>" /></td>
 	</tr>
 <?php
 
@@ -513,7 +521,7 @@ switch ( $mode )
 		$dp = opendir($phpbb_root_path . 'includes/auth');
 		while ( $file = readdir($dp) )
 		{
-			if ( preg_match('/^auth_(.*?)\.' . $phpEx . '$/', $file) ) 
+			if ( preg_match('/^auth_(.*?)\.' . $phpEx . '$/', $file) )
 			{
 				$auth_plugins[] = preg_replace('/^auth_(.*?)\.' . $phpEx . '$/', '\1', $file);
 			}
@@ -534,7 +542,7 @@ switch ( $mode )
 		<td class="row2"><select name="auth_method"><?php echo $auth_select; ?></select></td>
 	</tr>
 <?php
-		
+
 		foreach ( $auth_plugins as $method )
 		{
 			if ( $method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx) )
@@ -553,7 +561,7 @@ switch ( $mode )
 						{
 							if ( !isset($board_config[$field]) )
 							{
-								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value) 
+								$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
 									VALUES ('$field', '')";
 								$db->sql_query($sql);
 							}
