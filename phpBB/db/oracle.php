@@ -95,8 +95,26 @@ class sql_db
 		unset($this->query_result);
 		if($query != "")
 		{
-			$this->query_result = OCIParse($this->db_connect_id, $query);
-			OCIExecute($this->query_result);
+			if(eregi("LIMIT", $query))
+			{
+				eregi("^([[:alnum:][:cntrl:] \*\,\'\"\+\.\(\)_=]+)LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+
+				$query = $limits[1];
+				if($limits[3])
+				{
+					$row_offset = $limits[2];
+					$num_rows = $limits[3];
+				}
+				else
+				{
+					$row_offset = 0;
+					$num_rows = $limits[2];
+				}
+				
+			
+				$this->query_result = OCIParse($this->db_connect_id, $query);
+				OCIExecute($this->query_result);
+			}
 		}
 		if($this->query_result)
 		{
