@@ -106,6 +106,9 @@ define('PRIVMSGS_READ_MAIL', 0);
 define('PRIVMSGS_NEW_MAIL', 1);
 define('PRIVMSGS_UNREAD_MAIL', 5);
 
+// BBCode UID length
+define('BBCODE_UID_LEN', 5);
+
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
