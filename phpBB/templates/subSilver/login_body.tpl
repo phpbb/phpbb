@@ -19,13 +19,13 @@
 		  <tr> 
 			<td width="45%" align="right"><span class="gen">{L_USERNAME}:</span></td>
 			<td> 
-			  <input type="text" name="username" size="25" maxlength="40" value="{USERNAME}" />
+			  <input type="text" class="post" name="username" size="25" maxlength="40" value="{USERNAME}" />
 			</td>
 		  </tr>
 		  <tr> 
 			<td align="right"><span class="gen">{L_PASSWORD}:</span></td>
 			<td> 
-			  <input type="password" name="password" size="25" maxlength="32" />
+			  <input type="password" class="post" name="password" size="25" maxlength="32" />
 			</td>
 		  </tr>
 		  <tr align="center"> 
