@@ -38,8 +38,8 @@ if( !empty($board_config['privmsg_disable']) )
 //
 // Var definitions
 //
-$html_entities_match = array("#&#", "#<#", "#>#", "#\"#");
-$html_entities_replace = array("&amp;", "&lt;", "&gt;", "&quot;");
+$html_entities_match = array("#&#", "#<#", "#>#");
+$html_entities_replace = array("&amp;", "&lt;", "&gt;");
 
 //
 // Parameters
@@ -1334,7 +1334,7 @@ else if( $submit || $refresh || $mode != "" )
 				
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
 
-				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]\n";
+				$privmsg_message = "[quote=\"" . $to_username . "\"]" . $privmsg_message . "[/quote]\n";
 
 				$mode = "reply";
 			}
@@ -1361,7 +1361,7 @@ else if( $submit || $refresh || $mode != "" )
 	{
 		$orig_word = array();
 		$replacement_word = array();
-		$result = obtain_word_list($orig_word, $replacement_word);
+		obtain_word_list($orig_word, $replacement_word);
 
 		if( $bbcode_on )
 		{
