@@ -512,7 +512,7 @@ class ucp_main extends module
 				{
 					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : '';
 
-					if (!empty($drafts))
+					if ($drafts)
 					{
 						$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
 							WHERE draft_id IN ($drafts) 
@@ -532,7 +532,7 @@ class ucp_main extends module
 					$draft_message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
 					$draft_message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $draft_message);
 
-					if ($draft_message != '' && $draft_subject != '')
+					if ($draft_message && $draft_subject)
 					{
 						$draft_row = array(
 							'draft_subject' => $draft_subject,
@@ -590,63 +590,58 @@ class ucp_main extends module
 					$db->sql_freeresult($result);
 				}
 				unset($topic_ids);
+				
+				$template->assign_var('S_EDIT_DRAFT', $edit);
 
-				if (sizeof($draftrows))
+				$row_count = 0;
+				foreach ($draftrows as $draft)
 				{
-					$template->assign_vars(array(
-						'S_DRAFT_ROWS' => true,
-						'S_EDIT_DRAFT' => $edit)
-					);
-		
-					$row_count = 0;
-					foreach ($draftrows as $draft)
+					$link_topic = $link_forum = 0;
+					$insert_url = $view_url = $title = '';
+
+					if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 					{
-						$link_topic = $link_forum = 0;
-						$insert_url = $view_url = $title = '';
+						$link_topic = true;
+						$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+						$title = $topic_rows[$draft['topic_id']]['topic_title'];
 
-						if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
-						{
-							$link_topic = true;
-							$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
-							$title = $topic_rows[$draft['topic_id']]['topic_title'];
-
-							$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
-						}
-						else if ($auth->acl_get('f_read', $draft['forum_id']))
-						{
-							$link_forum = true;
-							$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
-							$title = $draft['forum_name'];
-
-							$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
-						}
-						
-						$template_row = array(
-							'DRAFT_ID' => $draft['draft_id'],
-							'DATE' => $user->format_date($draft['save_time']),
-							'DRAFT_MESSAGE' => ($submit) ? $draft_message : $draft['draft_message'],
-							'DRAFT_SUBJECT' => ($submit) ? $draft_subject : $draft['draft_subject'],
-
-							'TITLE' => $title,
-							'U_VIEW' => $view_url,
-							'U_VIEW_EDIT' => "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
-							'U_INSERT' => $insert_url,
-
-							'S_ROW_COUNT' => $row_count++,
-							'S_HIDDEN_FIELDS' => $s_hidden_fields,
-							'S_LINK_TOPIC'	=> $link_topic,
-							'S_LINK_FORUM'	=> $link_forum
-						);
-						
-						if ($edit)
-						{
-							$template->assign_vars($template_row);
-						}
-						else
-						{
-							$template->assign_block_vars('draftrow', $template_row);
-						}
+						$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
 					}
+					else if ($auth->acl_get('f_read', $draft['forum_id']))
+					{
+						$link_forum = true;
+						$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+						$title = $draft['forum_name'];
+
+						$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+					}
+						
+					$template_row = array(
+						'DATE'			=> $user->format_date($draft['save_time']),
+						'DRAFT_MESSAGE'	=> ($submit) ? $draft_message : $draft['draft_message'],
+						'DRAFT_SUBJECT'	=> ($submit) ? $draft_subject : $draft['draft_subject'],
+						'TITLE'			=> $title,
+
+						'DRAFT_ID'	=> $draft['draft_id'],
+						'FORUM_ID'	=> $draft['forum_id'],
+						'TOPIC_ID'	=> $draft['topic_id'],
+
+						'U_VIEW'		=> $view_url,
+						'U_VIEW_EDIT'	=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
+						'U_INSERT'		=> $insert_url,
+
+						'S_ROW_COUNT'		=> $row_count++,
+						'S_LINK_TOPIC'		=> $link_topic,
+						'S_LINK_FORUM'		=> $link_forum,
+						'S_HIDDEN_FIELDS'	=> $s_hidden_fields
+					);
+						
+					($edit) ? $template->assign_vars($template_row) : $template->assign_block_vars('draftrow', $template_row);
+				}
+
+				if (!$edit)
+				{
+					$template->assign_vars('S_DRAFT_ROWS', $row_count);
 				}
 
 				break;

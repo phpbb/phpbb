@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 //
-// * Use this for ucp integration - changeable user id
+// * Use this for ACP integration - changeable user id
 //
 
 class ucp_attachments extends module
@@ -66,7 +66,7 @@ class ucp_attachments extends module
 		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-
+	
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
 		{
@@ -93,32 +93,40 @@ class ucp_attachments extends module
 		$sql = 'SELECT a.*, t.topic_title
 			FROM ' . ATTACHMENTS_TABLE . ' a, ' . TOPICS_TABLE . ' t
 			WHERE a.topic_id = t.topic_id
-				AND a.poster_id = ' . $user->data['user_id'] . '
-			ORDER BY ' . $order_by;
+				AND a.poster_id = ' . $user->data['user_id'] . "
+			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
 
-		$i = 0;
-		while ($row = $db->sql_fetchrow($result))
+		$row_count = 0;
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
+			$template->assign_var('S_ATTACHMENT_ROWS', true);
 
-			$template->assign_block_vars('attachrow', array(
-				'ROW_NUMBER'		=> $i + ($start + 1),
-				'ATTACH_ID'			=> $row['attach_id'],
-				'FILENAME'			=> $row['real_filename'],
-				'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
-				'EXTENSION'			=> $row['extension'],
-				'SIZE'				=> ($row['filesize'] >= 1048576) ? (round($row['filesize'] / 1048576 * 100) / 100) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? (round($row['filesize'] / 1024 * 100) / 100) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
-				'DOWNLOAD_COUNT'	=> $row['download_count'],
-				'POST_TIME'			=> $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']),
-				'TOPIC_TITLE'		=> $row['topic_title'],
+			do
+			{
+				$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#' . $row['post_id'];
 
-				'S_ROW_COUNT'	=> $i,
+				$template->assign_block_vars('attachrow', array(
+					'ROW_NUMBER'		=> $i + ($start + 1),
+					'FILENAME'			=> $row['real_filename'],
+					'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
+					'EXTENSION'			=> $row['extension'],
+					'SIZE'				=> ($row['filesize'] >= 1048576) ? (round($row['filesize'] / 1048576 * 100) / 100) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? (round($row['filesize'] / 1024 * 100) / 100) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
+					'DOWNLOAD_COUNT'	=> $row['download_count'],
+					'POST_TIME'			=> $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']),
+					'TOPIC_TITLE'		=> $row['topic_title'],
 
-				'U_VIEW_ATTACHMENT'	=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
-				'U_VIEW_TOPIC'		=> $view_topic)
-			);
-			$i++;
+					'ATTACH_ID'			=> $row['attach_id'],
+					'POST_ID'			=> $row['post_id'],
+					'TOPIC_ID'			=> $row['topic_id'],
+				
+					'S_ROW_COUNT'		=> $row_count++,
+
+					'U_VIEW_ATTACHMENT'	=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
+					'U_VIEW_TOPIC'		=> $view_topic)
+				);
+			} 
+			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 

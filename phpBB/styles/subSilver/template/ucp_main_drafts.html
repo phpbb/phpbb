@@ -29,11 +29,7 @@
 
 	<!-- BEGIN draftrow -->
 
-	<!-- IF draftrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
+		<!-- IF draftrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 		<td class="postdetails" style="padding: 4px;">{draftrow.DATE}</td>
 		<td style="padding: 4px;"><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
@@ -46,9 +42,11 @@
 	</tr>
 	<!-- END draftrow -->
 
+	<!-- IF S_DRAFT_ROWS -->
 	<tr>
 		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
 	</tr>
+	<!-- ENDIF -->
 
 	<!-- ELSEIF S_EDIT_DRAFT -->
 	<tr>

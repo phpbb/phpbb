@@ -13,7 +13,7 @@
 	</tr>
 </table>
 
-<!-- ELSEIF attachrow -->
+<!-- ELSEIF S_ATTACHMENT_ROWS -->
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
@@ -28,11 +28,7 @@
 
 	<!-- BEGIN attachrow -->
 
-	<!-- IF attach.S_ROW_COUNT is even -->
-	<tr class="row2">
-	<!-- ELSE -->
-	<tr class="row1">
-	<!-- ENDIF -->
+		<!-- IF attachrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" style="padding: 4px;" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
 		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall">{L_TOPIC}: <a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
@@ -60,7 +56,10 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th>{L_UCP_NO_ATTACHMENTS}</th>
+		<th height="28">{L_UCP}</th>
+	</tr>
+	<tr class="row1">
+		<td height="25" align="center"><b class="genmed">{L_UCP_NO_ATTACHMENTS}</b></td>
 	</tr>
 </table>
 
