@@ -1028,8 +1028,6 @@ $lang += array(
 	'USER_ADMIN_EXPLAIN'	=> 'Here you can change your users information and certain specific options. To modify the users permissions please use the user and group permissions system.',
 	'SELECT_USER'			=> 'Select User', 
 
-	'Admin_user_updated' => 'The users profile was successfully updated.',
-
 	'SELECT_FORM'			=> 'Select form', 
 	'USER_ADMIN_OVERVIEW'	=> 'Overview',
 	'USER_ADMIN_FEEDBACK'	=> 'Feedback', 
@@ -1063,14 +1061,18 @@ $lang += array(
 	'USER_ADMIN_MOVE_POSTS'	=> 'Move all posts', 
 	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.', 
 
+	'USER_POSTING_PREFS'	=> 'Posting preferences', 
+
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management', 
 	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management', 
 	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management', 
 
 	'USER_DELETED'			=> 'User deleted successfully',
 	'USER_OVERVIEW_UPDATED'	=> 'User details updated', 
-	'USER_ADMIN_INACTIVE'	=> 'User deactivated successfully.', 
-	'USER_ADMIN_ACTIVE'		=> 'User activated successfully.', 
+	'USER_PROFILE_UPDATED'	=> 'User profile updated', 
+	'USER_PREFS_UPDATED'	=> 'User preferences updated', 
+	'USER_ADMIN_INACTIVE'	=> 'User deactivated successfully', 
+	'USER_ADMIN_ACTIVE'		=> 'User activated successfully', 
 );
 
 // Group admin
