@@ -31,11 +31,11 @@ function insertCode(formObj, selectObj)
 				<td class="row2"><span class="courier"><input type="text" name="subject" size="50" maxlength="100" value="{SUBJECT}" /></span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br><br><span class="gensmall">{L_HTML_IS} <u>{HTML_STATUS}</u><br />{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
+				<td class="row1"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><br /><span class="gensmall">{L_HTML_IS} <u>{HTML_STATUS}</u><br />{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
 				<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td><span class="gen"><textarea name="message" rows="10" cols="45" wrap="virtual">{MESSAGE}</textarea></span></td>
-						<td valign="top">&nbsp;<span class="gensmall">BBcodes:</span><br><span class="couriersmall"><select class="small" name="addbbcode" size="6" onchange="insertCode(this.form, this);"> <option value="[b][/b]">[b] [/b]</option> <option value="[i][/i]">[i] [/i]</option> <option value="[quote][/quote]">[quote] [/quote]</option> <option value="[code][/code]">[code] [/code]</option> <option value="[list][/list]">[list] [/list]</option> <option value="[list=][/list]">[list=] [/list]</option> <option value="[img][/img]">[img] [/img]</option> <option value="[url][/url]">[url] [/url]</option></select></span> <br clear="all" />&nbsp;<span class="gensmall">Smiley codes:</span><br><span class="couriersmall"><select class="small" name="addsmiley" size="1" onchange="insertCode(this.form, this);"> <option value=":)">Smiley</option> </option> <option value=";)">Wink</option> <option value=":d">Big Grin</option> <option value=":lol:">Laugh Out Loud</option> <option value=":(">Sad</option> <option value=":o">Eek!</option> <option value=":">Eek!</option> <option value=":oops:">Opps!</option> <option value="8)">Cool</option> <option value=":?">Confused</option> <option value=":roll:">Rolling Eyes</option> <option value=":p">Razz</option> <option value=":x">Mad</option> <option value=":|">Neutral</option> <option value=":!:">Exclamation</option> <option value=":?:">Question</option> <option value=":idea:">Idea</option> <option value=":arrow:">Arrow</option></select></span></td>
+						<td><span class="courier"><textarea name="message" rows="10" cols="45" wrap="virtual">{MESSAGE}</textarea></span></td>
+						<td valign="top">&nbsp;<span class="gensmall">BBcodes:</span><br /><span class="couriersmall"><select class="small" name="addbbcode" size="6" onchange="insertCode(this.form, this);"> <option value="[b][/b]">[b] [/b]</option> <option value="[i][/i]">[i] [/i]</option> <option value="[quote][/quote]">[quote] [/quote]</option> <option value="[code][/code]">[code] [/code]</option> <option value="[list][/list]">[list] [/list]</option> <option value="[list=][/list]">[list=] [/list]</option> <option value="[img][/img]">[img] [/img]</option> <option value="[url][/url]">[url] [/url]</option></select></span> <br clear="all" />&nbsp;<span class="gensmall">Smiley codes:</span><br /><span class="couriersmall"><select class="small" name="addsmiley" size="1" onchange="insertCode(this.form, this);"> <option value=":)">Smiley</option> </option> <option value=";)">Wink</option> <option value=":d">Big Grin</option> <option value=":lol:">Laugh Out Loud</option> <option value=":(">Sad</option> <option value=":o">Eek!</option> <option value=":">Eek!</option> <option value=":oops:">Opps!</option> <option value="8)">Cool</option> <option value=":?">Confused</option> <option value=":roll:">Rolling Eyes</option> <option value=":p">Razz</option> <option value=":x">Mad</option> <option value=":|">Neutral</option> <option value=":!:">Exclamation</option> <option value=":?:">Question</option> <option value=":idea:">Idea</option> <option value=":arrow:">Arrow</option></select></span></td>
 					</tr>
 				</table></td>
 			</tr>
@@ -66,12 +66,10 @@ function insertCode(formObj, selectObj)
 						<td><span class="gen">{L_ATTACH_SIGNATURE}</span></td>
 					</tr>
 					<!-- END signature_checkbox -->
-					<!-- BEGIN notify_checkbox -->
 					<tr>
 						<td><input type="checkbox" name="notify" {S_NOTIFY_CHECKED} /></td>
 						<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
 					</tr>
-					<!-- END notify_checkbox -->
 					<!-- BEGIN delete_checkbox -->
 					<tr>
 						<td><input type="checkbox" name="delete" /></td>

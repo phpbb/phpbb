@@ -4,4 +4,8 @@ You are receiving this email because you are watching the topic, "{TOPIC_TITLE}"
 
 {TOPIC_URL}
 
+If you no longer wish to watch this topic you can either click the "Stop watching this topic link" found at the bottom of the topic above, or by clicking the following link:
+
+{UN_WATCH_URL}
+
 {EMAIL_SIG}

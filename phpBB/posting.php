@@ -97,7 +97,30 @@ else
 
 $attach_sig = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
 
-$notify = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['user_notify'];
+if($mode == "reply" && !empty($topic_id) )
+{
+	if( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) )
+	{
+		$notify = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;		
+	}
+	else
+	{
+		$sql = "SELECT *  
+			FROM " . TOPICS_WATCH_TABLE . " 
+			WHERE topic_id = $topic_id 
+				AND user_id = " . $userdata['user_id'];
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
+		}
+
+		$notify = ( $db->sql_numrows($result)) ? TRUE : 0;
+	}
+}
+else
+{
+	$notify = ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['preview']) ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['user_notify'];
+}
 
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : 0;
 
@@ -541,18 +564,21 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 										{
 											if($email_set[$i]['user_email'] != "")
 											{
-												$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
+												$email_headers = "From: " . $board_config['board_email_from'] . "\nReturn-Path: " . $board_config['board_email_from'] . "\r\n";
 
 												$emailer->use_template("topic_notify");
 												$emailer->email_address($email_set[$i]['user_email']);
 												$emailer->set_subject($lang['Topic_reply_notification']);
 												$emailer->extra_headers($email_headers);
 
+												$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+
 												$emailer->assign_vars(array(
 													"USERNAME" => $email_set[$i]['username'], 
 													"SITENAME" => $board_config['sitename'],
 													"TOPIC_TITLE" => $email_set[$i]['topic_title'],
-													"TOPIC_URL" => "http://" . $SERVER_NAME . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id",
+													"TOPIC_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id", 
+													"UN_WATCH_URL" => "http://" . $HTTP_SERVER_VARS['SERVER_NAME'] . $path . "/viewtopic.$phpEx?" . POST_TOPIC_URL . "=$new_topic_id&unwatch=topic",
 													"EMAIL_SIG" => $board_config['board_email'])
 												);
 
@@ -582,11 +608,11 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 								// Handle notification request ... not complete
 								// only fully functional for new posts
 								//
-								if( !empty($notify) )
+								if( isset($notify) )
 								{
 									if($mode == "reply")
 									{
-										$sql = "SELECT notify_status 
+										$sql = "SELECT * 
 											FROM " . TOPICS_WATCH_TABLE . " 
 											WHERE topic_id = $new_topic_id 
 												AND user_id = " . $userdata['user_id'];
@@ -599,11 +625,23 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 										{
 											if( !$notify )
 											{
-
+												$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
+													WHERE topic_id = $new_topic_id 
+														AND user_id = " . $userdata['user_id'];
+												if( !$result = $db->sql_query($sql) )
+												{
+													message_die(GENERAL_ERROR, "Couldn't delete topic watch information", "", __LINE__, __FILE__, $sql);
+												}
 											}
 										}
 										else if( $notify )
 										{
+											$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
+												VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
+											if( !$result = $db->sql_query($sql) )
+											{
+												message_die(GENERAL_ERROR, "Couldn't insert topic watch information", "", __LINE__, __FILE__, $sql);
+											}
 										}
 									}
 									else if( $notify )
@@ -1376,14 +1414,6 @@ else
 if( $user_sig != "" )
 {
 	$template->assign_block_vars("signature_checkbox", array());
-}
-
-//
-// Notify selection
-//
-if($mode == "newtopic" || $preview || ( $mode == "editpost" && $notify_show ) )
-{
-	$template->assign_block_vars("notify_checkbox", array());
 }
 
 //

@@ -11,7 +11,7 @@
 			<tr>
 				<th>&nbsp;{L_MESSAGE}&nbsp;</th>
 			</tr>
-			<tr bgcolor="{ROW_COLOR}">
+			<tr bgcolor="{T_TD_COLOR1}">
 				<td height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="0" border="0">
 					<tr>
 						<td><img src="images/icon_minipost.gif" alt="Post image icon" /><span class="gensmall">{L_POSTED}: {POST_DATE}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Post Subject: {POST_SUBJECT}</span><hr /></td>
