@@ -54,9 +54,8 @@ class template
 	var $block_nesting_level = 0;
 
 	var $static_lang;
-	var $force_recompile;
 
-	function set_template($static_lang = false, $force_recompile = false)
+	function set_template($static_lang = false)
 	{
 		global $phpbb_root_path, $config, $user;
 
@@ -74,7 +73,6 @@ class template
 		}
 
 		$this->static_lang = $static_lang;
-		$this->force_recompile = $force_recompile;
 
 		return true;
 	}
@@ -132,12 +130,14 @@ class template
 	// Load a compiled template if possible, if not, recompile it
 	function _tpl_load(&$handle)
 	{
-		global $phpEx, $user, $db;
+		global $config, $user, $db, $phpEx;
 
 		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
+		$recompile = (($config['load_tplcompile'] && filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
+
 		// Recompile page if the original template is newer, otherwise load the compiled version
-		if (file_exists($filename) && !$this->force_recompile)
+		if (!$recompile)
 		{
 			return $filename;
 		}
@@ -285,8 +285,6 @@ class template
 	// Include a seperate template
 	function _tpl_include($filename, $include = true)
 	{
-		global $user;
-
 		$handle = $filename;
 		$this->filename[$handle] = $filename;
 		$this->files[$handle] = $this->root . '/' . $filename;
@@ -295,14 +293,14 @@ class template
 
 		if ($include)
 		{
-			if (!$this->force_recompile && $filename)
+			global $user;
+
+			if ($filename)
 			{
 				include($filename);
+				return;
 			}
-			else
-			{
-				eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
-			}
+			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
 		}
 	}
 
