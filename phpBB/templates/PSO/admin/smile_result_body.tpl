@@ -8,9 +8,7 @@
 				<td class="cat" align="center"><span class="cattitle"><b>{L_SMILEY_TITLE}</b></span></td>
 			</tr>
 			<tr>
-				<td class="row2" width="100%" align="center"><span class="gen">{L_SMILEY_ACTION}</span><br>
-				<a href='{S_SMILEY_URL}'>{L_SMILEY_TEXT}</a>
-				</td>
+				<td class="row2" width="100%" align="center"><span class="gen">{L_SMILEY_ACTION}</span><br /><a href="{U_SMILEY_ADMIN}">{L_SMILEY_TEXT}</a></td>
 			</tr>
 		</table></td>
 	</tr>
