@@ -378,7 +378,7 @@ class session {
 class acl
 {
 	var $founder = false;
-	var $acl = array();
+	var $acl = false;
 
 	function acl(&$userdata, $forum_id = false, $extra_options = false)
 	{
@@ -476,6 +476,8 @@ class acl
 			}
 		}
 
+//		print_r($this->acl);
+
 		return;
 	}
 
@@ -487,11 +489,11 @@ class acl
 		}
 		else if ( $auth_main && $auth_type )
 		{
-			return ( $this->get_acl(0, 'admin') ) ? true : ( ( $this->acl[$forum_id][$auth_main][$auth_type] ) ? true : false );
+			return $this->acl[$forum_id][$auth_main][$auth_type];
 		}
 		else if ( !$auth_type && is_array($this->acl[$forum_id][$auth_main]) )
 		{
-			return ( $this->get_acl(0, 'admin') ) ? true : ( ( array_sum($this->acl[$forum_id][$auth_main]) ) ? true : false );
+			return array_sum($this->acl[$forum_id][$auth_main]);
 		}
 	}
 
