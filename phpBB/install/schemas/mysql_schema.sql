@@ -97,7 +97,7 @@ CREATE TABLE phpbb_config (
 #
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   disallow_username varchar(25),
+   disallow_username varchar(25) DEFAULT '' NOT NULL,
    PRIMARY KEY (disallow_id)
 );
 
@@ -284,11 +284,6 @@ CREATE TABLE phpbb_search_wordmatch (
 # within system memory and therefore for big busy boards
 # is likely to be noticeably faster than continually
 # writing to disk ...
-#
-# I must admit I read about this type on vB's board.
-# Hey, I never said you cannot get basic ideas from
-# competing boards, just that I find it's best not to
-# look at any code ... !
 #
 CREATE TABLE phpbb_sessions (
    session_id char(32) DEFAULT '' NOT NULL,
