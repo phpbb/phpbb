@@ -27,8 +27,8 @@
 //
 
 // Debug Level
-define(DEBUG, 1); // Debugging on
-//define(DEBUG, 0); // Debugging off
+//define(DEBUG, 1); // Debugging on
+define(DEBUG, 0); // Debugging off
 
 // User Levels <- Do not change the values of USER or ADMIN
 define(DELETED, -1);
@@ -61,6 +61,7 @@ define(SESSION_CREATE, 4);
 define(NO_TOPICS, 5);
 define(GENERAL_ERROR, 6);
 define(LOGIN_FAILED, 7);
+define(GENERAL_MESSAGE, 10);
 
 // Private messaging
 define(PRIVMSGS_READ_MAIL, 0);
