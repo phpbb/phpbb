@@ -218,6 +218,7 @@ $lang['Post_Annoucement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
 $lang['Options'] = "Options";
 
+$lang['Confirm'] = "Confirm";
 $lang['Confirm_delete'] = "Are you sure you want to delete this post?";
 $lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
@@ -491,6 +492,10 @@ $lang['Topics_Removed'] = "The selected topics have been successfully removed fr
 $lang['Topics_Locked'] = "The selected topics have been locked";
 $lang['Topics_Unlocked'] = "The selected topics have been unlocked";
 $lang['Return_to_modcp'] = "to return to the moderator control panel";
+$lang['Confirm_delete_topic'] = "Are you sure you want to remove this topic(s)?";
+$lang['Confirm_lock_topic'] = "Are you sure you want to lock this topic(s)?";
+$lang['Confirm_unlock_topic'] = "Are you sure you want to unlock this topic(s)?";
+$lang['Confirm_move_topic'] = "Are you sure you want to move this topic(s)?";
 
 //
 // Old format ... _DON'T_add_any_ new entries here!!
