@@ -21,18 +21,12 @@
 
 class acm
 {
-	var $db;
 	var $is_modified = FALSE;
 	var $vars = '';
-	var $sql_enabled = FALSE;
-
-	function acm(&$db)
-	{
-		$this->db =& $db;
-	}
 
 	function load($var_names = '')
 	{
+		global $db;
 		$this->vars = array();
 
 		$sql = 'SELECT var_name, var_ts, var_data
@@ -43,9 +37,9 @@ class acm
 			$sql .= " WHERE var_name IN ('" . implode("', '", $var_names) . "')";
 		}
 
-		$result = $this->db->sql_query($sql);
+		$result = $db->sql_query($sql);
 
-		while ($row = $this->db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$this->vars[$row['var_name']] = array(
 				'data'	=>	unserialize($row['var_data']),
@@ -67,6 +61,8 @@ class acm
 			return;
 		}
 
+		global $db;
+
 		$delete = $insert = array();
 		foreach ($this->vars as $var_name => $var_ary)
 		{
@@ -79,10 +75,10 @@ class acm
 				else
 				{
 					$delete[] = $var_name;
-					$insert[] = "'$var_name', " . time() . ", '" . $this->db->sql_escape(serialize($var_ary['data'])) . "'";
+					$insert[] = "'$var_name', " . time() . ", '" . $db->sql_escape(serialize($var_ary['data'])) . "'";
 				}
 
-				$this->db->sql_query($sql);
+				$db->sql_query($sql);
 			}
 		}
 
@@ -90,7 +86,7 @@ class acm
 		{
 			$sql = 'DELETE FROM ' . CACHE_TABLE . "
 				WHERE var_name IN ('" . implode("', '", $delete) . "')";
-			$this->db->sql_query($sql);
+			$db->sql_query($sql);
 		}
 		if (count($insert))
 		{
@@ -99,7 +95,7 @@ class acm
 				case 'mysql':
 					$sql = 'INSERT INTO ' . CACHE_TABLE . ' (var_name, var_ts, var_data)
 						VALUES (' . implode('), (', $insert) . ')';
-					$this->db->sql_query($sql);
+					$db->sql_query($sql);
 				break;
 			
 				default:
@@ -107,7 +103,7 @@ class acm
 					{
 						$sql = 'INSERT INTO ' . CACHE_TABLE . " (var_name, var_ts, var_data)
 							VALUES ($values)";
-						$this->db->sql_query($sql);
+						$db->sql_query($sql);
 					}
 			}
 		}
@@ -117,9 +113,11 @@ class acm
 
 	function tidy($max_age = 0)
 	{
+		global $db;
+
 		$sql = 'DELETE FROM ' . CACHE_TABLE . '
 			WHERE var_ts < ' . (time() - $max_age);
-		$this->db->sql_query($sql);
+		$db->sql_query($sql);
 	}
 
 	function get($var_name, $max_age = 0)

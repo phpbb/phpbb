@@ -27,7 +27,7 @@ class acm
 
 	var $sql_rowset = array();
 
-	function acm(&$db)
+	function acm()
 	{
 		global $phpbb_root_path;
 		$this->cache_dir = $phpbb_root_path . 'cache/';

@@ -190,8 +190,8 @@ set_error_handler('msg_handler');
 $user		= new user();
 $auth		= new auth();
 $template	= new template();
+$cache		= new acm();
 $db			= new sql_db();
-$cache		= new acm($db);
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);

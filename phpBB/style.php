@@ -49,7 +49,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 
 	$db = new sql_db();
-	$cache = new acm($db);
+	$cache = new acm();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
