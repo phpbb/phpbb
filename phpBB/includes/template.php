@@ -243,25 +243,8 @@ class Template {
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 			$this->compile_write($handle, $this->compiled_code[$handle]);
 
-			eval($this->compiled_code[$handle]);
+			return $handle;
 		}
-	}
-
-	function merge_from_include($filename)
-	{
-		$handle = 'include_' . $this->include_counter++;
-
-		$this->filename[$handle] = $filename;
-		$this->files[$handle] = $this->make_filename($filename);
-
-		if (!file_exists($this->files[$handle]))
-		{
-			trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
-		}
-		
-		$content = implode('', @file($this->files[$handle]));
-
-		return ($content);
 	}
 
 	/**
@@ -340,19 +323,15 @@ class Template {
 	 */
 	function compile($code, $do_not_echo = false, $retvar = '')
 	{
-		// Pull out all merging includes, to let them parse with the code
-		preg_match_all('#<!-- MERGE_INCLUDE(.*?)-->#s', $code, $matches);
-		$merge_blocks = $matches[1];
-		foreach($merge_blocks as $filename)
-		{
-			$code = preg_replace('#<!-- MERGE_INCLUDE ' . preg_quote(trim($filename)) . ' -->#s', $this->merge_from_include(trim($filename)), $code);
-		}
-				
 		// Pull out all block/statement level elements and seperate
 		// plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
+
+		preg_match_all('#<!-- INCLUDE (.*?) -->#s', $code, $matches);
+		$include_blocks = $matches[1];
+		$code = preg_replace('#<!-- INCLUDE (.*?) -->#s', '<!-- INCLUDE -->', $code);
 
 		preg_match_all('#<!-- (.*?) (.*?)?[ ]?-->#s', $code, $blocks);
 		$text_blocks = preg_split('#<!-- (.*?) (.*?)?[ ]?-->#s', $code);
@@ -391,16 +370,19 @@ class Template {
 					$compile_blocks[] = "// ENDIF\n}\n";
 					break;
 				case 'INCLUDE':
-					$compile_blocks[] = '// INCLUDE ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_include($blocks[2][$curr_tb]);
+					$temp = '';
+					list(, $temp) = each($include_blocks);
+					$compile_blocks[] = "// INCLUDE $temp\ninclude('" . $this->cachedir . $temp . ".' . \$phpEx);\n";
+					$this->assign_from_include($temp);
 					break;
-				case 'INCLUDEPHP':
+/*				case 'INCLUDEPHP':
 					$compile_blocks[] = '// INCLUDEPHP ' . $blocks[2][$curr_tb] . "\n" . $this->compile_tag_include_php($blocks[2][$curr_tb]);
 					break;
 				case 'PHP':
 					$temp = '';
 					list(, $temp) = each($php_blocks);
 					$compile_blocks[] = "// PHP START\n" . $temp . "\n// PHP END\n";
-					break;
+					break;*/
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
 					$trim_check = trim($blocks[0][$curr_tb]);
