@@ -77,8 +77,32 @@ switch($mode)
 			
 			if(isset($submit) && !$error)
 			{
+				// The AUTO_INCREMENT field in MySQL v3.23 dosan't work correctly when there is a row with
+				// -1 in that field so we have to explicitly get the next user ID.
+				$sql = "SELECT max(user_id) AS total FROM users";
+   			if($result = $db->sql_query($sql))
+   			{
+   				$user_id_row = $db->sql_fetchrow($result);
+   				$new_user_id = $user_id_row["total"] + 1;
+   				unset($result);
+   				unset($user_id_row);
+   			}
+   			else
+   			{
+   				if(DEBUG)
+   				{
+   					$db_error = $db->sql_error();
+   					error_die($db, GENERAL_ERROR, "Error getting next user ID.<br>Reason: ".$db_error["message"]."<br>Line: ".__LINE__."<br>File: ".__FILE__);
+   				}
+   				else
+   				{
+   					error_die($db, QUERY_ERROR);
+   				}
+   			} 
+   			
 				$md_pass = md5($password);
 				$sql = "INSERT INTO ".USERS_TABLE." (
+				       user_id,
 						 username,
 						 user_regdate,
 						 user_password,
@@ -103,6 +127,7 @@ switch($mode)
 					    user_active,
 					    user_actkey)
 					    VALUES (
+					    $new_user_id,
 					    '".addslashes($username)."',
 					    '".time()."',
 					    '$md_pass',
@@ -144,14 +169,28 @@ switch($mode)
 					else if($coppa)
 					{
 						$msg = $l_coppa;
+						$email_msg = $l_welcomecoppa;
 					}
 					else 
 					{
 						$msg = $l_accountadded;
 						$email_msg = $l_welcomeemail;
 					}
-					mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
+					if(!$coppa) 
+					{
+						mail($email, $l_welcomesubj, $email_msg, "From: $email_from\r\n");
+					}
 					error_die($db, GENERAL_ERROR, $msg);
+				}
+				else
+				{
+					$error = TRUE;
+					$err = $db->sql_error();
+					$error_msg = "Query Error: ".$err["message"];
+					if(DEBUG)
+					{
+						$error_msg .= "<br>Query: $sql";
+					}
 				}
 		
 			}
