@@ -536,6 +536,7 @@ $lang['No_assigned_rank'] = "Nie okre¶lono rang specjalnych";
 $lang['Rank_updated'] = "Ranga zosta³a zaktualizowana";
 $lang['Rank_added'] = "Ranga zosta³a dodana";
 $lang['Rank_removed'] = "Ranga zosta³a usuniêta";
+$lang['No_update_ranks'] = "Ranga zosta³a usuniêta, jednak¿e konta u¿ytkowników, którym zosta³a przydzielona nie zosta³y zmienione. Bêdziesz musia³ rêcznie usun±æ rangê z tych kont";
 
 $lang['Click_return_rankadmin'] = "Kliknij %sTutaj%s aby powróciæ do Administracji Rangami";
 
