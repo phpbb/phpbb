@@ -42,7 +42,7 @@ require('pagestart.' . $phpEx);
 // Do we have styles admin permissions?
 if (!$auth->acl_get('a_general'))
 {
-	trigger_error($user->lang['No_admin']);
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
 // Set some variables
@@ -53,7 +53,7 @@ $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'admin';
 // Define some vars depending on which logs we're looking at
 $log_table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
 $l_title = ($mode == 'admin') ? $user->lang['ADMIN_LOGS'] : $user->lang['MOD_LOGS'];
-$l_title_explain = ($mode == 'admin') ? $user->lang['Admin_logs_explain'] : $user->lang['Mod_logs_explain'];
+$l_title_explain = ($mode == 'admin') ? $user->lang['ADMIN_LOGS_EXPLAIN'] : $user->lang['MOD_LOGS_EXPLAIN'];
 
 // Delete entries if requested and able
 if ((isset($_POST['delmarked']) || isset($_POST['delall'])) && $auth->acl_get('a_clearlogs'))
@@ -78,9 +78,9 @@ if ((isset($_POST['delmarked']) || isset($_POST['delall'])) && $auth->acl_get('a
 // Sorting ... this could become a function
 if (isset($_POST['sort']) || $start)
 {
-	if (!empty($_REQUEST['sort_days']))
+	if (!empty($_POST['sort_days']))
 	{
-		$sort_days = intval($_REQUEST['sort_days']);
+		$sort_days = intval($_POST['sort_days']);
 		$where_sql = time() - ($sort_days * 86400);
 	}
 	else
@@ -88,8 +88,8 @@ if (isset($_POST['sort']) || $start)
 		$where_sql = 0;
 	}
 
-	$sort_key = (isset($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : '';
-	$sort_dir = (isset($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : '';
+	$sort_key = (isset($_POST['sort_key'])) ? $_POST['sort_key'] : '';
+	$sort_dir = (isset($_POST['sort_dir'])) ? $_POST['sort_dir'] : '';
 }
 else
 {
@@ -100,7 +100,9 @@ else
 	$sort_dir = 'd';
 }
 
-$previous_days = array(0 => $user->lang['All_Entries'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+
+
+$previous_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 $sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
 $sort_by = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
@@ -235,9 +237,6 @@ else
 
 <script language="Javascript" type="text/javascript">
 <!--
-//
-// Should really check the browser to stop this whining ...
-//
 function marklist(status)
 {
 	for (i = 0; i < document.log.length; i++)
