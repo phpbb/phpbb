@@ -936,7 +936,7 @@ switch ($mode)
 			else
 			{
 				$sql = 'SELECT p.post_id
-					FROM ' . POSTS_TABLE . ' p
+					FROM ' . POSTS_TABLE . " p
 					WHERE p.topic_id = $topic_id
 						$limit_posts_time
 					ORDER BY $sort_order";
@@ -1191,8 +1191,6 @@ function mcp_header($template_name, $forum_nav = FALSE, $jump_mode = 'forum_view
 	{
 //		$extra_form_fields['post_id_list'] = $_GET['post_id_list'];
 	}
-
-	$url = "mcp.$phpEx$SID" . ((!empty($_GET['post_id_list'])) ? '&amp;post_id_list
 
 	$page_title = sprintf($user->lang['MCP'], '', '');
 	include($phpbb_root_path . 'includes/page_header.' . $phpEx);
