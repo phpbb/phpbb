@@ -50,11 +50,10 @@ if (!isset($HTTP_POST_VARS) && isset($_POST))
 if (@phpversion() < '4.0.0')
 {
 	// PHP3 path; in PHP3, globals are _always_ registered
-	$not_unset = array('HTTP_GET_VARS', 'HTTP_POST_VARS', 'HTTP_COOKIE_VARS', 'HTTP_SERVER_VARS', 'HTTP_ENV_VARS', 'HTTP_POST_FILES', 'phpEx', 'phpbb_root_path');
 	
 	// We 'flip' the array of variables to test like this so that
 	// we can validate later with isset($test[$var]) (no in_array())
-	$test = array('HTTP_GET_VARS' => NULL, 'HTTP_POST_VARS' => NULL, 'HTTP_COOKIE_VARS' => NULL, 'HTTP_SERVER_VARS' => NULL, 'HTTP_ENV_VARS' => NULL, 'HTTP_POST_FILES' => NULL);
+	$test = array('HTTP_GET_VARS' => NULL, 'HTTP_POST_VARS' => NULL, 'HTTP_COOKIE_VARS' => NULL, 'HTTP_SERVER_VARS' => NULL, 'HTTP_ENV_VARS' => NULL, 'HTTP_POST_FILES' => NULL, 'phpEx' => NULL, 'phpbb_root_path' => NULL);
 
 	// Loop through each input array
 	@reset($test);
@@ -63,7 +62,7 @@ if (@phpversion() < '4.0.0')
 		while (list($var,) = @each($$input))
 		{
 			// Validate the variable to be unset
-			if (!isset($test[$var]) && $var != 'test' && $var != 'input' && $var != 'not_unset' && !in_array($var, $not_unset))
+			if (!isset($test[$var]) && $var != 'test' && $var != 'input' && $var != 'not_unset')
 			{
 				unset($$var);
 			}
