@@ -1,13 +1,13 @@
 <?php
+
 /***************************************************************************
- *                           lang_admin.php [Norwegian]
+ *                            lang_admin.php [Norwegian]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
  *     $Id$
- *
  *
  ****************************************************************************/
 
@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 // 
-// Norwegian translation by lanes, shantra & water
+//   Norwegian translation by lanes, shantra & water
 // 
 
 //
@@ -236,11 +236,17 @@ $lang['Config_explain'] = "Feltene under vil tillate deg i å tilpasse alle de ge
 $lang['Click_return_config'] = "Klikk %sHer%s for å returnere til Generell Konfigurasjon";
 
 $lang['General_settings'] = "Generelle Forum Innstillinger";
+$lang['Server_name'] = "Domene navn";
+$lang['Server_name_explain'] = "Domene navnet dette forumet ligger under.";
+$lang['Script_path'] = "Sti";
+$lang['Script_path_explain'] = "Sti, relativ i forhold til domenet, til phpBB2 katalogen.";
+$lang['Server_port'] = "Server Port";
+$lang['Server_port_explain'] = "Porten servern kjører på, du skal bare endre denne dersom serveren kjører på en annen port.";
 $lang['Site_name'] = "Nettsidens Navn";
 $lang['Site_desc'] = "Beskrivelse av Nettsiden";
 $lang['Board_disable'] = "Slå Av Forumet";
 $lang['Board_disable_explain'] = "Dette vil gjøre forumet utilgjengelig for brukerne. Ikke logg ut når du slår av forumet, du vil ikke kunne logge inn igjen!";
-$lang['Acct_activation'] = "Aktivèr Konto Aktivering";
+$lang['Acct_activation'] = "Aktiver Konto Aktivering";
 $lang['Acc_None'] = "Ingen"; // These three entries are the type of activation
 $lang['Acc_User'] = "Bruker";
 $lang['Acc_Admin'] = "Administrator";
@@ -298,8 +304,12 @@ $lang['Admin_email'] = "Administrator Epost Adresse";
 $lang['Email_sig'] = "Epost Signatur";
 $lang['Email_sig_explain'] = "Denne signaturen blir lagt på all epost som sendes fra forumet.";
 $lang['Use_SMTP'] = "Bruk en SMTP Server";
-$lang['Use_SMTP_explain'] = "Markèr Ja hvis du ønsker eller må sende epost via en SMTP server isteden for den lokale epostfunksjonaliteten.";
+$lang['Use_SMTP_explain'] = "Marker Ja hvis du ønsker eller må sende epost via en SMTP server isteden for den lokale epostfunksjonaliteten.";
 $lang['SMTP_server'] = "SMTP Server Adresse";
+$lang['SMTP_username'] = "SMTP Brukernavn";
+$lang['SMTP_username_explain'] = "Brukernavn fylles ut bare dersom SMTP serveren krever det.";
+$lang['SMTP_password'] = "SMTP Passord";
+$lang['SMTP_password_explain'] = "Passord fylles ut bare dersom SMTP serveren krever det.";
 
 $lang['Disable_privmsg'] = "Private Meldinger";
 $lang['Inbox_limits'] = "Maks Meldinger i Innboks";
@@ -678,21 +688,25 @@ $lang['Download_config'] = "Last ned Config";
 
 $lang['ftp_choose'] = "Velg Nedlastings Metode";
 $lang['ftp_option'] = "<br />Siden FTP extensions er aktivert i denne versionen av PHP kan du bli gitt muligheten for først å automatisk prøve å ftp'e filen til rett sted.";
-$lang['ftp_instructs'] = "Du har valgt å automatisk ftp'e filen til kontoen som inneholder phpBB 2. Vennligst skriv inn informasjonen nedenfor for å benytte deg av denne prosessen. Husk at FTP stien skal være den eksakte stien til din phpBB 2 installasjon akkurat som om du ftp'er til den via din normale klient.";
-$lang['ftp_info'] = "Skriv inn din FTP Informasjon";
-$lang['Attempt_ftp'] = "Forsøk å ftp'e config filen til det valgte stedet";
-$lang['Send_file'] = "Bare send filen til meg og jeg vil ftp'e den manuelt";
+$lang['ftp_instructs'] = "Du har valgt å automatisk ftp'e filen til kontoen som inneholder phpBB 2. Vennligst skriv inn informasjonen nedenfor for å benytte deg av denne prosessen. Husk at FTP stien skal være den eksakte stien til din phpBB 2 installasjon akkurat som om du benytter ditt vanlige FTP program.";
+$lang['ftp_info'] = "Skriv inn din FTP informasjon";
+$lang['Attempt_ftp'] = "Overfør config.php til serveren vha. FTP";
+$lang['Send_file'] = "Send config.php til meg, slik at jeg kan laste den opp manuelt vha. FTP";
 $lang['ftp_path'] = "FTP sti til phpBB 2";
 $lang['ftp_username'] = "Ditt FTP Brukernavn";
 $lang['ftp_password'] = "Ditt FTP Passord";
 $lang['Transfer_config'] = "Start Overførsel";
-$lang['NoFTP_config'] = "Forsøk på å ftp'e config filen på plass gikk ikke. Vennligst last ned config filen og ftp den manuelt på plass."; 
+$lang['NoFTP_config'] = "Det gikk ikke å overføre config.php vha. FTP. Vennligst last ned config.php og FTP den til serveren manuelt."; 
 
 
-$lang['Install'] = "Installèr";
+$lang['Install'] = "Installer";
 $lang['Upgrade'] = "Oppgrader";
 
 $lang['Install_Method'] = "Velg Installasjons Metode";
+
+$lang['Install_No_Ext'] = "PHP konfigurasjonen på din server støtter ikke den databasen du har valgt";
+
+$lang['Install_No_PCRE'] = "phpBB2 krever at PHP er konfigurert med \"Perl Compatible Regular Expressions Module for PHP\", det tyder på at PHP på din server ikke er konfigurert med støtte for denne modulen.";
 
 //
 // That's all Folks!

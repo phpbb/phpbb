@@ -1,6 +1,7 @@
 <?php
+
 /***************************************************************************
- *                        lang_bbcode.php [Norwegian]
+ *                         lang_bbcode.php [english]
  *                            -------------------
  *   begin                : Wednesday Oct 3, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -10,6 +11,7 @@
  *
  *
  ***************************************************************************/
+
 
 /***************************************************************************
  *
@@ -21,8 +23,26 @@
  ***************************************************************************/
 
 // 
-// Norwegian translation by lanes, shantra & water
+//   Norwegian translation by lanes, shantra & water
 // 
+
+//
+// To add an entry to your BBCode guide simply add a line to this file in this format:
+// $faq[] = array("question", "answer");
+// If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
+// Links will be created automatically
+//
+// DO NOT forget the ; at the end of the line.
+// Do NOT put double quotes (") in your BBCode guide entries, if you absolutely must then escape them ie. \"something\"
+//
+// The BBCode guide items will appear on the BBCode guide page in the same order they are listed in this file
+//
+// If just translating this file please do not alter the actual HTML unless absolutely necessary, thanks :)
+//
+// In addition please do not translate the colours referenced in relation to BBCode any section, if you do
+// users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
+// references which are 'in-line' within the text though.
+//
 
 
 $faq[] = array("--","Introduksjon");

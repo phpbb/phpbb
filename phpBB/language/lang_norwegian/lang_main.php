@@ -1,15 +1,14 @@
 <?php
 /***************************************************************************
- *                         lang_main.php [Norwegian]
- *                            -------------------
- *   begin                : Saturday Dec 16 2000
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
+ *			      lang_main.php [English]
+ *				-------------------
+ *     begin		    : Sat Dec 16 2000
+ *     copyright	    : (C) 2001 The phpBB Group
+ *     email		    : support@phpbb.com
  *
- *   $Id$
+ *     $Id$
  *
- *
- ***************************************************************************/
+ ****************************************************************************/
 
 /***************************************************************************
  *
@@ -21,15 +20,26 @@
  ***************************************************************************/
 
 // 
-// Norwegian translation by lanes, shantra & water
+//   Norwegian translation by lanes, shantra & water
 // 
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
+//
 
 //setlocale(LC_ALL, "no");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['LEFT'] = "VENSTRE";
+$lang['RIGHT'] = "HØYRE";
 $lang['DATE_FORMAT'] =	"d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -285,6 +295,7 @@ $lang['Start_watching_topic'] = "Abonner på dette temaet";
 $lang['No_longer_watching'] = "Abonnementet på dette temaet er avluttet";
 $lang['You_are_watching'] = "Abonnementet på dette temaet er opprettet";
 
+$lang['Total_votes'] = "Antall stemmer";
 
 //
 // Posting/Replying (Not private messaging!)
