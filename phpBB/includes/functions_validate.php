@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,7 +16,6 @@
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
- *
  *
  ***************************************************************************/
 
@@ -35,51 +33,47 @@ function validate_username($username)
 	$sql = "SELECT username 
 		FROM " . USERS_TABLE . " 
 		WHERE LOWER(username) = '" . strtolower($username) . "'";
-	if ( $result = $db->sql_query($sql) )
+	$result = $db->sql_query($sql);
+
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		if ( $row = $db->sql_fetchrow($result) )
+		if ( ( $userdata['session_logged_in'] && $row['username'] != $userdata['username'] ) || !$userdata['session_logged_in'] )
 		{
-			if ( ( $userdata['session_logged_in'] && $row['username'] != $userdata['username'] ) || !$userdata['session_logged_in'] )
-			{
-				return array('error' => true, 'error_msg' => $lang['Username_taken']);
-			}
+			return array('error' => true, 'error_msg' => $lang['Username_taken']);
 		}
 	}
 
 	$sql = "SELECT group_name
 		FROM " . GROUPS_TABLE . " 
 		WHERE LOWER(group_name) = '" . strtolower($username) . "'";
-	if ( $result = $db->sql_query($sql) )
+	$result = $db->sql_query($sql);
+
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			return array('error' => true, 'error_msg' => $lang['Username_taken']);
-		}
+		return array('error' => true, 'error_msg' => $lang['Username_taken']);
 	}
 
 	$sql = "SELECT disallow_username
 		FROM " . DISALLOW_TABLE;
-	if ( $result = $db->sql_query($sql) )
+	$result = $db->sql_query($sql);
+
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		while( $row = $db->sql_fetchrow($result) )
+		if ( preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'])) . ')\b#i', $username) )
 		{
-			if ( preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['disallow_username'])) . ")\b#i", $username) )
-			{
-				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
-			}
+			return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 		}
 	}
 
 	$sql = "SELECT word 
 		FROM  " . WORDS_TABLE;
-	if ( $result = $db->sql_query($sql) )
+	$result = $db->sql_query($sql);
+
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		while( $row = $db->sql_fetchrow($result) )
+		if ( preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['word'])) . ')\b#i', $username) )
 		{
-			if ( preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'])) . ")\b#i", $username) )
-			{
-				return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
-			}
+			return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 		}
 	}
 
@@ -106,25 +100,21 @@ function validate_email($email)
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
-			if ( $result = $db->sql_query($sql) )
+			$result = $db->sql_query($sql);
+
+			while( $row = $db->sql_fetchrow($result) )
 			{
-				while( $row = $db->sql_fetchrow($result) )
+				$match_email = str_replace('*', '.*?', $row['ban_email']);
+				if ( preg_match('/^' . $match_email . '$/is', $email) )
 				{
-					$match_email = str_replace('*', '.*?', $row['ban_email']);
-					if ( preg_match('/^' . $match_email . '$/is', $email) )
-					{
-						return array('error' => true, 'error_msg' => $lang['Email_banned']);
-					}
+					return array('error' => true, 'error_msg' => $lang['Email_banned']);
 				}
 			}
 
 			$sql = "SELECT user_email
 				FROM " . USERS_TABLE . "
 				WHERE user_email = '" . str_replace("\'", "''", $email) . "'";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
-			}
+			$result = $db->sql_query($sql);
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
@@ -162,7 +152,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if ( $website != "" )
+	if ( $website != '' )
 	{
 		if ( !preg_match('#^http:\/\/#i', $website) )
 		{

@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,33 +25,24 @@ if ( !defined('IN_PHPBB') )
 }
 
 //
-// Show the overall footer.
-//
-$admin_link = ( $userdata['user_level'] == ADMIN ) ? '<a href="' . append_sid("admin/index.$phpEx") . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
-
-$template->set_filenames(array(
-	'overall_footer' => ( empty($gen_simple_header) ) ? 'overall_footer.tpl' : 'simple_footer.tpl')
-);
-
-//
 // Output page creation time
 //
-if ( DEBUG )
+if ( defined('DEBUG') )
 {
 	$mtime = microtime();
 	$mtime = explode(' ', $mtime);
 	$totaltime = ( $mtime[1] + $mtime[0] ) - $starttime;
-	$gzip_text = ( $board_config['gzip_compress'] ) ? 'GZIP compression enabled' : 'GZIP compression disabled';
+
+	$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $board_config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . (( $session->load ) ? $session->load : 'N/A') . ' ]', $totaltime);
 }
 
 $template->assign_vars(array(
-	'PHPBB_VERSION' => '2' . $board_config['version'],
-	'TRANSLATION_INFO' => ( isset($lang['TRANSLATION_INFO']) ) ? $lang['TRANSLATION_INFO'] : '', 
-	'ADMIN_LINK' => $admin_link, 
-	'DEBUG_OUTPUT' => ( DEBUG ) ? sprintf('<br /><br />phpBB Created this page in %f seconds : ' . $db->sql_num_queries() . ' queries executed : ' .  $gzip_text, $totaltime) : '')
+	'PHPBB_VERSION' => $board_config['version'], 
+	'ADMIN_LINK' => ( $acl->get_acl_admin() ) ? '<a href="' . "admin/index.$phpEx$SID" . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '', 
+	'DEBUG_OUTPUT' => ( defined('DEBUG') ) ? $debug_output : '')
 );
 
-$template->pparse('overall_footer');
+$template->display('body');
 
 //
 // Close our DB connection.
