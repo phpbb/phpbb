@@ -13,7 +13,7 @@
 CREATE TABLE phpbb_banlist (
    ban_id int(10) NOT NULL auto_increment,
    ban_userid int(10),
-   ban_ip int(10),
+   ban_ip int(11),
    ban_start int(10),
    ban_end int(10),
    ban_time_type int(10),
@@ -46,7 +46,6 @@ CREATE TABLE phpbb_config (
    allow_bbcode tinyint(3),
    allow_sig tinyint(3),
    allow_namechange tinyint(3),
-   require_activation tinyint(3),
    selected int(2) DEFAULT '0' NOT NULL,
    posts_per_page int(10),
    hot_threshold int(10),
@@ -55,7 +54,6 @@ CREATE TABLE phpbb_config (
    override_themes tinyint(3),
    email_sig varchar(255),
    email_from varchar(100),
-   system_timezone varchar(4),
    default_lang varchar(255),
    PRIMARY KEY (config_id),
    UNIQUE selected (selected)
@@ -189,33 +187,34 @@ CREATE TABLE phpbb_priv_msgs (
 #
 
 CREATE TABLE phpbb_ranks (
-   rank_id int(10) NOT NULL auto_increment,
+   rank_id int(11) NOT NULL auto_increment,
    rank_title varchar(50) NOT NULL,
-   rank_min int(10) DEFAULT '0' NOT NULL,
-   rank_max int(10) DEFAULT '0' NOT NULL,
-   rank_special int(2) DEFAULT '0',
+   rank_min int(11) DEFAULT '0' NOT NULL,
+   rank_max int(11) DEFAULT '0' NOT NULL,
+   rank_special tinyint(4) DEFAULT '0',
    rank_image varchar(255),
    PRIMARY KEY (rank_id),
    KEY rank_min (rank_min),
-   KEY rank_max (rank_max)
+   KEY rank_max (rank_max),
+   KEY rank_id (rank_id)
 );
 
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_sessions'
+# Table structure for table 'phpbb_session'
 #
 
-CREATE TABLE phpbb_sessions (
-   sess_id int(10) unsigned DEFAULT '0' NOT NULL,
-   user_id int(10) DEFAULT '0' NOT NULL,
-   start_time int(10) unsigned DEFAULT '0' NOT NULL,
-   remote_ip int(10) DEFAULT '0' NOT NULL,
-   username varchar(40),
-   forum int(10),
-   PRIMARY KEY (sess_id),
-   KEY start_time (start_time),
-   KEY remote_ip (remote_ip)
+CREATE TABLE phpbb_session (
+   session_id int(10) unsigned DEFAULT '0' NOT NULL,
+   session_user_id int(10) DEFAULT '0' NOT NULL,
+   session_time int(10) unsigned DEFAULT '0' NOT NULL,
+   session_ip int(10) DEFAULT '0' NOT NULL,
+   session_forum int(10),
+   session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (session_id),
+   KEY start_time (session_time),
+   KEY remote_ip (session_ip)
 );
 
 
@@ -266,7 +265,8 @@ CREATE TABLE phpbb_topics (
    topic_notify tinyint(3) DEFAULT '0',
    topic_last_post_id int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (topic_id),
-   KEY forum_id (forum_id)
+   KEY forum_id (forum_id),
+   KEY topic_id (topic_id)
 );
 
 
@@ -276,7 +276,7 @@ CREATE TABLE phpbb_topics (
 #
 
 CREATE TABLE phpbb_users (
-   user_id int(10) NOT NULL auto_increment,
+   user_id int(11) NOT NULL auto_increment,
    username varchar(40) NOT NULL,
    user_regdate varchar(20) NOT NULL,
    user_password varchar(32) NOT NULL,
@@ -288,24 +288,24 @@ CREATE TABLE phpbb_users (
    user_intrest varchar(150),
    user_sig varchar(255),
    user_viewemail tinyint(3),
-   user_theme int(10),
+   user_theme int(11),
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
-   user_posts int(10) DEFAULT '0',
+   user_posts int(11) DEFAULT '0',
    user_attachsig tinyint(3),
    user_desmile tinyint(3),
    user_html tinyint(3),
    user_bbcode tinyint(3),
-   user_rank int(10) DEFAULT '0',
-   user_level int(10) DEFAULT '1',
+   user_rank int(11) DEFAULT '0',
+   user_avatar varchar(100),
+   user_level int(11) DEFAULT '1',
    user_lang varchar(255),
-   user_timezone varchar(4),
-   user_active tinyint(3),
    user_actkey varchar(32),
    user_newpasswd varchar(32),
    user_notify tinyint(3),
-   PRIMARY KEY (user_id)
+   PRIMARY KEY (user_id),
+   KEY user_id (user_id)
 );
 
 
@@ -337,4 +337,5 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
+
 
