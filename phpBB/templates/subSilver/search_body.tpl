@@ -27,7 +27,7 @@
 		</span> </td>
 	</tr>
 	<tr> 
-	  <td class="catSides" colspan="4" align="center" height="28"><b><span class="gen">{L_SEARCH_OPTIONS}</span></b></td>
+	  <th class="thHead" colspan="4" height="25">{L_SEARCH_OPTIONS}</th>
 	</tr>
 	<tr> 
 	  <td class="row1" align="right"><span class="gen">{L_FORUM}:&nbsp;</span></td>
@@ -61,19 +61,19 @@
 	<tr> 
 	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_DISPLAY_RESULTS}:&nbsp;</span></td>
 	  <td class="row2" nowrap="nowrap"> 
-		<input type="radio" name="showresults" value="posts" checked />
+		<input type="radio" name="showresults" value="posts" />
 		<span class="genmed">{L_POSTS}
-		<input type="radio" name="showresults" value="topics" />
+		<input type="radio" name="showresults" value="topics" checked="checked" />
 		{L_TOPICS}</span></td>
 	  <td class="row1" align="right" nowrap="nowrap"><span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span></td>
 	  <td class="row2" valign="middle"><span class="genmed">
-		<select class="post" name="sortby">{S_TIME_OPTIONS}
+		<select class="post" name="resultdays">{S_TIME_OPTIONS}
 		</select>
 		</span></td>
 	</tr>
 	<tr> 
 	  <td class="catBottom" colspan="4" align="center" height="28">{S_HIDDEN_FIELDS} 
-		<input class="liteoption" type="submit" name="submit" value="{L_SEARCH}" />
+		<input class="liteoption" type="submit" value="{L_SEARCH}" />
 	  </td>
 	</tr>
   </table>
