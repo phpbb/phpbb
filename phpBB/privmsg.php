@@ -1050,7 +1050,7 @@ else if( $submit || $refresh || $mode != "" )
 
 				if( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) )
 				{
-					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+					$path = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? ( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/") ? "" : dirname($HTTP_SERVER_VARS['PATH_INFO']) ) : ( (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) );
 					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 

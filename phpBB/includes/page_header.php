@@ -149,7 +149,7 @@ $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_o
 $l_online_users = ( $total_online_users == 1 ) ? sprintf($lang['Online_user_total'], $total_online_users) : sprintf($lang['Online_users_total'], $total_online_users);
 $l_online_users .= ( $logged_visible_online == 1 ) ? sprintf($lang['Reg_user_total'], $logged_visible_online) : sprintf($lang['Reg_users_total'], $logged_visible_online); 
 $l_online_users .= ( $logged_hidden_online == 1 ) ? sprintf($lang['Hidden_user_total'], $logged_hidden_online) : sprintf($lang['Hidden_user_total'], $logged_hidden_online); 
-$l_online_users .= ( $guests_online == 1 ) ? sprintf($lang['Guest_user_total'], $guests_online) : sprintf($lang['Guest_user_total'], $guests_online); 
+$l_online_users .= ( $guests_online == 1 ) ? sprintf($lang['Guest_user_total'], $guests_online) : sprintf($lang['Guest_users_total'], $guests_online); 
 
 //
 // Obtain number of new private messages

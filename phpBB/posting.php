@@ -1057,7 +1057,7 @@ if( $submit && $mode != "vote" )
 		$post_username = "";
 	}
 
-	$post_subject = trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['subject'])));
+	$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
 	if( $mode == 'newtopic' && empty($post_subject) )
 	{
 		$error = TRUE;
@@ -1068,7 +1068,7 @@ if( $submit && $mode != "vote" )
 		$error_msg .= $lang['Empty_subject'];
 	}
 
-	$post_message = trim(str_replace("&nbsp;", " ", $HTTP_POST_VARS['message']));
+	$post_message = trim($HTTP_POST_VARS['message']);
 	if( !empty($post_message) )
 	{
 		if( !$error )
@@ -1323,7 +1323,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-									$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+									$path = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? ( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/") ? "" : dirname($HTTP_SERVER_VARS['PATH_INFO']) ) : ( (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) );
 									$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 									$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 

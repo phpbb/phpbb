@@ -128,7 +128,7 @@ $lang['Reg_user_total'] = "%d Registered, ";
 $lang['Hidden_users_total'] = "%d Hidden and ";
 $lang['Hidden_user_total'] = "%d Hidden and ";
 $lang['Guest_users_total'] = "%d Guests";
-$lang['Guest_user_total'] = "%d Guests";
+$lang['Guest_user_total'] = "%d Guest";
 
 $lang['You_last_visit'] = "You last visited on %s"; // %s replaced by date/time
 $lang['Search_new'] = "View posts since last visit";

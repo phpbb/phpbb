@@ -170,7 +170,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-	$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+	$path = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? ( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/") ? "" : dirname($HTTP_SERVER_VARS['PATH_INFO']) ) : ( (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) );
 	$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 	$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ? ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" ) : "http://";
 
@@ -363,7 +363,7 @@ else if( $group_id )
 
 				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-				$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+				$path = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? ( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/") ? "" : dirname($HTTP_SERVER_VARS['PATH_INFO']) ) : ( (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) );
 				$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 				$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
@@ -476,7 +476,7 @@ else if( $group_id )
 
 					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-					$path = (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']);
+					$path = ( isset($HTTP_SERVER_VARS['PATH_INFO']) ) ? ( dirname($HTTP_SERVER_VARS['PATH_INFO']) == "/") ? "" : dirname($HTTP_SERVER_VARS['PATH_INFO']) ) : ( (dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) == "/") ? "" : dirname($HTTP_SERVER_VARS['SCRIPT_NAME']) );
 					$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
 					$protocol = ( !empty($HTTP_SERVER_VARS['HTTPS']) ) ?  ( ( $HTTP_SERVER_VARS['HTTPS'] == "on" ) ? "https://" : "http://" )  : "http://";
 
