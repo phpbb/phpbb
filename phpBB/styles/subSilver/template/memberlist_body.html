@@ -116,7 +116,7 @@ function marklist(status)
 	<!-- ENDIF -->
 
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-		<td class="gen" align="center"><a href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></td>
+		<td class="gen" align="center"><a href="{memberrow.U_VIEWPROFILE}"><!-- IF memberrow.USER_COLOR --><b style="color:{memberrow.USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{memberrow.USERNAME}</b></a></td>
 		<td class="gensmall" align="center" valign="middle" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center" valign="middle">{memberrow.POSTS}</td>
 		<td class="gen" align="center" valign="middle">{memberrow.RANK_IMG}</td>
