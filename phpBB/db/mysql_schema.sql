@@ -40,8 +40,8 @@ CREATE TABLE phpbb_user_group (
 #
 # Table structure for table 'phpbb_groups'
 #
-
 DROP TABLE IF EXISTS phpbb_groups;
+
 CREATE TABLE phpbb_groups (
    group_id int(11) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
@@ -371,14 +371,14 @@ CREATE TABLE `phpbb_themes` (
   `span_class3` varchar(25) default NULL,
   PRIMARY KEY  (`themes_id`),
   KEY `themes_name` (`themes_name`)
-)
+);
 
 
 # --------------------------------------------------------
 #
 # Table structure for table 'phpbb_themes_name'
 #
-DROP TABLE IF EXISTS phpbb_themes_name;
+# DROP TABLE IF EXISTS phpbb_themes_name;
 
 CREATE TABLE phpbb_themes_name (
    themes_id int(11) DEFAULT '0' NOT NULL,
