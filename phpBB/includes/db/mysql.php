@@ -57,9 +57,9 @@ class sql_db
 			return false;
 		}
 
-		if (count($this->open_queries))
+		if (sizeof($this->open_queries))
 		{
-			foreach ($this->open_queries as $query_id)
+			foreach ($this->open_queries as $i_query_id => $query_id)
 			{
 				@mysql_free_result($query_id);
 			}
@@ -111,8 +111,11 @@ class sql_db
 		{
 			global $cache;
 
-			// DEBUG
-			$this->sql_report('start', $query);
+			// EXPLAIN only in extra debug mode
+			if (defined('DEBUG_EXTRA'))
+			{
+				$this->sql_report('start', $query);
+			}
 
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
@@ -125,22 +128,24 @@ class sql_db
 					$this->sql_error($query);
 				}
 
-				// DEBUG
-				$this->sql_report('stop', $query);
+				if (defined('DEBUG_EXTRA'))
+				{
+					$this->sql_report('stop', $query);
+				}
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
+					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
-					// mysql_free_result happened within sql_save()
+					// mysql_free_result called within sql_save()
 				}
-				elseif (preg_match('/^SELECT/', $query))
+				else if (strpos($query, 'SELECT') !== false && $this->query_result)
 				{
-					$this->open_queries[] = $this->query_result;
+					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else
+			else if (defined('DEBUG_EXTRA'))
 			{
-				// DEBUG
 				$this->sql_report('fromcache', $query);
 			}
 		}
@@ -258,7 +263,9 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if (method_exists($cache, 'sql_fetchrow') && $cache->sql_exists($query_id))
+		// This method is called too often... do not waste memory by calling/checking unneeded things
+//		if (method_exists($cache, 'sql_fetchrow') && $cache->sql_exists($query_id))
+		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
@@ -345,17 +352,13 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if ($query_id)
+		if (isset($this->open_queries[(int) $query_id]))
 		{
-			// If it is not found within the open queries, we try to free a cached result. ;)
-			if (!(array_search($query_id, $this->open_queries) > 0))
-			{
-				return false;
-			}
-			unset($this->open_queries[array_search($query_id, $this->open_queries)]);
+			unset($this->open_queries[(int) $query_id]);
+			return @mysql_free_result($query_id);
 		}
 
-		return ($query_id) ? @mysql_free_result($query_id) : false;
+		return false;
 	}
 
 	function sql_escape($msg)
@@ -367,8 +370,8 @@ class sql_db
 	{
 		if (!$this->return_on_error)
 		{
-			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-			$this_page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
+			$this_page = (isset($_SERVER['PHP_SELF']) && !empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+			$this_page .= '&' . ((isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : (isset($_ENV['QUERY_STRING']) ? $_ENV['QUERY_STRING'] : ''));
 
 			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
 
@@ -388,7 +391,6 @@ class sql_db
 		return $result;
 	}
 
-	// DEBUG
 	function sql_report($mode, $query = '')
 	{
 		if (empty($_GET['explain']))

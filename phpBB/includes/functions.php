@@ -1389,7 +1389,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (defined('DEBUG_EXTRA'))
 			{
 				// Remove me
-				if (!strstr($errfile, '/cache/') && !strstr($errfile, 'mysql.php') && !strstr($errfile, 'template.php'))
+				if (!strstr($errfile, '/cache/') && !strstr($errfile, 'template.php'))
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
 				}
@@ -1533,7 +1533,7 @@ function page_header($page_title = '')
 				$reading_sql
 				AND u.user_id = s.session_user_id
 			ORDER BY u.username ASC, s.session_ip ASC";
-		$result = $db->sql_query($sql, false);
+		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1579,6 +1579,7 @@ function page_header($page_title = '')
 
 			$prev_session_ip = $row['session_ip'];
 		}
+		$db->sql_freeresult($result);
 
 		if (!$online_userlist)
 		{

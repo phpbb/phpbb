@@ -234,6 +234,9 @@ class bbcode_firstpass extends bbcode
 						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 					}
 
+					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
+					$code = strtr($code, array_flip(get_html_translation_table(HTML_ENTITIES)));
+
 					ob_start();
 					highlight_string($code);
 					$code = ob_get_contents();

@@ -162,7 +162,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 			$forum_unread[$parent_id] = true;
 		}
 	}
-	$db->sql_freeresult();
+	$db->sql_freeresult($result);
 
 	// Handle marking posts
 	if ($mark_read == 'forums')
