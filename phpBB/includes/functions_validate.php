@@ -134,7 +134,7 @@ function validate_email($email)
 							return array('error' => true, 'error_msg' => $lang['Email_banned']);
 						}
 					}
-					while($row = $db->sql_fetchrow($result))
+					while($row = $db->sql_fetchrow($result));
 				}
 			}
 			$db->sql_freeresult($result);
