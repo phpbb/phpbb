@@ -198,7 +198,7 @@ if($online_count)
 
 		if( $logged_on && ( !$hidden || $userdata['user_level'] == ADMIN ) )
 		{
-			if($count % 2))
+			if(!($count % 2))
 			{
 				$row_color = "#" . $theme['td_color1'];
 			}
