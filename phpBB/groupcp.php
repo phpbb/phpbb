@@ -1245,7 +1245,7 @@ else
 			$template->assign_block_vars('switch_groups_remaining', array() );
 		}
 
-		$s_hidden_fields = '';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 		$template->assign_vars(array(
 			'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],
