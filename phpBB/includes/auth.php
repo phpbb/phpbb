@@ -281,12 +281,12 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						break;
 
 					case AUTH_ACL:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Users_granted_access'];
 						break;
 		
 					case AUTH_MOD:
-						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Moderators'];
 						break;
 	
@@ -315,7 +315,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		for($k = 0; $k < count($f_access); $k++)
 		{
 			$f_forum_id = $f_access[$k]['forum_id'];
-			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+			$auth_user[$f_forum_id]['auth_mod'] = ($userdata['session_logged_in'] && $num_u_access) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
 	}
 
