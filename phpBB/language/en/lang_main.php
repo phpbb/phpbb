@@ -114,9 +114,13 @@ $lang = array(
 	'VIEW_MESSAGE'	=> 'Click %sHere%s to view your message',
 
 
+	'Information' => 'Information',
+
+
 	'BOARD_DISABLE'		=> 'Sorry but this board is currently unavailable',
 	'BOARD_UNAVAILABLE' => 'Sorry but the board is temporarily unavailable, please try again in a few minutes',
 	'BOARD_BANNED'		=> 'You have been banned from this forum<br />Please contact the %sboard administrator%s for more information',
+	'EMAIL_DISABLED'	=> 'Sorry but all emailing functions have been disabled.', 
 
 
 	'G_ADMINISTRATORS' 	=> 'ADMINISTRATORS',
@@ -161,30 +165,31 @@ $lang = array(
 	'Registered_users'		=> 'Registered Users:',
 	'Browsing_forum_guest'	=> 'Users browsing this forum: %1$s and %2$d guest',
 	'Browsing_forum_guests'	=> 'Users browsing this forum: %1$s and %2$d guests',
-	'Online_users_zero_total'	=> 'In total there are <b>0</b> users online :: ',
-	'Online_users_total'		=> 'In total there are <b>%d</b> users online :: ',
-	'Online_user_total'			=> 'In total there is <b>%d</b> user online :: ',
-	'Reg_users_zero_total'	=> '0 Registered, ',
-	'Reg_users_total'		=> '%d Registered, ',
-	'Reg_user_total'		=> '%d Registered, ',
-	'Hidden_users_zero_total'	=> '0 Hidden and ',
-	'Hidden_user_total'			=> '%d Hidden and ',
-	'Hidden_users_total'		=> '%d Hidden and ',
-	'Guest_users_zero_total'=> '0 Guests',
-	'Guest_users_total'		=> '%d Guests',
-	'Guest_user_total'		=> '%d Guest',
+
+	'ONLINE_USERS_ZERO_TOTAL'	=> 'In total there are <b>0</b> users online :: ',
+	'ONLINE_USERS_TOTAL'		=> 'In total there are <b>%d</b> users online :: ',
+	'ONLINE_USER_TOTAL'			=> 'In total there is <b>%d</b> user online :: ',
+	'REG_USERS_ZERO_TOTAL'		=> '0 Registered, ',
+	'REG_USERS_TOTAL'			=> '%d Registered, ',
+	'REG_USER_TOTAL'			=> '%d Registered, ',
+	'HIDDEN_USERS_ZERO_TOTAL'	=> '0 Hidden and ',
+	'HIDDEN_USER_TOTAL'			=> '%d Hidden and ',
+	'HIDDEN_USERS_TOTAL'		=> '%d Hidden and ',
+	'GUEST_USERS_ZERO_TOTAL'	=> '0 Guests',
+	'GUEST_USERS_TOTAL'			=> '%d Guests',
+	'GUEST_USER_TOTAL'			=> '%d Guest',
+
 	'Posted_articles_zero_total'=> 'Our users have posted a total of <b>0</b> article',
 	'Posted_articles_total'		=> 'Our users have posted a total of <b>%d</b> articles',
 	'Posted_article_total'		=> 'Our users have posted a total of <b>%d</b> article',
 	'Posted_topics_zero_total'	=> 'Our users have posted a total of <b>0</b> topic',
 	'Posted_topics_total'		=> 'Our users have posted a total of <b>%d</b> topics',
 	'Posted_topic_total'		=> 'Our users have posted a total of <b>%d</b> topic',
+
 	'Registered_users_zero_total'	=> 'We have <b>0</b> registered users',
 	'Registered_users_total'		=> 'We have <b>%d</b> registered users',
 	'Registered_user_total'			=> 'We have <b>%d</b> registered user',
 	'Newest_user'	=> 'The newest registered user is <b>%s%s%s</b>',
-
-	'No_new_posts_last_visit' => 'No new posts since your last visit',
 
 	'NO_NEW_POSTS' => 'No new posts',
 	'NEW_POSTS' => 'New posts',
@@ -446,6 +451,18 @@ $lang = array(
 	'STYLES_TIP' 	=> 'Tip: Styles can be applied quickly to selected text',
 	'CLOSE_WINDOW' 	=> 'Close Window',
 	'Topic_reply_notification' => 'Topic Reply Notification',
+
+	'GENERAL_UPLOAD_ERROR'	=> 'Upload Error: Could not upload Attachment to %s',
+	'TOO_MANY_ATTACHMENTS'	=> 'Attachment cannot be added, since the max. number of %d Attachments in this post was achieved',
+	'INVALID_FILENAME'		=> '%s is an invalid filename',
+	'ATTACHMENT_PHP_SIZE_NA'=> 'The Attachment is too big.<br />Couldn\'t get the maximum Size defined in PHP.<br />The Attachment Mod is unable to determine the maximum Upload Size defined in the php.ini file.',
+	'ATTACHMENT_PHP_SIZE_OVERRUN' => 'The Attachment is too big.<br />Maximum Upload Size: %d MB.<br />Please note that this Size is defined in php.ini, this means it\'s set by PHP and the Attachment Mod can not override this value.',
+	'DISALLOWED_EXTENSION'	=> 'The Extension %s is not allowed',
+	'BYTES' => 'Bytes',
+	'KB'	=> 'KB',
+	'MB'	=> 'MB',
+	'ATTACHMENT_TOO_BIG'	=> 'The Attachment is too big, maximum size is %1d %2s',
+	'ATTACH_QUOTA_REACHED'	=> 'Sorry, the total board attachment quota has been reached.',
 	
 
 	'User_control_panel' => 'User Control Panel',
@@ -633,19 +650,6 @@ $lang = array(
 	'Password_activated' => 'Your account has been re-activated. To logon please use the password supplied in the email you received',
 
 
-	'GENERAL_UPLOAD_ERROR' => 'Upload Error: Could not upload Attachment to %s',
-	'TOO_MANY_ATTACHMENTS' => 'Attachment cannot be added, since the max. number of %d Attachments in this post was achieved',
-	'INVALID_FILENAME' => '%s is an invalid filename',
-	'ATTACHMENT_PHP_SIZE_NA' => 'The Attachment is too big.<br />Couldn\'t get the maximum Size defined in PHP.<br />The Attachment Mod is unable to determine the maximum Upload Size defined in the php.ini file.',
-	'ATTACHMENT_PHP_SIZE_OVERRUN' => 'The Attachment is too big.<br />Maximum Upload Size: %d MB.<br />Please note that this Size is defined in php.ini, this means it\'s set by PHP and the Attachment Mod can not override this value.',
-	'DISALLOWED_EXTENSION' => 'The Extension %s is not allowed',
-	'BYTES' => 'Bytes',
-	'KB' => 'KB',
-	'MB' => 'MB',
-	'ATTACHMENT_TOO_BIG' => 'The Attachment is too big.<br />Max Size: %1d %2s',
-	'ATTACH_QUOTA_REACHED' => 'Sorry, but the maximum filesize for all Attachments is reached. Please contact the Board Administrator if you have questions.',
-
-
 	'FIND_USERNAME'			=> 'Find a member',
 	'FIND_USERNAME_EXPLAIN' => 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format yyyy-mm-dd, e.g. 2002-01-01. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself). Alternatively you can mark the users required and click the Insert Marked button.',
 	'NO_MEMBERS'	=> 'No members found for this search criteria', 
@@ -785,7 +789,7 @@ $lang = array(
 	'No_search_match' => 'No topics or posts met your search criteria',
 	'Found_search_match' => 'Search found %d match',
 	'Found_search_matches' => 'Search found %d matches',
-
+	'No_new_posts_last_visit' => 'No new posts since your last visit',
 	
 	'Sorry_auth_announce' => 'Sorry but only %s can post announcements in this forum',
 	'Sorry_auth_sticky' => 'Sorry but only %s can post sticky messages in this forum',
@@ -830,7 +834,7 @@ $lang = array(
 	'Viewing_priv_msgs' => 'Viewing Private Messages',
 	'Viewing_FAQ' => 'Viewing FAQ', 
 
-	'All_times' => 'All times are %s %s',
+	'ALL_TIMES' => 'All times are %s %s',
 	'-13'	=> 'GMT - 13 Hours',
 	'-12'	=> 'GMT - 12 Hours',
 	'-11'	=> 'GMT - 11 Hours',
@@ -946,11 +950,5 @@ $lang = array(
 		'Dec' => 'Dec',
 	),
 
-	'Information' => 'Information',
-	'Critical_Information' => 'Critical Information',
-	'General_Error' => 'General Error',
-	'Critical_Error' => 'Critical Error',
-	'An_error_occured' => 'An Error Occurred',
-	'A_critical_error' => 'A Critical Error Occurred'
 );
 ?>
