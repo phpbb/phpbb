@@ -5,7 +5,7 @@
 
 {ERROR_BOX}
 
-<form action="{S_PROFILE_ACTION}" method="post"><table width="98%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+<form action="{S_PROFILE_ACTION}" enctype="multipart/form-data" method="post"><table width="98%" cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr> 
 	  <th class="thHead" colspan="2">{L_REGISTRATION_INFO}</th>
 	</tr>
@@ -129,6 +129,14 @@
 		<span class="gen">{L_NO}</span></td>
 	</tr>
 	<tr> 
+	  <td class="row1"><span class="gen">{L_NOTIFY_ON_REPLY}:</span></td>
+	  <td class="row2"> 
+		<input type="radio" name="notifyreply" value="1" {NOTIFY_REPLY_YES} />
+		<span class="gen">{L_YES}</span>&nbsp;&nbsp; 
+		<input type="radio" name="notifyreply" value="0" {NOTIFY_REPLY_NO} />
+		<span class="gen">{L_NO}</span></td>
+	</tr>
+	<tr> 
 	  <td class="row1"><span class="gen">{L_NOTIFY_ON_PRIVMSG}:</span></td>
 	  <td class="row2"> 
 		<input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} />
@@ -198,11 +206,12 @@
 	<tr> 
 	  <td class="catSides" colspan="2"><span class="cattitle">&nbsp;</span></td>
 	</tr>
+	<!-- BEGIN avatarblock -->
 	<tr> 
-	  <th class="thSides" colspan="2">{L_AVATAR_PANEL}</th>
+	  <th class="thSides" colspan="2" height="12" valign="middle">{L_AVATAR_PANEL}</th>
 	</tr>
-	<tr> 
-	  <td class="row1" colspan="2" align="center"> 
+	<tr align="center"> 
+	  <td class="row1" colspan="2"> 
 		<table width="70%" cellspacing="2" cellpadding="0" border="0">
 		  <tr> 
 			<td width="65%"><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
@@ -214,6 +223,39 @@
 		</table>
 	  </td>
 	</tr>
+	<!-- BEGIN avatarupload -->
+	<tr> 
+	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
+	  <td class="row2"> 
+		<input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" />
+		<input type="file" name="avatar" class="post"style="width: 200px"  />
+	  </td>
+	</tr>
+	<tr> 
+	  <td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span></td>
+	  <td class="row2"> 
+		<input type="text" name="avatarurl" size="40" class="post"style="width: 200px"  />
+	  </td>
+	</tr>
+	<!-- END avatarupload -->
+	<!-- BEGIN avatarremote -->
+	<tr> 
+	  <td class="row1"><span class="gen">{L_LINK_REMOTE_AVATAR}:</span></td>
+	  <td class="row2"> 
+		<input type="text" name="avatarremoteurl" size="40" class="post"style="width: 200px"  />
+	  </td>
+	</tr>
+	<!-- END avatarremote -->
+	<!-- BEGIN avatargallery -->
+	<tr> 
+	  <td class="row1"><span class="gen">{L_AVATAR_GALLERY}:</span></td>
+	  <td class="row2"> 
+		<input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="liteoption" />
+	  </td>
+	</tr>
+	<!-- END avatargallery -->
+	<!-- END avatarblock -->
+	<tr> 
 	<tr> 
 	  <td class="catSides" colspan="2">&nbsp;</td>
 	</tr>
