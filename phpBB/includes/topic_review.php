@@ -139,6 +139,11 @@ function topic_review($topic_id, $is_inline_review)
 				$poster = $row['post_username'];
 				$poster_rank = $lang['Guest'];
 			}
+			elseif ( $poster_id == ANONYMOUS )
+			{
+				$poster = $lang['Guest'];
+				$poster_rank = '';
+			}
 
 			$post_subject = ( $row['post_subject'] != '' ) ? $row['post_subject'] : '';
 
