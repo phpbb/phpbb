@@ -24,34 +24,63 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
-if($submit)
+if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 {
-   $userdata = get_userdata($username, $db);
-   if($userdata["error"])
-   {
-		error_die($db, LOGIN_FAILED);
-	}
-   else 
+	if($HTTP_POST_VARS['submit'] == "Login" && !$userdata['session_logged_in'])
 	{
-		if(!auth("login", $db))
-	  	{
-	   	error_die($db, LOGIN_FAILED);
-	  	}
-		else 
-	  	{
-	   	$sessid = new_session($userdata[user_id], $user_ip, $session_cookie_time, $db);
-			set_session_cookie($sessid, $session_cookie_time, $session_cookie, "", "", 0);
-			header("Location: index.$phpEx");
+
+		$username = $HTTP_POST_VARS["username"];
+		$password = $HTTP_POST_VARS["password"];
+		$sql = "SELECT *
+			FROM ".USERS_TABLE."
+			WHERE username = '$username'";
+		$result = $db->sql_query($sql);
+		if(!$result)
+		{
+			error_die($db, "Error in obtaining userdata : login");
+		}
+	
+		$rowresult = $db->sql_fetchrow($result);
+		if(count($rowresult))
+		{
+			if(md5($password) == $rowresult["user_password"])
+			{
+				$session_id = session_begin($db, $rowresult["user_id"], $user_ip, $session_length, 1, $rowresult["user_password"]);
+				if($session_id)
+				{
+					header("Location: index.$phpEx");
+				}
+				else
+				{
+					error_die($db, "Couldn't start session : login");
+				}
+			}
+			else
+			{
+				error_die($db, LOGIN_FAILED);
+			}
+		}
+		else
+		{
+			error_die($db, LOGIN_FAILED);
 		}
 	}
-}
-else if($logout)
-{
-	if($user_logged_in)
+	else if($HTTP_GET_VARS['submit'] == "logout" && $userdata['session_logged_in'])
 	{
-		end_user_session($userdata["user_id"], $db);
+		if($userdata['session_logged_in'])
+		{
+			session_end($db, $userdata["session_id"], $userdata["user_id"]);
+		}
+		header("Location: index.$phpEx");
 	}
+	else
+	{
+		header("Location: index.$phpEx");
+	}
+}
+else
+{
 	header("Location: index.$phpEx");
 }
-   
+
 ?>
