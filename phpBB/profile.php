@@ -484,7 +484,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				// so we have to explicitly get the next user ID
 				//
 				$sql = "SELECT MAX(user_id) AS total
-					FROM ".USERS_TABLE;
+					FROM " . USERS_TABLE;
 				if($result = $db->sql_query($sql))
 				{
 					$user_id_row = $db->sql_fetchrow($result);
@@ -854,14 +854,14 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$password_confirm = "";
 
 			$icq = $userdata['user_icq'];
-			$aim = stripslashes($$userdata['user_aim']);
-			$msn = stripslashes($$userdata['user_msnm']);
-			$yim = stripslashes($$userdata['user_yim']);
+			$aim = stripslashes($userdata['user_aim']);
+			$msn = stripslashes($userdata['user_msnm']);
+			$yim = stripslashes($userdata['user_yim']);
 
-			$website = stripslashes($$userdata['user_website']);
-			$location = stripslashes($$userdata['user_from']);
-			$occupation = stripslashes($$userdata['user_occ']);
-			$interests = stripslashes($$userdata['user_interests']);
+			$website = stripslashes($userdata['user_website']);
+			$location = stripslashes($userdata['user_from']);
+			$occupation = stripslashes($userdata['user_occ']);
+			$interests = stripslashes($userdata['user_interests']);
 			$signature = stripslashes($userdata['user_sig']);
 
 			$viewemail = $userdata['user_viewemail'];
