@@ -23,7 +23,6 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
 // Start session management
 $user->start();
@@ -80,10 +79,6 @@ while ($row = $db->sql_fetchrow($result))
 	$ranksrow[] = $row;
 }
 $db->sql_freeresult($result);
-
-
-// Instantiate new bbcode object for potential later use
-$bbcode = new bbcode();
 
 
 // What do you want to do today? ... oops, I think that line is taken ...
@@ -593,7 +588,9 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 function show_profile($data)
 {
 	global $config, $auth, $template, $user, $SID, $phpEx;
-	global $ranksrow, $bbcode;
+	global $ranksrow;
+
+	static $bbcode;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -690,7 +687,12 @@ function show_profile($data)
 
 	if ($data['user_sig_bbcode_bitfield'])
 	{
-		$bbcode->bbcode_second_pass(&$data['user_sig'], $data['user_sig_bbcode_uid'], $data['user_sig_bbcode_bitfield']);
+		if (!isset($bbcode))
+		{
+			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+			$bbcode = new bbcode();
+		}
+		$bbcode->bbcode_second_pass($data['user_sig'], $data['user_sig_bbcode_uid'], $data['user_sig_bbcode_bitfield']);
 	}
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
@@ -699,7 +701,7 @@ function show_profile($data)
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-		'SIGNATURE'		=> (!empty($data['user_sig'])) ? $data['user_sig'] : '', 
+		'SIGNATURE'		=> (!empty($data['user_sig'])) ? str_replace("\n", '<br />', $data['user_sig']) : '', 
 
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']), 
 		'AVATAR_IMG'	=> $poster_avatar,
