@@ -696,9 +696,27 @@ switch($mode)
 
 				if($result = $db->sql_query($sql))
 				{
-					$postrow = $db->sql_fetchrowset($result);
-					$subject = stripslashes($postrow[0]['post_subject']);
-					$message = stripslashes($postrow[0]['post_text']);
+					$postrow = $db->sql_fetchrow($result);
+
+					if($userdata['user_id'] != $postrow['user_id'] && !$is_auth['auth_mod'])
+					{
+						include('includes/page_header.'.$phpEx);
+
+						$msg = "Sorry but you can only edit your own posts.";
+
+						$template->set_filenames(array(
+							"reg_header" => "error_body.tpl"
+						));
+						$template->assign_vars(array(
+							"ERROR_MESSAGE" => $msg
+						));
+						$template->pparse("reg_header");
+
+						include('includes/page_tail.'.$phpEx);
+					}
+
+					$subject = stripslashes($postrow['post_subject']);
+					$message = stripslashes($postrow['post_text']);
 					if(eregi("\[addsig]$", $message))
 					{
 						$attach_sig = TRUE;
@@ -718,14 +736,14 @@ switch($mode)
    				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
    				// is_first_post needs functionality!
-   				if($postrow[0]['topic_notify'] && $is_first_post)
+   				if($postrow['topic_notify'] && $is_first_post)
    				{
    					$notify = TRUE;
    				}
 
 					if($is_first_post)
 					{
-						$subject = stripslashes($postrow[0]['topic_title']);
+						$subject = stripslashes($postrow['topic_title']);
 					}
    			}
    			else
