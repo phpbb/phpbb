@@ -68,12 +68,11 @@ else
 	}
 }
 
-
 // Set some basic vars
 $error = $cfg = $stylecfg = array();
 $tmp_path = '';
 
-$safe_mode = (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
+$safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 $file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false; 
 
 // Generate list of archive types inc. regexp | match
@@ -114,10 +113,6 @@ switch ($action)
 		{
 			remove($mode, $id);
 		}
-		break;
-
-	case 'preview':
-
 		break;
 }
 
@@ -765,7 +760,7 @@ function viewsource(url)
 						{
 							if (!in_array($value, $test_ary))
 							{
-								$base_classes['custom'][] = $value;
+//								$base_classes['custom'][] = $value;
 							}
 						}
 						unset($matches);
@@ -1428,9 +1423,10 @@ function frontend($type, $options)
 	$dp = opendir("{$phpbb_root_path}styles");
 	while ($file = readdir($dp))
 	{
-		if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/$file/$type/$type.cfg"))
+		$subpath = ($type != 'style') ? "$type/" : '';
+		if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$type.cfg"))
 		{
-			if ($cfg = file("{$phpbb_root_path}styles/$file/$type/$type.cfg"))
+			if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$type.cfg"))
 			{
 				$name = trim($cfg[0]);
 				if (!in_array($name, $installed))
@@ -1454,7 +1450,7 @@ function frontend($type, $options)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $cfg['name']; ?></td>
-		<td class="<?php echo $row_class; ?>" colspan="<?php echo $thspan ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;path=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" colspan="<?php echo ($type != 'style') ? $thspan : $thspan + 1 ?>" align="center"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=install&amp;path=" . urlencode($cfg['path']); ?>"><?php echo $user->lang['INSTALL']; ?></a></td>
 	</tr>
 <?php
 
