@@ -419,6 +419,9 @@ $lang['No_folder'] = "No folder specified";
 $lang['Mark_all'] = "Mark all";
 $lang['Unmark_all'] = "Unmark all";
 
+$lang['Confirm_delete_pm'] = "Are you sure you want to delete this message?";
+$lang['Confirm_delete_pms'] = "Are you sure you want to delete these messages?";
+
 $lang['Inbox_size'] = "Your Inbox is %d%% full"; // eg. Your Inbox is 50% full
 $lang['Sentbox_size'] = "Your Sentbox is %d%% full"; 
 $lang['Savebox_size'] = "Your Savebox is %d%% full"; 

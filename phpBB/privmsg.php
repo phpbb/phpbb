@@ -601,7 +601,7 @@ else if( ( $delete && $mark_list ) || $delete_all )
 		);
 		$template->assign_vars(array(
 			"MESSAGE_TITLE" => $lang['Information'],
-			"MESSAGE_TEXT" => $lang['Confirm_delete'], 
+			"MESSAGE_TEXT" => ( count($mark_list) == 1 ) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'], 
 
 			"L_YES" => $lang['Yes'],
 			"L_NO" => $lang['No'],
