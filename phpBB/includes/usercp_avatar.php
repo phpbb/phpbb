@@ -74,7 +74,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		$avatar_filename = 'http://' . $avatar_filename;
 	}
 
-	if ( !preg_match('#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+(:[0-9]+)*\/.*?\.(gif|jpg|jpeg|png)$)#is', $avatar_filename) )
+	if ( !preg_match('#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+(:[0-9]+)*\/[^\"]*?\.(gif|jpg|jpeg|png)$)#is', $avatar_filename) )
 	{
 		$error = true;
 		$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
