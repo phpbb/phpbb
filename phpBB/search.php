@@ -1080,7 +1080,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					{
 						if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 						{
-							if( $HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $searchset[$i]['post_time'] ) 
+							if( $HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $searchset[$i]['post_time']  && $searchset[$i]['post_time'] > $userdata['session_last_visit'] ) 
 							{
 								$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
 
