@@ -22,11 +22,12 @@
  * 
  ***************************************************************************/ 
 
-function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "") 
+function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "", $err_file = "", $sql = "") 
 {
 
 	global $db, $template, $board_config, $theme, $lang, $phpEx;
 	global $userdata, $user_ip, $session_length;
+	global $starttime;
 
 	if(empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) )
 	{
@@ -58,7 +59,10 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		{
 			$theme = setuptheme(1);
 		}
-		include('includes/page_header.'.$phpEx);
+		if($msg_code != CRITICAL_ERROR)
+		{
+			include('includes/page_header.'.$phpEx);
+		}
 	}
 
 	switch($msg_code)
@@ -70,40 +74,11 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			}
 			break;
 
-		case BANNED:
-			$msg_title = $lang['Information'];
-			$msg_text = $lang['You_been_banned'];
-			break;
-
-		case NO_POSTS:
-			$msg_title = $lang['Information'];
-			$msg_text = $lang['No_topics_post_one'];
-			break;
-
-		case LOGIN_FAILED:
-			$msg_title = $lang['Information'];
-			$msg_text = $lang['Error_login'];
-			break;
-
-		case SQL_CONNECT:
-			$msg_title = $lang['General_Error'];
-			$msg_text = $lang['Error_database_connect'];
-			break;
-		
-		case SQL_QUERY:
-			if($msg_text == "")
-			{
-				$msg_text = $lang['An_error_occured'];
-			}
+		case CRITICAL_MESSAGE:
 			if($msg_title == "")
 			{
-				$msg_title = $lang['General_Error'];
+				$msg_title = $lang['Critical_Information'];
 			}
-			break;
-			
-		case SESSION_CREATE:
-			$msg_title = $lang['General_Error'];
-			$msg_text = $lang['Error_session'];
 			break;
 
 		case GENERAL_ERROR:
@@ -115,13 +90,38 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			{
 				$msg_title = $lang['General_Error'];
 			}
+
+		case CRITICAL_ERROR:
+			if($msg_text == "")
+			{
+				$msg_text = $lang['A_critical_error'];
+			}
+			if($msg_title == "")
+			{
+				$msg_title = $lang['Critical_Error'];
+			}
 			break;
 	}
-	if(DEBUG)
+	if(DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) )
 	{
+		$sql_error = $db->sql_error();
+
+		$debug_text = "";
+		if($sql_error['message'] != "")
+		{
+			$debug_text .= "<br /><br />SQL Error : " . $sql_error['code'] . " " . $sql_error['message'];
+		}
+		if($sql != "")
+		{
+			$debug_text .= "<br /><br />$sql";
+		}
 		if($err_line != "" && $err_file != "")
 		{
-			$msg_text .= "<br /><br /><u>DEBUG INFO</u></br /><br>Line : " . $err_line . "<br />File : " . $err_file;
+			$debug_text .= "</br /><br />Line : " . $err_line . "<br />File : " . $err_file;
+		}
+		if($debug_text != "")
+		{
+			$msg_text = $msg_text . "<br /><br /><b><u>DEBUG MODE</u></b>" . $debug_text;
 		}
 	}
 

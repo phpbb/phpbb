@@ -30,7 +30,7 @@
 function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0) 
 {
 
-	global $db;
+	global $db, $lang;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
@@ -57,7 +57,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	$result = $db->sql_query($sql);
 	if (!$result) 
 	{
-		error_die(SQL_QUERY, "Couldn't obtain ban information.", __LINE__, __FILE__);
+		message_die(CRITICAL_ERROR, "Couldn't obtain ban information.", __LINE__, __FILE__, $sql);
 	}
 
 	$ban_info = $db->sql_fetchrow($result);
@@ -67,7 +67,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	// 
 	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
 	{
-		error_die(AUTH_BANNED);
+		message_die(CRITICAL_MESSAGE, $lang['You_been_banned']);
 	}
 	else
 	{
@@ -106,8 +106,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		if(!$result || !$db->sql_affectedrows())
 		{
 			mt_srand( (double) microtime() * 1000000);
-//			$session_id = md5(mt_rand(uniqid)); // This is a superior but more intensive creation method
-			$session_id = mt_rand();
+			$session_id = md5(mt_rand()); // This is a superior but more intensive creation method
+//			$session_id = mt_rand();
 			
 			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
 				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
@@ -116,14 +116,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
-				if(DEBUG)
-				{
-					error_die(SQL_QUERY, "Error creating new session : session_begin", __LINE__, __FILE__);
-				}
-				else
-				{
-					error_die(SESSION_CREATE);
-				}
+				message_die(CRITICAL_ERROR, "Error creating new session : session_begin", __LINE__, __FILE__, $sql);
 			}
 
 			$sessiondata['sessionid'] = $session_id;
@@ -143,14 +136,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$result = $db->sql_query($sql_auto);
 			if(!$result)
 			{
-				if(DEBUG)
-				{
-					error_die(GENERAL_ERROR, "Couldn't update users autologin key : session_begin", __LINE__, __FILE__);
-				}
-				else
-				{
-					error_die(SQL_QUERY, "Error creating new session", __LINE__ , __FILE__);
-				}
+				message_die(CRITICAL_ERROR, "Couldn't update users autologin key : session_begin", __LINE__, __FILE__, $sql);
 			}
 			$sessiondata['autologinid'] = $autologin_key;
 		}
@@ -175,7 +161,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 //
 function session_pagestart($user_ip, $thispage_id, $session_length)
 {
-	global $db;
+	global $db, $lang;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
@@ -201,14 +187,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	$result = $db->sql_query($sql);
 	if(!$result)
 	{
-		if(DEBUG)
-		{
-			error_die(SQL_QUERY, "Error clearing sessions table : session_pagestart", __LINE__, __FILE__);
-		}
-		else
-		{
-			error_die(SESSION_CREATE);
-		}
+		message_die(CRITICAL_ERROR, "Error clearing sessions table : session_pagestart", __LINE__, __FILE__, $sql);
 	}
 
 	//
@@ -236,14 +215,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
-			if(DEBUG)
-			{
-				error_die(SQL_QUERY, "Error doing DB query userdata row fetch : session_pagestart", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SESSION_CREATE);
-			}
+			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart", __LINE__, __FILE__, $sql);
 		}
 		
 		$userdata = $db->sql_fetchrow($result);
@@ -269,14 +241,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				$result = $db->sql_query($sql);
 				if(!$result)
 				{
-					if(DEBUG)
-					{
-						error_die(SQL_QUERY, "Error updating sessions table : session_pagestart", __LINE__, __FILE__);
-					}
-					else
-					{
-						error_die(SESSION_CREATE);
-					}
+					message_die(CRITICAL_ERROR, "Error updating sessions table : session_pagestart", __LINE__, __FILE__, $sql);
 				}
 				else
 				{
@@ -319,14 +284,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
-			if(DEBUG)
-			{
-				error_die(SQL_QUERY, "Error doing DB query userdata row fetch (non-session) : session_pagestart", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SESSION_CREATE);
-			}
+			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch (non-session) : session_pagestart", __LINE__, __FILE__, $sql);
 		}
 		
 		$userdata = $db->sql_fetchrow($result);
@@ -357,14 +315,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	$result_id = session_begin($user_id, $user_ip, $thispage_id, $session_length, $login, $autologin);
 	if(!$result)
 	{
-		if(DEBUG)
-		{
-			error_die(SQL_QUERY, "Error creating ".$userdata['user_id']." session : session_pagestart", __LINE__, __FILE__);
-		}
-		else
-		{
-			error_die(SESSION_CREATE);
-		}
+		message_die(CRITICAL_ERROR, "Error creating user session : session_pagestart", __LINE__, __FILE__, $sql);
 	}
 	else
 	{
@@ -376,14 +327,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
-			if(DEBUG)
-			{
-				error_die(SQL_QUERY, "Error doing DB query userdata row fetch : session_pagestart new user", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SESSION_CREATE);
-			}
+			message_die(CRITICAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart new user", __LINE__, __FILE__, $sql);
 		}
 
 		$userdata = $db->sql_fetchrow($result);
@@ -401,7 +345,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 function session_end($session_id, $user_id) 
 {
 
-	global $db;
+	global $db, $lang;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
@@ -424,14 +368,7 @@ function session_end($session_id, $user_id)
 	$result = $db->sql_query($sql, $db);
 	if (!$result) 
 	{
-		if(DEBUG)
-		{
-			error_die(SQL_QUERY, "Couldn't delete user session : session_end", __LINE__, __FILE__);
-		}
-		else
-		{
-			error_die(SESSION_CREATE);
-		}
+		message_die(CRITICAL_ERROR, "Couldn't delete user session : session_end", __LINE__, __FILE__, $sql);
 	}
 
 	if($sessiondata['autologinid'])
@@ -442,14 +379,7 @@ function session_end($session_id, $user_id)
 		$result = $db->sql_query($sql, $db);
 		if (!$result) 
 		{
-			if(DEBUG)
-			{
-				error_die(SQL_QUERY, "Couldn't reset user autologin key : session_end", __LINE__, __FILE__);
-			}
-			else
-			{
-				error_die(SESSION_CREATE);
-			}
+			message_die(CRITICAL_ERROR, "Couldn't reset user autologin key : session_end", __LINE__, __FILE__, $sql);
 		}
 		$sessiondata['autologinid'] = "";
 	}

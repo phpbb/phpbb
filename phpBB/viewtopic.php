@@ -151,40 +151,12 @@ else
 
 if(!$result = $db->sql_query($sql))
 {
-	if(DEBUG)
-	{
-		$dberror = $db->sql_error();
-		message_die(SQL_QUERY, "Couldn't obtain topic information<br><br><b>DEBUG INFO</b><br><br>Reason : " . $dberror['message'] . "<br>Query : $sql<br>File : " . __FILE__ . "<br>Line : " .  __LINE__ . "<br>", "");
-	}
-	else
-	{
-		message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist']);
-  	}
+	message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
 }
 
 if(!$total_rows = $db->sql_numrows($result))
 {
-	//
-	// This should be considered temporary since
-	// it should be moved to the templating file
-	// when if...else constructs become available
-	//
-/*	if(isset($HTTP_GET_VARS['view']))
-	{
-		error_die(GENERAL_ERROR, $l_nomoretopics);
-	}
-	else
-	{ */
-		if(DEBUG)
-		{
-			$error = $db->sql_error();
-			message_die(GENERAL_ERROR, "The forum/topic you selected does not exist<br><br><b><u>DEBUG INFO</u></b><br><br>Reason : " . $error['message'] . "<br><br>Query : $sql<br><br>File : " . __FILE__ . "<br><br>Line : " .  __LINE__ . "<br>", "");
-		}
-		else
-		{
-			message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist']);
-		}
-//	}
+	message_die(GENERAL_MESSAGE,  $lang['Topic_post_not_exist'], "", __LINE__, __FILE__, $sql);
 }
 $forum_row = $db->sql_fetchrowset($result);
 $forum_name = stripslashes($forum_row[0]['forum_name']);
@@ -307,7 +279,7 @@ $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website,
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
 {
-	message_die(SQL_QUERY, "Couldn't obtain post/user information.", "", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain post/user information.", "", __LINE__, __FILE__, $sql);
 }
 if(!$total_posts = $db->sql_numrows($result))
 {
@@ -316,14 +288,14 @@ if(!$total_posts = $db->sql_numrows($result))
 	// will appear in the templates file at some
 	// point
 	//
-	message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__, $sql);
 }
 $sql = "SELECT *
 	FROM ".RANKS_TABLE."
 	ORDER BY rank_min";
 if(!$ranks_result = $db->sql_query($sql))
 {
-	message_die(SQL_QUERY, "Couldn't obtain ranks information.", "", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain ranks information.", "", __LINE__, __FILE__, $sql);
 }
 $postrow = $db->sql_fetchrowset($result);
 $ranksrow = $db->sql_fetchrowset($ranksresult);
@@ -385,7 +357,7 @@ $sql = "UPDATE ".TOPICS_TABLE."
 	WHERE topic_id = $topic_id";
 if(!$update_result = $db->sql_query($sql))
 {
-	message_die(SQL_QUERY, "Couldn't update topic views.", "", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't update topic views.", "", __LINE__, __FILE__, $sql);
 }
 
 //
@@ -399,15 +371,15 @@ for($x = 0; $x < $total_posts; $x++)
 
 	$post_date = create_date($board_config['default_dateformat'], $postrow[$x]['post_time'], $board_config['default_timezone']);
 
-	$poster_posts = $postrow[$x]['user_posts'];
+	$poster_posts = ($postrow[$x]['user_id'] != ANONYMOUS) ? $lang['Posts'] . ": " . $postrow[$x]['user_posts'] : "";
 
-	$poster_from = ($postrow[$x]['user_from']) ? "$l_from: ".$postrow[$x]['user_from'] : "";
+	$poster_from = ($postrow[$x]['user_from'] && $postrow[$x]['user_id'] != ANONYMOUS) ? $lang['From'] . ": " .$postrow[$x]['user_from'] : "";
 
-	$poster_joined = create_date($board_config['default_dateformat'], $postrow[$x]['user_regdate'], $board_config['default_timezone']);
+	$poster_joined = ($postrow[$x]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$x]['user_regdate'], $board_config['default_timezone']) : "";
 
 	$poster_avatar = ($postrow[$x]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"".$board_config['avatar_path']."/".$postrow[$x]['user_avatar']."\">" : "";
 
-	if($postrow[$x]['user_rank'] == '')
+	if(empty($postrow[$x]['user_rank']) && $postrow[$x]['user_id'] != ANONYMOUS)
 	{
 		for($i = 0; $i < count($ranksrow); $i++)
 		{
@@ -418,14 +390,17 @@ for($x = 0; $x < $total_posts; $x++)
 			}
 		}
 	}
-	else
+	else 
 	{
-		for($i = 0; $i < count($ranksrow); $i++)
+		if(!empty($postrow[$x]['user_rank']))
 		{
-			if($postrow[$x]['user_rank'] == $ranksrow[$i]['rank_special'])
+			for($i = 0; $i < count($ranksrow); $i++)
 			{
-				$poster_rank = $ranksrow[$i]['rank_title'];
-				$rank_image = ($ranksrow[$i]['rank_image']) ? "<img src=\"".$ranksrow[$i]['rank_image']."\">" : "";
+				if($postrow[$x]['user_rank'] == $ranksrow[$i]['rank_special'])
+				{
+					$poster_rank = $ranksrow[$i]['rank_title'];
+					$rank_image = ($ranksrow[$i]['rank_image']) ? "<img src=\"".$ranksrow[$i]['rank_image']."\">" : "";
+				}
 			}
 		}
 	}

@@ -62,12 +62,12 @@ if(isset($forum_id))
 }
 else
 {
-	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
+	message_die(GENERAL_MESSAGE, "You have reached this page in error, please go back and try again");
 }
 
 if(!$result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 }
 
 //
@@ -76,14 +76,9 @@ if(!$result = $db->sql_query($sql))
 //
 if(!$total_rows = $db->sql_numrows($result))
 {
-   error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
+   message_die(GENERAL_MESSAGE, "The forum you selected does not exist, please go back and try again.");
 }
-
 $forum_row = $db->sql_fetchrow($result);
-if(!$forum_row)
-{
-	error_die(SQL_QUERY, "Couldn't obtain rowset.", __LINE__, __FILE__);
-}
 
 //
 // Start auth check
@@ -128,7 +123,6 @@ if(empty($HTTP_POST_VARS['postdays']))
 	$topics_count = $forum_row['forum_topics'];
 }
 
-
 //
 // Obtain list of moderators of this forum
 //
@@ -140,7 +134,7 @@ $sql = "SELECT u.username, u.user_id
 			AND u.user_id = ug.user_id";
 if(!$result_mods = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 }
 $total_mods = $db->sql_numrows($result_mods);
 if($total_mods)
@@ -183,7 +177,7 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 
 	if(!$result = $db->sql_query($sql))
 	{
-		error_die(SQL_QUERY, "Couldn't obtain limited topics count information.", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Couldn't obtain limited topics count information", "", __LINE__, __FILE__, $sql);
 	}
 	$topics_count = $db->sql_fetchfield("forum_topics", -1, $result);
 
@@ -225,7 +219,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 
 if(!$t_result = $db->sql_query($sql))
 {
-   error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
+   message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
 $total_topics = $db->sql_numrows($t_result);
 
@@ -444,7 +438,7 @@ else
 	// at some future point when if...else
 	// constructs are available
 	//
-	message_die(NO_POSTS);
+	message_die(GENERAL_MESSAGE, $lang['No_topics_post_one']);
 }
 
 include('includes/page_tail.'.$phpEx);
