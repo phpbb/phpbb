@@ -75,7 +75,7 @@ function compose_pm($id, $mode, $action)
 		case 'post':
 			if (!$auth->acl_get('u_sendpm'))
 			{
-				trigger_error('NOT_AUTHORIZED_POST_PM');
+				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 		
 			break;
@@ -85,7 +85,7 @@ function compose_pm($id, $mode, $action)
 		case 'forward':
 			if (!$msg_id)
 			{
-				trigger_error('NO_PM');
+				trigger_error('NO_MESSAGE');
 			}
 					
 			if ($quote_post)
@@ -110,7 +110,7 @@ function compose_pm($id, $mode, $action)
 		case 'edit':
 			if (!$msg_id)
 			{
-				trigger_error('NO_PM');
+				trigger_error('NO_MESSAGE');
 			}
 
 			// check for outbox (not read) status, we do not allow editing if one user already having the message
@@ -125,15 +125,15 @@ function compose_pm($id, $mode, $action)
 		case 'delete':
 			if (!$auth->acl_get('u_pm_delete'))
 			{
-				trigger_error('NOT_AUTHORIZED_DELETE_PM');
+				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
 		
 			if (!$msg_id)
 			{
-				trigger_error('NO_PM');
+				trigger_error('NO_MESSAGE');
 			}
 
-			$sql = 'SELECT msg_id, unread, new, author_id
+			$sql = 'SELECT msg_id, unread, new, author_id, folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND msg_id = $msg_id";
@@ -144,27 +144,27 @@ function compose_pm($id, $mode, $action)
 			break;
 
 		default:
-			trigger_error('NO_POST_MODE');
+			trigger_error('NO_ACTION_MODE');
 	}
 
 	if ($action == 'reply' && !$auth->acl_get('u_sendpm'))
 	{
-		trigger_error('NOT_AUTHORIZED_REPLY_PM');
+		trigger_error('NO_AUTH_REPLY_MESSAGE');
 	}
 
 	if ($action == 'quote' && (!$config['auth_quote_pm'] || !$auth->acl_get('u_sendpm')))
 	{
-		trigger_error('NOT_AUTHORIZED_QUOTE_PM');
+		trigger_error('NO_AUTH_QUOTE_MESSAGE');
 	}
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
 	{
-		trigger_error('NOT_AUTHORIZED_FORWARD_PM');
+		trigger_error('NO_AUTH_FORWARD_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$auth->acl_get('u_pm_edit'))
 	{
-		trigger_error('NOT_AUTHORIZED_EDIT_PM');
+		trigger_error('NO_AUTH_EDIT_MESSAGE');
 	}
 
 	if ($sql)
@@ -173,7 +173,7 @@ function compose_pm($id, $mode, $action)
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
-			trigger_error('NOT_AUTHORIZED');
+			trigger_error('NO_MESSAGE');
 		}
 
 		extract($row);
@@ -184,7 +184,7 @@ function compose_pm($id, $mode, $action)
 
 		if (!$author_id && $msg_id)
 		{
-			trigger_error('NO_USER');
+			trigger_error('NO_AUTHOR');
 		}
 
 		if (($action == 'reply' || $action == 'quote') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
@@ -217,14 +217,14 @@ function compose_pm($id, $mode, $action)
 
 	if (($to_group_id || isset($address_list['g'])) && !$config['allow_mass_pm'])
 	{
-		trigger_error('NOT_ALLOWED_MASS_PM');
+		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
 	{
 		if (!($message_time > time() - $config['pm_edit_time'] || !$config['pm_edit_time']))
 		{
-			trigger_error('NOT_AUTHORIZED_EDIT_TIME');
+			trigger_error('CANNOT_EDIT_MESSAGE_TIME');
 		}
 	}
 
@@ -233,6 +233,8 @@ function compose_pm($id, $mode, $action)
 		$icon_id = 0;
 	}
 
+
+	
 	$message_parser = new parse_message();
 
 	$message_subject = (isset($message_subject)) ? $message_subject : '';
@@ -242,6 +244,34 @@ function compose_pm($id, $mode, $action)
 	$s_action = "{$phpbb_root_path}ucp.$phpEx?sid={$user->session_id}&amp;i=$id&amp;mode=$mode&amp;action=$action";
 	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
 	$s_action .= ($quote_post) ? "&amp;q=1" : '';
+
+	// Delete triggered ?
+	if ($action == 'delete')
+	{
+		// Folder id has been determined by the SQL Statement
+		// $folder_id = request_var('f', PRIVMSGS_NO_BOX);
+
+		$s_hidden_fields = '<input type="hidden" name="p" value="' . $msg_id . '" /><input type="hidden" name="f" value="' . $folder_id . '" /><input type="hidden" name="action" value="delete" />';
+
+		// Do we need to confirm ?
+		if (confirm_box(true))
+		{
+			delete_pm($user->data['user_id'], $msg_id, $folder_id);
+						
+			// TODO - jump to next message in "history"?
+			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$folder_id";
+			$message = $user->lang['MESSAGE_DELETED'];
+
+			meta_refresh(3, $meta_info);
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+			trigger_error($message);
+		}
+		else
+		{
+			// "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose"
+			confirm_box(false, 'DELETE_MESSAGE', $s_hidden_fields);
+		}
+	}
 
 	// Handle User/Group adding/removing
 	handle_message_list_actions($address_list, $remove_u, $remove_g, $add_to, $add_bcc);
@@ -299,34 +329,6 @@ function compose_pm($id, $mode, $action)
 	if ($action == 'edit' || $action == 'forward')
 	{
 		$message_parser->bbcode_uid = $bbcode_uid;
-	}
-
-	// Delete triggered ?
-	if ($action == 'delete')
-	{
-		// Get Folder ID
-		$folder_id = request_var('f', PRIVMSGS_NO_BOX);
-
-		$s_hidden_fields = '<input type="hidden" name="p" value="' . $msg_id . '" /><input type="hidden" name="f" value="' . $folder_id . '" /><input type="hidden" name="action" value="delete" />';
-
-		// Do we need to confirm ?
-		if (confirm_box(true))
-		{
-			delete_pm($user->data['user_id'], $msg_id, $folder_id);
-						
-			// TODO - jump to next message in "history"?
-			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$folder_id";
-			$message = $user->lang['PM_DELETED'];
-
-			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
-			trigger_error($message);
-		}
-		else
-		{
-			// "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose"
-			confirm_box(false, 'DELETE_PM', $s_hidden_fields);
-		}
 	}
 
 	$html_status	= ($config['allow_html'] && $config['auth_html_pm'] && $auth->acl_get('u_pm_html'));
@@ -716,7 +718,7 @@ function compose_pm($id, $mode, $action)
 			break;
 
 		default:
-			trigger_error('NOT_AUTHORIZED');
+			trigger_error('NO_ACTION_MODE');
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
@@ -738,7 +740,7 @@ function compose_pm($id, $mode, $action)
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-		'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
+		'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '', 
 
 		'S_EDIT_POST'			=> ($action == 'edit'),

@@ -17,6 +17,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 	$redirect_url = "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=options";
 
+	// Change "full folder" setting - what to do if folder is full
 	if (isset($_POST['fullfolder']))
 	{
 		$full_action = request_var('full_action', 0);
@@ -52,6 +53,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		}
 	}
 	
+	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
 		$folder_name = request_var('foldername', '');
@@ -60,7 +62,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			$sql = 'SELECT folder_name 
 				FROM ' . PRIVMSGS_FOLDER_TABLE . "
-				WHERE folder_name = '$folder_name'
+				WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
 					AND user_id = " . $user->data['user_id'];
 			$result = $db->sql_query_limit($sql, 1);
 
@@ -88,10 +90,148 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$message = $user->lang['FOLDER_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 			meta_refresh(3, $redirect_url);
 			trigger_error($message);
-
 		}
 	}
 	
+	// Rename folder
+	if (isset($_POST['rename_folder']))
+	{
+		$new_folder_name = request_var('new_folder_name', '');
+		$rename_folder_id= request_var('rename_folder_id', 0);
+
+		if (!$new_folder_name)
+		{
+			trigger_error('NO_NEW_FOLDER_NAME');
+		}
+
+		// Select custom folder
+		$sql = 'SELECT folder_name, pm_count
+			FROM ' . PRIVMSGS_FOLDER_TABLE . "
+			WHERE user_id = {$user->data['user_id']}
+				AND folder_id = $rename_folder_id";
+		$result = $db->sql_query_limit($sql, 1);
+		$folder_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$folder_row)
+		{
+			trigger_error('CANNOT_RENAME_FOLDER');
+		}
+
+		$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . " 
+			SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
+			WHERE folder_id = $rename_folder_id
+				AND user_id = {$user->data['user_id']}";
+		$db->sql_query($sql);
+
+		$message = $user->lang['FOLDER_RENAMED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		meta_refresh(3, $redirect_url);
+		trigger_error($message);
+	}
+
+	// Remove Folder
+	if (isset($_POST['remove_folder']))
+	{
+		$remove_folder_id = request_var('remove_folder_id', 0);
+
+		// Default to "move all messages to inbox"
+		$remove_action = request_var('remove_action', 1);
+		$move_to = request_var('move_to', PRIVMSGS_INBOX);
+
+		// Move to same folder?
+		if ($remove_action == 1 && $remove_folder_id == $move_to)
+		{
+			trigger_error('CANNOT_MOVE_TO_SAME_FOLDER');
+		}
+		
+		// Select custom folder
+		$sql = 'SELECT folder_name, pm_count
+			FROM ' . PRIVMSGS_FOLDER_TABLE . "
+			WHERE user_id = {$user->data['user_id']}
+				AND folder_id = $remove_folder_id";
+		$result = $db->sql_query_limit($sql, 1);
+		$folder_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$folder_row)
+		{
+			trigger_error('CANNOT_REMOVE_FOLDER');
+		}
+
+		$s_hidden_fields = '<input type="hidden" name="remove_folder_id" value="' . $remove_folder_id . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="remove_action" value="' . $remove_action . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="move_to" value="' . $move_to . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="remove_folder" value="1" />';
+
+		// Do we need to confirm?
+		if (confirm_box(true))
+		{
+			// Gather message ids
+			$sql = 'SELECT msg_id 
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE user_id = ' . $user->data['user_id'] . "
+					AND folder_id = $remove_folder_id";
+			$result = $db->sql_query($sql);
+
+			$msg_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$msg_ids[] = (int) $row['msg_id'];
+			}
+			$db->sql_freeresult($result);
+
+			// First of all, copy all messages to another folder... or delete all messages
+			switch ($remove_action)
+			{
+				// Move Messages
+				case 1:
+					$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
+					$num_moved = move_pm($user->data['user_id'], $message_limit, $msg_ids, $move_to, $remove_folder_id);
+					
+					// Something went wrong, only partially moved?
+					if ($num_moved != $folder_row['pm_count'])
+					{
+						trigger_error(sprintf($user->lang['MOVE_PM_ERROR'], $num_moved, $folder_row['pm_count']));
+					}
+					break;
+
+				// Remove Messages
+				case 2:
+					delete_pm($user->data['user_id'], $msg_ids, $remove_folder_id);
+					break;
+			}
+
+			// Remove folder
+			$sql = 'DELETE FROM ' . PRIVMSGS_FOLDER_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND folder_id = $remove_folder_id";
+			$db->sql_query($sql);
+
+			// Check full folder option. If the removed folder has been specified as destination switch back to inbox
+			if ($user->data['user_full_folder'] == $remove_folder_id)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_full_folder = ' . PRIVMSGS_INBOX . '
+					WHERE user_id = ' . $user->data['user_id'];
+				$db->sql_query($sql);
+
+				$user->data['user_full_folder'] = PRIVMSGS_INBOX;
+			}
+
+			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode";
+			$message = $user->lang['FOLDER_REMOVED'];
+
+			meta_refresh(3, $meta_info);
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $meta_info . '">', '</a>');
+			trigger_error($message);
+		}
+		else
+		{
+			confirm_box(false, 'REMOVE_FOLDER', $s_hidden_fields);
+		}
+	}
+
+	// Add Rule
 	if (isset($_POST['add_rule']))
 	{
 		$check_option	= request_var('check_option', 0);
@@ -116,14 +256,14 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		}
 		
 		$rule_ary = array(
-			'user_id'		=> $user->data['user_id'],
-			'rule_check'	=> $check_option,
+			'user_id'			=> $user->data['user_id'],
+			'rule_check'		=> $check_option,
 			'rule_connection'	=> $rule_option,
-			'rule_string'	=> $rule_string,
-			'rule_user_id'	=> $rule_user_id,
-			'rule_group_id'	=> $rule_group_id,
-			'rule_action'	=> $action,
-			'rule_folder_id'=> $folder_id
+			'rule_string'		=> $rule_string,
+			'rule_user_id'		=> $rule_user_id,
+			'rule_group_id'		=> $rule_group_id,
+			'rule_action'		=> $action,
+			'rule_folder_id'	=> $folder_id
 		);
 
 		$sql = 'SELECT rule_id 
@@ -145,6 +285,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		trigger_error($message);
 	}
 
+	// Remove Rule
 	if (isset($_POST['delete_rule']) && !isset($_POST['cancel']))
 	{
 		$delete_id = array_map('intval', array_keys($_POST['delete_rule']));
@@ -157,7 +298,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 		$s_hidden_fields = '<input type="hidden" name="delete_rule[' . $delete_id . ']" value="1" />';
 
-		// Do we need to confirm ?
+		// Do we need to confirm?
 		if (confirm_box(true))
 		{
 			$sql = 'DELETE FROM ' . PRIVMSGS_RULES_TABLE . '
@@ -176,7 +317,6 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			confirm_box(false, 'DELETE_RULE', $s_hidden_fields);
 		}
-
 	}
 	
 	$folder = array();
@@ -216,7 +356,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	if ($user->data['user_full_folder'] == FULL_FOLDER_NONE)
 	{
 		// -3 here to let the correct folder id be selected
-		$to_folder_id = $config['full_folder_action']-3;
+		$to_folder_id = $config['full_folder_action'] - 3;
 	}
 	else
 	{
@@ -245,6 +385,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			case 1:
 				$s_delete_checked = ' checked="checked"';
 				break;
+
 			case 2:
 				$s_hold_checked = ' checked="checked"';
 				break;

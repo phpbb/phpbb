@@ -21,6 +21,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$folder_id	= (int) $folder_id;
 	$author_id	= (int) $message_row['author_id'];
 
+	// Not able to view message, it was deleted by the sender
+	if ($message_row['deleted'])
+	{
+		trigger_error('NO_AUTH_READ_REMOVED_MESSAGE');
+	}
+
 	// Grab icons
 	$icons = array();
 	obtain_icons($icons);
@@ -157,7 +163,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_FROM' 		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
-		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_PM']),
+		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
 		'INFO_IMG' 			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
 		'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_PM']),
 		'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['MESSAGE_REPORTED_MESSAGE']),

@@ -17,7 +17,7 @@ function marklist(form_name, status)
 	<tr>
 		<td class="gensmall" nowrap="nowrap" align="left">
 			<!-- IF S_UNREAD --><b>{L_UNREAD_MESSAGES}</b><!-- ELSE -->{FOLDER_STATUS}<!-- ENDIF -->
-		<td class="gensmall" nowrap="nowrap" align="right"><!-- IF U_INBOX --><a href="{U_INBOX}">{L_PM_INBOX}</a><!-- ELSE -->{L_PM_INBOX}<!-- ENDIF -->&nbsp;|&nbsp;<!-- IF U_OUTBOX --><a href="{U_OUTBOX}">{L_PM_OUTBOX}</a><!-- ELSE -->{L_PM_OUTBOX}<!-- ENDIF -->&nbsp;|&nbsp;<!-- IF U_SENTBOX --><a href="{U_SENTBOX}">{L_PM_SENTBOX}</a><!-- ELSE -->{L_PM_SENTBOX}<!-- ENDIF -->&nbsp;|&nbsp;<a href="{U_CREATE_FOLDER}">{L_CREATE_FOLDER}</a></td>
+		<td class="gensmall" nowrap="nowrap" align="right"><!-- IF not S_IN_INBOX --><a href="{U_INBOX}">{L_PM_INBOX}</a><!-- ELSE --><b>{L_PM_INBOX}</b><!-- ENDIF -->&nbsp;|&nbsp;<!-- IF not S_IN_OUTBOX --><a href="{U_OUTBOX}">{L_PM_OUTBOX}</a><!-- ELSE --><b>{L_PM_OUTBOX}</b><!-- ENDIF -->&nbsp;|&nbsp;<!-- IF not S_IN_SENTBOX --><a href="{U_SENTBOX}">{L_PM_SENTBOX}</a><!-- ELSE --><b>{L_PM_SENTBOX}</b><!-- ENDIF -->&nbsp;|&nbsp;<a href="{U_CREATE_FOLDER}">{L_CREATE_FOLDER}</a></td>
 	</tr>
 </table>
 

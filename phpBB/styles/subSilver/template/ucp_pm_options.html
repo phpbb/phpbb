@@ -93,6 +93,27 @@
 
 <div style="padding: 2px;"></div>
 
+<!-- IF S_FOLDER_OPTIONS -->
+<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="2">{L_RENAME_FOLDER}</th>
+	</tr>
+	<tr>
+		<td class="row1" width="200"><b class="gen">{L_RENAME_FOLDER}: </b></td>
+		<td class="row1"><select name="rename_folder_id">{S_FOLDER_OPTIONS}</select></td>
+	</tr>
+	<tr>
+		<td class="row1" width="200"><b class="gen">{L_NEW_FOLDER_NAME}: </b></td>
+		<td class="row1"><input type="text" class="post" name="new_folder_name" size="30" maxlength="30" /></td>
+	</tr>
+	<tr>
+		<td class="row1" align="right" colspan="2"><input class="btnlite" style="width:150px" type="submit" name="rename_folder" value="{L_RENAME}" /></td>
+	</tr>
+</table>
+
+<div style="padding: 2px;"></div>
+<!-- ENDIF -->
+
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th colspan="2">{L_ADD_FOLDER}</th>
@@ -121,20 +142,20 @@
 	</tr>
 	<tr>
 		<td class="row1" width="200"><b class="gen">{L_REMOVE_FOLDER}: </b></td>
-		<td class="row1"><select name="removefolder">{S_FOLDER_OPTIONS}</select></td>
+		<td class="row1"><select name="remove_folder_id">{S_FOLDER_OPTIONS}</select></td>
 		<td class="row1"><b class="genmed">{L_AND}</b></td>
 	</tr>
 	<tr>
 		<td class="row2" width="200">&nbsp;</td>
-		<td class="row2" colspan="2"><input type="radio" name="remove_action" value="1" checked="checked" />&nbsp;<span class="genmed">Move messages from removed folder to </span>&nbsp;<select name="move_to">{S_TO_FOLDER_OPTIONS}</select></td>
+		<td class="row2" colspan="2"><input type="radio" name="remove_action" value="1" checked="checked" />&nbsp;<span class="genmed">{L_MOVE_DELETED_MESSAGES_TO} </span>&nbsp;<select name="move_to">{S_TO_FOLDER_OPTIONS}</select></td>
 	</tr>
 	<tr>
 		<td class="row2" width="200">&nbsp;</td>
-		<td class="row2" colspan="2"><input type="radio" name="remove_action" value="2" />&nbsp;<span class="genmed">Delete all messages within removed folder</span></td>
+		<td class="row2" colspan="2"><input type="radio" name="remove_action" value="2" />&nbsp;<span class="genmed">{L_DELETE_MESSAGES_IN_FOLDER}</span></td>
 	</tr>
 	<tr>
 		<td class="row2" width="200">&nbsp;</td>
-		<td class="row2" colspan="2" align="right"><input class="btnlite" style="width:150px" type="submit" name="remove" value="{L_REMOVE}" /></td>
+		<td class="row2" colspan="2" align="right"><input class="btnlite" style="width:150px" type="submit" name="remove_folder" value="{L_REMOVE}" /></td>
 	</tr>
 
 </table>

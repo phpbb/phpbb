@@ -41,7 +41,7 @@
 		<!-- IF S_PM_ICONS -->
 			<td class="row1" width="25" align="center">{messagerow.PM_ICON_IMG}</td>
 		<!-- ENDIF -->
-		<td class="row1">
+		<!-- IF messagerow.S_PM_DELETED --><td class="row3"><!-- ELSE --><td class="row1"><!-- ENDIF -->
 			<!-- IF messagerow.S_PM_REPORTED -->
 				<a href="{messagerow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
@@ -50,7 +50,15 @@
 			<!-- ELSEIF messagerow.PM_IMG -->
 				{messagerow.PM_IMG}&nbsp;
 			<!-- ENDIF -->
-			<p class="topictitle">{messagerow.ATTACH_ICON_IMG} <a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a></p></td>
+			<p class="topictitle">
+				{messagerow.ATTACH_ICON_IMG} 
+				<!-- IF messagerow.S_PM_DELETED -->
+					{L_MESSAGE_REMOVED_FROM_OUTBOX}<br />
+					<a href="{messagerow.U_REMOVE_PM}" style="float:right;">{L_DELETE_MESSAGE}</a>
+				<!-- ELSE -->
+					<a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a>
+				<!-- ENDIF -->
+			</p></td>
 		<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR}<!-- ENDIF --></p></td>
 		<!-- IF S_UNREAD -->
 			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF messagerow.FOLDER --><a href="{messagerow.U_FOLDER}">{messagerow.FOLDER}</a><!-- ELSE -->{L_UNKNOWN_FOLDER}<!-- ENDIF --></p></td>

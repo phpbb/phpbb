@@ -15,7 +15,14 @@ function jump_to_inbox()
 	<td>
 		<table width="100%" border="0" cellspacing="1" cellpadding="4">
 		<tr> 
-			<td valign="top" class="row1" align="center"><br /><span class="gen">{MESSAGE}</span><br /><br /><span class="genmed"><a href="javascript:window.close();">{L_CLOSE_WINDOW}</a></span><br /><br /></td>
+			<td valign="top" class="row1" align="center">
+				<br />
+				<!-- IF S_NOT_LOGGED_IN -->
+					{L_LOGIN_CHECK_PM}
+				<!-- ELSE -->
+					{MESSAGE}<br /><br />{CLICK_TO_VIEW}
+				<!-- ENDIF -->
+				<br /><br /><span class="genmed"><a href="javascript:window.close();">{L_CLOSE_WINDOW}</a></span><br /><br /></td>
 		</tr>
 		</table>
 	</td>

@@ -129,6 +129,7 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			// Generate all URIs ...
 			$message_author = "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['author_id'] . '">' . $row['username'] . '</a>';
 			$view_message_url = "$url&amp;f=$folder_id&amp;p=$message_id";
+			$remove_message_url = "$url&amp;mode=compose&amp;action=delete&amp;p=$message_id";
 
 			$row_indicator = '';
 			foreach ($color_rows as $var)
@@ -159,8 +160,10 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['message_attachment'])) : '',
 
 				'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
+				'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
 
-				'U_VIEW_PM'			=> $view_message_url,
+				'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
+				'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
 				'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '',
 				'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;mode=reports&amp;pm=$message_id")
 //				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
@@ -182,7 +185,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 {
 	global $user, $db, $template, $config, $auth, $_POST;
 
-	$start		= request_var('start', 0);
+	$start = request_var('start', 0);
 
 	$sort_days = (isset($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : ((!empty($user->data['user_show_days'])) ? $user->data['user_show_days'] : 0);
 	$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : ((!empty($user->data['user_sortby_type'])) ? $user->data['user_sortby_type'] : 't');
@@ -191,7 +194,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-	$sort_by_sql = array('a' => 'u.username', 't' => 'p.message_time', 's' => 'p.subject');
+	$sort_by_sql = array('a' => 'u.username', 't' => 'p.message_time', 's' => 'p.message_subject');
 
 	$sort_key = (!in_array($sort_key, array('a', 't', 's'))) ? 't' : $sort_key;
 
@@ -319,7 +322,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 
 	$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
-	while($row = $db->sql_fetchrow($result))
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[$row['msg_id']] = $row;
 		$pm_list[] = $row['msg_id'];

@@ -48,7 +48,7 @@ class ucp_pm extends module
 		
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
-			trigger_error('NO_PM');
+			trigger_error('NO_MESSAGE');
 		}
 
 		// Is PM disabled?
@@ -60,7 +60,9 @@ class ucp_pm extends module
 		$user->add_lang('posting');
 		$template->assign_var('S_PRIVMSGS', true);
 
+		// Folder directly specified?
 		$folder_specified = request_var('folder', '');
+
 		if (!in_array($folder_specified, array('inbox', 'outbox', 'sentbox')))
 		{
 			$folder_specified = (int) $folder_specified;
@@ -98,16 +100,13 @@ class ucp_pm extends module
 					{
 						$l_new_message = $user->lang['YOU_NO_NEW_PM'];
 					}
-
-					$l_new_message .= '<br /><br />' . sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;i=pm&amp;folder=inbox" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
-				}
-				else
-				{
-					$l_new_message = $user->lang['LOGIN_CHECK_PM'];
 				}
 
 				$template->assign_vars(array(
-					'MESSAGE'	=> $l_new_message)
+					'MESSAGE'			=> $l_new_message,
+					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
+					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;i=pm&amp;folder=inbox" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
+					'U_INBOX'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox")
 				);
 
 				break;
@@ -118,7 +117,7 @@ class ucp_pm extends module
 	
 				if (!$auth->acl_get('u_sendpm'))
 				{
-					trigger_error('NOT_AUTHORIZED');
+					trigger_error('NO_AUTH_SEND_MESSAGE');
 				}
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.'.$phpEx);
@@ -162,7 +161,7 @@ class ucp_pm extends module
 
 				if (!$auth->acl_get('u_readpm'))
 				{
-					trigger_error('NOT_AUTHORIZED');
+					trigger_error('NO_AUTH_READ_MESSAGE');
 				}
 
 				// First Handle Mark actions and moving messages
@@ -172,7 +171,11 @@ class ucp_pm extends module
 				{
 					$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
 
-					if (move_pm($user->data['user_id'], $message_limit))
+					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
+					$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
+					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+
+					if (move_pm($user->data['user_id'], $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id))
 					{
 						// Return to folder view if single message moved
 						if ($action == 'view_message')
@@ -211,7 +214,7 @@ class ucp_pm extends module
 					$result = $db->sql_query_limit($sql, 1);
 					if (!($row = $db->sql_fetchrow($result)))
 					{
-						trigger_error('MESSAGE_NO_LONGER_AVAILABLE');
+						trigger_error('NO_MESSAGE');
 					}					
 					$folder_id = (int) $row['folder_id'];
 				}
@@ -258,7 +261,7 @@ class ucp_pm extends module
 
 					if (!($message_row = $db->sql_fetchrow($result)))
 					{
-						trigger_error('MESSAGE_NO_LONGER_AVAILABLE');
+						trigger_error('NO_MESSAGE');
 					}
 
 					// Update unread status
@@ -294,7 +297,7 @@ class ucp_pm extends module
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
 				$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id";
-
+				
 				$template->assign_vars(array(
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
@@ -307,11 +310,15 @@ class ucp_pm extends module
 					'S_FOLDER_ACTION'		=> "$url&amp;mode=view_messages&amp;action=view_folder",
 					'S_PM_ACTION'			=> "$url&amp;mode=$mode&amp;action=$action",
 					
-					'U_INBOX'				=> ($folder_id != PRIVMSGS_INBOX) ? "$url&amp;folder=inbox" : '',
-					'U_OUTBOX'				=> ($folder_id != PRIVMSGS_OUTBOX) ? "$url&amp;folder=outbox" : '',
-					'U_SENTBOX'				=> ($folder_id != PRIVMSGS_SENTBOX) ? "$url&amp;folder=sentbox" : '',
+					'U_INBOX'				=> "$url&amp;folder=inbox",
+					'U_OUTBOX'				=> "$url&amp;folder=outbox",
+					'U_SENTBOX'				=> "$url&amp;folder=sentbox",
 					'U_CREATE_FOLDER'		=> "$url&amp;mode=options",
 
+					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
+					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
+					'S_IN_SENTBOX'			=> ($folder_id == PRIVMSGS_SENTBOX) ? true : false,
+					
 					'FOLDER_STATUS'			=> $folder_status['message'],
 					'FOLDER_MAX_MESSAGES'	=> $folder_status['max'],
 					'FOLDER_CUR_MESSAGES'	=> $folder_status['cur'],
@@ -347,7 +354,7 @@ class ucp_pm extends module
 				break;
 
 			default:
-				trigger_error('NOT_AUTHORIZED');
+				trigger_error('NO_ACTION_MODE');
 		}
 
 		$template->assign_vars(array( 
