@@ -601,9 +601,9 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 			$user_id_sql = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (isset($row['ban_userid']))
+				if (isset($row['ban_userid']) && !empty($row['ban_userid']))
 				{
-					$user_id_sql = ', ' . $row['ban_userid'];
+					$user_id_sql .= ', ' . $row['ban_userid'];
 				}
 			}
 

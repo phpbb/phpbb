@@ -178,7 +178,7 @@ if ( $result = $db->sql_query($sql) )
 			'USERNAME' => $username,
 
 			'S_HIDDEN_FIELDS' => '', 
-			'S_POST_ACTION' => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
+			'S_POST_ACTION' => append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
 
 			'L_SEND_EMAIL_MSG' => $lang['Send_email_msg'], 
 			'L_RECIPIENT' => $lang['Recipient'], 

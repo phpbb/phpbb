@@ -49,8 +49,8 @@ function show_coppa()
 		"AGREE_UNDER_13" => $lang['Agree_under_13'],
 		'DO_NOT_AGREE' => $lang['Agree_not'],
 
-		"U_AGREE_OVER13" => "profile.$phpEx?mode=register&amp;agreed=true",
-		"U_AGREE_UNDER13" => "profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true")
+		"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
+		"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
 	);
 
 	$template->pparse('body');
