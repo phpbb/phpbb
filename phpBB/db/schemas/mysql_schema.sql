@@ -231,7 +231,6 @@ CREATE TABLE phpbb_ranks (
    rank_id smallint(5) UNSIGNED NOT NULL auto_increment,
    rank_title varchar(50) NOT NULL,
    rank_min mediumint(8) DEFAULT '0' NOT NULL,
-   rank_max mediumint(8) DEFAULT '0' NOT NULL,
    rank_special tinyint(1) DEFAULT '0',
    rank_image varchar(255),
    PRIMARY KEY (rank_id) 

@@ -259,7 +259,6 @@ CREATE TABLE phpbb_ranks (
    rank_id number(4) NOT NULL,
    rank_title varchar(50) DEFAULT '' NOT NULL,
    rank_min number(4) DEFAULT '0' NOT NULL,
-   rank_max number(4) DEFAULT '0' NOT NULL,
    rank_special number(4) DEFAULT '0',
    rank_image varchar(255),
    CONSTRAINT phpbb_ranks_pkey PRIMARY KEY (rank_id)

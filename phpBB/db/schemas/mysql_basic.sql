@@ -71,7 +71,7 @@ INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_passw
 
 
 # -- Ranks
-INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_max, rank_special, rank_image) VALUES ( 1, 'Site Admin', -1, -1, 1, NULL);
+INSERT INTO phpbb_ranks (rank_id, rank_title, rank_min, rank_special, rank_image) VALUES ( 1, 'Site Admin', -1, 1, NULL);
 
 
 # -- Groups

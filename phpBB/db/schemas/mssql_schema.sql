@@ -149,7 +149,6 @@ CREATE TABLE [phpbb_ranks] (
 	[rank_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[rank_title] [varchar] (50) NOT NULL ,
 	[rank_min] [int] NULL ,
-	[rank_max] [int] NULL ,
 	[rank_special] [smallint] NULL ,
 	[rank_image] [varchar] (50) NULL 
 ) ON [PRIMARY]

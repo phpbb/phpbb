@@ -164,15 +164,15 @@ if( $mode != "" )
 		if( $rank_id )
 		{
 			$sql = "UPDATE " . RANKS_TABLE . "
-				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_max = 0, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
+				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
 				WHERE rank_id = $rank_id";
 
 			$message = $lang['Rank_updated'];
 		}
 		else
 		{
-			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_max, rank_min, rank_image)
-				VALUES ('" . str_replace("\'", "''", $rank_title) . "', $special_rank, 0, $min_posts, '" . str_replace("\'", "''", $rank_image) . "')";
+			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_min, rank_image)
+				VALUES ('" . str_replace("\'", "''", $rank_title) . "', $special_rank, $min_posts, '" . str_replace("\'", "''", $rank_image) . "')";
 
 			$message = $lang['Rank_added'];
 		}
