@@ -550,7 +550,8 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
 		WHERE g.group_id = $group_id
 			AND ug.group_id = g.group_id
-			AND u.user_id = ug.user_id";
+			AND u.user_id = ug.user_id 
+		ORDER BY u.username";
 	$g_result = $db->sql_query($sql);
 	$groupinf = $db->sql_fetchrowset($g_result);
 
@@ -769,6 +770,8 @@ else if( !empty($HTTP_POST_VARS[POST_GROUPS_URL]) || !empty($HTTP_GET_VARS[POST_
 	}
 	@reset($auth_group);
 
+	$username = array();
+	$user_id = array();
 	for($i = 0; $i < count($groupinf); $i++)
 	{
 		$username[] = $groupinf[$i]['username'];
