@@ -37,8 +37,8 @@ $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date f
 // Common, these terms are used extensively on several pages
 //
 $lang['Forum'] = 'Forum';
-$lang['Subforum'] = 'Subforum: ';
-$lang['Subforums'] = 'Subforums: ';
+$lang['Subforum'] = 'Subforum';
+$lang['Subforums'] = 'Subforums';
 $lang['Category'] = 'Category';
 $lang['Topic'] = 'Topic';
 $lang['Topics'] = 'Topics';
@@ -47,6 +47,7 @@ $lang['Views'] = 'Views';
 $lang['Post'] = 'Post';
 $lang['Posts'] = 'Posts';
 $lang['Posted'] = 'Posted';
+$lang['Rating'] = 'Rating';
 $lang['Username'] = 'Username';
 $lang['Password'] = 'Password';
 $lang['Email'] = 'Email';
@@ -221,6 +222,7 @@ $lang['Error_login'] = 'You have specified an incorrect or inactive username or 
 $lang['Index'] = 'Index';
 $lang['No_Posts'] = 'No Posts';
 $lang['No_forums'] = 'This board has no forums';
+$lang['Category_not_exist'] = 'The category you selected does not exist';
 
 $lang['Private_Message'] = 'Private Message';
 $lang['Private_Messages'] = 'Private Messages';

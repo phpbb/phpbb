@@ -63,19 +63,13 @@ $acl = new acl($userdata, $forum_id);
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
-if ( !empty($forum_id) )
-{
-	$sql = "SELECT *
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_id = $forum_id";
-	$result = $db->sql_query($sql);
-}
-else
+if (empty($forum_id))
 {
 	message_die(MESSAGE, 'Forum_not_exist');
 }
 
-if ( !($forum_data = $db->sql_fetchrow($result)) )
+
+if (!$forum_branch = get_forum_branch($forum_id))
 {
 	message_die(MESSAGE, 'Forum_not_exist');
 }
@@ -89,7 +83,7 @@ $session->configure($userdata);
 //
 // Auth check
 //
-if ( !$acl->get_acl($forum_id, 'forum', 'read') )
+if (!$acl->get_acl($forum_id, 'forum', 'read'))
 {
 	if ( $userdata['user_id'] )
 	{
@@ -107,6 +101,67 @@ if ( !$acl->get_acl($forum_id, 'forum', 'read') )
 //
 // End of auth check
 //
+
+$type = 'parent';
+$forum_rows = array();
+
+foreach ($forum_branch as $row)
+{
+	if ($type == 'parent')
+	{
+		if ($row['forum_status'] == ITEM_CATEGORY)
+		{
+			$link = 'index.' . $phpEx . $SID . '&amp;c=' . $row['forum_id'];
+		}
+		else
+		{
+			$link = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'];
+		}
+
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=>	$row['forum_name'],
+			'U_VIEW_FORUM'	=>	$link
+		));
+
+		if ($row['forum_id'] == $forum_id)
+		{
+			$branch_root_id = 0;
+			$forum_data = $row;
+			$type = 'child';
+		}
+	}
+	else
+	{
+		if ($row['parent_id'] == $forum_data['forum_id'])
+		{
+			//
+			// Root-level forum
+			//
+			$forum_rows[] = $row;
+			$parent_id = $row['forum_id'];
+
+			if ($row['forum_status'] == ITEM_CATEGORY)
+			{
+				$branch_root_id = $row['forum_id'];
+			}
+		}
+		elseif ($row['parent_id'] == $branch_root_id)
+		{
+			//
+			// Forum directly under a category
+			//
+			$forum_rows[] = $row;
+			$parent_id = $row['forum_id'];
+		}
+		elseif ($row['forum_status'] != ITEM_CATEGORY)
+		{
+			if ($acl->get_acl($row['forum_id'], 'forum', 'list'))
+			{
+				$subforums[$parent_id][] = $row;
+			}
+		}
+	}
+}
 
 //
 // Topic read tracking cookie info
@@ -236,14 +291,10 @@ $select_sort_dir = '<select name="sort_dir">';
 $select_sort_dir .= ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $lang['Ascending'] . '</option><option value="d">' . $lang['Descending'] . '</option>' : '<option value="a">' . $lang['Ascending'] . '</option><option value="d" selected="selected">' . $lang['Descending'] . '</option>';
 $select_sort_dir .= '</select>';
 
-
-
-
 $post_alt = ( $forum_data['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 $template->assign_vars(array(
 	'FORUM_ID' => $forum_id,
-	'FORUM_NAME' => $forum_data['forum_name'],
 	'POST_IMG' => '<img src=' . (( $forum_data['forum_status'] == FORUM_LOCKED ) ? $theme['post_locked'] : $theme['post_new'] ) . ' border="0" alt="' . $post_alt . '" title="' . $post_alt . '" />',
 	'PAGINATION' => generate_pagination("viewforum.$phpEx$SID&amp;f=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
 	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )),
@@ -264,6 +315,7 @@ $template->assign_vars(array(
 	'L_VIEWS' => $lang['Views'],
 	'L_POSTS' => $lang['Posts'],
 	'L_LASTPOST' => $lang['Last_Post'],
+	'L_RATING' => $lang['Rating'],
 	'L_VIEW_MODERATORS' => $lang['View_moderators'],
 	'L_DISPLAY_TOPICS' => $lang['Display_topics'],
 	'L_SORT_BY' => $lang['Sort_by'],
@@ -290,10 +342,23 @@ $template->assign_vars(array(
 	'S_FORUM_ACTION' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
 
 	'U_POST_NEW_TOPIC' => 'posting.' . $phpEx . $SID . '&amp;mode=newtopic&amp;f=' . $forum_id,
-	'U_VIEW_FORUM' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id,
 	'U_VIEW_MODERATORS' => 'memberslist.' . $phpEx . $SID . '&amp;mode=moderators&amp;f=' . $forum_id,
 	'U_MARK_READ' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;mark=topics')
 );
+
+//
+// Do we have subforums? if so, let's include this harmless file
+//
+if (count($forum_rows))
+{
+	$template->assign_vars(array(
+		'S_HAS_SUBFORUM'	=>	TRUE,
+		'L_SUBFORUM'		=>	(count($forum_rows) == 1) ? $lang['Subforum'] : $lang['Subforums']
+	));
+
+	$root_id = $forum_id;
+	include($phpbb_root_path . 'includes/forums_display.' . $phpEx);
+}
 
 //
 // Grab all the basic data. If we're not on page 1 we also grab any
@@ -530,8 +595,8 @@ $nav_links['up'] = array(
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'viewforum_body.html')
-);
+	'body' => 'viewforum_body.html'
+));
 make_jumpbox('viewforum.'.$phpEx);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);

@@ -171,9 +171,15 @@ class Template {
 	 */
 	function display($handle)
 	{
+		if (!empty($_REQUEST['explain']))
+		{
+			global $db;
+			echo $this->sql_report();
+			return TRUE;
+		}
 		$_str = '';
 
-		if ( !($this->compile_load($_str, $handle, true)) )
+		if (!$this->compile_load($_str, $handle, true))
 		{
 			if ( !$this->loadfile($handle) )
 			{

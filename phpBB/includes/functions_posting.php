@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            functions_post.php
+ *                           functions_posting.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -18,11 +18,6 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
-
-if ( !defined('IN_PHPBB') )
-{
-	die('Hacking attempt');
-}
 
 $html_entities_match = array('#&#', '#<#', '#>#');
 $html_entities_replace = array('&amp;', '&lt;', '&gt;');

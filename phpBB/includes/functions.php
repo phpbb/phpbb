@@ -583,6 +583,29 @@ function on_page($num_items, $per_page, $start)
 	return sprintf($lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
 }
 
+function format_subforums_list($subforums)
+{
+	if (empty($subforums))
+	{
+		return '';
+	}
+
+	global $phpEx, $SID;
+	foreach ($subforums as $row)
+	{
+		$alist[$row['forum_id']] = $row['forum_name'];
+	}
+	asort($alist);
+
+	$links = array();
+	foreach ($alist as $forum_id => $forum_name)
+	{
+		$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $forum_id . '">' . htmlspecialchars($forum_name) . '</a>';
+	}
+
+	return implode(', ', $links);
+}
+
 //
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier

@@ -19,21 +19,28 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
-	die('Hacking attempt');
-}
+//
+// Close our DB connection.
+//
+$db->sql_close();
 
 //
 // Output page creation time
 //
-if ( defined('DEBUG') )
+if (defined('DEBUG'))
 {
-	$mtime = microtime();
-	$mtime = explode(' ', $mtime);
-	$totaltime = ( $mtime[1] + $mtime[0] ) - $starttime;
+	$mtime = explode(' ', microtime());
+	$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-	$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $board_config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . ( ( $session->load ) ? $session->load : 'N/A') . ' ]', $totaltime);
+	if (!empty($_REQUEST['explain']))
+	{
+		echo $db->sql_report;
+		echo "<pre><b>Page generated in $totaltime seconds with " . $db->num_queries . " queries,\nspending " . $db->sql_time . ' doing MySQL queries and ' . ($totaltime - $db->sql_time) . ' doing PHP things.</b></pre>';
+
+		exit;
+	}
+
+	$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $board_config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . ( ( $session->load ) ? $session->load : 'N/A') . ' | <a href="' . $_SERVER['REQUEST_URI'] . '&explain=1">Explain</a> ]', $totaltime);
 }
 
 $template->assign_vars(array(
@@ -44,11 +51,5 @@ $template->assign_vars(array(
 
 $template->display('body');
 
-//
-// Close our DB connection.
-//
-$db->sql_close();
-
 exit;
-
 ?>

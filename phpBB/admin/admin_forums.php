@@ -231,7 +231,7 @@ switch ($mode)
 			'prune_enable'		=>	(!empty($_POST['prune_enable'])) ? 1 : 0,
 			'prune_days'		=>	intval($_POST['prune_days']),
 			'prune_freq'		=>	intval($_POST['prune_freq']),
-			'display_on_index'	=>	(!empty($_POST['display_on_index'])) ? 0 : 1,
+			'display_on_index'	=>	(!isset($_POST['display_on_index']) || !empty($_POST['display_on_index'])) ? 1 : 0,
 			'post_count_inc'	=>	(!empty($_POST['disable_post_count'])) ? 0 : 1
 		);
 
@@ -477,12 +477,21 @@ switch ($mode)
   <td class="row2">
 	<input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Disable_post_count'] ?>
 <?php
-		if ($mode == 'edit')
+		if ($mode == 'edit' && $parent_id > 0)
 		{
+			//
+			// if this forum is a subforum put the "display on index" checkbox
+			//
+			if ($parent_info = get_forum_info($parent_id))
+			{
+				if ($parent_info['parent_id'] > 0 || $parent_info['forum_status'] != ITEM_CATEGORY)
+				{
 ?>
-	<br />
-	<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Display_on_index'] ?>
+					<br />
+					<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Display_on_index'] ?>
 <?php
+				}
+			}
 		}
 ?>
 </td></tr>

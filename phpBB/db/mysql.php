@@ -30,6 +30,8 @@ class sql_db
 	var $query_result;
 	var $return_on_error = false;
 	var $transaction = false;
+	var $sql_report = '';
+	var $sql_time = 0;
 
 	//
 	// Constructor
@@ -63,14 +65,14 @@ class sql_db
 	//
 	function sql_close()
 	{
-		if ( !$this->db_connect_id )
+		if (!$this->db_connect_id)
 		{
 			return false;
 		}
 
-		if ( count($this->open_queries) )
+		if (count($this->open_queries))
 		{
-			foreach($this->open_queries as $query_id)
+			foreach ($this->open_queries as $query_id)
 			{
 				@mysql_free_result($query_id);
 			}
@@ -117,14 +119,59 @@ class sql_db
 	//
 	function sql_query($query = '', $transaction = false)
 	{
-		if ( $query != '' )
+		if ($query != '')
 		{
 			$this->query_result = false;
 			$this->num_queries++;
 
-			if ( !($this->query_result = @mysql_query($query, $this->db_connect_id)) )
+			if (!empty($_REQUEST['explain']))
+			{
+				global $starttime;
+				$curtime = explode(' ', microtime());
+				$curtime = $curtime[0] + $curtime[1] - $starttime;
+			}
+			if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
 			{
 				$this->sql_error($query);
+			}
+			if (!empty($_REQUEST['explain']))
+			{
+				$endtime = explode(' ', microtime());
+				$endtime = $endtime[0] + $endtime[1] - $starttime;
+
+				$this->sql_report .= "<pre>Query:\t" . preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query) . "\n\n";
+				if ($this->query_result)
+				{
+					$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
+				}
+				else
+				{
+					$error = $this->sql_error();
+					$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . $error['message'] . '<br><br><pre>';
+				}
+				$this->sql_time += $endtime - $curtime;
+				if (preg_match('/^SELECT/', $query))
+				{
+					$html_table = FALSE;
+					if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
+					{
+						while ($row = mysql_fetch_assoc($result))
+						{
+							if (!$html_table && count($row))
+							{
+								$html_table = TRUE;
+								$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
+								$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
+							}
+							$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
+						}
+					}
+					if ($html_table)
+					{
+						$this->sql_report .= '</table><br>';
+					}
+				}
+				$this->sql_report .= "<hr>\n";
 			}
 
 			$this->open_queries[] = $this->query_result;

@@ -85,7 +85,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20020817]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.0 [20021003]');
 
 
 # -- auth options
