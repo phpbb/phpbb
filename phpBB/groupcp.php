@@ -197,7 +197,7 @@ else if( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	$emailer->use_template("group_request", $moderator['user_lang']);
 	$emailer->email_address($moderator['user_email']);
-	$emailer->set_subject($lang['Group_request']);
+	$emailer->set_subject();//$lang['Group_request']
 	$emailer->extra_headers($email_headers);
 
 	$emailer->assign_vars(array(
@@ -403,7 +403,7 @@ else if( $group_id )
 
 				$emailer->use_template("group_added", $row['user_lang']);
 				$emailer->email_address($row['user_email']);
-				$emailer->set_subject($lang['Group_added']);
+				$emailer->set_subject();//$lang['Group_added']
 				$emailer->extra_headers($email_headers);
 
 				$emailer->assign_vars(array(
@@ -509,7 +509,7 @@ else if( $group_id )
 
 					$emailer->use_template("group_approved");
 					$emailer->email_address($email_addresses);
-					$emailer->set_subject($lang['Group_approved']);
+					$emailer->set_subject();//$lang['Group_approved']
 					$emailer->extra_headers($email_headers);
 
 					$emailer->assign_vars(array(

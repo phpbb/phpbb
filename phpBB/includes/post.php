@@ -630,14 +630,14 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 					{
 						$emailer->use_template("topic_notify", $row['user_lang']);
 						$emailer->email_address($row['user_email']);
-						$emailer->set_subject($lang['Topic_reply_notification']);
+						$emailer->set_subject();//$lang['Topic_reply_notification']
 						$emailer->extra_headers($email_headers);
 
 						$emailer->assign_vars(array(
 							"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 							"USERNAME" => $row['username'],
 							"SITENAME" => $board_config['sitename'],
-							"TOPIC_TITLE" => $topic_title,
+							"TOPIC_TITLE" => $topic_title, 
 
 							"U_TOPIC" => $server_protocol . $server_name . $server_port . $script_name . "?" . POST_POST_URL . "=$post_id#$post_id",
 							"U_STOP_WATCHING_TOPIC" => $server_protocol . $server_name . $server_port . $script_name . "?" . POST_TOPIC_URL . "=$topic_id&unwatch=topic")

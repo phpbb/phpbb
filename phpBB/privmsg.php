@@ -1125,7 +1125,7 @@ else if( $submit || $refresh || $mode != "" )
 					$emailer->use_template("privmsg_notify", $to_userdata['user_lang']);
 					$emailer->extra_headers($email_headers);
 					$emailer->email_address($to_userdata['user_email']);
-					$emailer->set_subject($lang['Notification_subject']);
+					$emailer->set_subject(); //$lang['Notification_subject']
 					
 					$emailer->assign_vars(array(
 						"USERNAME" => $to_username, 
@@ -1205,16 +1205,6 @@ else if( $submit || $refresh || $mode != "" )
 			else
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain post and post text", "", __LINE__, __FILE__, $sql);
-			}
-		}
-
-		//
-		// Process the username list operations
-		//
-		if( $submit_search )
-		{
-			if( !empty($HTTP_POST_VARS['username_search']) )
-			{
 			}
 		}
 	}

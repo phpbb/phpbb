@@ -59,7 +59,7 @@ function validate_email($email)
 
 	if ( $email != "" )
 	{
-		if ( preg_match("/^[a-z0-9\.\-_]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is", $email) )
+		if ( preg_match('/^[a-z0-9\.\-_]+@[a-z0-9\-_]+\.([a-z0-9\-_]+\.)*?[a-z]+$/is', $email) )
 		{
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
@@ -107,28 +107,28 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	{
 		if ( strlen($$check_var_length[$i]) < 2 )
 		{
-			$$check_var_length[$i] = "";
+			$$check_var_length[$i] = '';
 		}
 	}
 
 	// ICQ number has to be only numbers.
-	if ( !preg_match("/^[0-9]+$/", $icq) )
+	if ( !preg_match('/^[0-9]+$/', $icq) )
 	{
-		$icq = "";
+		$icq = '';
 	}
 	
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
 	if ( $website != "" )
 	{
-		if ( !preg_match("#^http:\/\/#i", $website) )
+		if ( !preg_match('#^http:\/\/#i', $website) )
 		{
 			$website = "http://" . $website;
 		}
 
-		if ( !preg_match("#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i", $website) )
+		if ( !preg_match('#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website) )
 		{
-			$website = "";
+			$website = '';
 		}
 	}
 
@@ -633,17 +633,17 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			}
 
 			$username_sql = "";
-			if( $board_config['allow_namechange'] || $mode == "register" )
+			if ( $board_config['allow_namechange'] || $mode == 'register' )
 			{
-				if( $username != $userdata['username'] || $mode == "register" )
+				if ( $username != $userdata['username'] || $mode == 'register' )
 				{
 					$result = validate_username($username);
-					if( $result['error'] )
+					if ( $result['error'] )
 					{
 						$error = TRUE;
 						if(isset($error_msg))
 						{
-							$error_msg .= "<br />";
+							$error_msg .= '<br />';
 						}
 						$error_msg .= $result['error_msg'];
 					}
@@ -654,7 +654,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 			}
 
-			if( $signature != "" )
+			if ( $signature != '' )
 			{
 				$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
 				if( $allowhtml )
@@ -665,7 +665,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				// Only create a new bbcode_uid when there was no uid yet.
 				if($signature_bbcode_uid == '')
 				{
-					$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+					$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : '';
 				}
 				$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
@@ -674,13 +674,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error = TRUE;
 					if( isset($error_msg) )
 					{
-						$error_msg .= "<br />";
+						$error_msg .= '<br />';
 					}
 					$error_msg .= $lang['Signature_too_long'];
 				}
 			}
 
-			if( $mode == "register" )
+			if ( $mode == 'register' )
 			{
 				//
 				// The AUTO_INCREMENT field in MySQL v3.23 doesn't work
@@ -689,7 +689,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				//
 				$sql = "SELECT MAX(user_id) AS total
 					FROM " . USERS_TABLE;
-				if( $result = $db->sql_query($sql) )
+				if ( $result = $db->sql_query($sql) )
 				{
 					$row = $db->sql_fetchrow($result);
 					$new_user_id = $row['total'] + 1;
@@ -704,7 +704,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$sql = "SELECT MAX(group_id) AS total
 					FROM " . GROUPS_TABLE;
-				if( $result = $db->sql_query($sql) )
+				if ( $result = $db->sql_query($sql) )
 				{
 					$row = $db->sql_fetchrow($result);
 					$new_group_id = $row['total'] + 1;
@@ -718,39 +718,39 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				}
 			}
 
-			$avatar_sql = "";
-			if( isset($HTTP_POST_VARS['avatardel']) && $mode == "editprofile" )
+			$avatar_sql = '';
+			if ( isset($HTTP_POST_VARS['avatardel']) && $mode == 'editprofile' )
 			{
-				if( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "" )
+				if ( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "" )
 				{
-					if( @file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
+					if ( @file_exists('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
 					{
-						@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
+						@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
 					}
 				}
 				$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
 			}
-			else if( ( $user_avatar_loc != "" || !empty($user_avatar_url) ) && $board_config['allow_avatar_upload'] && !$error )
+			else if ( ( $user_avatar_loc != "" || !empty($user_avatar_url) ) && $board_config['allow_avatar_upload'] && !$error )
 			{
 				//
 				// Only allow one type of upload, either a
 				// filename or a URL
 				//
-				if( !empty($user_avatar_loc) && !empty($user_avatar_url) )
+				if ( !empty($user_avatar_loc) && !empty($user_avatar_url) )
 				{
 					$error = TRUE;
 					if( isset($error_msg) )
 					{
-						$error_msg .= "<br />";
+						$error_msg .= '<br />';
 					}
 					$error_msg .= $lang['Only_one_avatar'];
 				}
 
-				if( $user_avatar_loc != "" )
+				if ( $user_avatar_loc != '' )
 				{
-					if( file_exists($user_avatar_loc) && ereg(".jpg$|.jpeg$|.gif$|.png$", $user_avatar_name) )
+					if ( file_exists($user_avatar_loc) && ereg('.jpg$|.jpeg$|.gif$|.png$', $user_avatar_name) )
 					{
-						if( $user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
+						if ( $user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0 )
 						{
 							$error_type = false;
 
@@ -762,14 +762,15 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							switch( $user_avatar_filetype )
 							{
-								case "jpeg":
-								case "pjpeg":
+								case 'jpeg':
+								case 'pjpeg':
+								case 'jpg':
 									$imgtype = '.jpg';
 									break;
-								case "gif":
+								case 'gif':
 									$imgtype = '.gif';
 									break;
-								case "png":
+								case 'png':
 									$imgtype = '.png';
 									break;
 								default:
@@ -784,18 +785,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 								{
-									$user_id = ($mode == "register") ? $new_user_id : $userdata['user_id'];
+									$user_id = ( $mode == 'register' ) ? $new_user_id : $userdata['user_id'];
 
 									$avatar_filename = $user_id . $imgtype;
 
-									if( $mode == "editprofile" && $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "" )
+									if( $mode == 'editprofile' && $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != '' )
 									{
-										if( @file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
+										if( @file_exists('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
 										{
-											@unlink("./" . $board_config['avatar_path'] . "/". $userdata['user_avatar']);
+											@unlink('./' . $board_config['avatar_path'] . '/'. $userdata['user_avatar']);
 										}
 									}
-									@copy($user_avatar_loc, "./" . $board_config['avatar_path'] . "/$avatar_filename");
+									@copy($user_avatar_loc, './' . $board_config['avatar_path'] . "/$avatar_filename");
 
 									$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
 								}
@@ -804,7 +805,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 									$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
 									$error = true;
-									$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+									$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 								}
 							}
 						}
@@ -813,32 +814,32 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 							$error = true;
-							$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+							$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 						}
 					}
 					else
 					{
 						$error = true;
-						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+						$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 					}
 				}
-				else if( !empty($user_avatar_url) )
+				else if ( !empty($user_avatar_url) )
 				{
 					//
 					// First check what port we should connect
 					// to, look for a :[xxxx]/ or, if that doesn't
 					// exist assume port 80 (http)
 					//
-					preg_match("/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
+					preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/', $user_avatar_url, $url_ary);
 
-					if( !empty($url_ary[4]) )
+					if ( !empty($url_ary[4]) )
 					{
-						$port = (!empty($url_ary[3])) ? $url_ary[3] : 80;
+						$port = ( !empty($url_ary[3]) ) ? $url_ary[3] : 80;
 
 						$fsock = @fsockopen($url_ary[2], $port, $errno, $errstr);
-						if( $fsock )
+						if ( $fsock )
 						{
-							$base_get = "/" . $url_ary[4];
+							$base_get = '/' . $url_ary[4];
 
 							//
 							// Uses HTTP 1.1, could use HTTP 1.0 ...
@@ -854,22 +855,22 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							}
 							@fclose($fsock);
 
-							if( preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) )
+							if ( preg_match('/Content-Length\: ([0-9]+)[^\/ ][\s]+/i', $avatar_data, $file_data1) && preg_match('/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i', $avatar_data, $file_data2) )
 							{
 								$file_size = $file_data1[1]; 
 								$file_type = $file_data2[1]; 
 
 								switch( $file_type )
 								{
-									case "jpeg":
-									case "pjpeg":
-									case "jpg":
+									case 'jpeg':
+									case 'pjpeg':
+									case 'jpg':
 										$imgtype = '.jpg';
 										break;
-									case "gif":
+									case 'gif':
 										$imgtype = '.gif';
 										break;
-									case "png":
+									case 'png':
 										$imgtype = '.png';
 										break;
 									default:
@@ -878,30 +879,30 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										break;
 								}
 
-								if( !$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'] )
+								if ( !$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'] )
 								{
 									$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
 
-									$tmp_filename = tempnam ("/tmp", $userdata['user_id'] . "-");
-									$fptr = @fopen($tmp_filename, "wb");
+									$tmp_filename = tempnam ('/tmp', $userdata['user_id'] . '-');
+									$fptr = @fopen($tmp_filename, 'wb');
 									$bytes_written = @fwrite($fptr, $avatar_data, $file_size);
 									@fclose($fptr);
 
-									if( $bytes_written == $file_size )
+									if ( $bytes_written == $file_size )
 									{
 										list($width, $height) = @getimagesize($tmp_filename);
 
-										if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
+										if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 										{
 											$user_id = ( $mode == "register" ) ? $new_user_id : $userdata['user_id'];
 
 											$avatar_filename = $user_id . $imgtype;
 
-											if( $mode == "editprofile" && $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != "")
+											if ( $mode == 'editprofile' && $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $userdata['user_avatar'] != '')
 											{
-												if( file_exists("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']) )
+												if ( file_exists("./" . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
 												{
-													@unlink("./" . $board_config['avatar_path'] . "/" . $userdata['user_avatar']);
+													@unlink("./" . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
 												}
 											}
 											@copy($tmp_filename, "./" . $board_config['avatar_path'] . "/$avatar_filename");
@@ -923,7 +924,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 										// Error writing file
 										//
 										@unlink($tmp_filename);
-										message_die(GENERAL_ERROR, "Could not write avatar file to local storage. Please contact the board administrator with this message", "", __LINE__, __FILE__);
+										message_die(GENERAL_ERROR, 'Could not write avatar file to local storage. Please contact the board administrator with this message', '', __LINE__, __FILE__);
 									}
 								}
 							}
@@ -933,7 +934,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								// No data
 								//
 								$error = true;
-								$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['File_no_data'] : $lang['File_no_data'];
+								$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
 							}
 						}
 						else
@@ -942,50 +943,50 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							// No connection
 							//
 							$error = true;
-							$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['No_connection_URL'] : $lang['No_connection_URL'];
+							$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
 						}
 					}
 					else
 					{
 						$error = true;
-						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
+						$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 					}
 				}
-				else if( !empty($user_avatar_name) )
+				else if ( !empty($user_avatar_name) )
 				{
 					$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 					$error = true;
-					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 				}
 			}
-			else if( $user_avatar_remoteurl != "" && $board_config['allow_avatar_remote'] && $avatar_sql == "" && !$error )
+			else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] && $avatar_sql == '' && !$error )
 			{
-				if( !preg_match("#^http:\/\/#i", $user_avatar_remoteurl) )
+				if ( !preg_match('#^http:\/\/#i', $user_avatar_remoteurl) )
 				{
-					$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
+					$user_avatar_remoteurl = 'http://' . $user_avatar_remoteurl;
 				}
 
-				if( preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+(:[0-9]+)*\/.*?\.(gif|jpg|jpeg|png)$)#is", $user_avatar_remoteurl) )
+				if ( preg_match('#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+(:[0-9]+)*\/.*?\.(gif|jpg|jpeg|png)$)#is', $user_avatar_remoteurl) )
 				{
 					$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
 				}
 				else
 				{
 					$error = true;
-					$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
+					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 				}
 			}
-			else if( $user_avatar_local != "" && $board_config['allow_avatar_local'] && $avatar_sql == "" && !$error )
+			else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] && $avatar_sql == '' && !$error )
 			{
 				$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_local) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 			}
 
-			if( !$error )
+			if ( !$error )
 			{
-				if( $mode == "editprofile" )
+				if ( $mode == 'editprofile' )
 				{
-					if( $email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN )
+					if ( $email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN )
 					{
 						$user_active = 0;
 						$user_actkey = gen_rand_string(true);
@@ -993,23 +994,23 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						//
 						// The user is inactive, remove their session forcing them to login again before they can post.
 						//
-						$sql = "DELETE FROM " . SESSIONS_TABLE . "
-			  				  WHERE session_user_id = " . $userdata['user_id'];
-				  		$db->sql_query($sql);
-
+						if( $userdata['session_logged_in'] )
+						{
+							session_end($userdata['session_id'], $userdata['user_id']);
+						}
 					}
 					else
 					{
 						$user_active = 1;
-						$user_actkey = "";
+						$user_actkey = '';
 					}
 
 					$sql = "UPDATE " . USERS_TABLE . "
 						SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) ."', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_active = $user_active, user_actkey = '" . str_replace("\'", "''", $user_actkey) . "'" . $avatar_sql . "
 						WHERE user_id = $user_id";
-					if( $result = $db->sql_query($sql) )
+					if ( $result = $db->sql_query($sql) )
 					{
-						if( $user_active == 0 )
+						if ( $user_active == 0 )
 						{
 							//
 							// The users account has been deactivated, send them an email with a new activation key
@@ -1019,17 +1020,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
 
-							if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
-							{
-								$emailer->use_template("user_activate", stripslashes($user_lang));
-								$emailer->email_address($email);
-							}
-							else
-							{
-								$emailer->use_template("admin_activate", stripslashes($user_lang));
-								$emailer->email_address($board_config['board_email']);
-							}
-							$emailer->set_subject($lang['Reactivate']);
+							$emailer->use_template('user_activate', stripslashes($user_lang));
+							$emailer->email_address($email);
+							$emailer->set_subject();//$lang['Reactivate']
 							$emailer->extra_headers($email_headers);
 
 							$emailer->assign_vars(array(
@@ -1041,20 +1034,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 							);
 							$emailer->send();
 							$emailer->reset();
-							
-							$message = $lang['Profile_updated_inactive'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
-					
-							// Log the user out as their account is no longer active
-							if( $userdata['session_logged_in'] )
-							{
-								session_end($userdata['session_id'], $userdata['user_id']);
-							}
 
-
+							$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 						}
 						else
 						{
-							$message = $lang['Profile_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+							$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 						}
 
 						$template->assign_vars(array(
@@ -1124,12 +1109,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 								$emailer->use_template($email_template, stripslashes($user_lang));
 								$emailer->email_address($email);
-								$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
+								$emailer->set_subject();//sprintf($lang['Welcome_subject'], $board_config['sitename'])
 								$emailer->extra_headers($email_headers);
 
 								if( $coppa )
 								{
 									$emailer->assign_vars(array(
+										"SITENAME" => $board_config['sitename'], 
 										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
@@ -1153,6 +1139,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								else
 								{
 									$emailer->assign_vars(array(
+										"SITENAME" => $board_config['sitename'], 
 										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"PASSWORD" => $password_confirm,
@@ -1169,11 +1156,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 								{
 									$emailer->use_template("admin_activate", stripslashes($user_lang));
 									$emailer->email_address($board_config['board_email']);
-									$emailer->set_subject($lang['New_account_subject']);
+									$emailer->set_subject(); //$lang['New_account_subject']
 									$emailer->extra_headers($email_headers);
 
 									$emailer->assign_vars(array(
-										"WELCOME_MSG" => sprintf($lang['Welcome_subject'], $board_config['sitename']),
 										"USERNAME" => $username,
 										"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -1626,27 +1612,27 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// of the templates to 'fake' an IF...ELSE...ENDIF solution
 			// it works well :)
 			//
-			if( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
+			if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 			{
-				$template->assign_block_vars("avatarblock", array() );
+				$template->assign_block_vars("avatar_block", array() );
 
-				if($board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']))
+				if ( $board_config['allow_avatar_upload'] && file_exists("./" . $board_config['avatar_path']) )
 				{
-					$template->assign_block_vars("avatarblock.avatarupload", array() );
-					if( $form_enctype != '' )
+					if ( $form_enctype != '' )
 					{
-						$template->assign_block_vars("avatarblock.avatarupload.avatarfileupload", array() );
+						$template->assign_block_vars("avatar_block.avatar_local_upload", array() );
 					}
+					$template->assign_block_vars("avatar_block.avatar_remote_upload", array() );
 				}
 
-				if($board_config['allow_avatar_remote'])
+				if ( $board_config['allow_avatar_remote'] )
 				{
-					$template->assign_block_vars("avatarblock.avatarremote", array() );
+					$template->assign_block_vars("avatar_block.avatar_remote_link", array() );
 				}
 
-				if($board_config['allow_avatar_local'] && file_exists("./" . $board_config['avatar_gallery_path']) )
+				if ( $board_config['allow_avatar_local'] && file_exists("./" . $board_config['avatar_gallery_path']) )
 				{
-					$template->assign_block_vars("avatarblock.avatargallery", array() );
+					$template->assign_block_vars("avatar_block.avatar_local_gallery", array() );
 				}
 			}
 		}
@@ -1655,9 +1641,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
-	else if( $mode == "sendpassword" )
+	else if ( $mode == "sendpassword" )
 	{
-		if( isset($HTTP_POST_VARS['submit']) )
+		if ( isset($HTTP_POST_VARS['submit']) )
 		{
 			$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags($HTTP_POST_VARS['username'])) : "";
 			$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : "";
@@ -1666,61 +1652,61 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				FROM " . USERS_TABLE . " 
 				WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
 					AND username = '" . str_replace("\'", "''", $username) . "'";
-			if( $result = $db->sql_query($sql) )
+			if ( $result = $db->sql_query($sql) )
 			{
-				if( !$db->sql_numrows($result) )
+				if ( $row = $db->sql_fetchrow($result) )
+				{
+					if ( $row['user_active'] == 0 )
+					{
+						message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
+					}
+
+					$username = $row['username'];
+
+					$user_actkey = gen_rand_string(true);
+					$user_password = gen_rand_string(false);
+					
+					$sql = "UPDATE " . USERS_TABLE . " 
+						SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
+						WHERE user_id = " . $row['user_id'];
+					if ( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't update new password information", "", __LINE__, __FILE__, $sql);
+					}
+
+					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+					$emailer = new emailer($board_config['smtp_delivery']);
+
+					$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+
+					$emailer->use_template("user_activate_passwd", $row['user_lang']);
+					$emailer->email_address($row['user_email']);
+					$emailer->set_subject();//$lang['New_password_activation']
+					$emailer->extra_headers($email_headers);
+
+					$emailer->assign_vars(array(
+						"SITENAME" => $board_config['sitename'], 
+						"USERNAME" => $username,
+						"PASSWORD" => $user_password,
+						"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
+
+						"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
+					);
+					$emailer->send();
+					$emailer->reset();
+
+					$template->assign_vars(array(
+						"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
+					);
+
+					$message = $lang['Password_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+
+					message_die(GENERAL_MESSAGE, $message);
+				}
+				else
 				{
 					message_die(GENERAL_MESSAGE, $lang['No_email_match']);
 				}
-
-				$row = $db->sql_fetchrow($result); 
-
-				if( $row['user_active'] == 0 )
-				{
-					message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
-				}
-
-				$username = $row['username'];
-
-				$user_actkey = gen_rand_string(true);
-				$user_password = gen_rand_string(false);
-				
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
-					WHERE user_id = " . $row['user_id'];
-				if( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't update new password information", "", __LINE__, __FILE__, $sql);
-				}
-
-				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-				$emailer = new emailer($board_config['smtp_delivery']);
-
-				$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
-
-				$emailer->use_template("user_activate_passwd", $row['user_lang']);
-				$emailer->email_address($row['user_email']);
-				$emailer->set_subject($lang['New_password_activation']);
-				$emailer->extra_headers($email_headers);
-
-				$emailer->assign_vars(array(
-					"SITENAME" => $board_config['sitename'], 
-					"USERNAME" => $username,
-					"PASSWORD" => $user_password,
-					"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']), 
-
-					"U_ACTIVATE" => $server_url . "?mode=activate&act_key=$user_actkey")
-				);
-				$emailer->send();
-				$emailer->reset();
-
-				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.$phpEx") . '">')
-				);
-
-				$message = $lang['Password_updated'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
-
-				message_die(GENERAL_MESSAGE, $message);
 			}
 			else
 			{
@@ -1769,23 +1755,23 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
-	else if( $mode == "activate" )
+	else if ( $mode == 'activate' )
 	{
 		$sql = "SELECT user_id, user_email, user_newpasswd, user_lang  
 			FROM " . USERS_TABLE . "
 			WHERE user_actkey = '" . str_replace("\'", "''", $HTTP_GET_VARS['act_key']) . "'";
-			if( $result = $db->sql_query($sql) )
+			if ( $result = $db->sql_query($sql) )
 			{
-				if( $row = $db->sql_fetchrow($result) )
+				if ( $row = $db->sql_fetchrow($result) )
 				{
 					$sql_update_pass = ( $row['user_newpasswd'] != "" ) ? ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''" : "";
 	
 					$sql = "UPDATE " . USERS_TABLE . "
 						SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
 						WHERE user_id = " . $row['user_id'];
-					if( $result = $db->sql_query($sql) )
+					if ( $result = $db->sql_query($sql) )
 					{
-						if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == "" )
+						if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == '' )
 						{
 							include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 							$emailer = new emailer($board_config['smtp_delivery']);
@@ -1794,7 +1780,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 							$emailer->use_template("admin_welcome_activated", $row['user_lang']);
 							$emailer->email_address($row['user_email']);
-							$emailer->set_subject($lang['Account_activated_subject']);
+							$emailer->set_subject();//$lang['Account_activated_subject']
 							$emailer->extra_headers($email_headers);
 
 							$emailer->assign_vars(array(
@@ -1838,9 +1824,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			}
 			break;
 	}
-	else if( $mode == "email" )
+	else if ( $mode == "email" )
 	{
-		if( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
+		if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
 		{
 			$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
 		}
@@ -1849,15 +1835,16 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 		}
 
-		if( !$userdata['session_logged_in'] )
+		if ( !$userdata['session_logged_in'] )
 		{
 			header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
+			exit;
 		}
 
 		$sql = "SELECT username, user_email, user_viewemail, user_lang  
 			FROM " . USERS_TABLE . " 
 			WHERE user_id = $user_id";
-		if( $result = $db->sql_query($sql) )
+		if ( $result = $db->sql_query($sql) )
 		{
 			$row = $db->sql_fetchrow($result);
 
@@ -1865,18 +1852,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$user_email = $row['user_email']; 
 			$user_lang = $row['user_lang'];
 
-			if( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
+			if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
 			{
-				if( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
+				if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
 				{
 					message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
 				}
 
-				if( isset($HTTP_POST_VARS['submit']) )
+				if ( isset($HTTP_POST_VARS['submit']) )
 				{
 					$error = FALSE;
 
-					if( !empty($HTTP_POST_VARS['subject']) )
+					if ( !empty($HTTP_POST_VARS['subject']) )
 					{
 						$subject = trim(strip_tags(stripslashes($HTTP_POST_VARS['subject'])));
 					}
@@ -1886,7 +1873,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
 					}
 
-					if( !empty($HTTP_POST_VARS['message']) )
+					if ( !empty($HTTP_POST_VARS['message']) )
 					{
 						$message = trim(strip_tags(stripslashes($HTTP_POST_VARS['message'])));
 					}
@@ -1896,18 +1883,18 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_message_email'] : $lang['Empty_message_email'];
 					}
 
-					if( !$error )
+					if ( !$error )
 					{
 						$sql = "UPDATE " . USERS_TABLE . " 
 							SET user_emailtime = " . time() . " 
 							WHERE user_id = " . $userdata['user_id'];
-						if( $result = $db->sql_query($sql) )
+						if ( $result = $db->sql_query($sql) )
 						{
 							include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 							$emailer = new emailer($board_config['smtp_delivery']);
 
 							$email_headers = "From: " . $userdata['user_email'] . "\n";
-							if( !empty($HTTP_POST_VARS['cc_email']) )
+							if ( !empty($HTTP_POST_VARS['cc_email']) )
 							{
 								$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
 							}
@@ -1965,7 +1952,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				);
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 
-				if( $error )
+				if ( $error )
 				{
 					$template->set_filenames(array(
 						"reg_header" => "error_body.tpl")
@@ -1976,7 +1963,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$template->assign_var_from_handle("ERROR_BOX", "reg_header");
 				}
 
-				if( $userdata['user_sig'] != "" )
+				if ( $userdata['user_sig'] != "" )
 				{
 					$template->assign_block_vars("signature_checkbox", array());
 				}
