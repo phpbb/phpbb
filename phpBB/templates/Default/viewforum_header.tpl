@@ -11,7 +11,7 @@
 	            <td align="left" style="{font-size: 8pt; height: 55px;}" nowrap>
 							<div style="{font-size: 10pt; font-weight: bold}">{FORUM_NAME}</div>
 							Moderated by - {MODERATORS}<br>
-	            <a href="index.{PHPEX}">{SITENAME} - Forum Index</a> >> {FORUM_NAME}
+	            <a href="{U_INDEX}">{SITENAME} - Forum Index</a> >> {FORUM_NAME}
 	            </td>                             
 	          </tr>                               
 	        </table>                              
