@@ -54,6 +54,9 @@ while( list($var, $param) = @each($params) )
 	}
 }
 
+$user_id = intval($user_id);
+$group_id = intval($group_id);
+
 //
 // Start program - define vars
 //

@@ -463,7 +463,7 @@ if ($upgrade == 1)
 if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1 && empty($HTTP_POST_VARS['upgrade_now']))
 {
 	header('Content-Type: text/x-delimtext; name="config.' . $phpEx . '"');
-	header('Content-disposition: attachment; filename=config.' . $phpEx . '"');
+	header('Content-disposition: attachment; filename="config.' . $phpEx . '"');
 
 	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
 	// because we add slashes at the top if its off, and they are added automaticlly 

@@ -207,12 +207,13 @@ if (
 		}
 	}
 }
+
 //
 // Let's make sure the user isn't logged in while registering,
 // and ensure that they were trying to register a second time
 // (Prevents double registrations)
 //
-if ( $userdata['session_logged_in'] && $mode == 'register' && $username == $userdata['username'])
+if ($mode == 'register' && ($userdata['session_logged_in'] || $username == $userdata['username']))
 {
 	message_die(GENERAL_MESSAGE, $lang['Username_taken'], '', __LINE__, __FILE__);
 }

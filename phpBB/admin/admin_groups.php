@@ -43,7 +43,7 @@ if ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) || isset($HTTP_GET_VARS[POST_GROUPS
 }
 else
 {
-	$group_id = '';
+	$group_id = 0;
 }
 
 if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
