@@ -819,7 +819,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			$forum_ids .= ', ' . $parent_forum_id;
 		}
 
-		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1' : '';
+		$forum_topics_sql = ($mode == 'post') ? ', forum_topics = forum_topics + 1, forum_topics_real = forum_topics_real + 1' : '';
 		$forum_sql = array(
 			'forum_last_post_id' 	=> $post_data['post_id'],
 			'forum_last_post_time' 	=> $current_time,
@@ -845,7 +845,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			));
 		}
 
-		$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
+		$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1, topic_replies_real = topic_replies_real + 1' : '';
 		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . $topic_replies_sql . ' WHERE topic_id = ' . $post_data['topic_id'];
 		$db->sql_query($sql);
 
@@ -952,7 +952,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 
 	$forum_update_sql = '';
 	$user_update_sql = '';
-	$topic_update_sql = 'topic_replies = topic_replies - 1';
+	$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1, ';
 
 	// Only one post... delete topic
 	if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
@@ -967,7 +967,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 		$db->sql_query($sql);
 
 		$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
-		$forum_update_sql .= 'forum_topics = forum_topics - 1';
+		$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
 	}
 
 	// Update Post Statistics
