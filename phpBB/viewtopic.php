@@ -501,7 +501,7 @@ if (!empty($poll_start))
 
 
 // Container for user details, only process once
-$user_cache = $attachments = $attach_list = $rowset = array();
+$user_cache = $attachments = $attach_list = $rowset = $update_count = array();
 $has_attachments = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = 0;
@@ -1022,8 +1022,6 @@ foreach ($rowset as $key => $row)
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
 	{
-		$update_count = array();
-
 		foreach ($attachments[$row['post_id']] as $attachment)
 		{
 			// Some basics...
@@ -1233,15 +1231,6 @@ foreach ($rowset as $key => $row)
 				}
 			}
 		}
-
-		// Update download count
-		if (count($update_count))
-		{
-			$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
-				SET download_count = download_count + 1 
-				WHERE attach_id IN (" . implode(', ', array_unique($update_count)) . ")";
-			$db->sql_query($sql);
-		}
 	}
 
 	unset($rowset[$key]);
@@ -1254,6 +1243,14 @@ unset($user_cache);
 // Mark topics read
 markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
 
+// Udate the attachment download counts
+if (count($update_count))
+{
+	$sql = "UPDATE " . ATTACHMENTS_DESC_TABLE . " 
+		SET download_count = download_count + 1 
+		WHERE attach_id IN (" . implode(', ', array_unique($update_count)) . ")";
+	$db->sql_query($sql);
+}
 
 // Update the topic view counter, excepted when the user was already reading it
 if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
