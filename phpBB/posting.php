@@ -185,11 +185,10 @@ if ($sql)
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
 	{
-		$sql = 'SELECT d.*
-			FROM ' . ATTACHMENTS_TABLE . ' a, ' . ATTACHMENTS_DESC_TABLE . " d
-			WHERE a.post_id = $post_id
-				AND a.attach_id = d.attach_id
-			ORDER BY d.filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
+		$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+			FROM ' . ATTACHMENTS_TABLE . "
+			WHERE post_id = $post_id
+			ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
@@ -1932,7 +1931,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			if ($attach_row['attach_id'])
 			{
 				// update entry in db if attachment already stored in db and filespace
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . " 
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
 					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
 					WHERE attach_id = " . (int) $attach_row['attach_id'];
 				$db->sql_query($sql);
@@ -1941,6 +1940,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			{
 				// insert attachment into db 
 				$attach_sql = array(
+					'post_id'			=> $data['post_id'],
+					'topic_id'			=> $data['topic_id'],
+					'poster_id'			=> $poster_id,
 					'physical_filename'	=> $attach_row['physical_filename'],
 					'real_filename'		=> $attach_row['real_filename'],
 					'comment'			=> $attach_row['comment'],
@@ -1949,18 +1951,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 					'filesize'			=> $attach_row['filesize'],
 					'filetime'			=> $attach_row['filetime'],
 					'thumbnail'			=> $attach_row['thumbnail']
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-
-				$attach_sql = array(
-					'attach_id'		=> $db->sql_nextid(),
-					'post_id'		=> $data['post_id'],
-					'privmsgs_id'	=> 0,
-					'user_id_from'	=> $poster_id,
-					'user_id_to'	=> 0
 				);
 
 				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
