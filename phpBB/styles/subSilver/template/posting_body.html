@@ -266,42 +266,42 @@ function checkForm()
 		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 			<!-- IF S_HTML_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="disable_html" {S_HTML_CHECKED} /></td>
+				<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_HTML}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} /></td>
+				<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_BBCODE}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} /></td>
+				<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_SMILIES}</td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td><input type="checkbox" name="disable_magic_url" {S_MAGIC_URL_CHECKED} /></td>
+				<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 			</tr>
 			<!-- IF S_SIG_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} /></td>
+				<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} /></td>
 				<td class="gen">{L_ATTACH_SIG}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_NOTIFY_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="notify" {S_NOTIFY_CHECKED} /></td>
+				<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} /></td>
 				<td class="gen">{L_NOTIFY_REPLY}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_TYPE_TOGGLE -->
 			<tr>
 				<td></td>
-				<td class="gen">{S_TYPE_TOGGLE}</td>
+				<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
 			</tr>
 			<!-- ENDIF -->
 		</table></td>
@@ -312,13 +312,13 @@ function checkForm()
 		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 			<!-- IF S_LOCK_TOPIC_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="lock_topic" {S_LOCK_TOPIC_CHECKED} /></td>
+				<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
 				<td class="gen">{L_LOCK_TOPIC}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_LOCK_POST_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="lock_post" {S_LOCK_POST_CHECKED} /></td>
+				<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
 				<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
 			</tr>
 			<!-- ENDIF -->
