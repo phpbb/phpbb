@@ -430,7 +430,7 @@ function username_search($search_match)
 
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
+			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' AND user_id <> " . ANONYMOUS . "
 			ORDER BY username";
 		if ( !($result = $db->sql_query($sql)) )
 		{

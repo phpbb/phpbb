@@ -312,6 +312,11 @@ else
 //
 // Generate HTML required for Mozilla Navigation bar
 //
+if (!isset($nav_links))
+{
+	$nav_links = array();
+}
+
 $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 while( list($nav_item, $nav_array) = @each($nav_links) )

@@ -663,15 +663,20 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+		$post_id_sql = '';
+
 		if (isset($HTTP_POST_VARS['split_type_all']) || isset($HTTP_POST_VARS['split_type_beyond']))
 		{
 			$posts = $HTTP_POST_VARS['post_id_list'];
 
-			$post_id_sql = '';
 			for ($i = 0; $i < count($posts); $i++)
 			{
 				$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . intval($posts[$i]);
 			}
+		}
+
+		if ($post_id_sql != '')
+		{
 
 			$sql = "SELECT post_id, poster_id, topic_id, post_time
 				FROM " . POSTS_TABLE . "
@@ -769,7 +774,7 @@ switch( $mode )
 				message_die(GENERAL_ERROR, 'Could not get topic/post information', '', __LINE__, __FILE__, $sql);
 			}
 
-			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="mode" value="split" />';
+			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /><input type="hidden" name="mode" value="split" />';
 
 			if( ( $total_posts = $db->sql_numrows($result) ) > 0 )
 			{

@@ -203,6 +203,7 @@ function init_userprefs($userdata)
 {
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpEx, $phpbb_root_path;
+	global $nav_links;
 
 	if ( $userdata['user_id'] != ANONYMOUS )
 	{
@@ -254,6 +255,29 @@ function init_userprefs($userdata)
 	}
 
 	$theme = setup_style($board_config['default_style']);
+
+	//
+	// Mozilla navigation bar
+	// Default items that should be valid on all pages.
+	// Defined here to correctly assign the Language Variables
+	// and be able to change the variables within code.
+	//
+	$nav_links['top'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'index.' . $phpEx),
+		'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+	);
+	$nav_links['search'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'search.' . $phpEx),
+		'title' => $lang['Search']
+	);
+	$nav_links['help'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'faq.' . $phpEx),
+		'title' => $lang['FAQ']
+	);
+	$nav_links['author'] = array ( 
+		'url' => append_sid($phpbb_root_path . 'memberlist.' . $phpEx),
+		'title' => $lang['Memberlist']
+	);
 
 	return;
 }
