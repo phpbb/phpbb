@@ -101,35 +101,27 @@ function validate_email($email)
 //
 function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
 {
+	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
+
+	for($i = 0; $i < count($check_var_length); $i++)
+	{
+		if ( strlen($$check_var_length[$i]) < 2 )
+		{
+			$$check_var_length[$i] = "";
+		}
+	}
+
 	// ICQ number has to be only numbers.
-	if (!preg_match("/^[0-9]+$/", $icq))
+	if ( !preg_match("/^[0-9]+$/", $icq) )
 	{
 		$icq = "";
 	}
 	
-	// AIM address has to have length >= 2.
-	if (strlen($aim) < 2)
-	{
-		$aim = "";
-	}
-	
-	// MSNM address has to have length >= 2.
-	if (strlen($msnm) < 2)
-	{
-		$msnm = "";
-	}
-	
-	// YIM address has to have length >= 2.
-	if (strlen($yim) < 2)
-	{
-		$yim = "";
-	}
-
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if($website != "")
+	if ( $website != "" )
 	{
-		if( !preg_match("#^http:\/\/#i", $website) )
+		if ( !preg_match("#^http:\/\/#i", $website) )
 		{
 			$website = "http://" . $website;
 		}
@@ -139,35 +131,11 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 			$website = "";
 		}
 	}
-	
-	// location has to have length >= 2.
-	if (strlen($location) < 2)
-	{
-		$location = "";
-	}
-	
-	// occupation has to have length >= 2.
-	if (strlen($occupation) < 2)
-	{
-		$occupation = "";
-	}
-	
-	// interests has to have length >= 2.
-	if (strlen($interests) < 2)
-	{
-		$interests = "";
-	}
-	
-	// sig has to have length >= 2.
-	if (strlen($sig) < 2)
-	{
-		$sig = "";
-	}
-	
+
 	return;
 }
 
-function generate_password()
+function gen_rand_string($hash)
 {
 	$chars = array( 
 		"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J", "k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T", "u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8", 
@@ -176,12 +144,13 @@ function generate_password()
 	$max_chars = count($chars) - 1;
 	srand((double)microtime()*1000000);
 	
+	$rand_str = "";
 	for($i = 0; $i < 8; $i++)
 	{
-		$new_passwd = ($i == 0) ? $chars[rand(0, $max_chars)] : $new_passwd . $chars[rand(0, $max_chars)];
+		$rand_str = ( $i == 0 ) ? $chars[rand(0, $max_chars)] : $rand_str . $chars[rand(0, $max_chars)];
 	}
 
-	return($new_passwd);
+	return ( $hash ) ? md5($rand_str) : $rand_str;
 }
 //
 // End page specific functions
@@ -194,9 +163,7 @@ function generate_password()
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
-	//
-	// Begin page proper
-	//
+
 	if ( $mode == "viewprofile" )
 	{
 		if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
@@ -217,8 +184,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		$db->sql_freeresult($result);
 		
 		//
-		// Output page header and
-		// profile_view template
+		// Output page header and profile_view template
 		//
 		$template->set_filenames(array(
 			"body" => "profile_view_body.tpl",
@@ -235,16 +201,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
 		);
 		$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-		//
-		// End header
-		//
 
 		//
 		// Calculate the number of days this user has been a member ($memberdays)
 		// Then calculate their posts per day
 		//
 		$regdate = $profiledata['user_regdate'];
-
 		$memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
 		$posts_per_day = $profiledata['user_posts'] / $memberdays;
 
@@ -1026,14 +988,13 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					if( $email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN )
 					{
 						$user_active = 0;
-						$user_actkey = generate_activation_key();
+						$user_actkey = gen_rand_string(true);
 
 						//
 						// The user is inactive, remove their session forcing them to login again before they can post.
 						//
 						$sql = "DELETE FROM " . SESSIONS_TABLE . "
 			  				  WHERE session_user_id = " . $userdata['user_id'];
-
 				  		$db->sql_query($sql);
 
 					}
@@ -1115,9 +1076,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
 						VALUES ($new_user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', '" . str_replace("\'", "''", $avatar_filename) . "', $viewemail, '" . str_replace("\'", "''", $aim) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popuppm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
 
-					if( $board_config['require_activation'] ==USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa == 1)
+					if ( $board_config['require_activation'] ==USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa == 1)
 					{
-						$user_actkey = generate_activation_key();
+						$user_actkey = gen_rand_string(true);
 						$sql .= "0, '" . str_replace("\'", "''", $user_actkey) . "')";
 					}
 					else
@@ -1125,30 +1086,30 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$sql .= "1, '')";
 					}
 
-					if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
+					if ( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 					{
 						$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
 							VALUES ($new_group_id, '', 'Personal User', 1, 0)";
-						if($result = $db->sql_query($sql))
+						if ( $result = $db->sql_query($sql) )
 						{
 							$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 								VALUES ($new_user_id, $new_group_id, 0)";
-							if($result = $db->sql_query($sql, END_TRANSACTION))
+							if ( $result = $db->sql_query($sql, END_TRANSACTION) )
 							{
-								if( $board_config['require_activation'] == USER_ACTIVATION_SELF )
+								if ( $coppa )
+								{
+									$message = $lang['COPPA'];
+									$email_template = "coppa_welcome_inactive";
+								}
+								else if ( $board_config['require_activation'] == USER_ACTIVATION_SELF )
 								{
 									$message = $lang['Account_inactive'];
 									$email_template = "user_welcome_inactive";
 								}
-								else if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
+								else if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 								{
 									$message = $lang['Account_inactive_admin'];
 									$email_template = "admin_welcome_inactive";
-								}
-								else if( $coppa )
-								{
-									$message = $lang['COPPA'];
-									$email_template = "coppa_welcome_inactive";
 								}
 								else
 								{
@@ -1703,8 +1664,8 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$username = $row['username'];
 
-				$user_actkey = generate_activation_key();
-				$user_password = generate_password();
+				$user_actkey = gen_rand_string(true);
+				$user_password = gen_rand_string(false);
 				
 				$sql = "UPDATE " . USERS_TABLE . " 
 					SET user_newpasswd = '" .md5($user_password) . "', user_actkey = '$user_actkey' 
