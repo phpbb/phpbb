@@ -90,7 +90,7 @@ else
 {
 	$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 }
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar 
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
@@ -167,25 +167,36 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 	for($i = 0; $i < $selected_members; $i++)
 	{
-		$username = stripslashes($members[$i]['username']);
+		$username = $members[$i]['username'];
 		$user_id = $members[$i]['user_id'];
 
-		$from = (!empty($members[$i]['user_from'])) ? stripslashes($members[$i]['user_from']) : "&nbsp;";
+		$from = ( !empty($members[$i]['user_from']) ) ? $members[$i]['user_from'] : "&nbsp;";
 
 		$joined = create_date($lang['DATE_FORMAT'], $members[$i]['user_regdate'], $board_config['board_timezone']);
 
-		$posts = ($members[$i]['user_posts']) ? $members[$i]['user_posts'] : 0;
+		$posts = ( $members[$i]['user_posts'] ) ? $members[$i]['user_posts'] : 0;
 
-		if($members[$i]['user_avatar'] != "" && $user_id != ANONYMOUS)
+		if( $members[$i]['user_avatar_type'] && $user_id != ANONYMOUS && $members[$i]['user_allowavatar'] )
 		{
-			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" />";
+			switch( $postrow[$i]['user_avatar_type'] )
+			{
+				case USER_AVATAR_UPLOAD:
+					$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+					break;
+				case USER_AVATAR_REMOTE:
+					$poster_avatar = "<img src=\"" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+					break;
+				case USER_AVATAR_GALLERY:
+					$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $members[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+					break;
+			}
 		}
 		else
 		{
 			$poster_avatar = "";
 		}
 
-		if( !empty($members[$i]['user_viewemail']) )
+		if( !empty($members[$i]['user_viewemail']) || $userdata['user_level'] == ADMIN )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $members[$i]['user_id']) : "mailto:" . $members[$i]['user_email'];
 
@@ -198,16 +209,16 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\" /></a>";
 
-		if($members[$i]['user_website'] != "")
+		if( $members[$i]['user_website'] != "" )
 		{
-			$www_img = "<a href=\"" . stripslashes($members[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
+			$www_img = "<a href=\"" . $members[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\" alt=\"" . $lang['Visit_website'] . "\" /></a>";
 		}
 		else
 		{
 			$www_img = "&nbsp;";
 		}
 
-		if($members[$i]['user_icq'])
+		if( $members[$i]['user_icq'] )
 		{
 			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
 
@@ -219,16 +230,16 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$icq_add_img = "&nbsp;";
 		}
 
-		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
+		$aim_img = ( $members[$i]['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
 
-		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
+		$msn_img = ( $members[$i]['user_msnm'] ) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
 
-		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
+		$yim_img = ( $members[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
 		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" alt=\"" . $lang['Search'] . "\" /></a>";
 
-		$row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$template->assign_block_vars("memberrow", array(
 			"U_VIEWPROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $user_id),
