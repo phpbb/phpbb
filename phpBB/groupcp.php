@@ -1056,9 +1056,18 @@ else if( $group_id )
 }
 else
 {
-	$sql = "SELECT g.group_id, g.group_name, ug.user_pending 
+//
+// Show the main groupcp.php screen where the user can select a group.
+//
+
+	//
+	// Select all group that the user is a member of or where the user has
+	// a pending membership.
+	//
+	$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 
 		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-		WHERE ug.user_id = " . $userdata['user_id'] . "  
+		WHERE
+			ug.user_id = " . $userdata['user_id'] . "  
 			AND ug.group_id = g.group_id
 			AND g.group_single_user <> " . TRUE . "
 		ORDER BY g.group_name, ug.user_id";
@@ -1072,6 +1081,7 @@ else
 	$s_pending_groups_opt = "";
 	while( $row = $db->sql_fetchrow($result) )
 	{
+		$in_group[] = $row['group_id'];
 		if ( $row['user_pending'] )
 		{
 			$s_pending_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
@@ -1080,15 +1090,19 @@ else
 		{
 			$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
-		$in_group[] = $row['group_id'];
 	}
 	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
 	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 
+	//
+	// Select all other groups i.e. groups that this user is not a member of
+	//
 	$ignore_group_sql =	( count($in_group) ) ? "AND group_id NOT IN (" . implode(", ", $in_group) . ")" : ""; 
 	$sql = "SELECT group_id, group_name  
 		FROM " . GROUPS_TABLE . " g 
-		WHERE group_single_user <> " . TRUE . " 
+		WHERE
+			group_single_user <> " . TRUE . " 
+			AND group_type <> " . GROUP_HIDDEN . "
 			$ignore_group_sql 
 		ORDER BY g.group_name";
 	if ( !($result = $db->sql_query($sql)) )
