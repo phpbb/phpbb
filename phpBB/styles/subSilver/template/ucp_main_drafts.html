@@ -1,17 +1,18 @@
-<!-- $Id$ -->
-
 <!-- INCLUDE ucp_header.html -->
 
-<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<!-- $Id$ -->
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th colspan="4" height="28">{L_UCP}</th>
+		<th colspan="4">{L_UCP}</th>
 	</tr>
-	<tr class="row1">
-		<td colspan="4" align="center" class="genmed">{L_DRAFTS_EXPLAIN}</td>
+	<tr>
+		<td class="row3" colspan="4" align="center"><span class="genmed">{L_DRAFTS_EXPLAIN}</span></td>
 	</tr>
+
 	<!-- IF ERROR -->
-	<tr class="row1">
-		<td colspan="2" align="center" class="genmed"><span style="color:red">{ERROR}</span></td>
+	<tr>
+		<td class="row1" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
 	</tr>
 	<!-- ENDIF -->
 
@@ -34,19 +35,19 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td class="postdetails">{draftrow.DATE}</td>
-		<td><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
-		<td align="center"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
-		<td align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
+		<td class="postdetails" style="padding: 4px;">{draftrow.DATE}</td>
+		<td style="padding: 4px;"><b class="gen">{draftrow.DRAFT_SUBJECT}</b><!-- IF draftrow.S_LINK_TOPIC --><br /><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSEIF draftrow.S_LINK_FORUM --><br /><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span><!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF --></td>
+		<td style="padding: 4px;" align="center"><span class="gen"><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
+		<td style="padding: 4px;" align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
 	</tr>
 	<!-- BEGINELSE -->
-	<tr class="row1">
-		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
+	<tr>
+		<td class="row1" colspan="4" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
 	</tr>
 	<!-- END draftrow -->
 
 	<tr>
-		<td class="cat" colspan="4" height="28" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
+		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
 	</tr>
 
 	<!-- ELSEIF S_EDIT_DRAFT -->
@@ -94,7 +95,7 @@
 		<td colspan="9" align="left" class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" height="28" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp; <input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
 	</tr>
 	<!-- ENDIF -->
 </table>

@@ -40,7 +40,7 @@ function marklist(form_name, status)
 </script>
 <script language="javascript" type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
-<table class="tablebg" width="80%" cellspacing="1">
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th colspan="2">{L_TITLE}</th>
 	</tr>
@@ -132,14 +132,10 @@ function marklist(form_name, status)
 	</tr>
 	<!-- IF SIGNATURE_PREVIEW -->
 	<tr>
-		<th colspan="2" height="28" valign="middle">{L_SIGNATURE_PREVIEW}</th>
+		<th colspan="2" valign="middle">{L_SIGNATURE_PREVIEW}</th>
 	</tr>
 	<tr> 
-		<td class="row1" colspan="2" align="center"><table cellspacing="0" cellpadding="6" border="0">
-			<tr>
-				<td><span class="postdetails">{SIGNATURE_PREVIEW}</span></td>
-			</tr>
-		</table></td>
+		<td class="row1" colspan="2"><div class="postdetails" style="padding: 6px;">{SIGNATURE_PREVIEW}</div></td>
 	</tr>
 	<!-- ENDIF -->
 	<tr>

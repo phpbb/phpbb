@@ -1,14 +1,16 @@
 <!-- INCLUDE ucp_header.html -->
 
-<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+<!-- $Id$ -->
+
+<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
-		<th colspan="4" height="28">{L_UCP}</th>
-	</tr>
-	<tr class="row1">
-		<td class="genmed" colspan="4" align="center">{L_UCP_WELCOME}</td>
+		<th colspan="4">{L_UCP}</th>
 	</tr>
 	<tr>
-		<th colspan="4" height="28">{L_WATCHED_FORUMS}</th>
+		<td class="row1" colspan="4" align="center"><span class="genmed">{L_UCP_WELCOME}</span></td>
+	</tr>
+	<tr>
+		<th colspan="4">{L_WATCHED_FORUMS}</th>
 	</tr>
 
 	<!-- BEGIN forumrow -->
@@ -19,19 +21,19 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td width="100%" class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></span></td>
-		<td class="gensmall" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
-		<td> <input type="checkbox" name="f[{forumrow.FORUM_ID}]" /> </td>
+		<td style="padding: 4px;" width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td style="padding: 4px;" width="100%" class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></span></td>
+		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+		<td style="padding: 4px;"> <input type="checkbox" name="f[{forumrow.FORUM_ID}]" /> </td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row1">
-		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_WATCHED_FORUMS}</b></td>
+		<td colspan="4" align="center"><b class="genmed">{L_NO_WATCHED_FORUMS}</b></td>
 	</tr>
 	<!-- END forumrow -->
 
 	<tr>
-		<th colspan="4" height="28">{L_WATCHED_TOPICS}</th>
+		<th colspan="4">{L_WATCHED_TOPICS}</th>
 	</tr>
 
 	<!-- BEGIN topicrow -->
@@ -42,26 +44,22 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
-		<td width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
-		<td class="postdetails" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
-		<td> <input type="checkbox" name="t[{topicrow.TOPIC_ID}]" /> </td>
+		<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td style="padding: 4px;" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<td class="postdetails" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
+		<td style="padding: 4px;"> <input type="checkbox" name="t[{topicrow.TOPIC_ID}]" /> </td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row1">
-		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_WATCHED_TOPICS}</b></td>
+		<td colspan="4" align="center"><b class="genmed">{L_NO_WATCHED_TOPICS}</b></td>
 	</tr>
 	<!-- END topicrow -->
 
 	<tr>
-		<td class="cat" colspan="4" height="28" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
+		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
 	</tr>
 </table>
 
-<table width="80%" cellspacing="2" border="0" align="right">
-	<tr>
-		<td align="right" valign="middle"><b class="gensmall"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b></td> 
-	</tr>
-</table>
+<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b></div>
 
 <!-- INCLUDE ucp_footer.html -->

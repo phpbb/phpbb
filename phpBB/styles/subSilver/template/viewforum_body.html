@@ -16,11 +16,17 @@
 
 <br clear="all" />
 
+<!-- IF S_HAS_SUBFORUM -->
+<!-- INCLUDE viewforum_subforum.html -->
+<!-- ENDIF -->
+
+<!-- IF S_IS_POSTABLE -->
 <div><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a></div>
 <div class="gensmall" style="float:left"><!-- IF S_IS_POSTABLE and MODERATORS --><b >{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --></div>
 <div class="gensmall" style="float:right"><!-- IF S_IS_POSTABLE and U_MCP -->[ <a href="{U_MCP}">{L_MCP}</a> ]<!-- ENDIF --></div>
 
 <br clear="all" /><br />
+<!-- ENDIF -->
 
 <!-- IF S_IS_POSTABLE or TOTAL_TOPICS -->
 <table width="100%" cellspacing="1">
@@ -35,10 +41,6 @@
 		<!-- ENDIF -->
 	</tr>
 </table>
-<!-- ENDIF -->
-
-<!-- IF S_HAS_SUBFORUM -->
-<!-- INCLUDE viewforum_subforum.html -->
 <!-- ENDIF -->
 
 <!-- IF S_IS_POSTABLE -->
@@ -124,6 +126,7 @@
 </table>
 
 <br clear="all" />
+<!-- ENDIF -->
 
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
@@ -144,6 +147,7 @@
 </table>
 <!-- ENDIF -->
 
+<!-- IF S_IS_POSTABLE -->
 <br clear="all" />
 
 <table width="100%" cellspacing="0">
