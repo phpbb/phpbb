@@ -738,8 +738,7 @@ switch($mode)
 			$new_forum_id = $HTTP_POST_VARS['new_forum_id'];
 			$topic_time = time();
 
-			$sql  = "INSERT INTO " . TOPICS_TABLE . "
-				(topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
+			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 				VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
@@ -761,13 +760,13 @@ switch($mode)
 				}
 
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id
+					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
 					WHERE post_id IN ($post_id_sql)";
 			}
 			else if( $HTTP_POST_VARS['split_type_beyond'] )
 			{
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id
+					SET topic_id = $new_topic_id, forum_id = $new_forum_id
 					WHERE post_time >= $post_time
 						AND topic_id = $topic_id";
 			}
@@ -779,13 +778,14 @@ switch($mode)
 
 			sync("topic", $new_topic_id);
 			sync("topic", $topic_id);
+			sync("forum", $new_forum_id);
 			sync("forum", $forum_id);
 
 			$template->assign_vars(array(
 				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 			);
 
-			$message = $lang['Topic_split'] . " " . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
+			$message = $lang['Topic_split'] . "<br /><br />" . sprintf($lang['Click_return_topic'], "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">", "</a>");
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
