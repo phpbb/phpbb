@@ -1,149 +1,162 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- $Id$ -->
+	<!-- $Id$ -->
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
-
-<br clear="all" />
-
-<table class="tablebg" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="5" align="right" valign="middle"><a class="nav" href="{U_MARK_READ}">{L_MARK_FORUMS_READ}</a>&nbsp;</td>
-	</tr>
-	<tr>
-		<th colspan="2">&nbsp;{L_FORUM}&nbsp;</th>
-		<th width="50">&nbsp;{L_TOPICS}&nbsp;</th>
-		<th width="50">&nbsp;{L_POSTS}&nbsp;</th>
-		<th>&nbsp;{L_LAST_POST}&nbsp;</th>
-	</tr>
-	<!-- BEGIN forumrow -->
-	<!-- IF forumrow.S_IS_CAT -->
-	<tr>
-		<td class="cat" colspan="2"><a class="cattitle" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></td>
-		<td class="catdiv" colspan="3" align="right">&nbsp;</td>
-	</tr>
-	<!-- ELSEIF forumrow.S_IS_LINK -->
-	<tr>
-		<td class="row1" width="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<!-- IF forumrow.CLICKS -->
-		<td class="row1">
+	<table class="tablebg" cellspacing="1">
+		<tr>
+			<td class="cat" colspan="5" align="right"><a class="nav" href="{U_MARK_READ}">{L_MARK_FORUMS_READ}</a>&nbsp;</td>
+		</tr>
+		<tr>
+			<th colspan="2">&nbsp;{L_FORUM}&nbsp;</th>
+			<th width="50">&nbsp;{L_TOPICS}&nbsp;</th>
+			<th width="50">&nbsp;{L_POSTS}&nbsp;</th>
+			<th>&nbsp;{L_LAST_POST}&nbsp;</th>
+		</tr>
+		<!-- BEGIN forumrow -->
+		<!-- IF forumrow.S_IS_CAT -->
+		<tr>
+			<td class="cat" colspan="2"><h4><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></h4></td>
+			<td class="catdiv" colspan="3">&nbsp;</td>
+		</tr>
+		<!-- ELSEIF forumrow.S_IS_LINK -->
+		<tr>
+			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
+			<!-- IF forumrow.CLICKS -->
+			<td class="row1">
+			<!-- ELSE -->
+			<td class="row1" colspan="4">
+			<!-- ENDIF -->
+				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
+				<p class="forumdesc">{forumrow.FORUM_DESC}</p></td>
+			<!-- IF forumrow.CLICKS -->
+			<td class="row2" colspan="3" align="center"><span class="gensmall">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
+			<!-- ENDIF -->
+		</tr>
 		<!-- ELSE -->
-		<td class="row1" colspan="4">
+		<tr>
+			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
+			<td class="row1" width="100%">
+				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
+				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
+				<!-- IF forumrow.MODERATORS -->
+					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}</p>
+				<!-- ENDIF -->
+				<!-- IF forumrow.SUBFORUMS -->
+					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}</p>
+				<!-- ENDIF -->
+			</td>
+			<td class="row2" align="center"><p class="gensmall">{forumrow.TOPICS}</p></td>
+			<td class="row2" align="center"><p class="gensmall">{forumrow.POSTS}</p></td>
+			<td class="row2" align="center" nowrap="nowrap">
+				<!-- IF forumrow.LAST_POST_TIME -->
+					<p class="gensmall">{forumrow.LAST_POST_TIME}</p>
+					<p class="gensmall">
+					<!-- IF forumrow.U_LAST_POSTER -->
+						<a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a>
+					<!-- ELSE -->
+						{forumrow.LAST_POSTER}
+					<!-- ENDIF -->
+					<a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a>
+					</p>
+				<!-- ELSE -->
+					<p class="gensmall">{L_NO_POSTS}</p>
+				<!-- ENDIF -->
+			</td>
+		</tr>
 		<!-- ENDIF -->
-		<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br /><div class="gensmall" style="padding: 4px;">{forumrow.FORUM_DESC}</div></td>
-		<!-- IF forumrow.CLICKS -->
-		<td class="row2" colspan="3" align="center" valign="middle" ><span class="gensmall">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
-		<!-- ENDIF -->
-	</tr>
-	<!-- ELSE -->
-	<tr>
-		<td class="row1" width="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-		<td class="row1" width="100%" valign="top"><a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br />
+		<!-- BEGINELSE -->
+		<tr>
+			<td class="row1" colspan="5" align="center"><p class="gensmall">{L_NO_FORUMS}</p></td>
+		</tr>
+		<!-- END forumrow -->
+	</table>
 
-			<div class="gensmall" style="padding: 4px;">{forumrow.FORUM_DESC}</div>
+	<br clear="all" />
 
-			<div class="gensmall"><!-- IF forumrow.MODERATORS --><b>{forumrow.L_MODERATOR_STR}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><br /><b>{forumrow.L_SUBFORUM_STR}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></div>
-		</td>
-		<td class="row2" align="center" valign="middle"><span class="gensmall">{forumrow.TOPICS}</span></td>
-		<td class="row2" align="center" valign="middle"><span class="gensmall">{forumrow.POSTS}</span></td>
-		<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="gensmall"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POSTER --><a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a><!-- ELSE -->{forumrow.LAST_POSTER}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></span></td>
-	</tr>
-	<!-- ENDIF -->
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gensmall">{L_NO_FORUMS}</span></td>
-	</tr>
-	<!-- END forumrow -->
-</table>
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
 
-<br clear="all" />
+	<!-- IF S_DISPLAY_ONLINE_LIST -->
+	<br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
-
-<!-- IF S_DISPLAY_ONLINE_LIST -->
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="2"><a class="cattitle" href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></td>
-	</tr>
-	<tr>
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat" colspan="2"><h4><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h4></td>
+		</tr>
+		<tr>
+			<!-- IF LEGEND -->
+			<td class="row1" rowspan="2" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+			<!-- ELSE -->
+			<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+			<!-- ENDIF -->
+			<td class="row1" width="100%"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}<br /><br />{L_ONLINE_EXPLAIN}</span></td>
+		</tr>
 		<!-- IF LEGEND -->
-		<td class="row1" rowspan="2" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-		<!-- ELSE -->
-		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+		<tr>
+			<td class="row1"><b class="gensmall">{L_LEGEND} :: {LEGEND}</b></td>
+		</tr>
 		<!-- ENDIF -->
-		<td class="row1" width="100%"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}<br /><br />{L_ONLINE_EXPLAIN}</span></td>
-	</tr>
-	<!-- IF LEGEND -->
-	<tr>
-		<td class="row1"><b class="gensmall">{L_LEGEND} :: {LEGEND}</b></td>
-	</tr>
+	</table>
 	<!-- ENDIF -->
-</table>
-<!-- ENDIF -->
 
-<!-- IF S_DISPLAY_BIRTHDAY_LIST -->
-<br clear="all" />
+	<!-- IF S_DISPLAY_BIRTHDAY_LIST -->
+	<br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="2"><span class="cattitle">{L_BIRTHDAYS}</span></td>
-	</tr>
-	<tr>
-		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-		<td class="row1" width="100%"><span class="gensmall"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></span></td>
-	</tr>
-</table>
-<!-- ENDIF -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat" colspan="2"><h4>{L_BIRTHDAYS}</h4></td>
+		</tr>
+		<tr>
+			<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+			<td class="row1" width="100%"><p class="gensmall"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
+		</tr>
+	</table>
+	<!-- ENDIF -->
 
-<br clear="all" />
+	<br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="2"><span class="cattitle">{L_STATISTICS}</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-		<td class="row1" width="100%" valign="middle"><span class="gensmall">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</span></td>
-	</tr>
-</table>
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat" colspan="2"><h4>{L_STATISTICS}</h4></td>
+		</tr>
+		<tr>
+			<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+			<td class="row1" width="100%" valign="middle"><p class="gensmall">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</p></td>
+		</tr>
+	</table>
 
-<!-- IF not S_USER_LOGGED_IN -->
-<br clear="all" />
+	<!-- IF not S_USER_LOGGED_IN -->
+	<br clear="all" />
 
-<form method="post" action="{S_LOGIN_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat"><a class="cattitle" href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></td>
-	</tr>
-	<tr>
-		<td class="row1" align="center"><span class="gensmall">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="gensmall">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input class="text" type="checkbox" name="autologin" />&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
-	</tr>
-</table></form>
-<!-- ENDIF -->
+	<form method="post" action="{S_LOGIN_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat"><h4><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></h4></td>
+		</tr>
+		<tr>
+			<td class="row1" align="center"><span class="gensmall">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="gensmall">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input class="text" type="checkbox" name="autologin" />&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
+		</tr>
+	</table></form>
+	<!-- ENDIF -->
 
-<br clear="all" />
+	<br clear="all" />
 
-<table align="center">
-	<tr>
-		<td width="20" align="center">{FORUM_NEW_IMG}</td>
-		<td><span class="gensmall">{L_NEW_POSTS}</span></td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center">{FORUM_IMG}</td>
-		<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center">{FORUM_LOCKED_IMG}</td>
-		<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
-	</tr>
-</table>
-
+	<table align="center">
+		<tr>
+			<td width="20" align="center">{FORUM_NEW_IMG}</td>
+			<td><span class="gensmall">{L_NEW_POSTS}</span></td>
+			<td>&nbsp;&nbsp;</td>
+			<td width="20" align="center">{FORUM_IMG}</td>
+			<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
+			<td>&nbsp;&nbsp;</td>
+			<td width="20" align="center">{FORUM_LOCKED_IMG}</td>
+			<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
+		</tr>
+	</table>
 
 <!-- INCLUDE overall_footer.html -->

@@ -1,288 +1,308 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- $Id$ -->
+	<!-- $Id$ -->
 
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-	<!-- IF U_FORUM_RULES -->
-	<tr>
-		<td class="row2"><a class="nav" href="{U_FORUM_RULES}">{L_FORUM_RULES}</a></td>
-	</tr>
-	<!-- ELSEIF RULES_TEXT -->
-	<tr>
-		<td class="row2"><span class="nav">{L_FORUM_RULES}</span></td>
-	</tr>
-	<!-- ENDIF -->
-</table>
-
-<br clear="all" />
-
-<div><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></div>
-<div class="gensmall" style="float:left"><!-- IF MODERATORS --><b >{L_MODERATORS}: {MODERATORS}</b><!-- ENDIF --></div>
-<div class="gensmall" style="float:right"><!-- IF U_MCP -->[ <a href="{U_MCP}">{L_MCP}</a> ]<!-- ENDIF --></div>
-
-<br clear="all" /><br />
-
-<table width="100%" cellspacing="1">
-	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
-		<!-- IF TOTAL_POSTS -->
-		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-		<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-		<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+	<!-- IF S_FORUM_RULES -->
+	<p class="forumrules">
+		<!-- IF U_FORUM_RULES -->
+		<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
+		<!-- ELSE -->
+		{L_FORUM_RULES}
 		<!-- ENDIF -->
-	</tr>
-</table>
+	</p>
 
-<form name="viewtopic" method="post" action="{S_TOPIC_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="2"><table width="100%" cellspacing="0">
+	<br clear="all" />
+	<!-- ENDIF -->
+
+	<div id="pageheader">
+		<h2><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+
+		<!-- IF MODERATORS -->
+			<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
+		<!-- ENDIF -->
+		<!-- IF U_MCP -->
+			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<!-- ENDIF -->
+	</div>
+
+	<br clear="all" /><br />
+
+	<div id="pagecontent">
+
+		<table width="100%" cellspacing="1">
 			<tr>
-				<td class="nav" nowrap="nowrap">&nbsp;
-				<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC}<!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
-				<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a><!-- IF U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
-				<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- IF U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
-				<!-- IF U_BUMP_TOPIC --><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}">{L_BUMP_TOPIC}</a><!-- ENDIF -->
-				</td>
-				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
+				<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
+				<!-- IF TOTAL_POSTS -->
+				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				<!-- ENDIF -->
 			</tr>
-		</table></td>
-	</tr>
-	<!-- IF S_HAS_POLL -->
-	<tr>
-		<td class="row2" colspan="2"><br clear="all" /><form method="post" action="{S_POLL_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
+		</table>
+
+		<table class="tablebg" width="100%" cellspacing="1">
 			<tr>
-				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
-			</tr>
-			<tr>
-				<td align="center"><table cellspacing="0" cellpadding="2" border="0">
-					<!-- BEGIN poll_option -->
+				<td class="cat" colspan="2"><table width="100%" cellspacing="0">
 					<tr>
-						<!-- IF S_CAN_VOTE -->
-						<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF -->/><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}" <!-- IF poll_option.POLL_OPTION_VOTED -->checked="checked"<!-- ENDIF --> /><!-- ENDIF -->&nbsp;</td>
-						<!-- ENDIF -->
-						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
-						<!-- IF S_DISPLAY_RESULTS -->
-						<td><table cellspacing="0" cellpadding="0" border="0">
-							<tr>
-								<td>{POLL_LEFT_CAP_IMG}</td>
-								<td>{poll_option.POLL_OPTION_IMG}</td>
-								<td>{POLL_RIGHT_CAP_IMG}</td>
-							</tr>
-						</table></td>
-						<td class="gen" align="center"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
-						<td class="gen" align="center">[ {poll_option.POLL_OPTION_RESULT} ]</td>
-						<!-- IF poll_option.POLL_OPTION_VOTED -->
-						<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
-						<!-- ENDIF -->
-						<!-- ENDIF -->
+						<td class="nav" nowrap="nowrap">&nbsp;
+						<!-- IF S_WATCH_TOPIC -->{S_WATCH_TOPIC}<!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+						<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a><!-- IF U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+						<!-- IF U_EMAIL_TOPIC --><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a><!-- IF U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
+						<!-- IF U_BUMP_TOPIC --><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}">{L_BUMP_TOPIC}</a><!-- ENDIF -->
+						</td>
+						<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
 					</tr>
-					<!-- END poll_option -->
 				</table></td>
 			</tr>
-			<!-- IF S_CAN_VOTE -->
+			<!-- IF S_HAS_POLL -->
 			<tr>
-				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="btnlite" /></td>
+				<td class="row2" colspan="2"><br clear="all" /><form method="post" action="{S_POLL_ACTION}">
+				
+					<table cellspacing="0" cellpadding="4" border="0" align="center">
+						<tr>
+							<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
+						</tr>
+						<tr>
+							<td align="center"><table cellspacing="0" cellpadding="2" border="0">
+								<!-- BEGIN poll_option -->
+								<tr>
+									<!-- IF S_CAN_VOTE -->
+									<td><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF -->/><!-- ELSE --><input type="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF -->&nbsp;</td>
+									<!-- ENDIF -->
+									<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
+									<!-- IF S_DISPLAY_RESULTS -->
+									<td>{POLL_LEFT_CAP_IMG}{poll_option.POLL_OPTION_IMG}{POLL_RIGHT_CAP_IMG}</td>
+									<td class="gen" align="center"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
+									<td class="gen" align="center">[ {poll_option.POLL_OPTION_RESULT} ]</td>
+									<!-- IF poll_option.POLL_OPTION_VOTED -->
+									<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
+									<!-- ENDIF -->
+									<!-- ENDIF -->
+								</tr>
+								<!-- END poll_option -->
+							</table></td>
+						</tr>
+						<!-- IF S_CAN_VOTE -->
+						<tr>
+							<td align="center"><span class="gensmall">{L_MAX_VOTES}</span><br /><br /><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="btnlite" /></td>
+						</tr>
+						<!-- ENDIF -->
+						<!-- IF S_DISPLAY_RESULTS -->
+						<tr>
+							<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></td>
+						</tr>
+						<!-- ELSE -->
+						<tr>
+							<td align="center"><span class="gensmall"><b><a href="{U_VIEW_RESULTS}">{L_VIEW_RESULTS}</a></b></span></td>
+						</tr>
+						<!-- ENDIF -->
+					</table>
+				{S_HIDDEN_FIELDS}</form></td>
 			</tr>
 			<!-- ENDIF -->
-			<!-- IF S_DISPLAY_RESULTS -->
 			<tr>
-				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></td>
+				<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
+				<th nowrap="nowrap">{L_MESSAGE}</th>
 			</tr>
+
+			<!-- BEGIN postrow -->
+
+			<!-- IF postrow.S_ROW_COUNT is even -->
+			<tr class="row1">
 			<!-- ELSE -->
-			<tr>
-				<td align="center"><span class="gensmall"><b><a href="{U_VIEW_RESULTS}">{L_VIEW_RESULTS}</a></b></span></td>
-			</tr>
+			<tr class="row2">
 			<!-- ENDIF -->
-		</table>{S_HIDDEN_FIELDS}</form></td>
-	</tr>
-	<!-- ENDIF -->
-	<tr>
-		<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
-		<th nowrap="nowrap">{L_MESSAGE}</th>
-	</tr>
 
-	<!-- BEGIN postrow -->
-
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-
-	<!-- IF postrow.S_IGNORE_POST -->
-		<td class="gensmall" colspan="2" height="25" align="center">{postrow.L_IGNORE_POST}</td>
-	<!-- ELSE -->
-		<td align="center" valign="middle"><a name="{postrow.U_POST_ID}"></a><b class="postauthor">{postrow.POSTER_NAME}</b></td>
-		<td width="100%" height="25"><table width="100%" cellspacing="0">
-			<tr>
-				<td class="gensmall"><div style="float:left">&nbsp;<b>{L_POST_SUBJECT}:</b> {postrow.POST_SUBJECT}</div><div style="float:right"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><b>{L_POSTED}:</b> {postrow.POST_DATE}&nbsp;</div></td>
+			<!-- IF postrow.S_IGNORE_POST -->
+				<td class="gensmall" colspan="2" height="25" align="center">{postrow.L_IGNORE_POST}</td>
+			<!-- ELSE -->
+				<td align="center" valign="middle"><a name="{postrow.U_POST_ID}"></a><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+				<td width="100%" height="25"><table width="100%" cellspacing="0">
+					<tr>
+						<td class="gensmall"><div style="float:left">&nbsp;<b>{L_POST_SUBJECT}:</b> {postrow.POST_SUBJECT}</div><div style="float:right"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><b>{L_POSTED}:</b> {postrow.POST_DATE}&nbsp;</div></td>
+					</tr>
+				</table></td>
 			</tr>
-		</table></td>
-	</tr>
 
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-		<td valign="top">
-			
-			<div align="center">
-			
-			<table cellspacing="4" align="center">
-				<tr>
-					<td>{postrow.KARMA_IMG}</td>
-				</tr>
-				<!-- IF postrow.ONLINE_IMG -->
-				<tr>
-					<td>{postrow.ONLINE_IMG}</td>
-				</tr>
-				<!-- ENDIF -->
-				<!-- IF postrow.POSTER_RANK -->
-				<tr>
-					<td class="postdetails">{postrow.POSTER_RANK}</td>
-				</tr>
-				<!-- ENDIF -->
-				<!-- IF postrow.RANK_IMAGE -->
-				<tr>
-					<td>{postrow.RANK_IMAGE}</td>
-				</tr>
-				<!-- ENDIF -->
-				<!-- IF postrow.POSTER_AVATAR -->
-				<tr>
-					<td>{postrow.POSTER_AVATAR}</td>
-				</tr>
-				<!-- ENDIF -->
-			</table>
-
-			<span class="postdetails">
-			<!-- IF postrow.POSTER_POSTS --><br /><b>{L_JOINED}:</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
-			<!-- IF postrow.POSTER_POSTS --><br /><b>{L_POSTS}:</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
-			<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}:</b> {postrow.POSTER_FROM}<!-- ENDIF -->
-			</span>
-
-			</div>
-		</td>
-		<td valign="top"><table width="100%" cellspacing="5">
-			<tr>
-				<td>
-
-					<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
-					<table width="100%" cellspacing="0">
+			<!-- IF postrow.S_ROW_COUNT is even -->
+			<tr class="row1">
+			<!-- ELSE -->
+			<tr class="row2">
+			<!-- ENDIF -->
+				<td valign="top">
+					
+					<div align="center">
+					
+					<table cellspacing="4" align="center">
 						<tr>
-							<td class="gensmall"><!-- IF postrow.S_POST_UNAPPROVED --><b style="color:green">&#187 <a style="color:green" href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></b> <!-- ENDIF --> <!-- IF postrow.S_POST_REPORTED --><b style="color:red">&#187 <a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b><!-- ENDIF --></td>
+							<td>{postrow.KARMA_IMG}</td>
 						</tr>
+						<!-- IF postrow.ONLINE_IMG -->
+						<tr>
+							<td>{postrow.ONLINE_IMG}</td>
+						</tr>
+						<!-- ENDIF -->
+						<!-- IF postrow.POSTER_RANK -->
+						<tr>
+							<td class="postdetails">{postrow.POSTER_RANK}</td>
+						</tr>
+						<!-- ENDIF -->
+						<!-- IF postrow.RANK_IMAGE -->
+						<tr>
+							<td>{postrow.RANK_IMAGE}</td>
+						</tr>
+						<!-- ENDIF -->
+						<!-- IF postrow.POSTER_AVATAR -->
+						<tr>
+							<td>{postrow.POSTER_AVATAR}</td>
+						</tr>
+						<!-- ENDIF -->
 					</table>
 
-					<br clear="all" />
-					<!-- ENDIF -->
+					<span class="postdetails">
+					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_JOINED}:</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_POSTS}:</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}:</b> {postrow.POSTER_FROM}<!-- ENDIF -->
+					</span>
 
-					<span class="postbody">{postrow.MESSAGE}</span>
-
-					<!-- IF postrow.S_HAS_ATTACHMENTS -->
-					<br clear="all" /><br /><table class="tablebg" width="100%" cellspacing="1">
-						<tr>
-							<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
-						</tr>
-						<!-- BEGIN attachment -->
-						<tr>
-							<!-- IF postrow.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{postrow.attachment.DISPLAY_ATTACHMENT}</td>
-						</tr>
-						<!-- END attachment -->
-					</table>
-					<!-- ENDIF -->
-
-					<!-- IF postrow.S_DISPLAY_NOTICE --><span class="gensmall" style="color:red;"><br /><br />{L_DOWNLOAD_NOTICE}</span><!-- ENDIF -->
-					<!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF -->
-					<!-- IF postrow.EDITED_MESSAGE --><span class="gensmall">{postrow.EDITED_MESSAGE}</span><!-- ENDIF -->
-					<!-- IF postrow.BUMPED_MESSAGE --><span class="gensmall">{postrow.BUMPED_MESSAGE}</span><!-- ENDIF -->
-
-					<!-- IF not postrow.S_HAS_ATTACHMENTS --><br clear="all" /><br /><!-- ENDIF -->
-
-					<table width="100%" cellspacing="0">
-						<tr valign="middle">
-							<td class="gensmall"><!-- IF postrow.S_CAN_RATE --><b>{L_RATE}:</b> <a style="color:green" href="{postrow.U_RATE_GOOD}">{L_RATE_GOOD}</a> / <a style="color:red" href="{postrow.U_RATE_BAD}">{L_RATE_BAD}</a><!-- ENDIF --></td>
-							<td class="gensmall" align="right"><!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}">{REPORT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_IP --><a href="{postrow.U_IP}">{IP_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_DELETE --><a href="{postrow.U_DELETE}">{DELETE_IMG}</a> <!-- ENDIF --></td>
-						</tr>
-					</table>
-
+					</div>
 				</td>
+				<td valign="top"><table width="100%" cellspacing="5">
+					<tr>
+						<td>
+
+							<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
+							<table width="100%" cellspacing="0">
+								<tr>
+									<td class="gensmall"><!-- IF postrow.S_POST_UNAPPROVED --><b class="postapprove">&#187 <a class="postapprove" href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></b> <!-- ENDIF --> <!-- IF postrow.S_POST_REPORTED --><b class="postreported">&#187 <a class="postreported" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b><!-- ENDIF --></td>
+								</tr>
+							</table>
+
+							<br clear="all" />
+							<!-- ENDIF -->
+
+							<div class="postbody">{postrow.MESSAGE}</div>
+
+							<!-- IF postrow.S_HAS_ATTACHMENTS -->
+							<br clear="all" /><br />
+							
+							<table class="tablebg" width="100%" cellspacing="1">
+								<tr>
+									<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+								</tr>
+								<!-- BEGIN attachment -->
+								<tr>
+									<!-- IF postrow.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{postrow.attachment.DISPLAY_ATTACHMENT}</td>
+								</tr>
+								<!-- END attachment -->
+							</table>
+							<!-- ENDIF -->
+
+							<!-- IF postrow.S_DISPLAY_NOTICE -->
+								<span class="gensmall" style="color:red;"><br /><br />{L_DOWNLOAD_NOTICE}</span>
+							<!-- ENDIF -->
+							<!-- IF postrow.SIGNATURE -->
+								<span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span>
+							<!-- ENDIF -->
+							<!-- IF postrow.EDITED_MESSAGE -->
+								<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
+							<!-- ENDIF -->
+							<!-- IF postrow.BUMPED_MESSAGE -->
+								<span class="gensmall">{postrow.BUMPED_MESSAGE}</span>
+							<!-- ENDIF -->
+
+							<!-- IF not postrow.S_HAS_ATTACHMENTS --><br clear="all" /><br /><!-- ENDIF -->
+
+							<table width="100%" cellspacing="0">
+								<tr valign="middle">
+									<!-- IF postrow.S_CAN_RATE -->
+									<td class="gensmall"><b>{L_RATE}:</b> <a style="color:green" href="{postrow.U_RATE_GOOD}">{L_RATE_GOOD}</a> / <a style="color:red" href="{postrow.U_RATE_BAD}">{L_RATE_BAD}</a></td>
+									<!-- ENDIF -->
+									<td class="gensmall" align="right"><!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}">{REPORT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_IP --><a href="{postrow.U_IP}">{IP_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_DELETE --><a href="{postrow.U_DELETE}">{DELETE_IMG}</a> <!-- ENDIF --></td>
+								</tr>
+							</table>
+
+						</td>
+					</tr>
+				</table></td>
 			</tr>
-		</table></td>
-	</tr>
 
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
+			<!-- IF postrow.S_ROW_COUNT is even -->
+			<tr class="row1">
+			<!-- ELSE -->
+			<tr class="row2">
+			<!-- ENDIF -->
+				<td></td>
+				<td><div class="gensmall" style="float:left">&nbsp;<!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float:right"><!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF -->&nbsp;</div></td>
+			</tr>
+
+			<!-- ENDIF -->
+			<tr>
+				<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+			</tr>
+
+			<!-- END postrow -->
+
+			<tr align="center">
+				<td class="cat" colspan="2"><form name="viewtopic" method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></form></td>
+			</tr>
+		</table>
+
+		<table width="100%" cellspacing="1">
+			<tr>
+				<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
+				<!-- IF TOTAL_POSTS -->
+				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				<!-- ENDIF -->
+			</tr>
+		</table>
+
+	</div>
+
+	<div id="pagefooter"></div>
+
+	<br clear="all" />
+
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+		<tr>
+			<td class="row1">
+				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+				<p class="datetime">{S_TIMEZONE}</p>
+			</td>
+		</tr>
+	</table>
+
+	<!-- IF S_DISPLAY_ONLINE_LIST -->
+	<br clear="all" />
+
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat"><h4>{L_WHO_IS_ONLINE}</h4></td>
+		</tr>
+		<tr>
+			<td class="row1"><p class="gensmall">{LOGGED_IN_USER_LIST}</p></td>
+		</tr>
+	</table>
 	<!-- ENDIF -->
-		<td></td>
-		<td><div class="gensmall" style="float:left">&nbsp;<!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float:right"><!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF -->&nbsp;</div></td>
-	</tr>
 
-	<!-- ENDIF -->
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
+	<br clear="all" />
 
-	<!-- END postrow -->
+	<table width="100%" cellspacing="1">
+		<tr>
+			<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+			<td align="right" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
+		</tr>
+	</table>
 
-	<tr align="center">
-		<td class="cat" colspan="2" height="28"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
-	</tr>
-</table></form>
+	<br clear="all" />
 
-<table width="100%" cellspacing="1">
-	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></td>
-		<!-- IF TOTAL_POSTS -->
-		<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-		<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-		<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
-		<!-- ENDIF -->
-	</tr>
-</table>
-
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="row1"><div class="nav" style="float:left"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></div><div class="gensmall" style="float:right">{S_TIMEZONE}</div></td>
-	</tr>
-</table>
-
-<!-- IF S_DISPLAY_ONLINE_LIST -->
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat"><span class="cattitle">{L_WHO_IS_ONLINE}</span></td>
-	</tr>
-	<tr>
-		<td class="row1"><span class="gensmall">{LOGGED_IN_USER_LIST}</span></td>
-	</tr>
-</table>
-<!-- ENDIF -->
-
-<br clear="all" />
-
-<table width="100%" cellspacing="1">
-	<tr>
-		<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
-		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
-	</tr>
-</table>
-
-<br clear="all" />
-
-<table width="100%" cellspacing="0">
-	<tr>
-		<td><!-- IF S_DISPLAY_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
-		<td align="right"><!-- INCLUDE jumpbox.html --></td>
-	</tr>
-</table>
+	<table width="100%" cellspacing="0">
+		<tr>
+			<td><!-- IF S_DISPLAY_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
+			<td align="right"><!-- INCLUDE jumpbox.html --></td>
+		</tr>
+	</table>
 
 <!-- INCLUDE overall_footer.html -->
