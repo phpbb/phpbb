@@ -958,12 +958,11 @@ $lang += array(
 	'STYLE_ADDED'		=> 'Style added successfully', 
 	'STYLE_EDITED'		=> 'Style edited successfully', 
 
-	'ADD_STYLE'				=> 'Create Template', 
-	'ADD_STYLE_EXPLAIN'		=> 'Here you can add a new template. Depending on your server configuration and file permissions you may have additional options here. For example you may be able to base this template set on an existing one. You may also be able to upload or import (from the store directory) a template archive. If you upload or import an archive the template name can be optionally taken from the archive name (to do this leave the template name blank).', 
-	'INSTALL_STYLE'			=> 'Install Template', 
-	'INSTALL_STYLE_EXPLAIN'	=> 'Here you can install a new template set. Depending on your server configuration you may have a number of options here.', 
+	'ADD_STYLE'				=> 'Create Style', 
+	'ADD_STYLE_EXPLAIN'		=> 'Here you can create a new style. Depending on your server configuration and file permissions you may have additional options. For example you may be able to base this style on an existing one. You may also be able to upload or import (from the store directory) a style archive. If you upload or import an archive the style name will be determined automatically.', 
+	'INSTALL_STYLE'			=> 'Install Style', 
+	'INSTALL_STYLE_EXPLAIN'	=> 'Here you can install a new style and if appropriate the corresponding style elements. If you already have the relevant style elements installed they will not be overwritten. Some styles require existing style elements to already be installed. If you try installing such a style and do not have the required elements you will be notified.', 
 	'SELECT_STYLE'			=> 'Select style', 
-	'STYLE_EXISTING_BASIS'	=> 'Use existing style as basis', 
 	'STYLE_UPLOAD_BASIS'	=> 'Upload a style', 
 	'STYLE_IMPORT_BASIS'	=> 'Import style from store', 
 
@@ -974,12 +973,16 @@ $lang += array(
 	'INCLUDE_IMAGESET'		=> 'Include imageset', 
 	'STYLE_EXPORTED'		=> 'Style exported succesfully and stored in %s', 
 
+	'STYLE_ERR_MORE_ELEMENTS'=> 'You must select at least two style elements.', 
 	'STYLE_ERR_STYLE_NAME'	=> 'You must supply a name for this style', 
 	'STYLE_ERR_NAME_LONG'	=> 'The style name can be no longer than 30 characters', 
 	'STYLE_ERR_NAME_EXIST'	=> 'A style with that name already exists', 
 	'STYLE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
 	'STYLE_ERR_NO_IDS'		=> 'You must select a template, theme and imageset for this style', 
 	'STYLE_ERR_NAME_CHARS'	=> 'The style name can only contain alphanumeric characters, -, +, _ and space',  
+	'REQUIRES_TEMPLATE'		=> 'This style requires the %s template set to be installed.', 
+	'REQUIRES_THEME'		=> 'This style requires the %s theme to be installed.', 
+	'REQUIRES_IMAGESET'		=> 'This style requires the %s imageset to be installed.', 
 
 
 	'TEMPLATES'					=> 'Templates', 
@@ -1244,6 +1247,8 @@ $lang += array(
 	'STORE_FILESYSTEM'		=> 'Filesystem', 
 	'EXPORT_STORE'			=> 'Store', 
 	'EXPORT_DOWNLOAD'		=> 'Download', 
+	'INSTALL'				=> 'Install', 
+	'FROM'					=> 'from', // "Create new style .... from ..."
 	'NO_IMAGESET'			=> 'Cannot find imageset on filesystem', 
 	'NO_THEME'				=> 'Cannot find theme on filesystem', 
 	'NO_TEMPLATE'			=> 'Cannot find template on filesystem', 
