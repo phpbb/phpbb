@@ -20,17 +20,21 @@
  ***************************************************************************/
 
 // Simple version of jumpbox, just lists authed forums
-function make_forum_select($forum_id = false, $ignore_forum = false, $add_select = false)
+// This needs altering to allow for ignoring acl checks ... they aren't needed
+// everywhere ...
+function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false)
 {
 	global $db, $user, $auth;
 
 	$right = $cat_right = 0;
 	$forum_list = $padding = $holding = '';
 
-	$rowset = get_forum_list('f_list', FALSE, FALSE, TRUE);
+	$acl = ($ignore_acl) ? '' : 'f_list';
+	$rowset = get_forum_list($acl, FALSE, FALSE, TRUE);
+
 	foreach ($rowset as $row)
 	{
-		if ($row['forum_id'] == $ignore_forum)
+		if ($row['forum_id'] == $ignore_id)
 		{
 			continue;
 		}
@@ -46,7 +50,7 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 
 		$right = $row['right_id'];
 
-		$selected = (is_array($forum_id)) ? ((in_array($row['forum_id'], $forum_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $forum_id) ? ' selected="selected"' : '');
+		$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id || $select_id === 0) ? ' selected="selected"' : '');
 
 		if ($row['left_id'] > $cat_right)
 		{
@@ -70,10 +74,6 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 	{
 		$forum_list .= '<option value="-1">' . $user->lang['NO_FORUMS'] . '</option>';
 	}
-	else if ($add_select)
-	{
-		$forum_list = '<option value="-1">' . $user->lang['SELECT_FORUM'] . '</option><option value="-1">-----------------</option>' . $forum_list;
-	}
 
 	return $forum_list;
 }
@@ -81,8 +81,8 @@ function make_forum_select($forum_id = false, $ignore_forum = false, $add_select
 // Obtain authed forums list
 function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = FALSE, $no_cache = FALSE)
 {
-	static $forum_rows;
 	global $db, $auth;
+	static $forum_rows;
 
 	if (!isset($forum_rows))
 	{
@@ -106,7 +106,8 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 		{
 			continue;
 		}
-		if ($auth->acl_gets($acl_list, $row['forum_id']))
+
+		if ($acl_list == '' || ($acl_list != '' && $auth->acl_gets($acl_list, $row['forum_id'])))
 		{
 			$rowset[] = ($id_only) ? $row['forum_id'] : $row;
 		}
@@ -577,6 +578,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				{
 					$post_info[$row['post_id']] = $row;
 				}
+				$db->sql_freeresult($result);
 
 				foreach ($forum_data as $forum_id => $data)
 				{
@@ -605,7 +607,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$sql = array();
 					foreach ($fieldnames as $fieldname)
 					{
-						if (preg_match('/name$/', $fieldname))
+						if (preg_match('#name$#', $fieldname))
 						{
 							if (isset($row[$fieldname]))
 							{
@@ -829,7 +831,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$sql = array();
 					foreach ($fieldnames as $fieldname)
 					{
-						if (preg_match('/name$/', $fieldname))
+						if (preg_match('#name$#', $fieldname))
 						{
 							$sql['topic_' . $fieldname] = (string) $row[$fieldname];
 						}
@@ -1099,15 +1101,15 @@ function cache_moderators()
 
 	$sql = "SELECT a.forum_id, u.user_id, u.username
 		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_USERS_TABLE . " a,  " . USERS_TABLE . "  u
-		WHERE o.auth_value = 'm_'
+		WHERE o.auth_option = 'm_'
 			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_allow_deny = 1
+			AND a.auth_setting = " . ACL_YES . " 
 			AND u.user_id = a.user_id";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']] = $row['forum_id'] . ', ' . $row['user_id'] . ', \'' . $row['username'] . '\', NULL, NULL';
+		$m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']] = $row['forum_id'] . ', ' . $row['user_id'] . ", '" . $row['username'] . "', NULL, NULL";
 		$user_id_sql .= (($user_id_sql) ? ', ' : '') . $row['user_id'];
 	}
 	$db->sql_freeresult($result);
@@ -1117,9 +1119,9 @@ function cache_moderators()
 	{
 		$sql = "SELECT a.forum_id, ug.user_id
 			FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . USER_GROUP_TABLE . "  ug
-			WHERE o.auth_value = 'm_'
+			WHERE o.auth_option = 'm_'
 				AND a.auth_option_id = o.auth_option_id
-				AND a.auth_allow_deny = 0
+				AND a.auth_setting = " . ACL_NO . " 
 				AND a.group_id = ug.group_id
 				AND ug.user_id IN ($user_id_sql)";
 		$result = $db->sql_query($sql);
@@ -1133,16 +1135,16 @@ function cache_moderators()
 
 	$sql = "SELECT a.forum_id, g.group_name, g.group_id
 		FROM  " . ACL_OPTIONS_TABLE . "  o, " . ACL_GROUPS_TABLE . " a,  " . GROUPS_TABLE . "  g
-		WHERE o.auth_value = 'm_'
+		WHERE o.auth_option = 'm_'
 			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_allow_deny = 1
+			AND a.auth_setting = " . ACL_YES . "
 			AND g.group_id = a.group_id
 			AND g.group_type NOT IN (" . GROUP_HIDDEN . ", " . GROUP_SPECIAL . ")";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$m_sql['f_' . $row['forum_id'] . '_g_' . $row['group_id']] = $row['forum_id'] . ', NULL, NULL, ' . $row['group_id'] . ', \'' . $row['group_name'] . '\'';
+		$m_sql['f_' . $row['forum_id'] . '_g_' . $row['group_id']] = $row['forum_id'] . ', NULL, NULL, ' . $row['group_id'] . ", '" . $row['group_name'] . "'";
 	}
 	$db->sql_freeresult($result);
 
@@ -1173,236 +1175,6 @@ function cache_moderators()
 					$db->sql_freeresult($result);
 				}
 		}
-	}
-}
-
-// Extension of auth class for changing permissions
-class auth_admin extends auth
-{
-	// Set a user or group ACL record
-	function acl_set($mode, &$forum_id, &$ug_id, &$auth)
-	{
-		global $db;
-
-		// One or more forums
-		if (!is_array($forum_id))
-		{
-			$forum_id = array($forum_id);
-		}
-
-		// Obtain list of dependencies - WRONG
-/*		$sql = 'SELECT auth_value, forum_id, auth_allow, auth_dep  
-			FROM ' . ACL_DEPS_TABLE . ' 
-			WHERE forum_id IN (' . implode(', ', $forum_id) . ') 
-				AND auth_value IN (' . implode(', ', preg_replace('#^(.*?)$#', "'\\1'", $auth)) . ')';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$row = unserialize($row['auth_dep']);
-			foreach ($row as $auth_value => $allow)
-			{
-				$auth[$auth_value] = $allow;
-			}
-			unset($row);
-		}
-		$db->sql_freeresult($result);
-*/
-		// Set any flags as required
-		foreach ($auth as $auth_value => $allow)
-		{
-			$flag = substr($auth_value, 0, strpos($auth_value, '_') + 1);
-			if (empty($auth[$flag]))
-			{
-				$auth[$flag] = $allow;
-			}
-		}
-
-		$sql = "SELECT auth_option_id, auth_value
-			FROM " . ACL_OPTIONS_TABLE;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$option_ids[$row['auth_value']] = $row['auth_option_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// NOTE THIS USED TO BE IN ($forum_id, 0) ...
-		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
-
-		$sql = ($mode == 'user') ? "SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $ug_id";
-		$result = $db->sql_query($sql);
-
-		$cur_auth = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_allow_deny'];
-		}
-		$db->sql_freeresult($result);
-
-		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
-		$id_field  = $mode . '_id';
-
-		foreach ($forum_id as $forum)
-		{
-			foreach ($auth as $auth_value => $allow)
-			{
-				$auth_option_id = $option_ids[$auth_value];
-
-				if (!empty($cur_auth[$forum]))
-				{
-					$sql_ary[] = (!isset($cur_auth[$forum][$auth_option_id])) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)" : (($cur_auth[$forum][$auth_option_id] != $allow) ? "UPDATE " . $table . " SET auth_allow_deny = $allow WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '');
-				}
-				else
-				{
-					$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)";
-				}
-			}
-		}
-		unset($forum_id);
-		unset($user_auth);
-
-		foreach ($sql_ary as $sql)
-		{
-			if ($sql != '')
-			{
-				$result = $db->sql_query($sql);
-				$db->sql_freeresult($result);
-			}
-		}
-		unset($sql_ary);
-
-		$this->acl_clear_prefetch();
-	}
-
-	function acl_delete($mode, &$forum_id, &$ug_id, $auth_ids = false)
-	{
-		global $db;
-
-		$auth_sql = '';
-		if ($auth_ids)
-		{
-			for($i = 0; $i < count($auth_ids); $i++)
-			{
-				$auth_sql .= (($auth_sql != '') ? ', ' : '') . intval($auth_ids[$i]);
-			}
-			$auth_sql = " AND auth_option_id IN ($auth_sql)";
-		}
-
-		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
-		$id_field  = $mode . '_id';
-
-		$sql = "DELETE FROM $table
-			WHERE $id_field = $ug_id
-				AND forum_id = $forum_id
-				$auth_sql";
-		$db->sql_query($sql);
-
-		$this->acl_clear_prefetch();
-	}
-
-	// Add a new option to the list ... $options is a hash of form ->
-	// $options = array(
-	//	'local'		=> array('option1', 'option2', ...),
-	//	'global'	=> array('optionA', 'optionB', ...)
-	//);
-	function acl_add_option($options)
-	{
-		global $db;
-
-		if (!is_array($new_options))
-		{
-			trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
-		}
-
-		$cur_options = array();
-
-		$sql = "SELECT auth_value, is_global, is_local
-			FROM " . ACL_OPTIONS_TABLE . "
-			ORDER BY auth_option_id";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (!empty($row['is_global']))
-			{
-				$cur_options['global'][] = $row['auth_value'];
-			}
-			if (!empty($row['is_local']))
-			{
-				$cur_options['local'][] = $row['auth_value'];
-			}
-		}
-		$db->sql_freeresult($result);
-
-		if (!is_array($options))
-		{
-			trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
-		}
-
-		// Here we need to insert new options ... this requires
-		// discovering whether an options is global, local or both
-		// and whether we need to add an option type flag (x_)
-		$new_options = array();
-		foreach ($options as $type => $option_ary)
-		{
-			$option_ary = array_unique($option_ary);
-			foreach ($option_ary as $option_value)
-			{
-				if (!in_array($option_value, $cur_options[$type]))
-				{
-					$new_options[$type][] = $option_value;
-				}
-
-				$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
-				if (!in_array($flag, $cur_options[$type]) && !in_array($flag, $new_options[$type]))
-				{
-					$new_options[$type][] = $flag;
-				}
-			}
-		}
-		unset($options);
-
-		$options = array();
-		$options['local'] = array_diff($new_options['local'], $new_options['global']);
-		$options['global'] = array_diff($new_options['global'], $new_options['local']);
-		$options['local_global'] = array_intersect($new_options['local'], $new_options['global']);
-
-		$type_sql = array('local' => '0, 1', 'global' => '1, 0', 'local_global' => '1, 1');
-
-		$sql = '';
-		foreach ($options as $type => $option_ary)
-		{
-			foreach ($option_ary as $option)
-			{
-				switch (SQL_LAYER)
-				{
-					case 'mysql':
-					case 'mysql4':
-						$sql .= (($sql != '') ? ', ' : '') . "('$option', " . $type_sql[$type] . ")";
-						break;
-					case 'mssql':
-						$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
-						break;
-					default:
-						$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
-							VALUES ($option, " . $type_sql[$type] . ")";
-						$result = $db->sql_query($sql);
-						$db->sql_freeresult($result);
-						$sql = '';
-				}
-			}
-		}
-
-		if ($sql != '')
-		{
-			$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
-				VALUES $sql";
-			$result = $db->sql_query($sql);
-		}
-
-		$cache->destroy('acl_options');
 	}
 }
 
@@ -1437,13 +1209,15 @@ function add_log()
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
 	global $db, $user, $auth, $phpEx, $SID;
+
 	$topic_id_list = $is_auth = $is_mod = array();
+
 	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
 
 	if ($mode == 'admin')
 	{
 		$table_sql = LOG_ADMIN_TABLE;
-		$forum_sql = '';
+		$sql_forum = '';
 	}
 	else
 	{
@@ -1451,15 +1225,15 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		if ($topic_id)
 		{
-			$forum_sql = 'AND l.topic_id = ' . $topic_id;
+			$sql_forum = 'AND l.topic_id = ' . intval($topic_id);
 		}
 		elseif (is_array($forum_id))
 		{
-			$forum_sql = 'AND l.forum_id IN (' . implode(', ', $forum_id) . ')';
+			$sql_forum = 'AND l.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
 		}
 		else
 		{
-			$forum_sql = ($forum_id) ? "AND l.forum_id = $forum_id" : '';
+			$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
 		}
 	}
 
@@ -1467,7 +1241,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		FROM $table_sql l, " . USERS_TABLE . " u
 		WHERE u.user_id = l.user_id
 			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
-			$forum_sql
+			$sql_forum
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
 
@@ -1503,16 +1277,17 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	}
 	$db->sql_freeresult($result);
 
-		
 	if (count($topic_id_list))
 	{
 		$topic_id_list = array_unique($topic_id_list);
 
-		// This query is not really needed if move_topics() updates the forum_id field, altough it's also used to determine if the topic still exists in the database
+		// This query is not really needed if move_topics() updates the forum_id field, 
+		// altough it's also used to determine if the topic still exists in the database
 		$sql = 'SELECT topic_id, forum_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(', ', $topic_id_list) . ')';
+			WHERE topic_id IN (' . implode(', ', array_map('intval', $topic_id_list)) . ')';
 		$result = $db->sql_query($sql);
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ($auth->acl_get('f_read', $row['forum_id']))
@@ -1522,7 +1297,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 				$is_auth[$row['topic_id']] = ($row['forum_id']) ? $row['forum_id'] : $config['default_forum_id'];
 			}
 
-			if ($auth->acl_gets('a_general', 'm_', $row['forum_id']))
+			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
 			{
 				$is_mod[$row['topic_id']] = $row['forum_id'];
 			}
@@ -1538,7 +1313,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$sql = "SELECT COUNT(*) AS total_entries
 		FROM $table_sql l
 		WHERE l.log_time >= $limit_days
-			$forum_sql";
+			$sql_forum";
 	$result = $db->sql_query($sql);
 
 	$row = $db->sql_fetchrow($result);
@@ -1827,131 +1602,357 @@ function event_execute($mode)
 	return;
 }
 
+// Extension of auth class for changing permissions
+if (class_exists(auth))
+{
+	class auth_admin extends auth
+	{
+		// Set a user or group ACL record
+		function acl_set($ug_type, &$forum_id, &$ug_id, &$auth)
+		{
+			global $db;
+
+			// One or more forums
+			if (!is_array($forum_id))
+			{
+				$forum_id = array($forum_id);
+			}
+
+			// Set any flags as required
+			foreach ($auth as $auth_option => $setting)
+			{
+				$flag = substr($auth_option, 0, strpos($auth_option, '_') + 1);
+				if (empty($auth[$flag]))
+				{
+					$auth[$flag] = $setting;
+				}
+			}
+
+			$sql = "SELECT auth_option_id, auth_option
+				FROM " . ACL_OPTIONS_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$option_ids[$row['auth_option']] = $row['auth_option_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$sql_forum = 'AND a.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+
+			$sql = ($ug_type == 'user') ? "SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.group_id = $ug_id";
+			$result = $db->sql_query($sql);
+
+			$cur_auth = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_setting'];
+			}
+			$db->sql_freeresult($result);
+
+			$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+			$id_field  = $ug_type . '_id';
+
+			foreach ($forum_id as $forum)
+			{
+				foreach ($auth as $auth_option => $setting)
+				{
+					$auth_option_id = $option_ids[$auth_option];
+
+					if (!empty($cur_auth[$forum]))
+					{
+						if ($setting == ACL_UNSET && isset($cur_auth[$forum][$auth_option_id]))
+						{
+							$sql_ary[] = "DELETE FROM $table 
+								WHERE forum_id = $forum
+									AND auth_option_id = $auth_option_id
+									AND $id_field = $ug_id";
+						}
+						else
+						{
+							$sql_ary[] = (!isset($cur_auth[$forum][$auth_option_id])) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($ug_id, $forum, $auth_option_id, $setting)" : (($cur_auth[$forum][$auth_option_id] != $setting) ? "UPDATE " . $table . " SET auth_setting = $setting WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '');
+						}
+					}
+					else
+					{
+						$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($ug_id, $forum, $auth_option_id, $setting)";
+					}
+				}
+			}
+			unset($forum_id);
+			unset($user_auth);
+
+			foreach ($sql_ary as $sql)
+			{
+				if ($sql != '')
+				{
+					$result = $db->sql_query($sql);
+					$db->sql_freeresult($result);
+				}
+			}
+			unset($sql_ary);
+
+			$this->acl_clear_prefetch();
+		}
+
+		function acl_delete($mode, &$forum_id, &$ug_id, $auth_ids = false)
+		{
+			global $db;
+
+			// One or more forums
+			if (!is_array($forum_id))
+			{
+				$forum_id = array($forum_id);
+			}
+
+			$auth_sql = ($auth_ids) ? ' AND auth_option_id IN (' . implode(', ', array_map('intval', $auth_ids)) . ')' : '';
+
+			$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+			$id_field  = $mode . '_id';
+
+			foreach ($forum_id as $forum)
+			{
+				$sql = "DELETE FROM $table
+					WHERE $id_field = $ug_id
+						AND forum_id = $forum
+						$auth_sql";
+				$db->sql_query($sql);
+			}
+
+			$this->acl_clear_prefetch();
+		}
+
+		// Add a new option to the list ... $options is a hash of form ->
+		// $options = array(
+		//	'local'		=> array('option1', 'option2', ...),
+		//	'global'	=> array('optionA', 'optionB', ...)
+		//);
+		function acl_add_option($options)
+		{
+			global $db;
+
+			if (!is_array($new_options))
+			{
+				trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
+			}
+
+			$cur_options = array();
+
+			$sql = "SELECT auth_option, is_global, is_local
+				FROM " . ACL_OPTIONS_TABLE . "
+				ORDER BY auth_option_id";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!empty($row['is_global']))
+				{
+					$cur_options['global'][] = $row['auth_option'];
+				}
+
+				if (!empty($row['is_local']))
+				{
+					$cur_options['local'][] = $row['auth_option'];
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (!is_array($options))
+			{
+				trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
+			}
+
+			// Here we need to insert new options ... this requires discovering whether
+			// an options is global, local or both and whether we need to add an option
+			// type flag (x_)
+			$new_options = array();
+			foreach ($options as $type => $option_ary)
+			{
+				$option_ary = array_unique($option_ary);
+				foreach ($option_ary as $option_value)
+				{
+					if (!in_array($option_value, $cur_options[$type]))
+					{
+						$new_options[$type][] = $option_value;
+					}
+
+					$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
+					if (!in_array($flag, $cur_options[$type]) && !in_array($flag, $new_options[$type]))
+					{
+						$new_options[$type][] = $flag;
+					}
+				}
+			}
+			unset($options);
+
+			$options = array();
+			$options['local'] = array_diff($new_options['local'], $new_options['global']);
+			$options['global'] = array_diff($new_options['global'], $new_options['local']);
+			$options['local_global'] = array_intersect($new_options['local'], $new_options['global']);
+
+			$type_sql = array('local' => '0, 1', 'global' => '1, 0', 'local_global' => '1, 1');
+
+			$sql = '';
+			foreach ($options as $type => $option_ary)
+			{
+				foreach ($option_ary as $option)
+				{
+					switch (SQL_LAYER)
+					{
+						case 'mysql':
+						case 'mysql4':
+							$sql .= (($sql != '') ? ', ' : '') . "('$option', " . $type_sql[$type] . ")";
+							break;
+						case 'mssql':
+							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
+							break;
+						default:
+							$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
+								VALUES ($option, " . $type_sql[$type] . ")";
+							$result = $db->sql_query($sql);
+							$sql = '';
+					}
+				}
+			}
+
+			if ($sql != '')
+			{
+				$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
+					VALUES $sql";
+				$result = $db->sql_query($sql);
+			}
+
+			$cache->destroy('acl_options');
+		}
+	}
+}
+
 if (class_exists(template))
 {
-class template_admin extends template
-{
-	function compile_cache_clear($template = false)
+	class template_admin extends template
 	{
-		global $phpbb_root_path;
-
-		$template_list = array();
-
-		if (!$template)
+		function compile_cache_clear($template = false)
 		{
-			$dp = opendir($phpbb_root_path . $this->cache_root);
-			while ($dir = readdir($dp)) 
+			global $phpbb_root_path;
+
+			$template_list = array();
+
+			if (!$template)
 			{
-				$template_dir = $phpbb_root_path . $this->cache_root . $dir;
-				if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
+				$dp = opendir($phpbb_root_path . $this->cache_root);
+				while ($dir = readdir($dp)) 
 				{
-					array_push($template_list, $dir);
+					$template_dir = $phpbb_root_path . $this->cache_root . $dir;
+					if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
+					{
+						array_push($template_list, $dir);
+					}
+				}
+				closedir($dp);
+			}
+			else
+			{
+				array_push($template_list, $template);
+			}
+
+			foreach ($template_list as $template)
+			{
+				$dp = opendir($phpbb_root_path . $this->cache_root . $template);
+				while ($file = readdir($dp))
+				{
+					unlink($phpbb_root_path . $this->cache_root . $file);
+				}
+				closedir($dp);
+			}
+
+			return;
+		}
+
+		function compile_cache_show($template)
+		{
+			global $phpbb_root_path;
+
+			$template_cache = array();
+
+			$template_dir = $phpbb_root_path . $this->cache_root . $template;
+			$dp = opendir($template_dir);
+			while ($file = readdir($dp))
+			{
+				if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
+				{
+					array_push($template_cache, $file);
 				}
 			}
 			closedir($dp);
-		}
-		else
-		{
-			array_push($template_list, $template);
+
+			return;
 		}
 
-		foreach ($template_list as $template)
+		function decompile(&$_str, $savefile = false)
 		{
-			$dp = opendir($phpbb_root_path . $this->cache_root . $template);
-			while ($file = readdir($dp))
+			$match_tags = array(
+				'#<\?php\nif \(\$this\->security\(\)\) \{(.*)[ \n]*?\n\}\n\?>$#s', 
+				'#echo \'(.*?)\';#s', 
+
+				'#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\(\'.*?\'\);\n#s',
+				'#\/\/ (INCLUDE .*?)\n.?include(\'.*?\');[\n]?#s',
+
+				'#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#',
+				'#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#',
+				'#\/\/ (ELSE)\n\} else \{\n#',
+				'#[\n]?\/\/ (ENDIF)\n}#',
+
+				'#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#',
+				'#\}\}?\n\/\/ (END .*?)\n#',
+				'#\/\/ (BEGINELSE)[\n]+?\}\} else \{\n#',
+
+				'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(L_([A-Z0-9_])+?)\'\]\)\).*?\}\'\)\) \. \'#s', 
+
+				'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
+			
+				'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
+			);
+
+			$replace_tags = array(
+				'\1',
+				'\1', 
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'<!-- \1 -->',
+				'{\1}',
+				'{\1}',
+				'{\1\2\3}',
+			);
+
+			preg_match_all('#\/\/ PHP START\n(.*?)\n\/\/ PHP END\n#s', $_str, $matches);
+			$php_blocks = $matches[1];
+			$_str = preg_replace('#\/\/ PHP START\n(.*?)\/\/ PHP END\n#s', '<!-- PHP -->', $_str);
+
+			$_str = preg_replace($match_tags, $replace_tags, $_str);
+			$text_blocks = preg_split('#<!-- PHP -->#s', $_str);
+
+			$_str = '';
+			for ($i = 0; $i < count($text_blocks); $i++)
 			{
-				unlink($phpbb_root_path . $this->cache_root . $file);
+				$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
 			}
-			closedir($dp);
-		}
 
-		return;
-	}
-
-	function compile_cache_show($template)
-	{
-		global $phpbb_root_path;
-
-		$template_cache = array();
-
-		$template_dir = $phpbb_root_path . $this->cache_root . $template;
-		$dp = opendir($template_dir);
-		while ($file = readdir($dp))
-		{
-			if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
+			$tmpfile = '';
+			if ($savefile)
 			{
-				array_push($template_cache, $file);
+				$tmpfile = tmpfile();
+				fwrite($tmpfile, $_str);
 			}
+
+			return $_str;
 		}
-		closedir($dp);
-
-		return;
-	}
-
-	function decompile(&$_str, $savefile = false)
-	{
-		$match_tags = array(
-			'#<\?php\nif \(\$this\->security\(\)\) \{(.*)[ \n]*?\n\}\n\?>$#s', 
-			'#echo \'(.*?)\';#s', 
-
-			'#\/\/ (INCLUDEPHP .*?)\n.?this\->assign_from_include_php\(\'.*?\'\);\n#s',
-			'#\/\/ (INCLUDE .*?)\n.?this\->assign_from_include\(\'.*?\'\);[\n]?#s',
-
-			'#\/\/ (IF .*?)\nif \(.*?\) \{[ ]?\n#',
-			'#\/\/ (ELSEIF .*?)\n\} elseif \(.*?\) \{[ ]?\n#',
-			'#\/\/ (ELSE)\n\} else \{\n#',
-			'#[\n]?\/\/ (ENDIF)\n}#',
-
-			'#\/\/ (BEGIN .*?)\n.?_.*? = \(.*?\) : 0;\nif \(.*?\) \{\nfor \(.*?\)\n\{\n#',
-			'#\}\}?\n\/\/ (END .*?)\n#',
-			'#\/\/ (BEGINELSE)[\n]+?\}\} else \{\n#',
-
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'(L_([A-Z0-9_])+?)\'\]\)\).*?\}\'\)\) \. \'#s', 
-
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'\.\'\]\[0\]\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-		
-			'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
-		);
-
-		$replace_tags = array(
-			'\1',
-			'\1', 
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'<!-- \1 -->',
-			'{\1}',
-			'{\1}',
-			'{\1\2\3}',
-		);
-
-		preg_match_all('#\/\/ PHP START\n(.*?)\n\/\/ PHP END\n#s', $_str, $matches);
-		$php_blocks = $matches[1];
-		$_str = preg_replace('#\/\/ PHP START\n(.*?)\/\/ PHP END\n#s', '<!-- PHP -->', $_str);
-
-		$_str = preg_replace($match_tags, $replace_tags, $_str);
-		$text_blocks = preg_split('#<!-- PHP -->#s', $_str);
-
-		$_str = '';
-        for ($i = 0; $i < count($text_blocks); $i++)
-		{
-			$_str .= $text_blocks[$i] . ((!empty($php_blocks[$i])) ? '<!-- PHP -->' . $php_blocks[$i] . '<!-- ENDPHP -->' : '');
-		}
-
-		$tmpfile = '';
-		if ($savefile)
-		{
-			$tmpfile = tmpfile();
-			fwrite($tmpfile, $_str);
-		}
-
-		return $_str;
 	}
 }
-}
+
 ?>
