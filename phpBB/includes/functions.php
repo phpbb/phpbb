@@ -28,30 +28,24 @@ function get_db_stat($mode)
 
 	switch($mode){
 		case 'postcount':
-			$sql = "SELECT count(*) AS total
+			$sql = "SELECT COUNT(post_id) AS total
 				FROM ".POSTS_TABLE;
 		break;
 
 		case 'usercount':
-			$sql = "SELECT count(*) AS total
+			$sql = "SELECT COUNT(user_id) AS total
 						FROM ". USERS_TABLE ."
-						WHERE user_id <> ".ANONYMOUS."
-							AND user_level <> ".DELETED;
+						WHERE user_id <> ".ANONYMOUS;
 		break;
 
 		case 'newestuser':
 			$sql = "SELECT user_id, username
 						FROM ".USERS_TABLE."
 						WHERE user_id <> " . ANONYMOUS. "
-							AND user_level <> ". DELETED ."
 						ORDER BY user_id DESC
 						LIMIT 1";
 		break;
 
-		case 'usersonline':
-			$sql = "SELECT COUNT(*) AS online
-				FROM ".SESSIONS_TABLE;
-			break;
 	}
 
 
@@ -65,10 +59,6 @@ function get_db_stat($mode)
 		if($mode == 'newestuser')
 		{
 			return($row);
-		}
-		else if($mode == "usersonline")
-		{
-			return ($row['online']);
 		}
 		else
 		{
@@ -338,7 +328,7 @@ function get_gmt_ts()
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
 {
 
-	global $l_prevpage, $l_nextpage;
+	global $lang;
 
 	$total_pages = ceil($num_items/$per_page);
 	if($total_pages == 1)
@@ -359,7 +349,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	for($i = $this_block_start; $i <= $this_block_end; $i++)
 	{
-		$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"".append_sid($base_url."&start=".(($i-1)*$per_page))."\">$i</a>";
+		$page_string .= ($i == $on_page) ? "<b>$i</b>" : "<a href=\"".append_sid($base_url . "&start=" . (($i - 1) * $per_page)) . "\">$i</a>";
 		if($i <  $this_block_end)
 		{
 			$page_string .= ", ";
@@ -369,9 +359,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	if($this_block_start > 1)
 	{
 		$page_string_prepend = "";
-		for($i = 0; $i < $this_block_start; $i+=10)
+		for($i = 0; $i < $this_block_start; $i += 10)
 		{
-			$page_string_prepend .= "<a href=\"".append_sid($base_url."&start=".($i*$per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ($i+9) . "</a>, ";
+			$page_string_prepend .= "<a href=\"" . append_sid($base_url . "&start=" . ($i * $per_page)) . "\">" . ( ($i == 0) ? ($i + 1) : $i) . " - " . ($i + 9) . "</a>, ";
 		}
 
 		$page_string = $page_string_prepend . $page_string;
@@ -389,9 +379,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		else
 		{
 
-			for($i = $this_block_end + 1; $i < $total_pages; $i+=10)
+			for($i = $this_block_end + 1; $i < $total_pages; $i += 10)
 			{
-				$page_string_append .= "<a href=\"".append_sid($base_url."&start=".(($i*$per_page) - $per_page))."\">" . ( ($i == 0) ? ($i+1) : $i) . " - " . ((($i+9) < $total_pages) ? ($i+9) : $total_pages) ."</a>";
+				$page_string_append .= "<a href=\"" . append_sid($base_url . "&start=" . (($i * $per_page) - $per_page)) . "\">" . ( ($i == 0) ? ($i + 1) : $i) . " - " . ((($i + 9) < $total_pages) ? ($i + 9) : $total_pages) . "</a>";
 				if($i < $total_pages - 10)
 				{
 					$page_string_append .= ", ";
@@ -405,12 +395,15 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	{
 		if($on_page > 1)
 		{
-			$page_string = " <a href=\"".append_sid($base_url."&start=".(($on_page-2) * $per_page))."\">Previous</a>&nbsp;&nbsp;" . $page_string;
+			$page_string = " <a href=\"" . append_sid($base_url . "&start=" . (($on_page - 2) * $per_page)) . "\">" . $lang['Previous'] . "</a>&nbsp;&nbsp;" . $page_string;
 		}
 		if($on_page < $total_pages)
 		{
-			$page_string .= "&nbsp;&nbsp;<a href=\"".append_sid($base_url."&start=".($on_page * $per_page))."\">Next</a>";
+			$page_string .= "&nbsp;&nbsp;<a href=\"" . append_sid($base_url . "&start=" . ($on_page * $per_page)) . "\">" . $lang['Next'] . "</a>";
 		}
+
+		$page_string = $lang['Goto_page'] . ": " . $page_string;
+
 	}
 
 	return $page_string;
