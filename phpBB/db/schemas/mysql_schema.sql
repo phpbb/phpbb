@@ -7,7 +7,6 @@
 #
 # Table structure for table 'phpbb_auth_access'
 #
-DROP TABLE IF EXISTS phpbb_auth_access;
 CREATE TABLE phpbb_auth_access (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
@@ -31,7 +30,6 @@ CREATE TABLE phpbb_auth_access (
 #
 # Table structure for table 'phpbb_user_group'
 #
-DROP TABLE IF EXISTS phpbb_user_group;
 CREATE TABLE phpbb_user_group (
    group_id mediumint(8) DEFAULT '0' NOT NULL,
    user_id mediumint(8) DEFAULT '0' NOT NULL,
@@ -43,7 +41,6 @@ CREATE TABLE phpbb_user_group (
 #
 # Table structure for table 'phpbb_groups'
 #
-DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
    group_id mediumint(8) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
@@ -60,7 +57,6 @@ CREATE TABLE phpbb_groups (
 #
 # Table structure for table 'phpbb_banlist'
 #
-DROP TABLE IF EXISTS phpbb_banlist;
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    ban_userid mediumint(8) NOT NULL,
@@ -75,7 +71,6 @@ CREATE TABLE phpbb_banlist (
 #
 # Table structure for table 'phpbb_categories'
 #
-DROP TABLE IF EXISTS phpbb_categories;
 CREATE TABLE phpbb_categories (
    cat_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    cat_title varchar(100),
@@ -89,7 +84,6 @@ CREATE TABLE phpbb_categories (
 #
 # Table structure for table 'phpbb_config'
 #
-DROP TABLE IF EXISTS phpbb_config;
 CREATE TABLE phpbb_config ( 
     config_name varchar(255) NOT NULL, 
     config_value varchar(255) NOT NULL, 
@@ -101,7 +95,6 @@ CREATE TABLE phpbb_config (
 #
 # Table structure for table 'phpbb_disallow'
 #
-DROP TABLE IF EXISTS phpbb_disallow;
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    disallow_username varchar(25),
@@ -113,7 +106,6 @@ CREATE TABLE phpbb_disallow (
 #
 # Table structure for table 'phpbb_forum_prune'
 #
-DROP TABLE IF EXISTS phpbb_forum_prune;
 CREATE TABLE phpbb_forum_prune (
    prune_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(5) UNSIGNED NOT NULL,
@@ -128,7 +120,6 @@ CREATE TABLE phpbb_forum_prune (
 #
 # Table structure for table 'phpbb_forums'
 #
-DROP TABLE IF EXISTS phpbb_forums;
 CREATE TABLE phpbb_forums (
    forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
    cat_id mediumint(8) UNSIGNED NOT NULL,
@@ -163,7 +154,6 @@ CREATE TABLE phpbb_forums (
 #
 # Table structure for table 'phpbb_posts'
 #
-DROP TABLE IF EXISTS phpbb_posts;
 CREATE TABLE phpbb_posts (
    post_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -190,7 +180,6 @@ CREATE TABLE phpbb_posts (
 #
 # Table structure for table 'phpbb_posts_text'
 #
-DROP TABLE IF EXISTS phpbb_posts_text;
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid char(10) NOT NULL,
@@ -204,7 +193,6 @@ CREATE TABLE phpbb_posts_text (
 #
 # Table structure for table 'phpbb_privmsgs'
 #
-DROP TABLE IF EXISTS phpbb_privmsgs;
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
@@ -227,7 +215,6 @@ CREATE TABLE phpbb_privmsgs (
 #
 # Table structure for table 'phpbb_privmsgs_text'
 #
-DROP TABLE IF EXISTS phpbb_privmsgs_text;
 CREATE TABLE phpbb_privmsgs_text (
    privmsgs_text_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL, 
@@ -240,7 +227,6 @@ CREATE TABLE phpbb_privmsgs_text (
 #
 # Table structure for table 'phpbb_ranks'
 #
-DROP TABLE IF EXISTS phpbb_ranks;
 CREATE TABLE phpbb_ranks (
    rank_id smallint(5) UNSIGNED NOT NULL auto_increment,
    rank_title varchar(50) NOT NULL,
@@ -256,7 +242,6 @@ CREATE TABLE phpbb_ranks (
 #
 # Table structure for table `phpbb_search_results`
 #
-DROP TABLE IF EXISTS phpbb_search_results;
 CREATE TABLE phpbb_search_results (
   search_id mediumint(8) UNSIGNED NOT NULL default '0',
   session_id char(32) NOT NULL default '',
@@ -270,7 +255,6 @@ CREATE TABLE phpbb_search_results (
 #
 # Table structure for table `phpbb_search_wordlist`
 #
-DROP TABLE IF EXISTS phpbb_search_wordlist;
 CREATE TABLE phpbb_search_wordlist (
   word_text varchar(50) binary NOT NULL default '',
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -283,7 +267,6 @@ CREATE TABLE phpbb_search_wordlist (
 #
 # Table structure for table `phpbb_search_wordmatch`
 #
-DROP TABLE IF EXISTS phpbb_search_wordmatch;
 CREATE TABLE phpbb_search_wordmatch (
   post_id mediumint(8) UNSIGNED NOT NULL default '0',
   word_id mediumint(8) UNSIGNED NOT NULL default '0',
@@ -307,7 +290,6 @@ CREATE TABLE phpbb_search_wordmatch (
 # competing boards, just that I find it's best not to
 # look at any code ... !
 #
-DROP TABLE IF EXISTS phpbb_sessions;
 CREATE TABLE phpbb_sessions (
    session_id char(32) DEFAULT '' NOT NULL,
    session_user_id mediumint(8) DEFAULT '0' NOT NULL,
@@ -327,7 +309,6 @@ CREATE TABLE phpbb_sessions (
 #
 # Table structure for table 'phpbb_smilies'
 #
-DROP TABLE IF EXISTS phpbb_smilies; 
 CREATE TABLE phpbb_smilies (
    smilies_id smallint(5) UNSIGNED NOT NULL auto_increment,
    code varchar(50),
@@ -341,7 +322,6 @@ CREATE TABLE phpbb_smilies (
 #
 # Table structure for table 'phpbb_themes'
 #
-DROP TABLE IF EXISTS phpbb_themes;
 CREATE TABLE phpbb_themes (
    themes_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
    template_name varchar(30) NOT NULL default '', 
@@ -394,7 +374,6 @@ CREATE TABLE phpbb_themes (
 #
 # Table structure for table 'phpbb_themes_name'
 #
-DROP TABLE IF EXISTS phpbb_themes_name;
 CREATE TABLE phpbb_themes_name (
    themes_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    tr_color1_name char(50),
@@ -435,7 +414,6 @@ CREATE TABLE phpbb_themes_name (
 #
 # Table structure for table 'phpbb_topics'
 #
-DROP TABLE IF EXISTS phpbb_topics;
 CREATE TABLE phpbb_topics (
    topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -460,7 +438,6 @@ CREATE TABLE phpbb_topics (
 #
 # Table structure for table 'phpbb_topics_watch'
 #
-DROP TABLE IF EXISTS phpbb_topics_watch;
 CREATE TABLE phpbb_topics_watch (
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -475,7 +452,6 @@ CREATE TABLE phpbb_topics_watch (
 #
 # Table structure for table 'phpbb_users'
 #
-DROP TABLE IF EXISTS phpbb_users;
 CREATE TABLE phpbb_users (
    user_id mediumint(8) NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
@@ -529,7 +505,6 @@ CREATE TABLE phpbb_users (
 #
 # Table structure for table 'phpbb_vote_desc'
 #
-DROP TABLE IF EXISTS phpbb_vote_desc;
 CREATE TABLE phpbb_vote_desc (
   vote_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
@@ -545,7 +520,6 @@ CREATE TABLE phpbb_vote_desc (
 #
 # Table structure for table 'phpbb_vote_results'
 #
-DROP TABLE IF EXISTS phpbb_vote_results;
 CREATE TABLE phpbb_vote_results (
   vote_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   vote_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
@@ -560,7 +534,6 @@ CREATE TABLE phpbb_vote_results (
 #
 # Table structure for table 'phpbb_vote_voters'
 #
-DROP TABLE IF EXISTS phpbb_vote_voters;
 CREATE TABLE phpbb_vote_voters (
   vote_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   vote_user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -575,7 +548,6 @@ CREATE TABLE phpbb_vote_voters (
 #
 # Table structure for table 'phpbb_words'
 #
-DROP TABLE IF EXISTS phpbb_words;
 CREATE TABLE phpbb_words (
    word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    word char(100) NOT NULL,

@@ -50,11 +50,11 @@ class sql_db
 
 		if($this->persistency)
 		{
-			$this->db_connect_id = odbc_pconnect($this->server, "", "");
+			$this->db_connect_id = odbc_pconnect($this->server, $this->user, $this->password);
 		}
 		else
 		{
-			$this->db_connect_id = odbc_connect($this->server, "", "");
+			$this->db_connect_id = odbc_connect($this->server, $this->user, $this->password);
 		}
 
 		if($this->db_connect_id)
@@ -169,7 +169,6 @@ class sql_db
 				{
 					$query = preg_replace("/\\\'/s", "''", $query);
 				}
-
 				$this->query_result = odbc_exec($this->db_connect_id, $query);
 
 				if($this->query_result)
