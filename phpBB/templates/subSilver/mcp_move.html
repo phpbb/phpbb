@@ -1,48 +1,47 @@
 <!-- INCLUDE overall_header.html -->
-
 <form action="{S_MCP_ACTION}" method="post"><input type="hidden" name="mode" value="move">
-  <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left" class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
+		<td align="left" class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
 	</tr>
-  </table>
-  <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+</table>
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
 	<tr> 
-	  <th height="25" class="thHead"><b>{L_MOVE}</b></th>
+		<th height="25" class="thHead"><b>{L_MOVE}</b></th>
 	</tr>
-	<tr> 
-	  <td class="row1"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="1">
-		  <tr> 
-			<td>&nbsp;</td>
-		  </tr>
-		  <tr> 
-			<td align="center"><table border="0" cellspacing="0" cellpadding="0">
-				<tr class="gen"><td align="left">
-					{L_SELECTED_TOPICS}<br />
-					<ul><!-- BEGIN topiclist -->
-						<li><a href="{topiclist.U_TOPIC_LINK}" target="_new">{topiclist.TOPIC_TITLE}</a>
-					<!-- END topiclist --></ul>
-				</td></tr>
-			</table></td>
-		  </tr>
-		  <tr> 
-			<td align="center"><span class="gen">{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br />
-			  <input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br />
-			  <br />
-			  {S_HIDDEN_FIELDS} 
-			  <input class="mainoption" type="submit" name="confirm" value="{L_CONFIRM}" />
-			  &nbsp;&nbsp; 
-			  <input class="liteoption" type="submit" name="cancel" value="{L_CANCEL}" />
-			</td>
-		  </tr>
-		  <tr> 
-			<td>&nbsp;</td>
-		  </tr>
-		</table>
-	  </td>
+	<tr>
+		<td class="row1"><table width="100%" border="0" cellspacing="0" cellpadding="1">
+			<tr> 
+				<td>&nbsp;</td>
+			</tr>
+			<tr> 
+				<td align="center"><table border="0" cellspacing="0" cellpadding="0">
+					<tr class="gen">
+						<td align="left">
+							{L_SELECTED_TOPICS}<br />
+								<ul><!-- BEGIN topiclist -->
+								<li><a href="{topiclist.U_TOPIC_LINK}" target="_new">{topiclist.TOPIC_TITLE}</a>
+								<!-- END topiclist --></ul>
+						</td>
+					</tr>
+				</table></td>
+			</tr>
+			<tr> 
+				<td align="center"><span class="gen">{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br />
+					<input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br />
+					<br />
+					{S_HIDDEN_FIELDS} 
+					<input class="mainoption" type="submit" name="confirm" value="{L_CONFIRM}" />
+					&nbsp;&nbsp; 
+					<input class="liteoption" type="submit" name="cancel" value="{L_CANCEL}" />
+				</td>
+			</tr>
+			<tr> 
+				<td>&nbsp;</td>
+			</tr>
+		</table></td>
 	</tr>
-  </table>
+</table>
 </form>
 
 <!-- INCLUDE overall_footer.html -->

@@ -1,12 +1,12 @@
 <!-- INCLUDE mcp_header.html -->
 
-<table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0"><form name="form" method="post" action="{S_MCP_ACTION}">
+<table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0"><form name="main" method="post" action="{S_MCP_ACTION}">
 	<tr>
 		<th height="25" colspan="6" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 	</tr>
 	<tr>
-		<td class="cat" colspan="6" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
-	</tr>
+		<td colspan="2" class="cat" height="28" align="left" nowrap="nowrap"><!-- INCLUDE mcp_jumpbox.html --></td>
+		<td colspan="4" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
 	<tr> 
 		<th>&nbsp;{L_FORUM}&nbsp;</th>
@@ -48,7 +48,7 @@
 	<!-- END unapproved_posts -->
 	<!-- IF S_HAS_UNAPPROVED_TOPICS or S_HAS_UNAPPROVED_POSTS -->
 	<tr>
-		<td class="cat" colspan="6" height="28" align="center"><input class="liteoption" type="submit" name="approve" value="{L_APPROVE_POSTS}" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="delete_posts" value="{L_DELETE_POSTS}" /></td>
+		<td class="cat" colspan="6" height="28" align="center"><input class="liteoption" type="submit" name="approve" value="{L_APPROVE_POSTS}" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="disapprove" value="{L_DISAPPROVE_POSTS}" /></td>
 	</tr>
 	<!-- ELSE -->
 	<tr>
@@ -59,7 +59,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-		<td class="nav" align="left" valign="middle"><!-- INCLUDE jumpbox.html --></td>
+		<td class="nav" align="left" valign="middle">{PAGE_NUMBER}</td>
 		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table>

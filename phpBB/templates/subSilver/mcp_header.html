@@ -4,9 +4,10 @@
 <!--
 function marklist(status)
 {
-	for (i = 0; i < document.form.length; i++)
+	for (i = 0; i < document.forms['main'].length; i++)
 	{
-		document.form.elements[i].checked = status;
+		// NOTE: all forms in MCP do not have the same name at present
+		document.forms['main'].elements[i].checked = status;
 	}
 }
 //-->
