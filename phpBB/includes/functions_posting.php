@@ -137,27 +137,33 @@ function update_last_post_information($type, $id)
 	switch ($type)
 	{
 		case 'forum':
-			$sql_table_add = ', ' . TOPICS_TABLE . ' t';
-			$sql_where_add = 'AND t.topic_id = p.topic_id AND t.topic_approved = 1 AND t.forum_id = ' . (int) $id;
-			$sql_update_table = FORUMS_TABLE;
+			// Anyone having any ideas how to optimize this?
+			// This query is very time consuming on large boards (already optimized this by 50%)
+			$sql = 'SELECT MAX(post_time) AS max_post_time FROM ' . POSTS_TABLE . ' 
+				WHERE post_approved = 1
+					AND forum_id = ' . $id;
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u 
+				WHERE p.poster_id = u.user_id 
+					AND p.post_time = ' . $row['max_post_time'];
 			break;
 
 		case 'topic':
-			$sql_table_add = '';
-			$sql_where_add = 'AND p.topic_id = ' . (int) $id;
-			$sql_update_table = TOPICS_TABLE;
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
+				WHERE p.post_approved = 1 
+					AND p.poster_id = u.user_id 
+					AND p.topic_id = $id
+				ORDER BY p.post_time DESC";
 			break;
 
 		default:
 			return array();
 	}
 
-	$sql = "SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
-		FROM " . POSTS_TABLE . ' p, ' . USERS_TABLE . " u $sql_table_add 
-		WHERE p.post_approved = 1 
-			AND p.poster_id = u.user_id 
-			$sql_where_add 
-		ORDER BY p.post_time DESC";
 	$result = $db->sql_query_limit($sql, 1);
 
 	$row = $db->sql_fetchrow($result);
@@ -354,32 +360,6 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	}
 
 	return;
-}
-
-// Delete File
-function phpbb_unlink($filename, $mode = 'file')
-{
-	global $config, $user;
-
-	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
-	$deleted = @unlink($filename);
-
-	if (file_exists($filename))
-	{
-		$filesys = str_replace('/','\\', $filename);
-		$deleted = @system("del $filesys");
-
-		if (file_exists($filename)) 
-		{
-			@chmod($filename, 0777);
-			if (!($deleted = @unlink($filename)))
-			{
-				$deleted = @system("del $filename");
-			}
-		}
-	}
-
-	return $deleted;
 }
 
 // Calculate the needed size for Thumbnail

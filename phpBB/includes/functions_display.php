@@ -321,7 +321,7 @@ function display_attachments($attachment_data, &$update_count, $force_physical =
 		}
 		else if ($extensions[$attachment['extension']]['upload_icon'] != '')
 		{
-			$upload_image = '<img src="' . $phpbb_root_path . 'images/upload_icons/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+			$upload_image = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
 		}
 	
 		$filesize = $attachment['filesize'];

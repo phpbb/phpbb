@@ -683,7 +683,7 @@ class parse_message
 		$error = array();
 
 		$num_attachments = count($this->attachment_data);
-		$this->filename_data['filecomment'] = request_var('filecomment', '');
+		$this->filename_data['filecomment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('filecomment', ''));
 		$this->filename_data['filename'] = ($_FILES['fileupload']['name'] != 'none') ? trim($_FILES['fileupload']['name']) : '';
 		
 		$add_file		= (isset($_POST['add_file'])) ? TRUE : FALSE;
@@ -773,7 +773,7 @@ class parse_message
 
 					foreach ($actual_comment_list as $index => $entry)
 					{
-						$this->attachment_data[$index]['comment'] = $entry;
+						$this->attachment_data[$index]['comment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $entry);
 					}
 				}
 				
