@@ -115,7 +115,7 @@ switch($mode)
 		$error_string = "reply to topics";
 		break;
 	case 'editpost':
-		$auth_type = AUTH_EDIT;
+		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_edit";
 		$error_string = "edit topics";
 		break;
@@ -170,7 +170,9 @@ $disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['
 $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
 $annouce = (isset($HTTP_POST_VARS['annouce'])) ? $HTTP_POST_VARS['annouce'] : "";
+$unannouce = (isset($HTTP_POST_VARS['unannouce'])) ? $HTTP_POST_VARS['unannouce'] : "";
 $sticky = (isset($HTTP_POST_VARS['sticky'])) ? $HTTP_POST_VARS['sticky'] : "";
+$unstick = (isset($HTTP_POST_VARS['unstick'])) ? $HTTP_POST_VARS['unstick'] : "";
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
 
@@ -340,7 +342,7 @@ switch($mode)
 				$username = addslashes($username);
 			}
 			$topic_time = get_gmt_ts();
-			$topic_notify = ($HTTP_POST_VARS['notify']) ? $HTTP_POST_VARS['notify'] : 0;
+			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
 			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
 						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.", ".$topic_type.")";
 
@@ -734,7 +736,7 @@ switch($mode)
 					if($is_first_post)
 					{
 						// Update topics table here, set notification level and such
-						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify' WHERE topic_id = ".$HTTP_POST_VARS[POST_TOPIC_URL];
+						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' WHERE topic_id = ".$HTTP_POST_VARS[POST_TOPIC_URL];
 						if(!$db->sql_query($sql))
 						{
 							if(SQL_LAYER != "mysql")
@@ -850,7 +852,7 @@ switch($mode)
 			if(!empty($post_id))
 			{
 
-   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify
+   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type
    						FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt
    						WHERE (p.post_id = '$post_id')
    							AND pt.post_id = p.post_id
@@ -898,16 +900,27 @@ switch($mode)
    				// Special handling for </textarea> tags in the message, which can break the editing form..
    				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
-   				// is_first_post needs functionality!
-   				if($postrow['topic_notify'] && $is_first_post)
+   				if($is_first_post)
    				{
-   					$notify = TRUE;
-   				}
-
-					if($is_first_post)
-					{
+   					$notify_show = TRUE;
+   					if($postrow['topic_notify'])
+   					{
+   						$notify = TRUE;
+   					}
 						$subject = stripslashes($postrow['topic_title']);
+						switch($postrow['topic_type'])
+						{
+							case ANNOUCE:
+								$is_annouce = TRUE;
+							break;
+							case STICKY:
+								$is_stuck = TRUE;
+							break;
+						}
+						
 					}
+					
+					
    			}
    			else
    			{
@@ -1085,32 +1098,55 @@ if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_U
 		}
 		$sig_toggle .= "> $l_attachsig";
 
-		if($mode == 'newtopic')
+		if($mode == 'newtopic' || ($mode == 'editpost' && $is_first_post))
 		{
 			if($is_auth['auth_announce'])
 			{
-				$annouce_toggle = '<input type="checkbox" name="annouce" ';
-				if($annouce)
+				if(!$is_annouce)
 				{
-					$announce_toggle .= "checked";
+					$annouce_toggle = '<input type="checkbox" name="annouce" ';
+					if($annouce)
+					{
+						$announce_toggle .= "checked";
+					}
+					$annouce_toggle .= '> '.$lang['Post_Annoucement'];
 				}
-				$annouce_toggle .= '> '.$lang['Post_Annoucement'];
+				else
+				{
+					$annouce_toggle = '<input type="checkbox" name="unannouce" ';
+					if($unannouce)
+					{
+						$announce_toggle .= "checked";
+					}
+					$annouce_toggle .= '> '.$lang['UnAnnounce'];
+				}
 			}
-
 
 			if($is_auth['auth_sticky'])
 			{
-				$sticky_toggle = '<input type="checkbox" name="sticky" ';
-				if($sticky)
+				if(!$is_stuck)
 				{
-					$sticky_toggle .= "checked";
+					$sticky_toggle = '<input type="checkbox" name="sticky" ';
+					if($sticky)
+					{
+						$sticky_toggle .= "checked";
+					}
+					$sticky_toggle .= '> '.$lang['Post_Sticky'];
 				}
-				$sticky_toggle .= '> '.$lang['Post_Sticky'];
+				else
+				{
+					$sticky_toggle = '<input type="checkbox" name="unstick" ';
+					if($unstick)
+					{
+						$sticky_toggle .= "checked";
+					}
+					$sticky_toggle .= '> '.$lang['UnStick'];
+				}
 			}
 		}
 
 
-		if($mode == 'newtopic' || ($mode == 'editpost' && $notify))
+		if($mode == 'newtopic' || ($mode == 'editpost' && $notify_show))
 		{
 			$notify_toggle = '<input type="checkbox" name="notify" ';
 			if($notify)
