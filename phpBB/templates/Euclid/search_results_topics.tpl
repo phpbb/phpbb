@@ -57,7 +57,7 @@
 
 <table width="98%" cellspacing="2" border="0" align="center">
 	<tr>
-		<td><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+		<td valign="top"><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
 		<td align="right">{JUMPBOX}</td>
 	</tr>
 </table>

@@ -26,7 +26,7 @@
 	  <span class="postdetails">{L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br />
 	  {L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br />
 	</td>
-	<td valign="top" class="row1"> <img src="templates/subSilver/images/icon_minipost.gif" alt="Post image icon"><span class="postdetails">{L_FORUM}:&nbsp;<b><a href="{U_FORUM}" class="postdetails">{searchresults.FORUM_NAME}</a></b>&nbsp;&nbsp;&nbsp;{L_POSTED}: 
+	<td valign="top" class="row1"> <span class="postdetails">{L_FORUM}:&nbsp;<b><a href="{U_FORUM}" class="postdetails">{searchresults.FORUM_NAME}</a></b>&nbsp;&nbsp;&nbsp;{L_POSTED}: 
 	  {searchresults.POST_DATE}&nbsp;&nbsp;&nbsp;Subject: <b><a href="{searchresults.U_POST}">{searchresults.POST_SUBJECT}</a></b></span></td>
   </tr>
   <tr>

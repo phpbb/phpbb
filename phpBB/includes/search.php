@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function clean_words($mode, &$entry, &$synonym_list)
+function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 {
 	// Weird, $init_match doesn't work with static when double quotes (") are used...
 	static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', "'", '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!');
@@ -37,16 +37,16 @@ function clean_words($mode, &$entry, &$synonym_list)
 
 	if( $mode == "post" )
 	{
-		// HTML entities like &nbsp;
-		$entry = preg_replace("/\b&[a-z]+;\b/is", " ", $entry); 
 		// Replace line endings by a space
 		$entry = preg_replace("/[\n\r]/is", " ", $entry); 
+		// HTML entities like &nbsp;
+		$entry = preg_replace("/\b&[a-z]+;\b/", " ", $entry); 
 		// Remove URL's
-		$entry = preg_replace("/\b[a-z0-9]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?/si", " ", $entry); 
+		$entry = preg_replace("/\b[a-z0-9]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?/", " ", $entry); 
 		// Quickly remove BBcode.
-		$entry = preg_replace("/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/is", " ", $entry); 
-		$entry = preg_replace("/\[\/?url(=.*?)?\]/si", " ", $entry);
-		$entry = preg_replace("/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/si", " ", $entry);
+		$entry = preg_replace("/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/", " ", $entry); 
+		$entry = preg_replace("/\[\/?url(=.*?)?\]/", " ", $entry);
+		$entry = preg_replace("/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/", " ", $entry);
 	}
 	else if( $mode == "search" ) 
 	{
@@ -55,7 +55,7 @@ function clean_words($mode, &$entry, &$synonym_list)
 	}
 
 	// Replace numbers on their own
-	$entry = preg_replace("/\b[0-9]+\b/si", " ", $entry); 
+	$entry = preg_replace("/\b[0-9]+\b/", " ", $entry); 
 
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
@@ -69,8 +69,21 @@ function clean_words($mode, &$entry, &$synonym_list)
 	{
 		$entry = str_replace("*", " ", $entry);
 
-		// 'words' that consist of <=3 or >=50 characters are removed.
-		$entry = preg_replace("/\b([a-z0-9]{1,3}|[a-z0-9]{50,})\b/si", " ", $entry); 
+		// 'words' that consist of <=3 or >=25 characters are removed.
+		$entry = preg_replace("/\b([a-z0-9]{1,3}|[a-z0-9]{25,})\b/", " ", $entry); 
+	}
+
+	if( !empty($stopword_list) )
+	{
+		for ($j = 0; $j < count($stopword_list); $j++)
+		{
+			$stopword = trim($stopword_list[$j]);
+
+			if ( $mode == "post" || ( $stopword != "not" && $stopword != "and" && $stopword != "or" ) )
+			{
+				$entry =  preg_replace("/\b" . $stopword . "\b/", " ", $entry);
+			}
+		}
 	}
 
 	if( !empty($synonym_list) )
@@ -78,11 +91,9 @@ function clean_words($mode, &$entry, &$synonym_list)
 		for ($j = 0; $j < count($synonym_list); $j++)
 		{
 			list($replace_synonym, $match_synonym) = split(" ", trim(strtolower($synonym_list[$j])));
-
-			if( ( $match_synonym != "and" && $match_synonym != "or" && $match_synonym != "not" && 
-				$replace_synonym != "and" && $replace_synonym != "or" && $replace_synonym != "not" ) || $mode == "post" )
+			if ( $mode == "post" || ( $match_synonym != "not" && $match_synonym != "and" && $match_synonym != "or" ) )
 			{
-				$entry =  preg_replace("/\b" . phpbb_preg_quote(trim($match_synonym), "/") . "\b/is", " " . trim($replace_synonym) . " ", $entry);
+				$entry =  preg_replace("/\b" . trim($match_synonym) . "\b/", " " . trim($replace_synonym) . " ", $entry);
 			}
 		}
 	}
@@ -98,7 +109,7 @@ function split_words(&$entry, $mode = "post")
 	}
 	else
 	{
-		preg_match_all("/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/is", $entry, $split_entries);
+		preg_match_all("/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/", $entry, $split_entries);
 	}
 
 	return $split_entries[1];
@@ -108,11 +119,12 @@ function add_search_words($post_id, $post_text, $post_title = "")
 {
 	global $db, $phpbb_root_path, $board_config, $lang;
 
+	$stopwords_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
 	$search_raw_words = array();
-	$search_raw_words['text'] = split_words(clean_words("post", $post_text, $synonym_array));
-	$search_raw_words['title'] = split_words(clean_words("post", $post_title, $synonym_array));
+	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
+	$search_raw_words['title'] = split_words(clean_words('post', $post_title, $stopword_array, $synonym_array));
 
 	$word = array();
 	$word_insert_sql = array();
@@ -387,6 +399,83 @@ function remove_unmatched_words()
 	}
 
 	return 0;
+}
+
+//
+// Username search
+//
+function username_search($search_match, $is_inline_review = 0, $default_list = "")
+{
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
+	global $starttime;
+
+	$author_list = '';
+	if ( !empty($search_match) )
+	{
+		$username_search = preg_replace("/\*/", "%", trim(strip_tags($search_match)));
+
+		$sql = "SELECT username 
+			FROM " . USERS_TABLE . " 
+			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
+			ORDER BY username";
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
+		}
+
+		if ( $row = $db->sql_fetchrow($result) )
+		{
+			do
+			{
+				$author_list .= '<option value="' . $row['username'] . '">' .$row['username'] . '</option>';
+			}
+			while ( $row = $db->sql_fetchrow($result) );
+		}
+		else
+		{
+			$author_list = '<option>' . $lang['No_match']. '</option>';
+		}
+
+	}
+
+	if ( !$is_inline_review )
+	{
+		$gen_simple_header = TRUE;
+		$page_title = $lang['Search'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			"search_user_body" => "search_username.tpl")
+		);
+
+		$template->assign_vars(array(
+			"L_CLOSE_WINDOW" => $lang['Close_window'], 
+			"L_SEARCH_USERNAME" => $lang['Find_username'], 
+			"L_UPDATE_USERNAME" => $lang['Select_username'], 
+			"L_SELECT" => $lang['Select'], 
+			"L_SEARCH" => $lang['Search'], 
+			"L_SEARCH_EXPLAIN" => $lang['Search_author_explain'], 
+			"L_CLOSE_WINDOW" => $lang['Close_window'], 
+
+			"S_AUTHOR_OPTIONS" => $author_list, 
+			"S_SEARCH_ACTION" => append_sid("search.$phpEx?mode=searchuser"))
+		);
+
+		//
+		// If we have results then dump them out and enable
+		// the appropriate switch block
+		//
+		if ( !empty($author_list) )
+		{
+			$template->assign_block_vars("switch_select_name", array());
+		}
+
+		$template->pparse("search_user_body");
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+
+	return($author_list);
 }
 
 ?>

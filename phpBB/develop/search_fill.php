@@ -7,55 +7,41 @@
 // Remove or comment the next line (die(".... ) to enable this script.
 // Do NOT FORGET to either remove this script or disable it after you have used it.
 //
-die("Please read the first lines of this script for instructions on how to enable it");
 
 //
 // Do not change anything below this line.
 //
-
 set_time_limit(0);
-$common_percent = 0.4; // Percentage of posts in which a word has to appear to be marked as common
 
 $phpbb_root_path = "../";
-
 include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'config.'.$phpEx);
-include($phpbb_root_path . 'includes/constants.'.$phpEx);
-include($phpbb_root_path . 'includes/db.'.$phpEx);
-include($phpbb_root_path . 'includes/functions.'.$phpEx);
+include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/search.'.$phpEx);
+
+$common_percent = 0.4; // Percentage of posts in which a word has to appear to be marked as common
 
 print "<html>\n<body>\n";
 
 //
 // Try and load stopword and synonym files
 //
-//$stopword_array = file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_stopwords.txt"); 
-//$synonym_array = file($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/search_synonyms.txt"); 
-
 // This needs fixing! Shouldn't be hardcoded to English files!
-//$stopword_array = file($phpbb_root_path . "language/lang_english/search_stopwords.txt"); 
+$stopword_array = file($phpbb_root_path . "language/lang_english/search_stopwords.txt"); 
 $synonym_array = file($phpbb_root_path . "language/lang_english/search_synonyms.txt"); 
-/*
-for ($j = 0; $j < count($stopword_array); $j++)
-{ 
-	$filter_word = trim(strtolower($stopword_array[$j])); 
-	$search[] = "/\b" . phpbb_preg_quote($filter_word, "/") . "\b/is";
-	$replace[] = '';
-} 
-*/
 
 //
 // Fetch a batch of posts_text entries
 //
-$sql = "SELECT count(*) as total, max(post_id) as max_post_id 
+$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
 	FROM ". POSTS_TEXT_TABLE;
-if(!$result = $db->sql_query($sql)) 
+if ( !($result = $db->sql_query($sql)) ) 
 {
 	$error = $db->sql_error();
 	die("Couldn't get maximum post ID :: " . $sql . " :: " . $error['message']);
 }
+
 $max_post_id = $db->sql_fetchrow($result);
+
 $totalposts = $max_post_id['total'];
 $max_post_id = $max_post_id['max_post_id'];
 
@@ -74,15 +60,18 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 		WHERE post_id 
 			BETWEEN $batchstart 
 				AND $batchend";
-	if(!$posts_result = $db->sql_query($sql))
+	if( !($result = $db->sql_query($sql)) )
 	{
 		$error = $db->sql_error();
 		die("Couldn't get post_text :: " . $sql . " :: " . $error['message']);
 	}
 
-	$rowset = $db->sql_fetchrowset($posts_result);
+	$rowset = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
 
-	if( $post_rows = $db->sql_numrows($posts_result) )
+	$post_rows = count($rowset);
+	
+	if( $post_rows )
 	{
 
 	//	$sql = "LOCK TABLES ".POST_TEXT_TABLE." WRITE";
@@ -92,18 +81,14 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 		// For every post in the batch:
 		for($post_nr = 0; $post_nr < $post_rows; $post_nr++ )
 		{ 
-
 			print ".";
 			flush();
-			$matches = array();
 
 			$post_id = $rowset[$post_nr]['post_id']; 
-			$text = clean_words("post", $rowset[$post_nr]['post_text'], $synonym_array); // Cleaned up post
-			$text_title = clean_words("post", $rowset[$post_nr]['post_subject'], $synonym_array);
 
 			$matches = array();
-			$matches['text'] = split_words($text);
-			$matches['title'] = split_words($text_title);
+			$matches['text'] = split_words(clean_words("post", $rowset[$post_nr]['post_text'], $stopword_array, $synonym_array));
+			$matches['title'] = split_words(clean_words("post", $rowset[$post_nr]['post_subject'], $stopword_array, $synonym_array));
 
 			while( list($match_type, $match_ary) = @each($matches) )
 			{
@@ -190,13 +175,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	//	$result = $db->sql_query($sql); 
 
 	}
-	else
-	{
-		print "Couldn't get rowcount for number of posts<br>$sql<br>\n";
-	} // All posts;
 
-	$db->sql_freeresult($posts_result);
-	
 	// Remove common words after the first 2 batches and after every 4th batch after that.
 	if( $batchcount % 4 == 3 )
 	{
