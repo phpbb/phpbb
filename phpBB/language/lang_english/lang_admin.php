@@ -218,8 +218,14 @@ $lang['Remove_selected'] = 'Remove selected';
 
 $lang['Advanced'] = 'Advanced';
 
+$lang['Applies_to_User'] = 'Applies to User ...';
+$lang['Applies_to_Group'] = 'Applies to Group ...';
+
+$lang['User_can'] = 'User can ... ';
+$lang['Group_can'] = 'Group can ... ';
 $lang['User_can_admin'] = 'User can admin ... ';
 $lang['Group_can_admin'] = 'Group can admin ... ';
+
 $lang['Allow'] = 'Allow';
 $lang['Deny'] = 'Deny';
 
