@@ -583,7 +583,7 @@ $lang += array(
 	'USER_CANNOT_QUOTE'		=> 'You cannot quote posts in this forum',
 	'USER_CANNOT_EDIT'		=> 'You cannot edit posts in this forum',
 	'USER_CANNOT_DELETE'	=> 'You cannot delete posts in this forum',
-	'USER_CANNOT_POST'		=> 'You cannot report posts in this forum',
+	'USER_CANNOT_REPORT'	=> 'You cannot report posts in this forum',
 	'CANNOT_POST_STICKY'	=> 'Sorry but you cannot post sticky topics.', 
 	'CANNOT_POST_ANNOUNCE'	=> 'Sorry but you cannot post announcements.', 
 	'CANNOT_POST_NEWS'		=> 'Sorry but you cannot post news topics.', 
@@ -839,10 +839,6 @@ $lang += array(
 	'New_account_subject' => 'New user account',
 	'Account_activated_subject' => 'Account Activated',
 
-	'Account_active' => 'Your account has now been activated. Thank you for registering',
-	'Account_active_admin' => 'The account has now been activated',
-	'Reactivate' => 'Reactivate your account!',
-	'Already_activated' => 'You have already activated your account',
 
 
 
@@ -859,7 +855,6 @@ $lang += array(
 	'ACCOUNT_INACTIVE_ADMIN'=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
 	'ACCOUNT_COPPA'			=> 'Your account has been created but has to be approved, please check your email for details.',
 
-	'Wrong_activation'			=> 'The activation key you supplied does not match any in the database',
 	'Send_password'				=> 'Send me a new password',
 	'Password_updated'			=> 'A new password has been created, please check your email for details on how to activate it',
 	'No_email_match'			=> 'The email address you supplied does not match the one listed for that username',
@@ -870,16 +865,32 @@ $lang += array(
 	'COPPA' => 'Your account has been created but has to be approved, please check your email for details.',
 );
 
+// ucp_activate
+$lang += array(
+	'Account_active' => 'Your account has now been activated. Thank you for registering',
+	'Account_active_admin' => 'The account has now been activated',
+	'Reactivate' => 'Reactivate your account!',
+	'Already_activated' => 'You have already activated your account',
+	'Wrong_activation'			=> 'The activation key you supplied does not match any in the database',
+);
+
 // ucp_prefs
 $lang += array(
 	'UCP_PREFS'	=> 'Preferences',
 
 	'UCP_PERSONAL'		=> 'Personal Settings', 
 	'HIDE_ONLINE'		=> 'Hide my online status',
+	'NOTIFY_METHOD'			=> 'Notification method', 
+	'NOTIFY_METHOD_EXPLAIN'	=> 'Method for sending messages sent via this board.', 
+	'NOTIFY_METHOD_EMAIL'	=> 'Email only', 
+	'NOTIFY_METHOD_IM'		=> 'Jabber only', 
+	'NOTIFY_METHOD_BOTH'	=> 'Both', 
 	'NOTIFY_ON_PM'		=> 'Email me on new private messages',
 	'POPUP_ON_PM'		=> 'Pop up window on new private message',
 	'SHOW_EMAIL'		=> 'Users can contact me by email',
 	'ADMIN_EMAIL'		=> 'Administrators can email me information',
+	'ALLOW_PM'			=> 'Allow users to send you private messages', 
+	'ALLOW_PM_EXPLAIN'	=> 'Note that admins and moderators will always be able to send you messages.', 
 	'BOARD_STYLE'		=> 'My board style',
 	'BOARD_LANGUAGE'	=> 'My language', 
 	'BOARD_TIMEZONE'	=> 'My timezone', 
@@ -1072,7 +1083,7 @@ $lang += array(
 	'IM_SEND'			=> 'Send Message', 
 	'IM_NO_JABBER'		=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.', 
 	'IM_SENT_JABBER'	=> 'Your message to %1$s has been sent successfully.', 
-	'IM_JABBER_SUBJECT' => 'Message from user %1$s at %2$s',  // This needs to be part of a contact template
+	'IM_JABBER_SUBJECT' => 'This is an automated message please do not reply! Message from user %1$s at %2$s',  // This needs to be part of a contact template
 );
 
 // gcp

@@ -214,6 +214,9 @@ $lang += array(
 	'LOG_BBCODE_ADD'				=> '<b>Added new BBCode</b><br />&#187; %s',
 	'LOG_BBCODE_EDIT'				=> '<b>Edited BBCode</b><br />&#187; %s',
 	'LOG_BBCODE_DELETE'			=> '<b>Deleted BBCode</b><br />&#187; %s',
+
+	'LOG_EMAIL_ERROR'	=> '%s', 
+	'LOG_JABBER_ERROR'	=> '%s', 
 );
 
 // Index page
@@ -643,6 +646,10 @@ $lang += array(
 	'SMTP_SERVER'				=> 'SMTP Server Address',
 	'SMTP_PORT'					=> 'SMTP Server Port',
 	'SMTP_PORT_EXPLAIN'			=> 'Only change this if you know your SMTP server is on a different port.',
+	'SMTP_AUTH_METHOD'			=> 'Authentication method for SMTP', 
+	'SMTP_AUTH_METHOD_EXPLAIN'	=> 'Only used if a username/password is set, ask your provider if you are unsure which method to use.', 
+	'SMTP_LOGIN'				=> 'LOGIN', 
+	'SMTP_PLAIN'				=> 'PLAIN', 
 	'SMTP_USERNAME'				=> 'SMTP Username',
 	'SMTP_USERNAME_EXPLAIN'		=> 'Only enter a username if your smtp server requires it.',
 	'SMTP_PASSWORD'				=> 'SMTP Password',
@@ -758,6 +765,15 @@ $lang += array(
 $lang += array(
 	'KARMA_SETTINGS'		=> 'Karma Settings', 
 	'KARMA_SETTINGS_EXPLAIN'=> 'Here you can enable and disable the user Karma rating system. You can also modify the weighting factors used to derive each users karma.', 
+	'ENABLE_KARMA'			=> 'Enable Karma',
+
+	'KARMA_HIST_WEIGHT'			=> 'Historical ratings weighting', 
+	'KARMA_HIST_WEIGHT_EXPLAIN'	=> 'Ratings made before the previous 30 days', 
+	'KARMA_DAY_WEIGHT'			=> 'Recent ratings weighting', 
+	'KARMA_DAY_WEIGHT_EXPLAIN'	=> 'Ratings made in past 30 days', 
+	'KARMA_REG_WEIGHT'			=> 'Membership length weighting', 
+	'KARMA_REG_WEIGHT_EXPLAIN'	=> 'Total length of membership', 
+	'KARMA_POST_WEIGHT'			=> 'Total posts weighting', 
 );
 
 // Avatars
