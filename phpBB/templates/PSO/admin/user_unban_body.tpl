@@ -18,20 +18,18 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_IP_OR_HOSTNAME}:&nbsp;<br /><span class="gensmall">{L_BAN_IP_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" name="ip" size="35" /></td>
+		<td class="row2">{S_IPLIST_SELECT}</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center">{L_BAN_EMAIL}</td>
 	</tr>
 	<tr>
 		<td class="row1">{L_EMAIL_ADDRESS}:&nbsp;<br /><span class="gensmall">{L_BAN_EMAIL_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" name="email" size="35" /></td>
+		<td class="row2">{S_EMAILLIST_SELECT}</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" /></td>
 	</tr>
 </table></form>
-
-<p>{L_BAN_EXPLAIN_WARN}</p>
 
 <br	clear="all" />

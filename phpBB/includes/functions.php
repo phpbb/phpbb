@@ -276,7 +276,7 @@ function init_userprefs($userdata)
 
 		if( !defined("TEMPLATE_CONFIG") )
 		{
-			message_die(CRITICAL_MESSAGE, "Couldn't open " . $board_config['default_template'] . " template config file");
+			message_die(CRITICAL_ERROR, "Couldn't open " . $board_config['default_template'] . " template config file");
 		}
 
 	}
@@ -354,7 +354,7 @@ function decode_ip($int_ip)
 //
 function create_date($format, $gmepoch, $tz)
 {
-	return (gmdate($format, $gmepoch + (3600 * $tz)));
+	return (@gmdate($format, $gmepoch + (3600 * $tz)));
 }
 
 //
@@ -362,7 +362,7 @@ function create_date($format, $gmepoch, $tz)
 //
 function get_gmt_ts()
 {
-	$time = time();
+	$time = @time();
 	return($time);
 }
 

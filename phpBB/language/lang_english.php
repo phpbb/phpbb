@@ -733,13 +733,30 @@ $lang['Group_has_members'] = "This group has the following members";
 
 // Banning
 $lang['Ban_control'] = "Ban Control";
-$lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP's or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
+$lang['Ban_explain'] = "Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user from even reaching the index page of your board. To prevent a user from registering under a different username you can also specify a banned email address. Please note that banning an email address alone will not prevent that user from being able to logon or post to your board, you should use one of the first two methods to achieve this.";
+$lang['Ban_explain_warn'] = "Please note that entering a range of IP addresses results in all the addresses between the start and end being added to the banlist. Attempts will be made to minimise the number of addresses added to the database by introducing wildcards automatically where appropriate. If you really must enter a range try to keep it small or better yet state specific addresses.";
 
-$lang['Ban_username'] = "Ban a specific user";
-$lang['Ban_IP'] = "Ban one or more IP's or hostnames";
+$lang['Ban_username'] = "Ban one or more specific users";
+$lang['Ban_username_explain'] = "You can ban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Ban_IP'] = "Ban one or more IP addresses or hostnames";
+$lang['IP_hostname'] = "IP addresses or hostnames";
 $lang['Ban_IP_explain'] = "To specify several different IP's or hostnames separate them with commas, to specify a range of IP's (not hostnames) separate the start and end with a hyphen (-), to specify a wildcard use *";
 $lang['Ban_email'] = "Ban one or more email addresses";
 $lang['Ban_email_explain'] = "To specify more than one email address separate them with commas";
+
+$lang['Unban_username'] = "Un-ban one more specific users";
+$lang['Unban_username_explain'] = "You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_IP'] = "Un-ban one or more IP addresses";
+$lang['Unban_IP_explain'] = "You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+$lang['Unban_email'] = "Un-ban one or more email addresses";
+$lang['Unban_email_explain'] = "You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser";
+
+$lang['No_banned_users'] = "No banned users";
+$lang['No_banned_ip'] = "No banned IP addresses";
+$lang['No_banned_email'] = "No banned email addresses";
+
+$lang['Ban_update_sucessful'] = "The banlist has been updated sucessfully";
+
 
 // Configuration
 $lang['Config_updated'] = "Forum Configuration Updated Sucessfully";

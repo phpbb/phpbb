@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-<!-- DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" -->
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- ?xml version="1.0" encoding="UTF-8"? -->
+<!--DOCTYPE PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd" -->
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -15,7 +15,7 @@ P	{font-family:{T_FONTFACE1};font-size:10pt}
 TH	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
 TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
-TD.cat	{background-color:{T_TH_COLOR2}}
+TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
 TD.row1	{background-color:{T_TD_COLOR1}}
 TD.row2	{background-color:{T_TD_COLOR2}}
 

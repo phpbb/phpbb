@@ -30,7 +30,7 @@
 function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0) 
 {
 
-	global $db, $lang, $board_config;
+	global $db, $lang, $board_config, $phpEx;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
 
 	$cookiename = $board_config['cookie_name'];
@@ -57,9 +57,14 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	//
 	// Initial ban check against IP and userid
 	//
+	ereg("(..)(..)(..)(..)", $user_ip, $user_ip_parts);
+
 	$sql = "SELECT ban_ip, ban_userid
-		FROM " . BANLIST_TABLE . "
-		WHERE ban_ip = '$user_ip' 
+		FROM " . BANLIST_TABLE . " 
+		WHERE ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "' 
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff' 
+			OR ban_ip = '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff' 
+			OR ban_ip = '" . $user_ip_parts[1] . "ffffff' 
 			OR ban_userid = $user_id";
 	$result = $db->sql_query($sql);
 	if (!$result) 
@@ -74,6 +79,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	// 
 	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
 	{
+		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
 		message_die(CRITICAL_MESSAGE, $lang['You_been_banned']);
 	}
 	else
