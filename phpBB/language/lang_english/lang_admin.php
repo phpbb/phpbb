@@ -314,6 +314,21 @@ $lang['Pollcreate'] = 'Poll create';
 
 $lang['Auth_updated'] = 'Permissions have been updated';
 
+//
+// Prune users
+//
+$lang['Prune_users'] = 'Prune Users';
+$lang['Prune_users_explain'] = 'Here you can delete (or deactivate) users from you board. This can be done in a variety of ways; by post count, last activity, etc. Each of these criteria can be combined, i.e. you can prune users last active before 2002-01-01 with fewer than 10 posts. Alternatively you can enter a list of users directly into the text box, any criteria entered will be ignored. Take care with this facility! Once a user is deleted there is no way back.';
+$lang['Select_users_explain'] = 'If you want to prune specifc users rather than use the criteria above you can enter their usernames here, one per line. Use the find username facility if you wish.';
+$lang['Last_active_explain'] = 'Enter a date in yyyy-mm-dd format.';
+$lang['Joined_explain'] = 'Enter a date in yyyy-mm-dd format.';
+
+$lang['Deactivate'] = 'Deactivate';
+$lang['Delete_user_posts'] = 'Delete pruned user posts';
+$lang['Delete_user_posts_explain'] = 'Setting this to yes will remove all posts made by the pruned users.';
+
+$lang['Confirm_prune_users'] = 'Are you sure you wish to prune the selected users?';
+$lang['Success_user_prune'] = 'The selected users have been pruned successfully';
 
 //
 // Banning
