@@ -207,7 +207,7 @@ function make_forum_box($box_name, $default_forum = -1)
 			$boxstring .=  "<option value=\"".$forum_rows[$y]['forum_id']."\"";
 			if($forum_rows[$y]['forum_id'] == $default_forum)
 			{
-				$boxstring .= " SELECTED";
+				$boxstring .= " selected=\"selected\"";
 			}
 			$boxstring .= ">$name</option>\n";
 		}
@@ -638,7 +638,7 @@ function language_select($default, $dirname="language/")
 			$filename = str_replace("lang_", "", $file);
 			$filename = str_replace(".$phpEx", "", $filename);
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
-			$selected = (strtolower($default) == strtolower($filename)) ? " selected" : "";
+			$selected = (strtolower($default) == strtolower($filename)) ? " selected=\"selected\"" : "";
 			$lang_select .= "  <option value=\"$filename\"$selected>".ucwords($displayname)."</option>\n";
 		}
 	}
@@ -664,7 +664,7 @@ function template_select($default, $dirname = "templates")
 		{
 			if($file == $default)
 			{
-				$selected = " selected";
+				$selected = " selected=\"selected\"";
 			}
 			$template_select .= "<option value=\"$file\"$selected>$file</option>\n";
 		}
@@ -695,7 +695,7 @@ function theme_select($default)
 			{
 				if(stripslashes($rowset[$i]['themes_name']) == $default || $rowset[$i]['themes_id'] == $default)
 				{
-					$selected = " selected";
+					$selected = " selected=\"selected\"";
 				}
 				else
 				{
@@ -730,10 +730,10 @@ function tz_select($default)
 			"-11" => "(GMT -11:00 hours) Midway Island, Samoa",
 			"-10" => "(GMT -10:00 hours) Hawaii",
 			"-9" => "(GMT -9:00 hours) Alaska",
-			"-8" => "(GMT -8:00 hours) Pacific Time (US & Canada)",
-			"-7" => "(GMT -7:00 hours) Mountain Time (US & Canada)",
-			"-6" => "(GMT -6:00 hours) Central Time (US & Canada), Mexico City",
-			"-5" => "(GMT -5:00 hours) Eastern Time (US & Canada), Bogota, Lima, Quito",
+			"-8" => "(GMT -8:00 hours) Pacific Time (US &amp; Canada)",
+			"-7" => "(GMT -7:00 hours) Mountain Time (US &amp; Canada)",
+			"-6" => "(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City",
+			"-5" => "(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito",
 			"-4" => "(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz",
 			"-3.5" => "(GMT -3:30 hours) Newfoundland",
 			"-3" => "(GMT -3:00 hours) Brazil, Buenos Aires, Georgetown",
@@ -759,7 +759,7 @@ function tz_select($default)
 
 	while(list($offset, $zone) = each($tz_array))
 	{
-		$selected = ($offset == $default) ? " selected" : "";
+		$selected = ($offset == $default) ? " selected=\"selected\"" : "";
 		$tz_select .= "\t<option value=\"$offset\"$selected>$zone</option>\n";
 	}
 	$tz_select .= "</select>\n";
