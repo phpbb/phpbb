@@ -203,6 +203,7 @@ $lang = array_merge($lang, array(
 	'All_Allow' => 'All Allow',
 	'All_Deny' => 'All Deny',
 	'All_Inherit' => 'All Inherit',
+	'INHERIT_PARENT' => 'Inherit from parent', 
 	'ACL_PRESET' => 'Preset', 
 	'Inheritance' => 'Inheritance',
 	'Inheritance_explain' => 'Select the subforums you want to inherit these permissions',
@@ -279,7 +280,8 @@ $lang = array_merge($lang, array(
 	'acl_f_print' => 'Print topics',
 	'acl_f_ignoreflood' => 'Ignore flood limit',
 	'acl_f_ignorequeue' => 'Ignore mod queue',
-	'acl_f_viewonline' => 'View everyone online',
+
+	'acl_u_viewonline' => 'View everyone online',
 
 	'Auth_updated' => 'Permissions have been updated',
 	'Prune_users' => 'Prune Users',
