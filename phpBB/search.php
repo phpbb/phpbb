@@ -851,6 +851,10 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 						$message = preg_replace($orig_word, $replacement_word, $message);
 					}
+					else
+					{
+						$post_subject = ( $searchset[$i]['post_subject'] != "" ) ? $searchset[$i]['post_subject'] : $topic_title;
+					}
 
 					if($board_config['allow_smilies'] && $searchset[$i]['enable_smilies'])
 					{
