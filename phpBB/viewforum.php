@@ -334,7 +334,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from
 		WHERE t.forum_id = $forum_id 
-			AND t.topic_type <> " . POST_ANNOUNCE . " 
+			AND t.topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ") 
 			$sql_approved 
 			$sql_limit_time
 		ORDER BY t.topic_type DESC, $sql_sort_order";
@@ -540,7 +540,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
-				'U_VIEW_TOPIC'	=> $view_topic_url)
+				'U_VIEW_TOPIC'	=> $view_topic_url,
+				'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;mode=reports&amp;t=$topic_id")
 			);
 
 			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
