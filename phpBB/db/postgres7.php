@@ -142,6 +142,7 @@ class sql_db
 				{
 					return false;
 				}
+				$this->in_transaction = TRUE;
 			}
 
 			$this->query_result = @pg_exec($this->db_connect_id, $query);
@@ -172,6 +173,8 @@ class sql_db
 				{
 					@pg_exec($this->db_connect_id, "ROLLBACK");
 				}
+				$this->in_transaction = FALSE;
+
 				return false;
 			}
 		}
