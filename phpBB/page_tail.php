@@ -22,6 +22,22 @@
  * 
  ***************************************************************************/ 
 
+// Load/parse the footer template we need based on pagetype.
+switch($pagetype) 
+{
+ case 'index':
+   $template->pparse("output", "footer");
+   break;
+}
+
+// Show the overall footer.
+if($user_logged_in) 
+{
+   $admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
+}
+$template->set_var(array("PHPBB_VERSION" => "2.0-alpha",
+			 "ADMIN_LINK" => $admin_link));
+$template->pparse("output", "overall_footer");
 
 
 ?>

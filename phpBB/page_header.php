@@ -22,26 +22,29 @@
  * 
  ***************************************************************************/ 
 
+// Parse and show the overall header.  
+$template->set_file(array("overall_header" => "overall_header.tpl",
+			  "overall_footer" => "overall_footer.tpl"));
+$template->set_var(array("SITENAME" => $sitename,
+			 "PAGE_TITLE" => $page_title,
+			 "META_INFO" => $meta_tags));
+$template->pparse("output", "overall_header");
 
+// Do a switch on page type, this way we only load the templates that we need at the time
 switch($pagetype) 
 {
  case 'index':
    $page_title = "Forum Index";
-   $template->set_file(array("overall_header" => "overall_header.tpl",
-			     "header" => "index_header.tpl",
+   $template->set_file(array("header" => "index_header.tpl",
 			     "body" => "index_body.tpl",
-			     "footer" => "index_footer.tpl",
-			     "overall_footer" => "overall_footer.tpl"));
-   $template->set_var(array("SITENAME" => $sitename,
-			    "PAGE_TITLE" => $page_title,
-			    "META_INFO" => $meta_tags,
-			    "TOTAL_POSTS" => $total_posts,
+			     "footer" => "index_footer.tpl"));
+			     
+   $template->set_var(array("TOTAL_POSTS" => $total_posts,
 			    "TOTAL_USERS" => $total_users,
 			    "NEWEST_USER" => $newest_user,
 			    "NEWEST_UID" => $newest_uid,
 			    "USERS_BROWSING" => $users_browsing));
 		      
-   $template->pparse("output", "overall_header");
    $template->pparse("output", "header");
    
    break;
