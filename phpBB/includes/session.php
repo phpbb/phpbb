@@ -515,7 +515,6 @@ class user extends session
 			}
 		}
 
-		include($this->lang_path . '/common.' . $phpEx);
 		$this->add_lang($lang_set);
 		unset($lang_set);
 
@@ -523,8 +522,7 @@ class user extends session
 		{
 			global $SID;
 
-			$style = intval($_GET['style']);
-			$SID .= '&amp;style=' . $style;
+			$SID .= '&amp;style=' . request_var('style', 0);
 		}
 		else
 		{
@@ -573,23 +571,6 @@ class user extends session
 		return;
 	}
 
-	// Internal usage
-	function set_lang($lang_file, $use_db = false, $use_help = false)
-	{
-		global $lang, $help, $phpEx;
-
-		if (!$use_db)
-		{
-			include($this->lang_path . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx);
-		}
-		else if ($use_db)
-		{
-			// Get Database Language Strings
-			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
-			// For example: help:faq, posting
-		}
-	}
-
 	// Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
 	//
 	// $lang_set = array('posting', 'help' => 'faq');
@@ -601,11 +582,14 @@ class user extends session
 	{
 		global $lang, $help, $phpEx;
 
+		$lang = array();
+
+		require($this->lang_path . "common.$phpEx");
+
 		if (is_array($lang_set))
 		{
 			foreach ($lang_set as $key => $lang_file)
 			{
-				$key = (string) $key;
 				if ($key == 'db')
 				{
 					$this->add_lang($lang_file, true, $use_help);
@@ -641,6 +625,22 @@ class user extends session
 			$this->lang += $lang;
 			// Yes, we unset $lang here, this variable is in use elsewhere
 			unset($lang);
+		}
+	}
+
+	function set_lang($lang_file, $use_db = false, $use_help = false)
+	{
+		global $lang, $help, $phpEx;
+
+		if (!$use_db)
+		{
+			require($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
+		}
+		else if ($use_db)
+		{
+			// Get Database Language Strings
+			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
+			// For example: help:faq, posting
 		}
 	}
 
