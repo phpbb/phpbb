@@ -58,7 +58,7 @@ class ucp_remind extends ucp
 					$db->sql_query($sql);
 
 					include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-					$emailer = new emailer($config['smtp_delivery']);
+					$emailer = new emailer();
 
 					$emailer->use_template('user_activate_passwd', $row['user_lang']);
 					$emailer->to($row['user_email']);

@@ -29,6 +29,7 @@ if (!empty($setmodules))
 	$filename = basename(__FILE__);
 	$module['LOG']['ADMIN_LOGS'] = $filename . "$SID&amp;mode=admin";
 	$module['LOG']['MOD_LOGS'] = $filename . "$SID&amp;mode=mod";
+	$module['LOG']['CRITICAL_LOGS'] = $filename . "$SID&amp;mode=critical";
 
 	return;
 }
@@ -59,9 +60,9 @@ $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'd';
 
 
 // Define some vars depending on which logs we're looking at
-$log_table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-$l_title = ($mode == 'admin') ? $user->lang['ADMIN_LOGS'] : $user->lang['MOD_LOGS'];
-$l_title_explain = ($mode == 'admin') ? $user->lang['ADMIN_LOGS_EXPLAIN'] : $user->lang['MOD_LOGS_EXPLAIN'];
+$log_type = ($mode == 'admin') ? LOG_ADMIN : (($mode == 'mod') ? LOG_MOD : LOG_CRITICAL);
+$l_title = $user->lang[strtoupper($mode) . '_LOGS'];
+$l_title_explain = $user->lang[strtoupper($mode) . '_LOGS_EXPLAIN'];
 
 
 // Delete entries if requested and able
@@ -74,10 +75,10 @@ if ((isset($_POST['delmarked']) || isset($_POST['delall'])) && $auth->acl_get('a
 		{
 			$where_sql .= (($where_sql != '') ? ', ' : '') . intval($marked);
 		}
-		$where_sql = "WHERE log_id IN ($where_sql)";
+		$where_sql = "WHERE log_type = $log_type AND log_id IN ($where_sql)";
 	}
 
-	$sql = "DELETE FROM $table_sql
+	$sql = "DELETE FROM " . LOG_TABLE . "
 		$where_sql";
 	$db->sql_query($sql);
 

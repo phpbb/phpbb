@@ -21,10 +21,10 @@
 
 class emailer
 {
-	var $msg, $subject, $extra_headers;
-	var $to_addres, $cc_address, $bcc_address;
+	var $vars, $msg, $subject, $extra_headers, $encoding;
+	var $addresses;
 	var $reply_to, $from;
-	var $use_queue, $queue;
+	var $use_queue, $mail_queue;
 
 	var $tpl_msg = array();
 
@@ -35,8 +35,8 @@ class emailer
 		$this->use_queue = $use_queue;
 		if ($use_queue)
 		{
-			$this->queue = new Queue();
-			$this->queue->init('emailer', $config['email_package_size']);
+			$this->mail_queue = new queue();
+			$this->mail_queue->init('emailer', $config['email_package_size']);
 		}
 		$this->reset();
 	}
@@ -45,7 +45,7 @@ class emailer
 	function reset()
 	{
 		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
+		$this->vars = $this->replyto = $this->from = $this->msg = $this->encoding = $this->extra_headers = '';
 	}
 
 	// Sets an email address to send to
@@ -70,14 +70,16 @@ class emailer
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
 	}
 
-	function replyto($address)
+	function replyto($address, $realname = '')
 	{
-		$this->replyto = trim($address);
+		$this->replyto = ($realname != '') ? mail_encode(trim($realname)) . ' ' : '';
+		$this->replyto .= '<' . trim($address) . '>';
 	}
 
-	function from($address)
+	function from($address, $realname = '')
 	{
-		$this->from = trim($address);
+		$this->from = ($realname != '') ? mail_encode(trim($realname)) . ' ' : '';
+		$this->from .= '<' . trim($address) . '>';
 	}
 
 	// set up subject for mail
@@ -89,7 +91,7 @@ class emailer
 	// set up extra mail headers
 	function headers($headers)
 	{
-		$this->extra_headers .= trim($headers) . "\r\n";
+		$this->extra_headers .= trim($headers) . "\n";
 	}
 
 	function template($template_file, $template_lang = '')
@@ -140,7 +142,7 @@ class emailer
 		$this->vars = (empty($this->vars)) ? $vars : $this->vars . $vars;
 	}
 
-	// Send the mail out to the recipients set previously in var $this->address
+	// Send the mail out to the recipients set previously in var $this->addresses
 	function send()
 	{
 		global $config, $user, $phpEx, $phpbb_root_path;
@@ -175,7 +177,7 @@ class emailer
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+			$drop_header .= '[\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -185,7 +187,7 @@ class emailer
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($user->lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+			$drop_header .= '[\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -203,26 +205,53 @@ class emailer
 		{
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? '"' . $this->encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
+				$$type .= (($$type != '') ? ',' : '') . (($which_ary['name'] != '') ? mail_encode($which_ary['name']) . ' <' . $which_ary['email'] . '>' : '<' . $which_ary['email'] . '>');
 			}
 		}
 
+		if (empty($this->replyto))
+		{
+			$this->replyto = '<' . $config['board_email'] . '>';
+		}
+
+		if (empty($this->from))
+		{
+			$this->from = '<' . $config['board_email'] . '>';
+		}
+
 		// Build header
-		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\nX-MimeOLE: Produced By phpBB2\r\n" . $this->extra_headers . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : ''); 
+		$headers = 'From: ' . $this->from . "\n";
+		$headers .= 'Reply-to: ' . $this->replyto . "\n";
+		$headers .= "Return-Path: <" . $config['board_email'] . ">\n";
+		$headers .= "Sender: <" . $config['board_email'] . ">\n";
+		$headers .= "MIME-Version: 1.0\n";
+		// Message-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\n
+		// $headers .= "Date: " . gmdate('D, d M Y H:i:s Z', time()) . "\n";
+		$headers .= "X-Priority: 3\n";
+		$headers .= "X-MSMail-Priority: Normal\n";
+		$headers .= "X-Mailer: PHP\n";
+		$headers .= "X-MimeOLE: Produced By phpBB2\n";
+		$headers .= "Content-type: text/plain; charset=" . $this->encoding . "\n";
+		$headers .= "Content-transfer-encoding: 8bit\n";
+		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
+		$headers .= ($cc != '') ? "Cc:$cc\n" : '';
+		$headers .= ($bcc != '') ? "Bcc:$bcc\n" : ''; 
 
 		// Send message ... removed $this->encode() from subject for time being
 		if (!$this->use_queue)
 		{
-			$result = ($config['smtp_delivery']) ? smtpmail($to, $this->subject, $this->msg, $this->extra_headers) : mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
+			$mail_to = ($to == '') ? 'Undisclosed-Recipients:;' : $to;
+			$err_msg = '';
+			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, $this->msg, $err_msg, $headers) : mail($mail_to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $headers);
 		}
 		else
 		{
-			$this->queue->put('emailer', array(
-				'smtp_delivery' => $config['smtp_delivery'],
+			$this->mail_queue->put('emailer', array(
 				'to'			=> $to,
+				'addresses'		=> $this->addresses,
 				'subject'		=> $this->subject,
 				'msg'			=> $this->msg,
-				'extra_headers' => $this->extra_headers)
+				'extra_headers' => $headers)
 			);
 
 			$result = true;
@@ -231,66 +260,69 @@ class emailer
 		// Did it work?
 		if (!$result)
 		{
-			$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $result . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
+			$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
+			add_log('critical', 'EMAIL_ERROR', $message);
 			trigger_error($message, E_USER_ERROR);
 		}
 
 		return true;
 	}
 
-	// Encodes the given string for proper display for this encoding ... nabbed 
-	// from php.net and modified. There is an alternative encoding method which 
-	// may produce less output but it's questionable as to its worth in this 
-	// scenario IMO
-	function encode($str)
+} // class emailer
+
+// Encodes the given string for proper display for this encoding ... nabbed 
+// from php.net and modified. There is an alternative encoding method which 
+// may produce less output but it's questionable as to its worth in this 
+// scenario IMO
+function mail_encode($str)
+{
+	if ($this->encoding == '')
 	{
-		if ($this->encoding == '')
-		{
-			return $str;
-		}
-
-		// define start delimimter, end delimiter and spacer
-		$end = "?=";
-		$start = "=?$this->encoding?B?";
-		$spacer = "$end\r\n $start";
-
-		// determine length of encoded text within chunks and ensure length is even
-		$length = 75 - strlen($start) - strlen($end);
-		$length = floor($length / 2) * 2;
-
-		// encode the string and split it into chunks with spacers after each chunk
-		$str = chunk_split(base64_encode($str), $length, $spacer);
-
-		// remove trailing spacer and add start and end delimiters
-		$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
-
-		return $start . $str . $end;
+		return $str;
 	}
 
-} // class emailer
+	// define start delimimter, end delimiter and spacer
+	$end = "?=";
+	$start = "=?$this->encoding?B?";
+	$spacer = "$end\r\n $start";
+
+	// determine length of encoded text within chunks and ensure length is even
+	$length = 75 - strlen($start) - strlen($end);
+	$length = floor($length / 2) * 2;
+
+	// encode the string and split it into chunks with spacers after each chunk
+	$str = chunk_split(base64_encode($str), $length, $spacer);
+
+	// remove trailing spacer and add start and end delimiters
+	$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+
+	return $start . $str . $end;
+}
 
 // This function has been modified as provided by SirSir to allow multiline responses when
 // using SMTP Extensions
 function server_parse($socket, $response)
 {
-   while (substr($server_response, 3, 1) != ' ')
-   {
-      if (!($server_response = fgets($socket, 256)))
-      {
-         trigger_error('Could not get mail server response codes', E_USER_ERROR);
-      }
-   }
+	while (substr($server_response, 3, 1) != ' ')
+	{
+		if (!($server_response = fgets($socket, 256)))
+		{
+			return 'Could not get mail server response codes';
+		}
+	}
 
-   if (!(substr($server_response, 0, 3) == $response))
-   {
-      trigger_error("Ran into problems sending Mail. Response: $server_response", E_USER_ERROR);
-   }
+	if (!(substr($server_response, 0, 3) == $response))
+	{
+		return "Ran into problems sending Mail. Response: $server_response";
+	}
+
+	return 0;
 }
 
 // Replacement or substitute for PHP's mail command
-function smtpmail($mail_to, $subject, $message, $headers = '')
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 {
-	global $config;
+	global $config, $_SERVER;
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
@@ -301,7 +333,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		{
 			if (sizeof($headers) > 1)
 			{
-				$headers = join("\r\n", $headers);
+				$headers = join("\n", $headers);
 			}
 			else
 			{
@@ -317,112 +349,183 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		// but we have to grab bcc and cc headers and treat them differently
 		// Something we really didn't take into consideration originally
 		$header_array = explode("\r\n", $headers);
-		@reset($header_array);
-
 		$headers = '';
-		while(list(, $header) = each($header_array))
+		
+		foreach ($header_array as $header)
 		{
-			if (preg_match('#^cc:#si', $header))
+			if (preg_match('#^cc:#si', $header) || preg_match('#^bcc:#si', $header))
 			{
-				$cc = preg_replace('#^cc:(.*)#si', '\1', $header);
-			}
-			else if (preg_match('#^bcc:#si', $header))
-			{
-				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
 			}
-			$headers .= $header . "\r\n";
+			$headers .= ($header != '') ? $header . "\r\n" : '';
 		}
 
 		$headers = chop($headers);
-		$cc = explode(',', $cc);
-		$bcc = explode(',', $bcc);
 	}
 
 	if (trim($subject) == '')
 	{
-		trigger_error('No email Subject specified', E_USER_ERROR);
+		$err_msg = 'No email Subject specified';
+		return FALSE;
 	}
 
 	if (trim($message) == '')
 	{
-		trigger_error('Email message was blank', E_USER_ERROR);
+		$err_msg = 'Email message was blank';
+		return FALSE;
 	}
 
-	$mail_to_array = explode(',', $mail_to);
+	$mail_rcpt = $mail_to = $mail_cc = array();
+
+	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
+	foreach ($addresses['to'] as $which_ary)
+	{
+		$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+		$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
+	}
+
+	foreach ($addresses['bcc'] as $which_ary)
+	{
+		$mail_rcpt['bcc'][] = '<' . trim($which_ary['email']) . '>';
+	}
+
+	foreach ($addresses['cc'] as $which_ary)
+	{
+		$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+		$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
+	}
 
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
 	if (!$socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
-		trigger_error("Could not connect to smtp host : $errno : $errstr", E_USER_ERROR);
+		$err_msg = "Could not connect to smtp host : $errno : $errstr";
+		return FALSE;
 	}
 
 	// Wait for reply
-	server_parse($socket, "220");
+	if ($err_msg = server_parse($socket, '220'))
+	{
+		return FALSE;
+	}
 
+/*
 	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
 	// This improved as provided by SirSir to accomodate
-	if (!empty($config['smtp_username']) && !empty($config['smtp_password']))
-	{
-		fputs($socket, "EHLO " . $config['smtp_host'] . "\r\n");
+	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
+	{ 
+		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, "250");
 
 		fputs($socket, "AUTH LOGIN\r\n");
 		server_parse($socket, "334");
 
-		fputs($socket, base64_encode($config['smtp_username']) . "\r\n");
+		fputs($socket, base64_encode($board_config['smtp_username']) . "\r\n");
 		server_parse($socket, "334");
 
-		fputs($socket, base64_encode($config['smtp_password']) . "\r\n");
+		fputs($socket, base64_encode($board_config['smtp_password']) . "\r\n");
 		server_parse($socket, "235");
 	}
 	else
 	{
-		fputs($socket, "HELO " . $config['smtp_host'] . "\r\n");
+		fputs($socket, "HELO " . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, "250");
+	}
+*/
+
+	// TEMP TEMP TEMP
+	$config['smtp_auth_method'] = 'LOGIN';
+
+	// I see the potential to use pipelining after the EHLO call... 
+
+	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
+	// This improved as provided by SirSir to accomodate
+	if (!empty($config['smtp_username']) && !empty($config['smtp_password']))
+	{
+		// See RFC 821 3.5
+		// best would be to do a reverse resolution on the IP and use the result (if any) as
+		// domain, or the IP as fallback. Since reverse dns is broken in many php versions (afaik)
+		// it seems better to just use the ip.
+		fputs($socket, "EHLO [" . $_SERVER["SERVER_ADDR"] . "]\r\n");
+		if ($err_msg = server_parse($socket, '250'))
+		{
+			return FALSE;
+		}
+
+		// EHLO returns the supported AUTH types
+		// NOTE: best way (IMO) is to first choose *MD5 (if it is available), then PLAIN, then LOGIN and if
+		// implemented (as a last resort) ANONYMOUS
+		switch ($config['smtp_auth_method'])
+		{
+			case 'PLAIN':
+				// Note: PLAIN should be default (if *MD5 is not available), since LOGIN is not fully compatible with
+				// Cyrus-SASL (used by many MTAs for SMTP-AUTH)
+				$base64_method_plain = base64_encode($config['smtp_username'] . "\0" . $config['smtp_username'] . "\0" . $config['smtp_password']);
+				fputs($socket, "AUTH PLAIN $base64_method_plain\r\n");
+				if ($err_msg = server_parse($socket, '235'))
+				{
+					return FALSE;
+				}
+				break;
+
+			case 'LOGIN':
+				fputs($socket, "AUTH LOGIN\r\n");
+				if ($err_msg = server_parse($socket, '334'))
+				{
+					return FALSE;
+				}
+
+				fputs($socket, base64_encode($config['smtp_username']) . "\r\n");
+				if ($err_msg = server_parse($socket, '334'))
+				{
+					return FALSE;
+				}
+
+				fputs($socket, base64_encode($config['smtp_password']) . "\r\n");
+				if ($err_msg = server_parse($socket, '235'))
+				{
+					return FALSE;
+				}
+				break;
+
+			// cram-md5, digest-md5...
+		}
+	}
+	else
+	{
+		fputs($socket, "HELO [" . $_SERVER["SERVER_ADDR"] . "]\r\n");
+		if ($err_msg = server_parse($socket, '250'))
+		{
+			return FALSE;
+		}
 	}
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	fputs($socket, "MAIL FROM: <" . $config['board_email'] . ">\r\n");
-	server_parse($socket, "250");
+	fputs($socket, "MAIL FROM: <" . $board_config['board_email'] . ">\r\n");
+	if ($err_msg = server_parse($socket, '250'))
+	{
+		return FALSE;
+	}
 
 	// Specify each user to send to and build to header.
-	@reset($mail_to_array);
-	while(list(, $mail_to_address) = each($mail_to_array))
-	{
-		// Add an additional bit of error checking to the To field.
-		$mail_to_address = trim($mail_to_address);
-		if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
-		{
-			fputs($socket, "RCPT TO: $mail_to_address\r\n");
-			server_parse($socket, "250");
-		}
-		$to_header .= (($to_header !='') ? ', ' : '') . "$mail_to_address";
-	}
-	// Ok now do the CC and BCC fields...
-	@reset($bcc);
-	while(list(, $bcc_address) = each($bcc))
-	{
-		// Add an additional bit of error checking to bcc header...
-		$bcc_address = trim($bcc_address);
-		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address))
-		{
-			fputs($socket, "RCPT TO: $bcc_address\r\n");
-			server_parse($socket, "250");
-		}
-	}
+	$to_header = implode(', ', $mail_to);
+	$cc_header = implode(', ', $mail_cc);
 
-	@reset($cc);
-	while(list(, $cc_address) = each($cc))
+	// Now tell the MTA to send the Message to the following people... [TO, BCC, CC]
+	foreach ($mail_rcpt as $type => $mail_to_addresses)
 	{
-		// Add an additional bit of error checking to cc header
-		$cc_address = trim($cc_address);
-		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address))
+		foreach ($mail_to_addresses as $mail_to_address)
 		{
-			fputs($socket, "RCPT TO: $cc_address\r\n");
-			server_parse($socket, "250");
+			// Add an additional bit of error checking to the To field.
+			if (preg_match('#[^ ]+\@[^ ]+#', $mail_to_address))
+			{
+				fputs($socket, "RCPT TO: $mail_to_address\r\n");
+				if ($err_msg = server_parse($socket, '250'))
+				{
+					return FALSE;
+				}
+			}
 		}
 	}
 
@@ -430,14 +533,23 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fputs($socket, "DATA\r\n");
 
 	// This is the last response code we look for until the end of the message.
-	server_parse($socket, "354");
+	if ($err_msg = server_parse($socket, '354'))
+	{
+		return FALSE;
+	}
 
 	// Send the Subject Line...
 	fputs($socket, "Subject: $subject\r\n");
 
 	// Now the To Header.
-	$to_header = ($to_header == '') ? "<Undisclosed-recipients:;>" : $to_header;
+	$to_header = ($to_header == '') ? 'Undisclosed-Recipients:;' : $to_header;
 	fputs($socket, "To: $to_header\r\n");
+
+	// Now the CC Header.
+	if ($cc_header != '')
+	{
+		fputs($socket, "CC: $cc_header\r\n");
+	}
 
 	// Now any custom headers....
 	fputs($socket, "$headers\r\n\r\n");
@@ -447,7 +559,10 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Ok the all the ingredients are mixed in let's cook this puppy...
 	fputs($socket, ".\r\n");
-	server_parse($socket, "250");
+	if ($err_msg = server_parse($socket, '250'))
+	{
+		return FALSE;
+	}
 
 	// Now tell the server we are done and close the socket...
 	fputs($socket, "QUIT\r\n");
@@ -458,14 +573,14 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 // This class is for handling queues - to be placed into another file ?
 // At the moment it is only handling the email queue
-class Queue
+class queue
 {
 	var $data = array();
 	var $queue_data = array();
 	var $package_size = 0;
 	var $cache_file = '';
 
-	function Queue()
+	function queue()
 	{
 		global $phpEx, $phpbb_root_path;
 
@@ -507,7 +622,7 @@ class Queue
 	// Thinking about a lock file...
 	function process()
 	{
-		global $_SERVER, $_ENV, $db;
+		global $db, $config, $phpEx, $phpbb_root_path;
 
 		if (file_exists($this->cache_file))
 		{
@@ -526,9 +641,20 @@ class Queue
 
 			$num_items = (count($data_array['data']) < $package_size) ? count($data_array['data']) : $package_size;
 
-			if ($object == 'emailer')
+			switch ($object)
 			{
-				@set_time_limit(60);
+				case 'emailer':
+					// Delete the email queued objects if mailing is disabled
+					if (!$config['email_enable'])
+					{
+						unset($this->queue_data['emailer']);
+						break 2;
+					}
+					include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+					@set_time_limit(60);
+					break;
+				default:
+					return;
 			}
 
 			for ($i = 0; $i < $num_items; $i++)
@@ -538,16 +664,23 @@ class Queue
 					$$var = $value;
 				}
 				
-				if ($object == 'emailer')
+				switch ($object)
 				{
-					$result = ($smtp_delivery) ? smtpmail($to, $subject, $msg, $extra_headers) : mail($to, $subject, preg_replace("#(?<!\r)\n#s", "\r\n", $msg), $extra_headers);
+					case 'emailer':
+						$mail_to = ($to == '') ? 'Undisclosed-Recipients:;' : $to;
+						$err_msg = '';
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, $msg, $err_msg, $extra_headers) : mail($mail_to, $subject, preg_replace("#(?<!\r)\n#s", "\n", $msg), $extra_headers);
 				
-					if (!$result)
-					{
-						$message = '<u>EMAIL ERROR</u> [ ' . (($smtp_delivery) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $result . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
-						trigger_error($message, E_USER_ERROR);
-					}
+						if (!$result)
+						{
+							// Logging instead of displaying!?
+							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
+							add_log('critical', 'MAIL_ERROR', $message);
+//							$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $result . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
+						}
+						break;
 				}
+
 				array_shift($this->queue_data[$object]['data']);
 			}
 
@@ -557,7 +690,7 @@ class Queue
 			}
 		}
 	
-		if (count($this->queue_data) == 0)
+		if (!sizeof($this->queue_data))
 		{
 			@flock($fp, LOCK_UN);
 			fclose($fp);

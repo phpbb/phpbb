@@ -243,9 +243,10 @@ CREATE TABLE phpbb_lang (
    PRIMARY KEY (lang_id)
 );
 
-# Table: 'phpbb_log_moderator'
-CREATE TABLE phpbb_log_moderator (
+# Table: 'phpbb_log'
+CREATE TABLE phpbb_log (
   log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
+  log_type tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
@@ -254,20 +255,9 @@ CREATE TABLE phpbb_log_moderator (
   log_operation text,
   log_data text,
   PRIMARY KEY (log_id),
+  KEY log_type (log_type),
   KEY forum_id (forum_id),
   KEY topic_id (topic_id),
-  KEY user_id (user_id)
-);
-
-# Table: 'phpbb_log_admin'
-CREATE TABLE phpbb_log_admin (
-  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
-  user_id mediumint(8) NOT NULL DEFAULT '0',
-  log_ip varchar(40) NOT NULL,
-  log_time int(11) NOT NULL,
-  log_operation text,
-  log_data text,
-  PRIMARY KEY (log_id),
   KEY user_id (user_id)
 );
 

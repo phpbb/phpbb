@@ -105,6 +105,11 @@ define('POST_GLOBAL', 3);
 define('TRACK_NORMAL', 0); // not used at the moment
 define('TRACK_POSTED', 1);
 
+// Log types
+define('LOG_ADMIN', 0);
+define('LOG_MOD', 1);
+define('LOG_CRITICAL', 2);
+
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);
 define('PRIVMSGS_NEW_MAIL', 1);
@@ -147,8 +152,7 @@ define('GROUPS_TABLE', $table_prefix.'groups');
 define('GROUPS_MODERATOR_TABLE', $table_prefix.'groups_moderator');
 define('ICONS_TABLE', $table_prefix.'icons');
 define('LANG_TABLE', $table_prefix.'lang');
-define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
-define('LOG_MOD_TABLE', $table_prefix.'log_moderator');
+define('LOG_TABLE', $table_prefix.'log');
 define('MODERATOR_TABLE', $table_prefix.'moderator_cache');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
@@ -234,7 +238,7 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 */
 
 // Handle email/cron queue.
-if (time() - $config['queue_interval'] >= $config['last_queue_run'])
+if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
 {
 	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 	{

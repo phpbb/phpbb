@@ -101,10 +101,10 @@ if (isset($_POST['submit']))
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 		$emailer = new emailer(true);
 
-		$extra_headers = 'X-AntiAbuse: Board servername - ' . $config['server_name'] . "\r\n";
-		$extra_headers .= 'X-AntiAbuse: User_id - ' . $user->data['user_id'] . "\r\n";
-		$extra_headers .= 'X-AntiAbuse: Username - ' . $user->data['username'] . "\r\n";
-		$extra_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\r\n";
+		$extra_headers = 'X-AntiAbuse: Board servername - ' . $config['server_name'] . "\n";
+		$extra_headers .= 'X-AntiAbuse: User_id - ' . $user->data['user_id'] . "\n";
+		$extra_headers .= 'X-AntiAbuse: Username - ' . $user->data['username'] . "\n";
+		$extra_headers .= 'X-AntiAbuse: User IP - ' . $user->ip . "\n";
 
 		foreach ($email_list as $lang => $to_ary)
 		{
@@ -129,7 +129,7 @@ if (isset($_POST['submit']))
 			}
 		}
 
-		$emailer->queue->save();
+		$emailer->mail_queue->save();
 		unset($email_list);
 
 		if ($group_id)

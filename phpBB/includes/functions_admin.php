@@ -1455,15 +1455,25 @@ function add_log()
 	$action		= array_shift($args);
 	$data		= (!sizeof($args)) ? '' : addslashes(serialize($args));
 
-	if ($mode == 'admin')
+	switch ($mode)
 	{
-		$sql = 'INSERT INTO ' . LOG_ADMIN_TABLE . ' (user_id, log_ip, log_time, log_operation, log_data)
-			VALUES (' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
-	}
-	else
-	{
-		$sql = 'INSERT INTO ' . LOG_MOD_TABLE . ' (user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
-			VALUES (' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+		case 'admin':
+			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, log_ip, log_time, log_operation, log_data)
+				VALUES (" . LOG_ADMIN . ", " . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+			break;
+		
+		case 'mod':
+			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
+				VALUES (" . LOG_MOD . ", " . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
+			break;
+
+		case 'critical':
+			$sql = "INSERT INTO " . LOG_TABLE . " (log_type, user_id, log_ip, log_time, log_operation, log_data)
+				VALUES (" . LOG_CRITICAL . ", " . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
+			break;
+		
+		default:
+			return;
 	}
 
 	$db->sql_query($sql);
@@ -1478,32 +1488,43 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
 
-	if ($mode == 'admin')
+	switch ($mode)
 	{
-		$table_sql = LOG_ADMIN_TABLE;
-		$sql_forum = '';
-	}
-	else
-	{
-		$table_sql = LOG_MOD_TABLE;
+		case 'admin':
+			$log_type = LOG_ADMIN;
+			$sql_forum = '';
+			break;
+		
+		case 'mod':
+			$log_type = LOG_MOD;
 
-		if ($topic_id)
-		{
-			$sql_forum = 'AND l.topic_id = ' . intval($topic_id);
-		}
-		elseif (is_array($forum_id))
-		{
-			$sql_forum = 'AND l.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
-		}
-		else
-		{
-			$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
-		}
+			if ($topic_id)
+			{
+				$sql_forum = 'AND l.topic_id = ' . intval($topic_id);
+			}
+			else if (is_array($forum_id))
+			{
+				$sql_forum = 'AND l.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+			}
+			else
+			{
+				$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
+			}
+			break;
+		
+		case 'critical':
+			$log_type = LOG_CRITICAL;
+			$sql_forum = '';
+			break;
+		
+		default:
+			return;
 	}
 
 	$sql = "SELECT l.*, u.username
-		FROM $table_sql l, " . USERS_TABLE . " u
-		WHERE u.user_id = l.user_id
+		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
+		WHERE l.log_type = $log_type
+			AND u.user_id = l.user_id
 			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
 			$sql_forum
 		ORDER BY $sort_by";
@@ -1531,9 +1552,16 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		{
 			$log_data_ary = unserialize(stripslashes($row['log_data']));
 
-			foreach ($log_data_ary as $log_data)
+			if (!empty($user->lang[$row['log_operation']]))
 			{
-				$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
+				foreach ($log_data_ary as $log_data)
+				{
+					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
+				}
+			}
+			else
+			{
+				$log[$i]['action'] = implode('', $log_data_ary);
 			}
 		}
 
@@ -1575,8 +1603,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	}
 
 	$sql = "SELECT COUNT(*) AS total_entries
-		FROM $table_sql l
-		WHERE l.log_time >= $limit_days
+		FROM " . LOG_TABLE . " l
+		WHERE l.log_type = $log_type
+			AND l.log_time >= $limit_days
 			$sql_forum";
 	$result = $db->sql_query($sql);
 

@@ -207,7 +207,7 @@ elseif (isset($_GET['pane']) && $_GET['pane'] == 'right')
 					do
 					{
 						$emailer->use_template('user_remind_inactive', $row['user_lang']);
-						$emailer->to($row['user_email']);
+						$emailer->to($row['user_email'], $row['username']);
 					
 						$emailer->assign_vars(array(
 							'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
