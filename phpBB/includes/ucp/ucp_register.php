@@ -23,13 +23,17 @@ class ucp_register extends module
 			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
 		}
 
+		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+
 		// Do not alter this first one to use request_var!
-		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$confirm_id = request_var('confirm_id', '');
+		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
-		$error = $data = array();
+		$cp = new custom_profile();
+
+		$error = $data = $cp_data = $cp_error = array();
 
 		//
 		if (!$agreed)
@@ -63,11 +67,6 @@ class ucp_register extends module
 
 			$this->display($user->lang['REGISTER'], 'ucp_agreement.html');
 		}
-
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-		$cp = new custom_profile();
-
-		$cp_data = $cp_error = array();
 
 		// Check and initialize some variables if needed
 		if ($submit)
@@ -108,15 +107,20 @@ class ucp_register extends module
 			extract($data);
 			unset($data);
 
+			// Replace "error" strings with their real, localised form
+			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+
 			// validate custom profile fields
-			$cp->submit_cp_field('register', $cp_data, $cp_error);
+			$cp->submit_cp_field('register', $cp_data, $error);
 
 			// Visual Confirmation handling
+			$wrong_confirm = false;
 			if ($config['enable_confirm'])
 			{
 				if (!$confirm_id)
 				{
 					$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+					$wrong_confirm = true;
 				}
 				else
 				{
@@ -129,8 +133,9 @@ class ucp_register extends module
 					if ($row = $db->sql_fetchrow($result))
 					{
 						if ($row['code'] != $confirm_code)
-						{			
+						{
 							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+							$wrong_confirm = true;
 						}
 						else
 						{
@@ -143,12 +148,13 @@ class ucp_register extends module
 					else
 					{		
 						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+						$wrong_confirm = true;
 					}
 					$db->sql_freeresult($result);
 				}
 			}
 
-			if (!sizeof($error) && !sizeof($cp_error))
+			if (!sizeof($error))
 			{
 				$server_url = generate_board_url();
 
@@ -172,19 +178,20 @@ class ucp_register extends module
 				$db->sql_transaction();
 		
 				$sql_ary = array(
-					'username'		=> $username, 
-					'user_password' => md5($new_password),
-					'user_email'	=> $email,
-					'user_timezone' => (float) $tz,
-					'user_lang'		=> $lang,
-					'user_allow_pm'	=> 1,
-					'user_type'		=> $user_type,
-					'user_actkey'	=> $user_actkey, 
-					'user_ip'		=> $user->ip, 
-					'user_regdate'	=> time(),
+					'username'			=> $username, 
+					'user_password'		=> md5($new_password),
+					'user_email'		=> $email, 
+					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email), 
+					'user_timezone'		=> (float) $tz,
+					'user_lang'			=> $lang,
+					'user_allow_pm'		=> 1,
+					'user_type'			=> $user_type,
+					'user_actkey'		=> $user_actkey, 
+					'user_ip'			=> $user->ip, 
+					'user_regdate'		=> time(),
 				);
 
-				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+				echo $sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				$db->sql_query($sql);
 				
 				$user_id = $db->sql_nextid();
@@ -348,7 +355,7 @@ class ucp_register extends module
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['attempts'] >= 3)
+				if ($config['max_reg_attempts'] && $row['attempts'] >= $row['max_reg_attempts'])
 				{
 					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
@@ -358,8 +365,11 @@ class ucp_register extends module
 			$code = gen_rand_string(6);
 			$confirm_id = md5(uniqid($user_ip));
 
-			$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-				VALUES ('$confirm_id', '" . $db->sql_escape($user->session_id) . "', '$code')";
+			$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'confirm_id'	=> (string) $confirm_id,
+				'session_id'	=> (string) $user->session_id,
+				'code'			=> (string) $code)
+			);
 			$db->sql_query($sql);
 			
 			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : '<img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5" alt="" title="" /><img src="ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6" alt="" title="" />';
