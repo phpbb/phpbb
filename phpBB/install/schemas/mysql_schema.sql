@@ -428,7 +428,8 @@ CREATE TABLE phpbb_sessions (
    session_page varchar(100) DEFAULT '' NOT NULL,
    session_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    PRIMARY KEY (session_id),
-   KEY session_time (session_time)
+   KEY session_time (session_time), 
+   KEY session_user_id (session_user_id) 
 );
 
 # Table: 'phpbb_smilies'
