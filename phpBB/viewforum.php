@@ -59,14 +59,14 @@ if(isset($forum_id))
 	$sql = "SELECT forum_name, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next 
 		FROM " . FORUMS_TABLE . " 
 		WHERE forum_id = $forum_id";
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
+	}
 }
 else
 {
 	message_die(GENERAL_MESSAGE, "You have reached this page in error, please go back and try again");
-}
-if(!$result = $db->sql_query($sql))
-{
-	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 }
 
 //
@@ -75,7 +75,7 @@ if(!$result = $db->sql_query($sql))
 //
 if(!$total_rows = $db->sql_numrows($result))
 {
-   message_die(GENERAL_MESSAGE, "The forum you selected does not exist, please go back and try again.");
+	message_die(GENERAL_MESSAGE, "The forum you selected does not exist, please go back and try again.");
 }
 $forum_row = $db->sql_fetchrow($result);
 
@@ -124,7 +124,7 @@ if(empty($HTTP_POST_VARS['postdays']))
 $sql = "SELECT u.username, u.user_id 
 	FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
 		WHERE aa.forum_id = $forum_id 
-			AND aa.auth_mod = 1
+			AND aa.auth_mod = " . TRUE . " 
 			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id";
 if(!$result_mods = $db->sql_query($sql))
@@ -166,7 +166,8 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	$sql = "SELECT COUNT(*) AS forum_topics
 		FROM " . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
-			AND topic_time > $min_post_time";
+			AND topic_time > $min_post_time 
+			OR topic_type = " . POST_ANNOUNCE;
 
 	if(!$result = $db->sql_query($sql))
 	{
@@ -174,7 +175,7 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	}
 	$topics_count = $db->sql_fetchfield("forum_topics", -1, $result);
 
-	$limit_posts_time = "AND t.topic_time > $min_post_time ";
+	$limit_posts_time = "AND ( t.topic_time > $min_post_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
 
 	if(!empty($HTTP_POST_VARS['postdays']))
 	{
@@ -220,12 +221,13 @@ $total_topics = $db->sql_numrows($t_result);
 // Post URL generation for
 // templating vars
 //
-$post_new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
+$post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&" . POST_FORUM_URL . "=$forum_id");
 $template->assign_vars(array(
 	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
 	"U_POST_NEW_TOPIC" => $post_new_topic_url,
 	"S_SELECT_POST_DAYS" => $select_post_days,
-	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=".$forum_id."&start=$start")));
+	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&start=$start"))
+);
 
 //
 // Dump out the page header and
@@ -237,12 +239,14 @@ $template->set_filenames(array(
 	"body" => "viewforum_body.tpl",
 	"jumpbox" => "jumpbox.tpl")
 );
+
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
 	"JUMPBOX_LIST" => $jumpbox,
     "SELECT_NAME" => POST_FORUM_URL)
 );
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
 $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
 	"FORUM_NAME" => $forum_name,
@@ -322,7 +326,8 @@ if($total_topics)
 		$replies = $topic_rowset[$x]['topic_replies'];
 		if($replies > $board_config['posts_per_page'])
 		{
-			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"".$images['posticon']."\">" . $lang['Goto_page'] .": ";
+			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['posticon'] . "\">" . $lang['Goto_page'] . ": ";
+
 			$times = 1;
 			for($i = 0; $i < ($replies + 1); $i += $board_config['posts_per_page'])
 			{
@@ -330,20 +335,20 @@ if($total_topics)
 				{
 					if(($i + $board_config['posts_per_page']) >= ($replies + 1))
 					{
-						$goto_page.=" ... <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i")."\">$times</a>";
+						$goto_page .=" ... <a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$i") . "\">$times</a>";
 					}
 				}
 				else
 				{
 					if($times != 1)
 					{
-						$goto_page.= ", ";
+						$goto_page .= ", ";
 					}
-					$goto_page.= "<a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i")."\">$times</a>";
+					$goto_page.= "<a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&start=$i") . "\">$times</a>";
 				}
 				$times++;
 			}
-			$goto_page.= ")";
+			$goto_page .= ")";
 		}
 		else
 		{
@@ -358,11 +363,11 @@ if($total_topics)
 //		{
 			if($userdata['session_start'] == $userdata['session_time'])
 			{
-				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 			}
 			else
 			{
-				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 			}
 //		}
 
@@ -412,7 +417,7 @@ if($total_topics)
 	$s_auth_can .= "You " . (($is_auth['auth_delete']) ? "<b>can</b>" : "<b>cannot</b>") . " delete your posts in this forum<br>";
 	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
-		$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br>";
+		$s_auth_can .= "You <b>can</b> <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">moderate this forum</a><br />";
 	}
 	
 	$template->assign_vars(array(
