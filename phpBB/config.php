@@ -24,6 +24,9 @@
 
 // Session data
 $cookiename = "phpbb2";
+$cookiedomain = "";
+$cookiepath = "";
+$cookiesecure = "";
 $cookielife = 31536000;
 $session_length = 300;
 
