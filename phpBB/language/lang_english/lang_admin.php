@@ -234,6 +234,9 @@ $lang['Site_desc'] = "Site description";
 $lang['Board_disable'] = "Disable board";
 $lang['Board_disable_explain'] = "This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!";
 $lang['Acct_activation'] = "Enable account activation";
+$lang['Acc_None'] = "None"; // These three entries are the type of activation
+$lang['Acc_User'] = "User";
+$lang['Acc_Admin'] = "Admin";
 
 $lang['Abilities_settings'] = "User and Forum Basic Settings";
 $lang['Max_poll_options'] = "Max number of poll options";

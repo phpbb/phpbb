@@ -83,7 +83,7 @@ $sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, 
 		AND u.user_id = s.session_user_id 
 		AND u.user_id <> " . ANONYMOUS . " 
 		AND u.user_session_time >= " . ( time() - 300 ) . " 
-	ORDER BY s.session_time DESC";
+	ORDER BY u.user_session_time DESC";
 if(!$result = $db->sql_query($sql))
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
@@ -231,15 +231,18 @@ if( count($onlinerow_reg) )
 		}
 	}
 
+	$l_r_user_s = ( $registered_users == 1 ) ? $lang['Reg_user_online'] : $lang['Reg_users_online'];
+	$l_h_user_s = ( $hidden_users == 1 ) ? $lang['Hidden_user_online'] : $lang['Hidden_users_online'];
+
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], $registered_users) . sprintf($lang['Hidden_users_online'], $hidden_users))
+		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users))
 	);
 
 }
 else
 {
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], 0, 0),
+		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], 0),
 		"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
 	);
 }

@@ -142,6 +142,7 @@ $lang['Edit_profile'] = "Edit your profile";
 $lang['Search'] = "Search";
 $lang['Memberlist'] = "Memberlist";
 $lang['FAQ'] = "FAQ";
+$lang['BBCode_guide'] = "BBCode Guide";
 $lang['Usergroups'] = "Usergroups";
 $lang['Last_Post'] = "Last Post";
 $lang['Moderator'] = "Moderator";
@@ -765,7 +766,9 @@ $lang['You_been_banned'] = "You have been banned from this forum<br />Please con
 //
 // Viewonline
 //
-$lang['Reg_users_online'] = "There are %d Registered and "; // There ae 5 Registered and
+$lang['Reg_user_online'] = "There is %d Registered user and "; // There ae 5 Registered and
+$lang['Reg_users_online'] = "There are %d Registered users and "; // There ae 5 Registered and
+$lang['Hidden_user_online'] = "%d Hidden user online"; // 6 Hidden users online
 $lang['Hidden_users_online'] = "%d Hidden users online"; // 6 Hidden users online
 $lang['Guest_users_online'] = "There are %d Guest users online"; // There are 10 Guest users online
 $lang['Guest_user_online'] = "There is %d Guest user online"; // There is 1 Guest user online
