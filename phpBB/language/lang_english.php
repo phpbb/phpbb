@@ -194,12 +194,29 @@ $l_version	= "Version";
 
 // Register
 $l_accountinactive = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information.";
-$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian email it to: <br>$l_mailingaddress<br>Or fax it to: <br> $l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
+$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br>$l_mailingaddress<br>Or fax it to: <br>$l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
 $l_acountadded = "Thank you for registering with $sitename. Your account has been successfully created.";
 $l_nowactive = "Your account is now been activated. You may login and post with this account. Thank you for using $sitename forums.";
 $l_notfilledin	= "Error - you did not fill in all the required fields.";
 $l_invalidname	= "The username you chose \"$username\" has been taken or has been disallowed by the administrator.";
 
+$l_mailingaddress =
+"
+	James Atkinson<br>
+	c/o 100World.com Inc.<br>
+	512-1529 West 6th Ave.<br>
+	Vancouver BC, V6J 1R1<br>
+	Canada<br>
+";
+
+$l_faxinfo = "
+	Mark Fax with: 
+  ATTN: James Atkinson<br>
+	RE: Forum Registration<br>
+	<br>
+	Fax Number: +1-604-742-1770<br>
+";	
+																																																									 
 $l_welcomesubj	= "Welcome to $sitename Forums";
 $l_welcomemail	= 
 "
