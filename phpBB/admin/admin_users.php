@@ -231,7 +231,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		{
 			if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 			{
-				if( @file_exists("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+				if( @file_exists(@realpath("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) )
 				{
 					@unlink("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 				}
@@ -256,7 +256,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 			if( $user_avatar_loc != "" )
 			{
-				if( file_exists($user_avatar_loc) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
+				if( file_exists(@realpath($user_avatar_loc)) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) )
 				{
 					if( $user_avatar_size <= $board_config['avatar_filesize'] && $avatar_size > 0)
 					{
@@ -299,7 +299,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 								if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 								{
-									if( @file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+									if( @file_exists(@realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) )
 									{
 										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
 									}
@@ -408,7 +408,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 										if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "")
 										{
-											if( file_exists("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']) )
+											if( file_exists(@realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) )
 											{
 												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 											}
@@ -1108,7 +1108,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'S_PROFILE_ACTION' => append_sid("admin_users.$phpEx"))
 		);
 
-		if( file_exists('./../' . $board_config['avatar_path'] ) && ($board_config['allow_avatar_upload'] == TRUE) )
+		if( file_exists(@realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] == TRUE) )
 		{
 			if ( $form_enctype != '' )
 			{
@@ -1117,7 +1117,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$template->assign_block_vars('avatar_remote_upload', array() );
 		}
 
-		if( file_exists('./../' . $board_config['avatar_gallery_path'] ) && ($board_config['allow_avatar_local'] == TRUE) )
+		if( file_exists(@realpath('./../' . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] == TRUE) )
 		{
 			$template->assign_block_vars('avatar_local_gallery', array() );
 		}

@@ -237,7 +237,7 @@ $server_port = ( !empty($HTTP_POST_VARS['server_port']) ) ? $HTTP_POST_VARS['ser
 $board_email = ( !empty($HTTP_POST_VARS['board_email']) ) ? $HTTP_POST_VARS['board_email'] : "";
 $script_path = ( !empty($HTTP_POST_VARS['script_path']) ) ? $HTTP_POST_VARS['script_path'] : "";
 
-if( @file_exists('config.'.$phpEx) )
+if( @file_exists(@realpath('config.'.$phpEx)) )
 {
 	include('config.'.$phpEx);
 }

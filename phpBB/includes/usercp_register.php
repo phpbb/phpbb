@@ -201,7 +201,7 @@ if (
 			$user_avatar = $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
 
-			if ( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && @file_exists('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']) )
+			if ( $userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && @file_exists(@realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
 			{
 				@unlink('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']);
 			}
@@ -920,7 +920,7 @@ else
 		{
 			$template->assign_block_vars('switch_avatar_block', array() );
 
-			if ( $board_config['allow_avatar_upload'] && file_exists('./' . $board_config['avatar_path']) )
+			if ( $board_config['allow_avatar_upload'] && file_exists(@realpath('./' . $board_config['avatar_path'])) )
 			{
 				if ( $form_enctype != '' )
 				{
@@ -934,7 +934,7 @@ else
 				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
 			}
 
-			if ( $board_config['allow_avatar_local'] && file_exists('./' . $board_config['avatar_gallery_path']) )
+			if ( $board_config['allow_avatar_local'] && file_exists(@realpath('./' . $board_config['avatar_gallery_path'])) )
 			{
 				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
 			}

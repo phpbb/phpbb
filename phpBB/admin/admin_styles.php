@@ -136,7 +136,7 @@ switch( $mode )
 				{
 					if( !is_file($phpbb_root_path . 'templates/' .$sub_dir) && !is_link($phpbb_root_path . 'templates/' .$sub_dir) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" )
 					{
-						if( @file_exists($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg") )
+						if( @file_exists(@realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) )
 						{
 							include($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg");
 							

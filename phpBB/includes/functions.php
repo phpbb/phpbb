@@ -220,7 +220,7 @@ function init_userprefs($userdata)
 		}
 	}
 
-	if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx) )
+	if ( !file_exists(@realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx)) )
 	{
 		$board_config['default_lang'] = 'english';
 	}
@@ -229,7 +229,7 @@ function init_userprefs($userdata)
 
 	if ( defined('IN_ADMIN') )
 	{
-		if( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx) )
+		if( !file_exists(@realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx)) )
 		{
 			$board_config['default_lang'] = 'english';
 		}
@@ -288,7 +288,7 @@ function setup_style($style)
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
-		$img_lang = ( file_exists($current_template_path . '/images/lang_' . $board_config['default_lang']) ) ? $board_config['default_lang'] : 'english';
+		$img_lang = ( file_exists(@realpath($current_template_path . '/images/lang_' . $board_config['default_lang'])) ) ? $board_config['default_lang'] : 'english';
 
 		while( list($key, $value) = @each($images) )
 		{
@@ -674,5 +674,20 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	}
 
 	exit;
+}
+
+//
+// This function is for compatibility with PHP 4.x's realpath()
+// function.  In later versions of PHP, it needs to be called
+// to do checks with some functions.  Older versions of PHP don't
+// seem to need this, so we'll just return the original value.
+//
+// dougk_ff7 <October 5, 2002>
+if ( !function_exists(realpath) )
+{
+	function realpath($path)
+	{
+		return $path;
+	}
 }
 ?>
