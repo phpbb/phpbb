@@ -20,6 +20,6 @@
 	</tr>
 	<!-- END smiles -->
 	<tr>
-		<td class="catBottom" colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" value="{L_SMILEY_ADD}" class="mainoption" /></td>
+		<td class="catBottom" colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" value="{L_SMILEY_ADD}" class="mainoption" />{S_IMPORT}{S_EXPORT}
 	</tr>
 </table></form>

@@ -38,8 +38,12 @@ if($setmodules == 1)
 // Load default header
 //
 $phpbb_root_dir = "./../";
+if( $HTTP_GET_VARS['mode'] == 'export' && $HTTP_GET_VARS['send_file'] == 1 )
+{
+	$no_page_header = 1;
+}
 require('pagestart.inc');
-
+$delimeter  = '=+:';
 //
 // Check to see what mode we should operate in.
 //
@@ -61,7 +65,14 @@ while($file = @readdir($dir))
 {
 	if( !@is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
 	{
-		$smiley_images[] = $file;
+		if( !is_null(@getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
+		{
+			$smiley_images[] = $file;
+		}
+		elseif(eregi('.pak$', $file) )
+		{	
+			$smiley_paks[] = $file;
+		}
 	}
 }
 
@@ -72,6 +83,188 @@ while($file = @readdir($dir))
 //
 switch($mode)
 {
+	case 'import':
+		//
+		// Import a list a "Smiley Pack"
+		//
+		$smile_pak = ( !empty($HTTP_POST_VARS['smile_pak']) ) ? $HTTP_POST_VARS['smile_pak'] : $HTTP_GET_VARS['smile_pak'];
+		$clear_current = ( !empty($HTTP_POST_VARS['clear_current']) ) ? $HTTP_POST_VARS['clear_current'] : $HTTP_GET_VARS['clear_current'];
+		$replace_existing = ( ! empty($HTTP_POST_VARS['replace']) ) ? $HTTP_POST_VARS['replace'] : $HTTP_GET_VARS['replace'];
+		if ( !empty($smile_pak) )
+		{
+			//
+			// The user has already selected a smile_pak file.. Import it.
+			//
+			if( $clear_current == 'Y' )
+			{
+				$sql = "DELETE FROM " . SMILIES_TABLE;
+				$result = $db->sql_query($sql);
+				if( !$result )
+		      {
+    		     message_die(GENERAL_ERROR, "Couldn't delete current smilies", "", __LINE__, __FILE__, $sql);
+      		}
+
+			}
+			else
+			{
+				$sql = "SELECT code FROM ". SMILIES_TABLE;
+				$result = $db->sql_query($sql);
+				if( !$result )
+     			{
+		         message_die(GENERAL_ERROR, "Couldn't get current smilies", "", __LINE__, __FILE__, $sql);
+      		}
+
+				$cur_smilies = $db->sql_fetchrowset($result);
+				for( $i = 0; $i < count($cur_smilies); $i++ )
+				{
+					$k = $cur_smilies[$i]['code'];
+					$smiles[$k] = 1;
+				}
+			}
+			$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
+			if( empty($fcontents) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__, $sql);
+			}
+			for( $i = 0; $i < count($fcontents); $i++ )
+			{
+				if( !get_magic_quotes_runtime() )
+				{
+					$fcontents[$i] = addslashes($fcontents[$i]);
+				}
+				$smile_data = explode($delimeter, trim($fcontents[$i]));
+				for( $j = 2; $j < count($smile_data); $j++)
+				{
+					$k = $smile_data[$j];
+					if( $smiles[$k] == 1 )
+					{
+						if( $replace_existing == 'Y' )
+						{
+							$sql = "UPDATE " . SMILIES_TABLE . " 
+										SET smile_url = '$smile_data[0]',
+											emoticon = '$smile_data[1]'
+										WHERE code = '$smile_data[$j]'";
+							
+						}
+						else
+						{
+							$sql = '';
+						}
+					}
+					else
+					{
+						$sql = "INSERT INTO " . SMILIES_TABLE . " (
+										code,
+										smile_url,
+										emoticon )
+									VALUES(
+										'$smile_data[$j]',
+										'$smile_data[0]',
+										'$smile_data[1]')";
+							
+					}
+					if( $sql != '' )
+					{
+						$result = $db->sql_query($sql);
+						if( !$result )
+				      {
+         				message_die(GENERAL_ERROR, "Couldn't update smilies!", "", __LINE__, __FILE__, $sql);
+      				}
+
+					}
+				}
+			}
+			//
+			// Ok the smilies have been imported do something...
+			//
+			$template->set_filenames(array(
+				"body" => "admin/admin_message_body.tpl")
+			);
+			$template->assign_vars(array(
+				"MESSAGE_TITLE" => $lang['smiley_title'],
+				"MESSAGE_TEXT" => $lang['smiley_import_success'])
+			);
+			$template->pparse("body");
+			
+		}
+		else
+		{
+			//
+			// Display the script to get the smile_pak cfg file...
+			//
+			$smile_paks_select = "<SELECT NAME='smile_pak'><option value=''>".$lang['Select_pak']."</option>";
+			while( list($key, $value) = each($smiley_paks) )
+			{
+				if ( !empty($value) ) 
+				{
+					$smile_paks_select .= "<option>".$value."</option>";
+				}
+			}
+			$smile_paks_select .= "</select>";
+			$replace_opt = "<input type='radio' name='replace' value='Y'>&nbsp;".$lang['replace_existing'];
+			$keep_opt = "<input type='radio' name='replace' value='N'>&nbsp;".$lang['keep_existing'];
+			$del_exist = "<input type='checkbox' name='clear_current' value='Y'>";
+			$hidden_vars = "<input type='hidden' name='mode' value='import'>";	
+			$template->set_filenames(array(
+				"body" => "admin/smile_import_body.tpl")
+			);
+			$template->assign_vars(array(
+				"S_SMILEY_ACTION" => $PHPSELF,
+				"L_SMILEY_TITLE" => $lang['smiley_title'],
+				"L_SMILEY_EXPLAIN" => $lang['smiley_import_inst'],
+				"L_SMILEY_IMPORT" => $lang['smiley_import'],
+				"L_SELECT_LBL" => $lang['choose_smile_pak'],
+				"S_SMILE_SELECT" => $smile_paks_select,
+				"L_IMPORT" => $lang['import'],
+				"L_CONFLICTS" => $lang['smile_conflicts'],
+				"S_REPLACE_OPT" => $replace_opt,
+				"S_KEEP_OPT" => $keep_opt,
+				"L_DEL_EXISTING" => $lang['del_existing_smileys'],
+				"S_DEL_EXISTING" => $del_exist,
+				"S_HIDDEN_FIELDS" => $hidden_vars)
+			);
+			$template->pparse("body");
+		}
+		break;
+		
+	case 'export':
+		//
+		// Export our smiley config as a smiley pak...
+		//
+		if ( $send_file == 1 )
+		{	
+			$smile_pak = '';
+			$sql = "SELECT * FROM " . SMILIES_TABLE;
+			$result = $db->sql_query($sql);
+			if( !$result )
+	      {
+  		   	message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
+      	}
+
+			$resultset = $db->sql_fetchrowset($result);
+			for($i = 0; $i < count($resultset); $i++ )
+			{
+				$smile_pak .= $resultset[$i]['smile_url'] . $delimeter;
+				$smile_pak .= $resultset[$i]['emoticon'] . $delimeter;
+				$smile_pak .= $resultset[$i]['code'] . "\n";
+			}
+			header("Content-Type: text/x-delimtext; name=\"smiles.pak\"");
+			header("Content-disposition: attachment; filename=smiles.pak");
+			echo $smile_pak;
+			exit;
+		}
+		$template->set_filenames(array(
+			"body" => "admin/admin_message_body.tpl")
+		);
+
+		$template->assign_vars(array(
+			"MESSAGE_TITLE" => $lang['smiley_title'],
+			"MESSAGE_TEXT" => $lang['export_smiles'])
+		);
+		$template->pparse('body');
+		
+		break;
+		
 	case 'delete':
 		//
 		// Admin has selected to delete a smiley.
@@ -291,7 +484,8 @@ switch($mode)
 		);
 
 		$s_hidden_fields = '<input type="hidden" name="mode" value="add">';
-
+		$s_import = '<a href="' . $PHPSELF . '?mode=import"><input type="button" value="'. $lang['import_smile_pack'] . '"></a>';
+		$s_export = '<a href="' . $PHPSELF . '?mode=export"><input type="button" value="'. $lang['export_smile_pack'] . '"></a>';
 		$template->assign_vars(array(
 			"L_ACTION" => $lang['Action'],
 			"L_SMILEY_TITLE" => $lang['smiley_title'],
@@ -301,9 +495,11 @@ switch($mode)
 			"L_SMILEY_ADD" => $lang['smile_add'],
 			"L_CODE" => $lang['Code'],
 			"L_EMOT" => $lang['Emotion'],
-			"L_SMILE" => $lang['Smile'], 
+			"L_SMILE" => $lang['Smile'],
 			
 			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_IMPORT" => $s_import,
+			"S_EXPORT" => $s_export,
 			"S_SMILEY_ACTION" => append_sid("admin_smilies.$phpEx"))
 		);
 
