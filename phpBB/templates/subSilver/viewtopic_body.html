@@ -85,6 +85,15 @@
 		<th class="thRight" nowrap="nowrap">{L_MESSAGE}</th>
 	</tr>
 	<!-- BEGIN postrow -->
+	<!-- IF postrow.S_BELOW_MIN_KARMA -->
+	<!-- IF postrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+		<td colspan="2" height="25" align="center"><span class="gensmall">{postrow.L_IGNORE_POST}</span></td>
+	</tr>
+	<!-- ELSE -->
 	<!-- IF postrow.S_ROW_COUNT is even -->
 	<tr class="row1">
 	<!-- ELSE -->
@@ -123,6 +132,7 @@
 			</tr>
 		</table></td>
 	</tr>
+	<!-- ENDIF -->
 	<tr>
 		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
