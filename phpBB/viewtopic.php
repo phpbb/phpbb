@@ -430,6 +430,46 @@ $replacement_word = array();
 obtain_word_list($orig_word, $replacement_word);
 
 //
+// Censor topic title
+//
+if( count($orig_word) )
+{
+	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+}
+
+//
+// Was a highlight request part of the URI? Yes, this idea was
+// taken from vB but we did already have a highlighter in place
+// in search itself ... it's just been extended a bit!
+//
+if( isset($HTTP_GET_VARS['highlight']) )
+{
+	$highlight_match = array();
+	$highlight_replace = array();
+
+	//
+	// Split words and phrases
+	//
+	$words = explode(" ", trim(urldecode($HTTP_GET_VARS['highlight'])));
+
+	for($i = 0; $i < count($words); $i++)
+	{
+		if( trim($words[$i]) != "" )
+		{
+			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
+			$highlight_replace[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
+		}
+	}
+
+	$highlight_active = ( count($highlight_match) ) ? true : false;
+
+}
+else
+{
+	$highlight_active = false;
+}
+
+//
 // Post, reply and other URL generation for
 // templating vars
 //
@@ -482,7 +522,6 @@ else
 // Set a cookie for this topic
 //
 setcookie($board_config['cookie_name'] . "_t_$topic_id", time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-//session_send_cookie("_t_$topic_id", time(), 0);
 
 //
 // Load templates
@@ -509,80 +548,22 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'],
-	"L_RETURN_TO_TOP" => $lang['Return_to_top'],
-
-	"S_TOPIC_LINK" => POST_TOPIC_URL, 
-	"S_SELECT_POST_DAYS" => $select_post_days,
-	"S_SELECT_POST_ORDER" => $select_post_order,
-	"S_POST_DAYS_ACTION" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$start"))
-
-);
-
-$page_title = $lang['View_topic'] ." - $topic_title";
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-//
-// End header
-//
-
-//
-// Censor topic title
-//
-if( count($orig_word) )
-{
-	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
-}
-
-//
-// Was a highlight request part of the URI? Yes, this idea was
-// taken from vB but we did already have a highlighter in place
-// in search itself ... it's just been extended a bit!
-//
-
-if( isset($HTTP_GET_VARS['highlight']) )
-{
-	$highlight_match = array();
-	$highlight_replace = array();
-
-	//
-	// Split words and phrases
-	//
-	$words = explode(" ", trim(urldecode($HTTP_GET_VARS['highlight'])));
-
-	for($i = 0; $i < count($words); $i++)
-	{
-		if( trim($words[$i]) != "" )
-		{
-			$highlight_match[] = "#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($words[$i], "#")) . ")(?!.*?<\/a>)(?!.*?\[/url\])\b#i";
-			$highlight_replace[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
-		}
-	}
-
-	$highlight_active = ( count($highlight_match) ) ? true : false;
-
-}
-else
-{
-	$highlight_active = false;
-}
-
-$template->assign_vars(array(
-	"FORUM_NAME" => $forum_name,
-	"TOPIC_TITLE" => $topic_title,
+	"IMG_POST" => $post_img,
+	"IMG_REPLY" => $reply_img,
 
 	"L_POSTED" => $lang['Posted'],
 	"L_POST_SUBJECT" => $lang['Post_subject'],
 	"L_VIEW_NEXT_TOPIC" => $lang['View_next_topic'],
 	"L_VIEW_PREVIOUS_TOPIC" => $lang['View_previous_topic'],
-
 	"L_POST_NEW_TOPIC" => $post_alt, 
 	"L_POST_REPLY_TOPIC" => $reply_alt, 
-
 	"L_BACK_TO_TOP" => $lang['Back_to_top'],
+	"L_DISPLAY_POSTS" => $lang['Display_posts'],
 
-	"IMG_POST" => $post_img,
-	"IMG_REPLY" => $reply_img,
+	"S_TOPIC_LINK" => POST_TOPIC_URL, 
+	"S_SELECT_POST_DAYS" => $select_post_days,
+	"S_SELECT_POST_ORDER" => $select_post_order,
+	"S_POST_DAYS_ACTION" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$start"), 
 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
@@ -590,6 +571,15 @@ $template->assign_vars(array(
 	"U_POST_NEW_TOPIC" => $new_topic_url,
 	"U_POST_REPLY_TOPIC" => $reply_topic_url)
 );
+
+//
+// Output page header
+// 
+$page_title = $lang['View_topic'] ." - $topic_title";
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+//
+// End header
+//
 
 //
 // Does this topic contain a voting element?
@@ -759,13 +749,13 @@ for($i = 0; $i < $total_posts; $i++)
 		switch( $postrow[$i]['user_avatar_type'] )
 		{
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				$poster_avatar = '<img src="' . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				$poster_avatar = '<img src="' . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"0\" />";
+				$poster_avatar = '<img src="' . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . '" alt="" border="0" />';
 				break;
 		}
 	}
@@ -795,16 +785,15 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Set them to empty string initially, in case we don't find a rank for this dude.
 	//
-	$poster_rank = "";
-	$rank_image = "";
-	
+	$poster_rank = '';
+	$rank_image = '';
 	if( $postrow[$i]['user_id'] == ANONYMOUS )
 	{
 		//
 		// This is redundant, but some day we might wanna stick in a rank for anon. posts.
 		//
-		$poster_rank = "";
-		$rank_image = "";
+		$poster_rank = '';
+		$rank_image = '';
 	}
 	else if( $postrow[$i]['user_rank'] )
 	{
@@ -813,7 +802,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if( $postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] )
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
+				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 			}
 		}
 	}
@@ -824,7 +813,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if( $postrow[$i]['user_posts'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
+				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 			}
 		}
 	}
@@ -840,83 +829,83 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if( $poster_id != ANONYMOUS )
 	{
-		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" title=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
+		$profile_img = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 
-		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Send_private_message'] . "\" title=\"" . $lang['Send_private_message'] . "\" border=\"0\" /></a>";
+		$pm_img = '<a href="' . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 
 		if( !empty($postrow[$i]['user_viewemail']) || $is_auth['auth_mod'] )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $poster_id) : "mailto:" . $postrow[$i]['user_email'];
 
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" title=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
+			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		}
 		else
 		{
-			$email_img = "";
+			$email_img = '';
 		}
 
-		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" title=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
+		$www_img = ($postrow[$i]['user_website']) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 
 		if( !empty($postrow[$i]['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" title=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
+			$icq_add_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		}
 		else
 		{
-			$icq_status_img = "";
-			$icq_add_img = "";
+			$icq_status_img = '';
+			$icq_add_img = '';
 		}
 
-		$aim_img = ( $postrow[$i]['user_aim'] ) ? "<a href=\"aim:goim?screenname=" . $postrow[$i]['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" alt=\"" . $lang['AIM'] . "\" title=\"" . $lang['AIM'] . "\" border=\"0\" /></a>" : "";
+		$aim_img = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
 
-		$msn_img = ( $postrow[$i]['user_msnm'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_msnm'] . "\" alt=\"" . $lang['MSNM'] . "\" title=\"" . $lang['MSNM'] . "\" border=\"0\" /></a>" : "";
+		$msn_img = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id") . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 
-		$yim_img = ( $postrow[$i]['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" alt=\"" . $lang['YIM'] . "\" title=\"" . $lang['YIM'] . "\" border=\"0\" /></a>" : "";
+		$yim_img = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
 	}
 	else
 	{
-		$profile_img = "";
-		$pm_img = "";
-		$email_img = "";
-		$www_img = "";
-		$icq_status_img = "";
-		$icq_add_img = "";
-		$aim_img = "";
-		$msn_img = "";
-		$yim_img = "";
+		$profile_img = '';
+		$pm_img = '';
+		$email_img = '';
+		$www_img = '';
+		$icq_status_img = '';
+		$icq_add_img = '';
+		$aim_img = '';
+		$msn_img = '';
+		$yim_img = '';
 	}
 
-	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" title=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
+	$quote_img = '<a href="' . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
 
-	$search_img = "<a href=\"" . append_sid("search.$phpEx?search_author=" . urlencode($poster)) . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" /></a>";
+	$search_img = '<a href="' . append_sid("search.$phpEx?search_author=" . urlencode($poster)) . '"><img src="' . $images['icon_search'] . '" border="0" /></a>';
 
 	if( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
 	{
-		$edit_img = "<a href=\"" . append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" title=\"" . $lang['Edit_delete_post'] . "\" border=\"0\" /></a>";
+		$edit_img = '<a href="' . append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
 	}
 	else
 	{
-		$edit_img = "";
+		$edit_img = '';
 	}
 
 	if( $is_auth['auth_mod'] )
 	{
-		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;" . POST_TOPIC_URL . "=" . $topic_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" title=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
+		$ip_img = '<a href="' . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;" . POST_TOPIC_URL . "=" . $topic_id) . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
 
-		$delpost_img = "<a href=\"" . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" title=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
+		$delpost_img = '<a href="' . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 	}
 	else
 	{
-		$ip_img = "";
+		$ip_img = '';
 
 		if( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $i == $total_replies - 1 )
 		{
-			$delpost_img = "<a href=\"" . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" title=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
+			$delpost_img = '<a href="' . append_sid("posting.$phpEx?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 		}
 		else
 		{
-			$delpost_img = "";
+			$delpost_img = '';
 		}
 	}
 
