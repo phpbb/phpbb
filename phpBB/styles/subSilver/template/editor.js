@@ -11,12 +11,12 @@ var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion); // Get browser version
 
 var is_ie = ((clientPC.indexOf("msie") != -1) && (clientPC.indexOf("opera") == -1));
-var is_nav  = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
+var is_nav = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
                 && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera')==-1)
                 && (clientPC.indexOf('webtv')==-1) && (clientPC.indexOf('hotjava')==-1));
 
-var is_win   = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
-var is_mac    = (clientPC.indexOf("mac")!=-1);
+var is_win = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
+var is_mac = (clientPC.indexOf("mac")!=-1);
 
 // Shows the help messages in the helpline window
 function helpline(help) {
@@ -51,11 +51,17 @@ function emoticon(text) {
 	text = ' ' + text + ' ';
 	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) {
 		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
+
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
 		document.forms[form_name].elements[text_name].focus();
 	} else {
-		document.forms[form_name].elements[text_name].value  += text;
+		var selStart = document.forms[form_name].elements[text_name].selectionStart;
+		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+
+		mozWrap(document.forms[form_name].elements[text_name], text, '')
 		document.forms[form_name].elements[text_name].focus();
+		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
+		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
 	}
 }
 
@@ -81,10 +87,19 @@ function bbfontstyle(bbopen, bbclose) {
 function insert_text(text) {
 	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) {
 		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == '' ? text : text;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
 	} else {
-		document.forms[form_name].elements[text_name].value += text;
+		var selStart = document.forms[form_name].elements[text_name].selectionStart;
+		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+
+		mozWrap(document.forms[form_name].elements[text_name], text, '')
+		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
+		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
 	}
+}
+
+function attach_inline() {
+	insert_text('[attachment=' + document.forms[form_name].elements['attachments'].value + ']' + document.forms[form_name].elements['attachments'].options[document.forms[form_name].elements['attachments'].selectedIndex].text + '[/attachment]');
 }
 
 function bbstyle(bbnumber) {
@@ -245,7 +260,7 @@ function mozWrap(txtarea, open, close)
 // Insert at Claret position. Code from
 // http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
 function storeCaret(textEl) {
-	if (textEl.createTextRange) textEl.caretPos = document.selection.createRange().duplicate();
+	if (textEl.createTextRange) { textEl.caretPos = document.selection.createRange().duplicate(); }
 }
 
 function colorPalette()
