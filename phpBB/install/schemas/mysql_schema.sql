@@ -615,6 +615,7 @@ CREATE TABLE phpbb_styles (
    theme_id tinyint(4) UNSIGNED NOT NULL,
    imageset_id tinyint(4) UNSIGNED NOT NULL,
    style_name char(30) NOT NULL,
+   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (style_id),
    KEY (template_id),
    KEY (theme_id),
