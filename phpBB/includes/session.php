@@ -285,11 +285,14 @@ class session {
 			$del_sessions++;
 		}
 
-		// Delete expired sessions
-		$sql = "DELETE FROM " . SESSIONS_TABLE . "
-			WHERE session_user_id IN ($del_user_id)
-				AND session_time < " . ( $current_time - $board_config['session_length'] );
-		$db->sql_query($sql);
+		if ( $del_user_id != '' )
+		{
+			// Delete expired sessions
+			$sql = "DELETE FROM " . SESSIONS_TABLE . "
+				WHERE session_user_id IN ($del_user_id)
+					AND session_time < " . ( $current_time - $board_config['session_length'] );
+			$db->sql_query($sql);
+		}
 
 		if ( $del_sessions < 10 )
 		{
