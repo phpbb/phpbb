@@ -40,8 +40,7 @@ h1 {
 }
 
 h3 {
-	font: bold 120% Verdana, serif;
-	line-height: 120%;
+	font: bold 120%/120% Verdana, serif;
 }
 
 /* --------------------------- */
@@ -54,8 +53,9 @@ h3 {
 /* header cell */
 th	{
 	height: 25px;
-	color: #FFA34F; 
-	font: bold 70%;
+	color: #FFA34F;
+	font-size:	70%;
+	font-weight:bold;
 	background: #006699 url('templates/subSilver/images/cellpic3.gif');
 }
 
@@ -120,7 +120,7 @@ a.copyright:hover {
 
 input, textarea, select {
 	color: black;
-	font: normal 70% Verdana, Arial, Helvetica, sans-serif;
+	font: normal 70% Verdana, Helvetica, sans-serif;
 	border-color: black;
 }
 
@@ -132,7 +132,7 @@ input.post, textarea.post, select {
 /* The buttons used for bbCode styling in message post */
 input.button {
 	color:	black;
-	font:	70% Verdana, Arial, Helvetica, sans-serif;
+	font: normal 70% Verdana, Helvetica, sans-serif;
 	background-color: #EFEFEF;
 }
 
@@ -175,12 +175,13 @@ hr	{
 
 .titles {
 	color: black;
-	font: 140% Verdana, Arial, Helvetica, serif;
+	font: normal 140% Verdana, Arial, Helvetica, serif;
 	text-decoration: none; 
 }
 
 .cattitle {
-	font: bold 80%;
+	font-size:	80%;
+	font-weight:bold;
 }
 
 /* Main table cell colours and backgrounds */
@@ -219,19 +220,22 @@ span.hilit {
 /* Forum title: Text and link to the forums used in: index.php */
 .forumlink {
 	color: #006699;
-	font: bold 80%;
+	font-size:	80%;
+	font-weight:bold;
 }
 
 /* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
 .nav {
 	color: black;
-	font: bold 65%;
+	font-size:	65%;
+	font-weight:bold;
 }
 
 /* titles for the topics: could specify viewed link colour too */
 .topictitle	{
 	color: black;
-	font: bold 82%;
+	font-size:	82%;
+	font-weight:bold;
 }
 
 /* Name of poster in viewmsg.php and viewtopic.php and other places */
@@ -254,15 +258,14 @@ span.hilit {
 /* Quote & Code blocks */
 .code {
 	color:	#006600;
-	font:	80% 'Courier New', courier;
+	font:	normal 80% 'Courier New', monospace;
 	border: #D1D7DC 1px solid;
 	background-color: #FAFAFA;
 }
 
 .quote {
 	color: #444;
-	font: 80% Verdana, Arial, Helvetica, sans-serif;
-	line-height: 125%;
+	font: normal 80%/125% Verdana, Arial, Helvetica, sans-serif;
 	border: #D1D7DC solid 1px;
 	background-color: #FAFAFA; 
 }
@@ -270,7 +273,7 @@ span.hilit {
 /* Copyright and bottom info */
 .copyright {
 	color: #444;
-	font: 60% Verdana, Arial, Helvetica, sans-serif;
+	font: normal 60% Verdana, Arial, Helvetica, sans-serif;
 	letter-spacing: -1px;
 }
 

@@ -1,3 +1,4 @@
+<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
 <!-- You should retain this javascript in your own template! -->
@@ -30,53 +31,51 @@ function marklist(status)
 //-->
 </script>
 
-<form method="post" action="{S_MODE_ACTION}" name="search">
-
-<table width="100%" class="forumline" cellspacing="1" cellpadding="4" border="0">
-	<tr>
-		<th class="thHead" colspan="2" height="25">{L_SEARCH_USERNAME}</th>
+<form method="post" action="{S_MODE_ACTION}" name="search"><table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr class="gen">
+		<th colspan="2" height="25">{L_SEARCH_USERNAME}</th>
 	</tr>
 	<tr>
 		<td class="row2" colspan="2"><span class="gensmall">{L_SEARCH_EXPLAIN}</span></td>
 	</tr>
-	<tr>
-		<td class="row1"><span class="gen">{L_USERNAME}: </span></td>
+	<tr class="gen">
+		<td class="row1">{L_USERNAME}: </span></td>
 		<td class="row1"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
 	</tr>
-	<tr>
-		<td class="row2"><span class="gen">{L_EMAIL}: </span></td>
+	<tr class="gen">
+		<td class="row2">{L_EMAIL}: </td>
 		<td class="row2"><input class="post" type="text" name="email" value="{EMAIL}" /></td>
 	</tr>
-	<tr>
-		<td class="row1"><span class="gen">{L_ICQ_NUMBER}: </span></td>
+	<tr class="gen">
+		<td class="row1">{L_ICQ_NUMBER}: </td>
 		<td class="row1"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
 	</tr>
-	<tr>
-		<td class="row2"><span class="gen">{L_AIM}: </span></td>
+	<tr class="gen">
+		<td class="row2">{L_AIM}: </td>
 		<td class="row2"><input class="post" type="text" name="aim" value="{AIM}" /></td>
 	</tr>
-	<tr>
-		<td class="row1"><span class="gen">{L_YAHOO}: </span></td>
+	<tr class="gen">
+		<td class="row1">{L_YAHOO}: </td>
 		<td class="row1"><input class="post" type="text" name="yahoo" value="{YAHOO}" /></td>
 	</tr>
-	<tr>
-		<td class="row2"><span class="gen">{L_MESSENGER}: </span></td>
+	<tr class="gen">
+		<td class="row2">{L_MESSENGER}: </td>
 		<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
 	</tr>
-	<tr>
-		<td class="row1"><span class="gen">{L_JOINED}: </span></td>
+	<tr class="gen">
+		<td class="row1">{L_JOINED}: </td>
 		<td class="row1"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
 	</tr>
-	<tr>
-		<td class="row2"><span class="gen">{L_ACTIVE}: </span></td>
+	<tr class="gen">
+		<td class="row2">{L_ACTIVE}: </td>
 		<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
 	</tr>
-	<tr>
-		<td class="row1"><span class="gen">{L_POSTS}: </span></td>
+	<tr class="gen">
+		<td class="row1"><span>{L_POSTS}: </td>
 		<td class="row1"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="text" name="count" value="{COUNT}" /></td>
 	</tr>
 	<tr>
-		<td class="row2"><span class="gen">{L_SORT_BY}:&nbsp;</span></td>
+		<td class="row2">{L_SORT_BY}:&nbsp;</td>
 		<td class="row2" valign="middle" nowrap="nowrap"><span class="genmed">{S_SORT_OPTIONS} {S_ORDER_SELECT}</span>&nbsp;</td>
 	</tr>
 	<tr>
@@ -87,22 +86,21 @@ function marklist(status)
 
 <!-- IF S_SEARCH_USER --><form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false"><!-- ELSE --><form method="post" action="{S_MODE_ACTION}"><!-- ENDIF --><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-		<td align="right" nowrap="nowrap"><span class="genmed">{L_SELECT_SORT_METHOD}:&nbsp;{S_MODE_SELECT}&nbsp; {L_ORDER}&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /></span></td>
+		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>
 </table>
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
 	<tr>
-		<th height="25" class="thCornerL" nowrap="nowrap">#</th>
-		<th class="thTop" nowrap="nowrap">&nbsp;</th>
-		<th class="thTop" nowrap="nowrap">{L_USERNAME}</th>
-		<th class="thTop" nowrap="nowrap">{L_EMAIL}</th>
-		<th class="thTop" nowrap="nowrap">{L_FROM}</th>
-		<th class="thTop" nowrap="nowrap">{L_JOINED}</th>
-		<th class="thTop" nowrap="nowrap">{L_POSTS}</th>
-		<th class="thCornerR" nowrap="nowrap">{L_WEBSITE}</th>
-		<!-- IF S_SEARCH_USER --><th width="2%"  class="thCornerR" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
+		<th height="25" nowrap="nowrap">#</th>
+		<th nowrap="nowrap">&nbsp;</th>
+		<th nowrap="nowrap">{L_USERNAME}</th>
+		<th nowrap="nowrap">{L_EMAIL}</th>
+		<th nowrap="nowrap">{L_FROM}</th>
+		<th nowrap="nowrap">{L_JOINED}</th>
+		<th nowrap="nowrap">{L_POSTS}</th>
+		<th nowrap="nowrap">{L_WEBSITE}</th>
+		<!-- IF S_SEARCH_USER --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
 	</tr>
 	<!-- BEGIN memberrow -->
 	<!-- IF memberrow.S_ROW_COUNT is even -->
@@ -110,26 +108,26 @@ function marklist(status)
 	<!-- ELSE -->
 	<tr class="row1">
 	<!-- ENDIF -->
-		<td align="center"><span class="gen">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</span></td>
-		<td align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
-		<td align="center"><span class="gen"><a href="{memberrow.U_VIEWPROFILE}" class="gen">{memberrow.USERNAME}</a></span></td>
-		<td align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
-		<td align="center" valign="middle"><span class="gen">{memberrow.FROM}</span></td>
-		<td align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
-		<td align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
-		<td align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</td>
-		<!-- IF S_SEARCH_USER --><td align="center" valign="middle"><span class="gensmall"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></span></td><!-- ENDIF -->
+		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
+		<td class="gen" align="center">&nbsp;{memberrow.PM_IMG}&nbsp;</td>
+		<td class="gen" align="center"><a href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></td>
+		<td class="gen" align="center" valign="middle">&nbsp;{memberrow.EMAIL_IMG}&nbsp;</td>
+		<td class="gen" align="center" valign="middle">{memberrow.FROM}</td>
+		<td class="gensmall" align="center" valign="middle" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
+		<td class="gen" align="center" valign="middle">{memberrow.POSTS}</td>
+		<td class="gen" align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</td>
+		<!-- IF S_SEARCH_USER --><td align="center" valign="middle"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
 	</tr>
 	<!-- END memberrow -->
 	<tr>
-		<td class="catbottom" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28" align="right"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ENDIF --></td>
+		<td class="cat" colspan="<!-- IF S_SEARCH_USER -->9<!-- ELSE -->8<!-- ENDIF -->" height="28" align="center"><!-- IF S_SEARCH_USER --><input class="liteoption" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;{S_MODE_SELECT}&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;{S_ORDER_SELECT}&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" /><!-- ENDIF --></td>
 	</tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="0" border="0">
 	<tr>
-		<td valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
-		<td align="right"><span class="gensmall"><!-- IF S_SEARCH_USER --><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall">{L_MARK_ALL}</a> :: <a href="javascript:marklist(false);" class="gensmall">{L_UNMARK_ALL}</a></span></b><br /><br /><!-- ENDIF -->{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+		<td class="nav" valign="top">{PAGE_NUMBER}</td>
+		<td align="right"><span class="gensmall"><!-- IF S_SEARCH_USER --><b><a href="javascript:marklist(true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist(false);">{L_UNMARK_ALL}</a></b><br /><br /><!-- ENDIF -->{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
 	</tr>
 </table></form>
 
