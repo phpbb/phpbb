@@ -46,7 +46,8 @@
                        {HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}</td>
 		</tr>
         <tr class="tableheader">
-		   <td align="center" colspan="2">{S_HIDDEN_POST_FIELDS}<input type="submit" name="preview" value="{L_PREVIEW}">&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;<input type="submit" name="cancel" value="{L_CANCEL}"></td>
+		   <td align="center" colspan="2">{S_HIDDEN_FORM_FIELDS}
+		   <input type="submit" name="preview" value="{L_PREVIEW}">&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;<input type="submit" name="cancel" value="{L_CANCEL}"></td>
 		</tr>
 	       </table>
 	      </td>
