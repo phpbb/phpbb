@@ -225,11 +225,11 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		//
 		$sql = "SELECT u.*, s.*, b.ban_ip, b.ban_userid
 			FROM ".SESSIONS_TABLE." s
-			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = '$int_ip' OR b.ban_userid = u.user_id)
-				AND ( b.ban_start < $current_time AND b.ban_end > $current_time ) )
-			LEFT JOIN ".USERS_TABLE." u ON ( u.user_id = s.session_user_id)
+			LEFT JOIN ".BANLIST_TABLE." b ON b.ban_ip = '$int_ip' OR b.ban_userid = u.user_id
+			LEFT JOIN ".USERS_TABLE." u ON u.user_id = s.session_user_id
 			WHERE s.session_id = '".$sessiondata['sessionid']."'
-				AND s.session_ip = '$int_ip'";
+				AND s.session_ip = '$int_ip'
+				AND b.ban_start < $current_time AND b.ban_end > $current_time";
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
