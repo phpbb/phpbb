@@ -29,14 +29,14 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
 {
-	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? intval($HTTP_GET_VARS[POST_FORUM_URL]) : intval($HTTP_POST_VARS[POST_FORUM_URL]);
+	$forum_id = ( isset($HTTP_GET_VARS[POST_FORUM_URL]) ) ? intval($HTTP_GET_VARS[POST_FORUM_URL]) : intval($HTTP_POST_VARS[POST_FORUM_URL]);
 }
 else
 {
 	$forum_id = "";
 }
 
-$start = (isset($HTTP_GET_VARS['start'])) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
 if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
 {
@@ -68,7 +68,7 @@ if( isset($forum_id) )
 	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
-	if(!$result = $db->sql_query($sql))
+	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 	}
@@ -82,7 +82,7 @@ else
 // If the query doesn't return any rows this isn't a valid forum. Inform
 // the user.
 //
-if(!$total_rows = $db->sql_numrows($result))
+if( !$total_rows = $db->sql_numrows($result) )
 {
 	message_die(GENERAL_MESSAGE, $lang['Forum_not_exist']);
 }
@@ -185,7 +185,7 @@ $sql = "SELECT g.group_name, g.group_id, g.group_single_user, u.user_id, u.usern
 		AND ug.group_id = aa.group_id
 		AND g.group_id = aa.group_id
 		AND u.user_id = ug.user_id";
-if(!$result_mods = $db->sql_query($sql))
+if( !$result_mods = $db->sql_query($sql) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 }
@@ -198,7 +198,7 @@ if( $total_mods = $db->sql_numrows($result_mods) )
 
 	for($i = 0; $i < $total_mods; $i++)
 	{
-		if($mods_rowset[$i]['group_single_user'])
+		if( $mods_rowset[$i]['group_single_user'] )
 		{
 			$mod_url = "profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $mods_rowset[$i]['user_id'];
 			$mod_name = $mods_rowset[$i]['username'];
@@ -209,9 +209,9 @@ if( $total_mods = $db->sql_numrows($result_mods) )
 			$mod_name = $mods_rowset[$i]['group_name'];
 		}
 
-		if(!strstr($forum_moderators, $mod_name))
+		if( !strstr($forum_moderators, $mod_name) )
 		{
-			if($i > 0)
+			if( $i > 0 )
 			{
 				$forum_moderators .= ", ";
 			}
@@ -231,11 +231,11 @@ else
 // handle pagination) and alter the main query
 //
 $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
-$previous_days_text = array($lang['All_Topics'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
+$previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
 
-if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
+if( !empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']) )
 {
-	$topic_days = (!empty($HTTP_POST_VARS['topicdays'])) ? $HTTP_POST_VARS['topicdays'] : $HTTP_GET_VARS['topicdays'];
+	$topic_days = ( !empty($HTTP_POST_VARS['topicdays']) ) ? $HTTP_POST_VARS['topicdays'] : $HTTP_GET_VARS['topicdays'];
 	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics
@@ -244,7 +244,7 @@ if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
 			AND p.post_id = t.topic_last_post_id
 			AND p.post_time >= $min_topic_time";
 
-	if(!$result = $db->sql_query($sql))
+	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain limited topics count information", "", __LINE__, __FILE__, $sql);
 	}
@@ -288,7 +288,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		$limit_topics_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
-if(!$t_result = $db->sql_query($sql))
+if( !$t_result = $db->sql_query($sql) )
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
@@ -306,7 +306,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.poster_id = u2.user_id
 		AND t.topic_type = " . POST_ANNOUNCE . " 
 	ORDER BY p.post_time DESC";
-if(!$ta_result = $db->sql_query($sql))
+if( !$ta_result = $db->sql_query($sql) )
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
@@ -394,7 +394,7 @@ $template->assign_vars(array(
 //
 // Okay, lets dump out the page ...
 //
-if($total_topics)
+if( $total_topics )
 {
 	//
 	// First get announcements
@@ -424,11 +424,11 @@ if($total_topics)
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
-		if($topic_type == POST_ANNOUNCE)
+		if( $topic_type == POST_ANNOUNCE )
 		{
 			$topic_type = $lang['Topic_Announcement'] . " ";
 		}
-		else if($topic_type == POST_STICKY)
+		else if( $topic_type == POST_STICKY )
 		{
 			$topic_type = $lang['Topic_Sticky'] . " ";
 		}
@@ -453,7 +453,7 @@ if($total_topics)
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
 			{
-				if($times > 4)
+				if( $times > 4 )
 				{
 					if( $j + $board_config['posts_per_page'] >= $replies + 1 )
 					{
@@ -462,7 +462,7 @@ if($total_topics)
 				}
 				else
 				{
-					if($times != 1)
+					if( $times != 1 )
 					{
 						$goto_page .= ", ";
 					}
@@ -482,7 +482,7 @@ if($total_topics)
 			$topic_type = $lang['Topic_Moved'] . " ";
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
-			$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+			$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" />";
 			$newest_post_img = "";
 		}
 		else
