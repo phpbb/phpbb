@@ -292,12 +292,11 @@ else
 	// out some additional instruction_textions later on what to do after installation
 	// for the odbc DBMS.
 	//
-	if( ereg(':', $dbms) && $install_step < 2 )
+	if( ereg(':', $dbms) )
 	{
 		$dbms = explode(':', $dbms);
 		$dbhost = $dbms[1] . ':' . $dbhost;
 		$dbms = $dbms[0];
-		$install_step = 2;
 	}
 	else if( isset($dbms) ) 
 	{
@@ -310,9 +309,10 @@ else
 	$remove_remarks = ( $dbms == 'mysql' ) ? 'remove_remarks' : 'remove_comments';
 	$delimiter = ( $dbms == 'mssql' ) ? 'GO' : ';'; 
 
-	switch ( $install_step )
+	if( $install_step == 1 )
 	{
-		case 1:
+		if($dbms != 'odbc')
+		{
 			//
 			// Ok we have the db info go ahead and read in the relevant schema
 			// and work on building the table.. probably ought to provide some
@@ -324,16 +324,16 @@ else
 			$sql_query = split_sql_file($sql_query, $delimiter);
 			$sql_count = count($sql_query);
 			$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
-
+	
 			for($i = 0; $i < $sql_count; $i++)
 			{
 				$result = $db->sql_query($sql_query[$i]);
 				if( !$result )
 				{
 					$error = $db->sql_error();
-
+	
 					$template->assign_block_vars("error_install", array());
-					$template->assign_vars(array(
+						$template->assign_vars(array(
 						"L_ERROR_TITLE" => $lang['Installer_Error'],
 						"L_ERROR" => $lang['Install_db_error'] . '<br>' . $error['message'])
 					);
@@ -341,23 +341,23 @@ else
 					die();
 				}
 			}
-
+	
 			//
 			// Ok tables have been built, let's fill in the basic information
 			//
 			$sql_query = @fread(@fopen($dbms_basic, 'r'), @filesize($dbms_basic));
 			$sql_query = $remove_remarks($sql_query);
 			$sql_query = split_sql_file($sql_query, $delimiter);
-			$sql_count = count($sql_query);
+				$sql_count = count($sql_query);
 			$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
-
+	
 			for($i = 0; $i < $sql_count; $i++)
 			{
 				$result = $db->sql_query($sql_query[$i]);
 				if( !$result )
 				{
 					$error = $db->sql_error();
-
+	
 					$template->assign_block_vars("error_install", array());
 					$template->assign_vars(array(
 						"L_ERROR_TITLE" => $lang['Installer_Error'],
@@ -374,146 +374,137 @@ else
 			// this we are going to pass them over to the admin_forum.php script
 			// to set up their forum defaults.
 			//
-			if( $dbms == 'odbc' )
+			$error = "";
+			//
+			// Update the default admin user with their information.
+			//
+			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+				VALUES ('board_startdate', " . time() . ")";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not insert board_startdate :: " . $sql . "<br /><br />";
+			}
+
+			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+				VALUES ('default_lang', '$language')";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not insert default_lang :: " . $sql . "<br /><br />";
+			}
+
+			$sql = "UPDATE " . $table_prefix . "users 
+				SET username = '$admin_name', user_password='" . md5($admin_pass1) . "', user_lang = '" . $language . "' 
+				WHERE username = 'Admin'";
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update admin info :: " . $sql . "<br /><br />";
+			}
+
+			$sql = "UPDATE " . $table_prefix . "users 
+				SET user_regdate = " . time();
+			$result = $db->sql_query($sql);
+			if( !$result )
+			{
+				$error .= "Could not update user_regdate :: " . $sql . "<br /><br />";
+			}
+
+			if( $error != "" )
+			{
+				$error = $db->sql_error();
+
+				$template->assign_block_vars("error_install", array());
+				$template->assign_vars(array(
+					"L_ERROR_TITLE" => $lang['Installer_Error'],
+					"L_ERROR" => $lang['Install_db_error'] . '<br /><br />' . $error)
+				);
+
+				$template->pparse('body');
+				exit;
+			}
+		}
+		$template->assign_block_vars("common_install", array());
+		//
+		// Write out the config file.
+		//
+		$config_data = '<?php'."\n\n";
+		$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
+		$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
+		$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
+		$config_data .= '$dbname = "' . $dbname . '";' . "\n";
+		$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
+		$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
+		$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
+		$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
+		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+
+		@umask(0111);
+		$no_open = FALSE;
+		$fp = @fopen('config.php', 'w');
+		if( !$fp )
+		{
+			//
+			// Unable to open the file writeable do something here as an attempt
+			// to get around that...
+			//
+			$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';			
+			if ( $dbms == 'odbc' )
 			{
 				//
 				// Output the instruction_textions for the odbc...
 				//
 				$template->assign_block_vars("common_install", array());
-
-				$s_hidden_fields = '<input type="hidden" name="install_step" value="3" />';
-
-				$template->assign_vars(array(
-					"L_INSTRUCTION_TEXT" => $lang['ODBC_instruction_texts'],
-					"L_SUBMIT" => $lang['OK'],
-
-					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-					"S_FORM_ACTION" => 'install.'.$phpEx)
-				);
-				exit();
+	
+				$s_hidden_fields .= '<input type="hidden" name="install_step" value="3" />';
+				$lang['Unwritable_config'] = $lang['ODBC_Instructs'] . '<br />' . $lang['Unwritable_config'];	
 			}
-			else
-			{
-				$error = "";
-				//
-				// Update the default admin user with their information.
-				//
-				$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
-					VALUES ('board_startdate', " . time() . ")";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					$error .= "Could not insert board_startdate :: " . $sql . "<br /><br />";
-				}
 
-				$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
-					VALUES ('default_lang', '$language')";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					$error .= "Could not insert default_lang :: " . $sql . "<br /><br />";
-				}
+			$template->assign_vars(array(
+				"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
+				"L_SUBMIT" => $lang['Download_config'],
 
-				$sql = "UPDATE " . $table_prefix . "users 
-					SET username = '$admin_name', user_password='" . md5($admin_pass1) . "', user_lang = '" . $language . "' 
-					WHERE username = 'Admin'";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					$error .= "Could not update admin info :: " . $sql . "<br /><br />";
-				}
+				"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+				"S_FORM_ACTION" => "install.$phpEx")
+			);
 
-				$sql = "UPDATE " . $table_prefix . "users 
-					SET user_regdate = " . time();
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					$error .= "Could not update user_regdate :: " . $sql . "<br /><br />";
-				}
+			$template->pparse('body');
+			exit();
+		}
 
-				if( $error != "" )
-				{
-					$error = $db->sql_error();
+		$result = @fputs($fp, $config_data, strlen($config_data));
+		fclose($fp);
 
-					$template->assign_block_vars("error_install", array());
-					$template->assign_vars(array(
-						"L_ERROR_TITLE" => $lang['Installer_Error'],
-						"L_ERROR" => $lang['Install_db_error'] . '<br /><br />' . $error)
-					);
+		//
+		// Ok we are basically done with the install process let's go on 
+		// and let the user configure their board now.
+		// We are going to do this by calling the admin_board.php from the
+		// normal board admin section.
+		//
+		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="forward_page" value="admin/" />';
+		$s_hidden_fields .= '<input type="hidden" name="submit" value="Login" />';
+		if ( $dbms == 'odbc' )
+		{
+			//
+			// Output the instruction_textions for the odbc...
+			//
+			$lang['Inst_Step_2'] = $lang['ODBC_Instructs'] . '<br />' . $lang['Inst_Step_2'];
+		}
 
-					$template->pparse('body');
-					exit;
-				}
+		$template->assign_vars(array(
+			"L_INSTRUCTION_TEXT" => $lang['Inst_Step_2'],
+			"L_SUBMIT" => $lang['Finish_Install'],
 
-				$template->assign_block_vars("common_install", array());
-
-				//
-				// Write out the config file.
-				//
-				$config_data = '<?php'."\n\n";
-				$config_data .= "//\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n//\n\n";
-				$config_data .= '$dbms = "' . $dbms . '";' . "\n\n";
-				$config_data .= '$dbhost = "' . $dbhost . '";' . "\n";
-				$config_data .= '$dbname = "' . $dbname . '";' . "\n";
-				$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
-				$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
-				$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
-				$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
-				$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
-
-				@umask(0111);
-				$no_open = FALSE;
-
-				$fp = @fopen('config.php', 'w');
-
-				if( !$fp )
-				{
-					//
-					// Unable to open the file writeable do something here as an attempt
-					// to get around that...
-					//
-					$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
-					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
-
-					$template->assign_vars(array(
-						"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
-						"L_SUBMIT" => $lang['Download_config'],
-
-						"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-						"S_FORM_ACTION" => "install.$phpEx")
-					);
-
-					$template->pparse('body');
-					exit();
-				}
-
-				$result = @fputs($fp, $config_data, strlen($config_data));
-				fclose($fp);
-
-				//
-				// Ok we are basically done with the install process let's go on 
-				// and let the user configure their board now.
-				// We are going to do this by calling the admin_board.php from the
-				// normal board admin section.
-				//
-				$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
-				$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-				$s_hidden_fields .= '<input type="hidden" name="forward_page" value="admin/" />';
-				$s_hidden_fields .= '<input type="hidden" name="submit" value="Login" />';
-
-				$template->assign_vars(array(
-					"L_INSTRUCTION_TEXT" => $lang['Inst_Step_2'],
-					"L_SUBMIT" => $lang['Finish_Install'],
-
-					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-					"S_FORM_ACTION" => "login.$phpEx")
-				);
-				
-				$template->pparse('body');
-				exit();
-			}
-			break;
+			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_FORM_ACTION" => "login.$phpEx")
+		);
+		
+		$template->pparse('body');
+		exit();
 	}
 }
-
 ?>
