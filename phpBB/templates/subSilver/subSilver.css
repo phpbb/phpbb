@@ -72,6 +72,7 @@ td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
 */
 td.cat,td.catHead,td.catBottom {
 	height: 29px;
+	border-width: 0px 0px 0px 0px;
 }
 th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
 	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px; }
