@@ -98,18 +98,6 @@
 				<td class="row2"><input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES} /> <span class="gen">{L_YES}</span>&nbsp;&nbsp;<input type="radio" name="allowsmilies" value="0" {ALWAYS_ALLOW_SMILIES_NO} /> <span class="gen">{L_NO}</span></td>
 			</tr>
 			<tr>
-				<td class="row1"><span class="gen">{L_BOARD_LANGUAGE}:</span></td>
-				<td class="row2">{LANGUAGE_SELECT}</td>
-			</tr>
-			<tr>
-				<td class="row1"><span class="gen">{L_BOARD_THEME}:</span></td>
-				<td class="row2">{THEME_SELECT}</td>
-			</tr>
-			<tr>
-				<td class="row1"><span class="gen">{L_BOARD_TEMPLATE}:</span></td>
-				<td class="row2">{TEMPLATE_SELECT}</td>
-			</tr>
-			<tr>
 				<td class="row1"><span class="gen">{L_TIMEZONE}:</span></td>
 				<td class="row2">{TIMEZONE_SELECT}</td>
 			</tr>
@@ -152,6 +140,10 @@
 			</tr>
 			<!-- END avatargallery -->
 			<!-- END avatarblock -->
+			<tr>
+				<td class="row1"><span class="gen">{L_DELETE_USER}?</span></td>
+				<td class="row2"><input type="checkbox" name="deleteuser">{L_DELETE_USER_EXPLAIN}</td>
+			</tr>
 			<tr>
 			   	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" /></td>
 			</tr>

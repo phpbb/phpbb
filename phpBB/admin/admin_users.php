@@ -153,11 +153,8 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
 		"AVATAR" => ($user_avatar != "") ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
 		"AVATAR_SIZE" => $board_config['avatar_filesize'],
-		"LANGUAGE_SELECT" => language_select(stripslashes($user_lang), $phpbb_root_path . "language/"),
-		"THEME_SELECT" => theme_select($user_theme),
 		"TIMEZONE_SELECT" => tz_select($user_timezone),
 		"DATE_FORMAT" => stripslashes($user_dateformat),
-		"TEMPLATE_SELECT" => template_select(stripslashes($user_template), $phpbb_root_path . "templates"),
 		"HTML_STATUS" => $html_status,
 		"BBCODE_STATUS" => $bbcode_status,
 		"SMILIES_STATUS" => $smilies_status,
@@ -215,6 +212,9 @@ if ( isset($HTTP_GET_VARS['submit']) ) {
 		"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
 		"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
 		"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
+		
+		"L_DELETE_USER" => $lang['User_delete'],
+		"L_DELETE_USER_EXPLAIN" => $lang['User_delete_explain'],
 	
 		"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'],
 		"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
@@ -614,10 +614,45 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 	
 	if(!$error)
 	{
-				$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = '1', user_actkey = '$user_actkey'" . $avatar_sql . "
-				WHERE user_id = $user_id";
-				if($result = $db->sql_query($sql))
+		if( $HTTP_POST_VARS['deleteuser'] )
+		{
+			$sql = "UPDATE " . POSTS_TABLE . " 
+			SET poster_id = '-1' 
+			WHERE poster_id = $user_id";
+			if( $result = $db->sql_query($sql) )
+			{
+				$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_poster = '-1'
+				WHERE topic_poster = $user_id";
+				if( $result = $db->sql_query($sql) )
+				{
+					$sql = "DELETE FROM " . USERS_TABLE . "
+					WHERE user_id = $user_id";
+					if( $result = $db->sql_query($sql) )
+					{
+						message_die(GENERL_MESSAGE, $lang['User_deleted']);
+					}
+					else
+					{
+						message_die(GENERAL_ERROR, "Could not update users table", "", __LINE__, __FILE__, $sql);
+					}
+				}
+				else
+				{
+					message_die(GENERAL_ERROR, "Could not update topics table", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			else
+			{
+				message_die(GENERAL_ERROR, "Could not update posts table", "", __LINE__, __FILE__, $sql);
+			}
+		}
+		else
+		{
+			$sql = "UPDATE " . USERS_TABLE . "
+			SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = '1', user_actkey = '$user_actkey'" . $avatar_sql . "
+			WHERE poster_id = $user_id";
+			if($result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_MESSAGE, $lang['Profile_updated']);
 			}
@@ -625,6 +660,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 			{
 				message_die(GENERAL_ERROR, "Could not update users table", "", __LINE__, __FILE__, $sql);
 			}
+		}
 	}
 	else
 	{
