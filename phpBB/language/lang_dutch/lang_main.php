@@ -135,7 +135,7 @@ $lang['Admin_online_color'] = "%sBeheerder%s";
 $lang['Mod_online_color'] = "%sModerator%s";
 
 $lang['You_last_visit'] = "Je laatste bezoek was op %s"; // %s replaced by date/time
-$lang['Current_time'] = "De huidige tijd nu is %s";
+$lang['Current_time'] = "Het is nu %s";
 $lang['Search_new'] = "Berichten sinds laatste bezoek";
 $lang['Search_your_posts'] = "Bekijk je berichten";
 $lang['Search_unanswered'] = "Bekijk onbeantwoorde berichten";
