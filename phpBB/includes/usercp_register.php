@@ -193,8 +193,12 @@ if ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_POST_VARS['avatargallery'])
 
 		$user_lang = stripslashes($user_lang);
 		$user_dateformat = stripslashes($user_dateformat);
-		$user_avatar = $user_avatar_local;
-		$user_avatar_type = USER_AVATAR_GALLERY;
+
+		if ( !isset($HTTP_POST_VARS['cancelavatar'])) 
+		{
+			$user_avatar = $user_avatar_local;
+			$user_avatar_type = USER_AVATAR_GALLERY;
+		}
 	}
 }
 
