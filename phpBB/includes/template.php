@@ -1,23 +1,15 @@
 <?php
-/***************************************************************************
- *                              template.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : template.php 
+// STARTED   : Sat, Feb 13, 2001
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 /*
 	Template class.
@@ -477,6 +469,23 @@ class template
 
 	function compile_tag_block($tag_args)
 	{
+		// Allow for control of looping (indexes start from zero):
+		// foo(2)    : Will start the loop on the 3rd entry
+		// foo(-2)   : Will start the loop two entries from the end
+		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fourth
+		// foo(3,-4) : Will start the loop on the fourth entry and end it four from last
+		if (preg_match('#^(.*?)\(([\-0-9]+)(,([\-0-9]+))?\)$#', $tag_args, $match))
+		{
+			$tag_args = $match[1];
+			$loop_start = ($match[2] < 0) ? '$_' . $tag_args . '_count ' . ($match[2] - 1) : $match[2];
+			$loop_end = ($match[4]) ? (($match[4] < 0) ? '$_' . $tag_args . '_count ' . $match[4] : ($match[4] + 1)) : '$_' . $tag_args . '_count';
+		}
+		else
+		{
+			$loop_start = 0;
+			$loop_end = '$_' . $tag_args . '_count';
+		}
+
 		$tag_template_php = '';
 		array_push($this->block_names, $tag_args);
 
@@ -501,7 +510,7 @@ class template
 		}
 
 		$tag_template_php .= 'if ($_' . $tag_args . '_count) {';
-		$tag_template_php .= 'for ($this->_' . $tag_args . '_i = 0; $this->_' . $tag_args . '_i < $_' . $tag_args . '_count; $this->_' . $tag_args . '_i++){';
+		$tag_template_php .= 'for ($this->_' . $tag_args . '_i = ' . $loop_start . '; $this->_' . $tag_args . '_i < ' . $loop_end . '; $this->_' . $tag_args . '_i++){';
 
 		return $tag_template_php;
 	}
