@@ -73,7 +73,7 @@ switch ($mode)
 	case 'post':
 		if (empty($forum_id))
 		{
-			trigger_error($user->lang['No_forum_id']);
+			trigger_error($user->lang['NO_FORUM']);
 		}
 
 		$sql = 'SELECT forum_id, forum_name, forum_parents, forum_status, forum_postable, enable_icons, enable_post_count, enable_moderate 
@@ -84,7 +84,7 @@ switch ($mode)
 	case 'reply':
 		if (empty($topic_id))
 		{
-			trigger_error($user->lang['No_topic_id']);
+			trigger_error($user->lang['NO_TOPIC']);
 		}
 
 		$sql = 'SELECT t.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
@@ -98,21 +98,20 @@ switch ($mode)
 	case 'delete':
 		if (empty($post_id))
 		{
-			trigger_error($user->lang['No_post_id']);
+			trigger_error($user->lang['NO_POST']);
 		}
 
-		$sql = 'SELECT t.*, p.*, pt.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
-			FROM ' . POSTS_TABLE . ' p, ' . POSTS_TEXT_TABLE . ' pt, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
+		$sql = 'SELECT t.*, p.*, f.forum_name, f.forum_parents, f.forum_status, f.forum_postable, f.enable_icons, f.enable_post_count, f.enable_moderate 
+			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . $post_id . '
 				AND t.topic_id = p.topic_id
-				AND pt.post_id = p.post_id
 				AND f.forum_id = t.forum_id';
 		break;
 
 	case 'topicreview':
 		if (!isset($topic_id))
 		{
-			trigger_error($user->lang['Topic_not_exist']);
+			trigger_error($user->lang['NO_TOPIC']);
 		}
 
 		topic_review($topic_id, false);
@@ -123,7 +122,7 @@ switch ($mode)
 		break;
 
 	default:
-		trigger_error($user->lang['No_valid_mode']);
+		trigger_error($user->lang['NO_MODE']);
 }
 
 if ($sql != '')
@@ -172,20 +171,20 @@ if ($mode == 'edit' && !empty($poll_start))
 
 if (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', intval($forum_id)) && !empty($forum_postable))
 {
-	trigger_error($user->lang['User_cannot_' . $mode]);
+	trigger_error($user->lang['USER_CANNOT_' . strtoupper($mode)]);
 }
 
 // Forum/Topic locked?
 if ((intval($forum_status) == ITEM_LOCKED || intval($topic_status) == ITEM_LOCKED) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
 {
-	$message = (intval($forum_status) == ITEM_LOCKED) ? 'Forum_locked' : 'Topic_locked';
+	$message = (intval($forum_status) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED';
 	trigger_error($user->lang[$message]);
 }
 
 // Can we edit this post?
 if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
 {
-	trigger_error($user->lang['Cannot_edit_time']);
+	trigger_error($user->lang['CANNOT_EDIT_TIME']);
 }
 
 // PERMISSION CHECKS
@@ -330,17 +329,18 @@ if (isset($_REQUEST['post']))
 	{
 		$db->sql_transaction();
 
-		// topic info
+		// Initial Topic table info
 		if ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id))
 		{
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
 				'topic_title' 	=> stripslashes($subject),
-				'topic_poster' 	=> intval($user->data['user_id']),
-				'topic_time' 	=> $current_time,
-				'topic_type' 	=> $topic_type,
+				'topic_time'	=> $current_time,
+				'topic_type'	=> $topic_type,
+				'topic_approved'=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1, 
 				'icon_id'		=> $icon_id,
-				'topic_approved'=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1,
+				'topic_poster'				=> intval($user->data['user_id']), 
+				'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])), 
 			);
 			if (!empty($poll_options))
 			{
@@ -356,12 +356,13 @@ if (isset($_REQUEST['post']))
 			$topic_id = ($mode == 'post') ? $db->sql_nextid() : $topic_id;
 		}
 
-		// post
+		// Post table info 
 		$post_sql = array(
 			'topic_id' 			=> intval($topic_id),
 			'forum_id' 			=> intval($forum_id),
 			'poster_id' 		=> ($mode == 'edit') ? intval($poster_id) : intval($user->data['user_id']),
 			'post_username'		=> ($username != '') ? stripslashes($username) : '', 
+			'post_subject'		=> stripslashes($subject),
 			'icon_id'			=> $icon_id, 
 			'poster_ip' 		=> $user->ip,
 			'post_time' 		=> $current_time,
@@ -372,27 +373,20 @@ if (isset($_REQUEST['post']))
 			'enable_html' 		=> $enable_html,
 			'enable_smilies' 	=> $enable_smilies,
 			'enable_magic_url' 	=> $enable_urls,
+			'bbcode_uid'		=> $bbcode_uid,
 		);
+		if ($mode != 'edit' || $message_md5 != $post_checksum)
+		{
+			$post_sql = array_merge($post_sql, array(
+				'post_checksum' => $message_md5,
+				'post_text' 	=> stripslashes($message), 
+				'post_encoding' => $user->lang['ENCODING'] 
+			));
+		}
 		$sql = ($mode == 'edit' && $poster_id == $user->data['user_id']) ? 'UPDATE ' . POSTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_sql) . ' , post_edit_count = post_edit_count + 1 WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $post_sql);
 		$db->sql_query($sql);
 
 		$post_id = ($mode == 'edit') ? $post_id : $db->sql_nextid();
-
-		// post_text ... may merge into posts table
-		$post_text_sql = array(
-			'post_subject'	=> stripslashes($subject),
-			'bbcode_uid'	=> $bbcode_uid,
-			'post_id' 		=> intval($post_id),
-		);
-		if ($mode != 'edit' || $message_md5 != $post_checksum)
-		{
-			$post_text_sql = array_merge($post_text_sql, array(
-				'post_checksum' => $message_md5,
-				'post_text' 	=> stripslashes($message),
-			));
-		}
-		$sql = ($mode == 'edit') ? 'UPDATE ' . POSTS_TEXT_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $post_text_sql) . ' WHERE post_id = ' . intval($post_id) : 'INSERT INTO ' . POSTS_TEXT_TABLE . ' ' . $db->sql_build_array('INSERT', $post_text_sql);
-		$db->sql_query($sql);
 
 		// poll options
 		if (!empty($poll_options))
@@ -465,15 +459,12 @@ if (isset($_REQUEST['post']))
 				'topic_last_post_id' 	=> intval($post_id),
 				'topic_last_post_time' 	=> $current_time,
 				'topic_last_poster_id' 	=> intval($user->data['user_id']),
-				'topic_last_poster_name'=> ($username != '') ? stripslashes($username) : '',
+				'topic_last_poster_name'=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])),
 			);
 			if ($mode == 'post')
 			{
 				$topic_sql = array_merge($topic_sql, array(
 					'topic_first_post_id' 		=> intval($post_id),
-					'topic_time' 				=> $current_time,
-					'topic_poster' 				=> intval($user->data['user_id']),
-					'topic_first_poster_name' 	=> ($username != '') ? stripslashes($username) : '',
 				));
 			}
 			$topic_replies_sql = ($mode == 'reply') ? ', topic_replies = topic_replies + 1' : '';
@@ -543,7 +534,7 @@ if (isset($_REQUEST['post']))
 
 
 // -----------
-// DECODE TEXT
+// DECODE TEXT -> This will/should be handled by bbcode.php eventually
 
 $server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 $server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
@@ -677,22 +668,8 @@ switch ($mode)
 }
 
 
-
-// Nav links for forum ... same as viewforum, viewtopic ... should merge ...
-$forum_parents = unserialize($forum_parents);
-
-foreach ($forum_parents as $parent_forum_id => $parent_name)
-{
-	$template->assign_block_vars('navlinks', array(
-		'FORUM_NAME'	=>	$parent_name,
-		'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $parent_forum_id)
-	);
-}
-$template->assign_block_vars('navlinks', array(
-	'FORUM_NAME'	=>	$forum_name,
-	'U_VIEW_FORUM'	=>	'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id)
-);
-
+// Build navigation links
+generate_forum_nav($forum_data);
 
 
 // Start assigning vars for main posting page ...
@@ -711,7 +688,6 @@ $template->assign_vars(array(
 	'MODERATORS' 		=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
 
 	'L_POST_A' 				=> $page_title,
-	'L_SUBJECT' 			=> $user->lang['Subject'],
 	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 	'L_ICON'				=> ($mode == 'reply' || $mode == 'quote') ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'], 
 
@@ -767,8 +743,10 @@ if ($auth->acl_gets('f_attach', 'm_edit', 'a_', $forum_id))
 	);
 }
 
+
 // Output page ...
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
@@ -787,15 +765,14 @@ include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 // FUNCTIONS
 function topic_review($topic_id, $is_inline_review = false)
 {
-	global $SID, $db, $config, $template, $user, $auth;
-	global $orig_word, $replacement_word;
-	global $phpEx, $phpbb_root_path, $starttime;
+	global $SID, $db, $config, $template, $user, $auth, $phpEx, $phpbb_root_path, $starttime;
+	global $censors;
 
 	// Define censored word matches
-	if (empty($orig_word) && empty($replacement_word))
+	if (empty($censors))
 	{
-		$orig_word = $replacement_word = array();
-		obtain_word_list($orig_word, $replacement_word);
+		$censors = array();
+		obtain_word_list($censors);
 	}
 
 	if (!$is_inline_review)
@@ -809,7 +786,7 @@ function topic_review($topic_id, $is_inline_review = false)
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['Topic_post_not_exist']);
+			trigger_error($user->lang['NO_TOPIC']);
 		}
 
 		$forum_id = intval($row['forum_id']);
@@ -817,12 +794,12 @@ function topic_review($topic_id, $is_inline_review = false)
 
 		if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 		{
-			trigger_error($user->lang['Sorry_auth_read']);
+			trigger_error($user->lang['SORRY_AUTH_READ']);
 		}
 
 		if (count($orig_word))
 		{
-			$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+			$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
 		}
 	}
 	else
@@ -833,11 +810,10 @@ function topic_review($topic_id, $is_inline_review = false)
 	}
 
 	// Go ahead and pull all data for this topic
-	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+	$sql = "SELECT u.username, u.user_id, p.* 
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
-			AND p.post_id = pt.post_id
 		ORDER BY p.post_time DESC
 		LIMIT " . $config['posts_per_page'];
 	$result = $db->sql_query($sql);
@@ -870,12 +846,12 @@ function topic_review($topic_id, $is_inline_review = false)
 
 			if (count($orig_word))
 			{
-				$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-				$message = preg_replace($orig_word, $replacement_word, $message);
+				$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+				$message = preg_replace($censors['match'], $censors['replace'], $message);
 			}
 
 			$template->assign_block_vars('postrow', array(
-				'MINI_POST_IMG' 	=> $user->img('goto_post', $user->lang['Post']),
+				'MINI_POST_IMG' 	=> $user->img('goto_post', $user->lang['POST']),
 				'POSTER_NAME' 		=> $poster,
 				'POST_DATE' 		=> $user->format_date($row['post_time']),
 				'POST_SUBJECT' 		=> $post_subject,
@@ -888,7 +864,7 @@ function topic_review($topic_id, $is_inline_review = false)
 	}
 	else
 	{
-		trigger_error($user->lang['Topic_post_not_exist']);
+		trigger_error($user->lang['NO_TOPIC']);
 	}
 	$db->sql_freeresult($result);
 

@@ -191,7 +191,8 @@ $lang = array_merge($lang, array(
 
 	'POST_STICKY' 	=> 'Sticky',
 	'POST_ANNOUNCEMENT' => 'Announcement',
-	'FORUM_LOCKED' => 'Forum is locked',
+	'POST_FORUM_LOCKED' => 'Forum is locked',
+	'POST_TOPIC_LOCKED' => 'Topic is locked', 
 
 
 	'Enter_password' => 'Please enter your username and password to login',
@@ -241,9 +242,10 @@ $lang = array_merge($lang, array(
 	'ACP' => '[ %sAdministration Control Panel%s ]',
 	'MCP' => '[ %sModerator Control Panel%s ]',
 
-
-	'NO_TOPICS'	=> 'There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one', 
-	'NO_TOPIC'	=> 'The requested topic does not exist', 
+	'NO_MODE'	=> 'No mode specified.', 
+	'NO_TOPICS'	=> 'There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one.', 
+	'NO_TOPIC'	=> 'The requested topic does not exist.', 
+	'NO_POST'	=> 'The requested post does not exist.', 
 
 
 	'Stop_watching_forum' => 'Stop watching this forum',
@@ -262,7 +264,7 @@ $lang = array_merge($lang, array(
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 
 	'POST_IGNORE'		=> 'This post was made by <b>%s</b> who is on your ignore list. To display this post click %sHERE%s.', 
 	'POST_BELOW_KARMA'	=> 'This post was made by <b>%1$s</b> whose karma rating of <b>%2$d</b> is below your desired minimum. To display this post click %3$sHERE%4$s.', 
-	'POST_ENCODING'		=> 'This post was made in a character set different to that being used here. Some text may display incorrectly. To view this post in its proper encoding click %sHERE%s.', 
+	'POST_ENCODING'		=> 'This post by <b>%1$s</b> was made in a character set different to yours. To view this post in its proper encoding click %2$sHERE%3$s.', 
 	'DISPLAY_POSTS' => 'Display posts from previous',
 	'ALL_POSTS' => 'All Posts',
 

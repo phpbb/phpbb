@@ -237,7 +237,7 @@ if ($forum_data['forum_postable'])
 		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
 		'FOLDER_ANNOUNCE_NEW_IMG'=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
 
-		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
+		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
 		'S_IS_POSTABLE'		=>	TRUE,
 		'S_SELECT_SORT_DIR' => $s_sort_dir,
@@ -386,8 +386,7 @@ if ($forum_data['forum_postable'])
 				$unread_topic = true;
 				if ($user->data['user_id'] != ANONYMOUS && 
 					($row['topic_last_post_time'] <= $row['lastread_time'] || 
-					$row['topic_last_post_time'] < (time() - $config['lastread']) || 
-					$row['topic_last_post_time'] < $forum_row['lastread_time'])
+					$row['topic_last_post_time'] < (time() - $config['lastread']))
 				)
 				{
 					$unread_topic = false;

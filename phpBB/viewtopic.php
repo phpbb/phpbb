@@ -25,20 +25,26 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
-// Start initial var setup
+
+// Initial var setup
 $topic_id = (isset($_GET['t'])) ? intval($_GET['t']) : 0;
 $post_id = (isset($_GET['p'])) ? intval($_GET['p']) : 0;
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
 
+$sort_days = (!empty($_REQUEST['sort_days'])) ? intval($_REQUEST['sort_days']) : 0;
+$sort_key = (!empty($_REQUEST['sort_key'])) ? $_REQUEST['sort_key'] : 't';
+$sort_dir = (!empty($_REQUEST['sort_dir'])) ? $_REQUEST['sort_dir'] : 'a';
+
+
+// Do we have a topic or post id?
 if (empty($topic_id) && empty($post_id))
 {
-	trigger_error('Topic_post_not_exist');
+	trigger_error('NO_TOPIC');
 }
+
 
 // Start session management
 $user->start();
-// End session management
-
 
 
 // Find topic id if user requested a newer or older topic
@@ -51,9 +57,9 @@ if (isset($_GET['view']) && empty($post_id))
 			$sql = "SELECT p.post_id
 				FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
 				WHERE s.session_id = '$user->session_id'
-					AND u.user_id = s.session_user_id
-					AND p.topic_id = $topic_id
-					AND p.post_approved = 1
+					AND u.user_id = s.session_user_id 
+					AND p.topic_id = $topic_id 
+					AND p.post_approved = 1 
 					AND p.post_time >= u.user_lastvisit
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
@@ -63,9 +69,7 @@ if (isset($_GET['view']) && empty($post_id))
 				trigger_error('No_new_posts_last_visit');
 			}
 
-			$post_id = $row['post_id'];
-			$newest_post_id = $post_id;
-			//redirect("viewtopic.$phpEx$SID&p=$post_id#$post_id");
+			redirect("viewtopic.$phpEx$SID&p=" . $row['post_id'] . "#" . $row['post_id']);
 		}
 
 		redirect("index.$phpEx");
@@ -85,7 +89,7 @@ if (isset($_GET['view']) && empty($post_id))
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
-			$message = ($_GET['view'] == 'next') ? 'No_newer_topics' : 'No_older_topics';
+			$message = ($_GET['view'] == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS';
 			trigger_error($message);
 		}
 		else
@@ -94,7 +98,6 @@ if (isset($_GET['view']) && empty($post_id))
 		}
 	}
 }
-
 
 
 // Look at this query ... perhaps a re-think? Perhaps store topic ids rather
@@ -119,7 +122,8 @@ if ($user->data['user_id'] != ANONYMOUS)
 
 		default:
 			$extra_fields .= ', tw.notify_status';
-			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON tw.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tw.topic_id';
+			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON tw.user_id = ' . $user->data['user_id'] . ' 
+				AND t.topic_id = tw.topic_id';
 	}
 }
 
@@ -132,16 +136,15 @@ $result = $db->sql_query($sql);
 
 if (!$topic_data = $db->sql_fetchrow($result))
 {
-	trigger_error('Topic_post_not_exist');
+	trigger_error('NO_TOPIC');
 }
 extract($topic_data);
-
 
 
 // Configure style, language, etc.
 $user->setup(false, intval($forum_style));
 $auth->acl($user->data, intval($forum_id));
-// End configure
+
 
 // Start auth check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
@@ -155,33 +158,35 @@ if (!$auth->acl_gets('f_read', 'm_', 'a_', intval($forum_id)))
 
 	trigger_error($user->lang['Sorry_auth_read']);
 }
-// End auth check
 
 
-
-
+// What is start equal to?
 if (!empty($post_id))
 {
 	$start = floor(($prev_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
 
+
+// Are we watching this topic?
 $s_watching_topic = '';
 $s_watching_topic_img = '';
 watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status);
 
 
-
-
 // Post ordering options
-$previous_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
+$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 
-if (isset($_POST['sort']))
+$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
+
+gen_sort_selects($limit_days, $sort_by_text, $s_limit_days, $s_sort_key, $s_sort_dir);
+
+
+// Limit posts to certain time frame, obtain correct post count
+if (isset($_REQUEST['sort']))
 {
-	if (!empty($_POST['sort_days']))
+	if ($sort_days) 
 	{
-		$sort_days = (!empty($_POST['sort_days'])) ? intval($_POST['sort_days']) : intval($_GET['sort_days']);
 		$min_post_time = time() - ($sort_days * 86400);
 
 		$sql = "SELECT COUNT(post_id) AS num_posts
@@ -199,55 +204,21 @@ if (isset($_POST['sort']))
 	{
 		$topic_replies++;
 	}
-
-	$sort_key = (isset($_POST['sort_key'])) ? $_POST['sort_key'] : $_GET['sort_key'];
-	$sort_dir = (isset($_POST['sort_dir'])) ? $_POST['sort_dir'] : $_GET['sort_dir'];
 }
 else
 {
 	$topic_replies++;
 	$limit_posts_time = '';
-
-	$sort_days = 0;
-	$sort_key = 't';
-	$sort_dir = 'a';
 }
 
-$sort_order = $sort_by[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
-$select_sort_days = '<select name="sort_days">';
-foreach ($previous_days as $day => $text)
-{
-	$selected = ($sort_days == $day) ? ' selected="selected"' : '';
-	$select_sort_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
-}
-$select_sort_days .= '</select>';
-
-$select_sort = '<select name="sort_key">';
-foreach ($sort_by_text as $key => $text)
-{
-	$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-	$select_sort .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
-}
-$select_sort .= '</select>';
-
-$select_sort_dir = '<select name="sort_dir">';
-$select_sort_dir .= ($sort_dir == 'a') ? '<option value="a" selected="selected">' . $user->lang['ASCENDING'] . '</option><option value="d">' . $user->lang['DESCENDING'] . '</option>' : '<option value="a">' . $user->lang['ASCENDING'] . '</option><option value="d" selected="selected">' . $user->lang['DESCENDING'] . '</option>';
-$select_sort_dir .= '</select>';
-
-$select_post_days = '<select name="postdays">';
-for($i = 0; $i < count($previous_days); $i++)
-{
-	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
-	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
-}
-$select_post_days .= '</select>';
+// Select the sort order
+$sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 
-
+// Cache this? ... it is after all doing a simple data grab
 $sql = "SELECT *
 	FROM " . RANKS_TABLE;
-$result = $db->sql_query($sql);
+$result = $db->sql_query($sql, 120);
 
 $ranksrow = array();
 while ($row = $db->sql_fetchrow($result))
@@ -261,7 +232,6 @@ $db->sql_freeresult($result);
 // Grab icons
 $icons = array();
 obtain_icons($icons);
-
 
 
 // Was a highlight request part of the URI?
@@ -284,11 +254,12 @@ if (isset($_GET['highlight']))
 }
 
 
+// Forum rules listing
+$s_forum_rules = '';
+gen_forum_rules('topic', $forum_id);
+
 
 // Quick mod tools
-$s_forum_rules = '';
-get_forum_rules('topic', $s_forum_rules, $forum_id);
-
 $topic_mod = '';
 $topic_mod .= ($auth->acl_gets('m_lock', 'a_', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_gets('m_delete', 'a_', $forum_id)) ? '<option value="delete">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
@@ -296,32 +267,32 @@ $topic_mod .= ($auth->acl_gets('m_move', 'a_', $forum_id)) ? '<option value="mov
 $topic_mod .= ($auth->acl_gets('m_split', 'a_', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_gets('m_merge', 'a_', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
 
+
 // If we've got a hightlight set pass it on to pagination.
 $pagination = ($highlight_match) ? generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $topic_replies, $config['posts_per_page'], $start) : generate_pagination("viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $topic_replies, $config['posts_per_page'], $start);
 
-// Post, reply and other URL generation for
-// templating vars
+
+// Post, reply and other URL generation for templating vars
 $new_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id;
 $reply_topic_url = 'posting.' . $phpEx . $SID . '&amp;mode=reply&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 $view_forum_url = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id;
 $view_prev_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=previous';
 $view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=next';
 
-$reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('reply_locked', $user->lang['Topic_locked']) : $user->img('reply_new', $user->lang['Reply_to_topic']);
-$post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['Forum_locked']) : $user->img('post_new', $user->lang['Post_new_topic']);
 
+// Post/reply images
+$reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('reply_locked', $user->lang['TOPIC_LOCKED']) : $user->img('reply_new', $user->lang['REPLY_TO_TOPIC']);
+$post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('post_new', $user->lang['POST_NEW_TOPIC']);
 
 
 // Set a cookie for this topic
-if ($user->data['user_id'] != ANONYMOUS)
+/*if ($user->data['user_id'] != ANONYMOUS)
 {
 	$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
 
 	$mark_topics[$forum_id][$topic_id] = 0;
 	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-}
-
-
+}*/
 
 
 // Grab censored words
@@ -344,10 +315,8 @@ $forum_moderators = array();
 get_moderators($forum_moderators, $forum_id);
 
 
-
 // This is only used for print view so ...
-$server_path = (($config['cookie_secure']) ? 'https://' : 'http://' ) . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
-
+$server_path = (($config['cookie_secure']) ? 'https://' : 'http://') . trim($config['server_name']) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/') . trim($config['script_path']) . '/';
 
 
 // Send vars to template
@@ -366,13 +335,11 @@ $template->assign_vars(array(
 	'REPLY_IMG' => $reply_img,
 
 	'S_TOPIC_LINK' 			=> 't',
-	'S_SELECT_SORT_DIR' 	=> $select_sort_dir,
-	'S_SELECT_SORT_KEY' 	=> $select_sort,
-	'S_SELECT_SORT_DAYS' 	=> $select_sort_days,
-	'S_SELECT_RATING' 		=> $rating,
+	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
+	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
+	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 	'S_TOPIC_ACTION' 		=> "viewtopic.$phpEx$SID&amp;t=" . $topic_id . "&amp;start=$start",
-	'S_AUTH_LIST' 			=> $s_forum_rules,
-	'S_TOPIC_MOD' 			=> ( $topic_mod != '' ) ? '<select name="mode">' . $topic_mod . '</select>' : '',
+	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic,
 
@@ -387,25 +354,6 @@ $template->assign_vars(array(
 	'U_POST_NEW_TOPIC' 		=> $new_topic_url,
 	'U_POST_REPLY_TOPIC' 	=> $reply_topic_url)
 );
-
-
-
-// Mozilla navigation bar
-$nav_links['prev'] = array(
-	'url' => $view_prev_topic_url,
-	'title' => $user->lang['View_previous_topic']
-);
-$nav_links['next'] = array(
-	'url' => $view_next_topic_url,
-	'title' => $user->lang['View_next_topic']
-);
-$nav_links['up'] = array(
-	'url' => $view_forum_url,
-	'title' => $forum_name
-);
-
-
-
 
 
 // Does this topic contain a poll?
@@ -476,63 +424,77 @@ if (!empty($poll_start))
 }
 
 
-
-// TEMP TEMP TEMP TEMP
-$rating = '';
-for ($i = 0; $i < 6; $i++)
-{
-	$rating .= (($rating != '') ? '&nbsp;' : '') . '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=??&amp;rate=' . $i . '">' . $i . '</a>';
-}
-// TEMP TEMP TEMP TEMP
-
-
-
 // Container for user details, only process once
 $user_cache = $attach_list = array();
+$force_encoding = '';
 $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*, pt.post_text, pt.post_subject, pt.bbcode_uid
-	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*
+	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
 		AND p.post_approved = " . TRUE . "
-		AND pt.post_id = p.post_id
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
-$result = $db->sql_query_limit($sql, $start, $config['posts_per_page']);
+$result = $db->sql_query_limit($sql, intval($start), intval($config['posts_per_page']));
 
 if ($row = $db->sql_fetchrow($result))
 {
 	do
 	{
 		$poster_id = $row['user_id'];
-		$poster = (!$poster_id) ? $user->lang['GUEST'] : $row['username'];
+		$poster	= ($poster_id == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'];
 
-		// Should we display this post? At present this is just karma but
-		// it will also check the ignore list in future ... outputting the
-		// appropriate message of course.
+
+		// Three situations can prevent a post being display:
+		// i)   The posters karma is below the minimum of the user 
+		// ii)  The poster is on the users ignore list
+		// iii) The post was made in a codepage different from the users
 		if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
 		{
 			$template->assign_block_vars('postrow', array(
 				'S_BELOW_MIN_KARMA' => true, 
 				'S_ROW_COUNT' => $i++,
 
-				'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $poster, '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+				'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $poster, intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
 			);
 
 			continue;
 		}
+		else if ($row['post_encoding'] != $user->lang['ENCODING'])
+		{
+			if (!empty($_GET['view']) && $_GET['view'] == 'encoding' && $post_id == $row['post_id'])
+			{
+				$force_encoding = $row['post_encoding'];
+			}
+			else
+			{
+				$template->assign_block_vars('postrow', array(
+					'S_WRONG_ENCODING' => true, 
+					'S_ROW_COUNT' => $i++,
 
-		// Display the post
-		$poster_posts = ($row['user_id']) ? $user->lang['POSTS'] . ': ' . $row['user_posts'] : '';
+					'L_IGNORE_POST' => sprintf($user->lang['POST_ENCODING'], $poster, '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
+				);
 
-		$poster_from = ($row['user_from'] && $row['user_id']) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '';
+				continue;
+			}
+		}
 
-		if (!isset($user_cache[$poster_id]['joined']))
+
+		// Display the post - Cache this
+		$poster_posts = ($row['user_id'] != ANONYMOUS) ? $user->lang['POSTS'] . ': ' . $row['user_posts'] : '';
+
+
+		// Cache this
+		$poster_from = ($row['user_from'] && $row['user_id'] != ANONYMOUS) ? $user->lang['LOCATION'] . ': ' . $row['user_from'] : '';
+
+
+		if (!isset($user_cache[$poster_id]['joined']) && $poster_id != ANONYMOUS)
 		{
 			$user_cache[$poster_id]['joined'] = ($row['user_id']) ? $user->lang['JOINED'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '';
 		}
+
 
 		if (isset($user_cache[$poster_id]['avatar']))
 		{
@@ -556,7 +518,6 @@ if ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['avatar'] = '';
 			}
 		}
-
 
 
 		// Generate ranks, set them to empty string initially.
@@ -587,23 +548,24 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 
-
 		// Handle anon users posting with usernames
-		if (!$poster_id && $row['post_username'] != '')
+		if ($poster_id == ANONYMOUS && $row['post_username'] != '')
 		{
 			$poster = $row['post_username'];
-			$poster_rank = $user->lang['GUEST'];
+			$user_cache[$poster_id]['rank_title'] = $user->lang['GUEST'];
+			$user_cache[$poster_id]['rank_image'] = '';
 		}
 
 
-
-		if (!isset($user_cache[$poster_id]['profile']) && $poster_id)
+		// Cache various user specific data ... so we don't have to recompute
+		// this each time the same user appears on this page
+		if (!isset($user_cache[$poster_id]['profile']) && $poster_id != ANONYMOUS)
 		{
 			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$user_cache[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['READ_PROFILE']) . '</a>';
 			$user_cache[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $user->lang['READ_PROFILE'] . '</a>';
 
-			$temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$poster_id";
+			$temp_url = "ucp.$phpEx$SID&amp;mode=message&amp;action=send&amp;u=$poster_id";
 			$user_cache[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['SEND_PRIVATE_MESSAGE']) . '</a>';
 			$user_cache[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $user->lang['SEND_PRIVATE_MESSAGE'] . '</a>';
 
@@ -681,13 +643,12 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 
-
 		// Non-user specific images/text
 		$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
 		$quote_img = '<a href="' . $temp_url . '">' . $user->img('icon_quote', $user->lang['REPLY_WITH_QUOTE']) . '</a>';
 		$quote = '<a href="' . $temp_url . '">' . $user->lang['REPLY_WITH_QUOTE'] . '</a>';
 
-		if (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+		if (($user->data['user_id'] == $poster_id && $auth->acl_gets('f_edit', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'];
 			$edit_img = '<a href="' . $temp_url . '">' . $user->img('icon_edit', $user->lang['EDIT_DELETE_POST']) . '</a>';
@@ -724,7 +685,6 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 
-
 		// Does post have an attachment? If so, add it to the list
 		if ($row['post_attach'])
 		{
@@ -732,12 +692,10 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 
-
 		// Parse the message and subject
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
 		$message = $row['post_text'];
 		$bbcode_uid = $row['bbcode_uid'];
-
 
 
 		// If the board has HTML off but the post has HTML
@@ -760,7 +718,6 @@ if ($row = $db->sql_fetchrow($result))
 		$message = (empty($row['enable_smilies']) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
 
 
-
 		// Highlight active words (primarily for search)
 		if ($highlight_match)
 		{
@@ -768,7 +725,6 @@ if ($row = $db->sql_fetchrow($result))
 			// via php.net's annotated manual
 			$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"hilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 		}
-
 
 
 		// Replace naughty words such as farty pants
@@ -793,7 +749,6 @@ if ($row = $db->sql_fetchrow($result))
 		{
 			$l_edited_by = '';
 		}
-
 
 
 		// Signature
@@ -822,7 +777,6 @@ if ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['sig'] = '';
 			}
 		}
-
 
 
 		// Define the little post icon
@@ -881,7 +835,7 @@ if ($row = $db->sql_fetchrow($result))
 			'YIM_IMG' 		=> $user_cache[$poster_id]['yim_img'],
 			'YIM' 			=> $user_cache[$poster_id]['yim'],
 
-			'POST_ICON' 	=> (!empty($row['icon_id']) ) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+			'POST_ICON' 	=> (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 
 			'L_MINI_POST_ALT'	=> $mini_post_alt,
 
@@ -897,20 +851,9 @@ if ($row = $db->sql_fetchrow($result))
 }
 else
 {
-	trigger_error($user->lang['No_posts_topic']);
+	trigger_error($user->lang['NO_TOPIC']);
 }
 
-$rating = '';
-if ($user->data['user_id'] != ANONYMOUS)
-{
-	$rating_text = array(0 => $user->lang['SPAM'], 5 => $user->lang['EXCELLENT']);
-
-	$sql = "SELECT rating
-		FROM " . TOPICS_RATINGS_TABLE . "
-		WHERE user_id = " . $user->data['user_id'] . " 
-			AND post_id IN ($post_id_sql)";
-//	$result = $db->sql_query($sql);
-}
 
 // If we have attachments, grab them ... based on Acyd Burns 2.0.x Mod
 if (sizeof($attach_list))
@@ -948,14 +891,38 @@ if (sizeof($attach_list))
 	$db->sql_freeresult($result);
 }
 
+
 // Mark topics read
 markread('topic', $forum_id, $topic_id, $forum_topic_data['topic_last_post_id']);
+
 
 // Update the topic view counter
 $sql = "UPDATE " . TOPICS_TABLE . "
 	SET topic_views = topic_views + 1
 	WHERE topic_id = $topic_id";
 $db->sql_query($sql);
+
+
+// Mozilla navigation bar
+$nav_links['prev'] = array(
+	'url' => $view_prev_topic_url,
+	'title' => $user->lang['View_previous_topic']
+);
+$nav_links['next'] = array(
+	'url' => $view_next_topic_url,
+	'title' => $user->lang['View_next_topic']
+);
+$nav_links['up'] = array(
+	'url' => $view_forum_url,
+	'title' => $forum_name
+);
+
+
+// Change encoding if appropriate
+if ($force_encoding != '')
+{
+	$user->lang['ENCODING'] = $force_encoding;
+}
 
 // Output the page
 $page_title = $user->lang['View_topic'] .' - ' . $topic_title;
@@ -967,7 +934,5 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-//, 'header' => 'overall_header.tpl', 'footer' => 'overall_footer.tpl'
 
 ?>

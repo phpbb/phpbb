@@ -200,22 +200,6 @@ function bbencode_second_pass($text, $uid, $enable_img = true)
 		$replacements[0] = $bbcode_tpl['img'];
 	}
 
-	// [url]xxxx://www.phpbb.com[/url] code..
-	$patterns[1] = "#\[url\]([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/url\]#si";
-	$replacements[1] = $bbcode_tpl['url1'];
-
-	// [url]www.phpbb.com[/url] code.. (no xxxx:// prefix).
-	$patterns[2] = "#\[url\]([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\[/url\]#si";
-	$replacements[2] = $bbcode_tpl['url2'];
-
-	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
-	$patterns[3] = "#\[url=([a-z]+?://){1}([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\](.*?)\[/url\]#si";
-	$replacements[3] = $bbcode_tpl['url3'];
-
-	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[4] = "#\[url=([a-z0-9\-\.,\?!%\*_\#:;~\\&$@\/=\+]+)\](.*?)\[/url\]#si";
-	$replacements[4] = $bbcode_tpl['url4'];
-
 	// [email]user@domain.tld[/email] code..
 	$patterns[5] = "#\[email\]([a-z0-9\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)\[/email\]#si";
 	$replacements[5] = $bbcode_tpl['email'];
@@ -601,48 +585,6 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 } // bbencode_second_pass_code()
 
 /**
- * Rewritten by Nathan Codding - Feb 6, 2001.
- * - Goes through the given string, and replaces xxxx://yyyy with an HTML <a> tag linking
- * 	to that URL
- * - Goes through the given string, and replaces www.xxxx.yyyy[zzzz] with an HTML <a> tag linking
- * 	to http://www.xxxx.yyyy[/zzzz]
- * - Goes through the given string, and replaces xxxx@yyyy with an HTML mailto: tag linking
- *		to that email address
- * - Only matches these 2 patterns either after a space, or at the beginning of a line
- *
- * Notes: the email one might get annoying - it's easy to make it more restrictive, though.. maybe
- * have it require something like xxxx@yyyy.zzzz or such. We'll see.
- */
-function make_clickable($text)
-{
-
-	// pad it with a space so we can match things at the start of the 1st line.
-	$ret = " " . $text;
-
-	// matches an "xxxx://yyyy" URL at the start of a line, or after a space.
-	// xxxx can only be alpha characters.
-	// yyyy is anything up to the first space, newline, or comma.
-	$ret = preg_replace("#([\n ])([a-z]+?)://([^\t <\n\r]+)#i", "\\1<a href=\"\\2://\\3\" target=\"_blank\">\\2://\\3</a>", $ret);
-
-	// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-	// Must contain at least 2 dots. xxxx contains either alphanum, or "-"
-	// yyyy contains either alphanum, "-", or "."
-	// zzzz is optional.. will contain everything up to the first space, newline, or comma.
-	// This is slightly restrictive - it's not going to match stuff like "forums.foo.com"
-	// This is to keep it from getting annoying and matching stuff that's not meant to be a link.
-	$ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[^\t <\n\r]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
-
-	// matches an email@domain type address at the start of a line, or after a space.
-	// Note: Only the followed chars are valid; alphanums, "-", "_" and or ".".
-	$ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)?[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
-
-	// Remove our padding..
-	$ret = substr($ret, 1);
-
-	return($ret);
-}
-
-/**
  * Nathan Codding - August 24, 2000.
  * Takes a string, and does the reverse of the PHP standard function
  * htmlspecialchars().
@@ -668,65 +610,6 @@ function replace_listitems($text, $uid)
 	$text = str_replace("[*]", "[*:$uid]", $text);
 
 	return $text;
-}
-
-/**
- * Escapes the "/" character with "\/". This is useful when you need
- * to stick a runtime string into a PREG regexp that is being delimited
- * with slashes.
- */
-function escape_slashes($input)
-{
-	$output = str_replace('/', '\/', $input);
-	return $output;
-}
-
-//
-// Smilies code ... would this be better tagged on to the end of bbcode.php?
-// Probably so and I'll move it before B2
-//
-function smilies_pass($message)
-{
-	global $db, $config;
-	static $smilies;
-
-	if ( empty($smilies) )
-	{
-		$sql = "SELECT code, smile_url
-			FROM " . SMILIES_TABLE;
-		$result = $db->sql_query($sql);
-
-		if ( !($smilies = $db->sql_fetchrowset($result)) )
-		{
-			return $message;
-		}
-
-		usort($smilies, 'smiley_sort');
-	}
-
-	for($i = 0; $i < count($smilies); $i++)
-	{
-		$orig[] = '/(?<=.\\W|\\W.|^\\W)' . preg_quote($smilies[$i]['code'], '/') . '(?=.\\W|\\W.|\\W$)/';
-		$repl[] = '<img src="'. $config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" width="' . $smilies[$i]['smile_width'] . '" height="' . $smilies[$i]['smile_height'] . '" alt="' . $smilies[$i]['smile_url'] . '" title="' . $smilies[$i]['smile_url'] . '" border="0" />';
-	}
-
-	if ( $i > 0 )
-	{
-		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
-		$message = substr($message, 1, -1);
-	}
-
-	return $message;
-}
-
-function smiley_sort($a, $b)
-{
-	if ( strlen($a['code']) == strlen($b['code']) )
-	{
-		return 0;
-	}
-
-	return ( strlen($a['code']) > strlen($b['code']) ) ? - 1 : 1;
 }
 
 ?>
