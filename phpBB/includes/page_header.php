@@ -56,8 +56,8 @@ if($board_config['gzip_compress'])
 // Parse and show the overall header.
 //
 $template->set_filenames(array(
-	"overall_header" => "overall_header.tpl",
-	"overall_footer" => "overall_footer.tpl"));
+	"overall_header" => "overall_header.tpl")
+);
 
 //
 // Generate logged in/logged out status
@@ -109,7 +109,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_
 $result = $db->sql_query($sql);
 if(!$result)
 {
-	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
 }
 
 $logged_visible_online = 0;
@@ -161,7 +161,7 @@ if($userdata['session_logged_in'])
 	$result_pm = $db->sql_query($sql);
 	if(!$result_pm)
 	{
-		error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
+		message_die(GENERAL_MESSAGE, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
 	}
 	if($pm_result = $db->sql_fetchrow($result_pm))
 	{
