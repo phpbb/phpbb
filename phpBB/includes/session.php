@@ -231,7 +231,7 @@ class session
 		$sql = "UPDATE " . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page', session_allow_viewonline = $viewonline 
 			WHERE session_id = '" . $this->session_id . "'";
-		if (!$db->sql_query($sql) || !$db->sql_affectedrows())
+		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
 			$this->session_id = md5(uniqid($user_ip));
