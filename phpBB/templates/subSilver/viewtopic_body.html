@@ -106,29 +106,33 @@
 				<td colspan="2"><hr /></td>
 			</tr>
 			<!-- IF postrow.S_POST_UNAPPROVED -->
-			<tr><td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr align="left" valign="middle">
-					<td>{UNAPPROVED_IMG}</td>
-					<td class="gensmall" width="100%">&nbsp;{L_POST_NOT_BEEN_APPROVED}&nbsp;[ <a href="{postrow.U_MCP_APPROVE}">{L_APPROVE_POST}</a> ]</td>
-				</tr>
-			</table></td></tr>
+			<tr>
+				<td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr align="left" valign="middle">
+						<td>{UNAPPROVED_IMG}</td>
+						<td class="gensmall" width="100%">&nbsp;{L_POST_NOT_BEEN_APPROVED}&nbsp;[ <a href="{postrow.U_MCP_APPROVE}">{L_APPROVE_POST}</a> ]</td>
+					</tr>
+				</table></td>
+			</tr>
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF postrow.S_POST_REPORTED -->
-			<tr><td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr align="left" valign="middle">
-					<td>{REPORTED_IMG}</td>
-					<td class="gensmall" width="100%">&nbsp;{L_POST_BEEN_REPORTED}&nbsp;[ <a href="{postrow.U_MCP_REPORT}">{L_READ_REPORTS}</a> ]</td>
-				</tr>
-			</table></td></tr>
+			<tr>
+				<td colspan="2"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr align="left" valign="middle">
+						<td>{REPORTED_IMG}</td>
+						<td class="gensmall" width="100%">&nbsp;{L_POST_BEEN_REPORTED}&nbsp;[ <a href="{postrow.U_MCP_REPORT}">{L_READ_REPORTS}</a> ]</td>
+					</tr>
+				</table></td>
+			</tr>
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td><span class="postbody">{postrow.MESSAGE}<!-- IF postrow.S_HAS_ATTACHMENTS --></span><!-- INCLUDE viewtopic_attach_body.html --><span class="postbody"><!-- ENDIF -->{postrow.SIGNATURE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
+				<td colspan="2"><span class="postbody">{postrow.MESSAGE}</span><!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF --><!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF --><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 			</tr>
 		</table></td>
 	</tr>
