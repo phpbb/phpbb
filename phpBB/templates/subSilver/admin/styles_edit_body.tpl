@@ -125,9 +125,9 @@
 	</tr>
 
 	<tr>
-		<td class="row1">{L_TD_CLASS3}:</td>
-		<td class="row2"><input type="text" size="25" maxlength="25" name="th_class3" value="{TD_CLASS3}"></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="th_class3_name" value="{TD_CLASS3_NAME}">
+		<td class="row1">{L_TH_CLASS3}:</td>
+		<td class="row2"><input type="text" size="25" maxlength="25" name="th_class3" value="{TH_CLASS3}"></td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="th_class3_name" value="{TH_CLASS3_NAME}">
 	</tr>
 	<tr>
 		<td class="row1">{L_TD_COLOR1}:</td>

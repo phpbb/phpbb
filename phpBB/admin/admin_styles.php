@@ -232,6 +232,10 @@ switch( $mode )
 			$updated_name['th_color3_name'] = $HTTP_POST_VARS['th_color3_name'];
 			$updated['th_class1'] = $HTTP_POST_VARS['th_class1'];
 			$updated_name['th_class1_name'] = $HTTP_POST_VARS['th_class1_name'];
+			$updated['th_class2'] = $HTTP_POST_VARS['th_class2'];
+			$updated_name['th_class2_name'] = $HTTP_POST_VARS['th_class2_name'];
+			$updated['th_class3'] = $HTTP_POST_VARS['th_class3'];
+			$updated_name['th_class3_name'] = $HTTP_POST_VARS['th_class3_name'];
 			$updated['td_color1'] = $HTTP_POST_VARS['td_color1'];
 			$updated_name['td_color1_name'] = $HTTP_POST_VARS['td_color1_name'];
 			$updated['td_color2'] = $HTTP_POST_VARS['td_color2'];
