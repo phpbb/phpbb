@@ -105,23 +105,15 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// then we need to pull the auth information
 	// on the given forum (or all forums)
 	//
-	if(($f_access == -1 && $type != AUTH_MOD) || $forum_id == AUTH_LIST_ALL)
+	if($f_access == -1)
 	{
-		$forum_match_sql = ($forum_id != LIST_ALL) ? "WHERE aa.forum_id = $forum_id" : "";
+		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "WHERE aa.forum_id = $forum_id" : "";
 		$sql = "SELECT $a_sql 
 			FROM ".AUTH_FORUMS_TABLE." aa 
 			$forum_match_sql";
 		$af_result = $db->sql_query($sql);
 
-		if($forum_id != AUTH_LIST_ALL)
-		{
-			$f_access = $db->sql_fetchrow($af_result);
-		}
-		else
-		{
-			$f_access_rows = $db->sql_fetchrowset($af_result);
-
-		}
+		$f_access = $db->sql_fetchrow($af_result);
 	}
 
 	//
@@ -131,27 +123,26 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	// they're good to go, if not then they
 	// are denied access
 	//
-	if(!$userdata['session_logged_in'] && $type != AUTH_MOD)
+	if(!$userdata['session_logged_in'])
 	{
 		if($forum_id != AUTH_LIST_ALL)
 		{
 			for($i = 0; $i < count($f_access); $i++)
 			{
-				$auth_user[$auth_fields[$i]] = ($f_access[$auth_fields[$i]] == AUTH_ALL) ? true : false;
+				$auth_user[$auth_fields[$i]] = ($f_access[$auth_fields[$i]] == AUTH_ALL) ? 1 : 0;
 			}
 		}
 		else
 		{
 			$auth_user_list = array();
-			for($i = 0; $i < count($auth_forum_rows); $i++)
+			for($i = 0; $i < count($f_access); $i++)
 			{
-				for($j = 0; $j < count($f_access); $j++)
+				for($j = 0; $j < count($auth_fields); $j++)
 				{
-					$auth_user_list[][$auth_fields[$j]] = ($f_access_rows[$i][$auth_fields[$j]] == AUTH_ALL) ? true : false;
+					$auth_user_list[$f_access[$i]['forum_id']][$auth_fields[$j]] = ($f_access[$i][$auth_fields[$j]] == AUTH_ALL) ? 1 : 0;
 				}
 			}
 		}
-
 	}
 	else 
 	{
@@ -167,6 +158,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 
 		$u_access = $db->sql_fetchrowset($au_result);
 
+		$auth_user = array();
 		for($i = 0; $i < count($auth_fields); $i++)
 		{
 			$key = $auth_fields[$i];
@@ -179,7 +171,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			//
 			if($value == AUTH_ALL || $value == AUTH_REG)
 			{
-				$auth_user[$key] = true;
+				$auth_user[$key] = 1;
 			}
 			else
 			{
@@ -192,7 +184,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				// (and any groups they belong to)
 				//
 	
-				$single_user = false;
+				$single_user = 0;
 
 				//
 				// Now we compare the users access level
@@ -210,6 +202,17 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				// which has access (and vice versa). This
 				// check is done via the single_user check
 				//
+				// PS : I appologise for the fantastically clear
+				// and hugely readable code here ;) Simple gist
+				// is, if this row of auth_access doesn't represent
+				// a single user then OR the contents of relevant auth_access
+				// levels against the current level (allows
+				// maximum group privileges to be assigned). If
+				// the row does represent a single user then forget
+				// any previous group results and instead set
+				// the auth to whatever the OR'd contents of the
+				// access levels are.
+				//
 				switch($value)
 				{
 					case AUTH_ACL:
@@ -217,8 +220,9 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						{
 							if(!$single_user)
 							{
-								$auth_user[$key] = $auth_user[$key] || $u_access[$j]['user_auth'] || $u_access[$i]['auth_mod'] || $u_access[$j]['auth_admin'];
 								$single_user = $u_access[$j]['single_user'];
+
+								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$j][$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN)) : ($u_access[$j][$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN));
 							}
 						}
 						break;
@@ -228,31 +232,31 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 						{
 							if(!$single_user)
 							{
-								$auth_user[$key] = $auth_user[$key] || $u_access[$j]['auth_mod'] || $u_access[$j]['auth_admin'];
 								$single_user = $u_access[$j]['single_user'];
+
+								$auth_user[$key] = (!$single_user) ? ($auth_user[$key] || $u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN)) : ($u_access[$i]['auth_mod'] || ($userdata['user_level'] == ADMIN));
 							}
 						}
 						break;
 	
 					case AUTH_ADMIN:
-						for($j = 0; $j < count($u_access); $j++)
-						{
-							if($single_user)
-							{
-								$auth_user[$key] = ($u_access[$j]['group_type'] == ADMIN) ? true : false;
-								$single_user = $u_access[$j]['single_user'];
-							}
-						}
+						//
+						// Pretty redundant right now ...
+						// 
+						$auth_user[$key] = ($userdata['user_level'] == ADMIN) ? 1 : 0;
 						break;
 
 					default:
-						$auth_user[$auth_fields[$i]] = false;
+						$auth_user[$key] = 0;
 						break;
 				}
 			}
 		}
 	
-		$single_user = false;
+		//
+		// Is user a moderator?
+		//
+		$single_user = 0;
 		for($j = 0; $j < count($u_access); $j++)
 		{
 			if(!$single_user)
@@ -261,23 +265,21 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 				$single_user = $u_access[$j]['single_user'];
 			}
 		}
-		$single_user = false;
-		for($j = 0; $j < count($u_access); $j++)
-		{
-			if($single_user)
-			{
-				$auth_user['auth_admin'] = ($u_access[$j]['group_type'] == ADMIN) ? true : false;
-				$single_user = $u_access[$j]['single_user'];
-			}
-		}
+
+		//
+		// Is user an admin (this is
+		// really redundant at this time)
+		//
+		$auth_user[$key] = ($userdata['user_level'] == ADMIN) ? 1 : 0;
+
 	}
 
 	//
-	// This currently only returns true or false
+	// This currently only returns 1 or 0
 	// however it will also return an array if a listing
 	// of all forums to which a user has access was requested.
 	// 
-	return ( ($forum_id != LIST_ALL) ? $auth_user : $auth_user_list );
+	return ( ($forum_id != AUTH_LIST_ALL) ? $auth_user : $auth_user_list );
 }
 
 ?>
