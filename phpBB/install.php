@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                                 install.php
+ *                                install.php
  *                            -------------------
  *   begin                : Tuesday, Sept 11, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -751,14 +751,11 @@ else
 					$row = $db->sql_fetchrow($result);
 					$version = $row['mysql_version'];
 
-					if( preg_match("/^(3\.23|4\.)/", $version) )
+					if( preg_match("/^(3\.23)|(4\.)/", $version) )
 					{
 						$sql = "ALTER TABLE " . $table_prefix . "sessions 
 							TYPE=HEAP";
-						if( !$result = $db->sql_query($sql))
-						{
-							$error .= "Could not alter session table to HEAP type :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-						}
+						$db->sql_query($sql))
 					}
 				}
 			}
@@ -778,7 +775,7 @@ else
 			}
 		}
 
-		if( !$reinstall && ! $upgrade_now )
+		if( !$reinstall && !$upgrade_now )
 		{
 			$template->assign_block_vars("switch_common_install", array());
 

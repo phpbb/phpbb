@@ -1895,11 +1895,11 @@ if( !empty($next) )
 
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23|4\.)/", $version) )
+			if( preg_match("/^(3\.23)|(4\.)/", $version) )
 			{
 				$sql = "ALTER TABLE " . $table_prefix . "sessions 
 					TYPE=HEAP";
-				query($sql, "Couldn't alter sessions table type to HEAP");
+				$db->sql_query($sql);
 			}
 
 			echo "Done<br />\n";
