@@ -654,6 +654,7 @@ $template->assign_vars(array(
 	"S_TOPIC_ADMIN" => $topic_mod,
 	"S_WATCH_TOPIC" => $s_watching_topic,
 
+	"U_VIEW_TOPIC" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=" . $HTTP_GET_VARS['highlight']), 
 	"U_VIEW_FORUM" => $view_forum_url,
 	"U_VIEW_OLDER_TOPIC" => $view_prev_topic_url,
 	"U_VIEW_NEWER_TOPIC" => $view_next_topic_url,
