@@ -498,3 +498,19 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_auto_prune'
+#
+DROP TABLE IF EXISTS phpbb_auto_prune;
+
+CREATE TABLE phpbb_auto_prune (
+	prune_id int(10) NOT NULL auto_increment,
+	forum_id int(11) NOT NULL,
+	prune_days int(3) NOT NULL,
+	last_pruned int(11),
+	admin_id int(11) NOT NULL,
+	PRIMARY KEY (prune_id)
+);
+
