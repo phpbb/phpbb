@@ -44,7 +44,7 @@ CREATE TABLE phpbb_user_group (
 DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
    group_id int(11) NOT NULL auto_increment,
-   group_type smallint(4) DEFAULT '1' NOT NULL, 
+   group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int(11) DEFAULT '0' NOT NULL,
@@ -163,9 +163,8 @@ CREATE TABLE phpbb_forums (
    cat_id int(10) NOT NULL,
    forum_name varchar(150),
    forum_desc text,
-   forum_access tinyint(3),
+   forum_status tinyint(4) DEFAULT '0' NOT NULL, 
    forum_order int(11) DEFAULT '1' NOT NULL,
-   forum_type tinyint(4),
    forum_posts int(11) DEFAULT '0' NOT NULL,
    forum_topics tinyint(4) DEFAULT '0' NOT NULL,
    forum_last_post_id int(11) DEFAULT '0' NOT NULL,
@@ -413,6 +412,7 @@ CREATE TABLE phpbb_topics (
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
    topic_last_post_id int(11) DEFAULT '0' NOT NULL,
+   topic_notify tinyint(1) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id)
