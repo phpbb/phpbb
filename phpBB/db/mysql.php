@@ -114,7 +114,7 @@ class sql_db
 		}
 		else
 		{
-			return false;
+			return ( $transaction == END_TRANSACTION ) ? true : false;
 		}
 	}
 
