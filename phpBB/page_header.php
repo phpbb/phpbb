@@ -26,6 +26,7 @@
 $template->set_file(array("overall_header" => "overall_header.tpl",
 			  "overall_footer" => "overall_footer.tpl"));
 $template->set_var(array("SITENAME" => $sitename,
+			"PHPEX" => $phpEx,
 			 "PAGE_TITLE" => $page_title,
 			 "META_INFO" => $meta_tags));
 $template->pparse("output", "overall_header");
