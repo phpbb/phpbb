@@ -182,7 +182,8 @@ $template->assign_vars(array(
 	"L_EMAIL_SIG_EXPLAIN" => $lang['Email_sig_explain'],
 	"L_USE_SMTP" => $lang['Use_SMTP'],
 	"L_USE_SMTP_EXPLAIN" => $lang['Use_SMTP_explain'],
-	"L_SMTP_SERVER" => $lang['SMTP_server'],
+	"L_SMTP_SERVER" => $lang['SMTP_server'], 
+	"L_SUBMIT" => $lang['Submit'], 
 	
 	"SITENAME" => $new['sitename'],
 	"SITE_DESCRIPTION" => $new['site_desc'],
