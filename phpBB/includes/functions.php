@@ -119,7 +119,7 @@ function get_userdata($username) {
 
 function make_jumpbox($match_forum_id = 0)
 {
-	global $lang, $db;
+	global $lang, $db, $SID;
 
 	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
@@ -174,6 +174,11 @@ function make_jumpbox($match_forum_id = 0)
 	else
 	{
 		$boxstring .= '<select><option value="-1">-- ! No Categories ! --</option></select>';
+	}
+
+	if( isset($SID) )
+	{
+//		$boxstring .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 	}
 
 	return($boxstring);
@@ -1165,9 +1170,19 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			$msg_text = $lang[$msg_text];
 		}
 
-		$template->set_filenames(array(
-			"message_body" => "message_body.tpl")
-		);
+		if( !defined("IN_ADMIN") )
+		{
+			$template->set_filenames(array(
+				"message_body" => "message_body.tpl")
+			);
+		}
+		else
+		{
+			$template->set_filenames(array(
+				"message_body" => "admin/admin_message_body.tpl")
+			);
+		}
+
 		$template->assign_vars(array(
 			"MESSAGE_TITLE" => $msg_title,
 			"MESSAGE_TEXT" => $msg_text)
