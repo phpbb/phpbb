@@ -24,9 +24,10 @@ $lang += array(
 	'ADMIN_INDEX'	=> 'Admin Index',
 
 	'DB_CAT'		=> 'Database', 
-	'DB_BACKUP'		=> 'DB Backup',
-	'DB_RESTORE'	=> 'DB Restore',
-	'SEARCH_INDEX'	=> 'Search indexing', 
+	'DB_BACKUP'		=> 'Backup Database',
+	'DB_RESTORE'	=> 'Restore Database',
+	'SEARCH_INDEX'	=> 'Search Indexing', 
+	'DB_UTILS'		=> 'Database Utilities', 
 
 	'FORUM_CAT'	=> 'Forums',
 	'PRUNE'		=> 'Pruning',
@@ -64,15 +65,15 @@ $lang += array(
 	'MANAGE_IMAGESET'	=> 'Imagesets', 
 
 	'USER_CAT'		=> 'Users / Groups', 
+	'MANAGE_USERS'	=> 'Manage Users', 
 	'BAN_EMAILS'	=> 'Ban Emails',
 	'BAN_IPS'		=> 'Ban IPs',
 	'BAN_USERS'		=> 'Ban Usernames',
 	'DISALLOW'		=> 'Disallow names',
-	'RANKS'			=> 'Ranks',
+	'RANKS'			=> 'Manage Ranks',
 	'PRUNE_USERS'	=> 'Prune users', 
-	'BOTS'			=> 'Bots', 
+	'BOTS'			=> 'Manage Bots', 
 	'GROUP_MANAGE'	=> 'Manage groups',
-	'GROUP_PREFS'	=> 'Group prefs', 
 	'USER_PERMS'	=> 'User permissions', 
 	'GROUP_PERMS'	=> 'Group permissions', 
 
@@ -1067,6 +1068,11 @@ $lang += array(
 	'GROUP_LANG'				=> 'Group language', 
 	'GROUP_TIMEZONE'			=> 'Group timezone', 
 	'GROUP_DST'					=> 'Group daylight savings', 
+
+
+	'GROUP_MODS_DEMOTED'		=> 'Group leaders demoted successfully', 
+	'GROUP_USERS_REMOVE'		=> 'Users removed from group and new defaults set successfully', 
+	'GROUP_DELETED'				=> 'Group deleted and user default groups set successfully', 
 
 
 	'GROUP_ERR_USERNAME'	=> 'No group name specified.',
