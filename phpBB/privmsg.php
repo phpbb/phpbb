@@ -64,13 +64,23 @@ if($mode == "read")
 		// Error out
 
 	}
+
+	if(!$userdata['session_logged_in'])
+	{
+		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id"));
+	}
+
 	if(!empty($HTTP_GET_VARS['folder']))
 	{
-		$folder = $HTTP_GET_VARS['folder']; 
-		if($folder == "inbox" || $folder == "saved")
+		if($folder == "inbox")
 		{
 			$user_to_sql = "AND pm.privmsgs_to_userid = " . $userdata['user_id'];
 			$user_from_sql = "AND u.user_id = pm.privmsgs_from_userid";
+		}
+		else if($folder == "savebox")
+		{
+			$user_to_sql = "AND ( (pm.privmsgs_to_userid = " . $userdata['user_id'] . " AND u.user_id = pm.privmsgs_from_userid) ";
+			$user_from_sql = "OR (u.user_id = pm.privmsgs_to_userid AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . ") )";
 		}
 		else
 		{
@@ -274,8 +284,20 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 	if(!$userdata['session_logged_in'])
 	{
-		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode"));
+		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode"));
 	}
+
+	//
+	// When we get to the point of a code review
+	// we really really really need to look at 
+	// combining the following fragments with the 
+	// posting routine. I don't think or see it 
+	// necessary to actually use posting for privmsgs
+	// but I'm sure more can be combined in common
+	// functions ... not that I think all functions are
+	// common, some functions are actually quite classy
+	// and sophisticated, champagne, caviar and all that
+	//
 
 	$disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
 	$disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
@@ -622,10 +644,12 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 {
 	if(!$userdata['session_logged_in'])
 	{
-		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
+		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
 
 	$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . " 
+		WHERE ";
+	$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . " 
 		WHERE ";
 
 	if(isset($HTTP_POST_VARS['delete']))
@@ -635,9 +659,12 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 		for($i = 0; $i < count($delete_ary); $i++)
 		{
 			$delete_sql .= "privmsgs_id = " . $delete_ary[$i] . " ";
+			$delete_text_sql .= "privmsgs_text_id = " . $delete_ary[$i] . " ";
+
 			if($i < count($delete_ary) -1)
 			{
 				$delete_sql .= "OR ";
+				$delete_text_sql . "OR ";
 			}
 		}
 
@@ -664,7 +691,14 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 
 	if(!$del_status = $db->sql_query($delete_sql))
 	{
-		error_die(SQL_QUERY, "Could not delete private messages.", __LINE__, __FILE__);
+		error_die(SQL_QUERY, "Could not delete private message info.", __LINE__, __FILE__);
+	}
+	else
+	{
+		if(!$del_text_status = $db->sql_query($delete_text_sql))
+		{
+			error_die(SQL_QUERY, "Could not delete private message text.", __LINE__, __FILE__);
+		}
 	}
 
 }
@@ -672,7 +706,7 @@ else if(isset($HTTP_POST_VARS['save']) && $folder != "savebox" && $folder != "ou
 {
 	if(!$userdata['session_logged_in'])
 	{
-		header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
+		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 	}
 
 	$saved_sql = "UPDATE " . PRIVMSGS_TABLE . "  
@@ -728,7 +762,7 @@ else if($HTTP_POST_VARS['cancel'])
 
 if(!$userdata['session_logged_in'])
 {
-	header(append_sid("Location: login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
+	header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
 }
 
 include('includes/page_header.'.$phpEx);
@@ -853,10 +887,10 @@ for($i = 0; $i < count($pm_list); $i++)
 	$msg_userid = $pm_list[$i]['user_id'];
 	$msg_username = stripslashes($pm_list[$i]['username']);
 
-	$u_from_user_profile = "profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid";
+	$u_from_user_profile = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$msg_userid");
 
 	$msg_subject = stripslashes($pm_list[$i]['privmsgs_subject']);
-	$u_subject = "privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id";
+	$u_subject = append_sid("privmsg.$phpEx?folder=$folder&mode=read&" . POST_POST_URL . "=$privmsg_id");
 
 	$msg_date = create_date($board_config['default_dateformat'], $pm_list[$i]['privmsgs_date'], $board_config['default_timezone']);
 
