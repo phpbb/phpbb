@@ -85,11 +85,11 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (2, 2, 0);
 
 
 -- Demo Topic
-INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_last_post_id) VALUES (1, 'Welcome to phpBB 2', 2, EXTRACT(EPOCH FROM TIMESTAMP 'now'), 0, 0, 1, 0, 0, 1);
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_last_post_id) VALUES (1, 'Welcome to phpBB 2', 2, date_part('EPOCH', TIMESTAMP 'now'), 0, 0, 1, 0, 0, 1);
 
 
 -- Demo Post
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, EXTRACT(EPOCH FROM TIMESTAMP 'now'), '', '7F000001');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, date_part('EPOCH', TIMESTAMP 'now'), '', '7F000001');
 INSERT INTO phpbb_posts_text (post_id, post_subject, post_text) VALUES (1, '', 'This is an example post in your phpBB 2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 
