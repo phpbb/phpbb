@@ -175,28 +175,23 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 			}
 		}
 	}
-
-	// No appropriate language found ... so let's use the first one in the language
-	// dir, this may or may not be English
-	if (!$language)
-	{
-		$dir = @opendir($phpbb_root_path . 'language');
-		while ($file = readdir($dir))
-		{
-			$path = $phpbb_root_path . 'language/' . $file;
-
-			if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
-			{
-				$language = $file;
-				break;
-			}
-		}
-	}
 }
 
+// No appropriate language found ... so let's use the first one in the language
+// dir, this may or may not be English
 if (!$language)
 {
-	$language = $default_language;
+	$dir = @opendir($phpbb_root_path . 'language');
+	while ($file = readdir($dir))
+	{
+		$path = $phpbb_root_path . 'language/' . $file;
+
+		if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+		{
+			$language = $file;
+			break;
+		}
+	}
 }
 
 include($phpbb_root_path . 'language/' . $language . '/lang_main.'.$phpEx);
