@@ -90,7 +90,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'firebird',
 		'MODULE'		=> 'interbase', 
 		'DELIM'			=> ';',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql'		=> array(
@@ -98,7 +97,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'mysql',
 		'MODULE'		=> 'mysql', 
 		'DELIM'			=> ';',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql4'	=> array(
@@ -106,7 +104,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'mysql',
 		'MODULE'		=> 'mysql', 
 		'DELIM'			=> ';',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mssql'		=> array(
@@ -114,7 +111,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'mssql',
 		'MODULE'		=> 'mssql', 
 		'DELIM'			=> 'GO',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_comments'
 	),
 	'msaccess' => array(
@@ -122,7 +118,6 @@ $available_dbms = array(
 		'SCHEMA'		=> '',
 		'MODULE'		=> 'odbc', 
 		'DELIM'			=> '',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> ''
 	),
 	'mssql-odbc'=>	array(
@@ -130,7 +125,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'mssql',
 		'MODULE'		=> 'odbc', 
 		'DELIM'			=> 'GO',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_comments'
 	),
 	'oracle'	=>	array(
@@ -138,7 +132,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'oracle',
 		'MODULE'		=> 'oracle', 
 		'DELIM'			=> '',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_comments'
 	),
 	'postgres' => array(
@@ -146,7 +139,6 @@ $available_dbms = array(
 		'SCHEMA'		=> 'postgres',
 		'MODULE'		=> 'pgsql', 
 		'DELIM'			=> ';',
-		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_comments'
 	),
 );
@@ -233,7 +225,7 @@ else if (isset($_POST['install']))
 		{
 			if (!$$var)
 			{
-				$error[$var_type][] = 'You must fill out all fields in this block';
+				$error[$var_type][] = $lang['INST_ERR_MISSING_DATA'];
 				break;
 			}
 		}
@@ -242,12 +234,12 @@ else if (isset($_POST['install']))
 	// Check the entered email address and password
 	if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
 	{
-		$error['admin'][] = $lang['INSTALL_PASSWORD_MISMATCH'];
+		$error['admin'][] = $lang['INST_ERR_PASSWORD_MISMATCH'];
 	}
 
 	if ($board_email1 != $board_email2 && $board_email1 != '')
 	{
-		$error['admin'][] = $lang['INSTALL_EMAIL_MISMATCH'];
+		$error['admin'][] = $lang['INST_ERR_EMAIL_MISMATCH'];
 	}
 
 	// Test the database connectivity
@@ -255,7 +247,7 @@ else if (isset($_POST['install']))
 	{
 		if (!can_load_dll($available_dbms[$dbms]['MODULE']))
 		{
-			$error['db'][] = 'Cannot load the PHP module for the selected database type';
+			$error['db'][] = $lang['INST_ERR_NO_DB'];
 		}
 	}
 
@@ -270,7 +262,7 @@ else if (isset($_POST['install']))
 	if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
 	{
 		$db_error = $db->sql_error();
-		$error['db'][] = 'Could not connect to the database, error message returned:' . '<br />' . (($db_error['message']) ? $db_error['message'] : 'No error message given');
+		$error['db'][] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
 	}
 
 	// No errors so lets do the twist
@@ -326,11 +318,11 @@ if ($stage == 0)
 		{
 			if (!can_load_dll($dll))
 			{
-				$dlls_other[$dll] = '<span style="color:red">' . 'Unavailable' . '</span>';
+				$dlls_other[$dll] = '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>';
 				continue;
 			}
 		}
-		$dlls_other[$dll] = '<span style="color:green">' . 'Available' . '</span>';
+		$dlls_other[$dll] = '<span style="color:green">' . $lang['AVAILABLE'] . '</span>';
 	}
 
 	inst_page_header();
@@ -444,11 +436,11 @@ if ($stage == 0)
 
 <hr />
 
-<h1>Directory and file setup</h2>
+<h1><?php echo $lang['DIRECTORIES_AND_FILES']; ?></h2>
 
-<h2>Required</h2>
+<h2><? echo $lang['REQUIRED']; ?></h2>
 
-<p>In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see "Does not exist" you need to create the relevant file or directory. If you see "Not writeable" you need to change the permissions on the file or directory to allow phpBB to write to it.</p>
+<p><?php echo $lang['INSTALL_REQUIRED_FILES']; ?></p>
 
 <table cellspacing="1" cellpadding="4" border="0"> 
 <?php
@@ -475,8 +467,8 @@ if ($stage == 0)
 
 		$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-		$exists = ($exists) ? '<span style="color:green">Exists</span>' : '<span style="color:red">Does not exist</span>';
-		$write = ($write) ? ', <span style="color:green">Writeable</span>' : (($exists) ? ', <span style="color:red">Not writeable</span>' : '');
+		$exists = ($exists) ? '<span style="color:green">' . $lang['FILE_FOUND'] . '</span>' : '<span style="color:red">' . $lang['FILE_NOT_FOUND'] . '</span>';
+		$write = ($write) ? ', <span style="color:green">' . $lang['FILE_WRITEABLE'] . '</span>' : (($exists) ? ', <span style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</span>' : '');
 
 ?>
 	<tr>
@@ -490,9 +482,9 @@ if ($stage == 0)
 ?>
 </table>
 
-<h2>Optional</h2>
+<h2><?php echo $lang['INSTALL_OPTIONAL']; ?></h2>
 
-<p>These files, directories or permissions are optional. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.</p>
+<p><?php echo $lang['INSTALL_OPTIONAL_FILES']; ?></p>
 
 <table cellspacing="1" cellpadding="4" border="0"> 
 <?php
@@ -512,8 +504,8 @@ if ($stage == 0)
 		$write = $exists = false;
 	}
 
-	$exists = ($exists) ? '<span style="color:green">Exists</span>' : '<span style="color:red">Does not exist</span>';
-	$write = ($write) ? ', <span style="color:green">Writeable</span>' : (($exists) ? ', <span style="color:red">Not writeable</span>' : '');
+	$exists = ($exists) ? '<span style="color:green">' . $lang['FILE_FOUND'] . '</span>' : '<span style="color:red">' . $lang['FILE_NOT_FOUND'] . '</span>';
+	$write = ($write) ? ', <span style="color:green">' . $lang['FILE_WRITEABLE'] . '</span>' : (($exists) ? ', <span style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</span>' : '');
 
 ?>
 	<tr>
@@ -522,15 +514,15 @@ if ($stage == 0)
 	</tr>
 </table>
 
-<h1 align="center" <?php echo ($passed['files']) ? 'style="color:green">Tests passed' : 'style="color:red">Tests failed'; ?></h2>
+<h1 align="center" <?php echo ($passed['files']) ? 'style="color:green">' . $lang['TESTS_PASSED'] : 'style="color:red">' . $lang['TESTS_FAILED']; ?></h2>
 
 <hr />
 
-<h1>Next stage</h1>
+<h1><?php echo $lang['INSTALL_NEXT']; ?></h1>
 
 <?php
 
-	$next_text = ($passed['db'] && $passed['files']) ? 'All the basic tests have been passed and you may proceed to the next stage of installation. If you have changed any permissions, modules, etc. and wish to re-test you can do so if you wish.' : 'Some tests failed and you should correct these problems before proceeding to the next stage. Failure to do so may result in an incomplete installation.';
+	$next_text = ($passed['db'] && $passed['files']) ? $lang['INSTALL_NEXT_PASS'] : $lang['INSTALL_NEXT_FAIL'];
 
 ?>
 
@@ -551,14 +543,9 @@ if ($stage == 0)
 	</tr>
 </table></form>
 
-<div class="copyright" align="center">Powered by phpBB <?php echo $config['version']; ?> &copy; 2003 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></div>
-
-<br clear="all" />
-
-</body>
-</html>
 <?php
 
+	inst_page_footer();
 	exit;
 
 }
@@ -579,7 +566,7 @@ if ($stage == 1)
 		{
 			if (!can_load_dll($available_dbms[$dbms]['MODULE']))
 			{
-				$error['db'][] = 'Cannot load the PHP module for the selected database type';
+				$error['db'][] = $lang['INST_ERR_NO_DB'];;
 			}
 		}
 
@@ -594,12 +581,12 @@ if ($stage == 1)
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
 		{
 			$db_error = $db->sql_error();
-			$error['db'][] = 'Could not connect to the database, error message returned:' . '<br />' . (($db_error['message']) ? $db_error['message'] : 'No error message given');
+			$error['db'][] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
 		}
 
 		if (!sizeof($error['db']))
 		{
-			$error['db'][] = 'CONNECTION SUCCESSFULL';
+			$error['db'][] = $lang['INSTALL_DB_CONNECT'];
 		}
 	}
 
@@ -663,6 +650,11 @@ if ($stage == 1)
 	inst_page_header();
 
 ?>
+
+<h1><?php echo $lang['INITIAL_CONFIG']; ?></h1>
+
+<p><?php echo $lang['INITIAL_CONFIG_EXPLAIN']; ?></p>
+
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $lang['ADMIN_CONFIG']; ?></th>
@@ -680,27 +672,27 @@ if ($stage == 1)
 	}
 ?>
 	<tr>
-		<td class="row1" width="50%" width="50%"><span class="gen"><?php echo $lang['DEFAULT_LANG']; ?>: </span></td>
+		<td class="row1" width="50%" width="50%"><b><?php echo $lang['DEFAULT_LANG']; ?>: </b></td>
 		<td class="row2"><select name="lang"><?php echo inst_language_select($language); ?></select></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['ADMIN_USERNAME']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_USERNAME']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="admin_name" value="<?php echo ($admin_name != '') ? $admin_name : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['ADMIN_EMAIL']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_EMAIL']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="board_email1" value="<?php echo ($board_email1 != '') ? $board_email1 : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['ADMIN_EMAIL_CONFIRM']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_EMAIL_CONFIRM']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="board_email2" value="<?php echo ($board_email2 != '') ? $board_email2 : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['ADMIN_PASSWORD']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_PASSWORD']; ?>: </b></td>
 		<td class="row2"><input class="post" type="password" name="admin_pass1" value="<?php echo ($admin_pass1 != '') ? $admin_pass1 : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['ADMIN_PASSWORD_CONFIRM']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['ADMIN_PASSWORD_CONFIRM']; ?>: </b></td>
 		<td class="row2"><input class="post" type="password" name="admin_pass2" value="<?php echo ($admin_pass2 != '') ? $admin_pass2 : ''; ?>" /></td>
 	</tr>
 	<tr>
@@ -735,7 +727,7 @@ if ($stage == 1)
 		<td class="row2"><input class="post" type="text" name="dbhost" value="<?php echo ($dbhost != '') ? $dbhost : ''; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo 'Database Server Port' . $lang['DB_PORT']; ?>: </b><br /><span class="gensmall">Leave this blank unless you know the server operates on a non-standard port.</span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['DB_PORT']; ?>: </b><br /><span class="gensmall"><?php echo $lang['DB_PORT_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="dbport" value="<?php echo ($dbport != '') ? $dbport : ''; ?>" /></td>
 	</tr>
 	<tr>
@@ -755,7 +747,7 @@ if ($stage == 1)
 		<td class="row2"><input class="post" type="text" name="table_prefix" value="<?php echo (!empty($table_prefix)) ? $table_prefix : 'phpbb_'; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="testdb" value="Test Connection" /></td>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="testdb" value="<?php echo $lang['DB_TEST']; ?>" /></td>
 	</tr>
 </table>
 
@@ -763,7 +755,7 @@ if ($stage == 1)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2">Server Configuration<?php echo $lang['SERVER_CONFIG']; ?></th>
+		<th colspan="2"><?php echo $lang['SERVER_CONFIG']; ?></th>
 	</tr>
 <?php
 
@@ -778,19 +770,19 @@ if ($stage == 1)
 	}
 ?>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['SERVER_NAME']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['SERVER_NAME']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="server_name" value="<?php echo $server_name; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['SERVER_PORT']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['SERVER_PORT']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="server_port" value="<?php echo $server_port; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="50%"><span class="gen"><?php echo $lang['SCRIPT_PATH']; ?>: </span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['SCRIPT_PATH']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="script_path" value="<?php echo $script_path; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" name="install" type="submit" value="Start Install" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" name="install" type="submit" value="<?php echo $lang['INSTALL_START']; ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -800,9 +792,8 @@ if ($stage == 1)
 }
 
 
-
-
-
+// Third stage
+//
 // Here we attempt to write out the config file. If we cannot write it directly
 // we'll offer the user various options
 if ($stage == 2)
@@ -903,7 +894,7 @@ if ($stage == 2)
 					}
 					else
 					{
-						$error['ftp'][] = 'Could not change to the given directory, please check the path.';
+						$error['ftp'][] = $lang['INST_ERR_FTP_PATH'];
 					}
 
 					// Remove the temporary file now
@@ -911,7 +902,7 @@ if ($stage == 2)
 				}
 				else
 				{
-					$error['ftp'][] = 'Could not login to ftp server, check your username and password';
+					$error['ftp'][] = $lang['INST_ERR_FTP_LOGIN'];
 				}
 				@ftp_quit($conn_id);
 			}
@@ -930,11 +921,11 @@ if ($stage == 2)
 		// of config.php, FTP, download and a retry and direct writing
 		if ($stage == 2)
 		{
-			inst_page_header($instruction_text, "install.$phpEx");
+			inst_page_header();
 
 ?>
 
-<p>Unfortunately phpBB could not write the configuration information directly to your config.php. This may be because the file does not exist or is not writeable. A number of options will be listed below enabling you to complete installation of config.php.</p>
+<p><?php echo $lang['INSTALL_SEND_CONFIG']; ?></p>
 
 <?php
 
@@ -965,9 +956,9 @@ if ($stage == 2)
 
 ?>
 
-<h1>Transfer config.php by FTP</h1>
+<h1><?php echo $lang['FTP_CONFIG']; ?></h1>
 
-<p>phpBB has detected the presence of the ftp module on this server. You may attempt to install your config.php via this if you wish. You will need to supply the information listed below. Remember your username and password are those to your server! (ask your hosting provider for details if you are unsure what these are)</p>
+<p><?php echo $lang['FTP_CONFIG_EXPLAIN']; ?></p>
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
@@ -988,7 +979,7 @@ if ($stage == 2)
 
 ?>
 	<tr>
-		<td class="row1" width="50%"><b><?php echo $lang['FTP_PATH']; ?>: </b><br /><span class="gensmall">This is the path from your root directory to that of phpBB2, e.g. htdocs/phpBB2/</span></td>
+		<td class="row1" width="50%"><b><?php echo $lang['FTP_PATH']; ?>: </b><br /><span class="gensmall"><?php echo $lang['FTP_PATH_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="ftp_dir" size="40" maxlength="255" value="<?php echo $ftp_dir; ?>" /></td>
 	</tr>
 	<tr>
@@ -1000,7 +991,7 @@ if ($stage == 2)
 		<td class="row2"><input class="post" type="password" name="ftp_pass" size="40" maxlength="255" value="<?php echo $ftp_pass; ?>" ></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" name="sendftp" type="submit" value="Upload" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" name="sendftp" type="submit" value="<?php echo $lang['FTP_UPLOAD']; ?>" /></td>
 	</tr>
 </table>
 
@@ -1012,25 +1003,25 @@ if ($stage == 2)
 
 ?>
 
-<h1>Download config.php</h1>
+<h1><?php echo $lang['DL_CONFIG']; ?></h1>
 
-<p>You may download the complete config.php to your own PC. You will then need to upload the file manually, replacing any existing config.php in your phpBB 2.2 root directory. Please remember to upload the file in ASCII format (see your FTP application documentation if you are unsure how to achieve this). When you have uploaded the config.php please click "Done" to move to the next stage.</p>
+<p><?php echo $lang['DL_CONFIG_EXPLAIN']; ?></p>
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" align="center"><input class="mainoption" name="dlftp" type="submit" value="Download" /> &nbsp;&nbsp; <input class="mainoption" name="dldone" type="submit" value="Done" /></td>
+		<td class="cat" align="center"><input class="mainoption" name="dlftp" type="submit" value="<?php echo $lang['DL_DOWNLOAD']; ?>" /> &nbsp;&nbsp; <input class="mainoption" name="dldone" type="submit" value="<?php echo $lang['DL_DONE']; ?>" /></td>
 	</tr>
 </table>
 
 <br />
 
-<h1>Retry automatic writing of config.php</h1>
+<h1><?php echo $lang['RETRY_WRITE']; ?></h1>
 
-<p>If you wish you can change the permissions on config.php to allow phpBB to write to it. Should you wish to do that you can click Retry below to try again. Remember to return the permissions on config.php after phpBB2 has finished installation.</p>
+<p><?php echo $lang['RETRY_WRITE_EXPLAIN']; ?></p>
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" align="center"><input class="mainoption" name="retry" type="submit" value="Retry" /></td>
+		<td class="cat" align="center"><input class="mainoption" name="retry" type="submit" value="<?php echo $lang['CONFIG_RETRY']; ?>Retry" /></td>
 	</tr>
 </table>
 
@@ -1058,6 +1049,7 @@ if ($stage == 3)
 		@dl($available_dbms[$dbms]['MODULE'] . ".$prefix");
 	}
 
+
 	// Load the appropriate database class if not already loaded
 	include_once($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
@@ -1065,14 +1057,6 @@ if ($stage == 3)
 	$db = new sql_db();
 	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-	// Load the appropriate schema and basic data
-	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
-	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
-
-	// How should we treat this schema?
-	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
-	$delimiter = $available_dbms[$dbms]['DELIM'];
-	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
 	// We ship the Access schema complete, we don't need to create tables nor
 	// populate it (at this time ... this may change). So we skip this section
@@ -1082,16 +1066,21 @@ if ($stage == 3)
 		$db->return_on_error = true;
 
 		$ignore_tables = array();
+
 		// Ok we have the db info go ahead and read in the relevant schema
-		// and work on building the table.. probably ought to provide some
-		// kind of feedback to the user as we are working here in order
-		// to let them know we are actually doing something.
+		// and work on building the table
+		$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
+
+		// How should we treat this schema?
+		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
+		$delimiter = $available_dbms[$dbms]['DELIM'];
+		$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
+
 		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
 		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
 
 		$sql_query = $remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, $delimiter);
-		$sql_count = count($sql_query);
 
 		foreach ($sql_query as $sql)
 		{
@@ -1105,25 +1094,40 @@ if ($stage == 3)
 				// to quit back to stage 1 and inform the user that this table extension
 				// is already in use
 				$ignore_tables[] = preg_replace('#^CREATE TABLE ([a-z_]+?) .*$#is', '\1', $sql);
+
 				$error = $db->sql_error();
 				die($error['message']);
 			}
 		}
+		unset($sql_query);
 
 		$ignore_tables = str_replace('\\|', '|', preg_quote(implode('|', $ignore_tables), '#'));
 
+
 		// Ok tables have been built, let's fill in the basic information
-		$sql_query = @fread(@fopen($dbms_basic, 'r'), @filesize($dbms_basic));
+		$sql_query = fread(fopen('schemas/schema_data.sql', 'r'), filesize('schemas/schema_data.sql'));
+
+		// Deal with any special comments, used at present for mssql set identity switching
+		switch ($dbms)
+		{
+			case 'mssql':
+			case 'mssql-odbc':
+				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2', $sql_query);
+				break;
+
+			default:
+				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);
+		}
+
 		$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
 
-		$sql_query = $remove_remarks($sql_query);
-		$sql_query = split_sql_file($sql_query, $delimiter_basic);
-		$sql_count = count($sql_query);
+		$sql_query = remove_remarks($sql_query);
+		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
 		{
 			$sql = trim(str_replace('|', ';', $sql));
-			if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#i', $sql))
+			if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#', $sql))
 			{
 				continue;
 			}
@@ -1134,12 +1138,13 @@ if ($stage == 3)
 				die($error['message']);
 			}
 		}
+		unset($sql_query);
 	}
+
 
 	$current_time = time();
 
-	// Set default config and post data, this applies to all DB's including
-	// MS Access
+	// Set default config and post data, this applies to all DB's including Access
 	$sql_ary = array(
 		'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
 			VALUES ('board_startdate', $current_time)",
@@ -1199,7 +1204,6 @@ if ($stage == 3)
 
 		'UPDATE ' . $table_prefix . "forums
 			SET forum_last_post_time = $current_time", 
-
 	);
 
 	foreach ($sql_ary as $sql)
@@ -1245,11 +1249,12 @@ if ($stage == 4)
 
 ?>
 
-<h1 align="center">Congratulations</h1>
+<h1 align="center"><?php echo $lang['INSTALL_CONGRATS']; ?></h1>
 
-<p>You have now successfully installed phpBB 2.2. Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the Userguide and the phpBB support forums, see the <a href="../docs/README.html" target="_blank">README</a> for further information.</p>
 
-<a href="<?php echo "../adm/index.$phpEx$SID"; ?>"><h2 align="center">Login</h2></a>
+<p><?php echo sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'); ?></p>
+
+<a href="<?php echo "../adm/index.$phpEx$SID"; ?>"><h2 align="center"><?php echo $lang['INSTALL_LOGIN']; ?></h2></a>
 
 <?php
 
@@ -1258,7 +1263,11 @@ if ($stage == 4)
 
 }
 
+exit;
 
+// ---------
+// FUNCTIONS
+//
 
 // addslashes to vars if magic_quotes_gpc is off this is a security precaution
 // to prevent someone trying to break out of a SQL statement.
@@ -1318,7 +1327,7 @@ function inst_page_footer()
 
 ?>
 
-<div class="copyright" align="center">Powered by phpBB <?php echo $config['version']; ?> &copy; 2003 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></div>
+<div class="copyright" align="center">Powered by phpBB 2.2 &copy; 2003 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></div>
 
 <br clear="all" />
 
@@ -1327,8 +1336,6 @@ function inst_page_footer()
 <?php
 
 }
-
-
 
 function inst_language_select($default = '')
 {
@@ -1372,5 +1379,8 @@ function can_load_dll($dll)
 
 	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
 }
+//
+// FUNCTIONS
+// ---------
 
 ?>
