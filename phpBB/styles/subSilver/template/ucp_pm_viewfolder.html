@@ -1,0 +1,83 @@
+<!-- INCLUDE ucp_header.html -->
+
+<!-- $Id$ -->
+
+<div id="pagecontent">
+
+<!-- INCLUDE ucp_pm_message_header.html -->
+	<div style="padding: 2px;"></div>
+
+<!-- IF S_PM_ICONS and S_UNREAD -->
+	<!-- DEFINE $COLSPAN = 7 -->
+<!-- ELSEIF not S_PM_ICONS and not S_UNREAD -->
+	<!-- DEFINE $COLSPAN = 5 -->
+<!-- ELSE -->
+	<!-- DEFINE $COLSPAN = 6 -->
+<!-- ENDIF -->
+
+<form name="viewfolder" method="post" action="{S_PM_ACTION}" style="margin:0px">
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+<!-- IF NUM_NOT_MOVED -->
+	<tr>
+		<td class="row3" colspan="{$COLSPAN}" align="center"><span class="gen">{NOT_MOVED_MESSAGES}<br />{RELEASE_MESSAGE_INFO}</span></td>
+	</tr>
+<!-- ENDIF -->
+	<tr>
+		<th colspan="<!-- IF S_PM_ICONS -->3<!-- ELSE -->2<!-- ENDIF -->">&nbsp;{L_SUBJECT}&nbsp;</th>
+		<!-- IF S_UNREAD -->
+			<th>&nbsp;<!-- IF S_SHOW_RECIPIENTS -->{L_RECIPIENTS}<!-- ELSE -->{L_AUTHOR}<!-- ENDIF -->&nbsp;</th>
+			<th>&nbsp;{L_FOLDER}&nbsp;</th>
+		<!-- ELSE -->
+			<th>&nbsp;<!-- IF S_SHOW_RECIPIENTS -->{L_RECIPIENTS}<!-- ELSE -->{L_AUTHOR}<!-- ENDIF -->&nbsp;</th>
+		<!-- ENDIF -->
+		<th>&nbsp;{L_SENT_AT}&nbsp;</th>
+		<th>&nbsp;{L_MARK}&nbsp;</th>
+	</tr>
+
+	<!-- BEGIN messagerow -->
+	<tr>
+		<td class="row1" width="25" align="center" nowrap="nowrap">{messagerow.FOLDER_IMG}</td>
+		<!-- IF S_PM_ICONS -->
+			<td class="row1" width="25" align="center">{messagerow.PM_ICON_IMG}</td>
+		<!-- ENDIF -->
+		<td class="row1">
+			<!-- IF messagerow.S_PM_REPORTED -->
+				<a href="{messagerow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+			<!-- ENDIF -->
+			<!-- IF not messagerow.PM_IMG and messagerow.PM_CLASS -->
+				<span class="{messagerow.PM_CLASS}"><img src="images/spacer.gif" width="10" height="10" alt="" border="0" /></span>&nbsp;
+			<!-- ELSEIF messagerow.PM_IMG -->
+				{messagerow.PM_IMG}&nbsp;
+			<!-- ENDIF -->
+			<p class="topictitle">{messagerow.ATTACH_ICON_IMG} <a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a></p></td>
+		<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR}<!-- ENDIF --></p></td>
+		<!-- IF S_UNREAD -->
+			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF messagerow.FOLDER --><a href="{messagerow.U_FOLDER}">{messagerow.FOLDER}</a><!-- ELSE -->{L_UNKNOWN_FOLDER}<!-- ENDIF --></p></td>
+		<!-- ENDIF -->
+		<td class="row1" width="120" align="center"><p class="topicdetails">{messagerow.SENT_TIME}</p></td>
+		<td class="row1" width="20" align="center"><p class="topicdetails"><input type="checkbox" name="marked_msg_id[]" value="{messagerow.MESSAGE_ID}" /></p></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="{$COLSPAN}" height="30" align="center" valign="middle"><span class="gen">{L_NO_MESSAGES}</span></td>
+	</tr>
+	<!-- END messagerow -->
+
+	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+</table>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td class="cat" align="left"><span class="gensmall">{L_DISPLAY_MESSAGES}:</span> {S_SELECT_SORT_DAYS} <span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR} <input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+		<td class="cat" align="right"><select name="mark_option">{S_MARK_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="submit_mark" value="{L_GO}" />&nbsp;</td>
+	</tr>
+</table>
+
+<div style="padding: 2px;"></div>
+<!-- INCLUDE ucp_pm_message_footer.html -->
+
+<br clear="all" />
+
+</div>
+
+<!-- INCLUDE ucp_footer.html -->

@@ -64,6 +64,7 @@ $lang += array(
 	'AVATAR_WRONG_SIZE'		=> 'The avatar must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.',
 
 	'BACK_TO_TOP'			=> 'Top',
+	'BCC'					=> 'Bcc',
 	'BIRTHDAYS'				=> 'Birthdays',
 	'BOARD_BAN_PERM'		=> 'You have been <b>permanently</b> banned from this board.<br /><br />Please contact the %2$sBoard Administrator%3$s for more information.',
 	'BOARD_BAN_REASON'		=> 'Reason given for ban: <b>%s</b>',
@@ -75,6 +76,7 @@ $lang += array(
 	'BYTES'					=> 'Bytes',
 
 	'CANCEL'				=> 'Cancel',
+	'CHANGE'				=> 'Change',
 	'CLICK_VIEW_PRIVMSG'	=> 'Click %sHere%s to visit your Inbox',
 	'CONFIRM'				=> 'Confirm',
 	'CONGRATULATIONS'		=> 'Congratulations to',
@@ -288,6 +290,7 @@ $lang += array(
 	'REG_USERS_ZERO_TOTAL'	=> '0 Registered, ',
 	'REG_USER_ONLINE'	=> 'There is %d Registered user and ',
 	'REG_USER_TOTAL'	=> '%d Registered, ',
+	'REMOVE'			=> 'Remove',
 	'REMOVE_INSTALL'	=> 'Please delete, move or rename the install directory.',
 	'REPLIES'			=> 'Replies',
 	'REPLY_WITH_QUOTE'	=> 'Reply with quote',

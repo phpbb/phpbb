@@ -759,7 +759,8 @@ class user extends session
 		{
 			if (!$this->theme['primary'][$img])
 			{
-				$imgs[$img . $suffix] = $alt; //'{{IMG:' . $img . '}}';
+				// Do not fill the image to let designers decide what to do if the image is empty
+				$imgs[$img . $suffix] = '';
 				return $imgs[$img . $suffix];
 			}
 			

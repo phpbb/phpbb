@@ -6,6 +6,47 @@
 	<tr>
 		<td width="20%" valign="top">
 
+<!-- IF S_SHOW_PM_BOX and S_POST_ACTION -->
+	<form action="{S_POST_ACTION}" method="post" name="post"{S_FORM_ENCTYPE}>
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th>{L_PM_TO}</th>
+		</tr>
+		<tr>
+			<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		</tr>
+		<tr>
+			<td class="row2"><input class="post" type="text" name="username" size="20" maxlength="40" value="" />&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD}" /></td>
+		</tr>
+	<!-- IF S_ALLOW_MASS_PM -->
+		<tr>
+			<td class="row1"><b class="genmed">{L_USERNAMES}:</b></td>
+		</tr>
+		<tr>
+			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
+				<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+					<li>&#187; <a href="{U_SEARCH_USER}" onclick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false">{L_FIND_USERNAME}</a></li>
+				</ul>
+			</td>
+		</tr>
+	<!-- ENDIF -->
+	<!-- IF S_GROUP_OPTIONS -->
+		<tr>
+			<td class="row1"><b class="genmed">{L_USERGROUPS}:</b></td>
+		</tr>
+		<tr>
+			<td class="row2"><select name="group_list[]" multiple="true" size="5" style="width:150px">{S_GROUP_OPTIONS}</select></td>
+		</tr>
+	<!-- ENDIF -->
+	<!-- IF S_ALLOW_MASS_PM -->
+		<tr>
+			<td class="row1"><div style="float:left">&nbsp;<input class="post" type="submit" name="add_bcc" value="{L_ADD_BCC}" />&nbsp;</div><div style="float:right">&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD_TO}" />&nbsp;</div></td>
+		</tr>
+	<!-- ENDIF -->
+	</table>
+	<div style="padding: 2px;"></div>
+<!-- ENDIF -->
+
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th>{L_OPTIONS}</th>
@@ -31,6 +72,26 @@
 
 <div style="padding: 2px;"></div>
 
+<!-- IF S_SHOW_COLOUR_LEGEND -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+	<tr>
+		<th colspan="2">{L_MESSAGE_COLOURS}</th>
+	</tr>
+	<!-- BEGIN pm_colour_info -->
+	<tr>
+		<!-- IF not pm_colour_info.IMG -->
+			<td class="row1 {pm_colour_info.CLASS}" width="5"><img src="images/spacer.gif" width="5" alt="{pm_colour_info.LANG}" border="0" /></td>
+		<!-- ELSE -->
+			<td class="row1" width="25" align="center">{pm_colour_info.IMG}</td>
+		<!-- ENDIF -->
+		<td class="row1"><span class="genmed">{pm_colour_info.LANG}</span></td>
+	</tr>
+	<!-- END pm_colour_info -->
+</table>
+
+<div style="padding: 2px;"></div>
+<!-- ENDIF -->
+
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th>{L_FRIENDS}</th>
@@ -42,7 +103,11 @@
 
 			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_online -->
-			<li><a href="{friends_online.U_PROFILE}">{friends_online.USERNAME}</a></li>
+				<li><a href="{friends_online.U_PROFILE}">{friends_online.USERNAME}</a>
+				<!-- IF S_SHOW_PM_BOX -->
+					&nbsp;[ <input class="post" type="submit" name="add_to[{friends_online.USER_ID}]" value="{L_ADD}" /> ]
+				<!-- ENDIF -->
+				</li>
 			<!-- BEGINELSE -->
 			<li>{L_NO_FRIENDS_ONLINE}</li>
 			<!-- END friends_online -->
@@ -54,7 +119,10 @@
 
 			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_offline -->
-			<li><a href="{friends_online.U_PROFILE}">{friends_offline.USERNAME}</a></li>
+			<li><a href="{friends_offline.U_PROFILE}">{friends_offline.USERNAME}</a>
+				<!-- IF S_SHOW_PM_BOX -->
+					&nbsp;[ <input class="post" type="submit" name="add_to[{friends_offline.USER_ID}]" value="{L_ADD}" /> ]
+				<!-- ENDIF -->
 			<!-- BEGINELSE -->
 			<li>{L_NO_FRIENDS_OFFLINE}</li>
 			<!-- END friends_offline -->
@@ -66,4 +134,4 @@
 
 		</td>
 		<td><img src="images/spacer.gif" width="4" alt="" /></td>
-		<td width="80%" valign="top"><form name="ucp" method="post" action="{S_UCP_ACTION}">
+		<td width="80%" valign="top"><!-- IF not S_PRIVMSGS --><form name="ucp" method="post" action="{S_UCP_ACTION}"><!-- ENDIF -->

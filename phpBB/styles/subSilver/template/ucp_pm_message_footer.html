@@ -1,0 +1,39 @@
+
+<!-- $Id$ -->
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+	<tr>
+		<td class="row1"><table border="0" cellspacing="0" cellpadding="0" width="100%"><tr><td align="left">
+		<!-- IF TOTAL_MESSAGES -->
+			<table width="100%" cellspacing="1">
+				<tr>
+					<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+					<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_MESSAGES} ]&nbsp;</td>
+					<td class="gensmall" width="100%" align="right" nowrap="nowrap"><b>{PAGINATION}</b></td>
+				</tr>
+			</table>
+		<!-- ENDIF -->
+		<!-- IF S_VIEW_MESSAGE -->
+		<span class="gensmall">
+				<!-- IF U_PRINT_PM --><a href="{U_PRINT_PM}" title="{L_PRINT_PM}">{L_PRINT_PM}</a><!-- IF U_EMAIL_PM or U_FORWARD_PM--> | <!-- ENDIF --><!-- ENDIF -->
+				<!-- IF U_EMAIL_PM --><a href="{U_EMAIL_PM}" title="{L_EMAIL_PM}">{L_EMAIL_PM}</a><!-- IF U_FORWARD_PM --> | <!-- ENDIF --><!-- ENDIF -->
+				<!-- IF U_FORWARD_PM --><a href="{U_FORWARD_PM}" title="{L_FORWARD_PM}">{L_FORWARD_PM}</a><!-- ENDIF -->
+		</span>
+		<!-- ENDIF -->
+		</td>
+		<td align="right" nowrap="nowrap">
+		<!-- IF S_VIEW_MESSAGE -->
+		<form name="movepm" method="post" action="{S_PM_ACTION}" style="margin:0px">
+			<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
+			<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+			<input type="hidden" name="p" value="{MSG_ID}" />
+		<!-- ENDIF -->
+			<!-- IF not S_UNREAD -->
+				<select name="dest_folder">{S_TO_FOLDER_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="move_pm" value="<!-- IF S_VIEW_MESSAGE -->Place Message into Folder<!-- ELSE -->Place Marked into Folder<!-- ENDIF -->" />
+			<!-- ENDIF -->
+			</form>
+		</td></tr></table></td>
+	</tr>
+</table>
+<!-- IF not S_VIEW_MESSAGE --><div style="float:right"><b class="gensmall"><a href="javascript:marklist('viewfolder', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('viewfolder', false);">{L_UNMARK_ALL}</a></b></div><!-- ENDIF -->
+
