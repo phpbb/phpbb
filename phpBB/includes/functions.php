@@ -99,7 +99,7 @@ function get_userdata($username) {
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . "
-		WHERE username = '$username'
+		WHERE username = '" . str_replace("\'", "''", $username) . "'
 			AND user_id <> " . ANONYMOUS;
 	if(!$result = $db->sql_query($sql))
 	{
@@ -330,7 +330,7 @@ function setup_style($style)
 	$template_path = 'templates/' ;
 	$template_name = $row['template_name'] ;
 
-	$template = new Template($phpbb_root_path . $template_path . $template_name, $db);
+	$template = new Template($phpbb_root_path . $template_path . $template_name, $board_config, $db);
 
 	if( $template )
 	{
@@ -387,15 +387,6 @@ function decode_ip($int_ip)
 function create_date($format, $gmepoch, $tz)
 {
 	return (@gmdate($format, $gmepoch + (3600 * $tz)));
-}
-
-//
-// Create a GMT timestamp
-//
-function get_gmt_ts()
-{
-	$time = @time();
-	return($time);
 }
 
 //
@@ -515,11 +506,11 @@ function validate_username($username)
 				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
 				WHERE ug.user_id = u.user_id
 					AND g.group_id = ug.group_id
-					AND	( LOWER(u.username) = '" . strtolower($username) . "'
-						OR LOWER(g.group_name) = '" . strtolower($username) . "' )";
+					AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
+						OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )";
 			$sql_disallow = "SELECT disallow_username
 				FROM " . DISALLOW_TABLE . "
-				WHERE '$username' LIKE disallow_username";
+				WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
 			if($result = $db->sql_query($sql_users))
 			{
 				if($db->sql_numrows($result) > 0)
@@ -541,12 +532,12 @@ function validate_username($username)
 				FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
 				WHERE ug.user_id = u.user_id
 					AND g.group_id = ug.group_id
-					AND	( LOWER(u.username) = '" . strtolower($username) . "'
-						OR LOWER(g.group_name) = '" . strtolower($username) . "' )
+					AND	( LOWER(u.username) = '" . strtolower(str_replace("\'", "''", $username)) . "'
+						OR LOWER(g.group_name) = '" . strtolower(str_replace("\'", "''", $username)) . "' )
 				UNION
 				SELECT disallow_username, NULL
 					FROM " . DISALLOW_TABLE . "
-					WHERE '$username' LIKE disallow_username";
+					WHERE '" . str_replace("\'", "''", $username) . "' LIKE disallow_username";
 			if($result = $db->sql_query($sql))
 			{
 				if($db->sql_numrows($result) > 0)
@@ -928,7 +919,7 @@ function username_search($search_match, $is_inline_review = 0, $default_list = "
 
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '$username_search' 
+			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
 			ORDER BY username";
 		if( !$result = $db->sql_query($sql) )
 		{
