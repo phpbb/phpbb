@@ -100,10 +100,6 @@ $lang += array(
 	'log_delete_word'		=> '<b>Deleted word censor</b>',
 	'log_edit_word'			=> '<b>Edited word censor</b><br />&#187; %s',
 	'log_add_word'			=> '<b>Added word censor</b><br />&#187; %s',
-	'log_template_edit'		=> '<b>Edited template</b><br />%s / %s',
-	'log_imageset_edit'		=> '<b>Edited imageset</b><br />&#187; %s',
-	'log_style_edit'		=> '<b>Edited style</b><br />&#187; %s',
-	'log_theme_edit'		=> '<b>Edited theme</b><br />&#187; %s',
 	'log_db_backup'			=> '<b>Database backup</b>',
 	'log_db_restore'		=> '<b>Database restore</b>',
 	'log_search_index'		=> '<b>Re-indexed search system</b><br />&#187; %s',
@@ -184,6 +180,8 @@ $lang += array(
 
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
+	'LOG_EXPORT_STYLE'	=> '<b>Exported style</b><br />&#187; %s', 
+	'LOG_DELETE_STYLE'	=> '<b>Deleted style</b><br />&#187; %s', 
 
 	'LOG_EDIT_TEMPLATE'	=> '<b>Edited template</b><br />&#187; %s [%s]', 
 	'LOG_CLEAR_TPLCACHE'=> '<b>Cleared template cache</b><br />&#187; %s', 
@@ -973,6 +971,14 @@ $lang += array(
 	'INCLUDE_IMAGESET'		=> 'Include imageset', 
 	'STYLE_EXPORTED'		=> 'Style exported succesfully and stored in %s', 
 
+	'DELETE_STYLE'			=> 'Delete style', 
+	'DELETE_STYLE_EXPLAIN'	=> 'Here you can remove the selected style. You cannot remove all the style elements from here. These must be deleted individually via their respective forms. Take care in deleting styles there is no undo facility.', 
+	'REPLACE_STYLE'			=> 'Replace style with', 
+	'REPLACE_STYLE_EXPLAIN'	=> 'This style will replace the one being deleted for members that use it.', 
+	'ONLY_STYLE'			=> 'This is the only remaining style, you cannot delete it',
+	'STYLE_DELETED'			=> 'Style deleted successfully', 
+
+	'STYLE_ERR_NOT_STYLE'	=> 'The imported or uploaded file did not contain a valid style archive.', 
 	'STYLE_ERR_MORE_ELEMENTS'=> 'You must select at least two style elements.', 
 	'STYLE_ERR_STYLE_NAME'	=> 'You must supply a name for this style', 
 	'STYLE_ERR_NAME_LONG'	=> 'The style name can be no longer than 30 characters', 
@@ -1249,6 +1255,7 @@ $lang += array(
 	'EXPORT_DOWNLOAD'		=> 'Download', 
 	'INSTALL'				=> 'Install', 
 	'FROM'					=> 'from', // "Create new style .... from ..."
+	'OPTIONAL_BASIS'		=> 'Optional basis', 
 	'NO_IMAGESET'			=> 'Cannot find imageset on filesystem', 
 	'NO_THEME'				=> 'Cannot find theme on filesystem', 
 	'NO_TEMPLATE'			=> 'Cannot find template on filesystem', 
