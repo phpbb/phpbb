@@ -439,7 +439,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
             // Keeps error in nested tag from breaking out
             // of table structure..
             //
-            $curr_pos = curr_pos + strlen($possible_start);	
+            $curr_pos = $curr_pos + strlen($possible_start);	
 			}
 			else
 			{
