@@ -18,15 +18,93 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+//
+// First thing to check for is the case that we couldn't write the config
+// file and they chose to have use send it to them.
+//
+
+if($HTTP_POST_VARS['send_file'] == 1)
+{
+	header("Content-Type: text/x-delimtext; name=\"config.php\"");
+	header("Content-disposition: attachment; filename=config.php");
+	if(get_magic_quotes_gpc())
+	{
+		$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	}
+	echo $HTTP_POST_VARS['config_data'];
+	exit();
+}
+
 $phpbb_root_path='./';
 include($phpbb_root_path.'extension.inc');
-include($phpbb_root_path.'includes/installation.'.$phpEx);
+
+
+/***************************************************************************
+ *								Install Customization Section
+ *
+ *		This section can be modified to set up some basic default information
+ * 	used by the install script.  Specifically the default theme data
+ *		and the default template.
+ *
+ **************************************************************************/
+$userdata = "some false data"; 
+$theme = array(
+	'themes_id' => '2',
+	'themes_name' => 'Default',
+	'template_name' => 'Default',
+	'td_color1' => 'CCCCCC', 
+	'td_color2' => 'DDDDDD'
+);
+$default_language = 'english';
+$default_template = 'Default';
+					
+$available_dbms[] = array(
+	"LABEL" => "MySQL",
+	"VALUE" => "mysql"
+);
+$available_dbms[] = array(
+	"LABEL" => "MS SQL",
+	"VALUE" => "mssql"
+);
+$available_dbms[] = array(
+	"LABEL" => "Postgres",
+	"VALUE" => "postgres"
+);
+$available_dbms[] = array(
+	"LABEL" => "ODBC - MSAccess",
+	"VALUE" => "odbc:access"
+);
+$available_dbms[] = array(
+	"LABEL" => "ODBC - DB2",
+	"VALUE" => "odbc:db2"
+);
+/***************************************************************************
+*		
+*						End Install Customization Section
+*
+***************************************************************************/
+
+//
+//	Fill an array with a list of available languages.
+//
+
+$dir = opendir($phpbb_root_path.'/language');
+while($file = readdir($dir))
+{
+	if(preg_match("/^lang_(.*)\.$phpEx/", $file, $matches))
+	{
+		$available_lang[] = $matches[1];
+	}
+}
+
+//
+// Bring in the extra files that contain functions we need.
+//
 
 $language = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $default_language;
 include($phpbb_root_path.'includes/sql_parse.'.$phpEx);
 include($phpbb_root_path.'includes/constants.'.$phpEx);
 include($phpbb_root_path.'includes/template.'.$phpEx);
-//include($phpbb_root_path.'includes/message.'.$phpEx);
 include($phpbb_root_path.'includes/functions.'.$phpEx);
 include($phpbb_root_path.'language/lang_'.$language.'.'.$phpEx);
 
@@ -301,7 +379,32 @@ switch ( $installStep )
 			$config_data.= '$table_prefix = "'.$HTTP_POST_VARS['prefix'].'";'."\n";
 			$config_data.= '?>';
 			@umask(0111);
-			$fp = fopen('config.php', 'w');
+			$noOpen = False;
+			$fp = @fopen('config.php', 'w');
+			if(!$fp)
+			{
+				//
+				// Unable to open the file writeable do something here as an attempt
+				// to get around that...
+				$template->set_filenames(array(
+						"body" => "install.tpl")
+				);
+				$template->assign_vars(array(
+					"L_INSTRUCT" => $lang['UnWrite_Config'],
+					"L_SUBMIT" => $lang['Send_Config'],
+					"S_FORM_ACTION" => 'install.'.$phpEx)
+				);
+				$template->assign_block_vars("hidden_fields", array(
+					"NAME" => "config_data",
+					"VALUE" => htmlspecialchars($config_data) )
+				);
+				$template->assign_block_vars("hidden_fields", array(
+					"NAME" => "send_file",
+					"VALUE" => "1")
+				);
+				$template->pparse('body');
+				exit();
+			}
 			$result = fputs($fp, $config_data, strlen($config_data));
 			fclose($fp);
 			//

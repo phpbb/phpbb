@@ -971,6 +971,11 @@ $lang['Finish_Install'] = "Finish Installation";
 $lang['Install_db_error'] = "An error occured trying to update the database";
 $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
 $lang['Table_Prefix'] = "Table Name Prefix";
+$lang['Send_Config'] = "Send Config File";
+$lang['UnWrite_Config'] = "Setup was unable to write your config file to the phpBB directory.  You can either correct this by making the config file writable
+by the webserver, and running this setup again, or you may choose to have the config.php file sent to you by clicking the button below.  Once the file has been
+saved to your local hard drive you should then ftp it to the server in your phpBB directory, and then <a href='login.php'>log into phpBB</a> and go the administration Panel to customize your board.";
+
 //
 // End
 // -------------------------------------------------
