@@ -37,7 +37,16 @@ function clean_words($entry, &$stopword_list, &$synonym_list)
 	static $later_match =   array("-", "~", "+", ".", "[", "]", "{", "}", ":", "\\", "/", "=", "#", "\"", ";", "*", "!");
 	static $later_replace = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
 
+	static $sgml_match = array("&nbsp;", "&szlig;", "&agrave;", "&aacute;", "&acirc;", "&atilde;", "&auml;", "&aring;", "&aelig;", "&ccedil;", "&egrave;", "&eacute;", "&ecirc;", "&euml;", "&igrave;", "&iacute;", "&icirc;", "&iuml;", "&eth;", "&ntilde;", "&ograve;", "&oacute;", "&ocirc;", "&otilde;", "&ouml;", "&oslash;", "&ugrave;", "&uacute;", "&ucirc;", "&uuml;", "&yacute;", "&thorn;", "&yuml;");
+	static $sgml_replace = array(" ", "s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "i", "i", "i", "i", "i", "i", "u", "u", "u", "u", "y", "t", "y");
+
+	static $accent_match = array("ß", "à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ø", "ù", "ú", "û", "ü", "ý", "þ", "ÿ");
+	static $accent_replace = array("s", "a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i", "i", "i", "o", "n", "i", "i", "i", "i", "i", "i", "u", "u", "u", "u", "y", "t", "y");
+
 	$entry = " " . stripslashes(strip_tags(strtolower($entry))) . " ";
+
+	$entry = str_replace($sgml_match, $sgml_match, $entry);
+	$entry = str_replace($accent_match, $accent_replace, $entry);
 
 	$entry = preg_replace("/[\n\r]/is", " ", $entry); 
 	$entry = preg_replace("/\b[a-z0-9]+:\/\/[a-z0-9\.\-]+(\/[a-z0-9\?\.%_\-\+=&\/]+)?/si", " ", $entry); 
@@ -79,6 +88,7 @@ function clean_words($entry, &$stopword_list, &$synonym_list)
 
 function split_words(&$entry)
 {
+	$split_entries = array();
 	preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
 
 	return $split_entries[1];
@@ -1029,10 +1039,9 @@ else
 
 if( $submit && $mode != "vote" )
 {
-	if( !empty($HTTP_POST_VARS['username']) )
+	$post_username = trim(strip_tags($HTTP_POST_VARS['username']));
+	if( !empty($post_username) )
 	{
-		$post_username = trim(strip_tags($HTTP_POST_VARS['username']));
-
 		if( !validate_username(stripslashes($post_username)) )
 		{
 			$error = TRUE;
@@ -1048,7 +1057,7 @@ if( $submit && $mode != "vote" )
 		$post_username = "";
 	}
 
-	$post_subject = trim(strip_tags($HTTP_POST_VARS['subject']));
+	$post_subject = trim(strip_tags(str_replace("&nbsp;", " ", $HTTP_POST_VARS['subject'])));
 	if( $mode == 'newtopic' && empty($post_subject) )
 	{
 		$error = TRUE;
@@ -1059,7 +1068,8 @@ if( $submit && $mode != "vote" )
 		$error_msg .= $lang['Empty_subject'];
 	}
 
-	if( !empty($HTTP_POST_VARS['message']) )
+	$post_message = trim(str_replace("&nbsp;", " ", $HTTP_POST_VARS['message']));
+	if( !empty($post_message) )
 	{
 		if( !$error )
 		{
@@ -1068,8 +1078,7 @@ if( $submit && $mode != "vote" )
 				$bbcode_uid = make_bbcode_uid();
 			}
 
-			$post_message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
-
+			$post_message = prepare_message($post_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 		}
 	}
 	else
