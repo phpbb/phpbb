@@ -39,7 +39,7 @@ if(empty($phpbb_root_path))
 }
 include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
-include($phpbb_root_path . 'includes/template.inc');
+include($phpbb_root_path . 'includes/template.'.$phpEx);
 include($phpbb_root_path . 'includes/message.'.$phpEx);
 include($phpbb_root_path . 'includes/sessions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.'.$phpEx);
@@ -113,6 +113,7 @@ else
 	$board_config['board_email_from'] = stripslashes($config['email_from']);
 	$board_config['flood_interval'] = $config['flood_interval'];
 	$board_config['session_length'] = $config['session_length'];
+//	$board_config['session_max'] = $config['session_max'];
 	$board_config['cookie_name'] = $config['cookie_name'];
 	$board_config['cookie_path'] = $config['cookie_path'];
 	$board_config['cookie_domain'] = $config['cookie_domain'];
