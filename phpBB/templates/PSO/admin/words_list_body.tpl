@@ -20,6 +20,6 @@
 	</tr>
 	<!-- END words -->
 	<tr>
-		<td colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="add" value="{L_WORD_ADD}" /></td>
+		<td colspan="5" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="add" value="{L_ADD_WORD}" /></td>
 	</tr>
 </table></form>

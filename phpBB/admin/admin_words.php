@@ -36,33 +36,56 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 }
-else
+else 
 {
-	$mode = "";
+	//
+	// These could be entered via a form button
+	//
+	if( isset($HTTP_POST_VARS['add']) )
+	{
+		$mode = "add";
+	}
+	else if( isset($HTTP_POST_VARS['save']) )
+	{
+		$mode = "save";
+	}
+	else
+	{
+		$mode = "";
+	}
 }
 
 if( $mode != "" )
 {
 	if( $mode == "edit" || $mode == "add" )
 	{
+		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+
 		$template->set_filenames(array(
 			"body" => "admin/words_edit_body.tpl")
 		);
 
-		$s_hidden_fields = '<input type="hidden" name="mode" value="save" />';
+		$s_hidden_fields = '';
 
 		if( $mode == "edit" )
 		{
-			$sql = "SELECT * 
-				FROM " . WORDS_TABLE . " 
-				WHERE word_id = " . $HTTP_GET_VARS['id'];
-			if(!$result = $db->sql_query($sql))
+			if( $word_id )
 			{
-				message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
-			}
+				$sql = "SELECT * 
+					FROM " . WORDS_TABLE . " 
+					WHERE word_id = $word_id";
+				if(!$result = $db->sql_query($sql))
+				{
+					message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
+				}
 
-			$word_info = $db->sql_fetchrow($result);
-			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_info['word_id'] . '" />';
+				$word_info = $db->sql_fetchrow($result);
+				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
+			}
+			else
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
+			}
 		}
 
 		$template->assign_vars(array(
@@ -166,8 +189,6 @@ else
 	$word_rows = $db->sql_fetchrowset($result);
 	$word_count = count($word_rows);
 
-	$s_hidden_fields = '<input type="hidden" name="mode" value="add" />';
-
 	$template->assign_vars(array(
 		"L_WORDS_TITLE" => $lang['Words_title'],
 		"L_WORDS_TEXT" => $lang['Words_explain'],
@@ -175,11 +196,11 @@ else
 		"L_REPLACEMENT" => $lang['Replacement'],
 		"L_EDIT" => $lang['Edit'],
 		"L_DELETE" => $lang['Delete'],
-		"L_WORD_ADD" => $lang['Add_new_word'],
+		"L_ADD_WORD" => $lang['Add_new_word'],
 		"L_ACTION" => $lang['Action'],
 
 		"S_WORDS_ACTION" => append_sid("admin_words.$phpEx"),
-		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+		"S_HIDDEN_FIELDS" => '')
 	);
 
 	for($i = 0; $i < $word_count; $i++)
