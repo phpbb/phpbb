@@ -571,6 +571,10 @@ else if ( $mode == 'read' )
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
+	$orig_word = array();
+	$replacement_word = array();
+	obtain_word_list($orig_word, $replacement_word);
+
 	if ( count($orig_word) )
 	{
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
@@ -1682,6 +1686,10 @@ $template->set_filenames(array(
 	'body' => 'privmsgs_body.tpl')
 );
 make_jumpbox('viewforum.'.$phpEx);
+
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
 
 //
 // New message
