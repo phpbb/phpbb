@@ -781,7 +781,7 @@ $lang['Emotion'] = "Emotion";
 
 // User Management
 $lang['User_admin'] = "Administration";
-$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power.<br />Deleting users is not provided here, nor is changing admin status. <br />Use the banning and user permission pages respectively.";
+$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power. Changing admin status is not provided here. Use the user permission pages for this. <br />Developer To-Do: <br />Add support to modify /"invisible/" fields.";
 $lang['User_delete'] = "Delete this user";
 $lang['User_delete_explain'] = "Click here to delete this user.  This cannot be undone.";
 $lang['User_deleted'] = "User was successfully deleted.";

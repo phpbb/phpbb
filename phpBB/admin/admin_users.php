@@ -654,7 +654,7 @@ else if($HTTP_POST_VARS[submit] && $HTTP_POST_VARS['user_id'])
 		{
 			$sql = "UPDATE " . USERS_TABLE . "
 			SET " . $username_sql . $passwd_sql . "user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_active = '1', user_actkey = '$user_actkey'" . $avatar_sql . "
-			WHERE poster_id = $user_id";
+			WHERE user_id = $user_id";
 			if($result = $db->sql_query($sql))
 			{
 						$template->set_filenames(array(
