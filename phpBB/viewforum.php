@@ -27,9 +27,9 @@ include('common.'.$phpEx);
 // If not give them a nice error page.
 if(isset($forum_id))
 {
-	$sql = "SELECT f.forum_type, f.forum_name
-		FROM ".FORUMS_TABLE." f 
-		WHERE forum_id = '$forum_id'";
+	$sql = "SELECT f.forum_type, f.forum_name, u.username, u.user_id
+		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+		WHERE f.forum_id = '$forum_id' AND fm.forum_id = '$forum_id' AND u.user_id = fm.user_id";
 }
 else 
 {
@@ -54,7 +54,12 @@ if(!$forum_row)
 }
 
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
-$forum_moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">james</a>";
+for($x = 0; $x < $db->sql_numrows($result); $x++)
+{
+   if($x > 0)
+     $forum_moderators .= ", ";
+   $forum_moderators .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_row[$x]["user_id"]."\">".$forum_row[$x]["username"]."</a>";
+}
 
 $pagetype = "viewforum";
 $page_title = "View Forum - $forum_name";
