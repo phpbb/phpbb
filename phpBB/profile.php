@@ -453,10 +453,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 				$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-				$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
-				$user_avatar_name = ($HTTP_POST_FILES['avatar']['name']) ? $HTTP_POST_FILES['avatar']['name'] : "";
-				$user_avatar_size = ($HTTP_POST_FILES['avatar']['size']) ? $HTTP_POST_FILES['avatar']['size'] : 0;
-				$user_avatar_type = ($HTTP_POST_FILES['avatar']['type']) ? $HTTP_POST_FILES['avatar']['type'] : "";
+				$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
+				$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
+				$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
+				$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
 
 				$error = FALSE;
 			
@@ -722,10 +722,10 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$user_template = ($HTTP_POST_VARS['template']) ? $HTTP_POST_VARS['template'] : $board_config['default_template'];
 			$user_dateformat = ($HTTP_POST_VARS['dateformat']) ? trim($HTTP_POST_VARS['dateformat']) : $board_config['default_dateformat'];
 
-			$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name']) ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
-			$user_avatar_name = ($HTTP_POST_FILES['avatar']['name']) ? $HTTP_POST_FILES['avatar']['name'] : "";
-			$user_avatar_size = ($HTTP_POST_FILES['avatar']['size']) ? $HTTP_POST_FILES['avatar']['size'] : 0;
-			$user_avatar_type = ($HTTP_POST_FILES['avatar']['type']) ? $HTTP_POST_FILES['avatar']['type'] : "";
+			$user_avatar_loc = ($HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : "";
+			$user_avatar_name = (!empty($HTTP_POST_FILES['avatar']['name'])) ? $HTTP_POST_FILES['avatar']['name'] : "";
+			$user_avatar_size = (!empty($HTTP_POST_FILES['avatar']['size'])) ? $HTTP_POST_FILES['avatar']['size'] : 0;
+			$user_avatar_type = (!empty($HTTP_POST_FILES['avatar']['type'])) ? $HTTP_POST_FILES['avatar']['type'] : "";
 
 			if(!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'])
 			{
