@@ -1,0 +1,18 @@
+Subject: {SITENAME} - Email a friend
+Charset: iso-8859-1
+
+Hello,
+
+This email was sent from "{SITENAME}" by {USERNAME} who thought you may be interested in the following topic.
+
+{TOPIC_NAME}
+
+You can find it at:
+
+{U_TOPIC}
+
+A message from {USERNAME} may also be included below. Please note that this message has not been seen or approved by the board administrators. If you wish to complain about having received this email please contact the board administrator {CONTACT_EMAIL}. Please quote the the message headers when contacting this address.
+
+----------
+
+{MESSAGE}
