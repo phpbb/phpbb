@@ -1,8 +1,8 @@
 <?php
 
-if ( !empty($setmodules) )
+if (!empty($setmodules))
 {
-	if ( !$auth->acl_get('a_styles') )
+	if (!$auth->acl_get('a_styles'))
 	{
 		return;
 	}
@@ -37,7 +37,156 @@ $action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) :
 
 switch ($mode)
 {
-	case 'editimageset':
+
+	case 'styles':
+
+		$style_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
+
+		switch ($action)
+		{
+			case 'preview':
+				break;
+
+			case 'edit':
+
+				if (isset($_POST['update']))
+				{
+				}
+
+				if ($style_id)
+				{
+					$sql = 'SELECT * 
+						FROM ' . STYLES_TABLE . "
+						WHERE style_id = $style_id";
+					$result = $db->sql_query($sql);
+
+					if ($style_data = $db->sql_fetchrow($result))
+					{
+					}
+					$db->sql_freeresult($result);
+				}
+
+				$style_options = array();
+				$field_ary = array(STYLES_CSS_TABLE => 'theme', STYLES_TPL_TABLE => 'template', STYLES_IMAGE_TABLE => 'imageset');
+				foreach ($field_ary as $table => $field)
+				{
+					$sql = "SELECT {$field}_id, {$field}_name
+						FROM $table 
+						ORDER BY {$field}_id";
+					$result = $db->sql_query($sql);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$selected = ($row[$field . '_id'] == $style_data[$field . '_id']) ? ' selected="selected"' : '';
+						${$field . '_options'} .= '<option value="' . $row[$field . '_id'] . '"' . $selected . '>' . $row[$field . '_name'] . '</option>';
+					}
+					$db->sql_freeresult($result);
+				}
+
+
+				// Output the page
+				adm_page_header($user->lang['EDIT_STYLE']);
+
+?>
+
+<h1><?php echo $user->lang['EDIT_STYLE']; ?></h1>
+
+<p><?php echo $user->lang['EDIT_STYLE_EXPLAIN']; ?></p>
+
+<p>Selected Style: <b><?php echo $style_data['style_name']; ?></b></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$style_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+	</tr>
+	<tr>
+		<td class="row1">Style Name</td>
+		<td class="row2"><input class="post" type="text" name="style_name" maxlength="255" size="40" /></td>
+	</tr>
+	<tr>
+		<td class="row1">Template set:</td>
+		<td class="row2"><select name="template_id"><?php echo $template_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1">Theme set:</td>
+		<td class="row2"><select name="theme_id"><?php echo $theme_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1">Imageset:</td>
+		<td class="row2"><select name="imageset_id"><?php echo $imageset_options; ?></select></td>
+	</tr>
+	<tr>
+		<td class="row1">Active:</td>
+		<td class="row2"></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+				adm_page_footer();
+				break;
+
+			case 'delete':
+				break;
+
+			case 'export':
+				break;
+		}
+
+		adm_page_header($user->lang['EDIT_STYLE']);
+
+?>
+<h1><?php echo $user->lang['EDIT_STYLE']; ?></h1>
+
+<p><?php echo $user->lang['EDIT_STYLE_EXPLAIN']; ?></p>
+
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th>Style name</th>
+		<th>&nbsp;</th>
+	</tr>
+<?php
+
+		$sql = 'SELECT style_id, style_name
+			FROM ' . STYLES_TABLE;
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;id=" . $row['style_id']; ?>"><?php echo $row['style_name']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=deactivate&amp;id=" . $row['style_id']; ?>">Deactivate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;id=" . $row['style_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=export&amp;id=" . $row['style_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=preview&amp;id=" . $row['style_id']; ?>">Preview</a>&nbsp;</td>
+	</tr>
+<?php
+
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		else
+		{
+		}
+		$db->sql_freeresult($result);
+
+
+?>
+	<tr>
+		<td class="cat" colspan="2">&nbsp;</td>
+	</tr>
+</table></form>
+<?php 
+
+		break;
+
+
+	case 'imagesets':
 		$imgroot = (isset($_POST['imgroot'])) ? $_POST['imgroot']  : $config['default_style'];
 
 		if (isset($_POST['img_addconfig']))
@@ -80,9 +229,9 @@ switch ($mode)
 
 <form method="post" action="admin_styles.<?php echo $phpEx . $SID; ?>&amp;mode=editimageset">
 
-<h2>Edit Imageset</h2>
+<h1>Edit Imageset</h1>
 
-<p>Template set: <select name="imgroot"><?php echo $imgroot_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="img_root" value="Select set" /> &nbsp; <input class="liteoption" type="submit" name="create" value="Create new set" /></p>
+<p>Template set: <select name="imgroot"><?php echo $imgroot_options; ?></select>&nbsp; <input class="btnlite" type="submit" name="img_root" value="Select set" /> &nbsp; <input class="btnlite" type="submit" name="create" value="Create new set" /></p>
 
 <p>Here you can create, edit, delete and download imagesets.</p>
 
@@ -116,7 +265,7 @@ switch ($mode)
 	<tr>
 		<td class="<?php echo $row_class; ?>" height="25"><span class="gen"><?php echo ucfirst(str_replace('_', ' ', $imageset[$i])); ?></span></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $img; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center">&nbsp;<input class="liteoption" type="submit" value="Edit" /></td>
+		<td class="<?php echo $row_class; ?>" align="center">&nbsp;<input class="btnlite" type="submit" value="Edit" /></td>
 	</tr>
 <?php
 
@@ -124,7 +273,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"> <input class="liteoption" type="submit" name="download" value="Download set" &nbsp; <input class="liteoption" type="submit" name="img_delete" value="Delete set" /> </td>
+		<td class="cat" colspan="3" height="28" align="center"> <input class="btnlite" type="submit" name="download" value="Download set" &nbsp; <input class="btnlite" type="submit" name="img_delete" value="Delete set" /> </td>
 	</tr>
 </table></form>
 
@@ -152,8 +301,8 @@ switch ($mode)
 
 			case 'edit':
 
-				$tplcols = (isset($_POST['tplcols'])) ? max(60, intval($_POST['tplcols'])) : 76;
-				$tplrows = (isset($_POST['tplrows'])) ? max(4, intval($_POST['tplrows'])) : 30;
+				$tplcols = (isset($_POST['tplcols'])) ? max(76, intval($_POST['tplcols'])) : 76;
+				$tplrows = (isset($_POST['tplrows'])) ? max(30, intval($_POST['tplrows'])) : 30;
 				$tplname = (isset($_POST['tplname'])) ? $_POST['tplname']  : '';
 				$tplroot = (isset($_POST['tplroot'])) ? $_POST['tplroot']  : 'subSilver';
 
@@ -235,7 +384,7 @@ switch ($mode)
 
 ?>
 
-<h2><?php echo $user->lang['Edit_template']; ?></h2>
+<h1><?php echo $user->lang['Edit_template']; ?></h1>
 
 <p><?php echo $user->lang['Edit_template_explain']; ?></p>
 
@@ -243,9 +392,9 @@ switch ($mode)
 	<tr>
 		<td class="cat"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td>&nbsp;Template: <select name="tplname"><?php echo $tplname_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_name" value="Select" /></td>
+				<td>&nbsp;Template: <select name="tplname"><?php echo $tplname_options; ?></select>&nbsp; <input class="btnlite" type="submit" name="tpl_name" value="Select" /></td>
 
-				<td align="right">Columns: <input type="text" name="tplcols" size="3" maxlength="3" value="<?php echo $tplcols; ?>" /> &nbsp;Rows: <input type="text" name="tplrows" size="3" maxlength="3" value="<?php echo $tplrows; ?>" />&nbsp; <input class="liteoption" type="submit" name="tpl_layout" value="Update" />&nbsp;</td>
+				<td align="right">Columns: <input type="text" name="tplcols" size="3" maxlength="3" value="<?php echo $tplcols; ?>" /> &nbsp;Rows: <input type="text" name="tplrows" size="3" maxlength="3" value="<?php echo $tplrows; ?>" />&nbsp; <input class="btnlite" type="submit" name="tpl_layout" value="Update" />&nbsp;</td>
 			</tr>
 		</table></td>
 	</tr>
@@ -253,7 +402,7 @@ switch ($mode)
 		<td colspan="2" align="center"><textarea class="edit" style="background-color:#DEE3E7" cols="<?php echo $tplcols; ?>" rows="<?php echo $tplrows; ?>" name="decompile"><?php echo htmlentities($str); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" height="28" align="center"><input class="liteoption" type="submit" name="tpl_compile" value="Recompile" /> &nbsp; <input class="liteoption" type="submit" name="tpl_download" value="Download" /> &nbsp; <input class="liteoption" type="reset" value="Undo" /></td>
+		<td class="cat" colspan="2" height="28" align="center"><input class="btnlite" type="submit" name="tpl_compile" value="Recompile" /> &nbsp; <input class="btnlite" type="submit" name="tpl_download" value="Download" /> &nbsp; <input class="btnlite" type="reset" value="Undo" /></td>
 	</tr>
 </table></form>
 
@@ -275,7 +424,7 @@ switch ($mode)
 		adm_page_header($user->lang['EDIT_TEMPLATE']);
 
 ?>
-<h2><?php echo $user->lang['Edit_template']; ?></h2>
+<h1><?php echo $user->lang['Edit_template']; ?></h1>
 
 <p><?php echo $user->lang['Edit_template_explain']; ?></p>
 
@@ -336,23 +485,46 @@ switch ($mode)
 
 	case 'themes':
 
-		$theme_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
-
 		switch ($action)
 		{
 			case 'preview':
-
 				break;
 
 			case 'edit':
 
+				// General parameters
+				$theme_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
+				$class = (isset($_POST['classname'])) ? htmlspecialchars($_POST['classname']) : '';
+
+				$txtcols = (isset($_POST['txtcols'])) ? max(40, intval($_POST['txtcols'])) : 76;
+				$txtrows = (isset($_POST['txtrows'])) ? max(5, intval($_POST['txtrows'])) : 10;
+				$showcss = (!empty($_POST['showcss'])) ? true : ((!empty($_POST['hidecss'])) ? false : ((!empty($_GET['showcss'])) ? true : false));
+
+				// List of default classes, categorised
+				$base_classes = array(
+					'text'	=> array(
+						'body',  'p',  'a',  'h1',  'h2',  'h3',  'tabletitle',  'cattitle',  'topictitle',  'topicauthor',  'topicdetails',  'postdetails',  'postbody',  'posthilit', 'postauthor',  'genmed',  'gensmall',  'copyright',
+					),
+					'tables'	=> array(
+						'table',  'th', 'cat',  'catdiv',  'td',  'row1',  'row2',  'row3',  'spacer',  'hr', 
+					),
+					'forms'		=> array(
+						'form',  'input',  'select',  'textarea',  'post',  'btnlite', 'btnmain', 'btnbbcode',
+					), 
+					'bbcode'	=> array(
+						'b', 'u', 'i', 'color', 'size', 'code', 'quote', 'flash', 'syntaxbg',  'syntaxcomment', 'syntaxdefault', 'syntaxhtml', 'syntaxkeyword', 'syntaxstring',
+					), 
+					'custom'	=> array(),
+				);
+
+
+				// We want to submit the updates
 				if (isset($_POST['update']))
 				{
 				}
 
-
-				$class = (isset($_POST['classname'])) ? htmlspecialchars($_POST['classname']) : '';
-
+				
+				// Do we want to edit an existing theme?
 				if ($theme_id)
 				{
 					$sql = 'SELECT * 
@@ -360,141 +532,66 @@ switch ($mode)
 						WHERE theme_id = $theme_id";
 					$result = $db->sql_query($sql);
 
-					if ($theme_data = $db->sql_fetchrow($result))
+					if (!(extract($db->sql_fetchrow($result))))
 					{
+						trigger_error($user->lang['NO_THEME']);
 					}
 					$db->sql_freeresult($result);
-				}
+					
 
-				$user->lang = array_merge($user->lang, array(
-					'SELECT_CLASS'			=> 'Select class', 
-
-					'style_cat_text'		=> 'Text classes',
-					'style_body'			=> 'Body',
-					'style_p'				=> 'Paragraphs', 
-					'style_h1'				=> 'Header 1', 
-					'style_h2'				=> 'Header 2', 
-					'style_h3'				=> 'Header 3', 
-
-					'style_postdetails'		=> 'Post Information',
-					'style_postbody'		=> 'Post Text', 
-					'style_postauthor'		=> 'Post Author', 
-
-					'style_topictitle'		=> 'Topic titles', 
-					'style_topicauthor'		=> 'Topic Author', 
-					'style_topicdetails'	=> 'Topic Details', 
-
-					'style_gen'				=> 'General Text', 
-					'style_genmed'			=> 'Medium Text', 
-					'style_gensmall'		=> 'Small Text',
-
-					'style_copyright'		=> 'Copyright Text', 
-
-
-					'style_cat_tables'		=> 'Table classes', 
-					'style_cat'				=> 'Category Header Cell', 
-					'style_cattitle'		=> 'Category Header Text', 
-					'style_th'				=> 'Table Header Cell',
-					'style_td'				=> 'Table Data Cell',
-
-					'style_cat_bbcode'		=> 'BBCode classes', 
-					'style_b'				=> 'Bold',
-					'style_u'				=> 'Underline',
-					'style_i'				=> 'Italics',
-					'style_color'			=> 'Colour',
-					'style_size'			=> 'Size',	
-					'style_code'			=> 'Code',
-					'style_quote'			=> 'Quote',
-					'style_flash'			=> 'Flash',
-					'style_syntaxbg'		=> 'Syntax Background', 
-					'style_syntaxcomment'	=> 'Syntax Comments',
-					'style_syntaxdefault'	=> 'Syntax Default',
-					'style_syntaxhtml'		=> 'Syntax HTML',
-					'style_syntaxkeyword'	=> 'Syntax Keyword',
-					'style_syntaxstring'	=> 'Syntax String',
-				
-				));
-
-				$base_classes = array(
-					'text'		=> array(
-						'body',
-						'p',
-						'h1', 
-						'h2', 
-						'h3',
-						'gen', 
-						'genmed', 
-						'gensmall', 
-						'topictitle', 
-						'topicauthor', 
-						'topicdetails', 
-						'postdetails',
-						'postbody', 
-						'postauthor', 
-						'copyright'
-					), 
-					'tables'	=> array(
-						'th',
-						'td', 
-						'cat', 
-						'cattitle', 
-					),
-					'bbcode'	=> array(
-						'b',
-						'u',
-						'i',
-						'color',
-						'size',
-						'code',
-						'quote',
-						'flash',
-						'syntaxbg', 
-						'syntaxcomment',
-						'syntaxdefault',
-						'syntaxhtml',
-						'syntaxkeyword',
-						'syntaxstring',
-					)
-				);
-			
-				$class_options = '';
-				foreach ($base_classes as $category => $class_ary)
-				{
-					$class_options .= '<option class="sep">' . $user->lang['style_cat_' . $category] . '</option>';
-					foreach ($class_ary as $class_name)
-					{
-						$selected = ($class_name == $class) ? ' selected="selected"' : '';
-						$class_options .= '<option value="' . $class_name . '"' . $selected . '>' . $user->lang['style_' . $class_name] . '</option>';
-					}
-				}
-
-				if (!empty($class))
-				{
-					//TEMP
-					if (!($fp = fopen($phpbb_root_path . 'templates/' . $theme_data['css_external'], 'rb')))
+					// Grab template data
+					if (!($fp = fopen($phpbb_root_path . 'styles/themes/' . $css_external, 'rb')))
 					{
 						die("ERROR");
 					}
-					$stylesheet = fread($fp, filesize($phpbb_root_path . 'templates/' . $theme_data['css_external']));
+					$stylesheet = fread($fp, filesize($phpbb_root_path . 'styles/themes/' . $css_external));
 					fclose($fp);
 					$stylesheet = str_replace(array("\t", "\n"), " ", $stylesheet);
 
 
+					// Pull out list of "custom" tags
+					if (preg_match_all('#([a-z\.:]+?) {.*?}#si', $stylesheet, $matches))
+					{
+						$test_ary = array();
+						foreach ($base_classes as $category => $class_ary)
+						{
+							$test_ary = array_merge($test_ary, $class_ary);
+						}
+
+						$matches = preg_replace('#^\.#', '', $matches[1]);
+						foreach ($matches as $value)
+						{
+							if (!in_array($value, $test_ary))
+							{
+								$base_classes['custom'][] = $value;
+							}
+						}
+						unset($matches);
+						unset($test_ary);
+					}				
+				}
+
+
+				// Do we have a class set? If so, we need to extract and set the relevant data
+				if (!empty($class))
+				{
+					// Here we pull out the appropriate class entry then proceed to pull it apart,
+					// setting appropriate variables to their respective values. We only match
+					// certain css elements, the rest are "hidden" and can be accessed by exposing
+					// the raw css
 					if (preg_match('#^.*?' . $class . ' {(.*?)}#m', $stylesheet, $matches))
 					{
-						$stylesheet = &$matches[1];
+						$css_element = &$matches[1];
 
+						// We categorise the elements which comprise the css class so that we set 
+						// any appropriate additional data, e.g. sizes require the scale type to be set, 
+						// images require the relevant image be pulled and selected in the dropdown, etc.
 						$match_elements = array(
-							'colors'	=> array('background-color', 'color', 'border-color', 
-							),
-							'sizes'		=> array('font-size', 'line-height', 'border-width', 
-							),
-							'images'	=> array('background-image', 
-							),
-							'repeat'	=> array('background-repeat',
-							),
-							'other'		=> array('font-weight', 'font-family', 'font-style', 'text-decoration', 'border-style', 
-							),
+							'colors'	=> array('background-color', 'color',),
+							'sizes'		=> array('font-size', 'line-height',),
+							'images'	=> array('background-image',),
+							'repeat'	=> array('background-repeat',),
+							'other'		=> array('font-weight', 'font-family', 'font-style', 'text-decoration',),
 						);
 
 						foreach ($match_elements as $type => $match_ary)
@@ -504,7 +601,7 @@ switch ($mode)
 								$$match = '';
 								$var = str_replace('-', '', $match);
 
-								if (preg_match('#\b' . $match . ': (.*?);#s', $stylesheet, $matches))
+								if (preg_match('# ' . $match . ': (.*?);#s', $css_element, $matches))
 								{
 									switch ($type)
 									{
@@ -525,6 +622,7 @@ switch ($mode)
 											{
 												$$var = trim($matches[1]);
 											}
+											$$var = str_replace('./', $theme_data['theme_name'] . '/', $$var);
 											break;
 
 										case 'repeat':
@@ -539,19 +637,35 @@ switch ($mode)
 						}
 					}
 				}
+				// End of class element variable setting
+
+
+				// Generate list of class options
+				$class_options = '';
+				foreach ($base_classes as $category => $class_ary)
+				{
+					$class_options .= '<option class="sep">' . $user->lang['style_cat_' . $category] . '</option>';
+					foreach ($class_ary as $class_name)
+					{
+						$selected = ($class_name == $class) ? ' selected="selected"' : '';
+						$class_options .= '<option value="' . $class_name . '"' . $selected . '>' . (($category == 'custom') ? $class_name : $user->lang['style_' . $class_name]) . '</option>';
+					}
+				}
+
 
 				// Grab list of potential images for class backgrounds
-				$imglist = filelist($phpbb_root_path . 'templates');
+				$imglist = filelist($phpbb_root_path . 'styles/themes');
 
 				$bg_imglist = '';
 				foreach ($imglist as $img)
 				{
 					$img = substr($img['path'], 1) . (($img['path'] != '') ? '/' : '') . $img['file']; 
 
-					$selected = (preg_match('#templates/' . preg_quote($img) . '#', $backgroundimage)) ? ' selected="selected"' : '';
+					$selected = (preg_match('#' . preg_quote($img) . '#', $backgroundimage)) ? ' selected="selected"' : '';
 					$bg_imglist .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
 				}
 				$bg_imglist = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $bg_imglist;
+				unset($imglist);
 
 
 				// Output the page
@@ -572,21 +686,50 @@ function swatch(field)
 </script>
 
 
-<h2><?php echo $user->lang['Edit_theme']; ?></h2>
+<h1><?php echo $user->lang['EDIT_THEME']; ?></h1>
 
-<p><?php echo $user->lang['Edit_theme_explain']; ?></p>
+<p><?php echo $user->lang['EDIT_THEME_EXPLAIN']; ?></p>
 
-<p>Selected Theme: <b><?php echo $theme_data['theme_name']; ?></b></p>
-
-<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+<form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;id=$theme_id&amp;showcss=$showcss"; ?>"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
-		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $class_options; ?></select>&nbsp; <input class="liteoption" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
+		<td align="right"><?php echo $user->lang['SELECT_CLASS']; ?>: <select name="classname" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $class_options; ?></select>&nbsp; <input class="btnlite" type="submit" value="<?php echo $user->lang['SELECT']; ?>" tabindex="100" /></td>
 	</tr>
 	<tr>
 		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<?php
+
+				if ($showcss)
+				{
+
+?>
+			<tr>
+				<td class="cat" colspan="2" align="right">Columns: <input class="post" type="text" name="txtcols" size="3" maxlength="3" value="<?php echo $txtcols; ?>" /> &nbsp;Rows: <input class="post" type="text" name="txtrows" size="3" maxlength="3" value="<?php echo $txtrows; ?>" />&nbsp; <input class="btnlite" type="submit" name="showcss" value="Update" />&nbsp;</td>
+			</tr>
+			<tr>
+				<th colspan="2">Raw CSS</th>
+			</tr>
+			<tr>
+				<td class="row1"><b>Theme name:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
+			</tr>
+			<tr>
+				<td class="row1" colspan="2" align="center"><textarea class="post" name="rawcss" rows="<?php echo $txtrows; ?>" cols="<?php echo $txtcols; ?>"><?php echo trim(str_replace('; ', ";\n", $css_element)); ?></textarea></td>
+			</tr>
+
+<?php
+
+				}
+				else
+				{
+
+?>
 			<tr>
 				<th>Parameter</th>
 				<th>Value</th>
+			</tr>
+			<tr>
+				<td class="row1"><b>Theme name:</b></td>
+				<td class="row2"><input class="post" type="text" name="theme_name" value="<?php echo $theme_name; ?>" maxlength="30" size="25" /></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2"><b>Background</b></td>
@@ -603,15 +746,17 @@ function swatch(field)
 				<td class="row1"><b>Repeat background:</b></td>
 				<td class="row2"><select name="backgroundrepeat"><?php
 
-			foreach (array('' => '------', 'none' => 'No', 'repeat-x' => 'Horizontally Only', 'repeat-y' => 'Vertically Only', 'both' => 'Both Directions') as $cssvalue => $cssrepeat)
-			{
-				echo '<option value="' . $cssvalue . '"' . (($backgroundrepeat == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssrepeat . '</option>';
-			}
+					foreach (array('' => '------', 'none' => 'No', 'repeat-x' => 'Horizontally Only', 'repeat-y' => 'Vertically Only', 'both' => 'Both Directions') as $cssvalue => $cssrepeat)
+					{
+						echo '<option value="' . $cssvalue . '"' . (($backgroundrepeat == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssrepeat . '</option>';
+					}
 	
 ?></select></td>
 			</tr>
+
+
 			<tr>
-				<td class="cat" colspan="2"><b>Text</b></td>
+				<td class="cat" colspan="2"><b>Foreground</b></td>
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('color');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
@@ -625,10 +770,10 @@ function swatch(field)
 				<td class="row1"><b>Size:</b></td>
 				<td class="row2"><input class="post" type="text" name="fontsize" value="<?php echo $fontsize; ?>" size="3" maxlength="3" /> <select name="fontsizeunits"><?php
 
-			foreach (array('pt', 'px', 'em', '%') as $units)
-			{
-				echo '<option value="' . $units . '"' . (($fontsizeunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
-			}
+					foreach (array('pt', 'px', 'em', '%') as $units)
+					{
+						echo '<option value="' . $units . '"' . (($fontsizeunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
+					}
 	
 ?></select></td>
 			</tr>
@@ -648,53 +793,59 @@ function swatch(field)
 				<td class="row1"><b>Line spacing:</b></td>
 				<td class="row2"><input class="post" type="text" name="lineheight" value="<?php echo $lineheight; ?>" size="3" maxlength="3" /> <select name="lineheightunits"><?php
 
-			foreach (array('pt', 'px', 'em', '%') as $units)
-			{
-				echo '<option value="' . $units . '"' . (($lineheightunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
-			}
+					foreach (array('pt', 'px', 'em', '%') as $units)
+					{
+						echo '<option value="' . $units . '"' . (($lineheightunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
+					}
 	
 ?></select></td>
 			</tr>
-			<tr>
-				<td class="cat" colspan="2"><b>Borders</b></td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>Color:</b> <br /><span class="gensmall">This is a hex-triplet of the form RRGGBB<br /><a href="swatch.php" onclick="swatch('bordercolor');return false" target="_swatch">Web-safe Colour Swatch</a></span></td>
-				<td class="row2"><table cellspacing="0" cellpadding="0" border="0"><tr><td><input class="post" type="text" name="bordercolor" value="<?php echo $bordercolor; ?>" size="8" maxlength="14" /></td><td>&nbsp;</td><td style="border:solid 1px black; background-color: <?php echo $bordercolor; ?>"><img src="../images/spacer.gif" width="45" height="15" alt="" /></td></tr></table></td>
-			</tr>
-			<tr>
-				<td class="row1"><b>Width:</b></td>
-				<td class="row2"><input class="post" type="text" name="borderwidth" value="<?php echo $borderwidth; ?>" size="2" maxlength="2" /> <select name="borderwidthunits"><?php
+<?php
 
-			foreach (array('pt', 'px', 'em', '%') as $units)
-			{
-				echo '<option value="' . $units . '"' . (($borderwidthunits == $units) ? ' selected="selected"' : '') . '>' . $units . '</option>';
-			}
-	
-?></select></td>
+				}
+
+?>
+			<tr>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<?php
+									
+				if ($showcss)
+				{
+
+?><input class="btnlite" type="submit" name="hidecss" value="<?php echo $user->lang['HIDE_RAW_CSS']; ?>" /><?php
+
+				}
+				else
+				{
+
+?><input class="btnlite" type="submit" name="showcss" value="<?php echo $user->lang['SHOW_RAW_CSS']; ?>" /><?php
+
+				}
+
+?>&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+			</tr>
+		</table>
+		
+
+		<h1>Custom Class</h1>
+
+		<p>You can add additional classes to this theme if you wish. You must provide the actual CSS class name below, it must be the same as that you have or will use in your template. Please remember that class names may contain only alphanumeric characters, periods (.), colons (:) and number/hash/pound (#). The new class will be added to the Custom Class category in the select box above.</p>
+
+		<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+			<tr>
+				<th colspan="2">Add Custom Class</td>
 			</tr>
 			<tr>
-				<td class="row1"><b>Style:</b></td>
-				<td class="row2"><select name="borderstyle"><?php
-	
-			foreach (array('' => '------', 'none' => 'none', 'solid' => 'solid', 'dashed' => 'dashed', 'dotted' => 'dotted') as $cssvalue => $cssstyle)
-			{
-				echo '<option value="' . $cssvalue . '"' . (($borderstyle == $cssvalue) ? ' selected="selected"' : '') . '>' . $cssstyle . '</option>';
-			}
-	
-?></select></td>
+				<td class="row1" width="40%">CSS class name:</td>
+				<td class="row2"><input class="post" type="text" name="customclass" value="" maxlength="15" size="15" /></td>
 			</tr>
-			<!-- tr>
-				<td class="row1" width="40%">Advanced: <br /><span class="gensmall">Enter here any additional CSS parameters and their values. Enter each parameter on a new row and terminate each with semi-colon ;</td>
-				<td class="row2"><textarea name="freeform" cols="40" rows="3"></textarea></td>
-			</tr -->
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addclass" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 			</tr>
-		</table></td>
+		</table>
+	
+		</td>
 	</tr>
 </table></form>
-
 <?php
 
 				adm_page_footer();
@@ -707,14 +858,14 @@ function swatch(field)
 				break;
 		}
 
+
+		// Output list of themes
 		adm_page_header($user->lang['EDIT_THEME']);
 
 ?>
-<h2><?php echo $user->lang['Edit_theme']; ?></h2>
+<h1><?php echo $user->lang['THEMES']; ?></h1>
 
-<p><?php echo $user->lang['Edit_theme_explain']; ?></p>
-
-<p>Selected Theme: <b>subSilver</b></p>
+<p><?php echo $user->lang['THEMES_EXPLAIN']; ?></p>
 
 <form name="style" method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
@@ -736,7 +887,7 @@ function swatch(field)
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id']; ?>"><?php echo $row['theme_name']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=recreate&amp;id=" . $row['theme_id']; ?>">Recreate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
+		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=recreate&amp;id=" . $row['theme_id']; ?>">Recache</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
 	</tr>
 <?php
 
@@ -751,7 +902,7 @@ function swatch(field)
 
 ?>
 	<tr>
-		<td class="cat" colspan="2">&nbsp;</td>
+		<td class="cat" colspan="2" align="right">Create new theme: <input class="post" type="text" name="theme_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newtheme" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -767,5 +918,72 @@ function swatch(field)
 
 
 }
+
+
+// ---------
+// FUNCTIONS
+//
+class template_admin extends template
+{
+	function compile_cache_clear($template = false)
+	{
+		global $phpbb_root_path;
+
+		$template_list = array();
+
+		if (!$template)
+		{
+			$dp = opendir($phpbb_root_path . $this->cache_root);
+			while ($dir = readdir($dp)) 
+			{
+				$template_dir = $phpbb_root_path . $this->cache_root . $dir;
+				if (!is_file($template_dir) && !is_link($template_dir) && $dir != '.' && $dir != '..')
+				{
+					array_push($template_list, $dir);
+				}
+			}
+			closedir($dp);
+		}
+		else
+		{
+			array_push($template_list, $template);
+		}
+
+		foreach ($template_list as $template)
+		{
+			$dp = opendir($phpbb_root_path . $this->cache_root . $template);
+			while ($file = readdir($dp))
+			{
+				unlink($phpbb_root_path . $this->cache_root . $file);
+			}
+			closedir($dp);
+		}
+
+		return;
+	}
+
+	function compile_cache_show($template)
+	{
+		global $phpbb_root_path;
+
+		$template_cache = array();
+
+		$template_dir = $phpbb_root_path . $this->cache_root . $template;
+		$dp = opendir($template_dir);
+		while ($file = readdir($dp))
+		{
+			if (preg_match('#\.html$#i', $file) && is_file($template_dir . '/' . $file))
+			{
+				array_push($template_cache, $file);
+			}
+		}
+		closedir($dp);
+
+		return;
+	}
+}
+//
+// FUNCTIONS
+// ---------
 
 ?>
