@@ -29,6 +29,37 @@
 \***************************************************************************/
 
 //
+// remove_comments will strip the sql comment lines out of an uploaded sql file
+// specifically for mssql and postgres type files in the install....
+//
+function remove_comments($sql)
+{
+	$lines = explode("\n", $sql);
+
+	// try to keep mem. use down
+	$sql = "";
+	$linecount = count($lines);
+	$output = "";
+	$in_comment = false;
+	for($i = 0; $i < $linecount; $i++)
+	{
+		if(ereg("^\/\*", $lines[$i])
+		{
+			$in_comment = true;
+		}
+		if(ereg("\*\/$", $lines[$i])
+		{
+			$in_comment = false;
+		}
+		if(!$in_comment)
+		{
+			$output .= $lines[$i] . "\n";
+		}
+		$lines[$i] = '';
+	}
+	return $output;
+}
+//
 // remove_remarks will strip the sql comment lines out of an uploaded sql file
 //
 function remove_remarks($sql)
@@ -103,7 +134,7 @@ function split_sql_file($sql, $delimiter)
 			else
 			{
 				// it's not complete, so prepend it onto the next token and continue the loop as usual.
-				$tokens[$i + 1] = $tokens[$i] . ";" .  $tokens[$i + 1];
+				$tokens[$i + 1] = $tokens[$i] . $delimiter .  $tokens[$i + 1];
 				// save memory.
 				$tokens[$i] = "";
 			}
