@@ -1217,7 +1217,7 @@ else if( $submit || $refresh || $mode != "" )
 
 		if( $mode == "edit" )
 		{
-			$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
+			$sql = "SELECT pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
 				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
 				WHERE pm.privmsgs_id = $privmsg_id
 					AND pmt.privmsgs_text_id = pm.privmsgs_id
@@ -1238,8 +1238,13 @@ else if( $submit || $refresh || $mode != "" )
 			$privmsg_subject = $privmsg['privmsgs_subject'];
 			$privmsg_message = $privmsg['privmsgs_text'];
 			$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+			$privmsg_bbcode_enabled = ($privmsg['privmsgs_enable_bbcode'] == 1);
 
-			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
+			if ($privmsg_bbcode_enabled)
+			{
+				$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", "", $privmsg_message);
+			}
+			
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 

@@ -2353,6 +2353,7 @@ else
 			$post_subject = $postrow['post_subject'];
 			$post_message = $postrow['post_text'];
 			$post_bbcode_uid = $postrow['bbcode_uid'];
+			$post_bbcode_enabled = ($postrow['enable_bbcode'] == 1);
 
 			if( $mode == "editpost" )
 			{
@@ -2365,7 +2366,10 @@ else
 				$user_sig = $userdata['user_sig'];
 			}
 
-			$post_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $post_message);
+			if ($post_bbcode_enabled)
+			{
+				$post_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $post_message);
+			}
 			$post_message = str_replace("<br />", "\n", $post_message);
 			$post_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $post_message);
 
