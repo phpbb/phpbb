@@ -56,6 +56,15 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
+/*
+	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id    
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa  
+		WHERE f.forum_id = $forum_id
+			AND aa.auth_mod = 1 
+			AND aa.forum_id = f.forum_id 
+			AND ug.group_id = aa.group_id 
+			AND u.user_id = ug.user_id";
+*/
 	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.*   
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa, ".AUTH_FORUMS_TABLE." fa  
 		WHERE f.forum_id = $forum_id
@@ -275,7 +284,14 @@ if($total_topics)
 			$goto_page = "";
 		}
 
-		$folder_img = "<img src=\"".$images['folder']."\">";
+		if($userdata['session_start'] == $userdata['session_time'])
+		{
+			$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+		}
+		else
+		{
+			$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+		}
 
 		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
 
@@ -291,7 +307,7 @@ if($total_topics)
 		$template->assign_block_vars("topicrow", array(
 			"FORUM_ID" => $forum_id,
 			"TOPIC_ID" => $topic_id,
-			"FOLDER" => $folder_img, 
+			"FOLDER" => $folder_image, 
 			"TOPIC_POSTER" => $topic_poster,
 			"GOTO_PAGE" => $goto_page,
 			"REPLIES" => $replies,

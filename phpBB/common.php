@@ -56,6 +56,7 @@ $images['msnm'] = "$url_images/msnm.gif";
 $images['quote'] = "$url_images/quote.gif";
 $images['posticon'] = "$url_images/posticon.gif";
 $images['folder'] = "$url_images/folder.gif";
+$images['new_folder'] = "$url_images/red_folder.gif";
 $images['latest_reply'] = "$url_images/latest_reply.gif";
 
 include('includes/template.inc');

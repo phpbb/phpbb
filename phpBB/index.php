@@ -94,12 +94,11 @@ if($total_categories)
 	{
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
-				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time 
+				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u 
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id 
 					AND p.poster_id = u.user_id 
-					AND af.forum_id = f.forum_id
 					$limit_forums
 					UNION (
 						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -116,12 +115,11 @@ if($total_categories)
 
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
-				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time  
+				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u 
 				WHERE f.forum_last_post_id = p.post_id(+) 
 					AND p.post_id = t.topic_last_post_id(+) 
 					AND p.poster_id = u.user_id(+)
-					AND af.forum_id = f.forum_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -129,6 +127,15 @@ if($total_categories)
 		default:
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
+/*
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time 
+				FROM ((( ".FORUMS_TABLE." f
+				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
+				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
+				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id )
+				$limit_forums
+				ORDER BY f.cat_id, f.forum_order";
+*/
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
 				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
@@ -139,6 +146,7 @@ if($total_categories)
 				ORDER BY f.cat_id, f.forum_order";
 			break;
 	}
+
 	if(!$q_forums = $db->sql_query($sql))
 	{
 		if(DEBUG)
@@ -199,10 +207,18 @@ if($total_categories)
 		for($j = 0; $j < $total_forums; $j++)
 		{
 			if( ( ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $viewcat == -1) ||
-				($category_rows[$i]['cat_id'] == $viewcat) ) && 
-				$is_auth_ary[$forum_rows[$j]['forum_id']]['auth_view'])
+				($category_rows[$i]['cat_id'] == $viewcat) ) && $is_auth_ary[$forum_rows[$j]['forum_id']]['auth_view'])
 			{
-				$folder_image = "<img src=\"".$images['folder']."\">";
+
+				if($userdata['session_start'] == $userdata['session_time'])
+				{
+					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+				}
+				else
+				{
+					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
+				}
+
 				$posts = $forum_rows[$j]['forum_posts'];
 				$topics = $forum_rows[$j]['forum_topics'];
 				if($forum_rows[$j]['username'] != "" && $forum_rows[$j]['post_time'] > 0)
