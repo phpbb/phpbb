@@ -123,6 +123,8 @@ $template->assign_vars(array(
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', 'NEW_POSTS'),
 	'FORUM_LOCKED_IMG'	=>	$user->img('forum_locked', 'NO_NEW_POSTS_LOCKED'),
 
+	'S_LOGIN_ACTION'	=>	"ucp.php?$SID&amp;mode=login", 
+
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );
 
