@@ -229,7 +229,7 @@ $template->assign_vars(array(
 	"FOLDER_IMG" => $images['folder'],
 	"FOLDER_NEW_IMG" => $images['folder_new'],
 	"FOLDER_HOT_IMG" => $images['folder_hot'],
-	"FOLDER_HOT_NEW_IMG" => $images['folder_hot_new'],
+	"FOLDER_HOT_NEW_IMG" => $images['folder_new_hot'],
 	"FOLDER_LOCKED_IMG" => $images['folder_locked'],
 	"FOLDER_LOCKED_NEW_IMG" => $images['folder_locked_new'],
 	"FOLDER_STICKY_IMG" => $images['folder_sticky'],
