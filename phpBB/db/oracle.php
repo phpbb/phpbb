@@ -193,8 +193,14 @@ class sql_db
 		}
 		if($query_id)
 		{
-			$result = OCIFetchInto($query_id, &$this->row[$query_id], OCI_ASSOC);
-			return $this->row[$query_id];
+		   $result = OCIFetchInto($query_id, &$this->row[$query_id], OCI_ASSOC);
+		   for($i = 0; $i < count($this->row[$query_id]); $i++)
+		     {
+			list($key, $val) = each($this->row[$query_id]);
+			$return_arr[strtolower($key)] = $val;
+		     }
+		   $this->row[$query_id] = $return_arr;
+		   return $this->row[$query_id];
 		}
 		else
 		{
