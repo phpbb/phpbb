@@ -140,10 +140,10 @@ a:hover.postdetails	{ color: #C23030; text-decoration: underline; }
 
 
 /* The content of the posts (body of text) */
-.postbody { font-size : 12px; }
+.postbody { font-size : 12px; line-height: 150%}
 
-a.postbody, a.posttiny, a.postsmall, a.postlarge, a.posthuge	{ text-decoration: none; color : #0176BC }
-a:hover.postbody, a:hover.posttiny, a:hover.postsmall, a:hover.postlarge, a:hover.posthuge{ text-decoration: underline; color : #C23030 }
+a.postbody	{ text-decoration: none; color : #0176BC }
+a:hover.postbody { text-decoration: underline; color : #C23030 }
 
 
 /* Quote Code (currently not used) */

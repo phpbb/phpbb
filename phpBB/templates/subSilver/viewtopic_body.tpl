@@ -45,7 +45,7 @@
 	</td>
   </tr>
   <tr> 
-	<td valign="top" class="{postrow.ROW_CLASS}"><span class="postbody" style="line-height: 150%">{postrow.MESSAGE}</span></td>
+	<td valign="top" class="{postrow.ROW_CLASS}"><span class="postbody">{postrow.MESSAGE}</span></td>
   </tr>
   <tr> 
 	<td width="22%" align="left" valign="middle" class="{postrow.ROW_CLASS}"><span class="nav"><a href="#top" class="nav">Back 
