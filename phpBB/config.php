@@ -33,9 +33,9 @@ $session_length = 300;
 // DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "";
-$dbuser = "";
-$dbpasswd = "";
+$dbname = "bartvb";
+$dbuser = "bartvb";
+$dbpasswd = "bvbdb=";
 
 // DB table prefix
 $table_prefix = "phpbb_";

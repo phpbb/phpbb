@@ -1,5 +1,12 @@
 <?php
 
+if($setmodules==1)
+{
+	$filename = basename(__FILE__);
+	$module['Auth']['users']	= $filename;
+	return;
+}
+
 chdir("../");
 
 include('extension.inc');

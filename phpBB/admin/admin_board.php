@@ -2,7 +2,7 @@
 /***************************************************************************  
  *                                 
  *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
+ *   begin                : Thursday, Jul 12, 2001 
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
@@ -21,6 +21,17 @@
  *                                                          
  * 
  ***************************************************************************/ 
+
+if($setmodules==1)
+{
+        $module['board']['config']=__FILE__;
+        //$module['users']['edit']=__FILE__.'?mode=edit';
+        //$module['users']['delete']=__FILE__.'?mode=delete';
+        return;
+}
+
+print "Got past the \$setmodules check<br>\n";
+print "Requested action was: $mode<br>\n";
 
 
 
