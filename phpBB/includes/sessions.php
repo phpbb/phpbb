@@ -37,16 +37,16 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if( isset($HTTP_COOKIE_VARS[$cookiename]) )
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
 	{
-		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? $HTTP_COOKIE_VARS[$cookiename . '_sid'] : "";
+		$sessiondata = isset($HTTP_COOKIE_VARS[$cookiename]) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
+		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
 
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : "";
 
 		$sessionmethod = SESSION_METHOD_GET;
 	}
@@ -176,15 +176,17 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if(isset($HTTP_COOKIE_VARS[$cookiename]))
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
 	{
-		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
+		$sessiondata = isset( $HTTP_COOKIE_VARS[$cookiename] ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
+		$session_id = isset( $HTTP_COOKIE_VARS[$cookiename . '_sid'] ) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
+
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
 		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
@@ -213,7 +215,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		//
 		$sql = "SELECT u.*, s.*
 			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-			WHERE s.session_id = '" . addslashes($session_id) . "'
+			WHERE s.session_id = '$session_id'
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
@@ -227,7 +229,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		//
 		// Did the session exist in the DB?
 		//
-		if(isset($userdata['user_id']))
+		if( isset($userdata['user_id']) )
 		{
 			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $session_id : "";
 
@@ -355,16 +357,16 @@ function session_end($session_id, $user_id)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if(isset($HTTP_COOKIE_VARS[$cookiename]))
+	if( isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) )
 	{
-		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$session_id = isset($HTTP_COOKIE_VARS[$cookiename . '_sid']) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
+		$sessiondata = isset( $HTTP_COOKIE_VARS[$cookiename] ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename])) : "";
+		$session_id = isset( $HTTP_COOKIE_VARS[$cookiename . '_sid'] ) ? stripslashes($HTTP_COOKIE_VARS[$cookiename . '_sid']) : "";
 
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$session_id = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$session_id = ( isset($HTTP_GET_VARS['sid']) ) ? $HTTP_GET_VARS['sid'] : "";
 
 		$sessionmethod = SESSION_METHOD_GET;
 	}
@@ -381,7 +383,7 @@ function session_end($session_id, $user_id)
 		message_die(CRITICAL_ERROR, "Couldn't delete user session : session_end", __LINE__, __FILE__, $sql);
 	}
 
-	if($sessiondata['autologinid'])
+	if( isset($sessiondata['autologinid']) )
 	{
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_autologin_key = ''
