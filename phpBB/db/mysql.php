@@ -167,32 +167,55 @@ class sql_db
 	// Idea for this from Ikonboard
 	function sql_query_array($query = '', $assoc_ary = false, $transaction = false)
 	{
-		if ( !is_array($assoc_ary) )
+		if (!is_array($assoc_ary))
 		{
 			return false;
 		}
 
-		if ( strpos(' ' . $query, 'INSERT') == 1 )
+		if (preg_match('/^INSERT/', $query))
 		{
-			$fields = '';
-			$values = '';
-			foreach ( $assoc_ary as $key => $var )
+			$fields = array();
+			$values = array();
+			foreach ($assoc_ary as $key => $var)
 			{
-				$fields .= ( ( $fields != '' ) ? ', ' : '' ) . $key;
-				$values .= ( ( $values != '' ) ? ', ' : '' ) . ( ( is_string($var) ) ? '\'' . str_replace('\'', '\'\'', $var) . '\'' : $var );
+				$fields[] = $key;
+
+				if (is_null($var))
+				{
+					$values[] = 'NULL';
+				}
+				elseif (is_string($var))
+				{
+					$values[] = str_replace("'", "''", $var);
+				}
+				else
+				{
+					$values[] = $var;
+				}
 			}
 
-			$query = $query . ' (' . $fields . ') VALUES (' . $values . ')';
+			$query = $query . ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
 		else
 		{
-			$values = '';
-			foreach ( $assoc_ary as $key => $var )
+			$values = array();
+			foreach ($assoc_ary as $key => $var)
 			{
-				$values .= ( ( $values != '' ) ? ', ' : '' ) . $key . ' = ' . ( ( is_string($var) ) ? '\'' . str_replace('\'', '\'\'', $var) . '\'' : $var );
+				if ($var == NULL)
+				{
+					$values[] = "$key = NULL";
+				}
+				elseif (is_string($var))
+				{
+					$values[] = "$key = '" . str_replace("'", "''", $var) . "'";
+				}
+				else
+				{
+					$values[] = "$key = $var";
+				}
 			}
 
-			$query = preg_replace('/^(.*? SET )(.*?)$/is', '\1' . $values . ' \2', $query);
+			$query = preg_replace('/^(.*? SET )(.*?)$/is', '\1' . implode(', ', $values) . ' \2', $query);
 		}
 
 		return $this->sql_query($query);
