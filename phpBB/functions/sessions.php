@@ -38,7 +38,7 @@ function new_session($userid, $remote_ip, $lifespan, $db)
    $currtime = (string) (time());
    $expirytime = (string) (time() - $lifespan);
    
-   $deleteSQL = "DELETE FROM sessions WHERE (start_time < $expirytime)";
+   $deleteSQL = "DELETE FROM $sessions_tables WHERE (start_time < $expirytime)";
    $delresult = $db->sql_query($deleteSQL);
    
    if (!$delresult) 
@@ -46,7 +46,7 @@ function new_session($userid, $remote_ip, $lifespan, $db)
 	error_die($db, SESSION_CREATE);
      }
    
-   $sql = "INSERT INTO sessions (sess_id, user_id, start_time, remote_ip) VALUES ($sessid, $userid, $currtime, '$remote_ip')";
+   $sql = "INSERT INTO $sessions_table (sess_id, user_id, start_time, remote_ip) VALUES ($sessid, $userid, $currtime, '$remote_ip')";
    
    $result = $db->sql_query($sql);
    
@@ -85,11 +85,11 @@ function set_session_cookie($sessid, $cookietime, $cookiename, $cookiepath, $coo
 function get_userid_from_session($sessid, $cookietime, $remote_ip, $db) 
 {
    $mintime = time() - $cookietime;
-   $sql = "SELECT user_id 
-	    FROM sessions 
-	    WHERE (sess_id = $sessid) 
-	      AND (start_time > $mintime) 
-	      AND (remote_ip = '$remote_ip')";
+	$sql = "SELECT user_id 
+			FROM $sessions_table 
+			WHERE (sess_id = $sessid)
+			AND (start_time > $mintime) 
+			AND (remote_ip = '$remote_ip')";
    $result = $db->sql_query($sql);
    if (!$result) 
      {
@@ -113,7 +113,7 @@ function update_session_time($sessid, $db)
 {
 
    $newtime = (string) time();
-   $sql = "UPDATE sessions SET start_time=$newtime WHERE (sess_id = $sessid)";
+   $sql = "UPDATE $sessions_table SET start_time=$newtime WHERE (sess_id = $sessid)";
    $result = $db->sql_query($sql);
    if (!$result) 
      {
@@ -126,7 +126,7 @@ function update_session_time($sessid, $db)
 
 function end_user_session($userid, $db) 
 {
-   $sql = "DELETE FROM sessions WHERE (user_id = $userid)";
+   $sql = "DELETE FROM $sessions_table WHERE (user_id = $userid)";
    $result = $db->sql_query($sql, $db);
    if (!$result) 
      {

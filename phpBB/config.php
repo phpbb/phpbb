@@ -70,8 +70,8 @@ $dbuser = "imanidiot";
 $dbpasswd = "imanidiotspassword";
 
 // DB table config
-
 $banlist_table = "phpbb_banlist";
+$categories_table = "phpbb_categories";
 $config_table = "phpbb_config";
 $disallow_table = "phpbb_disallow";
 $forum_access_table = "phpbb_forum_access";
