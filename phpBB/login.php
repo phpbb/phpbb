@@ -123,7 +123,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		// session id check
 		if ($sid == '' || $sid != $userdata['session_id'])
 		{
-			message_die(ERROR, 'Invalid_session');
+			message_die(GENERAL_ERROR, 'Invalid_session');
 		}
 
 		if( $userdata['session_logged_in'] )
