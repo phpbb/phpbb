@@ -127,7 +127,9 @@ else
 		$mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
 		$forward_page .= "?mode=".$mode;
 	}
-	
+
+	$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
+
 	$template->assign_vars(array(
 		"L_USERNAME" => $l_username,
 		"L_PASSWORD" => $l_password,
@@ -135,7 +137,7 @@ else
 		"L_LOGIN" => $l_login,
 		"U_SEND_PASSWORD" => "sendpassword.".$phpEx,
 		"FORWARD_PAGE" => $forward_page,
-		"USERNAME" => $userdata['username']
+		"USERNAME" => $username
 		)
 	);
 
