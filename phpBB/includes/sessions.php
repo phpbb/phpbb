@@ -79,7 +79,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			if ( isset($sessiondata['autologinid']) && $userdata['user_active'] )
 			{
 				// We have to login automagically
-				if( $sessiondata['autologinid'] == $auto_login_key )
+				if( $sessiondata['autologinid'] === $auto_login_key )
 				{
 					// autologinid matches password
 					$login = 1;
