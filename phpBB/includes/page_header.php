@@ -39,7 +39,7 @@ if ($config['gzip_compress'])
 if ($user->data['user_id'] != ANONYMOUS)
 {
 	$u_login_logout = 'login.'.$phpEx. $SID . '&amp;logout=true';
-	$l_login_logout = $user->lang['LOGOUT'] . ' [ ' . $user->data['username'] . ' ]';
+	$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 }
 else
 {
@@ -66,7 +66,7 @@ if (!empty($_REQUEST['f']))
 	$reading_sql = 'AND s.session_page LIKE \'%f=' . intval($_REQUEST['f']) . '%\'';
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_allow_viewonline
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE ." s
 	WHERE s.session_time >= " . (time() - 300) . "
 		$reading_sql
@@ -87,19 +87,20 @@ while ($row = $db->sql_fetchrow($result))
 				$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
 			}
 
-			if ($row['user_allow_viewonline'])
+			if ($row['user_allow_viewonline'] && $row['session_allow_viewonline'])
 			{
-				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
+				$user_online_link = $row['username'];
 				$logged_visible_online++;
 			}
 			else
 			{
-				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '"><i>' . $row['username'] . '</i></a>';
+				$user_online_link = '<i>' . $row['username'] . '</i>';
 				$logged_hidden_online++;
 			}
 
 			if ($row['user_allow_viewonline'] || $auth->acl_get('a_'))
 			{
+				$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
 				$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 			}
 		}

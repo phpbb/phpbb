@@ -43,6 +43,7 @@ if (isset($login) || isset($logout))
 	if (isset($login) && $user->data['user_id'] == ANONYMOUS)
 	{
 		$autologin = (!empty($autologin)) ? true : false;
+		$viewonline = (!empty($viewonline)) ? 0 : 1;
 
 		// Is the board disabled? Are we an admin? No, then back to the index we go
 		if (!empty($config['board_disable']) && !$auth->acl_get('a_'))
@@ -50,13 +51,18 @@ if (isset($login) || isset($logout))
 			redirect("index.$phpEx$SID");
 		}
 
-		if (!$auth->login($username, $password, $autologin))
+		if (($result = $auth->login($username, $password, $autologin, $viewonline)) !== true)
 		{
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')
-			);
+			// If we get a non-numeric (e.g. string) value we output an error
+			if (!is_numeric($result))
+			{
+				trigger_error($result, E_USER_ERROR);
+			}
 
-			$message = $user->lang['Error_login'] . '<br /><br />' . sprintf($user->lang['Click_return_login'], '<a href="' . "login.$phpEx$SID&amp;redirect=$redirect" . '">', '</a>') . '<br /><br />' .  sprintf($user->lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+			// If we get an integer zero then we are inactive, else the username/password is wrong
+			$message = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
+			$message .=  '<br /><br />' . sprintf($user->lang['RETURN_LOGIN'], '<a href="' . "login.$phpEx$SID&amp;redirect=$redirect" . '">', '</a>') . '<br /><br />' .  sprintf($user->lang['RETURN_INDEX'], '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+
 			trigger_error($message);
 		}
 	}
@@ -65,25 +71,22 @@ if (isset($login) || isset($logout))
 		$user->destroy();
 	}
 
-	//
 	// Redirect to wherever we're supposed to go ...
-	//
-	$redirect_url = ($redirect) ? preg_replace('/^.*?redirect=(.*?)&(.*?)$/', '\\1' . $SID . '&\\2', $redirect) : 'index.'.$phpEx;
+	$redirect_url = ($redirect) ? preg_replace('#^.*?redirect=(.*?)&(.*?)$#', '\1' . $SID . '&\2', $redirect) : 'index.'.$phpEx;
 	redirect($redirect_url);
 }
 
 if ($user->data['user_id'] == ANONYMOUS)
 {
 	$template->assign_vars(array(
-		'L_ENTER_PASSWORD'	=> $user->lang['Enter_password'],
-		'L_SEND_PASSWORD' 	=> $user->lang['Forgotten_password'],
-
 		'U_SEND_PASSWORD' 	=> "ucp.$phpEx$SID&amp;mode=sendpassword",
+		'U_TERMS_USE'		=> "ucp.$phpEx$SID&amp;mode=terms", 
+		'U_PRIVACY'			=> "ucp.$phpEx$SID&amp;mode=privacy", 
 
 		'S_HIDDEN_FIELDS' 	=> '<input type="hidden" name="redirect" value="' . $redirect . '" />')
 	);
 
-	$page_title = $user->lang['Login'];
+	$page_title = $user->lang['LOGIN'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(

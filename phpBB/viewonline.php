@@ -41,7 +41,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 
 // Get user list
-$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip
+$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_colour, s.session_time, s.session_page, s.session_ip, s.session_allow_viewonline
 	FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".(time() - 300) . "
@@ -74,7 +74,7 @@ while ($row = $db->sql_fetchrow($result))
 				$username = '<b style="color:#' . $row['user_colour'] . '">' . $username . '</b>';
 			}
 
-			if (!$row['user_allow_viewonline'])
+			if (!$row['user_allow_viewonline'] || !$row['session_allow_viewonline'])
 			{
 				$view_online = ($auth->acl_gets('u_viewonline', 'a_')) ? true : false;
 				$hidden_users++;

@@ -133,6 +133,9 @@ $lang = array(
 	'SEARCH_SELF'		=> 'View your posts',
 	'SEARCH_UNANSWERED' => 'View unanswered posts',
 
+	'LOGIN'			=> 'Login', 
+	'LOGOUT_USER'	=> 'Logout [ %s ]', 
+	'LOGOUT'		=> 'Logout', 
 	'REGISTER'		=> 'Register',
 	'PROFILE'		=> 'User Control Panel',
 	'SEARCH'		=> 'Search',
@@ -197,13 +200,15 @@ $lang = array(
 	'POST_TOPIC_LOCKED' => 'Topic is locked', 
 
 
-	'Enter_password' => 'Please enter your username and password to login',
-	'LOGIN' => 'Login',
-	'LOGOUT' => 'Logout',
-	'Forgotten_password' => 'I forgot my password',
-	'LOG_ME_IN' => 'Log me on automatically each visit',
-	'Error_login' => 'You have specified an incorrect or inactive username or an invalid password',
-	'Index' => 'Index',
+	'LOGIN'			=> 'Login',
+	'TERMS_USE'		=> 'Terms of Use', 
+	'PRIVACY'		=> 'Privacy Policy', 
+	'FORGOT_PASS'	=> 'I forgot my password',
+	'LOG_ME_IN'		=> 'Log me on automatically each visit',
+	'HIDE_ME'		=> 'Hide my online status this session', 
+	'LOGIN_ERROR'	=> 'You have specified an incorrect username or password. Please check them both and try again. If you continue to have problems please contact a board administrator.',
+	'ACTIVE_ERROR'	=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',
+
 
 	'Private_Message' => 'Private Message',
 	'Private_Messages' => 'Private Messages',
@@ -250,6 +255,7 @@ $lang = array(
 	'NO_TOPIC'	=> 'The requested topic does not exist.', 
 	'NO_POSTS'	=> 'No Posts were found.',
 	'NO_POST'	=> 'The requested post does not exist.', 
+	'NO_USER'	=> 'The requested user does not exist.', 
 
 	'Stop_watching_forum' => 'Stop watching this forum',
 	'Start_watching_forum' => 'Watch this forum for new posts',
@@ -265,7 +271,7 @@ $lang = array(
 	'VIEW_PREVIOUS_TOPIC' => 'View previous topic',
 	'NO_NEWER_TOPICS'	=> 'There are no newer topics in this forum',
 	'NO_OLDER_TOPICS'	=> 'There are no older topics in this forum', 
-	'POST_IGNORE'		=> 'This post was made by <b>%s</b> who is on your ignore list. To display this post click %sHERE%s.', 
+	'POST_IGNORE'		=> 'This post was made by <b>%1$s</b> who is on your ignore list. To display this post click %sHERE%s.', 
 	'POST_BELOW_KARMA'	=> 'This post was made by <b>%1$s</b> whose karma rating of <b>%2$d</b> is below your desired minimum. To display this post click %3$sHERE%4$s.', 
 	'POST_ENCODING'		=> 'This post by <b>%1$s</b> was made in a character set different to yours. To view this post in its proper encoding click %2$sHERE%3$s.', 
 	'DISPLAY_POSTS' => 'Display posts from previous',
@@ -281,7 +287,7 @@ $lang = array(
 	'DELETE_POST' => 'Delete',
 	'DELETE_POST_WARN' => 'Once deleted the post cannot be recovered',
 	'REPORT_TO_ADMIN' => 'Report this post',
-	'POST_BEEN_REPORTED' => 'This post has been reported',
+	'POST_BEEN_REPORTED' => 'This post has already been reported.',
 	'wrote' => 'wrote',
 	'Quote' => 'Quote',
 	'Code' => 'Code',
@@ -305,8 +311,8 @@ $lang = array(
 	'VIEW_RESULTS'	=> 'View Results',
 
 
-	'MESSAGE_BODY' 	=> 'Message body',
-	'MESSAGE_BODY_EXPLAIN' => 'Enter your message here, it may contain no more than <b>%d</b> characters.',
+	'MESSAGE_BODY' 			=> 'Message body',
+	'MESSAGE_BODY_EXPLAIN'	=> 'Enter your message here, it may contain no more than <b>%d</b> characters.',
 	'TOPIC_REVIEW' 	=> 'Topic review',
 	'TOPIC_ICON' 	=> 'Topic icon',
 	'POST_ICON' 	=> 'Post icon',
@@ -496,11 +502,11 @@ $lang = array(
 	'ABOUT_USER'		=> 'Profile',
 	'CONTACT_USER'		=> 'Contact', 
 	'USER_FORUM'		=> 'Forum statistics', 
-	'USER_PRESENCE'		=> 'User presence', 
+	'USER_PRESENCE'		=> 'Forum presence', 
 
 	'USER_POST'		=> '%d Post', 
 	'USER_POSTS'	=> '%d Posts', 
-	'POST_PCT'		=> '%.2f%% of total',
+	'POST_PCT'		=> '%.2f%% of all posts',
 	'POST_DAY'		=> '%.2f posts per day',
 	'TOTAL_POSTS'	=> 'Total posts', 
 	'ACTIVE_IN_FORUM'	=> 'Most active forum', 
@@ -619,17 +625,6 @@ $lang = array(
 	'No_email_match' => 'The email address you supplied does not match the one listed for that username',
 	'New_password_activation' => 'New password activation',
 	'Password_activated' => 'Your account has been re-activated. To logon please use the password supplied in the email you received',
-	'Send_email_msg' => 'Send an email message',
-	'No_user_specified' => 'No user was specified',
-	'User_prevent_email' => 'This user does not wish to receive email. Try sending them a private message',
-	'User_not_exist' => 'That user does not exist',
-	'CC_email' => 'Send a copy of this email to yourself',
-	'Email_message_desc' => 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.',
-	'Flood_email_limit' => 'You cannot send another email at this time, try again later',
-	'Recipient' => 'Recipient',
-	'Email_sent' => 'The email has been sent',
-	'Empty_subject_email' => 'You must specify a subject for the email',
-	'Empty_message_email' => 'You must enter a message to be emailed',
 
 
 	'FIND_USERNAME' => 'Find a member',
@@ -656,6 +651,16 @@ $lang = array(
 	'BEFORE' => 'Before',
 	'AFTER' => 'After',
 	'NEVER' => 'Never',
+
+	'SEND_EMAIL' => 'Send Email',
+	'NO_EMAIL' => 'You are not permitted to send email to this user.',
+	'CC_EMAIL' => 'Send a copy of this email to yourself',
+	'EMAIL_BODY_EXPLAIN' => 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.',
+	'FLOOD_EMAIL_LIMIT' => 'You cannot send another email at this time. Please try again later.',
+	'RECIPIENT' => 'Recipient',
+	'EMAIL_SENT' => 'The email has been sent.',
+	'EMPTY_SUBJECT_EMAIL' => 'You must specify a subject for the email.',
+	'EMPTY_MESSAGE_EMAIL' => 'You must enter a message to be emailed.',
 
 
 	'Group_Control_Panel' => 'Group Control Panel',

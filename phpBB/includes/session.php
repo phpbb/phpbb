@@ -130,7 +130,7 @@ class session
 	}
 
 	// Create a new session
-	function create(&$user_id, &$autologin, $set_autologin = false)
+	function create(&$user_id, &$autologin, $set_autologin = false, $viewonline = 1)
 	{
 		global $SID, $db, $config;
 
@@ -229,7 +229,7 @@ class session
 		$db->sql_return_on_error(true);
 
 		$sql = "UPDATE " . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page'
+			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '$this->browser', session_page = '$this->page', session_allow_viewonline = $viewonline 
 			WHERE session_id = '" . $this->session_id . "'";
 		if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
@@ -237,8 +237,8 @@ class session
 			$this->session_id = md5(uniqid($user_ip));
 
 			$sql = "INSERT INTO " . SESSIONS_TABLE . "
-				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page)
-				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '$this->browser', '$this->page')";
+				(session_id, session_user_id, session_last_visit, session_start, session_time, session_ip, session_browser, session_page, session_allow_viewonline)
+				VALUES ('" . $this->session_id . "', $user_id, " . $this->data['session_last_visit'] . ", $current_time, $current_time, '$this->ip', '$this->browser', '$this->page', $viewonline)";
 			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
@@ -1196,7 +1196,7 @@ class auth
 	}
 
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
-	function login($username, $password, $autologin = false)
+	function login($username, $password, $autologin = false, $viewonline = 1)
 	{
 		global $config, $user, $phpbb_root_path, $phpEx;
 
@@ -1209,13 +1209,16 @@ class auth
 			$method = 'login_' . $method;
 			if (function_exists($method))
 			{
-				if (!($login = $method($username, $password)))
+				$login = $method($username, $password);
+
+				// If login returned anything other than an array there was an error
+				if (!is_array($login))
 				{
-					return false;
+					return $login;
 				}
 
 				$autologin = (!empty($autologin)) ? md5($password) : '';
-				return ($login['user_active']) ? $user->create($login['user_id'], $autologin, true) : false;
+				return ($login['user_active']) ? $user->create($login['user_id'], $autologin, true, $viewonline) : false;
 			}
 		}
 

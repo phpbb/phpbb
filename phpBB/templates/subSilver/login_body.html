@@ -1,39 +1,41 @@
 <!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
-<form action="{S_LOGIN_ACTION}" method="post"><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<form action="{S_LOGIN_ACTION}" method="post"><table width="50%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-		<td align="left" class="nav"><a href="{U_INDEX}">{L_INDEX}</a></td>
+		<td align="left"><a class="nav" href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>
 </table>
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0" align="center">
+<table class="tablebg" width="50%" cellspacing="1" cellpadding="2" border="0" align="center">
 	<tr> 
-		<th height="25" nowrap="nowrap">{L_ENTER_PASSWORD}</th>
+		<th height="25">{L_LOGIN}</th>
+	</tr>
+	<tr>
+		<td class="row3" align="center"><span class="gensmall"><a href="{U_TERMS_USE}">{L_TERMS_USE}</a> &nbsp;<a href="{U_PRIVACY}">{L_PRIVACY}</a></span></td>
 	</tr>
 	<tr> 
-		<td class="row1"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
 			<tr> 
-				<td colspan="2" align="center">&nbsp;</td>
-			</tr>
-			<tr> 
-				<td width="45%" align="right"><span class="gen">{L_USERNAME}:</span></td>
-				<td><input type="text" name="username" size="25" maxlength="40" value="{USERNAME}" /></td>
+				<td><b class="gensmall">{L_USERNAME}:</b></td>
+				<td><input class="post" type="text" name="username" size="25" maxlength="40" value="{USERNAME}" /><br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a></td>
 			</tr>
 			<tr> 
-				<td class="gen" align="right">{L_PASSWORD}:</td>
-				<td><input class="text" type="password" name="password" size="25" maxlength="25" /></td>
+				<td><b class="gensmall">{L_PASSWORD}:</b></td>
+				<td><input class="post" type="password" name="password" size="25" maxlength="25" /><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></td>
 			</tr>
-			<tr align="center"> 
-				<td class="gen" colspan="2">{L_AUTO_LOGIN}: <input type="checkbox" name="autologin" /></td>
+			<tr> 
+				<td>&nbsp;</td>
+				<td><input type="checkbox" name="autologin" /> <span class="gensmall">{L_LOG_ME_IN}</span></td>
 			</tr>
-			<tr align="center"> 
-				<td colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" /></td>
-			</tr>
-			<tr align="center"> 
-				<td class="gensmall" colspan="2"><a href="{U_SEND_PASSWORD}">{L_SEND_PASSWORD}</a></td>
+			<tr>
+				<td>&nbsp;</td>
+				<td><input type="checkbox" name="viewonline" /> <span class="gensmall">{L_HIDE_ME}</span></td>
 			</tr>
 		</table></td>
+	</tr>
+	<tr> 
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" /></td>
 	</tr>
 </table></form>
 
