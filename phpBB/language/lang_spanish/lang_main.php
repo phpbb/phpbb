@@ -7,7 +7,6 @@
  *                            Mariano Martene (pacha@maestrosdelweb.com)
  *                            Angelika Lautz (alautz@promis.net)
  *                            Patricio Marin (pmarin@hotmail.com)
- *                            phpBB Group
  *
  *     $Id$
  *
@@ -23,11 +22,23 @@
  ***************************************************************************/
  
 
+//
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// Deberia tambien intentar configurar locale y codificación de caracteres
+// (mas dirección). La codificación y dirección serán
+// enviados a la plantilla. El locale puede que funcione
+// o no, depende del soporte del Sistema Operativo y la
+// sintaxis varia ... escoja como mejor la parezca!
+//
+
 //setlocale(LC_ALL, "es");
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "ltr";
-$lang['LEFT'] = "left";
-$lang['RIGHT'] = "right";
+$lang['DIRECTION'] = "LTR";
+$lang['LEFT'] = "LEFT";
+$lang['RIGHT'] = "RIGHT";
 $lang['DATE_FORMAT'] =  "d M Y"; // Esto se debería cambiar al formato predeterminado para su idioma, formato como php date()
 
 //
@@ -105,7 +116,7 @@ $lang['Click_return_group'] = "Click %saquí%s para volver a la Información del G
 
 $lang['Admin_panel'] = "Ir a Panel de Administración";
 
-$lang['Board_disable'] = "Lo sentimos pero este foro no se encuentra disponible, por favor intente mas tarde";
+$lang['Board_disable'] = "Lo sentimos pero momentaneamente este foro no se encuentra disponible, por favor intente de ingresar luego";
 
 
 //
@@ -159,7 +170,7 @@ $lang['Posted_article_total'] = "Nuestros usuarios han publicado un total de <b>
 $lang['Registered_users_zero_total'] = "Tenemos <b>0</b> usuarios registrados"; // # registered users
 $lang['Registered_users_total'] = "Tenemos <b>%d</b> usuarios registrados"; // # usuarios registrados
 $lang['Registered_user_total'] = "Tenemos <b>%d</b> usuario registrado"; // # usuarios registrados
-$lang['Newest_user'] = "El usuario registrado mas reciente es <b>%s%s%s</b>"; // un enlace a nombre de usuario, /a 
+$lang['Newest_user'] = "El último usuario registrado es <b>%s%s%s</b>"; // un enlace a nombre de usuario, /a 
 
 $lang['No_new_posts_last_visit'] = "No hay mensajes nuevos desde su última visita";
 $lang['No_new_posts'] = "No hay mensajes nuevos";
@@ -244,7 +255,7 @@ $lang['Guest'] = 'Invitado';
 $lang['Post_subject'] = "<b>Asunto</b>";
 $lang['View_next_topic'] = "Ver tema siguiente";
 $lang['View_previous_topic'] = "Ver tema anterior";
-$lang['Submit_vote'] = "Enviar voto";
+$lang['Submit_vote'] = "Votar";
 $lang['View_results'] = "Ver resultados";
 
 $lang['No_newer_topics'] = "No hay temas nuevos en este foro";
@@ -254,15 +265,15 @@ $lang['No_posts_topic'] = "No existen mensajes para este tema";
 
 $lang['Display_posts'] = "Mostrar mensajes de anteriores";
 $lang['All_Posts'] = "Todos los mensajes";
-$lang['Newest_First'] = "El mas reciente primero";
-$lang['Oldest_First'] = "El mas antiguo primero";
+$lang['Newest_First'] = "El más reciente primero";
+$lang['Oldest_First'] = "El más antiguo primero";
 
 $lang['Back_to_top'] = "Volver arriba";
 
 $lang['Read_profile'] = "Ver perfil de usuario"; 
 $lang['Send_email'] = "Enviar email a usuario";
 $lang['Visit_website'] = "Visitar sitio web del autor";
-$lang['ICQ_status'] = "Estatus ICQ";
+$lang['ICQ_status'] = "Status ICQ";
 $lang['Edit_delete_post'] = "Editar/Borrar este mensaje";
 $lang['View_IP'] = "Ver IP del autor";
 $lang['Delete_post'] = "Borrar este mensaje";
@@ -398,7 +409,7 @@ $lang['font_tiny'] = "Miniatura";
 $lang['font_small'] = "Pequeña";
 $lang['font_normal'] = "Normal";
 $lang['font_large'] = "Grande";
-$lang['font_huge'] = "Super Grande";
+$lang['font_huge'] = "Enorme";
 
 $lang['Close_Tags'] = "Cerrar marcadores";
 $lang['Styles_tip'] = "Nota: Se pueden aplicar estilos rápidamente al texto seleccionado";
@@ -468,8 +479,8 @@ $lang['Find'] = "Encontrar";
 $lang['No_match'] = "No se hallaron coincidencias";
 
 $lang['No_post_id'] = "No se identificó un ID de mensaje";
-$lang['No_such_folder'] = "No existe ese folder";
-$lang['No_folder'] = "No se especificó folder";
+$lang['No_such_folder'] = "No existe esa carpeta";
+$lang['No_folder'] = "No se especificó una carpeta";
 
 $lang['Mark_all'] = "Marcar todos";
 $lang['Unmark_all'] = "Desmarcar todos";
@@ -492,11 +503,11 @@ $lang['About_user'] = "Todo sobre %s"; // %s es nombre de usuario
 
 $lang['Preferences'] = "Preferencias";
 $lang['Items_required'] = "Los campos marcados con * son obligatorios a menos que se indique lo contrario";
-$lang['Registration_info'] = "Información de Registro";
+$lang['Registration_info'] = "Información de Registración";
 $lang['Profile_info'] = "Información de Perfil";
 $lang['Profile_info_warn'] = "Esta información estará públicamente disponible";
 $lang['Avatar_panel'] = "Panel de Control de Avatar";
-$lang['Avatar_gallery'] = "Galería Avatar";
+$lang['Avatar_gallery'] = "Galería de Avatars";
 
 $lang['Website'] = "Sitio Web";
 $lang['Location'] = "Ubicación";
@@ -508,7 +519,7 @@ $lang['Hidden_email'] = "[ Oculto ]";
 $lang['Search_user_posts'] = "Buscar mensajes de este usuario";
 $lang['Interests'] = "Intereses";
 $lang['Occupation'] = "Ocupación"; 
-$lang['Poster_rank'] = "Ranking de Autor";
+$lang['Poster_rank'] = "Rango del Autor";
 
 $lang['Total_posts'] = "Cantidad de Mensajes";
 $lang['User_post_pct_stats'] = "%.2f%% del total"; // 1.25% del total
@@ -567,8 +578,8 @@ $lang['Select_category'] = "Seleccionar categoría";
 $lang['Delete_Image'] = "Borrar Imagen";
 $lang['Current_Image'] = "Imagen Actual";
 
-$lang['Notify_on_privmsg'] = "Notificar de nuevos Mensajes Privados";
-$lang['Popup_on_privmsg'] = "Desplegar nueva ventana cuando hay Mensajes Privados"; 
+$lang['Notify_on_privmsg'] = "Notificarme por nuevos Mensajes Privados";
+$lang['Popup_on_privmsg'] = "Desplegar nueva ventana cuando hay Mensajes Privados";
 $lang['Popup_on_privmsg_explain'] = "Algunas plantillas pueden abrir una nueva ventana para informarle cuando ha recibido nuevos mensajes privados"; 
 $lang['Hide_user'] = "Ocultar su status online";
 
@@ -635,7 +646,7 @@ $lang['Empty_message_email'] = "Debe ingresar un mensaje para ser enviado";
 //
 $lang['Select_sort_method'] = "Ordenar por";
 $lang['Sort'] = "Ordenar";
-$lang['Sort_Top_Ten'] = "Los 10 autores que mas escriben";
+$lang['Sort_Top_Ten'] = "Los 10 autores que más escriben";
 $lang['Sort_Joined'] = "Fecha de Registro";
 $lang['Sort_Username'] = "Nombre de usuario";
 $lang['Sort_Location'] = "Ubicación";
@@ -799,7 +810,7 @@ $lang['Online_explain'] = "Estos datos estan basados en usuarios activos durante
 $lang['Forum_Location'] = "Ubicación del Foro";
 $lang['Last_updated'] = "Ultima Actualización";
 
-$lang['Forum_index'] = "Indice de Foro";
+$lang['Forum_index'] = "Indice del Foro";
 $lang['Logging_on'] = "Entrando";
 $lang['Posting_message'] = "Publicando mensaje";
 $lang['Searching_forums'] = "Buscando foros";
@@ -833,11 +844,11 @@ $lang['Confirm_lock_topic'] = "¿Está seguro que quiere cerrar el/los tema/s sele
 $lang['Confirm_unlock_topic'] = "¿Está seguro que quiere desbloquear el/los tema/s seleccionado/s?";
 $lang['Confirm_move_topic'] = "¿Está seguro que quiere mover el/los tema/s seleccionado/s?";
 
-$lang['Move_to_forum'] = "Mover a foro";
+$lang['Move_to_forum'] = "Mover al foro";
 $lang['Leave_shadow_topic'] = "Dejar tema sombreado en antiguo foro.";
 
 $lang['Split_Topic'] = "Panel de Control para División de Temas";
-$lang['Split_Topic_explain'] = "Usando el siguiente formulario puede dividir un tema en dos, ya sea seleccionando los mensajes individualmente o dividiendolo en un mensaje determinado";
+$lang['Split_Topic_explain'] = "Usando el siguiente formulario puede dividir un tema en dos, ya sea seleccionando los mensajes individualmente o dividiéndolo en un mensaje determinado";
 $lang['Split_title'] = "Título del nuevo tema";
 $lang['Split_forum'] = "Foro para nuevo tema";
 $lang['Split_posts'] = "Dividir mensajes seleccionados";
@@ -865,10 +876,10 @@ $lang['-12'] = "GMT - 12 Horas";
 $lang['-11'] = "GMT - 11 Horas";
 $lang['-10'] = "HST (Hawaii)";
 $lang['-9'] = "GMT - 9 Horas";
-$lang['-8'] = "PST (U.S./Canada)";
-$lang['-7'] = "MST (U.S./Canada)";
-$lang['-6'] = "CST (U.S./Canada)";
-$lang['-5'] = "EST (Lima /U.S./Canada)";
+$lang['-8'] = "PST (U.S./Canadá)";
+$lang['-7'] = "MST (U.S./Canadá)";
+$lang['-6'] = "CST (U.S./Canadá)";
+$lang['-5'] = "EST (Lima /U.S.A./Canadá)";
 $lang['-4'] = "GMT - 4 Horas";
 $lang['-3.5'] = "GMT - 3.5 Horas";
 $lang['-3'] = "GMT - 3 Horas";
@@ -925,44 +936,47 @@ $lang['tz']['10'] = "(GMT +10:00 horas) Canberra, Guam, Melbourne, Sydney, Vladi
 $lang['tz']['11'] = "(GMT +11:00 horas) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 horas) Auckland, Wellington, Fiji, Marshall Island";
 
-$lang['datetime']['Sunday'] = "Domingo";
-$lang['datetime']['Monday'] = "Lunes";
-$lang['datetime']['Tuesday'] = "Martes";
-$lang['datetime']['Wednesday'] = "Miércoles";
-$lang['datetime']['Thursday'] = "Jueves";
-$lang['datetime']['Friday'] = "Viernes";
-$lang['datetime']['Saturday'] = "Sábado";
-$lang['datetime']['Sun'] = "Dom";
-$lang['datetime']['Mon'] = "Lun";
-$lang['datetime']['Tue'] = "Mar";
-$lang['datetime']['Wed'] = "Mie";
-$lang['datetime']['Thu'] = "Jue";
-$lang['datetime']['Fri'] = "Vie";
-$lang['datetime']['Sat'] = "Sab";
-$lang['datetime']['January'] = "Enero";
-$lang['datetime']['February'] = "Febrero";
-$lang['datetime']['March'] = "Marzo";
-$lang['datetime']['April'] = "Abril";
-$lang['datetime']['May'] = "Mayo";
-$lang['datetime']['June'] = "Junio";
-$lang['datetime']['July'] = "Julio";
-$lang['datetime']['August'] = "Agosto";
-$lang['datetime']['September'] = "Setiembre";
-$lang['datetime']['October'] = "Octubre";
-$lang['datetime']['November'] = "Noviembre";
-$lang['datetime']['December'] = "Diciembre";
-$lang['datetime']['Jan'] = "Ene";
-$lang['datetime']['Feb'] = "Feb";
-$lang['datetime']['Mar'] = "Mar";
-$lang['datetime']['Apr'] = "Abr";
-$lang['datetime']['May'] = "May";
-$lang['datetime']['Jun'] = "Jun";
-$lang['datetime']['Jul'] = "Jul";
-$lang['datetime']['Aug'] = "Ago";
-$lang['datetime']['Sep'] = "Set";
-$lang['datetime']['Oct'] = "Oct";
-$lang['datetime']['Nov'] = "Nov";
-$lang['datetime']['Dec'] = "Dic";
+$lang['days_long'][0] = "Domingo";
+$lang['days_long'][1] = "Lunes";
+$lang['days_long'][2] = "Martes";
+$lang['days_long'][3] = "Miércoles";
+$lang['days_long'][4] = "Jueves";
+$lang['days_long'][5] = "Viernes";
+$lang['days_long'][6] = "Sábado";
+
+$lang['days_short'][0] = "Dom";
+$lang['days_short'][1] = "Lun";
+$lang['days_short'][2] = "Mar";
+$lang['days_short'][3] = "Mie";
+$lang['days_short'][4] = "Jue";
+$lang['days_short'][5] = "Vie";
+$lang['days_short'][6] = "Sab";
+
+$lang['months_long'][0] = "Enero";
+$lang['months_long'][1] = "Febrero";
+$lang['months_long'][2] = "Marzo";
+$lang['months_long'][3] = "Abril";
+$lang['months_long'][4] = "Mayo";
+$lang['months_long'][5] = "Junio";
+$lang['months_long'][6] = "Julio";
+$lang['months_long'][7] = "Agosto";
+$lang['months_long'][8] = "Setiembre";
+$lang['months_long'][9] = "Octubre";
+$lang['months_long'][10] = "Noviembre";
+$lang['months_long'][11] = "Diciembre";
+
+$lang['months_short'][0] = "Ene";
+$lang['months_short'][1] = "Feb";
+$lang['months_short'][2] = "Mar";
+$lang['months_short'][3] = "Abr";
+$lang['months_short'][4] = "May";
+$lang['months_short'][5] = "Jun";
+$lang['months_short'][6] = "Jul";
+$lang['months_short'][7] = "Ago";
+$lang['months_short'][8] = "Set";
+$lang['months_short'][9] = "Oct";
+$lang['months_short'][10] = "Nov";
+$lang['months_short'][11] = "Dic";
 
 //
 // Errores (no relacionados con una falla específica en 
