@@ -376,7 +376,7 @@ if( $mode == "read" )
 	$username_to = $privmsg['username_2'];
 	$user_id_to = $privmsg['user_id_2'];
 
-	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']);
+	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']);
 
 	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $username_from\" border=\"0\" /></a>";
 

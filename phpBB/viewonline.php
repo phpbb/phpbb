@@ -199,7 +199,7 @@ if( count($onlinerow_reg) )
 					"ROW_COLOR" => "#" . $row_color,
 					"ROW_CLASS" => $row_class,
 					"USERNAME" => $username,
-					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_time'], $board_config['default__timezone']),
+					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_time'], $board_config['board_timezone']),
 					"LOCATION" => $location,
 
 					"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
