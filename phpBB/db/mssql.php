@@ -29,6 +29,8 @@ class sql_db
 
 	var $db_connect_id;
 	var $query_result;
+	var $in_transaction = 0;
+	var $transaction_name;
 	var $query_limit_offset;
 	var $query_limit_numrows;
 	var $query_limit_success;
@@ -91,7 +93,7 @@ class sql_db
 	//
 	// Query method
 	//
-	function sql_query($query = "")
+	function sql_query($query = "", $transaction = FALSE)
 	{
 		//
 		// Remove any pre-existing queries
@@ -100,27 +102,30 @@ class sql_db
 		unset($this->row);
 		if($query != "")
 		{
+			if($transaction == BEGIN_TRANSACTION)
+			{
+				$result = mssql_query("BEGIN TRANSACTION", $this->db_connect_id);
+				if(!$result)
+				{
+					return false;
+				}
+				$this->in_transaction = TRUE;
+			}
+
 			//
-			// Does query contain any LIMIT code?
-			// If so pull out relevant start and num_results
-			// This isn't terribly easy with MSSQL, whatever
-			// you do will potentially impact performance
-			// compared to an 'in-built' limit
+			// Does query contain any LIMIT code? If so pull out relevant start and num_results
+			// This isn't terribly easy with MSSQL, whatever you do will potentially impact
+			// performance compared to an 'in-built' limit
 			//
-			// Another issue is the 'lack' of a returned true
-			// value when a query is valid but has no result
-			// set (as with all the other DB interfaces).
-			// It seems though that it's 'fair' to say that if
-			// a query returns a false result (ie. no resource id)
-			// then the SQL was valid but had no result set. If the
-			// query returns nothing but the rowcount returns
-			// something then there's a problem. This
-			// may well be a false assumption though ... needs
-			// checking under Windows itself.
+			// Another issue is the 'lack' of a returned true value when a query is valid but has
+			// no result set (as with all the other DB interfaces). It seems though that it's 
+			// 'fair' to say that if a query returns a false result (ie. no resource id) then the
+			// SQL was valid but had no result set. If the query returns nothing but the rowcount
+			// returns something then there's a problem. This may well be a false assumption though 
+			// ... needs checking under Windows itself.
 			//
 			if(eregi("LIMIT", $query))
 			{
-				 "HERE";
 				preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
 
 				$query = $limits[1];
@@ -135,15 +140,17 @@ class sql_db
 					$num_rows = $limits[2];
 				}
 	
-				 "<br>".$query."<br>";
 				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
+
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
+
 				@mssql_query("SET ROWCOUNT 0");
 
 				$this->query_limit_success[$this->query_result] = true;
 
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = $num_rows;
+
 				if($this->query_result && $row_offset > 0)
 				{
 					$result = @mssql_data_seek($this->query_result, $row_offset);
@@ -163,47 +170,69 @@ class sql_db
 					$next_id_query = @mssql_query("SELECT @@IDENTITY AS this_id");
 					$this->next_id[$this->query_result] = $this->sql_fetchfield("this_id", -1, $next_id_query);
 				}
+				else
+				{
+					if($this->in_transaction)
+					{
+						mssql_query("ROLLBACK", $this->db_connect_id);
+						$this->in_transaction = FALSE;
+					}
+					return false;
+				}
+
 				$this->query_limit_offset[$this->query_result] = -1;
 				$this->query_limit_numrows[$this->query_result] = -1;
 			}
 			else 
 			{
-				//
-				// This needs a little more work
-				// before we take it public. SELECT needs
-				// separating out, with other queries
-				// (UPDATE, DELETE, etc.) having a uniqid
-				// $this-
-				// 
 				if(eregi("SELECT", $query))
 				{
-					$this->query_result = @@mssql_query($query, $this->db_connect_id);
+					$this->query_result = @mssql_query($query, $this->db_connect_id);
 				}
 				else
 				{
-					$this->query_result = @@mssql_query($query, $this->db_connect_id);
+					$this->query_result = @mssql_query($query, $this->db_connect_id);
 					if($this->query_result)
 					{
 						$this->query_result = uniqid(rand());
 					}
 				}
+
 				if($this->query_result)
 				{
 					$affected_query = @mssql_query("SELECT @@ROWCOUNT AS this_count");
+
 					$this->affected_rows[$this->query_result] = $this->sql_fetchfield("this_count", -1, $affected_query);
+
 					$this->query_limit_offset[$this->query_result] = -1;
 					$this->query_limit_numrows[$this->query_result] = -1;
 				}
 				else
 				{
+					if($this->in_transaction)
+					{
+						mssql_query("ROLLBACK", $this->db_connect_id);
+						$this->in_transaction = FALSE;
+					}
 					return false;
 				}
+			}
+
+			if($transaction == END_TRANSACTION)
+			{
+				$result = mssql_query("COMMIT", $this->db_connect_id);
 			}
 
 			return $this->query_result;
 		}
 		else
 		{
+			if($transaction == END_TRANSACTION)
+			{
+				$result = mssql_query("COMMIT", $this->db_connect_id);
+				$this->in_transaction = FALSE;
+			}
+
 			return false;
 		}
 	}
@@ -436,7 +465,7 @@ class sql_db
 		}
 		if($query_id)
 		{
-			return $this->next_id[$query_id]+1;
+			return $this->next_id[$query_id];
 		}
 		else
 		{

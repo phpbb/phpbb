@@ -28,7 +28,8 @@ class sql_db
 {
 
 	var $db_connect_id;
-	var $query_result;
+	var $query_result; 
+	var $in_transaction = 0;
 	var $row;
 	var $rownum = array();
 
@@ -115,7 +116,7 @@ class sql_db
 	//
 	// Query method
 	//
-	function sql_query($query="")
+	function sql_query($query = "", $transaction = FALSE)
 	{
 		// Remove any pre-existing queries
 		unset($this->query_result);
@@ -123,11 +124,32 @@ class sql_db
 		{
 			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2, \\1", $query);
 
+			if($transaction == BEGIN_TRANSACTION)
+			{
+				$result = @pg_exec($this->db_connect_id, "BEGIN");
+				if(!$result)
+				{
+					return false;
+				}
+			}
+
 			$this->query_result = @pg_exec($this->db_connect_id, $query);
 			if($this->query_result)
 			{
+				if($transaction == END_TRANSACTION)
+				{
+					$result = @pg_exec($this->db_connect_id, "COMMIT");
+					if(!$result)
+					{
+						@pg_exec($this->db_connect_id, "ROLLBACK");
+						return false;
+					}
+					$this->in_transaction = FALSE;
+				}
+
 				$this->last_query_text[$this->query_result] = $query;
 				$this->rownum[$this->query_result] = 0;
+
 				unset($this->row[$this->query_result]);
 				unset($this->rowset[$this->query_result]);
 
@@ -135,11 +157,26 @@ class sql_db
 			}
 			else
 			{
+				if($this->in_transaction)
+				{
+					@pg_exec($this->db_connect_id, "ROLLBACK");
+				}
 				return false;
 			}
 		}
 		else
 		{
+			if($transaction == END_TRANSACTION)
+			{
+				$result = @pg_exec($this->db_connect_id, "COMMIT");
+				if(!$result)
+				{
+					@pg_exec($this->db_connect_id, "ROLLBACK");
+					return false;
+				}
+				$this->in_transaction = FALSE;
+			}
+
 			return false;
 		}
 	}

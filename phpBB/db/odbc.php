@@ -117,7 +117,7 @@ class sql_db
 	//
 	// Query method
 	//
-	function sql_query($query = "")
+	function sql_query($query = "", $transaction = FALSE)
 	{
 		//
 		// Remove any pre-existing queries

@@ -94,7 +94,7 @@ class sql_db
 	//
 	// Base query method
 	//
-	function sql_query($query = "")
+	function sql_query($query = "", $transaction = FALSE)
 	{
 		// Remove any pre-existing queries
 		unset($this->query_result);
