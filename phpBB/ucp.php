@@ -23,7 +23,6 @@
 // TODO for 2.2:
 //
 // * Registration
-//    * Admin defineable use of COPPA
 //    * Link to (additional?) registration conditions
 //    * Form based click through rather than links
 //    * Inform user of registration method i.e. if a valid email is required
@@ -89,7 +88,9 @@ if (!empty($_REQUEST['mode']))
 			{
 				redirect("index.$phpEx$SID");
 			}
-			include($phpbb_root_path . 'ucp/usercp_register.'.$phpEx);
+
+			include($phpbb_root_path . 'ucp/ucp_register.'.$phpEx);
+			ucp_register::main();
 			break;
 
 		case 'login':
@@ -127,33 +128,48 @@ $censors = array();
 obtain_word_list($censors);
 
 
+$selected_module = (!empty($_REQUEST['module_id'])) ? $_REQUEST['module_id'] : '';
+
 // "Home" module
 $template->assign_block_vars('ucp_sections', array(
 	'U_SECTION'	=> "ucp.$phpEx$SID",
-	'SECTION'	=> $user->lang['UCP_Main'])
+	'SECTION'	=> $user->lang['UCP_Main'], 
+	'S_IS_TAB'	=> (!$selected_module) ? true : false)
 );
 
+
+
 // Grab the other enabled UCP modules
-$selected_module = (!empty($_REQUEST['module_id'])) ? $_REQUEST['module_id'] : '';
 $sql = "SELECT module_id, module_name, module_filename 
 	FROM " . UCP_MODULES_TABLE . " 
-	ORDER BY module_order";
+	ORDER BY module_order ASC";
 $result = $db->sql_query($sql);
 
+$selected_module_name = '';
 while ($row = $db->sql_fetchrow($result))
 {
 	$template->assign_block_vars('ucp_sections', array(
+		'SECTION'	=> $user->lang['UCP_' . $row['module_name']], 
+
 		'U_SECTION'	=> "ucp.$phpEx$SID&amp;module_id=" . $row['module_id'],
-		'SECTION'	=> $row['module_name'])
+
+		'S_IS_TAB'	=> ($row['module_id'] == $selected_module) ? true : false)
 	);
 	
 	if ($row['module_id'] == $selected_module)
 	{
-		$module_to_include = $row['module_filename'] . '.' . $phpEx;
-		include($phpbb_root_path . $module_to_include);
+		$selected_module_name = $row['module_filename'];
+		$selected_module_id = $row['module_id'];
 	}
 }
 $db->sql_freeresult($result);
+
+if ($selected_module_name)
+{
+	include($phpbb_root_path . 'ucp/' . $selected_module_name . '.' . $phpEx);
+	eval($selected_module_name . '::main(' . $selected_module_id . ');');
+}
+
 
 
 // Subscribed Topics
@@ -210,19 +226,21 @@ while ($row = $db->sql_fetchrow($result))
 		$unread_topic = true;
 	}
 
+
+
+
+
+
+
 	$newest_post_img = ($unread_topic) ? '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id  . '&amp;view=newest#newest">' . $user->img('goto_post_newest', 'View_newest_post') . '</a> ' : '';
 	$folder_img = ($unread_topic) ? $folder_new : $folder;
 	$folder_alt = ($unread_topic) ? 'New_posts' : (($row['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
 	$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
 
-	// Needs to be handled within this code rather than going out of UCP
-	$unsubscribe_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;unwatch=topic">' . $user->img('icon_delete', 'Stop_watching_topic', FALSE) . '</a>';
-	
 	$template->assign_block_vars('subscribed_topics', array(
 		'TOPIC_FOLDER_IMG'	=> $user->img($folder_img, $folder_alt),
 		'NEWEST_POST_IMG'	=> $newest_post_img,
-		'UNSUBSCRIBE_IMG'	=> $unsubscribe_img,	
 
 		'TOPIC_TITLE'	=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
 		
@@ -268,13 +286,10 @@ while ($row = $db->sql_fetchrow($result))
 
 	$last_post = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 
-	// Needs to be handled within this code rather than going out of UCP
-	$unsubscribe_img = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;unwatch=forum">' . $user->img('icon_delete', 'Stop_watching_forum', FALSE) . '</a>';	
 	
 	$template->assign_block_vars('subscribed_forums', array(
 		'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 		'NEWEST_FORUM_POST_IMG' => $last_post,
-		'UNSUBSCRIBE_IMG'		=> $unsubscribe_img,
 
 		'FORUM_NAME'	=> $row['forum_name'],
 		
@@ -299,9 +314,79 @@ $db->sql_freeresult($result);
 page_header($user->lang['UCP'] . ' - ' . $this_section);
 
 $template->set_filenames(array(
-	'body' => 'usercp_main.html')
+	'body' => 'ucp_main.html')
 );
+make_jumpbox('viewforum.'.$phpEx);
 
 page_footer();
+
+
+// A wrapper class for ucp modules?
+class ucp
+{
+	function main($module_id)
+	{
+		return false;
+	}
+
+	function extra_fields($page)
+	{
+		return false;
+	}
+
+	function gen_rand_string($num_chars)
+	{
+		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+		list($usec, $sec) = explode(' ', microtime()); 
+		mt_srand($sec * $usec); 
+
+		$max_chars = count($chars) - 1;
+		$rand_str = '';
+		for ($i = 0; $i < $num_chars; $i++)
+		{
+			$rand_str .= $chars[mt_rand(0, $max_chars)];
+		}
+
+		return $rand_str;
+	}
+
+	function load($filename)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		require($phpbb_root_path . $filename . '.' . $phpEx);
+	}
+
+	function subsection(&$module_ary, &$selected_module)
+	{
+		global $template, $user, $phpEx, $SID;
+
+		foreach($module_ary as $section_title => $module_link)
+		{
+			$template->assign_block_vars('ucp_subsection', array(
+				'L_TITLE'	=> $user->lang['UCP_' . $section_title],
+
+				'S_SELECTED'=> ($section_title == strtoupper($selected_module)) ? true : false, 
+
+				'U_TITLE'	=> "ucp.$phpEx$SID&amp;$module_link")
+			);
+		}
+	}
+
+	function output(&$page_title, $tpl_name)
+	{
+		global $config, $db, $template, $phpEx;
+
+		page_header($page_title);
+
+		$template->set_filenames(array(
+			'body' => $tpl_name)
+		);
+		make_jumpbox('viewforum.'.$phpEx);
+
+		page_footer();
+	}
+}
 
 ?>

@@ -336,11 +336,11 @@ function make_jumpbox($action, $forum_id = false, $select_all = false)
 // Pick a language, any language ...
 function language_select($default = '')
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db;
 
-	$sql = "SELECT lang_iso, lang_local_name 
-		FROM " . LANG_TABLE . "
-		ORDER BY lang_english_name";
+	$sql = 'SELECT lang_iso, lang_local_name 
+		FROM ' . LANG_TABLE . '
+		ORDER BY lang_english_name';
 	$result = $db->sql_query($sql);
 
 	$lang_options = '';
@@ -359,9 +359,9 @@ function style_select($default = '')
 {
 	global $db;
 
-	$sql = "SELECT style_id, style_name
-		FROM " . STYLES_TABLE . "
-		ORDER BY style_name, style_id";
+	$sql = 'SELECT style_id, style_name
+		FROM ' . STYLES_TABLE . '
+		ORDER BY style_name';
 	$result = $db->sql_query($sql);
 
 	$style_options = '';

@@ -1,0 +1,87 @@
+<!-- $Id$ -->
+
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{S_UCP_ACTION}"><table width="80%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav"><a href="{U_INDEX}">{L_INDEX}</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<th colspan="2" height="25" valign="middle">{L_REGISTRATION}</th>
+	</tr>
+
+	<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</td>
+	</tr>
+	<!-- ENDIF -->
+
+	<!-- IF L_ITEMS_REQUIRED -->
+	<tr> 
+		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<tr> 
+		<td class="row1" width="38%"><span class="gen">{L_USERNAME}: </span></td>
+		<td class="row2"><input type="text" class="post" name="username" size="25" maxlength="40" value="{USERNAME}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: </span></td>
+		<td class="row2"><input type="text" class="post" name="email" size="25" maxlength="255" value="{EMAIL}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_CONFIRM_EMAIL}: </span></td>
+		<td class="row2"><input type="text" class="post" name="email_confirm" size="25" maxlength="255" value="{EMAIL_CONFIRM}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_PASSWORD}: </span></td>
+		<td class="row2"><input type="password" class="post" name="new_password" size="25" maxlength="100" value="{PASSWORD}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_CONFIRM_PASSWORD}:  </span></td>
+		<td class="row2"><input type="password" class="post" name="password_confirm" size="25" maxlength="100" value="{PASSWORD_CONFIRM}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_LANGUAGE}: </span></td>
+		<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_TIMEZONE}: </span></td>
+		<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
+	</tr>
+
+	<!-- IF S_CONFIRM_CODE -->
+	<tr> 
+		<th colspan="2" height="25" valign="middle">{L_CONFIRMATION}</th>
+	</tr>
+	<tr> 
+		<td class="row3" colspan="2"><span class="gensmall">{L_CONFIRM_EXPLAIN}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2" align="center">{CONFIRM_IMG}</td>
+	</tr>
+	<tr> 
+		<td class="row1"><span class="gen">{L_CONFIRM_CODE}:  </span><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
+		<td class="row2"><input type="text" class="post" name="confirm_code" size="6" maxlength="6" /></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<!-- IF S_COPPA -->
+	<tr> 
+		<th colspan="2" height="25" valign="middle">{L_COPPA_COMPLIANCE}</th>
+	</tr>
+	<tr> 
+		<td class="row3" colspan="2"><span class="gensmall">{L_COPPA_EXPLAIN}</span></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<tr>
+		<td class="cat" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input class="mainoption" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="{L_RESET}" name="reset" /></td>
+	</tr>
+</table></form>
+
+<!-- INCLUDE overall_footer.html -->

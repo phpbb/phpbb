@@ -63,20 +63,20 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 // and user profile manipulation
 class userdata extends user
 {
-	var $error = false;
-	var $error_msg;
+	var $error = array();
 	
-	function add_new_user($userdata, $coppa)
+	function add_user($coppa)
 	{
 		global $config, $db, $user;
 
-		$userdata = $this->prepare_data($userdata, TRUE);
+		$userdata = $this->prepare_data(true);
 		
-		if (!$this->error)
+		if (!sizeof($this->error))
 		{
-			if (($coppa) && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
+			if ($coppa && ($config['require_activation'] == USER_ACTIVATION_SELF || 
+				$config['require_activation'] == USER_ACTIVATION_ADMIN))
 			{
-				$user_actkey = $this->gen_png_string(10);
+				$user_actkey = ucp::gen_rand_string(10);
 				$key_len = 54 - (strlen($server_url));
 				$key_len = ($key_len > 6) ? $key_len : 6;
 	
@@ -103,26 +103,12 @@ class userdata extends user
 				'username'		=> $userdata['username'], 
 				'user_password' => $userdata['password'],
 				'user_email'	=> $userdata['email'],
-				'user_viewemail'	=> $userdata['viewemail'],
-				'user_attachsig'	=> $userdata['attachsig'],
-				'user_allowsmile'	=> $userdata['allowsmilies'],
-				'user_allowhtml'	=> $userdata['allowhtml'],
-				'user_allowbbcode'	=> $userdata['allowbbcode'],
-				'user_allow_viewonline' => $userdata['allowviewonline'],
-				'user_allow_pm'		=> 1,
-				'user_notify'	=> $userdata['notifyreply'],
-				'user_allow_viewonline' => $userdata['hideonline'],
-				'user_notify_pm'=> $userdata['notifypm'],
-				'user_popup_pm' => $userdata['popup_pm'],
+				'user_allow_pm'	=> 1,
 				'user_timezone' => (float) $userdata['timezone'],
-				'user_dateformat'	=> $userdata['dateformat'],
-				'user_lang'			=> $userdata['language'],
-				'user_style'		=> $userdata['style'],
-				'user_active' => $user_active,
-				'user_actkey' => $user_actkey
+				'user_lang'		=> $userdata['language'],
+				'user_active'	=> $user_active,
+				'user_actkey'	=> $user_actkey
 			);
-	//			'user_avatar' => $avatar_sql['data'],
-	//			'user_avatar_type' => $avatar_sql['type'],
 	
 			$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 			$db->sql_query($sql);
@@ -143,22 +129,22 @@ class userdata extends user
 	
 			if ($coppa)
 			{
-				$message = $user->lang['COPPA'];
+				$message = $user->lang['ACCOUNT_COPPA'];
 				$email_template = 'coppa_welcome_inactive';
 			}
 			else if ($config['require_activation'] == USER_ACTIVATION_SELF)
 			{
-				$message = $user->lang['Account_inactive'];
+				$message = $user->lang['ACCOUNT_INACTIVE'];
 				$email_template = 'user_welcome_inactive';
 			}
 			else if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 			{
-				$message = $user->lang['Account_inactive_admin'];
+				$message = $user->lang['ACCOUNT_INACTIVE_ADMIN'];
 				$email_template = 'admin_welcome_inactive';
 			}
 			else
 			{
-				$message = $user->lang['Account_added'];
+				$message = $user->lang['ACCOUNT_ADDED'];
 				$email_template = 'user_welcome';
 			}
 	
@@ -221,29 +207,27 @@ class userdata extends user
 				$emailer->reset();
 			}
 	*/
-			$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 			
-			$return = array('user_id' => $user_id,
-				'username' => $userdata['username'],
-				'message' => $message);
+			if ($config['require_activation'] == USER_ACTIVATION_NONE)
+			{
+				set_config('newest_user_id', $userdata['user_id']);
+				set_config('newest_username', $userdata['username']);
+				set_config('num_users', $config['num_users'] + 1, TRUE);
+			}
+			unset($userdata);
 				
-			return($return);
-			
-		
-		}
-		else
-		{
-			return(array('user_id' => 0,
-				'username' => NULL,
-				'message' => $this->error_msg));
+			return $message;
 		}
 
+		return false;
 	}
 	
-	function prepare_data($userdata, $registration = FALSE)
+	function prepare_data($registration = FALSE)
 	{
 		global $db, $user, $config;
 	
+		$userdata = &$_POST;
+
 		$strip_var_list = array('username' => 'username', 'email' => 'email'); 
 	
 		foreach ($strip_var_list as $var => $param)
@@ -287,14 +271,13 @@ class userdata extends user
 	
 		if (!empty($userdata['language']))
 		{
-			if (preg_match('/^[a-z_]+$/i', $userdata['language']))
+			if (preg_match('#^[a-z_]+$#i', $userdata['language']))
 			{
 				$userdata['language'] = $userdata['language'];
 			}
 			else
 			{
-				$this->error = true;
-				$this->error_msg = $user->lang['Fields_empty'];
+				$this->error[] = $user->lang['Fields_empty'];
 			}
 		}
 		else
@@ -307,25 +290,22 @@ class userdata extends user
 	
 		if (empty($userdata['username']) || empty($userdata['password']) || empty($userdata['password_confirm']) || empty($userdata['email']))
 		{
-			$this->error = TRUE;
-			$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Fields_empty'];
+			$this->error[] = $user->lang['Fields_empty'];
 		}
 	
 		if (!empty($userdata['password']) && !empty($userdata['password_confirm']))
 		{
 			if ($userdata['password'] != $userdata['password_confirm'])
 			{
-				$this->error = TRUE;
-				$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Password_mismatch'];
+				$this->error[] = $user->lang['Password_mismatch'];
 			}
 			else if (strlen($userdata['password']) > 32)
 			{
-				$this->error = TRUE;
-				$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Password_long'];
+				$this->error[] = $user->lang['Password_long'];
 			}
 			else
 			{
-				if (!$this->error)
+				if (!sizeof($this->error))
 				{
 					$userdata['password'] = md5($userdata['password']);
 					$passwd_sql = "user_password = '$password', ";
@@ -334,8 +314,7 @@ class userdata extends user
 		}
 		else if ((empty($userdata['password']) && !empty($userdata['password_confirm'])) || (!empty($userdata['password']) && empty($userdata['password_confirm'])))
 		{
-			$this->error = TRUE;
-			$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Password_mismatch'];
+			$this->error[] = $user->lang['Password_mismatch'];
 		}
 		else
 		{
@@ -349,22 +328,19 @@ class userdata extends user
 			{
 				$userdata['email'] = $user->data['user_email'];
 
-				$this->error = TRUE;
-				$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $result;
+				$this->error[] = $result;
 			}
 		}
 	
 		if (empty($userdata['username']))
 		{
-			$this->error = TRUE;
-			$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Username_disallowed'];
+			$this->error[] = $user->lang['Username_disallowed'];
 		}
 		else
 		{
 			if (($result = $this->validate_username($userdata['username'])) != false)
 			{
-				$this->error = TRUE;
-				$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $result;
+				$this->error[] = $result;
 			}
 		}
 	
@@ -373,8 +349,7 @@ class userdata extends user
 		{
 			if (empty($userdata['confirm_id']))
 			{
-				$this->error = TRUE;
-				$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Confirm_code_wrong'];
+				$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
 			}
 			else
 			{
@@ -382,22 +357,20 @@ class userdata extends user
 					FROM " . CONFIRM_TABLE . " 
 					WHERE confirm_id = '" . $userdata['confirm_id'] . "' 
 						AND session_id = '" . $user->data['session_id'] . "'";
-					
 				$result = $db->sql_query($sql);
 	
 				if ($row = $db->sql_fetchrow($result))
 				{
 					if ($row['code'] != $userdata['confirm_code'])
 					{			
-						$this->error = TRUE;
-						$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Confirm_code_wrong'];
+						$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
 					}
 				}
 				else
 				{		
-					$this->error = TRUE;
-					$this->error_msg .= ((isset($this->error_msg)) ? '<br />' : '') . $user->lang['Confirm_code_wrong'];
+					$this->error[] = $user->lang['CONFIRM_CODE_WRONG'];
 				}
+				$db->sql_freeresult($result);
 	
 				$sql = "DELETE FROM " . CONFIRM_TABLE . " 
 					WHERE confirm_id = '" . $userdata['confirm_id'] . "' 
@@ -405,7 +378,8 @@ class userdata extends user
 				$db->sql_query($sql);
 			}
 		}
-		return($userdata);
+
+		return $userdata;
 	}
 	
 	function modify_userdata($userdata)
@@ -414,23 +388,6 @@ class userdata extends user
 		
 	}
 	
-	function gen_png_string($num_chars)
-	{
-		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-	
-		list($usec, $sec) = explode(' ', microtime()); 
-		mt_srand($sec * $usec); 
-	
-		$max_chars = count($chars) - 1;
-		$rand_str = '';
-		for ($i = 0; $i < $num_chars; $i++)
-		{
-			$rand_str .= $chars[mt_rand(0, $max_chars)];
-		}
-	
-		return $rand_str;
-	}
-
 	// Check to see if the username has been taken, or if it is disallowed.
 	// Also checks if it includes the " character, which we don't allow in usernames.
 	// Used for registering, changing names, and posting anonymously with a username
@@ -441,7 +398,19 @@ class userdata extends user
 		// Clean up username ... convert any entities into normal
 		// text, remove excess spaces, then escape it
 		$username = strtr(trim($username), array_flip(get_html_translation_table(HTML_ENTITIES)));
-		$username = preg_replace('#[\s]{2,}#', '', $username);
+		$username = preg_replace('#\s{2,}#', '', $username);
+
+		if (strlen(htmlspecialchars($username)) > 60)
+		{
+			return 'USERNAME_LONG';
+		}
+
+		// Don't allow " in username.
+		if (strstr($username, '"'))
+		{
+			return 'USERNAME_INVALID';
+		}
+	
 		$username = $db->sql_escape($username);
 
 		$sql = "SELECT username
@@ -451,8 +420,9 @@ class userdata extends user
 	
 		if (($row = $db->sql_fetchrow($result)) && $row['username'] != $user->data['username'])
 		{
-			return $user->lang['Username_taken'];
+			return 'USERNAME_TAKEN';
 		}
+		$db->sql_freeresult($result);
 	
 		$sql = "SELECT group_name
 			FROM " . GROUPS_TABLE . "
@@ -461,39 +431,36 @@ class userdata extends user
 	
 		if ($row = $db->sql_fetchrow($result))
 		{
-			return $user->lang['Username_taken'];
+			return 'USERNAME_TAKEN';
 		}
-	
+		$db->sql_freeresult($result);
+
 		$sql = "SELECT disallow_username
 			FROM " . DISALLOW_TABLE;
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'], '#')) . ')\b#i', $username))
+			if (preg_match('#(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'], '#')) . ')#i', $username))
 			{
-				return $user->lang['Username_disallowed'];
+				return 'USERNAME_DISALLOWED';
 			}
 		}
-	
+		$db->sql_freeresult($result);
+
 		$sql = "SELECT word
 			FROM  " . WORDS_TABLE;
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . ')\b#i', $username))
+			if (preg_match('#(' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . ')#i', $username))
 			{
-				return $user->lang['Username_disallowed'];
+				return 'USERNAME_DISALLOWED';
 			}
 		}
-	
-		// Don't allow " in username.
-		if (strstr($username, '"'))
-		{
-			return $user->lang['Username_invalid'];
-		}
-	
+		$db->sql_freeresult($result);
+
 		return false;
 	}
 	
@@ -514,9 +481,10 @@ class userdata extends user
 				{
 					if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#is', $email))
 					{
-						return $user->lang['Email_banned'];
+						return 'EMAIL_BANNED';
 					}
 				}
+				$db->sql_freeresult($result);
 	
 				$sql = "SELECT user_email
 					FROM " . USERS_TABLE . "
@@ -525,14 +493,15 @@ class userdata extends user
 	
 				if ($row = $db->sql_fetchrow($result))
 				{
-					return $user->lang['Email_taken'];
+					return 'EMAIL_TAKEN';
 				}
+				$db->sql_freeresult($result);
 	
 				return false;
 			}
 		}
 	
-		return $user->lang['Email_invalid'];
+		return 'EMAIL_INVALID';
 	}
 }
 

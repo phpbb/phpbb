@@ -1,0 +1,25 @@
+<!-- $Id$ -->
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{S_UCP_ACTION}" {S_FORM_ENCTYPE}><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" colspan="2" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" cellspacing="1" cellpadding="6" border="0" align="left">
+	<tr>
+		<!-- BEGIN ucp_sections -->
+		<!-- IF ucp_sections.S_IS_TAB -->
+		<td class="row1" nowrap="nowrap"><span class="nav"><b>{ucp_sections.SECTION}</b>
+		<!-- ELSE -->
+		<td class="row2" nowrap="nowrap"><a class="nav" href="{ucp_sections.U_SECTION}">{ucp_sections.SECTION}</a>
+		<!-- ENDIF -->
+		</td>
+		<!-- END ucp_sections -->
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="0" cellpadding="0" border="0">
