@@ -1094,7 +1094,7 @@ switch ($mode)
 
 						while ($row = $db->sql_fetchrow($result))
 						{
-							if (filemtime("{$phpbb_root_path}styles/$template_path/template/" . $row['template_filename']) > $row['template_mtime'])
+							if (@filemtime("{$phpbb_root_path}styles/$template_path/template/" . $row['template_filename']) > $row['template_mtime'])
 							{
 								$filelist['/'][] = $row['template_filename'];
 							}
@@ -1426,30 +1426,59 @@ function viewsource(url)
 						$test_ary += $tpl_ary;
 					}
 
-					$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
-					while ($file = readdir($dp))
+
+					if (!$template_storedb)
 					{
-						if (!strstr($file, 'bbcode.') && strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
+						$dp = @opendir("{$phpbb_root_path}styles/$template_path/template");
+						while ($file = readdir($dp))
 						{
-							if (!in_array($file, $test_ary))
+							if (!strstr($file, 'bbcode.') && strstr($file, '.html') && is_file("{$phpbb_root_path}styles/$template_path/template/$file"))
 							{
-								$tpllist['custom'][] = $file;
+								if (!in_array($file, $test_ary))
+								{
+//									$tpllist['custom'][] = $file;
+								}
 							}
 						}
+						closedir($dp);
+						unset($matches);
+						unset($test_ary);
+
+						if ($tplname)
+						{
+							if (!($fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'r')))
+							{
+								trigger_error($user->lang['NO_TEMPLATE']);
+							}
+							$tpldata = fread($fp, filesize("{$phpbb_root_path}styles/$template_path/template/$tplname"));
+							fclose($fp);
+						}
+
 					}
-					closedir($dp);
-					unset($matches);
-					unset($test_ary);
+					else
+					{
+						$sql = 'SELECT * 
+							FROM ' . STYLES_TPLDATA_TABLE . " 
+							WHERE template_id = $template_id";
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							if (!strstr($row['template_filename'], 'bbcode.') && !in_array($row['template_filename'], $test_ary))
+							{
+//								$tpllist['custom'][] = $row['template_filename'];
+							}
+
+							if ($row['template_filename'] == $tplname)
+							{
+								$tpldata = $row['template_data'];
+							}
+						}
+						$db->sql_freeresult($result);
+					}
 
 					if ($tplname)
 					{
-						$fp = fopen("{$phpbb_root_path}styles/$template_path/template/$tplname", 'r');// . '.html'
-						while ($buffer = fread($fp, 1024))
-						{
-							$tpldata .= $buffer;
-						}
-						@fclose($fp);
-
 						preg_match_all('#<!\-\- INCLUDE (.*?) \-\->#', $tpldata, $included_tpls);
 						$included_tpls = $included_tpls[1];
 					}
@@ -1612,11 +1641,7 @@ function viewsource(url)
 					
 
 					// Where is the CSS stored?
-					if ($css_storedb)
-					{
-						$stylesheet = &$css_data;
-					}
-					else
+					if (!$theme_storedb)
 					{
 						if (!($fp = fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'rb')))
 						{
@@ -1624,6 +1649,10 @@ function viewsource(url)
 						}
 						$stylesheet = fread($fp, filesize("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"));
 						fclose($fp);
+					}
+					else
+					{
+						$stylesheet = &$theme_data;
 					}
 
 
@@ -1696,14 +1725,10 @@ function viewsource(url)
 						{
 							$stylesheet = preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
 						}
-						else
-						{
-							$stylesheet .= '';
-						}
 
 
 						// Where is the CSS stored?
-						if (is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css") && !$css_storedb)
+						if (!$storedb && is_writeable("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css"))
 						{
 							// Grab template data
 							if (!($fp = fopen("{$phpbb_root_path}styles/$theme_path/theme/stylesheet.css", 'wb')))
@@ -1715,11 +1740,10 @@ function viewsource(url)
 						}
 						else
 						{
-							// We change the path to one relative to the root rather than the theme
-							// folder
+							// We change the path to one relative to the root rather than the theme folder
 							$sql_ary = array(
-								'css_storedb'	=> 1,
-								'css_data'		=> str_replace('./', 'styles/themes/', $stylesheet),
+								'theme_storedb'		=> 1,
+								'theme_data'		=> str_replace('./', "styles/$theme_path/theme/", $stylesheet),
 							);
 							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' 
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
@@ -1738,7 +1762,7 @@ function viewsource(url)
 					if (!empty($_POST['preview']))
 					{
 						// Temp, just to get this out of the way
-						theme_preview($stylesheet, $class, $css_element);
+						theme_preview($theme_path, $stylesheet, $class, $css_element);
 						exit;
 					}
 
@@ -1817,7 +1841,7 @@ function viewsource(url)
 
 
 				// Grab list of potential images for class backgrounds
-				$imglist = filelist("{$phpbb_root_path}styles/themes/$theme_path");
+				$imglist = filelist("{$phpbb_root_path}styles/$theme_path/theme");
 
 				$bg_imglist = '';
 				foreach ($imglist as $path => $img_ary)
@@ -2924,7 +2948,12 @@ function details($type, $mode, $action, $id)
 			if ($type == 'template' && $storedb)
 			{
 				$filelist = array('/template' => $filelist['']);
-				$id = $db->sql_nextid();
+
+				if (!$id)
+				{
+					$id = $db->sql_nextid();
+				}
+
 				store_templates('insert', $id, $path, $filelist);
 			}
 
@@ -3292,12 +3321,10 @@ function export($type, $id, $name, $path, &$files, &$data)
 
 }
 
-function theme_preview(&$stylesheet, &$class, &$css_element)
+function theme_preview(&$path, &$stylesheet, &$class, &$css_element)
 {
 	global $config, $user;
 
-	$output = '<span class="' . str_replace('.', '', $class). '">%s</span>';
-						
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html dir="<?php echo $user->lang['LTR']; ?>">
@@ -3308,15 +3335,16 @@ function theme_preview(&$stylesheet, &$class, &$css_element)
 <!--
 <?php
 
+
 	$updated_element = implode('; ', $css_element) . ';';
+
 	if (preg_match('#^' . $class . ' {(.*?)}#m', $stylesheet))
 	{
-		echo $stylesheet = str_replace("url('./../", "url('./../styles/themes/", preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet));
+		$stylesheet = preg_replace('#^(' . $class . ' {).*?(})#m', '\1 ' . $updated_element . ' \2', $stylesheet);
 	}
-	else
-	{
-		echo str_replace("url('./../", "url('./../styles/themes/", $stylesheet);
-	}
+
+	echo str_replace('styles/', '../styles/', str_replace('./', "styles/$path/theme/", $stylesheet));
+
 ?>
 //-->
 </style>
