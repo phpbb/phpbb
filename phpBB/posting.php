@@ -164,9 +164,21 @@ if ($mode == 'edit' && !empty($poll_start))
 // POST INFO
 // ---------
 
-
 // -----------------
 // PERMISSION CHECKS
+
+// Collect general Permissions to be used within the complete page
+$forum_id = intval($forum_id);
+$perm = array(
+	'm_lock' => $auth->acl_gets('m_lock', 'a_', intval($forum_id)),
+
+	'f_news' => $auth->acl_gets('f_news', 'm_', 'a_', intval($forum_id)),
+	'f_announce' => $auth->acl_gets('f_announce', 'm_', 'a_', intval($forum_id)),
+	'f_sticky' => $auth->acl_gets('f_sticky', 'm_', 'a_', intval($forum_id)),
+	'f_ignoreflood' => $auth->acl_gets('f_ignoreflood', 'm_', 'a_', intval($forum_id)),
+
+	'm_edit' => $auth->acl_gets('m_edit', 'a_')
+);
 
 if (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', intval($forum_id)) && !empty($forum_postable))
 {
@@ -174,20 +186,20 @@ if (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', intval($forum_id)) && !empty($for
 }
 
 // Forum/Topic locked?
-if ((intval($forum_status) == ITEM_LOCKED || intval($topic_status) == ITEM_LOCKED) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
+if ((intval($forum_status) == ITEM_LOCKED || intval($topic_status) == ITEM_LOCKED) && !$perm['m_edit'])
 {
 	$message = (intval($forum_status) == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED';
 	trigger_error($user->lang[$message]);
 }
 
 // Can we edit this post?
-if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$auth->acl_gets('m_edit', 'a_', intval($forum_id)))
+if (($mode == 'edit' || $mode == 'delete') && !empty($config['edit_time']) && $post_time < time() - intval($config['edit_time']) && !$perm['m_edit'])
 {
 	trigger_error($user->lang['CANNOT_EDIT_TIME']);
 }
 
 // Do we want to edit our post ?
-if ( ($mode == 'edit') && (!$auth->acl_get('m_edit', 'a_', intval($forum_id))) )
+if ( ($mode == 'edit') && (!$perm['m_edit']) )
 {
 	if ( ($user->data['user_id'] != $poster_id) )
 	{
@@ -259,7 +271,7 @@ if ($submit)
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']) && !$auth->acl_gets('f_ignoreflood', 'm_', 'a_', intval($forum_id)))
+			if (intval($row['last_post_time']) && ($current_time - intval($row['last_post_time'])) < intval($config['flood_interval']) && !$perm['f_ignoreflood'])
 			{
 				$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['FLOOD_ERROR'];
 			}
@@ -316,19 +328,19 @@ if ($submit)
 		switch ($topic_type)
 		{
 			case POST_NEWS:
-				$auth_option = 'NEWS';
+				$auth_option = 'news';
 				break;
 			case POST_ANNOUNCE:
-				$auth_option = 'ANNOUNCE';
+				$auth_option = 'announce';
 				break;
 			case POST_STICKY:
-				$auth_option = 'STICKY';
+				$auth_option = 'sticky';
 				break;
 		}
 
-		if (!$auth->acl_gets('f_' . $auth_option, 'm_', 'a_', intval($forum_id)))
+		if (!$perm['f_' . $auth_option])
 		{
-			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['CANNOT_POST_' . $auth_option];
+			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $user->lang['CANNOT_POST_' . strtoupper($auth_option)];
 		}
 	}
 
@@ -606,7 +618,7 @@ if ( ($mode == 'post') || (($mode == 'edit') && (intval($post_id) == intval($top
 	@reset($topic_types);
 	while (list($auth_key, $topic_value) = each($topic_types))
 	{
-		if ($auth->acl_gets('f_' . $auth_key, 'm_', 'a_', intval($forum_id)))
+		if ($perm['f_' . $auth_key])
 		{
 			$topic_type_toggle .= '<input type="radio" name="topic_type" value="' . $topic_value['const'] . '"';
 			if (intval($topic_type) == $topic_value['const'])
@@ -707,7 +719,7 @@ $template->assign_vars(array(
 	'S_NOTIFY_ALLOWED' 	=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 	'S_DELETE_ALLOWED' 	=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', intval($forum_id))) || $auth->acl_gets('m_delete', 'a_', intval($forum_id)))) ? true : false,
 	'S_TYPE_TOGGLE' 	=> $topic_type_toggle,
-	'S_LOCK_TOPIC_ALLOWED' => (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_gets('m_lock', 'a_', intval($forum_id)))) ? true : false,
+	'S_LOCK_TOPIC_ALLOWED' => (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', 'a_', intval($forum_id)))) ? true : false,
 
 	'S_DISPLAY_REVIEW'	=> ($mode == 'reply' || $mode == 'quote') ? true : false,
 	'S_TOPIC_ID' 		=> intval($topic_id),

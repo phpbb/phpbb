@@ -53,7 +53,8 @@ class parse_message
 		// Smiley check
 		if (intval($config['max_post_smilies']) && $smilies )
 		{
-			$sql = "SELECT code	FROM " . SMILIES_TABLE;
+			$sql = "SELECT code	
+			FROM " . SMILIES_TABLE;
 			$result = $db->sql_query($sql);
 
 			$match = 0;
@@ -154,7 +155,8 @@ class parse_message
 	{
 		global $db, $user;
 
-		$sql = "SELECT * FROM " . SMILIES_TABLE;
+		$sql = "SELECT * 
+		FROM " . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
