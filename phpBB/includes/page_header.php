@@ -133,7 +133,8 @@ $template->assign_vars(array(
 	"L_SEARCH" => $lang['Search'],
 	"L_PRIVATEMSGS" => $lang['Private_msgs'],
 	"L_MEMBERLIST" => $lang['Memberlist'],
-	"L_FAQ" => $lang['FAQ'],
+	"L_FAQ" => $lang['FAQ'], 
+	"L_USERGROUPS" => $lang['Usergroups'], 
 	"L_FORUM" => $lang['Forum'],
 	"L_TOPICS" => $lang['Topics'], 
 	"L_REPLIES" => $lang['Replies'],
@@ -168,7 +169,8 @@ $template->assign_vars(array(
 	"U_FAQ" => append_sid("faq.".$phpEx),
 	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
-	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
+	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx), 
+	"U_GROUP_ADMIN" => append_sid("groupadmin.".$phpEx), 
 
 	"S_TIMEZONE" => $s_timezone,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
@@ -203,10 +205,10 @@ $template->assign_vars(array(
 	"T_IMG1" => $theme['img1'],
 	"T_IMG2" => $theme['img2'],
 	"T_IMG3" => $theme['img3'],
-	"T_IMG4" => $theme['img4']));
+	"T_IMG4" => $theme['img4'])
+);
 
-
-header ("Expires: " . gmdate("D, d M Y H:i:s", time()+10) . " GMT"); 
+header ("Expires: " . gmdate("D, d M Y H:i:s", time()+30) . " GMT"); 
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 $template->pparse("overall_header");

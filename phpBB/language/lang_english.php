@@ -88,6 +88,7 @@ $lang['Search'] = "Search";
 $lang['Private_msgs'] = "Private Messages";
 $lang['Memberlist'] = "Memberlist";
 $lang['FAQ'] = "FAQ";
+$lang['Usergroups'] = "Usergroups";
 $lang['Last_Post'] = "Last Post";
 $lang['Moderator'] = "Moderator/s";
 
