@@ -98,7 +98,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.s
 		AND ( s.session_time >= ".( time() - 300 ) . " 
 			OR u.user_session_time >= " . ( time() - 300 ) . " )
 		$user_forum_sql 
-	ORDER BY u.username ASC";
+	ORDER BY u.username ASC, s.session_ip ASC";
 $result = $db->sql_query($sql);
 if(!$result)
 {
@@ -114,6 +114,7 @@ $guests_online = 0;
 $online_userlist = "";
 
 $prev_user_id = 0;
+$prev_user_ip = '';
 
 while( $row = $db->sql_fetchrow($result) )
 {
@@ -154,9 +155,14 @@ while( $row = $db->sql_fetchrow($result) )
 	}
 	else
 	{
-		$guests_online++;
+		// Skip multiple sessions for one user
+		if( $row['session_ip'] != $prev_session_ip )
+		{
+			$guests_online++;
+		}
 	}
 
+	$prev_session_ip = $row['session_ip'];
 	$prev_user_id = $row['user_id'];
 }
 
