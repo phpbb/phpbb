@@ -615,7 +615,7 @@ else
 //
 // Dump out the page header and load viewforum template
 //
-$page_title = $lang['View_forum'] . " - $forum_name";
+$page_title = $lang['View_forum'] . " - " . $forum_row['forum_name'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
