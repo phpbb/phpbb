@@ -1185,10 +1185,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		user_notification($mode, stripslashes($post_data['subject']), $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
 	}
 
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $post_data['forum_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id']);
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=" . $post_data['forum_id'] . '&amp;t=' . $post_data['topic_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id']);
 
 	$message = ($auth->acl_get('f_moderate', $post_data['forum_id']) && !$auth->acl_get('f_ignorequeue', $post_data['forum_id'])) ? 'POST_STORED_MOD' : 'POST_STORED';
-	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
+	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '&amp;t=' . $post_data['topic_id'] . '&amp;p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
 	trigger_error($message);
 }
 
