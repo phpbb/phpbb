@@ -4,11 +4,15 @@
 # from all files in the current directory and all subdirectories.
 #
 # Written by: Jonathan Haase.
+#
+# UPDATE: 7/31/2001: fix so that it doesn't touch things in the images directory
+#
 
 find . > FILELIST.$$
 grep -sv FILELIST FILELIST.$$ > FILELIST2.$$
 grep -sv $(basename $0) FILELIST2.$$ > FILELIST.$$
-grep -sv "^\.$" FILELIST.$$ > FILELIST
+grep -sv "^\.$" FILELIST.$$ > FILELIST2.$$
+grep -sv "images" FILELIST2.$$ > FILELIST
 rm FILELIST2.$$
 rm FILELIST.$$
 
