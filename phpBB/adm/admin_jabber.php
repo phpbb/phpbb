@@ -61,62 +61,65 @@ $jabber->resource	= $jab_resource;
 
 // Are changing (or initialising) a new host or username? If so run some checks and 
 // try to create account if it doesn't exist
-if ($jab_enable && ($jab_host != $config['jab_host'] || $jab_username != $config['jab_username']))
+if ($jab_enable)
 {
-	if (!$jabber->Connect())
+	if($jab_host != $config['jab_host'] || $jab_username != $config['jab_username']))
 	{
-		trigger_error('Could not connect to Jabber server', E_USER_ERROR);
-	}
-
-	// First we'll try to authorise using this account, if that fails we'll
-	// try to create it.
-	if (!($result = $jabber->SendAuth()))
-	{
-		if (($result = $jabber->AccountRegistration($config['board_email'], $config['sitename'])) <> 2)
+		if (!$jabber->Connect())
 		{
+			trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+		}
 
-			$error[] = ($result == 1) ? $user->lang['ERR_JAB_USERNAME'] : sprintf($user->lang['ERR_JAB_REGISTER'], $result);
+		// First we'll try to authorise using this account, if that fails we'll
+		// try to create it.
+		if (!($result = $jabber->SendAuth()))
+		{
+			if (($result = $jabber->AccountRegistration($config['board_email'], $config['sitename'])) <> 2)
+			{
+
+				$error[] = ($result == 1) ? $user->lang['ERR_JAB_USERNAME'] : sprintf($user->lang['ERR_JAB_REGISTER'], $result);
+			}
+			else
+			{
+				$message = $user->lang['JAB_REGISTERED'];
+				$log = 'JAB_REGISTER';
+			}
 		}
 		else
 		{
-			$message = $user->lang['JAB_REGISTERED'];
-			$log = 'JAB_REGISTER';
+			$message = $user->lang['JAB_CHANGED'];
+			$log = 'JAB_CHANGED';
 		}
-	}
-	else
-	{
-		$message = $user->lang['JAB_CHANGED'];
-		$log = 'JAB_CHANGED';
-	}
 
-	sleep(1);
-	$jabber->Disconnect();
-}
-else if ($jab_password != $config['jab_password'])
-{
-	if (!$jabber->Connect())
-	{
-		trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+		sleep(1);
+		$jabber->Disconnect();
 	}
+	else if ($jab_password != $config['jab_password'])
+	{
+		if (!$jabber->Connect())
+		{
+			trigger_error('Could not connect to Jabber server', E_USER_ERROR);
+		}
 
-	if (!$jabber->SendAuth())
-	{
-		trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
-	}
-	$jabber->SendPresence(NULL, NULL, 'online');
+		if (!$jabber->SendAuth())
+		{
+			trigger_error('Could not authorise on Jabber server', E_USER_ERROR);
+		}
+		$jabber->SendPresence(NULL, NULL, 'online');
 
-	if (($result = $jabber->ChangePassword($jab_password))  <> 2)
-	{
-		$error[] = ($result == 1) ? $user->lang['ERR_JAB_PASSCHG'] : sprintf($user->lang['ERR_JAB_PASSFAIL'], $result);
-	}
-	else
-	{
-		$message = $user->lang['JAB_PASS_CHANGED'];
-		$log = 'JAB_PASSCHG';
-	}
+		if (($result = $jabber->ChangePassword($jab_password))  <> 2)
+		{
+			$error[] = ($result == 1) ? $user->lang['ERR_JAB_PASSCHG'] : sprintf($user->lang['ERR_JAB_PASSFAIL'], $result);
+		}
+		else
+		{
+			$message = $user->lang['JAB_PASS_CHANGED'];
+			$log = 'JAB_PASSCHG';
+		}
 
-	sleep(1);
-	$jabber->Disconnect();
+		sleep(1);
+		$jabber->Disconnect();
+	}
 }
 
 // Pull relevant config data
