@@ -194,7 +194,7 @@ function make_forum_select($box_name, $ignore_forum = false)
 		message_die(GENERAL_ERROR, "Couldn't obtain forums information.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$forum_list = "";
+	$forum_list = '';
 	while( $row = $db->sql_fetchrow($result) )
 	{
 		if ( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
@@ -203,7 +203,7 @@ function make_forum_select($box_name, $ignore_forum = false)
 		}
 	}
 
-	$forum_list .= ( $forum_list == "" ) ? '<option value="-1">-- ! No Forums ! --</option>' : '<select name="' . $box_name . '">' . $forum_list . '</select>';
+	$forum_list = ( $forum_list == "" ) ? '<option value="-1">-- ! No Forums ! --</option>' : '<select name="' . $box_name . '">' . $forum_list . '</select>';
 
 	return $forum_list;
 }
