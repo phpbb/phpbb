@@ -59,14 +59,16 @@ class ucp_profile extends module
 					extract($data);
 					unset($data);
 
-					if ($auth->acl_get('u_chgpasswd') && $new_password && md5($password_confirm) != $user->data['user_password'])
+					if ($auth->acl_get('u_chgpasswd') && $new_password && $password_confirm != $new_password)
 					{
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
-					if ((($auth->acl_get('u_chgemail') && $email != $user->data['user_email']) || ($username != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && md5($cur_password) != $user->data['user_password'])
+
+					if (($new_password || ($auth->acl_get('u_chgemail') && $email != $user->data['user_email']) || ($username != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && md5($cur_password) != $user->data['user_password'])
 					{
 						$error[] = 'CUR_PASSWORD_ERROR';
 					}
+
 					if ($auth->acl_get('u_chgemail') && $email != $user->data['user_email'] && $email_confirm != $email)
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
@@ -75,9 +77,11 @@ class ucp_profile extends module
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'username'		=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $username : $user->data['username'], 
-							'user_email'	=> ($auth->acl_get('u_chgemail')) ? $email : $user->data['user_email'], 
-							'user_password'	=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password']
+							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $username : $user->data['username'], 
+							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $email : $user->data['user_email'], 
+							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32(strtolower($email)) . strlen($email) : $user->data['user_email_hash'], 
+							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password'], 
+							'user_passchg'		=> time(), 
 						);
 
 						if ($config['email_enable'] && $email != $user->data['user_email'] && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
@@ -153,7 +157,7 @@ class ucp_profile extends module
 							);
 						}
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
+						echo $sql = 'UPDATE ' . USERS_TABLE . ' 
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
@@ -184,6 +188,7 @@ class ucp_profile extends module
 					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
 				
+					'S_FORCE_PASSWORD'	=> ($config['chg_passforce'] && $this->data['user_passchg'] < time() - $config['chg_passforce']) ? true : false, 
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false, 
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
