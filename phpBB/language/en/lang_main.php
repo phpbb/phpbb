@@ -957,7 +957,106 @@ $lang = array(
 		'Oct' => 'Oct',
 		'Nov' => 'Nov',
 		'Dec' => 'Dec',
-	),
+	)
 
 );
+
+
+
+// lang_mod strings
+
+$lang = array_merge($lang, array(
+	'ALL_FORUMS'				=>	'All forums',
+	'LOOK_UP_FORUM'				=>	'Select a forum',
+
+	'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
+
+	'FORUM_NOT_EXIST'			=>	'The forum you selected does not exist',
+	'TOPIC_NOT_EXIST'			=>	'The topic you selected does not exist',
+	'SELECT_TOPIC'				=>	'Select topic',
+	'TOPIC_NUMBER_IS'			=>	'Topic #%d is %s',
+	'POST_DETAILS'				=>	'Post details',
+
+	'CONFIRM_DELETE_POSTS'		=>	'Are you sure you want to delete these posts?',
+	'POST_REMOVED'				=>	'The selected post has been successfully removed from the database',
+	'POSTS_REMOVED'				=>	'The selected posts have been successfully removed from the database',
+
+	'RESYNC'					=>	'Resync',
+	'TOPIC_RESYNCHRONISED'		=>	'The selected topic has been resynchronised',
+	'TOPICS_RESYNCHRONISED'		=>	'The selected topics have been resynchronised',
+
+	'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
+	'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
+	'LEAVE_SHADOW'				=>	'Leave a shadow topic in the old forum',
+	'TOPIC_MOVED'				=>	'The selected topic has been successfully moved.',
+	'TOPICS_MOVED'				=>	'The selected topics have been successfully moved.',
+
+	'RETURN_NEW_TOPIC'			=>	'Click %sHere%s to go to the new topic',
+	'RETURN_NEW_FORUM'			=>	'Click %sHere%s to go to the destination forum',
+
+	'DISPLAY_OPTIONS'			=>	'Display options',
+	'POSTS_PER_PAGE'			=>	'Posts per page',
+	'POSTS_PER_PAGE_EXPLAIN'	=>	'(Set to 0 to view all posts)',
+
+	'MERGE_TOPIC'				=>	'Merge topic',
+	'MERGE_TOPIC_EXPLAIN'		=>	'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic. Please enter the destination topic id or click on the "Select" button to search for one',
+	'MERGE_TOPIC_ID'			=>	'Destination topic id',
+	'MERGE_POSTS'				=>	'Merge posts',
+	'POSTS_MERGED'				=>	'The selected posts have been merged',
+
+	'SPLIT_TOPIC'				=>	'Split topic',
+	'SPLIT_TOPIC_EXPLAIN'		=>	'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post',
+	'SPLIT_SUBJECT'				=>	'New topic title',
+	'SPLIT_FORUM'				=>	'Forum for new topic',
+	'SPLIT_POSTS'				=>	'Split selected posts',
+	'SPLIT_AFTER'				=>	'Split from selected post',
+	'TOPIC_SPLIT'				=>	'The selected topic has been split successfully',
+	'CANNOT_SPLIT_FIRST_POST'	=>	'You cannot split the first post of a topic',
+
+	'DELETE_POSTS'				=>	'Delete posts',
+	'APPROVE_POSTS'				=>	'Approve posts',
+	'POST_APPROVED'				=>	'The selected post has been approved',
+	'POSTS_APPROVED'			=>	'The selected posts have been approved',
+	'POST_UNAPPROVED'			=>	'The selected post has been unapproved',
+	'POSTS_UNAPPROVED'			=>	'The selected posts have been unapproved',
+	'TOPIC_APPROVED'			=>	'The selected topic has been approved',
+	'TOPICS_APPROVED'			=>	'The selected topics have been approved',
+	'TOPIC_UNAPPROVED'			=>	'The selected topic has been unapproved',
+	'TOPICS_UNAPPROVED'			=>	'The selected topics have been unapproved',
+
+	'MOVE'						=>	'Move',
+
+	'LOCK'						=>	'Lock',
+	'UNLOCK'					=>	'Unlock',
+	'TOPIC_LOCKED'				=>	'The selected topic has been locked',
+	'TOPICS_LOCKED'				=>	'The selected topics have been locked',
+	'TOPIC_UNLOCKED'			=>	'The selected topic has been unlocked',
+	'TOPICS_UNLOCKED'			=>	'The selected topics have been unlocked',
+
+	'NOT_ALLOWED'				=>	'You are not allowed to perform this action.',
+	'TOPIC_TYPE_CHANGED'		=>	'Topic type successfully changed',
+
+	'NO_TOPIC_SELECTED'			=>	'You must select at least one topic to perform this action',
+	'NO_POST_SELECTED'			=>	'You must select at least one post to perform this action',
+	'NO_SUBJECT'				=>	'&lt;No subject&gt;',
+
+	'MOD_QUEUE'					=>	'Moderation queue',
+
+	'logm_lock'				=>	'Locked topic',
+	'logm_unlock'			=>	'Unlocked topic',
+	'logm_move'				=>	'Moved topic from forum %s',
+	'logm_split'			=>	'Split topic from topic %s',
+	'logm_delete_topic'		=>	'Deleted topic',
+	'logm_delete_post'		=>	'Deleted post %s',
+	'logm_delete_posts'		=>	'Deleted posts %s',
+	'logm_approve_topic'	=>	'Approved topic',
+	'logm_approve_post'		=>	'Approved post %s',
+	'logm_unapprove_topic'	=>	'Unapproved topic',
+	'logm_unapprove_post'	=>	'Unapproved post %s',
+	'logm_merge'			=>	'Merged posts from topic %s',
+	'logm_make_announce'	=>	'Topic type changed to Announcement',
+	'logm_make_sticky'		=>	'Topic type changed to Sticky',
+	'logm_make_normal'		=>	'Topic type changed to Regular',
+	'logm_make_global'		=>	'Topic type changed to Global Announcement'
+));
 ?>
