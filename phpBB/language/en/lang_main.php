@@ -489,9 +489,24 @@ $lang = array_merge($lang, array(
 	'Savebox_size' => 'Your Savebox is %d%% full',
 	'Click_view_privmsg' => 'Click %sHere%s to visit your Inbox',
 
+	'NO_USER' => 'No user found', 
 
-	'Viewing_user_profile' => 'Viewing profile :: %s',
-	'About_user' => 'All about %s',
+	'VIEWING_PROFILE'	=> 'Viewing profile of %s',
+	'ABOUT_USER'		=> 'Profile',
+	'CONTACT_USER'		=> 'Contact', 
+	'USER_FORUM'		=> 'Forum statistics', 
+	'USER_PRESENCE'		=> 'User presence', 
+
+	'USER_POST'		=> '%d Post', 
+	'USER_POSTS'	=> '%d Posts', 
+	'POST_PCT'		=> '%.2f%% of total',
+	'POST_DAY'		=> '%.2f posts per day',
+	'TOTAL_POSTS'	=> 'Total posts', 
+	'ACTIVE_IN_FORUM'	=> 'Most active forum', 
+	'ACTIVE_IN_TOPIC'	=> 'Most active topic', 
+	'SEARCH_USER_POSTS'	=> 'Search users posts', 
+
+
 	'Preferences' => 'Preferences',
 	'Items_required' => 'Items marked with a * are required unless stated otherwise',
 	'Registration_info' => 'Registration Information',
@@ -504,12 +519,9 @@ $lang = array_merge($lang, array(
 	'CONTACT' => 'Contact',
 	'EMAIL_ADDRESS' => 'Email address',
 	'SEND_PRIVATE_MESSAGE' => 'Send private message',
-	'Search_user_posts' => 'Find all posts by %s',
-	'Interests' => 'Interests',
-	'Occupation' => 'Occupation',
-	'Total_posts' => 'Total posts',
-	'User_post_pct_stats' => '%.2f%% of total',
-	'User_post_day_stats' => '%.2f posts per day',
+	'INTERESTS' => 'Interests',
+	'OCCUPATION' => 'Occupation',
+
 	'No_user_id_specified' => 'Sorry but that user does not exist',
 	'Wrong_Profile' => 'You cannot modify a profile that is not your own.',
 	'Only_one_avatar' => 'Only one type of avatar can be specified',

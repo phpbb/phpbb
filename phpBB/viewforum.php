@@ -239,6 +239,7 @@ if ($forum_data['forum_postable'])
 		'S_TOPIC_ICONS'		=> ($forum_data['enable_icons']) ? true : false, 
 		'S_WATCH_FORUM' 	=> $s_watching_forum,
 		'S_FORUM_ACTION' 	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . "&amp;start=$start",
+		'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
 		'S_SEARCHBOX_ACTION'=> "search.$phpEx$SID&amp;f=$forum_id", 
 
 		'U_POST_NEW_TOPIC'	=> 'posting.' . $phpEx . $SID . '&amp;mode=post&amp;f=' . $forum_id,
@@ -444,11 +445,11 @@ if ($forum_data['forum_postable'])
 
 			$last_post_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('goto_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
-			$topic_author = ($row['topic_poster'] != ANONYMOUS) ? '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['topic_poster'] . '">' : '';
+			$topic_author = ($row['topic_poster'] != ANONYMOUS) ? "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['topic_poster'] . '">' : '';
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? $row['topic_first_poster_name'] : (($row['topic_first_poster_name'] != '') ? $row['topic_first_poster_name'] : $user->lang['GUEST']);
 			$topic_author .= ($row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
 
-			$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : '<a href="ucp.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
+			$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
 
 			$first_post_time = $user->format_date($row['topic_time'], $config['board_timezone']);
 

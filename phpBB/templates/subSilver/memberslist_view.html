@@ -1,0 +1,105 @@
+<!-- INCLUDE overall_header.html -->
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr> 
+		<td align="left"><a class="nav" href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
+	</tr>
+</table>
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0" align="center">
+	<tr> 
+		<th colspan="2" height="25" nowrap="nowrap">{USER_PROFILE}</th>
+	</tr>
+	<tr> 
+		<td class="cat" width="40%" height="28" align="center"><b class="gen">{L_USER_PRESENCE}</b></td>
+		<td class="cat" width="60%" align="center"><b class="gen">{L_USER_FORUM}</b></td>
+	</tr>
+	<tr> 
+		<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br /><span class="postdetails">{POSTER_RANK}</span></td>
+		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+			<tr> 
+				<td class="gen" align="right" valign="middle" nowrap="nowrap">{L_JOINED}: </td>
+				<td width="100%"><b class="gen">{JOINED}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
+				<td valign="top"><b><span class="gen">{POSTS}</span></b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
+			</tr>
+			<tr>
+				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
+				<td><!-- IF ACTIVE_FORUM_PCT --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">{L_NO_POSTS}</span><!-- ENDIF --></td>
+			</tr>
+			<tr>
+				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
+				<td><!-- IF ACTIVE_TOPIC_PCT --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="gensmall">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">{L_NO_POSTS}</span><!-- ENDIF --></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr> 
+		<td class="cat" height="28" align="center"><b class="gen">{L_CONTACT_USER}</b></td>
+		<td class="cat" height="28" align="center"><b class="gen">{L_ABOUT_USER}</b></td>
+	</tr>
+	<tr> 
+		<td class="row1" valign="top"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+			<tr> 
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
+				<td class="row1" valign="middle" width="100%"><b class="gen">{EMAIL_IMG}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_PM}: </td>
+				<td valign="middle"><b class="gen">{PM_IMG}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_MSNM}: </td>
+				<td valign="middle"><span class="gen">{MSN}</span></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_YIM}: </td>
+				<td valign="middle">{YIM_IMG}</td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_AIM}: </td>
+				<td valign="middle">{AIM_IMG}</td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" nowrap="nowrap" align="right">{L_ICQ}: </td>
+				<td><script language="JavaScript" type="text/javascript"><!-- 
+
+		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
+			document.write(' {ICQ_IMG}');
+		else
+			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
+		  
+				//--></script><noscript>{ICQ_IMG}</noscript></td>
+			</tr>
+		</table></td>
+		<td class="row1" valign="top"><table cellspacing="1" cellpadding="2" border="0">
+			<tr> 
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_LOCATION}: </td>
+				<td><b class="gen">{LOCATION}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
+				<td><b class="gen">{OCCUPATION}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="top" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
+				<td><b class="gen">{INTERESTS}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" valign="middle" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
+				<td><b class="gen">{WWW}</b></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+<br clear="all" />
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<tr> 
+		<td align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
+</table>
+
+<!-- INCLUDE overall_footer.html -->

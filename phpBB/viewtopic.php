@@ -222,8 +222,9 @@ $sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'AS
 
 
 // Cache this? ... it is after all doing a simple data grab
-$sql = "SELECT *
-	FROM " . RANKS_TABLE;
+$sql = "SELECT * 
+	FROM " . RANKS_TABLE . " 
+	ORDER BY rank_special, rank_min DESC";
 $result = $db->sql_query($sql, 120);
 
 $ranksrow = array();
@@ -347,6 +348,7 @@ $template->assign_vars(array(
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="mode">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> "mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;quickmod=1",
 	'S_WATCH_TOPIC' 		=> $s_watching_topic, 
+	'S_SHOW_SEARCHBOX'		=> ($auth->acl_gets('f_search', 'm_', 'a_', $forum_id)) ? true : false, 
 	'S_SEARCHBOX_ACTION'	=> "search.$phpEx$SID&amp;f=$forum_id", 
 
 	'U_TOPIC'				=> $server_path . 'viewtopic.' . $phpEx  . '?t=' . $topic_id,
@@ -532,29 +534,23 @@ if ($row = $db->sql_fetchrow($result))
 		}
 
 
-		// Generate ranks, set them to empty string initially.
-		if (!isset($user_cache[$poster_id]['rank_title']))
+		// Set poster rank
+		if (!isset($user_cache[$poster_id]['rank_title']) && $poster_id != ANONYMOUS)
 		{
-			if ($row['user_rank'])
+			foreach ($ranksrow as $rank)
 			{
-				for($j = 0; $j < count($ranksrow); $j++)
+				if (empty($row['user_rank']) && $row['user_posts'] >= $rank['rank_min'])
 				{
-					if ($row['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
-					{
-						$user_cache[$poster_id]['rank_title'] = $ranksrow[$j]['rank_title'];
-						$user_cache[$poster_id]['rank_image'] = ($ranksrow[$j]['rank_image']) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" border="0" alt="' . $poster_rank . '" title="' . $poster_rank . '" /><br />' : '';
-					}
+					$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
+					$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $user_cache[$poster_id]['rank_title'] . '" title="' . $user_cache[$poster_id]['rank_title'] . '" /><br />' : '';
+					break;
 				}
-			}
-			else
-			{
-				for($j = 0; $j < count($ranksrow); $j++)
+
+				if (!empty($rank['rank_special']) && $row['user_rank'] == $rank['rank_id'])
 				{
-					if ($row['user_posts'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'])
-					{
-						$user_cache[$poster_id]['rank_title'] = $ranksrow[$j]['rank_title'];
-						$user_cache[$poster_id]['rank_image'] = ($ranksrow[$j]['rank_image']) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" border="0" alt="' . $poster_rank . '" title="' . $poster_rank . '" /><br />' : '';
-					}
+					$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
+					$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $rank['rank_image'] . '" border="0" alt="' . $user_cache[$poster_id]['rank_title'] . '" title="' . $user_cache[$poster_id]['rank_title'] . '" /><br />' : '';
+					break;
 				}
 			}
 		}
@@ -573,7 +569,7 @@ if ($row = $db->sql_fetchrow($result))
 		// this each time the same user appears on this page
 		if (!isset($user_cache[$poster_id]['profile']) && $poster_id != ANONYMOUS)
 		{
-			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
+			$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$user_cache[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['READ_PROFILE']) . '</a>';
 			$user_cache[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $user->lang['READ_PROFILE'] . '</a>';
 
@@ -613,7 +609,7 @@ if ($row = $db->sql_fetchrow($result))
 			$user_cache[$poster_id]['aim_img'] = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
 			$user_cache[$poster_id]['aim'] = ($row['user_aim']) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
-			$temp_url = "ucp.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
+			$temp_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
 			$user_cache[$poster_id]['msn_img'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
 			$user_cache[$poster_id]['msn'] = ($row['user_msnm']) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
