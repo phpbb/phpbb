@@ -38,9 +38,9 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 	if($HTTP_POST_VARS['submit'] == "Login" && !$userdata['session_logged_in'])
 	{
 
-		$username = $HTTP_POST_VARS["username"];
-		$password = $HTTP_POST_VARS["password"];
-		$sql = "SELECT *
+		$username = $HTTP_POST_VARS['username'];
+		$password = $HTTP_POST_VARS['password'];
+		$sql = "SELECT user_id, username, user_password, user_active
 			FROM ".USERS_TABLE."
 			WHERE username = '$username'";
 		$result = $db->sql_query($sql);
@@ -52,11 +52,11 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		$rowresult = $db->sql_fetchrow($result);
 		if(count($rowresult))
 		{
-			if((md5($password) == $rowresult["user_password"]) && $rowresult['user_active'] != 0)
+			if((md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0)
 			{	
 				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
 
-				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
+				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 				if($session_id)
 				{
 					if(!empty($HTTP_POST_VARS['forward_page']))
@@ -87,7 +87,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 	{
 		if($userdata['session_logged_in'])
 		{
-			session_end($userdata["session_id"], $userdata["user_id"]);
+			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 		if(!empty($HTTP_POST_VARS['forward_page']))
 		{

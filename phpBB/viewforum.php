@@ -47,23 +47,14 @@ if(isset($forum_id))
 {
 	$sql = "SELECT f.forum_type, f.forum_name, f.forum_topics, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-		WHERE f.forum_id = '$forum_id'
-			AND fm.forum_id = '$forum_id'
+		WHERE f.forum_id = $forum_id
+			AND fm.forum_id = $forum_id
 			AND u.user_id = fm.user_id";
 }
 else 
 {
 	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
-
-//
-// Start session management
-//
-$userdata = session_pagestart($user_ip, $forum_id, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
 
 if(!$result = $db->sql_query($sql))
 {
@@ -75,6 +66,18 @@ if(!$total_rows = $db->sql_numrows($result))
 {
    error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
+
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+
 
 //
 // Add checking for private forums here!!
@@ -88,15 +91,15 @@ if(!$forum_row)
 	error_die(SQL_QUERY, "Couldn't obtain rowset.", __LINE__, __FILE__);
 }
 
-$forum_name = stripslashes($forum_row[0]["forum_name"]);
-$topics_count = $forum_row[0]["forum_topics"];
+$forum_name = stripslashes($forum_row[0]['forum_name']);
+$topics_count = $forum_row[0]['forum_topics'];
 
 for($x = 0; $x < $db->sql_numrows($result); $x++)
 {
 	if($x > 0)
 		$forum_moderators .= ", ";
 	
-	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]["user_id"])."\">".$forum_row[$x]["username"]."</a>";
+	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]['user_id'])."\">".$forum_row[$x]['username']."</a>";
 }
 
 if(!isset($start))
@@ -104,12 +107,16 @@ if(!isset($start))
 	$start = 0;
 }
 
+//
+// Grab all the basic data for
+// this forum
+//
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time
-	FROM " . TOPICS_TABLE ." t
-	LEFT JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id
-	LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id
-	LEFT JOIN " . USERS_TABLE . " u2 ON p.poster_id = u2.user_id
-	WHERE t.forum_id = '$forum_id'
+	FROM ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".POSTS_TABLE." p, ".USERS_TABLE." u2
+	WHERE t.forum_id = $forum_id
+		AND t.topic_poster = u.user_id 
+		AND p.post_id = t.topic_last_post_id 
+		AND p.poster_id = u2.user_id 
 	ORDER BY topic_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
 if(!$t_result = $db->sql_query($sql))
@@ -117,6 +124,7 @@ if(!$t_result = $db->sql_query($sql))
    error_die(SQL_QUERY, "Couldn't obtain topic information.", __LINE__, __FILE__);
 }
 $total_topics = $db->sql_numrows($t_result);
+
 
 //
 // Post URL generation for 
@@ -139,9 +147,9 @@ if($total_topics)
 	$topic_rowset = $db->sql_fetchrowset($t_result);
 	for($x = 0; $x < $total_topics; $x++)
 	{
-		$topic_title = stripslashes($topic_rowset[$x]["topic_title"]);
-		$topic_id = $topic_rowset[$x]["topic_id"];
-		$replies = $topic_rowset[$x]["topic_replies"];
+		$topic_title = stripslashes($topic_rowset[$x]['topic_title']);
+		$topic_id = $topic_rowset[$x]['topic_id'];
+		$replies = $topic_rowset[$x]['topic_replies'];
 		if($replies > $board_config['posts_per_page'])
 		{
 			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"".$images['posticon']."\">$l_gotopage: ";
@@ -176,14 +184,14 @@ if($total_topics)
 
 		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
 
-		$topic_poster = stripslashes($topic_rowset[$x]["username"]);
-		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["user_id"]);
+		$topic_poster = stripslashes($topic_rowset[$x]['username']);
+		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['user_id']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]["post_time"], $board_config['default_timezone']);
-		$last_post_user = $topic_rowset[$x]["user2"];
-		$last_post_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]["id2"]);
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$x]['post_time'], $board_config['default_timezone']);
+		$last_post_user = $topic_rowset[$x]['user2'];
+		$last_post_profile_url = append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$topic_rowset[$x]['id2']);
 
-		$views = $topic_rowset[$x]["topic_views"];
+		$views = $topic_rowset[$x]['topic_views'];
 
 		$template->assign_block_vars("topicrow", array(
 			"FORUM_ID" => $forum_id,

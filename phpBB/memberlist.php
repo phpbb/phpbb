@@ -46,24 +46,24 @@ if(isset($HTTP_GET_VARS['mode']))
 		case 'topten':
 			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email 
 				FROM ".USERS_TABLE." 
-				WHERE user_id != ".ANONYMOUS." 
-					AND user_level != ".DELETED." 
+				WHERE user_id <> ".ANONYMOUS." 
+					AND user_level <> ".DELETED." 
 				ORDER BY user_posts DESC 
 				LIMIT 10";
 			break;
 		case 'alpha':
 			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email 
 				FROM ".USERS_TABLE." 
-				WHERE user_id != ".ANONYMOUS." 
-					AND user_level != ".DELETED." 
+				WHERE user_id <> ".ANONYMOUS." 
+					AND user_level <> ".DELETED." 
 				ORDER BY username ASC 
 				LIMIT $start, ".$board_config['topics_per_page'];
 			break;
 		default:
 			$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
 				FROM ".USERS_TABLE." 
-				WHERE user_id != ".ANONYMOUS." 
-					AND user_level != ".DELETED." 
+				WHERE user_id <> ".ANONYMOUS." 
+					AND user_level <> ".DELETED." 
 				ORDER BY user_id ASC 
 				LIMIT $start, ".$board_config['topics_per_page'];
 			break;
@@ -73,8 +73,8 @@ else
 {
 	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email
 		FROM ".USERS_TABLE." 
-		WHERE user_id != ".ANONYMOUS." 
-			AND user_level != ".DELETED." 
+		WHERE user_id <> ".ANONYMOUS." 
+			AND user_level <> ".DELETED." 
 		ORDER BY user_id ASC 
 		LIMIT $start, ".$board_config['topics_per_page'];
 }
@@ -115,7 +115,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		$from = stripslashes($members[$x]['user_from']);
 		$joined = create_date($board_config['default_dateformat'], $members[$x]['user_regdate'], $board_config['default_timezone']);
 		
-		if($members[$x]['user_viewemail'] != 0)
+		if($members[$x]['user_viewemail'] <> 0)
 		{
 			$email = str_replace("@", " at ", $members[$x]['user_email']);
 			$email = "<a href=\"mailto:$email\">$email</a>";
@@ -125,7 +125,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$email = "&nbsp;";
 		}
 		
-		if($members[$x]['user_website'] != '')
+		if($members[$x]['user_website'] <> '')
 		{
 			$url_img = $images['www'];
 			$url = "<a href=\"".stripslashes($members[$x]['user_website'])."\"><img src=\"".$url_img."\" border=\"0\"/></a>";
@@ -154,12 +154,12 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			  "WEBSITE" => $url));
 	}
 	
-	if($mode != "topten")
+	if($mode <> "topten")
 	{
 		$sql = "SELECT count(*) AS total 
 			FROM ".USERS_TABLE." 
-			WHERE user_id != ".ANONYMOUS." 
-				AND user_level != ".DELETED;
+			WHERE user_id <> ".ANONYMOUS." 
+				AND user_level <> ".DELETED;
 		if(!$count_result = $db->sql_query($sql))
 		{
 			if(DEBUG)

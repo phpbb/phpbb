@@ -35,7 +35,6 @@ init_userprefs($userdata);
 //
 // End session management
 //
-//nl2br(var_dump($userdata));
 
 $total_posts = get_db_stat('postcount');
 $total_users = get_db_stat('usercount');
@@ -51,7 +50,7 @@ if(empty($viewcat))
 
 include('includes/page_header.'.$phpEx);
 
-$sql = "SELECT c.*
+$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 	FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
 	WHERE f.cat_id=c.cat_id
 	GROUP BY c.cat_id, c.cat_title, c.cat_order
@@ -70,14 +69,14 @@ if($total_categories)
 	$limit_forums = "";
 	if($viewcat != -1)
 	{
-		$limit_forums = " WHERE f.cat_id = $viewcat ";
+		$limit_forums = "AND f.cat_id = $viewcat ";
 	}
 	$sql = "SELECT f.*, t.topic_id, u.username, u.user_id, p.post_time
-		FROM ".FORUMS_TABLE." f
-		LEFT JOIN ".POSTS_TABLE." p ON p.post_id = f.forum_last_post_id
-		LEFT JOIN ".USERS_TABLE." u ON u.user_id = p.poster_id
-		LEFT JOIN ".TOPICS_TABLE." t ON t.topic_last_post_id = p.post_id
-		$limit_forums
+		FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t
+		WHERE p.post_id = f.forum_last_post_id
+			AND u.user_id = p.poster_id 
+			AND t.topic_last_post_id = p.post_id
+			$limit_forums
 		ORDER BY f.cat_id, f.forum_order";
 	if(!$q_forums = $db->sql_query($sql))
 	{

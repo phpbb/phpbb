@@ -68,7 +68,7 @@ include('includes/db.'.$phpEx);
 //
 $sql = "SELECT *
 	FROM ".CONFIG_TABLE."
-	WHERE selected = '1'";
+	WHERE selected = 1";
 if(!$result = $db->sql_query($sql))
 {
 	//

@@ -44,9 +44,8 @@ $newest_uid = $newest_userdata["user_id"];
 
 include('includes/page_header.'.$phpEx);
 
-$sql = "SELECT u.username, u.user_id, f.forum_name, f.forum_id, s.session_page, s.session_logged_in, s.session_time
+$sql = "SELECT u.username, u.user_id, s.session_page, s.session_logged_in, s.session_time
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
-	LEFT JOIN ".FORUMS_TABLE." f ON f.forum_id = s.session_page
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".(time()-300)."
 	ORDER BY s.session_time DESC";
@@ -56,7 +55,16 @@ if(!$result)
 	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
 }
 $onlinerow = $db->sql_fetchrowset($result);
-if(!$onlinerow)
+$sql = "SELECT forum_name, forum_id
+	FROM ".FORUMS_TABLE;
+$forums_result = $db->sql_query($sql);
+if(!$forums_result)
+{
+	error_die(SQL_QUERY, "Couldn't obtain user/online forums information.", __LINE__, __FILE__);
+}
+$forumsrow = $db->sql_fetchrowset($forums_result);
+
+if(!$onlinerow || !$forumsrow)
 {
 	error_die(SQL_QUERY, "Couldn't fetchrow", __LINE__, __FILE__);
 }
@@ -68,7 +76,6 @@ $template->assign_vars(array(
 	"L_LAST_UPDATE" => $l_last_updated
 	)
 );
-
 
 $active_users = 0;
 $guest_users = 0;
@@ -124,7 +131,7 @@ if($online_count)
 			$guest_users++;
 		}
 
-		if($onlinerow[$i]['forum_name'] == "")
+		if($onlinerow[$i]['session_page'] < 0)
 		{
 			switch($onlinerow[$i]['session_page'])
 			{
@@ -171,8 +178,15 @@ if($online_count)
 		}
 		else
 		{
-			$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$onlinerow[$i]['forum_id']);
-			$location = $onlinerow[$i]['forum_name'];
+			for($j = 0; $j < count($forumrow); $j++)
+			{
+				if($onlinerow[$i]['session_page'] == $forumrow[$j]['forum_id'])
+				{
+					$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$forumrow[$j]['forum_id']);
+					$location = $forumrow[$j]['forum_name'];
+					break;
+				}
+			}
 		}
 
 		//

@@ -27,7 +27,7 @@
 // Adds/updates a new session to the database for the given userid.
 // Returns the new session ID on success.
 //
-function session_begin($user_id, $user_ip, $page_id, $session_length, $login = FALSE, $autologin = FALSE) 
+function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $autologin = 0) 
 {
 
 	global $db;
@@ -53,7 +53,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 	//
 	$sql = "SELECT ban_ip, ban_userid
 		FROM ".BANLIST_TABLE."
-		WHERE (ban_ip = '$int_ip' OR ban_userid = '$user_id')
+		WHERE (ban_ip = '$int_ip' OR ban_userid = $user_id)
 			AND (ban_start < $current_time AND ban_end > $current_time )";
 	$result = $db->sql_query($sql);
 	if (!$result) 
@@ -73,8 +73,8 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 	{
 		if($user_id == ANONYMOUS)
 		{
-			$login = FALSE;
-			$autologin = FALSE;
+			$login = 0;
+			$autologin = 0;
 		}
 		//
 		// Remove duplicate user_id from session table
@@ -85,17 +85,19 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 		if( ( $login || $autologin ) && $user_id != ANONYMOUS && $user_id != DELETED )
 		{
 			$sql_delete_same_user = "DELETE FROM ".SESSIONS_TABLE."
-				WHERE session_user_id = '$user_id'
-					AND session_ip != '$int_ip'
-					AND session_logged_in = '1'";
+				WHERE session_user_id = $user_id
+					AND session_ip <> '$int_ip'
+					AND session_logged_in = 1";
 			$result = $db->sql_query($sql_delete_same_user);
 		}
 	
 		$sql_update = "UPDATE ".SESSIONS_TABLE."
-			SET session_user_id = '$user_id', session_start = '$current_time', session_time = '$current_time', session_page = '$page_id', session_logged_in = '$login'
+			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
 			WHERE (session_id = '".$sessiondata['sessionid']."')
 				AND (session_ip = '$int_ip')";
 		$result = $db->sql_query($sql_update);
+
+//		$affected = $db->sql_affectedrows();
 
 		if(!$result || !$db->sql_affectedrows())
 		{
@@ -106,7 +108,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
 				(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
 				VALUES
-				('$session_id', '$user_id', '$current_time', '$current_time', '$int_ip', '$page_id', '$login')";
+				('$session_id', $user_id, $current_time, $current_time, '$int_ip', $page_id, $login)";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -133,7 +135,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 
 			$sql_update = "UPDATE ".USERS_TABLE."
 				SET user_autologin_key = '$autologin_key'
-				WHERE user_id = '$user_id'";
+				WHERE user_id = $user_id";
 			$result = $db->sql_query($sql_update);
 			if(!$result)
 			{
@@ -156,6 +158,9 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 		setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
 		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
+
+//		echo $sql_update."<br>".$affected."<br>".$sql_insert."<br>";
+
 	}
 
 	return $session_id;
@@ -279,8 +284,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 			if($current_time - $userdata['session_time'] > 60)
 			{
 				$sql = "UPDATE ".SESSIONS_TABLE."
-					SET session_time = '$current_time', session_page = '$thispage_id'
-					WHERE (session_id = ".$userdata['session_id'].")
+					SET session_time = $current_time, session_page = $thispage_id
+					WHERE (session_id = '".$userdata['session_id']."')
 						AND (session_ip = '$int_ip')
 						AND (session_user_id = ".$userdata['user_id'].")";
 				$result = $db->sql_query($sql);
@@ -323,15 +328,15 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	// pull basic user prefs.
 	//
 
-	$login = FALSE;
-	$autologin = FALSE;
+	$login = 0;
+	$autologin = 0;
 	$userdata['session_logged_in'] = 0;
 
 	if(isset($sessiondata['userid']) && isset($sessiondata['autologinid']))
 	{
 		$sql = "SELECT u.*
 			FROM ".USERS_TABLE." u
-			WHERE u.user_id = '".$sessiondata['userid']."'";
+			WHERE u.user_id = ".$sessiondata['userid'];
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
@@ -354,8 +359,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				// We have a match, and not the kind you light ... 
 				//
 				$userdata['session_logged_in'] = 1;
-				$login = TRUE;
-				$autologin = TRUE;
+				$login = 1;
+				$autologin = 1;
 			}
 			$userdata['user_id'] = $sessiondata['userid'];
 		}
@@ -370,7 +375,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	{
 		$userdata['user_id'] = ANONYMOUS;
 	}
-
 
 	$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $login, $autologin);
 	if(!$result)
@@ -416,9 +420,9 @@ function session_end($session_id, $user_id)
 	$current_time = time();
 
 	$sql = "UPDATE  ".SESSIONS_TABLE."
-		SET session_logged_in = '0', session_user_id = '-1'
+		SET session_logged_in = 0, session_user_id = -1, session_time = $current_time
 		WHERE (session_user_id = $user_id)
-			AND (session_id = $session_id)";
+			AND (session_id = '$session_id')";
 	$result = $db->sql_query($sql, $db);
 	if (!$result) 
 	{
@@ -436,7 +440,7 @@ function session_end($session_id, $user_id)
 	{
 		$sql = "UPDATE ".USERS_TABLE."
 			SET user_autologin_key = ''
-			WHERE user_id = '$user_id'";
+			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql, $db);
 		if (!$result) 
 		{
@@ -459,7 +463,7 @@ function session_end($session_id, $user_id)
 
 	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
-	return true;
+	return 1;
 
 } // session_end()
 

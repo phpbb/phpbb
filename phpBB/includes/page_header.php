@@ -73,7 +73,7 @@ else
 $sql = "SELECT u.username, u.user_id, s.session_logged_in
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= '".(time() - 300)."'";
+		AND s.session_time >= ".(time() - 300);
 $result = $db->sql_query($sql);
 if(!$result)
 {

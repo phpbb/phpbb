@@ -24,9 +24,7 @@
 
 function error_die($error_code, $error_msg = "", $line = "", $file = "") 
 {
-	global $db, $template, $phpEx, $default_lang;
-	global $table_bgcolor, $color1;
-	global $starttime, $phpbbversion;
+	global $db, $template, $phpEx, $default_lang, $theme;
 
 	if(!defined("HEADER_INC"))
 	{
@@ -42,6 +40,10 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 		{
 			$template = new Template("templates/Default");
 		}
+		if(!$theme)
+		{
+			$theme = setuptheme(1);
+		}
 		include('includes/page_header.'.$phpEx);
 	}
 	if(!$error_msg)
@@ -56,8 +58,7 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 				break;
 
 			case SQL_CONNECT:
-				$db_error = $db->sql_error();
-				$error_msg .= "<br />SQL connect error - " . $db_error["message"];
+				$error_msg = "Couldn't connect to database!";
 				break;
 
 			case BANNED:
@@ -65,8 +66,6 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 				break;
 			
 			case SQL_QUERY:
-				$db_error = $db->sql_error();
-				$error_msg .= "<br />SQL query error - ".$db_error["message"];
 				break;
 			
 			case SESSION_CREATE:
@@ -88,8 +87,10 @@ function error_die($error_code, $error_msg = "", $line = "", $file = "")
 			$error_msg .= "<br /><br /><u>DEBUG INFO</u></br /><br>Line: ".$line."<br />File: ".$file;
 	}
 
-	$template->set_filenames(array("error_body" => "error_body.tpl"));
-	$template->assign_vars(array("ERROR_MESSAGE" => $error_msg));
+	$template->set_filenames(array(
+		"error_body" => "error_body.tpl"));
+	$template->assign_vars(array(
+		"ERROR_MESSAGE" => $error_msg));
 	$template->pparse("error_body");
 
 	include('includes/page_tail.'.$phpEx);

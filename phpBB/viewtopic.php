@@ -46,7 +46,7 @@ if(!isset($topic_id))
 $sql = "SELECT t.topic_title, t.topic_status, t.topic_replies,
 		f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
 	FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-	WHERE t.topic_id = '$topic_id'
+	WHERE t.topic_id = $topic_id
 		AND f.forum_id = t.forum_id
 		AND fm.forum_id = t.forum_id
 		AND u.user_id = fm.user_id";
@@ -60,9 +60,9 @@ if(!$total_rows = $db->sql_numrows($result))
    error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
 $forum_row = $db->sql_fetchrowset($result);
-$topic_title = $forum_row[0]["topic_title"];
-$forum_id = $forum_row[0]["forum_id"];
-$forum_name = stripslashes($forum_row[0]["forum_name"]);
+$topic_title = $forum_row[0]['topic_title'];
+$forum_id = $forum_row[0]['forum_id'];
+$forum_name = stripslashes($forum_row[0]['forum_name']);
 
 //
 // Start session management
@@ -75,9 +75,9 @@ init_userprefs($userdata);
 
 for($x = 0; $x < $total_rows; $x++)
 {
-	$moderators[] = array("user_id" => $forum_row[$x]["user_id"],
-		"username" => $forum_row[$x]["username"]);
-	if($userdata["user_id"] == $forum_row[$x]["user_id"])
+	$moderators[] = array("user_id" => $forum_row[$x]['user_id'],
+		"username" => $forum_row[$x]['username']);
+	if($userdata['user_id'] == $forum_row[$x]['user_id'])
 	{
 		$is_moderator = 1;
 	}
@@ -89,20 +89,18 @@ for($x = 0; $x < $total_rows; $x++)
 
 
 
-$total_replies = $forum_row[0]["topic_replies"] + 1;
+$total_replies = $forum_row[0]['topic_replies'] + 1;
 
 if(!isset($start))
 {
    $start = 0;
 }
 
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, r.rank_title, r.rank_image, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
-	FROM ".POSTS_TABLE." p
-	LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id
-	LEFT JOIN ".POSTS_TEXT_TABLE." pt ON p.post_id = pt.post_id
-	LEFT JOIN ".RANKS_TABLE." r ON ( u.user_rank = r.rank_id )
-		AND (r.rank_special = 1)
-	WHERE p.topic_id = '$topic_id'
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, p.post_time, p.post_id, p.bbcode_uid, pt.post_text
+	FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".POSTS_TEXT_TABLE." pt
+	WHERE p.topic_id = $topic_id
+		AND p.poster_id = u.user_id 
+		AND p.post_id = pt.post_id 
 	ORDER BY p.post_time ASC
 	LIMIT $start, ".$board_config['posts_per_page'];
 if(!$result = $db->sql_query($sql))
@@ -150,29 +148,35 @@ include('includes/page_header.'.$phpEx);
 //
 for($x = 0; $x < $total_posts; $x++)
 {
-	$poster = stripslashes($postrow[$x]["username"]);
-	$poster_id = $postrow[$x]["user_id"];
-	$post_date = create_date($board_config['default_dateformat'], $postrow[$x]["post_time"], $board_config['default_timezone']);
-	$poster_posts = $postrow[$x]["user_posts"];
-	$poster_from = ($postrow[$x]["user_from"]) ? "$l_from: ".$postrow[$x]["user_from"] : "";
-	$poster_joined = create_date($board_config['default_dateformat'], $postrow[$x]["user_regdate"], $board_config['default_timezone']);
+	$poster = stripslashes($postrow[$x]['username']);
+	$poster_id = $postrow[$x]['user_id'];
+	$post_date = create_date($board_config['default_dateformat'], $postrow[$x]['post_time'], $board_config['default_timezone']);
+	$poster_posts = $postrow[$x]['user_posts'];
+	$poster_from = ($postrow[$x]['user_from']) ? "$l_from: ".$postrow[$x]['user_from'] : "";
+	$poster_joined = create_date($board_config['default_dateformat'], $postrow[$x]['user_regdate'], $board_config['default_timezone']);
 	if($poster_id != ANONYMOUS && $poster_id != DELETED)
 	{
-		if(!$postrow[$x]["rank_title"])
+		if(!$postrow[$x]['user_rank'])
 		{
 			for($i = 0; $i < count($ranksrow); $i++)
 			{
 				if($poster_posts > $ranksrow[$i]['rank_min'] && $poster_posts < $ranksrow[$i]['rank_max'])
 				{
 					$poster_rank = $ranksrow[$i]['rank_title'];
-					$rank_image = ($ranksrow[$x]["rank_image"]) ? "<img src=\"".$ranksrow[$x]["rank_image"]."\">" : "";
+					$rank_image = ($ranksrow[$x]['rank_image']) ? "<img src=\"".$ranksrow[$x]['rank_image']."\">" : "";
 				}
 			}
 		}
 		else
 		{
-			$poster_rank = stripslashes($postrow[$x]["rank_title"]);
-			$rank_image = ($postrow[$x]["rank_image"]) ? "<img src=\"".$postrow[$x]["rank_image"]."\">" : "";
+			for($i = 0; $i < count($ranksrow); $i++)
+			{
+				if($postrow[$x]['user_rank'] == $ranksrow[$i]['rank_special'])
+				{
+					$poster_rank = $ranksrow[$i]['rank_title'];
+					$rank_image = ($ranksrow[$x]['rank_image']) ? "<img src=\"".$ranksrow[$x]['rank_image']."\">" : "";
+				}
+			}
 		}
 	}
 	else
@@ -181,13 +185,13 @@ for($x = 0; $x < $total_posts; $x++)
 	}
 
 	$profile_img = "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$poster_id")."\"><img src=\"".$images['profile']."\" alt=\"$l_profileof $poster\" border=\"0\"></a>";
-	$email_img = ($postrow[$x]["user_viewemail"] == 1) ? "<a href=\"mailto:".$postrow[$x]["user_email"]."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
-	$www_img = ($postrow[$x]["user_website"]) ? "<a href=\"".$postrow[$x]["user_website"]."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
+	$email_img = ($postrow[$x]['user_viewemail'] == 1) ? "<a href=\"mailto:".$postrow[$x]['user_email']."\"><img src=\"".$images['email']."\" alt=\"$l_email $poster\" border=\"0\"></a>" : "";
+	$www_img = ($postrow[$x]['user_website']) ? "<a href=\"".$postrow[$x]['user_website']."\"><img src=\"".$images['www']."\" alt=\"$l_viewsite\" border=\"0\"></a>" : "";
 
-	if($postrow[$x]["user_icq"])
+	if($postrow[$x]['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/".$postrow[$x]["user_icq"]."#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=".$postrow[$x]["user_icq"]."&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=".$postrow[$x]["user_icq"]."\"><img src=\"".$images['icq']."\" alt=\"$l_icq\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/".$postrow[$x]['user_icq']."#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=".$postrow[$x]['user_icq']."&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=".$postrow[$x]['user_icq']."\"><img src=\"".$images['icq']."\" alt=\"$l_icq\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -195,21 +199,21 @@ for($x = 0; $x < $total_posts; $x++)
 		$icq_add_img = "";
 	}
 	
-	$aim_img = ($postrow[$x]["user_aim"]) ? "<a href=\"aim:goim?screenname=".$postrow[$x]["user_aim"]."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
-	$msn_img = ($postrow[$x]["user_msnm"]) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
-	$yim_img = ($postrow[$x]["user_yim"]) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]["user_yim"]."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
+	$aim_img = ($postrow[$x]['user_aim']) ? "<a href=\"aim:goim?screenname=".$postrow[$x]['user_aim']."&message=Hello+Are+you+there?\"><img src=\"".$images['aim']."\" border=\"0\"></a>" : "";
+	$msn_img = ($postrow[$x]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&user_id=$poster_id\"><img src=\"".$images['msn']."\" border=\"0\"></a>" : "";
+	$yim_img = ($postrow[$x]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=".$postrow[$x]['user_yim']."&.src=pg\"><img src=\"".$images['yim']."\" border=\"0\"></a>" : "";
 	
-	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
-	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]["post_id"]."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
+	$edit_img = "<a href=\"".append_sid("posting.$phpEx?mode=editpost&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['edit']."\" alt=\"$l_editdelete\" border=\"0\"></a>";
+	$quote_img = "<a href=\"".append_sid("posting.$phpEx?mode=reply&quote=true&post_id=".$postrow[$x]['post_id']."&topic_id=$topic_id&forum_id=$forum_id")."\"><img src=\"".$images['quote']."\" alt=\"$l_replyquote\" border=\"0\"></a>";
 	$pmsg_img = "<a href=\"".append_sid("priv_msgs.$phpEx?mode=send")."\"><img src=\"".$images['pmsg']."\" alt=\"$l_sendpmsg\" border=\"0\"></a>";
 	
 	if($is_moderator)
 	{
 		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&user_id=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
-		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]["post_id"])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
+		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 	
-	$message = stripslashes($postrow[$x]["post_text"]);
+	$message = stripslashes($postrow[$x]['post_text']);
 	$bbcode_uid = $postrow[$x]['bbcode_uid'];
 	$user_sig = stripslashes($postrow[$x]['user_sig']);
 
@@ -234,25 +238,11 @@ for($x = 0; $x < $total_posts; $x++)
 	
 	if(!($x % 2))
 	{
-		if(isset($theme['td_color1']))
-		{
-			$color = "#".$theme['td_color1'];
-		}
-		else
-		{
-			$color = "#DDDDDD";
-		}
+		$color = "#".$theme['td_color1'];
 	}
 	else
 	{
-		if(isset($theme['td_color2']))
-		{
-			$color = "#".$theme['td_color2'];
-		}
-		else
-		{
-			$color = "#CCCCCC";
-		}
+		$color = "#".$theme['td_color2'];
 	}
 	
 	$message = eregi_replace("\[addsig]$", "<br />_________________<br />" . nl2br($user_sig), $message);
@@ -282,7 +272,7 @@ for($x = 0; $x < $total_posts; $x++)
 		"IP_IMG" => $ip_img,
 		"DELPOST_IMG" => $delpost_img,
 		
-		"U_POST_ID" => "#".$postrow[$x]["post_id"]));
+		"U_POST_ID" => "#".$postrow[$x]['post_id']));
 }
 
 if($total_replies > $board_config['posts_per_page'])

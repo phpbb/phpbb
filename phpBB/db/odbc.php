@@ -130,9 +130,9 @@ class sql_db
 		{
 			if(!eregi("^INSERT ",$query))
 			{
-				if(eregi(" LIMIT ", $query))
+				if(eregi("LIMIT", $query))
 				{
-					preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+					preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
 	
 					$query = $limits[1];
 					if($limits[3])
@@ -158,29 +158,29 @@ class sql_db
 				}
 				else
 				{
-					$this->query_result = @odbc_exec($this->db_connect_id, $query);
+					$this->query_result = odbc_exec($this->db_connect_id, $query);
 
 					$row_offset = 0;
 					$this->result_numrows[$this->query_result] = 5E6;
 				}
 
-				if($this->query_result)
+				$result_id = $this->query_result;
+				if($this->query_result && eregi("^SELECT", $query))
 				{
-					$result_id = $this->query_result;
 
-					for($i = 1; $i < @odbc_num_fields($result_id)+1; $i++)
+					for($i = 1; $i < odbc_num_fields($result_id)+1; $i++)
 					{
-						$this->result_field_names[$result_id][] = @odbc_field_name($result_id, $i);
+						$this->result_field_names[$result_id][] = odbc_field_name($result_id, $i);
 					}
 
 					$i =  $row_offset + 1;
 					$k = 0;
-					while(@odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
+					while(odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
 					{
 
 						for($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
 						{
-							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = @odbc_result($result_id, $j);
+							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = odbc_result($result_id, $j);
 						}
 						$i++;
 						$k++;
@@ -189,10 +189,15 @@ class sql_db
 					$this->result_numrows[$result_id] = $k;
 					$this->row_index[$result_id] = 0;
 				}
+				else
+				{
+					$this->result_numrows[$result_id] = @odbc_num_rows($result_id);
+					$this->row_index[$result_id] = 0;
+				}
 			}
 			else
 			{
-				$this->query_result = @odbc_exec($this->db_connect_id, $query);
+				$this->query_result = odbc_exec($this->db_connect_id, $query);
 
 				if($this->query_result)
 				{
@@ -210,10 +215,10 @@ class sql_db
 						default:
 							$sql_id = "";
 					}
-					$id_result = @odbc_exec($this->db_connect_id, $sql_id);
+					$id_result = odbc_exec($this->db_connect_id, $sql_id);
 					if($id_result)
 					{
-						$row_result = @odbc_fetch_row($id_result);
+						$row_result = odbc_fetch_row($id_result);
 						if($row_result)
 						{
 							$this->next_id[$this->query_result] = odbc_result($id_result, 1);
@@ -261,14 +266,14 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
-/*		if($query_id)
+		if($query_id)
 		{
-			return $this->@odbc_num_rows[$query_id];
+			return $this->result_numrows[$query_id];
 		}
 		else
 		{
 			return false;
-		}*/
+		}
 	}
 	function sql_numfields($query_id = 0)
 	{
