@@ -132,6 +132,7 @@ if ($mode != '')
 
 			$sql = ($word_id) ? "UPDATE " . WORDS_TABLE . " SET word = '" . sql_quote($word) . "', replacement = '" . sql_quote($replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . sql_quote($word) . "', '" . sql_quote($replacement) . "')";
 			$db->sql_query($sql);
+			$cache->destroy('word_censors');
 
 			$log_action = ($word_id) ? 'log_edit_word' : 'log_add_word';
 			add_admin_log($log_action, stripslashes($word));
@@ -153,6 +154,7 @@ if ($mode != '')
 			$sql = "DELETE FROM " . WORDS_TABLE . "
 				WHERE word_id = $word_id";
 			$db->sql_query($sql);
+			$cache->destroy('word_censors');
 
 			add_admin_log('log_delete_word');
 

@@ -139,18 +139,8 @@ $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_o
 
 if ($total_online_users > $config['record_online_users'])
 {
-	$config['record_online_users'] = $total_online_users;
-	$config['record_online_date'] = time();
-
-	$sql = "UPDATE " . CONFIG_TABLE . "
-		SET config_value = '$total_online_users'
-		WHERE config_name = 'record_online_users'";
-	$db->sql_query($sql);
-
-	$sql = "UPDATE " . CONFIG_TABLE . "
-		SET config_value = '" . $config['record_online_date'] . "'
-		WHERE config_name = 'record_online_date'";
-	$db->sql_query($sql);
+	set_config('record_online_users', $total_online_users);
+	set_config('record_online_date', time());
 }
 
 if ($total_online_users == 0)

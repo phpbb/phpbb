@@ -36,7 +36,7 @@ class sql_db
 	//
 	// Constructor
 	//
-	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port, $persistency = false)
+	function sql_db($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
 		$this->open_queries = array();
 		$this->num_queries = 0;
@@ -117,74 +117,84 @@ class sql_db
 	//
 	// Base query method
 	//
-	function sql_query($query = '')
+	function sql_query($query = '', $expire_time = 0)
 	{
 		if ($query != '')
 		{
-			$this->query_result = false;
-			$this->num_queries++;
+			global $cache;
+			if (!$expire_time || !$cache->sql_load($query))
+			{
+				$this->query_result = false;
+				$this->num_queries++;
 
-			if (!empty($_REQUEST['explain']))
-			{
-				global $starttime;
-				$curtime = explode(' ', microtime());
-				$curtime = $curtime[0] + $curtime[1] - $starttime;
-			}
-			if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
-			{
-				$this->sql_error($query);
-			}
-			if (!empty($_REQUEST['explain']))
-			{
-				$endtime = explode(' ', microtime());
-				$endtime = $endtime[0] + $endtime[1] - $starttime;
+				if (!empty($_REQUEST['explain']))
+				{
+					global $starttime;
+					$curtime = explode(' ', microtime());
+					$curtime = $curtime[0] + $curtime[1] - $starttime;
+				}
+				if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
+				{
+					$this->sql_error($query);
+				}
+				if (!empty($_REQUEST['explain']))
+				{
+					$endtime = explode(' ', microtime());
+					$endtime = $endtime[0] + $endtime[1] - $starttime;
 
-				$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
-				if ($this->query_result)
-				{
-					$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
-				}
-				else
-				{
-					$error = $this->sql_error();
-					$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
-				}
-				$this->sql_time += $endtime - $curtime;
-				if (preg_match('/^SELECT/', $query))
-				{
-					$html_table = FALSE;
-					if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
+					$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
+					if ($this->query_result)
 					{
-						while ($row = mysql_fetch_assoc($result))
+						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
+					}
+					else
+					{
+						$error = $this->sql_error();
+						$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
+					}
+					$this->sql_time += $endtime - $curtime;
+					if (preg_match('/^SELECT/', $query))
+					{
+						$html_table = FALSE;
+						if ($result = mysql_query("EXPLAIN $query", $this->db_connect_id))
 						{
-							if (!$html_table && count($row))
+							while ($row = mysql_fetch_assoc($result))
 							{
-								$html_table = TRUE;
-								$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
-								$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
+								if (!$html_table && count($row))
+								{
+									$html_table = TRUE;
+									$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";
+									$this->sql_report .= "<tr>\n<td><b>" . implode("</b></td>\n<td><b>", array_keys($row)) . "</b></td>\n</tr>\n";
+								}
+								$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
 							}
-							$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
+						}
+						if ($html_table)
+						{
+							$this->sql_report .= '</table><br>';
 						}
 					}
-					if ($html_table)
-					{
-						$this->sql_report .= '</table><br>';
-					}
+					$this->sql_report .= "<hr>\n";
 				}
-				$this->sql_report .= "<hr>\n";
-			}
 
-			$this->open_queries[] = $this->query_result;
+				$this->open_queries[] = $this->query_result;
+			}
 		}
 		else
 		{
 			return false;
 		}
 
+		if ($expire_time && $this->query_result)
+		{
+			$cache->sql_save($query, $this->query_result);
+			@mysql_free_result(array_pop($this->open_queries));
+		}
+
 		return ( $this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query = '', $total, $offset = 0)
+	function sql_query_limit($query = '', $total, $offset = 0, $expire_time = 0)
 	{
 		if ( $query != '' )
 		{
@@ -196,7 +206,7 @@ class sql_db
 				$query .= ' LIMIT ' . ( ( !empty($offset) ) ? $offset . ', ' . $total : $total );
 			}
 
-			return $this->sql_query($query);
+			return $this->sql_query($query, $expire_time);
 		}
 		else
 		{
@@ -288,59 +298,62 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
+		global $cache;
+		if ($cache->sql_exists($query_id))
+		{
+			return $cache->sql_fetchrow($query_id);
+		}
+
 		return ( $query_id ) ? @mysql_fetch_assoc($query_id) : false;
 	}
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
-			while($this->rowset[$query_id] = @mysql_fetch_assoc($query_id))
+			while ($this->rowset[$query_id] = $this->sql_fetchrow($query_id))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
 			return $result;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
-			if($rownum > -1)
+			if ($rownum > -1)
 			{
 				$result = @mysql_result($query_id, $rownum, $field);
 			}
 			else
 			{
-				if(empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
+				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
 				{
-					if($this->sql_fetchrow())
+					if ($this->sql_fetchrow())
 					{
 						$result = $this->row[$query_id][$field];
 					}
 				}
 				else
 				{
-					if($this->rowset[$query_id])
+					if ($this->rowset[$query_id])
 					{
 						$result = $this->rowset[$query_id][$field];
 					}
-					else if($this->row[$query_id])
+					elseif ($this->row[$query_id])
 					{
 						$result = $this->row[$query_id][$field];
 					}
@@ -348,10 +361,7 @@ class sql_db
 			}
 			return $result;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	function sql_rowseek($rownum, $query_id = 0)

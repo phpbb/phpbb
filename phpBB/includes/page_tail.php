@@ -51,6 +51,8 @@ $template->assign_vars(array(
 	'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : ''
 ));
 
+
+$cache->save_cache();
 $template->display('body');
 
 exit;

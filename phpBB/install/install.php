@@ -690,6 +690,7 @@ else
 			$config_data .= '$dbname = "' . $dbname . '";' . "\n";
 			$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
 			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
+			$config_data .= "\$acm_type = 'file';\n";
 			$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!

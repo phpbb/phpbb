@@ -29,6 +29,18 @@ function sql_quote($msg)
 	return str_replace("\'", "''", $msg);
 }
 
+function set_config($config_name, $config_value)
+{
+	global $db, $cache, $config;
+	$config[$config_name] = $config_value;
+	$cache->save('config', $config);
+
+	$sql = 'UPDATE ' . CONFIG_TABLE . "
+			SET config_value = '" . sql_escape($config_value) . "'
+			WHERE config_name = '$config_name'";
+	$db->sql_query($sql);
+}
+
 function get_userdata($user)
 {
 	global $db;
@@ -140,7 +152,7 @@ function generate_forum_nav(&$forum_data)
 // Obtain list of moderators of each forum
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $SID, $db, $acl_options, $phpEx;
+	global $cache, $SID, $db, $acl_options, $phpEx;
 
 	if (!empty($forum_id) && is_array($forum_id))
 	{
@@ -189,7 +201,9 @@ function make_jumpbox($action, $forum_id = false)
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql);
+	
+	// Cache the forums list for 60 seconds
+	$result = $db->sql_query($sql, 60);
 
 	$right = $cat_right = 0;
 	$padding = $forum_list = $holding = '';
@@ -646,16 +660,27 @@ function on_page($num_items, $per_page, $start)
 // to return both sets of arrays
 function obtain_word_list(&$orig_word, &$replacement_word)
 {
-	global $db;
-
-	$sql = "SELECT word, replacement
-		FROM  " . WORDS_TABLE;
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
+	global $db, $cache;
+	if ($cache->exists('word_censors'))
 	{
-		$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-		$replacement_word[] = $row['replacement'];
+		$words = $cache->load('word_censors');
+		$orig_word = $words['orig'];
+		$replacement_word = $words['replacement'];
+	}
+	else
+	{
+		$sql = "SELECT word, replacement
+			FROM  " . WORDS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+			$replacement_word[] = $row['replacement'];
+		}
+
+		$words = array('orig' => $orig_word, 'replacement' => $replacement_word);
+		$cache->save('word_censors', $words);
 	}
 
 	return true;
@@ -833,7 +858,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $db, $auth, $template, $config, $user, $nav_links;
+	global $cache, $db, $auth, $template, $config, $user, $nav_links;
 	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ($errno)

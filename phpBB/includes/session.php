@@ -326,10 +326,7 @@ class session
 		{
 			// Less than 5 sessions, update gc timer ... else we want gc
 			// called again to delete other sessions
-			$sql = "UPDATE " . CONFIG_TABLE . "
-				SET config_value = '$current_time'
-				WHERE config_name = 'session_last_gc'";
-			$db->sql_query($sql);
+			set_config('session_last_gc', $current_time);
 		}
 
 		return;
@@ -442,7 +439,9 @@ class user extends session
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.style_id
 				AND i.imageset_id = s.imageset_id";
-		$result = $db->sql_query($sql);
+
+		// Cache this query for 60 seconds
+		$result = $db->sql_query($sql, 60);
 
 		if (!($this->theme = $db->sql_fetchrow($result)))
 		{

@@ -37,7 +37,7 @@ if ( !get_magic_quotes_gpc() )
 }
 
 require($phpbb_root_path . 'config.'.$phpEx);
-require($phpbb_root_path . 'config_cache.'.$phpEx);
+//require($phpbb_root_path . 'config_cache.'.$phpEx);
 
 if ( !defined('PHPBB_INSTALLED') )
 {
@@ -46,6 +46,7 @@ if ( !defined('PHPBB_INSTALLED') )
 }
 
 // Include files
+require($phpbb_root_path . 'includes/acm/cache_' . $acm_type . '.'.$phpEx);
 require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
@@ -148,10 +149,14 @@ define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 // Set PHP error handler to ours
 set_error_handler('msg_handler');
 
+// Experimental cache manager
+$cache = new acm();
+
 // Need these here so instantiate them now
 $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
+/*
 // Obtain boardwide default config (rebuilding cache if reqd)
 if ( empty($config) )
 {
@@ -176,6 +181,29 @@ if ( empty($acl_options) )
 	$auth_admin = new auth_admin();
 	$acl_options = $auth_admin->acl_cache_options();
 }
+*/
+
+if (!$config = $cache->load('config'))
+{
+	$config = array();
+
+	$sql = 'SELECT * FROM ' . CONFIG_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$config[$row['config_name']] = $row['config_value'];
+	}
+
+	$cache->save('config', $config);
+}
+
+/*
+if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
+{
+	$cache->tidy($config['cache_gc']);
+}
+*/
 
 // Instantiate some basic classes
 $user = new user();
