@@ -163,6 +163,7 @@ $error = FALSE;
 //
 // Set initial conditions
 //
+$is_first_post = (($HTTP_GET_VARS['is_first_post'] == 1) || ($HTTP_POST_VARS['is_first_post'] == 1)) ? TRUE : FALSE;
 $disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
 $disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
 $disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
@@ -551,8 +552,8 @@ switch($mode)
 			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
 			$topic_time = get_gmt_ts();
 
-				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
-						  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$uid')";
+			$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
+					  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$uid')";
 
 			if($db->sql_query($sql))
 			{
@@ -713,16 +714,106 @@ switch($mode)
 			{
 				$post_id = $HTTP_POST_VARS[POST_POST_URL];
 				$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
-
+				
+				if($SQL_LAYER != "mysql")
+				{
+					switch($SQL_LAYER)
+					{
+						case 'postgres':
+							$result = $db->sql_query("BEGIN");
+							break;
+						case 'mssql':
+							$result = $db->sql_query("BEGIN TRANSACTION");
+							break;
+					}
+				}
+				
 				$sql = "UPDATE ".POSTS_TEXT_TABLE." SET post_text = '$message', post_subject = '$subject' WHERE post_id = ".$HTTP_POST_VARS[POST_POST_URL];
 				if($db->sql_query($sql))
 				{
 					if($is_first_post)
 					{
 						// Update topics table here, set notification level and such
+						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify' WHERE topic_id = ".$HTTP_POST_VARS[POST_TOPIC_URL];
+						if(!$db->sql_query($sql))
+						{
+							if(SQL_LAYER != "mysql")
+							{
+								switch($SQL_LAYER)
+								{
+									case 'postgres':
+										$result = $db->sql_query("ROLLBACK");
+									break;
+									case 'mssql':
+										$result = $db->sql_query("ROLLBACK TRANSACTION");
+									break;
+								}
+							}
+
+							if(DEBUG)
+							{
+								$error = $db->sql_error();
+								error_die(QUERY_ERROR, "Updating topics table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+							}
+							else
+							{
+								error_die(QUERY_ERROR);
+							}
+						}
+						else
+						{
+							if(SQL_LAYER != "mysql")
+							{
+								switch($SQL_LAYER)
+								{
+									case 'postgres':
+										$result = $db->sql_query("COMMIT");
+										break;
+									case 'mssql':
+										$result = $db->sql_query("COMMIT TRANSACTION");
+										break;
+								}
+								if(!$result)
+								{
+									error_die(SQL_ERROR, "Couldn't commit");
+								}
+							}
+
+							include('includes/page_header.'.$phpEx);
+							// If we get here the post has been inserted successfully.
+							$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$post_id#$post_id")."\">$l_here</a>
+  										$l_viewmsg<br /><br />$l_click <a href=\"".append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id")."\">$l_here</a> $l_returntopic";
+	
+							$template->set_filenames(array(
+								"reg_header" => "error_body.tpl"
+							));
+							$template->assign_vars(array(
+								"ERROR_MESSAGE" => $msg
+							));
+							$template->pparse("reg_header");
+	
+							include('includes/page_tail.'.$phpEx);
+						}
 					}
 					else
 					{
+						if(SQL_LAYER != "mysql")
+						{
+							switch($SQL_LAYER)
+							{
+								case 'postgres':
+									$result = $db->sql_query("COMMIT");
+								break;
+								case 'mssql':
+									$result = $db->sql_query("COMMIT TRANSACTION");
+								break;
+							}
+							if(!$result)
+							{
+								error_die(SQL_ERROR, "Couldn't commit");
+							}
+						}
+
 						include('includes/page_header.'.$phpEx);
 						// If we get here the post has been inserted successfully.
 						$msg = "$l_stored<br /><br />$l_click <a href=\"".append_sid("viewtopic.$phpEx?".POST_POST_URL."=$post_id#$post_id")."\">$l_here</a>
@@ -898,10 +989,11 @@ if($preview)
 //
 // Show the same form for each mode.
 //
-		if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
-		{
-			error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
-		}
+
+if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
+{
+	error_die(GENERAL_ERROR, "Sorry, no there is no such forum");
+}
 
 		$sql = "SELECT forum_name
 					FROM ".FORUMS_TABLE."
@@ -1033,8 +1125,21 @@ if($preview)
 			$topic_id = ($HTTP_GET_VARS[POST_TOPIC_URL]) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
 			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
 		}
-		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\"><input type=\"hidden\" name=\"".POST_POST_URL."\" value=\"$post_id\">";
+		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\"><input type=\"hidden\" name=\"".POST_POST_URL."\" value=\"$post_id\"><input type=\"hidden\" name=\"is_first_post\" value=\"$is_first_post\">";
 
+		if($mode == 'newtopic')
+		{
+			$post_a = $lang['Post_a'] . " " . $lang['Topic'];
+		}
+		else if($mode == 'reply')
+		{
+			$post_a = $lang['Post_a'] . " " . $lang['Reply'];
+		}
+		else if($mode == 'editpost')
+		{
+			$post_a = $lang['Edit_Post'];
+		}
+		
 		$template->assign_vars(array(
 			"L_SUBJECT" => $l_subject,
 			"L_MESSAGE_BODY" => $l_body,
@@ -1042,7 +1147,7 @@ if($preview)
 			"L_PREVIEW" => $lang['Preview'],
 			"L_SUBMIT" => $l_submit,
 			"L_CANCEL" => $l_cancelpost,
-
+			"L_POST_A" => $post_a,
 			"USERNAME_INPUT" => $username_input,
 			"PASSWORD_INPUT" => $password_input,
 			"SUBJECT_INPUT" => $subject_input,

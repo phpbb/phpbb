@@ -17,7 +17,7 @@ function insertCode(formObj, selectObj){
 	<tr><form action="{S_POST_ACTION}" method="POST">
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
-				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>Post a Topic</b></font></td>
+				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_POST_A}</b></font></td>
 	        </tr>
             <tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_SUBJECT}</b></font></td>

@@ -34,6 +34,9 @@ function addBBcode(bbCode)
     <tr>
       <td>
          <table border="0" width="100%" cellpadding="3" cellspacing="1">
+         	<tr class="tableheader">
+         	  <td colspan="2">{L_POST_A}</td>
+         	</tr>
             <tr class="tablebody">
 	           <td bgcolor="#DDDDDD">{L_USERNAME}</td>
 	           <td bgcolor="#CCCCCC">{USERNAME_INPUT}</td>
