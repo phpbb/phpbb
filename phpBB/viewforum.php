@@ -333,11 +333,11 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	}
 
 	// If the user is trying to reach late pages, start searching from the end
-	$store_reverse = FALSE;
+	$store_reverse = false;
 	$sql_limit = $config['topics_per_page'];
 	if ($start > $topics_count / 2)
 	{
-		$store_reverse = TRUE;
+		$store_reverse = true;
 
 		if ($start + $config['topics_per_page'] > $topics_count)
 		{
@@ -365,7 +365,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			AND t.topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
 			$sql_approved
 			$sql_limit_time
-		ORDER BY t.topic_type DESC, $sql_sort_order";
+		ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
 	$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -378,7 +378,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	$topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 
 	// Okay, lets dump out the page ...
-	if (count($topic_list))
+	if (sizeof($topic_list))
 	{
 		if ($config['load_db_lastread'])
 		{
