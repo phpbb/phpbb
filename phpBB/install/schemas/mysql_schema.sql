@@ -81,7 +81,7 @@ CREATE TABLE phpbb_banlist (
    ban_reason varchar(255), 
    PRIMARY KEY (ban_id), 
    KEY ban_ip_user_id (ban_ip, ban_userid), 
-   KEY ban_email 
+   KEY ban_email (ban_email)
 );
 
 
@@ -222,7 +222,7 @@ CREATE TABLE phpbb_icons (
 # Table structure for table 'phpbb_log_moderator'
 #
 CREATE TABLE phpbb_log_moderator (
-  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0',
+  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
   user_id mediumint(8) NOT NULL DEFAULT '0', 
   forum_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0', 
   log_ip varchar(40) NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE phpbb_log_moderator (
 # Table structure for table 'phpbb_log_admin'
 #
 CREATE TABLE phpbb_log_admin (
-  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0',
+  log_id mediumint(5) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
   user_id mediumint(8) NOT NULL DEFAULT '0', 
   log_ip varchar(40) NOT NULL,
   log_time int(11) NOT NULL, 
