@@ -112,10 +112,10 @@ function generate_forum_nav(&$forum_data)
 		if (empty($forum_data['forum_parents']))
 		{
 			$sql = 'SELECT forum_id, forum_name
-					FROM ' . FORUMS_TABLE . '
-					WHERE left_id < ' . $forum_data['left_id'] . '
-					  AND right_id > ' . $forum_data['right_id'] . '
-					ORDER BY left_id ASC';
+				FROM ' . FORUMS_TABLE . '
+				WHERE left_id < ' . $forum_data['left_id'] . '
+					AND right_id > ' . $forum_data['right_id'] . '
+				ORDER BY left_id ASC';
 
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
@@ -124,8 +124,8 @@ function generate_forum_nav(&$forum_data)
 			}
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
-					WHERE parent_id = " . $forum_data['parent_id'];
+				SET forum_parents = '" . $db->sql_escape(serialize($forum_parents)) . "'
+				WHERE parent_id = " . $forum_data['parent_id'];
 			$db->sql_query($sql);
 		}
 		else
@@ -150,7 +150,7 @@ function generate_forum_nav(&$forum_data)
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> strip_tags($forum_data['forum_desc'])
+		'FORUM_DESC'	=> $forum_data['forum_desc']
 	));
 
 	return;
@@ -186,15 +186,51 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 }
 
 // User authorisation levels output
-function get_forum_rules($mode, &$rules, &$forum_id)
+function gen_forum_rules($mode, &$forum_id)
 {
-	global $SID, $auth, $user;
+	global $SID, $template, $auth, $user;
 
-	$rules .= (($auth->acl_gets('f_post', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_post_can'] : $user->lang['Rules_post_cannot']) . '<br />';
-	$rules .= (($auth->acl_gets('f_reply', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_reply_can'] : $user->lang['Rules_reply_cannot']) . '<br />';
-	$rules .= (($auth->acl_gets('f_edit', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_edit_can'] : $user->lang['Rules_edit_cannot']) . '<br />';
-	$rules .= (($auth->acl_gets('f_delete', 'm_', 'a_', $forum_id) || $auth->acl_get('m_delete', $forum_id)) ? $user->lang['Rules_delete_can'] : $user->lang['Rules_delete_cannot']) . '<br />';
-	$rules .= (($auth->acl_gets('f_attach', 'm_', 'a_', $forum_id)) ? $user->lang['Rules_attach_can'] : $user->lang['Rules_attach_cannot']) . '<br />';
+	$rules = array('post', 'reply', 'edit', 'delete', 'attach');
+
+	foreach ($rules as $rule)
+	{
+		$template->assign_block_vars('rules', array(
+			'RULE' => ($auth->acl_gets('f_' . $rule, 'm_', 'a_', $forum_id)) ? $user->lang['RULES_' . strtoupper($rule) . '_CAN'] : $user->lang['RULES_' . strtoupper($rule) . '_CANNOT'])
+		);
+	}
+
+	return;
+}
+
+function gen_sort_selects(&$limit_days, &$sort_by_text, &$s_limit_days, &$s_sort_key, &$s_sort_dir)
+{
+	global $user;
+
+	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+	$s_limit_days = '<select name="sort_days">';
+	foreach ($limit_days as $day => $text)
+	{
+		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
+		$s_limit_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
+	}
+	$s_limit_days .= '</select>';
+
+	$s_sort_key = '<select name="sort_key">';
+	foreach ($sort_by_text as $key => $text)
+	{
+		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+		$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
+	}
+	$s_sort_key .= '</select>';
+
+	$s_sort_dir = '<select name="sort_dir">';
+	foreach ($sort_dir_text as $key => $value)
+	{
+		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
+		$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+	}
+	$s_sort_dir .= '</select>';
 
 	return;
 }

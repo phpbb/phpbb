@@ -724,6 +724,10 @@ class Template {
 		return;
 	}
 
+
+
+
+
 	function compile_cache_clear($mode, &$dir, &$template)
 	{
 		$template_list = array();
@@ -794,8 +798,6 @@ class Template {
 		
 			'#\' \. \(\(isset\(\$this\->_tpldata\[\'([a-z0-9_\.]+?)\'\].*?[\'([a-z0-9_\.]+?)\'\].*?\[\'([A-Z0-9_]+?)\'\]\)\).*?\'\'\) \. \'#s',
 		);
-
-//' . ((isset($this->_tpldata['faq_block_link.'][$_faq_block_link_i]['faq_row_link.'][$_faq_row_link_i]['U_FAQ_LINK'])) ? $this->_tpldata['faq_block_link.'][$_faq_block_link_i]['faq_row_link.'][$_faq_row_link_i]['U_FAQ_LINK'] : '') . '
 
 		$replace_tags = array(
 			'\1',

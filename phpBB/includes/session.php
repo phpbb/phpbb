@@ -72,7 +72,7 @@ class session
 
 				if ($this->load > doubleval($config['limit_load']))
 				{
-					trigger_error('Board_unavailable');
+					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
 		}
@@ -150,7 +150,7 @@ class session
 
 			if (intval($row['sessions']) > intval($config['active_sessions']))
 			{
-				trigger_error('Board_unavailable');
+				trigger_error('BOARD_UNAVAILABLE');
 			}
 		}
 
@@ -215,7 +215,10 @@ class session
 
 			if ($banned)
 			{
-				trigger_error('You_been_banned');
+				// TODO
+				// Note that at present this doesn't surround the administrator
+				// text with an appropriate URL
+				trigger_error('BOARD_BANNED');
 			}
 		}
 
@@ -449,8 +452,7 @@ class user extends session
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.style_id
 				AND i.imageset_id = s.imageset_id";
-
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql, 600);
 
 		if (!($this->theme = $db->sql_fetchrow($result)))
 		{
@@ -488,7 +490,7 @@ class user extends session
 			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : '';
 
 			$width = ($width) ? 'width="' . $width . '" ' : '';
-			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . '" ' . $width . 'alt="' . $alt . '" title="' . $alt . '" />';
+			$imgs[$img] = '<img src=' . str_replace('{LANG}', $this->img_lang, $this->theme[$img]) . ' ' . $width . 'alt="' . $alt . '" title="' . $alt . '" />';
 		}
 		return $imgs[$img];
 	}
