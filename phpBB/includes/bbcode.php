@@ -58,7 +58,15 @@ function bbencode_second_pass($text, $uid)
 	$text = str_replace("[/list:u:$uid]", '</ul>', $text);
 	$text = str_replace("[/list:o:$uid]", '</ol>', $text);
 	// Ordered lists
-	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<ol type="\1">', $text);
+	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<ol type="\1">', $text); 
+
+	// colours
+	$text = preg_replace("/\[color=(\#[0-9A-F]{6}|[a-z]+):$uid\]/si", '<font color="\1">', $text);
+	$text = str_replace("[/color:$uid]", "</font>", $text);
+
+	// size
+	$text = preg_replace("/\[size=([\-\+]?[1-3]):$uid\]/si", '<font size="\1">', $text);
+	$text = str_replace("[/size:$uid]", "</font>", $text);
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = str_replace("[quote:$uid]", '<table border="0" align="center" width="85%"><tr><td><font size="-1">' . $lang['Quote'] . '</font><hr /> </td></tr><tr><td><font size="-1"><blockquote>', $text);
@@ -146,6 +154,12 @@ function bbencode_first_pass($text, $uid)
 
 	// ordered.
 	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:o]",  false, 'replace_listitems');
+
+	// [color] and [/color] for setting text color
+	$text = preg_replace("#\[color=(\#[0-9A-F]{6}|[a-z]+)\](.*?)\[/color\]#si", "[color=\\1:$uid]\\2[/color:$uid]", $text);
+
+	// [size] and [/size] for setting text size
+	$text = preg_replace("#\[size=([\-\+]?[1-3])\](.*?)\[/size\]#si", "[size=\\1:$uid]\\2[/size:$uid]", $text);
 
 	// [b] and [/b] for bolding text.
 	$text = preg_replace("#\[b\](.*?)\[/b\]#si", "[b:$uid]\\1[/b:$uid]", $text);
