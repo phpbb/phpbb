@@ -37,7 +37,12 @@ $lang['Groups'] = 'Group Admin';
 $lang['Forums'] = 'Forum Admin';
 $lang['Styles'] = 'Styles Admin';
 
-$lang['Configuration'] = 'Configuration';
+$lang['Avatar_settings'] = 'Avatar Settings';
+$lang['Cookie_settings'] = 'Cookie Settings';
+$lang['Board_defaults'] = 'Board Defaults';
+$lang['Board_settings'] = 'Board Settings';
+$lang['Email_settings'] = 'Email Settings';
+$lang['Server_settings'] = 'Server Settings';
 $lang['Permissions'] = 'Permissions';
 $lang['Manage'] = 'Manage';
 $lang['Disallow'] = 'Disallow names';
@@ -318,59 +323,22 @@ $lang['Click_return_banadmin'] = 'Click %sHere%s to return to Ban Control';
 
 
 //
-// Configuration
+// Cookies
 //
-$lang['General_Config'] = 'General Configuration';
-$lang['Config_explain'] = 'The form below will allow you to customize all the general board options. For User and Forum configurations use the related links on the left hand side.';
+$lang['Cookie_settings_explain'] = 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.';
+$lang['Cookie_domain'] = 'Cookie domain';
+$lang['Cookie_name'] = 'Cookie name';
+$lang['Cookie_path'] = 'Cookie path';
+$lang['Cookie_secure'] = 'Cookie secure';
+$lang['Cookie_secure_explain'] = 'If your server is running via SSL set this to enabled else leave as disabled';
+$lang['Session_length'] = 'Session length [ seconds ]';
 
-$lang['Click_return_config'] = 'Click %sHere%s to return to General Configuration';
 
-$lang['General_settings'] = 'General Board Settings';
-$lang['Server_name'] = 'Domain Name';
-$lang['Server_name_explain'] = 'The domain name this board runs from';
-$lang['Script_path'] = 'Script path';
-$lang['Script_path_explain'] = 'The path where phpBB2 is located relative to the domain name';
-$lang['Server_port'] = 'Server Port';
-$lang['Server_port_explain'] = 'The port your server is running on, usually 80, only change if different';
-$lang['Site_name'] = 'Site name';
-$lang['Site_desc'] = 'Site description';
-$lang['Board_disable'] = 'Disable board';
-$lang['Board_disable_explain'] = 'This will make the board unavailable to users. Do not logout when you disable the board, you will not be able to log back in!';
-$lang['Acct_activation'] = 'Enable account activation';
-$lang['Acc_None'] = 'None'; // These three entries are the type of activation
-$lang['Acc_User'] = 'User';
-$lang['Acc_Admin'] = 'Admin';
+//
+// Avatars
+//
+$lang['Avatar_settings_explain'] = 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.';
 
-$lang['Abilities_settings'] = 'User and Forum Basic Settings';
-$lang['Max_poll_options'] = 'Max number of poll options';
-$lang['Flood_Interval'] = 'Flood Interval';
-$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posts'; 
-$lang['Board_email_form'] = 'User email via board';
-$lang['Board_email_form_explain'] = 'Users send email to each other via this board';
-$lang['Topics_per_page'] = 'Topics Per Page';
-$lang['Posts_per_page'] = 'Posts Per Page';
-$lang['Hot_threshold'] = 'Posts for Popular Threshold';
-$lang['Default_style'] = 'Default Style';
-$lang['Override_style'] = 'Override user style';
-$lang['Override_style_explain'] = 'Replaces users style with the default';
-$lang['Default_language'] = 'Default Language';
-$lang['Date_format'] = 'Date Format';
-$lang['System_timezone'] = 'System Timezone';
-$lang['Enable_gzip'] = 'Enable GZip Compression';
-$lang['Enable_prune'] = 'Enable Forum Pruning';
-$lang['Allow_HTML'] = 'Allow HTML';
-$lang['Allow_BBCode'] = 'Allow BBCode';
-$lang['Allowed_tags'] = 'Allowed HTML tags';
-$lang['Allowed_tags_explain'] = 'Separate tags with commas';
-$lang['Allow_smilies'] = 'Allow Smilies';
-$lang['Smilies_path'] = 'Smilies Storage Path';
-$lang['Smilies_path_explain'] = 'Path under your phpBB root dir, e.g. images/smilies';
-$lang['Allow_sig'] = 'Allow Signatures';
-$lang['Max_sig_length'] = 'Maximum signature length';
-$lang['Max_sig_length_explain'] = 'Maximum number of characters in user signatures';
-$lang['Allow_name_change'] = 'Allow Username changes';
-
-$lang['Avatar_settings'] = 'Avatar Settings';
 $lang['Allow_local'] = 'Enable gallery avatars';
 $lang['Allow_remote'] = 'Enable remote avatars';
 $lang['Allow_remote_explain'] = 'Avatars linked to from another website';
@@ -384,12 +352,26 @@ $lang['Avatar_storage_path_explain'] = 'Path under your phpBB root dir, e.g. ima
 $lang['Avatar_gallery_path'] = 'Avatar Gallery Path';
 $lang['Avatar_gallery_path_explain'] = 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery';
 
-$lang['COPPA_settings'] = 'COPPA Settings';
-$lang['COPPA_fax'] = 'COPPA Fax Number';
-$lang['COPPA_mail'] = 'COPPA Mailing Address';
-$lang['COPPA_mail_explain'] = 'This is the mailing address where parents will send COPPA registration forms';
 
-$lang['Email_settings'] = 'Email Settings';
+//
+// Server
+//
+$lang['Server_settings_explain'] = 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.';
+
+$lang['Server_name'] = 'Domain Name';
+$lang['Server_name_explain'] = 'The domain name this board runs from';
+$lang['Script_path'] = 'Script path';
+$lang['Script_path_explain'] = 'The path where phpBB2 is located relative to the domain name';
+$lang['Server_port'] = 'Server Port';
+$lang['Server_port_explain'] = 'The port your server is running on, usually 80, only change if different';
+
+
+//
+// Email
+//
+$lang['Email_settings_explain'] = 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.';
+$lang['Board_email_form'] = 'Users send email via board';
+$lang['Board_email_form_explain'] = 'This function keeps email addresses completely private.';
 $lang['Admin_email'] = 'Admin Email Address';
 $lang['Email_sig'] = 'Email Signature';
 $lang['Email_sig_explain'] = 'This text will be attached to all emails the board sends';
@@ -401,19 +383,63 @@ $lang['SMTP_username_explain'] = 'Only enter a username if your smtp server requ
 $lang['SMTP_password'] = 'SMTP Password';
 $lang['SMTP_password_explain'] = 'Only enter a password if your smtp server requires it';
 
-$lang['Disable_privmsg'] = 'Private Messaging';
-$lang['Inbox_limits'] = 'Max posts in Inbox';
-$lang['Sentbox_limits'] = 'Max posts in Sentbox';
-$lang['Savebox_limits'] = 'Max posts in Savebox';
+//
+// Board settings
+//
+$lang['Click_return_config'] = 'Click %sHere%s to return to General Configuration';
+$lang['Board_settings_explain'] = 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.';
 
-$lang['Cookie_settings'] = 'Cookie settings'; 
-$lang['Cookie_settings_explain'] = 'These details define how cookies are sent to your users browsers. In most cases the default values for the cookie settings should be sufficient but if you need to change them do so with care, incorrect settings can prevent users logging in';
-$lang['Cookie_domain'] = 'Cookie domain';
-$lang['Cookie_name'] = 'Cookie name';
-$lang['Cookie_path'] = 'Cookie path';
-$lang['Cookie_secure'] = 'Cookie secure';
-$lang['Cookie_secure_explain'] = 'If your server is running via SSL set this to enabled else leave as disabled';
-$lang['Session_length'] = 'Session length [ seconds ]';
+$lang['Site_name'] = 'Site name';
+$lang['Site_desc'] = 'Site description';
+$lang['Board_disable'] = 'Disable board';
+$lang['Board_disable_explain'] = 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.';
+$lang['Acct_activation'] = 'Enable account activation';
+$lang['Acct_activation_explain'] = 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.';
+$lang['Acc_None'] = 'None'; // These three entries are the type of activation
+$lang['Acc_User'] = 'User';
+$lang['Acc_Admin'] = 'Admin';
+$lang['Acc_Disable'] = 'Disable';
+$lang['Enable_gzip'] = 'Enable GZip Compression';
+$lang['Enable_prune'] = 'Enable Forum Pruning';
+$lang['Enable_COPPA'] = 'Enable COPPA';
+$lang['Enable_COPPA_explain'] = 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA act.';
+$lang['COPPA_fax'] = 'COPPA Fax Number';
+$lang['COPPA_mail'] = 'COPPA Mailing Address';
+$lang['COPPA_mail_explain'] = 'This is the mailing address where parents will send COPPA registration forms';
+$lang['Boxes_max'] = 'Max number of boxes';
+$lang['Boxes_max_explain'] = 'Users can create this many private messaging boxes.';
+$lang['Boxes_limit'] = 'Max messages in boxes';
+$lang['Boxes_limit_explain'] = 'Users are limited to no more than this many messages in each of their private message folders';
+$lang['Flood_Interval'] = 'Flood Interval';
+$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.'; 
+
+
+//
+// Board defaults
+//
+$lang['Board_defaults_explain'] = 'These settings allow you to define a number of default or global settings used by the board. For example, to disable the use of HTML across the entire board alter the relevant setting below. This data is also used for new user registrations and (where relevant) guest users.';
+
+$lang['Max_poll_options'] = 'Max number of poll options';
+$lang['Topics_per_page'] = 'Topics Per Page';
+$lang['Posts_per_page'] = 'Posts Per Page';
+$lang['Hot_threshold'] = 'Posts for Popular Threshold';
+$lang['Default_style'] = 'Default Style';
+$lang['Override_style'] = 'Override user style';
+$lang['Override_style_explain'] = 'Replaces users style with the default';
+$lang['Default_language'] = 'Default Language';
+$lang['Date_format'] = 'Date Format';
+$lang['System_timezone'] = 'System Timezone';
+$lang['Allow_HTML'] = 'Allow HTML';
+$lang['Allow_BBCode'] = 'Allow BBCode';
+$lang['Allowed_tags'] = 'Allowed HTML tags';
+$lang['Allowed_tags_explain'] = 'Separate tags with commas';
+$lang['Allow_smilies'] = 'Allow Smilies';
+$lang['Smilies_path'] = 'Smilies Storage Path';
+$lang['Smilies_path_explain'] = 'Path under your phpBB root dir, e.g. images/smilies';
+$lang['Allow_sig'] = 'Allow Signatures';
+$lang['Max_sig_length'] = 'Maximum signature length';
+$lang['Max_sig_length_explain'] = 'Maximum number of characters in user signatures';
+$lang['Allow_name_change'] = 'Allow Username changes';
 
 
 //
@@ -440,7 +466,7 @@ $lang['Move_contents'] = 'Move all contents';
 $lang['Forum_delete'] = 'Delete Forum';
 $lang['Forum_delete_explain'] = 'The form below will allow you to delete a forum (or category) and decide where you want to put all topics (or forums) it contained.';
 
-$lang['Forum_settings'] = 'General Forum Settings';
+$lang['Forum_general'] = 'General Forum Settings';
 $lang['Forum_name'] = 'Forum name';
 $lang['Forum_desc'] = 'Description';
 $lang['Forum_status'] = 'Forum status';
