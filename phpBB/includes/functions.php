@@ -1715,7 +1715,7 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=view_messages",
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
