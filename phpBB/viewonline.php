@@ -246,7 +246,7 @@ if( count($onlinerow_reg) )
 
 	if( $hidden_users == 0 )
 	{
-		$l_h_user_s = $lang['Hidden_users_zero_online'];
+		echo $l_h_user_s = $lang['Hidden_users_zero_online'];
 	}
 	else if( $hidden_users == 1 )
 	{
@@ -265,7 +265,7 @@ if( count($onlinerow_reg) )
 else
 {
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], 0),
+		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_zero_online'], 0) .  sprintf($lang['Hidden_users_zero_online'], 0),
 		"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
 	);
 }
@@ -368,7 +368,7 @@ if( count($onlinerow_guest) )
 else
 {
 	$template->assign_vars(array(
-		"TOTAL_GUEST_USERS_ONLINE" => sprintf($lang['Guest_users_online'], 0, 0),
+		"TOTAL_GUEST_USERS_ONLINE" => sprintf($lang['Guest_users_zero_online'], 0),
 		"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
 	);
 }
