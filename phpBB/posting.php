@@ -1162,7 +1162,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
 	$post_username = (($mode == 'edit' && $username != '' && $data['poster_id'] == ANONYMOUS) || ($mode != 'edit' && $user->data['user_id'] == ANONYMOUS)) ? stripslashes($username) : '';
-	$stat_username = ($username) ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']));
+	$stat_username = ($mode != 'edit') ? (($user->data['user_id'] == ANONYMOUS && !empty($username)) ? stripslashes($username) : stripslashes($user->data['username'])) : (($username) ? stripslashes($username) : '');
 
 	// Initial Topic table info
 	if ($mode == 'post' || ($mode == 'edit' && $data['topic_first_post_id'] == $data['post_id']))
