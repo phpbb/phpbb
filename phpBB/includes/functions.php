@@ -198,7 +198,7 @@ function init_userprefs($userdata)
 	}
 	else
 	{
-		include('language/lang_english'.$phpEx);
+		include('language/lang_english.'.$phpEx);
 	}
 
 	return;
