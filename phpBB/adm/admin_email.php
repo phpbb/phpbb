@@ -61,13 +61,17 @@ if (isset($_POST['submit']))
 			$usernames = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", explode("\n", $usernames)));
 
 			$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
-				FROM ' . USERS_TABLE . ' 
-				WHERE username IN (' . $usernames . ')
-					AND user_allow_massemail = 1';
+				FROM ' . USERS_TABLE . " 
+				WHERE username IN ($usernames)
+					AND user_allow_massemail = 1
+				ORDER BY user_lang, user_notify_type, SUBSTRING(user_email FROM INSTR(user_email,'@'))";
 		}
 		else
 		{
-			$sql = ($group_id) ? 'SELECT u.user_email, u.username, u.user_lang, u.user_jabber, u.user_notify_type FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> 1 AND u.user_id = ug.user_id AND u.user_allow_massemail = 1" : 'SELECT username, user_email, user_jabber, user_notify_type, user_lang FROM ' . USERS_TABLE . ' WHERE user_allow_massemail = 1';
+			$sql = ($group_id) ? 'SELECT u.user_email, u.username, u.user_lang, u.user_jabber, u.user_notify_type FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> 1 AND u.user_id = ug.user_id AND u.user_allow_massemail = 1" : 'SELECT u.username, u.user_email, u.user_jabber, u.user_notify_type, u.user_lang FROM ' . USERS_TABLE . ' u WHERE u.user_allow_massemail = 1';
+
+			// TODO: different for other db servers?
+			$sql .= " ORDER BY u.user_lang, u.user_notify_type, SUBSTRING(u.user_email FROM INSTR(u.user_email,'@'))";
 		}
 		$result = $db->sql_query($sql);
 
@@ -77,18 +81,32 @@ if (isset($_POST['submit']))
 		}
 		$db->sql_freeresult($result);
 	
-		$i = 0;
+		$i = $j = 0;
+		// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
+		$max_chunk_size = 50;
 		$email_list = array();
+		$old_lang = $row['user_lang'];
+		$old_notify_type = $row['user_notify_type'];
+
 		do
 		{
 			if (($row['user_notify'] == NOTIFY_EMAIL && $row['user_email']) ||
 				($row['user_notify'] == NOTIFY_IM && $row['user_jabber']) ||
 				($row['user_notify'] == NOTIFY_BOTH && $row['user_email'] && $row['user_jabber']))
 			{
-				$email_list[$row['user_lang']][$i]['method'] = $row['user_notify_type'];
-				$email_list[$row['user_lang']][$i]['email'] = $row['user_email'];
-				$email_list[$row['user_lang']][$i]['name'] = $row['username'];
-				$email_list[$row['user_lang']][$i]['jabber'] = $row['user_jabber'];
+				if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
+				{
+					$i = 0;
+					$j++;
+					$old_lang = $row['user_lang'];
+					$old_notify_type = $row['user_notify_type'];
+				}
+
+				$email_list[$j][$i]['lang']		= $row['user_lang'];
+				$email_list[$j][$i]['method']	= $row['user_notify_type'];
+				$email_list[$j][$i]['email']	= $row['user_email'];
+				$email_list[$j][$i]['name']		= $row['username'];
+				$email_list[$j][$i]['jabber']	= $row['user_jabber'];
 				$i++;
 			}
 		} 
@@ -100,35 +118,46 @@ if (isset($_POST['submit']))
 
 		$messenger = new messenger();
 
-		foreach ($email_list as $lang => $to_ary)
+		for ($i = 0; $i < sizeof($email_list); $i++)
 		{
-			foreach ($to_ary as $to)
+			$used_lang = $email_list[$i][0]['lang'];
+			$used_method = $email_list[$i][0]['method'];
+
+			if (sizeof($email_list[$i]) == 1)
 			{
-				$messenger->template('admin_send_email', $lang);
-
-				$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-				$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-				$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-
-				$messenger->subject($subject);
-				$messenger->headers($extra_headers);
-
-				$messenger->replyto($config['board_email']);
-				$messenger->to($to['email'], $to['name']);
-				$messenger->im($to['jabber'], $to['name']);
-
-				$messenger->assign_vars(array(
-					'SITENAME'		=> $config['sitename'],
-					'CONTACT_EMAIL' => $config['board_contact'],
-					'MESSAGE'		=> $message)
-				);
-
-				$messenger->send($to['method']);
+				$messenger->to($email_list[$i][0]['email'], $email_list[$i][0]['name']);
+				$messenger->im($email_list[$i][0]['jabber'], $email_list[$i][0]['name']);
 			}
-		}
+			else
+			{
+				for ($j = 0; $j < sizeof($email_list[$i]); $j++)
+				{
+					$email_row = $email_list[$i][$j];
 
-		$messenger->queue->save();
+					$messenger->bcc($email_row['email'], $email_row['name']);
+					$messenger->im($email_row['jabber'], $email_row['name']);
+				}
+			}
+
+			$messenger->template('admin_send_email', $used_lang);
+
+			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+		
+			$messenger->subject($subject);
+			$messenger->replyto($config['board_email']);
+
+			$messenger->assign_vars(array(
+				'SITENAME'		=> $config['sitename'],
+				'CONTACT_EMAIL' => $config['board_contact'],
+				'MESSAGE'		=> $message)
+			);
+	
+			$messenger->send($used_method);
+			$messenger->queue->save();
+		}
 		unset($email_list);
 
 		if ($group_id)
