@@ -27,7 +27,11 @@
 //
 if($userdata['user_level'] == ADMIN)
 {
-	$admin_link = "<a href=\"" . append_sid("admin/index.$phpEx") . "\">" . $lang['Admin_panel'] . "</a>";
+	$admin_link = "<a href=\"" . append_sid("admin/index.$phpEx") . "\">" . $lang['Admin_panel'] . "</a><br /><br />";
+}
+else
+{
+	$admin_link = "";
 }
 $current_time = time();
 
@@ -36,8 +40,8 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	"PHPBB_VERSION" => "2.0-alpha",
-	"ADMIN_LINK" => $admin_link . "<br />"));
+	"PHPBB_VERSION" => "2.0a",
+	"ADMIN_LINK" => $admin_link));
 
 $template->pparse("overall_footer");
 
@@ -53,7 +57,7 @@ $totaltime = ($endtime - $starttime);
 $gzip_text = ($board_config['gzip_compress']) ? "GZIP compression enabled" : "GZIP compression disabled";
 $debug_mode = (DEBUG) ? " : Debug Mode" : "";
 
-printf("<center><font size=-2>phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed : $gzip_text".$debug_mode."</font></center>", $totaltime);
+printf("<br /><center><font size=\"-2\">phpBB Created this page in %f seconds : " . $db->num_queries . " queries executed : $gzip_text".$debug_mode."</font></center>", $totaltime);
 
 //
 // Close our DB connection.
