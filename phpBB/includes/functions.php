@@ -32,8 +32,8 @@ function set_config($config_name, $config_value, $is_dynamic = FALSE)
 	}
 	else
 	{
-		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . ' 
-			WHERE config_name = "' . $config_name . '"');
+		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
+			WHERE config_name = '" . $config_name . "'");
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
 			VALUES ('$config_name', '" . $db->sql_escape($config_value) . "')";
@@ -244,7 +244,7 @@ function make_jumpbox($action, $forum_id = false, $extra_form_fields = array())
 	$sql = 'SELECT forum_id, forum_name, forum_postable, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query($sql, 120);
 
 	$right = $cat_right = 0;
 	$padding = $forum_list = $holding = '';
