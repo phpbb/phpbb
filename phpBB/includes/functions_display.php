@@ -22,23 +22,17 @@
 function display_forums($root_data=array(), $display_moderators=TRUE)
 {
 	global $db, $template, $auth, $user, $phpEx, $SID;
-	global $total_posts;
 
 	$where_sql = ($root_data['forum_id']) ? ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'] : '';
 
 	$sql = 'SELECT * FROM ' . FORUMS_TABLE . $where_sql . ' ORDER BY left_id';
 	$result = $db->sql_query($sql);
 
-	$total_posts = 0;
 	$branch_root_id = $root_data['forum_id'];
 	$forum_rows = $subforums = $forum_ids = $forum_moderators = array();
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['post_count_inc'])
-		{
-			$total_posts += $row['forum_posts'];
-		}
 		if (isset($right_id))
 		{
 			if ($row['left_id'] < $right_id)
