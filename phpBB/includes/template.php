@@ -289,7 +289,6 @@ class template
 
 		return true;
 	}
-	
 
 	// Include a seperate template
 	function _tpl_include($filename, $include = true)
@@ -301,7 +300,7 @@ class template
 		$this->files[$handle] = $this->root . '/' . $filename;
 
  		$filename = $this->_tpl_load($handle);
-		
+
 		if ($include)
 		{
 			if (!$this->force_recompile && $filename)
@@ -556,7 +555,7 @@ class template
 				case '/':
 				case '@':
 					break;	
-				
+
 				case 'eq':
 					$token = '==';
 					break;
@@ -766,7 +765,7 @@ class template
 
 		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
-		if ($fp = @fopen($filename, 'w+'))
+		if ($fp = @fopen($filename, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 			@fwrite ($fp, $data);
