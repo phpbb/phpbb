@@ -848,7 +848,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 							// If we get here the post has been inserted successfully.
 							//
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_POST_URL . '=' . $new_post_id .'#' . $new_post_id . '">')
+								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id") . '#' . $new_post_id . '">')
 							);
 
 							$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id") . "#$new_post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
@@ -988,7 +988,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									if($db->sql_query($sql))
 									{
 										$template->assign_vars(array(
-											"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '">')
+											"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 										);
 
 										$msg_die = $lang['Poll_delete'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_topic'];
@@ -1163,7 +1163,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									if( !$is_first_post_topic && !$is_last_post_topic )
 									{
 										$template->assign_vars(array(
-											"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '">')
+											"META" => '<meta http-equiv="refresh" content="3;url= ' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 										);
 
 										$msg_die .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
@@ -1171,7 +1171,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 									else
 									{
 										$template->assign_vars(array(
-											"META" => '<meta http-equiv="refresh" content="3;url=viewforum.' . $phpEx . '?' . POST_FORUM_URL . '=' . $forum_id . '">')
+											"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
 										);
 									}
 									$msg_die .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
@@ -1373,7 +1373,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 							// If we get here the post has been inserted successfully.
 							//
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_POST_URL . '=' . $post_id . '#' . $post_id . '">')
+								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . '#' . $post_id . '">')
 							);
 
 							$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
@@ -1398,7 +1398,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						// If we get here the post has been inserted successfully.
 						//
 						$template->assign_vars(array(
-							"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_POST_URL . '=' . $post_id . '#' . $post_id . '">')
+							"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . '#' . $post_id . '">')
 						);
 
 						$msg_die = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id") . "#$post_id\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
@@ -1444,7 +1444,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				if( $vote_info['max_vote_option'] < $vote_option_id )
 				{
 					$template->assign_vars(array(
-						"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '">')
+						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "= $topic_id") . '">')
 					);
 
 					$message = $lang['No_vote_option'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
@@ -1479,7 +1479,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 						{
 
 							$template->assign_vars(array(
-								"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '">')
+								"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 							);
 
 							$message = $lang['Vote_cast'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
@@ -1508,7 +1508,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 				else
 				{
 					$template->assign_vars(array(
-						"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '">')
+						"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 					);
 
 					$message = $lang['Already_voted'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
@@ -2106,6 +2106,8 @@ $template->assign_vars(array(
 	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
 	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
 	"L_DELETE_POST" => $lang['Delete_post'],
+
+	"U_TOPIC_REVIEW" => ( $mode == "reply" ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : "", 
 
 	"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "", 
 	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 

@@ -235,10 +235,10 @@ if($userdata['user_id'] != ANONYMOUS)
 			}
 			
 			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '&amp;start=' . $start .'">')
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
 			);
 
-			$message = $lang['No_longer_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start\">" . $lang['HERE'] . "</a> " . $lang['to_return_topic'];
+			$message = $lang['No_longer_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
@@ -279,10 +279,10 @@ if($userdata['user_id'] != ANONYMOUS)
 			}
 
 			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="3;url=viewtopic.' . $phpEx . '?' . POST_TOPIC_URL . '=' . $topic_id . '&amp;start=' . $start .'">')
+				"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
 			);
 
-			$message = $lang['You_are_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start\">" . $lang['HERE'] . "</a> " . $lang['to_return_topic'];
+			$message = $lang['You_are_watching']. "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
 			message_die(GENERAL_MESSAGE, $message);
 		}
 		else
@@ -297,7 +297,7 @@ else
 	{
 		if( $HTTP_GET_VARS['unwatch'] == "topic" )
 		{
-			header("Location: login.$phpEx?forward_page=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic");
+			header("Location: " . append_sid("login.$phpEx?forward_page=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic"));
 		}
 	}
 	else

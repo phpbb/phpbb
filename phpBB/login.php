@@ -33,13 +33,12 @@ init_userprefs($userdata);
 // End session management
 //
 
-if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
+if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
-	if($HTTP_POST_VARS['submit'] == "Login" && !$userdata['session_logged_in'])
+	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
-
-		$username = $HTTP_POST_VARS['username'];
-		$password = $HTTP_POST_VARS['password'];
+		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : "";
+		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : "";
 
 		$sql = "SELECT user_id, username, user_password, user_active
 			FROM ".USERS_TABLE."
@@ -61,9 +60,10 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 
 				if($session_id)
 				{
-					if(!empty($HTTP_POST_VARS['forward_page']))
+					if( !empty($HTTP_POST_VARS['forward_page']) )
 					{
-						header("Location: " . append_sid($HTTP_POST_VARS['forward_page']));
+//						echo $HTTP_POST_VARS['forward_page'];
+						header("Location: " . $HTTP_POST_VARS['forward_page']);
 					}
 					else
 					{
@@ -85,13 +85,13 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 			message_die(GENERAL_MESSAGE, $lang['Error_login']);
 		}
 	}
-	else if($HTTP_GET_VARS['submit'] == "logout" && $userdata['session_logged_in'])
+	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
 	{
-		if($userdata['session_logged_in'])
+		if( $userdata['session_logged_in'] )
 		{
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
-		if(!empty($HTTP_POST_VARS['forward_page']))
+		if( !empty($HTTP_POST_VARS['forward_page']) )
 		{
 			header("Location: " . append_sid($HTTP_POST_VARS['forward_page']));
 		}
@@ -102,7 +102,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 	}
 	else
 	{
-		if(!empty($HTTP_POST_VARS['forward_page']))
+		if( !empty($HTTP_POST_VARS['forward_page']) )
 		{
 			header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
 		}
@@ -127,11 +127,11 @@ else
 			"body" => "login_body.tpl")
 		);
 
-		if(isset($HTTP_POST_VARS['forward_page']) || isset($HTTP_GET_VARS['forward_page']))
+		if( isset($HTTP_POST_VARS['forward_page']) || isset($HTTP_GET_VARS['forward_page']) )
 		{
-			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
+			echo $forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
 
-			if(preg_match("/^forward_page=(.*)(&sid=[0-9]*)$|^forward_page=(.*)$/si", $forward_to, $forward_matches))
+			if( preg_match("/^forward_page=(.*)(&sid=[0-9]*)$|^forward_page=(.*)$/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
 
