@@ -101,15 +101,15 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 // Fill smiley templates (or just the variables) with smileys
 // Either in a window or inline
 //
-function generate_smilies($mode)
+function generate_smilies($mode, $page_id)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
-	global $user_ip, $forum_id, $session_length;
+	global $user_ip, $session_length;
 	global $userdata;
 
-	if( $mode == 'window' )
+	if( $mode == "window" )
 	{
-		$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+		$userdata = session_pagestart($user_ip, $page_id, $session_length);
 		init_userprefs($userdata);
 
 		$gen_simple_header = TRUE;
@@ -141,8 +141,8 @@ function generate_smilies($mode)
 
 			$num_smilies = count($rowset);
 
-			$smilies_count = ( $mode == 'inline' ) ? min(19, $num_smilies) : $num_smilies;
-			$smilies_split_row = ( $mode == 'inline' ) ? 3 : 7;
+			$smilies_count = ( $mode == "inline" ) ? min(19, $num_smilies) : $num_smilies;
+			$smilies_split_row = ( $mode == "inline" ) ? 3 : 7;
 
 			$s_colspan = 0;
 			$row = 0;
@@ -165,7 +165,7 @@ function generate_smilies($mode)
 
 				if( $col == $smilies_split_row )
 				{
-					if( $mode == 'inline' && $row == 4 )
+					if( $mode == "inline" && $row == 4 )
 					{
 						break;
 					}
@@ -178,7 +178,7 @@ function generate_smilies($mode)
 				}
 			}
 
-			if( $mode == 'inline' && $num_smilies > 20)
+			if( $mode == "inline" && $num_smilies > 20)
 			{
 				$template->assign_block_vars("switch_smilies_extra", array());
 
@@ -196,11 +196,12 @@ function generate_smilies($mode)
 		}
 	}
 
-	if( $mode == 'window' )
+	if( $mode == "window" )
 	{
 		$template->pparse("smiliesbody");
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 }
+
 ?>

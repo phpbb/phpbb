@@ -677,7 +677,7 @@ if( $mode == "topicreview" )
 }
 else if( $mode == "smilies" )
 {
-	generate_smilies('window');
+	generate_smilies("window", PAGE_POSTING);
 	exit;
 }
 
@@ -2584,7 +2584,7 @@ if( $error )
 //
 // Send smilies to template
 //
-generate_smilies('inline');
+generate_smilies("inline", PAGE_POSTING);
 
 //
 // User not logged in so offer up a username
