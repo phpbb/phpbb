@@ -192,12 +192,10 @@ function add_search_words($post_id, $post_text, $post_title = "")
 				}
 			}
 
-			$word_sql_in = implode(", ", $match_word);
-
 			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
 				SELECT $post_id, word_id, $title_match  
 					FROM " . SEARCH_WORD_TABLE . " 
-					WHERE word_text IN ($word_sql_in)"; 
+					WHERE word_text IN ($word_text_sql)"; 
 			$result = $db->sql_query($sql); 
 			if( !$result )
 			{
@@ -206,7 +204,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 		}
 	}
 
-	remove_common("single", 40, $word_id_list);
+	remove_common("single", 0.4, $word_id_list);
 
 	return;
 }
