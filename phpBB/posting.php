@@ -72,7 +72,7 @@ else
 {
 	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
 }
-$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "";
+$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "");
 
 //
 // Start session management
@@ -90,6 +90,7 @@ init_userprefs($userdata);
 
 // This is a quick check to see if it works
 // can probably be placed better ...
+
 switch($mode)
 {
 	case 'newtopic':
@@ -130,6 +131,7 @@ if(!$is_auth)
 
 	include('includes/page_tail.'.$phpEx);
 }
+
 //
 // End Auth
 //
