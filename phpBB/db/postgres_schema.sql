@@ -199,7 +199,9 @@ CREATE TABLE phpbb_posts (
    post_time int4 DEFAULT '0' NOT NULL, 
    post_username varchar(30), 
    poster_ip char(8) DEFAULT '' NOT NULL,
-   bbcode_uid varchar(10) DEFAULT '' NOT NULL,
+   bbcode_uid varchar(10) DEFAULT '' NOT NULL, 
+   post_edit_time int4,
+   post_edit_count int2 DEFAULT '0' NOT NULL, 
    CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
 );
 CREATE  INDEX forum_id_phpbb_posts_index ON phpbb_posts (forum_id);

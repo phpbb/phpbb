@@ -204,6 +204,8 @@ CREATE TABLE phpbb_posts (
    poster_ip char(8) NOT NULL, 
    post_username varchar(30), 
    bbcode_uid varchar(10) NOT NULL,
+   post_edit_time int(11),
+   post_edit_count smallint(4) DEFAULT '0' NOT NULL, 
    PRIMARY KEY (post_id),
    KEY forum_id (forum_id),
    KEY topic_id (topic_id),

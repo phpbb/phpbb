@@ -164,6 +164,7 @@ if( $mode != "newtopic" )
 			{
 				$topic_id = $check_row['topic_id'];
 			}
+
 			$is_first_post = FALSE;
 			$is_last_post = FALSE;
 		}
@@ -357,7 +358,7 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 
 			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smile_on, $bbcode_uid);
 
-			if($attach_sig && !empty($userdata['user_sig']))
+			if( $attach_sig )
 			{
 				$message .= (eregi(" $", $message)) ? "[addsig]" : " [addsig]";
 			}
@@ -776,8 +777,17 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 		}
 		else
 		{
+			if( !$is_last_post && $userdata['user_level'] != ADMIN )
+			{
+				$edited_sql = ", post_edit_time = " . time() . ", post_edit_count = post_edit_count + 1 ";
+			}
+			else
+			{
+				$edited_sql = "";
+			}
+
 			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET bbcode_uid = '$bbcode_uid' 
+				SET bbcode_uid = '$bbcode_uid'" . $edited_sql . "  
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
@@ -866,11 +876,16 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 
 				$subject = stripslashes(trim($postrow['post_subject']));
 				$message = stripslashes(trim($postrow['post_text']));
+
 				if(eregi("\[addsig]$", $message))
 				{
+					$message = eregi_replace("\[addsig]$", "", $message);
 					$attach_sig = TRUE;
 				}
-				$message = eregi_replace("\[addsig]$", "", $message);
+				else
+				{
+					$attach_sig = FALSE;
+				}
 
 				// Removes UID from BBCode entries
 				$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
@@ -899,6 +914,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						case POST_ANNOUNCE:
 							$is_announce = TRUE;
 							break;
+
 						case POST_STICKY:
 							$is_sticky = TRUE;
 							break;
@@ -950,6 +966,7 @@ if($preview && !$error)
 		case POST_ANNOUNCE:
 			$is_announce = TRUE;
 			break;
+
 		case POST_STICKY:
 			$is_sticky = TRUE;
 			break;
@@ -961,7 +978,9 @@ if($preview && !$error)
 	$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 	$preview_message = make_clickable($preview_message);
 
-	$template->set_filenames(array("preview" => "posting_preview.tpl"));
+	$template->set_filenames(array(
+		"preview" => "posting_preview.tpl")
+	);
 	$template->assign_vars(array(
 		"TOPIC_TITLE" => $subject, 
 		"POST_SUBJECT" => $subject, 

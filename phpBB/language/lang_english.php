@@ -199,6 +199,11 @@ $lang['Reply_with_quote'] = "Reply with quote";
 $lang['View_IP'] = "View IP of poster";
 $lang['Delete_post'] = "Delete this post";
 
+$lang['Edited_by'] = "Last edited by"; // followed by -> [username] on ...
+$lang['on'] = "on";
+$lang['edited'] = "edited"; // followed by -> [num] times in total
+$lang['times_in_total'] = "time/s in total";
+
 $lang['Lock_topic'] = "Lock this topic";
 $lang['Unlock_topic'] = "Unlock this topic";
 $lang['Move_topic'] = "Move this topic";

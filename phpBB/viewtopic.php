@@ -166,7 +166,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_view'])
 //
 // Go ahead and pull all data for this topic
 //
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.bbcode_uid, pt.post_text, pt.post_subject, p.post_username
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, p.post_time, p.post_id, p.post_username, p.bbcode_uid, p.post_edit_time, p.post_edit_count, pt.post_text, pt.post_subject
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 	WHERE p.topic_id = $topic_id
 		AND p.poster_id = u.user_id
@@ -394,22 +394,40 @@ for($i = 0; $i < $total_posts; $i++)
 
 	if(!$board_config['allow_html'])
 	{
-		$user_sig = strip_tags($user_sig);
+		if($user_sig != "")
+		{
+			$user_sig = strip_tags($user_sig);
+		}
 		$message = strip_tags($message);
 	}
 
 	if($board_config['allow_bbcode'])
 	{
-		// do bbcode stuff here
-		$sig_uid = make_bbcode_uid();
-		$user_sig = bbencode_first_pass($user_sig, $sig_uid);
-		$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+		if($user_sig != "")
+		{
+			$sig_uid = make_bbcode_uid();
+			$user_sig = bbencode_first_pass($user_sig, $sig_uid);
+			$user_sig = bbencode_second_pass($user_sig, $sig_uid);
+		}
 
 		$message = bbencode_second_pass($message, $bbcode_uid);
 	}
 
 	$message = make_clickable($message);
 	$message = str_replace("\n", "<br />", $message);
+
+	if($user_sig != "")
+	{
+		$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
+	}
+
+	//
+	// Editing information
+	//
+	if($postrow[$i]['post_edit_count'])
+	{
+		$message = $message . "<br /><br /><font size=\"-2\">" . $lang['Edited_by'] . " " . $poster . " " . $lang['on'] . " " . create_date($board_config['default_dateformat'], $postrow[$i]['post_edit_time'], $board_config['default_timezone']) . ", " . $lang['edited'] . " " . $postrow[$i]['post_edit_count'] . " " . $lang['times_in_total'] . "</font>";
+	}
 
 	//
 	// Again this will be handled by the templating
@@ -423,8 +441,6 @@ for($i = 0; $i < $total_posts; $i++)
 	{
 		$color = "#" . $theme['td_color2'];
 	}
-
-	$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
 
 	$template->assign_block_vars("postrow", array(
 		"POSTER_NAME" => $poster,
