@@ -1,14 +1,14 @@
-<?php 
+<?php
 // -------------------------------------------------------------
 //
 // $Id$
 //
-// FILENAME  : bbcode.php 
+// FILENAME  : bbcode.php
 // STARTED   : Thu Nov 21, 2002
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 // TODO for 2.2:
@@ -34,13 +34,26 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// This small snippet is required to let admins login if the board is disabled...
-if ($_REQUEST['mode'] == 'login')
+include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
+
+// Basic parameter data
+$mode	= request_var('mode', '');
+$module = request_var('i', '');
+
+if ($mode == 'login' || $mode == 'logout')
 {
 	define('IN_LOGIN', true);
 }
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
+
+// Start session management
+$user->start();
+$auth->acl($user->data);
+$user->setup('ucp');
+
+$ucp = new module();
+
+
 
 // ---------
 // FUNCTIONS
@@ -86,7 +99,7 @@ class module
 			$module_lang = strtoupper($module_type) . '_' . $row['module_title'];
 			$template->assign_block_vars($module_type . '_section', array(
 				'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
-				'S_SELECTED'	=> $selected, 
+				'S_SELECTED'	=> $selected,
 				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
 			);
 
@@ -132,7 +145,7 @@ class module
 
 						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
 							'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($module_lang))),
-							'S_SELECTED'	=> $selected, 
+							'S_SELECTED'	=> $selected,
 							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
 						));
 
@@ -240,16 +253,6 @@ class module
 // ---------
 
 
-// Start session management
-$user->start();
-$auth->acl($user->data);
-$user->setup('ucp');
-
-$ucp = new module();
-
-// Basic parameter data
-$mode	= request_var('mode', '');
-$module = request_var('i', '');
 
 // Basic "global" modes
 switch ($mode)
@@ -349,7 +352,7 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 	{
 		redirect("index.$phpEx$SID");
 	}
-	
+
 	login_box($user->cur_page, '', $user->lang['LOGIN_EXPLAIN_UCP']);
 }
 
@@ -357,12 +360,12 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 // Output listing of friends online
 $update_time = $config['load_online_time'] * 60;
 
-$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_allow_viewonline) AS viewonline 
-	FROM ((' . ZEBRA_TABLE . ' z 
+$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_allow_viewonline) AS viewonline
+	FROM ((' . ZEBRA_TABLE . ' z
 	LEFT JOIN ' . SESSIONS_TABLE . ' s ON s.session_user_id = z.zebra_id), ' . USERS_TABLE . ' u)
-	WHERE z.user_id = ' . $user->data['user_id'] . ' 
-		AND z.friend = 1 
-		AND u.user_id = z.zebra_id  
+	WHERE z.user_id = ' . $user->data['user_id'] . '
+		AND z.friend = 1
+		AND u.user_id = z.zebra_id
 	GROUP BY z.zebra_id';
 $result = $db->sql_query($sql);
 
@@ -372,7 +375,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
-		
+
 		'USER_ID'	=> $row['user_id'],
 		'USERNAME'	=> $row['username'])
 	);
@@ -384,8 +387,8 @@ if ($mode == 'compose' && request_var('action', '') != 'edit')
 {
 	if ($config['allow_mass_pm'])
 	{
-		$sql = 'SELECT group_id, group_name, group_type   
-			FROM ' . GROUPS_TABLE . ' 
+		$sql = 'SELECT group_id, group_name, group_type
+			FROM ' . GROUPS_TABLE . '
 			WHERE group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_CLOSED . ')
 				AND group_receive_pm = 1
 			ORDER BY group_type DESC';

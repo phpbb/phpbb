@@ -7,8 +7,8 @@
 // STARTED   : Thu Aug 2, 2001
 // COPYRIGHT : © 2001, 2004 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 if (!defined('IN_PHPBB') || !isset($phpbb_root_path))
@@ -16,14 +16,12 @@ if (!defined('IN_PHPBB') || !isset($phpbb_root_path))
 	die('Hacking attempt');
 }
 
-define('IN_ADMIN', true);
 define('NEED_SID', true);
 require($phpbb_root_path . 'common.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup('admin');
 
 // Did user forget to login? Give 'em a chance to here ...
 if ($user->data['user_id'] == ANONYMOUS)
@@ -32,11 +30,12 @@ if ($user->data['user_id'] == ANONYMOUS)
 }
 
 $auth->acl($user->data);
+$user->setup('admin');
 // End session management
 
 // Some oft used variables
 $safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
-$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false; 
+$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
 
 
 // -----------------------------
@@ -192,7 +191,7 @@ function adm_page_confirm($title, $message)
 {
 	global $phpEx, $SID, $user;
 
-	// Grab data from GET and POST arrays ... note this is _not_ 
+	// Grab data from GET and POST arrays ... note this is _not_
 	// validated! Everything is typed as string to ensure no
 	// funny business on displayed hidden field data. Validation
 	// will be carried out by whatever processes this form.
@@ -299,7 +298,7 @@ class module
 			// Get the localised lang string if available, or make up our own otherwise
 			$template->assign_block_vars($module_type . '_section', array(
 				'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
-				'S_SELECTED'	=> $selected, 
+				'S_SELECTED'	=> $selected,
 				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
 			);
 */
@@ -336,7 +335,7 @@ class module
 						// Get the localised lang string if available, or make up our own otherwise
 						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
 							'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
-							'S_SELECTED'	=> $selected, 
+							'S_SELECTED'	=> $selected,
 							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
 						));
 */

@@ -3,12 +3,12 @@
 //
 // $Id$
 //
-// FILENAME  : session.php 
+// FILENAME  : session.php
 // STARTED   : Sat Dec 16, 2000
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 class session
@@ -33,7 +33,7 @@ class session
 
 		$split_page = array();
 		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', $this->page, $split_page, PREG_SET_ORDER);
-		
+
 		// Page for session_page value
 		$this->page = $split_page[0][1] . ((isset($split_page[0][2])) ? $split_page[0][2] : '');
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
@@ -148,8 +148,8 @@ class session
 		$bot = false;
 
 		// Pull bot information from DB and loop through it
-		$sql = 'SELECT user_id, bot_agent, bot_ip 
-			FROM ' . BOTS_TABLE . '  
+		$sql = 'SELECT user_id, bot_agent, bot_ip
+			FROM ' . BOTS_TABLE . '
 			WHERE bot_active = 1';
 		$result = $db->sql_query($sql);
 
@@ -193,12 +193,6 @@ class session
 			WHERE u.user_id = $user_id
 				AND u.group_id = g.group_id
 			ORDER BY s.session_time DESC";
-
-/*		$sql = 'SELECT u.*, s.session_time, s.session_id 
-			FROM (' . USERS_TABLE . ' u
-			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
-			WHERE u.user_id = $user_id
-			ORDER BY s.session_time DESC";*/
 		$result = $db->sql_query_limit($sql, 1);
 
 		$this->data = $db->sql_fetchrow($result);
@@ -239,7 +233,7 @@ class session
 		{
 			$banned = false;
 
-			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end  
+			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 				FROM ' . BANLIST_TABLE . '
 				WHERE ban_end >= ' . time() . '
 					OR ban_end = 0';
@@ -249,8 +243,8 @@ class session
 			{
 				do
 				{
-					if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $this->data['user_id']) || 
-						(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) || 
+					if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $this->data['user_id']) ||
+						(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
 						(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
 					{
 						if (!empty($row['ban_exclude']))
@@ -260,7 +254,7 @@ class session
 						}
 						else
 						{
-							$banned = true; 
+							$banned = true;
 						}
 					}
 				}
@@ -273,10 +267,10 @@ class session
 				// Initiate environment ... since it won't be set at this stage
 				$this->setup();
 
-				// Determine which message to output 
+				// Determine which message to output
 				$till_date = (!empty($row['ban_end'])) ? $this->format_date($row['ban_end']) : '';
 				$message = (!empty($row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-	
+
 				$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
 				// More internal HTML ... :D
 				$message .= (!empty($row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $row['ban_show_reason']) : '';
@@ -291,7 +285,7 @@ class session
 		$db->sql_return_on_error(true);
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . "
-			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '" . $db->sql_escape($this->browser) . "', session_page = '" . $db->sql_escape($this->page) . "', session_allow_viewonline = $viewonline 
+			SET session_user_id = $user_id, session_last_visit = " . $this->data['session_last_visit'] . ", session_start = $current_time, session_time = $current_time, session_browser = '" . $db->sql_escape($this->browser) . "', session_page = '" . $db->sql_escape($this->page) . "', session_allow_viewonline = $viewonline
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
@@ -301,9 +295,9 @@ class session
 			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'session_id'				=> (string) $this->session_id,
 				'session_user_id'			=> (int) $user_id,
-				'session_start'				=> (int) $current_time, 
+				'session_start'				=> (int) $current_time,
 				'session_last_visit'		=> (int) $this->data['session_last_visit'],
-				'session_time'				=> (int) $current_time, 
+				'session_time'				=> (int) $current_time,
 				'session_ip'				=> (string) $this->ip,
 				'session_browser'			=> (string) $this->browser,
 				'session_page'				=> (string) $this->page,
@@ -430,7 +424,7 @@ class session
 						if ($row['session_user_id'] != ANONYMOUS)
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "' 
+								SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
 								WHERE user_id = " . $row['session_user_id'];
 							$db->sql_query($sql);
 						}
@@ -441,7 +435,7 @@ class session
 					while ($row = $db->sql_fetchrow($result));
 				}
 
-				if ($del_user_id != '')
+				if ($del_user_id)
 				{
 					// Delete expired sessions
 					$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
@@ -555,7 +549,7 @@ class user extends session
 
 		$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
-			WHERE s.style_id IN ($style, " . $config['default_style'] . ') 
+			WHERE s.style_id IN ($style, " . $config['default_style'] . ')
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
 				AND i.imageset_id = s.imageset_id';
@@ -567,19 +561,20 @@ class user extends session
 		}
 
 		$this->theme = ($row2 = $db->sql_fetchrow($result)) ? array(
-			($style == $row['style_id']) ? 'primary' : 'secondary'	=> $row, 
+			($style == $row['style_id']) ? 'primary' : 'secondary'	=> $row,
 			($style == $row2['style_id']) ? 'primary' : 'secondary'	=> $row2) : array('primary'	=> $row);
-
 		$db->sql_freeresult($result);
+
 		unset($row);
 		unset($row2);
 
 		// Set theme info
 		$theme_info = array();
+
 		$default_theme_info = array(
-			'pagination_sep' => ', ',
-			'pagination_goto_page' => true,
-			'avatar_img_class' => ''
+			'pagination_sep'		=> ', ',
+			'pagination_goto_page'	=> true,
+			'avatar_img_class'		=> ''
 		);
 
 		foreach ($this->theme as $style_priority => $row)
@@ -588,6 +583,7 @@ class user extends session
 			{
 				$theme_info = array();
 				include($phpbb_root_path . 'styles/' . $row['theme_path'] . '/theme/theme_info.' . $phpEx);
+
 				if (sizeof($theme_info))
 				{
 					$this->theme[$style_priority] = array_merge($this->theme[$style_priority], $theme_info);
@@ -607,6 +603,15 @@ class user extends session
 		$template->set_template();
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+
+		// Is board disabled and user not an admin or moderator?
+		// TODO
+		// New ACL enabling board access while offline?
+		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+		{
+			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
+			trigger_error($message);
+		}
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're
@@ -643,7 +648,7 @@ class user extends session
 		{
 			foreach ($lang_set as $key => $lang_file)
 			{
-				// Please do not delete this line. 
+				// Please do not delete this line.
 				// We have to force the type here, else [array] language inclusion will not work
 				$key = (string) $key;
 
@@ -701,9 +706,9 @@ class user extends session
 		}
 	}
 
-	function format_date($gmepoch, $format = false)
+	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		static $lang_dates;
+		static $lang_dates, $midnight;
 
 		if (empty($lang_dates))
 		{
@@ -715,7 +720,24 @@ class user extends session
 
 		$format = (!$format) ? $this->date_format : $format;
 
-		return strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates);
+		if (!$midnight)
+		{
+			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $this->timezone + $this->dst));
+			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $this->timezone - $this->dst;
+		}
+
+		if ($gmepoch > $midnight && !$forcedate)
+		{
+			return preg_replace('#\|.*?\|#', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
+		}
+		else if ($gmepoch > $midnight - 86400 && !$forcedate)
+		{
+			return preg_replace('#\|.*?\|#', $this->lang['datetime']['YESTERDAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
+		}
+		else
+		{
+			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
+		}
 	}
 
 	function get_iso_lang_id()
@@ -731,8 +753,8 @@ class user extends session
 		{
 			$this->lang_name = $config['default_lang'];
 		}
-		
-		$sql = 'SELECT lang_id 
+
+		$sql = 'SELECT lang_id
 			FROM ' . LANG_TABLE . "
 			WHERE lang_iso = '{$this->lang_name}'";
 		$result = $db->sql_query($sql);
@@ -744,7 +766,7 @@ class user extends session
 	function get_profile_fields($user_id)
 	{
 		global $user, $db;
-		
+
 		if (isset($user->profile_fields))
 		{
 			return;
@@ -754,7 +776,7 @@ class user extends session
 		// Grabbing all user specific options (all without the need of special complicate adding to the sql query) might be useful...
 		$sql = 'SELECT * FROM ' . PROFILE_DATA_TABLE . "
 			WHERE user_id = $user_id";
-		$result = $db->sql_query_limit($sql, 1); 
+		$result = $db->sql_query_limit($sql, 1);
 
 		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
 		$db->sql_freeresult($result);
@@ -772,7 +794,7 @@ class user extends session
 				$imgs[$img . $suffix] = '';
 				return $imgs[$img . $suffix];
 			}
-			
+
 			if (!$width)
 			{
 				list($imgsrc, $height, $width) = explode('*', $this->theme['primary'][$img]);
@@ -829,7 +851,7 @@ class user extends session
 		if (!$data)
 		{
 			$this->data['user_options'] = $var;
-			return true; 
+			return true;
 		}
 		else
 		{
@@ -853,8 +875,8 @@ class auth
 
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
-			$sql = 'SELECT auth_option, is_global, is_local 
-				FROM ' . ACL_OPTIONS_TABLE . ' 
+			$sql = 'SELECT auth_option, is_global, is_local
+				FROM ' . ACL_OPTIONS_TABLE . '
 				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
 
@@ -1007,7 +1029,7 @@ class auth
 
 		$hold_ary = $this->acl_raw_data($userdata['user_id'], false, false);
 		$hold_ary = $hold_ary[$userdata['user_id']];
-		
+
 		// If this user is founder we're going to force fill the admin options ...
 		if ($userdata['user_type'] == USER_FOUNDER)
 		{
@@ -1086,28 +1108,28 @@ class auth
 		// First grab user settings ... each user has only one setting for each
 		// option ... so we shouldn't need any ACL_NO checks ... he says ...
 		$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
-			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a 
-			WHERE ao.auth_option_id = a.auth_option_id 
+			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a
+			WHERE ao.auth_option_id = a.auth_option_id
 				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-				$sql_forum 
-				$sql_opts 
+				$sql_forum
+				$sql_opts
 			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
 		}
 		$db->sql_freeresult($result);
 
 		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
-		$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting 
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a 
-			WHERE ao.auth_option_id = a.auth_option_id 
+		$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting
+			FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a
+			WHERE ao.auth_option_id = a.auth_option_id
 				AND a.group_id = ug.group_id
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
-				$sql_forum 
-				$sql_opts 
+				$sql_forum
+				$sql_opts
 			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
@@ -1115,7 +1137,7 @@ class auth
 		{
 			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
 			{
-				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting']; 
+				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
 			}
 		}
 		$db->sql_freeresult($result);

@@ -7,8 +7,8 @@
 // STARTED   : Sat Feb 17, 2001
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 if (!defined('IN_PHPBB'))
@@ -241,7 +241,7 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
 {
-	$sql = 'SELECT * 
+	$sql = 'SELECT *
 		FROM ' . CONFIG_TABLE . '
 		WHERE is_dynamic = 1';
 	$result = $db->sql_query($sql);
@@ -255,7 +255,7 @@ else
 {
 	$config = $cached_config = array();
 
-	$sql = 'SELECT * 
+	$sql = 'SELECT *
 		FROM ' . CONFIG_TABLE;
 	$result = $db->sql_query($sql);
 
@@ -299,13 +299,6 @@ if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined(
 if (file_exists('install'))
 {
 //	trigger_error('REMOVE_INSTALL');
-}
-
-// Show 'Board is disabled' message
-if ($config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN'))
-{
-	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
-	trigger_error($message);
 }
 
 ?>
