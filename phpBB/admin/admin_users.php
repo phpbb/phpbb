@@ -295,7 +295,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		if( $signature != "" )
 		{
 			$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
-			if( $allowhtml )
+			if( $board_config['allow_html'] )
 			{
 				$sig_length_check = preg_replace("/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is", "\\1\\3\\4", $sig_length_check);
 			}
@@ -303,9 +303,9 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 			// Only create a new bbcode_uid when there was no uid yet.
 			if($signature_bbcode_uid == '')
 			{
-				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+				$signature_bbcode_uid = ( $board_config['allow_bbcode'] ) ? make_bbcode_uid() : "";
 			}
-			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
+			$signature = prepare_message($signature, $board_config['allow_html'], $board_config['allow_bbcode'], $board_config['allow_smilies'], $signature_bbcode_uid);
 
 			if( strlen($sig_length_check) > $board_config['max_sig_chars'] )
 			{
