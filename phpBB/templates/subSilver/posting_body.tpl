@@ -1,10 +1,8 @@
 <!-- Spell checker option part 1: You must sign up for free at www.spellchecker.net to use this option -->
 <!-- Change the path to point to the file you got once signed up at Spellchecker.net -->
 <!-- Remember to uncomment the spellchecker button near the end of this template -->
-<!-- <script type="text/javascript" language="javascript" src=spellcheck/spch.js></script> -->
+<!-- script type="text/javascript" language="javascript" src=spellcheck/spch.js></script -->
 <!-- End spellchecker option -->
-
-
 
 <script language="JavaScript" type="text/javascript">
 <!--
@@ -421,7 +419,7 @@ function bbstyle(formObj, bbnumber) {
 		<!-- Spell checker option part 2: You must sign up for free at www.spellchecker.net to use this option -->
 		<!-- Change the path in the onclick function to point to your files you got once signed up at Spellchecker.net -->
 		<!-- Remember to uncomment the link to the javascript file at the top of this template -->
-		<!-- <input type="button" tabindex="4" class="liteoption" name="spellcheck" value="Spell Check" onClick= "doSpell ('uk', document.post.message, 'http://www.yourhost.com/path_to_phpbb2/spellcheck/sproxy.php', true);" /> -->
+		<!-- input type="button" tabindex="4" class="liteoption" name="spellcheck" value="Spell Check" onClick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB/spellcheck/sproxy.php', true);" / -->
 		<!-- End spellchecker option -->
 		&nbsp; 
 		<input type="submit" tabindex="5" name="preview" class="mainoption" value="{L_PREVIEW}" />
@@ -441,3 +439,5 @@ function bbstyle(formObj, bbnumber) {
 	<td valign="top" align="right">{JUMPBOX}</td>
   </tr>
 </table>
+
+{TOPIC_REVIEW_BOX}

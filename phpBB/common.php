@@ -101,6 +101,7 @@ $userdata = Array();
 $theme = Array();
 $images = Array();
 $lang = Array();
+$gen_simple_header = FALSE;
 
 @include($phpbb_root_path . 'config.'.$phpEx);
 

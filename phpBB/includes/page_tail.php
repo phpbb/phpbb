@@ -33,9 +33,18 @@ else
 }
 $current_time = time();
 
-$template->set_filenames(array(
-	"overall_footer" => "overall_footer.tpl")
-);
+if( empty($gen_simple_header) )
+{
+	$template->set_filenames(array(
+		"overall_footer" => "overall_footer.tpl")
+	);
+}
+else
+{
+	$template->set_filenames(array(
+		"overall_footer" => "simple_footer.tpl")
+	);
+}
 
 $template->assign_vars(array(
 	"PHPBB_VERSION" => "2.0 beta-1",

@@ -26,6 +26,198 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/post.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 
+// -----------------------
+// Page specific functions
+//
+function topic_review($topic_id, $is_inline_review)
+{
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
+	global $userdata, $session_length, $user_ip;
+	global $orig_word, $replacement_word;
+	global $starttime;
+
+	if( !$is_inline_review )
+	{
+		if( !isset($topic_id) )
+		{
+			message_die(GENERAL_MESSAGE, 'Topic_not_exist');
+		}
+
+		//
+		// Get topic info ...
+		//
+		$sql = "SELECT f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments 
+			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
+			WHERE t.topic_id = $topic_id
+				AND f.forum_id = t.forum_id";
+		if(!$result = $db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+		}
+
+		if( !$total_rows = $db->sql_numrows($result) )
+		{
+			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
+		}
+		$forum_row = $db->sql_fetchrow($result);
+
+		$forum_id = $forum_row['forum_id'];
+		
+		//
+		// Start session management
+		//
+		$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+		init_userprefs($userdata);
+		//
+		// End session management
+		//
+
+		$is_auth = array();
+		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
+
+	}
+
+	//
+	// Go ahead and pull all data for this topic
+	//
+	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject
+		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
+		WHERE p.topic_id = $topic_id
+			AND p.poster_id = u.user_id
+			AND p.post_id = pt.post_id
+		ORDER BY p.post_time DESC
+		LIMIT " . $board_config['posts_per_page'];
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain post/user information.", "", __LINE__, __FILE__, $sql);
+	}
+
+	if(!$total_posts = $db->sql_numrows($result))
+	{
+		message_die(GENERAL_ERROR, "There don't appear to be any posts for this topic.", "", __LINE__, __FILE__, $sql);
+	}
+	$postrow = $db->sql_fetchrowset($result);
+
+	//
+	// Define censored word matches
+	//
+	if( empty($orig_word) && empty($replacement_word) )
+	{
+		$orig_word = array();
+		$replacement_word = array();
+		obtain_word_list($orig_word, $replacement_word);
+	}
+
+	//
+	// Dump out the page header and load viewtopic body template
+	//
+	if( !$is_inline_review )
+	{
+		$gen_simple_header = TRUE;
+
+		$page_title = $lang['Review_topic'] ." - $topic_title";
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			"reviewbody" => "posting_topic_review.tpl")
+		);
+	}
+
+	//
+	// Okay, let's do the loop, yeah come on baby let's do the loop
+	// and it goes like this ...
+	//
+	for($i = 0; $i < $total_posts; $i++)
+	{
+		$poster_id = $postrow[$i]['user_id'];
+		$poster = $postrow[$i]['username'];
+
+		$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
+
+		$mini_post_img = '<img src="' . $images['icon_minipost'] . '" alt="' . $lang['Post'] . '" />';
+
+		//
+		// Handle anon users posting with usernames
+		//
+		if( $poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '' )
+		{
+			$poster = $postrow[$i]['post_username'];
+			$poster_rank = $lang['Guest'];
+		}
+
+		$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : "";
+
+		$message = $postrow[$i]['post_text'];
+		$bbcode_uid = $postrow[$i]['bbcode_uid'];
+
+		//
+		// If the board has HTML off but the post has HTML
+		// on then we process it, else leave it alone
+		//
+		if( !$board_config['allow_html'] )
+		{
+			if( $postrow[$i]['enable_html'] )
+			{
+				$message = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $message);
+			}
+		}
+
+		if( $bbcode_uid != "" )
+		{
+			$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
+		}
+
+		$message = make_clickable($message);
+
+		if( count($orig_word) )
+		{
+			$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
+			$message = preg_replace($orig_word, $replacement_word, $message);
+		}
+
+		if( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] )
+		{
+			$message = smilies_pass($message);
+		}
+
+		$message = str_replace("\n", "<br />", $message);
+
+		//
+		// Again this will be handled by the templating
+		// code at some point
+		//
+		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+		$template->assign_block_vars("postrow", array(
+			"ROW_COLOR" => "#" . $row_color, 
+			"ROW_CLASS" => $row_class, 
+
+			"MINI_POST_IMG" => $mini_post_img, 
+			"POSTER_NAME" => $poster, 
+			"POST_DATE" => $post_date, 
+			"POST_SUBJECT" => $post_subject, 
+			"MESSAGE" => $message)
+		);
+	}
+
+	$template->assign_vars(array(
+		"L_POSTED" => $lang['Posted'],
+		"L_POST_SUBJECT" => $lang['Post_subject'], 
+		"L_TOPIC_REVIEW" => $lang['Topic_review'])
+	);
+
+	if( !$is_inline_review )
+	{
+		$template->pparse("reviewbody");
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+}
+//
+// End page specific functions
+// ---------------------------
+
 // -------------------------------------------
 // Do some initial checks, set basic variables,
 // etc.
@@ -128,26 +320,13 @@ init_userprefs($userdata);
 //
 
 //
-// Set topic type
+// If the mode is set to topic review then output
+// that review ...
 //
-if( isset($HTTP_POST_VARS['topictype']) )
+if( $mode == "topicreview" )
 {
-	if($HTTP_POST_VARS['topictype']  == "announce")
-	{
-		$topic_type = POST_ANNOUNCE;
-	}
-	else if($HTTP_POST_VARS['topictype'] == "sticky")
-	{
-		$topic_type = POST_STICKY;
-	}
-	else
-	{
-		$topic_type = POST_NORMAL;
-	}
-}
-else
-{
-	$topic_type = POST_NORMAL;
+	topic_review($topic_id, false);
+	exit;
 }
 
 //
@@ -342,6 +521,29 @@ else if( $topic_status == TOPIC_LOCKED )
 }
 
 //
+// Set topic type
+//
+if( isset($HTTP_POST_VARS['topictype']) )
+{
+	if($HTTP_POST_VARS['topictype']  == "announce")
+	{
+		$topic_type = POST_ANNOUNCE;
+	}
+	else if($HTTP_POST_VARS['topictype'] == "sticky")
+	{
+		$topic_type = POST_STICKY;
+	}
+	else
+	{
+		$topic_type = POST_NORMAL;
+	}
+}
+else
+{
+	$topic_type = POST_NORMAL;
+}
+
+//
 // Auth checks
 //
 $auth_type = AUTH_ALL;
@@ -386,6 +588,11 @@ switch( $mode )
 		$auth_string = $lang['can_vote'];
 		break;
 
+	case 'topicreview':
+		$is_auth_type = "auth_read";
+		$auth_string = $lang['can_read'];
+		break;
+
 	default:
 		message_die(GENERAL_MESSAGE, $lang['No_post_mode']);
 		break;
@@ -410,6 +617,7 @@ if( !$is_auth[$is_auth_type] )
 				$redirect = "mode=newtopic&" . POST_FORUM_URL . "=$forum_id";
 				break;
 			case 'reply':
+			case 'topicreview':
 				$redirect = "mode=reply&" . POST_TOPIC_URL . "=$topic_id";
 				break;
 			case 'quote':
@@ -1831,7 +2039,8 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	"body" => "posting_body.tpl", 
 	"pollbody" => "posting_poll_body.tpl", 
-	"jumpbox" => "jumpbox.tpl")
+	"jumpbox" => "jumpbox.tpl", 
+	"reviewbody" => "posting_topic_review.tpl")
 );
 
 $jumpbox = make_jumpbox();
@@ -2112,7 +2321,8 @@ $template->assign_vars(array(
 	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
 	"L_DELETE_POST" => $lang['Delete_post'],
 
-	"U_TOPIC_REVIEW" => ( $mode == "reply" ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : "", 
+	"U_VIEWTOPIC" => ( $mode == "reply" ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : "", 
+	"U_REVIEW_TOPIC" => ( $mode == "reply" ) ? append_sid("posting.$phpEx?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : "", 
 
 	"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "", 
 	"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 
@@ -2165,6 +2375,20 @@ if( $display_poll )
 
 	$template->assign_var_from_handle("POLLBOX", "pollbody");
 
+}
+
+//
+// Topic review
+//
+if( $mode == "reply" )
+{
+	topic_review($topic_id, true);
+
+	//
+	// Enable inline mode ...
+	//
+	$template->assign_block_vars("switch_inline_mode", array());
+	$template->assign_var_from_handle("TOPIC_REVIEW_BOX", "reviewbody");
 }
 
 //

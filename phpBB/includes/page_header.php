@@ -56,9 +56,18 @@ if($board_config['gzip_compress'])
 //
 // Parse and show the overall header.
 //
-$template->set_filenames(array(
-	"overall_header" => "overall_header.tpl")
-);
+if( empty($gen_simple_header) )
+{
+	$template->set_filenames(array(
+		"overall_header" => "overall_header.tpl")
+	);
+}
+else
+{
+	$template->set_filenames(array(
+		"overall_header" => "simple_header.tpl")
+	);
+}
 
 //
 // Generate logged in/logged out status
