@@ -192,6 +192,7 @@ switch($pagetype)
 	case 'newtopic':
 		$template->set_filenames(array(
 			"header" => "newtopic_header.tpl",
+			"jumpbox" => "jumpbox.tpl",
 			"body" => "posting_body.tpl"));
 		$jumpbox = make_jumpbox();
 		$template->assign_vars(array(
