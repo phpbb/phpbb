@@ -319,7 +319,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 		$where_ids = array_unique($where_ids);
 	}
 
-	if (!count($where_ids))
+	if (!sizeof($where_ids))
 	{
 		return array('topics' => 0, 'posts' => 0);
 	}
@@ -403,7 +403,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 		$forum_ids[] = $row['forum_id'];
 	}
 
-	if (!count($post_ids))
+	if (!sizeof($post_ids))
 	{
 		return false;
 	}
@@ -657,7 +657,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 				$topic_ids[] = $row['topic_id'];
 			}
 
-			if (count($topic_ids))
+			if (sizeof($topic_ids))
 			{
 				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 					WHERE topic_id IN (' . implode(',', $topic_ids) . ')';
@@ -722,43 +722,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	{
 		if (!$where_type)
 		{
-			// Sync all topics/forums.
-         if($mode == 'topic')
-			{
-				//This can bomb out on a large forum so we're going to split this up.
-				$batch_size = 500;
-				
-				//TODO: Fit this into the layout.
-				print "Syncing topics, going to do this in batches (batch size = $batch_size):<br />";
-				$sql = "SELECT
-					MIN(topic_id) AS topic_min,
-					MAX(topic_id) AS topic_max
-				FROM " . TOPICS_TABLE;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$topic_min = $row['topic_min'];
-				$topic_max = $row['topic_max'];
-
-				// Run the batches
-				$batch_start = $topic_min;
-				while($batch_start <= $topic_max)
-				{
-					if (defined('DEBUG_EXTRA'))
-					{
-						print "Syncing topic_id $batch_start to ". ($batch_start+$batch_size) . ".  ";
-						print ceil(memory_get_usage()/1024) . " KB<br />\n";
-						flush();
-					}
-					sync('topic', 'range', "topic_id BETWEEN $batch_start AND " . ($batch_start+$batch_size-1));
-					
-					$batch_start += $batch_size;
-				}
-			}
-			else
-			{
-				$where_sql = '';
-				$where_sql_and = 'WHERE';
-			}
+			$where_sql = '';
+			$where_sql_and = 'WHERE';
 		}
 		elseif ($where_type == 'range')
 		{
@@ -774,7 +739,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				return;
 			}
 			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
-         // $where_type contains the field for the where clause (forum_id, topic_id)
+			// $where_type contains the field for the where clause (forum_id, topic_id)
 			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
@@ -785,6 +750,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		{
 			return;
 		}
+		
 		// $where_type contains the field for the where clause (forum_id, topic_id)
 		$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
 		$where_sql_and = $where_sql . "\n\tAND";
@@ -852,7 +818,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 					$db->sql_freeresult();
 
-					if (!count($topic_ids))
+					if (!sizeof($topic_ids))
 					{
 						return;
 					}
@@ -906,7 +872,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$post_ids[] = $post_id;
 			}
 
-			if (count($post_ids))
+			if (sizeof($post_ids))
 			{
 				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET post_reported = 1 - post_reported
@@ -944,7 +910,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				}
 			}
 
-			if (count($topic_ids))
+			if (sizeof($topic_ids))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_reported = 1 - topic_reported
@@ -996,7 +962,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$post_ids[] = $post_id;
 			}
 
-			if (count($post_ids))
+			if (sizeof($post_ids))
 			{
 				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET post_attachment = 1 - post_attachment
@@ -1034,7 +1000,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				}
 			}
 
-			if (count($topic_ids))
+			if (sizeof($topic_ids))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_attachment = 1 - topic_attachment
@@ -1106,7 +1072,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 
 			// 4: Retrieve last_post infos
-			if (count($post_ids))
+			if (sizeof($post_ids))
 			{
 				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -1164,7 +1130,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 				}
 
-				if (count($sql))
+				if (sizeof($sql))
 				{
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql) . '
@@ -1203,11 +1169,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$db->sql_freeresult($result);
 
 			// Use "t" as table alias because of the $where_sql clause
-         // NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
+			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
 				$where_sql
-				GROUP BY t.topic_id, t.post_approved";
+				GROUP BY t.topic_id"; //, t.post_approved";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1250,18 +1216,19 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 
 			// Now we delete empty topics and orphan posts
-			if (count($delete_posts))
+			if (sizeof($delete_posts))
 			{
 				delete_posts('topic_id', array_keys($delete_posts), FALSE);
 				unset($delete_posts);
 			}
-			if (!count($topic_data))
+
+			if (!sizeof($topic_data))
 			{
 				// If we get there, topic ids were invalid or topics did not contain any posts
 				delete_topics($where_type, $where_ids, TRUE);
 				return;
 			}
-			if (count($delete_topics))
+			if (sizeof($delete_topics))
 			{
 				$delete_topic_ids = array();
 				foreach ($delete_topics as $topic_id => $void)
@@ -1305,7 +1272,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$db->sql_freeresult($result);
 
 			// approved becomes unapproved, and vice-versa
-			if (count($approved_unapproved_ids))
+			if (sizeof($approved_unapproved_ids))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_approved = 1 - topic_approved
@@ -1364,7 +1331,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					}
 				}
 
-				if (count($sql))
+				if (sizeof($sql))
 				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql) . '
@@ -1377,7 +1344,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			unset($topic_data);
 
 			// if some topics have been resync'ed then resync parent forums
-			if ($resync_parents && count($resync_forums))
+			if ($resync_parents && sizeof($resync_forums))
 			{
 				sync('forum', 'forum_id', $resync_forums, TRUE);
 			}
@@ -1484,7 +1451,7 @@ function remove_comments(&$output)
 	$output = '';
 
 	// try to keep mem. use down
-	$linecount = count($lines);
+	$linecount = sizeof($lines);
 
 	$in_comment = false;
 	for($i = 0; $i < $linecount; $i++)
@@ -1530,7 +1497,7 @@ function split_sql_file($sql, $delimiter)
 	$matches = array();
 
 	// this is faster than calling count($oktens) every time thru the loop.
-	$token_count = count($tokens);
+	$token_count = sizeof($tokens);
 	for ($i = 0; $i < $token_count; $i++)
 	{
 		// Don't wanna add an empty string as the last thing in the array.
@@ -1837,7 +1804,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	}
 	$db->sql_freeresult($result);
 
-	if (count($topic_id_list))
+	if (sizeof($topic_id_list))
 	{
 		$topic_id_list = array_unique($topic_id_list);
 
@@ -1852,7 +1819,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		{
 			if ($auth->acl_get('f_read', $row['forum_id']))
 			{
-				// DEBUG!!
+				// DEBUG!! - global topic
 				$config['default_forum_id'] = 2;
 				$is_auth[$row['topic_id']] = ($row['forum_id']) ? $row['forum_id'] : $config['default_forum_id'];
 			}
@@ -1870,8 +1837,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		}
 	}
 
-	$sql = "SELECT COUNT(*) AS total_entries
-		FROM " . LOG_TABLE . " l
+	$sql = 'SELECT COUNT(l.log_id) AS total_entries
+		FROM ' . LOG_TABLE . " l
 		WHERE l.log_type = $log_type
 			AND l.log_time >= $limit_days
 			$sql_forum";

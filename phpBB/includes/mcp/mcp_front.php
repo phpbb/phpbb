@@ -26,6 +26,9 @@ function mcp_front_view($id, $mode, $action, $url)
 	// Latest 5 unapproved
 	$forum_list = get_forum_list('m_approve');
 	$post_list = array();
+	$forum_names = array();
+
+	$forum_id = request_var('f', 0);
 
 	$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
 	if (!empty($forum_list))
@@ -40,6 +43,17 @@ function mcp_front_view($id, $mode, $action, $url)
 
 		if ($total)
 		{
+			$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id IN (' . implode(', ', $forum_list) . ')';
+			$result = $db->sql_query_limit($sql);
+			
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_names[$row['forum_id']] = $row['forum_name'];
+			}
+			$db->sql_freeresult($result);
+
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . '
 				WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
@@ -51,11 +65,10 @@ function mcp_front_view($id, $mode, $action, $url)
 				$post_list[] = $row['post_id'];
 			}
 
-			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, f.forum_id, f.forum_name
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . ' u
+			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t,  ' . USERS_TABLE . ' u
 				WHERE p.post_id IN (' . implode(', ', $post_list) . ')
 					AND t.topic_id = p.topic_id
-					AND f.forum_id = p.forum_id
 					AND p.poster_id = u.user_id
 				ORDER BY p.post_id DESC';
 			$result = $db->sql_query($sql);
@@ -67,10 +80,10 @@ function mcp_front_view($id, $mode, $action, $url)
 					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . '&amp;mode=forum_view' : '',
 					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
 					'U_FORUM'		=> ($row['forum_id']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : '',
-					'U_TOPIC'		=> 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
+					'U_TOPIC'		=> $phpbb_root_path . 'viewtopic.' . $phpEx . $SID . '&amp;f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $row['topic_id'],
 					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'],
 
-					'FORUM_NAME'	=> ($row['forum_id']) ? $row['forum_name'] : $user->lang['POST_GLOBAL'],
+					'FORUM_NAME'	=> ($row['forum_id']) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],

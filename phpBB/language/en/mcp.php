@@ -69,6 +69,8 @@ $lang += array(
 	'FORUM_STATUS'			=> 'Forum Status',
 	'FORUM_STYLE'			=> 'Forum Style',
 
+	'GLOBAL_ANNOUNCEMENT'	=> 'Global Announcement',
+	
 	'IP_INFO'				=> 'IP Information',
 
 	'LATEST_LOGS'			=> 'Latest 5 logged actions',
