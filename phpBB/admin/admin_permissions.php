@@ -149,7 +149,8 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 	}
 
 	$sql = "SELECT group_id, group_name  
-		FROM " . GROUPS_TABLE;
+		FROM " . GROUPS_TABLE . " 
+		ORDER BY group_name";
 	$result = $db->sql_query($sql);
 
 	$group_list = '';
@@ -241,10 +242,10 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 				<th><?php echo $lang['Add_users']; ?></th>
 			</tr>
 			<tr> 
-				<td class="row1" align="center"><textarea cols="40" rows="4" name="new"></textarea></td>
+				<td class="row1" align="center"><textarea cols="40" rows="4" name="entries"></textarea></td>
 			</tr>
 			<tr> 
-				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=newuser', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
@@ -253,10 +254,10 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 				<th><?php echo $lang['Add_groups']; ?></th>
 			</tr>
 			<tr> 
-				<td class="row1" align="center"><select name="new" multiple="multiple" size="4"><?php echo $group_list; ?></select></td>
+				<td class="row1" align="center"><select name="entries[]" multiple="multiple" size="4"><?php echo $group_list; ?></select></td>
 			</tr>
 			<tr> 
-				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /><input type="hidden" name="type" value="group" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /><input type="hidden" name="type" value="group" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
@@ -281,10 +282,15 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		}
 		$db->sql_freeresult($result);
 
-		$where_sql = '';
-		foreach ( $HTTP_POST_VARS['entries'] as $id )
+		if ( $HTTP_POST_VARS['type'] == 'user' && !empty($HTTP_POST_VARS['new']) )
 		{
-			$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . intval($id);
+			$HTTP_POST_VARS['entries'] = explode("\n", $HTTP_POST_VARS['entries']);
+		}
+
+		$where_sql = '';
+		foreach ( $HTTP_POST_VARS['entries'] as $value )
+		{
+			$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . ( ( $HTTP_POST_VARS['type'] == 'user' && !empty($HTTP_POST_VARS['new']) ) ? '\'' . $value . '\'' : intval($value) );
 		}
 
 		switch ( $HTTP_POST_VARS['type'] )
@@ -292,38 +298,27 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 			case 'group':
 				$l_type = 'Group';
 
-				$sql = "SELECT g.group_id, g.group_name, o.auth_option, a.auth_allow_deny   
-					FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o 
-					WHERE o.auth_type LIKE '$type_sql' 
-						AND a.auth_option_id = o.auth_option_id 
-						$forum_sql 
-						AND g.group_id = a.group_id 
-						AND g.group_id IN ($where_sql) 
-					ORDER BY g.group_name ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT g.group_id AS id, g.group_name AS name, o.auth_option, a.auth_allow_deny FROM " . GROUPS_TABLE . " g, " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND g.group_id = a.group_id AND g.group_id IN ($where_sql) ORDER BY g.group_name ASC" : "SELECT group_id AS id, group_name AS name FROM " . GROUPS_TABLE . " WHERE group_id IN ($where_sql) ORDER BY group_name ASC";
 				break;
 
 			case 'user':
 				$l_type = 'User';
 
-				$sql = "SELECT u.user_id, u.username, o.auth_option, a.auth_allow_deny 
-					FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o 
-					WHERE o.auth_type LIKE '$type_sql' 
-						AND a.auth_option_id = o.auth_option_id 
-						$forum_sql 
-						AND u.user_id = a.user_id
-						AND u.user_id IN ($where_sql)  
-					ORDER BY u.username, u.user_regdate ASC";
+				$sql = ( empty($HTTP_POST_VARS['new']) ) ? "SELECT u.user_id AS id, u.username AS name, o.auth_option, a.auth_allow_deny FROM " . USERS_TABLE . " u, " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE o.auth_type LIKE '$type_sql' AND a.auth_option_id = o.auth_option_id $forum_sql AND u.user_id = a.user_id AND u.user_id IN ($where_sql) ORDER BY u.username, u.user_regdate ASC" : "SELECT user_id AS id, username AS name FROM " . USERS_TABLE . " WHERE username IN ($where_sql) ORDER BY username, user_regdate ASC";
 				break;
 		}
 
 		$result = $db->sql_query($sql);
 
 		$ug = '';;
+		$ug_hidden = '';
 		$auth = array();
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$ug_name = ( ( $row['group_name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : ( ( $HTTP_POST_VARS['type'] == 'user' ) ? $row['username'] : $row['group_name'] ) );
-			$ug .= ( !strstr($ug, $ug_name) ) ? $ug_name . "\n" : '';
+			$ug_test = ( $row['name'] == 'ADMINISTRATORS' ) ? $lang['Admin_group'] : $row['name'];
+			$ug .= ( !strstr($ug, $ug_test) ) ? $ug_test . "\n" : '';
+			$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
+			$ug_hidden = ( !strstr($ug_hidden, $ug_test) ) ? $ug_test : '';
 
 			$auth[$row['auth_option']] = ( isset($auth_group[$row['auth_option']]) ) ?  min($auth_group[$row['auth_option']], $row['auth_allow_deny']) : $row['auth_allow_deny'];
 		}
@@ -343,7 +338,7 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		{
 			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 
-			$l_can_cell = ( !empty($lang['acl_admin_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_admin_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
+			$l_can_cell = ( !empty($lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']]) ) ? $lang['acl_' . $type_sql . '_' . $auth_options[$i]['auth_option']] : $auth_options[$i]['auth_option'];
 
 			$can_type = ( !empty($auth[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
 			$cannot_type = ( empty($auth[$auth_options[$i]['auth_option']]) ) ? ' checked="checked"' : '';
@@ -363,10 +358,10 @@ if ( !empty($forum_id) || $mode == 'administrators' )
 		<th colspan="3"><?php echo $lang['Applies_to_' . $l_type]; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="3"><textarea cols="40" rows="3"><?php echo $ug; ?></textarea></td>
+		<td class="row1" colspan="3"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+		<td class="cat" colspan="3" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><?php echo $ug_hidden; ?></td>
 	</tr>
 </table></form>
 
