@@ -60,18 +60,20 @@ $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $user
 
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
-$topictype = (isset($HTTP_POST_VARS['topictype'])) ? $HTTP_POST_VARS['topictype'] : "normal";
-if($topictype == "announce")
+if(isset($HTTP_POST_VARS['topictype']))
 {
-	$topic_type = POST_ANNOUNCE;
-}
-else if($topictype == "sticky")
-{
-	$topic_type = POST_STICKY;
-}
-else
-{
-	$topic_type = POST_NORMAL;
+	if($HTTP_POST_VARS['topictype']  == "announce")
+	{
+		$topic_type = POST_ANNOUNCE;
+	}
+	else if($HTTP_POST_VARS['topictype'] == "sticky")
+	{
+		$topic_type = POST_STICKY;
+	}
+	else
+	{
+		$topic_type = POST_NORMAL;
+	}
 }
 
 //
@@ -104,6 +106,11 @@ switch($mode)
 		$is_auth_type = "auth_reply";
 		$auth_string = $lang['can_reply_to_topics'];
 		break;
+	case 'quote':
+		$auth_type = AUTH_ALL;
+		$is_auth_type = "auth_reply";
+		$auth_string = $lang['can_reply_to_topics'];
+		break;
 	case 'editpost':
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_edit";
@@ -126,10 +133,8 @@ $is_auth = auth($auth_type, $forum_id, $userdata);
 if(!$is_auth[$is_auth_type])
 {
 	//
-	// Ooopss, user is not authed
+	// The user is not authed
 	//
-	include('includes/page_header.'.$phpEx);
-
 	$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
 
 	message_die(GENERAL_MESSAGE, $msg);
@@ -156,6 +161,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		if($result = $db->sql_query($sql))
 		{
 			$db_row = $db->sql_fetchrow($result);
+
 			$last_post_time = $db_row['last_post_time'];
 			$current_time = get_gmt_ts();
 
@@ -191,7 +197,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		$username = "";
 	}
 
-	$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
+	$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
 	if($mode == 'newtopic' && empty($subject))
 	{
 		$error = TRUE;
@@ -232,7 +238,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 				$bbcode_on = TRUE;
 			}
 
-			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $bbcode_uid);
+			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smile_on, $bbcode_uid);
 
 			if($attach_sig && !empty($userdata['user_sig']))
 			{
@@ -256,134 +262,70 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	}
 }
 
-switch($mode)
+//
+// If submitted then update tables
+// according to the mode
+//
+if($mode == "newtopic" || $mode == "reply")
 {
-	case 'newtopic':
+	$page_title = ($mode == "newtopic") ? " " . $lang['Post_new_topic'] : " " . $lang['Post_reply'];
+	$section_title = ($mode == "newtopic") ? $lang['Post_new_topic_in'] : " " . $Lang['Post_reply_to'];
 
-		$page_title = " " . $lang['Postnew'];
-		$section_title = $lang['Post_new_topic_in'];
+	if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+	{
+		$topic_time = get_gmt_ts();
 
-		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+		if($mode == "reply")
 		{
-			if($username)
-			{
-				$username = addslashes($username);
-			}
-
-			$topic_time = get_gmt_ts();
+			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
+		}
+		else if($mode == "newtopic")
+		{
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
 
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
 				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, $topic_notify, " . TOPIC_UNLOCKED . ", $topic_type)";
 
-			if($db->sql_query($sql, BEGIN_TRANSACTION))
+			if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				$new_topic_id = $db->sql_nextid();
-
-				$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid) 
-					VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid')";
-
-				if($db->sql_query($sql))
-				{
-					$new_post_id = $db->sql_nextid();
-
-					$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text) 
-						VALUES ($new_post_id, '" . $subject . "', '" . $message . "')";
-
-					if($db->sql_query($sql))
-					{
-						$sql = "UPDATE " . TOPICS_TABLE . " 
-							SET topic_last_post_id = $new_post_id 
-							WHERE topic_id = $new_topic_id";
-
-						if($db->sql_query($sql))
-						{
-							$sql = "UPDATE " . FORUMS_TABLE . " 
-								SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 
-								WHERE forum_id = $forum_id";
-
-							if($db->sql_query($sql))
-							{
-								$sql = "UPDATE " . USERS_TABLE . " 
-									SET user_posts = user_posts + 1 
-									WHERE user_id = " . $userdata['user_id'];
-
-								if($db->sql_query($sql, END_TRANSACTION))
-								{
-									//
-									// If we get here the post has been inserted successfully.
-									//
-									$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-									message_die(GENERAL_MESSAGE, $msg);
-								}
-								else
-								{
-									message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
-								}
-							}
-							else
-							{
-								message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
-							}
-						}
-						else
-						{
-							message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
-						}
-					}
-					else
-					{
-						message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
-					}
-				}
-				else
-				{
-					message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
-				}
 			}
 			else
 			{
 				message_die(GENERAL_ERROR, "Error inserting data into topics table", "", __LINE__, __FILE__, $sql);
 			}
 		}
-		break;
 
-	case 'reply':
-		$page_title = " " . $lang['Reply'];
-		$section_title = $l_postreplyto;
-
-		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+		if($mode == "reply" || ( $mode == "newtopic" && $result ) )
 		{
-
-			if($username)
+			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid) 
+				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid')";
+			if($mode == "reply")
 			{
-				$username = addslashes($username);
+				$result = $db->sql_query($sql, BEGIN_TRANSACTION);
+			}
+			else
+			{
+				$result = $db->sql_query($sql);
 			}
 
-			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
-			$topic_time = get_gmt_ts();
-
-			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
-					  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$bbcode_uid')";
-
-			if($db->sql_query($sql, BEGIN_TRANSACTION))
+			if($result)
 			{
 				$new_post_id = $db->sql_nextid();
 
 				$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text) 
-					VALUES ($new_post_id, '".$subject."', '".$message."')";
+					VALUES ($new_post_id, '$subject', '$message')";
 
 				if($db->sql_query($sql))
 				{
 					$sql = "UPDATE " . TOPICS_TABLE . " 
-						SET topic_last_post_id = $new_post_id, topic_replies = topic_replies + 1 
+						SET topic_last_post_id = $new_post_id 
 						WHERE topic_id = $new_topic_id";
 
 					if($db->sql_query($sql))
 					{
 						$sql = "UPDATE " . FORUMS_TABLE . " 
-							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1 
+							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 
 							WHERE forum_id = $forum_id";
 
 						if($db->sql_query($sql))
@@ -394,94 +336,140 @@ switch($mode)
 
 							if($db->sql_query($sql, END_TRANSACTION))
 							{
-
+								//
+								// If we get here the post has been inserted successfully.
+								//
 								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
 								message_die(GENERAL_MESSAGE, $msg);
 							}
 							else
 							{
-								message_die(GENERAL_ERROR, "Couldn't update users table", "", __LINE__, __FILE__, $sql);
+								message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
 							}
 						}
 						else
 						{
+							// Rollback ?
 							message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 					else
 					{
+						// Rollback ?
 						message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
 					}
 				}
 				else
 				{
+					// Rollback ?
 					message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 			else
 			{
+				// Rollback ?
 				message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 			}
 		}
-		break;
+	}
+}
+else if($mode == "quote" && !$preview)
+{
+	$page_title = " " . $lang['Post_reply'];
+	$section_title = " " . $Lang['Post_reply_to'];
 
-	case 'editpost':
+	if( isset($HTTP_GET_VARS[POST_POST_URL]) )
+	{
+		$post_id = $HTTP_GET_VARS[POST_POST_URL]; 
 
-		$page_title = " $l_editpost";
-		$section_title = $l_editpostin;
-
-		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
+			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
+			WHERE p.post_id = $post_id 
+				AND pt.post_id = p.post_id 
+				AND p.topic_id = t.topic_id 
+				AND p.poster_id = u.user_id";
+		if($result = $db->sql_query($sql))
 		{
-			if(isset($HTTP_POST_VARS['delete_post']))
+			$postrow = $db->sql_fetchrow($result);
+
+			$poster = stripslashes(trim($postrow['username']));
+			$subject = stripslashes(trim($postrow['post_subject']));
+			$message = stripslashes(trim($postrow['post_text']));
+			if(eregi("\[addsig]$", $message))
 			{
-
-
+				$attach_sig = TRUE;
 			}
-			else
-			{
-				$post_id = $HTTP_POST_VARS[POST_POST_URL];
-				$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
+			$message = eregi_replace("\[addsig]$", "", $message);
+
+			// Removes UID from BBCode entries
+			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+
+			// This has not been implemented yet!
+			//$message = desmile($message);
+
+			$message = str_replace("<br />", "\n", $message);
+
+			$message = undo_htmlspecialchars($message);
 				
-				$sql = "UPDATE " . POSTS_TABLE . " 
-					SET bbcode_uid = '$bbcode_uid' 
+			// Special handling for </textarea> tags in the message, which can break the editing form..
+			$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+
+			$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['default_timezone']);
+
+			$message = "On " . $msg_date . " " . $poster . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
+
+		}
+		else
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain post and post text", "", __LINE__, __FILE__, $sql);
+		}
+	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
+	}
+}
+else if($mode == "editpost")
+{
+	$page_title = " " . $lang['Edit_post'];
+	$section_title = $lang['Edit_post_in'];
+
+	if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+	{
+		if(isset($HTTP_POST_VARS['delete_post']))
+		{
+			//
+			// To be completed!
+			//
+
+		}
+		else
+		{
+			$post_id = $HTTP_POST_VARS[POST_POST_URL];
+			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
+				
+			$sql = "UPDATE " . POSTS_TABLE . " 
+				SET bbcode_uid = '$bbcode_uid' 
+				WHERE post_id = $post_id";
+
+			if($db->sql_query($sql, BEGIN_TRANSACTION))
+			{
+				$sql = "UPDATE " . POSTS_TEXT_TABLE . " 
+					SET post_text = '$message', post_subject = '$subject' 
 					WHERE post_id = $post_id";
 
-				if($db->sql_query($sql, BEGIN_TRANSACTION))
+				if($is_first_post)
 				{
-
-					$sql = "UPDATE " . POSTS_TEXT_TABLE . " 
-						SET post_text = '$message', post_subject = '$subject' 
-						WHERE post_id = $post_id";
-
-					if($is_first_post)
+					if($db->sql_query($sql))
 					{
-						if($db->sql_query($sql))
-						{
-							//
-							// Update topics table here, set notification level and such
-							//
-							$sql = "UPDATE " . TOPICS_TABLE . " 
-								SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' 
-								WHERE topic_id = $new_topic_id";
+						//
+						// Update topics table here, set notification level and such
+						//
+						$sql = "UPDATE " . TOPICS_TABLE . " 
+							SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' 
+							WHERE topic_id = $new_topic_id";
 
-							if($db->sql_query($sql, END_TRANSACTION))
-							{
-								//
-								// If we get here the post has been inserted successfully.
-								//
-								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-								message_die(GENERAL_MESSAGE, $msg);
-							}
-							else
-							{
-								message_die(GENERAL_ERROR, "Updating topics table", "", __LINE__, __FILE__, $sql);
-							}
-						}
-					}
-					else
-					{
 						if($db->sql_query($sql, END_TRANSACTION))
 						{
 							//
@@ -493,89 +481,102 @@ switch($mode)
 						}
 						else
 						{
-							message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
+							message_die(GENERAL_ERROR, "Updating topics table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 				}
 				else
 				{
-					message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
+					if($db->sql_query($sql, END_TRANSACTION))
+					{
+						//
+						// If we get here the post has been inserted successfully.
+						//
+						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+							message_die(GENERAL_MESSAGE, $msg);
+					}
+					else
+					{
+						message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
+					}
 				}
 			}
-		}
-		else if(!$preview)
-		{
-			$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
-
-			if(!empty($post_id))
-			{
-
-	   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type
-   					FROM ".POSTS_TABLE." p, ".USERS_TABLE." u, ".TOPICS_TABLE." t, ".POSTS_TEXT_TABLE." pt
-   					WHERE (p.post_id = '$post_id')
-   						AND pt.post_id = p.post_id
-   						AND (p.topic_id = t.topic_id)
-   						AND (p.poster_id = u.user_id)";
-
-				if($result = $db->sql_query($sql))
-				{
-					$postrow = $db->sql_fetchrow($result);
-
-					if($userdata['user_id'] != $postrow['user_id'] && !$is_auth['auth_mod'])
-					{
-						$msg = $lang['Sorry_edit_own_posts'];;
-
-						message_die(GENERAL_MESSAGE, $msg);
-					}
-
-					$subject = stripslashes($postrow['post_subject']);
-					$message = stripslashes($postrow['post_text']);
-					if(eregi("\[addsig]$", $message))
-					{
-						$attach_sig = TRUE;
-					}
-					$message = eregi_replace("\[addsig]$", "", $message);
-
-					// Removes UID from BBEncoded entries
-					$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
-
-					// This has not been implemented yet!
-					//$message = desmile($message);
-
-					$message = str_replace("<br />", "\n", $message);
-
-	   				$message = undo_htmlspecialchars($message);
-
-   					// Special handling for </textarea> tags in the message, which can break the editing form..
-   					$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
-
-   					if($is_first_post)
-   					{
-   						$notify_show = TRUE;
-   						if($postrow['topic_notify'])
-   						{
-   							$notify = TRUE;
-   						}
-						$subject = stripslashes($postrow['topic_title']);
-						switch($postrow['topic_type'])
-						{
-							case POST_ANNOUNCE:
-								$is_announce = TRUE;
-								break;
-							case POST_STICKY:
-								$is_sticky = TRUE;
-								break;
-						}
-					}
-				}
-	   		}
 			else
 			{
-				message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
-	   		}
+				message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
+			}
 		}
-		break;
-} // end switch
+	}
+	else if(!$preview)
+	{
+		$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+
+		if(!empty($post_id))
+		{
+   			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
+				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
+				WHERE p.post_id = $post_id 
+					AND pt.post_id = p.post_id 
+					AND p.topic_id = t.topic_id 
+					AND p.poster_id = u.user_id";
+
+			if($result = $db->sql_query($sql))
+			{
+				$postrow = $db->sql_fetchrow($result);
+
+				if($userdata['user_id'] != $postrow['user_id'] && !$is_auth['auth_mod'])
+				{
+					message_die(GENERAL_MESSAGE, $lang['Sorry_edit_own_posts']);
+				}
+
+				$subject = stripslashes(trim($postrow['post_subject']));
+				$message = stripslashes(trim($postrow['post_text']));
+				if(eregi("\[addsig]$", $message))
+				{
+					$attach_sig = TRUE;
+				}
+				$message = eregi_replace("\[addsig]$", "", $message);
+
+				// Removes UID from BBCode entries
+				$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
+
+				// This has not been implemented yet!
+				//$message = desmile($message);
+
+				$message = str_replace("<br />", "\n", $message);
+
+   				$message = undo_htmlspecialchars($message);
+				
+				// Special handling for </textarea> tags in the message, which can break the editing form..
+				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+
+				if($is_first_post)
+				{
+					$notify_show = TRUE;
+					if($postrow['topic_notify'])
+					{
+						$notify = TRUE;
+					}
+					$subject = stripslashes($postrow['topic_title']);
+
+					switch($postrow['topic_type'])
+					{
+						case POST_ANNOUNCE:
+							$is_announce = TRUE;
+							break;
+						case POST_STICKY:
+							$is_sticky = TRUE;
+							break;
+					}
+				}
+			}
+   		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
+   		}
+	}
+} // end if ... mode
 
 //
 // Output page
@@ -588,11 +589,11 @@ include('includes/page_header.'.$phpEx);
 if($error)
 {
 	$template->set_filenames(array(
-		"reg_header" => "error_body.tpl"
-	));
+		"reg_header" => "error_body.tpl")
+	);
 	$template->assign_vars(array(
-		"ERROR_MESSAGE" => $error_msg
-	));
+		"ERROR_MESSAGE" => $error_msg)
+	);
 	$template->pparse("reg_header");
 }
 //
@@ -776,7 +777,7 @@ if($mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post ) )
 	}
 }
 
-if($mode == 'newtopic' || ($mode == 'editpost' && $notify_show))
+if($mode == "newtopic" || ($mode == "editpost" && $notify_show))
 {
 	$notify_toggle = '<input type="checkbox" name="notify" ';
 	if($notify)
@@ -786,22 +787,31 @@ if($mode == 'newtopic' || ($mode == 'editpost' && $notify_show))
 	$notify_toggle .= "> " . $lang['Notify'];
 }
 
-if($mode == 'reply' || $mode == 'editpost')
+if($mode == "reply" || $mode == "editpost" || $mode == "quote")
 {
 	$topic_id = ($HTTP_GET_VARS[POST_TOPIC_URL]) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
 	$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+
+	//
+	// Reset mode to reply if quote is in effect
+	// to allow proper handling by submit/preview
+	//
+	if($mode == "quote")
+	{
+		$mode = "reply";
+	}
 }
 $hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\"><input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\"><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\"><input type=\"hidden\" name=\"is_first_post\" value=\"$is_first_post\">";
 
-if($mode == 'newtopic')
+if($mode == "newtopic")
 {
 	$post_a = $lang['Post_a_new_topic'];
 }
-else if($mode == 'reply')
+else if($mode == "reply")
 {
 	$post_a = $lang['Post_a_reply'];
 }
-else if($mode == 'editpost')
+else if($mode == "editpost")
 {
 	$post_a = $lang['Edit_Post'];
 }
