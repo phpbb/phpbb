@@ -38,6 +38,7 @@ $newest_uid = $newest_userdata["user_id"];
 $users_browsing = "4 Users";
 
 $pagetype = "index";
+$page_title = "Forum Index";
 include('page_header.'.$phpEx);
 
 $template->set_block("body", "catrow", "cats");
@@ -84,7 +85,7 @@ if($total_categories)
 				}
 				else
 				{
-					$last_post = "";
+					$last_post = "No Posts";
 				}
 
 				$moderators = "<a href=\"profile.$phpEx?mode=viewprofile&user_id=1\">theFinn</a>";

@@ -35,7 +35,6 @@ $template->pparse("output", "overall_header");
 switch($pagetype) 
 {
  case 'index':
-   $page_title = "Forum Index";
    $template->set_file(array("header" => "index_header.tpl",
 			     "body" => "index_body.tpl",
 			     "footer" => "index_footer.tpl"));
@@ -50,7 +49,6 @@ switch($pagetype)
    
    break;
  case 'viewforum':
-     $page_title = "View Forum";
      $template->set_file(array("header" => "viewforum_header.tpl",
 			       "body" => "viewforum_body.tpl",
 			       "footer" => "viewforum_footer.tpl"));

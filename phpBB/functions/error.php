@@ -24,6 +24,7 @@
 
 function error_die($db, $error_code = "", $error_msg = "") 
 {
+   global $template, $phpEx;
    if(!$error_msg)
    {
       switch($error_code)
@@ -42,10 +43,15 @@ function error_die($db, $error_code = "", $error_msg = "")
 	 case SESSION_CREATE:
 	   $error_msg = "Error creating session. Could not log you in. Please go back and try again.";
 	   break;
+	 case NO_POSTS:
+	   $error_msg = "There are no posts in this forum. Click on the 'Post New Topic' link on this page to post one.";
 	}
    }
-
-   die($error_msg);
+   $template->set_file(array("error_body" => "error_body.tpl"));
+   $template->set_var(array("ERROR_MESSAGE" => $error_msg));
+   $template->pparse("output", "error_body");
+   include('page_tail.'.$phpEx);
+   exit();
 }
    
 	   
