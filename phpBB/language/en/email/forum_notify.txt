@@ -1,10 +1,11 @@
 Subject: Forum Post Notification - {FORUM_NAME}
+Charset: iso-8859-1
 
 Hello {USERNAME},
 
-You are receiving this email because you are watching the forum, "{FORUM_NAME}" at {SITENAME}. This forum has received a new post since your last visit. You can use the following link to view forum, no more notifications will be sent until you visit the topic.
+You are receiving this email because you are watching the forum, "{FORUM_NAME}" at {SITENAME}. This forum has received a new reply to the topic "{TOPIC_TITLE}" since your last visit. You can use the following link to view this topic, no more notifications will be sent until you visit the topic.
 
-{U_FORUM}
+{U_TOPIC}
 
 If you no longer wish to watch this forum you can either click the "Stop watching this forum link" found at the bottom of the forum above, or by clicking the following link:
 

@@ -424,7 +424,7 @@ class sql_db
 		{
 			if ($this->transaction)
 			{
-				$this->sql_transaction(ROLLBACK);
+				$this->sql_transaction('rollback');
 			}
 
 			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];

@@ -21,9 +21,7 @@
 
 // TODO for 2.2:
 // 
-// * deletion of posts/polls
 // * topic review additions -> quoting from previous posts ?
-// * post preview (poll preview too?)
 // * check for reply since started posting upon submission and display of 'between-posts' to allow re-defining of post
 // * hidden form element containing sid to prevent remote posting - Edwin van Vliet
 // * Attachments
@@ -33,7 +31,6 @@
 // * permission defined ability for user to add poll options
 // * Spellcheck? aspell? or some such?
 // * Posting approval
-// * After Submit got clicked, disable the button (prevent double-posts), could be solved in a more elegant way
 
 // Temp Function - strtolower (will have a look at iconv later) - borrowed from php.net
 function phpbb_strtolower($string)
@@ -298,7 +295,7 @@ if ( ($mode == 'edit') && (!$perm['m_edit']) && ($user->data['user_id'] != $post
 	trigger_error($user->lang['USER_CANNOT_EDIT']);
 }
 
-$message_handler = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
+$message_parser = new parse_message(0); // <- TODO: add constant (MSG_POST/MSG_PM)
 
 // Delete triggered ?
 if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->data['user_id'] != ANONYMOUS) && ($perm['u_delete']) && ($post_id == $topic_last_post_id)) || ($perm['m_delete'])) )
@@ -313,7 +310,7 @@ if ( ($mode == 'delete') && ((($poster_id == $user->data['user_id']) && ($user->
 			'user_id' => $poster_id
 		);
 
-		$msg = $message_handler->delete_post($mode, $post_id, $topic_id, $forum_id, $post_data);
+		$msg = delete_post($mode, $post_id, $topic_id, $forum_id, $post_data);
 		
 		// We have a problem... 
 		trigger_error($msg);
@@ -385,7 +382,7 @@ if (($submit) || ($preview))
 
 	if ( ($poll_delete) && ($mode == 'edit' && !empty($poll_options) && ((empty($poll_last_vote) && $poster_id == $user->data['user_id'] && $perm['u_delete']) || $perm['m_delete'])) )
 	{
-		$message_handler->delete_poll($topic_id);
+		delete_poll($topic_id);
 
 		$poll_title = '';
 		$poll_length = '';
@@ -416,7 +413,7 @@ if (($submit) || ($preview))
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if (($result = $message_handler->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
+		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -471,7 +468,7 @@ if (($submit) || ($preview))
 	);
 
 	$poll = array();
-	if (($result = $message_handler->parse_poll($poll, $poll_data)) != '')
+	if (($result = $message_parser->parse_poll($poll, $poll_data)) != '')
 	{
 		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 	}
@@ -526,7 +523,7 @@ if (($submit) || ($preview))
 			'notify_set'			=> $notify_set
 		);
 		
-		$message_handler->submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data);
+		submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data);
 	}	
 
 	$post_text = stripslashes($message);
@@ -547,15 +544,15 @@ if ($preview)
 	}
 
 	$post_time = $current_time;
-	$preview_message = $message_handler->format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
+	$preview_message = format_display(stripslashes($message), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, $enable_sig);
 
 	$preview_subject = (sizeof($censors)) ? preg_replace($censors['match'], $censors['replace'], $subject) : $subject;
 
 	// Poll Preview
-	if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+	if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_gets('m_edit', 'a_', $forum_id)) ))
 	{
 		decode_text($poll_title);
-		$preview_poll_title = $message_handler->format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);
+		$preview_poll_title = format_display(stripslashes($poll_title), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false);
 
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)) ? true : false,
@@ -565,7 +562,7 @@ if ($preview)
 		foreach ($poll_options as $option)
 		{
 			$template->assign_block_vars('poll_option', array(
-				'POLL_OPTION_CAPTION' => $message_handler->format_display(stripslashes($option), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false))
+				'POLL_OPTION_CAPTION' => format_display(stripslashes($option), $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false, false))
 			);
 		}
 	}
@@ -575,10 +572,10 @@ if ($preview)
 decode_text($post_text);
 decode_text($subject);
 
-for ($i = 0; $i < sizeof($poll_options); $i++)
-{
-	decode_text($poll_options[$i]);
-}
+// Save us some processing time. ;)
+$poll_options_tmp = implode("\n", $poll_options);
+decode_text($poll_options_tmp);
+$poll_options = explode("\n", $poll_options_tmp);
 
 if (($mode == 'quote') && (!$preview))
 {
@@ -735,7 +732,7 @@ $template->assign_vars(array(
 );
 
 // Poll entry
-if ((($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && empty($poll_last_vote))) && $auth->acl_get('f_poll', $forum_id)) || $auth->acl_gets('m_edit', 'a_', $forum_id))
+if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_gets('m_edit', 'a_', $forum_id)) ))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
