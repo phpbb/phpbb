@@ -393,7 +393,10 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 					// Grab a bit more of the string to hopefully get all of it..
 					if ($close_pos = strpos($text, '"]', $curr_pos + 9))
 					{
-						$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 2);
+						if (strpos(substr($text, $curr_pos + 9, $close_pos - ($curr_pos + 9)), '[quote') === false)
+						{
+							$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 2);
+						}
 					}
 				}
 
