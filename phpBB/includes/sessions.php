@@ -37,12 +37,12 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 	if(isset($HTTP_COOKIE_VARS[$cookiename]))
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$sessionmethod = "cookie";
+		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (!empty($HTTP_GET_VARS['sid'])) ? stripslashes(urldecode($HTTP_GET_VARS['sid'])) : "";
-		$sessionmethod = "get";
+		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
 	$expiry_time = $current_time - $session_length;
@@ -155,10 +155,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = F
 		$serialised_cookiedata = serialize($sessiondata);
 		setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
 
-		if($sessionmethod != "cookie")
-		{
-			$SID = "sid=".$sessiondata['sessionid'];
-		}
+		$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 	}
 
 	return $session_id;
@@ -179,12 +176,12 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	if(isset($HTTP_COOKIE_VARS[$cookiename]))
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$sessionmethod = "cookie";
+		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (!empty($HTTP_GET_VARS['sid'])) ? stripslashes(urldecode($HTTP_GET_VARS['sid'])) : "";
-		$sessionmethod = "get";
+		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
 	$int_ip = encode_ip($user_ip);
@@ -223,7 +220,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	if(isset($sessiondata['sessionid']))
 	{
 		//
-		// session_id & and userid exist so go ahead and attempt
+		// session_id exists so go ahead and attempt
 		// to grab all data in preparation
 		//
 		$sql = "SELECT u.*, s.*, b.ban_ip, b.ban_userid
@@ -245,17 +242,22 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 				error_die(SESSION_CREATE);
 			}
 		}
+
 		$userdata = $db->sql_fetchrow($result);
 
-		if($userdata['ban_ip'] || $userdata['ban_userid'])
-		{
-			error_die(BANNED);
-		}
 		//
 		// Did the session exist in the DB?
 		// 
 		if(isset($userdata['user_id']))
 		{
+
+			if($userdata['ban_ip'] || $userdata['ban_userid'])
+			{
+				error_die(BANNED);
+			}
+
+			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
+
 			//
 			// Only update session DB a minute or so after last update
 			//
@@ -287,11 +289,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 					$sessiondata['sessiontime'] = $current_time;
 					$serialised_cookiedata = serialize($sessiondata);
 					setcookie($cookiename, $serialised_cookiedata, $session_length, $cookiepath, $cookiedomain, $cookiesecure);
-
-					if($sessionmethod != "cookie")
-					{
-						$SID = "sid=".$sessiondata['sessionid'];
-					}
 
 					return $userdata;
 				}
@@ -394,12 +391,12 @@ function session_end($session_id, $user_id)
 	if(isset($HTTP_COOKIE_VARS[$cookiename]))
 	{
 		$sessiondata = unserialize(stripslashes($HTTP_COOKIE_VARS[$cookiename]));
-		$sessionmethod = "cookie";
+		$sessionmethod = SESSION_METHOD_COOKIE;
 	}
 	else
 	{
-		$sessiondata['sessionid'] = (!empty($HTTP_GET_VARS['sid'])) ? stripslashes(urldecode($HTTP_GET_VARS['sid'])) : "";
-		$sessionmethod = "get";
+		$sessiondata['sessionid'] = (isset($HTTP_GET_VARS['sid'])) ? $HTTP_GET_VARS['sid'] : "";
+		$sessionmethod = SESSION_METHOD_GET;
 	}
 	$current_time = time();
 
@@ -445,10 +442,7 @@ function session_end($session_id, $user_id)
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename, $serialised_cookiedata, $cookielife, $cookiepath, $cookiedomain, $cookiesecure);
 
-	if($sessionmethod != "cookie")
-	{
-		$SID = "";
-	}
+	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
 
 	return true;
 
