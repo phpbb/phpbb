@@ -3,10 +3,10 @@
 *                           upgrade_20.php  -  description
 *                              -------------------
 *     begin                : Sat Oct 14 2000
-*     copyright            : (C) 2000 by James Atkinson
-*     email                : james@totalgeek.org
+*     copyright            : (C) 2001 The phpBB Group        
+*     email                : support@phpbb.com                           
 * 
-*     $id$
+*     $id Exp $
 * 
 ****************************************************************************/
   
@@ -71,9 +71,9 @@ function convert_date($date_in)
 
 	list($date, $time) = split(" ", $date_in);
 // UK/European format
-	list($day, $month, $year) = split("-", $date);
+//	list($day, $month, $year) = split("-", $date);
 // Original phpBB format
-//	list($year, $month, $day) = split("-", $date);
+	list($year, $month, $day) = split("-", $date);
 	list($hours, $minutes) = split(":", $time);
 	$timestamp = mktime($hours, $minutes, 0, $month, $day, $year);             
 
