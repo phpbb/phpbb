@@ -191,7 +191,7 @@ class ucp_register extends module
 					'user_regdate'		=> time(),
 				);
 
-				echo $sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				$db->sql_query($sql);
 				
 				$user_id = $db->sql_nextid();
