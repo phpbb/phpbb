@@ -20,15 +20,22 @@
  ***************************************************************************/
 
 //
-// Translation done by Ken Christensen (Dalixam)
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
 //
 
-
-//setlocale(LC_ALL, "dk");
+//setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['LEFT'] = "VENSTRE";
+$lang['RIGHT'] = "HØJRE";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -113,17 +120,19 @@ $lang['Board_disable'] = "Desværre dette forum er i øjeblikket ikke tilgængeligt
 // Global Header strings
 //
 $lang['Registered_users'] = "Hvem er på nu:";
-$lang['Online_users_zero_total'] = "Der er i alt <b>0</b> Brugere på systemmet nu :: ";
-$lang['Online_users_total'] = "Der er i alt <b>%d</b> Brugere på systemmet nu :: ";
-$lang['Online_user_total'] = "Der er <b>%d</b> Bruger på systemmet nu :: ";
+$lang['Browsing_forum'] = "Brugere på systemet nu:";
+$lang['Online_users_zero_total'] = "Der er i alt <b>0</b> Brugere på systemmet nu: ";
+$lang['Online_users_total'] = "Der er i alt <b>%d</b> Brugere på systemmet nu: ";
+$lang['Online_user_total'] = "Der er <b>%d</b> Bruger på systemmet nu: ";
 $lang['Reg_users_zero_total'] = "Ingen Tilmeldte, ";
 $lang['Reg_users_total'] = "%d Tilmeldte, ";
 $lang['Reg_user_total'] = "%d Tilmeldt, ";
-$lang['Hidden_users_zero_total'] = "Igen skjulte og ";
+$lang['Hidden_users_zero_total'] = "Ingen skjulte og ";
 $lang['Hidden_users_total'] = "%d Skjulte og ";
 $lang['Hidden_user_total'] = "%d Skjult og ";
 $lang['Guest_users_zero_total'] = "Ingen gæster";
 $lang['Guest_users_total'] = "%d Gæster";
+$lang['Record_online_users'] = "Flest brugere online på samme tid var <b>%s</b> den %s"; // first %s = number of users, second %s is the date.
 $lang['Guest_user_total'] = "%d Gæst";
 $lang['Admin_online_color'] = "%sAdministrator%s";
 $lang['Mod_online_color'] = "%sRedaktør%s";
@@ -447,6 +456,10 @@ $lang['Cannot_send_privmsg'] = "Desværre, administrator har låst din adgang til 
 $lang['No_to_user'] = "Du må angive et brugernavn for at kunne sende denne besked";
 $lang['No_such_user'] = "Beklager, kan ikke finde en bruger med det navn";
 
+$lang['Disable_HTML_pm'] = "Slå HTML fra i denne besked";
+$lang['Disable_BBCode_pm'] = "Slå BBCode fra i denne besked";
+$lang['Disable_Smilies_pm'] = "Slå Smilies fra i denne besked";
+
 $lang['Message_sent'] = "Din besked er blev sendt";
 
 $lang['Click_return_inbox'] = "Klik %sHer%s for at returnerer til din indbakke";
@@ -512,7 +525,7 @@ $lang['Search_user_posts'] = "Find alle indlæg skrevet af %s"; // Find all posts
 
 $lang['No_user_id_specified'] = "Beklager, den bruger eksistere ikke";
 $lang['Wrong_Profile'] = "Du kan kun rette i din egen profil.";
-$lang['Sorry_banned_or_taken_email'] = "Beklager, den angivne email er blevet blokeret eller er ikke gyldig, forsøg venligst en anden, Hvis den også er blokeret bør du kontakte Forumets administrator";
+
 $lang['Only_one_avatar'] = "Kun et slags billede kan angives";
 $lang['File_no_data'] = "Filen på den URL som du angav, indeholder ingen data";
 $lang['No_connection_URL'] = "Der kunne ikke skabes forbindelse til den angivne URL";
@@ -534,17 +547,18 @@ $lang['Timezone'] = "Tids zone";
 $lang['Date_format'] = "Dato format";
 $lang['Date_format_explain'] = "Den benyttede syntaks er identisk med PHP <a href=\"http://www.php.net/date\" target=\"_other\">date()</a> funktion";
 $lang['Signature'] = "Underskrift";
-$lang['Signature_explain'] = "Denne tekst boks kan blive tilføjet som underskrift til alle de indlæg som du skriver, der er en begrænsning på %d karaktere";
+$lang['Signature_explain'] = "Denne tekst kan blive tilføjet som underskrift til alle de indlæg som du skriver, der er en begrænsning på %d karaktere";
 $lang['Public_view_email'] = "Vis altid min Email Adresse";
 
 $lang['Current_password'] = "Nuværende kodeord";
 $lang['New_password'] = "Nyt kodeord";
 $lang['Confirm_password'] = "Bekræft kodeord";
+$lang['Confirm_password_explain'] = "Du skal bekræfte dit nuværende kodeord, hvis du vil ændre det eller ændre din email adresse";
 $lang['password_if_changed'] = "Du skal kun angive kodeord hvis du ønsker at skifte til et nyt";
 $lang['password_confirm_if_changed'] = "Du skal kun bekræfte dit kodeord, hvis du har ændret det ovenfor";
 
 $lang['Avatar'] = "Personligt Billede";
-$lang['Avatar_explain'] = "Viser et lille billede sammen med dine personlige data i dine indlæg. Kun et billede kan være aktivt på et hvilket som helst tidspunkt, formatet skal være (%d,%d) (hxb) pixels og ikke større end %dkB.";
+$lang['Avatar_explain'] = "Viser et lille billede sammen med dine personlige data i dine indlæg. Kun et billede kan være aktivt på et hvilket som helst tidspunkt, formatet må maksimalt være (%d,%d) (hxb) pixels og ikke større end %dkB.";
 $lang['Upload_Avatar_file'] = "Hent Billede fra din maskine";
 $lang['Upload_Avatar_URL'] = "Hent billede fra URL";
 $lang['Upload_Avatar_URL_explain'] = "Indtaste en URL hvor billedet befinder sig, det vil blive kopieret til denne server.";
@@ -572,7 +586,13 @@ $lang['Profile_updated_inactive'] = "Din profil er blevet opdateret, da der er æ
 
 $lang['Password_mismatch'] = "Det nye kodeord, og det felt der indeholde bekræftelse af det nye kodeord er ikke ens";
 $lang['Current_password_mismatch'] = "Det angivne kodeord er ikke det samme som det der er gemt i vores database";
-$lang['Invalid_username'] = "Det bruger navn som du har valg, er enten blevet taget af anden bruger, eller er ikke tilladt på dette forum, eller det indeholde ugyldige tegn som \"";
+$lang['Password_long'] = "Dit kodeord må ikke være længere end 32 tegn";
+$lang['Username_taken'] = "Desværre, det brugernavn er allerede taget";
+$lang['Username_invalid'] = "Desværre, det brugernavn indeholder et ulovlig tegn som \"";
+$lang['Username_disallowed'] = "Desværre, dette brugernavn er ikke tilladt";
+$lang['Email_taken'] = "Desværre, denne email er allerede registreret til en anden bruger";
+$lang['Email_banned'] = "Desværre, denne email er blevet bandlyst";
+$lang['Email_invalid'] = "Desværre, denne email er ikke brugbar";
 $lang['Signature_too_long'] = "Din underskrift er for lang";
 $lang['Fields_empty'] = "Du skal udfylde de nødvendige felter";
 $lang['Avatar_filetype'] = "Billede filen skal være af fil typen .jpg, .gif or .png";
@@ -589,10 +609,10 @@ $lang['Account_inactive_admin'] = "Din konto er nu oprettet. Dette forum kræver 
 $lang['Account_active'] = "Din konto er nu aktiveret, til for din tilmelding";
 $lang['Account_active_admin'] = "Din konto er nu aktiveret";
 $lang['Reactivate'] = "Genaktiver venligst din konto!";
-$lang['COPPA'] = "Din konto er nu oprettet, dog skal den først verificeres, kontroller venligst din mail for flere informationer.";
+$lang['COPPA'] = "Din konto er nu oprettet, dog skal den først verificeres, kontroller venligst din mail for yderligere instruktioner.";
 
 $lang['Registration'] = "Tilmeldings vilkår";
-$lang['Reg_agreement'] = "Administratorer og redaktører af dette forum vil prøve at fjerne eller rette i indlæg det kan være stødende så hurtigt som muligt, dog vil det være umuligt at gennemlæse alle indlæg. Derfor godkender du at være indforstået med at alle indlæg i dette forum udtrykker holdninger og meninger af forfatterne af indlæggene, og ikke administratorene, redaktører eller webmastere (bortset fra indlæg skrevet af disse) og derfor kan disse heller ikke holdes ansvarlige.<br /><br />Du vedkender også ikke at skrive indlæg der indeholder skældsord, pornografiske , vulgære, bagtalene, hadefulde, truende, seksuelt-orienterede eller andre ord/vendinger som strider mod gældende lovgivning. Såfremt dette konstateres, kan det føre til at du øjeblikkeligt og permanent udelukkes fra forumet (din Internet udbyder vil blive orienteret). Din unike IP adresse logges i alle indlæg der skrive til dette forum, for at forebygge misbrug af denne slags. Du vedkender også at administrator, redaktører og webmastere tilhørende dette forum har ret til at fjerne, rette eller lukke et hvert emne/indlæg hvornår som helst de måtte ønske dette. Som bruger giver du ret til at alle informationer som du har indtastet gemmes i en database. Disse informationer vil ikke blive videregivet til 3. part uden din viden, webmastere, administratore eller redaktører kan ikke blive holdt ansvarlige for eventuelle hacker angreb der måtte føre til afslørelse af disse data.<br /><br />Dette forum bruger cookies til at gemme information på din lokal harddisk. Disse cookier indeholder ingen af de informationer som du har indtastet om dig selv, De er kun til for at sørge for at du får den nemeste brugerflade. Din email bliver kun brugt til at sende en verificering af dine tilmeldings detaljer og kodeord (og til at sende et nyt kodeord, hvis du skulle glemme dit nuværende).<br /><br />Ved at klikke på nedenstående tilmelding vedkender du at være indforstået med disse forhold.";
+$lang['Reg_agreement'] = "Administratorer og redaktører af dette forum vil prøve at fjerne eller rette i indlæg der kan være stødende så hurtigt som muligt, dog vil det være umuligt at gennemlæse alle indlæg. Derfor acceptere du at være indforstået med at alle indlæg i dette forum udtrykker holdninger og meninger af forfatterne af indlæggene, og ikke administratorene, redaktører eller webmastere (bortset fra indlæg skrevet af disse) og derfor kan disse heller ikke holdes ansvarlige.<br /><br />Du vedkender også ikke at skrive indlæg der indeholder skældsord, pornografiske , vulgære, bagtalene, hadefulde, truende, seksuelt-orienterede eller andre ord/vendinger som strider mod gældende lovgivning. Såfremt dette konstateres, kan det føre til at du øjeblikkeligt og permanent udelukkes fra forumet (din Internet udbyder vil blive orienteret). Din unike IP adresse logges i alle indlæg der skrive til dette forum, for at forebygge misbrug af en hver slags. Du vedkender også at administrator, redaktører og webmastere tilhørende dette forum har ret til at fjerne, rette eller lukke et hvert emne/indlæg hvornår som helst de måtte ønske dette. Som bruger giver du ret til at alle informationer som du har indtastet gemmes i en database. Disse informationer vil ikke blive videregivet til 3. part uden din viden, webmastere, administratore eller redaktører kan ikke blive holdt ansvarlige for eventuelle hacker angreb der måtte føre til afslørelse af disse data.<br /><br />Dette forum bruger cookies til at gemme information på din lokal harddisk. Disse cookier indeholder ingen af de informationer som du har indtastet om dig selv, De er kun til for at sørge for at du får den nemeste brugerflade. Din email bliver kun brugt til at sende en verificering af dine tilmeldings detaljer og kodeord (og til at sende et nyt kodeord, hvis du skulle glemme dit nuværende).<br /><br />Ved at klikke på nedenstående tilmeldings link acceptere du at være indforstået med disse forhold.";
 
 $lang['Agree_under_13'] = "Jeg er indforstået med disse vilkår og er <b>under</b> 13 år gammel";
 $lang['Agree_over_13'] = "Jeg er indforstået med disse vilkår og er <b>over</b> 13 år gammel";
@@ -803,7 +823,7 @@ $lang['Viewing_FAQ'] = "Viser Generelle Spørgsmål";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Redaktør Administration";
-$lang['Mod_CP_explain'] = "På denne side har du mulighed for at ændre dette forum, du kan Slette, flytte låse et hvert emne, du kan også låse emnerne op igen.";
+$lang['Mod_CP_explain'] = "På denne side har du mulighed for at ændre dette forum, du kan Slette, flytte og låse emnerne, du kan også låse emnerne op igen.";
 
 $lang['Select'] = "Vælg";
 $lang['Delete'] = "Slet";
@@ -823,7 +843,7 @@ $lang['Confirm_unlock_topic'] = "Er du sikker på du ønsker at låse de(t) valgte 
 $lang['Confirm_move_topic'] = "Er du sikker på du ønsker at flytte de(t) valgte emne(r)?";
 
 $lang['Move_to_forum'] = "Flyt til nyt forum";
-$lang['Leave_shadow_topic'] = "Lad skygge emner forblive i det gamle forum.";
+$lang['Leave_shadow_topic'] = "Bevar henvisning til emnet i det gamle forum.";
 
 $lang['Split_Topic'] = "Del et Emne";
 $lang['Split_Topic_explain'] = "Ved at bruge nedenstående, kan du dele et emne i 2 dele, enten ved at vælge posterne individuelt eller ved at dele ved et bestemt indlæg";

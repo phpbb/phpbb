@@ -1,6 +1,7 @@
 <?php
+
 /***************************************************************************
- *                            lang_admin.php [Danish]
+ *                            lang_admin.php [English]
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -21,8 +22,9 @@
 
 //
 // Translation done by Ken Christensen (Dalixam)
-//
 
+// Format is same as lang_main
+//
 
 //
 // Modules, this replaces the keys used
@@ -151,6 +153,14 @@ $lang['Private'] = "Privat";
 $lang['Registered'] = "Registeret";
 $lang['Administrators'] = "Administratorer";
 $lang['Hidden'] = "Skjult";
+
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short!
+$lang['Forum_ALL'] = "ALLE";
+$lang['Forum_REG'] = "REGISTRERET";
+$lang['Forum_PRIVATE'] = "PRIVAT";
+$lang['Forum_MOD'] = "REDAKTØR";
+$lang['Forum_ADMIN'] = "ADMIN";
 
 $lang['View'] = "Se";
 $lang['Read'] = "Læse";
@@ -688,6 +698,10 @@ $lang['Upgrade'] = "Upgradér";
 
 
 $lang['Install_Method'] = "Vælg installationsmetode";
+
+$lang['Install_No_Ext'] = "Php Konfigurationen på din server understøtter ikke den type af database, som du har valgt"; 
+
+$lang['Install_No_PCRE'] = "PhpBB2 Kræver \"Perl-Compatible Regular Expressions\" Modulet til php, hvilket din php konfiguration ikke lader til at understøtte!"; 
 
 //
 // That's all Folks!
