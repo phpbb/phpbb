@@ -49,7 +49,7 @@ function inarray($needle, $haystack)
 //
 // Generate relevant output
 //
-if( $HTTP_GET_VARS['pane'] == 'left' )
+if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 {
 	$dir = @opendir(".");
 
@@ -116,7 +116,7 @@ if( $HTTP_GET_VARS['pane'] == 'left' )
 
 	include('page_footer_admin.'.$phpEx);
 }
-elseif( $HTTP_GET_VARS['pane'] == 'right' )
+elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 {
 
 	include('page_header_admin.'.$phpEx);
@@ -257,19 +257,6 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 							}
 						}
 					}
-
-					if( $dbsize >= 1048576 )
-					{
-						$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
-					}
-					else if( $dbsize >= 1024 )
-					{
-						$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
-					}
-					else
-					{
-						$dbsize = sprintf("%.2f Bytes", $dbsize);
-					}
 				} // Else we couldn't get the table status.
 			}
 			else
@@ -282,9 +269,41 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			$dbsize = $lang['Not_available'];
 		}
 	}
+	else if( preg_match("/^mssql/", SQL_LAYER) )
+	{
+		$sql = "SELECT ( SELECT SUM(reserved) 
+				FROM sysindexes where indid in(0,1,255)) 
+			* low AS dbsize 
+			FROM master.dbo.spt_values 
+			WHERE number = 1 AND type = 'E'"; 
+		if( $result = $db->sql_query($sql) )
+		{
+			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
+		}
+		else
+		{
+			$dbsize = $lang['Not_available'];
+		}
+	}
 	else
 	{
 		$dbsize = $lang['Not_available'];
+	}
+
+	if ( is_integer($dbsize) )
+	{
+		if( $dbsize >= 1048576 )
+		{
+			$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
+		}
+		else if( $dbsize >= 1024 )
+		{
+			$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
+		}
+		else
+		{
+			$dbsize = sprintf("%.2f Bytes", $dbsize);
+		}
 	}
 
 	$template->assign_vars(array(
