@@ -429,7 +429,7 @@ $lang['Click_view_privmsg'] = "Click %sHere%s to visit your Inbox";
 // Profiles/Registration
 //
 $lang['Viewing_user_profile'] = "Viewing profile :: %s"; // %s is username 
-$lang['About_user'] = "All about %s";
+$lang['About_user'] = "All about %s"; // %s is username
 
 $lang['Preferences'] = "Preferences";
 $lang['Items_required'] = "Items marked with a * are required unless stated otherwise";
@@ -706,10 +706,10 @@ $lang['this_forum'] = " this forum";
 // Viewonline
 //
 $lang['Who_is_online'] = "Who is online";
-$lang['Reg_users_online'] = "There are %d Registered and ";
-$lang['Hidden_users_online'] = "%d Hidden users online";
-$lang['Guest_users_online'] = "There are %d Guest users online";
-$lang['Guest_user_online'] = "There is %d Guest user online";
+$lang['Reg_users_online'] = "There are %d Registered and "; // There ae 5 Registered and
+$lang['Hidden_users_online'] = "%d Hidden users online"; // 6 Hidden users online
+$lang['Guest_users_online'] = "There are %d Guest users online"; // There are 10 Guest users online
+$lang['Guest_user_online'] = "There is %d Guest user online"; // There is 1 Guest user online
 $lang['No_users_browsing'] = "There are no users currently browsing this forum";
 
 $lang['Online_explain'] = "This data is based on users active over the past five minutes";
@@ -732,7 +732,7 @@ $lang['Viewing_FAQ'] = "Viewing FAQ";
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Moderator Control Panel";
-$lang['Mod_CP_explain'] = "Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics. If this forum is defined as private in some way you can also modify which users can and cannot access it.";
+$lang['Mod_CP_explain'] = "Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics.";
 
 $lang['Select'] = "Select";
 $lang['Delete'] = "Delete";
