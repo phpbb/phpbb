@@ -173,9 +173,9 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 //
 // Start of program proper
 //
-if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
+if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
-	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 	//
 	// Begin page proper
 	//
@@ -208,7 +208,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		// End header
 		//
 
-		if( !$HTTP_GET_VARS[POST_USERS_URL] )
+		if( empty($HTTP_GET_VARS[POST_USERS_URL]) )
 		{
 			// CHANGE THIS!
 			message_die(GENERAL_ERROR, "You must supply the user ID number of the user you want to view", "", __LINE__, __FILE__);
@@ -235,7 +235,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$percentage = 0;
 		}
 
-		if( $profiledata['user_viewemail'] )
+		if( $profiledata['user_viewemail'] && $profiledata['user_email'] != "" )
 		{
 			// Replace the @ with 'at'. Some anti-spam mesures.
 			$email_addr = str_replace("@", " at ", $profiledata['user_email']);
@@ -248,7 +248,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$email_img = "";
 		}
 
-		if($profiledata['user_avatar'] != "" && $profiledata['user_id'] != ANONYMOUS)
+		if( $profiledata['user_avatar'] != "" && $profiledata['user_id'] != ANONYMOUS )
 		{
 			$avatar_img = (eregi("http", $profiledata['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $profiledata['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $profiledata['user_avatar'] . "\" alt=\"\" />";;
 		}
@@ -259,9 +259,22 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 		if( !empty($profiledata['user_icq']) )
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $profiledata['user_icq'] . "&amp;img=5\" border=\"0\" alt=\"\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $profiledata['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $profiledata['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			//
+			// This cannot stay like this, it needs a 'proper' solution, eg a separate
+			// template for overlaying the ICQ icon, or we just do away with the icq status 
+			// display (which is after all somewhat a pain in the rear :D 
+			//
+			if( $theme['template_name'] == "subSilver" )
+			{
+				$icq_add_img = '<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" class="icqback"><img src="images/spacer.gif" width="3" height="18" alt = "">' . $icq_status_img . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="' . $lang['ICQ'] . '" /></a></td></tr></table>'; 
+				$icq_status_img = "";
+			}
+			else
+			{
+				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $profiledata['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			}
 		}
 		else
 		{
@@ -334,7 +347,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	}
-	else if($mode == "editprofile" || $mode == "register")
+	else if( $mode == "editprofile" || $mode == "register" )
 	{
 
 		if( !$userdata['session_logged_in'] && $mode == "editprofile" )
@@ -347,7 +360,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		//
 		// Start processing for output
 		//
-		if($mode == "register" && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']))
+		if( $mode == "register" && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
 		{
 			if(!isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']))
 			{
@@ -450,7 +463,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					$error_msg = $lang['Wrong_Profile'];
 				}
 			}
-			else if($mode == "register")
+			else if( $mode == "register" )
 			{
 				$coppa = (!$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa']) ? 0 : TRUE;
 
@@ -464,7 +477,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			if( !empty($password) && !empty($password_confirm) )
 			{
 				// Awww, the user wants to change their password, isn't that cute..
-				if($password != $password_confirm)
+				if( $password != $password_confirm )
 				{
 					$error = TRUE;
 					$error_msg = $lang['Password_mismatch'];
@@ -618,8 +631,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 								switch($user_avatar_type)
 								{
 									case "jpeg":
-										$imgtype = '.jpg';
-										break;
 									case "pjpeg":
 										$imgtype = '.jpg';
 										break;
@@ -720,8 +731,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 									switch($file_type)
 									{
 										case "jpeg":
-											$imgtype = '.jpg';
-											break;
 										case "pjpeg":
 											$imgtype = '.jpg';
 											break;
