@@ -434,10 +434,11 @@ switch($mode)
 	case 'lock':
 		$topics = (!empty($_POST['topic_id_list'])) ? $_POST['topic_id_list'] : array($topic_id);
 
-		$topic_id_sql = '';
+		$topic_id_sql = $log_data = '';
 		for($i = 0; $i < count($topics); $i++)
 		{
-			$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . $topics[$i];
+			$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . intval($topics[$i]);
+			$log_data = (($log_data != '') ? ', ' : '') . '<a href="viewtopic.'.$phpEx.'?t=' . intval($topics[$i]) . '">' . $topics[$i] . '</a>';
 		}
 
 		$sql = "UPDATE " . TOPICS_TABLE . "
@@ -445,6 +446,8 @@ switch($mode)
 			WHERE topic_id IN ($topic_id_sql)
 				AND topic_moved_id = 0";
 		$db->sql_query($sql);
+
+		add_log('mod', $forum_id, 'logm_lock', $log_data);
 
 		if (!empty($topic_id))
 		{
