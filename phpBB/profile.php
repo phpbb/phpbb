@@ -160,7 +160,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"YIM_IMG" => $yim_img, 
 			"WEBSITE" => ( ($profiledata['user_website']) ? stripslashes($profiledata['user_website']) : "&nbsp;" ),
 			"WEBSITE_IMG" => $www_img, 
-			"LOCATION" => ( ($profiledatas['user_from']) ? stripslashes($profiledata['user_from']) : "&nbsp;" ),
+			"LOCATION" => ( ($profiledata['user_from']) ? stripslashes($profiledata['user_from']) : "&nbsp;" ),
 			"OCCUPATION" => ( ($profiledata['user_occ']) ? stripslashes($profiledata['user_occ']) : "&nbsp;" ),
 			"INTERESTS" => ( ($profiledata['user_interests']) ? stripslashes($profiledata['user_interests']) : "&nbsp;" ),
 			"AVATAR_IMG" => $avatar_img,
@@ -331,7 +331,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			for($i = 0; $i < count($ban_email_list); $i++)
 			{
 				$match_email = str_replace("*@", ".*@", $ban_email_list[$i]['ban_email']);
-				if( eregi("^" . $match_email . "$", $email) )
+				if( preg_match("/^" . $match_email . "$/is", $email) )
 				{
 					$error = TRUE;
 					if(isset($error_msg))
@@ -767,21 +767,21 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		else if($mode == "editprofile")
 		{
 			$user_id = $userdata['user_id'];
-			$username = stripslashes($userdata['username']);
+			$username = $userdata['username'];
 			$email = $userdata['user_email'];
 			$password = "";
 			$password_confirm = "";
 
 			$icq = $userdata['user_icq'];
-			$aim = stripslashes($userdata['user_aim']);
-			$msn = stripslashes($userdata['user_msnm']);
-			$yim = stripslashes($userdata['user_yim']);
+			$aim = $userdata['user_aim'];
+			$msn = $userdata['user_msnm'];
+			$yim = $userdata['user_yim'];
 
-			$website = stripslashes($userdata['user_website']);
-			$location = stripslashes($userdata['user_from']);
-			$occupation = stripslashes($userdata['user_occ']);
-			$interests = stripslashes($userdata['user_interests']);
-			$signature = stripslashes($userdata['user_sig']);
+			$website = $userdata['user_website'];
+			$location = $userdata['user_from'];
+			$occupation = $userdata['user_occ'];
+			$interests = $userdata['user_interests'];
+			$signature = $userdata['user_sig'];
 
 			$viewemail = $userdata['user_viewemail'];
 			$notifypm = $userdata['user_notify_pm'];
@@ -861,13 +861,13 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			"ALWAYS_ALLOW_SMILIES_YES" => ($allowsmilies) ? "checked=\"checked\"" : "",
 			"ALWAYS_ALLOW_SMILIES_NO" => (!$allowsmilies) ? "checked=\"checked\"" : "",
 			"ALLOW_AVATAR" => $board_config['allow_avatar_upload'],
-			"AVATAR" => ($user_avatar != "") ? "<img src=\"".$board_config['avatar_path']."/$user_avatar\" alt=\"\" />" : "",
+			"AVATAR" => ($user_avatar != "") ? "<img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($user_avatar) . "\" alt=\"\" />" : "",
 			"AVATAR_SIZE" => $board_config['avatar_filesize'], 
-			"LANGUAGE_SELECT" => language_select($user_lang),
+			"LANGUAGE_SELECT" => language_select(stripslashes($user_lang)),
 			"THEME_SELECT" => theme_select($user_theme),
 			"TIMEZONE_SELECT" => tz_select($user_timezone),
 			"DATE_FORMAT" => stripslashes($user_dateformat),
-			"TEMPLATE_SELECT" => template_select($user_template),
+			"TEMPLATE_SELECT" => template_select(stripslashes($user_template)),
 			"HTML_STATUS" => $html_status, 
 			"BBCODE_STATUS" => $bbcode_status, 
 			"SMILIES_STATUS" => $smilies_status, 

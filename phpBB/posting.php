@@ -344,8 +344,8 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 	//
 	if(isset($HTTP_POST_VARS['username']))
 	{
-		$username = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['username']))));
-		if(!validate_username($username))
+		$username = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username'])));
+		if(!validate_username(stripslashes($username)))
 		{
 			$error = TRUE;
 			if(!empty($error_msg))
@@ -360,7 +360,7 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 		$username = "";
 	}
 
-	$subject = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))));
+	$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
 	if($mode == 'newtopic' && empty($subject))
 	{
 		$error = TRUE;
@@ -371,29 +371,16 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 		$error_msg .= $lang['Empty_subject'];
 	}
 
-	//
-	// You can't make it both an annoumcement and a stick topic
-	//
-	if($annouce && $sticky)
-	{
-		$error = TRUE;
-		if(!empty($error_msg))
-		{
-			$error_msg .= "<br />";
-		}
-		$error_msg .= $lang['Annouce_and_sticky'];
-	}
-
 	if(!empty($HTTP_POST_VARS['message']))
 	{
 		if(!$error && !$preview)
 		{
-			$smile_on = ($disable_smilies) ? FALSE : TRUE;
-			$html_on = ($disable_html) ? FALSE : TRUE;
+			$smile_on = ($disable_smilies || !$board_config['allow_smilies']) ? 0 : TRUE;
+			$html_on = ($disable_html || !$board_config['allow_html']) ? 0 : TRUE;
 
-			if($disable_bbcode)
+			if($disable_bbcode || !$board_config['allow_bbcode'])
 			{
-				$bbcode_on = FALSE;
+				$bbcode_on = 0;
 			}
 			else
 			{
@@ -401,17 +388,20 @@ if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_U
 				$bbcode_on = TRUE;
 			}
 
+			//
+			// prepare_message returns a bbcode parsed
+			// html parsed and slashed result ...
+			//
 			$message = prepare_message(stripslashes($HTTP_POST_VARS['message']), $html_on, $bbcode_on, $smile_on, $bbcode_uid);
 
 			if( $attach_sig )
 			{
-				$message .= (eregi(" $", $message)) ? "[addsig]" : " [addsig]";
+				$message .= (ereg(" $", $message)) ? "[addsig]" : " [addsig]";
 			}
 		}
-		else
+		else 
 		{
-			// do stripslashes incase magic_quotes is on.
-			$message = stripslashes($HTTP_POST_VARS['message']);
+			$message = stripslashes(trim($HTTP_POST_VARS['message']));
 		}
 	}
 	else
@@ -445,6 +435,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 		else if($mode == "newtopic")
 		{
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
+
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
 				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, $topic_notify, " . TOPIC_UNLOCKED . ", $topic_type)";
 
@@ -460,9 +451,8 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 		if($mode == "reply" || ( $mode == "newtopic" && $result ) )
 		{
-			$enable_smiles = ($smile_on) ? 1 : 0;
-			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_smiles) 
-				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $enable_smiles)";
+			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid, enable_bbcode, enable_html, enable_smilies) 
+				VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid', $bbcode_on, $html_on, $smile_on)";
 			if($mode == "reply")
 			{
 				$result = $db->sql_query($sql, BEGIN_TRANSACTION);
@@ -517,29 +507,44 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 							}
 							else
 							{
+								if(SQL_LAYER == "mysql")
+								{
+								}
 								message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
 							}
 						}
 						else
 						{
+							if(SQL_LAYER == "mysql")
+							{
+							}
 							// Rollback ?
 							message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 					else
 					{
+						if(SQL_LAYER == "mysql")
+						{
+						}
 						// Rollback ?
 						message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
 					}
 				}
 				else
 				{
+					if(SQL_LAYER == "mysql")
+					{
+					}
 					// Rollback ?
 					message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 			else
 			{
+				if(SQL_LAYER == "mysql")
+				{
+				}
 				// Rollback ?
 				message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 			}
@@ -574,9 +579,6 @@ else if($mode == "quote" && !$preview && $topic_status == TOPIC_UNLOCKED)
 
 			// Removes UID from BBCode entries
 			$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
-
-			// This has not been implemented yet!
-			//$message = desmile($message);
 
 			$message = str_replace("<br />", "\n", $message);
 
@@ -637,7 +639,7 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				!isset($HTTP_GET_VARS['confirm']) && !isset($HTTP_POST_VARS['confirm']))
 			{
 
-				$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="' . POST_TOPIC_URL . '" value="'. $topic_id . '"><input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '"><input type="hidden" name="delete" value="true">';
+				$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="'. $topic_id . '" /><input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" /><input type="hidden" name="delete" value="true" />';
 
 				//
 				// Output confirmation page
@@ -691,6 +693,9 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						}
 						else
 						{
+							if(SQL_LAYER == "mysql")
+							{
+							}
 							// Rollback ?
 							message_die(GENERAL_ERROR, "Error deleting from post  table", "", __LINE__, __FILE__, $sql);
 						}
@@ -721,12 +726,18 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 							}
 							else
 							{
+								if(SQL_LAYER == "mysql")
+								{
+								}
 								// Rollback ?
 								message_die(GENERAL_ERROR, "Error obtaining new last topic id", "", __LINE__, __FILE__, $sql);
 							}
 						}
 						else
 						{
+							if(SQL_LAYER == "mysql")
+							{
+							}
 							// Rollback ?
 							message_die(GENERAL_ERROR, "Error deleting from post table", "", __LINE__, __FILE__, $sql);
 						}
@@ -792,6 +803,9 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						}
 						else
 						{
+							if(SQL_LAYER == "mysql")
+							{
+							}
 							// Rollback ?
 							message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 						}
@@ -802,12 +816,18 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						// This error is produced by the last SQL query carried out
 						// before we jumped into this common block
 						//
+						if(SQL_LAYER == "mysql")
+						{
+						}
 						// Rollback ?
 						message_die(GENERAL_ERROR, $if_die_msg, "", __LINE__, __FILE__, $sql);
 					}
 				}
 				else
 				{
+					if(SQL_LAYER == "mysql")
+					{
+					}
 					// Rollback ?
 					message_die(GENERAL_ERROR, "Error deleting from posts text table", "", __LINE__, __FILE__, $sql);
 				}
@@ -831,9 +851,9 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 			{
 				$edited_sql = "";
 			}
-			$enable_smiles = ($smile_on) ? 1 : 0;
+
 			$sql = "UPDATE " . POSTS_TABLE . " 
-				SET bbcode_uid = '$bbcode_uid', enable_smiles=$enable_smiles" . $edited_sql . "  
+				SET bbcode_uid = '$bbcode_uid', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smile_on" . $edited_sql . "  
 				WHERE post_id = $post_id";
 
 			if($db->sql_query($sql, BEGIN_TRANSACTION))
@@ -864,7 +884,16 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 						}
 						else
 						{
+							if(SQL_LAYER == "mysql")
+							{
+							}
 							message_die(GENERAL_ERROR, "Updating topics table", "", __LINE__, __FILE__, $sql);
+						}
+					}
+					else
+					{
+						if(SQL_LAYER == "mysql")
+						{
 						}
 					}
 				}
@@ -881,12 +910,18 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 					}
 					else
 					{
+						if(SQL_LAYER == "mysql")
+						{
+						}
 						message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
 					}
 				}
 			}
 			else
 			{
+				if(SQL_LAYER == "mysql")
+				{
+				}
 				message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
 			}
 		}
@@ -936,9 +971,6 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 				// Removes UID from BBCode entries
 				$message = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $message);
 
-				// This has not been implemented yet!
-				//$message = desmile($message);
-
 				$message = str_replace("<br />", "\n", $message);
 
    				$message = undo_htmlspecialchars($message);
@@ -978,10 +1010,24 @@ else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 //
 // Output page
 //
+if($mode == "newtopic")
+{
+	$post_a = $lang['Post_a_new_topic'];
+}
+else if($mode == "reply")
+{
+	$post_a = $lang['Post_a_reply'];
+}
+else if($mode == "editpost")
+{
+	$post_a = $lang['Edit_Post'];
+}
+
+$page_title = $post_a;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
-// Start: Error handling
+// Start Error handling
 //
 if($error)
 {
@@ -994,12 +1040,12 @@ if($error)
 	$template->pparse("reg_header");
 }
 //
-// End: error handling
+// End error handling
 //
 
 if(empty($username))
 {
-	$username = $userdata['username'];
+	$username = stripslashes($userdata['username']);
 }
 
 //
@@ -1018,21 +1064,39 @@ if($preview && !$error)
 			break;
 	}
 
-	$bbcode_uid = make_bbcode_uid();
-	$preview_message = prepare_message($message, TRUE, TRUE, TRUE, $bbcode_uid);
-	$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
+	$preview_smile_on = ($disable_smilies) ? FALSE : TRUE;
+	$preview_html_on = ($disable_html) ? FALSE : TRUE;
+	$preview_html_on = TRUE;
+
+	if($disable_bbcode)
+	{
+		$preview_bbcode_on = FALSE;
+	}
+	else
+	{
+		$bbcode_uid = make_bbcode_uid();
+		$preview_bbcode_on = TRUE;
+	}
+
+	$preview_message = stripslashes(prepare_message($message, $preview_html_on, $preview_bbcode_on, $preview_smile_on, $bbcode_uid));
+	if(!$disable_bbcode)
+	{
+		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
+	}
 	$preview_message = make_clickable($preview_message);
+	$preview_message = str_replace("\n", "<br />", $preview_message);
 
 	$template->set_filenames(array(
 		"preview" => "posting_preview.tpl")
 	);
 	$template->assign_vars(array(
-		"TOPIC_TITLE" => $subject, 
-		"POST_SUBJECT" => $subject, 
+		"TOPIC_TITLE" => stripslashes($subject), 
+		"POST_SUBJECT" => stripslashes($subject), 
 		"ROW_COLOR" => "#" . $theme['td_color1'],
-		"POSTER_NAME" => $username,
+		"ROW_CLASS" => $theme['td_class1'], 
+		"POSTER_NAME" => stripslashes($username),
 		"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
-		"MESSAGE" => stripslashes(nl2br($preview_message)),
+		"MESSAGE" => $preview_message,
 		
 		"L_PREVIEW" => $lang['Preview'],
 		"L_POSTED" => $lang['Posted'])
@@ -1061,38 +1125,18 @@ if(!$result = $db->sql_query($sql))
 $forum_info = $db->sql_fetchrow($result);
 $forum_name = stripslashes($forum_info['forum_name']);
 
-$template->set_filenames(array(
-	"body" => "posting_body.tpl",
-	"jumpbox" => "jumpbox.tpl")
-);
-$jumpbox = make_jumpbox();
-$template->assign_vars(array(
-	"JUMPBOX_LIST" => $jumpbox,
-	"SELECT_NAME" => POST_FORUM_URL)
-);
-$template->assign_var_from_handle("JUMPBOX", "jumpbox");
-
-$template->assign_vars(array(
-	"FORUM_ID" => $forum_id,
-	"FORUM_NAME" => $forum_name,
-
-	"L_POSTNEWIN" => $section_title,
-
-	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
-);
-
 if($userdata['session_logged_in'])
 {
-	$username_input = $userdata["username"];
+	$username_input = stripslashes($userdata["username"]);
 	$password_input = "";
 }
 else
 {
 	$username_input = '<input type="text" name="username" value="' . $username . '" size="25" maxlength="50">';
-	$password_input = '<input type="password" name="password" size="25" maxlenght="40">';
+	$password_input = '<input type="password" name="password" size="25" maxlength="40">';
 }
-$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
-$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">'.$message.'</textarea>';
+$subject_input = '<input type="text" name="subject" value="' . stripslashes($subject) . '" size="50" maxlength="255">';
+$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">' . $message . '</textarea>';
 
 if($board_config['allow_html'])
 {
@@ -1157,7 +1201,7 @@ if($mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post ) )
 		{
 			$announce_toggle .= ' checked';
 		}
-		$announce_toggle .= '> ' . $lang['Post_Annoucement'] . '&nbsp;&nbsp;';
+		$announce_toggle .= '> ' . $lang['Post_Announcement'] . '&nbsp;&nbsp;';
 	}
 
 	if($is_auth['auth_sticky'])
@@ -1222,19 +1266,26 @@ else if($mode == "editpost")
 }
 $hidden_form_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\">";
 
-if($mode == "newtopic")
-{
-	$post_a = $lang['Post_a_new_topic'];
-}
-else if($mode == "reply")
-{
-	$post_a = $lang['Post_a_reply'];
-}
-else if($mode == "editpost")
-{
-	$post_a = $lang['Edit_Post'];
-}
-		
+$template->set_filenames(array(
+	"body" => "posting_body.tpl",
+	"jumpbox" => "jumpbox.tpl")
+);
+$jumpbox = make_jumpbox();
+$template->assign_vars(array(
+	"JUMPBOX_LIST" => $jumpbox,
+	"SELECT_NAME" => POST_FORUM_URL)
+);
+$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+$template->assign_vars(array(
+	"FORUM_ID" => $forum_id,
+	"FORUM_NAME" => $forum_name,
+
+	"L_POSTNEWIN" => $section_title,
+
+	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+);
+
 $template->assign_vars(array(
 	"USERNAME_INPUT" => $username_input,
 	"PASSWORD_INPUT" => $password_input,

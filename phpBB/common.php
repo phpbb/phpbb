@@ -22,6 +22,35 @@
  *
  ***************************************************************************/
 
+error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+
+//
+// addslashes to vars if magic_quotes_gpc is off
+// this is a security precaution to prevent someone
+// trying to break out of a SQL statement.
+//
+if( !get_magic_quotes_gpc() )
+{
+	@reset($HTTP_GET_VARS); 
+	while( list($k, $v) = each($HTTP_GET_VARS) ) 
+	{
+		$HTTP_GET_VARS[$k] = addslashes($v); 
+	}
+
+	@reset($HTTP_POST_VARS); 
+	while( list($k, $v) = each($HTTP_POST_VARS) ) 
+	{
+		$HTTP_POST_VARS[$k] = addslashes($v); 
+	}
+
+	@reset($HTTP_COOKIE_VARS); 
+	while( list($k, $v) = each($HTTP_COOKIE_VARS) ) 
+	{
+		$HTTP_COOKIE_VARS[$k] = addslashes($v); 
+	}
+}
+
 //
 // Define some basic configuration arrays this also prevents
 // malicious rewriting of language and otherarray values via
@@ -93,6 +122,7 @@ else
 	$board_config['board_startdate'] = $config['board_startdate'];
 	$board_config['sitename'] = stripslashes($config['sitename']);
 	$board_config['allow_html'] = $config['allow_html'];
+	$board_config['allow_html_tags'] = split(",", $config['allow_html_tags']);
 	$board_config['allow_bbcode'] = $config['allow_bbcode'];
 	$board_config['allow_smilies'] = $config['allow_smilies'];
 	$board_config['allow_sig'] = $config['allow_sig'];
@@ -115,21 +145,22 @@ else
 	$board_config['flood_interval'] = $config['flood_interval'];
 	$board_config['session_length'] = $config['session_length'];
 //	$board_config['session_max'] = $config['session_max'];
-	$board_config['cookie_name'] = $config['cookie_name'];
-	$board_config['cookie_path'] = $config['cookie_path'];
-	$board_config['cookie_domain'] = $config['cookie_domain'];
+	$board_config['cookie_name'] = stripslashes($config['cookie_name']);
+	$board_config['cookie_path'] = stripslashes($config['cookie_path']);
+	$board_config['cookie_domain'] = stripslashes($config['cookie_domain']);
 	$board_config['cookie_secure'] = $config['cookie_secure'];
 	$board_config['avatar_filesize'] = $config['avatar_filesize'];
 	$board_config['avatar_max_width'] = $config['avatar_max_width'];
 	$board_config['avatar_max_height'] = $config['avatar_max_height'];
-	$board_config['avatar_path'] = $config['avatar_path'];
+	$board_config['avatar_path'] = stripslashes($config['avatar_path']);
+	$board_config['smilies_path'] = stripslashes($config['smilies_path']);
 	$board_config['prune_enable'] = $config['prune_enable'];
 	$board_config['gzip_compress'] = $config['gzip_compress'];
 	$board_config['smtp_delivery'] = $config['smtp_delivery'];
-	$board_config['smtp_host'] = $config['smtp_host'];
+	$board_config['smtp_host'] = stripslashes($config['smtp_host']);
 }
 
-if($board_config['board_disable'])
+if($board_config['board_disable'] && !defined("IN_ADMIN"))
 {
 	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
 
