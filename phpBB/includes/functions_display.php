@@ -302,7 +302,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		}
 
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
-		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_link_track']) ? $row['forum_posts'] : '';
+		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? $row['forum_posts'] : '';
 
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=>	false, 
