@@ -104,6 +104,7 @@ else
 	$board_config['override_user_themes'] = $config['override_themes'];
 	$board_config['posts_per_page'] = $config['posts_per_page'];
 	$board_config['topics_per_page'] = $config['topics_per_page'];
+	$board_config['hot_threshold'] = $config['hot_threshold'];
 	$board_config['default_theme'] = $config['default_theme'];
 	$board_config['default_dateformat'] = stripslashes($config['default_dateformat']);
 	$board_config['default_template'] = stripslashes($config['sys_template']);

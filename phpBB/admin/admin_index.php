@@ -34,9 +34,6 @@ if($from_index != 1)
 	$phpbb_root_path = "./../";
 	include($phpbb_root_path . 'extension.inc');
 	include($phpbb_root_path . 'common.'.$phpEx);
-
-	$template_header = "admin/page_header.tpl";	
-	include('page_header_admin.'.$phpEx);
 }
 
 //
