@@ -254,7 +254,7 @@ $template->assign_vars(array(
 	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
 	"S_CONTENT_DIR_LEFT" => $lang['LEFT'], 
 	"S_CONTENT_DIR_RIGHT" => $lang['RIGHT'], 
-	"S_TIMEZONE" => $lang['All_times'] . " " . $lang[$board_config['board_timezone']],
+	"S_TIMEZONE" => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_CURRENT_TIME" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
 

@@ -522,7 +522,6 @@ $lang['Account_active'] = "Your account has now been activated. Thank you for re
 $lang['Account_active_admin'] = "The account has now been activated";
 $lang['Reactivate'] = "Reactivate your account!";
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
-$lang['Welcome_COPPA'] = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />" . $lang['Mailing_address'] . "<br />Or fax it to: <br />" . $lang['Fax_info'] . "<br /> Once this information has been received your account will be activated by the administrator and you will receive an email notification.";
 
 $lang['Wrong_activation'] = "The activation key you supplied does not match any in the database";
 $lang['Send_password'] = "Send me a new password"; 
@@ -543,6 +542,7 @@ $lang['Email_sent'] = "The email has been sent";
 $lang['Send_email'] = "Send email";
 $lang['Empty_subject_email'] = "You must specify a subject for the email";
 $lang['Empty_message_email'] = "You must enter a message to be emailed";
+
 
 //
 // Memberslist
@@ -682,8 +682,10 @@ $lang['Reg_users_online'] = "There are %d Registered and ";
 $lang['Hidden_users_online'] = "%d Hidden users online";
 $lang['Guest_users_online'] = "There are %d Guest users online";
 $lang['Guest_user_online'] = "There is %d Guest user online";
-$lang['Online_explain'] = "This data is based on users active over the past five minutes";
 $lang['No_users_browsing'] = "There are no users currently browsing this forum";
+
+$lang['Online_explain'] = "This data is based on users active over the past five minutes";
+
 $lang['Forum_Location'] = "Forum Location";
 $lang['Last_updated'] = "Last Updated";
 
@@ -699,48 +701,30 @@ $lang['Viewing_FAQ'] = "Viewing FAQ";
 
 
 //
-// Errors (not related to a
-// specific failure on a page)
-//
-$lang['Information'] = "Information";
-$lang['Critical_Information'] = "Critical Information";
-
-$lang['You_been_banned'] = "You have been banned from this forum<br />Please contact the webmaster or board administrator for more information";
-$lang['No_topics_post_one'] = "There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one";
-$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
-
-$lang['General_Error'] = "General Error";
-$lang['Critical_Error'] = "Critical Error";
-$lang['An_error_occured'] = "An Error Occured";
-$lang['A_critical_error'] = "A Critical Error Occured";
-
-$lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
-
-$lang['Not_Moderator'] = "You are not a moderator of this forum";
-$lang['Not_Authorised'] = "Not Authorised";
-
-
-//
 // Moderator Control Panel
 //
 $lang['Mod_CP'] = "Moderator Control Panel";
 $lang['Mod_CP_explain'] = "Using the form below you can perform mass moderation operations on this forum. You can lock, unlock, move or delete any number of topics. If this forum is defined as private in some way you can also modify which users can and cannot access it.";
+
 $lang['Select'] = "Select";
 $lang['Delete'] = "Delete";
 $lang['Move'] = "Move";
 $lang['Lock'] = "Lock";
 $lang['Unlock'] = "Unlock";
+
 $lang['Topics_Removed'] = "The selected topics have been successfully removed from the database.";
 $lang['Topics_Locked'] = "The selected topics have been locked";
 $lang['Topics_Moved'] = "The selected topics have been moved";
 $lang['Topics_Unlocked'] = "The selected topics have been unlocked";
-$lang['Return_to_modcp'] = "to return to the moderator control panel";
+
 $lang['Confirm_delete_topic'] = "Are you sure you want to remove the selected topic/s?";
 $lang['Confirm_lock_topic'] = "Are you sure you want to lock the selected topic/s?";
 $lang['Confirm_unlock_topic'] = "Are you sure you want to unlock the selected topic/s?";
 $lang['Confirm_move_topic'] = "Are you sure you want to move the selected topic/s?";
+
 $lang['Move_to_forum'] = "Move to forum";
 $lang['Leave_shadow_topic'] = "Leave shadow topic in old forum.";
+
 $lang['Split_Topic'] = "Split Topic Control Panel";
 $lang['Split_Topic_explain'] = "Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post";
 $lang['Split_title'] = "New topic title";
@@ -748,9 +732,12 @@ $lang['Split_forum'] = "Forum for new topic";
 $lang['Split_posts'] = "Split selected posts";
 $lang['Split_after'] = "Split from selected post";
 $lang['Topic_split'] = "The selected topic has been split successfully";
+
 $lang['Too_many_error'] = "You have selected too many posts. You can only select one post to split a topic after!";
-$lang['New_forum'] = "New forum";
+
 $lang['None_selected'] = "You have no selected any topics to preform this operation on. Please go back and select at least one.";
+$lang['New_forum'] = "New forum";
+
 $lang['This_posts_IP'] = "IP for this post";
 $lang['Other_IP_this_user'] = "Other IP's this user has posted from";
 $lang['Users_this_IP'] = "Users posting from this IP";
@@ -761,7 +748,7 @@ $lang['Lookup_IP'] = "Look up IP";
 //
 // Timezones ... for display on each page
 //
-$lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
+$lang['All_times'] = "All times are %s"; // eg. All times are GMT - 12 Hours (times from next block)
 
 $lang['-12'] = "GMT - 12 Hours";
 $lang['-11'] = "GMT - 11 Hours";
@@ -794,6 +781,27 @@ $lang['10'] = "EST (Australia)";
 $lang['11'] = "GMT + 11 Hours";
 $lang['12'] = "GMT + 12 Hours";
 
+
+//
+// Errors (not related to a
+// specific failure on a page)
+//
+$lang['Information'] = "Information";
+$lang['Critical_Information'] = "Critical Information";
+
+$lang['You_been_banned'] = "You have been banned from this forum<br />Please contact the webmaster or board administrator for more information";
+$lang['No_topics_post_one'] = "There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one";
+$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
+
+$lang['General_Error'] = "General Error";
+$lang['Critical_Error'] = "Critical Error";
+$lang['An_error_occured'] = "An Error Occured";
+$lang['A_critical_error'] = "A Critical Error Occured";
+
+$lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
+
+$lang['Not_Moderator'] = "You are not a moderator of this forum";
+$lang['Not_Authorised'] = "Not Authorised";
 
 //
 // That's all Folks!
