@@ -266,7 +266,7 @@ function storeCaret(textEl) {
 				  <td><a href="javascript:emoticon(':|')"><img src="images/smiles/icon_neutral.gif" width="15" height="15" border="0" alt="Neutral" /></a></td>
 				  <td><a href="javascript:emoticon(':(')"><img src="images/smiles/icon_sad.gif" width="15" height="15" border="0" alt="Sad" /></a></td>
 				  <td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_confused.gif" width="15" height="15" border="0" alt="Uncertain" /></a></td>
-				  <td><a href="javascript:emoticon(':eek:')"><img src="images/smiles/icon_eek.gif" width="15" height="15" border="0" alt="Surprise" /></a></td>
+				  <td><a href="javascript:emoticon(':shock:')"><img src="images/smiles/icon_eek.gif" width="15" height="15" border="0" alt="Shocked" /></a></td>
 				</tr>
 				<tr align="center" valign="middle"> 
 				  <td><a href="javascript:emoticon(':roll:')"><img src="images/smiles/icon_rolleyes.gif" width="15" height="15" border="0" alt="Roll eyes" /></a></td>
@@ -278,7 +278,7 @@ function storeCaret(textEl) {
 				  <td><a href="javascript:emoticon(':evil:')"><img src="images/smiles/icon_evil.gif" width="15" height="15" border="0" alt="Evil" /></a></td>
 				  <td><a href="javascript:emoticon(':x')"><img src="images/smiles/icon_mad.gif" width="15" height="15" border="0" alt="Mad" /></a></td>
 				  <td><a href="javascript:emoticon(':cry:')"><img src="images/smiles/icon_cry.gif" width="15" height="15" border="0" alt="Cry" /></a></td>
-				  <td><a href="javascript:emoticon(':o')"><img src="images/smiles/icon_surprised.gif" width="15" height="15" border="0" alt="Shock" /></a></td>
+				  <td><a href="javascript:emoticon(':o')"><img src="images/smiles/icon_surprised.gif" width="15" height="15" border="0" alt="Surprised" /></a></td>
 				</tr>
 				<tr align="center" valign="middle"> 
 				  <td><a href="javascript:emoticon(':idea:')"><img src="images/smiles/icon_idea.gif" width="15" height="15" border="0" alt="Idea" /></a></td>
