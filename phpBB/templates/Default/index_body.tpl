@@ -45,7 +45,10 @@
 				<!-- END forumrow -->
 				<!-- END catrow -->
 				<tr class="catheader">
-					<td colspan="6">{TOTAL_USERS_ONLINE}<br/>{LOGGED_IN_USER_LIST}</td>
+					<td colspan="6"><a href="{U_VIEWONLINE}">Who is Online</a></td>
+				</tr>
+				<tr style="background-color:#DEDEDE">
+					<td colspan="6" align="left">{TOTAL_USERS_ONLINE}<br />{LOGGED_IN_USER_LIST}</td>
 				</tr>
 			</table></td>
 		</tr>

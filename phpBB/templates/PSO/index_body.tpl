@@ -31,7 +31,7 @@
 			<!-- END forumrow -->
 			<!-- END catrow -->
 			<tr>
-				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b>Who is Online</b>&nbsp;</font></td>
+				<td colspan="6" bgcolor="{T_TH_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE3}"><b><a href="{U_VIEWONLINE}">Who is Online</a></b>&nbsp;</font></td>
 			</tr>
 			<tr>
 				<td colspan="6" bgcolor="{T_TD_COLOR1}" align="left"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">{TOTAL_USERS_ONLINE}</font><br><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{LOGGED_IN_USER_LIST}</font></td>
