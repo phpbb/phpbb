@@ -31,6 +31,10 @@ if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_UR
 {
 	$forum_id = ( isset($HTTP_GET_VARS[POST_FORUM_URL]) ) ? intval($HTTP_GET_VARS[POST_FORUM_URL]) : intval($HTTP_POST_VARS[POST_FORUM_URL]);
 }
+else if( isset($HTTP_GET_VARS['forum']))
+{
+	$forum_id = $HTTP_GET_VARS['forum'];
+}
 else
 {
 	$forum_id = "";
