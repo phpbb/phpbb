@@ -1198,22 +1198,18 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 
-	$perms = array();
-/*	foreach (discover_auth(array_keys($notify_rows), array('f_read'), $forum_id) as $user_id => $forum_ary)
+	foreach (discover_auth(array_keys($notify_rows), array('f_read'), $forum_id) as $user_id => $forum_ary)
 	{
 		foreach ($forum_ary as $forum_id => $option_ary)
 		{
 			if (array_sum(array_values($option_ary)))
 			{
-				echo array_sum(array_values($option_ary));
-				echo " >> ";
-//				$perms[] = $user_id;
-//				break;
+				$notify_rows[$user_id]['allowed'] = true;
+				break;
 			}
 		}
-		print_r($forum_ary);
 	}
-*/
+
 
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$email_users = $delete_ids = $update_notification = array();
