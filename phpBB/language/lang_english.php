@@ -71,17 +71,20 @@ $lang['Years'] = "Years";
 $lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
 $lang['GMT'] = "GMT";
 
+$lang['Next'] = "Next Page";
+$lang['Previous'] = "Previous Page";
 $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
 $lang['of'] = "of"; // See Page above
-
-$lang['You_last_visit'] = "You last visited on";
+$lang['Go'] = "Go";
 
 //
 // Global Header strings
 //
 $lang['Registered'] = "Registered";
 $lang['None'] = "None";
+
+$lang['You_last_visit'] = "You last visited on";
 
 $lang['Welcome_to'] = "Welcome to"; // Followed by site name
 $lang['Register'] = "Register";
@@ -148,8 +151,16 @@ $lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annouceme
 
 
 //
-// Private Messageing <= Should be blank for now
+// Private Messaging
 //
+$lang['Inbox'] = "Inbox";
+$lang['Sent'] = "Sent";
+$lang['Flag'] = "Flag";
+$lang['Subject'] = "Subject";
+$lang['From'] = "From";
+$lang['To'] = "To";
+$lang['Date'] = "Date";
+
 
 //
 // Profiles/Registration

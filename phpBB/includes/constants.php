@@ -63,6 +63,11 @@ define(NO_TOPICS, 5);
 define(GENERAL_ERROR, 6);
 define(LOGIN_FAILED, 7);
 
+// Private messaging
+define(PRIVMSGS_READ_MAIL, 0);
+define(PRIVMSGS_NEW_MAIL, 1);
+define(PRIVMSGS_SENT_MAIL, 2);
+
 // URL PARAMETERS
 define(POST_TOPIC_URL, 't');
 define(POST_FORUM_URL, 'f');
@@ -84,6 +89,7 @@ define(PAGE_VIEWONLINE, -6);
 define(PAGE_VIEWMEMBERS, -7);
 define(PAGE_FAQ, -8);
 define(PAGE_POSTING, -9);
+define(PAGE_PRIVMSGS, -10);
 
 // Auth settings
 define(AUTH_ALL, 0);
@@ -120,7 +126,8 @@ define('FORUMS_TABLE', $table_prefix.'forums');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
-define('PRIV_MSGS_TABLE', $table_prefix.'priv_msgs');
+define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
+define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
 define('THEMES_TABLE', $table_prefix.'themes');
