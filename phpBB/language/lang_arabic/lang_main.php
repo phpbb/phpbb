@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id: lang_main.php,v 1.77 2002/01/13 15:39:36 psotfx Exp $
+ *     $Id: lang_main.php,v 1.80 2002/01/27 03:10:35 psotfx Exp $
  *
  ****************************************************************************/
 
@@ -112,6 +112,7 @@ $lang['Board_disable'] = "äÃÓİ Çä ÇáãäÊÏì ãÚØá ÇáÂä¡ ÇÑÌæ ÇáÑÌæÚ İí æŞÊ áÇÍŞ";
 // Global Header strings
 //
 $lang['Registered_users'] = "ãÔÊÑßíä ãÓÌáíä:";
+$lang['Browsing_forum'] = "ÚÏÏ ãÊÕİÍíä ÇáãäÊÏì:";
 $lang['Online_users_zero_total'] = "ßßá åäÇß <b>0</b> ãÓÊÎÏã Úáì ÇáÎØ :: ";
 $lang['Online_users_total'] = "ßßá åäÇß <b>%d</b> ãÓÊÎÏãíä Úáì ÇáÎØ :: ";
 $lang['Online_user_total'] = "ßßá åäÇß <b>%d</b> ãÓÊÎÏã Úáì ÇáÎØ :: ";
@@ -237,7 +238,7 @@ $lang['No_topics_post_one'] = "áÇ ãæÇÖíÚ İí åĞÇ ÇáãäÊÏì<br />ÇÖÛØ Úáì <b>ÇÑÓá ãæ
 //
 // Viewtopic
 //
-$lang['View_topic'] = "View topic";
+$lang['View_topic'] = "ÇØáÚ Úáì ÇáãæÖæÚ";
 
 $lang['Guest'] = "ÒÇÆÑ";
 $lang['Post_subject'] = "ãæÖæÚ ÇáÑÓÇáÉ";
@@ -386,7 +387,7 @@ $lang['color_olive'] = "ÒíÊæäí";
 $lang['color_cyan'] = "ÇÒÑŞ ÓãÇæí";
 $lang['color_blue'] = "ÇÒÑŞ";
 $lang['color_dark_blue'] = "ÇÒÑŞ ŞÇÊã";
-$lang['color_indigo'] = "Indigo";
+$lang['color_indigo'] = "äíáí";
 $lang['color_violet'] = "ÈäİÓÌí";
 $lang['color_white'] = "ÇÈíÖ";
 $lang['color_black'] = "ÇÓæÏ";
@@ -445,6 +446,10 @@ $lang['PM_disabled'] = "ÇáÑÓÇÆá ÇáÎÇÕÉ ŞÏ ÇÛáŞÊ áåĞÇ ÇáãäÊÏì";
 $lang['Cannot_send_privmsg'] = "äÃÓİ áßä ÇáãÏíÑ ŞÏ ãäÚß ãä ÇÑÓÇá ÑÓÇÆá ÎÇÕÉ";
 $lang['No_to_user'] = "Úáíß ĞßÑ ÇÓã ÇáãÔÊÑß áÇÑÓÇá ÇáÑÓÇáÉ";
 $lang['No_such_user'] = "äÃÓİ áßä áÇ íæÌÏ ãÔÊÑß ÈåĞÇ ÇáÇÓã";
+
+$lang['Disable_HTML_pm'] = "ÚØá HTML İí åĞå ÇáÑÓÇáÉ";
+$lang['Disable_BBCode_pm'] = "ÚØá BBCode İí åĞå ÇáÑÓÇáÉ";
+$lang['Disable_Smilies_pm'] = "ÚØá Smilies İí åĞå ÇáÑÓÇáÉ";
 
 $lang['Message_sent'] = "áŞÏ ÇÑÓáÊ ÑÓÇáÊß";
 
@@ -511,7 +516,7 @@ $lang['Search_user_posts'] = "ÇæÌÏ ÌãíÚ ÇáÇÓåÇãÇÊ ãä ÇáãÔÊÑß %s"; // Find all po
 
 $lang['No_user_id_specified'] = "äÃÓİ áßä åĞÇ ÇáãÔÊÑß ÛíÑ ãæÌæÏ";
 $lang['Wrong_Profile'] = "áÇ ÊÓÊØíÚ ÊÚÏíá ÇáäÈĞÉ ÇáÔÎÕíÉ æÇáÊí áíÓÊ áß.";
-$lang['Sorry_banned_or_taken_email'] = "äÃÓİ áßä ÇáÈÑíÏ ÇáÇáßÊÑæäí ÇáãĞßæÑ ÇãÇ ŞÏ Êã ãäÚå, Ãæ ŞÏ ÇÚØí áãÔÊÑß ÂÎÑ Ãæ ÛíÑ ÕÍíÍ. ÇáÑÌÇÁ ÇÚØÇÁ ÈÑíÏ ÂÎÑ, Çä ßÇä åæ ÇáÂÎÑ ããäæÚ İÊÓÊØíÚ ÇáÇÊÕÇá ÈãÏíÑ ÇáãæŞÚ";
+
 $lang['Only_one_avatar'] = "íÓãÍ ÈÊÍÏíÏ ÔÎÕíÉ æÇÍÏÉ İŞØ";
 $lang['File_no_data'] = "Çáãáİ ÇáãÓÌá ÚÈÑ ÚäæÇä ÇáÇäÊÑäÊ áÇ íÍÊæí Úáì ÔíÁ";
 $lang['No_connection_URL'] = "áã äÊãßä ÇáÇÊÕÇá ÈÚäæÇä ÇáÇäÊÑäÊ ÇáãÓÌá";
@@ -539,13 +544,13 @@ $lang['Public_view_email'] = "ÏÇÆãÇ ÇÙåÑ ÈÑíÏí ÇáÇáßÊÑæäí";
 $lang['Current_password'] = "ßáãÉ ÇáÓÑ ÇáÍÇáíÉ";
 $lang['New_password'] = "ßáãÉ ÇáÓÑ ÇáÌÏíÏÉ";
 $lang['Confirm_password'] = "ÊÃßíÏ ßáãÉ ÇáÓÑ";
+$lang['Confirm_password_explain'] = "Úáíß ÊÃßíÏ ßáãÉ ÇáÓÑ ÇáÍÇáíÉ ÅĞÇ ßäÊ ÊÑíÏ ÊÛííÑ ÚäæÇä ÇáÈÑíÏ ÇáÇáßÊÑæäí";
 $lang['password_if_changed'] = "ÇĞÇ ÇÑÏÊ ÇáÊÛííÑ Úáíß İŞØ ÊÒæíÏäÇ ÈßáãÉ ÇáÓÑ";
 $lang['password_confirm_if_changed'] = "Úáíß ÊÒæíÏäÇ ÈÊÃßíÏ áßãÉ ÇáÓÑ ÇĞÇ Êã ÊÛííÑåÇ İí ÇáÇÚáì";
 
 $lang['Avatar'] = "ÔÎÕíÉ";
 $lang['Avatar_explain'] = "ÊÙåÑ ÕæÑÉ ãÇ ÇÓİá ÇÓãß İí ÇáäÔÑÉ. íãßä ÇÙåÇÑ ÕæÑÉ æÇÍÏÉ ááãÔÊÑß, ÚÑÖåÇ áÇ íÒíÏ Úä %d äŞØÉ, æÇÑÊİÇÚåÇ áÇ íÒíÏ Úä %d äŞØÉ æÍÌã Çáãáİ áÇ íÒíÏ Úä %dkB."; 
-$lang['Upload_Avatar_file'] = "ÇÑÓá ÇáÕæÑÉ ãä ÌåÇÒß";
-$lang['Upload_Avatar_URL'] = "ÇÓÍÈ ÕæÑÉ ÇáÔÎÕíÉ ãä ÇáãæŞÚ";
+$lang['Upload_Avatar_URL'] = "ÇÑÓá ÇáÕæÑÉ ãä ÚäæÇä ÇäÊÑäÊ";
 $lang['Upload_Avatar_URL_explain'] = "ÇÏÎá ÚäæÇä ÇáÇäÊÑäÊ ááÍÕæá Úáì ÇáÕæÑÉ ãäåÇ, Óæİ íÊã ÊÎÒíäåÇ İí åĞÇ ÇáãæŞÚ.";
 $lang['Pick_local_Avatar'] = "ÇÎÊÑ ÇáÔÎÕíÉ ãä ãßÊÈÉ ÇáÕæÑ";
 $lang['Link_remote_Avatar'] = "ÇæÕá ãÚ ÔÎÕíÉ ÎÇÑÌ ÇáãæŞÚ";
@@ -571,7 +576,13 @@ $lang['Profile_updated_inactive'] = "Êã ÊÚÏíá ÈíÇäÇÊ ÇáÔÎÕíÉ, áßäß ÛíÑÊ ÈíÇäÇÊ ã
 
 $lang['Password_mismatch'] = "ßáãÇÊ ÇáÓÑ ÇáÊí Êã ÇÏÎÇáåÇ ÛíÑ ãÊØÇÈŞÉ";
 $lang['Current_password_mismatch'] = "ßáãÉ ÇáÓÑ ÇáãÚØÇÉ áÇ ÊØÇÈŞ Êáß ÇáãÎÒäÉ İí ŞÇÚÏÉ ÇáÈíÇäÇÊ";
-$lang['Invalid_username'] = "ÇÓã ÇáãÔÊÑß ÇáãÚØì ÇãÇ ãÃÎæĞ Ãæ ããäæÚ ãä ÇáÏÎæá, Ãæ íÍÊæí Úáì ÍÑæİ ããäæÚÉ ãËá \"";
+$lang['Password_long'] = "íÌÈ Çä Êßæä ßáãÉ ÇáÓÑ ÇŞá ãä 33 ÍÑİ";
+$lang['Username_taken'] = "äÃÓİ áßä åĞÇ ÇáÇÓã ãÃÎæĞ";
+$lang['Username_invalid'] = "äÃÓİ áßä åĞÇ ÇáÇÓã íÍÊæì Úáì ÍÑİ ÛíÑ ãÓãæÍ Èå ãËá \"";
+$lang['Username_disallowed'] = "äÃÓİ áßä åĞÇ ÇáÇÓã ãä ÇáÇÓãÇÁ ÇáããäæÚÉ";
+$lang['Email_taken'] = "äÃÓİ áßä ÇáÈÑíÏ ÇáÇáßÊÑæäí ãÓÌá áÔÎÕ ÂÎÑ";
+$lang['Email_banned'] = "äÃÓİ áßä åĞÇ ÇáÈÑíÏ ÇáÇáßÊÑæäí ŞÏ ãäÚ ãÓÈŞÇ";
+$lang['Email_invalid'] = "äÃÓİ áßä ÇáÈÑíÏ ÇáÇáßÊÑæäí ÎØÃ";
 $lang['Signature_too_long'] = "ÍÌã ÊæŞíÚß ßÈíÑ ÌÏÇ";
 $lang['Fields_empty'] = "Úáíß ãáÁ ÇáÍŞæá/ÇáãÑÈÚÇÊ ÇáİÇÑÛÉ";
 $lang['Avatar_filetype'] = "äæÚ ãáİ ÇáÔÎÕíÉ íÌÈ Çä íßæä  .jpg, .gif Ãæ .png";
