@@ -593,7 +593,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = ($on_page == 1) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
+	$page_string = ($on_page == 1) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
 
 	if ($total_pages > 5)
 	{
@@ -627,9 +627,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['Next'] . '</a>';
+	$page_string .= ($on_page == $total_pages) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
-	$page_string = $user->lang['Goto_page'] . ' ' . $page_string;
+	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
 
 	return $page_string;
 }
@@ -638,7 +638,7 @@ function on_page($num_items, $per_page, $start)
 {
 	global $user;
 
-	return sprintf($user->lang['Page_of'], floor($start / $per_page) + 1, max(ceil($num_items / $per_page), 1));
+	return sprintf($user->lang['PAGE_OF'], floor($start / $per_page) + 1, max(ceil($num_items / $per_page), 1));
 }
 
 // Obtain list of naughty words and build preg style replacement arrays for use by the
