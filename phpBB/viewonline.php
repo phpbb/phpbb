@@ -152,7 +152,7 @@ if($online_count)
 				"USER_ID" => $onlinerow[$i]['user_id'],
 				"USERNAME" => $username,
 				"LOGGEDON" => $loggedon,
-				"LASTUPDATE" => create_date($default_dateformat, $onlinerow[$i]['session_time'], $sys_timezone),
+				"LASTUPDATE" => create_date($date_format, $onlinerow[$i]['session_time'], $sys_timezone),
 				"LOCATION" => $location,
 				"LOCATION_URL" => $location_url
 			)
