@@ -1143,7 +1143,7 @@ function move_forum($from_id, $to_id)
 			WHERE forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
 		$result = $db->sql_query($sql);
 
-		$row = $db->sql_fetchtrow($result);
+		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		$diff = '+ ' . ($row['right_id'] - $from_data['left_id'] + 1);
