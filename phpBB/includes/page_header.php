@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-define(HEADER_INC, TRUE);
+define('HEADER_INC', TRUE);
 
 //
 // gzip_compression
@@ -160,7 +160,7 @@ while( $row = $db->sql_fetchrow($result) )
 	$prev_user_id = $row['user_id'];
 }
 
-if( $online_userlist == "" )
+if( empty($online_userlist) )
 {
 	$online_userlist = $lang['None'];
 }
@@ -297,6 +297,7 @@ if( $userdata['session_logged_in'] )
 }
 else
 {
+	$icon_pm = $images['pm_no_new_msg'];
 	$l_privmsgs_text = $lang['Login_check_pm'];
 	$l_privmsgs_text_unread = "";
 	$s_privmsg_new = 0;
@@ -457,17 +458,15 @@ $template->assign_vars(array(
 if( !$userdata['session_logged_in'] )
 {
 	$template->assign_block_vars("switch_user_logged_out", array());
-
 }
 else
 {
 	$template->assign_block_vars("switch_user_logged_in", array());
 
-	if( $userdata['user_popup_pm'] )
+	if( !empty($userdata['user_popup_pm']) )
 	{
 		$template->assign_block_vars("switch_enable_pm_popup", array());
 	}
-
 }
 
 header ("Cache-Control: no-store, no-cache, must-revalidate");
