@@ -665,7 +665,7 @@ if (!empty($poll_start))
 
 // Container for user details, only process once
 $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = array();
-$has_attachments = FALSE;
+$has_attachments = $display_notice = FALSE;
 $force_encoding = '';
 $bbcode_bitfield = $i = 0;
 
@@ -688,7 +688,6 @@ if (!$row = $db->sql_fetchrow($result))
 // and the global bbcode_bitfield are built
 do
 {
-	$display_notice = FALSE;
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
@@ -734,8 +733,7 @@ do
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 		'enable_html'		=> $row['enable_html'],
 		'enable_smilies'	=> $row['enable_smilies'],
-		'enable_sig'		=> $row['enable_sig'],
-		'display_notice'	=> $display_notice
+		'enable_sig'		=> $row['enable_sig']
 	);
 
 	
@@ -1136,7 +1134,7 @@ foreach ($rowset as $i => $row)
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
-		'S_DISPLAY_NOTICE'	=> $row['display_notice'])
+		'S_DISPLAY_NOTICE'	=> $display_notice)
 	);
 
 	// Process Attachments for this post

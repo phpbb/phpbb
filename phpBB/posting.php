@@ -1701,30 +1701,29 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 	unset($email_list_ary);
 	
-	if (sizeof($delete_ids))
-	{
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $delete_ids) . ")";
-		$db->sql_query($sql);
-	}
-
-
 	if ($update_watched_sql_topic != '')
 	{
-		$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
+		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
-			WHERE topic_id = " . $topic_id . "
+			WHERE topic_id = $topic_id
 				AND user_id IN (" . $update_watched_sql_topic . ")";
 		$db->sql_query($sql);
 	}
 
 	if ($update_watched_sql_forum != '')
 	{
-		$sql = "UPDATE " . FORUMS_WATCH_TABLE . "
+		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
-			WHERE forum_id = " . $forum_id . "
+			WHERE forum_id = $forum_id
 				AND user_id IN (" . $update_watched_sql_forum . ")";
+		$db->sql_query($sql);
+	}
+
+	if (sizeof($delete_ids))
+	{
+		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+			WHERE topic_id = $topic_id
+				AND user_id IN (" . implode(', ', $delete_ids) . ")";
 		$db->sql_query($sql);
 	}
 }

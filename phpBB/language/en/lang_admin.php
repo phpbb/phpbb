@@ -1322,6 +1322,7 @@ $lang += array(
 $lang += array(
 	'ADMIN_LOGS_EXPLAIN' => 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'MOD_LOGS_EXPLAIN' => 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'CRITICAL_LOGS_EXPLAIN' => 'This lists the actions carried out by the board itself. These log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'DISPLAY_LOG' => 'Display entries from previous',
 	'ALL_ENTRIES' => 'All entries',
 	'SORT_IP' => 'IP address',
@@ -1425,13 +1426,12 @@ $lang += array(
 	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 
 	'MANAGE_EXTENSIONS'			=> 'Manage Extensions',
-	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed and forbidden file extensions. You are not able to manage forbidden file extensions with the extension groups management panel. To allow or disallow not forbidden file extensions, use the extension groups management panel.',
+	'MANAGE_EXTENSIONS_EXPLAIN' => 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. It is not recommended to add scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
 	'COMMENT'					=> 'Comment',
 	'EXTENSION'					=> 'Extension',
 	'ADD_EXTENSION'				=> 'Add extension',
 	'EXTENSIONS_UPDATED'		=> 'Extensions successfully updated',
 	'EXTENSION_EXIST'			=> 'The Extension %s already exist',
-	'CANNOT_ADD_FORBIDDEN_EXTENSION' => 'The Extension %s is forbidden, you are not able to add it to the allowed Extensions',
 	'NOT_ASSIGNED'				=> 'Not assigned',
 );
 
