@@ -38,6 +38,15 @@ else
 }
 
 $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
+
+if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
+{
+	$mark_read = (isset($HTTP_POST_VARS['mark'])) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
+}
+else
+{
+	$mark_read = "";
+}
 //
 // End initial var setup
 //
@@ -103,7 +112,6 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 //
 // Do the forum Prune
 //
-/*
 if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 {
 	if( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
@@ -112,7 +120,6 @@ if( $is_auth['auth_mod'] && $board_config['prune_enable'] )
 		auto_prune($forum_id);
 	}
 }
-*/
 //
 // End of forum prune
 //
@@ -217,7 +224,7 @@ for($i = 0; $i < count($previous_days); $i++)
 $select_topic_days .= "</select>";
 
 //
-// Grab all the basic data (all topics except global announcements) 
+// Grab all the basic data (all topics except announcements) 
 // for this forum
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
@@ -226,11 +233,11 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
-		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
+		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . " 
+		AND t.topic_type <> " . POST_ANNOUNCE . " 
 		$limit_topics_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
-
 if(!$t_result = $db->sql_query($sql))
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
@@ -238,14 +245,32 @@ if(!$t_result = $db->sql_query($sql))
 $total_topics = $db->sql_numrows($t_result);
 
 //
+// All announcement data, this keeps announcements 
+// on each viewforum page ...
+//
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
+	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
+	WHERE ( t.forum_id = $forum_id 
+			OR t.forum_id = -1 ) 
+		AND t.topic_poster = u.user_id
+		AND p.post_id = t.topic_last_post_id
+		AND p.poster_id = u2.user_id
+		AND ( t.topic_type = " . POST_GLOBAL_ANNOUNCE . " 
+			OR t.topic_type = " . POST_ANNOUNCE . " )
+	ORDER BY p.post_time DESC";
+if(!$ta_result = $db->sql_query($sql))
+{
+   message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+}
+$total_announcements = $db->sql_numrows($ta_result);
+
+//
 // Post URL generation for templating vars
 //
-$post_new_topic_url = append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
-
 $template->assign_vars(array(
 	"L_DISPLAY_TOPICS" => $lang['Display_topics'], 
 
-	"U_POST_NEW_TOPIC" => $post_new_topic_url,
+	"U_POST_NEW_TOPIC" => append_sid("posting.$phpEx?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id"),
 
 	"S_SELECT_TOPIC_DAYS" => $select_topic_days,
 	"S_POST_DAYS_ACTION" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id . "&amp;start=$start"))
@@ -260,9 +285,23 @@ $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can'] : 
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['edit_posts'] . "<br />";
 $s_auth_can .= $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can'] : $lang['cannot'] ) . " " . $lang['delete_posts'] . "<br />";
 
+/*
+$s_auth_read_img = "<img src=\"" . ( ($is_auth['auth_read']) ? $image['auth_can_read'] : $image['auth_cannot_read'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_read']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['read_posts'] . "\" />";
+$s_auth_post_img = "<img src=\"" . ( ($is_auth['auth_post']) ? $image['auth_can_post'] : $image['auth_cannot_post'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_post']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['post_topics'] . "\" />";
+$s_auth_reply_img = "<img src=\"" . ( ($is_auth['auth_reply']) ? $image['auth_can_reply'] : $image['auth_cannot_reply'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_reply']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['reply_posts'] . "\" />";
+$s_auth_edit_img = "<img src=\"" . ( ($is_auth['auth_edit']) ? $image['auth_can_edit'] : $image['auth_cannot_edit'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_edit']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['edit_posts'] . "\" />";
+$s_auth_delete_img = "<img src=\"" . ( ($is_auth['auth_delete']) ? $image['auth_can_delete'] : $image['auth_cannot_delete'] ) . "\" alt=\"" . $lang['You'] . " " . ( ($is_auth['auth_delete']) ? $lang['can']  : $lang['cannot'] ) . " " . $lang['delete_posts'] . "\" />";
+*/
 if( $is_auth['auth_mod'] )
 {
 	$s_auth_can .= $lang['You'] . " " . $lang['can'] . " <a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['moderate_forum'] . "</a><br />";
+
+//	$s_auth_mod_img = "<a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['auth_mod'] . "\" alt=\"" . $lang['You'] . " " . $lang['can'] . " " . $lang['moderate_forum'] . "\" border=\"0\"/></a>";
+
+}
+else
+{
+	$s_auth_mod_img = "";
 }
 
 //
@@ -290,10 +329,18 @@ $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
 	"FORUM_NAME" => $forum_name,
 	"MODERATORS" => $forum_moderators,
-	
 	"IMG_POST" => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
-	"S_AUTH_LIST" => $s_auth_can)
+	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
+
+	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"), 
+
+	"S_AUTH_LIST" => $s_auth_can, 
+	"S_AUTH_READ_IMG" => $s_auth_read_img, 
+	"S_AUTH_POST_IMG" => $s_auth_post_img, 
+	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
+	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
+	"S_AUTH_MOD_IMG" => $s_auth_mod_img)
 );
 //
 // End header
@@ -302,9 +349,22 @@ $template->assign_vars(array(
 //
 // Okay, lets dump out the page ...
 //
-if($total_topics)
+if($total_topics || $total_announcements)
 {
-	$topic_rowset = $db->sql_fetchrowset($t_result);
+	//
+	// First get announcements
+	//
+	while( $row = $db->sql_fetchrow($ta_result) )
+	{
+		$topic_rowset[] = $row;
+	}
+	//
+	// Now get everything else
+	//
+	while( $row = $db->sql_fetchrow($t_result) )
+	{
+		$topic_rowset[] = $row;
+	}
 
 	for($i = 0; $i < $total_topics; $i++)
 	{
@@ -314,11 +374,11 @@ if($total_topics)
 
 		if($topic_type == POST_ANNOUNCE)
 		{
-			$topic_type = $lang['Annoucement'] . " ";
+			$topic_type = $lang['Topic_Announcement'] . " ";
 		}
 		else if($topic_type == POST_STICKY)
 		{
-			$topic_type = $lang['Sticky'] . " ";
+			$topic_type = $lang['Topic_Sticky'] . " ";
 		}
 		else
 		{
@@ -385,13 +445,29 @@ if($total_topics)
 
 			if(empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'])
 			{
-				$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
+				if($mark_read == "topics")
+				{
+					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+					$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+				}
+				else
+				{
+					$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />";
+				}
 			}
 			else
 			{
 				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 				{
-					$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					if($mark_read == "topics")
+					{
+						setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+						$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					}
+					else
+					{
+						$folder_image = ($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id] < $topic_rowset[$i]['post_time'] ) ? "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" />" : "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
+					}
 				}
 				else
 				{
@@ -417,7 +493,7 @@ if($total_topics)
 			$last_post_user = $topic_rowset[$i]['user2'];
 		}
 
-		$last_post = $last_post_time . "<br />by ";
+		$last_post = $last_post_time . "<br />" . $lang['by'] . " ";
 		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
 		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\" /></a>";
 

@@ -1,7 +1,7 @@
 <form method="post" action="{S_POST_DAYS_ACTION}"><table width="98%" cellspacing="0" cellpadding="4" border="0" align="center">
 	<tr>
 		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><a href="{U_INDEX}">{SITENAME}&nbsp;{L_INDEX}</a> -> {FORUM_NAME}</span></td>
-		<td align="right" valign="bottom"  nowrap="nowrap"><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_TOPIC_DAYS}&nbsp;<input type="submit"  value="{L_GO}" /></span></td>
+		<td align="right" valign="bottom"  nowrap="nowrap"><span class="gensmall">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_TOPIC_DAYS}&nbsp;<input type="submit" value="{L_GO}" /></span></td>
 	</tr>
 </table>
 
@@ -67,6 +67,9 @@
 			</tr>
 			<tr>
 				<td colspan="8"><br /><span class="gensmall"><b>{S_TIMEZONE}</b></span></td>
+			</tr>
+			<tr>
+				<td colspan="8"><br /><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
 			</tr>
 		</table></td>
 		<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span></td>
