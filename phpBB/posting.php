@@ -303,12 +303,15 @@ function remove_old_words($post_id)
 						}
 					}
 
-					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
-						WHERE word_id IN ($word_id_sql)";
-					$result = $db->sql_query($sql); 
-					if( !$result )
+					if( $word_id_sql )
 					{
-						message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "  
+							WHERE word_id IN ($word_id_sql)";
+						$result = $db->sql_query($sql); 
+						if( !$result )
+						{
+							message_die(GENERAL_ERROR, "Couldn't delete word list entry", "", __LINE__, __FILE__, $sql);
+						}
 					}
 				}
 
