@@ -607,7 +607,7 @@ $lang['Agree_not'] = "En hyväsy ehtoja";
 
 $lang['Wrong_activation'] = "Antamasi aktivointiavain ei täsmää tietokantaan tallennetun kanssa";
 $lang['Send_password'] = "Lähetä minulle uusi salasana"; 
-$lang['Password_updated'] = "Uusi salasana on luotu, tarkista sähköpostistasi lisäohjeet;
+$lang['Password_updated'] = "Uusi salasana on luotu, tarkista sähköpostistasi lisäohjeet";
 $lang['No_email_match'] = "Antamasi sähköpostiosoite ei täsmää käyttäjätunnuksen tiedoissa annettuun";
 $lang['New_password_activation'] = "Uuden salasanan aktivointi";
 $lang['Password_activated'] = "Käyttäjätunnuksesi on aktivoitu uudelleen. Kirjaudu sisään käyttäen uutta salasanaa joka lähetettiin sähköpostiisi";
