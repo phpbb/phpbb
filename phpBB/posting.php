@@ -82,17 +82,17 @@ if ( isset($HTTP_POST_VARS['cancel']) )
 	else if ( $topic_id )
 	{
 		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
-		$post_append = "";
+		$post_append = '';
 	}
 	else if ( $forum_id )
 	{
 		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
-		$post_append = "";
+		$post_append = '';
 	}
 	else
 	{
 		$redirect = "index.$phpEx";
-		$post_append = "";
+		$post_append = '';
 	}
 
 	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
@@ -871,7 +871,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	if( $is_auth['auth_sticky'] )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
-		if ( $post_data['topic_type'] == POST_STICKY )
+		if ( $post_data['topic_type'] == POST_STICKY || $topic_type == POST_STICKY )
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
@@ -881,7 +881,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 	if( $is_auth['auth_announce'] )
 	{
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_ANNOUNCE . '"';
-		if ( $post_data['topic_type'] == POST_ANNOUNCE )
+		if ( $post_data['topic_type'] == POST_ANNOUNCE || $topic_type == POST_ANNOUNCE )
 		{
 			$topic_type_toggle .= ' checked="checked"';
 		}
@@ -890,7 +890,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 
 	if ( $topic_type_toggle != '' )
 	{
-		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL || $topic_type == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 
