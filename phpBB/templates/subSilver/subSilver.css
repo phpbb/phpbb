@@ -269,6 +269,13 @@ span.hilit {
 }
 
 /* Quote & Code blocks */
+.quote {
+	color: #444;
+	font: normal 70%/125% Verdana, Arial, Helvetica, sans-serif;
+	border: #D1D7DC solid 1px;
+	background-color: #FAFAFA; 
+}
+
 .code {
 	color:	#006600;
 	font:	normal 70% 'Courier New', monospace;
@@ -276,12 +283,13 @@ span.hilit {
 	background-color: #FAFAFA;
 }
 
-.quote {
-	color: #444;
-	font: normal 70%/125% Verdana, Arial, Helvetica, sans-serif;
-	border: #D1D7DC solid 1px;
-	background-color: #FAFAFA; 
-}
+/* Syntax highlighning */
+.hl_bg { color: #FFFFFF }
+.hl_comment { color: #FF8000 }
+.hl_default { color: #0000BB }
+.hl_html { color: #000000 }
+.hl_keyword { color: #007700 }
+.hl_string { color: #DD0000 }
 
 /* Copyright and bottom info */
 .copyright {
