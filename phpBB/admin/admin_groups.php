@@ -19,401 +19,313 @@
  *
  ***************************************************************************/
 
-if( !empty($setmodules) )
+if (!empty($setmodules) )
 {
-	if ( !$auth->acl_get('a_group') )
+	if (!$auth->acl_get('a_group') )
 	{
 		return;
 	}
 
-	$filename = basename(__FILE__);
-	$module['GROUP']['CREATE'] = $filename . "$SID&amp;mode=create";
-	$module['GROUP']['MANAGE'] = $filename . "$SID&amp;mode=manage";
+	$module['GROUP']['MANAGE'] = basename(__FILE__) . "$SID";
 
 	return;
 }
 
 define('IN_PHPBB', 1);
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have general permissions?
-//
-if ( !$auth->acl_get('a_group') )
+if (!$auth->acl_get('a_group') )
 {
-	message_die(MESSAGE, $user->lang['No_admin']);
+	trigger_error($user->lang['NO_ADMIN']);
 }
 
-if( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) )
+
+// Check and set some common vars
+$action = (isset($_REQUEST['action']))? $_REQUEST['action'] : ((isset($_POST['addgroup'])) ? 'addgroup' : '');
+$group_id = (isset($_REQUEST['g']))? intval($_REQUEST['g']) : '';
+
+// Which page?
+page_header($user->lang['MANAGE']);
+
+switch ($action)
 {
-	$group_id = ( isset($_POST[POST_GROUPS_URL]) ) ? intval($_POST[POST_GROUPS_URL]) : intval($_GET[POST_GROUPS_URL]);
-}
-else
-{
-	$group_id = '';
-}
+	case 'edit':
+	case 'addgroup':
 
-//
-// Mode setting
-//
-if( isset($_POST['mode']) || isset($_GET['mode']) )
-{
-	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
-}
-else
-{
-	$mode = "";
-}
-
-if( isset($_POST['edit']) || isset($_POST['new']) )
-{
-	//
-	// Ok they are editing a group or creating a new group
-	//
-	$template->set_filenames(array(
-		"body" => "admin/group_edit_body.tpl")
-	);
-
-	if ( isset($_POST['edit']) )
-	{
-		//
-		// They're editing. Grab the vars.
-		//
-		$sql = "SELECT *
-			FROM " . GROUPS_TABLE . "
-			WHERE group_single_user <> " . TRUE . "
-			AND group_id = $group_id";
-		if(!$result = $db->sql_query($sql))
+		if (isset($_POST['submit']))
 		{
-			message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
+			$group_name = $_POST['group_name'];
+			$group_description = $_POST['group_description'];
+
 		}
 
-		if( !$db->sql_numrows($result) )
+		if ($action == 'edit' && empty($_POST['submit']))
 		{
-			message_die(GENERAL_MESSAGE, $user->lang['Group_not_exist']);
-		}
-
-		$group_info = $db->sql_fetchrow($result);
-
-		$mode = "editgroup";
-		$template->assign_block_vars("group_edit", array());
-
-	}
-	else if( isset($_POST['new']) )
-	{
-		$group_info = array (
-			"group_name" => "",
-			"group_description" => "",
-			"group_moderator" => "",
-			"group_type" => GROUP_OPEN);
-		$group_open = "checked=\"checked\"";
-
-		$mode = "newgroup";
-
-	}
-	//
-	// Ok, now we know everything about them, let's show the page.
-	//
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS . "
-		ORDER BY username";
-	$u_result = $db->sql_query($sql);
-	if( !$u_result )
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain user info for moderator list", "", __LINE__, __FILE__, $sql);
-	}
-
-	$user_list = $db->sql_fetchrowset($u_result);
-
-	for($i = 0; $i < count($user_list); $i++)
-	{
-		if( $user_list[$i]['user_id'] == $group_info['group_moderator'] )
-		{
-			$group_moderator = $user_list[$i]['username'];
-		}
-	}
-
-	$group_open = ( $group_info['group_type'] == GROUP_OPEN ) ? "checked=\"checked\"" : "";
-	$group_closed = ( $group_info['group_type'] == GROUP_CLOSED ) ? "checked=\"checked\"" : "";
-	$group_hidden = ( $group_info['group_type'] == GROUP_HIDDEN ) ? "checked=\"checked\"" : "";
-
-	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-
-	$template->assign_vars(array(
-		"GROUP_NAME" => $group_info['group_name'],
-		"GROUP_DESCRIPTION" => $group_info['group_description'],
-		"GROUP_MODERATOR" => $group_moderator,
-
-		"L_GROUP_TITLE" => $user->lang['Group_administration'],
-		"L_GROUP_EDIT_DELETE" => ( isset($_POST['new']) ) ? $user->lang['New_group'] : $user->lang['Edit_group'],
-		"L_GROUP_NAME" => $user->lang['group_name'],
-		"L_GROUP_DESCRIPTION" => $user->lang['group_description'],
-		"L_GROUP_MODERATOR" => $user->lang['group_moderator'],
-		"L_FIND_USERNAME" => $user->lang['Find_username'],
-		"L_GROUP_STATUS" => $user->lang['group_status'],
-		"L_GROUP_OPEN" => $user->lang['group_open'],
-		"L_GROUP_CLOSED" => $user->lang['group_closed'],
-		"L_GROUP_HIDDEN" => $user->lang['group_hidden'],
-		"L_GROUP_DELETE" => $user->lang['group_delete'],
-		"L_GROUP_DELETE_CHECK" => $user->lang['group_delete_check'],
-		"L_SUBMIT" => $user->lang['Submit'],
-		"L_RESET" => $user->lang['Reset'],
-		"L_DELETE_MODERATOR" => $user->lang['delete_group_moderator'],
-		"L_DELETE_MODERATOR_EXPLAIN" => $user->lang['delete_moderator_explain'],
-		"L_YES" => $user->lang['Yes'],
-
-		"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"),
-
-		"S_GROUP_OPEN_TYPE" => GROUP_OPEN,
-		"S_GROUP_CLOSED_TYPE" => GROUP_CLOSED,
-		"S_GROUP_HIDDEN_TYPE" => GROUP_HIDDEN,
-		"S_GROUP_OPEN_CHECKED" => $group_open,
-		"S_GROUP_CLOSED_CHECKED" => $group_closed,
-		"S_GROUP_HIDDEN_CHECKED" => $group_hidden,
-		"S_GROUP_ACTION" => append_sid("admin_groups.$phpEx"),
-		"S_HIDDEN_FIELDS" => $s_hidden_fields)
-	);
-
-	$template->pparse('body');
-
-}
-else if( isset($_POST['group_update']) )
-{
-	//
-	// Ok, they are submitting a group, let's save the data based on if it's new or editing
-	//
-	if( isset($_POST['group_delete']) )
-	{
-		$sql = "DELETE FROM " . GROUPS_TABLE . "
-			WHERE group_id = " . $group_id;
-		if ( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
-		}
-
-		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-			WHERE group_id = " . $group_id;
-		if ( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't update user_group", "", __LINE__, __FILE__, $sql);
-		}
-
-		$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-			WHERE group_id = " . $group_id;
-		if ( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't update auth_access", "", __LINE__, __FILE__, $sql);
-		}
-
-		$message = $user->lang['Deleted_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
-
-		message_die(GENERAL_MESSAGE, $message);
-	}
-	else
-	{
-		$group_type = isset($_POST['group_type']) ? intval($_POST['group_type']) : GROUP_OPEN;
-		$group_name = isset($_POST['group_name']) ? trim($_POST['group_name']) : "";
-		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : "";
-		$group_moderator = isset($_POST['username']) ? $_POST['username'] : "";
-		$delete_old_moderator = isset($_POST['delete_old_moderator']) ? intval($_POST['delete_old_moderator']) : "";
-
-		if( $group_name == "" )
-		{
-			message_die(GENERAL_MESSAGE, $user->lang['No_group_name']);
-		}
-		else if( $group_moderator == "" )
-		{
-			message_die(GENERAL_MESSAGE, $user->lang['No_group_moderator']);
-		}
-
-		$this_userdata = get_userdata($group_moderator);
-		$group_moderator = $this_userdata['user_id'];
-
-		if( !$group_moderator )
-		{
-			message_die(GENERAL_MESSAGE, $user->lang['No_group_moderator']);
-		}
-
-		if( $mode == "editgroup" )
-		{
-			$sql = "SELECT *
-				FROM " . GROUPS_TABLE . "
-				WHERE group_single_user <> " . TRUE . "
-				AND group_id = " . $group_id;
-			if(!$result = $db->sql_query($sql))
-			{
-				message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
-			}
-			if( !$db->sql_numrows($result) )
-			{
-				message_die(GENERAL_MESSAGE, $user->lang['Group_not_exist']);
-			}
-			$group_info = $db->sql_fetchrow($result);
-
-			if ( $group_info['group_moderator'] != $group_moderator )
-			{
-				if ( $delete_old_moderator != "" )
-				{
-					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE user_id = " . $group_info['group_moderator'] . "
-							AND group_id = " . $group_id;
-					if ( !$result = $db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, "Couldn't update group moderator", "", __LINE__, __FILE__, $sql);
-					}
-				}
-				$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-					VALUES (" . $group_id . ", " . $group_moderator . ", 0)";
-				if ( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't update group moderator", "", __LINE__, __FILE__, $sql);
-				}
-			}
-			$sql = "UPDATE " . GROUPS_TABLE . "
-				SET group_type = $group_type, group_name = '" . str_replace("\'", "''", $group_name) . "', group_description = '" . str_replace("\'", "''", $group_description) . "', group_moderator = $group_moderator
+			$sql = "SELECT * 
+				FROM " . GROUPS_TABLE . " 
 				WHERE group_id = $group_id";
-			if ( !$result = $db->sql_query($sql) )
+			$result = $db->sql_query($sql);
+
+			if (!extract($db->sql_fetchrow($result)))
 			{
-				message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
+				trigger_error($user->lang['NO_GROUP']);
 			}
-
-			$message = $user->lang['Updated_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
-
-			message_die(GENERAL_MESSAGE, $message);
 		}
-		else if( $mode == "newgroup" )
-		{
-			$sql = "SELECT MAX(group_id) AS new_group_id
-				FROM " . GROUPS_TABLE;
-			if ( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);
-			}
-			$row = $db->sql_fetchrow($result);
-
-			$new_group_id = $row['new_group_id'] + 1;
-
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
-				VALUES ($new_group_id, $group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
-			if ( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert new group", "", __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-				VALUES ($new_group_id, $group_moderator, 0)";
-			if ( !$result = $db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't insert new user-group info", "", __LINE__, __FILE__, $sql);
-			}
-
-			$message = $user->lang['Added_new_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
-
-			message_die(GENERAL_MESSAGE, $message);
-
-		}
-		else
-		{
-			message_die(GENERAL_MESSAGE, $user->lang['Group_mode_not_selected']);
-		}
-	}
-}
-
-page_header($user->lang['Manage']);
 
 ?>
 
-<h1><?php echo $user->lang['Manage']; ?></h1>
+<h1><?php echo $user->lang['MANAGE'] . ' : <i>' . $group_name . '</i>'; ?></h1>
 
-<p><?php echo $user->lang['Group_manage_explain']; ?></p>
+<p><?php echo $user->lang['GROUP_EDIT_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+<?php 
+
+		$sql = "SELECT * 
+			FROM " . RANKS_TABLE . "
+			WHERE rank_special = 1
+			ORDER BY rank_title";
+		$result = $db->sql_query($sql);
+
+		$rank_options = '<option value="-1"' . ((empty($group_rank)) ? 'selected="selected" ' : '') . '>' . $user->lang['USER_DEFAULT'] . '</option>';
+		if ($row = $db->sql_fetchrow($result))
+		{
+			do
+			{
+				$selected = (!empty($group_rank) && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
+				$rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+
+		$type_open = ($group_type == GROUP_OPEN) ? ' checked="checked"' : '';
+		$type_closed = ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
+		$type_hidden = ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
+		$type_free = ($group_type == GROUP_FREE) ? ' checked="checked"' : '';
+
+		$sql = "SELECT u.user_id, u.username  
+			FROM " . GROUPS_MODERATOR_TABLE . " gm, " . USERS_TABLE . " u 
+			WHERE gm.group_id = $group_id 
+				AND u.user_id = gm.user_id";
+//		$result = $db->sql_query($sql);
+
+?>
+
+<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="3"><?php echo $user->lang['Manage']; ?></th>
+		<th colspan="2"><?php echo $user->lang['GROUP_DETAILS']; ?></th>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_NAME']; ?>:</td>
+		<td class="row1"><input type="text" name="group_name" value="<?php echo (!empty($group_name)) ? $group_name : ''; ?>" size="40" maxlength="40" /></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_DESC']; ?>:</td>
+		<td class="row1"><input type="text" name="group_description" value="<?php echo (!empty($group_description)) ? $group_description : ''; ?>" size="40" maxlength="255" /></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_TYPE']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_TYPE_EXPLAIN']; ?></span></td>
+		<td class="row1" nowrap="nowrap"><input type="radio" name="group_type" value="<?php echo GROUP_FREE . '"' . $type_free; ?> /> <?php echo $user->lang['GROUP_OPEN']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_OPEN . '"' . $type_open; ?> /> <?php echo $user->lang['GROUP_REQUEST']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_CLOSED . '"' . $type_closed; ?> /> <?php echo $user->lang['GROUP_CLOSED']; ?> &nbsp; <input type="radio" name="group_type" value="<?php echo GROUP_HIDDEN . '"' . $type_hidden; ?> /> <?php echo $user->lang['GROUP_HIDDEN']; ?></td>
+	</tr>
+	<tr>
+		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS_SAVE']; ?></th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="2"><span class="gensmall"><?php echo $user->lang['GROUP_SETTINGS_SAVE_EXPLAIN']; ?></span></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_COLOR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_COLOR_EXPLAIN']; ?></span></td>
+		<td class="row1"><input type="text" name="group_color" value="<?php echo (!empty($group_color)) ? $group_color : ''; ?>" size="6" maxlength="6" /></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_RANK']; ?>:</td>
+		<td class="row1"><select name="group_rank"><?php echo $rank_options; ?></select></td>
+	</tr>
+	<!-- tr>
+		<td class="row2"><?php echo $user->lang['GROUP_AVATAR']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_AVATAR_EXPLAIN']; ?></span></td>
+		<td class="row1">&nbsp;</td>
+	</tr -->
+	<tr>
+		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS']; ?></th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="2"><span class="gensmall"><?php echo $user->lang['GROUP_SETTINGS_EXPLAIN']; ?></span></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_LANG']; ?>:</td>
+		<td class="row1"><select name="tz"><?php echo '<option value="-1" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . language_select(); ?></select></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_TIMEZONE']; ?>:</td>
+		<td class="row1"><select name="tz"><?php echo '<option value="-1" selected="selected">' . $user->lang['USER_DEFAULT'] . '</option>' . tz_select(); ?></select></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_DST']; ?>:</td>
+		<td class="row1"><input type="radio" name="dst" value="0" /> <?php echo $user->lang['DISABLED']; ?> &nbsp; <input type="radio" name="dst" value="1" /> <?php echo $user->lang['ENABLED']; ?> &nbsp; <input type="radio" name="dst" value="-1" checked="checked" /> <?php echo $user->lang['USER_DEFAULT']; ?></td>
+	</tr>
+	<tr>
+		<td class="row2"><?php echo $user->lang['GROUP_FORCE_SET']; ?>:<br /><span class="gensmall"><?php echo $user->lang['GROUP_FORCE_SET_EXPLAIN']; ?></span></td>
+		<td class="row1"><input type="radio" name="force_set" value="1" checked="checked" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="force_set" value="0" /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="liteoption" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+		break;
+
+	case 'add':
+		break;
+
+	case 'delete':
+		break;
+
+	case 'list':
+
+?>
+
+<h1><?php echo $user->lang['GROUP_MEMBERS']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_LIST_EXPLAIN']; ?></p>
+
+<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=list"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th colspan="2"><?php echo $user->lang['']; ?></th>
+	</tr>
+</table></form>
+
+<?php
+
+		break;
+
+	default:
+	
+		// Default mangement page
+
+?>
+
+<h1><?php echo $user->lang['MANAGE']; ?></h1>
+
+<p><?php echo $user->lang['GROUP_MANAGE_EXPLAIN']; ?></p>
+
+<h1><?php echo $user->lang['USER_DEF_GROUPS']; ?></h1>
+
+<p><?php echo $user->lang['USER_DEF_GROUPS_EXPLAIN']; ?></p>
+
+<form method="post" action="admin_groups.<?php echo "$phpEx$SID"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th width="95%"><?php echo $user->lang['MANAGE']; ?></th>
+		<th><?php echo $user->lang['ACTION']; ?></th>
 	</tr>
 <?php
 
-	$sql = "SELECT group_id, group_name
-		FROM " . GROUPS_TABLE . "
-		ORDER BY group_name";
-	$result = $db->sql_query($sql);
+		$sql = "SELECT ug.group_id, u.user_id, u.username
+			FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
+			WHERE ug.user_pending = 1 
+				AND g.group_type = " . GROUP_SPECIAL . " 
+				AND u.user_id = ug.user_id
+			ORDER BY ug.group_id, u.user_id";
+		$result = $db->sql_query($sql);
 
-	$groups = array();
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		do
+		$pending = array();
+		if ($row = $db->sql_fetchrow($result) )
 		{
-			$groups[] = $row;
+			do
+			{
+				$pending[$row['group_id']][] = $row;
+			}
+			while ($row = $db->sql_fetchrow($result) );
 		}
-		while ( $row = $db->sql_fetchrow($result) );
-	}
+		$db->sql_freeresult($result);
 
-	$sql = "SELECT ug.group_id, u.user_id, u.username
-		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
-		WHERE ug.user_pending = 1
-			AND u.user_id = ug.user_id
-		ORDER BY ug.group_id";
-	$result = $db->sql_query($sql);
+		$sql = "SELECT group_id, group_name, group_type 
+			FROM " . GROUPS_TABLE . "
+			ORDER BY group_type ASC, group_name";
+		$result = $db->sql_query($sql);
 
-	$pending = array();
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		do
+		$special_toggle = false;
+		if ($row = $db->sql_fetchrow($result) )
 		{
-			$pending[$row['group_id']][] = $row;
-		}
-		while ( $row = $db->sql_fetchrow($result) );
-	}
+			do
+			{
 
-	foreach ( $groups as $group_ary )
-	{
-		$group_id = $group_ary['group_id'];
-		$group_name = ( !empty($user->lang[$group_ary['group_name']]) ) ? $user->lang[$group_ary['group_name']] : $group_ary['group_name'];
+				if ($row['group_type'] == GROUP_SPECIAL && !$special_toggle)
+				{
+					$special_toggle = true;
 
 ?>
 	<tr>
-		<td class="cat"><span class="cattitle"><?php echo $group_name;?></span></td>
-		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="edit[<?php echo $group_id; ?>]" value="<?php echo $user->lang['Edit'];?>" />&nbsp;</td>
-		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="delete[<?php echo $group_id; ?>]" value="<?php echo $user->lang['Delete'];?>" />&nbsp;</td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" name="addgroup" value="<?php echo $user->lang['ADD_NEW_GROUP']; ?>" /></td>
+	</tr>
+</table>
+
+<h1><?php echo $user->lang['SPECIAL_GROUPS']; ?></h1>
+
+<p><?php echo $user->lang['SPECIAL_GROUPS_EXPLAIN']; ?></p>
+
+<table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th width="95%"><?php echo $user->lang['MANAGE']; ?></th>
+		<th><?php echo $user->lang['ACTION']; ?></th>
 	</tr>
 <?php
 
-		if ( is_array($pending[$group_id]) )
-		{
-			$row_class = '';
-			foreach( $pending[$group_id] as $pending_ary )
-			{
-				$row_class = ( $row_class != 'row1' ) ? 'row1' : 'row2';
+				}
+
+				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+
+				$group_id = $row['group_id'];
+				$group_name = (!empty($user->lang[$row['group_name']]))? $user->lang[$row['group_name']] : $row['group_name'];
+
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>"><a href="admin_groups.<?php echo "$phpEx$SID&amp;action=list&amp;g=$group_id"; ?>"><?php echo $group_name;?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="admin_groups.<?php echo "$phpEx$SID&amp;action=add&amp;g=$group_id"; ?>"><?php echo $user->lang['ADD']; ?></a> | <a href="admin_groups.<?php echo "$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><?php echo $user->lang['EDIT']; ?></a><?php 
+
+				if (!$special_toggle)
+				{
+
+?> | <a href="admin_groups.<?php echo "$phpEx$SID&amp;action=delete&amp;g=$group_id"; ?>"><?php echo $user->lang['DELETE']; ?></a><?php
+	
+				}
+			
+?>&nbsp;</td>
+	</tr>
+<?php
+
+				if (is_array($pending[$group_id]) )
+				{
+					foreach ($pending[$group_id] as $pending_ary )
+					{
+						$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
+
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $pending_ary['username'];?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Approve_selected'];?>" /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Deny_selected'];?>" /></td>
-	</tr>
-<?php
-			}
-		}
-		else
-		{
-?>
-	<tr>
-		<td class="row1" colspan="4" align="center">No pending users</td>
+		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Approve_selected'];?>" /> &nbsp; <input class="liteoption" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Deny_selected'];?>" /></td>
 	</tr>
 <?php
 
+					}
+				}
+			}
+			while ($row = $db->sql_fetchrow($result) );
 		}
-	}
+		$db->sql_freeresult($result);
 
 ?>
 </table></form>
 
 <?php
+
+		break;
+
+}
 
 page_footer();
 
