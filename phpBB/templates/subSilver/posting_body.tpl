@@ -14,13 +14,13 @@ var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion); // Get browser version
 
 var is_ie = ((clientPC.indexOf("msie") != -1) && (clientPC.indexOf("opera") == -1));
-var is_nav  = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
+var is_nav = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
                 && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera')==-1)
                 && (clientPC.indexOf('webtv')==-1) && (clientPC.indexOf('hotjava')==-1));
+var is_moz = 0;
 
-var is_win   = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
-var is_mac    = (clientPC.indexOf("mac")!=-1);
-
+var is_win = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
+var is_mac = (clientPC.indexOf("mac")!=-1);
 
 // Helpline messages
 b_help = "{L_BBCODE_B_HELP}";
@@ -92,38 +92,48 @@ function checkForm() {
 }
 
 function emoticon(text) {
+	var txtarea = document.post.message;
 	text = ' ' + text + ' ';
-	if (document.post.message.createTextRange && document.post.message.caretPos) {
-		var caretPos = document.post.message.caretPos;
+	if (txtarea.createTextRange && txtarea.caretPos) {
+		var caretPos = txtarea.caretPos;
 		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
-		document.post.message.focus();
+		txtarea.focus();
 	} else {
-	document.post.message.value  += text;
-	document.post.message.focus();
+		txtarea.value  += text;
+		txtarea.focus();
 	}
 }
 
 function bbfontstyle(bbopen, bbclose) {
+	var txtarea = document.post.message;
+
 	if ((clientVer >= 4) && is_ie && is_win) {
 		theSelection = document.selection.createRange().text;
 		if (!theSelection) {
-			document.post.message.value += bbopen + bbclose;
-			document.post.message.focus();
+			txtarea.value += bbopen + bbclose;
+			txtarea.focus();
 			return;
 		}
 		document.selection.createRange().text = bbopen + theSelection + bbclose;
-		document.post.message.focus();
-		return;
-	} else {
-		document.post.message.value += bbopen + bbclose;
-		document.post.message.focus();
+		txtarea.focus();
 		return;
 	}
-	storeCaret(document.post.message);
+	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	{
+		mozWrap(txtarea, bbopen, bbclose);
+		return;
+	}
+	else
+	{
+		txtarea.value += bbopen + bbclose;
+		txtarea.focus();
+	}
+	storeCaret(txtarea);
 }
 
 
 function bbstyle(bbnumber) {
+	var txtarea = document.post.message;
 
 	donotinsert = false;
 	theSelection = false;
@@ -132,23 +142,29 @@ function bbstyle(bbnumber) {
 	if (bbnumber == -1) { // Close all open tags & default button names
 		while (bbcode[0]) {
 			butnumber = arraypop(bbcode) - 1;
-			document.post.message.value += bbtags[butnumber + 1];
+			txtarea.value += bbtags[butnumber + 1];
 			buttext = eval('document.post.addbbcode' + butnumber + '.value');
 			eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 		}
 		imageTag = false; // All tags are closed including image tags :D
-		document.post.message.focus();
+		txtarea.focus();
 		return;
 	}
 
 	if ((clientVer >= 4) && is_ie && is_win)
+	{
 		theSelection = document.selection.createRange().text; // Get text selection
-		
-	if (theSelection) {
-		// Add tags around selection
-		document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
-		document.post.message.focus();
-		theSelection = '';
+		if (theSelection) {
+			// Add tags around selection
+			document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
+			txtarea.focus();
+			theSelection = '';
+			return;
+		}
+	}
+	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	{
+		mozWrap(txtarea, bbtags[bbnumber], bbtags[bbnumber+1]);
 		return;
 	}
 	
@@ -163,31 +179,47 @@ function bbstyle(bbnumber) {
 	if (donotinsert) {		// Close all open tags up to the one just clicked & default button names
 		while (bbcode[bblast]) {
 				butnumber = arraypop(bbcode) - 1;
-				document.post.message.value += bbtags[butnumber + 1];
+				txtarea.value += bbtags[butnumber + 1];
 				buttext = eval('document.post.addbbcode' + butnumber + '.value');
 				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 				imageTag = false;
 			}
-			document.post.message.focus();
+			txtarea.focus();
 			return;
 	} else { // Open tags
 	
 		if (imageTag && (bbnumber != 14)) {		// Close image tag before adding another
-			document.post.message.value += bbtags[15];
+			txtarea.value += bbtags[15];
 			lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
 			document.post.addbbcode14.value = "Img";	// Return button back to normal state
 			imageTag = false;
 		}
 		
 		// Open tag
-		document.post.message.value += bbtags[bbnumber];
+		txtarea.value += bbtags[bbnumber];
 		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
 		arraypush(bbcode,bbnumber+1);
 		eval('document.post.addbbcode'+bbnumber+'.value += "*"');
-		document.post.message.focus();
+		txtarea.focus();
 		return;
 	}
-	storeCaret(document.post.message);
+	storeCaret(txtarea);
+}
+
+// From http://www.massless.org/mozedit/
+function mozWrap(txtarea, open, close)
+{
+	var selLength = txtarea.textLength;
+	var selStart = txtarea.selectionStart;
+	var selEnd = txtarea.selectionEnd;
+	if (selEnd == 1 || selEnd == 2) 
+		selEnd = selLength;
+
+	var s1 = (txtarea.value).substring(0,selStart);
+	var s2 = (txtarea.value).substring(selStart, selEnd)
+	var s3 = (txtarea.value).substring(selEnd, selLength);
+	txtarea.value = s1 + open + s2 + close + s3;
+	return;
 }
 
 // Insert at Claret position. Code from

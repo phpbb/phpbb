@@ -15,13 +15,11 @@
 	</tr>
 	<tr> 
 	  <td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
-	  <td class="row2" colspan="2"><span class="courier"> 
-		<input type="text" size="35" style="width: 350px" maxlength="100" name="subject" class="post" />
-		</span></td>
+	  <td class="row2" colspan="2"><input class="post" type="text" size="35" style="width: 350px" maxlength="100" name="subject" /></td>
 	</tr>
 	<tr> 
 	  <td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
-	  <td class="row2" colspan="2"><span class="courier">{S_FORUM_SELECT}</span></td>
+	  <td class="row2" colspan="2">{S_FORUM_SELECT}</td>
 	</tr>
 	<tr> 
 	  <td class="catHead" colspan="3" height="28"> 
