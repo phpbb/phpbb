@@ -125,6 +125,7 @@ define('MAIL_HIGH_PRIORITY', 2);
 define('LOG_ADMIN', 0);
 define('LOG_MOD', 1);
 define('LOG_CRITICAL', 2);
+define('LOG_USERS', 3);
 
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);

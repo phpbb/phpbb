@@ -140,7 +140,7 @@ if ($mode == 'mod')
 //
 $log_data = array();
 $log_count = 0;
-view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, $sql_where, $sql_sort);
+view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
 
 if ($log_count)
 {

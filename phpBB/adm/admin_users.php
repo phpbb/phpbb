@@ -36,6 +36,7 @@ include($phpbb_root_path.'includes/functions_profile_fields.'.$phpEx);
 //
 $mode		= request_var('mode', '');
 $action		= request_var('action', 'overview');
+$start		= request_var('start', 0);
 $username	= request_var('username', '');
 $user_id	= request_var('u', 0);
 $ip			= request_var('ip', '');
@@ -47,6 +48,7 @@ $quicktools	= request_var('quicktools', '');
 $submit		= (isset($_POST['update'])) ? true : false;
 $confirm	= (isset($_POST['confirm'])) ? true : false;
 $cancel		= (isset($_POST['cancel'])) ? true : false;
+$preview	= (isset($_POST['preview'])) ? true : false;
 
 $error = array();
 
@@ -119,7 +121,7 @@ adm_page_header($user->lang['MANAGE']);
 //
 // User has submitted a form, process it
 //
-if ($submit)
+if ($submit || $preview)
 {
 	switch ($action)
 	{
@@ -473,6 +475,16 @@ if ($submit)
 
 			break;
 
+		case 'feedback':
+
+			if ($message = request_var('message', ''))
+			{
+				add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
+				trigger_error("ADDED");
+			}
+
+			break;
+
 		case 'profile':
 
 			$var_ary = array(
@@ -672,9 +684,120 @@ if ($submit)
 			break;
 
 		case 'avatar':
+
+			$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+
+			$var_ary = array(
+				'uploadurl'		=> (string) '', 
+				'remotelink'	=> (string) '', 
+				'width'			=> (string) '',
+				'height'		=> (string) '', 
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$data[$var] = request_var($var, $default);
+			}
+
+			$var_ary = array(
+				'uploadurl'		=> array('string', true, 5, 255), 
+				'remotelink'	=> array('string', true, 5, 255), 
+				'width'			=> array('string', true, 1, 3), 
+				'height'		=> array('string', true, 1, 3), 
+			);
+
+			$error = validate_data($data, $var_ary);
+
+			if (!sizeof($error))
+			{
+				$data['user_id'] = $user_id;
+
+				if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+				{
+					list($type, $filename, $width, $height) = avatar_upload($data, $error);
+				}
+				else if ($data['remotelink'])
+				{
+					list($type, $filename, $width, $height) = avatar_remote($data, $error);
+				}
+				else if ($delete)
+				{
+					$type = $filename = $width = $height = '';
+				}
+			}
+
+			if (!sizeof($error))
+			{
+				// Do we actually have any data to update?
+				if (sizeof($data))
+				{
+					$sql_ary = array(
+						'user_avatar'			=> $filename, 
+						'user_avatar_type'		=> $type, 
+						'user_avatar_width'		=> $width, 
+						'user_avatar_height'	=> $height, 
+					);
+
+					echo $sql = 'UPDATE ' . USERS_TABLE . ' 
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
+						WHERE user_id = $user_id";
+					$db->sql_query($sql);
+
+					// Delete old avatar if present
+					if ($user_avatar && $filename != $user_avatar)
+					{
+						avatar_delete($user_avatar);
+					}
+				}
+
+				trigger_error($message);
+			}
+
+			extract($data);
+			unset($data);
+
 			break;
 
-		case 'signature':
+		case 'sig':
+
+			$var_ary = array(
+				'enable_html'		=> (bool) $config['allow_html'], 
+				'enable_bbcode'		=> (bool) $config['allow_bbcode'], 
+				'enable_smilies'	=> (bool) $config['allow_smilies'],
+				'enable_urls'		=> true,  
+				'signature'			=> (string) $user_sig, 
+
+			);
+
+			foreach ($var_ary as $var => $default)
+			{
+				$$var = request_var($var, $default);
+			}
+
+			if (!$preview)
+			{
+				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+
+				$message_parser = new parse_message();
+
+				$message_parser->message = $signature;
+				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+
+				$sql_ary = array(
+					'user_sig'					=> (string) $message_parser->message, 
+					'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+					'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
+				);
+
+				$sql = 'UPDATE ' . USERS_TABLE . ' 
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
+					WHERE user_id = $user_id";
+				$db->sql_query($sql);
+
+				$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+				trigger_error($message);
+			}
+
 			break;
 
 		case 'groups':
@@ -706,11 +829,41 @@ if ($username || $user_id)
 
 ?>
 
+<script language="javascript" type="text/javascript">
+<!--
+
+var form_name = 'admin';
+var text_name = 'signature';
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+imageTag = false;
+
+// Helpline messages
+b_help = "<?php echo $user->lang['BBCODE_B_HELP']; ?>";
+i_help = "<?php echo $user->lang['BBCODE_I_HELP']; ?>";
+u_help = "<?php echo $user->lang['BBCODE_U_HELP']; ?>";
+q_help = "<?php echo $user->lang['BBCODE_Q_HELP']; ?>";
+c_help = "<?php echo $user->lang['BBCODE_C_HELP']; ?>";
+l_help = "<?php echo $user->lang['BBCODE_L_HELP']; ?>";
+o_help = "<?php echo $user->lang['BBCODE_O_HELP']; ?>";
+p_help = "<?php echo $user->lang['BBCODE_P_HELP']; ?>";
+w_help = "<?php echo $user->lang['BBCODE_W_HELP']; ?>";
+a_help = "<?php echo $user->lang['BBCODE_A_HELP']; ?>";
+s_help = "<?php echo $user->lang['BBCODE_S_HELP']; ?>";
+f_help = "<?php echo $user->lang['BBCODE_F_HELP']; ?>";
+e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
+
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="editor.js"></script>
+
 <h1><?php echo $user->lang['USER_ADMIN']; ?></h1>
 
 <p><?php echo $user->lang['USER_ADMIN_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id"; ?>"<?php echo ($can_upload) ? ' enctype="multipart/form-data"' : ''; ?>><table width="100%" cellspacing="2" cellpadding="0" border="0" align="center">
+<form method="post" name="admin" action="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id"; ?>"<?php echo ($file_uploads) ? ' enctype="multipart/form-data"' : ''; ?>><table width="100%" cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
 		<td align="right"><?php echo $user->lang['SELECT_FORM']; ?>: <select name="action" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();"><?php echo $form_options; ?></select></td>
 	</tr>
@@ -830,67 +983,84 @@ if ($username || $user_id)
 
 			break;
 
-
-
-
-
-
 		case 'feedback':
 
-			if ($submit)
+			$st	= request_var('st', 0);
+			$sk	= request_var('sk', 't');
+			$sd	= request_var('sd', 'd');
+
+			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+			$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+
+			$s_limit_days = $s_sort_key = $s_sort_dir = '';
+			gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir);
+
+			// Define where and sort sql for use in displaying logs
+			$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
+			$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
+
+			$log_data = array();
+			$log_count = 0;
+			view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
+
+			$pagination = generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $total_reports, $config['posts_per_page'], $start);
+
+			if ($log_count)
 			{
-
-			}
-
-?>
-
-
-
-<?php
-
-			$sql = 'SELECT COUNT(user_id) AS total_reports
-				FROM ' . USERS_NOTES_TABLE . "
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			
-			$total_reports = $row['total_reports'];
-
-			if ($total_reports)
-			{
-				$pagination = generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total_reports, $config['posts_per_page'], $start);
-
-				$sql = 'SELECT u.username, n.* 
-					FROM ' . USERS_NOTES_TABLE . ' n, ' . USERS_TABLE . " u  
-					WHERE n.user_id = $user_id 
-						AND u.user_id = n.reporter_id 
-					ORDER BY n.report_log DESC, n.report_date DESC";
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
+				for($i = 0; $i < sizeof($log_data); $i++)
 				{
 					$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 				<tr>
-					<td class="<?php echo $row_class; ?>"><span class="gensmall">Report by: <b><?php echo $row['username']; ?></b> on <?php echo $user->format_date($row['report_date']); ?></span><hr /><?php echo $row['report_text']; ?></td>
+					<td class="<?php echo $row_class; ?>"><span class="gensmall">Report by: <b><?php echo $log_data[$i]['username']; ?></b> on <?php echo $user->format_date($log_data[$i]['time']); ?></span><hr /><?php echo $log_data[$i]['action']; ?></td>
+					<td class="<?php echo $row_class; ?>" width="5%" align="center"><input type="checkbox" name="mark[]" value="<?php echo $log_data[$i]['id']; ?>" /></td>
 				</tr>
 <?php
 
 				}
-				$db->sql_freeresult($result);
 			}
 			else
 			{
 
 ?>
 				<tr>
-					<td class="row1" align="center">No reports exist for this user</td>
+					<td class="row1" colspan="2" align="center">No reports exist for this user</td>
 				</tr>
 <?php
 
 			}
+
+
+?>
+			<tr>
+				<td class="cat" colspan="2" align="center"><?php echo $user->lang['DISPLAY_LOG']; ?>: &nbsp;<?php echo $s_limit_days; ?>&nbsp;<?php echo $user->lang['SORT_BY']; ?>: <?php echo $s_sort_key; ?> <?php echo $s_sort_dir; ?>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="sort" /></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td align="right"></td>
+	</tr>
+</table>
+
+<h1><?php echo $user->lang['ADD_FEEDBACK']; ?></h1>
+
+<p><?php echo $user->lang['ADD_FEEDBACK_EXPLAIN']; ?></p>
+
+<table width="100%" cellspacing="2" cellpadding="0" border="0" align="center">
+	<tr>
+		<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
+			<tr>
+				<th colspan="2"><?php echo $user->lang['USER_ADMIN_' . strtoupper($action)]; ?></th>
+			</tr>
+			<tr>
+				<td class="row1" colspan="2" align="center"><textarea name="message" rows="10" cols="76"></textarea></td>
+			</tr>
+<?php
+
+
 			break;
 
 
@@ -1033,12 +1203,10 @@ if ($username || $user_id)
 				<td class="row1"><b><?php echo $user->lang['VIEW_AVATARS']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewavatars" value="1"<?php echo $viewavatars_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewavatars" value="0"<?php echo $viewavatars_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<!-- IF S_CHANGE_CENSORS -->
 			<tr> 
 				<td class="row1"><b><?php echo $user->lang['DISABLE_CENSORS']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewcensors" value="1"<?php echo $viewcensors_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewcensors" value="0"<?php echo $viewcensors_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<!-- ENDIF -->
 			<!-- tr>
 				<td class="row1"><b><?php echo $user->lang['MINIMUM_KARMA']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['MINIMUM_KARMA_EXPLAIN']; ?></span></td>
 				<td class="row2"><select name="user_min_karma">{S_MIN_KARMA_OPTIONS}</select></td>
@@ -1093,18 +1261,14 @@ if ($username || $user_id)
 				<td class="row1"><b><?php echo $user->lang['ALLOW_PM']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_PM_EXPLAIN']; ?></span></td>
 				<td class="row2"><input type="radio" name="user_allow_pm" value="1"<?php echo $user_allow_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_pm" value="0"<?php echo $user_allow_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<!-- IF S_CAN_HIDE_ONLINE -->
 			<tr> 
 				<td class="row1"><b><?php echo $user->lang['HIDE_ONLINE']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_allow_viewonline" value="0"<?php echo $user_allow_viewonline_no; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_viewonline" value="1"<?php echo $user_allow_viewonline_yes; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<!-- ENDIF -->
-			<!-- IF S_SELECT_NOTIFY -->
 			<tr> 
 				<td class="row1"><b><?php echo $user->lang['NOTIFY_METHOD']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['NOTIFY_METHOD_EXPLAIN']; ?></span></td>
 				<td class="row2"><input type="radio" name="user_notify_type" value="0"<?php echo $notify_email; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_EMAIL']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="1"<?php echo $notify_im; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_IM']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="2"<?php echo $notify_both; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_BOTH']; ?></span></td>
 			</tr>
-			<!-- ENDIF -->
 			<tr> 
 				<td class="row1"><b><?php echo $user->lang['NOTIFY_ON_PM']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_notify_pm" value="1"<?php echo $user_notify_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_pm" value="0"<?php echo $user_notify_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
@@ -1141,6 +1305,11 @@ if ($username || $user_id)
 		case 'avatar':
 			$can_upload = ($file_uploads && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path'])) ? true : false;
 
+			$display_gallery = (isset($_POST['displaygallery'])) ? true : false;
+			$avatar_category = request_var('category', '');
+
+			// Generate users avatar
+			$avatar_img = '';
 			if ($user_avatar)
 			{
 				switch ($user_avatar_type)
@@ -1247,11 +1416,46 @@ if ($username || $user_id)
 		case 'sig':
 			include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
+			$signature_preview = '';
+			if ($preview)
+			{
+				$signature_preview = $signature;
+
+				// Fudge-o-rama ...
+				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+
+				$message_parser = new parse_message();
+				$message_parser->message = $signature_preview;
+				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+				$signature_preview = $message_parser->message;
+
+				if ($enable_bbcode)
+				{
+					include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+					$bbcode = new bbcode($message_parser->bbcode_bitfield);
+
+					$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
+				}
+
+				// If we allow users to disable display of emoticons
+				// we'll need an appropriate check and preg_replace here
+				$signature_preview = (empty($enable_smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $signature_preview) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $signature_preview);
+
+				// Replace naughty words such as farty pants
+				if (sizeof($censors))
+				{
+					$signature_preview = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature_preview . '<'), 1, -1));
+				}
+
+				$signature_preview = str_replace("\n", '<br />', $signature_preview);
+			}
+
 			decode_text($user_sig, $user_sig_bbcode_uid);
 
 
 ?>
 	<tr> 
+		<td class="row1" width="40%"><b class="genmed"><?php echo $user->lang['SIGNATURE']; ?>: </b></td>
 		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
 			<tr align="center" valign="middle">
 				<td><input class="btnlite" type="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
@@ -1267,25 +1471,117 @@ if ($username || $user_id)
 			<tr>
 				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
-						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
-							<option value="7">{L_FONT_TINY}</option>
-							<option value="9">{L_FONT_SMALL}</option>
-							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
-							<option value="18">{L_FONT_LARGE}</option>
-							<option  value="24">{L_FONT_HUGE}</option>
+						<td><span class="genmed"> &nbsp;<?php echo $user->lang['FONT_SIZE']; ?>:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+							<option value="7"><?php echo $user->lang['FONT_TINY']; ?></option>
+							<option value="9"><?php echo $user->lang['FONT_SMALL']; ?></option>
+							<option value="12" selected="selected"><?php echo $user->lang['FONT_NORMAL']; ?></option>
+							<option value="18"><?php echo $user->lang['FONT_LARGE']; ?></option>
+							<option  value="24"><?php echo $user->lang['FONT_HUGE']; ?></option>
 						</select></td>
-						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
+						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')"><?php echo $user->lang['CLOSE_TAGS']; ?></a></td>
 					</tr>
 				</table></td>
 			</tr>
 			<tr>
-				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="{L_STYLES_TIP}" /></td>
+				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="<?php echo $user->lang['STYLES_TIP']; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="9"><textarea class="post" name="signature" rows="6" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);"><?php echo $user_sig; ?></textarea></td>
+				<td colspan="9"><textarea name="signature" rows="6" cols="60" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);"><?php echo $user_sig; ?></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="9"><table cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
+
+						colorPalette('h', 14, 5)
+
+						//--></script></td>
+					</tr>
+				</table></td>
 			</tr>
 		</table></td>
 	</tr>
+	<tr>
+		<td class="row1" valign="top"><b class="genmed"><?php echo $user->lang['OPTIONS']; ?></b><br /><table cellspacing="2" cellpadding="0" border="0">
+			<tr>
+				<td class="gensmall"><?php echo ($config['allow_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF']; ?></td>
+			</tr>
+			<tr>
+				<td class="gensmall"><?php echo ($config['allow_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], "<a href=\"../faq.$phpEx$SID&amp;mode=bbcode\" target=\"_blank\">", '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], "<a href=\"../faq.$phpEx$SID&amp;mode=bbcode\" target=\"_blank\">", '</a>'); ?></td>
+			</tr>
+			<tr>
+				<td class="gensmall"><?php echo ($config['allow_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF']; ?></td>
+			</tr>
+			<tr>
+				<td class="gensmall"><?php echo ($config['allow_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF']; ?></td>
+			</tr>
+			<tr>
+				<td class="gensmall"><?php echo ($config['allow_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF']; ?></td>
+			</tr>
+		</table></td>
+		<td class="row2" valign="top"><table cellspacing="0" cellpadding="1" border="0">
+<?php
+
+			if ($config['allow_html'])
+			{
+			
+?>
+			<tr>
+				<td><input type="checkbox" name="disable_html" /></td>
+				<td class="gen"><?php echo $user->lang['DISABLE_HTML']; ?></td>
+			</tr>
+<?php
+
+			}
+
+			if ($config['allow_bbcode'])
+			{
+			
+?>
+			<tr>
+				<td><input type="checkbox" name="disable_bbcode" /></td>
+				<td class="gen"><?php echo $user->lang['DISABLE_BBCODE']; ?></td>
+			</tr>
+<?php
+
+			}
+
+			if ($config['allow_smilies'])
+			{
+			
+?>
+			<tr>
+				<td><input type="checkbox" name="disable_smilies" /></td>
+				<td class="gen"><?php echo $user->lang['DISABLE_SMILIES']; ?></td>
+			</tr>
+<?php
+
+			}
+			
+?>
+			<tr>
+				<td><input type="checkbox" name="disable_magic_url" /></td>
+				<td class="gen"><?php echo $user->lang['DISABLE_MAGIC_URL']; ?></td>
+			</tr>
+		</table></td>
+	</tr>
+<?php
+
+			if ($signature_preview)
+			{
+			
+?>
+	<tr>
+		<th colspan="2" valign="middle"><?php echo $user->lang['ADMIN_SIGNATURE_PREVIEW']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1" colspan="2"><div class="postdetails" style="padding: 6px;"><?php echo $signature_preview; ?></div></td>
+	</tr>
+<?php
+
+			}
+			
+?>
 <?php
 
 			break;
@@ -1302,7 +1598,7 @@ if ($username || $user_id)
 
 ?>
 			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+				<td class="cat" colspan="2" align="center"><?php echo ($action == 'sig') ? '<input class="btnlite" type="submit" name="preview" value="' . $user->lang['PREVIEW'] . '" />&nbsp;&nbsp;' : ''; ?><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 			</tr>
 		</table></td>
 	</tr>
