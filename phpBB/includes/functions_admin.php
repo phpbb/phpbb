@@ -613,7 +613,7 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 			{
 				$remaining[] = $row['post_id'];		
 			}
-			$db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
 			$unset_ids = array_diff($post_ids, $remaining);
 			if (sizeof($unset_ids))
@@ -648,7 +648,7 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 			{
 				$remaining[] = $row['topic_id'];		
 			}
-			$db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
 			$unset_ids = array_diff($topic_ids, $remaining);
 			if (sizeof($unset_ids))
