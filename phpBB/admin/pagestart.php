@@ -26,7 +26,8 @@ if (!defined('IN_PHPBB'))
 
 define('IN_ADMIN', true);
 define('NEED_SID', true);
-include($phpbb_root_path . 'common.'.$phpEx);
+require($phpbb_root_path . 'common.'.$phpEx);
+require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start($update);
@@ -45,7 +46,7 @@ function page_header($sub_title, $meta = '', $table_html = true)
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
-		if (extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent())
+		if (extension_loaded('zlib') && !headers_sent())
 		{
 			ob_start('ob_gzhandler');
 		}
@@ -105,6 +106,7 @@ function page_footer($copyright_html = true)
 
 	// Close our DB connection.
 	$db->sql_close();
+
 ?>
 
 		</td>
@@ -147,7 +149,7 @@ function page_message($title, $message, $show_header = false)
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
 		<td><a href="../index.<?php echo $phpEx . $SID; ?>"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
-		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['ADMIN_TITLE']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
@@ -172,83 +174,6 @@ function page_message($title, $message, $show_header = false)
 
 <?php
 
-}
-
-function add_admin_log()
-{
-	global $db, $user;
-
-	$arguments = func_get_args();
-
-	$action = array_shift($arguments);
-	$data = (!sizeof($arguments)) ? '' : addslashes(serialize($arguments));
-
-	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data)
-		VALUES (" . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
-	$db->sql_query($sql);
-
-	return;
-}
-
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
-{
-	global $db, $user, $phpEx, $SID;
-
-	$table_sql = ($mode == 'admin') ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-	$forum_sql = ($mode == 'mod' && $forum_id) ? "AND l.forum_id = $forum_id" : '';
-	$limit_sql = ($limit) ? (($offset) ? "LIMIT $offset, $limit" : "LIMIT $limit") : '';
-
-	$sql = "SELECT l.log_id, l.user_id, l.log_ip, l.log_time, l.log_operation, l.log_data, u.username
-		FROM $table_sql l, " . USERS_TABLE . " u
-		WHERE u.user_id = l.user_id
-			AND l.log_time >= $limit_days
-			$forum_sql
-		ORDER BY $sort_by
-		$limit_sql";
-	$result = $db->sql_query($sql);
-
-	$log = array();
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$i = 0;
-		do
-		{
-			$log[$i]['id'] = $row['log_id'];
-			$log[$i]['username'] = '<a href="admin_users.'.$phpEx . $SID . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
-			$log[$i]['ip'] = $row['log_ip'];
-			$log[$i]['time'] = $row['log_time'];
-
-			$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
-
-			if (!empty($row['log_data']))
-			{
-				$log_data_ary = unserialize(stripslashes($row['log_data']));
-
-				foreach ($log_data_ary as $log_data)
-				{
-					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
-				}
-			}
-
-			$i++;
-		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-
-	$db->sql_freeresult($result);
-
-	$sql = "SELECT COUNT(*) AS total_entries
-		FROM $table_sql l
-		WHERE l.log_time >= $limit_days
-			$forum_sql";
-	$result = $db->sql_query($sql);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$log_count =  $row['total_entries'];
-
-	return;
 }
 // End Functions
 // -----------------------------

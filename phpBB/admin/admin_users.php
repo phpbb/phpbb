@@ -36,7 +36,6 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Set mode
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'main';

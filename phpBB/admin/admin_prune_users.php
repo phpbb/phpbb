@@ -172,7 +172,7 @@ if (isset($_POST['prune']))
 				$where_sql";
 //			$db->sql_query($sql);
 
-			add_admin_log($l_admin_log, implode(', ', $usernames));
+			add_log('admin', $l_admin_log, implode(', ', $usernames));
 
 			unset($user_ids);
 			unset($usernames);

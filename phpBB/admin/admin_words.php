@@ -35,7 +35,6 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 // Do we have forum admin permissions?
 if (!$auth->acl_get('a_words'))
@@ -138,7 +137,7 @@ if ($mode != '')
 			$cache->destroy('word_censors');
 
 			$log_action = ($word_id) ? 'log_edit_word' : 'log_add_word';
-			add_admin_log($log_action, stripslashes($word));
+			add_log('admin', $log_action, stripslashes($word));
 
 			$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
 			break;
@@ -160,7 +159,7 @@ if ($mode != '')
 
 			$cache->destroy('word_censors');
 
-			add_admin_log('log_delete_word');
+			add_log('admin', 'log_delete_word');
 
 			$message = $user->lang['WORD_REMOVE'];
 			break;

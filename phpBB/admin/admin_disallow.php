@@ -61,7 +61,7 @@ if (isset($_POST['disallow']))
 		$message = $user->lang['Disallow_successful'];
 	}
 
-	add_admin_log('log_disallow_add', str_replace('%', '*', $disallowed_user));
+	add_log('admin', 'log_disallow_add', str_replace('%', '*', $disallowed_user));
 
 	trigger_error($message);
 }
@@ -78,7 +78,7 @@ else if (isset($_POST['allow']))
 		WHERE disallow_id = $disallowed_id";
 	$db->sql_query($sql);
 
-	add_admin_log('log_disallow_delete');
+	add_log('admin', 'log_disallow_delete');
 
 	trigger_error($user->lang['Disallowed_deleted']);
 }

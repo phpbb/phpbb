@@ -37,7 +37,6 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 // Get mode
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
@@ -104,7 +103,7 @@ while ($row = $db->sql_fetchrow($result))
 
 if (isset($_POST['submit']))
 {
-	add_admin_log('log_' . $mode . '_config');
+	add_log('admin', 'log_' . $mode . '_config');
 	trigger_error($user->lang['Config_updated']);
 }
 

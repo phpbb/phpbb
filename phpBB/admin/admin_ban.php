@@ -299,7 +299,7 @@ if (isset($_POST['bansubmit']) || isset($_GET['bansubmit']))
 
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'log_ban_';
-		add_admin_log($log_entry . $mode, $ban_reason, $ban_list_log);
+		add_log('admin', $log_entry . $mode, $ban_reason, $ban_list_log);
 	}
 
 	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);
@@ -319,7 +319,7 @@ else if (isset($_POST['unbansubmit']))
 			WHERE ban_id IN ($unban_sql)";
 		$db->sql_query($sql);
 
-		add_admin_log('log_unban_' . $mode, sizeof($_POST['unban']));
+		add_log('admin', 'log_unban_' . $mode, sizeof($_POST['unban']));
 	}
 
 	trigger_error($user->lang['BAN_UPDATE_SUCESSFUL']);

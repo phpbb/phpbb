@@ -163,7 +163,7 @@ switch ($mode)
 
 			@chmod($phpbb_root_path . 'templates/cache/' . $tplroot . '/' . $tplname . '.html.' . $phpEx, 0644);
 
-			add_admin_log('log_template_edit', $tplname, $tplroot);
+			add_log('admin', 'log_template_edit', $tplname, $tplroot);
 
 			exit;
 		}
@@ -266,7 +266,7 @@ switch ($mode)
 					WHERE theme_id = $theme_id";
 				$db->sql_query($sql);
 
-				add_admin_log('log_theme_edit', $theme_name);
+				add_log('admin', 'log_theme_edit', $theme_name);
 
 				message_die(MESSAGE, $user->lang['Success_theme_update']);
 			}

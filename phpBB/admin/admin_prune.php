@@ -36,7 +36,6 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Do we have permission?
 if (!$auth->acl_get('a_prune'))
@@ -109,7 +108,7 @@ if (isset($_POST['doprune']))
 		}
 		while($row = $db->sql_fetchrow($result));
 
-		add_admin_log('log_prune', $log_data);
+		add_log('admin', 'log_prune', $log_data);
 
 	}
 	else

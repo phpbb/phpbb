@@ -38,7 +38,6 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 $mode = (isset($_GET['mode'])) ? $_GET['mode'] : '';
 
@@ -260,7 +259,7 @@ switch($mode)
 				ob_end_clean();
 		}
 
-		add_admin_log('log_db_backup');
+		add_log('admin', 'log_db_backup');
 
 		if (empty($store_path))
 		{
@@ -373,7 +372,7 @@ switch($mode)
 				}
 			}
 
-			add_admin_log('log_db_restore');
+			add_log('admin', 'log_db_restore');
 
 			trigger_error($user->lang['Restore_success']);
 		}
