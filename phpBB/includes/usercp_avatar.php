@@ -135,7 +135,7 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 		{
 			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
-			$tmp_path = ( !$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . "/tmp";
+			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . "/tmp";
 			$tmp_filename = tempnam($tmp_path, $userdata['user_id'] . '-');
 
 			$fptr = @fopen($tmp_filename, 'wb');
@@ -176,6 +176,8 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 			return;
 		}
+
+		list($width, $height) = @getimagesize($avatar_filename);
 	}
 
 	if ( !($imgtype = check_image_type($avatar_filetype, $error, $error_msg)) )
@@ -202,7 +204,7 @@ function user_avatar_upload($mode, $avatar_mode, $user_id, &$error, &$error_msg,
 		}
 		else
 		{
-			if ( $ini_val('open_basedir') != '' )
+			if ( @$ini_val('open_basedir') != '' )
 			{
 				if ( phpversion() < '4.0.3' )
 				{
