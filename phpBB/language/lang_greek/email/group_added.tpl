@@ -1,9 +1,9 @@
-Congratulations,
+Συγχαρητήρια,
 
-You have been added to the "{GROUP_NAME}" group on {SITENAME}.
-This action was done by the group moderator or the site administrator, contact them for more information.
+Έχετε ενταχθεί την ομάδα  "{GROUP_NAME}" στο {SITENAME}.
+Η ένταξη πραγματοποιήθηκε από τον Διαμεσολαβητή ομάδας ή από τον Διαχειριστή του συστήματος, επικοινωνήστε μαζί τους για περισσότερες πληροφορίες.
 
-You can view your groups information here:
+Μπορείτε να δείτε τα χαρακτηριστικά αυτής της ομάδας εδώ:
 {U_GROUPCP}
 
 {EMAIL_SIG}

@@ -1,10 +1,10 @@
-Hello {USERNAME},
+Γεια σας  {USERNAME},
 
-You are receiving this email because you are watching the topic, "{TOPIC_TITLE}" at {SITENAME}. This topic has received a reply since your last visit. You can use the following link to view the replies made, no more notifications will be sent until you visit the topic.
+Λάβατε αυτό το μήνυμα γιατί παρακολουθείτε την Θ.Ενότητα, "{TOPIC_TITLE}" στο {SITENAME}. Η Θ.Ενότητα έχει λάβει ένα νέο μήνυμα από την τελευταία σας επίσκεψη. Ακολουθήστε τον παρακάτω δεσμό για να το δείτε, δεν θα υπάρξει άλλη ειδοποίηση έως ότου επισκεφτείτε την Θ.Ενότητα.
 
 {U_TOPIC}
 
-If you no longer wish to watch this topic you can either click the "Stop watching this topic link" found at the bottom of the topic above, or by clicking the following link:
+Εάν δεν επιθυμείτε πλέων να παρακολουθείτε την Θ.Ενότητα επιλέξτε "Παύση παρακολούθησης αυτής της Θ.Ενότητας" στο κάτω τμήμα της σελίδας της Θ.Ενότητας ή πατήστε στον ακόλουθο δεσμό:
 
 {U_STOP_WATCHING_TOPIC}
 

@@ -1,15 +1,15 @@
-Hello {USERNAME}
+Γεια σας {USERNAME}
 
-You are receiving this email because you have (or someone pretending to be you has) requested a new password be sent for your account on {SITENAME}. If you did not request this email then please ignore it, if you keep receiving it please contact the board administrator.
+Λάβατε αυτό το μήνυμα διότι εσείς ή κάποιος ο οποίος προσποιείται εσάς, ζητήσατε να σας αποσταλεί νέος κωδικός στον λογαριασμό σας στο {SITENAME}. Εάν στην πραγματικότητα δεν έχετε ζητήσει τίποτα τέτοιο απλά αγνοήστε αυτό το μήνυμα, σε περίπτωση που θα συνεχίσετε να λαμβάνετε το ίδιο μήνυμα και στο μέλλον επικοινωνήστε με τον Διαχειριστή.
 
-To use the new password you need to activate it. To do this click the link provided below.
+Για να χρησιμοποιήσετε τον νέο κωδικό πρέπει πρώτα να τον ενεργοποιήσετε ακολουθώντας τον παρακάτω δεσμό.
 
 {U_ACTIVATE}
 
-If sucessful you will be able to login using the following password:
+Εάν ολοκληρωθεί η διαδικασία με επιτυχία θα μπορείτε να συνδέεστε με τον ακόλουθο κωδικό:
 
-Password: {PASSWORD}
+Κωδικός: {PASSWORD}
 
-You can of course change this password yourself via the profile page. If you have any difficulties please contact the board administrator.
+Βεβαίως τον κωδικό, μπορείτε να τον αλλάξετε και μέσα από τις ρυθμίσεις του προφίλ σας. Εάν συναντήσετε οποιαδήποτε δυσκολία επικοινωνήστε με τον Διαχειριστή.
 
 {EMAIL_SIG}

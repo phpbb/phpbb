@@ -1,10 +1,10 @@
-The following is an email sent to you by an administrator of "{SITENAME}". If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
+Το ακόλουθο είναι ένα μήνυμα το οποίο σας έχει αποστείλει έναν διαχειριστή του "{SITENAME}". Εάν το μήνυμα αυτό είναι ανεπιθύμητο με ενοχλητικό ή και προσβλητικό περιεχόμενο σας παρακαλώ επικοινωνήστε με τον  webmaster της Δ.Συζήτησης στην ακόλουθη διεύθυνση:
 
 {BOARD_EMAIL}
 
-Include this full email (particularly the headers). 
+Συμπεριλάβετε αυτό το μήνυμα κυρίως τις κεφαλίδες. 
 
-Message sent to you follows:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Το περιεχόμενο του μηνύματος που σας αποστάλη:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

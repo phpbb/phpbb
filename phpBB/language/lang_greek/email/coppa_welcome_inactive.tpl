@@ -1,50 +1,50 @@
 {WELCOME_MSG}
 
-In compliance with the COPPA act your account is currently inactive.
+Σύμφωνα με το διάταγμα COPPA ο λογαριασμός σας είναι προσωρινά ανενεργός.
 
-Please print this message out and have your parent or guardian sign and date it. Then fax it to:
+Παρακαλώ εκτυπώστε το ακόλουθο κείμενο και δώστε το προς έγκριση και υπογραφή στον κηδεμόνα σας, κατόπιν αποστείλετε το με φαξ στο:
 
 {FAX_INFO}
 
-OR mail it to:
+ή με ηλ.ταχυδρομίο:
 
 {MAIL_INFO}
 
------------------------------- CUT HERE ------------------------------
-Permission to Participate at {SITENAME}
+------------------------------ να κοπή εδώ ------------------------------
+Έγκριση για συμμετοχή στο {SITENAME}
 
-Username: {USERNAME}
-Password: {PASSWORD}
+Όνομα χρήστη: {USERNAME}
+Κωδικός: {PASSWORD}
 Email: {EMAIL_ADDRESS}
 
-ICQ Number: {ICQ}
-AIM Address: {AIM}
+ICQ Νούμερο: {ICQ}
+AIM Διεύθυνση: {AIM}
 MSN Messenger: {MSN}
 Yahoo Messenger: {YIM}
-Web Site: {WEB_SITE}
-From: {FROM}
-Occupation: {OCC}
-Interests: {INTERESTS}
+Ηλ. Σελίδα: {WEB_SITE}
+Από: {FROM}
+Ιδιότητα: {OCC}
+Ενδιαφέροντα: {INTERESTS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO {SITENAME} TO STORE THIS INFORMATION. 
-I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM {SITENAME} AT ANY TIME.
-
-
-Parent or Guardian 
-(print your name here): _____________________
-
-(sign here): __________________ 
-
-Date: _______________
-
------------------------------- CUT HERE ------------------------------
+ΈΧΩ ΕΞΕΤ¶ΣΗ ΤΑ ΣΤΟΙΧΕΊΑ ΠΟΥ ΜΟΥ ΠΡΟΣΚΌΜΙΣΕ ΤΟ ΤΈΚΝΟ ΜΟΥ ΚΑΙ ΕΠΙΤΡΈΠΩ ΤΟ ΦΟΡΟΥΜ {SITENAME} ΝΑ ΑΠΟΘΗΚΕΎΣΗ ΑΥΤ¶ ΤΑ ΣΤΟΙΧΕΊΑ. 
+ΚΑΤΑΝΟΏ ΟΤΙ ΑΥΤΈΣ ΟΙ ΠΛΗΡΟΦΟΡΊΕΣ ΜΠΟΡΟΎΝ ΝΑ ΑΛΛΑΞΟΥΝ ΟΠΟΙΑΔΉΠΟΤΕ ΣΤΙΓΜΉ ΠΡΑΓΜΑΤΟΠΟΙΗΘΕΙ  ΣΥΝΔΕΣΗ ΜΕ ΤΗΝ ΕΙΣΑΓΩΓΗ ΤΟΥ ΚΩΔΙΚΟΎ.
+ΚΑΤΑΝΟΏ ΟΤΙ ΑΥΤΈΣ ΟΙ ΠΛΗΡΟΦΟΡΊΕΣ ΜΠΟΡΟΎΝ ΝΑ ΔΙΑΓΡΑΦΟΎΝ ΟΠΟΙΑΔΉΠΟΤΕ ΣΤΙΓΜΉ ΑΠΟ ΤΟ ΦΟΡΟΥΜ {SITENAME} ΚΑΤΌΠΙΝ ΑΙΤΉΣΕΩΣ ΜΟΥ.
 
 
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
+Γονέας ή Κηδεμόνας 
+(το όνομα σας): _____________________
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+(Υπογραφή): __________________ 
 
-Thank you for registering.
+Ημερομηνία: _______________
+
+------------------------------ να κοπή εδώ ------------------------------
+
+
+Από την στιγμή που ο διαχειριστής θα λάβει αυτό το έντυπο μέσο φαξ ή ηλ. ταχυδρομείου ο λογαριασμός θα ενεργοποιηθεί.
+Παρακαλώ μην ξεχνάτε τον κωδικό σας διότι αυτός βρίσκετε κωδικοποιημένος στη βάση δεδομένων μας και δεν μπορεί κανείς να τον ανασύρει. Παρ' όλα αυτά εάν τον ξεχάσετε μπορείτε να ζητήσετε έναν νέο κωδικό ο οποίος θα ενεργοποιηθεί με τον ίδιο τρόπο που έγινε η ενεργοποίηση αυτού του λογαριασμού.
+
+
+Σας ευχαριστούμε για την εγγραφή σας.
 
 {EMAIL_SIG}

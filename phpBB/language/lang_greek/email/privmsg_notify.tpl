@@ -1,9 +1,9 @@
-Hello {USERNAME},
+Γεια σας {USERNAME},
 
-You have received a new private message to your account on "{SITENAME}" and you have requested that you be notified on this event. You can view your new message by clicking on the following link:
+Έχετε λάβει ένα νέο προσωπικό μήνυμα στο λογαριασμό σας του "{SITENAME}" , έχετε επιλέξει να ειδοποιήστε για κάθε εισερχόμενο μήνυμα. Μπορείτε να διαβάσετε το μήνυμα σας στον ακόλουθο σύνδεσμο:
 
 {U_INBOX}
 
-Remember that you can always choose not to be notified of new messages by changing the appropriate setting in your profile.
+Να θυμάστε πως πάντοτε μπορείτε να απενεργοποιήσετε την δυνατότητα της ειδοποίησης αλλάζοντας την κατάλληλη ρύθμιση στο προφίλ σας.
 
 {EMAIL_SIG}

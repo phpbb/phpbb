@@ -1,5 +1,5 @@
-Hello {USERNAME},
+Γεια σας  {USERNAME},
 
-Your account on "{SITENAME}" has now been activated, you may login using the username and password you received in a previous email.
+Ο λογαριασμός σας στο "{SITENAME}" έχει ενεργοποιηθεί, μπορείτε να συνδεθείτε στην Δ.Συζήτηση χρησιμοποιώντας το όνομα χρήστη και τον κωδικό χρήστη που λάβατε σε προηγούμενο μήνυμα.
 
 {EMAIL_SIG}

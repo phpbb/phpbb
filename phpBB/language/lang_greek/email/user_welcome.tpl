@@ -1,14 +1,14 @@
 {WELCOME_MSG}
 
-Please keep this email for your records. Your account information is as follows:
+Παρακαλώ διατηρήστε αυτό το μήνυμα στο αρχείο σας. Οι πληροφορίες του λογαριασμού σας είναι οι ακόλουθες:
 
 ----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
+Όνομα χρήστη: {USERNAME}
+Κωδικός: {PASSWORD}
 ----------------------------
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+Παρακαλώ μην ξεχνάτε τον κωδικό σας διότι αυτός βρίσκετε κωδικοποιημένος στη βάση δεδομένων μας και δεν μπορεί κανείς να τον ανασύρει. Παρ' όλα αυτά εάν τον ξεχάσετε μπορείτε να ζητήσετε έναν νέο κωδικό ο οποίος θα ενεργοποιηθεί με τον ίδιο τρόπο που έγινε η ενεργοποίηση αυτού του λογαριασμού.
 
-Thank you for registering.
+Σας ευχαριστούμε για την εγγραφή σας.
 
 {EMAIL_SIG}

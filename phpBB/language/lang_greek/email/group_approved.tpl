@@ -1,7 +1,7 @@
-Congratulations,
+Συγχαρητήρια,
 
-Your request to join the "{GROUP_NAME}" group on {SITENAME} has been approved.
-Click on the following link to see your group membership.
+Η αίτηση σας για την ένταξη στην ομάδα "{GROUP_NAME}" στο {SITENAME} έχει εγκριθεί.
+Ακολουθήστε τον παρακάτω δεσμό για να δείτε τις ιδιότητες μέλους της ομάδας.
 
 {U_GROUPCP}
 

@@ -1,6 +1,6 @@
-Hello {USERNAME},
+Γεια σας {USERNAME},
 
-Your account on "{SITENAME}" has been deactivated, most likely due to changes made to your profile. In order to reactivate your account you must click on the link below:
+Ο λογαριασμός σας στο "{SITENAME}" έχει απενεργοποιηθεί, το πιθανότερο λόγο των αλλαγών που έχετε κάνει στο προφίλ σας. Για να ενεργοποιήσετε πάλι τον λογαριασμό σας ακολουθήστε τον παρακάτω δεσμό:
 
 {U_ACTIVATE}
 

@@ -1,7 +1,7 @@
-Dear {GROUP_MODERATOR},
+Αγαπητέ-η {GROUP_MODERATOR},
 
-A user has requested to join a group you moderator on {SITENAME}.
-To approve to deny this request for group membership please visit the following link:
+Ένας χρήστης έχει ζητήσει να ενταχθεί στην ομάδα σας στο {SITENAME}.
+Για να εξετάσετε το αίτημα του ακολουθήστε το παρακάτω σύνδεσμο:
 
 {U_GROUPCP}
 

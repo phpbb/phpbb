@@ -1,16 +1,15 @@
 {WELCOME_MSG}
 
-Please keep this email for your records. Your account information is as follows:
+Παρακαλώ πολύ διατηρήστε αυτό το μήνυμα, περιέχει βασικές πληροφορίες λογαριασμού:
 
 ----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
+Όνομα χρήστη: {USERNAME}
+Κωδικός: {PASSWORD}
 ----------------------------
 
-Your account is currently inactive, the administrator of the board will need to activate it before you can log in. You will receive another email when this has occured.
+Ο λογαριασμός σας προσωρινά είναι ανενεργός, πρέπει να ενεργοποιηθεί από τον διαχειριστή του συστήματος προτού μπορέσετε να συνδεθείτε. Θα λάβετε ένα καινούργιο μήνυμα όταν αυτό θα καθίσταται δυνατό.
+Σας παρακαλούμε να μην λησμονήσετε τον κωδικό σας διότι δεν θα μπορέσουμε να το ανασύρουμε από την βάση δεδομένων μας μιας και αποθηκεύετε σε κρυπτογραφημένη μορφή. Παρ' όλα αυτά εάν συμβεί κάτι τέτοιο μπορείτε πάντα να ζητήσετε έναν καινούργιο κωδικό ο οποίος θα ενεργοποιηθεί με τον ίδιο τρόπο όπως αυτός ο λογαριασμός.
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
-
-Thank you for registering.
+Σας ευχαριστούμε για την εγγραφή σας.
 
 {EMAIL_SIG}

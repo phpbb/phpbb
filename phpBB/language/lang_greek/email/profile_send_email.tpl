@@ -1,12 +1,12 @@
-Hello {TO_USERNAME},
+Γεια σας {TO_USERNAME},
 
-The following is an email sent to you by {FROM_USERNAME} via your account on {SITENAME}. If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
+Το ακόλουθο είναι ένα email από τον {FROM_USERNAME} μέσο του λογαριασμού σας στο {SITENAME}. Εάν το μήνυμα αυτό αποτελεί ενόχληση με προσβλητικό ή ανούσιο περιεχόμενο παρακαλώ επικοινωνήστε με τον webmaster του φόρουμ στην ακόλουθη διεύθυνση:
 
 {BOARD_EMAIL}
 
-Include this full email (particularly the headers). Please note that the reply address to this email has been set to that of {FROM_USERNAME}.
+Να συμπεριλάβετε ολόκληρο το μήνυμα ιδίως τις κεφαλίδες. Έχετε υπόψη ότι ως  διεύθυνση απάντησης έχει ορισθεί η διεύθυνση του {FROM_USERNAME}.
 
-Message sent to you follows
+Ακολουθεί το μήνυμα που σας αποστάλη
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}
