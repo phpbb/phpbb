@@ -67,6 +67,7 @@ define(LOGIN_FAILED, 7);
 define(PRIVMSGS_READ_MAIL, 0);
 define(PRIVMSGS_NEW_MAIL, 1);
 define(PRIVMSGS_SENT_MAIL, 2);
+define(PRIVMSGS_SAVED_MAIL, 3);
 
 // URL PARAMETERS
 define(POST_TOPIC_URL, 't');
