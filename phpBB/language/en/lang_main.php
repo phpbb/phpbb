@@ -243,6 +243,7 @@ $lang = array(
 	'BOARD_BAN_PERM'	=> 'You have been <b>permanently</b> banned from this board.<br /><br />Please contact the %2$sBoard Administrator%3$s for more information.', 
 	'BOARD_BAN_REASON'	=> 'Reason given for ban: <b>%s</b>', 
 	'EMAIL_DISABLED'	=> 'Sorry but all email related functions have been disabled.', 
+	'REMOVE_INSTALL'	=> 'Please delete, move or rename the install directory.', 
 
 	'G_ADMINISTRATORS' 	=> 'ADMINISTRATORS',
 	'G_SUPER_MODERATORS'=> 'SUPER MODERATORS',

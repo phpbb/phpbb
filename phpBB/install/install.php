@@ -57,7 +57,7 @@ if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 
 	if (defined('PHPBB_INSTALLED'))
 	{
-//		redirect("../index.$phpEx");
+		redirect("../index.$phpEx");
 	}
 }
 
@@ -66,7 +66,7 @@ if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 $stage = (isset($_POST['stage'])) ? intval($_POST['stage']) : 0;
 
 // These are all strings so we'll just traverse an array
-$var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'ftp_path', 'ftp_user', 'ftp_pass');
+$var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
 
 foreach ($var_ary as $var)
 {
@@ -398,29 +398,29 @@ if ($stage == 0)
 	$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
 
 	// Imagemagick are you there? Give me a sign or a path ...
-	$imagemagick = '';
+	$img_imagick = '';
 	if (empty($_ENV['MAGICK_HOME']))
 	{
 		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
 
 		foreach ($locations as $location)
 		{
-			if (file_exists($location . 'mogrify' . $exe) && is_executable($location . 'mogrify' . $exe))
+			if (file_exists($location . 'convert' . $exe) && is_executable($location . 'convert' . $exe))
 			{
-				$imagemagick = str_replace('\\', '/', $location);
+				$img_imagick = str_replace('\\', '/', $location);
 				continue;
 			}
 		}
 	}
 	else
 	{
-		$imagemagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
+		$img_imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
 	}
 
 ?>
 	<tr>
 		<td>&bull;&nbsp;<b><?php echo $lang['APP_MAGICK']; ?>: </b></td>
-		<td><?php echo ($imagemagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $imagemagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>'; ?></td>
+		<td><?php echo ($img_imagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>'; ?></td>
 	</tr>
 </table>
 
@@ -437,7 +437,7 @@ if ($stage == 0)
 <table cellspacing="1" cellpadding="4" border="0"> 
 <?php
 
-	$directories = array('cache/', 'cache/templates/', 'cache/themes/', 'cache/tmp/');
+	$directories = array('cache/', 'cache/templates/', 'cache/themes/', 'cache/tmp/', 'files/');
 
 	umask(0);
 
@@ -516,7 +516,7 @@ if ($stage == 0)
 
 	$next_text = ($passed['db'] && $passed['files']) ? $lang['INSTALL_NEXT_PASS'] : $lang['INSTALL_NEXT_FAIL'];
 
-	$s_hidden_fields = ($imagemagick) ? '<input type="hidden" name="imagemagick" value="' . $imagemagick . '" />' : '';
+	$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
 ?>
 
@@ -524,12 +524,12 @@ if ($stage == 0)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="hidden" name="stage" value="1" /><input class="liteoption" name="retest" type="submit" value="Test Again" /><?php 
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="hidden" name="stage" value="1" /><input class="liteoption" name="retest" type="submit" value="<?php echo $lang['INSTALL_TEST']; ?>" /><?php 
 	
 	if ($passed['db'] && $passed['files'])
 	{
 
-?>&nbsp;&nbsp; <input class="mainoption" name="submit" type="submit" value="Next Stage" /><?php
+?>&nbsp;&nbsp; <input class="mainoption" name="submit" type="submit" value="<?php echo $lang['INSTALL_NEXT']; ?>" /><?php
 	
 	}
 	
@@ -623,6 +623,7 @@ if ($stage == 1)
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="stage" value="2" />';
+	$s_hidden_fields .= ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';;
 
 	inst_page_header();
 
@@ -1110,6 +1111,10 @@ if ($stage == 3)
 
 		'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
 			VALUES ('default_lang', '" . $db->sql_escape($language) . "')",
+
+		'UPDATE ' . $table_prefix . "config
+			SET config_value = '" . $db->sql_escape($img_imagick) . "'
+			WHERE config_name = 'img_imagick'",
 
 		'UPDATE ' . $table_prefix . "config
 			SET config_value = '" . $db->sql_escape($server_name) . "'

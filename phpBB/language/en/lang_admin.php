@@ -1134,6 +1134,8 @@ $lang = array_merge($lang, array(
 	'SCRIPT_PATH_EXPLAIN'	=> 'The path where phpBB2 is located relative to the domain name',
 	'SERVER_PORT'			=> 'Server port',
 	'SERVER_PORT_EXPLAIN'	=> 'The port your server is running on, usually 80, only change if different',
+	'INSTALL_TEST'	=> 'Test Again', 
+	'INSTALL_NEXT'	=> 'Next Stage', 
 	'INSTALL_START'	=> 'Start Install', 
 
 	'INSTALL_SEND_CONFIG'	=> 'Unfortunately phpBB could not write the configuration information directly to your config.php. This may be because the file does not exist or is not writeable. A number of options will be listed below enabling you to complete installation of config.php.', 
