@@ -76,9 +76,6 @@ $field_names = array(
 	"auth_sticky" => $lang['Sticky'],
 	"auth_announce" => $lang['Announce']);
 
-$forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
-
-
 // ---------------
 // Start Functions
 //
@@ -544,7 +541,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			{
 				if(!empty($valid_auth_mod_sql[$forum_id]))
 				{
-					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_mod_grpname[$forum_id][$i] . "</a></b> grants moderator status to <b>" . $warning_mod_frmname[$forum_id][$i] . "</b> for this user<br />";
+					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_mod_grpname[$forum_id][$i] . "</a></b> " . $lang['grants_moderator_status'] . " <b>" . $warning_mod_frmname[$forum_id][$i] . "</b> " . $lang['for_this_user'] . "<br />";
 				}
 			}
 		}
@@ -555,23 +552,23 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			{
 				if(!empty($valid_auth_prv_sql[$forum_id]))
 				{
-					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a></b> grants access status to <b>" . $warning_prv_frmname[$forum_id][$i] . "</b> for this user<br />";
+					$warning_list .= "<b><a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_ary[$i] . "\">" . $warning_prv_grpname[$forum_id][$i] . "</a></b> " . $lang['grants_access_status'] . " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b> " . $lang['for_this_user'] . "<br />";
 				}
 			}
 		}
 
 		if($warning_list != "")
 		{
-			$warning_list = "<br />This user still has access/moderator rights to this forum via group membership. You may want to alter the group authorisation or remove this user the group to fully prevent them having access/moderator rights. The groups granting rights are noted below.<br/><br/>" . $warning_list . "<br />Click <a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id\">HERE</a> to return to user auth admin<br />";
+			$warning_list = "<br />" . $lang['Conflict_message_userauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] . " <a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id\">" . $lang['HERE'] . "</a> ". $lang['return_user_auth_admin'] . "<br />";
 
-			$template_header = "admin/page_header.tpl";
 			include('page_header_admin.'.$phpEx);
 
 			$template->set_filenames(array(
 				"body" => "admin/admin_message_body.tpl")
 			);
+
 			$template->assign_vars(array(
-				"MESSAGE_TITLE" => "Authorisation Conflict Warning", 
+				"MESSAGE_TITLE" => $lang['Conflict_warning'], 
 				"MESSAGE_TEXT" => $warning_list)
 			);
 		}
@@ -603,7 +600,6 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	}
 	$select_list .= "</select>";
 
-	$template_header = "admin/page_header.tpl";
 	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
@@ -643,7 +639,6 @@ else
 		"body" => "admin/auth_ug_body.tpl")
 	);
 
-
 	$sql = "SELECT f.* 
 		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
 		WHERE c.cat_id = f.cat_id 
@@ -658,29 +653,14 @@ else
 		{
 			while(list($forum_id, $forum_row) = each($forum_access))
 			{
-				for($j = 0; $j < count($forum_auth_key_fields); $j++)
-				{
-					$basic_auth_level[$forum_row['forum_id']] = "public";
+				$forum_auth_level[$forum_row['forum_id']] = AUTH_ALL;
 
-					if($forum_row[$forum_auth_key_fields[$j]] == AUTH_REG)
+				for($j = 0; $j < count($forum_auth_fields); $j++)
+				{
+					if($forum_row[$forum_auth_fields[$j]] == AUTH_ACL)
 					{
-						$basic_auth_level[$forum_row['forum_id']] = "registered";
-						$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
-					}
-					else if($forum_row[$forum_auth_key_fields[$j]] == AUTH_ACL)
-					{
-						$basic_auth_level[$forum_row['forum_id']] = "private";
-						$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
-					}
-					else if($forum_row[$forum_auth_key_fields[$j]] == AUTH_MOD)
-					{
-						$basic_auth_level[$forum_row['forum_id']] = "moderator";
-						$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
-					}
-					else if($forum_row[$forum_auth_key_fields[$j]] == AUTH_ADMIN)
-					{
-						$basic_auth_level[$forum_row['forum_id']] = "admin";
-						$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
+						$forum_auth_level[$forum_row['forum_id']] = AUTH_ACL;
+						$forum_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
 					}
 				}
 			}
@@ -719,7 +699,6 @@ else
 	for($i = 0; $i < count($forum_access); $i++)
 	{
 		$f_forum_id = $forum_access[$i]['forum_id'];
-		$is_forum_restricted[$f_forum_id] = 0;
 
 		for($j = 0; $j < count($forum_auth_fields); $j++)
 		{
@@ -790,30 +769,33 @@ else
 	{
 		if( empty($adv) )
 		{
-			if($basic_auth_level[$forumkey] == "private")
+			if($forum_auth_level[$forumkey] == AUTH_ACL)
 			{
 				$allowed = 1;
 
-				for($j = 0; $j < count($basic_auth_level_fields[$forumkey]); $j++)
+				for($j = 0; $j < count($forum_auth_level_fields[$forumkey]); $j++)
 				{
-					if(!$auth_user[$forumkey][$basic_auth_level_fields[$forumkey][$j]])
+					if(!$auth_user[$forumkey][$forum_auth_level_fields[$forumkey][$j]])
 					{
 						$allowed = 0;
 					}
 				}
+
 				$optionlist_acl = "<select name=\"private[$forumkey]\">";
+
 				if($is_admin || $user_ary['auth_mod'])
 				{
-					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option>";
 				}
 				else if($allowed)
 				{
-					$optionlist_acl .= "<option value=\"1\" selected>". $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\"  selected=\"selected\">" . $lang['Allowed_Access'] . "</option><option value=\"0\">". $lang['Disallowed_Access'] . "</option>";
 				}
 				else
 				{
-					$optionlist_acl .= "<option value=\"1\">". $lang['Allowed_Access'] . "</option><option value=\"0\" selected>". $lang['Disallowed_Access'] . "</option>";
+					$optionlist_acl .= "<option value=\"1\">" . $lang['Allowed_Access'] . "</option><option value=\"0\"  selected=\"selected\">". $lang['Disallowed_Access'] . "</option>";
 				}
+
 				$optionlist_acl .= "</select>";
 			}
 			else
@@ -840,11 +822,11 @@ else
 						{
 							if(!$auth_field_acl[$forum_id][$field_name])
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\"  selected=\"selected\">" . $lang['ON'] . "</option><option value=\"0\">" . $lang['OFF'] . "</option>";
 							}
 						}
 						else
@@ -855,7 +837,7 @@ else
 							}
 							else
 							{
-								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\" selected>" . $lang['OFF'] . "</option>";
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">" . $lang['ON'] . "</option><option value=\"0\"  selected=\"selected\">" . $lang['OFF'] . "</option>";
 							}
 						}
 
@@ -869,19 +851,19 @@ else
 		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
 		if($user_ary['auth_mod'])
 		{
-			$optionlist_mod .= "<option value=\"1\" selected>" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\"  selected=\"selected\">" . $lang['Is_Moderator'] . "</option><option value=\"0\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		else
 		{
-			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\" selected>" . $lang['Not_Moderator'] . "</option>";
+			$optionlist_mod .= "<option value=\"1\">" . $lang['Is_Moderator'] . "</option><option value=\"0\"  selected=\"selected\">" . $lang['Not_Moderator'] . "</option>";
 		}
 		$optionlist_mod .= "</select>";
 
-		$row_class = ($i%2) ? "row2" : "row1";
-		$row_color = "#" . ( ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
+		$row_class = ( !($i%2) ) ? "row2" : "row1";
+		$row_color = ( !($i%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 
 		$template->assign_block_vars("forums", array(
-			"ROW_COLOR" => $row_color, 
+			"ROW_COLOR" => "#" . $row_color, 
 			"ROW_CLASS" => $row_class, 
 			"FORUM_NAME" => $forum_access[$i]['forum_name'], 
 
@@ -911,7 +893,7 @@ else
 	reset($auth_user);
 
 	$t_username .= $userinf[0]['username'];
-	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected>' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user" selected>' . $lang['User'] . '</option></select>';
+	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin"  selected=\"selected\">' . $lang['Administrator'] . '</option><option value="user">' . $lang['User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Administrator'] . '</option><option value="user"  selected=\"selected\">' . $lang['User'] . '</option></select>';
 
 	for($i = 0; $i < count($userinf); $i++)
 	{
@@ -939,8 +921,8 @@ else
 		$t_usergroup_list = "None";
 	}
 
-	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\">";
-	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
+	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\" />";
+	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\" />";
 
 	$s_column_span = 2; // Two columns always present
 	if(!$adv)

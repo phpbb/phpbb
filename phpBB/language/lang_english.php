@@ -110,6 +110,8 @@ $lang['YIM'] = "Yahoo Messenger";
 
 $lang['Error'] = "Error";
 
+$lang['HERE'] = "HERE";
+
 $lang['IP_Address'] = "IP Address";
 
 $lang['Jump_to'] = "Jump to";
@@ -705,6 +707,16 @@ $lang['Disallowed_Access'] = "Disallowed Access";
 $lang['Is_Moderator'] = "Is Moderator";
 $lang['Not_Moderator'] = "Not Moderator";
 
+$lang['Conflict_warning'] = "Authorisation Conflict Warning";
+$lang['Conflict_message_userauth'] = "This user still has access/moderator rights to this forum via group membership. You may want to alter the group authorisation or remove this user the group to fully prevent them having access/moderator rights. The groups granting rights are noted below.";
+$lang['Conflict_message_groupauth'] = "The following user/s still have access/moderator rights to this forum via their user auth settings. You may want to alter the user authorisation/s to fully prevent them having access/moderator rights. The users granted rights are noted below.";
+
+$lang['has_moderator_status'] = "has moderator status on";
+$lang['has_access_status'] = "has access status to";
+$lang['grants_access_status'] = "grants access status to";
+$lang['grants_moderator_status'] = "grants moderator status to";
+$lang['for_this_user'] = "for this user";
+
 $lang['Submit_changes'] = "Submit changes";
 $lang['Reset_changes'] = "Reset changes";
 
@@ -730,6 +742,10 @@ $lang['This_user_is'] = "This user is a"; // followed by User/Administrator and 
 $lang['and_belongs_groups'] = "and belongs to the following groups"; // followed by list of groups
 
 $lang['Group_has_members'] = "This group has the following members";
+
+$lang['return_group_auth_admin'] = "to return to the group permissions panel";
+$lang['return_user_auth_admin'] = "to return to the user permissions panel";
+
 
 // Banning
 $lang['Ban_control'] = "Ban Control";
