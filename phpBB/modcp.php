@@ -608,7 +608,7 @@ switch($mode)
 		{	
 			if($topics[$x]['topic_status'] == TOPIC_LOCKED)
 			{	
-				$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
+				$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
 			}
 			else
 			{

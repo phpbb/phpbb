@@ -225,7 +225,7 @@ function make_forum_box($box_name, $default_forum = -1)
 // Initialise user settings on page load
 function init_userprefs($userdata)
 {
-	global $board_config, $theme, $template, $lang, $phpEx, $phpbb_root_path;
+	global $board_config, $theme, $images, $template, $lang, $phpEx, $phpbb_root_path;
 
 	if(!$board_config['override_user_themes'])
 	{
@@ -271,6 +271,17 @@ function init_userprefs($userdata)
 	}
 
 	$template = new Template($phpbb_root_path . "templates/" . $board_config['default_template']);
+
+	if($template)
+	{
+		@include($phpbb_root_path . "templates/" . $board_config['default_template'] . "/" . $board_config['default_template'] . ".cfg");
+
+		if( !defined("TEMPLATE_CONFIG") )
+		{
+			message_die(CRITICAL_MESSAGE, "Couldn't open " . $board_config['default_template'] . " template config file");
+		}
+
+	}
 
 	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
 	{

@@ -173,7 +173,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		$posts = ($members[$i]['user_posts']) ? $members[$i]['user_posts'] : 0;
 		
-		if($members[$i]['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS)
+		if($members[$i]['user_avatar'] != "" && $user_id != ANONYMOUS)
 		{
 			$poster_avatar = (strstr("http", $members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $members[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $members[$i]['user_avatar'] . "\">";
 		}
@@ -185,14 +185,14 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		if( !empty($members[$i]['user_viewemail']) )
 		{
 			$altered_email = str_replace("@", " at ", $members[$i]['user_email']);
-			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
+			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
 		}
 		else
 		{
 			$email_img = "&nbsp;";
 		}
 
-		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['privmsg'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
+		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
 		
 		if($members[$i]['user_website'] != "")
 		{
@@ -204,7 +204,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			{
 				$website_url = stripslashes($members[$i]['user_website']);
 			}
-			$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
+			$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\"/></a>";
 		}
 		else
 		{
@@ -213,9 +213,9 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		if($members[$i]['user_icq'])
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $members[$i]['user_icq'] . "&img=5\" border=\"0\"></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
 		}
 		else
 		{
@@ -223,13 +223,13 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			$icq_add_img = "&nbsp;";
 		}
 
-		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$aim_img = ($members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$msn_img = ($members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+		$yim_img = ($members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
+		$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\"></a>";
 
 		if(!($i % 2))
 		{
@@ -248,6 +248,8 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 			"FROM" => $from,
 			"JOINED" => $joined,
 			"POSTS" => $posts,
+
+			"AVATAR_IMG" => $poster_avatar, 
 			"EMAIL_IMG" => $email_img,
 			"PM_IMG" => $pm_img,
 			"WWW_IMG" => $www_img,

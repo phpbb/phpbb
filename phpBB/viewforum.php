@@ -254,7 +254,8 @@ $template->assign_vars(array(
 	"FORUM_ID" => $forum_id,
 	"FORUM_NAME" => $forum_name,
 	"MODERATORS" => $forum_moderators,
-	"USERS_BROWSING" => $users_browsing)
+	
+	"IMG_POST" => $images['topic_new'])
 );
 //
 // End header
@@ -292,7 +293,7 @@ if($total_topics)
 
 		if($replies > $board_config['posts_per_page'])
 		{
-			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['posticon'] . "\">" . $lang['Goto_page'] . ": ";
+			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\">" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
@@ -323,17 +324,17 @@ if($total_topics)
 
 		if($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED)
 		{	
-			$folder_image = "<img src=\"" . $images['locked_folder'] . "\" alt=\"Topic Locked\">";
+			$folder_image = "<img src=\"" . $images['folder_locked'] . "\" alt=\"Topic Locked\">";
 		}
 		else
 		{
 			if($userdata['session_start'] >= $userdata['session_time'] - 300)
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 			}
 			else
 			{
-				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+				$folder_image = ($topic_rowset[$i]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 			}
 		}
 			
@@ -355,7 +356,7 @@ if($total_topics)
 
 		$last_post = $last_post_time . "<br />by ";
 		$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $last_post_user . "</a>&nbsp;";
-		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 
 		$views = $topic_rowset[$i]['topic_views'];
 

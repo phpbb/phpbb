@@ -219,17 +219,17 @@ if($mode == "read")
 
 	$poster_avatar = ($privmsg['user_avatar'] != "" && $userdata['user_id'] != ANONYMOUS) ? "<img src=\"" . $board_config['avatar_path'] . "/" . $privmsg['user_avatar'] . "\">" : "";
 
-	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['profile'] . "\" alt=\"" . $lang['Profile'] . "\" border=\"0\"></a>";
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Profile'] . "\" border=\"0\"></a>";
 
-	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:" . $privmsg['user_email'] . "\"><img src=\"" .$images['email'] . "\" alt=\"" . $lang['Email'] . "\" border=\"0\"></a>" : "";
+	$email_img = ($privmsg['user_viewemail'] == 1) ? "<a href=\"mailto:" . $privmsg['user_email'] . "\"><img src=\"" .$images['icon_email'] . "\" alt=\"" . $lang['Email'] . "\" border=\"0\"></a>" : "";
 
-	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\"><img src=\"" . $images['www'] . "\" alt=\"" . $lang['Website'] . "\" border=\"0\"></a>" : "";
+	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Website'] . "\" border=\"0\"></a>" : "";
 
 	if($privmsg['user_icq'])
 	{
-		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $privmsg['user_icq'] . "&img=5\" alt=\"" . $lang['Page_ICQ'] . "\" border=\"0\"></a>";
+		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $privmsg['user_icq'] . "&img=5\" border=\"0\"></a>";
 
-		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $privmsg['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
+		$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $privmsg['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\"></a>";
 	}
 	else
 	{
@@ -237,20 +237,20 @@ if($mode == "read")
 		$icq_add_img = "";
 	}
 
-	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "";
+	$aim_img = ($privmsg['user_aim']) ? "<a href=\"aim:goim?screenname=" . $privmsg['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "";
 
-	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "";
+	$msn_img = ($privmsg['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "";
 
-	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "";
+	$yim_img = ($privmsg['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $privmsg['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "";
 
 	if($folder == "inbox")
 	{
-		$quote_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['quote'] . "\" alt=\"\" border=\"0\"></a>";
+		$quote_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"\" border=\"0\"></a>";
 	}
 
 	if($folder == "outbox")
 	{
-		$edit_img = "<a href=\"" . append_sid("privmsg.$phpEx?folder=$folder&mode=edit&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['edit'] . "\" alt=\"\" border=\"0\"></a>";
+		$edit_img = "<a href=\"" . append_sid("privmsg.$phpEx?folder=$folder&mode=edit&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['icon_edit'] . "\" alt=\"\" border=\"0\"></a>";
 	}
 
 	$post_subject = stripslashes($privmsg['privmsgs_subject']);

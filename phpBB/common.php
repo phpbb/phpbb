@@ -24,7 +24,8 @@
 
 //
 // Define some basic configuration arrays this also prevents
-// malicious rewriting of language array values via URI params
+// malicious rewriting of language and otherarray values via
+// URI params
 //
 $board_config = Array();
 $userdata = Array();
@@ -45,31 +46,6 @@ include($phpbb_root_path . 'includes/sessions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
-
-//
-// This would probably be best moved to a template 
-// specific file, eg "images.tpl"
-//
-$url_images = "images";
-
-$images['quote'] = "$url_images/icon_quote.gif";
-$images['edit'] = "$url_images/icon_edit.gif";
-$images['search_icon'] = "$url_images/icon_search.gif";
-$images['profile'] = "$url_images/icon_profile.gif";
-$images['privmsg'] = "$url_images/icon_pm.gif";
-$images['email'] = "$url_images/icon_email.gif";
-$images['delpost'] = "$url_images/icon_delete.gif";
-$images['ip'] = "$url_images/icon_ip.gif";
-$images['www'] = "$url_images/icon_www.gif";
-$images['icq'] = "$url_images/icon_icq_add.gif";
-$images['aim'] = "$url_images/icon_aim.gif";
-$images['yim'] = "$url_images/icon_yim.gif";
-$images['msnm'] = "$url_images/icon_msnm.gif";
-$images['posticon'] = "$url_images/icon_minipost.gif";
-$images['folder'] = "$url_images/folder.gif";
-$images['new_folder'] = "$url_images/folder_new.gif";
-$images['latest_reply'] = "$url_images/icon_latest_reply.gif";
-$images['locked_folder'] = "$url_images/folder_lock.gif";
 
 //
 // Obtain and encode users IP
@@ -148,7 +124,7 @@ else
 
 //
 // This doesn't need to be here, it's only neccesary
-// for the following if loop because a language file
+// for the following if... loop because a language file
 // will be loaded post-session initialisation (or the default
 // English one will load if a CRITICAL_ERROR occurs)
 //

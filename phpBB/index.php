@@ -135,28 +135,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Obtain list of moderators of each forum
 	//
-/*	$sql = "SELECT f.forum_id, u.username, u.user_id
-		FROM " . FORUMS_TABLE . " f, " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
-		WHERE aa.forum_id = f.forum_id 
-			AND aa.auth_mod = " . TRUE . " 
-			AND ug.group_id = aa.group_id
-			AND u.user_id = ug.user_id  
-		ORDER BY f.forum_id, u.user_id";
-	if(!$q_forum_mods = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
-	}
-	$forum_mods_list = $db->sql_fetchrowset($q_forum_mods);
-
-	for($i = 0; $i < count($forum_mods_list); $i++)
-	{
-		$forum_mods_name[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['username'];
-		$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
-
-		$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 1;
-	}*/
-
-
 	$sql = "SELECT f.forum_id, g.group_name, g.group_id, g.group_single_user, ug.user_id
 		FROM " . FORUMS_TABLE . " f, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
 		WHERE aa.forum_id = f.forum_id 
@@ -237,11 +215,11 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 				if($userdata['session_start'] >= $userdata['session_time'] - 300)
 				{
-					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = ($forum_rows[$j]['post_time'] > $userdata['session_last_visit']) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 				}
 				else
 				{
-					$folder_image = ($forum_rows[$j]['post_time'] >= $userdata['session_time'] - 300) ? "<img src=\"" . $images['new_folder'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
+					$folder_image = ($forum_rows[$j]['post_time'] >= $userdata['session_time'] - 300) ? "<img src=\"" . $images['folder_new'] . "\">" : "<img src=\"" . $images['folder'] . "\">";
 				}
 
 				$posts = $forum_rows[$j]['forum_posts'];
@@ -262,7 +240,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$last_post = $last_post_time . "<br />by ";
 					$last_post .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "="  . $forum_rows[$j]['user_id']) . "\">" . $last_poster . "</a>&nbsp;";
 
-					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\"></a>";
+					$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" width=\"20\" height=\"11\" border=\"0\" alt=\"" . $lang['View_latest_post'] . "\"></a>";
 				}
 				else
 				{

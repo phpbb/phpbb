@@ -52,10 +52,10 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 //
 // What shall we do? hhmmmm
 //
-if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
+if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) && isset($HTTP_POST_VARS['viewinfo']) ) )
 {
 
-	$group_id = $HTTP_GET_VARS[POST_GROUPS_URL];
+	$group_id = ( isset($HTTP_POST_VARS[POST_GROUPS_URL]) ) ? $HTTP_POST_VARS[POST_GROUPS_URL] : $HTTP_GET_VARS[POST_GROUPS_URL];
 
 	$sql = "SELECT * 
 		FROM " . GROUPS_TABLE . " 
@@ -108,7 +108,6 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 	//
 	$template->pparse("info");
 
-
 	//
 	// Generate memberlist if there any!
 	//
@@ -145,26 +144,17 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 
 			$posts = ($group_members[$i]['user_posts']) ? $group_members[$i]['user_posts'] : 0;
 		
-			if($group_members[$i]['user_avatar'] != "")
-			{
-				$poster_avatar = (strstr("http", $group_members[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<img src=\"" . $group_members[$i]['user_avatar'] . "\">" : "<img src=\"" . $board_config['avatar_path'] . "/" . $group_members[$i]['user_avatar'] . "\">";
-			}
-			else
-			{
-				$poster_avatar = "";
-			}
-
 			if( !empty($group_members[$i]['user_viewemail']) )
 			{
 				$altered_email = str_replace("@", " at ", $group_members[$i]['user_email']);
-				$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
+				$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\"></a>";
 			}
 			else
 			{
 				$email_img = "&nbsp;";
 			}
 
-			$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $group_members[$i]['user_id']) . "\"><img src=\"" . $images['privmsg'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
+			$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&" . POST_USERS_URL . "=" . $group_members[$i]['user_id']) . "\"><img src=\"" . $images['icon_pm'] . "\" border=\"0\" alt=\"" . $lang['Send_private_message'] . "\"></a>";
 		
 			if($group_members[$i]['user_website'] != "")
 			{
@@ -176,7 +166,7 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 				{
 					$website_url = stripslashes($group_members[$i]['user_website']);
 				}
-				$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['www'] . "\" border=\"0\"/></a>";
+				$www_img = "<a href=\"$website_url\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" border=\"0\"/></a>";
 			}
 			else
 			{
@@ -185,9 +175,9 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 
 			if($group_members[$i]['user_icq'])
 			{
-				$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $group_members[$i]['user_icq'] . "&img=5\" alt=\"$l_icqstatus\" border=\"0\"></a>";
+				$icq_status_img = "<a href=\"http://wwp.icq.com/" . $group_members[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $group_members[$i]['user_icq'] . "&img=5\" border=\"0\"></a>";
 
-				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"$l_icq\" border=\"0\"></a>";
+				$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $group_members[$i]['user_icq'] . "\"><img src=\"" . $images['icq'] . "\" alt=\"". $lang['ICQ'] . "\" border=\"0\"></a>";
 			}
 			else
 			{
@@ -195,13 +185,13 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 				$icq_add_img = "&nbsp;";
 			}
 	
-			$aim_img = ($group_members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $group_members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['aim'] . "\" border=\"0\"></a>" : "&nbsp;";
+			$aim_img = ($group_members[$i]['user_aim']) ? "<a href=\"aim:goim?screenname=" . $group_members[$i]['user_aim'] . "&message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-			$msn_img = ($group_members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
+			$msn_img = ($group_members[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-			$yim_img = ($group_members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $group_members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['yim'] . "\" border=\"0\"></a>" : "&nbsp;";
+			$yim_img = ($group_members[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $group_members[$i]['user_yim'] . "&.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\"></a>" : "&nbsp;";
 
-			$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($group_members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
+			$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($group_members[$i]['username']) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\"></a>";
 
 			if(!($i % 2))
 			{
@@ -222,6 +212,7 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 					"MOD_FROM" => $from,
 					"MOD_JOINED" => $joined,
 					"MOD_POSTS" => $posts,
+
 					"MOD_EMAIL_IMG" => $email_img,
 					"MOD_PM_IMG" => $pm_img,
 					"MOD_WWW_IMG" => $www_img,
@@ -243,6 +234,7 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 					"FROM" => $from,
 					"JOINED" => $joined,
 					"POSTS" => $posts,
+
 					"EMAIL_IMG" => $email_img,
 					"PM_IMG" => $pm_img,
 					"WWW_IMG" => $www_img,
@@ -279,7 +271,89 @@ if( isset($HTTP_GET_VARS[POST_GROUPS_URL]) )
 	}
 
 }
+else 
+{
 
+	$sql = "SELECT group_id, group_name  
+		FROM " . GROUPS_TABLE . "  
+		WHERE group_single_user <> " . TRUE . " 
+		ORDER BY group_name";
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
+	}
+	if( !$db->sql_numrows($result) )
+	{
+		message_die(GENERAL_MESSAGE, "No groups exist");
+	}
+	$group_list = $db->sql_fetchrowset($result);
+
+	$sql = "SELECT g.group_id, g.group_name, ug.user_pending 
+		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug 
+		WHERE ug.user_id = " . $userdata['user_id'] . "
+			AND g.group_id = ug.group_id 
+			AND g.group_single_user <> " . TRUE . " 
+		ORDER BY g.group_name";
+	if(!$result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
+	}
+	if($db->sql_numrows($result))
+	{
+		$membergroup_list = $db->sql_fetchrowset($result);
+	}
+
+	$template->set_filenames(array(
+		"user" => "groupcp_user_body.tpl",
+		"jumpbox" => "jumpbox.tpl")
+	);
+
+	$jumpbox = make_jumpbox();
+	$template->assign_vars(array(
+		"JUMPBOX_LIST" => $jumpbox,
+		"SELECT_NAME" => POST_FORUM_URL)
+	);
+	$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+
+	$s_group_list = '<select name="' . POST_GROUPS_URL . '">';
+	for($i = 0; $i < count($group_list); $i++)
+	{
+		$s_group_list .= '<option value="' . $group_list[$i]['group_id'] . '">' . $group_list[$i]['group_name'] . '</option>';
+	}
+	$s_group_list .= "</select>";
+
+	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">';
+	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">';
+	for($i = 0; $i < count($membergroup_list); $i++)
+	{
+		if($membergroup_list[$i]['user_pending'])
+		{
+			$s_pending_groups .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+		}
+		else
+		{
+			$s_member_groups .= '<option value="' . $membergroup_list[$i]['group_id'] . '">' . $membergroup_list[$i]['group_name'] . '</option>';
+		}
+	}
+	$s_pending_groups .= "</select>";
+	$s_member_groups .= "</select>";
+
+
+	$template->assign_vars(array(
+		"L_YOU_BELONG_GROUPS" => "You belong to the following usergroups", 
+		"L_SELECT_A_GROUP" => "To join a usergroup select one from the list", 
+		"L_PENDING_GROUPS" => "You have memberships pending on these groups", 
+
+		"GROUP_LIST_SELECT" => $s_group_list,
+		"GROUP_PENDING_SELECT" => $s_pending_groups,
+		"GROUP_MEMBER_SELECT" => $s_member_groups)
+	);
+
+	$template->pparse("user");
+
+
+}
 
 //
 // Page footer
