@@ -569,7 +569,7 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 		if ( $mode == "reply" )
 		{
 			$sql = "SELECT ban_userid 
-				FROM " . BANLIST_TABLE;
+				FROM " . BANLIST_TABLE . ";
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, "", "", __LINE__, __FILE__, $sql);
@@ -578,7 +578,10 @@ function user_notification($mode, &$post_data, &$forum_id, &$topic_id, &$post_id
 			$user_id_sql = "";
 			while ( $row = $db->sql_fetchrow($result) )
 			{
-				$user_id_sql = ", " . $row['ban_userid'];
+				if ( isset($row['ban_user_id']) )
+				{
+					$user_id_sql = ", " . $row['ban_userid'];
+				}
 			}
 
 			$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title 
