@@ -34,10 +34,10 @@ CREATE TABLE phpbb_attach_desc (
 
 # Table: phpbb_auth_groups
 CREATE TABLE phpbb_auth_groups (
-  group_id mediumint(8) unsigned NOT NULL default '0',
-  forum_id mediumint(8) unsigned NOT NULL default '0',
-  auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_setting tinyint(4) NOT NULL default '0',
+  group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_option_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_setting tinyint(4) DEFAULT '0' NOT NULL,
   KEY group_id (group_id),
   KEY auth_option_id (auth_option_id)
 );
@@ -66,10 +66,10 @@ CREATE TABLE phpbb_auth_presets (
 
 # Table: phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
-  user_id mediumint(8) UNSIGNED NOT NULL default '0',
-  forum_id mediumint(8) UNSIGNED NOT NULL default '0',
-  auth_option_id smallint(5) UNSIGNED NOT NULL default '0',
-  auth_setting tinyint(4) NOT NULL default '0',
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_option_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_setting tinyint(4) DEFAULT '0' NOT NULL,
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
 );
@@ -90,7 +90,7 @@ CREATE TABLE phpbb_banlist (
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
-  bbcode_id tinyint(3) unsigned NOT NULL default '0',
+  bbcode_id tinyint(3) UNSIGNED DEFAULT '0' NOT NULL,
   bbcode_tag varchar(16) NOT NULL default '',
   bbcode_match varchar(255) NOT NULL default '',
   bbcode_tpl text NOT NULL default '',
@@ -220,9 +220,9 @@ CREATE TABLE phpbb_forums_marking (
 
 # Table: 'phpbb_forums_watch'
 CREATE TABLE phpbb_forums_watch (
-  forum_id smallint(5) UNSIGNED NOT NULL DEFAULT '0',
-  user_id mediumint(8) NOT NULL DEFAULT '0',
-  notify_status tinyint(1) NOT NULL default '0',
+  forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id mediumint(8) DEFAULT '0' NOT NULL,
+  notify_status tinyint(1) DEFAULT '0' NOT NULL,
   KEY forum_id (forum_id),
   KEY user_id (user_id),
   KEY notify_status (notify_status)
@@ -266,11 +266,11 @@ CREATE TABLE phpbb_lang (
 
 # Table: 'phpbb_log'
 CREATE TABLE phpbb_log (
-  log_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0' auto_increment,
-  log_type tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
-  user_id mediumint(8) NOT NULL DEFAULT '0',
-  forum_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  log_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL auto_increment,
+  log_type tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id mediumint(8) DEFAULT '0' NOT NULL,
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   log_ip varchar(40) NOT NULL,
   log_time int(11) NOT NULL,
   log_operation text,
@@ -284,10 +284,10 @@ CREATE TABLE phpbb_log (
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
-  forum_id mediumint(8) unsigned NOT NULL,
-  user_id mediumint(8) unsigned default NULL,
+  forum_id mediumint(8) UNSIGNED NOT NULL,
+  user_id mediumint(8) UNSIGNED default NULL,
   username char(30) default NULL,
-  group_id mediumint(8) unsigned default NULL,
+  group_id mediumint(8) UNSIGNED default NULL,
   groupname char(30) default NULL,
   display_on_index tinyint(4) NOT NULL default '1',
   KEY display_on_index (display_on_index),
@@ -310,19 +310,19 @@ CREATE TABLE phpbb_modules (
 
 # Table: 'phpbb_poll_results'
 CREATE TABLE phpbb_poll_results (
-  poll_option_id tinyint(4) unsigned NOT NULL DEFAULT '0',
+  poll_option_id tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED NOT NULL,
   poll_option_text varchar(255) NOT NULL,
-  poll_option_total mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  poll_option_total mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   KEY poll_option_id (poll_option_id),
   KEY topic_id (topic_id)
 );
 
 # Table: 'phpbb_poll_voters'
 CREATE TABLE phpbb_poll_voters (
-  topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  poll_option_id tinyint(4) UNSIGNED NOT NULL DEFAULT '0',
-  vote_user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  poll_option_id tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  vote_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   vote_user_ip varchar(40) NOT NULL,
   KEY topic_id (topic_id),
   KEY vote_user_id (vote_user_id),
@@ -397,8 +397,8 @@ CREATE TABLE phpbb_ranks (
 
 # Table: 'phpbb_ratings'
 CREATE TABLE phpbb_ratings (
-  post_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  user_id tinyint(4) UNSIGNED UNSIGNED NOT NULL DEFAULT '0',
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id tinyint(4) UNSIGNED UNSIGNED DEFAULT '0' NOT NULL,
   rating tinyint(4) DEFAULT '0' NOT NULL,
   KEY post_id (post_id),
   KEY user_id (user_id)
@@ -407,7 +407,7 @@ CREATE TABLE phpbb_ratings (
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id smallint(6) NOT NULL auto_increment,
-  reason_priority tinyint(4) NOT NULL default '0',
+  reason_priority tinyint(4) DEFAULT '0' NOT NULL,
   reason_name varchar(255) DEFAULT '' NOT NULL,
   reason_description text NOT NULL,
   PRIMARY KEY  (reason_id)
@@ -415,20 +415,21 @@ CREATE TABLE phpbb_reports_reasons (
 
 # Table: 'phpbb_reports'
 CREATE TABLE phpbb_reports (
-  report_id smallint(5) unsigned NOT NULL auto_increment,
-  reason_id smallint(5) unsigned NOT NULL default '0',
-  post_id mediumint(8) unsigned NOT NULL default '0',
-  user_id mediumint(8) unsigned NOT NULL default '0',
-  user_notify tinyint(1) NOT NULL default '0',
-  report_time int(10) unsigned NOT NULL default '0',
+  report_id smallint(5) UNSIGNED NOT NULL auto_increment,
+  reason_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_notify tinyint(1) DEFAULT '0' NOT NULL,
+  report_time int(10) UNSIGNED DEFAULT '0' NOT NULL,
   report_text text NOT NULL,
   PRIMARY KEY  (report_id)
 );
 
 # Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
-  search_id int(11) UNSIGNED NOT NULL default '0',
-  session_id varchar(32) DEFAULT '' NOT NULL,
+  search_id int(11) UNSIGNED DEFAULT '0' NOT NULL,
+  session_id varchar(32) DEFAULT '' NOT NULL, 
+  search_time int(11) DEFAULT '0' NOT NULL, 
   search_array text NOT NULL,
   PRIMARY KEY  (search_id),
   KEY session_id (session_id)
@@ -436,18 +437,18 @@ CREATE TABLE phpbb_search_results (
 
 # Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar(50) binary DEFAULT '' NOT NULL,
+  word_text varchar(50) BINARY DEFAULT '' NOT NULL,
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  word_common tinyint(1) unsigned NOT NULL default '0',
+  word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY (word_text),
   KEY word_id (word_id)
 );
 
 # Table: phpbb_search_wordmatch
 CREATE TABLE phpbb_search_wordmatch (
-  post_id mediumint(8) UNSIGNED NOT NULL default '0',
-  word_id mediumint(8) UNSIGNED NOT NULL default '0',
-  title_match tinyint(1) NOT NULL default '0',
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  title_match tinyint(1) DEFAULT '0' NOT NULL,
   KEY word_id (word_id)
 );
 
@@ -534,7 +535,7 @@ CREATE TABLE phpbb_styles_theme (
 
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
-  imageset_id tinyint(4) unsigned NOT NULL auto_increment,
+  imageset_id tinyint(4) UNSIGNED NOT NULL auto_increment,
   imageset_name varchar(30) DEFAULT '' NOT NULL,
   imageset_copyright varchar(50) DEFAULT '' NOT NULL,
   imageset_path varchar(30) DEFAULT '' NOT NULL,
@@ -625,8 +626,8 @@ CREATE TABLE phpbb_topics (
    topic_last_view_time int(11) DEFAULT '0' NOT NULL,
    topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    poll_title varchar(255) NOT NULL,
-   poll_start int(11) NOT NULL DEFAULT '0',
-   poll_length int(11) NOT NULL DEFAULT '0',
+   poll_start int(11) DEFAULT '0' NOT NULL,
+   poll_length int(11) DEFAULT '0' NOT NULL,
    poll_max_options tinyint(4) UNSIGNED NOT NULL DEFAULT '1',
    poll_last_vote int(11),
    PRIMARY KEY (topic_id),
@@ -646,9 +647,9 @@ CREATE TABLE phpbb_topics_marking (
 
 # Table: 'phpbb_topics_watch'
 CREATE TABLE phpbb_topics_watch (
-  topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  notify_status tinyint(1) NOT NULL default '0',
+  topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  notify_status tinyint(1) DEFAULT '0' NOT NULL,
   KEY topic_id (topic_id),
   KEY user_id (user_id),
   KEY notify_status (notify_status)
