@@ -536,7 +536,7 @@ else
 			);
 			$template->pparse('body');				*/
 
-			exit;
+			die("Error during installation: no $check_exts extension");
 		}
 
 		include($phpbb_root_path . 'db/' . $dbms . '.' . $phpEx);

@@ -331,13 +331,16 @@ function language_select($default, $select_name = "language", $dirname="language
 	$user = array();
 	while ( $file = readdir($dir) )
 	{
-		if ( file_exists($dirname . '/' . $file . '/iso.txt') )
+		if (!is_dir($dirname . '/' . $file))
+		{
+			continue;
+		}
+		if ( @file_exists($dirname . '/' . $file . '/iso.txt') )
 		{
 			list($displayname) = file($dirname . '/' . $file . '/iso.txt');
-			$lang[$displayname] = $dirname . '/' . $file;
+			$lang[$displayname] = $file;
 		}
 	}
-
 	@closedir($dir);
 
 	@asort($lang);
