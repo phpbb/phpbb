@@ -17,50 +17,35 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-/*
-CREATE TABLE phpbb_modules (
-  module_id mediumint(8) NOT NULL auto_increment,
-  module_type char(3) NOT NULL default '',
-  module_title varchar(50) NOT NULL default '',
-  module_filename varchar(50) NOT NULL default '',
-  module_order mediumint(4) NOT NULL default '0',
-  module_enabled tinyint(1) unsigned NOT NULL default '1',
-  module_acl varchar(255) NOT NULL default '',
-  PRIMARY KEY  (module_id),
-  KEY module_type (module_type,module_enabled)
-);
-
-INSERT INTO phpbb_modules VALUES (6, 'mcp', 'MAIN', 'main', 1, 1, '');
-*/
-@define('MODULES_TABLE', $table_prefix . 'modules');
-
 // ---------
 // FUNCTIONS
 //
 class module
 {
-	var $module_id = 0;
-	var $module_url;
-	var $modules = array();
-	var $submodules = array();
+	var $id = 0;
+	var $type;
+	var $name;
+	var $mode;
+	var $modules;
 
-	function module($module_type, $module_url, $selected)
+	// Private methods, should not be overwritten
+	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $auth, $db, $phpbb_root_path, $phpEx, $user;
+		global $template, $auth, $db, $user;
 
-		$sql = 'SELECT module_id, module_title, module_filename, module_acl
+		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
 			FROM ' . MODULES_TABLE . "
 			WHERE module_type = '{$module_type}'
 				AND module_enabled = 1
 			ORDER BY module_order ASC";
 		$result = $db->sql_query($sql);
 
+		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
+			// Authorisation is required for the basic module
 			if ($row['module_acl'])
 			{
-				// Authorisation is required
-
 				$is_auth = FALSE;
 				foreach (explode(',', $row['module_acl']) as $auth_option)
 				{
@@ -70,70 +55,157 @@ class module
 						break;
 					}
 				}
+
+				// The user is not authorised to use this module, skip it
 				if (!$is_auth)
 				{
-					// The user is not authorised to use this module, skip it
 					continue;
 				}
 			}
 
-			if ($row['module_filename'] == $selected || $row['module_id'] == $selected)
-			{
-				$module_id = intval($row['module_id']);
-				$module_name = $row['module_filename'];
-			}
+			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
 
 			// Get the localised lang string if available, or make up our own otherwise
-			$title = (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title'])));
-
-			$modules[intval($row['module_id'])] = array(
-				'title'	=>	$title,
-				'name'	=>	$row['module_filename'],
-				'link'	=>	'&amp;i=' . $row['module_id']
+/*
+			$template->assign_block_vars($module_type . '_section', array(
+				'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . $row['module_title']])) ? $user->lang[strtoupper($module_type) . '_' . $row['module_title']] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
+				'S_SELECTED'	=> $selected, 
+				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
 			);
+*/
+			$this->modules[intval($row['module_id'])] = array(
+				'title'		=>	(isset($user->lang[strtoupper($module_type) . '_' . strtoupper($row['module_title'])])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($row['module_title'])] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
+				'name'		=>	$row['module_filename'],
+				'link'		=>	'&amp;i=' . $row['module_id'],
+				'selected'	=>	$selected,
+				'subs'		=>	array()
+			);
+
+
+			if ($selected)
+			{
+				$module_id = $row['module_id'];
+				$module_name = $row['module_filename'];
+
+				if ($row['module_subs'])
+				{
+					$j = 0;
+					$submodules_ary = explode("\n", $row['module_subs']);
+					foreach ($submodules_ary as $submodule)
+					{
+						$submodule = explode(',', trim($submodule));
+						$submodule_title = array_shift($submodule);
+
+						$is_auth = true;
+						foreach ($submodule as $auth_option)
+						{
+							if (!$auth->acl_get($auth_option))
+							{
+								$is_auth = false;
+							}
+						}
+
+						if (!$is_auth)
+						{
+							continue;
+						}
+
+						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
+
+						// Get the localised lang string if available, or make up our own otherwise
+/*
+						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
+							'L_TITLE'		=> (isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
+							'S_SELECTED'	=> $selected, 
+							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
+						));
+*/
+						$this->modules[intval($row['module_id'])]['subs'][$submodule_title] = array(
+							'title'		=>	(isset($user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)])) ? $user->lang[strtoupper($module_type) . '_' . strtoupper($submodule_title)] : ucfirst(str_replace('_', ' ', strtolower($submodule_title))),
+							'name'		=>	$submodule_title,
+							'link'		=>	'&amp;i=' . $module_id . '&amp;mode=' . $submodule_title,
+							'selected'	=>	$selected
+						);
+
+						if ($selected)
+						{
+							$this->mode = $submodule_title;
+						}
+
+						$j++;
+					}
+				}
+			}
+
+			$i++;
 		}
 		$db->sql_freeresult($result);
 
-		if (empty($module_id))
+		if (!$module_id)
 		{
 			trigger_error('MODULE_NOT_EXIST');
 		}
 
-		require($phpbb_root_path . "includes/{$module_type}/{$module_type}_{$module_name}.$phpEx");
-		eval("\$this->module = new {$module_type}_{$module_name}(\$module_id);");
-
-		$this->module->modules = $modules;
-		$this->module->module_url = $module_url;
+		$this->type = $module_type;
+		$this->id = $module_id;
+		$this->name = $module_name;
+		$this->url = $module_url;
 	}
 
-	// This generates the block template variable for outputting the list
-	// of submodules, should be called with an associative array of modules
-	// in the form 'LANG_STRING' => 'LINK'
-	function menu($selected)
+	function load($type = false, $name = false, $mode = false, $run = true)
 	{
-		global $template, $user;
+		global $template, $phpbb_root_path, $phpEx;
 
-		foreach ($this->modules as $module_id => $section_data)
+		if ($type)
 		{
-			$template->assign_block_vars($this->module_type . '_section', array(
-				'L_TITLE'		=> $section_data['title'],
-				'S_SELECTED'	=> ($module_id == $this->module_id) ? TRUE : FALSE, 
-				'U_TITLE'		=> $this->url . $section_data['link'])
-			);
+			$this->type = $type;
+		}
 
-			if ($module_id == $this->module_id)
+		if ($name)
+		{
+			$this->name = $name;
+		}
+
+		if (!$mode && $this->mode)
+		{
+			$mode = $this->mode;
+		}
+
+		if (!class_exists($this->type . '_' . $this->name))
+		{
+			$filename = $phpbb_root_path . "includes/{$this->type}/{$this->type}_{$this->name}.$phpEx";
+			include_once($filename);
+
+			if (!class_exists($this->type . '_' . $this->name) && !file_exists($filename))
 			{
-				foreach ($this->submodules as $title => $module_link)
-				{
-					// Get the localised lang string if available, or make up our own otherwise
-					$section_title = (isset($user->lang[$title])) ? $user->lang[$title] : ucfirst(str_replace('_', ' ', strtolower($title)));
+				trigger_error('MODULE_NOT_EXIST');
+			}
 
-					$template->assign_block_vars("{$this->module_type}_section.{$this->module_type}_subsection", array(
-						'L_TITLE'		=> $section_title,
-						'S_SELECTED'	=> ($title == $selected) ? TRUE : FALSE, 
-						'U_TITLE'		=> $this->url . $module_link
-					));
+			if ($run)
+			{
+				eval("\$this->module = new {$this->type}_{$this->name}(\$this->id, \$mode);");
+
+				$vars = array('modules', 'id', 'name', 'type', 'url', 'mode');
+				foreach ($vars as $var)
+				{
+					$this->module->$var = $this->$var;
 				}
+
+				// Shortcut to submodules
+				$this->module->subs =& $this->module->modules[$this->id]['subs'];
+
+				if (method_exists($this->module, 'init'))
+				{
+					$this->module->init();
+				}
+				if (method_exists($this->module, 'main'))
+				{
+					$this->module->main($mode);
+				}
+
+				// We're not exactly supposed to ever get there
+				$template->assign_var('MESSAGE', 'This mode is currently unavailable');
+				$this->display('An error occured', 'mcp_front.html');
 			}
 		}
 	}
@@ -142,6 +214,30 @@ class module
 	function display($page_title, $tpl_name)
 	{
 		global $template;
+
+		// This method is used to put variables in menu titles
+		if (method_exists($this, 'alter_menu'))
+		{
+			$this->alter_menu();
+		}
+
+		foreach ($this->modules as $id => $section_data)
+		{
+			$template->assign_block_vars($this->type . '_section', array(
+				'L_TITLE'		=> $section_data['title'],
+				'S_SELECTED'	=> ($id == $this->id) ?  TRUE : FALSE, 
+				'U_TITLE'		=> $this->url . $section_data['link'])
+			);
+
+			foreach ($section_data['subs'] as $sub)
+			{
+				$template->assign_block_vars("{$this->type}_section.{$this->type}_subsection", array(
+					'L_TITLE'		=> $sub['title'],
+					'S_SELECTED'	=> ($sub['name'] == $this->mode) ? TRUE : FALSE, 
+					'U_TITLE'		=> $this->url . $sub['link']
+				));
+			}
+		}
 
 		page_header($page_title);
 
@@ -152,31 +248,95 @@ class module
 		page_footer();
 	}
 
-	function message_die($msg)
+
+	// Public methods to be overwritten by modules
+	function module()
 	{
-		global $template, $user;
+		// Module name
+		// Module filename
+		// Module description
+		// Module version
+		// Module compatibility
+		return false;
+	}
 
-		if (isset($user->lang[$msg]))
-		{
-			$msg = $user->lang[$msg];
-		}
+	function init()
+	{
+		return false;
+	}
 
-		$template->assign_vars(array(
-			'MESSAGE_TITLE'	=>	$user->lang['MESSAGE'],
-			'MESSAGE_TEXT'	=>	$msg
-		));
-		$this->display('MCP', 'mcp_message.html');
+	function install()
+	{
+		return false;
+	}
+
+	function uninstall()
+	{
+		return false;
 	}
 }
 
 class mcp extends module
 {
-	var $module_type = 'mcp';
 	var $forum_id = 0;
 	var $topic_id = 0;
 	var $post_id = 0;
+	var $topic_id_list = array();
+	var $post_id_list = array();
 
-	function get_forum_data($forum_id, $acl_list = '', $return_on_error = FALSE)
+	function get_topic_ids($acl_list = '')
+	{
+		if (!$this->topic_id_list)
+		{
+			return;
+		}
+
+		global $auth, $db;
+		$topic_ids = array();
+
+		$sql = 'SELECT topic_id, forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id IN (' . implode(', ', $this->topic_id_list) . ')';
+		$result = $db->sql_query($sql);
+		
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!$acl_list || $auth->acl_get($acl_list, $row['forum_id']))
+			{
+				$topic_ids[] = $row['topic_id'];
+			}
+		}
+
+		return $topic_ids;
+	}
+
+	function get_post_ids($acl_list = '')
+	{
+		if (!$this->post_id_list)
+		{
+			return;
+		}
+
+		global $auth, $db;
+		$post_ids = array();
+
+		$sql = 'SELECT post_id, forum_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id IN (' . implode(', ', $this->post_id_list) . ')';
+		$result = $db->sql_query($sql);
+		
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!$acl_list || $auth->acl_get($acl_list, $row['forum_id']))
+			{
+				$post_ids[] = $row['post_id'];
+			}
+		}
+
+		return $post_ids;
+	}
+
+	function get_forum_data($forum_id, $acl_list = 'f_list')
 	{
 		global $auth, $db;
 		$rowset = array();
@@ -200,12 +360,11 @@ class mcp extends module
 			$rowset[$row['forum_id']] = $row;
 		}
 
-		if (!$return_on_error && empty($rowset))
+		if (empty($rowset))
 		{
-			$this->message_die('FORUM_NOT_EXIST');
+			return FALSE;
 		}
-
-		if (is_array($forum_id))
+		elseif (is_array($forum_id))
 		{
 			return $rowset;
 		}
@@ -215,7 +374,7 @@ class mcp extends module
 		}
 	}
 
-	function get_topic_data($topic_id, $acl_list = '', $return_on_error = FALSE)
+	function get_topic_data($topic_id, $acl_list = '')
 	{
 		global $auth, $db;
 		$rowset = array();
@@ -238,16 +397,69 @@ class mcp extends module
 				$row['topic_replies'] = $row['topic_replies_real'];
 				$row['forum_topics'] = $row['forum_topics_real'];
 			}
+			elseif (!$row['topic_approved'])
+			{
+				// TODO: should moderators without m_approve be allowed to perform any action of unapproved items?
+				continue;
+			}
 
 			$rowset[$row['topic_id']] = $row;
 		}
 
-		if (!$return_on_error && empty($rowset))
+		if (empty($rowset))
 		{
-			$this->message_die('TOPIC_NOT_EXIST');
+			// DEBUG
+			global $template;
+			$template->assign_var('MESSAGE', 'Error while retrieving topic data #' . $topic_id);
+			// -----
+
+			return FALSE;
 		}
 
 		if (is_array($topic_id))
+		{
+			return $rowset;
+		}
+		else
+		{
+			return array_pop($rowset);
+		}
+	}
+
+	function get_post_data($post_id, $acl_list = '')
+	{
+		global $auth, $db;
+		$rowset = array();
+
+		// DEBUG: won't probably work on global announcements
+		$sql = 'SELECT p.*, u.*, t.*, f.*
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
+			WHERE p.post_id ' . ((is_array($post_id)) ? 'IN (' . implode(', ', $post_id) . ')' : "= $post_id") . '
+				AND u.user_id = p.poster_id
+				AND t.topic_id = p.topic_id
+				AND f.forum_id = p.forum_id';
+		$result = $db->sql_query($sql);
+		
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+			{
+				continue;
+			}
+			if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+			{
+				// TODO: should moderators without m_approve be allowed to perform any action of unapproved items?
+				continue;
+			}
+
+			$rowset[$row['post_id']] = $row;
+		}
+
+		if (empty($rowset))
+		{
+			return FALSE;
+		}
+		elseif (is_array($post_id))
 		{
 			return $rowset;
 		}
@@ -262,21 +474,55 @@ class mcp extends module
 		global $db;
 
 		// Obtain initial var settings
-		$this->forum_id = (isset($_REQUEST['f'])) ? max(0, intval($_REQUEST['f'])) : 0;
-		$this->topic_id = (!empty($_REQUEST['t'])) ? intval($_REQUEST['t']) : 0;
-		$this->post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
+		$this->forum_id = request_var('f', 0);
+		$this->topic_id = request_var('t', 0);
+		$this->post_id = request_var('p', 0);
 
 		$this->topic_id_list = ($this->topic_id) ? array($this->topic_id) : array();
 		$this->post_id_list = ($this->post_id) ? array($this->post_id) : array();
 
-		$this->to_forum_id = (!empty($_REQUEST['to_forum_id'])) ? intval($_REQUEST['to_forum_id']) : 0;
-		$this->to_topic_id = (!empty($_REQUEST['to_topic_id'])) ? intval($_REQUEST['to_topic_id']) : 0;
+		$this->to_forum_id = request_var('to_forum_id', 0);
+		$this->to_topic_id = request_var('to_topic_id', 0);
 
-		$this->confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
-		$this->action = (!empty($_REQUEST['action'])) ? $_REQUEST['action'] : '';
-		$this->quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
+		$this->cancel = request_var('cancel', FALSE);
+		$this->confirm = ($this->cancel) ? FALSE : request_var('confirm', FALSE);
+		$this->quickmod = request_var('quickmod', FALSE);
+
+		$this->view = request_var('view', '');
+		$this->start = request_var('start', 0);
+		$this->action = request_var('action', '');
+		if (is_array($this->action))
+		{
+			list($this->action, $void) = each($this->action);
+		}
+
+		// Cleanse input
+		if (!empty($_POST['topic_id_list']) && is_array($_POST['topic_id_list']))
+		{
+			foreach ($_POST['topic_id_list'] as $t_id)
+			{
+				if ($t_id = intval($t_id))
+				{
+					$this->topic_id_list[] = $t_id;
+				}
+			}
+		}
+		if (!empty($_POST['post_id_list']) && is_array($_POST['post_id_list']))
+		{
+			foreach ($_POST['post_id_list'] as $p_id)
+			{
+				if ($p_id = intval($p_id))
+				{
+					$this->post_id_list[] = $p_id;
+				}
+			}
+		}
 
 		// Put the forum_id and al in the url
+		if (!$this->post_id && !empty($this->post_id_list))
+		{
+			$this->post_id = $this->post_id_list[0];
+		}
 		if ($this->post_id)
 		{
 			$this->url .= '&amp;p=' . $this->post_id;
@@ -301,6 +547,11 @@ class mcp extends module
 				}
 			}
 		}
+
+		if (!$this->topic_id && !empty($this->topic_id_list))
+		{
+			$this->topic_id = $this->topic_id_list[0];
+		}
 		if ($this->topic_id)
 		{
 			$this->url .= '&amp;t=' . $this->topic_id;
@@ -317,28 +568,6 @@ class mcp extends module
 		if ($this->forum_id)
 		{
 			$this->url .= '&amp;f=' . $this->forum_id;
-		}
-
-		// Cleanse inputted values
-		if (!empty($_POST['topic_id_list']) && is_array($_POST['topic_id_list']))
-		{
-			foreach ($_POST['topic_id_list'] as $t_id)
-			{
-				if ($t_id = intval($t_id))
-				{
-					$this->topic_id_list[] = $t_id;
-				}
-			}
-		}
-		if (!empty($_POST['post_id_list']) && is_array($_POST['post_id_list']))
-		{
-			foreach ($_POST['post_id_list'] as $p_id)
-			{
-				if ($p_id = intval($p_id))
-				{
-					$this->post_id_list[] = $p_id;
-				}
-			}
 		}
 
 		// Build short_id_list
@@ -361,7 +590,7 @@ class mcp extends module
 		$sql = 'SELECT forum_id, forum_name, forum_type, left_id, right_id
 			FROM ' . FORUMS_TABLE . '
 			ORDER BY left_id ASC';
-		$result = $db->sql_query($sql, 120);
+		$result = $db->sql_query($sql);
 
 		$right = $cat_right = 0;
 		$padding = $forum_list = $holding = '';
@@ -412,7 +641,6 @@ class mcp extends module
 
 		$template->assign_vars(array(
 			'S_JUMPBOX_ACTION'		=>	$action,
-			'S_MCP_ACTION'			=>	$action,
 			'S_ENABLE_SELECT_ALL'	=>	$enable_select_all,
 			'S_CURRENT_FORUM'		=>	intval($forum_id)
 		));
@@ -443,7 +671,7 @@ class mcp extends module
 	{
 		global $db, $user, $auth, $template;
 
-		$sort_days = (!empty($_REQUEST['st'])) ? max(intval($_REQUEST['st']), 0) : 0;
+		$sort_days = request_var('sort_days', '0');
 		$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
 
 		switch ($mode)
@@ -455,7 +683,7 @@ class mcp extends module
 				$sql = 'SELECT COUNT(topic_id) AS total
 					FROM ' . TOPICS_TABLE . "
 					$where_sql forum_id = $forum_id
-						AND topic_type <> " . POST_ANNOUNCE . "
+						AND topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
 						AND topic_last_post_time >= $min_time";
 
 				if (!$auth->acl_get('m_approve', $forum_id))
@@ -479,7 +707,7 @@ class mcp extends module
 				}
 			break;
 
-			case 'unapproved':
+			case 'unapproved_posts':
 				$type = 'posts';
 				$default_key = 't';
 				$default_dir = 'd';
@@ -488,6 +716,17 @@ class mcp extends module
 					$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
 						AND post_approved = 0
 						AND post_time >= ' . $min_time;
+			break;
+
+			case 'unapproved_topics':
+				$type = 'topics';
+				$default_key = 't';
+				$default_dir = 'd';
+				$sql = 'SELECT COUNT(topic_id) AS total
+					FROM ' . TOPICS_TABLE . "
+					$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+						AND topic_approved = 0
+						AND topic_time >= ' . $min_time;
 			break;
 
 			case 'reports':
@@ -527,8 +766,8 @@ class mcp extends module
 			break;
 		}
 
-		$sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : $default_key;
-		$sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : $default_dir;
+		$sort_key = request_var('sk', $default_key);
+		$sort_dir = request_var('sd', $default_dir);
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
 		switch ($type)
@@ -544,7 +783,7 @@ class mcp extends module
 			case 'posts':
 				$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
 				$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-				$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_time', 's' => 'p.post_subject');
+				$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 				$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
 			break;
 
@@ -585,70 +824,50 @@ class mcp extends module
 		}
 	}
 }
+
+function return_link($msg, $url)
+{
+	global $template, $user;
+
+	$template->assign_block_vars('return_links', array(
+		'U_LINK'		=>	$url,
+		'MESSAGE_LINK'	=>	sprintf($user->lang[$msg], '<a href="' . $url . '">', '</a>')
+	));
+}
+
+//
 // FUNCTIONS
 // ---------
-
 
 // Start session management
 $user->start();
 $auth->acl($user->data);
-
 $user->setup();
 
+$mcp = new module();
+
 // Basic parameter data
-$module = (!empty($_REQUEST['i'])) ? intval($_REQUEST['i']) : 0;
-$start = (!empty($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
-if (!empty($_REQUEST['mode']))
+$module = request_var('i', 'main');
+if (isset($_POST['jumpbox']) || isset($_POST['sort']) || isset($_POST['confirm']) || isset($_POST['cancel']))
 {
-	if (is_array($_REQUEST['mode']))
-	{
-		list($mode, $void) = each($_REQUEST['mode']);
-	}
-	else
-	{
-		$mode = $_REQUEST['mode'];
-	}
+	// Sometimes we want to ignore input from the dropdown list of modes
+	// when the jumpbox is used or when confirming an action for example
+	$mode = request_var('mode', '', 'GET');
+}
+elseif (isset($_POST['mode']) && is_array($_POST['mode']))
+{
+	list($mode, $void) = each($_POST['mode']);
+	$mode = htmlspecialchars($mode);
 }
 else
 {
-	$mode = 'front';
+	$mode = request_var('mode', '');
 }
 
-// Basic "global" modes
-if (!$module)
-{
-	switch ($mode)
-	{
-		// NOTE: below are basic modes that must not require a module_id to ne passed
-		case 'topic_view':
-		case 'post_details':
-		case 'approve':
-			// used in viewtopic.php
+// Instantiate module system and generate list of available modules
+$mcp->create('mcp', "mcp.$phpEx$SID", $module, $mode);
 
-		case 'split':
-		case 'delete':
-		case 'merge':
-		case 'move':
-		case 'fork':
-		case 'make_normal':
-		case 'make_sticky':
-		case 'make_announce':
-		case 'make_global':
-			// quick-mod
-
-		case 'forum_view':
-		case 'front':
-		default:
-			$module = 'main';
-			break;
-
-	}
-}
-
-// Instantiate a new mcp object
-// NOTE: if $module is an integer, the module corresponding to this module_id will be loaded
-//       if it's a string, the module of this name will be loaded
-$mcp = new module('mcp', "mcp.$phpEx$SID", $module);
-$mcp->module->main($mode);
+// Load and execute the relevant module
+$mcp->load('mcp', false, $mode, TRUE);
 
 ?>
