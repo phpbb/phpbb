@@ -72,7 +72,7 @@ else
 				if (!isset($tracking_topics[$forum_id]) && $user->data['user_id'] != ANONYMOUS)
 				{
 					markread('mark', $forum_id);
-					redirect(str_replace('&amp;', '&', htmlspecialchars((!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'])));
+					redirect("viewforum.$phpEx$SID&amp;f=$forum_id");
 				}
 			}
 
@@ -499,6 +499,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			}
 
 			// Goto message generation
+			// Note: Template this a little bit more to allow style authors seperating goto_page, next, prev and pagination block?
 			if (($replies + 1) > $config['posts_per_page'])
 			{
 				$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
@@ -516,7 +517,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 					}
 					else if ($times < $total_pages)
 					{
-						$goto_page .= ', ';
+						$goto_page .= $user->theme['primary']['pagination_sep'];
 					}
 					$times++;
 				}
