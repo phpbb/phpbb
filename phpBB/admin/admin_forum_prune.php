@@ -45,7 +45,7 @@ if( !empty($setmodules) )
 //
 $phpbb_root_dir = "./../";
 require('pagestart.inc');
-include($phpbb_root_path . 'includes/prune.php');
+include($phpbb_root_path . 'includes/prune.'.$phpEx);
 
 //
 // Get the forum ID for pruning

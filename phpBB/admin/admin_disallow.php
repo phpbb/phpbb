@@ -119,7 +119,7 @@ $template->set_filenames(array(
 
 $template->assign_vars(array(
 	"S_DISALLOW_SELECT" => $disallow_select,
-	"S_FORM_ACTION" => append_sid('admin_disallow.php'),
+	"S_FORM_ACTION" => append_sid("admin_disallow.$phpEx"),
 
 	"L_INFO" => $output_info,
 	"L_DISALLOW_TITLE" => $lang['Disallow_control'],

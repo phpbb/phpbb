@@ -345,8 +345,8 @@ else
 //
 if( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  && !defined("PHPBB_INSTALLED") && empty($HTTP_POST_VARS['upgrade_now']) )
 {
-	header("Content-Type: text/x-delimtext; name=\"config.php\"");
-	header("Content-disposition: attachment; filename=config.php");
+	header("Content-Type: text/x-delimtext; name=\"config.$phpEx\"");
+	header("Content-disposition: attachment; filename=config.$phpEx");
 
 	//
 	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
@@ -463,7 +463,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		//
 		@ftp_chdir($conn_id, $ftp_dir);
 
-		$res = ftp_put($conn_id, 'config.php', $tmpfname, FTP_ASCII);
+		$res = ftp_put($conn_id, 'config.'.$phpEx, $tmpfname, FTP_ASCII);
 
 		@ftp_quit($conn_id);
 
@@ -799,7 +799,7 @@ else
 			@umask(0111);
 			$no_open = FALSE;
 
-			$fp = @fopen('config.php', 'w');
+			$fp = @fopen('config.'.$phpEx, 'w');
 			if( !$fp )
 			{
 				//
