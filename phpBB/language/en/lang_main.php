@@ -1052,6 +1052,7 @@ $lang += array(
 	'SEARCH_USER_POSTS'	=> 'Search users posts', 
 	'USER_ONLINE'	=> 'Online', 
 	'USER_OFFLINE'	=> 'Offline', 
+	'ADD_FRIEND'	=> 'Add friend', 
 
 	'SEND_IM'			=> 'Instant Messaging', 
 	'IM_RECIPIENT'		=> 'Recipient', 
@@ -1212,7 +1213,7 @@ $lang += array(
 	'VIEWING_FAQ'				=> 'Viewing FAQ'
 );
 
-//---- MCP lang strings
+// mcp
 $lang += array(
 	'NOT_MODERATOR'		=> 'You are not a moderator of this forum',
 
@@ -1379,7 +1380,7 @@ $lang += array(
 	'logm_make_global'		=>	'<b>Changed topic type</b> to Global Announcement'
 );
 
-//----- Post reporting
+// report
 $lang += array(
 	'REASON'			=>	'Reason',
 	'MORE_INFO'			=>	'Further information',

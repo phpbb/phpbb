@@ -415,6 +415,7 @@ switch ($mode)
 			'S_PROFILE_ACTION'	=> "groupcp.$phpEx$SID", 
 			'S_GROUP_OPTIONS'	=> $group_options, 
 
+			'U_ADD_FRIEND'		=> "ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']), 
 			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 			'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 		);
@@ -517,12 +518,12 @@ switch ($mode)
 			}
 			else
 			{
-				if ($email == '' || !preg_match('#^.*?@(.*?\.)?[a-z0-9\-]+\.[a-z]{2,4}$#i', $email)) 
+				if (!$email || !preg_match('#^.*?@(.*?\.)?[a-z0-9\-]+\.[a-z]{2,4}$#i', $email)) 
 				{
 					$error[] = $user->lang['EMPTY_ADDRESS_EMAIL'];
 				}
 
-				if ($name == '') 
+				if (!$name) 
 				{
 					$error[] = $user->lang['EMPTY_NAME_EMAIL'];
 				}
