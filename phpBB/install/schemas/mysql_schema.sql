@@ -390,6 +390,78 @@ CREATE TABLE phpbb_posts (
 );
 
 # Table: 'phpbb_privmsgs'
+CREATE TABLE phpbb_privmsgs (
+   msg_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   root_level mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   author_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   icon_id tinyint(4) UNSIGNED DEFAULT '1' NOT NULL,
+   author_ip varchar(40) DEFAULT '' NOT NULL,
+   message_time int(11) DEFAULT '0' NOT NULL,
+   message_reported tinyint(1) DEFAULT '0' NOT NULL,
+   enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
+   enable_html tinyint(1) DEFAULT '0' NOT NULL,
+   enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
+   enable_magic_url tinyint(1) DEFAULT '1' NOT NULL,
+   enable_sig tinyint(1) DEFAULT '1' NOT NULL,
+   message_subject varchar(60),
+   message_text text,
+   message_edit_reason varchar(100),
+   message_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   message_checksum varchar(32) DEFAULT '' NOT NULL,
+   message_encoding varchar(11) DEFAULT 'iso-8859-15' NOT NULL,
+   message_attachment tinyint(1) DEFAULT '0' NOT NULL,
+   bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   bbcode_uid varchar(5) DEFAULT '' NOT NULL,
+   message_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   message_edit_count smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   to_address text,
+   bcc_address text,
+   PRIMARY KEY  (msg_id),
+   KEY author_ip (author_ip),
+   KEY message_time (message_time),
+   KEY author_id (author_id),
+   KEY root_level (root_level)
+);
+
+# Table: 'phpbb_privmsgs_folder'
+CREATE TABLE phpbb_privmsgs_folder (
+   folder_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   folder_name varchar(40),
+   pm_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   PRIMARY KEY  (folder_id),
+   KEY user_id (user_id)
+);
+
+# Table: 'phpbb_privmsgs_rules'
+CREATE TABLE phpbb_privmsgs_rules (
+   rule_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_check mediumint(4) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_connection mediumint(4) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_string varchar(255) DEFAULT '' NOT NULL,
+   rule_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_action mediumint(4) UNSIGNED DEFAULT '0' NOT NULL,
+   rule_folder_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   PRIMARY KEY  (rule_id)
+);
+
+# Table: 'phpbb_privmsgs_to'
+CREATE TABLE phpbb_privmsgs_to (
+   msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   author_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   deleted tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+   unread tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+   replied tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   marked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   forwarded tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   folder_id int(10) DEFAULT '0' NOT NULL,
+   KEY msg_id (msg_id),
+   KEY user_id (user_id,folder_id)
+);
 
 # Table: 'phpbb_profile_fields'
 CREATE TABLE phpbb_profile_fields (
