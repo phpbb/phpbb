@@ -42,6 +42,11 @@ if ($user->data['user_id'] == ANONYMOUS)
 $auth->acl($user->data);
 // End session management
 
+// Some oft used variables
+$safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
+$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false; 
+
+
 // -----------------------------
 // Functions
 function adm_page_header($sub_title, $meta = '', $table_html = true)
@@ -155,7 +160,7 @@ function adm_page_message($title, $message, $show_header = false)
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><a href="../index.<?php echo $phpEx . $SID; ?>"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td><a href="<?php echo "../index.$phpEx$SID"; ?>"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
 		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['ADMIN_TITLE']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
@@ -168,7 +173,7 @@ function adm_page_message($title, $message, $show_header = false)
 
 <br /><br />
 
-<table class="bg" width="80%" cellpadding="4" cellspacing="1" border="0" align="center">
+<table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th><?php echo $title; ?></th>
 	</tr>
@@ -180,6 +185,76 @@ function adm_page_message($title, $message, $show_header = false)
 <br />
 
 <?php
+
+}
+
+function adm_page_confirm($title, $message)
+{
+	global $phpEx, $SID, $user;
+
+	// Grab data from GET and POST arrays ... note this is _not_ 
+	// validated! Everything is typed as string to ensure no
+	// funny business on displayed hidden field data. Validation
+	// will be carried out by whatever processes this form.
+	$var_ary = array_merge($_GET, $_POST);
+
+	$s_hidden_fields = '';
+	foreach ($var_ary as $key => $var)
+	{
+		if (empty($var))
+		{
+			continue;
+		}
+
+		if (is_array($var))
+		{
+			foreach ($var as $k => $v)
+			{
+				if (is_array($v))
+				{
+					foreach ($v as $_k => $_v)
+					{
+						set_var($var[$k][$_k], $_v, 'string');
+						$s_hidden_fields .= "<input type=\"hidden\" name=\"${key}[$k][$_k]\" value=\"" . addslashes($_v) . '" />';
+					}
+				}
+				else
+				{
+					set_var($var[$k], $v, 'string');
+					$s_hidden_fields .= "<input type=\"hidden\" name=\"${key}[$k]\" value=\"" . addslashes($v) . '" />';
+				}
+			}
+		}
+		else
+		{
+			set_var($var, $var, 'string');
+			$s_hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . addslashes($var) . '" />';
+		}
+		unset($var_ary[$key]);
+	}
+
+?>
+
+<br /><br />
+
+<form name="confirm" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>">
+<table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th><?php echo $title; ?></th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><?php echo $message; ?><br /><br /><input class="btnlite" type="submit" name="confirm" value="<?php echo $user->lang['YES']; ?>" />&nbsp;&nbsp;<input class="btnmain" type="submit" name="cancel" value="<?php echo $user->lang['NO']; ?>" /></td>
+	</tr>
+</table>
+
+<?php echo $s_hidden_fields; ?>
+</form>
+
+<br />
+
+<?php
+
+	adm_page_footer();
 
 }
 // End Functions
