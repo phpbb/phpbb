@@ -45,6 +45,57 @@ else
 }
 
 //
+// Handle marking posts
+//
+if( $mark_read == "forums" )
+{
+	$sql = "SELECT f.forum_id, t.topic_id 
+		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+		WHERE t.forum_id = f.forum_id
+			AND p.post_id = t.topic_last_post_id
+			AND p.post_time > " . $userdata['session_last_visit'] . " 
+			AND t.topic_moved_id = NULL";
+	if(!$t_result = $db->sql_query($sql))
+	{
+		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
+	}
+
+	if( $mark_read_rows = $db->sql_numrows($t_result) )
+	{
+		$mark_read_list = $db->sql_fetchrowset($t_result);
+
+		for($i = 0; $i < $mark_read_rows; $i++ )
+		{
+			$forum_id = $mark_read_list[$i]['forum_id'];
+			$topic_id = $mark_read_list[$i]['topic_id'];
+
+			if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+			{
+				setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			}
+			else
+			{
+				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+				{
+					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+				}
+			}
+		}
+	}
+
+	$template->assign_vars(array(
+		"META" => '<meta http-equiv="refresh" content="3;url=index.' . $phpEx . '">')
+	);
+
+	$message = $lang['Forums_marked_read'] . "<br /><br />" . $lang['Click'] . " <a href=\"index.$phpEx\">" . $lang['HERE'] . "</a> " . $lang['to_return_index'];
+
+	message_die(GENERAL_MESSAGE, $message);
+}
+//
+// End handle marking posts
+//
+
+//
 // If you don't use these stats on your index
 // you may want to consider removing them since
 // it will reduce the number of queries speeding
@@ -160,7 +211,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 			AND g.group_id = aa.group_id
 			AND u.user_id = ug.user_id
 		ORDER BY aa.forum_id, g.group_id, u.user_id";
-
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Could not query forum moderator information", "", __LINE__, __FILE__, $sql);
@@ -251,14 +301,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 						{
 							if( !isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $check_topic_id]) )
 							{
-								if($mark_read == "forums")
-								{
-									setcookie('phpbb2_' . $forum_id . '_' . $check_topic_id, time(), 0, $cookiepath, $cookiedomain, $cookiesecure);
-								}
-								else
-								{
-									$unread_topics = true;
-								}
+								$unread_topics = true;
 							}
 							else
 							{
