@@ -532,12 +532,12 @@ if ($stage == 0)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="hidden" name="stage" value="1" /><input class="liteoption" name="retest" type="submit" value="<?php echo $lang['INSTALL_TEST']; ?>" /><?php 
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="hidden" name="stage" value="1" /><input class="btnlite" name="retest" type="submit" value="<?php echo $lang['INSTALL_TEST']; ?>" /><?php 
 	
 	if ($passed['db'] && $passed['files'])
 	{
 
-?>&nbsp;&nbsp; <input class="mainoption" name="submit" type="submit" value="<?php echo $lang['INSTALL_NEXT']; ?>" /><?php
+?>&nbsp;&nbsp; <input class="btnmain" name="submit" type="submit" value="<?php echo $lang['INSTALL_NEXT']; ?>" /><?php
 	
 	}
 	
@@ -733,7 +733,7 @@ if ($stage == 1)
 		<td class="row2"><input class="post" type="text" name="table_prefix" value="<?php echo (!empty($table_prefix)) ? $table_prefix : 'phpbb_'; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="testdb" value="<?php echo $lang['DB_TEST']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="testdb" value="<?php echo $lang['DB_TEST']; ?>" /></td>
 	</tr>
 </table>
 
@@ -768,7 +768,7 @@ if ($stage == 1)
 		<td class="row2"><input class="post" type="text" name="script_path" value="<?php echo $script_path; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" name="install" type="submit" value="<?php echo $lang['INSTALL_START']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="btnmain" name="install" type="submit" value="<?php echo $lang['INSTALL_START']; ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -977,7 +977,7 @@ if ($stage == 2)
 		<td class="row2"><input class="post" type="password" name="ftp_pass" size="40" maxlength="255" value="<?php echo $ftp_pass; ?>" ></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" name="sendftp" type="submit" value="<?php echo $lang['FTP_UPLOAD']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" name="sendftp" type="submit" value="<?php echo $lang['FTP_UPLOAD']; ?>" /></td>
 	</tr>
 </table>
 
@@ -995,7 +995,7 @@ if ($stage == 2)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" align="center"><input class="mainoption" name="dlftp" type="submit" value="<?php echo $lang['DL_DOWNLOAD']; ?>" /> &nbsp;&nbsp; <input class="mainoption" name="dldone" type="submit" value="<?php echo $lang['DL_DONE']; ?>" /></td>
+		<td class="cat" align="center"><input class="btnmain" name="dlftp" type="submit" value="<?php echo $lang['DL_DOWNLOAD']; ?>" /> &nbsp;&nbsp; <input class="btnmain" name="dldone" type="submit" value="<?php echo $lang['DL_DONE']; ?>" /></td>
 	</tr>
 </table>
 
@@ -1007,7 +1007,7 @@ if ($stage == 2)
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" align="center"><input class="mainoption" name="retry" type="submit" value="<?php echo $lang['CONFIG_RETRY']; ?>Retry" /></td>
+		<td class="cat" align="center"><input class="btnmain" name="retry" type="submit" value="<?php echo $lang['CONFIG_RETRY']; ?>Retry" /></td>
 	</tr>
 </table>
 
