@@ -26,6 +26,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_lang','english'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style','1'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat','D M d, Y g:i a'); 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone','0');
@@ -47,7 +48,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_enable','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method','db');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval','0');
