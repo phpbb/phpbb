@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************************
  *                           lang_admin.php [Hungarian]
  *                              -------------------
@@ -706,6 +707,10 @@ $lang['Upgrade'] = "Frissítés";
 
 
 $lang['Install_Method'] = "Válasszon telepítési módot";
+
+$lang['Install_No_Ext'] = "A php telepített változata nem támogatja a használni kívánt adatbázis típust";
+
+$lang['Install_No_PCRE'] = "A phpBB2 igényli a Perl-Compatible Regular Expressions Module jelenlétét!";
 
 //
 // That's all Folks!

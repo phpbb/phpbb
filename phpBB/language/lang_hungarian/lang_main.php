@@ -305,6 +305,7 @@ $lang['Start_watching_topic'] = "Téma figyelése új hozzászólásokról";
 $lang['No_longer_watching'] = "Mostantól nem figyeli a téma hozzászólásait"; 
 $lang['You_are_watching'] = "Mostantól figyeli a téma hozzászólásait";
 
+$lang['Total_votes'] = "Szavazatok száma";
 
 //
 // Posting/Replying (Not private messaging!)
@@ -491,7 +492,7 @@ $lang['No_such_folder'] = "Ilyen mappa nem létezik";
 $lang['No_folder'] = "Nem lett mappa megadva";
 
 $lang['Mark_all'] = "Kijelöli mindet";
-$lang['Unmark_all'] = "egyiket sem";
+$lang['Unmark_all'] = "Egyiket sem";
 
 $lang['Confirm_delete_pm'] = "Biztos benne, hogy le akarja törölni ezt az üzenetet?";
 $lang['Confirm_delete_pms'] = "Biztos benne, hogy le akarja törölni ezeket az üzeneteket?";
@@ -536,7 +537,7 @@ $lang['Search_user_posts'] = "Keresés: %s összes hozzászólása"; // Find all post
 
 $lang['No_user_id_specified'] = "Pardon, ilyen felhasználó nem létezik";
 $lang['Wrong_Profile'] = "Nem lehet más profilját módosítani.";
-$lang['Sorry_banned_or_taken_email'] = "Pardon, a megadott email cím vagy le van tiltva, vagy már másik felhasználó használja, vagy érvénytelen. Próbálja egy másikkal, amennyiben az is tiltva van, vegye fel a kapcsolatot a fórum adminisztrátorával további információért.";
+
 $lang['Only_one_avatar'] = "Egyszerre csak egy avatar választható";
 $lang['File_no_data'] = "A megadott URL nem tartalmaz adatot";
 $lang['No_connection_URL'] = "A megadott URL nem érthetõ el";
@@ -564,12 +565,12 @@ $lang['Public_view_email'] = "Az email cím mások által megtekinthetõ";
 $lang['Current_password'] = "Jelenlegi jelszó";
 $lang['New_password'] = "Új jelszó";
 $lang['Confirm_password'] = "Új jelszó mégegyszer";
+$lang['Confirm_password_explain'] = "Meg kell erõsíteni a jelszót, ha meg akarja változtatni, vagy megváltoztatta az email címét";
 $lang['password_if_changed'] = "Csak akkor kell megadni új jelszót, ha meg akarja változtatni";
 $lang['password_confirm_if_changed'] = "Csak akkor kell megerõsíteni az új jelszót, ha meg akarja változtatni";
 
 $lang['Avatar'] = "Avatar"; 
 $lang['Avatar_explain'] = "Megjelenít egy kis képet vagy grafikát a hozzászólásainál. Egyszerre csak egy kép jeleníthetõ meg, amelynek a maximális mérete 80x80 pixel, %dkB.";
-$lang['Upload_Avatar_file'] = "Avatar feltöltése a gépérõl";
 $lang['Upload_Avatar_URL'] = "Avatar feltöltése megadott URL címrõl";
 $lang['Upload_Avatar_URL_explain'] = "Adja meg a feltölteni kívánt avatar URL címét";
 $lang['Pick_local_Avatar'] = "Válasszon avatart a galériából";
@@ -596,7 +597,13 @@ $lang['Profile_updated_inactive'] = "A profil frissítve lett, de olyan fontos ad
 
 $lang['Password_mismatch'] = "A beírt új jelszavak nem egyeznek meg";
 $lang['Current_password_mismatch'] = "A jelenlegi jelszó nem egyezik meg az adatbázisban lévõvel";
-$lang['Invalid_username'] = "A kért felhasználónév már foglalt, tiltott, vagy érvénytelen karaktert tartalmaz, mint például az \" jel";
+$lang['Password_long'] = "A jelszó nem lehet hosszabb 32 karakternél";
+$lang['Username_taken'] = "Pardon, ez a felhasználónév már foglalt";
+$lang['Username_invalid'] = "Pardon, ez a felhasználónév érvénytelen karaktert tartalmaz";
+$lang['Username_disallowed'] = "Pardon, ez a felhasználónév le van tiltva";
+$lang['Email_taken'] = "Pardon, ezt az email címet már egy másik felhasználó használja";
+$lang['Email_banned'] = "Pardon, ez az email cím le van tiltva";
+$lang['Email_invalid'] = "Pardon, ez az email cím érvénytelen";
 $lang['Signature_too_long'] = "Az aláírás túl hosszú";
 $lang['Fields_empty'] = "Ki kell tölteni a szükséges mezõket";
 $lang['Avatar_filetype'] = "Az avatar fájlnak .jpg, .gif or .png formátumúnak kell lennie";
@@ -619,7 +626,6 @@ $lang['Registration'] = "Regisztrációs feltételek";
 $lang['Reg_agreement'] = "Bár az adminisztrátorok és moderátorok mindent megtesznek, hogy eltávolítsák a kifogásolható hozzászólásokat amilyen gyorsan csak lehetséges, teljességgel lehetetlen minden egyes hozzászólást ellenõrizni. Ezért felhívjuk a figyelmét, hogy a fórumon olvasható hozzászólások a fórumon hozzászóló nézetét és véleményét tükrözik, nem pedig az adminisztrátorokét, moderátorokét, valamint a webmesterét, (természetesen kivételt képeznek ez alól az elõbb megnevezett személyek saját hozzászólásai) ezért a fórum üzemeltetõi a fórumon olvasható tartalomért semmilyen felelõsséget nem vállalnak.<br /><br />A regisztrálással egyetért azzal, hogy nem postáz sértõ, obszcén, vulgáris, rágalmazó, gyûlöletkeltõ valamint bármilyen más módon jogsértõ hozzászólásokat. A szabály megsértése esetén a fórum üzemeltetõi azonnal és véglegesen kitiltják a fórumról, valamint megteszik a szükséges lépéseket a felelõsségrevonáshoz. Minden hozzászóló IP címét rögzítjük. Egyetért azzal, hogy a fórum üzemeltetõi fenntartják maguknak a jogot, hogy töröljék, módosítsák, vagy lezárják azokat a témákat, amelyeket erre szükségesnek tartanak. Mint felhasználó, egyetért azzal, hogy a beírt személyes adatait az adatbázisunkban tároljuk. Az adatait a beleegyezése nélkül nem szolgáltatjuk ki harmadik félnek. A fórum üzemeltetõi a rendszert érõ támadásból származó adatbázis sérülésért és az adatok esetleges nyilvánosságra kerüléséért felelõsséget nem vállalnak.<br /><br />Ez a fórum cookie-kat használ információk tárolására. Ezek a cookie-k nem tartalmaznak semmi információt a fennt leírtakból, kizárólag a böngészést segítik elõ. A megadott email cím a regisztráció ellenõrzésére szolgál (és az új jelszó elküldésére, ha elfelejtené a jelenlegit).<br /><br />Amennyiben folytatni kívánja a regisztrációt, el kell fogadnia ezeket a feltételeket.";
 
 $lang['Agree_under_13'] = "Egyetértek a feltételekkel, és 13 év <b>alatt</b> vagyok";
-//$lang['Agree_over_13'] = "Egyetértek a feltételekkel, és 13 év <b>felett</b> vagyok"; // XXX mauzi COPPA support
 $lang['Agree_over_13'] = "Egyetértek a feltételekkel";
 $lang['Agree_not'] = "Nem értek egyet a feltételekkel";
 
