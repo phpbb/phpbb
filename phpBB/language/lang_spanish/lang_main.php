@@ -884,37 +884,6 @@ $lang['Lookup_IP'] = "Buscar por IP";
 //
 $lang['All_times'] = "Todas las horas son %s"; // ej. Todas las horas son GMT - 12 Horas 
 
-$lang['-12'] = "GMT - 12 Horas";
-$lang['-11'] = "GMT - 11 Horas";
-$lang['-10'] = "HST (Hawaii)";
-$lang['-9'] = "GMT - 9 Horas";
-$lang['-8'] = "PST (U.S./Canadá)";
-$lang['-7'] = "MST (U.S./Canadá)";
-$lang['-6'] = "CST (U.S./Canadá)";
-$lang['-5'] = "EST (Lima /U.S.A./Canadá)";
-$lang['-4'] = "GMT - 4 Horas";
-$lang['-3.5'] = "GMT - 3.5 Horas";
-$lang['-3'] = "GMT - 3 Horas";
-$lang['-2'] = "Mid-Atlantic";
-$lang['-1'] = "GMT - 1 Hora";
-$lang['0'] = "GMT";
-$lang['1'] = "CET (Europa)";
-$lang['2'] = "EET (Europa)";
-$lang['3'] = "GMT + 3 Horas";
-$lang['3.5'] = "GMT + 3.5 Horas";
-$lang['4'] = "GMT + 4 Horas";
-$lang['4.5'] = "GMT + 4.5 Horas";
-$lang['5'] = "GMT + 5 Horas";
-$lang['5.5'] = "GMT + 5.5 Horas";
-$lang['6'] = "GMT + 6 Horas";
-$lang['7'] = "GMT + 7 Horas";
-$lang['8'] = "WST (Australia)";
-$lang['9'] = "GMT + 9 Horas";
-$lang['9.5'] = "CST (Australia)";
-$lang['10'] = "EST (Australia)";
-$lang['11'] = "GMT + 11 Horas";
-$lang['12'] = "GMT + 12 Horas";
-
 // Estos se muestran en la lista desplegable de zona horaria
 $lang['-12'] = 'GMT - 12 Horas'; 
 $lang['-11'] = 'GMT - 11 Horas'; 
