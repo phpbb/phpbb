@@ -6,7 +6,11 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
+<<<<<<< lang_english.php
  *     $Id$
+=======
+ *     $Id$
+>>>>>>> 1.42
  *
  *  ***************************************************************************/
 
@@ -160,12 +164,14 @@ $lang['Edit_Post'] = "Edit Post";
 //
 $lang['Inbox'] = "Inbox";
 $lang['Sent'] = "Sent";
+$lang['Outbox'] = "Outbox";
+$lang['Saved'] = "Saved";
 $lang['Flag'] = "Flag";
 $lang['Subject'] = "Subject";
 $lang['From'] = "From";
 $lang['To'] = "To";
-$lang['Date'] = "Date";
-
+$lang['Date'] = "Date"; 
+$lang['Mark'] = "Mark"; 
 
 //
 // Profiles/Registration
@@ -174,6 +180,8 @@ $lang['Website'] = "Website";
 $lang['From'] = "From";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
+$lang['Sorry_banned_email'] = "Sorry but the email address you gave has been banned from registering on this system.";
+
 
 //
 // Memberslist

@@ -134,6 +134,8 @@ if($mode == "read")
 	$post_new_mesg_url = "<a href=\"privmsg.$phpEx?mode=post\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
 	$post_reply_mesg_url = ($folder == "inbox") ? "<a href=\"privmsg.$phpEx?mode=reply&" . POST_POST_URL . "=$privmsgs_id\"><img src=\"templates/PSO/images/reply.gif\" border=\"1\"></a>" : "";
 
+	$s_hidden_fields = "<input type=\"hidden\" name=\"mark[]\" value=\"$privmsgs_id\">";
+
 	$template->assign_vars(array(
 		"INBOX" => $inbox_url, 
 		"SENTBOX" => $sentbox_url, 
@@ -145,6 +147,8 @@ if($mode == "read")
 		"L_DATE" => $lang['Date'], 
 		"L_FROM_OR_TO" => (($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To']),
 
+		"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 		"S_POST_NEW_MSG" => $post_new_mesg_url,
 		"S_POST_REPLY_MSG" => $post_reply_mesg_url)
 	);
@@ -217,8 +221,6 @@ if($mode == "read")
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,
 		"QUOTE_IMG" => $quote_img,
-
-		"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"), 
 
 		"L_FROM" => $lang['From'])
 	);
@@ -426,15 +428,13 @@ $savebox_url .= ($folder != "savebox") ? "<a href=\"" . append_sid("privmsg.$php
 
 $post_new_mesg_url = "<a href=\"privmsg.$phpEx?mode=post\"><img src=\"templates/PSO/images/post.gif\" border=\"1\"></a>";
 
-//$s_hidden_folder = "<input type=\"hidden\" name=\"folder\" value=\"$folder\">";
-
 $template->assign_vars(array(
 	"INBOX" => $inbox_url, 
 	"SENTBOX" => $sentbox_url, 
 	"OUTBOX" => $outbox_url, 
 	"SAVEBOX" => $savebox_url, 
 
-	"L_MARK" => "Mark",
+	"L_MARK" => $lang['Mark'],
 	"L_FLAG" => $lang['Flag'],
 	"L_SUBJECT" => $lang['Subject'],
 	"L_DATE" => $lang['Date'], 
