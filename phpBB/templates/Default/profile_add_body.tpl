@@ -82,6 +82,14 @@
 					<td bgcolor="#CCCCCC"><input type="radio" name="viewemail" value="1" {VIEW_EMAIL_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="viewemail" value="0" {VIEW_EMAIL_NO}> {L_NO}</td>
 				</tr>
 				<tr class="tablebody">
+					<td bgcolor="#DDDDDD"><b>{L_HIDE_USER}:</b></td>
+					<td bgcolor="#CCCCCC"><input type="radio" name="allowviewonline" value="1" {HIDE_USER_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="allowviewonline" value="0" {HIDE_USER_NO}> {L_NO}</td>
+				</tr>
+				<tr class="tablebody">
+					<td bgcolor="#DDDDDD"><b>{L_NOTIFY_ON_PRIVMSG}:</b></td>
+					<td bgcolor="#CCCCCC"><input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO}> {L_NO}</td>
+				</tr>
+				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_ALWAYS_ADD_SIGNATURE}:</b></td>
 					<td bgcolor="#CCCCCC"><input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES}> {L_YES}&nbsp;&nbsp;<input type="radio" name="attachsig" value="0" {ALWAYS_ADD_SIGNATURE_NO}> {L_NO}</td>
 				</tr>
@@ -117,14 +125,9 @@
 					<td bgcolor="#DDDDDD" width="30%"><b>{L_DATE_FORMAT}:</b><br /><font style="{font-size: 8pt;}">{L_DATE_FORMAT_EXPLANATION}</font></td>
 					<td bgcolor="#CCCCCC"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="16"></td>
 				</tr>
-			<tr class="tableheader">
-		   	<td align="center" colspan="2">
-		   		<input type="hidden" name="user_id" value="{USER_ID}">
-					<input type="hidden" name="mode" value="{MODE}">
-					<input type="hidden" name="agreed" value="true">
-					<input type="hidden" name="coppa" value="{COPPA}">
-					<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;
-			</tr>
+				<tr class="tableheader">
+				   	<td align="center" colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;</td>
+				</tr>
 			</table>
 		</td>
 	</tr>

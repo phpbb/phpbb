@@ -64,11 +64,11 @@ $template->set_filenames(array(
 //
 if($userdata['session_logged_in'])
 {
-	$logged_in_status = $lang['You_are_logged_in'] . " <b>".$userdata["username"]."</b>.";
-	$logged_in_status .= " [<a href=\"".append_sid("login.$phpEx?submit=logout")."\">".$lang['Logout']."</a>]";
+	$logged_in_status = $lang['You_are_logged_in'] . " <b>" . $userdata["username"] . "</b>.";
+	$logged_in_status .= " [<a href=\"" . append_sid("login.$phpEx?submit=logout") . "\">" . $lang['Logout'] . "</a>]";
 
 	$u_login_logout = "login.$phpEx?submit=logout";
-	$l_login_logout = $lang['Logout']." : ".$userdata["username"]."";
+	$l_login_logout = $lang['Logout'] . " : " . $userdata["username"] . "";
 }
 else
 {
@@ -87,22 +87,22 @@ $s_last_visit = create_date($board_config['default_dateformat'], $userdata['sess
 //
 if($board_config['default_timezone'] < 0)
 {
-	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] ." - ".(-$board_config['default_timezone']) . " " . $lang['Hours'];
+	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] . " - " . (-$board_config['default_timezone']) . " " . $lang['Hours'];
 }
 else if($board_config['default_timezone'] == 0)
 {
-	$s_timezone = $lang['All_times'] . " " .$lang['GMT'];
+	$s_timezone = $lang['All_times'] . " " . $lang['GMT'];
 }
 else
 {
-	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] ." + ".$board_config['default_timezone'] . " " . $lang['Hours'];
+	$s_timezone = $lang['All_times'] . " " . $lang['GMT'] ." + " . $board_config['default_timezone'] . " " . $lang['Hours'];
 }
 
 //
 // Get basic (usernames + totals) online
 // situation
 //
-$sql = "SELECT u.username, u.user_id, s.session_logged_in
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".(time() - 300);
@@ -112,14 +112,22 @@ if(!$result)
 	error_die(SQL_QUERY, "Couldn't obtain user/online information.", __LINE__, __FILE__);
 }
 
-$logged_online = 0;
+$logged_visible_online = 0;
+$logged_hidden_online = 0;
 $guests_online = 0;
 while($row = $db->sql_fetchrow($result))
 {
 	if($row['session_logged_in'])
 	{
-		$userlist_ary[] = "<a href=\"".append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
-		$logged_online++;
+		if($row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN)
+		{
+			$userlist_ary[] = "<a href=\"" . append_sid("profile." . $phpEx . "?mode=viewprofile&" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+			$logged_visible_online++;
+		}
+		else
+		{
+			$logged_hidden_online++;
+		}
 	}
 	else
 	{
@@ -127,17 +135,18 @@ while($row = $db->sql_fetchrow($result))
 	}
 }
 $userlist = "";
-for($i = 0; $i < $logged_online; $i++)
+for($i = 0; $i < $logged_visible_online; $i++)
 {
-	$userlist .= ($i ==  $logged_online - 1 && $logged_online > 1) ? " and " : "";
+	$userlist .= ($i ==  $logged_visible_online - 1 && $logged_visible_online > 1) ? " and " : "";
 	$userlist .= $userlist_ary[$i];
-	$userlist .= ($i < $logged_online - 2) ? ", " : "";
+	$userlist .= ($i < $logged_visible_online - 2) ? ", " : "";
 }
 
-$l_r_user_s = ($logged_online == 1) ? $lang['User'] : $lang['Users'];
 $l_g_user_s = ($guests_online == 1) ? $lang['User'] : $lang['Users'];
-$l_is_are = ($logged_online == 1) ? $lang['is'] : $lang['are'];
-$userlist = ($logged_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $userlist : $lang['Registered'] . " $l_r_user_s: ".$lang['None'];
+$l_h_user_s = ($logged_hidden_online == 1) ? $lang['User'] : $lang['Users'];
+$l_r_user_s = ($logged_visible_online == 1) ? $lang['User'] : $lang['Users'];
+$l_is_are = ($logged_visible_online == 1) ? $lang['is'] : $lang['are'];
+$userlist = ($logged_visible_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $userlist : $lang['Registered'] . " $l_r_user_s: ".$lang['None'];
 
 //
 // Obtain number of new private messages
@@ -183,7 +192,7 @@ $template->assign_vars(array(
 	"PAGE_TITLE" => $page_title,
 	"LOGIN_STATUS" => $logged_in_status,
 	"META_INFO" => $meta_tags,
-	"TOTAL_USERS_ONLINE" => "$l_There $l_is_are $logged_online $l_Registered $l_r_user_s $l_and $guests_online $l_guest $l_g_user_s $l_online",
+	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s and $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
 	"LOGGED_IN_USER_LIST" => $userlist,
 
 	"L_USERNAME" => $lang['Username'],

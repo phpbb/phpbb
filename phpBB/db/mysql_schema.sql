@@ -44,7 +44,7 @@ CREATE TABLE phpbb_user_group (
 DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
    group_id int(11) NOT NULL auto_increment,
-   group_name varchar(100) NOT NULL,
+   group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int(11) DEFAULT '0' NOT NULL,
    group_single_user tinyint(1) DEFAULT '0' NOT NULL,
@@ -130,7 +130,7 @@ DROP TABLE IF EXISTS phpbb_disallow;
 
 CREATE TABLE phpbb_disallow (
    disallow_id int(10) NOT NULL auto_increment,
-   disallow_username varchar(50),
+   disallow_username varchar(25),
    PRIMARY KEY (disallow_id)
 );
 
@@ -142,11 +142,11 @@ CREATE TABLE phpbb_disallow (
 DROP TABLE IF EXISTS phpbb_forum_prune;
 
 CREATE TABLE phpbb_forum_prune (
-	prune_id int(10) NOT NULL auto_increment,
-	forum_id int(11) NOT NULL,
-	prune_days int(3) NOT NULL,
-	prune_freq int(3) NOT NULL,
-	PRIMARY KEY(prune_id)
+   prune_id int(10) NOT NULL auto_increment,
+   forum_id int(11) NOT NULL,
+   prune_days int(3) NOT NULL,
+   prune_freq int(3) NOT NULL,
+   PRIMARY KEY(prune_id)
 );
 
 # --------------------------------------------------------
@@ -424,7 +424,7 @@ DROP TABLE IF EXISTS phpbb_users;
 CREATE TABLE phpbb_users (
    user_id int(11) NOT NULL auto_increment,
    user_active tinyint(4),
-   username varchar(40) NOT NULL,
+   username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
    user_autologin_key varchar(32),
    user_level tinyint(4) DEFAULT '0',
@@ -440,6 +440,7 @@ CREATE TABLE phpbb_users (
    user_allowsmile tinyint(1), 
    user_allowavatar tinyint(1) DEFAULT '1' NOT NULL, 
    user_allow_pm tinyint(1) DEFAULT '1' NOT NULL, 
+   user_allow_viewonline tinyint(1) DEFAULT '1' NOT NULL, 
    user_notify_pm tinyint(1) DEFAULT '1' NOT NULL, 
    user_regdate int(11) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',

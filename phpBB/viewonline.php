@@ -36,12 +36,6 @@ init_userprefs($userdata);
 // End session management
 //
 
-$total_posts = get_db_stat('postcount');
-$total_users = get_db_stat('usercount');
-$newest_userdata = get_db_stat('newestuser');
-$newest_user = $newest_userdata["username"];
-$newest_uid = $newest_userdata["user_id"];
-
 //
 // Output page header and load
 // viewonline template
@@ -58,20 +52,11 @@ $template->assign_vars(array(
     "SELECT_NAME" => POST_FORUM_URL)
 );
 $template->assign_var_from_handle("JUMPBOX", "jumpbox");
-$template->assign_vars(array(
-	"TOTAL_POSTS" => $total_posts,
-	"TOTAL_USERS" => $total_users,
-	"POST_USER_URL" => POST_USERS_URL,
-	"NEWEST_USER" => $newest_user,
-	"NEWEST_UID" => $newest_uid,
-	
-	"U_NEWEST_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=$newest_uid"))
-);
 //
 // End header
 //
 
-$sql = "SELECT u.username, u.user_id, s.session_page, s.session_logged_in, s.session_time
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_page, s.session_logged_in, s.session_time
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s 
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".(time()-300)."
@@ -103,11 +88,10 @@ if(!$onlinerow || !$forum_data)
 }
 
 $template->assign_vars(array(
-	"L_WHOSONLINE" => $l_whosonline,
-	"L_USERNAME" => $l_username,
-	"L_LOCATION" => $l_forum_location,
-	"L_LAST_UPDATE" => $l_last_updated
-	)
+	"L_WHOSONLINE" => $lang['Who_is_online'],
+	"L_USERNAME" => $lang['Username'],
+	"L_LOCATION" => $lang['Location'],
+	"L_LAST_UPDATE" => $lang['Last_updated'])
 );
 
 $active_users = 0;
@@ -121,31 +105,54 @@ if($online_count)
 
 		if(!($i % 2))
 		{
-			$row_color = "#".$theme['td_color1'];
+			$row_color = "#" . $theme['td_color1'];
 		}
 		else
 		{
-			$row_color = "#".$theme['td_color2'];
+			$row_color = "#" . $theme['td_color2'];
 		}
 
-		if($onlinerow[$i]['user_id'] != ANONYMOUS && $onlinerow[$i]['user_id'] != DELETED)
+		if($onlinerow[$i]['user_id'] != ANONYMOUS)
 		{
 			if($onlinerow[$i]['session_logged_in'])
 			{
-				$username = $onlinerow[$i]['username'];
-				$logged_on = TRUE;
-				$active_users++;
+				if($onlinerow[$i]['user_allow_viewonline'])
+				{
+					$username = $onlinerow[$i]['username'];
+					$hidden = FALSE;
+					$logged_on = TRUE;
+					$active_users++;
+				}
+				else
+				{
+					$username = $onlinerow[$i]['username'];
+					$hidden = TRUE;
+					$logged_on = TRUE;
+					$hidden_users++;
+				}
 			}
 			else
 			{
-				$username = $onlinerow[$i]['username'];
-				$logged_on = FALSE;
-				$guest_users++;
+				if($onlinerow[$i]['user_allow_viewonline'])
+				{
+					$username = $onlinerow[$i]['username'];
+					$hidden = FALSE;
+					$logged_on = FALSE;
+					$guest_users++;
+				}
+				else
+				{
+					$username = $onlinerow[$i]['username'];
+					$hidden = TRUE;
+					$logged_on = FALSE;
+					$guest_users++;
+				}
 			}
 		}
 		else
 		{
-			$username = $l_anonymous;
+			$username = $lang['Anonymous'];
+			$hidden = FALSE;
 			$logged_on = FALSE;
 			$guest_users++;
 		}
@@ -155,49 +162,53 @@ if($online_count)
 			switch($onlinerow[$i]['session_page'])
 			{
 				case PAGE_INDEX:
-					$location = $l_forum_index;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Forum_index'];
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_LOGIN:
-					$location = $l_logging_on;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Loggin_on'];
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_SEARCH:
-					$location = $l_searching;
-					$location_url = "search.".$phpEx;
+					$location = $lang['Searching_forums'];
+					$location_url = "search.$phpEx";
 					break;
 				case PAGE_REGISTER:
-					$location = $l_registering;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Registering'];
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_VIEWPROFILE:
-					$location = $l_viewing_profiles;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Viewing_profiles'];
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_ALTERPROFILE:
-					$location = $l_altering_profile;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Altering_profile'];
+					$location_url = "index.$phpEx";
 					break;
 				case PAGE_VIEWONLINE:
-					$location = $l_viewing_online;
-					$location_url = "viewonline.".$phpEx;
+					$location = $lang['Viewing_online'];
+					$location_url = "viewonline.$phpEx";
 					break;
 				case PAGE_VIEWMEMBERS:
-					$location = $l_viewing_members;
-					$location_url = "memberlist.".$phpEx;
+					$location = $lang['Viewing_member_list'];
+					$location_url = "memberlist.$phpEx";
+					break;
+				case PAGE_PRIVMSGS:
+					$location = $lang['Viewing_priv_msgs'];
+					$location_url = "privmsg.$phpEx";
 					break;
 				case PAGE_FAQ:
-					$location = $l_viewing_faq;
-					$location_url = "faq.".$phpEx;
+					$location = $lang['Viewing_FAQ'];
+					$location_url = "faq.$phpEx";
 					break;
 				default:
-					$location = $l_forum_index;
-					$location_url = "index.".$phpEx;
+					$location = $lang['Forum_index'];
+					$location_url = "index.$phpEx";
 			}
 		}
 		else
 		{
-			$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$onlinerow[$i]['session_page']);
+			$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow[$i]['session_page']);
 			$location = $forum_data[$onlinerow[$i]['session_page']];
 		}
 
@@ -209,7 +220,7 @@ if($online_count)
 		// if... constructs in the templating system
 		// for that ...
 		//
-		if($logged_on)
+		if( $logged_on && ( !$hidden || $userdata['user_level'] == ADMIN ) )
 		{
 			$template->assign_block_vars("userrow", 
 				array(
@@ -218,7 +229,7 @@ if($online_count)
 					"LOGGED_ON" => $logged_on,
 					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow[$i]['session_time'], $board_config['default__timezone']),
 					"LOCATION" => $location,
-					"U_USER_PROFILE" => append_sid("profile.".$phpEx."?mode=viewprofile&".POST_USERS_URL."=".$onlinerow[$i]['user_id']),
+					"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $onlinerow[$i]['user_id']),
 					"U_FORUM_LOCATION" => append_sid($location_url)
 				)
 			);
@@ -227,7 +238,8 @@ if($online_count)
 	}
 
 	$template->assign_vars(array(
-		"ACTIVE_USERS" => $active_users,
+		"ACTIVE_USERS" => $active_users, 
+		"HIDDEN_USERS" => $hidden_users, 
 		"GUEST_USERS" => $guest_users
 		)
 	);

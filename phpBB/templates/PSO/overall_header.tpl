@@ -9,20 +9,20 @@
 
 P	{font-family:{T_FONTFACE1};font-size:10pt}
 
-TH	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
-
+TH		{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE2};font-size:8pt;font-weight:normal}
+TH.secondary	{background-color:{T_TH_COLOR3};font-family:{T_FONTFACE1};font-size:10pt;font-weight:normal;text-align:left}
 TD.tablebg	{background-color:{T_TH_COLOR1}}
 TD.cat		{background-color:{T_TH_COLOR2}}
-TD.row_1	{background-color:{T_TD_COLOR1}}
-TD.row_2	{background-color:{T_TD_COLOR2}}
+TD.row1		{background-color:{T_TD_COLOR1}}
+TD.row2		{background-color:{T_TD_COLOR2}}
 
-SPAN.title		{font-family:Impact,sans-serif;font-size:36pt}
-SPAN.cattitle	{font-family:{T_FONTFACE1};font-size:12pt;}
-SPAN.gen		{font-family:{T_FONTFACE1};font-size:10pt}
+SPAN.title	{font-family:Impact,sans-serif;font-size:36pt}
+SPAN.cattitle	{font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
+SPAN.gen	{font-family:{T_FONTFACE1};font-size:10pt}
 SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
 
 SELECT.small	{font-family:"Courier New",courier;font-size:8pt;width:140px}
-INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
+INPUT.text	{font-family:"Courier New",courier;font-size:8pt;}
 
 //-->
 </style>
@@ -43,7 +43,7 @@ INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
 				</table></td>
 			</tr>
 			<tr>
-				<td class="row_1"><table width="100%" cellspacing="0" cellpadding="4" border="0">
+				<td class="row1"><table width="100%" cellspacing="0" cellpadding="4" border="0">
 					<tr>
 						<td><span class="gensmall"><a href="{U_FAQ}">{L_FAQ}</a>&nbsp;|&nbsp;<a href="{U_MEMBERLIST}">{L_MEMBERLIST}</a>&nbsp;|&nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a>&nbsp;|&nbsp<a href="{U_SEARCH}">{L_SEARCH}</a></span></td>
 						<td align="center"><span class="gensmall">{L_LAST_VISIT} {S_LAST_VISIT_DATE}</span></td>

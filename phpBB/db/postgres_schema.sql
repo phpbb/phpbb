@@ -47,7 +47,7 @@ CREATE TABLE phpbb_auth_access (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_groups (
    group_id int DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
-   group_name varchar(100) NOT NULL,
+   group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
    group_moderator int4 DEFAULT '0' NOT NULL,
    group_single_user int2 DEFAULT '0' NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE phpbb_config (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_disallow (
    disallow_id int4 DEFAULT nextval('phpbb_disallow_id_s'::text) NOT NULL,
-   disallow_username varchar(40),
+   disallow_username varchar(25),
    CONSTRAINT phpbb_disallow_pkey PRIMARY KEY (disallow_id)
 );
 
@@ -162,11 +162,11 @@ CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
   Table structure for table phpbb_forum_prune
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forum_prune (
-	prune_id int4 NOT NULL auto_increment,
-	forum_id int4 NOT NULL,
-	prune_days int4 NOT NULL,
-	prune_freq int4 NOT NULL,
-	CONSTRAINT phpbb_forum_prune_pkey PRIMARY KEY (prune_id)
+   prune_id int4 NOT NULL auto_increment,
+   forum_id int4 NOT NULL,
+   prune_days int4 NOT NULL,
+   prune_freq int4 NOT NULL,
+   CONSTRAINT phpbb_forum_prune_pkey PRIMARY KEY (prune_id)
 );
 CREATE  INDEX prune_id_phpbb_forum_prune_index ON phpbb_forum_prune (cat_id);
 CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
@@ -402,7 +402,7 @@ CREATE  INDEX user_id_phpbb_user_group_index ON phpbb_user_group (user_id);
 CREATE TABLE phpbb_users (
    user_id int4 DEFAULT nextval('phpbb_users_id_seq'::text) NOT NULL,
    user_active int2,
-   username varchar(40) DEFAULT '' NOT NULL,
+   username varchar(25) DEFAULT '' NOT NULL,
    user_regdate int4 DEFAULT '0' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
    user_autologin_key varchar(32),
@@ -425,6 +425,7 @@ CREATE TABLE phpbb_users (
    user_allowsmile int2,
    user_allow_pm int2 DEFAULT '1' NOT NULL, 
    user_allowavatar int2 DEFAULT '1' NOT NULL, 
+   user_allow_viewonline int2 DEFAULT '1' NOT NULL, 
    user_notify_pm int2 DEFAULT '1' NOT NULL, 
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),

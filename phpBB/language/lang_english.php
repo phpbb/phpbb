@@ -87,8 +87,12 @@ $lang['Private_messaging'] = "Send a Private Message";
 //
 // Global Header strings
 //
+$lang['There'] = "There";
 $lang['Registered'] = "Registered";
+$lang['Guest'] = "Guest";
+$lang['Hidden'] = "Hidden";
 $lang['None'] = "None";
+$lang['online'] = "online";
 
 $lang['You_last_visit'] = "You last visited on";
 
@@ -240,6 +244,7 @@ $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";
 
 $lang['Notify_on_privmsg'] = "Notify on Private Message";
+$lang['Hide_user'] = "Hide your online status";
 
 
 //
@@ -284,6 +289,24 @@ $lang['can_edit_topics'] = " can edit topics in";
 $lang['can_delete_topics'] = " can delete topics in";
 
 $lang['this_forum'] = " this forum";
+
+//
+// Viewonline
+//
+$lang['Who_is_online'] = "Who is online";
+$lang['Location'] = "Location";
+$lang['Last_updated'] = "Last Updated";
+
+$lang['Forum_index'] = "Forum index";
+$lang['Loggin_on'] = "Logging on";
+$lang['Searching_forums'] = "Searching forums";
+$lang['Registering'] = "Registering";
+$lang['Viewing_profiles'] = "Viewing profiles";
+$lang['Altering_profile'] = "Altering profile";
+$lang['Viewing_online'] = "Viewing who is online";
+$lang['Viewing_member_list'] = "Viewing member list";
+$lang['Viewing_priv_msgs'] = "Viewing Private Messages";
+$lang['Viewing_FAQ'] = "Viewing FAQ";
 
 //
 // Errors (not related to a

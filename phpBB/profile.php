@@ -341,6 +341,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowhtml = $HTTP_POST_VARS['allowhtml'];
 				$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
 				$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
+				$allowviewonline = ($HTTP_POST_VARS['allowviewonline']) ? 0 : 1;
 
 				$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 				$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
@@ -475,29 +476,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$sql = "UPDATE ".USERS_TABLE."
-						SET 
-							username = '$username'".$passwd_sql.", 
-							user_email = '$email', 
-							user_icq = '$icq', 
-							user_website = '$website', 
-							user_occ = '$occupation', 
-							user_from = '$location', 
-							user_interests = '$interests', 
-							user_sig = '$signature', 
-							user_viewemail = $viewemail, 
-							user_aim = '$aim', 
-							user_yim = '$yim', 
-							user_msnm = '$msn', 
-							user_attachsig = '$attachsig', 
-							user_allowsmile = '$allowsmilies', 
-							user_allowhtml = '$allowhtml', 
-							user_allowbbcode = '$allowbbcode', 
-							user_notify_pm = '$notifypm', 
-							user_timezone = '$user_timezone', 
-							user_dateformat = '$user_dateformat', 
-							user_lang = '$user_lang', 
-							user_template = '$user_template', 
-							user_theme = '$user_theme".$avatar_sql."'
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occupation', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify_pm = $notifypm, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme".$avatar_sql."
 						WHERE user_id = $user_id";
 
 					if($result = $db->sql_query($sql))
@@ -570,6 +549,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$allowhtml = $userdata['user_allowhtml'];
 				$allowbbcode = $userdata['user_allowbbcode'];
 				$allowsmilies = $userdata['user_allowsmile'];
+				$allowviewonline = $userdata['user_allow_viewonline'];
 
 				$user_avatar = $userdata['user_avatar'];
 				$user_theme = $userdata['user_theme'];
@@ -579,6 +559,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				$user_dateformat = $userdata['user_dateformat'];
 			}
 
+			$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '"><input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="0">';
+			
 			$template->set_filenames(array(
 				"body" => "profile_add_body.tpl",
 				"jumpbox" => "jumpbox.tpl")
@@ -590,9 +572,6 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			);
 			$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 			$template->assign_vars(array(
-				"COPPA" => 0,
-				"MODE" => $mode,
-				"USER_ID" => $userdata['user_id'],
 				"USERNAME" => stripslashes($username),
 				"EMAIL" => stripslashes($email),
 				"YIM" => stripslashes($yim),
@@ -606,6 +585,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"SIGNATURE" => stripslashes(str_replace("<br />", "\n", $signature)),
 				"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
 				"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "", 
+				"HIDE_USER_YES" => (!$allowviewonline) ? "CHECKED" : "",
+				"HIDE_USER_NO" => ($allowviewonline) ? "CHECKED" : "", 
 				"NOTIFY_PM_YES" => ($notifypm) ? "CHECKED" : "", 
 				"NOTIFY_PM_NO" => (!$notifypm) ? "CHECKED" : "", 
 				"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
@@ -647,7 +628,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_USER_UNIQUE" => $l_useruniq,
 				"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
 				"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
-				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
+				"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml, 
+				"L_HIDE_USER" => $lang['Hide_user'], 
 				"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 				"L_AVATAR" => $lang['Avatar'],
 				"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
@@ -666,6 +648,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_CONFIRM" => $l_confirm,
 				"L_EMAIL_ADDRESS" => $l_emailaddress,
 
+				"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 			);
 
@@ -698,6 +681,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : $board_config['allow_html'];
 			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : $board_config['allow_bbcode'];
 			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : $board_config['allow_smilies'];
+			$allowviewonline = (!empty($HTTP_POST_VARS['allowviewonline'])) ? $HTTP_POST_VARS['allowviewonline'] : 1;
 
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
@@ -898,8 +882,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 
 					$md_pass = md5($password);
-					$sql = "INSERT INTO ".USERS_TABLE."	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
-						VALUES ($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
+					$sql = "INSERT INTO ".USERS_TABLE."	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_active, user_actkey)
+						VALUES ($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$avatar_filename', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $allowviewonline, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, 0, ";
 					if($require_activation || $coppa == 1)
 					{
 						$act_key = generate_activation_key();
@@ -928,7 +912,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 							{
 								if($require_activation)
 								{
-								$msg = $l_accountinactive;
+									$msg = $l_accountinactive;
 									$email_msg = $l_welcomeemailactivate;
 								}
 								else if($coppa)
@@ -1012,6 +996,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					$selected_template = $board_config['default_template'];
 				}
 
+				$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '"><input type="hidden" name="agreed" value="true"><input type="hidden" name="coppa" value="' . $coppa . '">';
+
 				//
 				// Load profile_add template
 				// to allow user to insert
@@ -1028,14 +1014,12 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				);
 				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
 				$template->assign_vars(array(
-					"MODE" => $mode,
 					"USERNAME" => stripslashes($username),
 					"EMAIL" => stripslashes($email),
 					"YIM" => stripslashes($yim),
 					"ICQ" => stripslashes($icq),
 					"MSN" => stripslashes($msn),
 					"AIM" => stripslashes($aim),
-					"COPPA" => $coppa,
 					"OCCUPATION" => stripslashes($occupation),
 					"INTERESTS" => stripslashes($interests),
 					"LOCATION" => stripslashes($location),
@@ -1043,6 +1027,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"SIGNATURE" => stripslashes($signature),
 					"VIEW_EMAIL_YES" => ($viewemail) ? "CHECKED" : "",
 					"VIEW_EMAIL_NO" => (!$viewemail) ? "CHECKED" : "",
+					"HIDE_USER_YES" => (!$allowviewonline) ? "CHECKED" : "",
+					"HIDE_USER_NO" => ($allowviewonline) ? "CHECKED" : "", 
 					"NOTIFY_PM_YES" => ($notifypm) ? "CHECKED" : "", 
 					"NOTIFY_PM_NO" => (!$notifypm) ? "CHECKED" : "", 
 					"ALWAYS_ADD_SIGNATURE_YES" => ($attachsig) ? "CHECKED" : "",
@@ -1081,6 +1067,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_ALWAYS_ALLOW_SMILIES" => $l_alwayssmile,
 					"L_ALWAYS_ALLOW_BBCODE" => $l_alwaysbbcode,
 					"L_ALWAYS_ALLOW_HTML" => $l_alwayshtml,
+					"L_HIDE_USER" => $lang['Hide_user'], 
 					"L_ALWAYS_ADD_SIGNATURE" => $l_alwayssig,
 					"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
 					"L_UPLOAD_IMAGE" => $lang['Upload_Image'],
@@ -1098,6 +1085,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					"L_CONFIRM" => $l_confirm,
 					"L_EMAIL_ADDRESS" => $l_emailaddress,
 
+					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 					"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 				);
 
@@ -1109,16 +1097,16 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 		case 'activate':
 
 			$sql = "SELECT user_id
-				FROM ".USERS_TABLE."
+				FROM " . USERS_TABLE . "
 				WHERE user_actkey = '$act_key'";
 			if($result = $db->sql_query($sql))
 			{
 				if($num = $db->sql_numrows($result))
 				{
 					$rowset = $db->sql_fetchrowset($result);
-					$sql_update = "UPDATE ".USERS_TABLE."
+					$sql_update = "UPDATE " . USERS_TABLE . "
 						SET user_active = 1, user_actkey = ''
-						WHERE user_id = ".$rowset[0]['user_id'];
+						WHERE user_id = " . $rowset[0]['user_id'];
 					if($result = $db->sql_query($sql_update))
 					{
 						error_die(GENERAL_ERROR, $l_nowactive);
