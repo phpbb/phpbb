@@ -738,19 +738,8 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 					//
 					$regdate = get_gmt_ts();
 
-					if(SQL_LAYER != "mssql")
-					{
-						$user_id_sql = "user_id,";
-						$user_id_value = $new_user_id . ", ";
-					}
-					else
-					{
-						$user_id_sql = "";
-						$user_id_value = "";
-					}
-
-					$sql = "INSERT INTO " . USERS_TABLE . "	(" . $user_id_sql . "username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_allow_pm, user_active, user_actkey)
-						VALUES (" . $user_id_value . "'" . addslashes($username) ."', $regdate, '" . addslashes($password) ."', '" . addslashes($email) ."', '" . addslashes($icq) ."', '" . addslashes($website) ."', '" . addslashes($occupation) ."', '" . addslashes($location) ."', '" . addslashes($interests) ."', '" . addslashes($signature) ."', '$avatar_filename', $viewemail, '" . addslashes($aim) ."', '" . addslashes($yim) ."', '" . addslashes($msn) ."', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '" . addslashes($user_dateformat) ."', '" . addslashes($user_lang) ."', '" . addslashes($user_template) ."', $user_theme, 0, 1, ";
+					$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_level, user_allow_pm, user_active, user_actkey)
+						VALUES ($new_user_id, '" . addslashes($username) ."', $regdate, '" . addslashes($password) ."', '" . addslashes($email) ."', '" . addslashes($icq) ."', '" . addslashes($website) ."', '" . addslashes($occupation) ."', '" . addslashes($location) ."', '" . addslashes($interests) ."', '" . addslashes($signature) ."', '$avatar_filename', $viewemail, '" . addslashes($aim) ."', '" . addslashes($yim) ."', '" . addslashes($msn) ."', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '" . addslashes($user_dateformat) ."', '" . addslashes($user_lang) ."', '" . addslashes($user_template) ."', $user_theme, 0, 1, ";
 
 					if($board_config['require_activation'] || $coppa == 1)
 					{
