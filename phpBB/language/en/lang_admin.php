@@ -576,7 +576,6 @@ $lang = array_merge($lang, array(
 	'ICONS_ORDER' => 'Icon order',
 	'ICONS_ADD' => 'Add a new Icon',
 	'ICONS_EDIT' => 'Edit Icon',
-	'ICONS' => 'Icon',
 	'EXPORT_SMILE_EXPLAIN' => 'To create a package of your currently installed smilies, click %sHERE%s to download the emoticons.pak file. Once downloaded create a zip or tgz file containing all of your smilies plus this .pak configuration file.',
 	'EXPORT_ICONS_EXPLAIN' => 'To create a package of your currently installed icons, click %sHERE%s to download the icons package file. Once downloaded create a zip or tgz file containing all of your icons plus this .pak configuration file.',
 	'NO_SMILE_EXPORT' => 'You have no smilies with which to create a package.', 
