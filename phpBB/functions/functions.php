@@ -1,28 +1,28 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                               functions.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
-function get_db_stat($db, $mode) 
+function get_db_stat($db, $mode)
 {
 	switch($mode){
 		case 'postcount':
@@ -30,8 +30,8 @@ function get_db_stat($db, $mode)
 		break;
 
 		case 'usercount':
-			$sql = 'SELECT count(*) AS total 
-						FROM '. USERS_TABLE .' 
+			$sql = 'SELECT count(*) AS total
+						FROM '. USERS_TABLE .'
 						WHERE user_id != '.ANONYMOUS.'
 						AND user_level != '.DELETED;
 		break;
@@ -49,7 +49,7 @@ function get_db_stat($db, $mode)
 			break;
 	}
 
-	
+
 	if(!$result = $db->sql_query($sql))
 	{
 		return 'ERROR';
@@ -82,7 +82,7 @@ function make_jumpbox($db)
 		WHERE f.cat_id = c.cat_id
 		GROUP BY c.cat_id, c.cat_title, c.cat_order
 		ORDER BY c.cat_order";
-	if(!$q_categories = $db->sql_query($sql)) 
+	if(!$q_categories = $db->sql_query($sql))
 	{
 		$db_error = $db->sql_error();
 		error_die(SQL_QUERY, "Couldn't obtain category list.", __LINE__, __FILE__);
@@ -94,9 +94,9 @@ function make_jumpbox($db)
 		$category_rows = $db->sql_fetchrowset($q_categories);
 
 		$limit_forums = "";
-	
+
 		$sql = "SELECT *
-			FROM ".FORUMS_TABLE." 
+			FROM ".FORUMS_TABLE."
 			ORDER BY cat_id, forum_order";
 		if(!$q_forums = $db->sql_query($sql))
 		{
@@ -111,7 +111,7 @@ function make_jumpbox($db)
 			$boxstring .= "<option value=\"-1\">&nbsp;</option>\n";
 			$boxstring .= "<option value=\"-1\">".stripslashes($category_rows[$i]["cat_title"])."</OPTION>\n";
 			$boxstring .= "<option value=\"-1\">----------------</OPTION>\n";
-			
+
 			if($total_forums)
 			{
 				for($y = 0; $y < $total_forums; $y++)
@@ -123,7 +123,7 @@ function make_jumpbox($db)
 					}
 				}
 			}
-			else 
+			else
 			{
 				$boxstring .= "<option value=\"-1\">-- ! No Forums ! --</option>\n";
 			}
@@ -142,9 +142,9 @@ function language_select($default, $name="language", $dirname="language/")
 	global $phpEx;
 	$dir = opendir($dirname);
 	$lang_select = "<select name=\"$name\">\n";
-	while ($file = readdir($dir)) 
+	while ($file = readdir($dir))
 	{
-		if (ereg("^lang_", $file)) 
+		if (ereg("^lang_", $file))
 		{
 			$file = str_replace("lang_", "", $file);
 			$file = str_replace(".$phpEx", "", $file);
@@ -213,7 +213,7 @@ function init_userprefs($userdata)
 	{
 		$theme = setuptheme($override_user_theme);
 	}
-	if($theme) 
+	if($theme)
 	{
 		$bgcolor = $theme["bgcolor"];
 		$table_bgcolor = $theme["table_bgcolor"];
@@ -269,8 +269,8 @@ function setuptheme($theme)
 {
 	global $db;
 
-	$sql = "SELECT * 
-		FROM ".THEMES_TABLE." 
+	$sql = "SELECT *
+		FROM ".THEMES_TABLE."
 		WHERE theme_id = '$theme'";
 	if(!$result = $db->sql_query($sql))
 		return(0);
@@ -320,7 +320,7 @@ function tz_select($default)
 			"+10" => "(GMT +10:00 hours) EAST (East Australian Standard), Guam, Papua New Guinea, Vladivostok",
 			"+11" => "(GMT +11:00 hours) Magadan, Solomon Islands, New Caledonia",
 			"+12" => "(GMT +12:00 hours) Auckland, Wellington, Fiji, Kamchatka, Marshall Island");
-	
+
 	while(list($offset, $zone) = each($tz_array))
 	{
 		if($offset == $default)
@@ -346,7 +346,7 @@ function validate_username(&$username, $db)
 	{
 		return(FALSE);
 	}
-	
+
 	$valid_name = TRUE;
 	$sql = "SELECT LOWER(username) FROM ".USERS_TABLE." WHERE username = '$username'";
 	if($result = $db->sql_query($sql))
@@ -356,7 +356,7 @@ function validate_username(&$username, $db)
 			$valid_name = FALSE;
 		}
 	}
-	
+
 	$sql = "SELECT disallow_username FROM ".DISALLOW_TABLE." WHERE disallow_username = '$username'";
 	if($result = $db->sql_query($sql))
 	{
@@ -365,12 +365,12 @@ function validate_username(&$username, $db)
 			$valid_name = FALSE;
 		}
 	}
-	
+
 	return($valid_name);
 }
 function generate_activation_key()
 {
-	$chars = array( 
+	$chars = array(
 		  "a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J",
 		  "k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T",
 		  "u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8",
@@ -380,32 +380,33 @@ function generate_activation_key()
    srand((double)microtime()*1000000);
    $act_key = $chars[rand(0,$max_elements)];
    $act_key .= $chars[rand(0,$max_elements)];
-   $act_key .= $chars[rand(0,$max_elements)];  
-   $act_key .= $chars[rand(0,$max_elements)]; 
-   $act_key .= $chars[rand(0,$max_elements)]; 
-   $act_key .= $chars[rand(0,$max_elements)]; 
-   $act_key .= $chars[rand(0,$max_elements)]; 
+   $act_key .= $chars[rand(0,$max_elements)];
+   $act_key .= $chars[rand(0,$max_elements)];
+   $act_key .= $chars[rand(0,$max_elements)];
+   $act_key .= $chars[rand(0,$max_elements)];
+   $act_key .= $chars[rand(0,$max_elements)];
    $act_key .= $chars[rand(0,$max_elements)];
    $act_key_md = md5($act_key);
-   
+
    return($act_key_md);
 }
 
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
-//	return sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
-		
-	return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
+	$return = sprintf("%02x%02x%02x%02x", $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
+
+	//return (( $ip_sep[0] * 0xFFFFFF + $ip_sep[0] ) + ( $ip_sep[1] *   0xFFFF + $ip_sep[1] ) + ( $ip_sep[2] *     0xFF + $ip_sep[2] ) + ( $ip_sep[3] ) );
+	return($return);
 }
 
 function decode_ip($int_ip)
 {
 	$hexipbang = explode(".",chunk_split($int_ip, 2, "."));
 
-//	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
-		
-	return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
+	return hexdec($hexipbang[0]).".".hexdec($hexipbang[1]).".".hexdec($hexipbang[2]).".".hexdec($hexipbang[3]);
+
+	//return sprintf( "%d.%d.%d.%d", ( ( $int_ip >> 24 ) & 0xFF ), ( ( $int_ip >> 16 ) & 0xFF ), ( ( $int_ip >>  8 ) & 0xFF ), ( ( $int_ip       ) & 0xFF ) );
 
 }
 
@@ -414,6 +415,6 @@ function decode_ip($int_ip)
 //
 function create_date($format, $gmepoch, $tz)
 {
-	return (date($format, $gmepoch + (3600 * $tz)));
+	return (gmdate($format, $gmepoch + (3600 * $tz)));
 }
 ?>
