@@ -125,6 +125,7 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 		}
 
 		$forum_id = $row['forum_id'];
+
 		$unread_topics = ($user->data['user_id'] && $row['forum_last_post_time'] > $user->data['user_lastvisit']) ? TRUE : FALSE;
 
 		$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
@@ -162,9 +163,9 @@ function display_forums($root_data=array(), $display_moderators=TRUE)
 		if (isset($subforums[$forum_id]))
 		{
 			$alist = array();
-			foreach ($subforums[$forum_id] as $forum_id => $forum_name)
+			foreach ($subforums[$forum_id] as $sub_forum_id => $forum_name)
 			{
-				$alist[$forum_id] = $forum_name;
+				$alist[$sub_forum_id] = $forum_name;
 			}
 			natsort($alist);
 
