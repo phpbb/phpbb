@@ -26,6 +26,7 @@
 //    * Admin defineable characters allowed in usernames?
 //    * Admin forced revalidation of given user/s from ACP
 //    * Simple registration (option or always?), i.e. username, email address, password
+
 // * Opening tab:
 //    * Last visit time
 //    * Last active in
@@ -34,14 +35,18 @@
 //    * New PM counter
 //    * Unread PM counter
 //    * Link/s to MCP if applicable?
+
 // * Black and White lists
 //    * Add buddy/ignored user
 //    * Group buddies/ignored users?
 //    * Mark posts/PM's of buddies different colour?
+
 // * PM system
 //    * See privmsg
+
 // * Avatars
 //    * as current but with definable width/height box?
+
 // * Permissions?
 //    * List permissions granted to this user (in UCP and ACP UCP)
 
@@ -49,6 +54,8 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
+
 
 // Start session management
 $user->start();
@@ -56,22 +63,28 @@ $user->setup();
 $auth->acl($user->data);
 
 
-//
+// Basic parameter data
 $mode = (!empty($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$module = (!empty($_REQUEST['i'])) ? $_REQUEST['i'] : 1;
+$module = (!empty($_REQUEST['i'])) ? intval($_REQUEST['i']) : 1;
 
 
-//
+// Instantiate a new ucp object
 $ucp = new ucp();
 
 
-//
+// Basic "global" modes
 switch ($mode)
 {
 	case 'activate':
 		$ucp->module('activate');
 		$ucp->modules['activate']->main();
 		break;
+
+	case 'remind':
+		$ucp->module('remind');
+		$ucp->modules['remind']->main();
+		break;
+
 
 	case 'register':
 		if ($user->data['user_id'] != ANONYMOUS)
@@ -81,6 +94,11 @@ switch ($mode)
 
 		$ucp->module('register');
 		$ucp->modules['register']->main();
+		break;
+
+	case 'confirm':
+		$ucp->module('confirm');
+		$ucp->modules['confirm']->main();
 		break;
 
 	case 'login':
@@ -143,93 +161,10 @@ $db->sql_freeresult($result);
 
 if ($selected_module)
 {
-	$ucp->module($selected_module);
-	$ucp->modules[$selected_module]->main($selected_id);
+	$ucp->load_module($selected_module);
+	$ucp->module[$selected_module]->main($selected_id);
 }
 
-
-
-
-
-
-
-// A wrapper class for ucp modules?
-class ucp
-{
-	var $modules = array();
-
-	function module($module_name)
-	{
-		if (!class_exists('ucp_' . $module_name))
-		{
-			$this->loadfile('ucp/ucp_' . $module_name);
-			eval('$this->modules[' . $module_name . '] = new ucp_' . $module_name . '();');
-		}
-	}
-
-	function loadfile($filename)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		return require($phpbb_root_path . $filename . '.' . $phpEx);
-	}
-
-	function main($module_id = false)
-	{
-		return false;
-	}
-
-	function subsection(&$module_ary, &$selected_module)
-	{
-		global $template, $user, $phpEx, $SID;
-
-		foreach($module_ary as $section_title => $module_link)
-		{
-			$template->assign_block_vars('ucp_subsection', array(
-				'L_TITLE'	=> $user->lang['UCP_' . $section_title],
-
-				'S_SELECTED'=> ($section_title == strtoupper($selected_module)) ? true : false, 
-
-				'U_TITLE'	=> "ucp.$phpEx$SID&amp;$module_link")
-			);
-		}
-	}
-
-	function output(&$page_title, $tpl_name)
-	{
-		global $config, $db, $template, $phpEx;
-
-		page_header($page_title);
-
-		$template->set_filenames(array(
-			'body' => $tpl_name)
-		);
-		make_jumpbox('viewforum.'.$phpEx);
-
-		page_footer();
-	}
-
-	function extra_fields($page)
-	{
-		return false;
-	}
-
-	function gen_rand_string($num_chars)
-	{
-		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
-		list($usec, $sec) = explode(' ', microtime()); 
-		mt_srand($sec * $usec); 
-
-		$max_chars = count($chars) - 1;
-		$rand_str = '';
-		for ($i = 0; $i < $num_chars; $i++)
-		{
-			$rand_str .= $chars[mt_rand(0, $max_chars)];
-		}
-
-		return $rand_str;
-	}
-}
+exit;
 
 ?>
