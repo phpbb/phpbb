@@ -22,7 +22,7 @@
 define('IN_PHPBB', true);
 
 // Error reporting level and runtime escaping
-error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+//error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
 // Include essential scripts
@@ -917,8 +917,8 @@ if ($stage == 2)
 	$config_data .= "define('DEBUG', true);\n"; // Comment out when final
 	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
-	$stage = 3;
-/*
+//	$stage = 3;
+
 	// Attempt to write out the config directly ...
 	if (is_writeable($phpbb_root_path . 'config.'.$phpEx))
 	{
@@ -939,7 +939,7 @@ if ($stage == 2)
 
 		@fclose($fp);
 	}
-*/
+
 	if ($stage == 2)
 	{
 		$ignore_ftp = false;
@@ -1167,6 +1167,7 @@ if ($stage == 3)
 			{
 				$ignore_tables[] = preg_replace('#^CREATE TABLE ([a-z_]+?) .*$#is', '\1', $sql);
 				$error = $db->sql_error();
+				die($error['message']);
 			}
 		}
 
@@ -1183,15 +1184,15 @@ if ($stage == 3)
 		foreach ($sql_query as $sql)
 		{
 			$sql = trim(str_replace('|', ';', $sql));
-			if (preg_match('#' . $ignore_tables . '#i', $sql))
+			if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#i', $sql))
 			{
 				continue;
-				echo "\nMATCH >> " . $sql;
 			}
 
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
+				die($error['message']);
 			}
 		}
 	}
@@ -1264,10 +1265,9 @@ if ($stage == 3)
 	foreach ($sql_ary as $sql)
 	{
 		$sql = trim(str_replace('|', ';', $sql));
-		if (preg_match('#' . $ignore_tables . '#i', $sql))
+		if ($ignore_tables != '' && preg_match('#' . $ignore_tables . '#i', $sql))
 		{
 			continue;
-			echo "\nMATCH >> " . $sql;
 		}
 
 		if (!$db->sql_query($sql))
@@ -1297,7 +1297,6 @@ if ($stage == 4)
 		$config[$row['config_name']] = $row['config_value'];
 	}
 	$db->sql_freeresult($result);
-
 
 	$user->start();
 	$auth->login($admin_name, $admin_pass1);
