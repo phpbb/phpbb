@@ -37,30 +37,42 @@ init_userprefs($userdata);
 //
 // Set initial conditions
 //
-if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
+if( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) ) 
 {
-	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+	$forum_id = (isset($HTTP_GET_VARS[POST_FORUM_URL])) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
 }
 else
 {
-	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
+	$forum_id = "";
+}
+if( isset($HTTP_GET_VARS[POST_POST_URL]) || isset($HTTP_POST_VARS[POST_POST_URL]) )
+{
+	$post_id = (isset($HTTP_GET_VARS[POST_POST_URL])) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+}
+else
+{
+	$post_id = "";
+}
+if( isset($HTTP_GET_VARS[POST_TOPIC_URL]) || isset($HTTP_POST_VARS[POST_TOPIC_URL]) )
+{
+	$topic_id = (isset($HTTP_GET_VARS[POST_TOPIC_URL])) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
+}
+else
+{
+	$topic_id = "";
 }
 
 $mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "");
 
-$is_first_post = (($HTTP_GET_VARS['is_first_post'] == 1) || ($HTTP_POST_VARS['is_first_post'] == 1)) ? TRUE : FALSE;
-
 $disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
 $disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['disable_bbcode'] : !$userdata['user_allowbbcode'];
 $disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
-
 $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
-
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
-if(isset($HTTP_POST_VARS['topictype']))
+if( isset($HTTP_POST_VARS['topictype']) )
 {
 	if($HTTP_POST_VARS['topictype']  == "announce")
 	{
@@ -75,9 +87,108 @@ if(isset($HTTP_POST_VARS['topictype']))
 		$topic_type = POST_NORMAL;
 	}
 }
+else
+{
+	$topic_type = POST_NORMAL;
+}
+//
+// Here we do various lookups to find topic_id, forum_id, post_id
+// etc. Doing it here prevents spoofing (eg. faking forum_id, 
+// topic_id or post_id). 
+//
+if( $mode != "newtopic" )
+{
+	if($mode == "reply" || $mode == "quote")
+	{
+		if($mode == "reply" && !empty($topic_id) )
+		{
+			$sql = "SELECT forum_id, topic_status   
+				FROM " . TOPICS_TABLE . " t 
+				WHERE topic_id = $topic_id";
+
+			$msg = $lang['No_topic_id'];
+		}
+		else if( !empty($post_id) )
+		{
+			$sql = "SELECT t.topic_id, t.forum_id, t.topic_status   
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
+				WHERE p.post_id = $post_id 
+					AND t.topic_id = p.topic_id";
+
+			$msg = $lang['No_post_id'];
+		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, $msg);
+		}
+	}
+	else if($mode == "editpost")
+	{
+		if( isset($post_id) )
+		{
+			$sql = "SELECT p.post_id, t.forum_id, t.topic_status, t.topic_last_post_id, f.forum_last_post_id     
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
+				WHERE t.topic_id = $topic_id 
+					AND p.topic_id = t.topic_id 
+					AND f.forum_id = t.forum_id 
+				ORDER BY p.post_time ASC 
+				LIMIT 1";
+		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, $lang['No_post_id']);
+		}
+	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, $lang['No_valid_mode']);
+	}
+
+	if($result = $db->sql_query($sql))
+	{
+		$check_row = $db->sql_fetchrow($result);
+
+		$forum_id = $check_row['forum_id'];
+		$topic_status = $check_row['topic_status']; 
+
+		if( $mode == "editpost" )
+		{
+			$is_first_post = ($check_row['post_id'] == $post_id) ? TRUE : FALSE; 
+			$is_last_post = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : FALSE; 
+			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : FALSE; 
+		}
+		else
+		{
+			if($mode == "quote")
+			{
+				$topic_id = $check_row['topic_id'];
+			}
+			$is_first_post = FALSE;
+			$is_last_post = FALSE;
+		}
+	}
+	else
+	{
+		message_die(GENERAL_ERROR, $lang['No_such_post'], "", __LINE__, __FILE__, $sql);
+	}
+}
+else
+{
+	$is_first_post = TRUE;
+	$is_last_post = FALSE;
+	$topic_status = TOPIC_UNLOCKED;
+}
 
 //
-// Auth code
+// Is topic locked?
+//
+if($topic_status == TOPIC_LOCKED)
+{
+	message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
+}
+
+//
+// Auth checks
 //
 switch($mode)
 {
@@ -143,13 +254,18 @@ if(!$is_auth[$is_auth_type])
 // End Auth
 //
 
+//
+// Clear error check
+//
 $error = FALSE;
+$error_msg = "";
 
 //
 // Prepare our message and subject on a 'submit'
 //
-if(isset($HTTP_POST_VARS['submit']) || $preview)
+if( ( isset($HTTP_POST_VARS['submit']) || $preview ) && $topic_status == TOPIC_UNLOCKED )
 {
+
 	//
 	// Flood control
 	//
@@ -173,7 +289,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		}
 	}
 	//
-	// End: Flood control
+	// End Flood control
 	//
 
 	//
@@ -185,7 +301,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		if(!validate_username($username))
 		{
 			$error = TRUE;
-			if(isset($error_msg))
+			if(!empty($error_msg))
 			{
 				$error_msg .= "<br />";
 			}
@@ -201,7 +317,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	if($mode == 'newtopic' && empty($subject))
 	{
 		$error = TRUE;
-		if(isset($error_msg))
+		if(!empty($error_msg))
 		{
 			$error_msg .= "<br />";
 		}
@@ -214,7 +330,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	if($annouce && $sticky)
 	{
 		$error = TRUE;
-		if(isset($error_msg))
+		if(!empty($error_msg))
 		{
 			$error_msg .= "<br />";
 		}
@@ -254,11 +370,11 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	else
 	{
 		$error = TRUE;
-		if(isset($error_msg))
+		if(!empty($error_msg))
 		{
 			$error_msg .= "<br />";
 		}
-		$error_msg .= $lang['Empty_msg'];
+		$error_msg .= $lang['Empty_message'];
 	}
 }
 
@@ -266,7 +382,7 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 // If submitted then update tables
 // according to the mode
 //
-if($mode == "newtopic" || $mode == "reply")
+if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED)
 {
 	$page_title = ($mode == "newtopic") ? " " . $lang['Post_new_topic'] : " " . $lang['Post_reply'];
 	$section_title = ($mode == "newtopic") ? $lang['Post_new_topic_in'] : " " . $Lang['Post_reply_to'];
@@ -277,7 +393,7 @@ if($mode == "newtopic" || $mode == "reply")
 
 		if($mode == "reply")
 		{
-			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
+			$new_topic_id = $topic_id;
 		}
 		else if($mode == "newtopic")
 		{
@@ -382,15 +498,13 @@ if($mode == "newtopic" || $mode == "reply")
 		}
 	}
 }
-else if($mode == "quote" && !$preview)
+else if($mode == "quote" && !$preview && $topic_status == TOPIC_UNLOCKED)
 {
 	$page_title = " " . $lang['Post_reply'];
 	$section_title = " " . $Lang['Post_reply_to'];
 
-	if( isset($HTTP_GET_VARS[POST_POST_URL]) )
+	if( isset($post_id) )
 	{
-		$post_id = $HTTP_GET_VARS[POST_POST_URL]; 
-
 		$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
 			FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
 			WHERE p.post_id = $post_id 
@@ -435,28 +549,208 @@ else if($mode == "quote" && !$preview)
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
+		message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 	}
 }
-else if($mode == "editpost")
+else if( $mode == "editpost" && $topic_status == TOPIC_UNLOCKED )
 {
 	$page_title = " " . $lang['Edit_post'];
 	$section_title = $lang['Edit_post_in'];
 
-	if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
+	if( ( isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) ) 
+		&& !$error && !$preview )
 	{
-		if(isset($HTTP_POST_VARS['delete_post']))
-		{
-			//
-			// To be completed!
-			//
+		
+		$sql = "SELECT poster_id  
+			FROM " . POSTS_TABLE . " 
+			WHERE post_id = $post_id";
 
+		if($result = $db->sql_query($sql))
+		{
+			list($check_user_id) = $db->sql_fetchrow($result);
+
+			if($userdata['user_id'] != $check_user_id && !$is_auth['auth_mod'])
+			{
+				$msg = ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) ? $lang['Sorry_delete_own_posts'] : $lang['Sorry_edit_own_posts'];
+
+				message_die(GENERAL_MESSAGE, $msg);
+			}
+		}
+		
+		if( ( isset($HTTP_POST_VARS['delete']) || isset($HTTP_GET_VARS['delete']) ) && ( $is_last_post || $is_auth['auth_mod'] ) )
+		{
+			// 
+			// Output a confirmation message, unless we've
+			// over-ridden it on the posting_body form (
+			// override_confirm set ), this is so people
+			// can implement JavaScript checkers if they wish
+			//
+			if( isset($HTTP_POST_VARS['delete']) && !isset($HTTP_POST_VARS['override_confirm']) )
+			{
+
+				$msg = '<br />' . $lang['Confirm_delete'] . '<br /><br /><a href="' . append_sid("posting.$phpEx?mode=editpost&" . POST_TOPIC_URL . "=$topic_id&" . POST_POST_URL . "=$post_id&delete=true&confirm=true") . '">' . $lang['Yes'] . '</a> &nbsp;&nbsp;&nbsp; <a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">' . $lang['No'] . '</a><br/><br />';
+
+				message_die(GENERAL_MESSAGE, $msg);
+
+			}
+			else if( isset($HTTP_GET_VARS['confirm']) || isset($HTTP_POST_VARS['confirm']) || 
+				isset($HTTP_POST_VARS['override_confirm']) )
+			{
+				
+				$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
+					WHERE post_id = $post_id";
+
+				if($db->sql_query($sql, BEGIN_TRANSACTION))
+				{
+					$sql = "DELETE FROM " . POSTS_TABLE . " 
+						WHERE post_id = $post_id";
+
+					if($is_last_post && $is_first_post)
+					{
+						//
+						// Delete the topic completely, updating the forum_last_post_id
+						// if necessary
+						//
+						if($db->sql_query($sql))
+						{
+							$sql = "DELETE FROM " . TOPICS_TABLE . " 
+								WHERE topic_id = $topic_id";
+
+							$sql_forum_upd = "forum_posts = forum_posts - 1, forum_topics = forum_topics - 1"; 
+
+							$if_die_msg = "Couldn't delete from topics table";
+						}
+						else
+						{
+							// Rollback ?
+							message_die(GENERAL_ERROR, "Error deleting from post  table", "", __LINE__, __FILE__, $sql);
+						}
+					}
+					else if($is_last_post)
+					{
+						//
+						// Delete the post and update the _last_post_id's of both
+						// the topic and forum if necessary
+						//
+						if($db->sql_query($sql))
+						{
+							$sql = "SELECT MAX(post_id) AS new_last_post_id 
+								FROM " . POSTS_TABLE . " 
+								WHERE topic_id = $topic_id";
+						
+							if($result = $db->sql_query($sql))
+							{
+								list($new_last_post_id) = $db->sql_fetchrow($result);
+
+								$sql = "UPDATE " . TOPICS_TABLE . " 
+									SET topic_replies = topic_replies - 1, topic_last_post_id = $new_last_post_id 
+									WHERE topic_id = $topic_id";
+
+								$sql_forum_upd = "forum_posts = forum_posts - 1";
+
+								$if_die_msg = "Error updating topics table";
+							}
+							else
+							{
+								// Rollback ?
+								message_die(GENERAL_ERROR, "Error obtaining new last topic id", "", __LINE__, __FILE__, $sql);
+							}
+						}
+						else
+						{
+							// Rollback ?
+							message_die(GENERAL_ERROR, "Error deleting from post table", "", __LINE__, __FILE__, $sql);
+						}
+					}
+					else if($is_auth['auth_mod']) 
+					{
+						//
+						// It's not last and it's not both first and last
+						// so it's somewhere in the middle(!) Only moderators
+						// can delete these posts, all we need do is update
+						// the forums table data as necessary
+						//
+						$sql_forum_upd = "forum_posts = forum_posts - 1";
+
+						$if_die_msg = "Couldn't delete from posts table";
+					}
+								
+					//
+					// Updating the forum is common to all three possibilities,
+					// _remember_ we're still in a transaction here!
+					//
+					if($db->sql_query($sql))
+					{
+						if($is_last_post_forum)
+						{
+							$sql = "SELECT MAX(post_id) AS new_last_post_id 
+								FROM " . POSTS_TABLE . " 
+								WHERE forum_id = $forum_id";
+					
+							if($result = $db->sql_query($sql))
+							{
+								list($new_last_post_id) = $db->sql_fetchrow($result);
+							}
+							else
+							{
+								message_die(GENERAL_ERROR, "Couldn't obtain new last post id for the forum", "", __LINE__, __FILE__, $sql);
+							}
+
+							$new_last_sql = ", forum_last_post_id = $new_last_post_id";
+						}
+						else
+						{
+							$new_last_sql = "";
+						}
+
+						$sql = "UPDATE " . FORUMS_TABLE . " 
+							SET " . $sql_forum_upd . $new_last_sql . " 
+							WHERE forum_id = $forum_id";
+
+						if($db->sql_query($sql, END_TRANSACTION))
+						{
+							//
+							// If we get here the post has been deleted successfully.
+							//
+							$msg = $lang['Deleted'];
+								
+							if(!$is_last_post || !$is_first_post)
+							{
+								$msg .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_return_topic'];
+							}
+							$msg .= "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+
+							message_die(GENERAL_MESSAGE, $msg);
+						}
+						else
+						{
+							// Rollback ?
+							message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
+						}
+					}
+					else
+					{
+						//
+						// This error is produced by the last SQL query carried out
+						// before we jumped into this common block
+						//
+						// Rollback ?
+						message_die(GENERAL_ERROR, $if_die_msg, "", __LINE__, __FILE__, $sql);
+					}
+				}
+				else
+				{
+					// Rollback ?
+					message_die(GENERAL_ERROR, "Error deleting from posts text table", "", __LINE__, __FILE__, $sql);
+				}
+			}
+			else
+			{
+				header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			}
 		}
 		else
 		{
-			$post_id = $HTTP_POST_VARS[POST_POST_URL];
-			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
-				
 			$sql = "UPDATE " . POSTS_TABLE . " 
 				SET bbcode_uid = '$bbcode_uid' 
 				WHERE post_id = $post_id";
@@ -476,7 +770,7 @@ else if($mode == "editpost")
 						//
 						$sql = "UPDATE " . TOPICS_TABLE . " 
 							SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' 
-							WHERE topic_id = $new_topic_id";
+							WHERE topic_id = $topic_id";
 
 						if($db->sql_query($sql, END_TRANSACTION))
 						{
@@ -501,7 +795,8 @@ else if($mode == "editpost")
 						// If we get here the post has been inserted successfully.
 						//
 						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-							message_die(GENERAL_MESSAGE, $msg);
+
+						message_die(GENERAL_MESSAGE, $msg);
 					}
 					else
 					{
@@ -517,9 +812,7 @@ else if($mode == "editpost")
 	}
 	else if(!$preview)
 	{
-		$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
-
-		if(!empty($post_id))
+		if( !empty($post_id) )
 		{
    			$sql = "SELECT p.*, pt.post_text, pt.post_subject, u.username, u.user_id, u.user_sig, t.topic_title, t.topic_notify, t.topic_type 
 				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . TOPICS_TABLE . " t, " . POSTS_TEXT_TABLE . " pt 
@@ -581,10 +874,10 @@ else if($mode == "editpost")
    		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
+			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
    		}
 	}
-} // end if ... mode
+}// end if ... mode
 
 //
 // Output page
@@ -655,10 +948,9 @@ if($preview && !$error)
 //
 // Show the same form for each mode.
 //
-
-if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
+if( empty($forum_id) )
 {
-	message_die(GENERAL_ERROR, "Sorry but there is no such forum");
+	message_die(GENERAL_ERROR, $lang['Forum_not_exist']);
 }
 
 $sql = "SELECT forum_name
@@ -795,21 +1087,36 @@ if($mode == "newtopic" || ($mode == "editpost" && $notify_show))
 	$notify_toggle .= "> " . $lang['Notify'];
 }
 
-if($mode == "reply" || $mode == "editpost" || $mode == "quote")
+//
+// Display delete toggle?
+//
+if($mode == 'editpost' && ( $is_last_post || $is_auth['auth_mod'] ) )
 {
-	$topic_id = ($HTTP_GET_VARS[POST_TOPIC_URL]) ? $HTTP_GET_VARS[POST_TOPIC_URL] : $HTTP_POST_VARS[POST_TOPIC_URL];
-	$post_id = ($HTTP_GET_VARS[POST_POST_URL]) ? $HTTP_GET_VARS[POST_POST_URL] : $HTTP_POST_VARS[POST_POST_URL];
+	$delete_toggle = '<input type="checkbox" name="delete"> ' . $lang['Delete_post'];
+}
 
+//
+// Define hidden fields
+//
+$hidden_form_fields = "";
+if($mode == "newtopic")
+{
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\">";
+}
+else if($mode == "reply" || $mode == "quote")
+{
 	//
 	// Reset mode to reply if quote is in effect
 	// to allow proper handling by submit/preview
 	//
-	if($mode == "quote")
-	{
-		$mode = "reply";
-	}
+	$mode = "reply";
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\">";
 }
-$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\"><input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\"><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\"><input type=\"hidden\" name=\"is_first_post\" value=\"$is_first_post\">";
+else if($mode == "editpost")
+{
+	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\"><input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$post_id\">";
+}
+$hidden_form_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\">";
 
 if($mode == "newtopic")
 {
@@ -834,6 +1141,7 @@ $template->assign_vars(array(
 	"SMILE_TOGGLE" => $smile_toggle,
 	"SIG_TOGGLE" => $sig_toggle,
 	"NOTIFY_TOGGLE" => $notify_toggle,
+	"DELETE_TOGGLE" => $delete_toggle,
 	"TYPE_TOGGLE" => $topic_type_toggle,
 	"BBCODE_TOGGLE" => $bbcode_toggle,
 	"BBCODE_STATUS" => $bbcode_status,
@@ -843,7 +1151,8 @@ $template->assign_vars(array(
 	"L_OPTIONS" => $lang['Options'],
 	"L_PREVIEW" => $lang['Preview'],
 	"L_SUBMIT" => $lang['Submit_post'],
-	"L_CANCEL" => $lang['Cancel_post'],
+	"L_CANCEL" => $lang['Cancel_post'], 
+	"L_CONFIRM_DELETE" => $lang['Confirm_delete'], 
 	"L_POST_A" => $post_a,
 
 	"S_POST_ACTION" => append_sid("posting.$phpEx"),

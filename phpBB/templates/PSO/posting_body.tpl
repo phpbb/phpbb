@@ -6,15 +6,33 @@
 
 <script language="JavaScript" type="text/javascript">
 <!--
-function insertCode(formObj, selectObj){
+function insertCode(formObj, selectObj)
+{
 	formObj.message.value += selectObj.options[selectObj.selectedIndex].value;
 	return;
+}
+function submit_check_alert(formObj)
+{
+<!--
+	if(formObj.elements["delete"] == "defined")
+	{
+		if(formObj.elements["delete"].checked)
+		{
+			result = confirm("{L_CONFIRM_DELETE}");
+			if(!result)
+			{
+				return false;
+			}
+		}
+	}
+//-->
+	return true;
 }
 //-->
 </script>
 
 <div align="center"><table width="80%" cellpadding="1" cellspacing="0" border="0">
-	<tr><form action="{S_POST_ACTION}" method="POST">
+	<tr><form action="{S_POST_ACTION}" method="POST" onSubmit="return submit_check_alert(this);">
 		<td class="tablebg"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
 				<th class="secondary" colspan="2"><b>{L_POST_A}</b></td>
@@ -37,7 +55,7 @@ function insertCode(formObj, selectObj){
 			</tr>
 			<tr>
 				<td class="row1"><span class="gen"><b>{L_OPTIONS}</b></span></td>
-				<td class="row2"><span class="gen">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br> &nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</span></td>
+				<td class="row2"><span class="gen">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br>{DELETE_TOGGLE}<br> &nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</span></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2" align="center">{S_HIDDEN_FORM_FIELDS}<input type="submit" name="preview" value="{L_PREVIEW}">&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;<input type="submit" name="cancel" value="{L_CANCEL}"></td>

@@ -106,7 +106,7 @@ $lang['moderate_forum'] = "moderate this forum";
 $lang['View_latest_post'] = "View latest post";
 
 $lang['ICQ'] = "ICQ Number";
-$lang['AIM'] = "AIM address";
+$lang['AIM'] = "AIM Address";
 $lang['MSNM'] = "MSN Messenger";
 $lang['YIM'] = "Yahoo Messenger";
 
@@ -218,6 +218,7 @@ $lang['Post_Annoucement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
 $lang['Options'] = "Options";
 
+$lang['Confirm_delete'] = "Are you sure you want to delete this post?";
 $lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
 $lang['Cancel_post'] = "Cancel post";
@@ -227,6 +228,11 @@ $lang['Sorry_edit_own_posts'] = "Sorry but you can only edit your own posts";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
 $lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
+$lang['Topic_locked'] = "This topic is locked you cannot edit posts or make replies";
+$lang['No_post_id'] = "You must select a post to edit";
+$lang['No_topic_id'] = "You must select a topic to reply to";
+$lang['No_valid_mode'] = "You can only post, reply edit or quote messages, please return and try again";
+$lang['No_such_post'] = "There is no such post, please return and try again";
 
 $lang['Attach_signature'] = "Attach signature (signatures can be changed in profile)";
 $lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
@@ -235,14 +241,17 @@ $lang['BBCode'] = "BBCode";
 $lang['Smilies'] = "Smilies"; 
 $lang['in_this_post'] = " in this post";
 $lang['Notify'] = "Notify";
+$lang['Delete_post'] = "Delete this post";
 $lang['is_ON'] = " is ON"; // this goes after either BBCode or HTML
 $lang['is_OFF'] = " is OFF"; // see above
 
 $lang['Stored'] = "Your message has been entered successfully";
+$lang['Deleted'] = "Your message has been deleted successfully";
 $lang['Click'] = "Click"; // Followed by here and then either return to topic or view message
 $lang['Here'] = "Here";
 $lang['to_return_forum'] = "to return to the forum";
 $lang['to_view_message'] = "to view your message";
+$lang['to_return_topic'] = "to return to the topic";
 
 //
 // Private Messaging
@@ -320,7 +329,8 @@ $lang['Pick_local_Avatar'] = "Select Avatar from the gallery";
 $lang['Link_remote_Avatar'] = "Link to off-site Avatar";
 $lang['Link_remote_Avatar_explain'] = "Enter the URL of the location containing the Avatar image you wish to link to.";
 $lang['Avatar_URL'] = "URL of Avatar Image";
-$lang['Avatar_gallery'] = "Show gallery of Avatar images";
+$lang['Select_from_gallery'] = "Select Avatar from gallery";
+$lang['Avatar_gallery'] = "Show gallery";
 
 $lang['Delete_Image'] = "Delete Image";
 $lang['Current_Image'] = "Current Image";

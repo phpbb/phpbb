@@ -226,7 +226,7 @@ $template->assign_vars(array(
 // templating vars
 //
 $new_topic_url = append_sid("posting.$phpEx?mode=newtopic&" . POST_FORUM_URL . "=$forum_id");
-$reply_topic_url = append_sid("posting.$phpEx?mode=reply&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
+$reply_topic_url = append_sid("posting.$phpEx?mode=reply&" . POST_TOPIC_URL . "=$topic_id");
 
 $view_forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
 
@@ -290,7 +290,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Generate ranks
 	//
-	if( empty($postrow[$i]['user_rank']) || $postrow[$i]['user_id'] == ANONYMOUS )
+	if( $postrow[$i]['user_id'] == ANONYMOUS )
 	{
 		$poster_rank = "";
 		$rank_image = "";
@@ -370,14 +370,9 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&f=all&b=0&d=DESC&c=100&dosearch=1") . "\"><img src=\"" . $images['search_icon'] . "\" border=\"0\"></a>";
 
-	if($i == 0)
-	{
-		$edit_post_url .= "&is_first_post=1";
-	}
-	$edit_post_url = append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id");
-	$edit_img = "<a href=\"" . $edit_post_url . "\"><img src=\"" . $images['edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\"></a>";
+	$edit_img = "<a href=\"" . append_sid("posting.$phpEx?mode=editpost&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id") . "\"><img src=\"" . $images['edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\"></a>";
 
-	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id&" . POST_FORUM_URL . "=$forum_id") . "\"><img src=\"" . $images['quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
+	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\"></a>";
 
 	if($is_auth['auth_mod'] || $userdata['user_level'] == ADMIN)
 	{
