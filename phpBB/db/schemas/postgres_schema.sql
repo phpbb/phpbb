@@ -98,7 +98,7 @@ CREATE TABLE phpbb_config (
   Table structure for table phpbb_disallow
 -------------------------------------------------------- */
 CREATE TABLE phpbb_disallow (
-   disallow_id int4 DEFAULT nextval('phpbb_disallow_id_s'::text) NOT NULL,
+   disallow_id int4 DEFAULT nextval('phpbb_disallow_id_seq'::text) NOT NULL,
    disallow_username varchar(25),
    CONSTRAINT phpbb_disallow_pkey PRIMARY KEY (disallow_id)
 );
