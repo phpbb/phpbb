@@ -1,12 +1,5 @@
 <!-- $Id$ -->
 
-<table class="tablebg" width="95%" border="0" cellpadding="3" cellspacing="1" align="center">
-	<tr>
-		<th height="28" align="center">{L_TOPIC_REVIEW}</th>
-	</tr>
-	<tr>
-		<td class="row1"><div style="overflow: auto; width: 100%; height: 300px; border: 1px;">
-
 <script language="JavaScript" type="text/javascript">
 <!--
 
@@ -60,68 +53,80 @@ function addquote(post_id, username) {
 //-->
 </script>
 
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr>
-		<th width="22%" height="28">{L_AUTHOR}</th>
-		<th>{L_MESSAGE}</th>
-	</tr>
-	<!-- BEGIN postrow -->
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-		<td rowspan="2" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a>
-		
-			<table width="150" cellspacing="0" cellpadding="4" border="0">
+<table class="tablebg" width="95%" border="0" cellpadding="3" cellspacing="1" align="center">
+<tr>
+	<th height="28" align="center">{L_TOPIC_REVIEW} - {TOPIC_TITLE}</th>
+</tr>
+<tr>
+	<td class="row1"><div style="overflow: auto; width: 100%; height: 300px; border: 1px;">
+
+		<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+		<tr>
+			<th width="22%" height="28">{L_AUTHOR}</th>
+			<th>{L_MESSAGE}</th>
+		</tr>
+		<!-- BEGIN topic_review_row -->
+		<!-- IF topic_review_row.S_ROW_COUNT is even -->
+		<tr class="row1">
+		<!-- ELSE -->
+		<tr class="row2">
+		<!-- ENDIF -->
+			<td rowspan="2" align="left" valign="top"><a name="{topic_review_row.U_POST_ID}"></a>
+				<table width="150" cellspacing="0" cellpadding="4" border="0">
 				<tr>
-					<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+					<td align="center"><b class="postauthor">{topic_review_row.POSTER_NAME}</b></td>
 				</tr>
 				<tr>
-					<td align="center">{postrow.KARMA_IMG}</td>
+					<td align="center">{topic_review_row.KARMA_IMG}</td>
 				</tr>
-			</table>
-		</td>
-		<td width="100%" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td>&nbsp;</td>
-				<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
-				<td class="gensmall" width="100%" valign="middle">{postrow.POST_SUBJECT}</td>
-				<td valign="top" nowrap="nowrap">&nbsp;<!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a><!-- ENDIF --></td>
-			</tr>
-		</table></td>
-	</tr>
-	<!-- IF postrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-
-		<td valign="top"><table width="100%" cellspacing="0" cellpadding="5" border="0">
-			<tr>
-				<td valign="top"><table width="100%" cellspacing="0" cellpadding="2">
-					<tr>
-						<td><div id="message_{postrow.POST_ID}" class="postbody">{postrow.MESSAGE}</div></td>
-					</tr>
-				</table></td>
-			</tr>
-			<tr>
-				<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tr valign="middle">
-						<td width="100%">&nbsp;</td>
-						<td width="10" nowrap="nowrap"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a></td>
-						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
-	</tr>
-	 <!-- END postrow -->
-</table>
-
+				</table>
+			</td>
+			<td width="100%" height="28">
+				<table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td>&nbsp;</td>
+					<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+					<td class="gensmall" width="100%" valign="middle">{topic_review_row.POST_SUBJECT}</td>
+					<td valign="top" nowrap="nowrap">&nbsp;<!-- IF topic_review_row.U_QUOTE --><a href="{topic_review_row.U_QUOTE}">{QUOTE_IMG}</a><!-- ENDIF --></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		<!-- IF topic_review_row.S_ROW_COUNT is even -->
+		<tr class="row1">
+		<!-- ELSE -->
+		<tr class="row2">
+		<!-- ENDIF -->
+			<td valign="top">
+				<table width="100%" cellspacing="0" cellpadding="5" border="0">
+				<tr>
+					<td valign="top">
+						<table width="100%" cellspacing="0" cellpadding="2">
+						<tr>
+							<td><div id="message_{topic_review_row.POST_ID}" class="postbody">{topic_review_row.MESSAGE}</div></td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table width="100%" cellspacing="0" cellpadding="0" border="0">
+						<tr valign="middle">
+							<td width="100%">&nbsp;</td>
+							<td width="10" nowrap="nowrap"><a href="{topic_review_row.U_MINI_POST}">{topic_review_row.MINI_POST_IMG}</a></td>
+							<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {topic_review_row.POST_DATE}</td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+		</tr>
+		<!-- END topic_review_row -->
+		</table>
 	</div></td>
 </tr>
 </table>
