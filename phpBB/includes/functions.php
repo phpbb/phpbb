@@ -186,7 +186,7 @@ function make_jumpbox($action, $forum_id = false)
 {
 	global $auth, $template, $lang, $db, $nav_links, $phpEx;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option><option value="-1">&nbsp;</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_status, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -194,6 +194,7 @@ function make_jumpbox($action, $forum_id = false)
 	$result = $db->sql_query($sql);
 
 	$right = 0;
+	$cat_right = 0;
 	$padding = '';
 	$forum_list = '';
 	while ( $row = $db->sql_fetchrow($result) )
@@ -204,25 +205,31 @@ function make_jumpbox($action, $forum_id = false)
 		}
 		else if ( $row['left_id'] > $right + 1 )
 		{
-			$padding = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+			$padding = substr($padding, 0, -13 * ( $row['left_id'] - $right + 1 ));
 		}
 
 		$right = $row['right_id'];
 
-		$linefeed = TRUE;
+		$linefeed = FALSE;
 		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ))
 		{
-			if ($row['forum_status'] == ITEM_CATEGORY)
+			$selected = ( $row['forum_id'] == $forum_id ) ? ' selected="selected"' : '';
+
+			if ($row['left_id'] > $cat_right)
 			{
-				$linefeed = TRUE;
-				$boxstring .= '<option value="-1">&nbsp;&nbsp;</option>';
+				$holding = '';
 			}
-			elseif ($row['parent_id'] == 0)
+			if ($row['parent_id'] == 0)
 			{
-				if ($linefeed)
+				if ($row['forum_status'] == ITEM_CATEGORY)
+				{
+					$linefeed = TRUE;
+					$holding = '<option value="-1">&nbsp;</option>';
+				}
+				elseif (!empty($linefeed))
 				{
 					$linefeed = FALSE;
-					$boxstring .= '<option value="-1">&nbsp;&nbsp;</option>';
+					$boxstring .= '<option value="-1">&nbsp;</option>';
 				}
 			}
 			else
@@ -230,14 +237,21 @@ function make_jumpbox($action, $forum_id = false)
 				$linefeed = TRUE;
 			}
 
-			$selected = ( $row['forum_id'] == $forum_id ) ? ' selected="selected"' : '';
-			$boxstring .= '<option value="' . (($row['forum_status'] == ITEM_CATEGORY) ? 'c' : '') . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-
 			if ($row['forum_status'] == ITEM_CATEGORY)
 			{
-				$boxstring .= '<option value="-1">' . $padding . '----------------</option>';
+				$cat_right = max($cat_right, $row['right_id']);
+
+				$holding .= '<option value="c' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option><option value="-1">' . $padding . '----------------</option>';
+			}
+			else
+			{
+				$boxstring .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+				$holding = '';
 			}
 
+			//
+			// TODO: do not add empty categories to nav links
+			//
 			$nav_links['chapter forum'][$row['forum_id']] = array (
 				'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
 				'title' => $row['forum_name']
