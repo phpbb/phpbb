@@ -157,7 +157,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	obtain_attach_extensions($extensions);
 
 	// Check Extension
-	if (!extension_allowed($forum_id, $filedata['extension']))
+	if (!extension_allowed($forum_id, $filedata['extension'], $extensions))
 	{
 		$filedata['error'][] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
 		$filedata['post_attach'] = false;

@@ -87,7 +87,8 @@ else
 }
 
 // disallowed ?
-if (!extension_allowed($row['forum_id'], $attachment['extension']))
+$extensions = array();
+if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 {
 	trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 }
@@ -207,7 +208,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		header("Content-length: $size");
 	}
 	$result = @readfile($filename);
-
+	
 	if (!$result)
 	{
 		trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_WARNING);

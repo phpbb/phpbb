@@ -422,7 +422,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 		$denied = false;
 			
-		if (!extension_allowed($forum_id, $attachment['extension']))
+		if (!extension_allowed($forum_id, $attachment['extension'], $extensions))
 		{
 			$denied = true;
 
