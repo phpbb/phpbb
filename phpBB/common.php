@@ -32,23 +32,56 @@ set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 //
 if( !get_magic_quotes_gpc() )
 {
-	@reset($HTTP_GET_VARS); 
 	while( list($k, $v) = each($HTTP_GET_VARS) ) 
 	{
-		$HTTP_GET_VARS[$k] = addslashes($v); 
+		if( is_array($HTTP_GET_VARS[$k]) )
+		{
+			while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
+			{
+				$HTTP_GET_VARS[$k][$k2] = addslashes($v2); 
+			}
+			@reset($HTTP_GET_VARS[$k]);
+		}
+		else
+		{
+			$HTTP_GET_VARS[$k] = addslashes($v); 
+		}
 	}
+	@reset($HTTP_GET_VARS); 
 
-	@reset($HTTP_POST_VARS); 
 	while( list($k, $v) = each($HTTP_POST_VARS) ) 
 	{
-		$HTTP_POST_VARS[$k] = addslashes($v); 
+		if( is_array($HTTP_POST_VARS[$k]) )
+		{
+			while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
+			{
+				$HTTP_POST_VARS[$k][$k2] = addslashes($v2); 
+			}
+			@reset($HTTP_POST_VARS[$k]);
+		}
+		else
+		{
+			$HTTP_POST_VARS[$k] = addslashes($v); 
+		}
 	}
+	@reset($HTTP_POST_VARS); 
 
-	@reset($HTTP_COOKIE_VARS); 
 	while( list($k, $v) = each($HTTP_COOKIE_VARS) ) 
 	{
-		$HTTP_COOKIE_VARS[$k] = addslashes($v); 
+		if( is_array($HTTP_COOKIE_VARS[$k]) )
+		{
+			while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
+			{
+				$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2); 
+			}
+			@reset($HTTP_COOKIE_VARS[$k]);
+		}
+		else
+		{
+			$HTTP_COOKIE_VARS[$k] = addslashes($v); 
+		}
 	}
+	@reset($HTTP_COOKIE_VARS); 
 }
 
 //
