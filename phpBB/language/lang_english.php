@@ -43,6 +43,7 @@ $l_preferences	= "Preferences";
 $l_welcometo    = "Welcome to";
 
 $l_all_times = "All times are";
+$l_hours = "hours";
 
 $l_anonymous	= "Anonymous";  // Post
 $l_guest	= "Guest"; // Whosonline
