@@ -1485,19 +1485,19 @@ function page_footer()
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('<br /><br />[ Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  ( ( $config['gzip_compress'] ) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
 
 		if ($auth->acl_get('a_'))
 		{
 			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . '&amp;explain=1">Explain</a>';
 		}
-		$debug_output .= ' ]';
 	}
 
 	$template->assign_vars(array(
 		'PHPBB_VERSION'	=> $config['version'],
-		'ADMIN_LINK' 	=> ($auth->acl_get('a_')) ? sprintf($user->lang['ACP'], '<a href="' . "adm/index.$phpEx?sid=" . $user->data['session_id'] . '">', '</a>') . '<br /><br />' : '',
-		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '')
+		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '', 
+
+		'U_ACP' => ($auth->acl_get('a_')) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
 	);
 
 	$template->display('body');
