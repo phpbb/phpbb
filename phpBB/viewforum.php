@@ -77,11 +77,10 @@ else
 // If the query doesn't return any rows this isn't a valid forum. Inform
 // the user.
 //
-if( !$total_rows = $db->sql_numrows($result) )
+if( !($forum_row = $db->sql_fetchrow($result)) )
 {
 	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
-$forum_row = $db->sql_fetchrow($result);
 
 //
 // Start session management
@@ -100,10 +99,15 @@ $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if( !$is_auth['auth_read'] || !$is_auth['auth_view'] )
 {
+	if ( !$userdata['session_logged_in'] )
+	{
+		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : "" );
+		header("Location: " . append_sid("posting.$phpEx?redirect=viewforum.$phpEx&$redirect", true));
+	}
 	//
 	// The user is not authed to read this forum ...
 	//
-	$message = sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
+	$message = ( !$is_auth['auth_view'] ) ? $lang['Forum_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
 
 	message_die(GENERAL_MESSAGE, $message);
 }

@@ -160,16 +160,15 @@ $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.top
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
 		$order_sql";
-if( !$result = $db->sql_query($sql) )
+if( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
 
-if( !$total_rows = $db->sql_numrows($result) )
+if( !($forum_row = $db->sql_fetchrow($result)) )
 {
-	message_die(GENERAL_MESSAGE,  'Topic_post_not_exist', "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
-$forum_row = $db->sql_fetchrow($result);
 
 $forum_id = $forum_row['forum_id'];
 
@@ -182,16 +181,6 @@ init_userprefs($userdata);
 // End session management
 //
 
-$forum_name = $forum_row['forum_name'];
-$topic_title = $forum_row['topic_title'];
-$topic_id = $forum_row['topic_id'];
-$topic_time = $forum_row['topic_time'];
-
-if(!empty($post_id))
-{
-	$start = floor(($forum_row['prev_posts'] - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
-}
-
 //
 // Start auth check
 //
@@ -200,16 +189,30 @@ $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 {
-	//
-	// The user is not authed to read this forum ...
-	//
-	$message = sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
+	if ( !$userdata['session_logged_in'] )
+	{
+		$redirect = ( isset($post_id) ) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id"; 
+		$redirect .= ( isset($start) ) ? "&start=$start" : "";
+		header("Location: " . append_sid("posting.$phpEx?redirect=viewtopic.$phpEx&$redirect", true));
+	}
+
+	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
 
 	message_die(GENERAL_MESSAGE, $message);
 }
 //
 // End auth check
 //
+
+$forum_name = $forum_row['forum_name'];
+$topic_title = $forum_row['topic_title'];
+$topic_id = $forum_row['topic_id'];
+$topic_time = $forum_row['topic_time'];
+
+if ( !empty($post_id) )
+{
+	$start = floor(($forum_row['prev_posts'] - 1) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+}
 
 //
 // Is user watching this thread? This could potentially
