@@ -659,25 +659,27 @@ function output_table_content($content)
 //
 function remove_remarks($sql)
 {
-	$i = 0;
+	$lines = explode("\n", $sql);
+	$linecount = count($lines);
+	$output = "";
 
-	while($i < strlen($sql))
+	for ($i = 0; $i < $linecount; $i++)
 	{
-		if( $sql[$i]	== "#" && ( $sql[$i-1] == "\n" || $i==0 ) )
+		if (($i != ($linecount - 1)) || (strlen($lines[$i]) > 0))
 		{
-			$j = 1;
-
-			while( $sql[$i + $j] != "\n" )
+			if ($lines[$i][0] != "#")
 			{
-				$j++;
+				$output .= $lines[$i] . "\n";
 			}
-			$sql = substr($sql,0,$i) . substr($sql,$i+$j);
+			else
+			{
+				$output .= "\n";
+			}
 		}
-		$i++;
 	}
-
-  return($sql);
-
+	
+	return $output;
+	
 }
 
 //
