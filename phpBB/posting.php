@@ -598,14 +598,17 @@ if (!empty($enable_icons))
 
 		foreach ($icons as $id => $data)
 		{
-			$template->assign_block_vars('topic_icon', array(
-				'ICON_ID'		=> $id,
-				'ICON_IMG'		=> $config['icons_path'] . '/' . $data['img'],
-				'ICON_WIDTH'	=> $data['width'],
-				'ICON_HEIGHT' 	=> $data['height'],
+			if ($data['display'])
+			{
+				$template->assign_block_vars('topic_icon', array(
+					'ICON_ID'		=> $id,
+					'ICON_IMG'		=> $config['icons_path'] . '/' . $data['img'],
+					'ICON_WIDTH'	=> $data['width'],
+					'ICON_HEIGHT' 	=> $data['height'],
 
-				'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
-			);
+					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
+				);
+			}
 		}
 	}
 }
