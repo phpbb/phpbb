@@ -15,7 +15,6 @@
 //
 // * Registration
 //    * Link to (additional?) registration conditions
-//    * Admin forced revalidation of given user/s from ACP
 
 // * Opening tab:
 //    * Last visit time
@@ -24,9 +23,6 @@
 //    * New PM counter
 //    * Unread PM counter
 //    * Link/s to MCP if applicable?
-
-// * Black and White lists
-//    * Mark posts/PM's of buddies different colour?
 
 // * PM system
 //    * See privmsg
@@ -278,7 +274,12 @@ switch ($mode)
 
 		define('IN_LOGIN', true);
 		login_box("ucp.$phpEx$SID&amp;mode=login");
-		redirect("index.$phpEx$SID");
+
+		$redirect = request_var('redirect', "index.$phpEx$SID");
+		meta_refresh(3, $redirect);
+
+		$message = $user->lang['LOGIN_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+		trigger_error($message);
 		break;
 
 	case 'logout':
@@ -287,13 +288,17 @@ switch ($mode)
 			$user->destroy();
 		}
 
-		redirect("index.$phpEx$SID");
+		$redirect = (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : "index.$phpEx$SID";
+		meta_refresh(3, $redirect);
+
+		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+		trigger_error($message);
 		break;
 }
 
 
 // Only registered users can go beyond this point
-if ($user->data['user_type'] == USER_INACTIVE || $user->data['user_type'] == USER_IGNORE)
+if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INACTIVE || $user->data['user_type'] == USER_IGNORE)
 {
 	redirect("index.$phpEx");
 }
@@ -305,6 +310,8 @@ obtain_word_list($censors);
 
 
 // Output listing of friends online
+$update_time = $config['load_online_time'] * 60;
+
 $sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_allow_viewonline) AS viewonline 
 	FROM ((' . ZEBRA_TABLE . ' z 
 	LEFT JOIN ' . SESSIONS_TABLE . ' s ON s.session_user_id = z.zebra_id), ' . USERS_TABLE . ' u)
@@ -314,7 +321,6 @@ $sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_tim
 	GROUP BY z.zebra_id';
 $result = $db->sql_query($sql);
 
-$update_time = $config['load_online_time'] * 60;
 while ($row = $db->sql_fetchrow($result))
 {
 	$which = (time() - $update_time < $row['online_time']) ? 'online' : 'offline';

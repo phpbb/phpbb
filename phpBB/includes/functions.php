@@ -938,10 +938,12 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 	$err = '';
 	if (isset($_POST['login']))
 	{
-		$autologin = (!empty($_POST['autologin'])) ? TRUE : FALSE;
+		$username	= request_var('username', '');
+		$password	= request_var('password', '');
+		$autologin	= (!empty($_POST['autologin'])) ? TRUE : FALSE;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 
-		if (($result = $auth->login($_POST['username'], $_POST['password'], $autologin, $viewonline)) === true)
+		if (($result = $auth->login($username, $password, $autologin, $viewonline)) === true)
 		{
 			// TODO
 			// Force change password ... plugin for EVENT_LOGIN in future
@@ -959,6 +961,8 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		// If we get an integer zero then we are inactive, else the username/password is wrong
 		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
 	}
+
+	$s_hidden_fields = (!empty($_SERVER['HTTP_REFERER'])) ? '<input type="hidden" name="redirect" value="' . htmlspecialchars($_SERVER['HTTP_REFERER']) . '" />' : '';
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err, 
