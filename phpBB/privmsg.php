@@ -653,45 +653,61 @@ else if( ( $delete && $mark_list ) || $delete_all )
 					break;
 			}
 
-			$deleteall_sql = "SELECT privmsgs_id
+			$sql = "SELECT privmsgs_id
 				FROM " . PRIVMSGS_TABLE . "
-				WHERE " . $delete_type;
-
-			if(!$del_list_status = $db->sql_query($deleteall_sql))
+				WHERE $delete_type";
+			if ( !($result = $db->sql_query($sql)) )
 			{
-				message_die(GENERAL_ERROR, "Could not obtain id list to delete all messages.", "", __LINE__, __FILE__, $deleteall_sql);
+				message_die(GENERAL_ERROR, "Could not obtain id list to delete all messages.", "", __LINE__, __FILE__, $sql);
 			}
 
-			$delete_list = $db->sql_fetchrowset($del_list_status);
-			for($i = 0; $i < count($delete_list); $i++)
+			while ( $row = $db->sql_fetchrow($result) )
 			{
-				$mark_list[] = $delete_list[$i]['privmsgs_id'];
+				$mark_list[] = $row['privmsgs_id'];
 			}
-			unset($delete_list);
+
 			unset($delete_type);
 		}
 
 		if ( count($mark_list) )
 		{
-			$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-				WHERE ";
-			$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-				WHERE ";
+			$delete_sql_id = implode(", ", $mark_list);
 
-			$delete_sql_id = "";
-			for($i = 0; $i < count($mark_list); $i++)
+			//
+			// Need to decrement the new message counter of recipient
+			//
+			if ( $folder == 'outbox' )
 			{
-				if( $delete_sql_id != "" )
+				$sql = "SELECT privmsgs_to_userid 
+					FROM " . PRIVMSGS_TABLE . " 
+					WHERE privmsgs_id IN ($delete_sql_id) 
+						AND privmsgs_from_userid = " . $userdata['user_id'] . " 
+						AND privmsgs_type = " . PRIVMSGS_NEW_MAIL;
+				if ( !($result = $db->sql_query($sql)) )
 				{
-					$delete_sql_id .= ", ";
+					message_die(GENERAL_ERROR, "Couldn't obtain user id list for outbox messages", "", __LINE__, __FILE__, $sql);
 				}
-				$delete_sql_id .= $mark_list[$i];
+
+				$update_pm_sql = "";
+				while( $row = $db->sql_fetchrow($result) )
+				{
+					$update_pm_sql .= ( ( $update_pm_sql != "" ) ? ", " : "" ) . $row['privmsgs_to_userid'];
+				}
+
+				$sql = "UPDATE " . USERS_TABLE . "  
+					SET user_new_privmsg = user_new_privmsg - 1 
+					WHERE user_id IN ($update_pm_sql)";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't update users new msg counters", "", __LINE__, __FILE__, $sql);
+				}
 			}
 
-			$delete_sql .= "privmsgs_id IN ($delete_sql_id)";
-			$delete_text_sql .= "privmsgs_text_id IN ($delete_sql_id)";
-
-			$delete_sql .= " AND ";
+			$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
+				WHERE privmsgs_text_id IN ($delete_sql_id)";
+			$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
+				WHERE privmsgs_id IN ($delete_sql_id)
+					AND ";
 
 			switch($folder)
 			{
@@ -716,16 +732,14 @@ else if( ( $delete && $mark_list ) || $delete_all )
 					break;
 			}
 
-			if(!$del_status = $db->sql_query($delete_sql, BEGIN_TRANSACTION))
+			if( !$db->sql_query($delete_sql, BEGIN_TRANSACTION) )
 			{
 				message_die(GENERAL_ERROR, "Could not delete private message info.", "", __LINE__, __FILE__, $delete_sql);
 			}
-			else
+
+			if( !$db->sql_query($delete_text_sql, END_TRANSACTION) )
 			{
-				if(!$del_text_status = $db->sql_query($delete_text_sql, END_TRANSACTION))
-				{
-					message_die(GENERAL_ERROR, "Could not delete private message text.", "", __LINE__, __FILE__, $delete_text_sql);
-				}
+				message_die(GENERAL_ERROR, "Could not delete private message text.", "", __LINE__, __FILE__, $delete_text_sql);
 			}
 		}
 	}
