@@ -294,7 +294,8 @@ class messenger
 		{
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, $this->msg, $err_msg, $headers, $log_session) : @$config['mail_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", $this->msg)), $headers);
+
+			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers) : @$config['mail_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
 
 			if (!$result)
 			{
@@ -498,7 +499,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, $msg, $err_msg, $headers, $log_session) : $config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", $msg)), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers) : $config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
