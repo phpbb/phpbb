@@ -82,6 +82,8 @@ $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where
 $lang['of'] = "of"; // See Page above
 $lang['Go'] = "Go";
 
+$lang['Private_messaging'] = "Send a Private Message";
+
 //
 // Global Header strings
 //
@@ -205,6 +207,12 @@ $lang['Message_sent'] = "Your message has been sent";
 
 $lang['to_return_inbox'] = " to return to your Inbox"; // This follows a "Click HERE ... "
 $lang['to_return_index'] = " to return to the Forum Index"; // This follows a "Click HERE ... "
+
+$lang['Re'] = "Re"; // Re as in 'Response to'
+
+$lang['Send_a_new_message'] = "Send a new private message";
+$lang['Send_a_reply'] = "Reply to a private message";
+$lang['Edit_message'] = "Edit private message";
 
 //
 // Profiles/Registration

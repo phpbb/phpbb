@@ -38,10 +38,10 @@ init_userprefs($userdata);
 // End session management
 //
 
-$folder = (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : ( (!empty($HTTP_POST_VARS['folder'])) ? $HTTP_POST_VARS['folder'] : "inbox" );
+$folder = (!empty($HTTP_POST_VARS['folder'])) ? $HTTP_POST_VARS['folder'] : ( (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : "inbox" );
 if(empty($HTTP_POST_VARS['cancel']))
 {
-	$mode = (!empty($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (!empty($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "" );
+	$mode = (!empty($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : ( (!empty($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "" );
 }
 else
 {
@@ -118,12 +118,12 @@ if($mode == "read")
 	{
 		error_die(SQL_QUERY, "Could not query private message post information.", __LINE__, __FILE__);
 	}
-	$privmsg = $db->sql_fetchrow($pm_status);
-
-	if(!$privmsg['privmsgs_id'])
+	if(!$db->sql_numrows($pm_status))
 	{
 		header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
 	}
+
+	$privmsg = $db->sql_fetchrow($pm_status);
 
 	if($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL && $folder == "inbox")
 	{
@@ -178,7 +178,6 @@ if($mode == "read")
 	$post_reply_mesg_url = ($folder == "inbox") ? "<a href=\"privmsg.$phpEx?mode=reply&" . POST_POST_URL . "=$privmsgs_id\"><img src=\"templates/PSO/images/reply.gif\" border=\"1\"></a>" : "";
 
 	$s_hidden_fields = "<input type=\"hidden\" name=\"mark[]\" value=\"$privmsgs_id\">";
-
 
 	include('includes/page_header.'.$phpEx);
 
@@ -246,7 +245,12 @@ if($mode == "read")
 
 	if($folder == "inbox")
 	{
-		$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['quote'] . "\" alt=\"$l_replyquote\" border=\"0\"></a>";
+		$quote_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=reply&quote=true&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['quote'] . "\" alt=\"\" border=\"0\"></a>";
+	}
+
+	if($folder == "outbox")
+	{
+		$edit_img = "<a href=\"" . append_sid("privmsg.$phpEx?folder=$folder&mode=edit&" . POST_POST_URL . "=" . $privmsgs_id) . "\"><img src=\"" . $images['edit'] . "\" alt=\"\" border=\"0\"></a>";
 	}
 
 	$post_subject = stripslashes($privmsg['privmsgs_subject']);
@@ -289,7 +293,8 @@ if($mode == "read")
 		"AIM_IMG" => $aim_img,
 		"MSN_IMG" => $msn_img,
 		"YIM_IMG" => $yim_img,
-		"QUOTE_IMG" => $quote_img,
+		"QUOTE_IMG" => $quote_img, 
+		"EDIT_IMG" => $edit_img, 
 
 		"L_FROM" => $lang['From'])
 	);
@@ -324,6 +329,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	$disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
 	$attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 	$preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
+	$submit = (isset($HTTP_POST_VARS['submit'])) ? TRUE : FALSE;
 
 	if($mode == "reply" || $mode == "edit")
 	{
@@ -331,10 +337,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		{
 			$privmsgs_id = $HTTP_GET_VARS[POST_POST_URL]; 
 		}
+		else if(!empty($HTTP_POST_VARS[POST_POST_URL]))
+		{
+			$privmsgs_id = $HTTP_POST_VARS[POST_POST_URL]; 
+		}
 		else
 		{
 			// Error out
-
 		}
 	}
 
@@ -363,7 +372,77 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		$to_username = "";
 	}
 
-	if($HTTP_POST_VARS['submit'] || $preview)
+	if($mode == "edit" && !$preview && !$submit)
+	{ 
+
+		$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, pm.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id 
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
+			WHERE pm.privmsgs_id = $privmsgs_id 
+				AND pmt.privmsgs_text_id = pm.privmsgs_id 
+				AND pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
+				AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
+				AND u.user_id = pm.privmsgs_to_userid";
+		if(!$pm_edit_status = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not obtain private message for editing.", __LINE__, __FILE__);
+		}
+		if(!$db->sql_numrows($pm_edit_status))
+		{
+			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+		}
+
+		$privmsg = $db->sql_fetchrow($pm_edit_status);
+
+		$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+
+		$subject = stripslashes($privmsg['privmsgs_subject']);
+		$message = stripslashes($privmsg['privmsgs_text']); 
+		$message = str_replace("[addsig]", "", $message); 
+		$message = str_replace(":$bbcode_uid", "", $message);
+
+		$to_username = stripslashes($privmsg['username']);
+		$to_userid = $privmsg['user_id'];
+
+	}
+	else if($mode == "reply" && !$preview && !$submit)
+	{
+
+		$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_bbcode_uid, pm.privmsgs_date, pmt.privmsgs_text, u.username, u.user_id 
+			FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u 
+			WHERE pm.privmsgs_id = $privmsgs_id 
+				AND pmt.privmsgs_text_id = pm.privmsgs_id 
+				AND pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
+				AND pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
+				AND u.user_id = pm.privmsgs_from_userid";
+		if(!$pm_reply_status = $db->sql_query($sql))
+		{
+			error_die(SQL_QUERY, "Could not obtain private message for editing.", __LINE__, __FILE__);
+		}
+		if(!$db->sql_numrows($pm_reply_status))
+		{
+			header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+		}
+		$privmsg = $db->sql_fetchrow($pm_reply_status);
+
+		$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+
+		$subject = $lang['Re'] . ":"  . stripslashes($privmsg['privmsgs_subject']);
+
+		$to_username = stripslashes($privmsg['username']);
+		$to_userid = $privmsg['user_id'];
+
+		if(isset($HTTP_GET_VARS['quote']))
+		{
+			$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['default_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
+
+			$message = stripslashes(str_replace("[addsig]", "", $privmsg['privmsgs_text'])); 
+			$message = str_replace(":$bbcode_uid", "", $message);
+			$message = "On " . $msg_date . " " . $to_username . " wrote:\n\n[quote]\n" . $message . "\n[/quote]";
+		}
+
+	}
+
+	if($submit || $preview)
 	{
 		//
 		// Flood control
@@ -390,8 +469,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		// End: Flood control
 		//
 
-		$subject = trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['subject'])));
-		if($mode == "post" && empty($subject))
+		$subject = (!empty($HTTP_POST_VARS['subject'])) ? $HTTP_POST_VARS['subject'] : "";
+		$subject = trim(strip_tags(htmlspecialchars($subject)));
+		$message = (!empty($HTTP_POST_VARS['message'])) ? $HTTP_POST_VARS['message'] : "";
+
+		if(empty($subject))
 		{
 			$error = TRUE;
 			if(isset($error_msg))
@@ -401,7 +483,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['Empty_subject'];
 		}
 
-		if(!empty($HTTP_POST_VARS['message']))
+		if(!empty($message))
 		{
 			if(!$error && !$preview)
 			{
@@ -409,10 +491,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				$bbcode_on = ($diable_bbcode) ? FALSE : TRUE;
 				$smile_on = ($disable_smilies) ? FALSE : TRUE;
 
-				$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $uid);
-				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
+				if(empty($bbcode_uid))
+				{
+					$bbcode_uid = make_bbcode_uid();
+				}
 
-				$uid = make_bbcode_uid();
+				$message = prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid);
+				$message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $message);
 
 				if($attach_sig && !empty($userdata['user_sig']))
 				{
@@ -436,7 +521,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			$error_msg .= $lang['Empty_msg'];
 		}
 
-		if(!empty($HTTP_POST_VARS['to_username']))
+		if(!empty($to_username))
 		{
 			$sql = "SELECT user_id  
 				FROM " . USERS_TABLE . " 
@@ -459,27 +544,47 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				$error_msg .= "<br />";
 			}
 			$error_msg .= $lang['No_to_user'];
-		}		
+		}
 
-		if($HTTP_POST_VARS['submit'] && !$preview && $mode == "post")
+		if(!$preview)
 		{
 			$msg_time = get_gmt_ts();
 
-			$sql = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
-				VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", $to_userid, $msg_time, '$user_ip', '$uid')";
-			if(!$pm_sent_status = $db->sql_query($sql))
+			if($mode != "edit")
 			{
-				error_die(SQL_QUERY, "Could not insert private message sent info.", __LINE__, __FILE__);
+				$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
+					VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", $to_userid, $msg_time, '$user_ip', '" . $bbcode_uid . "')";
+			}
+			else
+			{
+				$sql_info = "UPDATE " . PRIVMSGS_TABLE . " 
+					SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = $to_userid, privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_bbcode_uid = '$bbcode_uid' 
+					WHERE privmsgs_id = $privmsgs_id";	
+			}
+
+			if(!$pm_sent_status = $db->sql_query($sql_info))
+			{
+				error_die(SQL_QUERY, "Could not insert/update private message sent info.", __LINE__, __FILE__);
 			}
 			else
 			{
 				$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
-				$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
-					VALUES ($privmsg_sent_id, '$message')";
+				if($mode != "edit")
+				{
+					$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
+						VALUES ($privmsg_sent_id, '$message')";
+				}
+				else
+				{
+					$sql = "UPDATE " . PRIVMSGS_TEXT_TABLE . " 
+						SET privmsgs_text = '$message' 
+						WHERE privmsgs_text_id = $privmsgs_id";
+				}
+
 				if(!$pm_sent_text_status = $db->sql_query($sql))
 				{
-					error_die(SQL_QUERY, "Could not insert private message sent text.", __LINE__, __FILE__);
+					error_die(SQL_QUERY, "Could not insert/update private message sent text.", __LINE__, __FILE__);
 				}
 
 				include('includes/page_header.'.$phpEx);
@@ -497,6 +602,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				include('includes/page_tail.'.$phpEx);
 			}
 		}
+		
 	}
 
 	//
@@ -521,17 +627,30 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 
-
-
 	include('includes/page_header.'.$phpEx);
 
 	if($preview && !$error)
 	{
+		if(empty($bbcode_uid))
+		{
+			$bbcode_uid = make_bbcode_uid();
+		}
+
 		$preview_message = $message;
-		$uid = make_bbcode_uid();
-		$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $uid);
-		$preview_message = bbencode_second_pass($preview_message, $uid);
+		$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $bbcode_uid);
+		$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 		$preview_message = make_clickable($preview_message);
+
+		$s_hidden_fields = "<input type=\"hidden\" name=\"folder\" value=\"$folder\">";
+		$s_hidden_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\">";
+		if(isset($HTTP_GET_VARS['quote']))
+		{
+			$s_hidden_fields .= "<input type=\"hidden\" name=\"quote\" value=\"true\">";
+		}
+		if(isset($privmsg_id))
+		{
+			$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$privmsgs_id\">";
+		}
 
 		$template->set_filenames(array(
 			"preview" => "posting_preview.tpl")
@@ -540,9 +659,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			"TOPIC_TITLE" => $subject, 
 			"POST_SUBJECT" => $subject, 
 			"ROW_COLOR" => "#" . $theme['td_color1'],
-			"POSTER_NAME" => $username,
+			"POSTER_NAME" => $to_username,
 			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['default_timezone']),
 			"MESSAGE" => stripslashes(nl2br($preview_message)),
+
+			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
 		
 			"L_PREVIEW" => $lang['Preview'],
 			"L_POSTED" => $lang['Posted'])
@@ -613,22 +734,27 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 	if($mode == 'post')
 	{
-		$post_a = $lang['Post_a_new_topic'];
+		$post_a = $lang['Send_a_new_message'];
 	}
 	else if($mode == 'reply')
 	{
-		$post_a = $lang['Post_a_reply'];
+		$post_a = $lang['Send_a_reply'];
 	}
-	else if($mode == 'editpost')
+	else if($mode == 'edit')
 	{
-		$post_a = $lang['Edit_Post'];
+		$post_a = $lang['Edit_message'];
 	}
 
 	$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
-	$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">'.$message.'</textarea>';
+	$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">' . $message . '</textarea>';
 
-	$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"folder\" value=\"$folder\">";
-
+	$s_hidden_fields = "<input type=\"hidden\" name=\"folder\" value=\"$folder\">";
+	$s_hidden_fields .= "<input type=\"hidden\" name=\"mode\" value=\"$mode\">";
+	if($mode == "edit")
+	{
+		$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$privmsgs_id\">";
+	}
+		
 	$template->assign_vars(array(
 		"S_USERNAME_INPUT" => "<input type=\"text\" name=\"to_username\" value=\"$to_username\">", 
 		"SUBJECT_INPUT" => $subject_input,
@@ -637,8 +763,6 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"HTML_TOGGLE" => $html_toggle,
 		"SMILE_TOGGLE" => $smile_toggle,
 		"SIG_TOGGLE" => $sig_toggle,
-		"ANNOUNCE_TOGGLE" => $annouce_toggle,
-		"STICKY_TOGGLE" => $sticky_toggle,
 		"NOTIFY_TOGGLE" => $notify_toggle,
 		"BBCODE_TOGGLE" => $bbcode_toggle,
 		"BBCODE_STATUS" => $bbcode_status,
@@ -652,7 +776,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"L_POST_A" => $post_a,
 
 		"S_POST_ACTION" => append_sid("privmsg.$phpEx"),
-		"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
+		"S_HIDDEN_FORM_FIELDS" => $s_hidden_fields)
 	);
 
 	$template->pparse("body");
@@ -684,7 +808,7 @@ else if( ( isset($HTTP_POST_VARS['delete']) && !empty($HTTP_POST_VARS['mark']) )
 			if($i < count($delete_ary) -1)
 			{
 				$delete_sql .= "OR ";
-				$delete_text_sql . "OR ";
+				$delete_text_sql .= "OR ";
 			}
 		}
 
