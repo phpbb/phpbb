@@ -1650,7 +1650,7 @@ if( !empty($next) )
 				{
 					print "<br>Removing common words (words that appear in more than $common_percent of the posts)<br>\n";
 					flush();
-					print "Removed " . remove_common_global($common_percent, 1) . " words that where too common.<br>";
+					print "Removed " . remove_common($common_percent, 1) . " words that where too common.<br>";
 				}
 				
 			}
