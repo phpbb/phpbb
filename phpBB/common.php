@@ -294,9 +294,6 @@ if (method_exists($cache, 'tidy') && time() - $config['cache_gc'] > $config['cac
 	set_config('cache_last_gc', time(), TRUE);
 }
 
-// Adjust storage path's
-$config['upload_dir'] = ($config['upload_dir']{0} == '/' || ($config['upload_dir']{0} != '/' && $config['upload_dir']{1} == ':')) ? $config['upload_dir'] : $phpbb_root_path . $config['upload_dir'];
-
 // Handle email/cron queue.
 if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
 {

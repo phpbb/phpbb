@@ -677,23 +677,13 @@ function phpbb_unlink($filename, $mode = 'file')
 {
 	global $config, $user, $phpbb_root_path;
 
-	$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumb_' . $filename : $config['upload_dir'] . '/' . $filename;
+	$filename = ($mode == 'thumbnail') ? $phpbb_root_path . $config['upload_dir'] . '/thumb_' . basename($filename) : $phpbb_root_path . $config['upload_dir'] . '/' . basename($filename);
 	$deleted = @unlink($filename);
 
 	if (file_exists($filename))
 	{
 		$filesys = str_replace('/','\\', $filename);
 		$deleted = @system("del $filesys");
-
-		if (file_exists($filename)) 
-		{
-			$filename = realpath($filename);
-			@chmod($filename, 0777);
-			if (!($deleted = @unlink($filename)))
-			{
-				$deleted = @system("del $filename");
-			}
-		}
 	}
 
 	return $deleted;

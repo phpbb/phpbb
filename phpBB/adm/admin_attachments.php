@@ -361,14 +361,14 @@ if ($submit && $mode == 'ext_groups')
 
 if ($submit && $mode == 'orphan')
 {
-	$delete_files = array_keys(request_var('delete', ''));
+	$delete_files = (isset($_REQUEST['delete'])) ? array_keys(request_var('delete', '')) : array();
 	$add_files = (isset($_REQUEST['add'])) ? array_keys(request_var('add', '')) : array();
 	$post_ids = request_var('post_id', 0);
 
 	foreach ($delete_files as $delete)
 	{
-		phpbb_unlink($config['upload_dir'] . '/' . $delete);
-		phpbb_unlink($config['upload_dir'] . '/thumb_' . $delete);
+		phpbb_unlink($delete);
+		phpbb_unlink($delete, 'thumbnail');
 	}
 
 	if (sizeof($delete_files))
@@ -1186,10 +1186,10 @@ if ($mode == 'orphan')
 {
 	$attach_filelist = array();
 
-	$dir = @opendir($config['upload_dir']);
+	$dir = @opendir($phpbb_root_path . $config['upload_dir']);
 	while ($file = @readdir($dir))
 	{
-		if (is_file($config['upload_dir'] . '/' . $file) && filesize($config['upload_dir'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
+		if (is_file($phpbb_root_path . $config['upload_dir'] . '/' . $file) && filesize($phpbb_root_path . $config['upload_dir'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
 		{
 			$attach_filelist[$file] = $file;
 		}
@@ -1241,12 +1241,12 @@ function marklist(match, name, status)
 	foreach ($attach_filelist as $file)
 	{
 		$row_class = (++$i % 2 == 0) ? 'row2' : 'row1';
-		$filesize = @filesize($config['upload_dir'] . '/' . $file);
+		$filesize = @filesize($phpbb_root_path . $config['upload_dir'] . '/' . $file);
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 ?>
 		<tr>
-			<td class="<?php echo $row_class; ?>"><a href="<?php echo $config['upload_dir'] . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
+			<td class="<?php echo $row_class; ?>"><a href="<?php echo $phpbb_root_path . $config['upload_dir'] . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
 			<td class="<?php echo $row_class; ?>"><?php echo $filesize . ' ' . $size_lang; ?></td>
 			<td class="<?php echo $row_class; ?>"><b class="gen">ID: </b><input type="text" name="post_id[<?php echo $file; ?>]" class="post" size="7" maxlength="10" value="<?php echo (!empty($post_ids[$file])) ? $post_ids[$file] : ''; ?>" /></td>
 			<td class="<?php echo $row_class; ?>"><input type="checkbox" name="add[<?php echo $file; ?>]" /></td>
@@ -1400,14 +1400,14 @@ function download_select($select_name, $group_id = false)
 // Upload already uploaded file... huh? are you kidding?
 function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 {
-	global $message_parser, $db, $user;
+	global $message_parser, $db, $user, $phpbb_root_path;
 
 	$message_parser->attachment_data = array();
 
 	$message_parser->filename_data['filecomment'] = '';
-	$message_parser->filename_data['filename'] = $upload_dir . '/' . $filename;
+	$message_parser->filename_data['filename'] = $phpbb_root_path . $upload_dir . '/' . basename($filename);
 
-	$filedata = upload_attachment($forum_id, $filename, true, $upload_dir . '/' . $filename);
+	$filedata = upload_attachment($forum_id, $filename, true, $phpbb_root_path . $upload_dir . '/' . basename($filename));
 
 	if ($filedata['post_attach'] && !sizeof($filedata['error']))
 	{
@@ -1491,35 +1491,31 @@ function test_upload(&$error, $upload_dir, $create_directory = false)
 {
 	global $user, $phpbb_root_path;
 
-	// Adjust the Upload Directory. Relative or absolute, this is the question here.
-	$real_upload_dir = $upload_dir;
-	$upload_dir = ($upload_dir{0} == '/' || ($upload_dir{0} != '/' && $upload_dir{1} == ':')) ? $upload_dir : $phpbb_root_path . $upload_dir;
-
 	// Does the target directory exist, is it a directory and writeable.
 	if ($create_directory)
 	{
-		if (!file_exists($upload_dir))
+		if (!file_exists($phpbb_root_path . $upload_dir))
 		{
-			@mkdir($upload_dir, 0777);
-			@chmod($upload_dir, 0777);
+			@mkdir($phpbb_root_path . $upload_dir, 0777);
+			@chmod($phpbb_root_path . $upload_dir, 0777);
 		}
 	}
 
-	if (!file_exists($upload_dir))
+	if (!file_exists($phpbb_root_path . $upload_dir))
 	{
-		$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $real_upload_dir);
+		$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $upload_dir);
 		return;
 	}
 	
-	if (!is_dir($upload_dir))
+	if (!is_dir($phpbb_root_path . $upload_dir))
 	{
-		$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $real_upload_dir);
+		$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $upload_dir);
 		return;
 	}
 	
-	if (!is_writable($upload_dir))
+	if (!is_writable($phpbb_root_path . $upload_dir))
 	{
-		$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $real_upload_dir);
+		$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 		return;
 	}
 }

@@ -910,7 +910,7 @@ if (!sizeof($error) && $preview)
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 		$attachment_data = $message_parser->attachment_data;
-		$unset_attachments = parse_inline_attachments($preview_message, $attachment_data, $update_count, $forum_id);
+		$unset_attachments = parse_inline_attachments($preview_message, $attachment_data, $update_count, $forum_id, true);
 
 		foreach ($unset_attachments as $index)
 		{
@@ -1667,8 +1667,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'topic_id'			=> $data['topic_id'],
 					'in_message'		=> 0,
 					'poster_id'			=> $poster_id,
-					'physical_filename'	=> $attach_row['physical_filename'],
-					'real_filename'		=> $attach_row['real_filename'],
+					'physical_filename'	=> basename($attach_row['physical_filename']),
+					'real_filename'		=> basename($attach_row['real_filename']),
 					'comment'			=> $attach_row['comment'],
 					'extension'			=> $attach_row['extension'],
 					'mimetype'			=> $attach_row['mimetype'],

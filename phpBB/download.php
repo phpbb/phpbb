@@ -36,7 +36,7 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$sql = 'SELECT *
+$sql = 'SELECT attach_id, in_message, post_msg_id, extension
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
@@ -100,6 +100,20 @@ if (!download_allowed())
 
 $download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 
+// Fetching filename here to prevent sniffing of filename
+$sql = 'SELECT attach_id, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype
+	FROM ' . ATTACHMENTS_TABLE . "
+	WHERE attach_id = $download_id";
+$result = $db->sql_query_limit($sql, 1);
+
+if (!($attachment = $db->sql_fetchrow($result)))
+{
+	trigger_error('ERROR_NO_ATTACHMENT');
+}
+$db->sql_freeresult($result);
+
+$attachment['physical_filename'] = basename($attachment['physical_filename']);
+
 if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
@@ -116,12 +130,12 @@ else
 // Determine the 'presenting'-method
 if ($download_mode == PHYSICAL_LINK)
 {
-	if (!@is_dir($config['upload_dir']))
+	if (!@is_dir($phpbb_root_path . $config['upload_dir']))
 	{
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 	}
 
-	redirect($config['upload_dir'] . '/' . $attachment['physical_filename']);
+	redirect($phpbb_root_path . $config['upload_dir'] . '/' . $attachment['physical_filename']);
 }
 else
 {
@@ -136,9 +150,9 @@ else
 
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $_SERVER, $HTTP_USER_AGENT, $HTTP_SERVER_VARS, $user, $db, $config;
+	global $user, $db, $config, $phpbb_root_path;
 
-	$filename = $upload_dir . '/' . $attachment['physical_filename'];
+	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
 	if (!@file_exists($filename))
 	{
@@ -147,7 +161,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Determine the Browser the User is using, because of some nasty incompatibilities.
 	// borrowed from phpMyAdmin. :)
-	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : ((!empty($HTTP_SERVER_VARS['HTTP_USER_AGENT'])) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : '');
+	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 	if (ereg('Opera(/| )([0-9].[0-9]{1,2})', $user_agent, $log_version))
 	{
@@ -192,8 +206,12 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		$attachment['mimetype'] = ($browser_agent == 'ie' || $browser_agent == 'opera') ? 'application/octetstream' : 'application/octet-stream';
 	}
 
+	if ($config['gzip_compress'])
+	{
+		@ob_end_clean();
+	}
+	
 	// Now the tricky part... let's dance
-	// TODO: needs a little bit more testing... seems to break on some configurations (incomplete files)
 	header('Pragma: public');
 //	header('Content-Transfer-Encoding: none');
 

@@ -535,8 +535,8 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	{
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $config['upload_dir'] . '/' . $attachment['physical_filename'];
-		$thumbnail_filename = $config['upload_dir'] . '/thumb_' . $attachment['physical_filename'];
+		$filename = $phpbb_root_path . $config['upload_dir'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_dir'] . '/thumb_' . basename($attachment['physical_filename']);
 
 		$upload_image = '';
 
@@ -554,7 +554,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$display_name = $attachment['real_filename']; 
+		$display_name = basename($attachment['real_filename']); 
 		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
 
 		$denied = false;

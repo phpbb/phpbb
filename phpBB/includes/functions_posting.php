@@ -133,7 +133,7 @@ function update_last_post_information($type, $id)
 // Upload Attachment - filedata is generated here
 function upload_attachment($forum_id, $filename, $local = false, $local_storage = '', $is_message = false)
 {
-	global $auth, $user, $config, $db;
+	global $auth, $user, $config, $db, $phpbb_root_path;
 
 	$filedata = array();
 	$filedata['error'] = array();
@@ -144,7 +144,7 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 		return $filedata;
 	}
 
-	$r_file = $filename;
+	$r_file = trim(basename($filename));
 	$file = (!$local) ? $_FILES['fileupload']['tmp_name'] : $local_storage;
 	$filedata['mimetype'] = (!$local) ? $_FILES['fileupload']['type'] : 'application/octet-stream';
 		
@@ -186,56 +186,6 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 		return $filedata;
 	}
 
-	// Check Image Size, if it is an image
-	if (!$auth->acl_gets('m_', 'a_') && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
-	{
-		list($width, $height) = getimagesize($file);
-
-		if ($width != 0 && $height != 0 && $config['img_max_width'] && $config['img_max_height'])
-		{
-			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
-			{
-				$filedata['error'][] = sprintf($user->lang['ERROR_IMAGESIZE'], $config['img_max_width'], $config['img_max_height']);
-				$filedata['post_attach'] = false;
-				return $filedata;
-			}
-		}
-	}
-
-	// check Filesize 
-	if ($allowed_filesize && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
-	{
-		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-
-		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
-			
-		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
-		$filedata['post_attach'] = false;
-		return $filedata;
-	}
-
-	// Check our complete quota
-	if ($config['attachment_quota'])
-	{
-		if ($config['upload_dir_size'] + $filedata['filesize'] > $config['attachment_quota'])
-		{
-			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = false;
-			return $filedata;
-		}
-	}
-
-	// TODO - Check Free Disk Space - need testing under windows
-	if ($free_space = disk_free_space($config['upload_dir']))
-	{
-		if ($free_space <= $filedata['filesize'])
-		{
-			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = false;
-			return $filedata;
-		}
-	}
-
 	$filedata['thumbnail'] = 0;
 				
 	// Prepare Values
@@ -244,10 +194,10 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 
 	$filedata['destination_filename'] = strtolower($filedata['filename']);
 	$filedata['destination_filename'] = $user->data['user_id'] . '_' . $filedata['filetime'] . '.' . $filedata['extension'];
-				
+
 	$filedata['filename'] = str_replace("'", "\'", $filedata['filename']);
-			
-	// Do we have to create a thumbnail ?
+
+	// Do we have to create a thumbnail?
 	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail'])
 	{
 		$filedata['thumbnail'] = 1;
@@ -264,11 +214,87 @@ function upload_attachment($forum_id, $filename, $local = false, $local_storage 
 	{
 		$filedata['error'][] = $result;
 		$filedata['post_attach'] = false;
+
+		return $filedata;
 	}
+
+	$file = (!$local) ? $phpbb_root_path . $config['upload_dir'] . '/' . $filedata['destination_filename'] : $local_storage;
+
+	if (!$filedata['filesize'])
+	{
+		$filedata['filesize'] = @filesize($file);
+	}
+
+	// Check Image Size, if it is an image
+	if (!$auth->acl_gets('m_', 'a_') && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
+	{
+		list($width, $height) = getimagesize($file);
+
+		if ($width != 0 && $height != 0 && $config['img_max_width'] && $config['img_max_height'])
+		{
+			if ($width > $config['img_max_width'] || $height > $config['img_max_height'])
+			{
+				$filedata['error'][] = sprintf($user->lang['ERROR_IMAGESIZE'], $config['img_max_width'], $config['img_max_height']);
+				$filedata['post_attach'] = false;
+	
+				phpbb_unlink($filedata['destination_filename']);
+				phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+				
+				return $filedata;
+			}
+		}
+	}
+
+	// check Filesize 
+	if ($allowed_filesize && $filedata['filesize'] > $allowed_filesize && !$auth->acl_gets('m_', 'a_'))
+	{
+		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+
+		$allowed_filesize = ($allowed_filesize >= 1048576) ? round($allowed_filesize / 1048576 * 100) / 100 : (($allowed_filesize >= 1024) ? round($allowed_filesize / 1024 * 100) / 100 : $allowed_filesize);
+			
+		$filedata['error'][] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
+		$filedata['post_attach'] = false;
+
+		phpbb_unlink($filedata['destination_filename']);
+		phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+
+		return $filedata;
+	}
+
+	// Check our complete quota
+	if ($config['attachment_quota'])
+	{
+		if ($config['upload_dir_size'] + $filedata['filesize'] > $config['attachment_quota'])
+		{
+			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			$filedata['post_attach'] = false;
+
+			phpbb_unlink($filedata['destination_filename']);
+			phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+
+			return $filedata;
+		}
+	}
+
+	// TODO - Check Free Disk Space - need testing under windows
+	if ($free_space = disk_free_space($phpbb_root_path . $config['upload_dir']))
+	{
+		if ($free_space <= $filedata['filesize'])
+		{
+			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			$filedata['post_attach'] = false;
+
+			phpbb_unlink($filedata['destination_filename']);
+			phpbb_unlink($filedata['destination_filename'], 'thumbnail');
+			
+			return $filedata;
+		}
+	}
+
 	return $filedata;
 }
 
-// Move/Upload File - could be used for Avatars too ?
+// Move/Upload File - could be used for Avatars too?
 function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 {
 	global $user, $config, $phpbb_root_path;
@@ -279,41 +305,41 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	switch ($upload_mode)
 	{
 		case 'copy':
-			if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
 			{
-				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+				if (!@move_uploaded_file($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
-			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
 			break;
 
 		case 'move':
-			if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			if (!@move_uploaded_file($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
 			{ 
-				if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+				if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename)) 
 				{
-					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
+					return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
 				}
 			} 
-			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
 			break;
 
 		case 'local':
-			if (!@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename))
+			if (!@copy($source_filename, $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename))
 			{
-				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $config['upload_dir'] . '/' . $destination_filename);
+				return sprintf($user->lang['GENERAL_UPLOAD_ERROR'], $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename);
 			}
-			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			@chmod($phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename, 0666);
 			@unlink($source_filename);
 			break;
 	}
 
 	if ($filedata['thumbnail'])
 	{
-		$source = $config['upload_dir'] . '/' . $destination_filename;
-		$destination = $config['upload_dir'] . '/thumb_' . $destination_filename;
+		$source = $phpbb_root_path . $config['upload_dir'] . '/' . $destination_filename;
+		$destination = $phpbb_root_path . $config['upload_dir'] . '/thumb_' . $destination_filename;
 
 		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
 		{
@@ -647,18 +673,18 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 		foreach ($attachment_data as $attach_row)
 		{
 			$hidden = '';
-			$attach_row['real_filename'] = stripslashes($attach_row['real_filename']);
+			$attach_row['real_filename'] = stripslashes(basename($attach_row['real_filename']));
 
 			foreach ($attach_row as $key => $value)
 			{
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 			
-			$download_link = (!$attach_row['attach_id']) ? $config['upload_dir'] . '/' . $attach_row['physical_filename'] : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
+			$download_link = (!$attach_row['attach_id']) ? $phpbb_root_path . $config['upload_dir'] . '/' . basename($attach_row['physical_filename']) : $phpbb_root_path . "download.$phpEx$SID&id=" . intval($attach_row['attach_id']);
 				
 			$template->assign_block_vars('attach_row', array(
-				'FILENAME'			=> $attach_row['real_filename'],
-				'ATTACH_FILENAME'	=> $attach_row['physical_filename'],
+				'FILENAME'			=> basename($attach_row['real_filename']),
+				'ATTACH_FILENAME'	=> basename($attach_row['physical_filename']),
 				'FILE_COMMENT'		=> $attach_row['comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'ASSOC_INDEX'		=> $count,

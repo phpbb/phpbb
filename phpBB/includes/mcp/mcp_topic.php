@@ -358,6 +358,12 @@ function split_topic($mode, $topic_id, $to_forum_id, $subject)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
+		// Change topic title of first post
+		$sql = 'UPDATE ' . POSTS_TABLE . " 
+			SET post_subject = '" . $db->sql_escape($subject) . "'
+			WHERE post_id = {$post_id_list[0]}";
+		$db->sql_query($sql);
+
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Link back to both topics
