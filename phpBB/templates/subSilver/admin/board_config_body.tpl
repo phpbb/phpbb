@@ -9,7 +9,7 @@
 	</tr>
 	<tr>
 		<td class="row1">{L_SERVER_NAME}<br /><span class="gensmall">{L_SERVER_NAME_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" maxlength="255" size="40" name="server_domain" value="{SERVER_NAME}" /></td>
+		<td class="row2"><input type="text" maxlength="255" size="40" name="server_name" value="{SERVER_NAME}" /></td>
 	</tr>
 	<tr>
 		<td class="row1">{L_SERVER_PORT}<br /><span class="gensmall">{L_SERVER_PORT_EXPLAIN}</span></td>
