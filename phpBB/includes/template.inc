@@ -46,26 +46,26 @@ if (!isset($_tpldata))
 class Template {
   var $classname = "Template";
 
-  // Hash of filenames for each template handle.
-  var $files = array();
+	// Hash of filenames for each template handle.
+	var $files = array();
 
-  // Root template directory.
-  var $root = "";
+	// Root template directory.
+	var $root = "";
   
-  // this will hash handle names to the compiled code for that handle.
-  var $compiled_code = array();
+	// this will hash handle names to the compiled code for that handle.
+	var $compiled_code = array();
   
-  // This will hold the uncompiled code for that handle.
-  var $uncompiled_code = array();
+	// This will hold the uncompiled code for that handle.
+	var $uncompiled_code = array();
   
-  /**
-   * Constructor. Simply sets the root dir.
-   * 
-   */
-  function Template($root = ".") 
-  {
-    $this->set_rootdir($root);
-  }
+	/**
+	 * Constructor. Simply sets the root dir.
+	 * 
+	 */
+	function Template($root = ".") 
+	{
+		$this->set_rootdir($root);
+	}
 
 	/**
 	 * Destroys this template object. Should be called when you're done with it, in order
@@ -77,159 +77,159 @@ class Template {
 		$_tpldata = array();
 	}
 
-  /**
-   * Sets the template root directory for this Template object.
-   */  
-  function set_rootdir($dir) 
-  {
-    if (!is_dir($dir)) 
-    {
-      return false;
-    }
-    
-    $this->root = $dir;
-    return true;
-  }
+	/**
+	 * Sets the template root directory for this Template object.
+	 */  
+	function set_rootdir($dir) 
+	{
+		if (!is_dir($dir)) 
+		{
+			return false;
+		}
+		
+		$this->root = $dir;
+		return true;
+	}
 
-  /** 
-   * Sets the template filenames for handles. $filename_array
-   * should be a hash of handle => filename pairs.
-   */
-  function set_filenames($filename_array) 
-  {
-  	if (!is_array($filename_array))
-  	{
-  		return false;	
-  	}
-  	
+	/** 
+	 * Sets the template filenames for handles. $filename_array
+	 * should be a hash of handle => filename pairs.
+	 */
+	function set_filenames($filename_array) 
+	{
+		if (!is_array($filename_array))
+		{
+			return false;	
+		}
+	
 		reset($filename_array);
 		while(list($handle, $filename) = each($filename_array)) 
 		{
-		  $this->files[$handle] = $this->make_filename($filename);
+			$this->files[$handle] = $this->make_filename($filename);
 		}
 		
 		return true;
-  }
+	}
 
-  
-  /**
-   * Load the file for the handle, compile the file,
-   * and run the compiled code. This will print out
-   * the results of executing the template.
-   */
-  function pparse($handle)
-  {
-  	global $_tpldata;
-  	
-  	if (!$this->loadfile($handle))
-  	{
-  		die("Template->pparse(): Couldn't load template file for handle $handle");	
-  	}
-  	
-  	// actually compile the template now.
-  	if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle]))
-  	{
-  		// Actually compile the code now.
-    	$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
-  	}
-  	
-  	// Run the compiled code.
-  	eval($this->compiled_code[$handle]);
-
-		return true;
-  }
-  
-  /**
-   * Inserts the uncompiled code for $handle as the
-   * value of $varname in the root-level. This can be used
-   * to effectively include a template in the middle of another 
-   * template.
-   * Note that all desired assignments to the variables in $handle should be done
-   * BEFORE calling this function.
-   */
-  function assign_var_from_handle($varname, $handle)
-  {
-  	global $_tpldata;
-  	if (!$this->loadfile($handle))
-  	{
-  		die("Template->assign_var_from_handle(): Couldn't load template file for handle $handle");	
-  	}
-  	
-  	// Compile it, with the "no echo statements" option on.
-  	$code = $this->compile($this->uncompiled_code[$handle], true);
-  	// turn it into a variable assignment.
-  	$code = '$_str = \'' . $code . '\';';
-  	
-  	// evaluate the variable assignment.
-  	eval($code);
-  	
-  	// assign the value of the generated variable to the given varname.
-  	$this->assign_var($varname, $_str);
-  	
-  	return true;
-  }
-  
-  /**
-   * Block-level variable assignment. Adds a new block iteration with the given
-   * variable assignments. Note that this should only be called once per block 
-   * iteration.
-   */
-  function assign_block_vars($blockname, $vararray)
-  {
-  	global $_tpldata;
-  	
-  	if (strstr($blockname, '.'))
-  	{
-  		// Nested block.	
-  		$blocks = explode('.', $blockname);
-  		$blockcount = sizeof($blocks) - 1;
-  		$str = '$_tpldata';
-  		for ($i = 0; $i < $blockcount; $i++)
-  		{
-  			$str .= '[\'' . $blocks[$i] . '.\']';
-  			eval('$lastiteration = sizeof(' . $str . ') - 1;');
-  			$str .= '[' . $lastiteration . ']';
-  		}
-  		// Now we add the block that we're actually assigning to.
-  		// We're adding a new iteration to this block with the given
-  		// variable assignments.
-  		$str .= '[\'' . $blocks[$blockcount] . '.\'][] = $vararray;';
-  		
-  		// Now we evaluate this assignment we've built up.
-  		eval($str);
-  	}
-  	else
-  	{
-  		// Top-level block.
-  		// Add a new iteration to this block with the variable assignments
-  		// we were given.
-  		$_tpldata[$blockname . '.'][] = $vararray;
-  	}
-  	
-  	return true;
-  }
-  
-  /**
-   * Root-level variable assignment. Adds to current assignments, overriding
-   * any existing variable assignment with the same name.
-   */
-  function assign_vars($vararray)
-  {
-  	global $_tpldata;
-  	
-  	reset ($vararray);
-  	while (list($key, $val) = each($vararray))
-  	{
-  		$_tpldata['.'][0][$key] = $val;	
-  	}
-  	
-  	return true;
-  }
   
 	/**
-   * Root-level variable assignment. Adds to current assignments, overriding
-   * any existing variable assignment with the same name.
-   */
+	 * Load the file for the handle, compile the file,
+	 * and run the compiled code. This will print out
+	 * the results of executing the template.
+	 */
+	function pparse($handle)
+	{
+		global $_tpldata;
+  	
+		if (!$this->loadfile($handle))
+		{
+			die("Template->pparse(): Couldn't load template file for handle $handle");	
+		}
+  	
+		// actually compile the template now.
+		if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle]))
+		{
+			// Actually compile the code now.
+			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
+		}
+  	
+		// Run the compiled code.
+		eval($this->compiled_code[$handle]);
+
+		return true;
+	}
+  
+	/**
+	 * Inserts the uncompiled code for $handle as the
+	 * value of $varname in the root-level. This can be used
+	 * to effectively include a template in the middle of another 
+	 * template.
+	 * Note that all desired assignments to the variables in $handle should be done
+	 * BEFORE calling this function.
+	 */
+	function assign_var_from_handle($varname, $handle)
+	{
+		global $_tpldata;
+		if (!$this->loadfile($handle))
+		{
+			die("Template->assign_var_from_handle(): Couldn't load template file for handle $handle");	
+		}
+		
+		// Compile it, with the "no echo statements" option on.
+		$code = $this->compile($this->uncompiled_code[$handle], true);
+		// turn it into a variable assignment.
+		$code = '$_str = \'' . $code . '\';';
+  	
+		// evaluate the variable assignment.
+		eval($code);
+  	
+		// assign the value of the generated variable to the given varname.
+		$this->assign_var($varname, $_str);
+  	
+		return true;
+	}
+  
+	/**
+	 * Block-level variable assignment. Adds a new block iteration with the given
+	 * variable assignments. Note that this should only be called once per block 
+	 * iteration.
+	 */
+	function assign_block_vars($blockname, $vararray)
+	{
+		global $_tpldata;
+		
+		if (strstr($blockname, '.'))
+		{
+			// Nested block.	
+			$blocks = explode('.', $blockname);
+			$blockcount = sizeof($blocks) - 1;
+			$str = '$_tpldata';
+			for ($i = 0; $i < $blockcount; $i++)
+			{
+				$str .= '[\'' . $blocks[$i] . '.\']';
+				eval('$lastiteration = sizeof(' . $str . ') - 1;');
+				$str .= '[' . $lastiteration . ']';
+			}
+			// Now we add the block that we're actually assigning to.
+			// We're adding a new iteration to this block with the given
+			// variable assignments.
+			$str .= '[\'' . $blocks[$blockcount] . '.\'][] = $vararray;';
+			
+			// Now we evaluate this assignment we've built up.
+			eval($str);
+		}
+		else
+		{
+			// Top-level block.
+			// Add a new iteration to this block with the variable assignments
+			// we were given.
+			$_tpldata[$blockname . '.'][] = $vararray;
+		}
+  	
+		return true;
+	}
+  
+	/**
+	 * Root-level variable assignment. Adds to current assignments, overriding
+	 * any existing variable assignment with the same name.
+	 */
+	function assign_vars($vararray)
+	{
+		global $_tpldata;
+		
+		reset ($vararray);
+		while (list($key, $val) = each($vararray))
+		{
+			$_tpldata['.'][0][$key] = $val;	
+		}
+
+		return true;
+	}
+  
+	/**
+	 * Root-level variable assignment. Adds to current assignments, overriding
+	 * any existing variable assignment with the same name.
+	 */
 	function assign_var($varname, $varval)
 	{
 		global $_tpldata;
@@ -240,60 +240,60 @@ class Template {
 	}
 	  
   
-  /** 
-   * Generates a full path+filename for the given filename, which can either
-   * be an absolute name, or a name relative to the rootdir for this Template
-   * object.
-   */
-  function make_filename($filename) 
-  {
-    // Check if it's an absolute or relative path.
-    if (substr($filename, 0, 1) != '/')
-    {
-      $filename = $this->root . '/' . $filename;
-    }
-    
-    if (!file_exists($filename))
-    {
-      die("Template->make_filename(): Error - file $filename does not exist");
-    }
-    
-    return $filename;
-  }
+	/** 
+	 * Generates a full path+filename for the given filename, which can either
+	 * be an absolute name, or a name relative to the rootdir for this Template
+	 * object.
+	 */
+	function make_filename($filename) 
+	{
+		// Check if it's an absolute or relative path.
+		if (substr($filename, 0, 1) != '/')
+		{
+			$filename = $this->root . '/' . $filename;
+		}
+	
+		if (!file_exists($filename))
+		{
+			die("Template->make_filename(): Error - file $filename does not exist");
+		}
+	
+		return $filename;
+	}
   
 	
-  /**
-   * If not already done, load the file for the given handle and populate
-   * the uncompiled_code[] hash with its code. Do not compile.
-   */
-  function loadfile($handle) 
-  {
-  	global $_tpldata;
-  	
-    // If the file for this handle is already loaded and compiled, do nothing.
-    if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
-    {
-      return true;
-    }
+	/**
+	 * If not already done, load the file for the given handle and populate
+	 * the uncompiled_code[] hash with its code. Do not compile.
+	 */
+	function loadfile($handle) 
+	{
+		global $_tpldata;
+		
+		// If the file for this handle is already loaded and compiled, do nothing.
+		if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
+		{
+			return true;
+		}
 
 		// If we don't have a file assigned to this handle, die.
-    if (!isset($this->files[$handle])) 
-    {
-      die("Template->loadfile(): No file specified for handle $handle");
-    }
-    
-    $filename = $this->files[$handle];
+		if (!isset($this->files[$handle])) 
+		{
+			die("Template->loadfile(): No file specified for handle $handle");
+		}
+	
+		$filename = $this->files[$handle];
 
-    $str = implode("", @file($filename));
-    if (empty($str)) 
-    {
-      die("Template->loadfile(): File $filename for handle $handle is empty");
-    }
+		$str = implode("", @file($filename));
+		if (empty($str)) 
+		{
+			die("Template->loadfile(): File $filename for handle $handle is empty");
+		}
 		
 		$this->uncompiled_code[$handle] = $str;
-    
-    return true;
-  }
+	
+		return true;
+	}
   
   
   
@@ -398,28 +398,28 @@ class Template {
 	}
   
   
-  /**
-   * Generates a reference to the given variable inside the given (possibly nested)
-   * block namespace. This is a string of the form:
-   * ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
-   * It's ready to be inserted into an "echo" line in one of the templates.
-   * NOTE: expects a trailing "." on the namespace.
-   */
-  function generate_block_varref($namespace, $varname)
-  {
-  	// Strip the trailing period.
-  	$namespace = substr($namespace, 0, strlen($namespace) - 1);
-  	
-  	// Get a reference to the data block for this namespace.
-  	$varref = $this->generate_block_data_ref($namespace, true);
-  	// Prepend the necessary code to stick this in an echo line.
-  	$varref = '\' . ' . $varref;
-  	// Append the variable reference.
-  	$varref .= '[\'' . $varname . '\'] . \'';
-  	
-  	return $varref;
-  		
-  }
+	/**
+	 * Generates a reference to the given variable inside the given (possibly nested)
+	 * block namespace. This is a string of the form:
+	 * ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
+	 * It's ready to be inserted into an "echo" line in one of the templates.
+	 * NOTE: expects a trailing "." on the namespace.
+	 */
+	function generate_block_varref($namespace, $varname)
+	{
+		// Strip the trailing period.
+		$namespace = substr($namespace, 0, strlen($namespace) - 1);
+		
+		// Get a reference to the data block for this namespace.
+		$varref = $this->generate_block_data_ref($namespace, true);
+		// Prepend the necessary code to stick this in an echo line.
+		$varref = '\' . ' . $varref;
+		// Append the variable reference.
+		$varref .= '[\'' . $varname . '\'] . \'';
+		
+		return $varref;
+	
+	}
   
   
 	/**
@@ -430,27 +430,27 @@ class Template {
 	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	 * NOTE: does not expect a trailing "." on the blockname.
 	 */
-  function generate_block_data_ref($blockname, $include_last_iterator)
-  {
-  	// Get an array of the blocks involved.
-  	$blocks = explode(".", $blockname);
-  	$blockcount = sizeof($blocks) - 1;
-  	$varref = '$_tpldata';
-  	// Build up the string with everything but the last child.
-  	for ($i = 0; $i < $blockcount; $i++)
-  	{
-  		$varref .= '[\'' . $blocks[$i] . '.\'][$_' . $blocks[$i] . '_i]';	
-  	}
-  	// Add the block reference for the last child.
-  	$varref .= '[\'' . $blocks[$blockcount] . '.\']';
-  	// Add the iterator for the last child if requried.
-  	if ($include_last_iterator)
-  	{
-  		$varref .= '[$_' . $blocks[$blockcount] . '_i]';
-  	}
-  	
-  	return $varref;
-  }
+	function generate_block_data_ref($blockname, $include_last_iterator)
+	{
+		// Get an array of the blocks involved.
+		$blocks = explode(".", $blockname);
+		$blockcount = sizeof($blocks) - 1;
+		$varref = '$_tpldata';
+		// Build up the string with everything but the last child.
+		for ($i = 0; $i < $blockcount; $i++)
+		{
+			$varref .= '[\'' . $blocks[$i] . '.\'][$_' . $blocks[$i] . '_i]';	
+		}
+		// Add the block reference for the last child.
+		$varref .= '[\'' . $blocks[$blockcount] . '.\']';
+		// Add the iterator for the last child if requried.
+		if ($include_last_iterator)
+		{
+			$varref .= '[$_' . $blocks[$blockcount] . '_i]';
+		}
+	
+		return $varref;
+	}
 
 }
 ?>

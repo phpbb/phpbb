@@ -10,7 +10,8 @@ INSERT INTO phpbb_config (config_id, sitename, allow_html, allow_bbcode, allow_s
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 1);
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments) VALUES (1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 3, 3, 3, 3);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments) VALUES 
+									(1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 3, 3, 3, 3, 3);
 
 # -- Users (admin is set as that, an admin ... password is null, change it once online!)
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '');
