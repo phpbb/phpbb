@@ -16,7 +16,6 @@
 // Previews of templates, imagesets, themes ... unified -> M-3
 // Add custom theme classes
 // Security review
-// .zip not appearing @ area51 ...
 
 if (!empty($setmodules))
 {
@@ -150,11 +149,8 @@ switch ($mode)
 					WHERE user_style = $id";
 				$db->sql_query($sql);
 				break;
-
-			case 'edit':
 		}
 
-		
 		adm_page_header($user->lang['MANAGE_STYLE']);
 
 ?>
@@ -278,8 +274,6 @@ switch ($mode)
 
 	// TEMPLATES
 	case 'template':
-		$template_id = &$id;
-
 		$tpllist = array(
 			'misc'		=> array(
 				'confirm_body.html', 'faq_body.html', 'index_body.html',  'message_body.html', 'viewonline_body.html', 
@@ -326,11 +320,11 @@ switch ($mode)
 				$tplname = (isset($_POST['tplname'])) ? htmlspecialchars($_POST['tplname'])  : '';
 				$tpldata = (!empty($_POST['tpldata'])) ? stripslashes($_POST['tpldata']) : ''; // NB : STRIPSLASHED!
 
-				if ($template_id)
+				if ($id)
 				{
 					$sql = 'SELECT * 
 						FROM ' . STYLES_TPL_TABLE . "
-						WHERE template_id = $template_id";
+						WHERE template_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!(extract($db->sql_fetchrow($result))))
@@ -361,17 +355,17 @@ switch ($mode)
 								// We change the path to one relative to the root rather than the theme folder
 								$sql = 'UPDATE ' . STYLES_TPL_TABLE . ' 
 									SET template_storedb = 1 
-									WHERE template_id = ' . $template_id;
+									WHERE template_id = ' . $id;
 								$db->sql_query($sql);
 
 								$filelist = filelist("{$phpbb_root_path}styles/$template_path/template");
 								$filelist = array('/template' => $filelist['']);
-								store_templates('insert', $template_id, $template_path, $filelist);
+								store_templates('insert', $id, $template_path, $filelist);
 							}
 
 							$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . " 
 								SET template_data = '" . $db->sql_escape($tpldata) . "', template_mtime = " . time() . " 
-								WHERE template_id = $template_id 
+								WHERE template_id = $id 
 									AND template_filename = '" . $db->sql_escape($tplname) . "'";
 							$db->sql_query($sql);
 
@@ -419,7 +413,7 @@ switch ($mode)
 					{
 						$sql = 'SELECT * 
 							FROM ' . STYLES_TPLDATA_TABLE . " 
-							WHERE template_id = $template_id";
+							WHERE template_id = $id";
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -460,7 +454,6 @@ switch ($mode)
 						$tpl_options .= '<option value="' . $tpl_file . '"' . $selected . '>' . (($category == 'custom') ? $tpl_file : $tpl_file) . '</option>';
 					}
 				}
-
 
 				// Output page
 				adm_page_header($user->lang['EDIT_TEMPLATE']);
@@ -519,7 +512,7 @@ switch ($mode)
 
 				$sql = 'SELECT * 
 					FROM ' . STYLES_TPL_TABLE . "
-					WHERE template_id = $template_id";
+					WHERE template_id = $id";
 				$result = $db->sql_query($sql);
 
 				if (!(extract($db->sql_fetchrow($result))))
@@ -669,7 +662,6 @@ switch ($mode)
 				}
 				closedir($dp);
 
-
 				// Output the page
 				adm_page_header($user->lang['TEMPLATE_CACHE']);
 
@@ -755,11 +747,11 @@ function viewsource(url)
 				break;
 
 			case 'refresh':
-				if ($template_id)
+				if ($id)
 				{
 					$sql = 'SELECT template_path, template_storedb
 						FROM ' . STYLES_TPL_TABLE . " 
-						WHERE template_id = $template_id";
+						WHERE template_id = $id";
 					$result = $db->sql_query($sql);
 
 					if (!extract($db->sql_fetchrow($result)))
@@ -774,7 +766,7 @@ function viewsource(url)
 
 						$sql = 'SELECT template_filename, template_mtime 
 							FROM ' . STYLES_TPLDATA_TABLE . "
-							WHERE template_id = $template_id";
+							WHERE template_id = $id";
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -786,7 +778,7 @@ function viewsource(url)
 						}
 						$db->sql_freeresult($result);
 
-						store_templates('update', $template_id, $template_path, $filelist);
+						store_templates('update', $id, $template_path, $filelist);
 						unset($filelist);
 					}
 				}
@@ -879,7 +871,6 @@ function viewsource(url)
 						$stylesheet = &$theme_data;
 					}
 
-
 					// Pull out list of "custom" tags
 					if (preg_match_all('#([a-z\.:]+?) {.*?}#si', $stylesheet, $matches))
 					{
@@ -939,7 +930,6 @@ function viewsource(url)
 						$css_element = explode('; ', ltrim(substr($matches[1], 0, -2)));
 					}
 
-
 					// User wants to submit data ...
 					if ($update)
 					{
@@ -977,7 +967,6 @@ function viewsource(url)
 						add_log('admin', 'LOG_EDIT_THEME', $theme_name);
 					}
 
-
 					// I guess really this needs some basic examples, pulled from subSilver
 					// to demonstrate the default classes. Other, custom classes can just use
 					// the div/span and some text? This is gonna get nasty :(
@@ -987,7 +976,6 @@ function viewsource(url)
 						theme_preview($theme_path, $stylesheet, $class, $css_element);
 						exit;
 					}
-
 
 					// Here we pull out the appropriate class entry then proceed to pull it apart,
 					// setting appropriate variables to their respective values. We only match
@@ -1061,7 +1049,6 @@ function viewsource(url)
 					}
 				}
 
-
 				// Grab list of potential images for class backgrounds
 				$imglist = filelist("{$phpbb_root_path}styles/$theme_path/theme");
 
@@ -1078,7 +1065,6 @@ function viewsource(url)
 				}
 				$bg_imglist = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $bg_imglist;
 				unset($imglist);
-
 
 				// Output the page
 				adm_page_header($user->lang['EDIT_THEME']);
@@ -1352,7 +1338,6 @@ function csspreview()
 					$imgheight = (preg_match('#height="([0-9]+?)"#i', $$imgname, $matches)) ? $matches[1] : 0;
 				}
 
-
 				// Generate list of image options
 				$img_options = '';
 				foreach ($imglist as $category => $img_ary)
@@ -1381,7 +1366,6 @@ function csspreview()
 				}
 				$imagesetlist_options = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $imagesetlist_options;
 				unset($imagesetlist);
-
 
 				adm_page_header($user->lang['EDIT_IMAGESET']);
 
@@ -1578,7 +1562,7 @@ function frontend($type, $options)
 
 function remove($type, $id)
 {
-	global $phpbb_root_path, $SID, $config, $db, $user, $mode, $action;
+	global $phpbb_root_path, $phpEx, $SID, $config, $db, $user, $mode, $action;
 
 	$new_id = (!empty($_POST['newid'])) ? intval($_POST['newid']) : false;
 	$deletefs = (!empty($_POST['deletefs'])) ? true : false;
@@ -2115,7 +2099,7 @@ function export($mode, $id)
 	{
 		if (!extension_loaded($module))
 		{
-			break;
+			continue;
 		}
 		echo '<input type="radio" name="format" value="' . $type . '" /> .' . $type . '&nbsp;&nbsp;';
 	}
@@ -2184,6 +2168,8 @@ function store_templates($mode, $id, $path, $filelist)
 	}
 }
 
+// Does what it says in the function title ... give it a src location, array of files
+// and destination
 function copy_files($src, $filelist, $dst)
 {
 	global $phpbb_root_path;
@@ -2222,6 +2208,7 @@ function copy_files($src, $filelist, $dst)
 	}
 }
 
+// You can guess what this does ... just give it a path
 function cleanup_folder($path)
 {
 	$filelist = filelist($path, '', '*');
@@ -2242,6 +2229,7 @@ function cleanup_folder($path)
 	@rmdir("$path");
 }
 
+// Is this element installed? If not, grab its cfg details
 function test_installed($element, $root_path, $reqd_name, &$id, &$name, &$copyright)
 {
 	global $db, $user;
@@ -2299,6 +2287,7 @@ function test_installed($element, $root_path, $reqd_name, &$id, &$name, &$copyri
 	return true;
 }
 
+// Install an element, doing various checks as we go
 function install_element($type, $action, $root_path, &$id, $name, $copyright, $storedb = 0)
 {
 	global $phpbb_root_path, $db, $user;
@@ -2421,6 +2410,7 @@ function install_element($type, $action, $root_path, &$id, $name, $copyright, $s
 	add_log('admin', $log, $name);
 }
 
+// Commented inline
 function install($type, $action, $id)
 {
 	global $phpbb_root_path, $phpEx, $SID, $config, $db, $user;
@@ -2973,7 +2963,7 @@ function install($type, $action, $id)
 
 			if ($type != 'imageset' && sizeof($sql_ary))
 			{
-				echo $sql = "UPDATE $sql_from 
+				$sql = "UPDATE $sql_from 
 					SET " . $db->sql_build_array('UPDATE', $sql_ary) . " 
 					WHERE {$type}_id = $id";
 				$db->sql_query($sql);
@@ -3109,30 +3099,47 @@ function install($type, $action, $id)
 
 	}
 
-	// Import, upload and basis options
-	if ($action == 'add' && !$basis && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
+	if ($type == 'template' || $type == 'theme')
 	{
-		$store_options = '';
-		$dp = @opendir("{$phpbb_root_path}store");
-		while ($file = readdir($dp))
-		{
-			if ($file{0} != '.' && preg_match('#(' . $archive_preg . ')$#i', $file))
-			{
-				$store_options .= "<option value=\"$file\">$file</option>";
-			}
-		}
-		closedir($dp);
-
-		$store_options = '<option value="">' . $user->lang['NO_IMPORT'] . '</option>' . $store_options;
+		$storedb_no = (!$storedb) ? ' checked="checked"' : '';
+		$storedb_yes = ($storedb) ? ' checked="checked"' : '';
 
 ?>
 	<tr>
-		<th colspan="2"><?php echo $user->lang['EXISTING_' . $l_type]; ?></th>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_LOCATION']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang[$l_type . '_LOCATION_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="storedb" value="0"<?php echo $storedb_no; ?> /> <?php echo $user->lang['STORE_FILESYSTEM']; ?>&nbsp;&nbsp;<input type="radio" name="storedb" value="1"<?php echo $storedb_yes; ?> /> <?php echo $user->lang['STORE_DATABASE']; ?></td>
+	</tr>
+<?php 
+
+	}
+
+	// Import, upload and basis options
+	if ($action == 'add' && !$safe_mode && is_writeable("{$phpbb_root_path}styles"))
+	{
+
+?>
+	<tr>
+		<th colspan="2"><?php echo $user->lang['OPTIONS']; ?></th>
 	</tr>
 <?php
 
-		if ($file_uploads)
+		if (!$basis)
 		{
+			$store_options = '';
+			$dp = @opendir("{$phpbb_root_path}store");
+			while ($file = readdir($dp))
+			{
+				if ($file{0} != '.' && preg_match('#(' . $archive_preg . ')$#i', $file))
+				{
+					$store_options .= "<option value=\"$file\">$file</option>";
+				}
+			}
+			closedir($dp);
+
+			$store_options = '<option value="">' . $user->lang['NO_IMPORT'] . '</option>' . $store_options;
+
+			if ($file_uploads)
+			{
 
 ?>
 	<tr>
@@ -3141,7 +3148,7 @@ function install($type, $action, $id)
 	</tr>
 <?php
 
-		}
+			}
 
 ?>
 	<tr>
@@ -3150,7 +3157,19 @@ function install($type, $action, $id)
 	</tr>
 <?php
 
-	}	
+		}	
+		else if ($basis)
+		{
+	
+?>
+	<tr>
+		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_BASIS']; ?>: </b></td>
+		<td class="row2"><b><?php echo ${$type . '_name'}; ?></b></td>
+	</tr>
+<?php
+
+		}
+	}
 
 	if ($type == 'style')
 	{
@@ -3180,21 +3199,6 @@ function install($type, $action, $id)
 <?php
 
 		}
-	}
-	else if ($type != 'imageset')
-	{
-		$storedb_no = (!$storedb) ? ' checked="checked"' : '';
-		$storedb_yes = ($storedb) ? ' checked="checked"' : '';
-
-?>
-	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_LOCATION']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang[$l_type . '_LOCATION_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="radio" name="storedb" value="0"<?php echo $storedb_no; ?> /> <?php echo $user->lang['STORE_FILESYSTEM']; ?>&nbsp;&nbsp;<input type="radio" name="storedb" value="1"<?php echo $storedb_yes; ?> /> <?php echo $user->lang['STORE_DATABASE']; ?></td>
-	</tr>
-<?php 
-
-
-
 	}
 
 ?>
