@@ -353,7 +353,7 @@ if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INAC
 // Output listing of friends online
 $update_time = $config['load_online_time'] * 60;
 
-$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_allow_viewonline) AS viewonline
+$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline
 	FROM ((' . ZEBRA_TABLE . ' z
 	LEFT JOIN ' . SESSIONS_TABLE . ' s ON s.session_user_id = z.zebra_id), ' . USERS_TABLE . ' u)
 	WHERE z.user_id = ' . $user->data['user_id'] . '
