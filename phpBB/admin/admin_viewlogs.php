@@ -63,9 +63,16 @@ else
 	$mode = 'admin';
 }
 
-//
+if ( isset($_POST['f']) ||  isset($_GET['f']) )
+{
+	$forum_id = ( isset($_POST['f']) ) ? $_POST['f'] : $_GET['f'];
+}
+else
+{
+	$forum_id = 0;
+}
+
 // Define some vars depending on which logs we're looking at
-//
 $log_table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
 $l_title = ( $mode == 'admin' ) ? $lang['Admin_logs'] : $lang['Mod_logs'];
 $l_title_explain = ( $mode == 'admin' ) ? $lang['Admin_logs_explain'] : $lang['Mod_logs_explain'];
@@ -141,19 +148,7 @@ $sort_order_options = ( $sort_dir == 'a' ) ? '<option value="a" selected="select
 
 $sort_sql = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
 
-//
-// Define forum list if we're looking @ mod logs
-//
-$forum_box = '';
-if ( $mode == 'mod' )
-{
-	include($phpbb_root_path . '/includes/functions_admin.'.$phpEx);
-	$forum_box = make_forum_select('f');
-}
-
-//
 // Output page
-//
 page_header($l_title);
 
 ?>
@@ -165,13 +160,16 @@ page_header($l_title);
 <form method="post" action="<?php echo "admin_viewlogs.$phpEx$SID&amp;mode=$mode"; ?>">
 <?php
 
+// Define forum list if we're looking @ mod logs
 if ( $mode == 'mod' )
 {
+	include($phpbb_root_path . '/includes/functions_admin.'.$phpEx);
+	$forum_box = make_forum_select($forum_id);
 
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $lang['Select_forum']; ?>: <?php echo $forum_box; ?> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
+		<td align="right"><?php echo $lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
 	</tr>
 </table>
 <?php

@@ -466,7 +466,7 @@ switch( $mode )
 				'L_YES' => $lang['Yes'],
 				'L_NO' => $lang['No'],
 
-				'S_FORUM_SELECT' => make_forum_select('new_forum', $forum_id),
+				'S_FORUM_SELECT' => '<select name="new_forum">' . make_forum_select(0, $forum_id) . '</select>',
 				'S_MODCP_ACTION' => append_sid("modcp.$phpEx"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
@@ -665,7 +665,7 @@ switch( $mode )
 
 					'S_SPLIT_ACTION' => "modcp.$phpEx$SID",
 					'S_HIDDEN_FIELDS' => $s_hidden_fields,
-					'S_FORUM_SELECT' => make_forum_select("new_forum_id"))
+					'S_FORUM_SELECT' => '<select name="new_forum_id">' . make_forum_select() . '</select>')
 				);
 
 				for($i = 0; $i < $total_posts; $i++)

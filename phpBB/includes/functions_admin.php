@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 // Simple version of jumpbox, just lists authed forums
-function make_forum_select($box_name, $ignore_forum = false)
+function make_forum_select($default_forum = false, $ignore_forum = false)
 {
 	global $db, $userdata, $auth, $lang;
 
@@ -34,28 +34,27 @@ function make_forum_select($box_name, $ignore_forum = false)
 	$forum_list = '';
 	while ( $row = $db->sql_fetchrow($result) )
 	{
+		if ( $row['left_id'] < $right  )
+		{
+			$subforum .= '&nbsp;&nbsp;&nbsp;';
+		}
+		else if ( $row['left_id'] > $right + 1 )
+		{
+			$subforum = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+		}
+
+		$right = $row['right_id'];
+
 		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ) && $ignore_forum != $row['forum_id'] )
 		{
-			if ( $row['left_id'] < $right  )
-			{
-				$subforum .= '&nbsp;&nbsp;&nbsp;';
-			}
-			else if ( $row['left_id'] > $right + 1 )
-			{
-				$subforum = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
-			}
-
-			$forum_list .= '<option value="' . $row['forum_id'] . '">' . $subforum . $row['forum_name'] . '</option>';
-
-			$right = $row['right_id'];
+			$selected = ( $row['forum_id'] == $default_forum ) ? ' selected="selected"' : '';
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $subforum . $row['forum_name'] . '</option>';
 		}
 
 	}
 	$db->sql_freeresult($result);
 
-	$forum_list = ( $forum_list == '' ) ? '<option value="-1">' . $lang['No_forums'] . '</option>' : '<select name="' . $box_name . '">' . $forum_list . '</select>';
-
-	return $forum_list;
+	return ( $forum_list == '' ) ? '<option value="-1">' . $lang['No_forums'] . '</option>' : $forum_list;
 }
 
 // Synchronise functions for forums/topics

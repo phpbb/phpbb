@@ -472,7 +472,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 else
 {
 
-	$select_list = make_forum_select('f');
+	$select_list = make_forum_select();
 
 	page_header($l_title);
 
@@ -487,7 +487,7 @@ else
 		<th align="center"><?php echo $lang['Select_a_Forum']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<?php echo $select_list; ?> &nbsp;<input type="submit" value="<?php echo $lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 
