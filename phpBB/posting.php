@@ -334,6 +334,7 @@ if ( !$is_auth[$is_auth_type] )
 	}
 
 	header("Location: " . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
+	exit;
 }
 
 //
@@ -765,6 +766,10 @@ else
 			}
 
 			$mode = 'reply';
+		}
+		else
+		{
+			$username = ( $post_info['user_id'] == ANONYMOUS && !empty($post_info['post_username']) ) ? $post_info['post_username'] : "";
 		}
 	}
 }
