@@ -178,6 +178,8 @@ $lang = array_merge($lang, array(
 	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
 	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
 
+	'LOG_CLEAR_TPLCACHE'=> '<b>Cleared template cache</b><br />&#187; %s', 
+
 
 	'WELCOME_PHPBB'	=> 'Welcome to phpBB',
 	'ADMIN_INTRO'	=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
@@ -920,6 +922,17 @@ $lang = array_merge($lang, array(
 	'EDIT_TEMPLATE'			=> 'Edit Template',
 	'EDIT_TEMPLATE_EXPLAIN' => 'Use this panel to edit an existing compiled template set. When you have made the required changes you can recompile the template and (or) download it. Please remember that the existing HTML templates are <b>not</b> altered, only the compiled versions are affected. Therefore you should download any altered files if you wish to keep them for future use and for archival purposes.', 
 	'SELECT_TEMPLATE'		=> 'Select template', 
+	'TEMPLATE_CACHE'		=> 'Template Cache', 
+	'TEMPLATE_CACHE_EXPLAIN'=> 'By default phpBB caches the compiled version of its templates. This decreases the load on the server each time a page is viewed and thus may reduce the page generation time. Here you can view the cache status of each file and delete individual files or the entire cache.', 
+	'CACHE_FILENAME'		=> 'Template file', 
+	'CACHE_FILESIZE'		=> 'Filesize', 
+	'CACHE_CACHED'			=> 'Cached', 
+	'CACHE_CREATED'			=> 'Created', 
+	'NO_CACHED_TPL_FILES'	=> 'No cached files for this template', 
+	'TEMPLATE_CACHE_CLEARED'=> 'Cached templates deleted', 
+	
+	'ERR_TPLCACHE_READ'		=> 'Cannot read the cache directory', 
+
 
 	'THEMES'				=> 'Themes', 
 	'THEMES_EXPLAIN'		=> 'From here you can add, edit, delete and export themes. A theme is the combination of colours and images that are applied to your templates to define the basic look of your forum. To manage templates, imagesets or styles please see the navigation menu.', 
