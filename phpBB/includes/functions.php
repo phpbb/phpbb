@@ -707,8 +707,7 @@ function obtain_icons(&$icons)
 	{
 		// Topic icons
 		$sql = "SELECT *
-			FROM " . ICONS_TABLE . "
-			WHERE icons_id > 1";
+			FROM " . ICONS_TABLE;
 		$result = $db->sql_query($sql);
 
 		$icons = array();
