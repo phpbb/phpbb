@@ -73,11 +73,7 @@ class emailer
 	//
 	function set_subject($subject = '')
 	{
-		$match = array();
-		preg_match("/^(Subject:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
-
-		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : "";
-		$this->subject = ( $subject != '' ) ? $subject : trim($match[2]);
+		$this->subject = $subject;
 	}
 
 	//
@@ -166,6 +162,16 @@ class emailer
 		$this->msg = str_replace ("\"", "\\\"", $this->msg);
 
 		eval("\$this->msg = \"$this->msg\";");
+
+		//
+		// We now try and pull a subject from the email body ... if it exists,
+		// do this here because the subject may contain a variable
+		//
+		$match = array();
+		preg_match("/^(Subject:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
+
+		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : "";
+		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
 
 		return TRUE;
 	}
