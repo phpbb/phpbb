@@ -1,3 +1,16 @@
+
+<script language="Javascript" type="text/javascript">
+<!--
+function create_icq_subsilver(icq_user_addr, icq_status_img, icq_add_img)
+{
+	if( icq_user_addr != "" || icq_user_addr != "&nbsp;" )
+	{
+		document.write('<table width="59" border="0" cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap" style=" background-image: url(\'' + icq_add_img + '\'); background-repeat: no-repeat"><img src="images/spacer.gif" width="3" height="18" alt = "">' + icq_status_img + '<a href="http://wwp.icq.com/scripts/search.dll?to=' + icq_user_addr + '"><img src="images/spacer.gif" width="35" height="18" border="0" alt="{L_ICQ_NUMBER}" /></a></td></tr></table>');
+	}
+}
+//-->
+</script>
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
 	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{REQUEST_URI}">{TOPIC_TITLE}</a><br />
@@ -57,7 +70,12 @@
 	  <table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 		<tr> 
 		  <td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} 
-			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap">{postrow.ICQ_STATUS_IMG}{postrow.ICQ_ADD_IMG}</td>
+			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
+
+		  create_icq_subsilver('{postrow.ICQ}', '{postrow.ICQ_STATUS_IMG}', '{postrow.ICQ_IMG}');
+		  
+		  //--></script>
+		  <noscript>{postrow.ICQ_ADD_IMG}</noscript></td>
 		</tr>
 	  </table>
 	</td>

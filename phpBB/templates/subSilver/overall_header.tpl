@@ -20,7 +20,6 @@
 TH			{ background-image: url(templates/subSilver/images/cellpic3.gif) }
 TD.cat		{ background-image: url(templates/subSilver/images/cellpic1.gif) }
 TD.rowpic	{ background-image: url(templates/subSilver/images/cellpic2.jpg); background-repeat: repeat-y }
-td.icqback	{ background-image: url(templates/subSilver/images/icon_icq_add.gif); background-repeat: no-repeat }
 TD.catHead,TD.catSides,TD.catLeft,TD.catRight,TD.catBottom { background-image: url(templates/subSilver/images/cellpic1.gif) }
 
 
