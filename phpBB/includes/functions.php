@@ -627,7 +627,15 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
 			}
-			$total_posts = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
+
+			if( $row = $db->sql_fetchrow($result) )
+			{
+				$total_posts = ($row['total']) ? $row['total'] : 0;
+			}
+			else
+			{
+				$total_posts = 0;
+			}
 
 			$sql = "SELECT COUNT(topic_id) AS total
 				FROM " . TOPICS_TABLE . "
@@ -636,7 +644,15 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get topic count", "Error", __LINE__, __FILE__, $sql);
 			}
-			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
+
+			if( $row = $db->sql_fetchrow($result) )
+			{
+				$total_topics = ($row['total']) ? $row['total'] : 0;
+			}
+			else
+			{
+				$total_topics = 0;
+			}
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
@@ -658,7 +674,7 @@ function sync($type, $id)
 
 			if( $row = $db->sql_fetchrow($result) )
 			{
-				$last_post = $row['last_post'];
+				$last_post = ($row['last_post']) ? $row['last_post'] : 0;
 			}
 			else
 			{
@@ -672,7 +688,15 @@ function sync($type, $id)
 			{
 				message_die(GENERAL_ERROR, "Could not get post count", "Error", __LINE__, __FILE__, $sql);
 			}
-			$total_posts = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] - 1 : 0;
+
+			if( $row = $db->sql_fetchrow($result) )
+			{
+				$total_posts = ($row['total']) ? $row['total'] - 1 : 0;
+			}
+			else
+			{
+				$total_posts = 0;
+			}
 
 			$sql = "UPDATE " . TOPICS_TABLE . "
 				SET topic_replies = $total_posts, topic_last_post_id = $last_post

@@ -37,18 +37,18 @@ require('pagestart.inc');
 // Start program - define vars
 //
 $simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 1, 1, 3),
-	1  => array(0, 0, 1, 1, 1, 1, 1, 3),
-	2  => array(1, 1, 1, 1, 1, 1, 1, 3),
-	3  => array(0, 2, 2, 2, 2, 2, 2, 3),
-	4  => array(2, 2, 2, 2, 2, 2, 2, 3),
-	5  => array(0, 3, 3, 3, 3, 3, 3, 3),
-	6  => array(3, 3, 3, 3, 3, 3, 3, 3),
+	0  => array(0, 0, 0, 0, 1, 1, 1, 3, 1, 1),
+	1  => array(0, 0, 1, 1, 1, 1, 1, 3, 1, 1),
+	2  => array(1, 1, 1, 1, 1, 1, 1, 3, 1, 1),
+	3  => array(0, 2, 2, 2, 2, 2, 2, 3, 2, 2),
+	4  => array(2, 2, 2, 2, 2, 2, 2, 3, 2, 2),
+	5  => array(0, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+	6  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
 );
 
 $simple_auth_types = array($lang['Public'], $lang['Registered'], $lang['Registered'] . " [" . $lang['Hidden'] . "]", $lang['Private'], $lang['Private'] . " [" . $lang['Hidden'] . "]", $lang['Moderators'], $lang['Moderators'] . " [" . $lang['Hidden'] . "]");
 
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_vote", "auth_pollcreate");
 
 $field_names = array(
 	"auth_view" => $lang['View'],
@@ -58,9 +58,11 @@ $field_names = array(
 	"auth_edit" => $lang['Edit'],
 	"auth_delete" => $lang['Delete'],
 	"auth_sticky" => $lang['Sticky'],
-	"auth_announce" => $lang['Announce']);
+	"auth_announce" => $lang['Announce'], 
+	"auth_vote" => $lang['Vote'], 
+	"auth_pollcreate" => $lang['Pollcreate']);
 
-$forum_auth_levels = array("ALL", "REG", "ACL", "MOD", "ADMIN");
+$forum_auth_levels = array("ALL", "REG", "PRIVATE", "MOD", "ADMIN");
 $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
 if(isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]))

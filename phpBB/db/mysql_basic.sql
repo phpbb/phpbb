@@ -4,13 +4,13 @@
 # $Id$
 
 # -- Config
-INSERT INTO phpbb_config (config_id, board_disable, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_bbcode, allow_smilies, allow_sig, allow_namechange, posts_per_page, hot_threshold, topics_per_page, flood_interval, allow_theme_create, override_themes, email_sig, email_from, default_theme, default_lang, default_dateformat, system_timezone, sys_template, avatar_filesize, avatar_path, allow_avatar_upload, avatar_max_width, avatar_max_height, allow_avatar_local, allow_avatar_remote) VALUES ( '1', '0', 'phpbb.com', 'phpbb2mysql', '/', '', '0', 600, '0', '1', '1', '1', '0', '10', '10', '25', '10', '0', '0', '', '', '2', 'english', 'd M Y H:i', '0', 'PSO', '6144', 'images/avatars', '0', '70', '70', '0', '0');
+INSERT INTO phpbb_config (config_id, board_disable, sitename, cookie_name, cookie_path, cookie_domain, cookie_secure, session_length, allow_html, allow_html_tags, allow_bbcode, allow_smilies, allow_sig, allow_namechange, allow_theme_create, allow_avatar_local, allow_avatar_remote, allow_avatar_upload, override_themes, posts_per_page, topics_per_page, hot_threshold, max_poll_options, email_sig, email_from, require_activation, flood_interval, avatar_filesize, avatar_max_width, avatar_max_height, avatar_path, smilies_path, default_theme, default_lang, default_dateformat, system_timezone, sys_template, prune_enable, gzip_compress, board_startdate, smtp_delivery, smtp_host) VALUES (1,0,'yourdomain.com','phpbb2mysql','/','','',900,'','b,i,u,pre',1,1,1,'','','',1,1,'',15,50,25,10,'Thanks, The Management','youraddress@yourdomain.com','',15,6144,80,80,'images/avatars','images/smiles',2,'english','D M d, Y g:i a',-8,'PSO',1,1,994190324,'','');
 
 # -- Categories
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 1);
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_attachments) VALUES (1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 3, 3, 3, 3, 3);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES (1, 'Test Forum 1', 'This is just a test forum, nothing special here.', 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 3, 1, 1, 1, 3);
 
 # -- Users
 INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_autologin_key, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_theme, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_template) VALUES ( '-1', 'Anonymous', '0', '972086460', '', '', '', '', '', '', '', '', '', '0', '0', '', '', '', '', '', '', '', '0', '0', '1', '', '', '', '', '', '', '', '', '0', '0', '');
@@ -34,10 +34,10 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (1, -1, 0)
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (2, 2, 0);
 
 # -- User Access (admin is set as ... an admin)
-INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_votecreate, auth_vote, auth_mod) VALUES (2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO phpbb_auth_access (group_id, forum_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_mod) VALUES (2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
 # -- Demo Topic
-INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_last_post_id) VALUES (1, 'Demo Topic', 2, '972086460', 0, 0, 1, 0, 0, 1);
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_vote, topic_last_post_id) VALUES (1, 'Demo Topic', 2, '972086460', 0, 0, 1, 0, 0, 0, 1);
 
 # -- Demo Post
 INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip) VALUES (1, 1, 1, 2, '972086460', '', '7F000001');
@@ -128,12 +128,11 @@ INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '26', 'dickweed', 
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '27', 'dickwad', '*beep*');
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '28', 'frig*', '*beep*');
 INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '29', 'hore', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '30', 'fag*', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '31', 'asswipe', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '32', 'asstool*', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '33', '*cock*', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '34', 'b!tch', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '35', 'masturbation', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '36', 'dickhead', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '37', 'spunk', '*beep*');
-INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '38', '*crap*', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '30', 'asswipe', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '31', 'asstool*', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '32', '*cock*', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '33', 'b!tch', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '34', 'masturbat*', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '35', 'dickhead', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '36', 'spunk', '*beep*');
+INSERT INTO phpbb_words (word_id, word, replacement) VALUES ( '37', '*crap*', '*beep*');

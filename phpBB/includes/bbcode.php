@@ -28,6 +28,7 @@ define("BBCODE_UID_LEN", 10);
  */
 function bbencode_second_pass($text, $uid)
 {
+	global $lang;
 
 	//$uid_tag_length = strpos($text, ']') + 1;
 	//$uid = substr($text, 5, BBCODE_UID_LEN);
@@ -60,8 +61,8 @@ function bbencode_second_pass($text, $uid)
 	$text = preg_replace("/\[list=([a1]):$uid\]/si", '<OL TYPE="\1">', $text);
 
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
-	$text = str_replace("[quote:$uid]", '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Quote:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><BLOCKQUOTE>', $text);
-	$text = str_replace("[/quote:$uid]", '</BLOCKQUOTE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE>', $text);
+	$text = str_replace("[quote:$uid]", '<table border="0" align="center" width="85%"><tr><td><font size="-1">' . $lang['Quote'] . '</font><hr /> </td></tr><tr><td><font size="-1"><blockquote>', $text);
+	$text = str_replace("[/quote:$uid]", '</blockquote></font></td></tr><tr><td><hr></td></tr></table>', $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", '<B>', $text);
@@ -89,15 +90,15 @@ function bbencode_second_pass($text, $uid)
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
 	$patterns[2] = "#\[url=([a-z]+?://){1}(.*?)\](.*?)\[/url\]#si";
-	$replacements[2] = '<A HREF="\1\2" TARGET="_blank">\3</A>';
+	$replacements[2] = '<a href="\1\2" target="_blank">\3</A>';
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
 	$patterns[3] = "#\[url=(.*?)\](.*?)\[/url\]#si";
-	$replacements[3] = '<A HREF="http://\1" TARGET="_blank">\2</A>';
+	$replacements[3] = '<A href="http://\1" TARGET="_blank">\2</A>';
 
 	// [email]user@domain.tld[/email] code..
 	$patterns[4] = "#\[email\](.*?)\[/email\]#si";
-	$replacements[4] = '<A HREF="mailto:\1">\1</A>';
+	$replacements[4] = '<A href="mailto:\1">\1</A>';
 
 	$text = preg_replace($patterns, $replacements, $text);
 
@@ -351,11 +352,13 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
  */
 function bbencode_second_pass_code($text, $uid)
 {
-	// If HTML is turned on we undo any HTML special chars that were created by the viewtopic code.
-//	$text = undo_htmlspecialchars($text);
+	global $lang;
 
-	$code_start_html = '<TABLE BORDER="0" ALIGN="CENTER" WIDTH="85%"><TR><TD><font size="-1">Code:</font><HR></TD></TR><TR><TD><FONT SIZE="-1"><PRE>';
-	$code_end_html =  '</PRE></FONT></TD></TR><TR><TD><HR></TD></TR></TABLE>';
+	$html_entities_match = array("#<#", "#>#");
+	$html_entities_replace = array("&lt;", "&gt;");
+
+	$code_start_html = '<table width="85%" border="0" align="center"><tr><td><font size="-1">' . $lang['Code'] . '</font><hr /></td></tr><tr><td><font size="-1"><pre>';
+	$code_end_html =  '</pre></font></td></tr><tr><td><hr /></td></tr></table>';
 
 	// First, do all the 1st-level matches. These need an htmlspecialchars() run,
 	// so they have to be handled differently.
@@ -366,7 +369,7 @@ function bbencode_second_pass_code($text, $uid)
 		$before_replace = $matches[1][$i];
 		$after_replace = $matches[1][$i];
 
-		$after_replace = htmlspecialchars($after_replace);
+		$after_replace = preg_replace($html_entities_match, $html_entities_replace, $after_replace);
 
 		$str_to_match = "[code:1:$uid]" . $before_replace . "[/code:1:$uid]";
 

@@ -34,7 +34,7 @@ init_userprefs($userdata);
 //
 if( !$userdata['session_logged_in'] )
 {
-	header("Location: ../login.$phpEx?forward_page=admin/");
+	header("Location: " . append_sid("../login.$phpEx?forward_page=admin/"));
 }
 else if( $userdata['user_level'] != ADMIN )
 {

@@ -782,7 +782,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				break;
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'session', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'words');
+			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'session', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
 
 			$additional_tables = (isset($HTTP_POST_VARS['additional_tables'])) ? $HTTP_POST_VARS['additional_tables'] : ( (isset($HTTP_GET_VARS['additional_tables'])) ? $HTTP_GET_VARS['additional_tables'] : "" );
 
@@ -846,7 +846,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 				);
 
 				$template->assign_vars(array(
-					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&backupstart=1&gzipcompress=$gzipcompress&startdownload=1\">",
+					"META" => "<meta http-equiv=\"refresh\" content=\"0;url=admin_db_utilities.$phpEx?perform=backup&amp;additional_tables=" . quotemeta($additional_tables) . "&amp;backup_type=$backup_type&amp;drop=1&amp;backupstart=1&amp;gzipcompress=$gzipcompress&amp;startdownload=1\">",
 
 					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
 					"MESSAGE_TEXT" => $lang['Backup_download'])
@@ -863,7 +863,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 			//
 			// Build the sql script file...
 			//
-			$backup_sql = "#\n";
+			$backup_sql  = "#\n";
 			$backup_sql .= "# phpBB Backup Script\n";
 			$backup_sql .= "# Dump of tables for $dbname\n";
 			$backup_sql .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";

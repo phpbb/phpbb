@@ -1,15 +1,15 @@
 <?php
 /***************************************************************************
  *                                 auth.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- *
- ***************************************************************************/
+ *                            -------------------                         
+ *   begin                : Saturday, Feb 13, 2001 
+ *   copyright            : (C) 2001 The phpBB Group        
+ *   email                : support@phpbb.com                           
+ *                                                          
+ *   $Id$                                                           
+ *                                                            
+ * 
+ ***************************************************************************/ 
 
 /***************************************************************************
  *
@@ -59,8 +59,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	switch($type)
 	{
 		case AUTH_ALL:
-			$a_sql = "a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce";
-			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+			$a_sql = "a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate";
+			$auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_vote", "auth_pollcreate");
 			break;
 
 		case AUTH_VIEW:
@@ -98,9 +98,13 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 			$auth_fields = array("auth_sticky");
 			break;
 
-		case AUTH_VOTECREATE:
+		case AUTH_POLLCREATE:
+			$a_sql = "a.auth_pollcreate";
+			$auth_fields = array("auth_pollcreate");
 			break;
 		case AUTH_VOTE:
+			$a_sql = "a.auth_vote";
+			$auth_fields = array("auth_vote");
 			break;
 		case AUTH_ATTACH:
 			break;

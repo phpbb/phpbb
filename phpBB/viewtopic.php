@@ -105,9 +105,9 @@ $join_sql_table = (!isset($post_id)) ? "" : "" . POSTS_TABLE . " p, " . POSTS_TA
 $join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
 $count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
 
-$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
+$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
 	FROM $join_sql_table " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
@@ -164,7 +164,7 @@ if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
 //
 
 //
-// Is user watching this thread? This could potentially
+// Is user watching this thread? This could potentially 
 // be combined into the above query but the LEFT JOIN causes
 // a number of problems which will probably end up in this
 // solution being practically as fast and certainly simpler!
@@ -173,9 +173,9 @@ if($userdata['user_id'] != ANONYMOUS)
 {
 	$can_watch_topic = TRUE;
 
-	$sql = "SELECT notify_status
-		FROM " . TOPICS_WATCH_TABLE . "
-		WHERE topic_id = $topic_id
+	$sql = "SELECT notify_status 
+		FROM " . TOPICS_WATCH_TABLE . " 
+		WHERE topic_id = $topic_id 
 			AND user_id = " . $userdata['user_id'];
 	if( !$result = $db->sql_query($sql) )
 	{
@@ -190,8 +190,8 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = 0;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . "
-					WHERE topic_id = $topic_id
+				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . " 
+					WHERE topic_id = $topic_id 
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -208,9 +208,9 @@ if($userdata['user_id'] != ANONYMOUS)
 			if( $watch_data['notify_status'] )
 			{
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
-					SET notify_status = 0
-					WHERE topic_id = $topic_id
+				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . " 
+					SET notify_status = 0 
+					WHERE topic_id = $topic_id 
 						AND user_id = " . $userdata['user_id'];
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -228,7 +228,7 @@ if($userdata['user_id'] != ANONYMOUS)
 				$is_watching_topic = TRUE;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : "";
-				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
+				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status) 
 					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
 				if( !$result = $db->sql_query($sql) )
 				{
@@ -279,7 +279,8 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain limited topics count information", "", __LINE__, __FILE__, $sql);
 	}
-	list($total_replies) = $db->sql_fetchrow($result);
+
+	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? $row['num_posts'] : 0;
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
@@ -362,27 +363,9 @@ $ranksrow = $db->sql_fetchrowset($ranksresult);
 //
 // Define censored word matches
 //
-$sql = "SELECT word, replacement
-	FROM  " . WORDS_TABLE;
-if( !$words_result = $db->sql_query($sql) )
-{
-	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
-}
-else
-{
-	$word_list = $db->sql_fetchrowset($words_result);
-
-	$orig_word = array();
-	$replacement_word = array();
-
-	for($i = 0; $i < count($word_list); $i++)
-	{
-		$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
-
-		$orig_word[] = "/\b(" . $word . ")\b/i";
-		$replacement_word[] = $word_list[$i]['replacement'];
-	}
-}
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
 
 //
 // Dump out the page header and load viewtopic body template
@@ -413,8 +396,8 @@ $template->assign_vars(array(
     "TOPIC_ID" => $topic_id,
     "TOPIC_TITLE" => $topic_title,
 
-	"L_DISPLAY_POSTS" => $lang['Display_posts'],
-	"L_RETURN_TO_TOP" => $lang['Return_to_top'],
+	"L_DISPLAY_POSTS" => $lang['Display_posts'], 
+	"L_RETURN_TO_TOP" => $lang['Return_to_top'], 
 
 	"S_SELECT_POST_DAYS" => $select_post_days,
 	"S_SELECT_POST_ORDER" => $select_post_order,
@@ -468,6 +451,126 @@ $template->assign_vars(array(
 );
 
 //
+// Does this topic contain a voting element?
+//
+if( !empty($forum_row['topic_vote']) )
+{
+	$sql = "SELECT vd.vote_id, vd.vote_text, vd.vote_start, vd.vote_length, vr.vote_option_id, vr.vote_option_text, vr.vote_result 
+		FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr 
+		WHERE vd.topic_id = $topic_id 
+			AND vr.vote_id = vd.vote_id 
+		ORDER BY vr.vote_option_id ASC";
+	if( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't obtain vote data for this topic", "", __LINE__, __FILE__, $sql);
+	}
+
+	if( $vote_options = $db->sql_numrows($result) )
+	{
+		$vote_info = $db->sql_fetchrowset($result);
+
+		$vote_id = $vote_info[0]['vote_id'];
+		$vote_title = $vote_info[0]['vote_text'];
+
+		$sql = "SELECT vote_id  
+			FROM " . VOTE_USERS_TABLE . "  
+			WHERE vote_id = $vote_id 
+				AND vote_user_id = " . $userdata['user_id'];
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain user vote data for this topic", "", __LINE__, __FILE__, $sql);
+		}
+
+		$user_voted = ( $db->sql_numrows($result) ) ? TRUE : 0;
+
+		if( isset($HTTP_GET_VARS['vote']) || isset($HTTP_POST_VARS['vote']) )
+		{
+			$view_result = ( ( ( isset($HTTP_GET_VARS['vote']) ) ? $HTTP_GET_VARS['vote'] : $HTTP_POST_VARS['vote'] ) == "viewresult" ) ? TRUE : 0;
+		}
+		else
+		{
+			$view_result = 0;
+		}
+
+		$poll_expired = ( $vote_info[0]['vote_length'] ) ? ( ( $vote_info[0]['vote_start'] + $vote_info[0]['vote_length'] < time() ) ? TRUE : 0 ) : 0;
+
+		if( $user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] )
+		{
+
+			$template->set_filenames(array(
+				"pollbox" => "viewtopic_poll_result.tpl")
+			);
+
+			$vote_results_sum = 0;
+
+			for($i = 0; $i < $vote_options; $i++)
+			{
+				$vote_results_sum += $vote_info[$i]['vote_result'];
+			}
+
+			$vote_graphic = 0;
+			$vote_graphic_max = count($images['voting_graphic']);
+
+			for($i = 0; $i < $vote_options; $i++)
+			{
+				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info[$i]['vote_result'] / $vote_results_sum : 0;
+				$vote_graphic_length = round($vote_percent * $board_config['vote_graphic_length']);
+
+				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
+				$vote_graphic = ($vote_graphic < $vote_graphic_max - 1) ? $vote_graphic + 1 : 0;
+				
+				$template->assign_block_vars("poll_option", array(
+					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'], 
+					"POLL_OPTION_RESULT" => $vote_info[$i]['vote_result'], 
+					"POLL_OPTION_PERCENT" => sprintf("%.1d%%", ($vote_percent * 100)), 
+
+					"POLL_OPTION_IMG" => $vote_graphic_img, 
+					"POLL_OPTION_IMG_WIDTH" => $vote_graphic_length)
+				);
+			}
+
+			$template->assign_vars(array(
+				"TOTAL_VOTES" => $vote_results_sum)
+			);
+
+		}
+		else
+		{
+			$template->set_filenames(array(
+				"pollbox" => "viewtopic_poll_ballot.tpl")
+			);
+
+			for($i = 0; $i < $vote_options; $i++)
+			{
+				$template->assign_block_vars("poll_option", array(
+					"POLL_OPTION_ID" => $vote_info[$i]['vote_option_id'], 
+					"POLL_OPTION_CAPTION" => $vote_info[$i]['vote_option_text'])
+				);
+			}
+
+			$template->assign_vars(array(
+				"L_SUBMIT_VOTE" => $lang['Submit_vote'],
+				"L_VIEW_RESULTS" => $lang['View_results'],
+			
+				"U_VIEW_RESULTS" => append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult"))
+			);
+
+			$s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '"><input type="hidden" name="mode" value="vote">';
+		}
+
+		$template->assign_vars(array(
+			"POLL_QUESTION" => $vote_title, 
+			
+			"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+			"S_VOTE_ACTION" => append_sid("posting.$phpEx?" . POST_TOPIC_URL . "=$topic_id"))
+		);
+
+		$template->assign_var_from_handle("POLL_DISPLAY", "pollbox");
+
+	}
+}
+
+//
 // Update the topic view counter
 //
 $sql = "UPDATE " . TOPICS_TABLE . "
@@ -485,19 +588,19 @@ if(!$update_result = $db->sql_query($sql))
 for($i = 0; $i < $total_posts; $i++)
 {
 	$poster_id = $postrow[$i]['user_id'];
-	$poster = stripslashes($postrow[$i]['username']);
+	$poster = $postrow[$i]['username'];
 
 	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['default_timezone']);
 
 	$poster_posts = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Posts'] . ": " . $postrow[$i]['user_posts'] : "";
 
-	$poster_from = ($postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS) ? $lang['From'] . ": " . stripslashes($postrow[$i]['user_from']) : "";
+	$poster_from = ($postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS) ? $lang['From'] . ": " . $postrow[$i]['user_from'] : "";
 
 	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['default_timezone']) : "";
 
 	if($postrow[$i]['user_avatar'] != "" && $poster_id != ANONYMOUS)
 	{
-		$poster_avatar = (eregi("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . stripslashes($postrow[$i]['user_avatar']) . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . stripslashes($postrow[$i]['user_avatar']) . "\" alt=\"\" /><br />";
+		$poster_avatar = (eregi("http", $postrow[$i]['user_avatar']) && $board_config['allow_avatar_remote']) ? "<br /><img src=\"" . $postrow[$i]['user_avatar'] . "\"><br />" : "<br /><img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" /><br />";
 	}
 	else
 	{
@@ -518,8 +621,8 @@ for($i = 0; $i < $total_posts; $i++)
 		{
 			if($postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'])
 			{
-				$poster_rank = stripslashes($ranksrow[$j]['rank_title']);
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . stripslashes($ranksrow[$j]['rank_image']) . "\"><br />" : "";
+				$poster_rank = $ranksrow[$j]['rank_title'];
+				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
 			}
 		}
 	}
@@ -529,8 +632,8 @@ for($i = 0; $i < $total_posts; $i++)
 		{
 			if($postrow[$i]['user_posts'] > $ranksrow[$j]['rank_min'] && $postrow[$i]['user_posts'] < $ranksrow[$j]['rank_max'] && !$ranksrow[$j]['rank_special'])
 			{
-				$poster_rank = stripslashes($ranksrow[$j]['rank_title']);
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . stripslashes($ranksrow[$j]['rank_image']) . "\"><br />" : "";
+				$poster_rank = $ranksrow[$j]['rank_title'];
+				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\"><br />" : "";
 			}
 		}
 	}
@@ -540,7 +643,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	if($poster_id == ANONYMOUS && $postrow[$i]['post_username'] != '')
 	{
-		$poster = stripslashes($postrow[$i]['post_username']);
+		$poster = $postrow[$i]['post_username'];
 		$poster_rank = $lang['Guest'];
 	}
 
@@ -550,16 +653,16 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
-		$email_addr = str_replace("@", " at ", stripslashes($postrow[$i]['user_email']));
+		$email_addr = str_replace("@", " at ", $postrow[$i]['user_email']);
 		$email_img = ($postrow[$i]['user_viewemail']) ? "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
 
-		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . stripslashes($postrow[$i]['user_website']) . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
+		$www_img = ($postrow[$i]['user_website']) ? "<a href=\"" . $postrow[$i]['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
 		if($postrow[$i]['user_icq'])
 		{
-			$icq_status_img = "<a href=\"http://wwp.icq.com/" . stripslashes($postrow[$i]['user_icq']) . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" border=\"0\" /></a>";
+			$icq_status_img = "<a href=\"http://wwp.icq.com/" . $postrow[$i]['user_icq'] . "#pager\"><img src=\"http://online.mirabilis.com/scripts/online.dll?icq=" . $postrow[$i]['user_icq'] . "&amp;img=5\" border=\"0\" /></a>";
 
-			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . stripslashes($postrow[$i]['user_icq']) . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
+			$icq_add_img = "<a href=\"http://wwp.icq.com/scripts/search.dll?to=" . $postrow[$i]['user_icq'] . "\"><img src=\"" . $images['icon_icq'] . "\" alt=\"" . $lang['ICQ'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -571,7 +674,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 		$msn_img = ($postrow[$i]['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "";
 
-		$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . stripslashes($postrow[$i]['user_yim']) . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
+		$yim_img = ($postrow[$i]['user_yim']) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $postrow[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "";
 	}
 	else
 	{
@@ -586,36 +689,56 @@ for($i = 0; $i < $total_posts; $i++)
 		$yim_img = "";
 	}
 
+	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
+
 	$search_img = "<a href=\"" . append_sid("search.$phpEx?a=" . urlencode($poster) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1") . "\"><img src=\"" . $images['icon_search'] . "\" border=\"0\" /></a>";
 
-	$edit_img = "<a href=\"" . append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;" . POST_TOPIC_URL . "=$topic_id") . "\"><img src=\"" . $images['icon_edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\" /></a>";
-
-	$quote_img = "<a href=\"" . append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_quote'] . "\" alt=\"" . $lang['Reply_with_quote'] ."\" border=\"0\" /></a>";
+	if( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
+	{
+		$edit_img = "<a href=\"" . append_sid("posting.$phpEx?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_edit'] . "\" alt=\"" . $lang['Edit_delete_post'] . "\" border=\"0\" /></a>";
+	}
+	else
+	{
+		$edit_img = "";
+	}
 
 	if( $is_auth['auth_mod'] )
 	{
-		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&" . POST_TOPIC_URL . "=$topic_id") . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
+		$ip_img = "<a href=\"" . append_sid("modcp.$phpEx?mode=viewip&amp;" . POST_POST_URL . "=" . $post_id) . "\"><img src=\"" . $images['icon_ip'] . "\" alt=\"" . $lang['View_IP'] . "\" border=\"0\" /></a>";
 
 		$delpost_img = "<a href=\"" . append_sid("topicadmin.$phpEx?mode=delpost&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']) . "\"><img src=\"" . $images['icon_delpost'] . "\" alt=\"" . $lang['Delete_post'] . "\" border=\"0\" /></a>";
 	}
-
-	$message = stripslashes($postrow[$i]['post_text']);
-	$post_subject = ($postrow[$i]['post_subject'] != "") ? stripslashes($postrow[$i]['post_subject']) : $topic_title;
+	else
+	{
+		$ip_img = "";
+		$delpost_img = "";
+	}
+	
+	$message = $postrow[$i]['post_text'];
+	$post_subject = ( $postrow[$i]['post_subject'] != "" ) ? $postrow[$i]['post_subject'] : $topic_title;
 
 	$bbcode_uid = $postrow[$i]['bbcode_uid'];
 
-	$user_sig = stripslashes($postrow[$i]['user_sig']);
+	$user_sig = $postrow[$i]['user_sig'];
 
-	if(!$board_config['allow_html'] || !$postrow[$i]['enable_html'])
+	//
+	// If the board has HTML off but the post has HTML
+	// on then we process it, else leave it alone
+	//
+	if( !$board_config['allow_html'] ) 
 	{
 		if($user_sig != "")
 		{
-			$user_sig = htmlspecialchars($user_sig);
+			$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
 		}
-		$message = htmlspecialchars($message);
+
+		if( $postrow[$i]['enable_html'] )
+		{
+			$message = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $message);
+		}
 	}
 
-	if($board_config['allow_bbcode'] && $bbcode_uid != "")
+	if( $board_config['allow_bbcode'] && $bbcode_uid != "" )
 	{
 		if($user_sig != "")
 		{
@@ -625,19 +748,9 @@ for($i = 0; $i < $total_posts; $i++)
 		}
 
 		$message = bbencode_second_pass($message, $bbcode_uid);
-
-		//
-		// This compensates for bbcode's rather agressive (but I guess necessary)
-		// HTML handling
-		//
-		if(!$postrow[$i]['enable_html'] || ($postrow[$i]['enable_html'] && !$board_config['allow_html']) )
-		{
-			$message = preg_replace("'&amp;'", "&", $message);
-		}
 	}
-	else
+	else if( !$board_config['allow_bbcode'] && $bbcode != "" )
 	{
-		// Removes UID from BBCode entries
 		$message = preg_replace("/\:[0-9a-z\:]+\]/si", "]", $message);
 	}
 
@@ -771,15 +884,15 @@ $template->assign_vars(array(
 	"ON_PAGE" => ( floor( $start / $board_config['posts_per_page'] ) + 1 ),
 	"TOTAL_PAGES" => ceil( $total_replies / $board_config['posts_per_page'] ),
 
-	"S_AUTH_LIST" => $s_auth_can,
-	"S_AUTH_READ_IMG" => $s_auth_read_img,
-	"S_AUTH_POST_IMG" => $s_auth_post_img,
-	"S_AUTH_REPLY_IMG" => $s_auth_reply_img,
-	"S_AUTH_EDIT_IMG" => $s_auth_edit_img,
+	"S_AUTH_LIST" => $s_auth_can, 
+	"S_AUTH_READ_IMG" => $s_auth_read_img, 
+	"S_AUTH_POST_IMG" => $s_auth_post_img, 
+	"S_AUTH_REPLY_IMG" => $s_auth_reply_img, 
+	"S_AUTH_EDIT_IMG" => $s_auth_edit_img, 
 	"S_AUTH_MOD_IMG" => $s_auth_mod_img,
-	"S_TOPIC_ADMIN" => $topic_mod,
-	"S_WATCH_TOPIC" => $s_watching_topic,
-	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img,
+	"S_TOPIC_ADMIN" => $topic_mod, 
+	"S_WATCH_TOPIC" => $s_watching_topic, 
+	"S_WATCH_TOPIC_IMG" => $s_watching_topic_img, 
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],

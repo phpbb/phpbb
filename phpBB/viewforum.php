@@ -65,7 +65,7 @@ init_userprefs($userdata);
 //
 if(isset($forum_id))
 {
-	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_votecreate, auth_vote, prune_enable, prune_next
+	$sql = "SELECT forum_name, forum_status, forum_topics, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_pollcreate, auth_vote, prune_enable, prune_next
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
 	if(!$result = $db->sql_query($sql))
@@ -88,7 +88,7 @@ if(!$total_rows = $db->sql_numrows($result))
 }
 $forum_row = $db->sql_fetchrow($result);
 
-$forum_name = stripslashes($forum_row['forum_name']);
+$forum_name = $forum_row['forum_name'];
 
 //
 // Start auth check
@@ -190,18 +190,18 @@ if(!empty($HTTP_POST_VARS['topicdays']) || !empty($HTTP_GET_VARS['topicdays']))
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
 		WHERE t.forum_id = $forum_id
 			AND p.post_id = t.topic_last_post_id
-			AND ( p.post_time >= $min_topic_time
-				OR t.topic_type = " . POST_ANNOUNCE . " )";
+			AND p.post_time >= $min_topic_time";
 
 	if(!$result = $db->sql_query($sql))
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain limited topics count information", "", __LINE__, __FILE__, $sql);
 	}
-	list($topics_count) = $db->sql_fetchrow($result);
+	$row = $db->sql_fetchrow($result);
 
-	$limit_topics_time = "AND ( p.post_time >= $min_topic_time OR t.topic_type = " . POST_ANNOUNCE . " ) ";
+	$topics_count = $row['forum_topics'];
+	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
-	if(!empty($HTTP_POST_VARS['topicdays']))
+	if( !empty($HTTP_POST_VARS['topicdays']) )
 	{
 		$start = 0;
 	}
@@ -232,7 +232,6 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
-		AND t.topic_type <> " . POST_GLOBAL_ANNOUNCE . "
 		AND t.topic_type <> " . POST_ANNOUNCE . "
 		$limit_topics_time
 	ORDER BY t.topic_type DESC, p.post_time DESC
@@ -249,8 +248,7 @@ $total_topics = $db->sql_numrows($t_result);
 //
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
 	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
-	WHERE ( t.forum_id = $forum_id
-			OR t.forum_id = -1 )
+	WHERE t.forum_id IN ($forum_id, -1)
 		AND t.topic_poster = u.user_id
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
@@ -270,27 +268,9 @@ $total_topics += $total_announcements;
 //
 // Define censored word matches
 //
-$sql = "SELECT word, replacement
-	FROM  " . WORDS_TABLE;
-if( !$words_result = $db->sql_query($sql) )
-{
-	message_die(GENERAL_ERROR, "Couldn't get censored words from database.", "", __LINE__, __FILE__, $sql);
-}
-else
-{
-	$word_list = $db->sql_fetchrowset($words_result);
-
-	$orig_word = array();
-	$replacement_word = array();
-
-	for($i = 0; $i < count($word_list); $i++)
-	{
-		$word = str_replace("\*", "\w*?", preg_quote($word_list[$i]['word']));
-
-		$orig_word[] = "/\b(" . $word . ")\b/i";
-		$replacement_word[] = $word_list[$i]['replacement'];
-	}
-}
+$orig_word = array();
+$replacement_word = array();
+obtain_word_list($orig_word, $replacement_word);
 
 //
 // Post URL generation for templating vars
@@ -331,12 +311,6 @@ else
 {
 	$s_auth_mod_img = "";
 }
-
-//
-// Dump out the page header and load viewforum template
-//
-$page_title = $lang['View_forum'] . " - $forum_name";
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewforum_body.tpl",
@@ -398,11 +372,11 @@ if($total_topics)
 	{
 		if( count($orig_word) )
 		{
-			$topic_title = preg_replace($orig_word, $replacement_word, stripslashes($topic_rowset[$i]['topic_title']));
+			$topic_title = preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']);
 		}
 		else
 		{
-			$topic_title = stripslashes($topic_rowset[$i]['topic_title']);
+			$topic_title = $topic_rowset[$i]['topic_title'];
 		}
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
@@ -426,7 +400,7 @@ if($total_topics)
 
 		if($replies > $board_config['posts_per_page'])
 		{
-			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\" />" . $lang['Goto_page'] . ": ";
+			$goto_page = "&nbsp;&nbsp;&nbsp;(<img src=\"" . $images['icon_minipost'] . "\" alt=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
@@ -490,11 +464,11 @@ if($total_topics)
 				}
 			}
 
-			if(empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'])
+			if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) && $topic_rowset[$i]['post_time'] > $userdata['session_last_visit'] )
 			{
 				if($mark_read == "topics")
 				{
-					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 					$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 				}
 				else
@@ -508,7 +482,7 @@ if($total_topics)
 				{
 					if($mark_read == "topics")
 					{
-						setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), time()+6000, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+						setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 						$folder_image = "<img src=\"$folder\" alt=\"" . $lang['No_new_posts'] . "\" />";
 					}
 					else
@@ -525,7 +499,7 @@ if($total_topics)
 
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
-		$topic_poster = stripslashes($topic_rowset[$i]['username']);
+		$topic_poster = $topic_rowset[$i]['username'];
 		$topic_poster_profile_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']);
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['default_timezone']);
@@ -582,14 +556,18 @@ else
 	//
 	$no_topics_msg = ($forum_row['forum_status'] == FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
 	$template->assign_vars(array(
-		"L_NO_TOPICS" => $no_topics_msg,
-
-		"S_NO_TOPICS" => TRUE)
+		"L_NO_TOPICS" => $no_topics_msg)
 	);
 
 	$template->assign_block_vars("notopicsrow", array() );
 
 }
+
+//
+// Dump out the page header and load viewforum template
+//
+$page_title = $lang['View_forum'] . " - $forum_name";
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
 // Parse the page and print

@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                           lang_english.php  -  description
+ *                               lang_english.php
  *                              -------------------
  *     begin                : Sat Dec 16 2000
  *     copyright            : (C) 2001 The phpBB Group
@@ -197,6 +197,7 @@ $lang['Display_topics'] = "Display topics from previous";
 $lang['All_Topics'] = "All Topics";
 $lang['Topic_Announcement'] = "<b>Announcement:</b>";
 $lang['Topic_Sticky'] = "<b>Sticky:</b>";
+$lang['Topic_Moved'] = "<b>Moved:</b>";
 
 //
 // Viewtopic
@@ -207,6 +208,8 @@ $lang['Guest'] = 'Guest';
 $lang['Post_subject'] = "Post subject";
 $lang['View_next_topic'] = "View next topic";
 $lang['View_previous_topic'] = "View previous topic";
+$lang['Submit_vote'] = "Submit Vote";
+$lang['View_results'] = "View Results";
 
 $lang['No_newer_topics'] = "There are no newer topics in this forum";
 $lang['No_older_topics'] = "There are no older topics in this forum";
@@ -258,16 +261,16 @@ $lang['Edit_Post'] = "Edit post";
 $lang['Post_Normal'] = "Normal";
 $lang['Post_Announcement'] = "Announcement";
 $lang['Post_Sticky'] = "Sticky";
-$lang['Topic_Moved'] = "Moved";
 $lang['Options'] = "Options";
 
 $lang['Confirm'] = "Confirm";
 $lang['Confirm_delete'] = "Are you sure you want to delete this post?";
+$lang['Confirm_delete_poll'] = "Are you sure you want to delete this poll?";
 $lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
 $lang['Cancel_post'] = "Cancel post";
 
-$lang['Flood_Error'] = "Your last post was less then " . $board_config['flood_interval'] . " seconds ago. You must wait before you post again!";
+$lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while.";
 $lang['Sorry_edit_own_posts'] = "Sorry but you can only edit your own posts";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
@@ -278,6 +281,20 @@ $lang['No_post_id'] = "You must select a post to edit";
 $lang['No_topic_id'] = "You must select a topic to reply to";
 $lang['No_valid_mode'] = "You can only post, reply edit or quote messages, please return and try again";
 $lang['No_such_post'] = "There is no such post, please return and try again";
+
+$lang['Add_poll'] = "Add a Poll";
+$lang['Add_poll_explain'] = "If you do not want to add a poll to your topic leave the fields blank";
+$lang['Poll_question'] = "Poll question";
+$lang['Poll_option'] = "Poll option";
+$lang['Add_option'] = "Add option";
+$lang['Update'] = "Update";
+$lang['Delete'] = "Delete";
+$lang['Poll_for'] = "Run poll for";
+$lang['Poll_for_explain'] = "[ Enter 0 or leave blank for a never ending poll ]";
+$lang['Delete_poll'] = "Delete Poll";
+$lang['Empty_poll_title'] = "You must enter a title for your poll";
+$lang['To_few_poll_options'] = "You must enter at least two poll options";
+$lang['To_many_poll_options'] = "You have tried to enter too many poll options";
 
 $lang['Attach_signature'] = "Attach signature (signatures can be changed in profile)";
 $lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
@@ -290,8 +307,12 @@ $lang['Delete_post'] = "Delete this post";
 $lang['is_ON'] = " is ON"; // this goes after either BBCode or HTML
 $lang['is_OFF'] = " is OFF"; // see above
 
+$lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
+
 $lang['Stored'] = "Your message has been entered successfully";
 $lang['Deleted'] = "Your message has been deleted successfully";
+$lang['Poll_delete'] = "Your poll has been deleted successfully";
+$lang['Vote_cast'] = "Your vote has been cast";
 $lang['Click'] = "Click"; // Followed by here and then either return to topic or view message
 $lang['Here'] = "Here";
 $lang['to_return_forum'] = "to return to the forum";
@@ -610,7 +631,6 @@ $lang['New_forum'] = "New forum";
 $lang['None_selected'] = "You have no selected any topics to preform this operation on. Please go back and select at least one.";
 
 
-
 //
 // Timezones ... for display on each page
 //
@@ -744,6 +764,8 @@ $lang['Edit'] = "Edit";
 $lang['Delete'] = "Delete";
 $lang['Sticky'] = "Sticky";
 $lang['Announce'] = "Announce";
+$lang['Vote'] = "Vote";
+$lang['Pollcreate'] = "Poll create";
 
 $lang['Permissions'] = "Permissions";
 $lang['Simple_Permission'] = "Simple Permission";
@@ -837,14 +859,21 @@ $lang['group_delete'] = "Delete group";
 $lang['group_delete_check'] = "Click here to delete this group.";
 $lang['submit_group_changes'] = "Submit Changes";
 $lang['reset_group_changes'] = "Reset Changes";
+
 //
 // Prune Administration
 //
-$lang['prune_days'] = 'Remove topics that haven\'t been posted to in';
+$lang['Forum_Prune'] = "Forum Prune";
+$lang['Forum_Prune_explain'] = "This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.";
+$lang['Do_Prune'] = "Do Prune";
+$lang['All_Forums'] = "All Forums";
+$lang['prune_days'] = "Remove topics that have not been posted to in";
+$lang['Prune_topics_not_posted'] = "Prune topics that haven't been posted to in the last";
 $lang['prune_freq'] = 'Check for topic age every';
-$lang['days'] = 'Days';
-$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune, please go back and do so";
-
+$lang['Set_prune_data'] = "You have turned on auto-prune for this forum but did not set a frequency or number of days to prune. Please go back and do so";
+$lang['Topics_pruned'] = "Topics pruned";
+$lang['Posts_pruned'] = "Posts pruned";
+$lang['Prune_success'] = "Pruning of forums was successful";
 //
 // Word censor
 //
@@ -874,70 +903,6 @@ $lang['Compose'] = "Compose";
 // -------------------------------------------------
 // Old format ... _DON'T_add_any_ new entries here!!
 //
-// Register
-$l_mailingaddress =
-"
-	James Atkinson<br />
-	c/o 100World.com Inc.<br />
-	512-1529 West 6th Ave.<br />
-	Vancouver BC, V6J 1R1<br />
-	Canada<br />
-";
-
-$l_faxinfo = "
-	Mark Fax with:
-  ATTN: James Atkinson<br />
-	RE: Forum Registration<br />
-	<br />
-	Fax Number: +1-604-742-1770<br />
-";
-$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian mail it to: <br />$l_mailingaddress<br />Or fax it to: <br />$l_faxinfo<br /> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
-$l_welcomesubj	= "Welcome to ".$board_config['sitename']." Forums";
-$l_welcomemail	= "
-$l_welcomesubj,
-
-Please keep this email for your records.
-
-
-Your account information is as follows:
-
-----------------------------
-Username: $username
-Password: $password
-----------------------------
-
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
-However, should you forget your password we provide an easy to use script to generate and email a new, random, password.
-
-Thank you for registering.
-
-";
-
-// Editpost
-// Newtopic
-$l_notifybody	= 'Dear $m[username]\r\nYou are receiving this Email because a message
-you posted on $sitename forums has been replied to, and
-you selected to be notified on this event.
-
-You may view the topic at:
-
-http://$SERVER_NAME$url_phpbb/viewtopic.$phpEx?topic=$topic&forum=$forum
-
-Or view the $sitename forum index at
-
-http://$SERVER_NAME$url_phpbb
-
-Thank you for using $sitename forums.
-
-Have a nice day.
-
-';
-
-
-// Smilies
-$l_smilesym	= "What to type";
-$l_smileemotion	= "Emotion";
-$l_smilepict	= "Picture";
 
 // Sendpasswd
 $l_wrongactiv	= "The activation key you provided is not correct. Please check email $l_message you recived and make sure you have copied the activation key exactly.";

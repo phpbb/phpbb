@@ -28,15 +28,18 @@
 define(DEBUG, 1); // Debugging on
 //define(DEBUG, 0); // Debugging off
 
+
 // User Levels <- Do not change the values of USER or ADMIN
 define(DELETED, -1);
 define(ANONYMOUS, -1);
 define(USER, 0);
 define(ADMIN, 1);
 
+
 // Forum state
 define(FORUM_UNLOCKED, 0);
 define(FORUM_LOCKED, 1);
+
 
 // Topic status
 define(TOPIC_UNLOCKED, 0);
@@ -57,6 +60,7 @@ define(POST_GLOBAL_ANNOUNCE, 3);
 define(BEGIN_TRANSACTION, 1);
 define(END_TRANSACTION, 2);
 
+
 // Error codes
 define(GENERAL_MESSAGE, 200);
 define(GENERAL_ERROR, 202);
@@ -70,11 +74,15 @@ define(SESSION_CREATE, 4);
 define(NO_TOPICS, 5);
 define(LOGIN_FAILED, 7);
 
+
 // Private messaging
 define(PRIVMSGS_READ_MAIL, 0);
 define(PRIVMSGS_NEW_MAIL, 1);
 define(PRIVMSGS_SENT_MAIL, 2);
 define(PRIVMSGS_SAVED_MAIL, 3);
+define(PRIVMSGS_SAVED_IN_MAIL, 3);
+define(PRIVMSGS_SAVED_OUT_MAIL, 4);
+
 
 // URL PARAMETERS
 define(POST_TOPIC_URL, 't');
@@ -83,9 +91,11 @@ define(POST_USERS_URL, 'u');
 define(POST_POST_URL, 'p');
 define(POST_GROUPS_URL, 'g');
 
+
 // Session parameters
 define(SESSION_METHOD_COOKIE, 100);
 define(SESSION_METHOD_GET, 101);
+
 
 // Page numbers for session handling
 define(PAGE_INDEX, 0);
@@ -100,6 +110,7 @@ define(PAGE_POSTING, -9);
 define(PAGE_PRIVMSGS, -10);
 define(PAGE_GROUPCP, -11);
 define(PAGE_TOPIC_OFFSET, 5000);
+
 
 // Auth settings
 define(AUTH_ALL, 0);
@@ -119,11 +130,12 @@ define(AUTH_DELETE, 6);
 
 define(AUTH_ANNOUNCE, 7);
 define(AUTH_STICKY, 8);
-define(AUTH_VOTECREATE, 9);
+define(AUTH_POLLCREATE, 9);
 define(AUTH_VOTE, 10);
 define(AUTH_ATTACH, 11);
 
 define(AUTH_LIST_ALL, 20);
+
 
 // Table names
 define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
@@ -138,6 +150,7 @@ define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
 define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
+define('PRUNE_TABLE', $table_prefix.'forum_prune');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
 define('SMILIES_TABLE', $table_prefix.'smilies');
@@ -147,6 +160,8 @@ define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
-define('PRUNE_TABLE', $table_prefix.'forum_prune');
+define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
+define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
+define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 
 ?>

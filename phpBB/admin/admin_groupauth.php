@@ -28,15 +28,35 @@ if($setmodules == 1)
 	return;
 }
 
+$phpbb_root_path = "./../";
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
+
 //
-// Include required files, get $phpEx and check permissions
+// Start session management
 //
-require('pagestart.inc');
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
+//
+// Is user logged in? If yes are they an admin?
+//
+if( !$userdata['session_logged_in'] )
+{
+	header("Location: ../login.$phpEx?forward_page=admin/");
+}
+else if( $userdata['user_level'] != ADMIN )
+{
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+}
 
 //
 // Start program - define vars
 //
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce");
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_vote", "auth_pollcreate");
 
 $auth_field_match = array(
 	"auth_view" => AUTH_VIEW,
@@ -46,7 +66,9 @@ $auth_field_match = array(
 	"auth_edit" => AUTH_EDIT,
 	"auth_delete" => AUTH_DELETE,
 	"auth_sticky" => AUTH_STICKY,
-	"auth_announce" => AUTH_ANNOUNCE);
+	"auth_announce" => AUTH_ANNOUNCE, 
+	"auth_vote" => AUTH_VOTE, 
+	"auth_pollcreate" => AUTH_POLLCREATE);
 
 $field_names = array(
 	"auth_view" => $lang['View'],
@@ -56,7 +78,9 @@ $field_names = array(
 	"auth_edit" => $lang['Edit'],
 	"auth_delete" => $lang['Delete'],
 	"auth_sticky" => $lang['Sticky'],
-	"auth_announce" => $lang['Announce']);
+	"auth_announce" => $lang['Announce'], 
+	"auth_vote" => $lang['Vote'], 
+	"auth_pollcreate" => $lang['Pollcreate']);
 
 
 // ---------------
@@ -458,7 +482,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 		{
 			if(!empty($valid_auth_mod_sql[$forum_id]))
 			{
-				$warning_list .= "<b><a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i] . "\">" . $warning_mod_username[$forum_id][$i] . "</a></b> " . $lang['has_moderator_status'] .  " <b>" . $warning_mod_frmname[$forum_id][$i] . "</b><br />";
+				$warning_list .= "<b><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_mod_username[$forum_id][$i] . "</a></b> " . $lang['has_moderator_status'] .  " <b>" . $warning_mod_frmname[$forum_id][$i] . "</b><br />";
 			}
 		}
 	}
@@ -469,14 +493,16 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 		{
 			if(!empty($valid_auth_prv_sql[$forum_id]))
 			{
-				$warning_list .= "<b><a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i] . "\">" . $warning_prv_username[$forum_id][$i] . "</a></b> " . $lang['has_access_status'] .  " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b><br />";
+				$warning_list .= "<b><a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_ary[$i]) . "\">" . $warning_prv_username[$forum_id][$i] . "</a></b> " . $lang['has_access_status'] .  " <b>" . $warning_prv_frmname[$forum_id][$i] . "</b><br />";
 			}
 		}
 	}
 
 	if($warning_list != "")
 	{
-		$warning_list = "<br />" . $lang['Conflict_message_groupauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] ." <a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id\">" . $lang['HERE'] . "</a> " . $lang['return_group_auth_admin'] . "<br />";
+		$warning_list = "<br />" . $lang['Conflict_message_groupauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] ." <a href=\"" . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id") . "\">" . $lang['HERE'] . "</a> " . $lang['return_group_auth_admin'] . "<br />";
+
+		include('page_header_admin.'.$phpEx);
 
 		$template->set_filenames(array(
 			"body" => "admin/admin_message_body.tpl")
@@ -489,7 +515,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 	}
 	else
 	{
-		header("Location: admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id");
+		header("Location: " . append_sid("admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id"));
 	}
 
 }
@@ -513,6 +539,8 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 		$select_list .= "<option value=\"" . $group_list[$i]['group_id'] . "\">" . $group_list[$i]['group_name'] . "</option>";
 	}
 	$select_list .= "</select>";
+
+	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_select_body.tpl")
@@ -543,6 +571,8 @@ else
 	{
 		$adv = FALSE;
 	}
+
+	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_ug_body.tpl")
@@ -812,7 +842,7 @@ else
 		$t_usergroup_list = "";
 		for($i = 0; $i < count($username); $i++)
 		{
-			$t_usergroup_list .= "<a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id[$i] . "\">" . $username[$i] . "</a>";
+			$t_usergroup_list .= "<a href=\"" . append_sid("admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id[$i]) . "\">" . $username[$i] . "</a>";
 			if($i < count($username) - 1)
 			{
 				$t_usergroup_list .= ", ";
@@ -850,7 +880,7 @@ else
 	$switch_mode = "admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id . "&adv=";
 	$switch_mode .= ( !$adv ) ? "1" : "0";
 	$switch_mode_text = ( !$adv ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
-	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
+	$u_switch_mode = '<a href="' . append_sid($switch_mode) . '">' . $switch_mode_text . '</a>';
 
 	$template->assign_vars(array(
 		"USERNAME" => $t_groupname,

@@ -35,49 +35,59 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if( $html_on )
 	{
-		$start = -1;
-		$end = 0;
+		$html_entities_match = array("#<#", "#>#", "#& #");
+		$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
 
-		for($h = 0; $h < strlen($message); $h++)
+		$start_html = 1;
+
+		$message = " " . $message;
+		while( $start_html = strpos($message, "<", $start_html) )
 		{
-			$start = strpos($message, "<", $h);
-
-			if($start > -1)
+			if( $end_html = strpos($message, ">", $start_html) )
 			{
-				$end = strpos($message, ">", $start);
+				$length = $end_html - $start_html + 1;
 
-				if($end)
+				$tagallowed = 0;
+				for($i = 0; $i < sizeof($board_config['allow_html_tags']); $i++)
 				{
-					$length = $end - $start + 1;
-					$tagallowed = 0;
+					$match_tag = trim($board_config['allow_html_tags'][$i]);
 
-					for($i = 0; $i < sizeof($board_config['allow_html_tags']); $i++)
+					if( preg_match("/^[\/]?" . $match_tag . "( .*?)*$/i", trim(substr($message, $start_html + 1, $length - 2))) )
 					{
-						$match_tag = trim($board_config['allow_html_tags'][$i]);
-						list($match_tag_split) = explode(" ", $match_tag);
-
-						if( preg_match("/^((\/" . $match_tag_split . ")|(" . $match_tag . "))[ \=]+/i", trim(substr($message, $start + 1, $length - 2)) . " ") )
+						if( !preg_match("/(^\?)|(\?$)/", trim(substr($message, $start_html + 1, $length - 2))) )
 						{
 							$tagallowed = 1;
 						}
 					}
-
-					if($length && !$tagallowed)
-					{
-						$message = str_replace(substr($message, $start, $length), htmlspecialchars(substr($message, $start, $length)), $message);
-					}
 				}
-				$start = -1;
+
+				if( $length && !$tagallowed )
+				{
+					$message = str_replace(substr($message, $start_html, $length), preg_replace($html_entities_match, $html_entities_replace, substr($message, $start_html, $length)), $message);
+				}
+
+				$start_html += $length;
+			}
+			else
+			{
+				$message = str_replace(substr($message, $start_html, 1), preg_replace($html_entities_match, $html_entities_replace, substr($message, $start_html, 1)), $message);
+
+				$start_html = strlen($message);
 			}
 		}
+		$message = trim($message);
+	}
+	else
+	{
+		$html_entities_match = array("#<#", "#>#", "#& #");
+		$html_entities_replace = array("&lt;", "&gt;", "&amp; ");
+		$message = preg_replace($html_entities_match, $html_entities_replace, $message);
 	}
 
-	if($bbcode_on)
+	if( $bbcode_on && $bbcode_uid != "" )
 	{
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
-
-	$message = addslashes($message);
 
 	return($message);
 }
