@@ -169,7 +169,7 @@ class emailer
 
 		if ($drop_header != '')
 		{
-			$this->msg = trim(preg_replace('#' . phpbb_preg_quote('#', $drop_header) . '#s', '', $this->msg));
+			$this->msg = trim(preg_replace('#' . phpbb_preg_quote($drop_header, '#') . '#s', '', $this->msg));
 		}
 
 		return true;
