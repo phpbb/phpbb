@@ -47,6 +47,7 @@ if (!$topic_id && !$post_id)
 	trigger_error('NO_TOPIC');
 }
 
+$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
 // Find topic id if user requested a newer or older topic
 $unread_post_id = '';
@@ -71,9 +72,7 @@ if (isset($_GET['view']) && !$post_id)
 			}
 			else
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
-				$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_f'])) : array();
-				$sql_unread_time = max($tracking_topics[$topic_id], $tracking_forums[$forum_id]);
+				$sql_unread_time = base_convert(max($tracking_topics[$forum_id]), 36, 10);
 				$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
 			}
 
@@ -232,6 +231,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
+// KARMA BITS GO HERE AT PRESENT - Removed for now
 
 // What is start equal to?
 if (!empty($post_id))
@@ -295,45 +295,9 @@ else
 $sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 
-// Cache this? ... it is after all doing a simple data grab
-
-// Only good if there are lots of ranks IMHO (we save the sorting)
-// Moved to global cache but could be simply obtained dynamically if we see
-// the cache is growing too big -- Ashe
-if ($cache->exists('ranks'))
-{
-	$ranks = $cache->get('ranks');
-}
-else
-{
-	$sql = 'SELECT *
-		FROM ' . RANKS_TABLE . '
-		ORDER BY rank_min DESC';
-	$result = $db->sql_query($sql);
-
-	$ranks = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['rank_special'])
-		{
-			$ranks['special'][$row['rank_id']] = array(
-				'rank_title'	=>	$row['rank_title'],
-				'rank_image'	=>	$row['rank_image']
-			);
-		}
-		else
-		{
-			$ranks['normal'][] = array(
-				'rank_title'	=>	$row['rank_title'],
-				'rank_min'		=>	$row['rank_min'],
-				'rank_image'	=>	$row['rank_image']
-			);
-		}
-	}
-	$db->sql_freeresult($result);
-
-	$cache->put('ranks', $ranks);
-}
+// Grab ranks
+$ranks = array();
+obtain_ranks($ranks);
 
 
 // Grab icons
@@ -420,7 +384,7 @@ $template->assign_vars(array(
 	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
-	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
+	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
 	'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['QUOTE_POST']),
 	'REPLY_IMG'			=> ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['TOPIC_LOCKED']) : $user->img('btn_reply', $user->lang['REPLY_TO_TOPIC']),
 	'EDIT_IMG' 			=> $user->img('btn_edit', $user->lang['EDIT_POST']),
@@ -458,10 +422,10 @@ $template->assign_vars(array(
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=$forum_id",
 	'U_VIEW_OLDER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=previous",
 	'U_VIEW_NEWER_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=next", 
-	'U_PRINT_TOPIC'			=> "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print",
-	'U_EMAIL_TOPIC'			=> "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id", 
+	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param&amp;view=print" : '',
+	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id" : '', 
 
-	'U_POST_NEW_TOPIC' 		=> "posting.$phpE$SID&amp;mode=post&amp;f=$forum_id",
+	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id")
 );
 
@@ -642,9 +606,10 @@ do
 	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
 	{
 		$rowset[] = array(
-			'below_karma'	=>	TRUE,
-			'poster'		=>	$poster,
-			'user_karma'	=>	$row['user_karma']
+			'below_karma'	=> TRUE,
+			'post_id'		=> $row['post_id'], 
+			'poster'		=> $poster,
+			'user_karma'	=> $row['user_karma']
 		);
 
 		continue;
@@ -742,6 +707,8 @@ do
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
+				'karma'			=> (!empty($row['user_karma'])) ? $row['user_karma'] : 0, 
+				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />', 
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
@@ -795,9 +762,9 @@ do
 				}
 			}
 
-			if ((!empty($row['user_allow_viewemail']) || $auth->acl_get('m_', $forum_id)) && $config['email_enable'])
+			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 			{
-				$user_cache[$poster_id]['email'] = ($config['board_email_form']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
+				$user_cache[$poster_id]['email'] = ($config['board_email_form'] && $config['email_enable']) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 			}
 			else
 			{
@@ -807,7 +774,7 @@ do
 			if (!empty($row['user_icq']))
 			{
 				$user_cache[$poster_id]['icq'] =  "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$poster_id";
-				$user_cache[$poster_id]['icq_status_img'] = '<a href="' . $user_cache[$poster_id]['icq'] . '"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" /></a>';
+				$user_cache[$poster_id]['icq_status_img'] = '<img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />';
 			}
 			else
 			{
@@ -848,8 +815,7 @@ if (count($attach_list))
 			WHERE post_id IN (' . implode(', ', $attach_list) . ')';
 		$db->sql_query($sql);
 
-		// We need to update the topic indicator too if the 
-		// complete topic is now without an attachment
+		// We need to update the topic indicator too if the complete topic is now without an attachment
 		if (count($rowset) != $total_posts)
 		{
 			// Not all posts are displayed so we query the db to find if there's any attachment for this topic
@@ -907,7 +873,7 @@ foreach ($rowset as $key => $row)
 			'S_IGNORE_POST' => true, 
 			'S_ROW_COUNT'	=> $i++,
 
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], intval($row['user_karma']), '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], $row['user_karma'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
 		);
 
 		continue;
@@ -936,7 +902,7 @@ foreach ($rowset as $key => $row)
 	{
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
-			$bbcode->bbcode_second_pass(&$user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
+			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
 		if (count($censors))
@@ -967,7 +933,7 @@ foreach ($rowset as $key => $row)
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
 	{
-		$bbcode->bbcode_second_pass(&$message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
 
@@ -981,7 +947,7 @@ foreach ($rowset as $key => $row)
 	{
 		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
 		// via php.net's annotated manual
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"hilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthighlight\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 
@@ -1018,6 +984,7 @@ foreach ($rowset as $key => $row)
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
+		'POSTER_KARMA'	=> $user_cache[$poster_id]['karma'], 
 
 		'POST_DATE' 	=> $user->format_date($row['post_time']),
 		'POST_SUBJECT' 	=> $row['post_subject'],
@@ -1030,6 +997,7 @@ foreach ($rowset as $key => $row)
 		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
+		'KARMA_IMG'			=> $user_cache[$poster_id]['karma_img'], 
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
@@ -1047,6 +1015,8 @@ foreach ($rowset as $key => $row)
 		'U_YIM' 			=> $user_cache[$poster_id]['yim'],
 		'U_JABBER'			=> $user_cache[$poster_id]['jabber'], 
 
+		'U_RATE_GOOD'		=> "viewtopic.$phpEx$SID&amp;rate=good&amp;p=" . $row['post_id'], 
+		'U_RATE_BAD'		=> "viewtopic.$phpEx$SID&amp;rate=bad&amp;p=" . $row['post_id'], 
 		'U_REPORT'			=> "report.$phpEx$SID&amp;p=" . $row['post_id'],
 		'U_MCP_REPORT'		=> ($auth->acl_get('f_report', $forum_id)) ? "mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
@@ -1054,6 +1024,7 @@ foreach ($rowset as $key => $row)
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
 
 		'S_ROW_COUNT'		=> $i++,
+		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? true : false, 
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
@@ -1092,7 +1063,6 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 		$db->sql_query($sql);
 	}
 }
-
 
 
 // Mark topics read
