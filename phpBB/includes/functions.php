@@ -74,16 +74,19 @@ function get_db_stat($mode)
 	return false;
 }
 
-function get_userdata($user)
+//
+// Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
+//
+function get_userdata($user, $force_str = false)
 {
 	global $db;
 
-	$user = ( is_string($user)) ? str_replace("\'", "''", htmlspecialchars(trim($user))) : intval($user);
+	$user = ((intval($user) == 0) || ($force_str)) ? str_replace("\'", "''", htmlspecialchars(trim($user))) : intval($user);
 
 	$sql = "SELECT *
 		FROM " . USERS_TABLE . " 
 		WHERE ";
-	$sql .= ( ( is_string($user) ) ? "username = '" .  $user . "'" : "user_id = $user" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  $user . "'" ) . " AND user_id <> " . ANONYMOUS;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);

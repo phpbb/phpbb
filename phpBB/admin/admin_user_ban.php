@@ -49,7 +49,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	$user_list = array();
 	if ( !empty($HTTP_POST_VARS['username']) )
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		$this_userdata = get_userdata($HTTP_POST_VARS['username'], true);
 		if( !$this_userdata )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );

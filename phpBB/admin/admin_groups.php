@@ -263,7 +263,7 @@ else if ( isset($HTTP_POST_VARS['group_update']) )
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 		
-		$this_userdata = get_userdata($group_moderator);
+		$this_userdata = get_userdata($group_moderator, true);
 		$group_moderator = $this_userdata['user_id'];
 
 		if ( !$group_moderator )

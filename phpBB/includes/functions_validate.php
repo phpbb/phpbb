@@ -29,6 +29,9 @@ function validate_username($username)
 {
 	global $db, $lang, $userdata;
 
+	// Remove doubled up spaces
+	$username = preg_replace('#\s+#', ' ', $username); 
+	// Limit username length
 	$username = substr(str_replace("\'", "'", $username), 0, 25);
 	$username = str_replace("'", "''", $username);
 

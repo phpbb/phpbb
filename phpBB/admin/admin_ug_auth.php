@@ -510,7 +510,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 {
 	if ( isset($HTTP_POST_VARS['username']) )
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		$this_userdata = get_userdata($HTTP_POST_VARS['username'], true);
 		if ( !is_array($this_userdata) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
