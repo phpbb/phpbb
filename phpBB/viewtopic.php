@@ -464,25 +464,27 @@ $template->assign_vars(array(
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
-	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
-	'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['QUOTE_POST']),
-	'REPLY_IMG'			=> ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['TOPIC_LOCKED']) : $user->img('btn_reply', $user->lang['REPLY_TO_TOPIC']),
-	'EDIT_IMG' 			=> $user->img('btn_edit', $user->lang['EDIT_POST']),
-	'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_POST']),
-	'IP_IMG' 			=> $user->img('btn_ip', $user->lang['VIEW_IP']),
-	'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']), 
-	'SEARCH_IMG' 		=> $user->img('btn_search', $user->lang['SEARCH_USER_POSTS']),
-	'PM_IMG' 			=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
-	'EMAIL_IMG' 		=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
-	'WWW_IMG' 			=> $user->img('btn_www', $user->lang['VISIT_WEBSITE']),
-	'ICQ_IMG' 			=> $user->img('btn_icq', $user->lang['ICQ']),
-	'AIM_IMG' 			=> $user->img('btn_aim', $user->lang['AIM']),
-	'MSN_IMG' 			=> $user->img('btn_msnm', $user->lang['MSNM']),
-	'YIM_IMG' 			=> $user->img('btn_yim', $user->lang['YIM']) ,
-	'JABBER_IMG'		=> $user->img('btn_jabber', $user->lang['JABBER']) ,
-	'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_POST']),
-	'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
-	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
+	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', 'FORUM_LOCKED') : $user->img('btn_post', 'POST_NEW_TOPIC'),
+	'QUOTE_IMG' 		=> $user->img('btn_quote', 'QUOTE_POST'),
+	'REPLY_IMG'			=> ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $user->img('btn_locked', 'TOPIC_LOCKED') : $user->img('btn_reply', 'REPLY_TO_TOPIC'),
+	'EDIT_IMG' 			=> $user->img('btn_edit', 'EDIT_POST'),
+	'DELETE_IMG' 		=> $user->img('btn_delete', 'DELETE_POST'),
+	'IP_IMG' 			=> $user->img('btn_ip', 'VIEW_IP'),
+	'PROFILE_IMG'		=> $user->img('btn_profile', 'READ_PROFILE'), 
+	'SEARCH_IMG' 		=> $user->img('btn_search', 'SEARCH_USER_POSTS'),
+	'PM_IMG' 			=> $user->img('btn_pm', 'SEND_PRIVATE_MESSAGE'),
+	'EMAIL_IMG' 		=> $user->img('btn_email', 'SEND_EMAIL'),
+	'WWW_IMG' 			=> $user->img('btn_www', 'VISIT_WEBSITE'),
+	'ICQ_IMG' 			=> $user->img('btn_icq', 'ICQ'),
+	'AIM_IMG' 			=> $user->img('btn_aim', 'AIM'),
+	'MSN_IMG' 			=> $user->img('btn_msnm', 'MSNM'),
+	'YIM_IMG' 			=> $user->img('btn_yim', 'YIM'),
+	'JABBER_IMG'		=> $user->img('btn_jabber', 'JABBER') ,
+	'REPORT_IMG'		=> $user->img('btn_report', 'REPORT_POST'),
+	'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED'),
+	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED'),
+	'KARMA_LEFT_IMG'	=> $user->img('karma_left', ''),
+	'KARMA_RIGHT_IMG'	=> $user->img('karma_right', ''),
 
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
@@ -545,9 +547,7 @@ if (!empty($poll_start))
 	{
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
-		// the need to delete cookies to mess with results. We could get 
-		// a little more clever by time limiting based on ip's but ultimately
-		// it can be overcome without great difficulty.
+		// the need to delete cookies to mess with results.
 		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
 		{
 			$cur_voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
@@ -647,7 +647,7 @@ if (!empty($poll_start))
 			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
-			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * 250), true), 
+			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * 250)), 
 			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
 		);
 	}
@@ -840,18 +840,19 @@ while ($row = $db->sql_fetchrow($result))
 		{
 			$user_sig = '';
 
-			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+			if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
 			}
 
 			$id_cache[] = $poster_id;
+
 			$user_cache[$poster_id] = array(
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
-				'karma'			=> ($config['enable_karma'] && $row['user_karma']) ? $row['user_karma'] : 0, 
-				'karma_img'		=> ($config['enable_karma']) ? '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />' : '',
+				'karma'			=> ($config['enable_karma']) ? $row['user_karma'] : 0, 
+				'karma_img'		=> ($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$row['user_karma']], false, (int) $row['user_karma']) : '',
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
@@ -1180,11 +1181,11 @@ for ($i = 0; $i < count($post_list); ++$i)
 		'EDITED_MESSAGE'=> $l_edited_by,
 		'BUMPED_MESSAGE'=> $l_bumped_by,
 
-		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
+		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'KARMA_IMG'			=> $user_cache[$poster_id]['karma_img'], 
-		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])), 
+		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')), 
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
