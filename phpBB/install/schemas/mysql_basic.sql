@@ -90,6 +90,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('lastread', '432000');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_ftp_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');

@@ -1633,9 +1633,8 @@ switch ($mode)
 
 
 		// Define censored word matches
-		$orig_word = array();
-		$replacement_word = array();
-		obtain_word_list($orig_word, $replacement_word);
+		$censors = array();
+		obtain_word_list($censors);
 
 		$topic_rows = array();
 
@@ -1717,9 +1716,9 @@ switch ($mode)
 
 			// Shouldn't moderators be allowed to read uncensored title?
 			$topic_title = $row['topic_title'];
-			if (count($orig_word))
+			if (count($censors['match']))
 			{
-				$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+				$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
 			}
 
 			$template->assign_block_vars('topicrow', array(

@@ -562,10 +562,10 @@ else if ( $mode == 'read' )
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
-	if ( count($orig_word) )
+	if ( count($censors['match']) )
 	{
-		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-		$private_message = preg_replace($orig_word, $replacement_word, $private_message);
+		$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+		$private_message = preg_replace($censors['match'], $censors['replace'], $private_message);
 	}
 
 	if ( $config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] )
@@ -1278,9 +1278,8 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( $preview && !$error )
 	{
-		$orig_word = array();
-		$replacement_word = array();
-		obtain_word_list($orig_word, $replacement_word);
+		$censors = array();
+		obtain_word_list($censors);
 
 		if ( $bbcode_on )
 		{
@@ -1316,10 +1315,10 @@ else if ( $submit || $refresh || $mode != '' )
 			$preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
 		}
 
-		if ( count($orig_word) )
+		if ( count($censors['match']) )
 		{
-			$preview_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
-			$preview_message = preg_replace($orig_word, $replacement_word, $preview_message);
+			$preview_subject = preg_replace($censors['match'], $censors['replace'], $privmsg_subject);
+			$preview_message = preg_replace($censors['match'], $censors['replace'], $preview_message);
 		}
 		else
 		{
@@ -1847,9 +1846,9 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		$msg_subject = $row['privmsgs_subject'];
 
-		if ( count($orig_word) )
+		if ( count($censors['match']) )
 		{
-			$msg_subject = preg_replace($orig_word, $replacement_word, $msg_subject);
+			$msg_subject = preg_replace($censors['match'], $censors['replace'], $msg_subject);
 		}
 
 		$u_subject = append_sid("privmsg.$phpEx?folder=$folder&amp;mode=read&amp;p=$privmsg_id");

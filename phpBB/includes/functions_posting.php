@@ -87,43 +87,6 @@ function generate_smilies($mode)
 	}
 }
 
-// Generate Topic Icons
-function generate_topic_icons($mode, $enable_icons)
-{
-	global $template, $config;
-
-	if (!$enable_icons)
-	{
-		return false;
-	}
-	
-	// Grab icons
-	$icons = array();
-	obtain_icons($icons);
-
-	if (sizeof($icons))
-	{
-		foreach ($icons as $id => $data)
-		{
-			if ($data['display'])
-			{
-				$template->assign_block_vars('topic_icon', array(
-					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
-					'ICON_WIDTH'	=> $data['width'],
-					'ICON_HEIGHT' 	=> $data['height'],
-
-					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
-				);
-			}
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
 function decode_text(&$message, $bbcode_uid)
 {
@@ -159,132 +122,7 @@ function decode_text(&$message, $bbcode_uid)
 
 	return;
 }
-
-// Topic Review
-function topic_review($topic_id, $is_inline_review = false)
-{
-	global $SID, $db, $config, $template, $user, $auth, $phpEx, $phpbb_root_path, $starttime;
-	global $censors;
-
-	// Define censored word matches
-	if (empty($censors))
-	{
-		$censors = array();
-		obtain_word_list($censors);
-	}
-
-	if (!$is_inline_review)
-	{
-		// Get topic info ...
-		$sql = "SELECT t.topic_title, f.forum_id
-			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
-			WHERE t.topic_id = $topic_id
-				AND f.forum_id = t.forum_id";
-		$result = $db->sql_query($sql);
-
-		if (!($row = $db->sql_fetchrow($result)))
-		{
-			trigger_error($user->lang['NO_TOPIC']);
-		}
-
-		$forum_id = intval($row['forum_id']);
-		$topic_title = $row['topic_title'];
-
-		if (!$auth->acl_gets('f_read', $forum_id))
-		{
-			trigger_error($user->lang['SORRY_AUTH_READ']);
-		}
-
-		if (count($orig_word))
-		{
-			$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
-		}
-	}
-	else
-	{
-		$template->assign_vars(array(
-			'S_DISPLAY_INLINE'	=> true)
-		);
-	}
-
-	// Go ahead and pull all data for this topic
-	$sql = "SELECT u.username, u.user_id, p.* 
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-		WHERE p.topic_id = $topic_id
-			AND p.poster_id = u.user_id
-		ORDER BY p.post_time DESC";
-	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
-
-	// Okay, let's do the loop, yeah come on baby let's do the loop
-	// and it goes like this ...
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$i = 0;
-		do
-		{
-			$poster_id = $row['user_id'];
-			$poster = $row['username'];
-
-			// Handle anon users posting with usernames
-			if($poster_id == ANONYMOUS && $row['post_username'] != '')
-			{
-				$poster = $row['post_username'];
-				$poster_rank = $user->lang['GUEST'];
-			}
-
-			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
-
-			$message = $row['post_text'];
-
-			if ($row['enable_smilies'])
-			{
-				$message = str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
-			}
-
-			if (count($orig_word))
-			{
-				$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
-				$message = preg_replace($censors['match'], $censors['replace'], $message);
-			}
-
-			$template->assign_block_vars('postrow', array(
-				'MINI_POST_IMG' 	=> $user->img('icon_post', $user->lang['POST']),
-				'POSTER_NAME' 		=> $poster,
-				'POST_DATE' 		=> $user->format_date($row['post_time']),
-				'POST_SUBJECT' 		=> $post_subject,
-				'MESSAGE' 			=> nl2br($message),
-
-				'S_ROW_COUNT'	=> $i++)
-			);
-		}
-		while ($row = $db->sql_fetchrow($result));
-	}
-	else
-	{
-		trigger_error($user->lang['NO_TOPIC']);
-	}
-	$db->sql_freeresult($result);
-
-	$template->assign_vars(array(
-		'L_MESSAGE' 	=> $user->lang['MESSAGE'],
-		'L_POSTED' 		=> $user->lang['POSTED'],
-		'L_POST_SUBJECT'=> $user->lang['POST_SUBJECT'],
-		'L_TOPIC_REVIEW'=> $user->lang['TOPIC_REVIEW'])
-	);
-
-	if (!$is_inline_review)
-	{
-		$page_title = $user->lang['TOPIC_REVIEW'] . ' - ' . $topic_title;
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-		$template->set_filenames(array(
-			'body' => 'posting_topic_review.html')
-		);
-
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-	}
-}
-
+/*
 // Update Last Post Informations
 function update_last_post_information($type, $id)
 {
@@ -354,7 +192,7 @@ function update_last_post_information($type, $id)
 	$sql = 'UPDATE ' . $sql_update_table . ' SET ' . $db->sql_build_array('UPDATE', $update_sql) . ' WHERE ' . $where_clause;
 	$db->sql_query($sql);
 }
-
+*/
 function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 {
 	global $db, $user, $config, $phpEx;
@@ -545,7 +383,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 // Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
 function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 {
-	global $auth, $forum_id, $config, $censors, $user, $bbcode;
+	global $auth, $forum_id, $config, $censors, $user, $bbcode, $phpbb_root_path;
 
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
@@ -593,122 +431,11 @@ function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 		$user_sig = '';
 	}
 		
-	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $message);
+	$message = (empty($smilies) || empty($config['allow_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $message) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $message);
 	
 	$message .= $user_sig;
 
 	return($message);
-}
-
-// Submit Poll
-function submit_poll($topic_id, $mode, $poll)
-{
-	global $db;
-
-	$cur_poll_options = array();
-	if ($poll['poll_start'] && $mode == 'edit')
-	{
-		$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
-			WHERE topic_id = " . $topic_id . "
-			ORDER BY poll_option_id";
-		$result = $db->sql_query($sql);
-
-		while ($cur_poll_options[] = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
-	}
-
-	for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
-	{
-		if (trim($poll['poll_options'][$i]) != '')
-		{
-			if (empty($cur_poll_options[$i]))
-			{
-				$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
-					VALUES (" . $i . ", " . $topic_id . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
-				$db->sql_query($sql);
-			}
-			else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
-			{
-				$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
-					SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-					WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
-				$db->sql_query($sql);
-			}
-		}
-	}
-			
-	if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
-	{
-		$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-			WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
-				AND topic_id = " . $topic_id;
-		$db->sql_query($sql);
-	}
-}
-	
-// Submit Attachment
-function submit_attachment($post_id, $topic_id, $user_id, $mode, $attachment_data)
-{
-	global $db, $config, $auth;
-
-	// Insert Attachment ?
-	if ((!empty($post_id)) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
-	{
-		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
-		{
-			if ($attachment_data['attach_id'][$i] != '-1')
-			{
-				// update entry in db if attachment already stored in db and filespace
-				$attach_sql = array(
-					'comment' => trim($attachment_data['comment'][$i])
-				);
-			
-				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
-				$db->sql_query($sql);
-			}
-			else
-			{
-				// insert attachment into db 
-				$attach_sql = array(
-					'physical_filename' => $attachment_data['physical_filename'][$i],
-					'real_filename' => $attachment_data['real_filename'][$i],
-					'comment' => trim($attachment_data['comment'][$i]),
-					'extension' => $attachment_data['extension'][$i],
-					'mimetype' => $attachment_data['mimetype'][$i],
-					'filesize' => $attachment_data['filesize'][$i],
-					'filetime' => $attachment_data['filetime'][$i],
-					'thumbnail' => $attachment_data['thumbnail'][$i]
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-
-				$attach_sql = array(
-					'attach_id' => $db->sql_nextid(),
-					'post_id' => $post_id,
-					'privmsgs_id' => 0,
-					'user_id_from' => $user_id,
-					'user_id_to' => 0
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-			}
-		}
-
-		if (count($attachment_data['attach_id']) > 0)
-		{
-			$sql = "UPDATE " . POSTS_TABLE . "
-				SET post_attachment = 1
-				WHERE post_id = " . $post_id;
-			$db->sql_query($sql);
-
-			$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_attachment = 1
-				WHERE topic_id = " . $topic_id;
-			$db->sql_query($sql);
-		}
-	}
 }
 
 // Submit Post
@@ -788,17 +515,108 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 	$post_data['post_id'] = ($mode == 'edit') ? $post_data['post_id'] : $db->sql_nextid();
 
-	// poll options
+	// Submit Poll
 	if (!empty($poll['poll_options']))
 	{
-		submit_poll($post_data['topic_id'], $mode, $poll);
+		$cur_poll_options = array();
+	
+		if ($poll['poll_start'] && $mode == 'edit')
+		{
+			$sql = "SELECT * FROM " . POLL_OPTIONS_TABLE . " 
+				WHERE topic_id = " . $post_data['topic_id'] . "
+				ORDER BY poll_option_id";
+			$result = $db->sql_query($sql);
+
+			while ($cur_poll_options[] = $db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+		}
+
+		for ($i = 0; $i < sizeof($poll['poll_options']); $i++)
+		{
+			if (trim($poll['poll_options'][$i]) != '')
+			{
+				if (empty($cur_poll_options[$i]))
+				{
+					$sql = "INSERT INTO " . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
+						VALUES (" . $i . ", " . $post_data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
+					$db->sql_query($sql);
+				}
+				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
+				{
+					$sql = "UPDATE " . POLL_OPTIONS_TABLE . " 
+						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'];
+					$db->sql_query($sql);
+				}
+			}
+		}
+			
+		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
+		{
+			$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
+				WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
+					AND topic_id = " . $post_data['topic_id'];
+			$db->sql_query($sql);
+		}
 	}
 
-	// Attachments
-	if (!empty($attachment_data['physical_filename']))
+	// Submit Attachments
+	if (count($attachment_data['attach_id']) && !empty($post_data['post_id']) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
 	{
-		$poster_id = ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']);
-		submit_attachment($post_data['post_id'], $post_data['topic_id'], $poster_id, $mode, $attachment_data);
+		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
+		{
+			if ($attachment_data['attach_id'][$i] != '-1')
+			{
+				// update entry in db if attachment already stored in db and filespace
+				$attach_sql = array(
+					'comment' => trim($attachment_data['comment'][$i])
+				);
+			
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
+				$db->sql_query($sql);
+			}
+			else
+			{
+				// insert attachment into db 
+				$attach_sql = array(
+					'physical_filename' => $attachment_data['physical_filename'][$i],
+					'real_filename' => $attachment_data['real_filename'][$i],
+					'comment' => trim($attachment_data['comment'][$i]),
+					'extension' => $attachment_data['extension'][$i],
+					'mimetype' => $attachment_data['mimetype'][$i],
+					'filesize' => $attachment_data['filesize'][$i],
+					'filetime' => $attachment_data['filetime'][$i],
+					'thumbnail' => $attachment_data['thumbnail'][$i]
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+
+				$attach_sql = array(
+					'attach_id' => $db->sql_nextid(),
+					'post_id' => $post_data['post_id'],
+					'privmsgs_id' => 0,
+					'user_id_from' => ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']),
+					'user_id_to' => 0
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+			}
+		}
+
+		if (count($attachment_data['attach_id']) > 0)
+		{
+			$sql = "UPDATE " . POSTS_TABLE . "
+				SET post_attachment = 1
+				WHERE post_id = " . $post_data['post_id'];
+			$db->sql_query($sql);
+
+			$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_attachment = 1
+				WHERE topic_id = " . $post_data['topic_id'];
+			$db->sql_query($sql);
+		}
 	}
 
 	// Fulltext parse
@@ -902,167 +720,6 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$message = ($post_data['enable_moderate']) ? 'POST_STORED_MOD' : 'POST_STORED';
 	$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID .'&p=' . $post_data['post_id'] . '#' . $post_data['post_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $post_data['forum_id'] . '">', '</a>');
 	trigger_error($message);
-}
-
-// Delete Poll
-function delete_poll($topic_id)
-{
-	global $db;
-
-	$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-		WHERE topic_id = " . $topic_id;
-	$db->sql_query($sql);
-
-	$sql = "DELETE FROM " . POLL_VOTES_TABLE . "
-		WHERE topic_id = " . $topic_id;
-	$db->sql_query($sql);
-
-	$topic_sql = array(
-		'poll_title'	=> '',
-		'poll_start' 	=> 0,
-		'poll_length'	=> 0,
-		'poll_last_vote' => 0
-	);
-
-	$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $topic_id;
-	$db->sql_query($sql);
-}
-
-// Delete Post. Please be sure user have the correct Permissions before calling this function
-function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
-{
-	global $db, $template, $user, $phpEx, $SID;
-
-	$search = new fulltext_search();
-
-	$db->sql_transaction();
-
-	$sql = "DELETE FROM " . POSTS_TABLE . " 
-		WHERE post_id = " . $post_id;
-	$db->sql_query($sql);
-
-	// User tries to delete the post twice ? Exit... we do not want the topics table screwed up.
-	if ($db->sql_affectedrows() == 0)
-	{
-		return ($user->lang['ALREADY_DELETED']);
-	}
-
-	$forum_sql = array();
-	$topic_sql = array();
-	$user_sql = array();
-
-	$forum_update_sql = '';
-	$user_update_sql = '';
-	$topic_update_sql = 'topic_replies = topic_replies - 1, topic_replies_real = topic_replies_real - 1';
-
-	// Only one post... delete topic
-	if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
-	{
-		$sql = "DELETE FROM " . TOPICS_TABLE . " 
-			WHERE topic_id = " . $topic_id . "
-				OR topic_moved_id = " . $topic_id;
-		$db->sql_query($sql);
-
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = " . $topic_id;
-		$db->sql_query($sql);
-
-		$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
-		$forum_update_sql .= 'forum_topics = forum_topics - 1, forum_topics_real = forum_topics_real - 1';
-	}
-
-	// Update Post Statistics
-	if ($post_data['enable_post_count'])
-	{
-		$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
-		$forum_update_sql .= 'forum_posts = forum_posts - 1';
-
-		$user_update_sql .= ($user_update_sql != '') ? ', ' : '';
-		$user_update_sql .= 'user_posts = user_posts - 1';
-	}
-
-	// Delete Attachment
-	delete_attachment($post_id);
-
-	// TODO: delete common words... maybe just call search_tidy ?
-//	$search->del_words($post_id);
-
-	$sql = "SELECT p.post_id, p.poster_id, p.post_username, u.username 
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u
-		WHERE p.topic_id = " . $topic_id . " 
-			AND p.poster_id = u.user_id 
-			AND p.post_approved = 1
-		ORDER BY p.post_time DESC";
-	$result = $db->sql_query_limit($sql, 1);
-
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	// If Post is first post, but not the only post... make next post the topic starter one. ;)
-	if (($post_data['topic_first_post_id'] != $post_data['topic_last_post_id']) && ($post_id == $post_data['topic_first_post_id']))
-	{
-		$topic_sql = array(
-			'topic_first_post_id' => intval($row['post_id']),
-			'topic_first_poster_name' => ( intval($row['poster_id']) == ANONYMOUS) ? trim($row['post_username']) : trim($row['username'])
-		);
-	}
-
-	$post_data['next_post_id'] = intval($row['post_id']);
-
-	// Update Forum, Topic and User with the gathered Informations
-	if (($forum_update_sql != '') || (count($forum_sql) > 0))
-	{
-		$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . ( (count($forum_sql) > 0) ? $db->sql_build_array('UPDATE', $forum_sql) : '') . 
-			( ($forum_update_sql != '') ? ((count($forum_sql) > 0) ? ', ' . $forum_update_sql : $forum_update_sql) : '') . ' 
-			WHERE forum_id = ' . $forum_id;
-		$db->sql_query($sql);
-	}
-
-	if (($topic_update_sql != '') || (count($topic_sql) > 0))
-	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . ( (count($topic_sql) > 0) ? $db->sql_build_array('UPDATE', $topic_sql) : '') . 
-			( ($topic_update_sql != '') ? ((count($topic_sql) > 0) ? ', ' . $topic_update_sql : $topic_update_sql) : '') . ' 
-			WHERE topic_id = ' . $topic_id;
-		$db->sql_query($sql);
-	}
-
-	if (($user_update_sql != '') || (count($user_sql) > 0))
-	{
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . ( (count($user_sql) > 0) ? $db->sql_build_array('UPDATE', $user_sql) : '') . 
-			( ($user_update_sql != '') ? ((count($user_sql) > 0) ? ', ' . $user_update_sql : $user_update_sql) : '') . ' 
-			WHERE user_id = ' . $post_data['user_id'];
-		$db->sql_query($sql);
-	}
-
-	// Update Forum stats...
-	if ($post_data['topic_first_post_id'] != $post_data['topic_last_post_id'])
-	{
-		update_last_post_information('topic', $topic_id);
-	}
-	update_last_post_information('forum', $forum_id);
-
-	$db->sql_transaction('commit');
-	
-	if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
-	{
-		$meta_info = '<meta http-equiv="refresh" content="5; url=viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">';
-		$message = $user->lang['DELETED'];
-	}
-	else
-	{
-		$meta_info = '<meta http-equiv="refresh" content="5; url=viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">';
-		$message = $user->lang['DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;p=' . $post_data['next_post_id'] . '#' . $post_data['next_post_id'] . '">', '</a>');
-	}
-
-	$template->assign_vars(array(
-		'META' => $meta_info)
-	);
-
-	$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
-
-	trigger_error($message);
-
-	return;
 }
 
 // Delete Attachment
@@ -1273,10 +930,10 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -
 			// delete attachments
 			while ($row = $db->sql_fetchrow($result))
 			{
-				phpbb_unlink($row['physical_filename']);
+				phpbb_unlink($row['physical_filename'], 'file', $config['use_ftp_upload']);
 				if (intval($row['thumbnail']) == 1)
 				{
-					phpbb_unlink($row['physical_filename'], 'thumbnail');
+					phpbb_unlink($row['physical_filename'], 'thumbnail', $config['use_ftp_upload']);
 				}
 					
 				$sql = "DELETE FROM " . ATTACHMENTS_DESC_TABLE . "
@@ -1673,24 +1330,14 @@ function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
 	return ('');
 }
 
-// Deletes an Attachment
-function phpbb_unlink($filename, $mode = false)
+// Delete File
+function phpbb_unlink($filename, $mode = 'file', $use_ftp = false)
 {
 	global $config, $user;
 
-	$config['use_ftp_upload'] = 0;
-
-	if (!$config['use_ftp_upload'])
+	if (!$use_ftp)
 	{
-		if ($mode == 'thumbnail')
-		{
-			$filename = $config['upload_dir'] . '/thumbs/t_' . $filename;
-		}
-		else
-		{
-			$filename = $config['upload_dir'] . '/' . $filename;
-		}
-
+		$filename = ($mode == 'thumbnail') ? $config['upload_dir'] . '/thumbs/t_' . $filename : $config['upload_dir'] . '/' . $filename;
 		$deleted = @unlink($filename);
 
 		if (@file_exists($filename))
@@ -1700,9 +1347,12 @@ function phpbb_unlink($filename, $mode = false)
 
 			if (@file_exists($filename)) 
 			{
-				$deleted = @chmod($filename, 0777);
+				@chmod($filename, 0777);
 				$deleted = @unlink($filename);
-				$deleted = @system("del $filename");
+				if (!$deleted)
+				{
+					$deleted = @system("del $filename");
+				}
 			}
 		}
 	}

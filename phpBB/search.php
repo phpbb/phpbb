@@ -653,12 +653,9 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$db->sql_freeresult($result);
 
-		//
 		// Define censored word matches
-		//
-		$orig_word = array();
-		$replacement_word = array();
-		obtain_word_list($orig_word, $replacement_word);
+		$censors = array();
+		obtain_word_list($censors);
 
 		//
 		// Output header
@@ -829,12 +826,12 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 						}
 					}
 
-					if ( count($orig_word) )
+					if ( count($censors['match']) )
 					{
-						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
-						$post_subject = ( $searchset[$i]['post_subject'] != "" ) ? preg_replace($orig_word, $replacement_word, $searchset[$i]['post_subject']) : $topic_title;
+						$topic_title = preg_replace($censors['match'], $censors['replace'], $topic_title);
+						$post_subject = ( $searchset[$i]['post_subject'] != "" ) ? preg_replace($censors['match'], $censors['replace'], $searchset[$i]['post_subject']) : $topic_title;
 
-						$message = preg_replace($orig_word, $replacement_word, $message);
+						$message = preg_replace($censors['match'], $censors['replace'], $message);
 					}
 					else
 					{
@@ -902,9 +899,9 @@ if ( $search_keywords != '' || $search_author != '' || $search_id )
 			{
 				$message = '';
 
-				if ( count($orig_word) )
+				if ( count($censors['match']) )
 				{
-					$topic_title = preg_replace($orig_word, $replacement_word, $searchset[$i]['topic_title']);
+					$topic_title = preg_replace($censors['match'], $censors['replace'], $searchset[$i]['topic_title']);
 				}
 
 				$topic_type = $searchset[$i]['topic_type'];

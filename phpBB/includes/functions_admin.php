@@ -278,7 +278,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	}
 	if (!count($where_ids))
 	{
-		return;
+		return false;
 	}
 
 	$post_ids = $topic_ids = $forum_ids = array();
@@ -297,7 +297,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 
 	if (!count($post_ids))
 	{
-		return;
+		return false;
 	}
 
 	$where_sql = ' WHERE post_id IN (' . implode(', ', $post_ids) . ')';
@@ -308,6 +308,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . $where_sql);
 	$db->sql_query('DELETE FROM ' . SEARCH_MATCH_TABLE . $where_sql);
 	$db->sql_transaction('commit');
+
+	delete_attachment($post_ids);
 
 	if ($auto_sync)
 	{

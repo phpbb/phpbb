@@ -549,11 +549,11 @@ class parse_message
 							// delete selected attachment
 							if ($actual_id_list[$i] == '-1')
 							{
-								phpbb_unlink($actual_list[$i]);
+								phpbb_unlink($actual_list[$i], 'file', $config['use_ftp_upload']);
 
 								if ($actual_thumbnail_list[$i] == 1)
 								{
-									phpbb_unlink('t_' . $actual_list[$i], 'thumbnail');
+									phpbb_unlink('t_' . $actual_list[$i], 'thumbnail', $config['use_ftp_upload']);
 								}
 							}
 							else
