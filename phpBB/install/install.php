@@ -55,9 +55,9 @@ if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 
 // Obtain various vars
 $stage = (isset($_POST['stage'])) ? intval($_POST['stage']) : 0;
-
+//, 'acm_type'
 // These are all strings so we'll just traverse an array
-$var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'acm_type', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
+$var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
 
 foreach ($var_ary as $var)
 {
@@ -757,8 +757,10 @@ if ($stage == 1)
 		<td class="row1" width="50%"><b><?php echo $lang['SCRIPT_PATH']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="script_path" value="<?php echo $script_path; ?>" /></td>
 	</tr>
+	<!-- tr>
 		<td class="row1" width="50%"><b><?php echo $lang['CACHE_STORE']; ?>: </b><br /><span class="gensmall"><?php echo $lang['CACHE_STORE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="radio" name="acm_type" value="db" <?php echo ($acm_type == 'db') ? 'checked="checked" ' : ''; ?>/> <?php echo $lang['STORE_DATABASE']; ?> <input type="radio" name="acm_type" value="file" <?php echo (!$acm_type || $acm_type == 'file') ? 'checked="checked" ' : ''; ?>/> <?php echo $lang['STORE_FILESYSTEM']; ?></td>
+	</tr -->
 	<tr>
 		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="btnmain" name="install" type="submit" value="<?php echo $lang['INSTALL_START']; ?>" /></td>
 	</tr>
@@ -806,7 +808,8 @@ if ($stage == 2)
 	$config_data .= "\$dbuser = '$dbuser';\n";
 	$config_data .= "\$dbpasswd = '$dbpasswd';\n\n";
 	$config_data .= "\$table_prefix = '$table_prefix';\n";
-	$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'db') . "';\n";
+//	$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'file') . "';\n";
+	$config_data .= "\$acm_type = 'file';\n";
 	$config_data .= "\$load_extensions = '$load_extensions';\n\n";
 	$config_data .= "define('PHPBB_INSTALLED', true);\n";
 	$config_data .= "define('DEBUG', true);\n"; // Comment out when final
