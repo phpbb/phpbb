@@ -77,8 +77,7 @@ function addBBcode(bbCode)
                 </tr>
                 <tr class="tablebody">
                       <td bgcolor="#DDDDDD">{L_OPTIONS}</td>
-                       <td bgcolor="#CCCCCC">
-                       {HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}</td>
+                       <td bgcolor="#CCCCCC">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br>&nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</td>
 		</tr>
         <tr class="tableheader">
 		   <td align="center" colspan="2">{S_HIDDEN_FORM_FIELDS}

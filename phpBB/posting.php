@@ -34,6 +34,9 @@ init_userprefs($userdata);
 // End session management
 //
 
+//
+// Set initial conditions
+//
 if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
 {
 	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
@@ -45,9 +48,6 @@ else
 
 $mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : ( (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : "");
 
-//
-// Set initial conditions
-//
 $is_first_post = (($HTTP_GET_VARS['is_first_post'] == 1) || ($HTTP_POST_VARS['is_first_post'] == 1)) ? TRUE : FALSE;
 
 $disable_html = (isset($HTTP_POST_VARS['disable_html'])) ? $HTTP_POST_VARS['disable_html'] : !$userdata['user_allowhtml'];
@@ -58,18 +58,14 @@ $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_s
 
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
 
-$annouce = (isset($HTTP_POST_VARS['annouce'])) ? TRUE : FALSE;
-$unannouce = (isset($HTTP_POST_VARS['unannouce'])) ? TRUE : FALSE;
-$sticky = (isset($HTTP_POST_VARS['sticky'])) ? TRUE : FALSE;
-$unstick = (isset($HTTP_POST_VARS['unstick'])) ? TRUE : FALSE;
-
 $preview = (isset($HTTP_POST_VARS['preview'])) ? TRUE : FALSE;
 
-if($annouce)
+$topictype = (isset($HTTP_POST_VARS['topictype'])) ? $HTTP_POST_VARS['topictype'] : "normal";
+if($topictype == "announce")
 {
 	$topic_type = POST_ANNOUNCE;
 }
-else if($sticky)
+else if($topictype == "sticky")
 {
 	$topic_type = POST_STICKY;
 }
@@ -88,40 +84,40 @@ switch($mode)
 		{
 			$auth_type = AUTH_ANNOUNCE;
 			$is_auth_type = "auth_announce";
-			$error_string = $lang['can_post_announcements'];
+			$auth_string = $lang['can_post_announcements'];
 		}
 		else if($topic_type == POST_STICKY)
 		{
 			$auth_type = AUTH_STICKY;
 			$is_auth_type = "auth_sticky";
-			$error_string = $lang['can_post_sticky_topics'];
+			$auth_string = $lang['can_post_sticky_topics'];
 		}
 		else
 		{
 			$auth_type = AUTH_ALL;
 			$is_auth_type = "auth_post";
-			$error_string = $lang['can_post_new_topics'];
+			$auth_string = $lang['can_post_new_topics'];
 		}
 		break;
 	case 'reply':
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_reply";
-		$error_string = $lang['can_reply_to_topics'];
+		$auth_string = $lang['can_reply_to_topics'];
 		break;
 	case 'editpost':
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_edit";
-		$error_string = $lang['can_edit_topics'];
+		$auth_string = $lang['can_edit_topics'];
 		break;
 	case 'delete':
 		$auth_type = AUTH_DELETE;
 		$is_auth_type = "auth_delete";
-		$error_string = $lang['can_delete_topics'];
+		$auth_string = $lang['can_delete_topics'];
 		break;
 	default:
 		$auth_type = AUTH_ALL;
 		$is_auth_type = "auth_all";
-		$error_string = $lang['can_post_new_topics'];
+		$auth_string = $lang['can_post_new_topics'];
 		break;
 }
 
@@ -134,17 +130,9 @@ if(!$is_auth[$is_auth_type])
 	//
 	include('includes/page_header.'.$phpEx);
 
-	$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $error_string . $lang['this_forum'];
+	$msg = $lang['Sorry_auth'] . $is_auth[$is_auth_type . "_type"] . $auth_string . $lang['this_forum'];
 
-	$template->set_filenames(array(
-		"reg_header" => "error_body.tpl"
-	));
-	$template->assign_vars(array(
-		"ERROR_MESSAGE" => $msg
-	));
-	$template->pparse("reg_header");
-
-	include('includes/page_tail.'.$phpEx);
+	message_die(GENERAL_MESSAGE, $msg);
 }
 //
 // End Auth
@@ -182,7 +170,9 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	// End: Flood control
 	//
 
+	//
 	// Handle anon posting with usernames
+	//
 	if(isset($HTTP_POST_VARS['username']))
 	{
 		$username = trim(strip_tags(htmlspecialchars(stripslashes($HTTP_POST_VARS['username']))));
@@ -212,7 +202,9 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 		$error_msg .= $lang['Empty_subject'];
 	}
 
+	//
 	// You can't make it both an annoumcement and a stick topic
+	//
 	if($annouce && $sticky)
 	{
 		$error = TRUE;
@@ -227,14 +219,8 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 	{
 		if(!$error && !$preview)
 		{
-			if($disable_html)
-			{
-				$html_on = FALSE;
-			}
-			else
-			{
-				$html_on = TRUE;
-			}
+			$smile_on = ($disable_smilies) ? FALSE : TRUE;
+			$html_on = ($disable_html) ? FALSE : TRUE;
 
 			if($disable_bbcode)
 			{
@@ -242,24 +228,15 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 			}
 			else
 			{
-				$uid = make_bbcode_uid();
+				$bbcode_uid = make_bbcode_uid();
 				$bbcode_on = TRUE;
 			}
 
-			if($disable_smilies)
-			{
-				$smile_on = FALSE;
-			}
-			else
-			{
-				$smile_on = TRUE;
-			}
-
-			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $uid);
+			$message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smile_on, $bbcode_uid);
 
 			if($attach_sig && !empty($userdata['user_sig']))
 			{
-				$message .= "[addsig]";
+				$message .= (eregi(" $", $message)) ? "[addsig]" : " [addsig]";
 			}
 		}
 		else
@@ -282,21 +259,9 @@ if(isset($HTTP_POST_VARS['submit']) || $preview)
 switch($mode)
 {
 	case 'newtopic':
-		$page_title = " ".$lang['Postnew'];
-		$section_title = $lang['Post_new_topic_in'];
 
-		if($SQL_LAYER != "mysql")
-		{
-			switch($SQL_LAYER)
-			{
-				case 'postgres':
-					$result = $db->sql_query("BEGIN");
-					break;
-				case 'mssql':
-					$result = $db->sql_query("BEGIN TRANSACTION");
-					break;
-			}
-		}
+		$page_title = " " . $lang['Postnew'];
+		$section_title = $lang['Post_new_topic_in'];
 
 		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
@@ -304,212 +269,92 @@ switch($mode)
 			{
 				$username = addslashes($username);
 			}
+
 			$topic_time = get_gmt_ts();
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? 1 : 0;
-			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
-						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.", ".$topic_type.")";
 
-			if($db->sql_query($sql))
+			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
+				VALUES ('$subject', " . $userdata['user_id'] . ", " . $topic_time . ", $forum_id, $topic_notify, " . TOPIC_UNLOCKED . ", $topic_type)";
+
+			if($db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				$new_topic_id = $db->sql_nextid();
-				$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid) 
-					VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$uid')";
+
+				$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid) 
+					VALUES ($new_topic_id, $forum_id, " . $userdata['user_id'] . ", '$username', $topic_time, '$user_ip', '$bbcode_uid')";
 
 				if($db->sql_query($sql))
 				{
 					$new_post_id = $db->sql_nextid();
-					$sql = "INSERT INTO ".POSTS_TEXT_TABLE." (post_id, post_subject, post_text) VALUES ($new_post_id, '".$subject."', '".$message."')";
+
+					$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text) 
+						VALUES ($new_post_id, '" . $subject . "', '" . $message . "')";
+
 					if($db->sql_query($sql))
 					{
-						$sql = "UPDATE ".TOPICS_TABLE." SET topic_last_post_id = $new_post_id WHERE topic_id = $new_topic_id";
+						$sql = "UPDATE " . TOPICS_TABLE . " 
+							SET topic_last_post_id = $new_post_id 
+							WHERE topic_id = $new_topic_id";
+
 						if($db->sql_query($sql))
 						{
-							$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 WHERE forum_id = $forum_id";
+							$sql = "UPDATE " . FORUMS_TABLE . " 
+								SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1, forum_topics = forum_topics + 1 
+								WHERE forum_id = $forum_id";
+
 							if($db->sql_query($sql))
 							{
-								if($userdata['user_id'] != ANONYMOUS)
+								$sql = "UPDATE " . USERS_TABLE . " 
+									SET user_posts = user_posts + 1 
+									WHERE user_id = " . $userdata['user_id'];
+
+								if($db->sql_query($sql, END_TRANSACTION))
 								{
-									$sql = "UPDATE ".USERS_TABLE." SET user_posts = user_posts + 1 WHERE user_id = ".$userdata['user_id'];
-									$db->sql_query($sql);
-								}
+									//
+									// If we get here the post has been inserted successfully.
+									//
+									$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
 
-								if(SQL_LAYER != "mysql")
+									message_die(GENERAL_MESSAGE, $msg);
+								}
+								else
 								{
-									switch($SQL_LAYER)
-									{
-										case 'postgres':
-											$result = $db->sql_query("COMMIT");
-											break;
-										case 'mssql':
-											$result = $db->sql_query("COMMIT TRANSACTION");
-											break;
-									}
-									if(!$result)
-									{
-										error_die(SQL_ERROR, "Couldn't commit");
-									}
+									message_die(GENERAL_ERROR, "Error updating users table", "", __LINE__, __FILE__, $sql);
 								}
-
-								//
-								// If we get here the post has been inserted successfully.
-								//
-								include('includes/page_header.'.$phpEx);
-
-								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-								$template->set_filenames(array(
-									"reg_header" => "error_body.tpl"
-								));
-								$template->assign_vars(array(
-									"ERROR_MESSAGE" => $msg
-								));
-								$template->pparse("reg_header");
-
-								include('includes/page_tail.'.$phpEx);
 							}
 							else
 							{
-								if(SQL_LAYER != "mysql")
-								{
-									switch($SQL_LAYER)
-									{
-										case 'postgres':
-											$result = $db->sql_query("ROLLBACK");
-											break;
-										case 'mssql':
-											$result = $db->sql_query("ROLLBACK TRANSACTION");
-											break;
-									}
-								}
-								error_die(QUERY_ERROR);
+								message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 							}
 						}
 						else
 						{
-							if(SQL_LAYER != "mysql")
-							{
-								switch($SQL_LAYER)
-								{
-									case 'postgres':
-										$result = $db->sql_query("ROLLBACK");
-										break;
-									case 'mssql':
-										$result = $db->sql_query("ROLLBACK TRANSACTION");
-										break;
-								}
-							}
-							if(DEBUG)
-							{
-								$error = $db->sql_error();
-								error_die(QUERY_ERROR, "Error updating topics table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-							}
-							else
-							{
-								error_die(QUERY_ERROR);
-							}
+							message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 					else
 					{
-						if(SQL_LAYER != "mysql")
-						{
-							switch($SQL_LAYER)
-							{
-								case 'postgres':
-									$result = $db->sql_query("ROLLBACK");
-									break;
-								case 'mssql':
-									$result = $db->sql_query("ROLLBACK TRANSACTION");
-									break;
-							}
-						}
-						if(DEBUG)
-						{
-							$error = $db->sql_error();
-							error_die(QUERY_ERROR, "Error inserting data into posts text table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-						}
-						else
-						{
-							error_die(QUERY_ERROR);
-						}
+						message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
 					}
 				}
 				else
 				{
-					if(SQL_LAYER != "mysql")
-					{
-						switch($SQL_LAYER)
-						{
-							case 'postgres':
-								$result = $db->sql_query("ROLLBACK");
-								break;
-							case 'mssql':
-								$result = $db->sql_query("ROLLBACK TRANSACTION");
-								break;
-						}
-					}
-					if(DEBUG)
-					{
-						$error = $db->sql_error();
-						error_die(QUERY_ERROR, "Error inserting data into posts table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-					}
-					else
-					{
-						error_die(QUERY_ERROR);
-					}
+					message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 			else
 			{
-				if(SQL_LAYER != "mysql")
-				{
-					switch($SQL_LAYER)
-					{
-						case 'postgres':
-							$result = $db->sql_query("ROLLBACK");
-							break;
-						case 'mssql':
-							$result = $db->sql_query("ROLLBACK TRANSACTION");
-							break;
-					}
-				}
-				if(DEBUG)
-				{
-					$error = $db->sql_error();
-					error_die(QUERY_ERROR, "Error inserting data into topics text table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-				}
-				else
-				{
-					error_die(QUERY_ERROR);
-				}
+				message_die(GENERAL_ERROR, "Error inserting data into topics table", "", __LINE__, __FILE__, $sql);
 			}
 		}
-      else if(isset($HTTP_POST_VARS['preview']))
-      {
-
-
-      }
-
-	  break;
+		break;
 
 	case 'reply':
-		$page_title = " $l_reply";
+		$page_title = " " . $lang['Reply'];
 		$section_title = $l_postreplyto;
 
 		if(isset($HTTP_POST_VARS['submit']) && !$error && !$preview)
 		{
-			if($SQL_LAYER != "mysql")
-			{
-				switch($SQL_LAYER)
-				{
-					case 'postgres':
-						$result = $db->sql_query("BEGIN");
-						break;
-					case 'mssql':
-						$result = $db->sql_query("BEGIN TRANSACTION");
-						break;
-				}
-			}
 
 			if($username)
 			{
@@ -519,150 +364,64 @@ switch($mode)
 			$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
 			$topic_time = get_gmt_ts();
 
-			$sql = "INSERT INTO ".POSTS_TABLE." (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
-					  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$uid')";
+			$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, bbcode_uid)
+					  VALUES ($new_topic_id, $forum_id, ".$userdata['user_id'].", '".$username."', $topic_time, '$user_ip', '$bbcode_uid')";
 
-			if($db->sql_query($sql))
+			if($db->sql_query($sql, BEGIN_TRANSACTION))
 			{
 				$new_post_id = $db->sql_nextid();
-				$sql = "INSERT INTO ".POSTS_TEXT_TABLE." (post_id, post_subject, post_text) VALUES ($new_post_id, '".$subject."', '".$message."')";
+
+				$sql = "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, post_text) 
+					VALUES ($new_post_id, '".$subject."', '".$message."')";
+
 				if($db->sql_query($sql))
 				{
-					$sql = "UPDATE ".TOPICS_TABLE." SET topic_last_post_id = $new_post_id, topic_replies = topic_replies + 1 WHERE topic_id = $new_topic_id";
+					$sql = "UPDATE " . TOPICS_TABLE . " 
+						SET topic_last_post_id = $new_post_id, topic_replies = topic_replies + 1 
+						WHERE topic_id = $new_topic_id";
+
 					if($db->sql_query($sql))
 					{
-						$sql = "UPDATE ".FORUMS_TABLE." SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1 WHERE forum_id = $forum_id";
+						$sql = "UPDATE " . FORUMS_TABLE . " 
+							SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1 
+							WHERE forum_id = $forum_id";
+
 						if($db->sql_query($sql))
 						{
-							if($userdata['user_id'] != ANONYMOUS)
+							$sql = "UPDATE " . USERS_TABLE . " 
+								SET user_posts = user_posts + 1 
+								WHERE user_id = " . $userdata['user_id'];
+
+							if($db->sql_query($sql, END_TRANSACTION))
 							{
 
-								$sql = "UPDATE ".USERS_TABLE." SET user_posts = user_posts + 1 WHERE user_id = ".$userdata['user_id'];
-								$db->sql_query($sql);
+								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+
+								message_die(GENERAL_MESSAGE, $msg);
 							}
-							include('includes/page_header.'.$phpEx);
-							//
-							// If we get here the post has been inserted successfully.
-							//
-							if(SQL_LAYER != "mysql")
+							else
 							{
-								switch($SQL_LAYER)
-								{
-									case 'postgres':
-										$result = $db->sql_query("COMMIT");
-										break;
-									case 'mssql':
-										$result = $db->sql_query("COMMIT TRANSACTION");
-										break;
-								}
-								if(!$result)
-								{
-									error_die(SQL_ERROR, "Couldn't commit");
-								}
+								message_die(GENERAL_ERROR, "Couldn't update users table", "", __LINE__, __FILE__, $sql);
 							}
-
-							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$new_post_id#$new_post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-							$template->set_filenames(array(
-								"reg_header" => "error_body.tpl"
-							));
-							$template->assign_vars(array(
-								"ERROR_MESSAGE" => $msg
-							));
-							$template->pparse("reg_header");
-
-							include('includes/page_tail.'.$phpEx);
 						}
 						else
 						{
-							if(SQL_LAYER != "mysql")
-							{
-								switch($SQL_LAYER)
-								{
-									case 'postgres':
-										$result = $db->sql_query("ROLLBACK");
-										break;
-									case 'mssql':
-										$result = $db->sql_query("ROLLBACK TRANSACTION");
-										break;
-								}
-							}
-							error_die(QUERY_ERROR);
+							message_die(GENERAL_ERROR, "Error updating forums table", "", __LINE__, __FILE__, $sql);
 						}
 					}
 					else
 					{
-					if(SQL_LAYER != "mysql")
-					{
-							switch($SQL_LAYER)
-							{
-								case 'postgres':
-									$result = $db->sql_query("ROLLBACK");
-									break;
-								case 'mssql':
-									$result = $db->sql_query("ROLLBACK TRANSACTION");
-									break;
-							}
-						}
-						if(DEBUG)
-						{
-							$error = $db->sql_error();
-							error_die(QUERY_ERROR, "Error updating topics table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-						}
-						else
-						{
-							error_die(QUERY_ERROR);
-						}
+						message_die(GENERAL_ERROR, "Error updating topics table", "", __LINE__, __FILE__, $sql);
 					}
 				}
 				else
 				{
-					if(SQL_LAYER != "mysql")
-					{
-						switch($SQL_LAYER)
-						{
-							case 'postgres':
-								$result = $db->sql_query("ROLLBACK");
-								break;
-							case 'mssql':
-								$result = $db->sql_query("ROLLBACK TRANSACTION");
-								break;
-						}
-					}
-					if(DEBUG)
-					{
-						$error = $db->sql_error();
-						error_die(QUERY_ERROR, "Error inserting data into posts text table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-					}
-					else
-					{
-						error_die(QUERY_ERROR);
-					}
+					message_die(GENERAL_ERROR, "Error inserting data into posts text table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 			else
 			{
-				if(SQL_LAYER != "mysql")
-				{
-					switch($SQL_LAYER)
-					{
-						case 'postgres':
-							$result = $db->sql_query("ROLLBACK");
-							break;
-						case 'mssql':
-							$result = $db->sql_query("ROLLBACK TRANSACTION");
-							break;
-					}
-				}
-				if(DEBUG)
-				{
-					$error = $db->sql_error();
-					error_die(QUERY_ERROR, "Error inserting data into posts table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-				}
-				else
-				{
-					error_die(QUERY_ERROR);
-				}
+				message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
 			}
 		}
 		break;
@@ -684,136 +443,63 @@ switch($mode)
 				$post_id = $HTTP_POST_VARS[POST_POST_URL];
 				$new_topic_id = $HTTP_POST_VARS[POST_TOPIC_URL];
 				
-				if($SQL_LAYER != "mysql")
+				$sql = "UPDATE " . POSTS_TABLE . " 
+					SET bbcode_uid = '$bbcode_uid' 
+					WHERE post_id = $post_id";
+
+				if($db->sql_query($sql, BEGIN_TRANSACTION))
 				{
-					switch($SQL_LAYER)
-					{
-						case 'postgres':
-							$result = $db->sql_query("BEGIN");
-							break;
-						case 'mssql':
-							$result = $db->sql_query("BEGIN TRANSACTION");
-							break;
-					}
-				}
-				
-				$sql = "UPDATE ".POSTS_TEXT_TABLE." SET post_text = '$message', post_subject = '$subject' WHERE post_id = $post_id";
-				if($db->sql_query($sql))
-				{
+
+					$sql = "UPDATE " . POSTS_TEXT_TABLE . " 
+						SET post_text = '$message', post_subject = '$subject' 
+						WHERE post_id = $post_id";
+
 					if($is_first_post)
 					{
-						// Update topics table here, set notification level and such
-						$sql = "UPDATE ".TOPICS_TABLE." SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' WHERE topic_id = $new_topic_id";
-						if(!$db->sql_query($sql))
+						if($db->sql_query($sql))
 						{
-							if(SQL_LAYER != "mysql")
-							{
-								switch($SQL_LAYER)
-								{
-									case 'postgres':
-										$result = $db->sql_query("ROLLBACK");
-									break;
-									case 'mssql':
-										$result = $db->sql_query("ROLLBACK TRANSACTION");
-									break;
-								}
-							}
+							//
+							// Update topics table here, set notification level and such
+							//
+							$sql = "UPDATE " . TOPICS_TABLE . " 
+								SET topic_title = '$subject', topic_notify = '$notify', topic_type = '".$topic_type."' 
+								WHERE topic_id = $new_topic_id";
 
-							if(DEBUG)
+							if($db->sql_query($sql, END_TRANSACTION))
 							{
-								$error = $db->sql_error();
-								error_die(QUERY_ERROR, "Updating topics table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
+								//
+								// If we get here the post has been inserted successfully.
+								//
+								$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+
+								message_die(GENERAL_MESSAGE, $msg);
 							}
 							else
 							{
-								error_die(QUERY_ERROR);
+								message_die(GENERAL_ERROR, "Updating topics table", "", __LINE__, __FILE__, $sql);
 							}
-						}
-						else
-						{
-							if(SQL_LAYER != "mysql")
-							{
-								switch($SQL_LAYER)
-								{
-									case 'postgres':
-										$result = $db->sql_query("COMMIT");
-										break;
-									case 'mssql':
-										$result = $db->sql_query("COMMIT TRANSACTION");
-										break;
-								}
-								if(!$result)
-								{
-									error_die(SQL_ERROR, "Couldn't commit");
-								}
-							}
-
-							//
-							// If we get here the post has been inserted successfully.
-							//
-							include('includes/page_header.'.$phpEx);
-
-							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-							$template->set_filenames(array(
-								"reg_header" => "error_body.tpl"
-							));
-							$template->assign_vars(array(
-								"ERROR_MESSAGE" => $msg
-							));
-							$template->pparse("reg_header");
-	
-							include('includes/page_tail.'.$phpEx);
 						}
 					}
 					else
 					{
-						if(SQL_LAYER != "mysql")
+						if($db->sql_query($sql, END_TRANSACTION))
 						{
-							switch($SQL_LAYER)
-							{
-								case 'postgres':
-									$result = $db->sql_query("COMMIT");
-								break;
-								case 'mssql':
-									$result = $db->sql_query("COMMIT TRANSACTION");
-								break;
-							}
-							if(!$result)
-							{
-								error_die(SQL_ERROR, "Couldn't commit");
-							}
+							//
+							// If we get here the post has been inserted successfully.
+							//
+							$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
+
+							message_die(GENERAL_MESSAGE, $msg);
 						}
-
-						//
-						// If we get here the post has been inserted successfully.
-						//
-						include('includes/page_header.'.$phpEx);
-
-						$msg = $lang['Stored'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id") . "\">" . $lang['Here'] . "</a> " . $lang['to_view_message'] . "<br /><br />" . $lang['Click'] . " <a href=\"" . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">" . $lang['Here'] . "</a> ". $lang['to_return_forum'];
-
-						$template->set_filenames(array(
-							"reg_header" => "error_body.tpl"
-						));
-						$template->assign_vars(array(
-							"ERROR_MESSAGE" => $msg
-						));
-						$template->pparse("reg_header");
-
-						include('includes/page_tail.'.$phpEx);
+						else
+						{
+							message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
+						}
 					}
 				}
 				else
 				{
-					if(DEBUG)
-					{
-						$error = $db->sql_error();
-						error_die(QUERY_ERROR, "Error updateing posts text table.<br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-					}
-					else
-					{
-						error_die(QUERY_ERROR);
-					}
+					message_die(GENERAL_ERROR, "Error updating posts text table", "", __LINE__, __FILE__, $sql);
 				}
 			}
 		}
@@ -837,19 +523,9 @@ switch($mode)
 
 					if($userdata['user_id'] != $postrow['user_id'] && !$is_auth['auth_mod'])
 					{
-						include('includes/page_header.'.$phpEx);
-
 						$msg = $lang['Sorry_edit_own_posts'];;
 
-						$template->set_filenames(array(
-							"reg_header" => "error_body.tpl"
-						));
-						$template->assign_vars(array(
-							"ERROR_MESSAGE" => $msg
-						));
-						$template->pparse("reg_header");
-
-						include('includes/page_tail.'.$phpEx);
+						message_die(GENERAL_MESSAGE, $msg);
 					}
 
 					$subject = stripslashes($postrow['post_subject']);
@@ -883,31 +559,19 @@ switch($mode)
 						$subject = stripslashes($postrow['topic_title']);
 						switch($postrow['topic_type'])
 						{
-							case ANNOUCE:
-								$is_annouce = TRUE;
+							case POST_ANNOUNCE:
+								$is_announce = TRUE;
 								break;
-							case STICKY:
-								$is_stuck = TRUE;
+							case POST_STICKY:
+								$is_sticky = TRUE;
 								break;
 						}
 					}
 				}
-	   			else
-				{
-					if(DEBUG)
-					{
-						$error = $db->error();
-						error_die(QUERY_ERROR, "Error get post information. <br>Reason: ".$error['message']."<br>Query: $sql", __LINE__, __FILE__);
-	   				}
-					else
-					{
-						error_die(QUERY_ERROR);
-	   				}
-				}
 	   		}
 			else
 			{
-				error_die(GENERAL_ERROR, "Sorry, no there is no such post");
+				message_die(GENERAL_MESSAGE, "Sorry but there is no such post");
 	   		}
 		}
 		break;
@@ -945,10 +609,20 @@ if(empty($username))
 //
 if($preview && !$error)
 {
+	switch($topic_type)
+	{
+		case POST_ANNOUNCE:
+			$is_announce = TRUE;
+			break;
+		case POST_STICKY:
+			$is_sticky = TRUE;
+			break;
+	}
+
 	$preview_message = $message;
-	$uid = make_bbcode_uid();
-	$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $uid);
-	$preview_message = bbencode_second_pass($preview_message, $uid);
+	$bbcode_uid = make_bbcode_uid();
+	$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $bbcode_uid);
+	$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 	$preview_message = make_clickable($preview_message);
 
 	$template->set_filenames(array("preview" => "posting_preview.tpl"));
@@ -975,15 +649,15 @@ if($preview && !$error)
 
 if(!isset($HTTP_GET_VARS[POST_FORUM_URL]) && !isset($HTTP_POST_VARS[POST_FORUM_URL]))
 {
-	error_die(GENERAL_ERROR, "Sorry but there is no such forum");
+	message_die(GENERAL_ERROR, "Sorry but there is no such forum");
 }
 
 $sql = "SELECT forum_name
-			FROM ".FORUMS_TABLE."
-			WHERE forum_id = $forum_id";
+		FROM " . FORUMS_TABLE . "
+		WHERE forum_id = $forum_id";
 if(!$result = $db->sql_query($sql))
 {
-	error_die(SQL_QUERY, "Could not obtain forum/forum access information.", __LINE__, __FILE__);
+	message_die(GENERAL_ERROR, "Could not obtain forum information.", "", __LINE__, __FILE__, $sql);
 }
 $forum_info = $db->sql_fetchrow($result);
 $forum_name = stripslashes($forum_info['forum_name']);
@@ -1005,7 +679,7 @@ $template->assign_vars(array(
 
 	"L_POSTNEWIN" => $section_title,
 
-	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
+	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 );
 
 if($userdata['session_logged_in'])
@@ -1068,50 +742,37 @@ if($attach_sig)
 }
 $sig_toggle .= "> " . $lang['Attach_signature'];
 
-if($mode == 'newtopic' || ($mode == 'editpost' && $is_first_post))
+$topic_type_radio = '';
+if($mode == 'newtopic' || ( $mode == 'editpost' && $is_first_post ) )
 {
 	if($is_auth['auth_announce'])
 	{
-		if(!$is_annouce)
+		$announce_toggle = '<input type="radio" name="topictype" value="announce"';
+		if($is_announce)
 		{
-			$annouce_toggle = '<input type="checkbox" name="annouce" ';
-			if($annouce)
-			{
-				$announce_toggle .= "checked";
-			}
-			$annouce_toggle .= '> '.$lang['Post_Annoucement'];
+			$announce_toggle .= ' checked';
 		}
-		else
-		{
-			$annouce_toggle = '<input type="checkbox" name="unannouce" ';
-			if($unannouce)
-			{
-				$announce_toggle .= "checked";
-			}
-			$annouce_toggle .= '> '.$lang['Un_announce'];
-		}
+		$announce_toggle .= '> ' . $lang['Post_Annoucement'] . '&nbsp;&nbsp;';
 	}
 
 	if($is_auth['auth_sticky'])
 	{
-		if(!$is_stuck)
+		$sticky_toggle = '<input type="radio" name="topictype" value="sticky"';
+		if($is_sticky)
 		{
-			$sticky_toggle = '<input type="checkbox" name="sticky" ';
-			if($sticky)
-			{
-				$sticky_toggle .= "checked";
-			}
-			$sticky_toggle .= '> '.$lang['Post_Sticky'];
+			$sticky_toggle .= ' checked';
 		}
-		else
+		$sticky_toggle .= '> ' . $lang['Post_Sticky'] . '&nbsp;&nbsp;';
+	}
+
+	if( $is_auth['auth_announce'] || $is_auth['auth_sticky'] )
+	{
+		$topic_type_toggle = '&nbsp;' . $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="normal"';
+		if(!$is_announce && !$is_sticky)
 		{
-			$sticky_toggle = '<input type="checkbox" name="unstick" ';
-			if($unstick)
-			{
-				$sticky_toggle .= "checked";
-			}
-			$sticky_toggle .= '> '.$lang['Un_stick'];
+			$topic_type_toggle .= ' checked';
 		}
+		$topic_type_toggle .= '> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $sticky_toggle . $announce_toggle;
 	}
 }
 
@@ -1154,9 +815,8 @@ $template->assign_vars(array(
 	"HTML_TOGGLE" => $html_toggle,
 	"SMILE_TOGGLE" => $smile_toggle,
 	"SIG_TOGGLE" => $sig_toggle,
-	"ANNOUNCE_TOGGLE" => $annouce_toggle,
-	"STICKY_TOGGLE" => $sticky_toggle,
 	"NOTIFY_TOGGLE" => $notify_toggle,
+	"TYPE_TOGGLE" => $topic_type_toggle,
 	"BBCODE_TOGGLE" => $bbcode_toggle,
 	"BBCODE_STATUS" => $bbcode_status,
 

@@ -160,11 +160,11 @@ $lang['Message_body'] = "Message body";
 $lang['Post_a_new_topic'] = "Post a new topic";
 $lang['Post_new_topic_in'] = "Post new topic in:"; // Followed by forum name
 $lang['Post_a_reply'] = "Post a reply";
+$lang['Post_topic_as'] = "Post topic as";
 $lang['Edit_Post'] = "Edit post";
-$lang['Post_Annoucement'] = "Post as an annoucement";
-$lang['Post_Sticky'] = "Make this topic sticky";
-$lang['Un_announce'] = "Remove annoucement status from this post";
-$lang['Un_stick'] = "Unstick this topic";
+$lang['Post_Normal'] = "Normal";
+$lang['Post_Annoucement'] = "Announcement";
+$lang['Post_Sticky'] = "Sticky";
 $lang['Options'] = "Options";
 
 $lang['Submit_post'] = "Submit Post";
@@ -318,15 +318,18 @@ $lang['Viewing_FAQ'] = "Viewing FAQ";
 // Errors (not related to a
 // specific failure on a page)
 //
-$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
 $lang['Information'] = "Information";
+$lang['Critical_Information'] = "Critical Information";
+
 $lang['You_been_banned'] = "You have been banned from this forum<br>Please contact the webmaster or board administrator for more information";
 $lang['No_topics_post_one'] = "There are no posts in this forum<br>Click on the <b>Post New Topic</b> link on this page to post one";
+$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
 
 $lang['General_Error'] = "General Error";
+$lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occured";
-$lang['Error_database_connect'] = "Could not connect to database<br>Please check your configuration settings";
-$lang['Error_session'] = "Error creating session<br>Could not log you in, please go back and try again";
+$lang['A_critical_error'] = "A Critical Error Occured";
+
 $lang['Error_login'] = "Login Failed<br>You have specified an incorrect/inactive username or invalid password, please go back and try again";
 
 

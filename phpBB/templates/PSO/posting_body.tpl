@@ -34,7 +34,7 @@ function insertCode(formObj, selectObj){
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_OPTIONS}</b></font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{STICKY_TOGGLE}<br>{ANNOUNCE_TOGGLE}<br>{NOTIFY_TOGGLE}</font></td>
+				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{HTML_TOGGLE}<br>{BBCODE_TOGGLE}<br>{SMILE_TOGGLE}<br>{SIG_TOGGLE}<br>{NOTIFY_TOGGLE}<br>&nbsp;&nbsp;&nbsp;&nbsp;{TYPE_TOGGLE}</font></td>
 			</tr>
 			<tr>
 				<td colspan="2" bgcolor="{T_TH_COLOR3}" align="center">{S_HIDDEN_FORM_FIELDS}<input type="submit" name="preview" value="{L_PREVIEW}">&nbsp;<input type="submit" name="submit" value="{L_SUBMIT}">&nbsp;<input type="submit" name="cancel" value="{L_CANCEL}"></td>
