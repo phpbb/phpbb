@@ -141,7 +141,8 @@ function remove_common($percent, $word_id_list = array())
 			$rowset = $db->sql_fetchrowset($result);
 
 			$sql = "SELECT COUNT(post_id) AS total_posts 
-				FROM phpbb_posts";
+				FROM " . POSTS_TABLE;
+				
 			$result = $db->sql_query($sql); 
 			if( !$result )
 			{
