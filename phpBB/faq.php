@@ -34,7 +34,7 @@ init_userprefs($userdata);
 //
 
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-include($phpbb_root_path . 'language/faq_' . $board_config['default_lang'] . '.' . $phpEx);
+include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_faq.' . $phpEx);
 
 $template->set_filenames(array(
 	"body" => "faq_body.tpl")

@@ -89,7 +89,7 @@ class emailer
 		global $board_config;
 
 		$phpbb_root_path = "./";
-		$template_file = $phpbb_root_path . "language/email/" . $template_file . "_" . $board_config['default_lang'] . ".tpl";
+		$template_file = $phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/email/" . $template_file . ".tpl";
 		if (!file_exists($template_file))
 		{
 			message_die(GENERAL_ERROR, "Couldn't find template file: $template_file", "", __LINE__, __FILE__);

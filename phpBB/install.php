@@ -160,7 +160,7 @@ include($phpbb_root_path.'includes/sessions.'.$phpEx);
 //
 // Import language file, setup template ...
 //
-include($phpbb_root_path.'language/lang_' . $language . '.'.$phpEx);
+include($phpbb_root_path.'language/lang_' . $language . '/lang_main.'.$phpEx);
 
 $template = new Template($phpbb_root_path . "templates/" . $default_template);
 
@@ -507,4 +507,5 @@ else
 		exit();
 	}
 }
+
 ?>

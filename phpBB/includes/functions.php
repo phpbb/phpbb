@@ -268,13 +268,13 @@ function init_userprefs($userdata)
 		}
 	}
 
-	if(file_exists("language/lang_".$board_config['default_lang'].".".$phpEx) )
+	if(file_exists("language/lang_".$board_config['default_lang']."/lang_main.".$phpEx) )
 	{
-		include($phpbb_root_path . 'language/lang_'.$board_config['default_lang'].'.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_'.$board_config['default_lang'].'/lang_main.'.$phpEx);
 	}
 	else
 	{
-		include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+		include($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx);
 	}
 
 	return;
@@ -333,7 +333,7 @@ function generate_activation_key()
 	$act_key = '';
 	for($i = 0; $i < 8; $i++)
 	{
-		$act_key .= $chars[rand(0,$max_elements)];
+		$act_key .= $chars[rand(0, $max_elements)];
 	}
 	$act_key_md = md5($act_key);
 
@@ -709,10 +709,11 @@ function language_select($default, $select_name = "language", $dirname="language
 		if (ereg("^lang_", $file))
 		{
 			$filename = str_replace("lang_", "", $file);
-			$filename = str_replace(".$phpEx", "", $filename);
+
 			$displayname = preg_replace("/(.*)_(.*)/", "\\1 [ \\2 ]", $filename);
+
 			$selected = (strtolower($default) == strtolower($filename)) ? " selected=\"selected\"" : "";
-			$lang_select .= "<option value=\"$filename\"$selected>".ucwords($displayname)."</option>";
+			$lang_select .= "<option value=\"$filename\"$selected>" . ucwords($displayname) . "</option>";
 		}
 	}
 	$lang_select .= "</select>";
@@ -1048,11 +1049,11 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 		{
 			if( !empty($board_config['default_lang']) )
 			{
-				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '.'.$phpEx);
+				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.'.$phpEx);
 			}
 			else
 			{
-				include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+				include($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx);
 			}
 		}
 
@@ -1111,7 +1112,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 			// Critical errors mean we cannot rely on _ANY_ DB information being
 			// available so we're going to dump out a simple echo'd statement
 			//
-			include($phpbb_root_path . 'language/lang_english.'.$phpEx);
+			include($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx);
 
 			if($msg_text == "")
 			{
