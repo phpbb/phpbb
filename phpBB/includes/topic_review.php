@@ -66,6 +66,11 @@ function topic_review($topic_id, $is_inline_review)
 
 		$is_auth = array();
 		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
+
+		if ( !$is_auth['auth_read'] )
+		{
+			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
+		}
 	}
 
 	//
