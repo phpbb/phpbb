@@ -219,7 +219,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			WHERE forum_id = $forum_id
 				AND topic_type <> " . POST_ANNOUNCE . "  
 				AND topic_last_post_time >= $min_post_time
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
+			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
 		$result = $db->sql_query($sql);
 
 		if (isset($_POST['sort']))
