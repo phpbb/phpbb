@@ -52,6 +52,7 @@ function generate_smilies($mode, $forum_id)
 	$sql = 'SELECT *
 		FROM ' . SMILIES_TABLE . 
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
+		GROUP BY smile_url
 		ORDER BY smile_order';
 	$result = $db->sql_query($sql, 3600);
 
