@@ -9,8 +9,8 @@
 #
 DROP TABLE IF EXISTS phpbb_auth_access;
 CREATE TABLE phpbb_auth_access (
-   group_id int(11) DEFAULT '0' NOT NULL,
-   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   group_id smallint(5) DEFAULT '0' NOT NULL,
+   forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    auth_view tinyint(1) DEFAULT '0' NOT NULL,
    auth_read tinyint(1) DEFAULT '0' NOT NULL,
    auth_post tinyint(1) DEFAULT '0' NOT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE phpbb_auth_access (
 #
 DROP TABLE IF EXISTS phpbb_user_group;
 CREATE TABLE phpbb_user_group (
-   group_id int(11) DEFAULT '0' NOT NULL,
-   user_id int(11) DEFAULT '0' NOT NULL,
+   group_id smallint(5) DEFAULT '0' NOT NULL,
+   user_id mediumint(8) DEFAULT '0' NOT NULL,
    user_pending tinyint(1), 
    KEY group_id (group_id),
    KEY user_id (user_id)
@@ -45,11 +45,11 @@ CREATE TABLE phpbb_user_group (
 #
 DROP TABLE IF EXISTS phpbb_groups;
 CREATE TABLE phpbb_groups (
-   group_id int(11) NOT NULL auto_increment,
+   group_id smallint(5) NOT NULL auto_increment,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
-   group_moderator int(11) DEFAULT '0' NOT NULL, 
+   group_moderator mediumint(8) DEFAULT '0' NOT NULL, 
    group_single_user tinyint(1) DEFAULT '1' NOT NULL, 
    PRIMARY KEY (group_id), 
    KEY group_single_user (group_single_user)
@@ -63,7 +63,7 @@ CREATE TABLE phpbb_groups (
 DROP TABLE IF EXISTS phpbb_banlist;
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   ban_userid int(11) NOT NULL,
+   ban_userid mediumint(8) NOT NULL,
    ban_ip char(8) NOT NULL,
    ban_email varchar(255),
    PRIMARY KEY (ban_id), 
@@ -116,7 +116,7 @@ CREATE TABLE phpbb_disallow (
 DROP TABLE IF EXISTS phpbb_forum_prune;
 CREATE TABLE phpbb_forum_prune (
    prune_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   forum_id mediumint(8) UNSIGNED NOT NULL,
+   forum_id smallint(5) UNSIGNED NOT NULL,
    prune_days tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED NOT NULL,
    PRIMARY KEY(prune_id),
@@ -130,7 +130,7 @@ CREATE TABLE phpbb_forum_prune (
 #
 DROP TABLE IF EXISTS phpbb_forums;
 CREATE TABLE phpbb_forums (
-   forum_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
    cat_id mediumint(8) UNSIGNED NOT NULL,
    forum_name varchar(150),
    forum_desc text,
@@ -167,8 +167,8 @@ DROP TABLE IF EXISTS phpbb_posts;
 CREATE TABLE phpbb_posts (
    post_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   poster_id int(11) DEFAULT '0' NOT NULL,
+   forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   poster_id mediumint(8) DEFAULT '0' NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    poster_ip char(8) NOT NULL, 
    post_username varchar(30), 
@@ -209,8 +209,8 @@ CREATE TABLE phpbb_privmsgs (
    privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
    privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
-   privmsgs_from_userid int(11) DEFAULT '0' NOT NULL,
-   privmsgs_to_userid int(11) DEFAULT '0' NOT NULL,
+   privmsgs_from_userid mediumint(8) DEFAULT '0' NOT NULL,
+   privmsgs_to_userid mediumint(8) DEFAULT '0' NOT NULL,
    privmsgs_date int(11) DEFAULT '0' NOT NULL,
    privmsgs_ip char(8) NOT NULL,
    privmsgs_enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
@@ -310,7 +310,7 @@ CREATE TABLE phpbb_search_wordmatch (
 DROP TABLE IF EXISTS phpbb_sessions;
 CREATE TABLE phpbb_sessions (
    session_id char(32) DEFAULT '' NOT NULL,
-   session_user_id int(11) DEFAULT '0' NOT NULL,
+   session_user_id mediumint(8) DEFAULT '0' NOT NULL,
    session_start int(11) DEFAULT '0' NOT NULL,
    session_time int(11) DEFAULT '0' NOT NULL,
    session_last_visit int(11) DEFAULT '0' NOT NULL,
@@ -438,9 +438,9 @@ CREATE TABLE phpbb_themes_name (
 DROP TABLE IF EXISTS phpbb_topics;
 CREATE TABLE phpbb_topics (
    topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   topic_title char(100) NOT NULL,
-   topic_poster int(11) DEFAULT '0' NOT NULL,
+   forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_title char(60) NOT NULL,
+   topic_poster mediumint(8) DEFAULT '0' NOT NULL,
    topic_time int(11) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -463,7 +463,7 @@ CREATE TABLE phpbb_topics (
 DROP TABLE IF EXISTS phpbb_topics_watch;
 CREATE TABLE phpbb_topics_watch (
   topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  user_id int(11) NOT NULL DEFAULT '0',
+  user_id mediumint(8) NOT NULL DEFAULT '0',
   notify_status tinyint(1) NOT NULL default '0',
   KEY topic_id (topic_id),
   KEY user_id (user_id), 
@@ -477,7 +477,7 @@ CREATE TABLE phpbb_topics_watch (
 #
 DROP TABLE IF EXISTS phpbb_users;
 CREATE TABLE phpbb_users (
-   user_id int(11) NOT NULL auto_increment,
+   user_id mediumint(8) NOT NULL auto_increment,
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
@@ -563,7 +563,7 @@ CREATE TABLE phpbb_vote_results (
 DROP TABLE IF EXISTS phpbb_vote_voters;
 CREATE TABLE phpbb_vote_voters (
   vote_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-  vote_user_id int(11) NOT NULL DEFAULT '0',
+  vote_user_id mediumint(8) NOT NULL DEFAULT '0',
   vote_user_ip char(8) NOT NULL,
   KEY vote_id (vote_id),
   KEY vote_user_id (vote_user_id),
