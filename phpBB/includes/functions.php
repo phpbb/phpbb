@@ -458,7 +458,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if ( $total_pages == 1 )
+	if ( $total_pages == 1 || !$num_items )
 	{
 		return '';
 	}
@@ -545,6 +545,13 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	return $page_string;
 }
 
+function on_page($num_items, $per_page, $start)
+{
+	global $lang;
+
+	return sprintf($lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
+}
+
 //
 // Obtain list of naughty words and build preg style replacement arrays for use by the
 // calling script, note that the vars are passed as references this just makes it easier
@@ -587,6 +594,13 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header
 	switch ( $msg_code )
 	{
 		case MESSAGE:
+			if ( !$userdata )
+			{
+				$userdata = $session->start();
+				$acl = new auth('admin', $userdata);
+				$session->configure($userdata);
+			}
+
 			if ( !defined('HEADER_INC') )
 			{
 				$page = ( !defined('IN_ADMIN') ) ? 'includes/page_header.' : 'admin/page_header_admin.';
