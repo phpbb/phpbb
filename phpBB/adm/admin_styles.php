@@ -28,19 +28,40 @@ if (!$auth->acl_get('a_styles'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-//
+
+// Get and set some vars
 $mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
+
+if (isset($_REQUEST['action']))
+{
+	$action = htmlspecialchars($_REQUEST['action']);
+}
+else
+{
+	if (isset($_POST['add']))
+	{
+		$action = 'add';
+	}
+	else if (isset($_POST['preview']))
+	{
+		$action = 'preview';
+	}
+	else
+	{
+		$action = '';
+	}
+}
+
+$error = array();
 
 
-
-
+// What shall we do today then?
 switch ($mode)
 {
 
 	case 'styles':
 
-		$style_id = (isset($_REQUEST['id'])) ? $_REQUEST['id']  : '';
+		$style_id = (isset($_REQUEST['id'])) ? intval($_REQUEST['id'])  : '';
 
 		switch ($action)
 		{
@@ -53,24 +74,103 @@ switch ($mode)
 				$db->sql_query($sql);
 				break;
 
+			case 'delete':
+				break;
+
+			case 'export':
+				break;
+
+			case 'add':
 			case 'edit':
 
 				if (isset($_POST['update']))
 				{
+					$style_name = (isset($_POST['style_name'])) ? stripslashes(htmlspecialchars($_POST['style_name'])) : '';
+					$style_copyright = (isset($_POST['style_copyright'])) ? stripslashes(htmlspecialchars($_POST['style_copyright'])) : '';
+
+					$style_active = (!empty($_POST['style_active'])) ? 1 : 0;
+
+					$template_id = (!empty($_POST['template_id'])) ? intval($_POST['template_id']) : 0;
+					$theme_id = (!empty($_POST['theme_id'])) ? intval($_POST['theme_id']) : 0;
+					$imageset_id = (!empty($_POST['imageset_id'])) ? intval($_POST['imageset_id']) : 0;
+
+					if (empty($style_name))
+					{
+						$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
+					}
+
+					if (strlen($style_name) > 30)
+					{
+						$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
+					}
+
+					if (strlen($style_copyright) > 60)
+					{
+						$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
+					}
+
+					if (!$template_id || !$theme_id || !$imageset_id)
+					{
+						$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+					}
+
+					if ($action == 'add')
+					{
+						$sql = 'SELECT style_name 
+							FROM ' . STYLES_TABLE . " 
+							WHERE style_name = '" . $db->sql_escape($style_name) . "'";
+						$result = $db->sql_query($sql);
+
+						if ($row = $db->sql_fetchrow($result))
+						{
+							$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
+						}
+						$db->sql_freeresult($result);
+					}
+
+					if (!sizeof($error))
+					{
+						$sql_ary = array(
+							'style_name'		=> $style_name, 
+							'style_copyright'	=> $style_copyright, 
+							'template_id'		=> $template_id, 
+							'theme_id'			=> $theme_id, 
+							'imageset_id'		=> $imageset_id, 
+						);
+
+						$sql = ($action == 'add') ? 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary) : 'UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE style_id = $style_id";
+						$db->sql_query($sql);
+
+						$log = ($action == 'add') ? 'LOG_ADD_STYLE' : 'LOG_EDIT_STYLE';
+						add_log('admin', $log, addslashes($style_name));
+
+						$message = ($action == 'add') ? 'STYLED_ADDED' : 'STYLE_EDITED';
+						trigger_error($user->lang[$message]);
+					}
 				}
 
-				if ($style_id)
+				if (!sizeof($error))
 				{
-					$sql = 'SELECT * 
-						FROM ' . STYLES_TABLE . "
-						WHERE style_id = $style_id";
-					$result = $db->sql_query($sql);
-
-					if (!extract($db->sql_fetchrow($result)))
+					if ($style_id)
 					{
-						die("ERROR");
+						$sql = 'SELECT * 
+							FROM ' . STYLES_TABLE . "
+							WHERE style_id = $style_id";
+						$result = $db->sql_query($sql);
+
+						if (!extract($db->sql_fetchrow($result)))
+						{
+							die("ERROR");
+						}
+						$db->sql_freeresult($result);
 					}
-					$db->sql_freeresult($result);
+					else
+					{
+						$style_name = (isset($_POST['style_name'])) ? stripslashes(htmlspecialchars($_POST['style_name'])) : '';
+						$style_copyright = '';
+						$style_active = 1;
+						$template_id = $theme_id = $imageset_id = 0;
+					}
 				}
 
 				$style_options = array();
@@ -81,6 +181,7 @@ switch ($mode)
 						FROM $table 
 						ORDER BY {$field}_id";
 					$result = $db->sql_query($sql);
+
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$selected = ($row[$field . '_id'] == ${$field . '_id'}) ? ' selected="selected"' : '';
@@ -103,15 +204,29 @@ switch ($mode)
 	<tr>
 		<th colspan="2">Edit Style</th>
 	</tr>
+<?php
+
+				if (sizeof($error))
+				{
+
+?>
+	<tr>
+		<td colspan="2" class="row3" align="center"><span style="color:red"><?php echo implode('<br />', $error); ?></span></td>
+	</tr>
+<?php
+
+				}
+
+?>
 	<tr>
 		<td class="row1">Style Name</td>
-		<td class="row2"><input class="post" type="text" name="style_name" maxlength="255" size="40" /></td>
+		<td class="row2"><input class="post" type="text" name="style_name" maxlength="30" size="30" value="<?php echo $style_name; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1">Style Copyright</td>
 		<td class="row2"><?php
 	
-				echo ($action == 'edit') ? '<b>' . $style_copyright . '</b>' : '<input class="post" type="text" name="style_name" maxlength="255" size="40" value="' . $style_copyright . '" />';
+				echo ($action == 'edit') ? '<b>' . $style_copyright . '</b>' : '<input class="post" type="text" name="style_copyright" maxlength="60" size="30" value="' . $style_copyright . '" />';
 
 ?></td>
 	</tr>
@@ -132,7 +247,7 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="style_active" value="0"<?php echo (!$style_active) ? ' checked="checked"' : ''; ?> /> Inactive &nbsp; <input type="radio" name="style_active" value="1"<?php echo ($style_active) ? ' checked="checked"' : ''; ?> /> Active</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<!-- input class="btnlite" type="submit" name="preview" value="<?php echo $user->lang['PREVIEW']; ?>" />&nbsp;&nbsp;--><input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
 </table></form>
 
@@ -140,16 +255,9 @@ switch ($mode)
 
 				adm_page_footer();
 				break;
-
-			case 'delete':
-				break;
-
-			case 'export':
-				break;
 		}
 
-
-
+		
 		adm_page_header($user->lang['MANAGE_STYLE']);
 
 ?>
@@ -210,7 +318,7 @@ switch ($mode)
 
 ?>
 	<tr>
-		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="newstyle" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="6" align="right">Create new style: <input class="post" type="text" name="style_name" value="" maxlength="30" size="25" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table></form>
 <?php 

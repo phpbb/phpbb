@@ -174,7 +174,9 @@ $lang = array_merge($lang, array(
 	'LOG_FORUM_DEL_POSTS_FORUMS'=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s', 
 	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s', 
 
-	'LOG_EDIT_THEME'		=> '<b>Edited theme</b><br />&#187; %s', 
+	'LOG_EDIT_THEME'	=> '<b>Edited theme</b><br />&#187; %s', 
+	'LOG_ADD_STYLE'		=> '<b>Added new style</b><br />&#187; %s', 
+	'LOG_EDIT_STYLE'	=> '<b>Edited style</b><br />&#187; %s', 
 
 
 	'WELCOME_PHPBB'	=> 'Welcome to phpBB',
@@ -895,12 +897,20 @@ $lang = array_merge($lang, array(
 	'Disallowed_already' => 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present',
 
 
-
 	'MANAGE_STYLE_EXPLAIN'	=> 'Here you can manage the available styles on your board. A style consists off a template, theme and imageset. You may alter existing styles, delete, deactivate, reactivate, create or import new ones. You can also see what a style will look like using the preview function. The current default style is noted by the presence of an asterix, * Also listed is the total user count for each style, note that overriding user styles will not be reflected here.', 
 	'STYLE_ACTIVATE'		=> 'Activate', 
 	'STYLE_DEACTIVATE'		=> 'Deactivate', 
 	'EDIT_STYLE'			=> 'Edit Style', 
 	'EDIT_STYLE_EXPLAIN'	=> 'Using the form below you can modify this existing style. You may alter the combination of template, theme and imageset which define the style itself. You may also deactivate the style and alter its name.', 
+	'STYLE_ADDED'			=> 'Style added successfully', 
+	'STYLE_EDITED'			=> 'Style edited successfully', 
+
+	'STYLE_ERR_STYLE_NAME'	=> 'You must supply a name for this style', 
+	'STYLE_ERR_NAME_LONG'	=> 'The style name can be no longer than 30 characters', 
+	'STYLE_ERR_NAME_EXIST'	=> 'A style with that name already exists', 
+	'STYLE_ERR_COPY_LONG'	=> 'The copyright can be no longer than 60 characters', 
+	'STYLE_ERR_NO_IDS'		=> 'You must select a template, theme and imageset for this style', 
+
 
 	'MANAGE_TEMPLATE_EXPLAIN'	=> 'A Template set comprises all the markup used to generate the layout of your board. Here you can  edit existing template sets, delete, export, import and preview sets. You can also modify the templating code used to generate BBCode.', 
 	'EDIT_TEMPLATE'			=> 'Edit Template',
