@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *                            index.php [ admin/ ]
+ *                            index.php [ adm/ ]
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group

@@ -20,7 +20,7 @@ $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 //
 // Updates to this version ...
 //
-$version = '2.1.0 [20020820]';
+$version = '2.1.1 [20030221]';
 
 // ----------------
 // BEGIN VARS DEFNS
@@ -135,7 +135,7 @@ page_header();
 
 <?php
 
-switch ( $this_version )
+switch ($this_version)
 {
 	case '.0.0':
 	case '.0.1':
@@ -163,9 +163,9 @@ switch ( $this_version )
 		);
 
 		$sql = '';
-		foreach ( $anon_id_tbl as $table => $field_ary )
+		foreach ($anon_id_tbl as $table => $field_ary)
 		{
-			foreach ( $field_ary as $field )
+			foreach ($field_ary as $field)
 			{
 				$sql = "UPDATE " . $table_prefix . "$table
 					SET $field = " . ANONYMOUS . "
@@ -188,7 +188,7 @@ switch ( $this_version )
 <h1>Updating current schema</h1>
 
 <?php
-
+/*
 //
 // Get schema
 //
@@ -205,7 +205,7 @@ $create_def = $schema['create_def'];
 $result = $db->sql_query('SHOW TABLES');
 
 $currenttables = array();
-while( $table = $db->sql_fetchrow($result) )
+while($table = $db->sql_fetchrow($result))
 {
 	$currenttables[] = $table[0];
 }
@@ -213,9 +213,9 @@ while( $table = $db->sql_fetchrow($result) )
 //
 // Check what tables we need to CREATE
 //
-foreach( $table_def as $table => $definition )
+foreach($table_def as $table => $definition)
 {
-	if ( !in_array($table, $currenttables) )
+	if (!in_array($table, $currenttables))
 	{
 		gen_str_init("* Creating <b>$table</b>");
 
@@ -228,7 +228,7 @@ foreach( $table_def as $table => $definition )
 //
 // Loop tables in schema
 //
-foreach ( $field_def as $table => $table_def )
+foreach ($field_def as $table => $table_def)
 {
 	// Loop fields in table
 	gen_str_init("* Updating table <b>$table</b>");
@@ -238,17 +238,17 @@ foreach ( $field_def as $table => $table_def )
 	$result = $db->sql_query($sql);
 
 	$current_fields = array();
-	while ( $row = $db->sql_fetchrow($result) )
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$current_fields[] = $row['Field'];
 	}
 
 	$alter_sql = "ALTER TABLE $table ";
-	if ( is_array($table_def) )
+	if (is_array($table_def))
 	{
-		foreach ( $table_def as $field => $definition )
+		foreach ($table_def as $field => $definition)
 		{
-			if ( $field == '' )
+			if ($field == '')
 			{
 				//
 				// Skip empty fields if any (shouldn't be needed)
@@ -271,7 +271,7 @@ foreach ( $field_def as $table => $table_def )
 			// If the current is not a key of $current_def and it is not a field that is
 			// to be renamed then the field doesn't currently exist.
 			//
-			$changes[] = ( !in_array($field, $current_fields) && $oldfield == $field ) ? " ADD $field " . $create_def[$table][$field] : " CHANGE $oldfield $field " . $create_def[$table][$field];
+			$changes[] = (!in_array($field, $current_fields) && $oldfield == $field) ? " ADD $field " . $create_def[$table][$field] : " CHANGE $oldfield $field " . $create_def[$table][$field];
 		}
 	}
 
@@ -285,18 +285,18 @@ foreach ( $field_def as $table => $table_def )
 	$result = $db->sql_query($sql);
 
 	$indices = array();
-	while( $row = $db->sql_fetchrow($result) )
+	while($row = $db->sql_fetchrow($result))
 	{
 		$indices[] = $row['Key_name'];
 	}
 
-	if ( is_array($key_def[$table]) )
+	if (is_array($key_def[$table]))
 	{
-		foreach ( $key_def[$table] as $key_name => $key_field )
+		foreach ($key_def[$table] as $key_name => $key_field)
 		{
-			if ( !in_array($key_name, $indices) )
+			if (!in_array($key_name, $indices))
 			{
-				$alter_sql .= ( $key_name == 'PRIMARY' ) ? ", ADD PRIMARY KEY ($key_field)" : ", ADD INDEX $key_name ($key_field)";
+				$alter_sql .= ($key_name == 'PRIMARY') ? ", ADD PRIMARY KEY ($key_field)" : ", ADD INDEX $key_name ($key_field)";
 			}
 		}
 	}
@@ -307,7 +307,7 @@ foreach ( $field_def as $table => $table_def )
 	gen_str_ok();
 
 }
-
+*/
 ?>
 
 <h1>Updating table data</h1>
@@ -315,7 +315,7 @@ foreach ( $field_def as $table => $table_def )
 <?php
 
 
-switch ( $this_version )
+switch ($this_version)
 {
 	case '.0.0':
 	case '.0.1':
@@ -391,7 +391,7 @@ switch ( $this_version )
 		$result = $db->sql_query($sql);
 
 		$sql_ary = array();
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			do
 			{
@@ -400,7 +400,7 @@ switch ( $this_version )
 					WHERE ban_id = " . $row['ban_id'];
 				$db->sql_query($sql);
 			}
-			while ( $row = $db->sql_fetchrow($result) );
+			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
@@ -419,16 +419,16 @@ switch ( $this_version )
 //			),
 
 		$batchsize = 1000;
-		foreach ( $upd_ip_sql as $table => $field_ary )
+		foreach ($upd_ip_sql as $table => $field_ary)
 		{
-			foreach ( $field_ary as $field )
+			foreach ($field_ary as $field)
 			{
 				gen_str_init("* Decoding <b>$table.$field</b>");
 
 				$db->sql_return_on_error(true);
 				$sql = "SELECT MAX($field) AS max_id
 					FROM " . $table_prefix . "$table";
-				if ( $result = $db->sql_query($sql) )
+				if ($result = $db->sql_query($sql))
 				{
 					$db->sql_return_on_error(false);
 
@@ -449,7 +449,7 @@ switch ( $this_version )
 									AND $batchend";
 						$result = $db->sql_query($sql);
 
-						if ( $row = $db->sql_fetchrow($result) )
+						if ($row = $db->sql_fetchrow($result))
 						{
 							do
 							{
@@ -458,7 +458,7 @@ switch ( $this_version )
 									WHERE $field LIKE '" . $row[$field] . "'";
 								$db->sql_query($sql);
 							}
-							while ( $row = $db->sql_fetchrow($result) );
+							while ($row = $db->sql_fetchrow($result));
 						}
 						$db->sql_freeresult($result);
 					}
@@ -530,7 +530,7 @@ switch ( $this_version )
 			"UPDATE " . $table_prefix . "config SET config_value = '1' WHERE config_name = 'default_style'",
 		);
 
-		if ( SQL_LAYER == 'mysql' || SQL_LAYER == 'mysql4' )
+		if (SQL_LAYER == 'mysql' || SQL_LAYER == 'mysql4')
 		{
 			$sql_ary[] = "ALTER TABLE " . $table_prefix . "users AUTO_INCREMENT = 1";
 		}
@@ -546,9 +546,7 @@ switch ( $this_version )
 		gen_str_ok();
 		gen_str_init('* Updating <b>permissions</b>');
 
-		//
 		// Grab user id of first user with user_level of ADMIN
-		//
 		$sql = "SELECT user_id
 			FROM " . $table_prefix . "users
 			WHERE user_level = 1
@@ -568,7 +566,7 @@ switch ( $this_version )
 		$result = $db->sql_query($sql);
 
 		$forum_access = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_access[] = $row;
 		}
@@ -585,7 +583,7 @@ switch ( $this_version )
 		$result = $db->sql_query($sql);
 
 		$user_access = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$user_access[$row['forum_id']] = $row;
 		}
@@ -601,7 +599,7 @@ switch ( $this_version )
 		$result = $db->sql_query($sql);
 
 		$group_access = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_access[$row['forum_id']] = $row;
 		}
@@ -617,20 +615,20 @@ switch ( $this_version )
 		$result = $db->sql_query($sql);
 
 		$delete_ug_sql = '';
-		if ( $row = $db->sql_fetchrow($result) )
+		if ($row = $db->sql_fetchrow($result))
 		{
 			do
 			{
-				$delete_ug_sql .= ( ( $delete_ug_sql != '' ) ? ', ' : '' ) . $row['group_id'];
+				$delete_ug_sql .= (($delete_ug_sql != '') ? ', ' : '') . $row['group_id'];
 			}
-			while ( $row = $db->sql_fetchrow($result) );
+			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
 		//
 		// Clean up user_group and groups
 		//
-		if ( $delete_ug_sql )
+		if ($delete_ug_sql)
 		{
 			$sql = "DELETE FROM " . $table_prefix . "user_group
 				WHERE group_id NOT IN ($delete_ug_sql)";
@@ -657,7 +655,7 @@ switch ( $this_version )
 		$all_options = array_merge($auth_options, array_merge($auth_mod_options, $auth_admin_options));
 		$option_ids = array();
 
-		foreach ( $all_options as $value )
+		foreach ($all_options as $value)
 		{
 			$sql = "INSERT INTO " . $table_prefix . "auth_options (auth_value)
 				VALUES ('$value')";
@@ -666,7 +664,7 @@ switch ( $this_version )
 			$option_ids[$value] = $db->sql_nextid();
 		}
 
-		foreach ( $new_groups as $k => $sql )
+		foreach ($new_groups as $k => $sql)
 		{
 			$db->sql_query($sql);
 			$$k = $db->sql_nextid();
@@ -707,11 +705,11 @@ switch ( $this_version )
 		$group_acl = array();
 		$user_acl = array();
 
-		foreach ( $forum_access as $forum )
+		foreach ($forum_access as $forum)
 		{
-			foreach( $auth_map as $k => $v )
+			foreach($auth_map as $k => $v)
 			{
-				switch ( $forum[$k] )
+				switch ($forum[$k])
 				{
 					case AUTH_ALL:
 						$group_acl[$guest_id][$forum['forum_id']][$v] = ACL_ALLOW;
@@ -724,22 +722,22 @@ switch ( $this_version )
 						break;
 
 					case AUTH_ACL:
-						foreach( $group_access as $forum_id => $access )
+						foreach($group_access as $forum_id => $access)
 						{
-							if ( $forum_id == $forum['forum_id'] )
+							if ($forum_id == $forum['forum_id'])
 							{
-								if ( !empty($access[$k]) )
+								if (!empty($access[$k]))
 								{
 									$group_acl[$access['group_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
 
-						foreach( $user_access as $forum_id => $access )
+						foreach($user_access as $forum_id => $access)
 						{
-							if ( $forum_id == $forum['forum_id'] )
+							if ($forum_id == $forum['forum_id'])
 							{
-								if ( !empty($access[$k]) )
+								if (!empty($access[$k]))
 								{
 									$user_acl[$access['user_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
@@ -750,22 +748,22 @@ switch ( $this_version )
 					case AUTH_MOD:
 						$group_acl[$super_mod_id][$forum['forum_id']][$v] = ACL_ALLOW;
 
-						foreach( $group_access as $forum_id => $access )
+						foreach($group_access as $forum_id => $access)
 						{
-							if ( $forum_id == $forum['forum_id'] )
+							if ($forum_id == $forum['forum_id'])
 							{
-								if ( !empty($access[$k]) )
+								if (!empty($access[$k]))
 								{
 									$group_acl[$access['group_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
 							}
 						}
 
-						foreach( $user_access as $forum_id => $access )
+						foreach($user_access as $forum_id => $access)
 						{
-							if ( $forum_id == $forum['forum_id'] )
+							if ($forum_id == $forum['forum_id'])
 							{
-								if ( !empty($access[$k]) )
+								if (!empty($access[$k]))
 								{
 									$user_acl[$access['user_id']][$forum['forum_id']][$v] = ACL_ALLOW;
 								}
@@ -801,9 +799,9 @@ switch ( $this_version )
 		//
 		// Do Moderators
 		//
-		foreach( $user_access as $forum_id => $access )
+		foreach($user_access as $forum_id => $access)
 		{
-			if ( !empty($access['auth_mod']) )
+			if (!empty($access['auth_mod']))
 			{
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['user_id'] . ", $forum_id, auth_option_id, " . ACL_ALLOW . "
@@ -817,9 +815,9 @@ switch ( $this_version )
 			}
 		}
 
-		foreach( $group_access as $forum_id => $access )
+		foreach($group_access as $forum_id => $access)
 		{
-			if ( !empty($access['auth_mod']) )
+			if (!empty($access['auth_mod']))
 			{
 				$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny)
 					SELECT " . $access['group_id'] . ", $forum_id, auth_option_id, " . ACL_ALLOW . "
@@ -836,11 +834,11 @@ switch ( $this_version )
 		//
 		// Rest of access list
 		//
-		foreach ( $user_acl as $user_id => $user_acl_ary )
+		foreach ($user_acl as $user_id => $user_acl_ary)
 		{
-			foreach ( $user_acl_ary as $forum_id => $auth )
+			foreach ($user_acl_ary as $forum_id => $auth)
 			{
-				foreach ( $auth as $auth_value => $allow )
+				foreach ($auth as $auth_value => $allow)
 				{
 					$auth_option_id = $option_ids[$auth_value];
 					$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
@@ -848,11 +846,11 @@ switch ( $this_version )
 			}
 		}
 
-		foreach ( $group_acl as $group_id => $group_acl_ary )
+		foreach ($group_acl as $group_id => $group_acl_ary)
 		{
-			foreach ( $group_acl_ary as $forum_id => $auth )
+			foreach ($group_acl_ary as $forum_id => $auth)
 			{
-				foreach ( $auth as $auth_value => $allow )
+				foreach ($auth as $auth_value => $allow)
 				{
 					$auth_option_id = $option_ids[$auth_value];
 					$sql_ary[] = "INSERT INTO " . $table_prefix . "auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id,  $auth_option_id, $allow)";
@@ -860,14 +858,14 @@ switch ( $this_version )
 			}
 		}
 
-		foreach ( $sql_ary as $sql )
+		foreach ($sql_ary as $sql)
 		{
 			$db->sql_query($sql);
 		}
 
 		gen_str_ok();
 
-	case '2.1.0 [20020816]':
+	case '2.1.1 [20030221]':
 
 		$sql_ary = array();
 
@@ -876,7 +874,7 @@ switch ( $this_version )
 		$sql_ary[] = "UPDATE " . $table_prefix . "posts_text
 			SET post_checksum = MD5(post_text)";
 
-		foreach ( $sql_ary as $sql )
+		foreach ($sql_ary as $sql)
 		{
 			$db->sql_query($sql);
 		}
@@ -884,7 +882,21 @@ switch ( $this_version )
 		gen_str_ok();
 		gen_str_init('* Updating <b>forum post info</b>');
 
-		switch ( SQL_LAYER )
+		$sql = "SELECT topic_id, MIN(post_id) AS first_post_id, MAX(post_id) AS last_post_id, COUNT(post_id) AS total_posts 
+			FROM {$table_prefix}posts 
+			GROUP BY topic_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql = "UPDATE {$table_prefix}topics 
+				SET topic_first_post_id = " . $row['first_post_id'] . ", topic_last_post_id = " . $row['last_post_id'] . ", topic_replies = " . ($row['total_posts'] - 1) . "
+				WHERE topic_id = " . $row['topic_id'];
+			$db->sql_query($sql);
+		}
+		$db->sql_freeresult($result);
+
+		switch (SQL_LAYER)
 		{
 			case 'oracle':
 				$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
@@ -895,20 +907,20 @@ switch ( $this_version )
 
 			default:
 				$sql = "SELECT f.forum_id, p.post_time, p.post_username, u.username, u.user_id
-					FROM (( " . $table_prefix . "forums f
-					LEFT JOIN " . $table_prefix . "posts p ON p.post_id = f.forum_last_post_id )
-					LEFT JOIN " . $table_prefix . "users u ON u.user_id = p.poster_id )";
+					FROM ((" . $table_prefix . "forums f
+					LEFT JOIN " . $table_prefix . "posts p ON p.post_id = f.forum_last_post_id)
+					LEFT JOIN " . $table_prefix . "users u ON u.user_id = p.poster_id)";
 				break;
 		}
 		$result = $db->sql_query($sql);
 
 		$sql_ary = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_id = $row['forum_id'];
 
 			$sql_ary[] = "UPDATE " . $table_prefix . "forums
-				SET forum_last_poster_id = " . ( ( $row['user_id'] ) ? $row['user_id'] : ANONYMOUS ) . ", forum_last_poster_name = '" . addslashes($row['post_username']) . "', forum_last_post_time = " . $row['post_time'] . "
+				SET forum_last_poster_id = " . (($row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . (($row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . "
 				WHERE forum_id = $forum_id";
 
 			$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
@@ -920,10 +932,10 @@ switch ( $this_version )
 					AND u2.user_id = p2.poster_id";
 			$result2 = $db->sql_query($sql);
 
-			while ( $row2 = $db->sql_fetchrow($result2) )
+			while ($row2 = $db->sql_fetchrow($result2))
 			{
 				$sql_ary[] = "UPDATE " . $table_prefix . "topics
-					SET topic_first_poster_name = '" . addslashes($row2['post_username']) . "', topic_last_poster_id = " . ( ( $row2['id2'] ) ? $row2['id2'] : ANONYMOUS ) . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . addslashes($row2['post_username2']) . "'
+					SET topic_poster = " . $row['user_id'] . ", topic_first_poster_name = '" . (($row2['user_id'] != ANONYMOUS && $row2['user_id']) ? addslashes($row2['username']) : addslashes($row2['post_username'])) . "', topic_last_poster_id = " . (($row2['id2'] != ANONYMOUS && $row2['id2']) ? $row2['id2'] : ANONYMOUS) . ", topic_last_post_time = " . $row2['post_time'] . ", topic_last_poster_name = '" . (($row2['id2'] !=  ANONYMOUS && $row2['id2']) ? addslashes($row2['user2']) : addslashes($row2['post_username2'])) . "'
 					WHERE topic_id = " . $row2['topic_id'];
 			}
 			$db->sql_freeresult($result2);
@@ -932,8 +944,9 @@ switch ( $this_version )
 		}
 		$db->sql_freeresult($result);
 
-		foreach ( $sql_ary as $sql )
+		foreach ($sql_ary as $sql)
 		{
+			echo $sql . "<br />";
 			$db->sql_query($sql);
 		}
 
@@ -941,9 +954,10 @@ switch ( $this_version )
 
 	case '2.1.0 [20020817]':
 
-		$sql = "INSERT INTO phpbb_config (config_name, config_value)
-			VALUES ('ip_check', '4')";
-		$db->sql_query($sql);
+//		$sql = "INSERT INTO phpbb_config (config_name, config_value)
+//			VALUES ('ip_check', '4')";
+//		$db->sql_query($sql);
+		break;
 
 	default;
 		print "<span class=\"updtext\">* No updates needed</span><br />\n";
@@ -996,11 +1010,11 @@ function page_header()
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" href="../admin/subSilver.css" type="text/css">
+<link rel="stylesheet" href="../adm/subSilver.css" type="text/css">
 <style type="text/css">
 <!--
-th		{ background-image: url('../admin/images/cellpic3.gif') }
-td.cat	{ background-image: url('../admin/images/cellpic1.gif') }
+th		{ background-image: url('../adm/images/cellpic3.gif') }
+td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 
 h1 { margin-left:15px }
 
@@ -1018,8 +1032,8 @@ h1 { margin-left:15px }
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><img src="../admin/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
-		<td width="100%" background="../admin/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">Update Script</span> &nbsp; &nbsp; &nbsp;</td>
+		<td><img src="../adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
+		<td width="100%" background="../adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">Update Script</span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
@@ -1078,7 +1092,7 @@ function get_schema()
 	{
 		$line = $schemafile[$i];
 
-		if ( preg_match('/^CREATE TABLE (\w+)/i', $line, $matches) )
+		if (preg_match('/^CREATE TABLE (\w+)/i', $line, $matches))
 		{
 			// Start of a new table definition, set some variables and go to the next line.
 			$tabledata = 1;
@@ -1088,7 +1102,7 @@ function get_schema()
 			continue;
 		}
 
-		if ( preg_match('/^\);/', $line) )
+		if (preg_match('/^\);/', $line))
 		{
 			// End of the table definition
 			// After this we will skip everything until the next 'CREATE' line
@@ -1096,12 +1110,12 @@ function get_schema()
 			$table_def[$table] .= ')'; // We don't need the closing semicolon
 		}
 
-		if ( $tabledata == 1 )
+		if ($tabledata == 1)
 		{
 			// We are inside a table definition, parse this line.
 			// Add the current line to the complete table definition:
 			$table_def[$table] .= $line;
-			if ( preg_match('/^\s*(\w+)\s+(\w+)\(([\d,]+)\)(.*)$/', $line, $matches) )
+			if (preg_match('/^\s*(\w+)\s+(\w+)\(([\d,]+)\)(.*)$/', $line, $matches))
 			{
 				// This is a column definition
 				$field = $matches[1];
@@ -1111,8 +1125,8 @@ function get_schema()
 				preg_match('/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i', $matches[4], $match);
 				$default = $match[1];
 
-				$notnull = ( preg_match('/NOT NULL/i', $matches[4]) ) ? 1 : 0;
-				$auto_increment = ( preg_match('/auto_increment/i', $matches[4]) ) ? 1 : 0;
+				$notnull = (preg_match('/NOT NULL/i', $matches[4])) ? 1 : 0;
+				$auto_increment = (preg_match('/auto_increment/i', $matches[4])) ? 1 : 0;
 
 				$field_def[$table][$field] = array(
 					'type' => $type,
@@ -1123,17 +1137,17 @@ function get_schema()
 				);
 			}
 
-			if ( preg_match('/\s*PRIMARY\s+KEY\s*\((.*)\).*/', $line, $matches) )
+			if (preg_match('/\s*PRIMARY\s+KEY\s*\((.*)\).*/', $line, $matches))
 			{
 				// Primary key
 				$key_def[$table]['PRIMARY'] = $matches[1];
 			}
-			else if ( preg_match('/\s*KEY\s+(\w+)\s*\((.*)\)/', $line, $matches) )
+			else if (preg_match('/\s*KEY\s+(\w+)\s*\((.*)\)/', $line, $matches))
 			{
 				// Normal key
 				$key_def[$table][$matches[1]] = $matches[2];
 			}
-			else if ( preg_match('/^\s*(\w+)\s*(.*?),?\s*$/', $line, $matches) )
+			else if (preg_match('/^\s*(\w+)\s*(.*?),?\s*$/', $line, $matches))
 			{
 				// Column definition
 				$create_def[$table][$matches[1]] = $matches[2];
@@ -1164,7 +1178,7 @@ function get_inserts()
 
 	for($i = 0; $i < count($insertfile); $i++)
 	{
-		if ( preg_match('/(INSERT INTO (\w+)\s.*);/i', str_replace('phpbb_', $table_prefix, $insertfile[$i]), $matches) )
+		if (preg_match('/(INSERT INTO (\w+)\s.*);/i', str_replace('phpbb_', $table_prefix, $insertfile[$i]), $matches))
 		{
 			$returnvalue[$matches[2]][] = $matches[1];
 		}

@@ -222,7 +222,7 @@ switch ($mode)
 		$forum_id = $db->sql_nextid();
 
 		// Redirect to permissions
-		redirect('admin/admin_permissions.' . $phpEx . $SID . '&mode=forums&f=' . $forum_id);
+		redirect('adm/admin_permissions.' . $phpEx . $SID . '&mode=forums&f=' . $forum_id);
 
 	break;
 

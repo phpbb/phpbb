@@ -341,7 +341,7 @@ else if( !empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		//
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.php" />';
+		$s_hidden_fields .= '<input type="hidden" name="redirect" value="adm/index.php" />';
 		$s_hidden_fields .= '<input type="hidden" name="submit" value="' . $lang['Login'] . '" />';
 
 		page_header($lang['Inst_Step_2'], "../login.$phpEx");
@@ -859,7 +859,7 @@ else
 		{
 			$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.php" />';
+			$s_hidden_fields .= '<input type="hidden" name="redirect" value="adm/index.php" />';
 			$s_hidden_fields .= '<input type="hidden" name="login" value="true" />';
 		}
 		else
@@ -897,11 +897,11 @@ function page_header($l_instructions, $s_action)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<link rel="stylesheet" href="../admin/subSilver.css" type="text/css">
+<link rel="stylesheet" href="../adm/subSilver.css" type="text/css">
 <style type="text/css">
 <!--
-th		{ background-image: url('../admin/images/cellpic3.gif') }
-td.cat	{ background-image: url('../admin/images/cellpic1.gif') }
+th		{ background-image: url('../adm/images/cellpic3.gif') }
+td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
 //-->
 </style>
 <title><?php echo $lang['Welcome_install']; ?></title>
@@ -910,8 +910,8 @@ td.cat	{ background-image: url('../admin/images/cellpic1.gif') }
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td><img src="../admin/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
-		<td width="100%" background="../admin/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Welcome_install']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+		<td><img src="../adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
+		<td width="100%" background="../adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Welcome_install']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
