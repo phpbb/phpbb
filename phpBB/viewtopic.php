@@ -282,10 +282,10 @@ $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete">
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_ANNOUNCE) && $auth->acl_get('f_announce', $forum_id)) ? '<option value="set_announce">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_ANNOUNCEMENT'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_STICKY) && $auth->acl_get('f_sticky', 'a_', $forum_id)) ? '<option value="set_sticky">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_STICKY'] . '</option>' : '';
-$topic_mod .= (($topic_type != POST_NORMAL) && $auth->acl_get('m_', $forum_id)) ? '<option value="set_normal">' . $user->lang['CHANGE_TOPIC_TYPE'] . $user->lang['POST_NORMAL'] . '</option>' : '';
-
+$topic_mod .= ($auth->acl_get('m_', $forum_id) && $topic_type != POST_NORMAL) ? '<option value="set_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_sticky', $forum_id) && $topic_type != POST_STICKY) ? '<option value="set_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="set_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('f_announce', $forum_id) && $topic_type != POST_ANNOUNCE) ? '<option value="set_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
 $pagination_url = "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
@@ -305,14 +305,16 @@ $reply_img = ($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) ? $u
 $post_img = ($forum_status == ITEM_LOCKED) ? $user->img('post_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']);
 
 
+/*
 // Set a cookie for this topic
-/*if ($user->data['user_id'] != ANONYMOUS)
+if ($user->data['user_id'] != ANONYMOUS)
 {
 	$mark_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_t'])) : array();
 
 	$mark_topics[$forum_id][$topic_id] = 0;
 	setcookie($config['cookie_name'] . '_t', serialize($mark_topics), 0, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-}*/
+}
+*/
 
 
 // Grab censored words
@@ -355,8 +357,8 @@ $template->assign_vars(array(
 	'REPLY_IMG'		=> $reply_img,
 	'REPORT_IMG'	=> $user->img('btn_report', $user->lang['REPORT_TO_ADMIN']),
 
-	'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_BEEN_REPORTED'),
-	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_NOT_BEEN_APPROVED'),
+	'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['POST_BEEN_REPORTED']),
+	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', $user->lang['POST_NOT_BEEN_APPROVED']),
 
 	'S_TOPIC_LINK' 			=> 't',
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
