@@ -759,6 +759,9 @@ $lang += array(
 	'CURRENT_PASSWORD_EXPLAIN'		=> 'You must confirm your current password if you wish to change it, alter your email address or username.',
 	'CONFIRM_PASSWORD_EXPLAIN'		=> 'You only need to confirm your password if you changed it above',
 	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing your email address.', 
+	'NEW_PASSWORD_ERROR'			=> 'The passwords you entered do not match.',
+	'CUR_PASSWORD_ERROR'			=> 'The current password you entered is incorrect.', 
+	'NEW_EMAIL_ERROR'				=> 'The email addresses you entered do not match.', 
 
 	'UCP_PROFILE_INFO'	=> 'Your Profile', 
 	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
@@ -839,9 +842,13 @@ $lang += array(
 	'COPPA_COMPLIANCE'		=> 'COPPA Compliance', 
 	'COPPA_EXPLAIN'			=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.', 
 
-	'PASSWORD_MISMATCH'		=> 'The passwords you entered did not match',
-	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.', 
-	'TOO_MANY_REGISTERS'	=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
+	'PASSWORD_MISMATCH'			=> 'The passwords you entered did not match',
+	'CONFIRM_CODE_WRONG'		=> 'The confirmation code you entered was incorrect.', 
+	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.', 
+	'TOO_SHORT_PASSWORD_CONFIRM'=> 'The password confirmation you entered is too short.', 
+	'TOO_SHORT_NEW_PASSWORD'	=> 'The password you entered is too short.', 
+	'USERNAME_TAKEN_USERNAME'	=> 'The username you entered is already in use, please select an alternative.', 
+	'EMAIL_TAKEN_EMAIL'			=> 'The email address you specified is already in use, please select an alternative.', 
 
 	'ACCOUNT_ADDED'			=> 'Thank you for registering, your account has been created. You may now login with your username and password',
 	'ACCOUNT_INACTIVE'		=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
