@@ -134,10 +134,12 @@
 				</table></td>
 			</tr>
 			<!-- BEGIN avatarupload -->
+			<!-- BEGIN avatarfileupload -->
 			<tr>
 				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_FILE}:</span></td>
 				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" /></td>
 			</tr>
+			<!-- END avatarfileupload -->
 			<tr>
 				<td class="row1"><span class="gen">{L_UPLOAD_AVATAR_URL}:</span><br /><span class="gensmall">{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
 				<td class="row2"><input type="text" name="avatarurl" size="40" /></td>
