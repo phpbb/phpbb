@@ -81,10 +81,11 @@ if(!isset($start))
    $start = 0;
 }
 
-$sql = "SELECT t.*, u.username, u.user_id, p.post_time
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time
 	FROM " . TOPICS_TABLE ." t
 	LEFT JOIN ". USERS_TABLE. " u ON t.topic_poster = u.user_id
 	LEFT JOIN ".POSTS_TABLE." p ON p.post_id = t.topic_last_post_id
+	LEFT JOIN " . USERS_TABLE . " u2 ON p.poster_id = u2.user_id
 	WHERE t.forum_id = '$forum_id'
 	ORDER BY topic_time DESC
 	LIMIT $start, $topics_per_page";
@@ -102,18 +103,20 @@ if($total_topics)
 	$topic_title = stripslashes($topic_rowset[$x]["topic_title"]);
 	$topic_id = $topic_rowset[$x]["topic_id"];
 	$replies = $topic_rowset[$x]["topic_replies"];
+	$topic_poster = stripslashes($topic_rowset[$x]["username"]);
 	$views = $topic_rowset[$x]["topic_views"];
 	$last_post_time = date($date_format, $topic_rowset[$x]["post_time"]);
-	$last_post_user = $topic_rowset[$x]["username"];
+	$last_post_user = $topic_rowset[$x]["user2"];
 	$folder_img = "<img src=\"images/folder.gif\">";
 	$template->set_var(array("FORUM_ID" => $forum_id,
 		"POST_TOPIC_URL" => POST_TOPIC_URL,
 				 "TOPIC_ID" => $topic_id,
 				 "FOLDER" => $folder_img, 
+				 "TOPIC_POSTER" => "<a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["user_id"]."\">".$topic_poster."</a>",
 				 "REPLIES" => $replies,
 				 "TOPIC_TITLE" => $topic_title,
 				 "VIEWS" => $views,
-				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["user_id"]."\">" . $last_post_user ."</a>"));
+				 "LAST_POST" => $last_post_time . "<br><a href=\"profile.$phpEx?mode=viewprofile?user_id=".$topic_rowset[$x]["id2"]."\">" . $last_post_user ."</a>"));
 	$template->parse("topics", "topicrow",  true);
      }
    $count = 1;
