@@ -57,16 +57,6 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-/*
-$s = explode(' ', microtime());
-resync('forum');
-$e = explode(' ', microtime());
-
-echo $e[0] + $e[1] - $s[0] - $s[1];
-echo $db->sql_report;
-exit;
-*/
-
 // temp temp temp
 very_temporary_lang_strings();
 // temp temp temp
@@ -105,12 +95,16 @@ if (isset($_POST['cancel']))
 $forum_data = $topic_data = $post_data = array();
 $topic_id_list = ($topic_id) ? array($topic_id) : array();
 $post_id_list = ($post_id) ? array($post_id) : array();
-$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+
+$to_forum_id = (!empty($_REQUEST['to_forum_id'])) ? intval($_REQUEST['to_forum_id']) : 0;
+$to_topic_id = (!empty($_REQUEST['to_topic_id'])) ? intval($_REQUEST['to_topic_id']) : 0;
 
 $confirm = (!empty($_POST['confirm'])) ? TRUE : FALSE;
 $mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
 $action = (!empty($_GET['action'])) ? $_GET['action'] : '';
 $quickmod = (!empty($_REQUEST['quickmod'])) ? TRUE : FALSE;
+
+$subject = (!empty($_REQUEST['subject'])) ? $_REQUEST['subject'] : '';
 
 $post_modes = array('move', 'delete', 'lock', 'unlock', 'merge_posts', 'delete_posts', 'split_all', 'split_beyond', 'select_topic', 'resync');
 foreach ($post_modes as $post_mode)
@@ -122,9 +116,36 @@ foreach ($post_modes as $post_mode)
 	}
 }
 
+// Build short_id_list and $return string
+$selected_post_ids = array();
+if (!empty($_GET['post_id_list']))
+{
+	$len = $_GET['post_id_list']{0};
+	for ($i = 1; $i < strlen($_GET['post_id_list']); $i += $len)
+	{
+		$short = substr($_GET['post_id_list'], $i, $len);
+		$selected_post_ids[] = (int) base_convert($short, 36, 10);
+		$post_id_list[] = base_convert($short, 36, 10);
+	}
+}
+$url_extra = (!empty($selected_post_ids)) ? '&amp;post_id_list=' . short_id_list($selected_post_ids) : '';
+$return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+
 // Check destination forum or topic if applicable
-$to_forum_id = (!empty($_REQUEST['to_forum_id'])) ? intval($_REQUEST['to_forum_id']) : 0;
-$to_topic_id = (!empty($_REQUEST['to_topic_id'])) ? intval($_REQUEST['to_topic_id']) : 0;
+switch ($mode)
+{
+	case 'split_all':
+	case 'split_beyond':
+		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=split&amp;t=' . $topic_id . $url_extra . '&subject=' . htmlspecialchars($subject) . '">', '</a>');
+	break;
+
+	case 'merge_posts':
+		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '&amp;mode=merge&amp;t=' . $topic_id . $url_extra . '">', '</a>');
+	break;
+
+	default:
+		$return_mode = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="mcp.' . $phpEx . $SID . '">', '</a>');
+}
 
 if ($to_topic_id)
 {
@@ -132,7 +153,7 @@ if ($to_topic_id)
 
 	if (!$row = $db->sql_fetchrow($result))
 	{
-		trigger_error($user->lang['Topic_not_exist'] . $return_mcp);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Topic_not_exist'] . $return_mode);
 	}
 	if (!isset($topic_data[$to_topic_id]))
 	{
@@ -142,11 +163,11 @@ if ($to_topic_id)
 	$to_forum_id = $row['forum_id'];
 }
 
-if ($to_forum_id)
+if ($to_forum_id > 0)
 {
 	if (!$auth->acl_gets('f_list', 'm_', 'a_', $to_forum_id))
 	{
-		trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mcp);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_EXIST'] . $return_mode);
 	}
 
 	if (!isset($forum_data[$to_forum_id]))
@@ -155,7 +176,7 @@ if ($to_forum_id)
 
 		if (!$row = $db->sql_fetchrow($result))
 		{
-			trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_mcp);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_EXIST'] . $return_mode);
 		}
 
 		$forum_data[$to_forum_id] = $row;
@@ -164,10 +185,14 @@ if ($to_forum_id)
 	switch ($mode)
 	{
 		case 'move':
-			$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
+			if ($confirm)
+			{
+				$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
+			}
 		break;
 
 		case 'merge':
+		case 'merge_posts':
 			$is_auth = $auth->acl_gets('f_post', 'f_reply', 'm_', 'a_', $to_forum_id);
 		break;
 	
@@ -175,15 +200,15 @@ if ($to_forum_id)
 		case 'split_beyond':
 			$is_auth = $auth->acl_gets('f_post', 'm_', 'a_', $to_forum_id);
 		break;
-	
+
 		default:
-			trigger_error('Died here with mode ' . $mode);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Died here with mode ' . $mode);
 	}
 
 	// TODO: prevent moderators to move topics/posts to locked forums/topics?
 	if (!$is_auth || !$forum_data[$to_forum_id]['forum_postable'])
 	{
-		trigger_error($user->lang['User_cannot_post'] . $return_mcp);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['User_cannot_post'] . $return_mode);
 	}
 }
 
@@ -200,18 +225,6 @@ foreach ($_POST['post_id_list'] as $p_id)
 	if ($p_id = intval($p_id))
 	{
 		$post_id_list[] = $p_id;
-	}
-}
-
-$selected_post_ids = array();
-if (!empty($_GET['post_id_list']))
-{
-	$len = $_GET['post_id_list']{0};
-	for ($i = 1; $i < strlen($_GET['post_id_list']); $i += $len)
-	{
-		$short = substr($_GET['post_id_list'], $i, $len);
-		$selected_post_ids[] = (int) base_convert($short, 36, 10);
-		$post_id_list[] = base_convert($short, 36, 10);
 	}
 }
 
@@ -303,22 +316,23 @@ if (count($forum_id_list))
 	$db->sql_freeresult($result);
 
 	// Set infos about current forum/topic/post
-	if (!$forum_id || count($forum_id_list) == 1)
+	// Uses each() because array_unique may unset index 0 if it's a duplicate
+	if (!$forum_id && count($forum_id_list) == 1)
 	{
-		$forum_id = $forum_id_list[0];
+		list($void, $forum_id) = each($forum_id_list);
 	}
-	if (!$topic_id || count($topic_id_list) == 1)
+	if (!$topic_id && count($topic_id_list) == 1)
 	{
-		$topic_id = $topic_id_list[0];
+		list($void, $topic_id) = each($topic_id_list);
 	}
-	if (!$post_id || count($post_id_list) == 1)
+	if (!$post_id && count($post_id_list) == 1)
 	{
-		$post_id = $post_id_list[0];
+		list($void, $post_id) = each($post_id_list);
 	}
 
-	$forum_info = !empty($forum_data[$forum_id]) ? $forum_data[$forum_id] : array();
-	$topic_info = !empty($topic_data[$topic_id]) ? $topic_data[$topic_id] : array();
-	$post_info = !empty($post_data[$post_id]) ? $post_data[$post_id] : array();
+	$forum_info = $forum_data[$forum_id];
+	$topic_info = $topic_data[$topic_id];
+	$post_info = $post_data[$post_id];
 }
 else
 {
@@ -326,7 +340,7 @@ else
 
 	if ($not_moderator)
 	{
-		trigger_error('Not_Moderator');
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Not_Moderator');
 	}
 	else
 	{
@@ -334,7 +348,7 @@ else
 		if (!in_array($mode, $forumless_modes))
 		{
 			// The user has submitted invalid post_ids or topic_ids
-			trigger_error($user->lang['Topic_post_not_exist'] . $return_mcp);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Topic_post_not_exist'] . $return_mcp);
 		}
 	}
 }
@@ -349,7 +363,6 @@ else
 // $forum_info is set to $forum_data[$forum_id] for quick reference, same for topic and post.
 //
 // We know that the user has m_ or a_ access to all the selected forums/topics/posts but we still have to check for specific authorisations.
-// Currently, this method may prevent moderators to merge topics if they do not have m_ or a_ access to both topics.
 //
 
 // Build links and tabs
@@ -364,7 +377,6 @@ $mcp_url .= ($forum_id) ? '&amp;f=' . $forum_id : '';
 $mcp_url .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 $mcp_url .= ($post_id) ? '&amp;p=' . $post_id : '';
 $mcp_url .= ($start) ? '&amp;start=' . $start : '';
-$url_extra = (!empty($_GET['post_id_list'])) ? '&amp;post_id_list=' . htmlspecialchars($_GET['post_id_list']) : '';
 $return_mcp = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '">', '</a>');
 
 if ($forum_id)
@@ -377,23 +389,25 @@ if ($topic_id)
 }
 if ($post_id)
 {
-	$tabs['post_view'] = $mcp_url . '&amp;mode=post_view' . $url_extra;
+	$tabs['post_details'] = $mcp_url . '&amp;mode=post_details' . $url_extra;
 }
-if (!empty($_GET['post_id_list']))
+if (!$forum_info['forum_postable'])
 {
-	$tabs['merge'] = $mcp_url . '&amp;mode=merge' . $url_extra;
-}
-
-if (count($forum_id_list) == 1 && !$forum_info['forum_postable'])
-{
-	trigger_error($user->lang['Forum_not_postable'] . $return_mcp);
+	if ($mode)
+	{
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_POSTABLE'] . $return_mcp);
+	}
+	else
+	{
+		$mode = 'front';
+	}
 }
 
 if (!$mode)
 {
 	if ($post_id)
 	{
-		$mode = 'post_view';
+		$mode = 'post_details';
 	}
 	elseif ($topic_id)
 	{
@@ -412,15 +426,16 @@ if (!$mode)
 
 // Get the current tab from the mode
 $tabs_mode = array(
-	'mod_queue'		=>	'mod_queue',
-	'post_reports'	=>	'post_reports',
-	'split'			=>	'topic_view',
-	'merge'			=>	(empty($_GET['post_id_list'])) ? 'topic_view' : 'merge',
-	'ip'			=>	'post_view',
-	'forum_view'	=>	'forum_view',
-	'topic_view'	=>	'topic_view',
-	'post_view'		=>	'post_view',
-	'front'			=>	'front'
+	'mod_queue'			=>	'mod_queue',
+	'post_reports'		=>	'post_reports',
+	'split'				=>	'topic_view',
+	'merge'				=>	(empty($_GET['post_id_list'])) ? 'topic_view' : 'merge',
+	'ip'				=>	'post_details',
+	'forum_view'		=>	'forum_view',
+	'topic_view'		=>	'topic_view',
+	'post_details'		=>	'post_details',
+	'topic_details'		=>	'topic_details',
+	'front'				=>	'front'
 );
 
 foreach ($tabs as $tab_name => $tab_link)
@@ -453,7 +468,7 @@ foreach ($tabs as $tab_name => $tab_link)
 // TODO:
 // - split_all			Actually split selected topic
 // - split_beyond		Actually split selected topic
-// - post_view			Displays post details. Has quick links to (un)approve post.
+// - post_details			Displays post details. Has quick links to (un)approve post.
 // - mod_queue			Displays a list or unapproved posts and/or topics. I haven't designed the interface yet but it will have to be able to filter/order them by type (posts/topics), by timestamp or by forum.
 // - post_reports		Displays a list of reported posts. No interface yet, must be able to order them by priority(?), type, timestamp or forum. Action: view all (default), read, delete.
 // - approve/unapprove	Actually un/approve selected topic(s) or post(s). NOTE: after some second thoughts we'll need three modes: (which names are still to be decided) the first to approve items, the second to set them back as "unapproved" and a third one to "disapprove" them. (IOW, delete them and eventually send a notification to the user)
@@ -475,7 +490,7 @@ switch ($mode)
 		);
 
 		$msg = (count($topic_id_list) == 1) ? $user->lang['TOPIC_RESYNCHRONISED'] : $user->lang['TOPICS_RESYNCHRONISED'];
-		trigger_error($msg . '<br /><br />' . $l_redirect);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $msg . '<br /><br />' . $l_redirect);
 	break;
 
 	case 'delete_posts':
@@ -484,7 +499,7 @@ switch ($mode)
 
 		if (!count($post_id_list))
 		{
-			trigger_error($user->lang['None_selected']);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected']);
 		}
 
 		if ($confirm)
@@ -499,7 +514,7 @@ switch ($mode)
 			);
 
 			$msg = (count($post_id_list) == 1) ? $user->lang['POST_REMOVED'] : $user->lang['POSTS_REMOVED'];
-			trigger_error($msg . '<br /><br />' . $l_redirect);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $msg . '<br /><br />' . $l_redirect);
 		}
 
 		// Not confirmed, show confirmation message
@@ -527,7 +542,7 @@ switch ($mode)
 	case 'delete':
 		if (!$topic_id_list)
 		{
-			trigger_error($user->lang['None_selected']);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected']);
 		}
 
 		if ($confirm)
@@ -549,7 +564,7 @@ switch ($mode)
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
 			);
 
-			trigger_error($user->lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		}
 
 		// Not confirmed, show confirmation message
@@ -584,20 +599,6 @@ switch ($mode)
 	case 'massdelete':
 	case 'topic_view':
 		mcp_header('mcp_topic.html', TRUE);
-
-		$template->assign_vars(array(
-			'TOPIC_TITLE'		=>	$topic_info['topic_title'],
-			'U_VIEW_TOPIC'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id",
-
-			'TO_TOPIC_ID'		=>	($to_topic_id) ? $to_topic_id : '',
-			'TO_TOPIC_EXPLAIN'	=>	($to_topic_id) ? sprintf($user->lang['Topic_number_is'], $to_topic_id, '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '" target="_new">' . htmlspecialchars($topic_data[$to_topic_id]['topic_title']) . '</a>') : '',
-
-			'S_FORM_ACTION'		=>	$mcp_url,
-			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select() . '</select>',
-			'S_ENABLE_SPLIT'	=>	($auth->acl_get('m_split', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
-			'S_ENABLE_MERGE'	=>	($auth->acl_get('m_merge', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
-			'S_ENABLE_DELETE'	=>	($auth->acl_get('m_delete', $forum_id) &&($mode == 'topic_view' || $mode == 'massdelete')) ? TRUE : FALSE
-		));
 
 		$is_first_post = TRUE;
 
@@ -635,22 +636,67 @@ switch ($mode)
 			$s_checkbox = ($is_first_post && $mode == 'split') ? '&nbsp;' : '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
 
 			$template->assign_block_vars('postrow', array(
-				'POSTER_NAME'	=>	$poster,
-				'POST_DATE'		=>	$user->format_date($row['post_time']),
-				'POST_SUBJECT'	=>	$post_subject,
-				'MESSAGE'		=>	$message,
-				'POST_ID'		=>	$row['post_id'],
+				'POSTER_NAME'		=>	$poster,
+				'POST_DATE'			=>	$user->format_date($row['post_time']),
+				'POST_SUBJECT'		=>	$post_subject,
+				'MESSAGE'			=>	$message,
+				'POST_ID'			=>	$row['post_id'],
 
-				'S_CHECKBOX'	=>	$s_checkbox,
-				'ROW_CLASS'		=>	'row' . $i
+				'S_CHECKBOX'		=>	$s_checkbox,
+				'ROW_CLASS'			=>	'row' . $i,
+				
+				'U_POST_DETAILS'	=>	$mcp_url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details'
 			));
 
 			$is_first_post = FALSE;
 			$i = 3 - $i;
 		}
+
+		if ($forum_info['enable_icons'] && ($mode == 'topic_view' || $mode == 'split'))
+		{
+			$icons = array();
+			obtain_icons($icons);
+
+			if (sizeof($icons))
+			{
+				$s_topic_icons = true;
+
+				foreach ($icons as $id => $data)
+				{
+					if ($data['display'])
+					{
+						$template->assign_block_vars('topic_icon', array(
+							'ICON_ID'		=> $id,
+							'ICON_IMG'		=> $config['icons_path'] . '/' . $data['img'],
+							'ICON_WIDTH'	=> $data['width'],
+							'ICON_HEIGHT' 	=> $data['height'],
+
+							'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
+						);
+					}
+				}
+			}
+		}
+
+		$template->assign_vars(array(
+			'TOPIC_TITLE'		=>	$topic_info['topic_title'],
+			'U_VIEW_TOPIC'		=>	"viewtopic.$phpEx$SID&amp;t=$topic_id",
+
+			'TO_TOPIC_ID'		=>	($to_topic_id) ? $to_topic_id : '',
+			'TO_TOPIC_EXPLAIN'	=>	($to_topic_id) ? sprintf($user->lang['Topic_number_is'], $to_topic_id, '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '" target="_new">' . htmlspecialchars($topic_data[$to_topic_id]['topic_title']) . '</a>') : '',
+
+			'SPLIT_SUBJECT'		=>	$subject,
+
+			'S_FORM_ACTION'		=>	$mcp_url,
+			'S_FORUM_SELECT'	=>	'<select name="to_forum_id">' . make_forum_select() . '</select>',
+			'S_ENABLE_SPLIT'	=>	($auth->acl_get('m_split', $forum_id) &&($mode == 'topic_view' || $mode == 'split')) ? TRUE : FALSE,
+			'S_ENABLE_MERGE'	=>	($auth->acl_get('m_merge', $forum_id) &&($mode == 'topic_view' || $mode == 'merge')) ? TRUE : FALSE,
+			'S_ENABLE_DELETE'	=>	($auth->acl_get('m_delete', $forum_id) &&($mode == 'topic_view' || $mode == 'massdelete')) ? TRUE : FALSE,
+			'S_SHOW_TOPIC_ICONS'=>	(!empty($s_topic_icons)) ? TRUE : FALSE
+		));
 	break;
 
-	case 'post_view':
+	case 'post_details':
 		mcp_header('mcp_post.html', TRUE);
 
 		$template->assign_vars(array(
@@ -668,7 +714,7 @@ switch ($mode)
 
 		if (!$row = $db->sql_fetchrow($result))
 		{
-			trigger_error('Topic_post_not_exist');
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Topic_post_not_exist');
 		}
 		else
 		{
@@ -710,7 +756,7 @@ switch ($mode)
 
 			if (!$to_forum_id)
 			{
-				trigger_error($user->lang['FORUM_NOT_EXIST'] . $return_move);
+				trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_EXIST'] . $return_move);
 			}
 
 			$result = $db->sql_query('SELECT forum_id, forum_postable FROM ' . FORUMS_TABLE . ' WHERE forum_id = ' . $to_forum_id);
@@ -720,7 +766,7 @@ switch ($mode)
 			{
 				if (!$row['forum_postable'])
 				{
-					trigger_error($user->lang['Forum_not_postable'] . $return_move);
+					trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['FORUM_NOT_POSTABLE'] . $return_move);
 				}
 
 				move_topics($topic_id_list, $to_forum_id);
@@ -735,7 +781,7 @@ switch ($mode)
 					$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $shadow));
 				}
 			}
-			trigger_error('done');
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'done');
 		}
 
 		foreach ($topic_data as $row)
@@ -767,6 +813,8 @@ switch ($mode)
 				AND topic_moved_id = 0';
 		$db->sql_query($sql);
 
+		add_log('mod', $forum_id, $topic_id, $mode);
+
 		$message = (($mode == 'lock') ? $user->lang['Topics_Locked'] : $user->lang['Topics_Unlocked']) . '<br /><br />';
 		if (isset($_GET['quickmod']))
 		{
@@ -785,27 +833,27 @@ switch ($mode)
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
 		));
 
-		trigger_error($message);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $message);
 	break;
 
 	case 'merge_posts':
 		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $to_topic_id . '">', '</a>');
 		move_posts($post_id_list, $to_topic_id);
 
-		trigger_error($user->lang['Posts_merged'] . $return_url . $return_mcp);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Posts_merged'] . $return_url . $return_mcp);
 	break;
 
 	case 'split_all':
 	case 'split_beyond':
-		$return_split = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=split&amp;post_id_list=' . short_id_list($post_id_list) . '">', '</a>');
+		$return_split = '<br /><br />' . sprintf($user->lang['Click_return_mcp'], '<a href="' . $mcp_url . '&amp;mode=split' . $url_extra . '">', '</a>');
 
-		if (empty($_POST['subject']))
+		if (!$subject)
 		{
-			trigger_error($user->lang['Empty_subject'] . $return_split);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['Empty_subject'] . $return_split);
 		}
 		if (!$to_forum_id)
 		{
-			trigger_error($user->lang['SELECT_DESTINATION_FORUM'] . $return_split);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['SELECT_DESTINATION_FORUM'] . $return_split);
 		}
 
 		if ($mode == 'split_beyond')
@@ -827,11 +875,11 @@ switch ($mode)
 
 		if (empty($post_id_list))
 		{
-			trigger_error($user->lang['None_selected'] . $return_split);
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['None_selected'] . $return_split);
 		}
 
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_approved)
-			VALUES ($to_forum_id, '" . $db->sql_escape($_POST['subject']) . "', 1)";
+			VALUES ($to_forum_id, '" . $db->sql_escape($subject) . "', 1)";
 		$db->sql_query($sql);
 
 		$to_topic_id = $db->sql_nextid();
@@ -839,7 +887,7 @@ switch ($mode)
 
 		$return_url = '<br /><br />' . sprintf($user->lang['Click_return_topic'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
 		$return_url .= '<br /><br />' . sprintf($user->lang['CLICK_GO_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '">', '</a>');
-		trigger_error($user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . $user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
 	break;
 
 	case 'ip':
@@ -849,7 +897,7 @@ switch ($mode)
 
 		if (!$post_id)
 		{
-			trigger_error('No_such_post');
+			trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'No_such_post');
 		}
 
 		$ip_this_post = $post_info['poster_ip'];
@@ -1148,7 +1196,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
-		trigger_error('Topic_post_not_exist');
+		trigger_error('Line : ' . __LINE__ . '<br/><br/>' . 'Topic_post_not_exist');
 	}
 
 	$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -1653,8 +1701,9 @@ function very_temporary_lang_strings()
 {
 	global $user;
 	$lang = array(
-		'Forum_not_postable'		=>	'This forum is not postable',
+		'FORUM_NOT_POSTABLE'		=>	'This forum is not postable',
 		'SELECTED_TOPICS'			=>	'You selected the following topic(s)',
+		'FORUM_NOT_EXIST'			=>	'The forum you selected does not exist',
 		'Topic_not_exist'			=>	'The topic you selected does not exist',
 		'Posts_merged'				=>	'The selected posts have been merged',
 		'Select_for_merge'			=>	'%sSelect%s',
@@ -1670,18 +1719,19 @@ function very_temporary_lang_strings()
 		'RESYNC'					=>	'Resync',
 		'SELECT_DESTINATION_FORUM'	=>	'Please select a forum for destination',
 		'TOPIC_SPLIT'				=>	'The selected topic has been split successfully',
-		'CLICK_GO_NEW_TOPIC'		=>	'Click %sHere%s to go to the new topic'
+		'CLICK_GO_NEW_TOPIC'		=>	'Click %sHere%s to go to the new topic',
+		'POST_DETAILS'				=>	'Post details'
 	);
 
 	$user->lang = array_merge($user->lang, $lang);
 	$user->lang['mod_tabs'] = array(
 		'front' => 'Front Page',
-		'mod_queue' => 'Mod Queue',
-		'forum_view' => 'View Forum',
-		'topic_view' => 'View Topic',
-		'post_view' => 'Post Details',
-		'post_reports' => 'Reported Posts',
-		'merge' => 'Merge'
+		'mod_queue'			=>	'Mod Queue',
+		'forum_view'		=>	'View Forum',
+		'topic_view'		=>	'View Topic',
+		'post_details'		=>	'Post Details',
+		'post_reports'		=>	'Reported Posts',
+		'merge'				=>	'Merge'
 	);
 }
 ?>

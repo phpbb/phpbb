@@ -6,19 +6,29 @@
 	<tr> 
 		<th height="25" class="thHead" colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
 		<td class="row2" colspan="2"><span class="courier"> 
-		<input type="text" size="35" style="width: 350px" maxlength="100" name="subject" class="post" />
+		<input type="text" size="35" style="width: 350px" maxlength="100" name="subject" class="post" value="{SPLIT_SUBJECT}" />
 		</span></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
 		<td class="row2" colspan="2"><span class="courier">{S_FORUM_SELECT}</span></td>
 	</tr>
+	<!-- IF S_SHOW_TOPIC_ICONS -->
+	<tr>
+		<td class="row1"><b class="gen">{L_ICON}</b></td>
+		<td class="row2" colspan="2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><input type="radio" name="icon" value="1" checked="checked" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+			</tr>
+		</table></td>
+	</tr>
+	<!-- ENDIF -->
 <!-- ENDIF -->
 <!-- IF S_ENABLE_MERGE -->
 	<tr> 
@@ -67,7 +77,8 @@
 	</tr>
 	<!-- BEGIN postrow -->
 	<tr> 
-		<td align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a>{postrow.POSTER_NAME}</span></td>
+		<td align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a>{postrow.POSTER_NAME}</span>
+			<br /><br /><br /><span class="gensmall"><a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a></span></td>
 		<td width="100%" valign="top" class="{postrow.ROW_CLASS}"> 
 		<table width="100%" cellspacing="0" cellpadding="3" border="0">
 			<tr> 
