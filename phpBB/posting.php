@@ -210,21 +210,21 @@ if (isset($_REQUEST['post']))
 	$search = new fulltext_search();
 
 	// Grab relevant submitted data
-	$message	= (!empty($_REQUEST['message'])) ? $_REQUEST['message'] : '';
-	$subject	= (!empty($_REQUEST['subject'])) ? $_REQUEST['subject'] : '';
-	$username	= (!empty($_REQUEST['username'])) ? $_REQUEST['username'] : '';
-	$topic_type	= (!empty($_REQUEST['topic_type'])) ? intval($_REQUEST['topic_type']) : '';
-	$icon_id	= (!empty($_REQUEST['icon'])) ? intval($_REQUEST['icon']) : 1;
+	$message	= (!empty($_POST['message'])) ? $_POST['message'] : '';
+	$subject	= (!empty($_POST['subject'])) ? $_POST['subject'] : '';
+	$username	= (!empty($_POST['username'])) ? $_POST['username'] : '';
+	$topic_type	= (!empty($_POST['topic_type'])) ? intval($_POST['topic_type']) : POST_NORMAL;
+	$icon_id	= (!empty($_POST['icon'])) ? intval($_POST['icon']) : 0;
 
-	$enable_html 	= (!intval($config['allow_html'])) ? 0 : ((!empty($_REQUEST['disable_html'])) ? 0 : 1);
-	$enable_bbcode 	= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_REQUEST['disable_bbcode'])) ? 0 : 1);
-	$enable_smilies = (!intval($config['allow_smilies'])) ? 0 : ((!empty($_REQUEST['disable_smilies'])) ? 0 : 1);
-	$enable_urls 	= (!empty($_REQUEST['disable_magic_url'])) ? 0 : 1;
-	$enable_sig 	= (empty($_REQUEST['attach_sig'])) ? 1 : 0;
+	$enable_html 	= (!intval($config['allow_html'])) ? 0 : ((!empty($_POST['disable_html'])) ? 0 : 1);
+	$enable_bbcode 	= (!intval($config['allow_bbcode'])) ? 0 : ((!empty($_POST['disable_bbcode'])) ? 0 : 1);
+	$enable_smilies = (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
+	$enable_urls 	= (!empty($_POST['disable_magic_url'])) ? 0 : 1;
+	$enable_sig 	= (empty($_POST['attach_sig'])) ? 1 : 0;
 
-	$poll_subject		= (!empty($_REQUEST['poll_subject'])) ? $_REQUEST['poll_subject'] : '';
-	$poll_length		= (!empty($_REQUEST['poll_length'])) ? $_REQUEST['poll_length'] : '';
-	$poll_option_text	= (!empty($_REQUEST['poll_option_text'])) ? $_REQUEST['poll_option_text'] : '';
+	$poll_subject		= (!empty($_POST['poll_subject'])) ? $_POST['poll_subject'] : '';
+	$poll_length		= (!empty($_POST['poll_length'])) ? $_POST['poll_length'] : '';
+	$poll_option_text	= (!empty($_POST['poll_option_text'])) ? $_POST['poll_option_text'] : '';
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message);
@@ -335,11 +335,11 @@ if (isset($_REQUEST['post']))
 		{
 			$topic_sql = array(
 				'forum_id' 		=> intval($forum_id),
-				'topic_title' 	=> htmlspecialchars($subject),
+				'topic_title' 	=> $subject,
 				'topic_poster' 	=> intval($user->data['user_id']),
 				'topic_time' 	=> $current_time,
-				'topic_type' 	=> (!empty($enable_icons)) ? intval($topic_type) : 0,
-				'icon_id'	=> $icon_id,
+				'topic_type' 	=> $topic_type,
+				'icon_id'		=> $icon_id,
 				'topic_approved'=> (!empty($enable_moderate) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', intval($forum_id))) ? 0 : 1,
 			);
 			if (!empty($poll_options))
@@ -380,7 +380,7 @@ if (isset($_REQUEST['post']))
 
 		// post_text ... may merge into posts table
 		$post_text_sql = array(
-			'post_subject'	=> htmlspecialchars($subject),
+			'post_subject'	=> $subject,
 			'bbcode_uid'	=> $bbcode_uid,
 			'post_id' 		=> intval($post_id),
 		);
