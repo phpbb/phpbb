@@ -166,15 +166,17 @@ class acm
 		return 'array(' . implode(',', $lines) . ')';
 	}
 
-	function sql_load($query)
+	function sql_load($query, $expire_time)
 	{
 		global $db, $phpEx;
-		@include($this->cache_dir . md5($query) . '.' . $phpEx);
 
-		if (!isset($rowset))
+		$filemtime = intval(@filemtime($this->cache_dir . md5($query) . '.' . $phpEx));
+		if (time() - $filemtime > $expire_time)
 		{
 			return FALSE;
 		}
+
+		include($this->cache_dir . md5($query) . '.' . $phpEx);
 
 		$query_id = 'Cache id #' . count($this->sql_rowset);
 		$this->sql_rowset[$query_id] = $rowset;
