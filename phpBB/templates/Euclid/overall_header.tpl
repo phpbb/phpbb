@@ -20,7 +20,7 @@ TD.cat	{background-color:{T_TH_COLOR2};font-family:{T_FONTFACE1};font-size:12pt}
 TD.row1	{background-color:{T_TD_COLOR1}}
 TD.row2	{background-color:{T_TD_COLOR2}}
 
-SPAN.title	{font-family:{T_FONTFACE2};font-size:36pt}
+SPAN.title	{font-family:{T_FONTFACE2};font-size:26pt}
 SPAN.cattitle	{font-family:{T_FONTFACE1};font-size:12pt;font-weight:bold}
 SPAN.gen	{font-family:{T_FONTFACE1};font-size:10pt}
 SPAN.gensmall	{font-family:{T_FONTFACE1};font-size:8pt}
@@ -57,7 +57,7 @@ HR {height:2px}
 				<td class="row2"><table width="100%" cellspacing="0" border="0">
 					<tr>
 						<td><span class="title"><a href="{U_INDEX}"><img src="templates/Euclid/images/logo_phpBB.gif" border="0" alt="" title="" /></a></span></td>
-						<td width="100%" align="center" valign="top"><br /><span class="cattitle"><b>{SITENAME}</b></span><br /><br /><span class="gen">{SITE_DESCRIPTION}</span></td>
+						<td width="100%" align="center" valign="top"><span class="title"><b>{SITENAME}</b></span><br /><span class="gen">{SITE_DESCRIPTION}</span></td>
 					</tr>
 				</table></td>
 			</tr>

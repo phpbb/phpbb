@@ -49,25 +49,25 @@
 	<tr>
 		<td class="tablebg"><table border="0" cellpadding="4" cellspacing="1" width="100%">
 			<tr bgcolor="{postrow.ROW_COLOR}">
-				<td rowspan="2" width="160" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a><table width="160" cellspacing="0" cellpadding="0" border="0">
+				<td width="160" align="left" valign="top"><a name="{postrow.U_POST_ID}"></a><table width="160" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td valign="top"><span class="gen"><b>{postrow.POSTER_NAME}</b></span><br /><span class="gensmall">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_FROM}</span><br /><br /></td>
 					</tr>
 				</table></td>
-				<td width="100%" height="20" valign="top"><table width="100%" cellspacing="1" cellpadding="0" border="0">
+				<td width="100%" valign="top"><table width="100%" cellspacing="1" cellpadding="0" border="0">
 					<tr>
 						<td valign="top"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td valign="middle"><span class="gensmall">{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 								<td>&nbsp;&nbsp;</td>
-								<td align="right" valign="middle" nowrap="nowrap">{postrow.EDIT_IMG} {postrow.QUOTE_IMG}</td>
+								<td align="right" valign="middle" nowrap="nowrap">{postrow.EDIT_IMG} {postrow.QUOTE_IMG} {postrow.DELETE_IMG}</td>
 							</tr>
 						</table></td>
 					</tr>
+					<tr>
+						<td width="100%" height="100%" valign="top"><hr /><span class="gen">{postrow.MESSAGE}</span></td>
+					</tr>
 				</table></td>
-			</tr>
-			<tr bgcolor="{postrow.ROW_COLOR}">
-				<td width="100%" height="100%" valign="top"><br /><span class="gen">{postrow.MESSAGE}</span></td>
 			</tr>
 			<tr bgcolor="{postrow.ROW_COLOR}">
 				<td align="left" valign="middle"><table cellspacing="0" cellpadding="0" border="0">
@@ -80,7 +80,7 @@
 				<td valign="middle"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td valign="middle">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.ICQ_ADD_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}</td>
-						<td align="right" valign="middle">{postrow.IP_IMG} {postrow.DELETE_IMG}</td>
+						<td align="right">{postrow.IP_IMG}</td>
 					</tr>
 				</table></td>
 			</tr>

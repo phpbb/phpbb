@@ -35,8 +35,8 @@
 			<tr>
 				<td class="row1" align="center" valign="middle">&nbsp;{topicrow.FOLDER}&nbsp;</td>
 				<td class="row2">&nbsp;<span class="gensmall">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>&nbsp;{topicrow.GOTO_PAGE}</span></td>
-				<td class="row2" align="center" valign="middle"><span class="gen"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}">{topicrow.TOPIC_POSTER}</a></span></td>
-				<td class="row1" align="center" valign="middle"><span class="gen">{topicrow.REPLIES}</span></td>
+				<td class="row1" align="center" valign="middle"><span class="gen"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}">{topicrow.TOPIC_POSTER}</a></span></td>
+				<td class="row2" align="center" valign="middle"><span class="gen">{topicrow.REPLIES}</span></td>
 				<td class="row1" align="center" valign="middle"><span class="gen">{topicrow.VIEWS}</span></td>
 				<td class="row2" align="center" valign="middle" NOWRAP><span class="gensmall">{topicrow.LAST_POST}</span></td>
 			</tr>

@@ -30,8 +30,8 @@
 				<td class="row1" align="center" valign="middle">{searchresults.FOLDER}</td>
 				<td class="row2"><span class="gensmall"><a href="{searchresults.U_VIEW_FORUM}" class="forumlink">{searchresults.FORUM_NAME}</a></span></td>
 				<td class="row1">&nbsp;<span class="gensmall">{searchresults.NEWEST_POST_IMG}{searchresults.TOPIC_TYPE}<a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a>&nbsp;{searchresults.GOTO_PAGE}</span></td>
-				<td class="row1" align="center" valign="middle"><span class="gen"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}">{searchresults.TOPIC_POSTER}</a></span></td>
-				<td class="row2" align="center" valign="middle"><span class="gen">{searchresults.REPLIES}</span></td>
+				<td class="row2" align="center" valign="middle"><span class="gen"><a href="{searchresults.U_TOPIC_POSTER_PROFILE}">{searchresults.TOPIC_POSTER}</a></span></td>
+				<td class="row1" align="center" valign="middle"><span class="gen">{searchresults.REPLIES}</span></td>
 				<td class="row2" align="center" valign="middle"><span class="gen">{searchresults.VIEWS}</span></td>
 				<td class="row1" align="center" valign="middle" NOWRAP><span class="gensmall">{searchresults.LAST_POST}</span></td>
 			</tr>

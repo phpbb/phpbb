@@ -46,7 +46,7 @@
 			</tr>
 			<tr>
 				<td class="row1" width="7%" align="center" valign="middle"><img src="templates/Euclid/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-				<td class="row2" colspan="4" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br /><span class="gen">{LOGGED_IN_USER_LIST}</span></td>
+				<td class="row2" colspan="4" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE}</span><br /><span class="gensmall">{LOGGED_IN_USER_LIST}</span></td>
 			</tr>
 		</table></td>
 	</tr>
