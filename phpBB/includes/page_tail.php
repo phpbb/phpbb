@@ -25,7 +25,7 @@
 //
 // Show the overall footer.
 //
-if($userdata['session_logged_in'])
+if($userdata['user_level'] == ADMIN)
 {
 	$admin_link = "<a href=\"admin/index.$phpEx\">Administration Panel</a>";
 }
