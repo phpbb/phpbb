@@ -102,7 +102,7 @@ define('PRIVMSGS_UNREAD_MAIL', 5);
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
-define('ACL_PREFETCH_TABLE', $table_prefix.'auth_prefetch');
+define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories'); //
