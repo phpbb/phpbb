@@ -194,7 +194,7 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 // Extract the data
 extract($topic_data);
 
-// We make this check here because the correct forum_id is determined
+//
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_replies_real : $topic_replies;
 unset($topic_replies_real);
 
@@ -232,12 +232,13 @@ else
 }
 
 // Check sticky/announcement time limit
-if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_limit && $topic_time + $topic_time_limit < time())
+if (($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) && $topic_time_limit && ($topic_time + $topic_time_limit) < time())
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
 		WHERE topic_id = ' . $topic_id;
 	$db->sql_query($sql);
+
 	$topic_type = POST_NORMAL;
 	$topic_time_limit = 0;
 }
@@ -1188,11 +1189,18 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			unset($post_storage_list);
 		}
+		
 		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
 
-		$user_edit_row = ($row['post_edit_reason']) ? $post_edit_list[$row['post_edit_user']] : array();
-
-		$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		if ($row['post_edit_reason'])
+		{
+			$user_edit_row = $post_edit_list[$row['post_edit_user']];
+			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		}
+		else
+		{
+			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_cache[$row['post_edit_user']]['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+		}
 	}
 	else
 	{

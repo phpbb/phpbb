@@ -181,6 +181,7 @@ class bbcode_firstpass extends bbcode
 
 		// We remove the hardcoded elements from the code block here because it is not used in code blocks
 		// Having it here saves us one preg_replace per message containing [code] blocks
+		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
 		$htm_match = array(
 			'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 			'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
@@ -245,8 +246,8 @@ class bbcode_firstpass extends bbcode
 					$code = ob_get_contents();
 					ob_end_clean();
 
-					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.');
-					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;');
+					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58');
 
 					if ($remove_tags)
 					{
@@ -271,8 +272,8 @@ class bbcode_firstpass extends bbcode
 				break;
 
 				default:
-					$str_from = array('<', '>', '[', ']', '.');
-					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;');
+					$str_from = array('<', '>', '[', ']', '.', ':');
+					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58');
 
 					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 			}
@@ -412,8 +413,8 @@ class bbcode_firstpass extends bbcode
 		$tok = ']';
 		$out = '[';
 
-		// Add newline at the end of each quote block to prevent parsing errors (urls, smilies, etc.)
-		$in = preg_replace('#([^\n])\[\/quote\]#is', "\\1\n[/quote]", $in);
+		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
+		$in = preg_replace(array('#\[quote(=?.*?)\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
 
 		$in = substr(str_replace('\"', '"', $in), 1);
 		$close_tags = $error_ary = array();
@@ -685,17 +686,6 @@ class parse_message extends bbcode_firstpass
 
 		$num_urls = 0;
 
-		// Parse URL's
-		if ($allow_magic_url)
-		{
-			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
-	
-			if ($config['max_' . $mode . '_urls'])
-			{
-				$num_urls += preg_match_all('#\<!-- (l|m|w|e) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
-			}
-		}
-
 		// Parse BBCode
 		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
@@ -711,6 +701,17 @@ class parse_message extends bbcode_firstpass
 			$this->parse_bbcode();
 	
 			$num_urls += $this->parsed_items['url'];
+		}
+
+		// Parse URL's
+		if ($allow_magic_url)
+		{
+			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
+	
+			if ($config['max_' . $mode . '_urls'])
+			{
+				$num_urls += preg_match_all('#\<!-- (l|m|w|e) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
+			}
 		}
 
 		// Check number of links
@@ -817,10 +818,9 @@ class parse_message extends bbcode_firstpass
 		
 		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
 
-		$match = $replace = array();
-
-		if(!is_array($match))
+		if (!is_array($match))
 		{
+			$match = $replace = array();
 			// Be sure to not let the matches cross over. ;)
 	
 			// relative urls for this board
@@ -839,6 +839,7 @@ class parse_message extends bbcode_firstpass
 			$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
 			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 		}
+		
 		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
 			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
 			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
@@ -860,7 +861,7 @@ class parse_message extends bbcode_firstpass
 
 		// NOTE: There is a memory leak in this block somewhere :\
 		// See if the static arrays have already been filled on an earlier invocation
-		if(!is_array($match))
+		if (!is_array($match))
 		{
 			// NOTE: obtain_* function? chaching the table contents?
 	
@@ -902,7 +903,7 @@ class parse_message extends bbcode_firstpass
 			$db->sql_freeresult($result);
 		}
 		
-		if(count($match))
+		if (sizeof($match))
 		{
 			if ($max_smilies)
 			{
@@ -1192,9 +1193,9 @@ class fulltext_search
 		// NCRs like &nbsp; etc.
 		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
 		// Do not index code
-		$match[] = '#\[code(=.*)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
+		$match[] = '#\[code=?.*?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
 		// BBcode
-		$match[] = '#\[\/?[a-z\*\+\-]+(=.*)?(\:?[0-9a-z]{5,})\]#';
+		$match[] = '#\[\/?[a-z\*\+\-]+=?.*?(\:?[0-9a-z]{5,})\]#';
 		// Sequences > min_search_chars & < max_search_chars
 //		$match[] = '#\s([\b]{1,' . $config['min_search_chars'] . '}|[\b]{' . $config['max_search_chars'] . ',})\s#is';
 //		$match[] = '#\s((&\#[0-9]+;){1,' . $config['min_search_chars'] . '}|(&\#[0-9]+;){' . $config['max_search_chars'] . ',})\s#is';

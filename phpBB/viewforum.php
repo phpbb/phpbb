@@ -476,37 +476,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			{
 				$mark_forum_read = false;
 			}
-/*
-			if ($config['load_db_lastread'])
-			{
-				if ((isset($row['mark_time']) && $row['topic_last_post_time'] > $row['mark_time']) || (empty($row['mark_time']) && $row['topic_last_post_time'] > $forum_data['mark_time']))
-				{
-					// sync post/topic marking
-					if (isset($unread_topc) && !$unread_topic && !empty($row['mark_time']) && $row['mark_time'])
-					{
-						markread('topic', $forum_id, $topic_id);
-					}
-					else
-					{
-						$mark_forum_read = false;
-					}
-				}
-			}
-			else
-			{
-				if (($mark_time_topic && $row['topic_last_post_time'] > $mark_time_topic) || (!$mark_time_topic && $mark_time_forum && $row['topic_last_post_time'] > $mark_time_forum))
-				{
-					if (isset($unread_topic) && !$unread_topic && !empty($row['mark_time']) && $mark_time_topic)
-					{
-						markread('topic', $forum_id, $topic_id);
-					}
-					else
-					{
-						$mark_forum_read = false;
-					}
-				}
-			}
-*/
+
 			unset($rowset[$topic_id]);
 		}
 	}

@@ -163,11 +163,10 @@ class bbcode
 				case 0:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str' => array(
-							'[quote:$uid]'	=>	$this->bbcode_tpl('quote_open', $bbcode_id),
 							'[/quote:$uid]'	=>	$this->bbcode_tpl('quote_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[quote=&quot;(.*?)&quot;:$uid\]#'	=>	$this->bbcode_tpl('quote_username_open', $bbcode_id)
+							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\](.)#ise'	=>	"\$this->bbcode_second_pass_quote('\$1', '\$2')"
 						)
 					);
 				break;
@@ -457,6 +456,23 @@ class bbcode
 		}
 
 		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));
+	}
+
+	function bbcode_second_pass_quote($username, $quote)
+	{
+		// when using the /e modifier, preg_replace slashes double-quotes but does not
+		// seem to slash anything else
+		$quote = str_replace('\"', '"', $quote);
+
+		// remove newline at the beginning
+		if ($quote{0} == "\n")
+		{
+			$quote = substr($quote, 1);
+		}
+
+		$quote = (($username) ? str_replace('$1', $username, $this->bbcode_tpl('quote_username_open')) : $this->bbcode_tpl('quote_open')) . $quote;
+
+		return $quote;
 	}
 
 	function bbcode_second_pass_code($type, $code)
