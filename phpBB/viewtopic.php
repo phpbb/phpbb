@@ -1131,7 +1131,7 @@ foreach ($rowset as $key => $row)
 			}
 			else if (trim($extensions[$attachment['extension']]['upload_icon']) != '')
 			{
-				$upload_image = '<img src="' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+				$upload_image = '<img src="' . $phpbb_root_path . 'images/upload_icons/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
 			}
 	
 			$filesize = $attachment['filesize'];

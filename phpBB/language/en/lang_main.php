@@ -486,6 +486,7 @@ $lang = array(
 	'ATTACHMENT_PHP_SIZE_NA'=> 'The Attachment is too big.<br />Couldn\'t get the maximum Size defined in PHP.<br />The Attachment Mod is unable to determine the maximum Upload Size defined in the php.ini file.',
 	'ATTACHMENT_PHP_SIZE_OVERRUN' => 'The Attachment is too big.<br />Maximum Upload Size: %d MB.<br />Please note that this Size is defined in php.ini, this means it\'s set by PHP and the Attachment Mod can not override this value.',
 	'DISALLOWED_EXTENSION'	=> 'The Extension %s is not allowed',
+	'ALLOWED'				=> 'Allowed',
 	'BYTES' => 'Bytes',
 	'KB'	=> 'KB',
 	'MB'	=> 'MB',

@@ -198,16 +198,12 @@ function send_file_to_browser($real_filename, $mimetype, $physical_filename, $up
 	header('Content-Transfer-Encoding: none');
 
 	// Send out the Headers
-	if ($browser_agent == 'ie')
-	{
-		header('Content-Type: ' . $mimetype);
-		header('Content-Disposition: inline; filename="' . $real_filename . '"');
-	} 
-	else
-	{
+	header('Content-Type: ' . $mimetype . '; name="' . $real_filename . '"');
+	header('Content-Disposition: inline; filename="' . $real_filename . '"');
+/*
 		header('Content-Type: ' . $mimetype . '; name="' . $real_filename . '"');
 		header('Content-Disposition: attachment; filename=' . $real_filename);
-	}
+*/
 
 	// Now send the File Contents to the Browser
 	if ($gotit)

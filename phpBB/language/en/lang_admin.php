@@ -124,6 +124,7 @@ $lang = array_merge($lang, array(
 	'LOG_EMAIL_CONFIG'		=> '<b>Altered email settings</b>',
 	'LOG_AVATAR_CONFIG'		=> '<b>Altered avatar settings</b>',
 	'LOG_AUTH_CONFIG'		=> '<b>Altered authentication settings</b>',
+	'LOG_ATTACH_CONFIG'		=> '<b>Altered attachment settings</b>',
 	'log_prune_user_deac'	=> '<b>Users Deactivated</b><br />%s',
 	'log_prune_user_del_del'=> '<b>Users Pruned and Posts Deleted</b><br />%s',
 	'log_prune_user_del_anon'=> '<b>Users Pruned and Posts Retained</b><br />%s',
@@ -142,6 +143,10 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_GROUP_ADD'			=> '<b>Edited Group permissions</b><br />&#187; %s', 
 	'LOG_ACL_PRESET_ADD'		=> '<b>Added or edited permission preset</b><br />&#187; %s', 
 	'LOG_ACL_PRESET_DEL'		=> '<b>Deleted permission preset</b><br />&#187; %s', 
+	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added or edited extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
 
 	'RUN_HOW'	=> 'When to run', 
 	'RUN_AS_NOW'=> 'Run now',
@@ -882,6 +887,7 @@ $lang = array_merge($lang, array(
 	'ATTACH_MANAGE_URL'			=> 'Configuration',
 	'ATTACH_CATS_URL'			=> 'Special Categories',
 	'ATTACH_EXTENSIONS_URL'		=> 'Extensions',
+	'ATTACH_EXT_GROUPS_URL'		=> 'Extension Groups',
 	'ATTACHMENT_SETTINGS'		=> 'Attachment Settings',
 	'ATTACHMENT_CONFIG_EXPLAIN' => 'Here you can configure the Main Settings for Attachments and the associated Special Categories.',
 
@@ -946,6 +952,25 @@ $lang = array_merge($lang, array(
 	'MAX_IMAGE_SIZE_EXPLAIN'	=> 'Here you can define the maximum allowed Image Dimension to be attached (Width x Height in pixels).<br />If it is set to 0x0, this feature is disabled. With some Images this Feature will not work due to limitations in PHP.',
 	'IMAGE_LINK_SIZE'			=> 'Image Link Dimensions',
 	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'If this defined Dimension of an Image is reached, the Image will be displayed as a Link, rather than displaying it inlined,<br />if Inline View is enabled (Width x Height in pixels).<br />If it is set to 0x0, this feature is disabled. With some Images this Feature will not work due to limitations in PHP.',
+
+	'EXTENSION_GROUPS_TITLE'	=> 'Manage Extension Groups',
+	'EXTENSION_GROUPS_TITLE_EXPLAIN'	=> 'Here you can add, delete and modify your Extension Groups, you can disable Extension Groups, assign a special Category to them, change the download mechanism and you can define an Upload Icon which will be displayed in front of an Attachment belonging to the Group.',
+	'EXTENSION_GROUPS'			=> 'Extension groups',
+	'EXTENSION_GROUP'			=> 'Extension group',
+	'SPECIAL_CATEGORY'			=> 'Special category',
+	'DOWNLOAD_MODE'				=> 'Download mode',
+	'UPLOAD_ICON'				=> 'Upload icon',
+	'MAX_EXTGROUP_FILESIZE'		=> 'Maximum filesize',
+	'ADD_EXTGROUP'				=> 'Add extension group',
+
+	'CAT_IMAGES'				=> 'Images',
+	'CAT_WM_FILES'				=> 'Win Media Streams',
+	'CAT_RM_FILES'				=> 'Real Media Streams',
+	'MODE_INLINE'				=> 'Inline',
+	'MODE_PHYSICAL'				=> 'Physical',
+	'NO_IMAGE'					=> 'No Image',
+	'EXTENSION_GROUPS_UPDATED'	=> 'Extension Groups updated successfully',
+	'EXTENSION_GROUP_EXIST'		=> 'The Extension Group %s already exist',
 
 
 	'WELCOME_INSTALL' => 'Welcome to phpBB 2 Installation',
