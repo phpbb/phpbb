@@ -646,10 +646,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			}
 			else
 			{
-				$privmsg_sent_id = $db->sql_nextid($pm_sent_status);
 
 				if($mode != "edit")
 				{
+					$privmsg_sent_id = $db->sql_nextid();
+
 					$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_text) 
 						VALUES ($privmsg_sent_id, '$message')";
 				}
@@ -811,6 +812,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	else if($mode == 'reply')
 	{
 		$post_a = $lang['Send_a_reply'];
+		//
+		// Switch mode to post ... it's a bit of a cheat really but once the basic
+		// info for the reply is determined it really becomes a new post ... so why
+		// do it any other way?!
+		//
+		$mode = "post";
 	}
 	else if($mode == 'edit')
 	{
