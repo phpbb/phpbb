@@ -404,6 +404,8 @@ $lang = array(
 	'RULES_EDIT_CANNOT'		=> 'You <b>cannot</b> edit your posts in this forum',
 	'RULES_DELETE_CAN'		=> 'You <b>can</b> delete your posts in this forum',
 	'RULES_DELETE_CANNOT'	=> 'You <b>cannot</b> delete your posts in this forum',
+	'RULES_LOCK_CAN'		=> 'You <b>can</b> lock your topics in this forum',
+	'RULES_LOCK_CANNOT'		=> 'You <b>cannot</b> lock your topics in this forum',
 	'RULES_VOTE_CAN'		=> 'You <b>can</b> vote in polls in this forum',
 	'RULES_VOTE_CANNOT'		=> 'You <b>cannot</b> vote in polls in this forum',
 
@@ -420,6 +422,8 @@ $lang = array(
 	'NO_UNREAD_POSTS'	=> 'There are no new unread posts for this topic.', 
 
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.', 
+	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
+	'LOGIN_NOTIFY_FORUM'	=> 'You have been notified about this forum, please login to view it.',
 	'STOP_WATCHING_FORUM'	=> 'Unsubscribe Forum',
 	'START_WATCHING_FORUM'	=> 'Subscribe Forum',
 	'NOT_WATCHING_FORUM'	=> 'You no subscribe to updates on this forum',
@@ -575,8 +579,8 @@ $lang += array(
 	'TOO_MANY_SMILIES'			=> 'Your message contains too many emoticons.',
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
 	'QUOTE_DEPTH_EXCEEDED'		=> 'You may embed only %1$d quotes within each other.',
-	'Forum_locked'				=> 'This forum is locked you cannot post, reply to or edit topics',
-	'Topic_locked'				=> 'This topic is locked you cannot edit posts or make replies',
+	'FORUM_LOCKED'				=> 'This forum is locked you cannot post, reply to or edit topics',
+	'TOPIC_LOCKED'				=> 'This topic is locked you cannot edit posts or make replies',
 
 	'USER_CANNOT_POST'		=> 'You cannot post in this forum',
 	'USER_CANNOT_REPLY'		=> 'You cannot reply in this forum',
