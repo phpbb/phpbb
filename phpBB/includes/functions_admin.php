@@ -1663,34 +1663,76 @@ if (class_exists(auth))
 					switch ($setting)
 					{
 						case ACL_UNSET:
-							$sql_ary[] = "DELETE FROM $table 
-								WHERE forum_id = $forum
-									AND auth_option_id = $auth_option_id
-									AND $id_field = $ug_id";
+							if (isset($cur_auth[$forum][$auth_option_id]))
+							{
+								$sql_ary['delete'][] = "DELETE FROM $table 
+									WHERE forum_id = $forum
+										AND auth_option_id = $auth_option_id
+										AND $id_field = $ug_id";
+							}
 							break;
 
 						default:
-							if (isset($cur_auth[$forum][$auth_option_id]) && $cur_auth[$forum][$auth_option_id] != $setting)
+							if (!isset($cur_auth[$forum][$auth_option_id]))
 							{
-								$sql_ary[] = "UPDATE " . $table . " 
+								$sql_ary['insert'][] = "$ug_id, $forum, $auth_option_id, $setting";
+							}
+							else if ($cur_auth[$forum][$auth_option_id] != $setting)
+							{
+								$sql_ary['update'][] = "UPDATE " . $table . " 
 									SET auth_setting = $setting 
 									WHERE $id_field = $ug_id 
 										AND forum_id = $forum 
 										AND auth_option_id = $auth_option_id";
-							}
-							else if (!isset($cur_auth[$forum][$auth_option_id]))
-							{
-								$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) 
-									VALUES ($ug_id, $forum, $auth_option_id, $setting)";
 							}
 					}
 				}
 			}
 			unset($cur_auth);
 
-			foreach ($sql_ary as $sql)
+			$sql = '';
+			foreach ($sql_ary as $sql_type => $sql_subary)
 			{
-				$result = $db->sql_query($sql);
+				switch ($sql_type)
+				{
+					case 'insert':
+						switch (SQL_LAYER)
+						{
+							case 'mysql':
+							case 'mysql4':
+								$sql = implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
+								break;
+
+							case 'mssql':
+								$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
+								break;
+
+							default:
+								foreach ($sql_subary as $sql)
+								{
+									$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($sql)";
+									$db->sql_query($sql);
+									$sql = '';
+								}
+						}
+
+						if ($sql != '')
+						{
+							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES $sql";
+							$db->sql_query($sql);
+						}
+						break;
+
+					case 'update':
+					case 'delete':
+						foreach ($sql_subary as $sql)
+						{
+							$result = $db->sql_query($sql);
+							$sql = '';
+						}
+						break;
+				}
+				unset($sql_ary[$sql_type]);
 			}
 			unset($sql_ary);
 
