@@ -2,10 +2,6 @@
   The original subSilver Theme for phpBB version 2+
   Created by subBlue design
   http://www.subBlue.com
-
-  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
-  theme administration centre. When you have finalised your style you could cut the final CSS code
-  and place it in an external file, deleting this section to save bandwidth.
 */
 
 
@@ -48,7 +44,7 @@ td.row3	{ background-color: #D1D7DC; }
 */
 td.rowpic {
 		background-color: #FFFFFF;
-		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-image: url(images/cellpic2.jpg);
 		background-repeat: repeat-y;
 }
 
@@ -56,11 +52,11 @@ td.rowpic {
 th	{
 	color: #FFA34F; font-size: 11px; font-weight : bold;
 	background-color: #006699; height: 25px;
-	background-image: url(templates/subSilver/images/cellpic3.gif);
+	background-image: url(images/cellpic3.gif);
 }
 
 td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
-			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-image: url(images/cellpic1.gif);
 			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
 }
 
