@@ -311,7 +311,7 @@ while( list($nav_item, $nav_array) = @each($nav_links) )
 {
 	if ( !empty($nav_array['url']) )
 	{
-		$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nav_array['url'], $nav_array['title']);
+		$nav_links_html .= sprintf($nav_link_proto, $nav_item, append_sid($nav_array['url']), $nav_array['title']);
 	}
 	else
 	{
