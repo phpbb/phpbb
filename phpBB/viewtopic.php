@@ -39,7 +39,10 @@ else
 {
 	$topic_id = $HTTP_GET_VARS['topic'];
 }
-
+if(isset($HTTP_GET_VARS[POST_POST_URL]))
+{
+	$post_id = $HTTP_GET_VARS[POST_POST_URL];
+}
 $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 
 $is_moderator = 0;
@@ -48,7 +51,7 @@ $is_moderator = 0;
 // End initial var setup
 //
 
-if(!isset($topic_id))
+if(!isset($topic_id) && !isset($post_id))
 {
 	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
@@ -124,12 +127,24 @@ else
 {
 */
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id
-	FROM ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
-	WHERE t.topic_id = $topic_id
-	AND f.forum_id = t.forum_id
-	AND fm.forum_id = t.forum_id
-	AND u.user_id = fm.user_id";
+	//
+	// This is perhaps a bodged(?) way
+	// of allowing a direct link to a post
+	// it also allows calculation of which
+	// page the post should be on
+	//
+	$join_sql_table = (!isset($post_id)) ? "" : "".POSTS_TABLE." p, ".POSTS_TABLE." p2,";
+	$join_sql = (!isset($post_id)) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
+	$count_sql = (!isset($post_id)) ? "" : ", COUNT(p2.post_id) AS prev_posts";
+	$order_sql = (!isset($post_id)) ? "" : "GROUP BY fm.user_id, p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id ORDER BY p.post_id ASC";
+
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_type, f.forum_name, f.forum_id, u.username, u.user_id".$count_sql." 
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f, ".FORUM_MODS_TABLE." fm, ".USERS_TABLE." u
+		WHERE $join_sql 
+			AND f.forum_id = t.forum_id
+			AND fm.forum_id = t.forum_id
+			AND u.user_id = fm.user_id 
+			$order_sql";
 
 // This closes out the opening braces above
 // Needed for the view/next query
@@ -175,9 +190,15 @@ if(!$total_rows = $db->sql_numrows($result))
 $forum_row = $db->sql_fetchrowset($result);
 $forum_name = stripslashes($forum_row[0]['forum_name']);
 $forum_id = $forum_row[0]['forum_id'];
+$topic_id = $forum_row[0]['topic_id'];
 $total_replies = $forum_row[0]['topic_replies'] + 1;
 $topic_title = $forum_row[0]['topic_title'];
 $topic_time = $forum_row[0]['topic_time'];
+
+if(!empty($post_id))
+{
+	$start = floor($forum_row[0]['prev_posts'] / $board_config['posts_per_page']) * $board_config['posts_per_page'];
+}
 
 //
 // Start session management
@@ -388,7 +409,7 @@ for($x = 0; $x < $total_posts; $x++)
 	if($is_moderator)
 	{
 		$ip_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=viewip&user_id=".$poster_id)."\"><img src=\"".$images['ip']."\" alt=\"$l_viewip\" border=\"0\"></a>";
-		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost$post_id=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
+		$delpost_img = "<a href=\"".append_sid("topicadmin.$phpEx?mode=delpost&".POST_POST_URL."=".$postrow[$x]['post_id'])."\"><img src=\"".$images['delpost']."\" alt=\"$l_delete\" border=\"0\"></a>";
 	}
 
 	$post_subject = ($postrow[$x]['post_subject'] != "") ? stripslashes($postrow[$x]['post_subject']) : "Re: ".$topic_title;
@@ -430,7 +451,6 @@ for($x = 0; $x < $total_posts; $x++)
 	$message = eregi_replace("\[addsig]$", "<br /><br />_________________<br />" . nl2br($user_sig), $message);
 
 	$template->assign_block_vars("postrow", array(
-		"TOPIC_TITLE" => $topic_title,
 		"POSTER_NAME" => $poster,
 		"POSTER_RANK" => $poster_rank,
 		"RANK_IMAGE" => $rank_image,
@@ -475,7 +495,7 @@ else
 $template->assign_vars(array(
 	"PAGINATION" => generate_pagination("viewtopic.$phpEx?".POST_TOPIC_URL."=$topic_id", $total_replies, $board_config['posts_per_page'], $start),
 	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
-	"TOTAL_PAGES" => ceil($total_replies/$board_config['posts_per_page']),
+	"TOTAL_PAGES" => ceil(($total_replies)/$board_config['posts_per_page']),
 		
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],
