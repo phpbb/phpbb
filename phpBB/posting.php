@@ -103,18 +103,20 @@ if( $mode != "newtopic" )
 	{
 		if($mode == "reply" && !empty($topic_id) )
 		{
-			$sql = "SELECT forum_id, topic_status   
-				FROM " . TOPICS_TABLE . " t 
-				WHERE topic_id = $topic_id";
+			$sql = "SELECT f.forum_id, f.forum_status, t.topic_status   
+				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t 
+				WHERE t.topic_id = $topic_id 
+					AND f.forum_id = t.forum_id";
 
 			$msg = $lang['No_topic_id'];
 		}
 		else if( !empty($post_id) )
 		{
-			$sql = "SELECT t.topic_id, t.forum_id, t.topic_status   
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t 
+			$sql = "SELECT f.forum_id, f.forum_status, t.topic_id, t.topic_status   
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
 				WHERE p.post_id = $post_id 
-					AND t.topic_id = p.topic_id";
+					AND t.topic_id = p.topic_id 
+					AND f.forum_id = t.forum_id";
 
 			$msg = $lang['No_post_id'];
 		}
@@ -127,7 +129,7 @@ if( $mode != "newtopic" )
 	{
 		if( isset($post_id) )
 		{
-			$sql = "SELECT p.post_id, t.forum_id, t.topic_status, t.topic_last_post_id, f.forum_last_post_id     
+			$sql = "SELECT p.post_id, t.forum_id, t.topic_status, t.topic_last_post_id, f.forum_last_post_id, f.forum_status      
 				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f  
 				WHERE t.topic_id = $topic_id 
 					AND p.topic_id = t.topic_id 
@@ -151,6 +153,7 @@ if( $mode != "newtopic" )
 
 		$forum_id = $check_row['forum_id'];
 		$topic_status = $check_row['topic_status']; 
+		$forum_status = $check_row['forum_status'];
 
 		if( $mode == "editpost" )
 		{
@@ -171,20 +174,37 @@ if( $mode != "newtopic" )
 	}
 	else
 	{
-		message_die(GENERAL_ERROR, $lang['No_such_post'], "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 	}
 }
 else
 {
-	$is_first_post = TRUE;
-	$is_last_post = FALSE;
-	$topic_status = TOPIC_UNLOCKED;
+	$sql = "SELECT forum_status    
+		FROM " . FORUMS_TABLE . " f 
+		WHERE forum_id = $forum_id";
+	if($result = $db->sql_query($sql))
+	{
+		$check_row = $db->sql_fetchrow($result);
+
+		$is_first_post = TRUE;
+		$is_last_post = FALSE;
+		$topic_status = TOPIC_UNLOCKED;
+		$forum_status = $check_row['forum_status'];
+	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, $lang['Forum_not_exist']);
+	}
 }
 
 //
 // Is topic locked?
 //
-if($topic_status == TOPIC_LOCKED)
+if($forum_status == FORUM_LOCKED)
+{
+	message_die(GENERAL_MESSAGE, $lang['Forum_locked']);
+}
+else if($topic_status == TOPIC_LOCKED)
 {
 	message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
 }
@@ -487,7 +507,7 @@ if( ($mode == "newtopic" || $mode == "reply") && $topic_status == TOPIC_UNLOCKED
 
 							if($db->sql_query($sql, END_TRANSACTION))
 							{
-								setcookie('phpbb2_' . $forum_id . '_' . $new_topic_id, '', 0, $cookiepath, $cookiedomain, $cookiesecure);
+								setcookie('phpbb2_' . $forum_id . '_' . $new_topic_id, '', time() - 1, $cookiepath, $cookiedomain, $cookiesecure);
 								//
 								// If we get here the post has been inserted successfully.
 								//
@@ -998,9 +1018,8 @@ if($preview && !$error)
 			break;
 	}
 
-	$preview_message = $message;
 	$bbcode_uid = make_bbcode_uid();
-	$preview_message = prepare_message($preview_message, TRUE, TRUE, TRUE, $bbcode_uid);
+	$preview_message = prepare_message($message, TRUE, TRUE, TRUE, $bbcode_uid);
 	$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 	$preview_message = make_clickable($preview_message);
 
