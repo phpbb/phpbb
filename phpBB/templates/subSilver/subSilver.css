@@ -260,25 +260,25 @@ span.hilit {
 /* Location, number of posts, post date etc */
 .postdetails {
 	color: black;
-	font-size: 65%;
+	font-size: 60%;
 }
 
 /* The content of the posts (body of text) */
 .postbody {
-	font-size: 80%;
+	font-size: 75%;
 }
 
 /* Quote & Code blocks */
 .code {
 	color:	#006600;
-	font:	normal 80% 'Courier New', monospace;
+	font:	normal 70% 'Courier New', monospace;
 	border: #D1D7DC 1px solid;
 	background-color: #FAFAFA;
 }
 
 .quote {
 	color: #444;
-	font: normal 80%/125% Verdana, Arial, Helvetica, sans-serif;
+	font: normal 70%/125% Verdana, Arial, Helvetica, sans-serif;
 	border: #D1D7DC solid 1px;
 	background-color: #FAFAFA; 
 }
