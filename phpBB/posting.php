@@ -1172,8 +1172,12 @@ if($mode == "newtopic")
 {
 	$post_a = $lang['Post_a_new_topic'];
 }
-else if($mode == "reply")
+else if($mode == "reply" || $mode == "quote")
 {
+	//
+	// Set mode to reply
+	//
+	$mode = "reply";
 	$post_a = $lang['Post_a_reply'];
 }
 else if($mode == "editpost")
@@ -1495,13 +1499,8 @@ if($mode == "newtopic")
 {
 	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\" />";
 }
-else if($mode == "reply" || $mode == "quote")
+else if($mode == "reply")
 {
-	//
-	// Reset mode to reply if quote is in effect
-	// to allow proper handling by submit/preview
-	//
-	$mode = "reply";
 	$hidden_form_fields .= "<input type=\"hidden\" name=\"" . POST_TOPIC_URL . "\" value=\"$topic_id\" />";
 }
 else if($mode == "editpost")
