@@ -51,7 +51,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 	// Initial ban check against IP and userid
 	//
 	$sql = "SELECT ban_ip, ban_userid
-		FROM ".BANLIST_TABLE."
+		FROM " . BANLIST_TABLE . "
 		WHERE ban_ip = '$user_ip' 
 			OR ban_userid = $user_id";
 	$result = $db->sql_query($sql);
@@ -76,18 +76,16 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 			$login = 0;
 			$autologin = 0;
 		}
+
 		//
 		// Remove duplicate user_id from session table
-		// if IP is different ... stops same user
-		// logging in from different PC's at same time 
-		// Do we want this ???
+		// if IP is different ... 
 		//
-		if( ( $login || $autologin ) && $user_id != ANONYMOUS && $user_id != DELETED )
+		if( ( $login || $autologin ) && $user_id != ANONYMOUS )
 		{
-			$sql_delete_same_user = "DELETE FROM ".SESSIONS_TABLE."
+			$sql_delete_same_user = "DELETE FROM " . SESSIONS_TABLE . "
 				WHERE session_ip <> '$user_ip'
-					AND session_user_id = $user_id
-					AND session_logged_in = 1";
+					AND session_user_id = $user_id";
 			$result = $db->sql_query($sql_delete_same_user);
 		}
 	
@@ -97,22 +95,21 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		//
 		$sessiondata['lastvisit'] = (!empty($sessiondata['sessiontime'])) ? $sessiondata['sessiontime'] : $current_time;
 
-		$sql_update = "UPDATE ".SESSIONS_TABLE."
+		$sql_update = "UPDATE " . SESSIONS_TABLE . "
 			SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login
-			WHERE (session_id = '".$sessiondata['sessionid']."')
+			WHERE (session_id = '" . $sessiondata['sessionid'] . "')
 				AND (session_ip = '$user_ip')";
 		$result = $db->sql_query($sql_update);
 
 		if(!$result || !$db->sql_affectedrows())
 		{
 			mt_srand( (double) microtime() * 1000000);
-			$session_id = md5(mt_rand()); // This is a superior but more intensive creation method
-//			$session_id = mt_rand();
+			$session_id = md5(mt_rand());
 			
-			$sql_insert = "INSERT INTO ".SESSIONS_TABLE."
+			$sql_insert = "INSERT INTO " . SESSIONS_TABLE . "
 				(session_id, session_user_id, session_start, session_time, session_last_visit, session_ip, session_page, session_logged_in)
 				VALUES
-				('$session_id', $user_id, $current_time, $current_time, ".$sessiondata['lastvisit'].", '$user_ip', $page_id, $login)";
+				('$session_id', $user_id, $current_time, $current_time, " . $sessiondata['lastvisit'] . ", '$user_ip', $page_id, $login)";
 			$result = $db->sql_query($sql_insert);
 			if(!$result)
 			{
@@ -130,7 +127,7 @@ function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0
 		{
 			$autologin_key = md5(uniqid(mt_rand()));
 
-			$sql_auto = "UPDATE ".USERS_TABLE."
+			$sql_auto = "UPDATE " . USERS_TABLE . "
 				SET user_autologin_key = '$autologin_key'
 				WHERE user_id = $user_id";
 			$result = $db->sql_query($sql_auto);
@@ -182,7 +179,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	// Delete expired sessions
 	//
 	$expiry_time = $current_time - $session_length;
-	$sql = "DELETE FROM ".SESSIONS_TABLE."
+	$sql = "DELETE FROM " . SESSIONS_TABLE . "
 		WHERE session_time < $expiry_time";
 	$result = $db->sql_query($sql);
 	if(!$result)
@@ -193,23 +190,15 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	//
 	// Does a session exist?
 	//
-	// Redo without initial user_id check?
-	// ie. check sessionid, then pull from DB
-	// based on sessionid and sessionip only?
-	// is this secure enough? probably, since
-	// the DB is cleared every 'sessiontime' mins
-	// (or when a user visits, whichever sooner)
-	// and a user is logged out 
-	// 
 	if(isset($sessiondata['sessionid']))
 	{
 		//
-		// session_id exists so go ahead and attempt
-		// to grab all data in preparation
+		// session_id exists so go ahead and attempt to grab all 
+		// data in preparation
 		//
 		$sql = "SELECT u.*, s.*
-			FROM ".SESSIONS_TABLE." s, ".USERS_TABLE." u
-			WHERE s.session_id = '".$sessiondata['sessionid']."'
+			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+			WHERE s.session_id = '" . $sessiondata['sessionid'] . "'
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
 		$result = $db->sql_query($sql);
@@ -225,19 +214,18 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		// 
 		if(isset($userdata['user_id']))
 		{
-
-			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
+			$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
 
 			//
 			// Only update session DB a minute or so after last update
 			//
 			if($current_time - $userdata['session_time'] > 60)
 			{
-				$sql = "UPDATE ".SESSIONS_TABLE."
+				$sql = "UPDATE " . SESSIONS_TABLE . "
 					SET session_time = $current_time, session_page = $thispage_id
-					WHERE (session_id = '".$userdata['session_id']."')
+					WHERE (session_id = '" . $userdata['session_id'] . "')
 						AND (session_ip = '$user_ip')
-						AND (session_user_id = ".$userdata['user_id'].")";
+						AND (session_user_id = " . $userdata['user_id'] . ")";
 				$result = $db->sql_query($sql);
 				if(!$result)
 				{
@@ -267,10 +255,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 		}
 	}
 	//
-	// If we reach here then no (valid) session
-	// exists. So we'll create a new one,
-	// using the cookie user_id if available to
-	// pull basic user prefs.
+	// If we reach here then no (valid) session exists. So we'll create a new one,
+	// using the cookie user_id if available to pull basic user prefs.
 	//
 
 	$login = 0;
@@ -279,8 +265,8 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	if(isset($sessiondata['userid']) && isset($sessiondata['autologinid']))
 	{
 		$sql = "SELECT u.*
-			FROM ".USERS_TABLE." u
-			WHERE u.user_id = ".$sessiondata['userid'];
+			FROM " . USERS_TABLE . " u
+			WHERE u.user_id = " . $sessiondata['userid'];
 		$result = $db->sql_query($sql);
 		if (!$result) 
 		{
@@ -320,7 +306,7 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 	else
 	{
 		$sql = "SELECT u.*, s.*
-			FROM ".SESSIONS_TABLE." s, ".USERS_TABLE." u
+			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
 			WHERE s.session_id = '$result_id'
 				AND s.session_ip = '$user_ip'
 				AND u.user_id = s.session_user_id";
@@ -344,7 +330,6 @@ function session_pagestart($user_ip, $thispage_id, $session_length)
 //
 function session_end($session_id, $user_id) 
 {
-
 	global $db, $lang;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $SID;
@@ -361,7 +346,7 @@ function session_end($session_id, $user_id)
 	}
 	$current_time = time();
 
-	$sql = "UPDATE  ".SESSIONS_TABLE."
+	$sql = "UPDATE  " . SESSIONS_TABLE . "
 		SET session_logged_in = 0, session_user_id = -1, session_time = $current_time
 		WHERE (session_id = '$session_id')
 			AND (session_user_id = $user_id)";
@@ -373,7 +358,7 @@ function session_end($session_id, $user_id)
 
 	if($sessiondata['autologinid'])
 	{
-		$sql = "UPDATE ".USERS_TABLE."
+		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_autologin_key = ''
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql, $db);
@@ -389,20 +374,17 @@ function session_end($session_id, $user_id)
 	$serialised_cookiedata = serialize($sessiondata);
 	setcookie($cookiename, $serialised_cookiedata, ($current_time+$cookielife), $cookiepath, $cookiedomain, $cookiesecure);
 
-	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=".$sessiondata['sessionid'] : "";
+	$SID = ($sessionmethod == SESSION_METHOD_GET) ? "sid=" . $sessiondata['sessionid'] : "";
 
 	return 1;
 
 } // session_end()
 
 //
-// Append $SID to a url
-// Borrowed from phplib and modified. This is an
-// extra routine utilised by the session
-// code above and acts as a wrapper
-// around every single URL and form action. If
-// you replace the session code you must
-// include this routine, even if it's empty.
+// Append $SID to a url. Borrowed from phplib and modified. This is an
+// extra routine utilised by the session code above and acts as a wrapper
+// around every single URL and form action. If you replace the session
+// code you must include this routine, even if it's empty.
 //
 function append_sid($url)
 {
@@ -415,7 +397,6 @@ function append_sid($url)
 	}
 
 	return($url);
-
 }
 
 ?>
