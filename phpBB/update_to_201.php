@@ -8,6 +8,7 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'config.'.$phpEx);
 include($phpbb_root_path . 'includes/constants.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
 
 $sql = "SELECT config_value  
@@ -82,56 +83,58 @@ if ( $row = $db->sql_fetchrow($result) )
 					$sql = "SELECT topic_id, topic_moved_id 
 						FROM " . TOPICS_TABLE . " 
 						WHERE topic_moved_id <> 0";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						die("Couldn't update version info");
+					}
+
+					$topic_ary = array();
+					while ( $row = $db->sql_fetchrow($result) )
+					{
+						$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
+					}
+
+					while ( list($topic_id, $topic_moved_id) = each($topic_ary) )
+					{
+						$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
+							FROM " . POSTS_TABLE . "
+							WHERE topic_id = $topic_moved_id";
+						if ( !($result = $db->sql_query($sql)) )
+						{
+							message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
+						}
+
+						if ( $row = $db->sql_fetchrow($result) )
+						{
+							$sql = "UPDATE " . TOPICS_TABLE . "
+								SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
+								WHERE topic_id = $topic_id";
+							if ( !$db->sql_query($sql) )
+							{
+								message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+				}
+
+				unset($sql);
+
+				$sql = "UPDATE " . CONFIG_TABLE . " 
+					SET config_value = '.0.1' 
+					WHERE config_name = 'version'";
 				if ( !($result = $db->sql_query($sql)) )
 				{
 					die("Couldn't update version info");
 				}
 
-				$topic_ary = array();
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
-				}
+				sync('all forums');
 
-				while ( list($topic_id, $topic_moved_id) = each($topic_ary) )
-				{
-					$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
-						FROM " . POSTS_TABLE . "
-						WHERE topic_id = $topic_moved_id";
-					if ( !($result = $db->sql_query($sql)) )
-					{
-						message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
-					}
+				die("UPDATING COMPLETE -> 2.0.1 Final installed");
+				break;
 
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						$sql = "UPDATE " . TOPICS_TABLE . "
-							SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
-							WHERE topic_id = $topic_id";
-						if ( !$db->sql_query($sql) )
-						{
-							message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
-						}
-					}
-				}
-			}
-
-			unset($sql);
-
-			$sql = "UPDATE " . CONFIG_TABLE . " 
-				SET config_value = '.0.1' 
-				WHERE config_name = 'version'";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				die("Couldn't update version info");
-			}
-
-			die("UPDATING COMPLETE -> 2.0.1 Final installed");
-			break;
-
-		default:
-			die("NO UPDATES REQUIRED");
-			break;
+			default:
+				die("NO UPDATES REQUIRED");
+				break;
 	}
 }
 
