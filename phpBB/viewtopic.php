@@ -53,7 +53,6 @@ if (empty($topic_id) && empty($post_id))
 $user->start();
 
 // Configure style, language, etc.
-$user->setup(false, $forum_style);
 $auth->acl($user->data);
 
 // Find topic id if user requested a newer or older topic
@@ -176,6 +175,9 @@ if (!$topic_data = $db->sql_fetchrow($result))
 	trigger_error('NO_TOPIC');
 }
 extract($topic_data);
+
+
+$user->setup();
 
 
 // Start auth check
@@ -524,7 +526,7 @@ if (!$row = $db->sql_fetchrow($result))
 // and the global bbcode_bitfield are built
 do
 {
-	$poster_id = intval($row['poster_id']);
+	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
 	if ($row['user_karma'] < $user->data['user_min_karma'] && (empty($_GET['view']) || $_GET['view'] != 'karma' || $post_id != $row['post_id']))
@@ -539,23 +541,24 @@ do
 	}
 
 	$rowset[] = array(
-		'post_id'				=>	$row['post_id'],
-		'poster'				=>	$poster,
-		'user_id'				=>	$row['user_id'],
-		'topic_id'				=>	$row['topic_id'],
-		'post_subject'			=>	$row['spost_ubject'],
-		'post_edit_count'		=>	$row['post_edit_count'],
-		'post_edit_time'		=>	$row['post_edit_time'],
-		'icon_id'				=>	$row['icon_id'],
-		'post_approved'			=>	$row['post_approved'],
-		'post_reported'			=>	$row['post_reported'],
-		'post_text'				=>	$row['post_text'],
-		'post_encoding'			=>	$row['post_encoding'],
-		'bbcode_uid'			=>	$row['bbcode_uid'],
-		'bbcode_bitfield'		=>	$row['bbcode_bitfield'],
-		'enable_html'			=>	$row['enable_html'],
-		'enable_smilies'		=>	$row['enable_smilies'],
-		'enable_sig'			=>	$row['enable_sig']
+		'post_id'				=> $row['post_id'], 
+		'post_date'				=> $user->format_date($row['post_time']), 
+		'poster'				=> $poster,
+		'user_id'				=> $row['user_id'],
+		'topic_id'				=> $row['topic_id'],
+		'post_subject'			=> $row['post_subject'],
+		'post_edit_count'		=> $row['post_edit_count'],
+		'post_edit_time'		=> $row['post_edit_time'],
+		'icon_id'				=> $row['icon_id'],
+		'post_approved'			=> $row['post_approved'],
+		'post_reported'			=> $row['post_reported'],
+		'post_text'				=> $row['post_text'],
+		'post_encoding'			=> $row['post_encoding'],
+		'bbcode_uid'			=> $row['bbcode_uid'],
+		'bbcode_bitfield'		=> $row['bbcode_bitfield'],
+		'enable_html'			=> $row['enable_html'],
+		'enable_smilies'		=> $row['enable_smilies'],
+		'enable_sig'			=> $row['enable_sig']
 	);
 
 	// Does post have an attachment? If so, add it to the list
@@ -610,7 +613,7 @@ do
 		else
 		{
 			$user_sig = ($row['user_sig'] && $config['allow_sig']) ? $row['user_sig'] : '';
-			if ($user_sig && $auth->acl_get('f_sigs', $forum_id))
+			if ($user_sig)
 			{
 //				if (!$auth->acl_get('f_html', $forum_id))
 //				{
@@ -674,7 +677,7 @@ do
 			if (!empty($row['user_rank']))
 			{
 				$user_cache[$poster_id]['rank_title'] = $ranks['special'][$row['user_rank']]['rank_title'];
-				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $ranks['special']['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
+				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $ranks['special'][$row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
 			}
 			else
 			{
@@ -827,12 +830,13 @@ foreach ($rowset as $key => $row)
 		{
 			$bbcode->bbcode_second_pass(&$user_cache[$poster_id]['sig'], $row['sig_bbcode_uid'], $row['sig_bbcode_bitfield']);
 		}
+
 		if (count($censors))
 		{
 			$user_cache[$poster_id]['sig'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_cache[$poster_id]['sig'] . '<'), 1, -1));
 		}
 
-		$user_cache[$poster_id]['sig'] = nl2br($user_cache[$poster_id]['user_sig']);
+		$user_cache[$poster_id]['sig'] = str_replace("\n", "<br />", $user_cache[$poster_id]['user_sig']);
 		$user_cache[$poster_id]['sig_parsed'] = TRUE;
 	}
 
@@ -879,8 +883,8 @@ foreach ($rowset as $key => $row)
 
 
 	// Parse the message and subject
-	$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : '';
 	$message = $row['post_text'];
+
 
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
@@ -917,16 +921,18 @@ foreach ($rowset as $key => $row)
 	// Replace naughty words such as farty pants
 	if (sizeof($censors))
 	{
-		$post_subject = preg_replace($censors['match'], $censors['replace'], $post_subject);
+		$row['post_subject'] = preg_replace($censors['match'], $censors['replace'], $row['post_subject']);
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
-	$message = str_replace("\n", "\n<br />\n", $message);
+
+	$message = str_replace("\n", '<br />', $message);
+
 
 	// Editing information
-	if (intval($row['post_edit_count']))
+	if (!empty($row['post_edit_count']))
 	{
-		$l_edit_time_total = (intval($row['post_edit_count']) == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
+		$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
 
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $row['poster'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 	}
@@ -953,9 +959,9 @@ foreach ($rowset as $key => $row)
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR' => $user_cache[$poster_id]['avatar'],
-		'POST_DATE' 	=> $user->format_date($row['post_time']),
+		'POST_DATE' 	=> $row['post_date'],
 
-		'POST_SUBJECT' 	=> $post_subject,
+		'POST_SUBJECT' 	=> $row['post_subject'],
 		'MESSAGE' 		=> $message,
 		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'=> $l_edited_by,
@@ -1007,13 +1013,13 @@ foreach ($rowset as $key => $row)
 		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 		'U_MINI_POST'	=> $mini_post_url,
-		'U_POST_ID' 	=> $u_post_id
-	));
+		'U_POST_ID' 	=> $u_post_id)
+	);
 
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]))
 	{
-		foreach($attachments[$row['post_id']] as $attachment)
+		foreach ($attachments[$row['post_id']] as $attachment)
 		{
 			// Some basics...
 			$attachment['extension'] = strtolower(trim($attachment['extension']));
@@ -1050,7 +1056,7 @@ foreach ($rowset as $key => $row)
 			$update_count = false;
 
 			// Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
-			if ( (!in_array($attachment['extension'], $extensions['_allowed_'])) )
+			if ((!in_array($attachment['extension'], $extensions['_allowed_'])))
 			{
 				$denied = true;
 
@@ -1078,9 +1084,11 @@ foreach ($rowset as $key => $row)
 					case STREAM_CAT:
 						$stream = TRUE;
 						break;
-/*						case SWF_CAT:
+/*
+					case SWF_CAT:
 						$swf = TRUE;
-						break;*/
+						break;
+*/
 					case IMAGE_CAT:
 						if (intval($config['img_display_inlined']))
 						{
@@ -1105,7 +1113,8 @@ foreach ($rowset as $key => $row)
 				}
 		
 
-				if ( (!$image) && (!$stream) /*&& (!$swf)*/ && (!$thumbnail) )
+				// && !$swf
+				if (!$image && !$stream  && !$thumbnail)
 				{
 					$link = TRUE;
 				}
@@ -1119,7 +1128,7 @@ foreach ($rowset as $key => $row)
 					//	$download_link = TRUE;
 					// 
 					// BEGIN
-					if ((intval($config['ftp_upload'])) && (trim($config['upload_dir']) == ''))
+					if (!empty($config['ftp_upload']) && trim($config['upload_dir']) == '')
 					{
 						$img_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 						$download_link = TRUE;
@@ -1149,7 +1158,7 @@ foreach ($rowset as $key => $row)
 					//	$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&amp;thumb=1';
 					//
 					// BEGIN
-					if ( (intval($config['allow_ftp_upload'])) && (trim($config['upload_dir']) == '') )
+					if (!empty($config['allow_ftp_upload']) && trim($config['upload_dir']) == '')
 					{
 						$thumb_source = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'] . '&thumb=1';
 					}
@@ -1172,10 +1181,10 @@ foreach ($rowset as $key => $row)
 					// Streams
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
-//						$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
+//					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
-					$update_count = true;
+					$update_count = !preg_match("#&t=$topic_id#", $user->data['session_page']) ? true : false;
 				}
 /*			
 				if ($swf)
@@ -1201,21 +1210,24 @@ foreach ($rowset as $key => $row)
 					$download_link = $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $attachment['attach_id'];
 				}
 				
-				if ($image || $thumbnail || $stream || $thumbnail || $link)
+				if ($image || $thumbnail || $stream || $link)
 				{
 					$template_array = array_merge($additional_array, array(
-//							'IS_FLASH' => ($swf) ? true : false,
-						'IS_STREAM' => ($stream) ? true : false,
-						'IS_THUMBNAIL' => ($thumbnail) ? true : false,
-						'IS_IMAGE' => ($image) ? true : false,
-						'U_DOWNLOAD_LINK' => $download_link,
-						'UPLOAD_IMG' => $upload_image,
+//						'IS_FLASH'		=> ($swf) ? true : false,
+						'IS_STREAM'		=> ($stream) ? true : false,
+						'IS_THUMBNAIL'	=> ($thumbnail) ? true : false,
+						'IS_IMAGE'		=> ($image) ? true : false,
 						'DOWNLOAD_NAME' => $display_name,
-						'FILESIZE' => $filesize,
-						'SIZE_VAR' => $size_lang,
-						'COMMENT' => $comment,
-						'L_DOWNLOADED_VIEWED' => $l_downloaded_viewed,
-						'L_DOWNLOAD_COUNT' => sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
+						'FILESIZE'		=> $filesize,
+						'SIZE_VAR'		=> $size_lang,
+						'COMMENT'		=> $comment,
+
+						'U_DOWNLOAD_LINK' => $download_link,
+
+						'UPLOAD_IMG' => $upload_image,
+
+						'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+						'L_DOWNLOAD_COUNT'		=> sprintf($user->lang['DOWNLOAD_NUMBER'], $attachment['download_count']))
 					);
 					
 					$template->assign_block_vars('postrow.attachment', $template_array);
