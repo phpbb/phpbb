@@ -113,7 +113,7 @@ switch( $mode )
 			
 			if( !$result = $db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Could not insert theme data!", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not insert theme data!", "", __LINE__, __FILE__, $sql);
 			}
 			
 			$message = $lang['Theme_installed'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
@@ -146,7 +146,7 @@ switch( $mode )
 									WHERE style_name = '" . str_replace("\'", "''", $style_name) . "'";
 								if(!$result = $db->sql_query($sql))
 								{
-									message_die(GENREAL_ERROR, "Could not query themes table!", "Error", __LINE__, __FILE__, $sql);
+									message_die(GENREAL_ERROR, "Could not query themes table!", "", __LINE__, __FILE__, $sql);
 								}
 
 								if(!$db->sql_numrows($result))
@@ -298,7 +298,7 @@ switch( $mode )
 				
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not update themes table!", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not update themes table!", "", __LINE__, __FILE__, $sql);
 				}
 				
 				//
@@ -309,7 +309,7 @@ switch( $mode )
 					WHERE themes_id = $style_id";
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not get data from themes_name table", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not get data from themes_name table", "", __LINE__, __FILE__, $sql);
 				}
 				
 				if($db->sql_numrows($result) > 0)
@@ -367,7 +367,7 @@ switch( $mode )
 										
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not update themes name table!", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not update themes name table!", "", __LINE__, __FILE__, $sql);
 				}
 							
 				$message = $lang['Theme_updated'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
@@ -384,7 +384,7 @@ switch( $mode )
 					WHERE style_name = '" . str_replace("\'", "''", $updated['style_name']) . "'";
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not query themes table", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not query themes table", "", __LINE__, __FILE__, $sql);
 				}
 				
 				if($db->sql_numrows($result))
@@ -430,7 +430,7 @@ switch( $mode )
 				
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not update themes table!", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not update themes table!", "", __LINE__, __FILE__, $sql);
 				}
 				
 				$style_id = $db->sql_nextid();
@@ -468,7 +468,7 @@ switch( $mode )
 										
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not insert themes name table!", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not insert themes name table!", "", __LINE__, __FILE__, $sql);
 				}
 				
 				$message = $lang['Theme_created'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
@@ -495,7 +495,7 @@ switch( $mode )
 					WHERE themes_id = $style_id";
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not get data from themes table", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not get data from themes table", "", __LINE__, __FILE__, $sql);
 				}
 				
 				$selected_values = $db->sql_fetchrow($result);
@@ -508,7 +508,7 @@ switch( $mode )
 					WHERE themes_id = $style_id";
 				if(!$result = $db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, "Could not get data from themes name table", "Error", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Could not get data from themes name table", "", __LINE__, __FILE__, $sql);
 				}
 				
 				$selected_names = $db->sql_fetchrow($result);
@@ -614,7 +614,7 @@ switch( $mode )
 				"L_SPAN_CLASS_1" => $lang['span_class1'],
 				"L_SPAN_CLASS_2" => $lang['span_class2'],
 				"L_SPAN_CLASS_3" => $lang['span_class3'],
-				
+				"L_SAVE_SETTINGS" => $lang['Save_Settings'], 
 				"THEME_NAME" => $selected['style_name'],
 				"HEAD_STYLESHEET" => $selected['head_stylesheet'],
 				"BODY_BACKGROUND" => $selected['body_background'],
@@ -856,7 +856,7 @@ switch( $mode )
 				WHERE themes_id = $style_id";
 			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION))
 			{
-				message_die(GENERAL_ERROR, "Could not remove style data!", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not remove style data!", "", __LINE__, __FILE__, $sql);
 			}
 			
 			//
@@ -872,7 +872,7 @@ switch( $mode )
 				WHERE user_style = $style_id";
 			if(!$result = $db->sql_query($sql, END_TRANSACTION))
 			{
-				message_die(GENERAL_ERROR, "Could not update user style information", "Error", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, "Could not update user style information", "", __LINE__, __FILE__, $sql);
 			}
 			
 			$message = $lang['Style_removed'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
@@ -888,7 +888,7 @@ switch( $mode )
 			ORDER BY template_name";
 		if(!$result = $db->sql_query($sql))
 		{
-			message_die(GENERAL_ERROR, "Could not get style information!", "Error", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Could not get style information!", "", __LINE__, __FILE__, $sql);
 		}
 		
 		$style_rowset = $db->sql_fetchrowset($result);

@@ -587,6 +587,7 @@ $lang['Theme_settings'] = "Theme Settings";
 $lang['Theme_element'] = "Theme Element";
 $lang['Simple_name'] = "Simple Name";
 $lang['Value'] = "Value";
+$lang['Save_Settings'] = "Save Settings";
 
 $lang['Stylesheet'] = "CSS Stylesheet";
 $lang['Background_image'] = "Background Image";

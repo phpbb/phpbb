@@ -238,7 +238,7 @@
 
 
 	<tr>
-		<td class="catBottom" colspan="3" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Save Settings" class="mainoption" />
+		<td class="catBottom" colspan="3" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SAVE_SETTINGS}" class="mainoption" />
 		</td>
 	</tr>
 </table></form>
