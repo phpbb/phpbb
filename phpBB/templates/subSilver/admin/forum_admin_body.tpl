@@ -9,11 +9,11 @@
 	</tr>
 	<!-- BEGIN catrow -->
 	<tr>
-		<td class="cat" colspan="3"><span class="cattitle"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b></span></td>
+		<td class="catLeft" colspan="3"><span class="cattitle"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_EDIT}">{L_EDIT}</a></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_DELETE}">{L_DELETE}</a></span></td>
 		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{catrow.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{catrow.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
-		<td class="cat" align="center" valign="middle"><span class="gen">&nbsp</span></td>
+		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp</span></td>
 	</tr>
 	<!-- BEGIN forumrow -->
 	<tr> 
@@ -34,6 +34,6 @@
 	</tr>
 	<!-- END catrow -->
 	<tr>
-		<td colspan="7" class="cat"><input type="text" name="categoryname" /> <input type="submit" class="liteoption"  name="addcategory" value="{L_CREATE_CATEGORY}" /></td>
+		<td colspan="7" class="catBottom"><input type="text" name="categoryname" /> <input type="submit" class="liteoption"  name="addcategory" value="{L_CREATE_CATEGORY}" /></td>
 	</tr>
 </table></form>
