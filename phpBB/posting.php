@@ -1742,7 +1742,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		case 'edit_topic':
 		case 'edit_last_post':
 		
-			$sql_data['post']['sql'] += array(
+			$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id' 		=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
@@ -1761,7 +1761,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $bbcode_uid,
 				'post_edit_locked'	=> $data['post_edit_locked']
-			);
+			));
 		break;
 	}
 	
