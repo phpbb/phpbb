@@ -30,7 +30,6 @@
 
 include('extension.inc');
 include('common.'.$phpEx);
-include('includes/bbcode.'.$phpEx);
 
 $pagetype = "search";
 $page_title = "Search Forums";
@@ -260,7 +259,7 @@ function gensearch_sql($searchstring, $override_all = 0)
 		}
 	}
 
-	$searchstring =  "WHERE ($searchstring) AND (pt.post_id = p.post_id) ";
+	$searchstring =  "($searchstring)";
 
 	$searchdata[0] = $searchstring;
 	for($i = 0; $i < count($searchforwords); $i++)
@@ -290,11 +289,11 @@ init_userprefs($userdata);
 
 $start = (isset($HTTP_GET_VARS['start'])) ? $HTTP_GET_VARS['start'] : 0;
 
-$querystring = (isset($HTTP_POST_VARS['querystring'])) ? $HTTP_POST_VARS['querystring'] : ( (isset($HTTP_GET_VARS['q'])) ? stripslashes($HTTP_GET_VARS['q']) : "" );
-$authorstring = (isset($HTTP_POST_VARS['authorstring'])) ? $HTTP_POST_VARS['authorstring'] : ( (isset($HTTP_GET_VARS['a'])) ? stripslashes($HTTP_GET_VARS['a']) : "" );
+$querystring = (isset($HTTP_POST_VARS['querystring'])) ? $HTTP_POST_VARS['querystring'] : ( (!empty($HTTP_GET_VARS['q'])) ? stripslashes($HTTP_GET_VARS['q']) : "" );
+$authorstring = (isset($HTTP_POST_VARS['authorstring'])) ? $HTTP_POST_VARS['authorstring'] : ( (!empty($HTTP_GET_VARS['a'])) ? stripslashes($HTTP_GET_VARS['a']) : "" );
 
 $return_chars = ($HTTP_POST_VARS['charsreqd'] != "all") ? $HTTP_POST_VARS['charsreqd'] : -1;
-$return_chars = (isset($HTTP_GET_VARS['c'])) ? ( ($HTTP_GET_VARS['c']!= "all") ? $HTTP_GET_VARS['c'] : -1 ) : $return_chars; 
+$return_chars = (isset($HTTP_GET_VARS['c'])) ? ( ($HTTP_GET_VARS['c'] != "all") ? $HTTP_GET_VARS['c'] : -1 ) : $return_chars; 
 $searchall = ($HTTP_POST_VARS['addterms'] == "all") ? 1 : ( ($HTTP_GET_VARS['m'] == "all") ? 1 : 0 );
 $searchforum = (isset($HTTP_POST_VARS['searchforum'])) ? $HTTP_POST_VARS['searchforum'] : $HTTP_GET_VARS['f'] ;
 $sortby = (isset($HTTP_POST_VARS['sortby'])) ? $HTTP_POST_VARS['sortby'] : $HTTP_GET_VARS['b'];
@@ -325,27 +324,33 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 	// searching of private forums
 	//
 
-	if($querystring != "")
+	if($querystring != "" || $authorstring != "")
 	{
 		$search_sql = "";
-		$searchdata = gensearch_sql(stripslashes($querystring), $searchall);
-		$search_sql = $searchdata[0];
+		if($querystring != "")
+		{
+			$searchdata = gensearch_sql(stripslashes($querystring), $searchall);
+			$search_sql = $searchdata[0];
+		}
+		if($authorstring != "")
+		{
+			$search_sql = preg_replace("/\(\)/", "", $search_sql);
+			$authorstring = stripslashes($authorstring);
+			$search_sql .= ($searchstring == "") ? "u.username LIKE '%$authorstring%'" : " AND (u.username LIKE '%$authorstring%')";
+		}
 
 		if(!ereg("\([ ]*\)",$search_sql))
 		{
-			if($authorstring != "")
-			{
-				$authorstring = stripslashes($authorstring);
-				$search_sql .= ($querystring == "") ? "WHERE u.username LIKE '%$authorstring%'" : " AND (u.username LIKE '%$authorstring%')";
-			}
-			$sql .= $search_sql." 
+			$sql .= "WHERE $search_sql 
 				AND (pt.post_id = p.post_id) 
 				AND (f.forum_id = p.forum_id) 
 				AND (p.topic_id = t.topic_id) 
 				AND (p.poster_id = u.user_id)";
 
 			if($searchforum != "all")
+			{
 				$sql .= " AND (f.forum_id = '$searchforum')";
+			}
 
 			$sql .= " ORDER BY ".$sortby_sql[$sortby]." $sortby_dir";
 		
@@ -411,7 +416,10 @@ if((isset($HTTP_POST_VARS['dosearch']) || isset($HTTP_GET_VARS['dosearch'])) && 
 						$message = preg_replace("/\[.*\]/", "", $message);
 
 						$message = str_replace("\n", "<br />", $message);
-						$message = preg_replace($search_string, $replace_string, $message);
+						if(count($searchdata) > 1)
+						{
+							$message = preg_replace($search_string, $replace_string, $message);
+						}
 
 					}
 					else

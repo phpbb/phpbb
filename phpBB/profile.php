@@ -320,10 +320,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"MSN" => stripslashes($profiledata['user_msnm']),
 				"L_YAHOO" => stripslashes($l_yahoo),
 				"YIM" => stripslashes($profiledata['user_yim']),
-				"WEBSITE" => "<a href=\"".stripslashes($profiledata['user_website'])."\" target=\"_blank\">".stripslashes($profiledata['user_website'])."</a>",
+				"WEBSITE" => stripslashes($profiledata['user_website']),
 				"LOCATION" => stripslashes($profiledata['user_from']),
 				"OCCUPATION" => stripslashes($profiledata['user_occ']),
-				"INTERESTS" => stripslashes($profiledata['user_interests']),
+				"INTERESTS" => stripslashes($profiledata['user_interests']), 
+				"AVATAR_IMG" => $board_config['avatar_path'] . "/" . stripslashes($profiledata['user_avatar']), 
 				
 				"L_VIEWING_PROFILE" => $l_viewing_profile, 
 				"L_USERNAME" => $l_username,
@@ -338,7 +339,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				"L_MESSENGER" => $l_messenger,
 				"L_LOCATION" => $l_from,
 				"L_OCCUPATION" => $l_occupation,
-				"L_INTERESTS" => $l_interests,
+				"L_INTERESTS" => $l_interests, 
+				"L_AVATAR" => $l_avatar, 
+
+				"U_SEARCH_USER" => append_sid("search.$phpEx?a=".urlencode($profiledata['username'])."&f=all&b=0&d=DESC&c=100&dosearch=1"), 
+				"U_USER_WEBSITE" => stripslashes($profiledata['user_website']),
 
 				"S_PROFILE_ACTION" => append_sid("profile.$phpEx"))
 			);

@@ -42,7 +42,7 @@
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_WEBSITE}:</b></td>
-					<td bgcolor="#CCCCCC">{WEBSITE}</td>
+					<td bgcolor="#CCCCCC"><a href="{U_USER_WEBSITE}" target="_wwwuser">{WEBSITE}</a></td>
 				</tr>
 				<tr class="tablebody">
 					<td bgcolor="#DDDDDD"><b>{L_LOCATION}:</b></td>

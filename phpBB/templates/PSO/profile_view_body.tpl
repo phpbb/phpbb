@@ -12,7 +12,7 @@
 			</tr>
 			<tr>
 	           <td bgcolor="{T_TD_COLOR1}" width="20%"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_USERNAME}:</font></td>
-	           <td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{USERNAME}</b> [<a href="search.{PHPEX}?term=&addterms=any&forum=all&search_username={USERNAME}&sortby=p.post_time&searchboth=both&submit=Search">{L_VIEW_USERS_POSTS}</a>]</font></td>
+	           <td bgcolor="{T_TD_COLOR2}" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{USERNAME}</b> [<a href="{U_SEARCH_USER}">{L_VIEW_USERS_POSTS}</a>]</font></td>
             </tr>
             <tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_JOINED}:</font></td>
@@ -44,7 +44,7 @@
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_WEBSITE}:</font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{WEBSITE}</b></font></td>
+				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{U_USER_WEBSITE}" target="_userwww">{WEBSITE}</a></b></font></td>
 			</tr>
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{L_LOCATION}:</font></td>
