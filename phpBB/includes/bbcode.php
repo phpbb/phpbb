@@ -25,11 +25,13 @@ class bbcode
 	var $bbcode_bitfield = 0;
 	var $bbcode_cache = array();
 
-	function bbcode($uid = '', $bitfield = 0)
+	function bbcode($bitfield = 0)
 	{
-		$this->bbcode_uid = $uid;
-		$this->bbcode_bitfield = $bitfield;
-		//$this->bbcode_cache_init();
+		if ($bitfield)
+		{
+			$this->bbcode_bitfield = $bitfield;
+			$this->bbcode_cache_init();
+		}
 	}
 
 	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = '')
@@ -38,6 +40,7 @@ class bbcode
 		{
 			$this->bbcode_cache_init();
 		}
+
 		if ($bbcode_uid)
 		{
 			$this->bbcode_uid = $bbcode_uid;
@@ -50,9 +53,10 @@ class bbcode
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());
 
-		for ($bbcode_id = 0; $bbcode_id < 31; ++$bbcode_id) 
+		$bitlen = strlen(decbin($this->bbcode_bitfield));
+		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
 		{
-			if ($this->bbcode_bitfield & pow(2, $bbcode_id)) 
+			if ($this->bbcode_bitfield & pow(2, $bbcode_id))
 			{
 				foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
 				{
@@ -66,8 +70,15 @@ class bbcode
 			}
 		}
 
-		$message = str_replace($str['search'], $str['replace'], $message);
-		$message = preg_replace($preg['search'], $preg['replace'], $message);
+
+		if (count($str['search']))
+		{
+			$message = str_replace($str['search'], $str['replace'], $message);
+		}
+		if (count($preg['search']))
+		{
+			$message = preg_replace($preg['search'], $preg['replace'], $message);
+		}
 
 		return $message;
 	}
@@ -83,19 +94,24 @@ class bbcode
 		$sql = '';
 
 		$bbcode_ids = array();
-		// TODO: only load needed bbcodes
-		for ($bbcode_id = 0; $bbcode_id < 10; ++$bbcode_id)
+		$bitlen = strlen(decbin($this->bbcode_bitfield));
+
+		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
 		{
+			if (isset($this->bbcode_cache[$bbcode_id]) || !($this->bbcode_bitfield & pow(2, $bbcode_id)))
+			{
+				continue;
+			}
+
 			$bbcode_ids[] = $bbcode_id;
 
-			//
-			// WARNING: hardcoded values. it assumes that bbcodes with bbcode_id > 10 are user-defined bbcodes
+			// WARNING: hardcoded values. it assumes that bbcodes with bbcode_id > 11 are user-defined bbcodes
 			// and it has to be specified which bbcodes need the template to be loaded
-			//
-			if ($bbcode_id > 10)
+			if ($bbcode_id > 11)
 			{
 				$sql .= $bbcode_id . ',';
 			}
+			// WARNING: even more hardcoded stuff - define which bbcodes need template
 			elseif (in_array($bbcode_id, array(0, 5, 6, 8, 9)))
 			{
 				$load_template = TRUE;
@@ -149,6 +165,7 @@ class bbcode
 			{
 				$rowset[$row['bbcode_id']] = $row;
 			}
+			$db->sql_freeresult($result);
 		}
 
 		foreach ($bbcode_ids as $bbcode_id)
@@ -222,7 +239,7 @@ class bbcode
 				case 8:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[code:$uid\](.*?)\[/code:$uid\]#ise'		=>	'$this->bbcode_second_pass_code("\1")'
+							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'		=>	"\$this->bbcode_second_pass_code('\\1', '\\2')"
 						)
 					);
 				break;
@@ -235,15 +252,22 @@ class bbcode
 							'[*:$uid]'				=>	'<li>'
 						),
 						'preg' => array(
-							'#\[list=(.+?):$uid\]#e'	=>	'$this->bbcode_ordered_list("\1")',
+							'#\[list=(.+?):$uid\]#e'	=>	"\$this->bbcode_ordered_list('\\1')",
 						)
 					);
 				break;
 				case 10:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[email:$uid\](.*?)\[/email:$uid\]#is'			=>	'<a href="mailto:\1">\1</a>',
+							'#\[email:$uid\](.*?)\[/email:$uid\]#is'		=>	'<a href="mailto:\1">\1</a>',
 							'#\[email=(.*?):$uid\](.*?)\[/email:$uid\]#is'	=>	'<a href="mailto:\1">\2</a>'
+						)
+					);
+				break;
+				case 11:
+					$this->bbcode_cache[$bbcode_id] = array(
+						'preg' => array(
+							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	'<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0"><param name="movie" value="\1"><param name="play" value="1"><param name="loop" value="1"><param name="quality" value="high"><embed src="\1" play="1" loop="1" quality="high"></embed></object>'
 						)
 					);
 				break;
@@ -281,11 +305,44 @@ class bbcode
 		return '<ol type="' . $chr . '" start="' . $start . '">';
 	}
 
-	function bbcode_second_pass_code($code)
+	function bbcode_second_pass_code($type, $code)
 	{
-		$code = str_replace("\t", '&nbsp; &nbsp;', $code);
-		$code = str_replace('  ', '&nbsp; ', $code);
-		$code = str_replace('  ', ' &nbsp;', $code);
+		$code = stripslashes(str_replace("\r\n", "\n", $code));
+
+		switch ($type)
+		{
+			case 'php':
+				$remove_tags = FALSE;
+				if (!preg_match('/<\?(php)? .*? \?>/', $code))
+				{
+					$remove_tags = TRUE;
+					$code = "<?php $code ?>";
+				}
+
+				$str_from = array('<', '>', '"', ':', '[', ']', '(', ')', '{', '}', '.', '@');
+				$str_to = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;', '&#46;', '&#64;');
+
+				$code = str_replace($str_to, $str_from, $code);
+
+				ob_start();
+				highlight_string($code);
+				$code = ob_get_contents();
+				ob_end_clean();
+
+				if ($remove_tags)
+				{
+					$code = preg_replace('/(.*?)&lt;\?php&nbsp;(.*)\?&gt;(.*?)/', '\1\2\3', $code);
+				}
+
+				$code = preg_replace('!^<code>[\n\r\s\t]*<font color="#[a-z0-9]+">[\n\r\s\t]*(.*)</font>[\n\r\s\t]*</code>[\n\r\s\t]*!is', '\\1', $code);
+			break;
+		
+			default:
+				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
+				$code = str_replace('  ', '&nbsp; ', $code);
+				$code = str_replace('  ', ' &nbsp;', $code);
+		}
+
 		$code = $this->bbcode_tpl['code_open'] . $code . $this->bbcode_tpl['code_close'];
 
 		return $code;
