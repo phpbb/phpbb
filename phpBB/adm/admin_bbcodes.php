@@ -3,12 +3,12 @@
 //
 // $Id$
 //
-// FILENAME  : admin_bbcodes.php 
+// FILENAME  : admin_bbcodes.php
 // STARTED   : Wed Aug 20, 2003
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 if (!empty($setmodules))
@@ -196,7 +196,7 @@ switch ($mode)
 				HAVING MIN(b2.bbcode_id) > b1.bbcode_id + 1
 				ORDER BY b1.bbcode_id ASC';
 			$result = $db->sql_query_limit($sql, 1);
-			
+
 			 if ($row = $db->sql_fetchrow($result))
 			{
 				 $bbcode_id = $row['bbcode_id'] + 1;
@@ -227,18 +227,31 @@ switch ($mode)
 
 			$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 			$lang = 'BBCODE_ADDED';
+			$log_action = 'LOG_BBCODE_ADD';
 		}
 		else
 		{
 			$db->sql_query('UPDATE ' . BBCODES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE bbcode_id = ' . $bbcode_id);
 			$lang = 'BBCODE_EDITED';
+			$log_action = 'LOG_BBCODE_EDIT';
 		}
+
+		add_log('admin', $log_action, $data['bbcode_tag']);
 
 		trigger_error($lang);
 	break;
 
 	case 'delete':
-		$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
+		$sql = 'SELECT bbcode_tag
+			FROM ' . BBCODES_TABLE . "
+			WHERE bbcode_id = $bbcode_id";
+		$result = $db->sql_query($sql);
+		
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
+			add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+		}
 
 		// No break here
 
