@@ -238,6 +238,7 @@ Backups completed ok.<P>
                          forum_id int(10) NOT NULL,
                          topic_status tinyint(3) DEFAULT '0' NOT NULL,
                          topic_notify tinyint(3) DEFAULT '0',
+								 topic_last_post_id int(11) DEFAULT '0' NOT NULL,
                          KEY(forum_id),
                          PRIMARY KEY (topic_id))",
            "banlist" => "CREATE TABLE banlist(
@@ -270,6 +271,7 @@ Backups completed ok.<P>
 	   drop_column($db, "forums", "forum_moderator");
 	   change_column($db, "forums", "forum_access", "tinyint(3)", "null");
 	   change_column($db, "forums", "forum_type", "tinyint(3)", "null");
+	   add_column($db, "forums", "forum_order", "int(10)", "default '0' not null");
 	   add_column($db, "forums", "forum_posts", "int(10)", "default '0' not null");
 	   add_column($db, "forums", "forum_topics", "int(10)", "default '0' not null");
 	   add_column($db, "forums", "forum_last_post_id", "int(10)", "default '0' not null");
@@ -328,6 +330,7 @@ Backups completed ok.<P>
 		$r = mysql_query("select * from posts_backup", $db);
 
 		echo "Converting posts and creating posts_text ...<br>";
+		flush();
 
 		while ($row = mysql_fetch_array($r)) 
 		{
@@ -356,6 +359,7 @@ Backups completed ok.<P>
       echo mysql_error($db);
 
 		echo "Converting priv_msgs ..<br>";
+		flush();
 
 		while ($row = mysql_fetch_array($r)) 
 		{
@@ -379,6 +383,7 @@ Backups completed ok.<P>
 		$r = mysql_query("select * from sessions_backup", $db);
 
 		echo "Converting sessions ..<br>";
+		flush();
 
 		while ($row = mysql_fetch_array($r)) 
 		{
@@ -399,6 +404,7 @@ Backups completed ok.<P>
 		$r = mysql_query("select * from topics_backup", $db);
 
 		echo "Converting topics ..<br>";
+		flush();
 
 		while ($row = mysql_fetch_array($r)) 
 		{
@@ -408,7 +414,7 @@ Backups completed ok.<P>
 			$topic_title  = $row['topic_title'];
 			$topic_poster = $row['topic_poster'];
 			$topic_views  = $row['topic_views'];
-			$topic_id     = $row['topic_id'];
+			$forum_id     = $row['forum_id'];
 			$topic_status = $row['topic_status'];
 			$topic_notify = $row['topic_notify'];
 
@@ -423,6 +429,7 @@ Backups completed ok.<P>
 		$r = mysql_query("select * from banlist_backup", $db);
 
 		echo "Converting banlist ..<br>";
+		flush();
 
 		while ($row = mysql_fetch_array($r)) 
 		{
