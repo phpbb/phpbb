@@ -393,6 +393,10 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
 	}
+	else
+	{
+		$avatar_sql = '';
+	}
 
 	if ( !$error )
 	{

@@ -64,7 +64,15 @@ function user_avatar_delete($avatar_type, $avatar_file)
 
 function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename)
 {
-	return ( $mode == 'editprofile' ) ? ", user_avatar = '" . str_replace("\'", "''", $avatar_filename) . "', user_avatar_type = " . USER_AVATAR_GALLERY : '';
+	if ( file_exists($board_config['avatar_gallery_path'] . '/' . $avatar_filename) && ($mode == 'editprofile') )
+	{
+		$return = ", user_avatar = '" . str_replace("\'", "''", $avatar_filename) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
+	}
+	else
+	{
+		$return = '';
+	}
+	return $return;
 }
 
 function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
