@@ -167,7 +167,7 @@ function bbencode_second_pass($text, $uid)
 	$text = str_replace("[quote:$uid]", $bbcode_tpl['quote_open'], $text);
 	$text = str_replace("[/quote:$uid]", $bbcode_tpl['quote_close'], $text);
 	
-	$text = preg_replace("/\[quote:$uid=(.*?)\]/si", $bbcode_tpl['quote_username_open'], $text);
+	$text = preg_replace("/\[quote:$uid=\"?(.*?)\"?\]/si", $bbcode_tpl['quote_username_open'], $text);
 
 	// [b] and [/b] for bolding text.
 	$text = str_replace("[b:$uid]", $bbcode_tpl['b_open'], $text);
@@ -240,7 +240,7 @@ function bbencode_first_pass($text, $uid)
 	// [QUOTE] and [/QUOTE] for posting replies with quote, or just for quoting stuff.
 	$text = bbencode_first_pass_pda($text, $uid, '[quote]', '[/quote]', '', false, '');
 	
-	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(.*?)\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
+	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=(\\\\".*?\\\\")\]/is', '[/quote]', '', false, '', "[quote:$uid=\\1]");
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = array();
@@ -276,8 +276,6 @@ function bbencode_first_pass($text, $uid)
 	// Remove our padding from the string..
 	$text = substr($text, 1);
 
-	// Add the uid tag to the start of the string..
-	//$text = '[uid=' . $uid . ']' . $text;
 
 	return $text;
 

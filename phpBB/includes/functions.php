@@ -476,6 +476,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 //
 // Check to see if the username has been taken, or if it is disallowed.
+// Also checks if it includes the " character, which we don't allow in usernames.
 // Used for registering, changing names, and posting anonymously with a username
 //
 function validate_username($username)
@@ -548,6 +549,12 @@ function validate_username($username)
 				return(FALSE);
 			}
 		}
+	}
+
+	// Don't allow " in username.
+	if ( strstr($username, '"') )
+	{
+		return FALSE;
 	}
 
 	return(TRUE);

@@ -546,6 +546,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					$error = TRUE;
 					$error_msg = $lang['Fields_empty'];
 				}
+				
 			}
 
 			$passwd_sql = "";

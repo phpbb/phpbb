@@ -1040,7 +1040,7 @@ if( $submit && $mode != "vote" )
 			{
 				$error_msg .= "<br />";
 			}
-			$error_msg .= $lang['Bad_username'];
+			$error_msg .= $lang['Invalid_username'];
 		}
 	}
 	else
@@ -2358,7 +2358,7 @@ else
 
 				$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
-				$post_message = "[quote=" . $post_username . "]\n" . $post_message . "\n[/quote]";
+				$post_message = "[quote=\"" . $post_username . "\"]\n" . $post_message . "\n[/quote]";
 
 				$mode = "reply";
 			}

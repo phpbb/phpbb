@@ -455,7 +455,6 @@ $lang['Search_user_posts'] = "Find all posts by %s"; // Find all posts by userna
 
 $lang['No_user_id_specified'] = "Sorry but that user does not exist";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
-$lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_or_taken_email'] = "Sorry but the email address you gave has either been banned, is already registered to another user or is invalid. Please try an alternative address, if that is also banned you should contact the board administrator for advice";
 $lang['Only_one_avatar'] = "Only one type of avatar can be specified";
 $lang['File_no_data'] = "The file at the URL you gave contains no data";
@@ -514,7 +513,7 @@ $lang['Profile_updated_inactive'] = "Your profile has been updated, however you 
 
 $lang['Password_mismatch'] = "The passwords you entered did not match";
 $lang['Current_password_mismatch'] = "The current password you supplied does not match that stored in the database";
-$lang['Invalid_username'] = "The username you requested has been taken or disallowed";
+$lang['Invalid_username'] = "The username you requested has been taken or disallowed, or contains invalid characters like the \" character";
 $lang['Signature_too_long'] = "Your signature is too long";
 $lang['Fields_empty'] = "You must fill in the required fields";
 $lang['Avatar_filetype'] = "The avatar filetype must be .jpg, .gif or .png";

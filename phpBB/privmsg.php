@@ -1263,7 +1263,7 @@ else if( $submit || $refresh || $mode != "" )
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
-			$privmsg_message = preg_replace("/(|\:1)\:$post_bbcode_uid(|\:[a-z])/si", "", $privmsg_message);
+			$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$post_bbcode_uid/si", "", $privmsg_message);
 			$privmsg_message = str_replace("<br />", "\n", $privmsg_message);
 			$privmsg_message = preg_replace($html_entities_match, $html_entities_replace, $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
@@ -1274,7 +1274,7 @@ else if( $submit || $refresh || $mode != "" )
 
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); //"[date]" . $privmsg['privmsgs_time'] . "[/date]";
 
-				$privmsg_message = "[quote=" . $to_username . "]\n" . $privmsg_message . "\n[/quote]";
+				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]";
 
 				$mode = "reply";
 			}
