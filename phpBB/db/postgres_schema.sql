@@ -233,6 +233,18 @@ CREATE  INDEX rank_min_phpbb_ranks_index ON phpbb_ranks (rank_min);
 
 
 /* --------------------------------------------------------
+  Table structure for table phpbb_search_results
+-------------------------------------------------------- */
+CREATE TABLE phpbb_search_results (
+  search_id int4 NOT NULL default '0',
+  session_id char(32) NOT NULL default '',
+  search_array text NOT NULL,
+  CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (search_id)
+);
+CREATE  INDEX session_id_phpbb_search_results ON phpbb_search_results (session_id);
+
+
+/* --------------------------------------------------------
   Table structure for table phpbb_sessions
 -------------------------------------------------------- */
 CREATE TABLE phpbb_sessions (
@@ -267,7 +279,7 @@ CREATE TABLE phpbb_smilies (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_themes (
    themes_id int4 DEFAULT nextval('phpbb_themes_id_seq'::text) NOT NULL,
-   themes_name varchar(30),
+   style_name varchar(30),
    template_name varchar(30) NOT NULL default '',
    head_stylesheet varchar(100),
    body_background varchar(100),
@@ -356,12 +368,12 @@ CREATE TABLE phpbb_themes_name (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_topics (
    topic_id int4 DEFAULT nextval('phpbb_topics_id_seq'::text) NOT NULL,
+   forum_id int4 DEFAULT '0' NOT NULL,
    topic_title varchar(100) DEFAULT '' NOT NULL,
    topic_poster int4 DEFAULT '0' NOT NULL,
    topic_time int4 DEFAULT '0' NOT NULL,
    topic_views int4 DEFAULT '0' NOT NULL,
    topic_replies int4 DEFAULT '0' NOT NULL,
-   forum_id int4 DEFAULT '0' NOT NULL,
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
@@ -369,8 +381,12 @@ CREATE TABLE phpbb_topics (
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
-CREATE  INDEX _phpbb_topics_index ON phpbb_topics (forum_id, topic_id);
 CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
+CREATE  INDEX topic_moved_id_phpbb_topics_index ON phpbb_topics (topic_moved_id);
+CREATE  INDEX topic_last_post_id_phpbb_topics_index ON phpbb_topics (topic_last_post_id);
+CREATE  INDEX topic_type_phpbb_topics_index ON phpbb_topics (topic_type);
+CREATE  INDEX topic_poster_phpbb_topics_index ON phpbb_topics (topic_poster);
+CREATE  INDEX topic_time_phpbb_topics_index ON phpbb_topics (topic_time);
 
 
 /* --------------------------------------------------------
@@ -381,8 +397,8 @@ CREATE TABLE phpbb_topics_watch (
   user_id int4,
   notify_status int2 NOT NULL default '0'
 );
-CREATE  INDEX _phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
-CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
+CREATE  INDEX topic_id_phpbb_topics_watch_index ON phpbb_topics_watch (topic_id);
+CREATE  INDEX user_id_phpbb_topics_watch_index ON phpbb_topics_watch (user_id);
 
 
 /* --------------------------------------------------------
@@ -414,7 +430,8 @@ CREATE TABLE phpbb_users (
    user_from varchar(100),
    user_interests varchar(255),
    user_sig varchar(255),
-   user_theme int4,
+   user_sig_bbcode_uid char(10),
+   user_style int4,
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
@@ -431,7 +448,6 @@ CREATE TABLE phpbb_users (
    user_avatar varchar(100),
    user_level int4 DEFAULT '1',
    user_lang varchar(255),
-   user_template varchar(50),
    user_timezone int4 DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_notify_pm int2 DEFAULT '1' NOT NULL,

@@ -302,7 +302,7 @@ GO
 
 CREATE TABLE [phpbb_themes] (
 	[themes_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[themes_name] [varchar] (50) NOT NULL ,
+	[style_name] [varchar] (50) NOT NULL ,
 	[head_stylesheet] [varchar] (50) NULL ,
 	[body_background] [varchar] (50) NULL ,
 	[body_bgcolor] [char] (6) NULL ,
@@ -419,8 +419,7 @@ CREATE TABLE [phpbb_users] (
 	[user_posts] [int] NOT NULL ,
 	[user_timezone] [int] NOT NULL ,
 	[user_dateformat] [varchar] (15) NOT NULL ,
-	[user_template] [varchar] (50) NULL ,
-	[user_theme] [int] NULL ,
+	[user_style] [int] NULL ,
 	[user_lang] [varchar] (50) NULL ,
 	[user_viewemail] [smallint] NULL ,
 	[user_attachsig] [smallint] NULL ,
@@ -439,7 +438,8 @@ CREATE TABLE [phpbb_users] (
 	[user_icq] [varchar] (15) NULL ,
 	[user_website] [varchar] (50) NULL ,
 	[user_from] [varchar] (200) NULL ,
-	[user_sig] [varchar] (255) NULL ,
+	[user_sig] [varchar] (255) NULL , 
+	[user_sig_bbcode_uid] [char] (10) NULL,
 	[user_aim] [varchar] (50) NULL ,
 	[user_yim] [varchar] (50) NULL ,
 	[user_msnm] [varchar] (50) NULL ,

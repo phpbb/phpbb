@@ -15,7 +15,7 @@
 
 /*
 CREATE TABLESPACE phpbb
-	DATAFILE '/path/to/oracle/oradata/SID/phpbb01.dbf'
+	DATAFILE 'E:/web/Oracle8i/ORADATA/phpbb01.dbf'
 	SIZE 10M
 	AUTOEXTEND ON NEXT 10M
 	MAXSIZE 100M;
@@ -298,7 +298,7 @@ CREATE TABLE phpbb_smilies (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_themes (
    themes_id number(4) NOT NULL,
-   themes_name varchar(30),
+   style_name varchar(30),
    template_name varchar(30) DEFAULT '' NOT NULL,
    head_stylesheet varchar(100),
    body_background varchar(100),
@@ -443,7 +443,8 @@ CREATE TABLE phpbb_users (
    user_from varchar(100),
    user_interests varchar(255),
    user_sig varchar(255),
-   user_theme number(4),
+   user_sig_bbcode_uid char(10),
+   user_style number(4),
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
@@ -460,7 +461,6 @@ CREATE TABLE phpbb_users (
    user_avatar varchar(100),
    user_level number(4) DEFAULT '1',
    user_lang varchar(255),
-   user_template varchar(50),
    user_timezone number(4) DEFAULT '0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
    user_notify_pm number(4) DEFAULT '1' NOT NULL,
