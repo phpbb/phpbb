@@ -24,7 +24,7 @@
 								<td align="center"><input type="submit" name="submit" value="{L_LOGIN}"></td>
 							</tr>
 							<tr>
-								<td align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="sendpassword.{PHPEX}">{L_SEND_PASSWORD}</a></font></td>
+								<td align="center"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}"><a href="{U_SEND_PASSWORD}">{L_SEND_PASSWORD}</a></font></td>
 							</tr>
 						</table></td>
 					</tr>

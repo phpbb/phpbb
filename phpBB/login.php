@@ -97,14 +97,12 @@ else
 	$template->set_filenames(array("body" => "login_body.tpl"));
 
 	$template->assign_vars(array(
-		"PHPEX" => $phpEx,
-		"PHP_SELF" => $PHP_SELF,
-
 		"L_USERNAME" => $l_username,
 		"L_PASSWORD" => $l_password,
 		"L_SEND_PASSWORD" => $l_resend_password,
 		"L_AUTO_LOGIN" => $l_autologin,
 		"L_LOGIN" => $l_login,
+		"U_SEND_PASSWORD" => "sendpassword.".$phpEx,
 
 		"USERNAME" => $userdata['username']
 		)
