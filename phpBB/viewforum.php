@@ -104,7 +104,8 @@ if ($forum_data['forum_link'])
 	if ($forum_data['forum_link_track'])
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_posts = forum_posts + 1';
+			SET forum_posts = forum_posts + 1 
+			WHERE forum_id = ' . $forum_id;
 		$db->sql_query($sql);
 	}
 
