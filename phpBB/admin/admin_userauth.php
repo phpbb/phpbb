@@ -964,7 +964,7 @@ else
 		"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['User'],
 		"L_FIND_USERNAME" => $lang['Find_username'],
 
-		"U_SEARCH_USER" => append_sid("admin_users.$phpEx?mode=searchuser"), 
+		"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"), 
 
 		"S_USER_ACTION" => append_sid("admin_userauth.$phpEx"))
 	);

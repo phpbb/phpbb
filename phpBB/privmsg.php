@@ -745,19 +745,12 @@ else if( $submit || $refresh || $mode != "" )
 
 	if( $mode == "searchuser" )
 	{
-		if( isset($HTTP_POST_VARS['search']) )
-		{
-			$username_list = username_search("privmsg.$phpEx", $HTTP_POST_VARS['search_author'], 1);
-		}
-		else
-		{
-			username_search("privmsg.$phpEx", "", 1);
-		}
-		
 		//
-		// Remove this later
+		// This 'will' handle a simple user search 
+		// performed from within the private message post
+		// form
 		//
-		exit;
+
 	}
 
 	//
@@ -1488,6 +1481,7 @@ else if( $submit || $refresh || $mode != "" )
 		"S_HIDDEN_FORM_FIELDS" => $s_hidden_fields,
 		"S_POST_ACTION" => append_sid("privmsg.$phpEx"),
 			
+		"U_SEARCH_USER" => append_sid("search.$phpEx?mode=searchuser"), 
 		"U_VIEW_FORUM" => append_sid("privmsg.$phpEx"))
 	);
 

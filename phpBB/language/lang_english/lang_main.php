@@ -622,7 +622,7 @@ $lang['found'] = "found"; // this precedes the number of matches found and follo
 $lang['match'] = "Match"; // this and the following entry proceed the number of matches found
 $lang['matches'] = "Matches";
 $lang['Search_new'] = "View posts since last visit";
-
+$lang['Close_window'] = "Close Window";
 
 //
 // Auth related entries

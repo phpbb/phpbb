@@ -209,7 +209,7 @@ function bbstyle(formObj, bbnumber) {
 	  <td class="row2"><span class="genmed"> 
 		<input type="text"  class="post" name="username" maxlength="50" size="20" tabindex="1" value="{USERNAME}" />
 		&nbsp; 
-		<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('privmsg.php?mode=searchuser', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" />
+		<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" />
 		</span></td>
 	</tr>
 	<!-- END privmsg_extensions -->

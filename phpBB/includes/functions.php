@@ -897,16 +897,10 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 // Username search
 //
-function username_search($calling_script, $search_match, $enable_window = 0, $default_list = "")
+function username_search($search_match, $is_inline_review = 0, $default_list = "")
 {
-	global $db, $template, $lang, $theme;
-
-	if( $enable_window )
-	{
-		$template->set_filenames(array(
-			"minisearchbody" => "mini_search.tpl")
-		);
-	}
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
+	global $starttime;
 
 	$author_list = "";
 	if( !empty($search_match) )
@@ -935,72 +929,44 @@ function username_search($calling_script, $search_match, $enable_window = 0, $de
 			$author_list = "<option>" . $lang['No_match']. "</option>";
 		}
 
-		if( $enable_window )
-		{
-			$template->assign_vars(array(
-				"S_AUTHOR_OPTIONS" => $author_list)
-			);
-				
-			$template->assign_block_vars("select_name", array());
-		}
 	}
 
-	if( $enable_window )
+	if( !$is_inline_review )
 	{
-		// 
-		// This theme var setup is very very temporary, completely
-		// forgot about it, doh!
-		//
+		$gen_simple_header = TRUE;
+
+		$page_title = $lang['Search'];
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			"search_user_body" => "search_username.tpl")
+		);
+
 		$template->assign_vars(array(
-			"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
-			"T_BODY_BACKGROUND" => $theme['body_background'],
-			"T_BODY_BGCOLOR" => "#".$theme['body_bgcolor'],
-			"T_BODY_TEXT" => "#".$theme['body_text'],
-			"T_BODY_LINK" => "#".$theme['body_link'],
-			"T_BODY_VLINK" => "#".$theme['body_vlink'],
-			"T_BODY_ALINK" => "#".$theme['body_alink'],
-			"T_BODY_HLINK" => "#".$theme['body_hlink'],
-			"T_TR_COLOR1" => "#".$theme['tr_color1'],
-			"T_TR_COLOR2" => "#".$theme['tr_color2'],
-			"T_TR_COLOR3" => "#".$theme['tr_color3'],
-			"T_TR_CLASS1" => $theme['tr_class1'],
-			"T_TR_CLASS2" => $theme['tr_class2'],
-			"T_TR_CLASS3" => $theme['tr_class3'],
-			"T_TH_COLOR1" => "#".$theme['th_color1'],
-			"T_TH_COLOR2" => "#".$theme['th_color2'],
-			"T_TH_COLOR3" => "#".$theme['th_color3'],
-			"T_TH_CLASS1" => $theme['th_class1'],
-			"T_TH_CLASS2" => $theme['th_class2'],
-			"T_TH_CLASS3" => $theme['th_class3'],
-			"T_TD_COLOR1" => "#".$theme['td_color1'],
-			"T_TD_COLOR2" => "#".$theme['td_color2'],
-			"T_TD_COLOR3" => "#".$theme['td_color3'],
-			"T_TD_CLASS1" => $theme['td_class1'],
-			"T_TD_CLASS2" => $theme['td_class2'],
-			"T_TD_CLASS3" => $theme['td_class3'],
-			"T_FONTFACE1" => $theme['fontface1'],
-			"T_FONTFACE2" => $theme['fontface2'],
-			"T_FONTFACE3" => $theme['fontface3'],
-			"T_FONTSIZE1" => $theme['fontsize1'],
-			"T_FONTSIZE2" => $theme['fontsize2'],
-			"T_FONTSIZE3" => $theme['fontsize3'],
-			"T_FONTCOLOR1" => "#".$theme['fontcolor1'],
-			"T_FONTCOLOR2" => "#".$theme['fontcolor2'],
-			"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
-			"T_SPAN_CLASS1" => $theme['span_class1'],
-			"T_SPAN_CLASS2" => $theme['span_class2'],
-			"T_SPAN_CLASS3" => $theme['span_class3'],
-			
 			"L_CLOSE_WINDOW" => $lang['Close_window'], 
 			"L_SEARCH_USERNAME" => $lang['Find_username'], 
 			"L_UPDATE_USERNAME" => $lang['Select_username'], 
 			"L_SELECT" => $lang['Select'], 
 			"L_SEARCH" => $lang['Search'], 
+			"L_SEARCH_EXPLAIN" => $lang['Search_author_explain'], 
+			"L_CLOSE_WINDOW" => $lang['Close_window'], 
 
-			"S_SEARCH_ACTION" => append_sid("$calling_script?mode=searchuser"))
+			"S_AUTHOR_OPTIONS" => $author_list, 
+			"S_SEARCH_ACTION" => append_sid("search.$phpEx?mode=searchuser"))
 		);
 
-		$template->pparse("minisearchbody");
+		//
+		// If we have results then dump them out and enable
+		// the appropriate switch block
+		//
+		if( !empty($author_list) )
+		{
+			$template->assign_block_vars("switch_select_name", array());
+		}
+
+		$template->pparse("search_user_body");
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
 
 	return($author_list);
@@ -1069,7 +1035,7 @@ function message_die($msg_code, $msg_text = "", $msg_title = "", $err_line = "",
 
 		if( empty($theme) )
 		{
-			$theme = setup_style($board_config['default_style']);
+			$theme = setup_style($board_config['default_theme']);
 		}
 
 		//

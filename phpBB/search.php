@@ -399,7 +399,27 @@ $sortby_sql = array("p.post_time", "pt.post_subject", "t.topic_title", "u.userna
 //
 // Begin core code
 //
-if( $query_keywords != "" || $query_author != "" || $search_id )
+if( $mode == "searchuser" )
+{
+	//
+	// This handles the simple windowed user search
+	// functions called from various other scripts. If a 
+	// script allows an 'inline' user search then this is
+	// handled by the script itself, this is only for the
+	// windowed version
+	//
+	if( isset($HTTP_POST_VARS['search']) )
+	{
+		username_search($HTTP_POST_VARS['search_author'], false);
+	}
+	else
+	{
+		username_search("", false);
+	}
+
+	exit;
+}
+else if( $query_keywords != "" || $query_author != "" || $search_id )
 {
 
 	if( $query_keywords != "" || $query_author != "" || $search_id == "newposts" )
