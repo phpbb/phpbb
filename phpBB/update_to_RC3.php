@@ -12,6 +12,9 @@ switch ( SQL_LAYER )
 {
 	case 'mysql':
 	case 'mysql4':
+		$sql[] = "ALTER TABLE " . RANKS_TABLE . " DROP 
+			COLUMN rank_max";
+
 		$sql[] = "ALTER TABLE " . USERS_TABLE . " 
 			ADD COLUMN user_session_time int(11) DEFAULT '0' NOT NULL, 
 			ADD COLUMN user_session_page smallint(5) DEFAULT '0' NOT NULL, 
@@ -50,7 +53,7 @@ switch ( SQL_LAYER )
 			ALTER COLUMN user_session_page SET DEFAULT '0'";
 		$sql[] = "CREATE INDEX user_session_time_" . $table_prefix . "users_index 
 			ON " . USERS_TABLE . " (user_session_time)";
-				
+
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " 
 			ADD COLUMN topic_first_post_id int4";
 		$sql[] = "CREATE INDEX topic_first_post_id_" . $table_prefix . "topics_index 
@@ -91,13 +94,76 @@ switch ( SQL_LAYER )
 			CONSTRAINT [DF_" . $table_prefix . "users_user_session_page] DEFAULT (0) FOR [user_session_page]";
 		$sql[] = "CREATE INDEX [IX_" . $table_prefix . "users] 
 			ON [" . USERS_TABLE . "]([user_session_time]) ON [PRIMARY]";
-	
+
+		/* DROP FORUM TABLE -- if this may cause you problems you can safely 
+		   comment it out, remember to manually remove the IDENTITY setting on 
+		   the forum_id column */
+		$sql [] = "ALTER TABLE " . FORUMS_TABLE . " DROP 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_posts], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_topics], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_last_post_id], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_prune_enable], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_view], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_read], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_post], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_reply], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_edit], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_delete], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_sticky], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_announce], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_vote], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_pollcreate], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_attachments]";
+		$sql[] = "CREATE TABLE Tmp_" . FORUMS_TABLE . " 
+			(forum_id int NOT NULL, cat_id int NOT NULL, forum_name varchar(100) NOT NULL, forum_desc varchar(255) NULL, forum_status smallint NOT NULL, forum_order int NOT NULL, forum_posts int NOT NULL, forum_topics smallint NOT NULL, forum_last_post_id int NOT NULL, prune_next int NULL, prune_enable smallint NOT NULL, auth_view smallint NOT NULL, auth_read smallint NOT NULL, auth_post smallint NOT NULL, auth_reply smallint NOT NULL, auth_edit smallint NOT NULL, auth_delete smallint NOT NULL,	auth_sticky smallint NOT NULL, auth_announce smallint NOT NULL, auth_vote smallint NOT NULL, auth_pollcreate smallint NOT NULL, auth_attachments smallint NOT NULL) ON [PRIMARY]";
+		$sql[] = "ALTER TABLE [Tmp_" . FORUMS_TABLE . "] WITH NOCHECK ADD 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_posts] DEFAULT (0) FOR [forum_posts], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_topics] DEFAULT (0) FOR [forum_topics], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_forum_last_post_id] DEFAULT (0) FOR [forum_last_post_id], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_prune_enable] DEFAULT (0) FOR [prune_enable], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_view] DEFAULT (0) FOR [auth_view], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_read] DEFAULT (0) FOR [auth_read], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_post] DEFAULT (0) FOR [auth_post], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_reply] DEFAULT (0) FOR [auth_reply], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_edit] DEFAULT (0) FOR [auth_edit], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_delete] DEFAULT (0) FOR [auth_delete], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_sticky] DEFAULT (0) FOR [auth_sticky], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_announce] DEFAULT (0) FOR [auth_announce], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_vote] DEFAULT (0) FOR [auth_vote], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate], 
+			CONSTRAINT [DF_" . $table_prefix . "forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]";
+		$sql[] = "INSERT INTO Tmp_" . FORUMS_TABLE . " (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_sticky, auth_announce, auth_vote, auth_pollcreate, auth_attachments)
+				SELECT forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_sticky, auth_announce, auth_vote, auth_pollcreate, auth_attachments FROM " . FORUMS_TABLE . " TABLOCKX";
+		$sql[] = "DROP TABLE " . FORUMS_TABLE;
+		$sql[] = "EXECUTE sp_rename N'Tmp_" . FORUMS_TABLE . "', N'" . FORUMS_TABLE . "', 'OBJECT'";
+		$sql[] = "ALTER TABLE " . FORUMS_TABLE . " ADD 
+			CONSTRAINT [PK_" . $table_prefix . "forums] PRIMARY KEY CLUSTERED (forum_id) ON [PRIMARY]";
+		$sql[] = "CREATE NONCLUSTERED INDEX [IX_" . $table_prefix . "forums]
+			ON " . FORUMS_TABLE . " (cat_id, forum_order, forum_last_post_id) ON [PRIMARY]";
+		/* END OF DROP FORUM -- don't remove anything after this point! */
+
+		$sql[] = "DROP INDEX " . RANKS_TABLE . ".IX_" . $table_prefix . "ranks";
+		$sql[] = "ALTER TABLE " . RANKS_TABLE . " DROP 
+			COLUMN rank_max";
+		$sql[] = "CREATE  INDEX [IX_" . $table_prefix . "ranks] 
+			ON [" . RANKS_TABLE . "]([rank_min], [rank_special]) ON [PRIMARY]";
+
 		$sql[] = "DROP INDEX " . TOPICS_TABLE . ".IX_" . $table_prefix . "topics";
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " ADD 
-			topic_first_post_id int NOT NULL, 
-			CONSTRAINT [DF_" . $table_prefix . "topics_topic_first_post_id] DEFAULT (0) FOR [topic_first_post_id]";
+			topic_first_post_id int NULL, 
+			CONSTRAINT [DF_" . $table_prefix . "topics_topic_first_post_id] FOR [topic_first_post_id]";
 		$sql[] = "CREATE  INDEX [IX_" . $table_prefix . "topics] 
 			ON [" . TOPICS_TABLE . "]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]";
+
+		$sql[] = "ALTER TABLE " . SEARCH_WORD_TABLE . " DROP 
+			CONSTRAINT [PK_" . $table_prefix . "search_wordlist]";
+		$sql[] = "CREATE UNIQUE INDEX [IX_" . $table_prefix . "search_wordlist] 
+			ON [" . SEARCH_WORD_TABLE . "]([word_text]) WITH IGNORE_DUP_KEY ON [PRIMARY]";
+		$sql[] = "CREATE  INDEX [IX_" . $table_prefix . "search_wordlist_1] 
+			ON [" . SEARCH_WORD_TABLE . "]([word_common]) ON [PRIMARY]";
+
+		$sql[] = "CREATE INDEX [IX_" . $table_prefix . "search_wordmatch_1] 
+			ON [" . SEARCH_MATCH_TABLE . "]([word_id]) ON [PRIMARY]";
 
 		$sql[] = "ALTER TABLE " . THEMES_NAME_TABLE . " ADD
 			tr_class1_name varchar(50) NULL, 
