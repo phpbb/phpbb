@@ -23,7 +23,10 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
-$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
+if(!isset($topic_id))
+{
+	$topic_id = $HTTP_GET_VARS[POST_TOPIC_URL];
+}
 
 $is_moderator = 0;
 
