@@ -92,7 +92,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	$forum_sql = ( $forum_id ) ? 'AND au.forum_id = ' . $forum_id : '';
 
 	$sql = "SELECT au.forum_id, u.user_id, u.username 
-		FROM phpbb_auth_users au, phpbb_auth_options ao, " . USERS_TABLE . " u
+		FROM " . ACL_USERS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . USERS_TABLE . " u
 		WHERE ao.auth_type LIKE 'mod'  
 			AND au.auth_option_id = ao.auth_option_id 
 			$forum_sql 
@@ -107,7 +107,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	}
 
 	$sql = "SELECT au.forum_id, g.group_id, g.group_name  
-		FROM phpbb_auth_groups au, phpbb_auth_options ao, " . GROUPS_TABLE . " g
+		FROM " . ACL_GROUPS_TABLE . " au, " . ACL_OPTIONS_TABLE . " ao, " . GROUPS_TABLE . " g
 		WHERE ao.auth_type LIKE 'mod' 
 			AND au.auth_option_id = ao.auth_option_id 
 			$forum_sql 
