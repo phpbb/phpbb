@@ -135,7 +135,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	//
 	// Obtain list of moderators of each forum
 	//
-	$sql = "SELECT f.forum_id, u.username, u.user_id
+/*	$sql = "SELECT f.forum_id, u.username, u.user_id
 		FROM " . FORUMS_TABLE . " f, " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
 		WHERE aa.forum_id = f.forum_id 
 			AND aa.auth_mod = " . TRUE . " 
@@ -154,9 +154,9 @@ if($total_categories = $db->sql_numrows($q_categories))
 		$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['user_id'];
 
 		$forum_mods_single_user[$forum_mods_list[$i]['forum_id']][] = 1;
-	}
+	}*/
 
-/*
+
 	$sql = "SELECT f.forum_id, g.group_name, g.group_id, g.group_single_user, ug.user_id
 		FROM " . FORUMS_TABLE . " f, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
 		WHERE aa.forum_id = f.forum_id 
@@ -183,7 +183,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 		{
 			$forum_mods_id[$forum_mods_list[$i]['forum_id']][] = $forum_mods_list[$i]['group_id'];
 		}
-	}*/
+	}
 
 	//
 	// Find which forums are visible for this user

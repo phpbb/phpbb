@@ -91,6 +91,7 @@ define(PAGE_VIEWMEMBERS, -7);
 define(PAGE_FAQ, -8);
 define(PAGE_POSTING, -9);
 define(PAGE_PRIVMSGS, -10);
+define(PAGE_GROUPCP, -11);
 
 // Auth settings
 define(AUTH_ALL, 0);
