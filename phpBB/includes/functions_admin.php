@@ -115,7 +115,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 	$rowset = array();
 	foreach ($forum_rows as $row)
 	{
-		if ($postable_only && $row['forum_type'] == FORUM_CAT)
+		if ($postable_only && $row['forum_type'] != FORUM_POST)
 		{
 			continue;
 		}
@@ -260,7 +260,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = TRUE)
 			AND forum_id = " . $forum_id;
 	$db->sql_query($sql);
 
-	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_MOD_TABLE);
+	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE);
 	foreach ($table_ary as $table)
 	{
 		$sql = "UPDATE $table
@@ -315,12 +315,12 @@ function move_posts($post_ids, $topic_id, $auto_sync = TRUE)
 		$db->sql_freeresult($result);
 	}
 
-	$sql = 'SELECT * 
+	$sql = 'SELECT forum_id 
 		FROM ' . TOPICS_TABLE . ' 
 		WHERE topic_id = ' . $topic_id;
 	$result = $db->sql_query($sql);
 
-	if (!($row = $db->sql_fetchrow($result)))
+	if (!$row = $db->sql_fetchrow($result))
 	{
 		trigger_error('NO_TOPIC');
 	}
@@ -437,11 +437,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	{
 		$where_ids = array_unique($where_ids);
 	}
-	if (!count($where_ids))
+	if (empty($where_ids))
 	{
 		return false;
 	}
-
 	$post_ids = $topic_ids = $forum_ids = array();
 
 	$sql = 'SELECT post_id, topic_id, forum_id
@@ -749,6 +748,15 @@ function phpbb_unlink($filename, $mode = 'file')
 // sync('topic', 'forum_id', array(2, 3));	<= resync topics from forum #2 and #3
 // sync('topic');							<= resync all topics
 // sync('topic', 'range', 'topic_id BETWEEN 1 AND 60');	<= resync a range of topics/forums (only available for 'topic' and 'forum' modes)
+//
+// Modes:
+// - topic_moved		Removes topic shadows that would be in the same forum as the topic they link to
+// - topic_approved		Resyncs the topic_approved flag according to the status of the first post
+// - post_reported		Resyncs the post_reported flag, relying on actual reports
+// - topic_reported		Resyncs the topic_reported flag, relying on post_reported flags
+// - post_attachement	Same as post_reported, thanks to a quick Search/Replace
+// - topic_attachement	Same as topic_reported, thanks to a quick Search/Replace
+//
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
 {
 	global $db;
@@ -772,18 +780,18 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 		elseif ($where_type == 'range')
 		{
 			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
-			$where_sql_and = $where_sql . ' AND';
+			$where_sql_and = $where_sql . "\n\tAND";
 		}
 		else
 		{
 			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
-			$where_sql_and = $where_sql . ' AND';
+			$where_sql_and = $where_sql . "\n\tAND";
 		}
 	}
 	else
 	{
-		$where_sql = "WHERE t.$where_type IN (" . implode(', ', $where_ids) . ')';
-		$where_sql_and = $where_sql . ' AND';
+		$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
+		$where_sql_and = $where_sql . "\n\tAND";
 	}
 
 	switch ($mode)
@@ -825,223 +833,220 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			break;
 
 		case 'topic_approved':
-			$sql = 'SELECT t.topic_id, p.post_approved
-				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-				$where_sql_and p.post_id = t.topic_first_post_id
-					AND p.post_approved <> t.topic_approved";
-			$result = $db->sql_query($sql);
-
-			$topic_ids = $approved_unapproved_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$approved_unapproved_ids[] = $row['topic_id'];
-			}
-			$db->sql_freeresult();
-
-			if (!count($approved_unapproved_ids))
-			{
-				return;
-			}
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_approved = 1 - topic_approved
-				WHERE topic_id IN (' . implode(', ', $approved_unapproved_ids) . ')';
-			$db->sql_query($sql);
-			break;
-
-		case 'post_attachment':
-			$post_ids = array();
-
 			switch (SQL_LAYER)
 			{
-				case 'oracle':
-					//TODO
-					break;
-
+				case 'mysql4':
+					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+						SET t.topic_approved = p.post_approved
+						$where_sql_and t.topic_first_post_id = p.post_id";
+					$db->sql_query($sql);
+				break;
+			
 				default:
-					$sql = 'SELECT t.post_id, t.post_attachment, COUNT(a.attach_id) AS attachments
-						FROM ' . POSTS_TABLE . ' t
-						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON t.post_id = a.post_id
-						$where_sql
-						GROUP BY t.post_id";
-			}
-			$result = $db->sql_query($sql);
+					$sql = 'SELECT t.topic_id, p.post_approved
+						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+						$where_sql_and p.post_id = t.topic_first_post_id
+							AND p.post_approved <> t.topic_approved";
+					$result = $db->sql_query($sql);
 
+					$topic_ids = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$topic_ids[] = $row['topic_id'];
+					}
+					$db->sql_freeresult();
+
+					if (!count($topic_ids))
+					{
+						return;
+					}
+
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_approved = 1 - topic_approved
+						WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+					$db->sql_query($sql);
+			}
+			break;
+
+		case 'post_reported':
+			$post_ids = $post_reported = array();
+
+			$sql = 'SELECT p.post_id, p.post_reported
+				FROM ' . POSTS_TABLE . " p
+				$where_sql
+				GROUP BY p.post_id, p.post_reported";
+			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (($row['post_attachment'] && !$row['attachments']) || ($row['attachments'] && !$row['post_attachment']))
+				$post_ids[$row['post_id']] = $row['post_id'];
+				if ($row['post_reported'])
+				{
+					$post_reported[$row['post_id']] = 1;
+				}
+			}
+
+			$sql = 'SELECT DISTINCT(post_id)
+				FROM ' . REPORTS_TABLE . '
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			$result = $db->sql_query($sql);
+
+			$post_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($post_reported[$row['post_id']]))
 				{
 					$post_ids[] = $row['post_id'];
 				}
+				else
+				{
+					unset($post_reported[$row['post_id']]);
+				}
 			}
-			$db->sql_freeresult($result);
 
-			if (!count($post_ids))
+			// $post_reported should be empty by now, if it's not it contains
+			// posts that are falsely flagged as reported
+			foreach ($post_reported as $post_id => $void)
 			{
-				return;
+				$post_ids[] = $post_id;
 			}
 
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 1 - post_attachment
+			if (count($post_ids))
+			{
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_reported = 1 - post_reported
+					WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+				$db->sql_query($sql);
+			}
+			break;
+
+		case 'topic_reported':
+			if ($sync_extra)
+			{
+				sync('post_reported', $where_type, $where_ids);
+			}
+
+			$topic_ids = $topic_reported = array();
+
+			$sql = 'SELECT DISTINCT(t.topic_id)
+				FROM ' . POSTS_TABLE . " t
+				$where_sql_and t.post_reported = 1";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topic_reported[$row['topic_id']] = 1;
+			}
+
+			$sql = 'SELECT t.topic_id, t.topic_reported
+				FROM ' . TOPICS_TABLE . " t
+				$where_sql";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['topic_reported'] ^ isset($topic_reported[$row['topic_id']]))
+				{
+					$topic_ids[] = $row['topic_id'];
+				}
+			}
+
+			if (count($topic_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 1 - topic_reported
+					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+			}
+			break;
+
+		case 'post_attachment':
+			$post_ids = $post_attachment = array();
+
+			$sql = 'SELECT p.post_id, p.post_attachment
+				FROM ' . POSTS_TABLE . " p
+				$where_sql
+				GROUP BY p.post_id, p.post_attachment";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$post_ids[$row['post_id']] = $row['post_id'];
+				if ($row['post_attachment'])
+				{
+					$post_attachment[$row['post_id']] = 1;
+				}
+			}
+
+			$sql = 'SELECT DISTINCT(post_id)
+				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-			$db->sql_query($sql);
+
+			$post_ids = array();
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($post_attachment[$row['post_id']]))
+				{
+					$post_ids[] = $row['post_id'];
+				}
+				else
+				{
+					unset($post_attachment[$row['post_id']]);
+				}
+			}
+
+			// $post_attachment should be empty by now, if it's not it contains
+			// posts that are falsely flagged as having attachments
+			foreach ($post_attachment as $post_id => $void)
+			{
+				$post_ids[] = $post_id;
+			}
+
+			if (count($post_ids))
+			{
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_attachment = 1 - post_attachment
+					WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+				$db->sql_query($sql);
+			}
 			break;
 
 		case 'topic_attachment':
-
-			switch (SQL_LAYER)
-			{
-				case 'oracle':
-					//TODO
-					break;
-
-				default:
-					$sql = 'SELECT t.topic_id, t.topic_attachment, a.attach_id
-						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-						LEFT JOIN ' . ATTACHMENTS_TABLE . " a ON p.post_id = a.post_id
-						$where_sql_and t.topic_id = p.topic_id
-							AND	((t.topic_attachment = 1 AND a.attach_id IS NULL)
-								OR	 (t.topic_attachment = 0 AND a.attach_id > 0))
-						GROUP BY p.topic_id";
-			}
-			$result = $db->sql_query($sql);
-
-			$topic_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-					$topic_ids[] = $row['topic_id'];
-			}
-			$db->sql_freeresult($result);
-
-			if (!count($topic_ids))
-			{
-				return;
-			}
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 1 - topic_attachment
-				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
-			$db->sql_query($sql);
-			break;
-
-		case 'reported':
-			$topic_data = $topic_ids = $post_ids = array();
-
 			if ($sync_extra)
 			{
-				switch (SQL_LAYER)
-				{
-					case 'oracle':
-						//TODO
-						break;
-
-					default:
-						$sql = 'SELECT p.post_id
-							FROM ' . POSTS_TABLE . ' t
-							LEFT JOIN ' . REPORTS_TABLE . " r ON r.post_id = t.post_id
-							$where_sql
-								AND	((t.post_reported = 1 AND r.post_id IS NULL)
-									OR (t.post_reported = 0 AND r.post_id > 0))
-							GROUP p.post_id";
-				}
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					do
-					{
-						$post_ids[] = $row['post_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
-
-					$sql = 'UPDATE ' . POSTS_TABLE . '
-						SET post_reported = 1 - post_reported
-						WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-					$db->sql_query($sql);
-					unset($post_ids);
-				}
-				$db->sql_freeresult();
+				sync('post_attachment', $where_type, $where_ids);
 			}
 
-			switch (SQL_LAYER)
-			{
-				case 'oracle':
-					//TODO
-					break;
+			$topic_ids = $topic_attachment = array();
 
-				default:
-					$sql = 'SELECT t.topic_id, t.topic_reported, p.post_reported
-						FROM ' . TOPICS_TABLE . ' t
-						LEFT JOIN ' . POSTS_TABLE . " p ON p.topic_id = t.topic_id
-						$where_sql
-						GROUP BY p.topic_id, p.post_reported";
-			}
+			$sql = 'SELECT DISTINCT(t.topic_id)
+				FROM ' . POSTS_TABLE . " t
+				$where_sql_and t.post_attachment = 1";
 			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
+			while ($row = $db->sql_fetchrow($result))
 			{
-				do
-				{
-					if (!isset($topic_data[$row['topic_id']]))
-					{
-						$topic_data[$row['topic_id']] = array(
-							'topic_reported' => $row['topic_reported'],
-							'post_reported' => $row['post_reported']
-						);
-					}
-					else
-					{
-						$topic_data[$row['topic_id']]['post_reported'] |= $row['post_reported'];
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
+				$topic_attachment[$row['topic_id']] = 1;
+			}
 
-				foreach ($topic_data as $topic_id => $row)
+			$sql = 'SELECT t.topic_id, t.topic_attachment
+				FROM ' . TOPICS_TABLE . " t
+				$where_sql";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['topic_attachment'] ^ isset($topic_attachment[$row['topic_id']]))
 				{
-					if ($row['post_reported'] != $row['topic_reported'])
-					{
-						$topic_ids[] = $topic_id;
-					}
-				}
-
-				if (count($topic_ids))
-				{
-					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_reported = 1 - topic_reported
-						WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
-					$db->sql_query($sql);
+					$topic_ids[] = $row['topic_id'];
 				}
 			}
-			$db->sql_freeresult($result);
 
-			return;
+			if (count($topic_ids))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_attachment = 1 - topic_attachment
+					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+			}
 			break;
 
 		case 'forum':
-			if ($resync_parents)
-			{
-				$sql = 'SELECT f2.forum_id
-					FROM ' . FORUMS_TABLE .  ' f, ' . FORUMS_TABLE . " f2
-					$where_sql_and f.left_id BETWEEN f2.left_id AND f2.right_id";
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					$forum_ids = array();
-					do
-					{
-						$forum_ids[] = intval($row['forum_id']);
-					}
-					while ($row = $db->sql_fetchrow($result));
-					$db->sql_freeresult($result);
-
-					sync('forum', 'forum_id', $forum_ids, FALSE);
-					unset($forum_ids);
-				}
-
-				return;
-			}
-
 			// 1° Get the list of all forums
 			$sql = 'SELECT f.*
 				FROM ' . FORUMS_TABLE . " f
@@ -1189,6 +1194,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
 
+				// This array holds all topic_ids
+				$delete_topics[$topic_id] = '';
+
 				if ($sync_extra)
 				{
 					$topic_data[$topic_id]['reported'] = 0;
@@ -1257,8 +1265,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			}
 			if (count($delete_topics))
 			{
-				delete_topics('topic_id', array_keys($delete_topics), FALSE);
-				unset($delete_topics);
+				$delete_topic_ids = array();
+				foreach ($delete_topics as $topic_id => $void)
+				{
+					unset($topic_data[$topic_id]);
+					$delete_topic_ids[] = $topic_id;
+				}
+
+				delete_topics('topic_id', $delete_topic_ids, FALSE);
+				unset($delete_topics, $delete_topic_ids);
 			}
 
 			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
@@ -1307,7 +1322,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			if ($sync_extra)
 			{
 				// This routine assumes that post_reported values are correct
-				// if they are not, use sync('reported') instead
+				// if they are not, use sync('post_reported') first
 				$sql = 'SELECT t.topic_id, p.post_id
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					$where_sql_and p.topic_id = t.topic_id
@@ -1323,7 +1338,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 				$db->sql_freeresult($result);
 
 				// This routine assumes that post_attachment values are correct
-				// if they are not, use sync('post_attachment') instead
+				// if they are not, use sync('post_attachment') first
 				$sql = 'SELECT t.topic_id, p.post_id
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					$where_sql_and p.topic_id = t.topic_id
@@ -1500,7 +1515,7 @@ function remove_comments(&$output)
 function remove_remarks($sql)
 {
 	// NOTE: isn't this function actually doing
-//	return preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*/', "\n", $sql));
+//	return preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
 	// ?
 	
 	$lines = explode("\n", $sql);
@@ -1719,7 +1734,7 @@ function add_log()
 	$forum_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
 	$topic_id	= ($mode == 'mod') ? intval(array_shift($args)) : '';
 	$action		= array_shift($args);
-	$data		= (!sizeof($args)) ? '' : addslashes(serialize($args));
+	$data		= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
 
 	switch ($mode)
 	{
