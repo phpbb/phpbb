@@ -263,7 +263,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $profiledata['user_id']) : "mailto:" . $profiledata['user_email'];
 
 			$email = "<a href=\"$email_uri\">" . $lang['Send_email'] . "</a>";
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $profiledata['username'] . "\" border=\"0\" /></a>";
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -363,7 +363,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"RANK_IMAGE" => $rank_image,
 			"POSTS_PER_DAY" => $posts_per_day,
 			"POSTS" => $profiledata['user_posts'],
-			"PERCENTAGE" => $percentage . "%",
+			"PERCENTAGE" => $percentage . "%", 
+			"POST_DAY_STATS" => sprintf($lang['User_post_day_stats'], $posts_per_day), 
+			"POST_PERCENT_STATS" => sprintf($lang['User_post_pct_stats'], $percentage), 
 			"EMAIL" => $email,
 			"EMAIL_IMG" => $email_img,
 			"PM_IMG" => $pm_img,
@@ -384,10 +386,12 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			"INTERESTS" => ( ($profiledata['user_interests']) ? $profiledata['user_interests'] : "&nbsp;" ),
 			"AVATAR_IMG" => $avatar_img,
 
-			"L_VIEWING_PROFILE" => $lang['Viewing_profile_of'], 
+			"L_VIEWING_PROFILE" => sprintf($lang['Viewing_user_profile'], $profiledata['username']), 
+			"L_ABOUT_USER" => sprintf($lang['About_user'], $profiledata['username']), 
+			"L_AVATAR" => $lang['Avatar'], 
 			"L_POSTER_RANK" => $lang['Poster_rank'], 
-			"L_PER_DAY" => $lang['posts_per_day'],
-			"L_OF_TOTAL" => $lang['of_total'],
+			"L_TOTAL_POSTS" => $lang['Total_posts'], 
+			"L_SEARCH_USER_POSTS" => sprintf($lang['Search_user_posts'], $profiledata['username']), 
 			"L_CONTACT" => $lang['Contact'],
 			"L_EMAIL_ADDRESS" => $lang['Email_address'],
 			"L_EMAIL" => $lang['Email'],
@@ -1537,7 +1541,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_YAHOO" => $lang['YIM'],
 				"L_WEBSITE" => $lang['Website'],
 				"L_AIM" => $lang['AIM'],
-				"L_LOCATION" => $lang['From'],
+				"L_LOCATION" => $lang['Location'],
 				"L_OCCUPATION" => $lang['Occupation'],
 				"L_BOARD_LANGUAGE" => $lang['Board_lang'],
 				"L_BOARD_STYLE" => $lang['Board_style'],
@@ -1554,7 +1558,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_ALWAYS_ADD_SIGNATURE" => $lang['Always_add_sig'],
 
 				"L_AVATAR_PANEL" => $lang['Avatar_panel'],
-				"L_AVATAR_EXPLAIN" => $lang['Avatar_explain'],
+				"L_AVATAR_EXPLAIN" => sprintf($lang['Avatar_explain'], $board_config['avatar_max_width'], $board_config['avatar_max_height'], (round($board_config['avatar_filesize'] / 1024))),
 				"L_UPLOAD_AVATAR_FILE" => $lang['Upload_Avatar_file'],
 				"L_UPLOAD_AVATAR_URL" => $lang['Upload_Avatar_URL'],
 				"L_UPLOAD_AVATAR_URL_EXPLAIN" => $lang['Upload_Avatar_URL_explain'],
@@ -1566,7 +1570,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_CURRENT_IMAGE" => $lang['Current_Image'],
 
 				"L_SIGNATURE" => $lang['Signature'],
-				"L_SIGNATURE_EXPLAIN" => $lang['Signature_explain'],
+				"L_SIGNATURE_EXPLAIN" => sprintf($lang['Signature_explain'], $board_config['max_sig_chars']),
 				"L_NOTIFY_ON_REPLY" => $lang['Always_notify'],
 				"L_NOTIFY_ON_REPLY_EXPLAIN" => $lang['Always_notify_explain'],
 				"L_NOTIFY_ON_PRIVMSG" => $lang['Notify_on_privmsg'],

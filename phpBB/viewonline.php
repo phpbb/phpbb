@@ -119,7 +119,7 @@ $template->assign_vars(array(
 	"L_WHOSONLINE" => $lang['Who_is_online'],
 	"L_ONLINE_EXPLAIN" => $lang['Online_explain'],
 	"L_USERNAME" => $lang['Username'],
-	"L_LOCATION" => $lang['Location'],
+	"L_FORUM_LOCATION" => $lang['Forum_Location'],
 	"L_LAST_UPDATE" => $lang['Last_updated'])
 );
 
@@ -222,7 +222,7 @@ if( count($onlinerow_reg) )
 					"ROW_CLASS" => $row_class,
 					"USERNAME" => $username,
 					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_time'], $board_config['board_timezone']),
-					"LOCATION" => $location,
+					"FORUM_LOCATION" => $location,
 
 					"U_USER_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
 					"U_FORUM_LOCATION" => append_sid($location_url))
@@ -232,7 +232,7 @@ if( count($onlinerow_reg) )
 	}
 
 	$template->assign_vars(array(
-		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], $registered_users, $hidden_users))
+		"TOTAL_REGISTERED_USERS_ONLINE" => sprintf($lang['Reg_users_online'], $registered_users) . sprintf($lang['Hidden_users_online'], $hidden_users))
 	);
 
 }
@@ -315,7 +315,7 @@ if( count($onlinerow_guest) )
 			"ROW_CLASS" => $row_class,
 			"USERNAME" => $lang['Guest'],
 			"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
-			"LOCATION" => $location,
+			"FORUM_LOCATION" => $location,
 
 			"U_FORUM_LOCATION" => append_sid($location_url))
 		);

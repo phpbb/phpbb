@@ -373,7 +373,9 @@ if( $mode == "read" )
 		"L_SUBJECT" => $lang['Subject'],
 		"L_DATE" => $lang['Date'],
 		"L_FROM" => $lang['From'],
-		"L_TO" => $lang['To'],
+		"L_TO" => $lang['To'], 
+		"L_SAVE_MSG" => $lang['Save_message'], 
+		"L_DELETE_MSG" => $lang['Delete_message'], 
 
 		"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
@@ -386,13 +388,13 @@ if( $mode == "read" )
 
 	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']);
 
-	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $username_from\" border=\"0\" /></a>";
+	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
 
 	if( !empty($privmsg['user_viewemail']) )
 	{
 		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $user_id_from) : "mailto:" . $privmsg['user_email'];
 
-		$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $username_from\" border=\"0\" /></a>";
+		$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
 	}
 	else
 	{
@@ -549,7 +551,7 @@ else if( ( $delete && $mark_list ) || $delete_all )
 		);
 		$template->assign_vars(array(
 			"MESSAGE_TITLE" => $lang['Information'],
-			"MESSAGE_TEXT" => "Are you sure you want to delete these message?", 
+			"MESSAGE_TEXT" => $lang['Confirm_delete'], 
 
 			"L_YES" => $lang['Yes'],
 			"L_NO" => $lang['No'],
@@ -1662,7 +1664,7 @@ $pm_list = $db->sql_fetchrowset($pm_status);
 // Build select box
 //
 $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
-$previous_days_text = array($lang['All_Messages'], "1 " . $lang['Day'], "7 " . $lang['Days'], "2 " . $lang['Weeks'], "1 " . $lang['Month'], "3 ". $lang['Months'], "6 " . $lang['Months'], "1 " . $lang['Year']);
+$previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
 
 $select_msg_days = "";
 for($i = 0; $i < count($previous_days); $i++)
@@ -1722,11 +1724,21 @@ if( $folder != "outbox" )
 
 	$template->assign_block_vars("box_size_notice", array());
 
-//	$lang_match = array("'{BOXNAME}'", "'{BOXSIZE}'");
-//	$lang_replace = array($l_box_name, $inbox_limit_pct);
-//	$l_box_size_status = preg_replace($lang_match, $lang_replace, $lang['Box_size']);
-
-	$l_box_size_status = sprintf($lang['Box_size'], $l_box_name, $inbox_limit_pct);
+	switch( $folder )
+	{
+		case 'inbox':
+			$l_box_size_status = sprintf($lang['Inbox_size'], $l_box_name, $inbox_limit_pct);
+			break;
+		case 'sentbox':
+			$l_box_size_status = sprintf($lang['Sentbox_size'], $l_box_name, $inbox_limit_pct);
+			break;
+		case 'savebox':
+			$l_box_size_status = sprintf($lang['Savebox_size'], $l_box_name, $inbox_limit_pct);
+			break;
+		default:
+			$l_box_size_status = "";
+			break;
+	}
 
 }
 
@@ -1763,6 +1775,9 @@ $template->assign_vars(array(
 	"L_FROM_OR_TO" => ($folder == "inbox" || $folder == "savebox") ? $lang['From'] : $lang['To'], 
 	"L_MARK_ALL" => $lang['Mark_all'], 
 	"L_UNMARK_ALL" => $lang['Unmark_all'], 
+	"L_DELETE_MARKED" => $lang['Delete_marked'], 
+	"L_DELETE_ALL" => $lang['Delete_all'], 
+	"L_SAVE_MARKED" => $lang['Save_marked'], 
 
 	"S_PRIVMSGS_ACTION" => append_sid("privmsg.$phpEx?folder=$folder"),
 	"S_HIDDEN_FIELDS" => "",
@@ -1828,11 +1843,8 @@ if( $pm_count )
 
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("privmsg.$phpEx?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
-		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-		"TOTAL_PAGES" => ceil(($pm_total)/$board_config['topics_per_page']),
+		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $pm_total / $board_config['topics_per_page'] )), 
 
-		"L_OF" => $lang['of'],
-		"L_PAGE" => $lang['Page'],
 		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
 

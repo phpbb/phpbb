@@ -146,7 +146,10 @@ $online_userlist = $lang['Registered_users'] . " " . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-$l_online_users = ( $total_online_users == 1 ) ? sprintf($lang['Online_user'], $total_online_users, $logged_visible_online, $logged_hidden_online, $guests_online) : sprintf($lang['Online_users'], $total_online_users, $logged_visible_online, $logged_hidden_online, $guests_online);
+$l_online_users = ( $total_online_users == 1 ) ? sprintf($lang['Online_user_total'], $total_online_users) : sprintf($lang['Online_users'], $total_online_users);
+$l_online_users .= ( $logged_visible_online == 1 ) ? sprintf($lang['Reg_user_total'], $logged_visible_online) : sprintf($lang['Reg_users_total'], $logged_visible_online); 
+$l_online_users .= ( $logged_hidden_online == 1 ) ? sprintf($lang['Hidden_user_total'], $logged_hidden_online) : sprintf($lang['Hidden_user_total'], $logged_hidden_online); 
+$l_online_users .= ( $guests_online == 1 ) ? sprintf($lang['Guest_user_total'], $guests_online) : sprintf($lang['Guest_user_total'], $guests_online); 
 
 //
 // Obtain number of new private messages
@@ -193,7 +196,7 @@ $template->assign_vars(array(
 	"LOGGED_IN_USER_LIST" => $online_userlist,
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"PRIVATE_MESSAGE_COUNT" => $new_pm_messages_session, 
-	"LAST_VISIT_DATE" => $s_last_visit, 
+	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit),
 
 	"L_USERNAME" => $lang['Username'],
 	"L_PASSWORD" => $lang['Password'],
@@ -230,7 +233,6 @@ $template->assign_vars(array(
 	"L_MESSAGE" => $lang['Message'],
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
-	"L_LAST_VISIT" => $lang['You_last_visit'],
 	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
 
 	"U_INDEX" => append_sid("index.".$phpEx),

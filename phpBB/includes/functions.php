@@ -163,16 +163,12 @@ function make_jumpbox($match_forum_id = 0)
 					}
 				}
 			}
-			else
-			{
-				$boxstring .= '<option value="-1">-- ! No Forums ! --</option>';
-			}
 		}
 		$boxstring .= '</select>';
 	}
 	else
 	{
-		$boxstring .= '<select><option value="-1">-- ! No Categories ! --</option></select>';
+		$boxstring .= '<select name="' . POST_FORUM_URL . '" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
 	if( isset($SID) )
@@ -273,6 +269,18 @@ function init_userprefs($userdata)
 	else
 	{
 		include($phpbb_root_path . 'language/lang_english/lang_main.' . $phpEx);
+	}
+
+	if( defined("IN_ADMIN") )
+	{
+		if( file_exists($phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_admin.".$phpEx) )
+		{
+			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+		}
+		else
+		{
+			include($phpbb_root_path . 'language/lang_english/lang_admin.' . $phpEx);
+		}
 	}
 
 	return;

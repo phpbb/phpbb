@@ -95,11 +95,11 @@
 	<!-- END nomessages -->
 	<tr> 
 	  <td class="catBottom" colspan="5" height="28" align="right"> {S_HIDDEN_FIELDS} 
-		<input type="submit" name="save" value="Save Marked" class="mainoption" />
+		<input type="submit" name="save" value="{L_SAVE_MARKED}" class="mainoption" />
 		&nbsp; 
-		<input type="submit" name="delete" value="Delete Marked" class="liteoption" />
+		<input type="submit" name="delete" value="{L_DELETE_MARKED}" class="liteoption" />
 		&nbsp; 
-		<input type="submit" name="deleteall" value="Delete All" class="liteoption" />
+		<input type="submit" name="deleteall" value="{L_DELETE_ALL}" class="liteoption" />
 	  </td>
 	</tr>
   </table>
@@ -107,13 +107,8 @@
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr> 
 	  <td align="left" valign="middle"><span class="nav">{POST_PM_IMG}</span></td>
-	  <td align="left" valign="middle" width="100%"><span class="nav">&nbsp;{L_PAGE} 
-		<b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span></td>
-	  <td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:select_switch(true);" class="gensmall">Mark 
-		all</a> :: <a href="javascript:select_switch(false);" class="gensmall">Unmark 
-		all</a></span></b><br />
-		<span class="nav">{PAGINATION}<br />
-		</span><span class="gensmall">{S_TIMEZONE}</span></td>
+	  <td align="left" valign="middle" width="100%"><span class="nav">{PAGE_NUMBER}</span></td>
+	  <td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:select_switch(true);" class="gensmall">{L_MARK_ALL}</a> :: <a href="javascript:select_switch(false);" class="gensmall">{L_UNMARK_ALL}</a></span></b><br /><span class="nav">{PAGINATION}<br /></span><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
   </table>
 </form>

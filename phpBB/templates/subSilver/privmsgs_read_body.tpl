@@ -11,7 +11,9 @@
 	<td valign="middle"><span class="cattitle">{SAVEBOX_LINK}</span></td>
   </tr>
 </table>
-<br />
+
+<br clear="all" />
+
 <form method="post" action="{S_PRIVMSGS_ACTION}">
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr>
@@ -19,6 +21,7 @@
 	  <td width="100%"><span class="nav">&nbsp;<a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
   </tr>
 </table>
+
 <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
 	<tr> 
 	  <th colspan="3" class="thHead">{BOX_NAME} :: {L_MESSAGE}</th>
@@ -48,18 +51,16 @@
 		<table cellspacing="0" cellpadding="0" border="0" height="18">
 		  <tr> 
 			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {PM_IMG} {EMAIL_IMG} 
-			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td>
-			
-		  <td valign="top" align="left" width="100%" nowrap="nowrap">{ICQ_STATUS_IMG}{ICQ_ADD_IMG}</td>
+			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap">{ICQ_STATUS_IMG}{ICQ_ADD_IMG}</td>
 		  </tr>
 		</table>
 	  </td>
 	</tr>
 	<tr>
 	  <td class="catBottom" colspan="3" height="28" align="right"> {S_HIDDEN_FIELDS} 
-		<input type="submit" name="save" value="Save Post" class="liteoption" />
+		<input type="submit" name="save" value="{L_SAVE_MSG}" class="liteoption" />
 		&nbsp; 
-		<input type="submit" name="delete" value="Delete Post" class="liteoption" />
+		<input type="submit" name="delete" value="{L_DELETE_MSG}" class="liteoption" />
 	  </td>
 	</tr>
   </table>
@@ -70,6 +71,7 @@
 	</tr>
   </table>
 </form>
+
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
 	<td valign="top" align="right"><span class="gensmall">{JUMPBOX}</span></td>

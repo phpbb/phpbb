@@ -98,7 +98,7 @@ $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user
 //
 // Memberlist sorting
 //
-$mode_types_text = array($lang['Joined'], $lang['Username'], $lang['Location'], $lang['Posts'], $lang['Email'],  $lang['Website'], $lang['Top_Ten']);
+$mode_types_text = array($lang['Sort_Joined'], $lang['Sort_Username'], $lang['Sort_Location'], $lang['Sort_Posts'], $lang['Sort_Email'],  $lang['Sort_Website'], $lang['Sort_Top_Ten']);
 $mode_types = array("joindate", "username", "location", "posts", "email", "website", "topten");
 
 $select_sort_mode = "<select name=\"mode\">";
@@ -112,11 +112,11 @@ $select_sort_mode .= "</select>";
 $select_sort_order = "<select name=\"order\">";
 if($sort_order == "ASC")
 {
-	$select_sort_order .= "<option value=\"ASC\" selected=\"selected\">" . $lang['Ascending'] . "</option><option value=\"DESC\">" . $lang['Descending'] . "</option>";
+	$select_sort_order .= "<option value=\"ASC\" selected=\"selected\">" . $lang['Sort_Ascending'] . "</option><option value=\"DESC\">" . $lang['Sort_Descending'] . "</option>";
 }
 else
 {
-	$select_sort_order .= "<option value=\"ASC\">" . $lang['Ascending'] . "</option><option value=\"DESC\" selected=\"selected\">" . $lang['Descending'] . "</option>";
+	$select_sort_order .= "<option value=\"ASC\">" . $lang['Sort_Ascending'] . "</option><option value=\"DESC\" selected=\"selected\">" . $lang['Sort_Descending'] . "</option>";
 }
 $select_sort_order .= "</select>";
 
@@ -189,7 +189,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $members[$i]['user_id']) : "mailto:" . $members[$i]['user_email'];
 
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_email'] . " " . $members[$i]['username'] . "\" /></a>";
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_email'] . "\" /></a>";
 		}
 		else
 		{
@@ -278,11 +278,8 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 	}
 	$template->assign_vars(array(
 		"PAGINATION" => $pagination,
-		"ON_PAGE" => ( floor( $start / $board_config['topics_per_page'] ) + 1 ),
-		"TOTAL_PAGES" => ceil( $total_members / $board_config['topics_per_page'] ),
+		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )), 
 
-		"L_OF" => $lang['of'],
-		"L_PAGE" => $lang['Page'],
 		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
 	$template->pparse("body");

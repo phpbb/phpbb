@@ -30,22 +30,21 @@
 	</tr>
 	<!-- END memberrow -->
 	<tr> 
-	  <td class="catbottom" colspan="7" height="28"> 
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-		  <tr> 
-			<td><span class="nav">&nbsp;{L_PAGE} <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span></td>
-			<td align="right"><span class="nav">{PAGINATION}&nbsp;</span></td>
-		  </tr>
-		</table>
-	  </td>
+	  <td class="catbottom" colspan="7" height="28">&nbsp;</td>
 	</tr>
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr> 
-	  <td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span></td>
+	  <td align="right" valign="top"></td>
 	</tr>
   </table>
-</form>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr> 
+	<td><span class="nav">{PAGE_NUMBER}</span></td>
+	<td align="right"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}&nbsp;</span></td>
+  </tr>
+</table></form>
 
 <table width="100%" cellspacing="2" border="0" align="center">
   <tr> 

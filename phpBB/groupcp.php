@@ -651,15 +651,15 @@ else if( $group_id )
 		"L_GROUP_INFORMATION" => $lang['Group_Information'],
 		"L_GROUP_NAME" => $lang['Group_name'],
 		"L_GROUP_DESC" => $lang['Group_description'],
-		"L_GROUP_STATUS" => $lang['group_status'],
+		"L_GROUP_TYPE" => $lang['Group_type'],
 		"L_GROUP_MEMBERSHIP" => $lang['Group_membership'],
 		"L_SUBSCRIBE" => $lang['Subscribe'],
 		"L_UNSUBSCRIBE" => $lang['Unsubscribe'],
 		"L_JOIN_GROUP" => $lang['Join_group'], 
 		"L_UNSUBSCRIBE_GROUP" => $lang['Unsubscribe'], 
-		"L_GROUP_OPEN" => $lang['group_open'],
-		"L_GROUP_CLOSED" => $lang['group_closed'],
-		"L_GROUP_HIDDEN" => $lang['group_hidden'], 
+		"L_GROUP_OPEN" => $lang['Group_open'],
+		"L_GROUP_CLOSED" => $lang['Group_closed'],
+		"L_GROUP_HIDDEN" => $lang['Group_hidden'], 
 		"L_UPDATE" => $lang['Update'], 
 
 		"GROUP_NAME" => $group_info['group_name'],
@@ -718,7 +718,7 @@ else if( $group_id )
 
 		$posts = ($group_members[$i]['user_posts']) ? $group_members[$i]['user_posts'] : 0;
 
-		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\" /></a>";
+		$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
 
 		$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 
@@ -726,7 +726,7 @@ else if( $group_id )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_members[$i]['user_id']) : "mailto:" . $group_members[$i]['user_email'];
 
-			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $group_members[$i]['username'] . "\" border=\"0\" /></a>";
+			$email_img = "<a href=\"$email_uri\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -875,7 +875,7 @@ else if( $group_id )
 
 				$posts = ( $modgroup_pending_list[$i]['user_posts'] ) ? $modgroup_pending_list[$i]['user_posts'] : 0;
 
-				$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $poster\" border=\"0\" /></a>";
+				$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . "\" border=\"0\" /></a>";
 
 				$pm_img = "<a href=\"" . append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id") . "\"><img src=\"". $images['icon_pm'] . "\" alt=\"" . $lang['Private_messaging'] . "\" border=\"0\" /></a>";
 

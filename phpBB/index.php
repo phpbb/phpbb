@@ -49,48 +49,50 @@ else
 //
 if( $mark_read == "forums" )
 {
-
-	$sql = "SELECT f.forum_id, t.topic_id 
-		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
-		WHERE t.forum_id = f.forum_id
-			AND p.post_id = t.topic_last_post_id
-			AND p.post_time > " . $userdata['session_last_visit'] . " 
-			AND t.topic_moved_id IS NULL";
-	if(!$t_result = $db->sql_query($sql))
+	if( $userdata['session_last_visit'] )
 	{
-		message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if( $mark_read_rows = $db->sql_numrows($t_result) )
-	{
-		$mark_read_list = $db->sql_fetchrowset($t_result);
-
-		for($i = 0; $i < $mark_read_rows; $i++ )
+		$sql = "SELECT f.forum_id, t.topic_id 
+			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
+			WHERE t.forum_id = f.forum_id
+				AND p.post_id = t.topic_last_post_id
+				AND p.post_time > " . $userdata['session_last_visit'] . " 
+				AND t.topic_moved_id IS NULL";
+		if(!$t_result = $db->sql_query($sql))
 		{
-			$forum_id = $mark_read_list[$i]['forum_id'];
-			$topic_id = $mark_read_list[$i]['topic_id'];
+			message_die(GENERAL_ERROR, "Could not query new topic information", "", __LINE__, __FILE__, $sql);
+		}
 
-			if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+		if( $mark_read_rows = $db->sql_numrows($t_result) )
+		{
+			$mark_read_list = $db->sql_fetchrowset($t_result);
+
+			for($i = 0; $i < $mark_read_rows; $i++ )
 			{
-				setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
-			}
-			else
-			{
-				if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+				$forum_id = $mark_read_list[$i]['forum_id'];
+				$topic_id = $mark_read_list[$i]['topic_id'];
+
+				if( empty($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
 				{
 					setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 				}
+				else
+				{
+					if( isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $topic_id]) )
+					{
+						setcookie('phpbb2_' . $forum_id . '_' . $topic_id, time(), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+					}
+				}
 			}
 		}
+
+		$template->assign_vars(array(
+			"META" => '<meta http-equiv="refresh" content="3;url='  .append_sid("index.$phpEx") . '">')
+		);
+
+		$message = $lang['Forums_marked_read'] . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
-
-	$template->assign_vars(array(
-		"META" => '<meta http-equiv="refresh" content="3;url='  .append_sid("index.$phpEx") . '">')
-	);
-
-	$message = $lang['Forums_marked_read'] . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a> ");
-
-	message_die(GENERAL_MESSAGE, $message);
 }
 //
 // End handle marking posts
@@ -247,7 +249,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	);
 
 	$template->assign_vars(array(
-		"TOTAL_POSTS" => sprintf($lang['Posted_total'], $total_posts),
+		"TOTAL_POSTS" => ( $total_posts == 1 ) ? sprintf($lang['Posted_article_total'], $total_posts) :  sprintf($lang['Posted_articles_total'], $total_posts),
 		"TOTAL_USERS" => ( $total_users == 1 ) ? sprintf($lang['Registered_user_total'], $total_users) : sprintf($lang['Registered_users_total'], $total_users),
 		"NEWEST_USER" => sprintf($lang['Newest_user'], "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . "\">", $newest_user, "</a>"), 
 

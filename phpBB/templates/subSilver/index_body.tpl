@@ -7,7 +7,7 @@
 		<a href="{egosearch.U_SEARCH_SELF}" class="gensmall">{egosearch.L_SEARCH_SELF}</a><br />
 		<!-- END egosearch -->
 		<a href="{U_SEARCH_UNANSWERED}" class="gensmall">{L_SEARCH_UNANSWERED}</a><br />
-		<a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{L_LAST_VISIT} {LAST_VISIT_DATE}</td>
+		<a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br />{LAST_VISIT_DATE}</td>
   </tr>
 </table>
 

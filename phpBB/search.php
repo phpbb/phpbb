@@ -1177,7 +1177,7 @@ $template->assign_vars(array(
 	"L_CHARACTERS" => $lang['characters_posts'], 
 	"L_SORT_BY" => $lang['Sort_by'],
 	"L_SORT_ASCENDING" => $lang['Sort_Ascending'],
-	"L_SORT_DESCENDING" => $lang['Sort_Decending'],
+	"L_SORT_DESCENDING" => $lang['Sort_Descending'],
 	"L_SEARCH_PREVIOUS" => $lang['Search_previous'], 
 	"L_DISPLAY_RESULTS" => $lang['Display_results'], 
 
