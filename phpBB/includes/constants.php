@@ -37,8 +37,8 @@ define(USER, 0);
 define(ADMIN, 1);
 
 // Topic state
-define(UNLOCKED, 0);
-define(LOCKED, 1);
+define(TOPIC_UNLOCKED, 0);
+define(TOPIC_LOCKED, 1);
 
 // Topic types
 define(POST_NORMAL, 0);
@@ -46,22 +46,22 @@ define(POST_STICKY, 1);
 define(POST_ANNOUNCE, 2);
 define(POST_GLOBAL_ANNOUNCE, 3);
 
-// Ban time types
-define(SECONDS, 1);
-define(MINUTES, 2);
-define(HOURS, 3);
-define(DAYS, 4);
-define(YEARS, 5);
+// SQL codes
+define(BEGIN_TRANSACTION, 1);
+define(END_TRANSACTION, 2);
 
 // Error codes
+define(GENERAL_MESSAGE, 200);
+define(GENERAL_ERROR, 202);
+define(CRITICAL_MESSAGE, 203);
+define(CRITICAL_ERROR, 204);
+
 define(SQL_CONNECT, 1);
 define(BANNED, 2);
 define(QUERY_ERROR, 3);
 define(SESSION_CREATE, 4);
 define(NO_TOPICS, 5);
-define(GENERAL_ERROR, 6);
 define(LOGIN_FAILED, 7);
-define(GENERAL_MESSAGE, 10);
 
 // Private messaging
 define(PRIVMSGS_READ_MAIL, 0);
@@ -128,7 +128,8 @@ define('GROUPS_TABLE', $table_prefix.'groups');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');
-define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text');
+define('PRIVMSGS_TEXT_TABLE', $table_prefix.'privmsgs_text'); 
+define('PRIVMSGS_IGNORE_TABLE', $table_prefix.'privmsgs_ignore');
 define('RANKS_TABLE', $table_prefix.'ranks');
 define('SESSIONS_TABLE', $table_prefix.'session');
 define('THEMES_TABLE', $table_prefix.'themes');
@@ -137,4 +138,5 @@ define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('WORDS_TABLE', $table_prefix.'words');
 define('PRUNE_TABLE', $table_prefix.'forum_prune');
+
 ?>

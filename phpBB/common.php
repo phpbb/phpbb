@@ -65,6 +65,7 @@ include('includes/auth.'.$phpEx);
 include('includes/functions.'.$phpEx);
 include('includes/db.'.$phpEx);
 
+
 // Obtain and encode users IP
 //$get_user_ip = ;
 $user_ip = encode_ip(($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR);
@@ -89,7 +90,7 @@ if(!$result = $db->sql_query($sql))
 	$board_config['default_lang'] = "english";
 	$board_config['gzip_compress'] = 0;
 
-	message_die(SQL_QUERY, "Could not query config information", "", __LINE__, __FILE__);
+	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
 else
 {
