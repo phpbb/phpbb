@@ -355,10 +355,7 @@ function bbstyle(formObj, bbnumber) {
 		</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br />
-		<span class="gensmall">{L_HTML_IS} <u>{HTML_STATUS}</u><br />
-		{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />
-		{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
+	  <td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span><br /><span class="gensmall">{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</span></td>
 	  <td class="row2"><span class="gen"> </span> 
 		<table cellspacing="0" cellpadding="1" border="0">
 		  <!-- BEGIN html_checkbox -->
@@ -424,7 +421,7 @@ function bbstyle(formObj, bbnumber) {
 		<!-- Spell checker option part 2: You must sign up for free at www.spellchecker.net to use this option -->
 		<!-- Change the path in the onclick function to point to your files you got once signed up at Spellchecker.net -->
 		<!-- Remember to uncomment the link to the javascript file at the top of this template -->
-		<!-- input type="button" tabindex="4" class="liteoption" name="spellcheck" value="Spell Check" onClick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB/spellcheck/sproxy.php', true);" / -->
+		<!-- input type="button" tabindex="4" class="liteoption" name="spellcheck" value="{L_SPELLCHECK}" onClick= "doSpell ('uk', document.post.message, document.location.protocol + '//' + document.location.host + '/phpBB/spellcheck/sproxy.php', true);" / -->
 		<!-- End spellchecker option -->
 		&nbsp; 
 		<input type="submit" tabindex="5" name="preview" class="mainoption" value="{L_PREVIEW}" />

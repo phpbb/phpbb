@@ -486,6 +486,7 @@ CREATE TABLE phpbb_users (
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_style int(11),
    user_lang varchar(255),
+   user_emailtime int(11), 
    user_viewemail tinyint(1),
    user_attachsig tinyint(1),
    user_allowhtml tinyint(1),

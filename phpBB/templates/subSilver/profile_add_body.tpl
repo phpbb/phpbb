@@ -108,12 +108,7 @@
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1"><span class="gen">{L_SIGNATURE}:</span><br />
-		<span class="gensmall">{L_SIGNATURE_EXPLAIN}<br />
-		<br />
-		{L_HTML_IS} <u>{HTML_STATUS}</u><br />
-		{L_BBCODE_IS} <u>{BBCODE_STATUS}</u><br />
-		{L_SMILIES_ARE} <u>{SMILIES_STATUS}</u></span></td>
+	  <td class="row1"><span class="gen">{L_SIGNATURE}:</span><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}<br /><br />{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</span></td>
 	  <td class="row2"> 
 		<textarea name="signature"style="width: 300px"  rows="6" cols="30" class="post">{SIGNATURE}</textarea>
 	  </td>

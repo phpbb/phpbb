@@ -725,8 +725,7 @@ else if( $group_id )
 
 		if( !empty($group_members[$i]['user_viewemail']) )
 		{
-			$email_addr = str_replace("@", " at ", $group_members[$i]['user_email']);
-			$email_img = ( $group_members[$i]['user_viewemail'] ) ? "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+			$email_img = ( $group_members[$i]['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $group_members[$i]['user_id']) . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
 		}
 		else
 		{
@@ -881,8 +880,7 @@ else if( $group_id )
 
 				if( !empty($modgroup_pending_list[$i]['user_viewemail']) )
 				{
-					$email_addr = str_replace("@", " at ", $modgroup_pending_list[$i]['user_email']);
-					$email_img = ( $modgroup_pending_list[$i]['user_viewemail'] ) ? "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
+					$email_img = ( $modgroup_pending_list[$i]['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=" . $modgroup_pending_list[$i]['user_id']) . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
 				}
 				else
 				{

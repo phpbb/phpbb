@@ -388,12 +388,11 @@ if( $mode == "read" )
 
 	$profile_img = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from") . "\"><img src=\"" . $images['icon_profile'] . "\" alt=\"" . $lang['Read_profile'] . " $username_from\" border=\"0\" /></a>";
 
-	$email_addr = str_replace("@", " at ", $privmsg['user_email']);
-	$email_img = ($privmsg['user_viewemail'] && $email_addr != "" ) ? "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $username_from\" border=\"0\" /></a>" : "";
+	$email_img = ( $privmsg['user_viewemail'] ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=$user_id_from") . "\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " $poster\" border=\"0\" /></a>" : "";
 
-	$www_img = ($privmsg['user_website']) ? "<a href=\"" . $privmsg['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
+	$www_img = ( $privmsg['user_website'])  ? "<a href=\"" . $privmsg['user_website'] . "\" target=\"_userwww\"><img src=\"" . $images['icon_www'] . "\" alt=\"" . $lang['Visit_website'] . "\" border=\"0\" /></a>" : "";
 
-	if($privmsg['user_icq'])
+	if( $privmsg['user_icq'] )
 	{
 		$icq_status_img = "<a href=\"http://wwp.icq.com/" . $privmsg['user_icq'] . "#pager\"><img src=\"http://web.icq.com/whitepages/online?icq=" . $privmsg['user_icq'] . "&amp;img=5\" width=\"18\" height=\"18\" border=\"0\" /></a>";
 

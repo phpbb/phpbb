@@ -187,8 +187,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		if( !empty($members[$i]['user_viewemail']) )
 		{
-			$altered_email = str_replace("@", " at ", $members[$i]['user_email']);
-			$email_img = "<a href=\"mailto:$altered_email\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\" /></a>";
+			$email_img = "<a href=\"" . append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL ."=$user_id") . "\"><img src=\"" . $images['icon_email'] . "\" border=\"0\" alt=\"" . $lang['Send_an_email'] . "\" /></a>";
 		}
 		else
 		{

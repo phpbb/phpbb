@@ -62,9 +62,6 @@ $lang['Password'] = "Password";
 $lang['Email'] = "Email";
 $lang['Poster'] = "Poster";
 $lang['Author'] = "Author";
-$lang['is'] = "is";
-$lang['are'] = "are";
-$lang['by'] = "by";
 $lang['Time'] = "Time";
 $lang['Hour'] = "Hour";
 $lang['Hours'] = "Hours";
@@ -88,18 +85,15 @@ $lang['Years'] = "Years";
 
 $lang['Enabled'] = "Enabled";
 $lang['Disabled'] = "Disabled";
+
 $lang['Next'] = "Next";
 $lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
-$lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
-$lang['Pages'] = "Pages";
+
 $lang['IP_Address'] = "IP Address";
 
 $lang['View_latest_post'] = "View latest post";
 $lang['Page_of'] = "Page <b>%d</b> of <b>%d</b>"; // Replaces with: Page 1 of 2 for example
-$lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
-$lang['Pages'] = "Pages";
-$lang['of'] = "of"; // See Page above
 
 $lang['Submit'] = "Submit";
 $lang['Reset'] = "Reset";
@@ -216,8 +210,8 @@ $lang['Rules_reply_can'] = "You <b>can</b> reply to topics in this forum";
 $lang['Rules_reply_cannot'] = "You <b>cannot</b> reply to topics in this forum";
 $lang['Rules_edit_can'] = "You <b>can</b> edit your posts in this forum";
 $lang['Rules_edit_cannot'] = "You <b>cannot</b> edit your posts in this forum";
-$lang['Rules_delete_can'] = "You <b>can</b> delete posts in this forum";
-$lang['Rules_delete_cannot'] = "You <b>cannot</b> delete posts in this forum";
+$lang['Rules_delete_can'] = "You <b>can</b> delete your posts in this forum";
+$lang['Rules_delete_cannot'] = "You <b>cannot</b> delete your posts in this forum";
 $lang['Rules_vote_can'] = "You <b>can</b> vote in polls in this forum";
 $lang['Rules_vote_cannot'] = "You <b>cannot</b> vote in polls in this forum";
 $lang['Rules_moderate'] = "You <b>can</b> %smoderate this forum%s"; // %s replaced by a href 
@@ -294,6 +288,7 @@ $lang['Confirm_delete'] = "Are you sure you want to delete this post?";
 $lang['Confirm_delete_poll'] = "Are you sure you want to delete this poll?";
 $lang['Submit_post'] = "Submit Post";
 $lang['Preview'] = "Preview";
+$lang['Spellcheck'] = "Spellcheck";
 $lang['Cancel_post'] = "Cancel post";
 
 $lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while";
@@ -326,16 +321,20 @@ $lang['Poll_for'] = "Run poll for";
 $lang['Poll_for_explain'] = "[ Enter 0 or leave blank for a never ending poll ]";
 $lang['Delete_poll'] = "Delete Poll";
 
+$lang['Disable_HTML_post'] = "Disable HTML in this post";
+$lang['Disable_BBCode_post'] = "Disable BBCode in this post";
+$lang['Disable_Smilies_post'] = "Disable Smilies in this post";
+
+$lang['HTML_is_ON'] = "HTML is <u>ON</u>";
+$lang['HTML_is_OFF'] = "HTML is <u>OFF</u>";
+$lang['BBCode_is_ON'] = "BBCode is <u>ON</u>";
+$lang['BBCode_is_OFF'] = "BBCode is <u>OFF</u>";
+$lang['Smilies_are_ON'] = "Smilies are <u>ON</u>";
+$lang['Smilies_are_OFF'] = "Smilies are <u>OFF</u>";
+
 $lang['Attach_signature'] = "Attach signature (signatures can be changed in profile)";
-$lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
-$lang['HTML'] = "HTML";
-$lang['BBCode'] = "BBCode";
-$lang['Smilies'] = "Smilies";
-$lang['in_this_post'] = " in this post";
 $lang['Notify'] = "Notify me when a reply is posted";
 $lang['Delete_post'] = "Delete this post";
-$lang['is_ON'] = " is ON"; // this goes after either BBCode or HTML
-$lang['is_OFF'] = " is OFF"; // see above
 
 $lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = "Quote"; // comes before bbcode quote output.
@@ -477,11 +476,6 @@ $lang['Confirm_password'] = "Confirm password";
 $lang['password_if_changed'] = "You only need to supply a password if you want to change it";
 $lang['password_confirm_if_changed'] = "You only need to confirm your password if you changed it above";
 
-$lang['is'] = "is"; // follows HTML or BBCode
-$lang['are'] = "are"; // follows Smilies
-$lang['OFF'] = "OFF";
-$lang['ON'] = "ON";
-
 $lang['Avatar'] = "Avatar";
 $lang['Avatar_explain'] = "Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than " . $board_config['avatar_max_width'] . " pixels, a height no greater than " . $board_config['avatar_max_height'] . " pixels and a file size no more than " . (round($board_config['avatar_filesize'] / 1024)) . " kB.";
 $lang['Upload_Avatar_file'] = "Upload Avatar from your machine";
@@ -539,6 +533,18 @@ $lang['No_email_match'] = "The email address you supplied does not match the one
 $lang['New_password_activation'] = "New password activation";
 $lang['Password_activated'] = "Your account has been re-activated. To logon please use the password supplied in the email you received";
 
+$lang['Send_email_msg'] = "Send an email message";
+$lang['No_user_specified'] = "No user was specified";
+$lang['User_prevent_email'] = "This user does not wish to receive email. Try sending them a private message";
+$lang['User_not_exist'] = "That user does not exist";
+$lang['CC_email'] = "Send a copy of this email to yourself";
+$lang['Email_message_desc'] = "This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.";
+$lang['Flood_email_limit'] = "You cannot send another email at this time, try again later";
+$lang['Recipient'] = "Recipient";
+$lang['Email_sent'] = "The email has been sent";
+$lang['Send_email'] = "Send email";
+$lang['Empty_subject_email'] = "You must specify a subject for the email";
+$lang['Empty_message_email'] = "You must enter a message to be emailed";
 
 //
 // Memberslist

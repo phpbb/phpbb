@@ -2579,12 +2579,12 @@ if( !$userdata['session_logged_in'] || ( $mode == "editpost" && $post_user_id ==
 //
 if( $board_config['allow_html'] )
 {
-	$html_status = $lang['ON'];
+	$html_status = $lang['HTML_is_ON'];
 	$template->assign_block_vars("html_checkbox", array());
 }
 else
 {
-	$html_status = $lang['OFF'];
+	$html_status = $lang['HTML_is_OFF'];
 }
 
 //
@@ -2592,12 +2592,12 @@ else
 //
 if($board_config['allow_bbcode'])
 {
-	$bbcode_status = $lang['ON'];
+	$bbcode_status = $lang['BBCode_is_ON'];
 	$template->assign_block_vars("bbcode_checkbox", array());
 }
 else
 {
-	$bbcode_status = $lang['OFF'];
+	$bbcode_status = $lang['BBCode_is_OFF'];
 }
 
 //
@@ -2605,12 +2605,12 @@ else
 //
 if($board_config['allow_smilies'])
 {
-	$smilies_status = $lang['ON'];
+	$smilies_status = $lang['Smilies_are_ON'];
 	$template->assign_block_vars("smilies_checkbox", array());
 }
 else
 {
-	$smilies_status = $lang['OFF'];
+	$smilies_status = $lang['Smilies_are_OFF'];
 }
 
 //
@@ -2717,15 +2717,13 @@ $template->assign_vars(array(
 	"L_MESSAGE_BODY" => $lang['Message_body'],
 	"L_OPTIONS" => $lang['Options'],
 	"L_PREVIEW" => $lang['Preview'],
+	"L_SPELLCHECK" => $lang['Specllcheck'],
 	"L_SUBMIT" => $lang['Submit_post'],
 	"L_CANCEL" => $lang['Cancel_post'],
 	"L_CONFIRM_DELETE" => $lang['Confirm_delete'],
-	"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
-	"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
-	"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
-	"L_DISABLE_HTML" => $lang['Disable'] . $lang['HTML'] . $lang['in_this_post'], 
-	"L_DISABLE_BBCODE" => $lang['Disable'] . $lang['BBCode'] . $lang['in_this_post'], 
-	"L_DISABLE_SMILIES" => $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'], 
+	"L_DISABLE_HTML" => $lang['Disable_HTML_post'], 
+	"L_DISABLE_BBCODE" => $lang['Disable_BBCode_post'], 
+	"L_DISABLE_SMILIES" => $lang['Disable_Smilies_post'], 
 	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
 	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
 	"L_DELETE_POST" => $lang['Delete_post'],

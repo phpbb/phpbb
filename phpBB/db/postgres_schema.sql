@@ -464,6 +464,7 @@ CREATE TABLE phpbb_users (
    user_yim varchar(255),
    user_msnm varchar(255),
    user_posts int4 DEFAULT '0' NOT NULL,
+   user_emailtime int4, 
    user_viewemail int2,
    user_attachsig int2,
    user_allowhtml int2,

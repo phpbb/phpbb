@@ -260,10 +260,10 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		if( $profiledata['user_viewemail'] && $profiledata['user_email'] != "" )
 		{
-			// Replace the @ with 'at'. Some anti-spam mesures.
-			$email_addr = str_replace("@", " at ", $profiledata['user_email']);
-			$email = "<a href=\"mailto:$email_addr\">$email_addr</a>";
-			$email_img = "<a href=\"mailto:$email_addr\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $profiledata['username'] . "\" border=\"0\" /></a>";
+			$email_profile = append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL . "=" . $profiledata['user_id']);
+
+			$email = "<a href=\"$email_profile\">" . $lang['Send_email'] . "</a>";
+			$email_img = "<a href=\"$email_profile\"><img src=\"" . $images['icon_email'] . "\" alt=\"" . $lang['Send_email'] . " " . $profiledata['username'] . "\" border=\"0\" /></a>";
 		}
 		else
 		{
@@ -1410,9 +1410,9 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$selected_template = $board_config['system_template'];
 			}
 
-			$html_status =  ($userdata['user_allowhtml']) ? $lang['ON'] : $lang['OFF'];
-			$bbcode_status = ($userdata['user_allowbbcode']) ? $lang['ON'] : $lang['OFF'];
-			$smilies_status = ($userdata['user_allowsmile']) ? $lang['ON'] : $lang['OFF'];
+			$html_status =  ($userdata['user_allowhtml']) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
+			$bbcode_status = ($userdata['user_allowbbcode']) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
+			$smilies_status = ($userdata['user_allowsmile']) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
 			$signature = preg_replace("/\:[0-9a-z\:]*?\]/si", "]", $signature);
 
@@ -1578,10 +1578,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				"L_PROFILE_INFO_NOTICE" => $lang['Profile_info_warn'],
 				"L_EMAIL_ADDRESS" => $lang['Email_address'],
 
-				"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
-				"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
-				"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
-
 				"S_ALLOW_AVATAR_UPLOAD" => $board_config['allow_avatar_upload'],
 				"S_ALLOW_AVATAR_LOCAL" => $board_config['allow_avatar_local'],
 				"S_ALLOW_AVATAR_REMOTE" => $board_config['allow_avatar_remote'],
@@ -1618,7 +1614,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
-	else if($mode == "sendpassword")
+	else if( $mode == "sendpassword" )
 	{
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
@@ -1729,7 +1725,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 	}
-	else if($mode == "activate")
+	else if( $mode == "activate" )
 	{
 		$sql = "SELECT user_id, user_email, user_newpasswd 
 			FROM " . USERS_TABLE . "
@@ -1746,10 +1742,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 					{
 						$sql_update_pass = "";
 					}
-					$sql_update = "UPDATE " . USERS_TABLE . "
+
+					$sql = "UPDATE " . USERS_TABLE . "
 						SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
 						WHERE user_id = " . $row['user_id'];
-					if($result = $db->sql_query($sql_update))
+					if( $result = $db->sql_query($sql) )
 					{
 						if( $board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == "" )
 						{
@@ -1803,6 +1800,184 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				message_die(GENERAL_ERROR, "Couldn't obtain user information", "", __LINE__, __FILE__, $sql);
 			}
 			break;
+	}
+	else if( $mode == "email" )
+	{
+		if( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
+		{
+			$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? $HTTP_GET_VARS[POST_USERS_URL] : $HTTP_POST_VARS[POST_USERS_URL];
+		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
+		}
+
+		if( !$userdata['session_logged_in'] )
+		{
+			header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=email&" . POST_USERS_URL . "=$user_id", true));
+		}
+
+		$sql = "SELECT username, user_email, user_viewemail, user_emailtime, user_sig, user_sig_bbcode_uid 
+			FROM " . USERS_TABLE . " 
+			WHERE user_id = $user_id";
+		if( $result = $db->sql_query($sql) )
+		{
+			$row = $db->sql_fetchrow($result);
+
+			$username = $row['username'];
+			$user_email = $row['user_email']; 
+			$user_sig = $row['user_sig'];
+			$user_sig_bbcode_uid = $row['user_sig_bbcode_uid'];
+
+			if( $row['user_viewemail'] )
+			{
+				if( time() - $row['user_emailtime'] < $board_config['flood_interval'] )
+				{
+					message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
+				}
+
+				if( isset($HTTP_POST_VARS['submit']) )
+				{
+					$error = FALSE;
+
+					if( !empty($HTTP_POST_VARS['subject']) )
+					{
+						$subject = trim(strip_tags($HTTP_POST_VARS['subject']));
+					}
+					else
+					{
+						$error = TRUE;
+						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
+					}
+
+					if( !empty($HTTP_POST_VARS['message']) )
+					{
+						$message = trim(strip_tags($HTTP_POST_VARS['message']));
+					}
+					else
+					{
+						$error = TRUE;
+						$error_msg = ( !empty($error_msg) ) ? $error_msg . "<br />" . $lang['Empty_message_email'] : $lang['Empty_message_email'];
+					}
+
+					if( !$error )
+					{
+						$sql = "UPDATE " . USERS_TABLE . " 
+							SET user_emailtime = " . time() . " 
+							WHERE user_id = " . $userdata['user_id'];
+						if( $result = $db->sql_query($sql) )
+						{
+							$server_name = ( isset($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_SERVER_VARS['SERVER_NAME'];
+
+							include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+							$emailer = new emailer($board_config['smtp_delivery']);
+
+							$email_headers = "From: " . $userdata['user_email'] . "\n";
+							if( !empty($HTTP_POST_VARS['cc_email']) )
+							{
+								$email_headers .= "Cc: " . $userdata['user_email'] . "\n";
+							}
+							$email_headers .= "Return-Path: " . $userdata['user_email'] . "\n";
+							$email_headers .= "X-AntiAbuse: Board servername - " . $server_name . "\n";
+							$email_headers .= "X-AntiAbuse: User_id - " . $user_id . "\n";
+							$email_headers .= "X-AntiAbuse: Username - " . $username . "\n";
+							$email_headers .= "X-AntiAbuse: User IP - " . decode_ip($user_ip) . "\r\n";
+
+							$emailer->use_template("profile_send_email");
+							$emailer->email_address($user_email);
+							$emailer->set_subject($subject);
+							$emailer->extra_headers($email_headers);
+
+							$emailer->assign_vars(array(
+								"SITENAME" => $board_config['sitename'], 
+								"BOARD_EMAIL" => $board_config['board_email'], 
+								"FROM_USERNAME" => $userdata['username'], 
+								"TO_USERNAME" => $username, 
+								"MESSAGE" => $message)
+							);
+							$emailer->send();
+							$emailer->reset();
+
+							$template->assign_vars(array(
+								"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.$phpEx") . '">')
+							);
+
+							$message = $lang['Email_sent'] . "<br /><br />" . sprintf($lang['Click_return_index'],  "<a href=\"" . append_sid("index.$phpEx") . "\">", "</a>");
+
+							message_die(GENERAL_MESSAGE, $message);
+						}
+						else
+						{
+							message_die(GENERAL_ERROR, "Couldn't update last email time", "", __LINE__, __FILE__, $sql);
+						}
+					}
+				}
+
+				include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+				$template->set_filenames(array(
+					"body" => "profile_send_email.tpl",
+					"jumpbox" => "jumpbox.tpl")
+				);
+
+				$jumpbox = make_jumpbox();
+				$template->assign_vars(array(
+					"L_GO" => $lang['Go'],
+					"L_JUMP_TO" => $lang['Jump_to'],
+					"L_SELECT_FORUM" => $lang['Select_forum'],
+
+					"S_JUMPBOX_LIST" => $jumpbox,
+					"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
+				);
+				$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+
+				if( $error )
+				{
+					$template->set_filenames(array(
+						"reg_header" => "error_body.tpl")
+					);
+					$template->assign_vars(array(
+						"ERROR_MESSAGE" => $error_msg)
+					);
+					$template->assign_var_from_handle("ERROR_BOX", "reg_header");
+				}
+
+				if( $userdata['user_sig'] != "" )
+				{
+					$template->assign_block_vars("signature_checkbox", array());
+				}
+
+				$template->assign_vars(array(
+					"USERNAME" => $username,
+
+					"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? "checked=\"checked\"" : "", 
+					"S_POST_ACTION" => append_sid("profile.$phpEx?&amp;mode=email&amp;" . POST_USERS_URL . "=$user_id"), 
+
+					"L_SEND_EMAIL_MSG" => $lang['Send_email_msg'], 
+					"L_RECIPIENT" => $lang['Recipient'], 
+					"L_SUBJECT" => $lang['Subject'],
+					"L_MESSAGE_BODY" => $lang['Message_body'], 
+					"L_MESSAGE_BODY_DESC" => $lang['Email_message_desc'], 
+					"L_OPTIONS" => $lang['Options'],
+					"L_CC_EMAIL" => $lang['CC_email'], 
+					"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
+					"L_SPELLCHECK" => $lang['Spellcheck'],
+					"L_SEND_EMAIL" => $lang['Send_email'])
+				);
+
+				$template->pparse("body");
+
+				include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+			}
+			else
+			{
+				message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
+			}
+		}
+		else
+		{
+			message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
+		}
 	}
 }
 

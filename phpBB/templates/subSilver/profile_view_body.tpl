@@ -56,7 +56,7 @@
 	  <table width="100%" border="0" cellspacing="1" cellpadding="3">
 		<tr> 
 		  <td valign="middle" align="right"><span class="gen">{L_EMAIL_ADDRESS}:</span></td>
-		  <td class="row1" valign="middle" width="100%"><b><span class="gen">{EMAIL}</span></b></td>
+		  <td class="row1" valign="middle" width="100%"><b><span class="gen">{EMAIL_IMG}</span></b></td>
 		</tr>
 		<tr> 
 		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_PM}:</span></td>
