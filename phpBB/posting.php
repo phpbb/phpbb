@@ -85,6 +85,7 @@ else
 	$topic_id = "";
 }
 
+
 //
 // Was cancel pressed? If so then redirect to the appropriate
 // page, no point in continuing with any further checks
@@ -629,7 +630,7 @@ if( ( $submit || $confirm ) && !$error )
 		if( $mode == "newtopic" )
 		{
 			$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote)
-				VALUES ('$subject', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
+				VALUES ('$post_subject', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
 
 			if( $result = $db->sql_query($sql, BEGIN_TRANSACTION) )
 			{
