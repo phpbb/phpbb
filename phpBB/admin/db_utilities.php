@@ -38,8 +38,23 @@ define("VERBOSE", "0");
 
 // Bring in the necessary files to include functions we will use later.
 include('extension.inc');
-include('common.' . $phpEx);
+include('common.'.$phpEx);
 
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+// 
+// End sessionmanagement
+//
+
+// 
+// Define Template files...
+// 
+$template->set_filenames(array(
+	"body" => "admin/db_utilities.tpl"));
+	
 // define a constant for the dbms so that we don't have to redeclare it 
 // global for each function....
 define('DBMS', "$dbms");
@@ -47,27 +62,6 @@ define('DBMS', "$dbms");
 // allowed.
 @set_time_limit(600); 
 
-function common_header()
-{
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
-<HTML>
-<HEAD>
-<TITLE>phpBB - Database Backup</TITLE>
-</HEAD>
-<BODY BGCOLOR="#000000" TEXT="#FFFFFF" LINK="#11C6BD" VLINK="#11C6BD">
-<?php
-	return;
-}
-
-function common_footer()
-{
-?>
-</BODY>
-</HTML>
-<?php
-	return;
-}
 
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
 //
@@ -140,7 +134,7 @@ function get_table_def_postgres($db, $table, $crlf)
 	if(!$result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
 	} // end if..
 	if ($drop == 1)
 	{
@@ -203,7 +197,7 @@ function get_table_def_postgres($db, $table, $crlf)
 	if(!$result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
 	} // end if..
 	while ( $row = $db->sql_fetchrow($result))
 	{
@@ -259,7 +253,7 @@ function get_table_def_postgres($db, $table, $crlf)
 	if (!$result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
 	} // end if(!$result)...
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -297,7 +291,7 @@ function get_table_def_mysql($db, $table, $crlf)
 	if(!result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Failed in get_table_def (show fields) : ' . $error['message']);
 	}
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -324,7 +318,7 @@ function get_table_def_mysql($db, $table, $crlf)
 	if(!$result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'FAILED IN get_table_def (show keys) : ' . $error['message']);
+		message_die(GENERAL_ERROR, 'FAILED IN get_table_def (show keys) : ' . $error['message']);
 	}
 	while($row = $db->sql_fetchrow($result)) {
 		$kname = $row['Key_name'];
@@ -385,7 +379,7 @@ function get_table_content_postgres($db, $table, $handler)
 	if (!$result)
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Faild in get_table_content (select *): ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Faild in get_table_content (select *): ' . $error['message']);
 	} // end if(!$result)...
 	$i_num_fields = $db->sql_numfields($result);
 	for ($i = 0; $i < $i_num_fields; $i++)
@@ -448,7 +442,7 @@ function get_table_content_mysql($db, $table, $handler)
 	if(!$result) 
 	{
 		$error = $db->sql_error();
-		error_die(GENERAL_ERROR, 'Failed in get_table_content (select *): ' . $error['message']);
+		message_die(GENERAL_ERROR, 'Failed in get_table_content (select *): ' . $error['message']);
 	}
 	if($db->sql_numrows($result) > 0) 
 	{
@@ -566,6 +560,18 @@ if(isset($perform))
 	switch($perform)
 	{
 		case 'backup':
+			if((DBMS == 'oracle') || (DBMS == 'odbc') || (DBMS == 'mssql'))
+			{
+				$db_message = '<h2>Database backups are not currently supported for ';
+				$db_message .= 'your Database system (' . DBMS . ")</h2>\n";
+				$db_links =  '<br><a href="' . append_sid("index.$phpEx") . '">Return to admin</a>';
+				$template->assign_vars(array(
+					"U_DB_MESSAGE" => $db_message,
+					"U_DB_LINKS" => $db_links
+				));
+				$template->pparse("body");
+				exit;
+			}
 			$tables = array('auth_access', 'auth_forums', 'banlist', 'categories', 'config', 'disallow', 'forum_access', 'forum_mods', 'forums', 'groups', 'posts', 'posts_text', 'privmsgs', 'ranks', 'session', 'session_keys', 'smilies', 'themes', 'themes_name', 'topics', 'user_group', 'users', 'words');
 			if(!isset($additional_tables) && !empty($additional_tables)) 
 			{
@@ -582,20 +588,23 @@ if(isset($perform))
 			}
 			if(!isset($backupstart))
 			{
-				common_header();
-				echo "<H2>This will perform a backup of all phpBB2 related tables.</H2><BR>";
-				echo "<P>If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below.<BR>\n";
-				echo "Otherwise just select the form of backup you want to perform and click the Start Backup button below.</P><BR>\n\n";
-				echo "<CENTER><FORM METHOD=\"post\" ACTION=\"$PHP_SELF\">\n";
-				echo "<TABLE BORDER=0>\n";
-				echo "<TR><TD>Additional Tables:</TD><TD><INPUT TYPE=\"text\" NAME=\"more_tables\"></TD></TR>\n";
-				echo "<TR><TD>Full Backup:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"full\" SELECTED></TD></TR>\n";
-				echo "<TR><TD>Table Structure Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"structure\"></TD></TR>\n";
-				echo "<TR><TD>Table Data Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"data\"></TD></TR>\n";
-				echo "</TABLE><INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"backup\">\n";
-				echo "<INPUT TYPE=\"hidden\" NAME=\"drop\" VALUE=\"1\">";
-				echo "<INPUT TYPE=\"submit\" NAME=\"backupstart\" VALUE=\"Start Backup\" ONCLICK=\"setTimeout('document.location=\'$PHP_SELF?backup_done=1\'', 2000);\"></FORM></P>\n";
-				common_footer();
+				$db_message = "<H2>This will perform a backup of all phpBB2 related tables.</H2><BR>\n";
+				$db_message .= "<P>If you have any additional custom tables in the same database with phpBB that you would like to back up as well please enter their names seperated by commas in the Additional Tables textbox below.<BR>\n";
+				$db_message .= "Otherwise just select the form of backup you want to perform and click the Start Backup button below.</P><BR>\n\n";
+				$db_links = "<FORM METHOD=\"post\" ACTION=\"". append_sid($PHP_SELF) . "\">\n";
+				$db_links .= "<TABLE BORDER=0>\n";
+				$db_links .= "<TR><TD>Additional Tables:</TD><TD><INPUT TYPE=\"text\" NAME=\"more_tables\"></TD></TR>\n";
+				$db_links .= "<TR><TD>Full Backup:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"full\" SELECTED></TD></TR>\n";
+				$db_links .= "<TR><TD>Table Structure Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"structure\"></TD></TR>\n";
+				$db_links .= "<TR><TD>Table Data Only:</TD><TD><INPUT TYPE=\"radio\" NAME=\"backup_type\" VALUE=\"data\"></TD></TR>\n";
+				$db_links .= "</TABLE><INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"backup\">\n";
+				$db_links .= "<INPUT TYPE=\"hidden\" NAME=\"drop\" VALUE=\"1\">";
+				$db_links .= "<INPUT TYPE=\"submit\" NAME=\"backupstart\" VALUE=\"Start Backup\" ONCLICK=\"setTimeout('document.location=\'" . append_sid("$PHP_SELF?backup_done=1") . "\'', 2000);\"></FORM></P>\n";
+				$template->assign_vars(array(
+					"U_DB_MESSAGE" => $db_message,
+					"U_DB_LINKS" => $db_links
+				));
+				$template->pparse("body");
 				exit;
 			}
 			// Build the sql script file...
@@ -633,21 +642,25 @@ if(isset($perform))
 		case 'restore':
 			if(!isset($restore_start)) 
 			{	
-				common_header();
-				echo "<H2>This will perform a full restore of a previously Backed up phpBB database</H2><BR>\n";
-				echo "<P><b>WARNING: This will overwrite any existing data</b><br>\n";
-				echo "<FORM ENCTYPE=\"multipart/form-data\" METHOD=\"post\" ACTION=\"$PHP_SELF\">\n";
-				echo "<INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"restore\">\n";
-				echo "Backup File:<INPUT TYPE=\"file\" NAME=\"backup_file\">\n";
-				echo "<INPUT TYPE=\"submit\" NAME=\"restore_start\" VALUE=\"Start Restore\">\n";
-				echo "</FORM></P>\n";
-				common_footer();
+				$db_message = "<H2>This will perform a full restore of a previously Backed up phpBB database</H2><BR>\n";
+				$db_message .= "<P><b>WARNING: This will overwrite any existing data</b><br>\n";
+				$db_links = "<FORM ENCTYPE=\"multipart/form-data\" METHOD=\"post\" ACTION=\"" . append_sid($PHP_SELF) . "\">\n";
+				$db_links .= "<INPUT TYPE=\"hidden\" NAME=\"perform\" VALUE=\"restore\">\n";
+				$db_links .= "Backup File:<INPUT TYPE=\"file\" NAME=\"backup_file\">\n";
+				$db_links .= "<INPUT TYPE=\"submit\" NAME=\"restore_start\" VALUE=\"Start Restore\">\n";
+				$db_links .= "</FORM></P>\n";
+				$template->assign_vars(array(
+					"U_DB_MESSAGE" => $db_message,
+					"U_DB_LINKS" => $db_links
+				));
+				$template->pparse("body");
+				exit;
 			} else 
 			{	
 				// Handle the file upload ....
 				if($backup_file == "none")
 				{
-					error_die(GENERAL_ERROR, 'Backup file upload failed...');
+					message_die(GENERAL_ERROR, 'Backup file upload failed...');
 					exit;
 				}
 				if(ereg("^php[0-9A-Za-z_.-]+$", basename($backup_file)))
@@ -659,7 +672,7 @@ if(isset($perform))
 					}
 				} else
 				{
-					error_die(GENERAL_ERROR, 'Trouble Accessing uploaded file...');
+					message_die(GENERAL_ERROR, 'Trouble Accessing uploaded file...');
 					exit;
 				}
 				$sql_query = trim($sql_query);
@@ -681,35 +694,46 @@ if(isset($perform))
 							if(!$result && (!(DBMS == 'postgres' && eregi("drop table", $sql))))
 							{
 								$error = $db->sql_error();
-								error_die(GENERAL_ERROR, 'Error importing backup file : ' . $error['message'] . "\n$sql");
+								message_die(GENERAL_ERROR, 'Error importing backup file : ' . $error['message'] . "\n$sql");
 							}
 						}
 					}
 				}
-				common_header();
-				echo "<CENTER><H2>The Database has been successfully restored..</H2>\n";
-				echo "<P><BR>Your board should be back to the state it was when the backup was made.<BR>\n";
-				echo '<A HREF="index.' . $phpEx . '">Go back to the Admin</A>';
-				echo '</P></CENTER>';
-				common_footer();
+				$db_message = "<CENTER><H2>The Database has been successfully restored..</H2>\n";
+				$db_message .= "<P><BR>Your board should be back to the state it was when the backup was made.<BR></P>\n";
+				$db_links = '<A HREF="' . append_sid("index.$phpEx") . '">Go back to the Admin</A>';
+				$template->assign_vars(array(
+					"U_DB_MESSAGE" => $db_message,
+					"U_DB_LINKS" => $db_links
+				));
+				$template->pparse("body");
+				exit;
 			}
-			exit;
 			break;
 	}
 } 
 elseif (isset($backup_done))
 {
-	common_header();
-	echo "<CENTER><H2>Your backup file should be downloading now</H2></CENTER><br>\n";
-	echo "<A HREF=\"$PHP_SELF\">Click Here to return to the Database Utilities</A><br>\n";
-	common_footer();
+	$db_message = "<H2>Your backup file should be downloading now</H2><br>\n";
+	$db_links =  "<A HREF=\"" . append_sid($PHP_SELF) . "\">Click Here to return to the Database Utilities</A><br>\n";
+	$template->assign_vars(array(
+		"U_DB_MESSAGE" => $db_message,
+		"U_DB_LINKS" => $db_links
+	));
+	$template->pparse("body");
+	exit;
 }
 else 
 {
-	common_header();
-	echo "<TABLE ALIGN=\"center\"><TR><TD ALIGN=\"CENTER\"><H2>Database Utilities</H2></TD></TR>\n";
-	echo "<TR><TD><A HREF=\"$PHP_SELF?perform=backup\">Backup Database</A></TD></TR>\n";
-	echo "<TR><TD><A HREF=\"$PHP_SELF?perform=restore\">Restore Database</A></TD></TR>\n";
-	common_footer();
+	$db_message = "<h2>These Utilties will help you to backup or restore your phpBB database</h2><br>\n";
+	$db_links = "<TABLE ALIGN=\"center\"><TR><TD ALIGN=\"CENTER\"><H2>Database Utilities</H2></TD></TR>\n";
+	$db_links .= "<TR><TD><A HREF=\"" . append_sid("$PHP_SELF?perform=backup") . "\">Backup Database</A></TD></TR>\n";
+	$db_links .= "<TR><TD><A HREF=\"" . append_sid("$PHP_SELF?perform=restore") . "\">Restore Database</A></TD></TR></TABLE>\n";
+	$template->assign_vars(array(
+		"U_DB_MESSAGE" => $db_message,
+		"U_DB_LINKS" => $db_links
+	));
+	$template->pparse("body");
+	exit;
 }
 ?>
