@@ -96,11 +96,11 @@ get_moderators($forum_moderators);
 
 $cat_id = (!empty($_GET['c'])) ? intval($_GET['c']) : 0;
 $root_id = $branch_root_id = $cat_id;
-$forum_rows = $subforums = $parent_forums = array();
+$forum_rows = $subforums = $nav_forums = array();
 
 if ($cat_id == 0)
 {
-	$is_child = TRUE;
+	$is_nav = FALSE;
 	$total_posts = 0;
 	switch (SQL_LAYER)
 	{
@@ -120,7 +120,7 @@ if ($cat_id == 0)
 }
 else
 {
-	$is_child = FALSE;
+	$is_nav = TRUE;
 
 	if (!$acl->get_acl($cat_id, 'forum', 'list'))
 	{
@@ -174,13 +174,13 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['forum_id'] == $cat_id)
 	{
-		$parent_forums[] = $row;
+		$nav_forums[] = $row;
 		$forum_rows[] = $row;
-		$is_child = TRUE;
+		$is_nav = FALSE;
 	}
-	elseif (!$is_child)
+	elseif ($is_nav)
 	{
-		$parent_forums[] = $row;
+		$nav_forums[] = $row;
 	}
 	else
 	{
@@ -265,7 +265,7 @@ $template->assign_vars(array(
 	'U_MARK_READ' => "index.$phpEx$SID&amp;mark=forums")
 );
 
-foreach ($parent_forums as $row)
+foreach ($nav_forums as $row)
 {
 	if ($row['forum_status'] == ITEM_CATEGORY)
 	{

@@ -139,9 +139,6 @@ foreach ($forum_rows as $row)
 				}
 		}
 
-		$l_moderator = 'Moderator: ';
-		$moderators_list = '<a href="#">Ashe</a>';
-
 		$template->assign_block_vars('forumrow', array(
 			$forum_type_switch	=>	TRUE,
 

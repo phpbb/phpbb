@@ -109,9 +109,11 @@ a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: u
 
 
 /* The register, login, search etc links at the top of the page */
-.mainmenu		{ font-size : 11px; color : #000000 }
+.mainmenu		{ font-size : 11px; color : black }
 a.mainmenu		{ text-decoration: none; color : #006699;  }
 a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+a.mainmenuw,a.mainmenuw:visited		{ text-decoration: none; color : white;  }
+a.mainmenuw:hover{ text-decoration: underline; color : black; }
 
 
 /* Forum category titles */
