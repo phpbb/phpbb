@@ -158,7 +158,12 @@ $lang['Sticky'] = "<b>Sticky:</b>";
 // Viewtopic
 //
 $lang['Guest'] = 'Guest';
+$lang['Post_subject'] = "Post subject";
+$lang['View_next_topic'] = "View next topic";
+$lang['View_previous_topic'] = "View previous topic";
 
+$lang['No_newer_topics'] = "There are no newer topics in this forum";
+$lang['No_older_topics'] = "There are no older topics in this forum";
 $lang['Topic_post_not_exist'] = "The topic or post you requested does not exist";
 
 //
