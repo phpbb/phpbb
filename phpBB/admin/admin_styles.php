@@ -43,7 +43,7 @@ $phpbb_root_path = "./../";
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : FALSE;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : FALSE;
 
-if( empty($HTTP_POST_VARS['send_file']) )
+if (empty($HTTP_POST_VARS['send_file']))
 {
 	$no_page_header = ( $cancel ) ? TRUE : FALSE;
 	require($phpbb_root_path . 'extension.inc');
@@ -932,7 +932,7 @@ switch( $mode )
 		break;
 }
 
-if( !$HTTP_POST_VARS['send_file'] )
+if (empty($HTTP_POST_VARS['send_file']))
 {
 	include('./page_footer_admin.'.$phpEx);
 }
