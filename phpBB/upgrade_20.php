@@ -6,7 +6,7 @@
 *     copyright            : (C) 2001 The phpBB Group        
 *     email                : support@phpbb.com                           
 * 
-*     $id Exp $
+*     $id upgrade_20.php,v 1.9 2001/03/23 01:32:41 psotfx Exp $
 * 
 ****************************************************************************/
   
@@ -75,7 +75,7 @@ function convert_date($date_in)
 // Original phpBB format
 	list($year, $month, $day) = split("-", $date);
 	list($hours, $minutes) = split(":", $time);
-	$timestamp = mktime($hours, $minutes, 0, $month, $day, $year);             
+	$timestamp = gmmktime($hours, $minutes, 0, $month, $day, $year);             
 
 	return($timestamp);
 }
