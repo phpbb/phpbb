@@ -242,6 +242,7 @@ $lang['Script_path_explain'] = "Het pad waar phpBB geinstalleerd is (b.v. /phpBB
 $lang['Server_port'] = "Server Poort";
 $lang['Server_port_explain'] = "De poort waarop de HTTP server draait, normaal 80.";
 $lang['Site_name'] = "Site naam";
+$lang['Site_name_explain'] = "No html tags allowed!";
 $lang['Site_desc'] = "Site omschrijving";
 $lang['Board_disable'] = "Board uitschakelen";
 $lang['Board_disable_explain'] = "Dit maakt het board onbereikbaar voor gebruikers. Log niet uit wanneer je het board uitschakelt, je kunt namelijk niet meer inloggen!";
@@ -305,6 +306,11 @@ $lang['Email_sig_explain'] = "Deze tekst wordt toegevoegd aan alle emails die he
 $lang['Use_SMTP'] = "Gebruik SMTP Server voor email";
 $lang['Use_SMTP_explain'] = "Vul 'yes' in als de email via een benoemde server wilt of moet versturen in plaats van de 'local mail' functie";
 $lang['SMTP_server'] = "SMTP Server Adres";
+$lang['SMTP_username'] = "SMTP Gebruikersnaam";
+$lang['SMTP_username_explain'] = "Vul alleen een gebruikersnaam in als dit nodig is";
+$lang['SMTP_password'] = "SMTP Wachtwoord";
+$lang['SMTP_password_explain'] = "Vul alleen een wachtwoord in als dit nodig is";
+
 
 $lang['Disable_privmsg'] = "Prive Berichten";
 $lang['Inbox_limits'] = "Max posts in Inbox";
