@@ -40,6 +40,13 @@ define(ADMIN, 1);
 define(UNLOCKED, 0);
 define(LOCKED, 1);
 
+// Topic types
+define(NORMAL, 0);
+define(STICKY, 1);
+define(ANNOUCE, 2);
+define(GLOB_ANNOUNCE, 3);
+
+
 // Ban time types
 define(SECONDS, 1);
 define(MINUTES, 2);

@@ -90,11 +90,27 @@ init_userprefs($userdata);
 switch($mode)
 {
 	case 'newtopic':
-		$auth_type = AUTH_POST;
-		$is_auth_type = "auth_post";
-		$error_string = "post new topics";
+		if(isset($HTTP_POST_VARS['annouce']))
+		{
+			$auth_type = AUTH_ANNOUCE;
+			$is_auth_type = "auth_announce";
+			$error_string = "post annoucements";
+		}
+		else if(isset($HTTP_POST_VARS['sticky']))
+		{
+			$auth_type = AUTH_STICKY;
+			$is_auth_type = "auth_sticky";
+			$error_string = "post sticky topics";
+		}
+		else
+		{
+			$auth_type = AUTH_ALL;
+			$is_auth_type = "auth_post";
+			$error_string = "post new topics";
+		}
 		break;
 	case 'reply':
+
 		$auth_type = AUTH_REPLY;
 		$is_auth_type = "auth_reply";
 		$error_string = "reply to topics";
@@ -110,8 +126,8 @@ switch($mode)
 		$error_string = "delete topics";
 		break;
 	default:
-		$auth_type = AUTH_POST;
-		$is_auth_type = "auth_post";
+		$auth_type = AUTH_ALL;
+		$is_auth_type = "auth_all";
 		$error_string = "post new topics";
 		break;
 }
@@ -153,6 +169,21 @@ $disable_bbcode = (isset($HTTP_POST_VARS['disable_bbcode'])) ? $HTTP_POST_VARS['
 $disable_smilies = (isset($HTTP_POST_VARS['disable_smile'])) ? $HTTP_POST_VARS['disable_smile'] : !$userdata['user_allowsmile'];
 $attach_sig = (isset($HTTP_POST_VARS['attach_sig'])) ? $HTTP_POST_VARS['attach_sig'] : $userdata['user_attachsig'];
 $notify = (isset($HTTP_POST_VARS['notify'])) ? $HTTP_POST_VARS['notify'] : $userdata["always_notify"];
+$annouce = (isset($HTTP_POST_VARS['annouce'])) ? $HTTP_POST_VARS['annouce'] : "";
+$sticky = (isset($HTTP_POST_VARS['sticky'])) ? $HTTP_POST_VARS['sticky'] : "";
+
+if($annouce)
+{
+	$topic_type = ANNOUCE;
+}
+else if($sticky)
+{
+	$topic_type = STICKY;
+}
+else
+{
+	$topic_type = NORMAL;
+}
 
 //
 // Prepare our message and subject on a 'submit'
@@ -193,6 +224,17 @@ if(isset($HTTP_POST_VARS['submit']))
 			$error_msg .= "<br />";
 		}
 		$error_msg .= $lang['Empty_subj'];
+	}
+
+	// You can't make it both an annoumcement and a stick topic
+	if($annouce && $sticky)
+	{
+		$error = TRUE;
+		if(isset($error_msg))
+		{
+			$error_msg .= "<br />";
+		}
+		$error_msg .= $lang['Annouce_and_sticky'];
 	}
 
 	if(!empty($HTTP_POST_VARS['message']))
@@ -274,8 +316,8 @@ switch($mode)
 		{
 			$topic_time = get_gmt_ts();
 			$topic_notify = ($HTTP_POST_VARS['notify']) ? $HTTP_POST_VARS['notify'] : 0;
-			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status)
-						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.")";
+			$sql  = "INSERT INTO ".TOPICS_TABLE." (topic_title, topic_poster, topic_time, forum_id, topic_notify, topic_status, topic_type)
+						VALUES ('$subject', ".$userdata['user_id'].", ".$topic_time.", $forum_id, $topic_notify, ".UNLOCKED.", ".$topic_type.")";
 
 			if($db->sql_query($sql))
 			{
@@ -807,20 +849,6 @@ if($error)
 		}
 		$forum_info = $db->sql_fetchrow($result);
 		$forum_name = stripslashes($forum_info['forum_name']);
-		$forum_access = $forum_info['forum_access'];
-
-		if($forum_access == ANONALLOWED)
-		{
-			$about_posting = "$l_anonusers $l_inthisforum $l_anonhint";
-		}
-		if($forum_access == REGONLY)
-		{
-			$about_posting = "$l_regusers $l_inthisforum";
-		}
-		if($forum_access == MODONLY)
-		{
-			$about_posting = "$l_modusers $l_inthisforum";
-		}
 
 		$template->set_filenames(array(
 			"body" => "posting_body.tpl",
@@ -905,6 +933,31 @@ if($error)
 		}
 		$sig_toggle .= "> $l_attachsig";
 
+		if($mode == 'newtopic')
+		{
+			if($is_auth['auth_announce'])
+			{
+				$annouce_toggle = '<input type="checkbox" name="annouce" ';
+				if($annouce)
+				{
+					$announce_toggle .= "checked";
+				}
+				$annouce_toggle .= '> '.$lang['Post_Annoucement'];
+			}
+
+
+			if($is_auth['auth_sticky'])
+			{
+				$sticky_toggle = '<input type="checkbox" name="sticky" ';
+				if($sticky)
+				{
+					$sticky_toggle .= "checked";
+				}
+				$sticky_toggle .= '> '.$lang['Post_Sticky'];
+			}
+		}
+
+
 		if($mode == 'newtopic' || ($mode == 'editpost' && $notify))
 		{
 			$notify_toggle = '<input type="checkbox" name="notify" ';
@@ -923,7 +976,6 @@ if($error)
 		$hidden_form_fields = "<input type=\"hidden\" name=\"mode\" value=\"$mode\"><input type=\"hidden\" name=\"".POST_FORUM_URL."\" value=\"$forum_id\"><input type=\"hidden\" name=\"".POST_TOPIC_URL."\" value=\"$topic_id\"><input type=\"hidden\" name=\"".POST_POST_URL."\" value=\"$post_id\">";
 
 		$template->assign_vars(array(
-			"L_ABOUT_POST" => $l_aboutpost,
 			"L_SUBJECT" => $l_subject,
 			"L_MESSAGE_BODY" => $l_body,
 			"L_OPTIONS" => $l_options,
@@ -931,7 +983,6 @@ if($error)
 			"L_SUBMIT" => $l_submit,
 			"L_CANCEL" => $l_cancelpost,
 
-			"ABOUT_POSTING" => $about_posting,
 			"USERNAME_INPUT" => $username_input,
 			"PASSWORD_INPUT" => $password_input,
 			"SUBJECT_INPUT" => $subject_input,
@@ -940,6 +991,8 @@ if($error)
 			"HTML_TOGGLE" => $html_toggle,
 			"SMILE_TOGGLE" => $smile_toggle,
 			"SIG_TOGGLE" => $sig_toggle,
+			"ANNOUNCE_TOGGLE" => $annouce_toggle,
+			"STICKY_TOGGLE" => $sticky_toggle,
 			"NOTIFY_TOGGLE" => $notify_toggle,
 			"BBCODE_TOGGLE" => $bbcode_toggle,
 			"BBCODE_STATUS" => $bbcode_status,

@@ -22,12 +22,12 @@
 				<td width="8%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_REPLIES}</b></font></td>
 				<td width="20%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>&nbsp;{L_AUTHOR}</b></font></td>
 				<td width="6%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_VIEWS}</b></font></td>
-				<td width="17%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_LASTPOST}</b></font></td>	
+				<td width="17%" bgcolor="{T_TH_COLOR3}" align="center"><font face="{T_FONTFACE2}" size="{T_FONTSIZE2}"><b>{L_LASTPOST}</b></font></td>
 			</tr>
 			<!-- BEGIN topicrow -->
 			<tr>
 				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle">&nbsp;{topicrow.FOLDER}&nbsp;</td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">&nbsp;<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>&nbsp;{topicrow.GOTO_PAGE}</td>
+				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE1}">&nbsp;{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>&nbsp;{topicrow.GOTO_PAGE}</td>
 				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{topicrow.REPLIES}</font></td>
 				<td bgcolor="{T_TD_COLOR2}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><a href="{topicrow.U_TOPIC_POSTER_PROFILE}">{topicrow.TOPIC_POSTER}</a></font></td>
 				<td bgcolor="{T_TD_COLOR1}" align="center" valign="middle"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}">{topicrow.VIEWS}</font></td>

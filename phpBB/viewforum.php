@@ -1,26 +1,26 @@
 <?php
-/***************************************************************************  
- *                                 
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+/***************************************************************************
+ *
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
 
@@ -57,24 +57,24 @@ init_userprefs($userdata);
 if(isset($forum_id))
 {
 /*
-	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id    
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa  
+	$sql = "SELECT f.forum_name, f.forum_topics, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, u.username, u.user_id
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
 		WHERE f.forum_id = $forum_id
-			AND aa.auth_mod = 1 
-			AND aa.forum_id = f.forum_id 
-			AND ug.group_id = aa.group_id 
+			AND aa.auth_mod = 1
+			AND aa.forum_id = f.forum_id
+			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id";
 */
-	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.*   
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa, ".AUTH_FORUMS_TABLE." fa  
+	$sql = "SELECT f.forum_name, f.forum_topics, u.username, u.user_id, fa.*
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa, ".AUTH_FORUMS_TABLE." fa
 		WHERE f.forum_id = $forum_id
 			AND fa.forum_id = f.forum_id
-			AND aa.auth_mod = 1 
-			AND aa.forum_id = f.forum_id 
-			AND ug.group_id = aa.group_id 
+			AND aa.auth_mod = 1
+			AND aa.forum_id = f.forum_id
+			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id";
 }
-else 
+else
 {
 	error_die(GENERAL_ERROR, "You have reached this page in error, please go back and try again");
 }
@@ -83,9 +83,9 @@ if(!$result = $db->sql_query($sql))
 {
 	error_die(SQL_QUERY, "Couldn't obtain forums information.", __LINE__, __FILE__);
 }
-// If the query doesn't return any rows this 
+// If the query doesn't return any rows this
 // isn't a valid forum. Inform the user.
-if(!$total_rows = $db->sql_numrows($result)) 
+if(!$total_rows = $db->sql_numrows($result))
 {
    error_die(GENERAL_ERROR, "The forum you selected does not exist. Please go back and try again.");
 }
@@ -108,7 +108,7 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 	// to read this forum ...
 	//
 	include('includes/page_header.'.$phpEx);
-	
+
 	$msg = "I am sorry but only " . $is_auth['auth_read_type'] . " can read this forum.";
 
 	$template->set_filenames(array(
@@ -135,16 +135,16 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 {
 	if($x > 0)
 		$forum_moderators .= ", ";
-	
+
 	$forum_moderators .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_row[$x]['user_id'])."\">".$forum_row[$x]['username']."</a>";
 }
 
 
 //
 // Generate a 'Show posts in previous x days'
-// select box. If the postdays var is POSTed 
-// then get it's value, find the number of topics 
-// with dates newer than it (to properly handle 
+// select box. If the postdays var is POSTed
+// then get it's value, find the number of topics
+// with dates newer than it (to properly handle
 // pagination) and alter the main query
 //
 $previous_days = array(0, 1, 7, 14, 30, 60, 180, 364);
@@ -156,9 +156,9 @@ if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 	$post_days = (!empty($HTTP_POST_VARS['postdays'])) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
-	$sql = "SELECT COUNT(*) AS forum_topics 
-		FROM ".TOPICS_TABLE."  
-		WHERE forum_id = $forum_id 
+	$sql = "SELECT COUNT(*) AS forum_topics
+		FROM ".TOPICS_TABLE."
+		WHERE forum_id = $forum_id
 			AND topic_time > $min_post_time";
 
 	if(!$result = $db->sql_query($sql))
@@ -195,11 +195,12 @@ $select_post_days .= "</select>";
 $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time
 	FROM ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".POSTS_TABLE." p, ".USERS_TABLE." u2
 	WHERE t.forum_id = $forum_id
-		AND t.topic_poster = u.user_id 
-		AND p.post_id = t.topic_last_post_id 
-		AND p.poster_id = u2.user_id 
+		AND t.topic_poster = u.user_id
+		AND p.post_id = t.topic_last_post_id
+		AND p.poster_id = u2.user_id
+		AND t.topic_type <> ".GLOB_ANNOUNCE."
 		$limit_posts_time
-	ORDER BY p.post_time DESC
+	ORDER BY t.topic_type DESC, p.post_time DESC
 	LIMIT $start, ".$board_config['topics_per_page'];
 if(!$t_result = $db->sql_query($sql))
 {
@@ -208,7 +209,7 @@ if(!$t_result = $db->sql_query($sql))
 $total_topics = $db->sql_numrows($t_result);
 
 //
-// Post URL generation for 
+// Post URL generation for
 // templating vars
 //
 $post_new_topic_url = append_sid("posting.".$phpEx."?mode=newtopic&".POST_FORUM_URL."=$forum_id");
@@ -278,8 +279,8 @@ if($total_topics)
 
 		$unread_topic_list['lastupdate'] = time();
 
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "'
 			WHERE user_id = " . $userdata['user_id'];
 		if(!$s_topic_times = $db->sql_query($sql))
 		{
@@ -291,6 +292,22 @@ if($total_topics)
 	for($x = 0; $x < $total_topics; $x++)
 	{
 		$topic_title = stripslashes($topic_rowset[$x]['topic_title']);
+
+		$topic_type = $topic_rowset[$x]['topic_type'];
+
+		if($topic_type == ANNOUCE)
+		{
+			$topic_type = $lang['Annoucement'] . " ";
+		}
+		else if($topic_type == STICKY)
+		{
+			$topic_type = $lang['Sticky'] . " ";
+		}
+		else
+		{
+			$topic_type = "";
+		}
+
 		$topic_id = $topic_rowset[$x]['topic_id'];
 
 		$replies = $topic_rowset[$x]['topic_replies'];
@@ -300,14 +317,14 @@ if($total_topics)
 			$times = 1;
 			for($i = 0; $i < ($replies + 1); $i += $board_config['posts_per_page'])
 			{
-				if($times > 4) 
+				if($times > 4)
 				{
-					if(($i + $board_config['posts_per_page']) >= ($replies + 1)) 
+					if(($i + $board_config['posts_per_page']) >= ($replies + 1))
 					{
 						$goto_page.=" ... <a href=\"".append_sid("viewtopic.$phpEx?".POST_TOPIC_URL."=".$topic_id."&start=$i")."\">$times</a>";
 					}
 				}
-				else 
+				else
 				{
 					if($times != 1)
 					{
@@ -319,7 +336,7 @@ if($total_topics)
 			}
 			$goto_page.= ")";
 		}
-		else 
+		else
 		{
 			$goto_page = "";
 		}
@@ -339,7 +356,7 @@ if($total_topics)
 				$folder_image = ($topic_rowset[$x]['post_time'] > $userdata['session_time'] - 300) ? "<img src=\"".$images['new_folder']."\">" : "<img src=\"".$images['folder']."\">";
 			}
 //		}
-				
+
 		$view_topic_url = append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$topic_id."&".$replies);
 
 		$topic_poster = stripslashes($topic_rowset[$x]['username']);
@@ -354,11 +371,12 @@ if($total_topics)
 		$template->assign_block_vars("topicrow", array(
 			"FORUM_ID" => $forum_id,
 			"TOPIC_ID" => $topic_id,
-			"FOLDER" => $folder_image, 
+			"FOLDER" => $folder_image,
 			"TOPIC_POSTER" => $topic_poster,
 			"GOTO_PAGE" => $goto_page,
 			"REPLIES" => $replies,
 			"TOPIC_TITLE" => $topic_title,
+			"TOPIC_TYPE" => $topic_type,
 			"VIEWS" => $views,
 			"LAST_POST_TIME" => $last_post_time,
 			"LAST_POST_USER" => $last_post_user,
@@ -381,10 +399,10 @@ if($total_topics)
 	$template->assign_vars(array(
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start),
 		"ON_PAGE" => (floor($start/$board_config['topics_per_page'])+1),
-		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']), 
+		"TOTAL_PAGES" => ceil($topics_count/$board_config['topics_per_page']),
 
 		"S_AUTH_LIST" => $s_auth_can,
-		
+
 		"L_OF" => $lang['of'],
 		"L_PAGE" => $lang['Page'],
 		"L_GOTO_PAGE" => $lang['Goto_page'])
@@ -401,7 +419,7 @@ else
 	//
 	error_die(NO_POSTS);
 }
-			       
+
 include('includes/page_tail.'.$phpEx);
 
 ?>

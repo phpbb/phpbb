@@ -34,7 +34,7 @@ CREATE TABLE phpbb_auth_forums (
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
    auth_votecreate int2 DEFAULT '0' NOT NULL,
-   auth_vote int2 DEFAULT '0' NOT NULL, 
+   auth_vote int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL
 );
 
@@ -53,8 +53,8 @@ CREATE TABLE phpbb_auth_access (
    auth_delete int2 DEFAULT '0' NOT NULL,
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
-   auth_votecreate int2 DEFAULT '0' NOT NULL, 
-   auth_attachments int2 DEFAULT '0' NOT NULL, 
+   auth_votecreate int2 DEFAULT '0' NOT NULL,
+   auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
    auth_admin int2 DEFAULT '0' NOT NULL
@@ -141,7 +141,7 @@ CREATE TABLE phpbb_config (
    system_timezone int4 NOT NULL,
    sys_template varchar(50) NOT NULL,
    avatar_filesize int4 DEFAULT '6144' NOT NULL,
-   avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL, 
+   avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
    selected int2 NOT NULL,
@@ -286,8 +286,8 @@ CREATE TABLE phpbb_session (
    session_id char(32) DEFAULT '0' NOT NULL,
    session_user_id int4 DEFAULT '0' NOT NULL,
    session_start int4 DEFAULT '0' NOT NULL,
-   session_time int4 DEFAULT '0' NOT NULL, 
-   session_last_visit int4 DEFAULT '0' NOT NULL, 
+   session_time int4 DEFAULT '0' NOT NULL,
+   session_last_visit int4 DEFAULT '0' NOT NULL,
    session_ip char(8) DEFAULT '0' NOT NULL,
    session_page int4 DEFAULT '0' NOT NULL,
    session_logged_in int2 DEFAULT '0' NOT NULL,
@@ -404,6 +404,7 @@ CREATE TABLE phpbb_topics (
    topic_replies int4 DEFAULT '0' NOT NULL,
    forum_id int4 DEFAULT '0' NOT NULL,
    topic_status int2 DEFAULT '0' NOT NULL,
+   topic_type int2 DEFAULT '0' NOT NULL,
    topic_notify int2 DEFAULT '0',
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)

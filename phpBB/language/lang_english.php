@@ -126,6 +126,8 @@ $lang['Forum_Index'] = "Forum Index";
 //
 // Viewforum
 //
+$lang['Annoucement'] = "<b>Annoucement:</b>";
+$lang['Sticky'] = "<b>Sticky:</b>";
 
 //
 // Viewtopic
@@ -140,6 +142,9 @@ $lang['Empty_subj'] = "You must specifiy a subject when posting a new topic.";
 $lang['Empty_msg'] = "You must enter a message when posting!";
 $lang['Postnew'] = "Post New Topic";
 $lang['Post_new_in'] = "Post New Topic in:"; // Followed by forum name
+$lang['Post_Annoucement'] = "Post as an annoucement";
+$lang['Post_Sticky'] = "Stick this topic";
+$lang['Annouce_and_sticky'] = "You cannot post a topic that is both an annoucement and a sticky topic";
 
 
 //

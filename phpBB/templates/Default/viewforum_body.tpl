@@ -42,7 +42,7 @@
 	        <!-- BEGIN topicrow -->
 	        <tr bgcolor="#DDDDDD" class="tablebody">
 	          <td width="5%" align="center" valign="middle">{topicrow.FOLDER}</td>
-              <td><a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>&nbsp;{topicrow.GOTO_PAGE}</td>
+              <td>{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>&nbsp;{topicrow.GOTO_PAGE}</td>
               <td width="5%" align="center" valign="middle">{topicrow.REPLIES}</td>
               <td width="10%" align="center" valign="middle">{topicrow.TOPIC_POSTER}</td>
 	          <td width="5%" align="center" valign="middle">{topicrow.VIEWS}</td>

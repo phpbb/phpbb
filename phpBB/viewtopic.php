@@ -142,10 +142,10 @@ else
 /*
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
 
-	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . " 
-		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f 
-		WHERE $join_sql 
-			AND f.forum_id = t.forum_id 
+	$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_votecreate, f.auth_vote, f.auth_attachments" . $count_sql . "
+		FROM $join_sql_table ".TOPICS_TABLE." t, ".FORUMS_TABLE." f
+		WHERE $join_sql
+			AND f.forum_id = t.forum_id
 			$order_sql";
 */
 	$order_sql = (!isset($post_id)) ? "" : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, f.forum_name, f.forum_id, fa.auth_view, fa.auth_read, fa.auth_post, fa.auth_reply, fa.auth_edit, fa.auth_delete, fa.auth_announce, fa.auth_sticky, fa.auth_votecreate, fa.auth_vote ORDER BY p.post_id ASC";
@@ -271,8 +271,8 @@ if($userdata['user_id'] != ANONYMOUS)
 	{
 		unset($unread_topic_list[$forum_id][$topic_id]);
 
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "' 
+		$sql = "UPDATE " . USERS_TABLE . "
+			SET user_topics_unvisited = '" . serialize($unread_topic_list) . "'
 			WHERE user_id = " . $userdata['user_id'];
 		if(!$s_topic_times = $db->sql_query($sql))
 		{
@@ -578,8 +578,8 @@ $template->assign_vars(array(
 	"ON_PAGE" => (floor($start/$board_config['posts_per_page'])+1),
 	"TOTAL_PAGES" => ceil(($total_replies)/$board_config['posts_per_page']),
 
-	"S_AUTH_LIST" => $s_auth_can, 
-	"S_TOPIC_ADMIN" => $topic_mod, 
+	"S_AUTH_LIST" => $s_auth_can,
+	"S_TOPIC_ADMIN" => $topic_mod,
 
 	"L_OF" => $lang['of'],
 	"L_PAGE" => $lang['Page'],
