@@ -863,6 +863,7 @@ CREATE TABLE phpbb_users (
    user_dateformat varchar(15) DEFAULT 'd M Y H:i' NOT NULL,
    user_style tinyint(4) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
+   user_colour varchar(6) DEFAULT '' NOT NULL,
    user_new_privmsg tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_unread_privmsg tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    user_last_privmsg int(11) DEFAULT '0' NOT NULL,
