@@ -33,6 +33,7 @@ $auth->acl($user->data);
 // var definitions
 $post_id = (!empty($_REQUEST['p'])) ? intval($_REQUEST['p']) : 0;
 $reason_id = (!empty($_REQUEST['reason_id'])) ? intval($_REQUEST['reason_id']) : 0;
+$notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE;
 $description = (!empty($_REQUEST['description'])) ? stripslashes($_REQUEST['description']) : '';
 
 // Start output of page
@@ -77,11 +78,18 @@ if (isset($_POST['cancel']))
 // Has the report been confirmed?
 if (!empty($_POST['reason_id']))
 {
+	$result = $db->sql_query('SELECT reason_name FROM ' . REASONS_TABLE . " WHERE reason_id = $reason_id");
+	$row = $db->sql_fetchrow($result);
+	if (!$row || (!$description && $row['reason_name'] == 'other'))
+	{
+		trigger_error('EMPTY_REPORT');
+	}
+
 	$sql_ary = array(
 		'reason_id'		=>	(int) $reason_id,
 		'post_id'		=>	(int) $post_id,
 		'user_id'		=>	(int) $user->user_id,
-		'user_notify'	=>	(!empty($_POST['notify'])) ? 1 : 0,
+		'user_notify'	=>	(int) $notify,
 		'report_time'	=>	(int) time(),
 		'report_text'	=>	(string) $description
 	);
@@ -98,9 +106,9 @@ if (!empty($_POST['reason_id']))
 		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET topic_reported = 1 WHERE topic_id = ' . $topic_id);
 	}
 
-	// TODO: warn moderators or something ;)
+	trigger_error($user->lang['POST_REPORTED_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'));
 
-	trigger_error($user->lang['POST_REPORTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'));
+	// TODO: warn moderators or something ;)
 }
 
 // Generate the form
@@ -135,6 +143,7 @@ while ($row = $db->sql_fetchrow($result))
 	));
 }
 
+$template->assign_var('S_CAN_NOTIFY', ($user->data['user_id'] == ANONYMOUS) ? FALSE : TRUE);
 $template->set_filenames(array(
 	'body' => 'report.html'
 ));
