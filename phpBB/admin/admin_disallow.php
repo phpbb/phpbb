@@ -23,7 +23,7 @@
 if($setmodules == 1)
 {
 	$filename = basename(__FILE__);
-	$module['Users']['Disallow'] = $filename;
+	$module['Users']['Disallow'] = append_sid($filename);
 
 	return;
 }
@@ -119,7 +119,7 @@ $template->assign_vars(array(
 	"L_DELETE" => $lang['Delete'],
 	"L_ADD" => $lang['Add'],
 	"L_RESET" => $lang['Reset'],
-	"S_FORM_ACTION" => 'admin_disallow.php',
+	"S_FORM_ACTION" => append_sid('admin_disallow.php'),
 	"L_EXPLAIN" => $lang['disallow_instructs'],
 	"L_DEL_DISALLOW" => $lang['del_disallow'],
 	"L_DEL_EXPLAIN" => $lang['del_disallow_explain'],
