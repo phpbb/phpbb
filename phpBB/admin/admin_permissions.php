@@ -484,7 +484,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			do
 			{
 				$preset_update_options .= '<option value="' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
-				$preset_options .= '<option style="color:red" value="preset_' . $row['preset_id'] . '">* ' . $row['preset_name'] . '</option>';
+				$preset_options .= '<option value="preset_' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
 
 				$preset_data = unserialize($row['preset_data']);
 				
@@ -579,9 +579,9 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 
 <form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="2" cellpadding="0" border="0" align="center">
 	<tr>
-		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><?php 
-	
-		echo ($preset_options) ? '<option>--' . $user->lang['PRESETS'] . '--</option>' . $preset_options : ''; 
+		<td align="right">Quick settings: <select name="set" onchange="use_preset(this.options[this.selectedIndex].value);"><option class="sep"><?php echo $user->lang['Select'] . ' -&gt;'; ?></option><option value="all_allow"><?php echo $user->lang['ALL_ALLOW']; ?></option><option value="all_deny"><?php echo $user->lang['ALL_DENY']; ?></option><option value="all_inherit"><?php echo $user->lang['ALL_INHERIT']; ?></option><?php 
+
+		echo ($preset_options) ? '<option class="sep">' . $user->lang['PRESETS'] . ' -&gt;' . '</option>' . $preset_options : ''; 
 
 ?></select></td>
 	</tr>
@@ -682,7 +682,7 @@ if (!empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators'
 			</tr>
 			<tr>
 				<td nowrap="nowrap"><?php echo $user->lang['SELECT_PRESET']; ?>: </td>
-				<td><select name="presetoption"><option value="-1"><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><?php 
+				<td><select name="presetoption"><option class="sep" value="-1"><?php echo $user->lang['Select'] . ' -&gt;'; ?></option><?php 
 
 		echo $preset_update_options;
 	

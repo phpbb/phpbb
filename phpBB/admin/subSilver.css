@@ -172,6 +172,10 @@ input.text {
 	font-family:	'Courier New',courier;
 }
 
+option.sep {
+	background-color:	#EFEFEF;
+}
+
 textarea.edit {
 	font-family:	'Courier New',courier;
 	font-size:		9pt;
