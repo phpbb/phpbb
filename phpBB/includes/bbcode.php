@@ -229,13 +229,13 @@ class bbcode
 					if ($user->data['user_viewflash'])
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash', $bbcode_id)
+							'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=>	$this->bbcode_tpl('flash', $bbcode_id)
 						));
 					}
 					else
 					{
 						$this->bbcode_cache[$bbcode_id] = array('preg' => array(
-							'#\[flash:$uid\](.*?)\[/flash:$uid\]#'	=>	str_replace('\\2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id))
+							'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=>	str_replace('\\1', '\\3', str_replace('\\2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id)))
 						));
 					}
 				break;
@@ -254,7 +254,7 @@ class bbcode
 		}
 	}
 
-	function bbcode_tpl($tpl_name, $bbcode_id = 0)
+	function bbcode_tpl($tpl_name, $bbcode_id = -1)
 	{
 		static $bbcode_hardtpl = array(
 			'b_open'		=>	'<span style="font-weight: bold">',
@@ -268,7 +268,7 @@ class bbcode
 			'size'			=>	'<span style="font-size: \1px; line-height: normal">\2</span>',
 			'color'			=>	'<span style="color: \1">\2</span>',
 			'olist_open'	=>	'<ol style="list-style-type:{LIST_TYPE}">',
-			'olist_close'	=>	'</ol',
+			'olist_close'	=>	'</ol>',
 			'ulist_open'	=>	'<ul>',
 			'ulist_close'	=>	'</ul>',
 			'listitem'		=>	'<li>',
@@ -280,7 +280,7 @@ class bbcode
 // DEBUG - nothing but [quote] and [list] is templated.
 // Note that [quote] and [code] templates MUST be defined, there is no hardcoded equivalent
 $user->theme['bbcode_bitfield'] = bindec('100000001');
-		if ($bbcode_id && !($user->theme['bbcode_bitfield'] & pow(2, $bbcode_id)))
+		if ($bbcode_id != -1 && !($user->theme['bbcode_bitfield'] & pow(2, $bbcode_id)))
 		{
 			return $bbcode_hardtpl[$tpl_name];
 		}
@@ -321,7 +321,7 @@ $user->theme['bbcode_bitfield'] = bindec('100000001');
 			'color'					=>	array('{COLOR}'		=>	'\\1', 'TEXT'			=>	'\\2'),
 			'size'					=>	array('{SIZE}'		=>	'\\1', 'TEXT'			=>	'\\2'),
 			'img'					=>	array('{URL}'		=>	'\\1'),
-			'flash'					=>	array('{URL}'		=>	'\\1'),
+			'flash'					=>	array('{WIDTH}'		=>	'\\1', '{HEIGHT}'		=>	'\\2', '{URL}'		=>	'\\3'),
 			'url'					=>	array('{URL}'		=>	'\\1', '{DESCRIPTION}'	=>	'\\2'),
 			'email'					=>	array('{EMAIL}'		=>	'\\1', '{DESCRIPTION}'	=>	'\\2')
 		);
@@ -374,7 +374,7 @@ $user->theme['bbcode_bitfield'] = bindec('100000001');
 			$start = 1;
 		}
 		
-		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl('list_open'));
+		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl('olist_open'));
 	}
 
 	function bbcode_second_pass_code($type, $code)
