@@ -42,17 +42,18 @@ CREATE TABLE phpbb_attach_desc (
 
 # --------------------------------------------------------
 #
-# Table structure for table `phpbb_auth_dependencies`
+# Table structure for table `phpbb_auth_deps`
 #
-CREATE TABLE phpbb_auth_dependencies (
+CREATE TABLE phpbb_auth_deps (
   dep_id tinyint(4) UNSIGNED NOT NULL auto_increment, 
-  dep_name varchar(50) NOT NULL DEFAULT '', 
-  auth_value text NOT NULL,
-  auth_allow tinyint(1) NOT NULL default '2',
-  forum_id text NOT NULL,
+  auth_option char(20) DEFAULT '' NOT NULL,
+  auth_setting tinyint(1) DEFAULT '2' NOT NULL,
+  forum_id mediumint(8) DEFAULT '0' NOT NULL,
   auth_deps text NOT NULL, 
   PRIMARY KEY (dep_id), 
-  KEY dep_name (dep_name)
+  KEY auth_option (auth_option),
+  KEY auth_setting (auth_setting), 
+  KEY forum_id (forum_id) 
 );
 
 
@@ -64,7 +65,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) unsigned NOT NULL default '0',
   forum_id mediumint(8) unsigned NOT NULL default '0',
   auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1',
+  auth_setting tinyint(4) NOT NULL default '1',
   KEY group_id (group_id),
   KEY auth_option_id (auth_option_id)
 );
@@ -76,12 +77,12 @@ CREATE TABLE phpbb_auth_groups (
 #
 CREATE TABLE phpbb_auth_options (
   auth_option_id tinyint(4) NOT NULL auto_increment,
-  auth_value char(20) NOT NULL,
+  auth_option char(20) NOT NULL,
   is_global tinyint(1) DEFAULT '0' NOT NULL,
   is_local tinyint(1) DEFAULT '0' NOT NULL,
   founder_only tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (auth_option_id),
-  KEY auth_value (auth_value)
+  KEY auth_option (auth_option)
 );
 
 
@@ -91,10 +92,10 @@ CREATE TABLE phpbb_auth_options (
 #
 CREATE TABLE phpbb_auth_presets (
   preset_id tinyint(4) NOT NULL auto_increment, 
-  preset_name varchar(50) NOT NULL, 
-  preset_user_id mediumint(5) UNSIGNED NOT NULL, 
-  preset_type varchar(2) NOT NULL, 
-  preset_data text,
+  preset_name varchar(50) DEFAULT '' NOT NULL, 
+  preset_user_id mediumint(5) DEFAULT 0 UNSIGNED NOT NULL, 
+  preset_type varchar(2) DEFAULT '' NOT NULL, 
+  preset_data text DEFAULT '' NOT NULL,
   PRIMARY KEY (preset_id),
   KEY preset_type (preset_type)
 );
@@ -106,9 +107,9 @@ CREATE TABLE phpbb_auth_presets (
 #
 CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED NOT NULL default '0',
-  forum_id mediumint(8) unsigned NOT NULL default '0',
-  auth_option_id smallint(5) unsigned NOT NULL default '0',
-  auth_allow_deny tinyint(4) NOT NULL default '1',
+  forum_id mediumint(8) UNSIGNED NOT NULL default '0',
+  auth_option_id smallint(5) UNSIGNED NOT NULL default '0',
+  auth_setting tinyint(4) NOT NULL default '1',
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
 );
@@ -120,14 +121,14 @@ CREATE TABLE phpbb_auth_users (
 #
 CREATE TABLE phpbb_banlist (
    ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   ban_userid mediumint(8) UNSIGNED,
-   ban_ip varchar(40),
-   ban_email varchar(50),
-   ban_start int(11),
-   ban_end int(11),
+   ban_userid mediumint(8) UNSIGNED DEFAULT 0 NOT NULL,
+   ban_ip varchar(40) DEFAULT '' NOT NULL,
+   ban_email varchar(50) DEFAULT '' NOT NULL,
+   ban_start int(11) DEFAULT '0' NOT NULL,
+   ban_end int(11) DEFAULT '0' NOT NULL,
    ban_exclude tinyint(1) DEFAULT '0' NOT NULL, 
-   ban_reason varchar(255), 
-   ban_give_reason varchar(255), 
+   ban_reason varchar(255) DEFAULT '' NOT NULL, 
+   ban_give_reason varchar(255) DEFAULT '' NOT NULL, 
    PRIMARY KEY (ban_id)
 );
 
@@ -150,10 +151,10 @@ CREATE TABLE phpbb_config (
 # Table structure for table 'phpbb_confirm'
 #
 CREATE TABLE phpbb_confirm (
-  confirm_id char(32) NOT NULL default '',
-  session_id char(32) NOT NULL default '',
-  code char(6) NOT NULL default '', 
-  time int(11) NOT NULL, 
+  confirm_id char(32) DEFAULT '' NOT NULL,
+  session_id char(32) DEFAULT '' NOT NULL,
+  code char(6) DEFAULT '' NOT NULL, 
+  time int(11) DEFAULT '0' NOT NULL, 
   PRIMARY KEY  (session_id,confirm_id),
   KEY time (time)
 );
@@ -165,7 +166,7 @@ CREATE TABLE phpbb_confirm (
 #
 CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   disallow_username varchar(30),
+   disallow_username varchar(30) DEFAULT '' NOT NULL,
    PRIMARY KEY (disallow_id)
 );
 
@@ -177,8 +178,8 @@ CREATE TABLE phpbb_disallow (
 CREATE TABLE phpbb_extensions (
   extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  extension varchar(100) NOT NULL,
-  comment varchar(100),
+  extension varchar(100) DEFAULT '' NOT NULL,
+  comment varchar(100) DEFAULT '' NOT NULL,
   PRIMARY KEY (extension_id)
 );
 
@@ -193,7 +194,7 @@ CREATE TABLE phpbb_extension_groups (
   cat_id tinyint(2) DEFAULT '0' NOT NULL, 
   allow_group tinyint(1) DEFAULT '0' NOT NULL,
   download_mode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-  upload_icon varchar(100) DEFAULT '',
+  upload_icon varchar(100) DEFAULT '' NOT NULL,
   max_filesize int(20) DEFAULT '0' NOT NULL,
   PRIMARY KEY (group_id)
 );
@@ -230,7 +231,6 @@ CREATE TABLE phpbb_forums (
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   forum_last_topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_poster_id mediumint(8) DEFAULT '0' NOT NULL,
    forum_last_post_time int(11) DEFAULT '0' NOT NULL,
