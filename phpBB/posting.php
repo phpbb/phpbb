@@ -89,58 +89,59 @@ else
 	       }
 	     $username_input = '<input type="text" name="username" value="'.$username.'" size="25" maxlength="50">';
 	     $password_input = '<input type="password" name="password" size="25" maxlenght="40">';
-	     $subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlenght="255">';
-	     $message_input = '<textarea name="message" rows="10" cols="35" wrap="virtual">'.$message.'</textarea>';
-	     if($allow_html)
-	       {
-		  $html_status = $l_htmlis . " " . $l_on;
-		  $html_toggle = '<input type="checkbox" name="disable_html" ';
-		  if($disable_html) 
-		    {
-		       $html_toggle .= 'checked';
-		    }
-		  $html_toggle .= "> $l_disable $l_html $l_onthispost";
-	       }
-	     else
-	       {
-		  $html_status = $l_htmlis . " " . $l_off;
-	       }
-	     if($allow_bbcode)
-	       {
-		  $bbcode_status = $l_bbcodeis . " " . $l_on;
-		  $bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
-		  if($disable_bbcode)
-		    {
-		       $bbcode_toggle .= "checked";
-		    }
-		  $bbcode_toggle .= "> $l_disable $l_bbcode $l_onthispost";
-	       }
-	     else
-	       {
-		  $bbcode_status = $l_bbcodeis . " " . $l_off;
-	       }
-
-	     $smile_toggle = '<input type="checkbox" name="disable_smile" ';
-	     if($disable_smile)
-	       {
-		  $smile_toggle .= "checked";
-	       }
-	     $smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
-	     
-	     $sig_toggle = '<input type="checkbox" name="attach_sig" ';
-	     if($attach_sig || $userdata["attach_sig"] == 1)
-	       {
-		  $sig_toggle .= "checked";
-	       }
-	     $sig_toggle .= "> $l_attachsig";
-	     
-	     $notify_toggle = '<input type="checkbox" name="notify" ';
-	     if($notify || $userdata["always_notify"] == 1)
-	       {
-		  $notify_toggle .= "checked";
-	       }
-	     $notify_toggle .= "> $l_notify";
 	  }
+	$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlenght="255">';
+	$message_input = '<textarea name="message" rows="10" cols="35" wrap="virtual">'.$message.'</textarea>';
+	if($allow_html)
+	  {
+	     $html_status = $l_htmlis . " " . $l_on;
+	     $html_toggle = '<input type="checkbox" name="disable_html" ';
+	     if($disable_html) 
+	       {
+		  $html_toggle .= 'checked';
+	       }
+	     $html_toggle .= "> $l_disable $l_html $l_onthispost";
+	  }
+	else
+	  {
+	     $html_status = $l_htmlis . " " . $l_off;
+	  }
+	if($allow_bbcode)
+	  {
+	     $bbcode_status = $l_bbcodeis . " " . $l_on;
+	     $bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
+	     if($disable_bbcode)
+	       {
+		  $bbcode_toggle .= "checked";
+	       }
+	     $bbcode_toggle .= "> $l_disable $l_bbcode $l_onthispost";
+	  }
+	else
+	  {
+	     $bbcode_status = $l_bbcodeis . " " . $l_off;
+	  }
+	
+	$smile_toggle = '<input type="checkbox" name="disable_smile" ';
+	if($disable_smile)
+	  {
+	     $smile_toggle .= "checked";
+	  }
+	$smile_toggle .= "> $l_disable $l_smilies $l_onthispost";
+	
+	$sig_toggle = '<input type="checkbox" name="attach_sig" ';
+	if($attach_sig || $userdata["attach_sig"] == 1)
+	  {
+	     $sig_toggle .= "checked";
+	  }
+	$sig_toggle .= "> $l_attachsig";
+	
+	$notify_toggle = '<input type="checkbox" name="notify" ';
+	if($notify || $userdata["always_notify"] == 1)
+	  {
+	     $notify_toggle .= "checked";
+	  }
+	$notify_toggle .= "> $l_notify";
+	
 	
 	$template->set_var(array("L_ABOUTPOST" => $l_aboutpost,
 				 "L_SUBJECT" => $l_subject,
