@@ -36,7 +36,8 @@
 	<td class="{postrow.ROW_CLASS}" height="28" valign="top"> 
 	  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr> 
-		  <td>{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
+		  <td width="100%">{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: 
+			{postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: 
 			{postrow.POST_SUBJECT}</span></td>
 		  <td nowrap="nowrap" valign="top" align="right">{postrow.IP_IMG} {postrow.QUOTE_IMG} 
 			{postrow.EDIT_IMG}</td>
@@ -84,9 +85,10 @@
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
 	<td align="left" valign="middle" nowrap="nowrap"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_TOPIC_POST}" align="middle" width="82" height="25" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{IMG_REPLY}" border="0" alt="{L_TOPIC_REPLY}" align="middle" width="82" height="25" /></a><span class="nav"></span></td>
-	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;{L_PAGE} 
-	  <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span> 
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a> 
+	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{L_PAGE} 
+	  <b>{ON_PAGE}</b> {L_OF} <b>{TOTAL_PAGES}</b>&nbsp;&nbsp;::&nbsp;{PAGINATION}</span> 
 	  <span class="gensmall"><br />
 	  {S_TIMEZONE}</span></td>
   </tr>

@@ -56,7 +56,7 @@
   </tr>
 </table>
 <!-- BEGIN loginbox -->
-<br />
+<br />&nbsp;
 <form method="post" action="{S_LOGIN_ACTION}">
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
