@@ -52,12 +52,6 @@ else
 
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
-	// session id check
-	if ($sid == '' || $sid != $userdata['session_id'])
-	{
-		message_die(ERROR, 'Invalid_session');
-	}
-
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
 		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : '';
@@ -126,6 +120,12 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	}
 	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
 	{
+		// session id check
+		if ($sid == '' || $sid != $userdata['session_id'])
+		{
+			message_die(ERROR, 'Invalid_session');
+		}
+
 		if( $userdata['session_logged_in'] )
 		{
 			session_end($userdata['session_id'], $userdata['user_id']);
