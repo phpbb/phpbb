@@ -455,7 +455,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 					"FORUM_LOCATION" => $location,
 					"IP_ADDRESS" => $reg_ip, 
 
-					"U_WHOIS_IP" => "http://www.geektools.com/cgi-bin/proxy.cgi?query=$reg_ip&targetnic=auto", 
+					"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$reg_ip", 
 					"U_USER_PROFILE" => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
 					"U_FORUM_LOCATION" => append_sid($location_url))
 				);
@@ -547,7 +547,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 				"FORUM_LOCATION" => $location,
 				"IP_ADDRESS" => $guest_ip, 
 
-				"U_WHOIS_IP" => "http://www.geektools.com/cgi-bin/proxy.cgi?query=$guest_ip&targetnic=auto", 
+				"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$guest_ip", 
 				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
