@@ -133,14 +133,9 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 
 	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'post') ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
 	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'reply') ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-
-	if ( $mode == 'topic' )
-	{
-		$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'edit') ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
-		$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'attach') ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
-	}
-
+	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'edit') ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
 	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'delete') || $acl->get_acl($forum_id, 'mod', 'delete') ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
+	$rules .= ( ( $acl->get_acl($forum_id, 'forum', 'attach') ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
 
 	if ( $acl->get_acl($forum_id, 'mod') )
 	{
