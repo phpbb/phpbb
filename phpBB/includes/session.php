@@ -203,8 +203,6 @@ class session
 					}
 				}
 				while ($row = $db->sql_fetchrow($result));
-
-
 			}
 			$db->sql_freeresult($result);
 

@@ -170,31 +170,35 @@ function sync($type, $id)
 	return true;
 }
 
-function prune($forum_id, $prune_date)
+function prune($forum_id, $prune_date, $sql_topics = '')
 {
 	global $db, $lang, $phpEx, $phpbb_root_path;
 
-	// Those without polls ...
-	$sql = "SELECT t.topic_id
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
-		WHERE t.forum_id = $forum_id
-			AND t.topic_vote = 0
-			AND t.topic_type <> " . POST_ANNOUNCE . "
-			AND ( p.post_id = t.topic_last_post_id
-				OR t.topic_last_post_id = 0 )";
-	if ( $prune_date != '' )
+	if ($sql_topics = '')
 	{
-		$sql .= " AND p.post_time < $prune_date";
-	}
-	$result = $db->sql_query($sql);
+		// Those without polls ...
+		$sql = "SELECT t.topic_id
+			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
+			WHERE t.forum_id = $forum_id
+				AND t.topic_vote = 0
+				AND t.topic_type <> " . POST_ANNOUNCE . "
+				AND (p.post_id = t.topic_last_post_id
+					OR t.topic_last_post_id = 0)";
+		if ($prune_date != '')
+		{
+			$sql .= " AND p.post_time < $prune_date";
+		}
+		$result = $db->sql_query($sql);
 
-	$sql_topics = '';
-	while ( $row = $db->sql_fetchrow($result) )
-	{
-		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
+		$sql_topics = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql_topics .= (($sql_topics != '') ? ', ' : '') . $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
 	}
 
-	if ( $sql_topics != '' )
+	if ($sql_topics != '')
 	{
 		$sql = "SELECT post_id
 			FROM " . POSTS_TABLE . "
@@ -202,15 +206,19 @@ function prune($forum_id, $prune_date)
 				AND topic_id IN ($sql_topics)";
 		$result = $db->sql_query($sql);
 
-		$sql_post = '';
-		while ( $row = $db->sql_fetchrow($result) )
+		$sql_posts = '';
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$sql_post .= ( ( $sql_post != '' ) ? ', ' : '' ) . $row['post_id'];
+			$sql_posts .= (($sql_posts != '') ? ', ' : '') . $row['post_id'];
 		}
 
-		if ( $sql_post != '' )
+		if ($sql_post != '')
 		{
 			$db->sql_transaction();
+
+			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
+				WHERE topic_id IN ($sql_topics)";
+			$db->sql_query($sql);
 
 			$sql = "DELETE FROM " . TOPICS_TABLE . "
 				WHERE topic_id IN ($sql_topics)";
@@ -219,20 +227,20 @@ function prune($forum_id, $prune_date)
 			$pruned_topics = $db->sql_affectedrows();
 
 			$sql = "DELETE FROM " . POSTS_TABLE . "
-				WHERE post_id IN ($sql_post)";
+				WHERE post_id IN ($sql_posts)";
 			$db->sql_query($sql);
 
 			$pruned_posts = $db->sql_affectedrows();
 
 			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . "
-				WHERE post_id IN ($sql_post)";
+				WHERE post_id IN ($sql_posts)";
 			$db->sql_query($sql);
 
 			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
-				WHERE post_id IN ($sql_post)";
+				WHERE post_id IN ($sql_posts)";
 			$db->sql_query($sql);
 
-			remove_search_post($sql_post);
+			sync('forum', $forum_id);
 
 			$db->sql_transaction('commit');
 
@@ -254,15 +262,14 @@ function auto_prune($forum_id = 0)
 		WHERE forum_id = $forum_id";
 	$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
+	if ($row = $db->sql_fetchrow($result))
 	{
-		if ( $row['prune_freq'] && $row['prune_days'] )
+		if ($row['prune_freq'] && $row['prune_days'])
 		{
-			$prune_date = time() - ( $row['prune_days'] * 86400 );
-			$next_prune = time() + ( $row['prune_freq'] * 86400 );
+			$prune_date = time() - ($row['prune_days'] * 86400);
+			$next_prune = time() + ($row['prune_freq'] * 86400);
 
 			prune($forum_id, $prune_date);
-			sync('forum', $forum_id);
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET prune_next = $next_prune
@@ -287,17 +294,17 @@ function remove_comments(&$output)
 	$in_comment = false;
 	for($i = 0; $i < $linecount; $i++)
 	{
-		if ( preg_match('/^\/\*/', preg_quote($lines[$i])) )
+		if (preg_match('/^\/\*/', preg_quote($lines[$i])))
 		{
 			$in_comment = true;
 		}
 
-		if ( !$in_comment )
+		if (!$in_comment)
 		{
 			$output .= $lines[$i] . "\n";
 		}
 
-		if ( preg_match('/\*\/$/', preg_quote($lines[$i])) )
+		if (preg_match('/\*\/$/', preg_quote($lines[$i])))
 		{
 			$in_comment = false;
 		}
@@ -320,9 +327,9 @@ function remove_remarks($sql)
 
 	for ($i = 0; $i < $linecount; $i++)
 	{
-		if ( $i != $linecount - 1 || strlen($lines[$i]) > 0 )
+		if ($i != $linecount - 1 || strlen($lines[$i]) > 0)
 		{
-			$output .= ( $lines[$i][0] != '#' ) ? $lines[$i] . "\n" : "\n";
+			$output .= ($lines[$i][0] != '#') ? $lines[$i] . "\n" : "\n";
 			// Trading a bit of speed for lower mem. use here.
 			$lines[$i] = '';
 		}
@@ -351,7 +358,7 @@ function split_sql_file($sql, $delimiter)
 	for ($i = 0; $i < $token_count; $i++)
 	{
 		// Don't wanna add an empty string as the last thing in the array.
-		if ( $i != $token_count - 1 || strlen($tokens[$i] > 0) )
+		if ($i != $token_count - 1 || strlen($tokens[$i] > 0))
 		{
 			// This is the total number of single quotes in the token.
 			$total_quotes = preg_match_all("/'/", $tokens[$i], $matches);
@@ -362,7 +369,7 @@ function split_sql_file($sql, $delimiter)
 			$unescaped_quotes = $total_quotes - $escaped_quotes;
 
 			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
-			if ( !($unescaped_quotes % 2) )
+			if (!($unescaped_quotes % 2))
 			{
 				// It's a complete sql statement.
 				$output[] = $tokens[$i];
@@ -390,7 +397,7 @@ function split_sql_file($sql, $delimiter)
 
 					$unescaped_quotes = $total_quotes - $escaped_quotes;
 
-					if ( ($unescaped_quotes % 2) == 1 )
+					if (($unescaped_quotes % 2) == 1)
 					{
 						// odd number of unescaped quotes. In combination with the previous incomplete
 						// statement(s), we now have a complete statement. (2 odds always make an even)
@@ -426,7 +433,7 @@ function config_config($config = false)
 {
 	global $db, $phpbb_root_path, $phpEx;
 
-	if ( !$config )
+	if (!$config)
 	{
 		$config = array();
 
@@ -444,7 +451,7 @@ function config_config($config = false)
 	$cache_str = "\$config = array(\n";
 	foreach ($config as $config_name => $config_value)
 	{
-		$cache_str .= "\t'$config_name' => " . ( ( is_numeric($config_value) ) ? $config_value : '"' . addslashes($config_value) . '"' ) . ",\n";
+		$cache_str .= "\t'$config_name' => " . ((is_numeric($config_value)) ? $config_value : '"' . addslashes($config_value) . '"') . ",\n";
 	}
 	$cache_str .= ");";
 
@@ -586,7 +593,7 @@ class auth_admin extends auth
 		foreach ($auth as $auth_value => $allow)
 		{
 			$flag = substr($auth_value, 0, strpos($auth_value, '_') + 1);
-			if ( empty($auth[$flag]) )
+			if (empty($auth[$flag]))
 			{
 				$auth[$flag] = $allow;
 			}
@@ -603,35 +610,35 @@ class auth_admin extends auth
 		$db->sql_freeresult($result);
 
 		// One or more forums
-		if ( !is_array($forum_id) )
+		if (!is_array($forum_id))
 		{
 			$forum_id = array($forum_id);
 		}
 		// NOTE THIS USED TO BE IN ($forum_id, 0) ...
 		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
 
-		$sql = ( $mode == 'user' ) ? "SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $ug_id";
+		$sql = ($mode == 'user') ? "SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $ug_id";
 		$result = $db->sql_query($sql);
 
 		$cur_auth = array();
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_allow_deny'];
 		}
 		$db->sql_freeresult($result);
 
-		$table = ( $mode == 'user' ) ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field  = $mode . '_id';
 
-		foreach ( $forum_id as $forum)
+		foreach ($forum_id as $forum)
 		{
-			foreach ( $auth as $auth_value => $allow )
+			foreach ($auth as $auth_value => $allow)
 			{
 				$auth_option_id = $option_ids[$auth_value];
 
-				if ( !empty($cur_auth[$forum]) )
+				if (!empty($cur_auth[$forum]))
 				{
-					$sql_ary[] = ( !isset($cur_auth[$forum][$auth_option_id]) ) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)" : ( ( $cur_auth[$forum][$auth_option_id] != $allow ) ? "UPDATE " . $table . " SET auth_allow_deny = $allow WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '' );
+					$sql_ary[] = (!isset($cur_auth[$forum][$auth_option_id])) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)" : (($cur_auth[$forum][$auth_option_id] != $allow) ? "UPDATE " . $table . " SET auth_allow_deny = $allow WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '');
 				}
 				else
 				{
@@ -642,9 +649,9 @@ class auth_admin extends auth
 		unset($forum_id);
 		unset($user_auth);
 
-		foreach ( $sql_ary as $sql )
+		foreach ($sql_ary as $sql)
 		{
-			if ( $sql != '' )
+			if ($sql != '')
 			{
 				$result = $db->sql_query($sql);
 				$db->sql_freeresult($result);
@@ -664,12 +671,12 @@ class auth_admin extends auth
 		{
 			for($i = 0; $i < count($auth_ids); $i++)
 			{
-				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
+				$auth_sql .= (($auth_sql != '') ? ', ' : '') . $auth_ids[$i];
 			}
 			$auth_sql = " AND auth_option_id IN ($auth_sql)";
 		}
 
-		$table = ( $mode == 'user' ) ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field  = $mode . '_id';
 
 		$sql = "DELETE FROM $table
@@ -685,7 +692,7 @@ class auth_admin extends auth
 	{
 		global $db;
 
-		$where_sql = ( $user_id ) ? "WHERE user_id = $user_id" : '';
+		$where_sql = ($user_id) ? "WHERE user_id = $user_id" : '';
 
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_permissions = ''
@@ -699,7 +706,7 @@ class auth_admin extends auth
 	// $options = array(
 	//	'local'		=> array('option1', 'option2', ...),
 	//	'global'	=> array('optionA', 'optionB', ...)
-	// );
+	//);
 	function acl_add_option($options)
 	{
 		global $db;
@@ -716,13 +723,13 @@ class auth_admin extends auth
 				ORDER BY is_global, is_local, auth_value";
 		$result = $db->sql_query($sql);
 
-		while ( $row = $db->sql_fetchrow($result) )
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if ( !empty($row['is_global']) )
+			if (!empty($row['is_global']))
 			{
 				$cur_options['global'][] = $row['auth_value'];
 			}
-			if ( !empty($row['is_local']) )
+			if (!empty($row['is_local']))
 			{
 				$cur_options['local'][] = $row['auth_value'];
 			}
@@ -773,10 +780,10 @@ class auth_admin extends auth
 				{
 					case 'mysql':
 					case 'mysql4':
-						$sql .= ( ($sql != '') ? ', ' : '' ) . "('$option', " . $type_sql[$type] . ")";
+						$sql .= (($sql != '') ? ', ' : '') . "('$option', " . $type_sql[$type] . ")";
 						break;
 					case 'mssql':
-						$sql .= ( ($sql != '') ? ' UNION ALL ' : '' ) . " SELECT '$option', " . $type_sql[$type];
+						$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
 						break;
 					default:
 						$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
@@ -788,7 +795,7 @@ class auth_admin extends auth
 			}
 		}
 
-		if ( $sql != '' )
+		if ($sql != '')
 		{
 			$sql = "INSERT INTO " . ACL_OPTIONS_TABLE . " (auth_value, is_global, is_local)
 				VALUES $sql";
@@ -804,7 +811,7 @@ class auth_admin extends auth
 
 		$options = array();
 
-		if ( !$options )
+		if (!$options)
 		{
 			$sql = "SELECT auth_value, is_global, is_local
 				FROM " . ACL_OPTIONS_TABLE . "
@@ -812,13 +819,13 @@ class auth_admin extends auth
 			$result = $db->sql_query($sql);
 
 			$global = $local = 0;
-			while ( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result))
 			{
-				if ( !empty($row['is_global']) )
+				if (!empty($row['is_global']))
 				{
 					$options['global'][$row['auth_value']] = $global++;
 				}
-				if ( !empty($row['is_local']) )
+				if (!empty($row['is_local']))
 				{
 					$options['local'][$row['auth_value']] = $local++;
 				}

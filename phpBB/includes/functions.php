@@ -671,16 +671,22 @@ function redirect($url)
 		$db->sql_close();
 	}
 
-	$protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
-	$server = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['server_name']));
-	$path = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($config['script_path']));
-	$port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
+	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
+	$server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['server_name']));
+	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
+	$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($config['script_path']));
+	$url = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($url));
 
+	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
 	{
-		header('HTTP/1.0 302 Redirect');
+		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		exit;
 	}
-	header('Location: ' . $protocol . $server . $path . $port . $url);
+
+	// Behave as per HTTP/1.1 spec for others
+	header('Location: ' . $server_protocol . $server_name . $server_port . $script_name . $url);
 	exit;
 }
 
@@ -691,7 +697,7 @@ function validate_username($username)
 {
 	global $db, $user;
 
-	$username = sql_quote($username);
+	$username = $db->sql_escape($username);
 
 	$sql = "SELECT username
 		FROM " . USERS_TABLE . "
@@ -719,7 +725,7 @@ function validate_username($username)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'])) . ')\b#i', $username))
+		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['disallow_username'], '#')) . ')\b#i', $username))
 		{
 			return $user->lang['Username_disallowed'];
 		}
@@ -731,7 +737,7 @@ function validate_username($username)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['word'])) . ')\b#i', $username))
+		if (preg_match('#\b(' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . ')\b#i', $username))
 		{
 			return $user->lang['Username_disallowed'];
 		}
@@ -761,7 +767,7 @@ function validate_email($email)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (preg_match('/^' . str_replace('*', '.*?', $row['ban_email']) . '$/is', $email))
+				if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#is', $email))
 				{
 					return $user->lang['Email_banned'];
 				}

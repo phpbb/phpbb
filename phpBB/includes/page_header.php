@@ -29,7 +29,7 @@ define('HEADER_INC', TRUE);
 // gzip_compression
 if ($config['gzip_compress'])
 {
-	if (extension_loaded('zlib') && strstr($HTTP_USER_AGENT,'compatible') && !headers_sent())
+	if (extension_loaded('zlib') && !headers_sent())
 	{
 		ob_start('ob_gzhandler');
 	}
@@ -306,7 +306,7 @@ $template->assign_vars(array(
 	'U_SEARCH' 		=> 'search.'.$phpEx.$SID,
 	'U_REGISTER' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=register',
 	'U_PROFILE' 	=> 'ucp.'.$phpEx.$SID.'&amp;mode=editprofile',
-	'U_MODCP' 		=> 'modcp.'.$phpEx.$SID,
+	'U_MODCP' 		=> 'mcp.'.$phpEx.$SID,
 	'U_FAQ' 		=> 'faq.'.$phpEx.$SID,
 	'U_SEARCH_SELF'	=> 'search.'.$phpEx.$SID.'&amp;search_id=egosearch',
 	'U_SEARCH_NEW' 	=> 'search.'.$phpEx.$SID.'&amp;search_id=newposts',

@@ -37,6 +37,12 @@
 	to this source
 */
 
+// Changes for 2.2:
+//
+// * Allow use of Smarty plug-ins?
+// * Allow use of DB for storage of compiled templates
+// * Reduce number of methods and variables
+
 class Template {
 
 	var $classname = 'Template';
@@ -129,12 +135,12 @@ class Template {
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
-			message_die("Template->loadfile(): No file specified for handle $handle");
+			trigger_error("Template->loadfile(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
 		if (!($fp = @fopen($this->files[$handle], 'r')))
 		{
-			message_die("Template->loadfile(): Error - file $filename does not exist or is empty");
+			trigger_error("Template->loadfile(): Error - file $filename does not exist or is empty", E_USER_ERROR);
 		}
 
 		$str = '';
@@ -173,7 +179,7 @@ class Template {
 		{
 			if (!$this->loadfile($handle))
 			{
-				message_die("Template->pparse(): Couldn't load template file for handle $handle");
+				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
 			}
 
 			// Actually compile the code now.
@@ -202,7 +208,7 @@ class Template {
 		{
 			if (!$this->loadfile($handle))
 			{
-				message_die("Template->pparse(): Couldn't load template file for handle $handle");
+				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
 			}
 
 			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
@@ -230,7 +236,7 @@ class Template {
 		{
 			if (!$this->loadfile($handle))
 			{
-				message_die("Template->pparse(): Couldn't load template file for handle $handle");
+				trigger_error("Template->pparse(): Couldn't load template file for handle $handle", E_USER_ERROR);
 			}
 
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
