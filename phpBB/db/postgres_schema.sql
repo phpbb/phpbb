@@ -18,7 +18,7 @@ CREATE TABLE phpbb_banlist (
    ban_end int,
    ban_time_type int
 );
-
+CREATE INDEX banlist_ban_id ON phpbb_banlist (ban_id);
 
 # --------------------------------------------------------
 #
@@ -30,6 +30,7 @@ CREATE TABLE phpbb_categories (
    cat_title varchar(100),
    cat_order varchar(10)
 );
+CREATE INDEX categories_cat_id ON phpbb_categories (cat_id);
 
 
 # --------------------------------------------------------
@@ -56,7 +57,7 @@ CREATE TABLE phpbb_config (
    system_timezone varchar(4),
    default_lang varchar(255)
 );
-
+CREATE INDEX config_config_id ON phpbb_config (config_id);
 
 # --------------------------------------------------------
 #
@@ -79,7 +80,8 @@ CREATE TABLE phpbb_forum_access (
    user_id int,
    can_post int2 DEFAULT 0 NOT NULL
 );
-
+CREATE INDEX forum_access_forum_id ON phpbb_forum_access (forum_id);
+CREATE INDEX forum_access_user_id ON phpbb_forum_access (user_id);
 
 
 # --------------------------------------------------------
@@ -88,11 +90,12 @@ CREATE TABLE phpbb_forum_access (
 #
 
 CREATE TABLE phpbb_forum_mods (
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   user_id int(10) DEFAULT '0' NOT NULL,
-   mod_notify tinyint(3)
+   forum_id int NOT NULL DEFAULT 0,
+   user_id int NOT NULL DEFAULT 0,
+   mod_notify int2
 );
-
+CREATE INDEX forum_mods_forum_id ON phpbb_forum_mods (forum_id);
+CREATE INDEX forum_mods_user_id ON phpbb_forum_mods (user_id);
 
 # --------------------------------------------------------
 #
@@ -100,21 +103,20 @@ CREATE TABLE phpbb_forum_mods (
 #
 
 CREATE TABLE phpbb_forums (
-   forum_id int(10) NOT NULL auto_increment,
+   forum_id SERIAL PRIMARY KEY,
    forum_name varchar(150),
    forum_desc text,
-   forum_access tinyint(3),
-   cat_id int(10),
-   forum_order int(11) DEFAULT '1' NOT NULL,
-   forum_type tinyint(3),
-   forum_posts int(11) DEFAULT '0' NOT NULL,
-   forum_topics tinyint(4) DEFAULT '0' NOT NULL,
-   forum_last_post_id int(11) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (forum_id),
-   KEY forum_id (forum_id),
-   KEY forums_order (forum_order),
-   KEY cat_id (cat_id)
+   forum_access int2,
+   cat_id int,
+   forum_order int DEFAULT '1' NOT NULL,
+   forum_type int2,
+   forum_posts int DEFAULT '0' NOT NULL,
+   forum_topics int DEFAULT '0' NOT NULL,
+   forum_last_post_id int DEFAULT '0' NOT NULL
 );
+CREATE INDEX forums_forum_id ON phpbb_forums (forum_id);
+CREATE INDEX forums_forum_order ON phpbb_forums (forum_order);
+CREATE INDEX forums_cat_id ON phpbb_forums (cat_id);
 
 
 # --------------------------------------------------------
@@ -135,17 +137,17 @@ CREATE TABLE phpbb_headermetafooter (
 #
 
 CREATE TABLE phpbb_posts (
-   post_id int(10) NOT NULL auto_increment,
-   topic_id int(10) DEFAULT '0' NOT NULL,
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   poster_id int(10) DEFAULT '0' NOT NULL,
-   post_time int(10) DEFAULT '0' NOT NULL,
-   poster_ip int(10) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (post_id),
-   KEY forum_id (forum_id),
-   KEY topic_id (topic_id),
-   KEY poster_id (poster_id)
+   post_id SERIAL PRIMARY KEY,
+   topic_id int DEFAULT '0' NOT NULL,
+   forum_id int DEFAULT '0' NOT NULL,
+   poster_id int DEFAULT '0' NOT NULL,
+   post_time int DEFAULT '0' NOT NULL,
+   poster_ip int DEFAULT '0' NOT NULL
 );
+CREATE INDEX posts_post_id ON phpbb_posts (post_id);
+CREATE INDEX posts_forum_id ON phpbb_posts (forum_id);
+CREATE INDEX posts_topic_id ON phpbb_posts (topic_id);
+CREATE INDEX posts_poster_id ON phpbb_posts (poster_id);
 
 
 # --------------------------------------------------------
@@ -154,9 +156,8 @@ CREATE TABLE phpbb_posts (
 #
 
 CREATE TABLE phpbb_posts_text (
-   post_id int(10) DEFAULT '0' NOT NULL,
-   post_text text,
-   PRIMARY KEY (post_id)
+   post_id int DEFAULT '0' NOT NULL PRIMARY KEY,
+   post_text text
 );
 
 
@@ -166,17 +167,15 @@ CREATE TABLE phpbb_posts_text (
 #
 
 CREATE TABLE phpbb_priv_msgs (
-   msg_id int(10) NOT NULL auto_increment,
-   from_userid int(10) DEFAULT '0' NOT NULL,
-   to_userid int(10) DEFAULT '0' NOT NULL,
-   msg_time int(10) DEFAULT '0' NOT NULL,
-   poster_ip int(10) DEFAULT '0' NOT NULL,
-   msg_status int(10) DEFAULT '0' NOT NULL,
-   msg_text text NOT NULL,
-   PRIMARY KEY (msg_id),
-   KEY to_userid (to_userid)
+   msg_id SERIAL PRIMARY KEY,
+   from_userid int DEFAULT '0' NOT NULL,
+   to_userid int DEFAULT '0' NOT NULL,
+   msg_time int DEFAULT '0' NOT NULL,
+   poster_ip int DEFAULT '0' NOT NULL,
+   msg_status int DEFAULT '0' NOT NULL,
+   msg_text text NOT NULL
 );
-
+CREATE INDEX priv_msgs_to_userid ON phpbb_priv_msgs (to_userid);
 
 # --------------------------------------------------------
 #
@@ -184,16 +183,15 @@ CREATE TABLE phpbb_priv_msgs (
 #
 
 CREATE TABLE phpbb_ranks (
-   rank_id int(10) NOT NULL auto_increment,
+   rank_id SERIAL PRIMARY KEY,
    rank_title varchar(50) NOT NULL,
-   rank_min int(10) DEFAULT '0' NOT NULL,
-   rank_max int(10) DEFAULT '0' NOT NULL,
-   rank_special int(2) DEFAULT '0',
-   rank_image varchar(255),
-   PRIMARY KEY (rank_id),
-   KEY rank_min (rank_min),
-   KEY rank_max (rank_max)
+   rank_min int DEFAULT '0' NOT NULL,
+   rank_max int DEFAULT '0' NOT NULL,
+   rank_special int2 DEFAULT '0',
+   rank_image varchar(255)
 );
+CREATE INDEX ranks_rank_min ON phpbb_ranks (rank_min);
+CREATE INDEX ranks_rank_max ON phpbb_ranks (rank_max);
 
 
 # --------------------------------------------------------
@@ -202,16 +200,15 @@ CREATE TABLE phpbb_ranks (
 #
 
 CREATE TABLE phpbb_sessions (
-   sess_id int(10) unsigned DEFAULT '0' NOT NULL,
-   user_id int(10) DEFAULT '0' NOT NULL,
-   start_time int(10) unsigned DEFAULT '0' NOT NULL,
-   remote_ip int(10) DEFAULT '0' NOT NULL,
+   sess_id int4 DEFAULT '0' NOT NULL PRIMARY KEY,
+   user_id int DEFAULT '0' NOT NULL,
+   start_time int4 DEFAULT '0' NOT NULL,
+   remote_ip int DEFAULT '0' NOT NULL,
    username varchar(40),
-   forum int(10),
-   PRIMARY KEY (sess_id),
-   KEY start_time (start_time),
-   KEY remote_ip (remote_ip)
+   forum int
 );
+CREATE INDEX sessions_start_time ON phpbb_sessions (start_time);
+CREATE INDEX sessions_remote_ip ON phpbb_sessions (remote_ip);
 
 
 # --------------------------------------------------------
@@ -220,7 +217,7 @@ CREATE TABLE phpbb_sessions (
 #
 
 CREATE TABLE phpbb_themes (
-   theme_id int(10) NOT NULL auto_increment,
+   theme_id SERIAL PRIMARY KEY,
    theme_name varchar(35),
    bgcolor varchar(10),
    textcolor varchar(10),
@@ -232,15 +229,14 @@ CREATE TABLE phpbb_themes (
    reply_image varchar(50),
    linkcolor varchar(15),
    vlinkcolor varchar(15),
-   theme_default int(2) DEFAULT '0',
+   theme_default int2 DEFAULT '0',
    fontface varchar(100),
    fontsize1 varchar(5),
    fontsize2 varchar(5),
    fontsize3 varchar(5),
    fontsize4 varchar(5),
    tablewidth varchar(10),
-   replylocked_image varchar(255),
-   PRIMARY KEY (theme_id)
+   replylocked_image varchar(255)
 );
 
 
@@ -250,20 +246,19 @@ CREATE TABLE phpbb_themes (
 #
 
 CREATE TABLE phpbb_topics (
-   topic_id int(10) NOT NULL auto_increment,
+   topic_id SERIAL PRIMARY KEY,
    topic_title varchar(100) NOT NULL,
-   topic_poster int(10) DEFAULT '0' NOT NULL,
-   topic_time int(10) DEFAULT '0' NOT NULL,
-   topic_views int(10) DEFAULT '0' NOT NULL,
-   topic_replies int(11) DEFAULT '0' NOT NULL,
-   forum_id int(10) DEFAULT '0' NOT NULL,
-   topic_status tinyint(3) DEFAULT '0' NOT NULL,
-   topic_notify tinyint(3) DEFAULT '0',
-   topic_last_post_id int(11) DEFAULT '0' NOT NULL,
-   PRIMARY KEY (topic_id),
-   KEY forum_id (forum_id)
+   topic_poster int DEFAULT '0' NOT NULL,
+   topic_time int DEFAULT '0' NOT NULL,
+   topic_views int DEFAULT '0' NOT NULL,
+   topic_replies int DEFAULT '0' NOT NULL,
+   forum_id int DEFAULT '0' NOT NULL,
+   topic_status int2 DEFAULT '0' NOT NULL,
+   topic_notify int2 DEFAULT '0',
+   topic_last_post_id int DEFAULT '0' NOT NULL
 );
-
+CREATE INDEX topics_topic_id ON phpbb_topics (topic_id);
+CREATE INDEX topics_forum_id ON phpbb_topics (forum_id);
 
 # --------------------------------------------------------
 #
@@ -271,7 +266,7 @@ CREATE TABLE phpbb_topics (
 #
 
 CREATE TABLE phpbb_users (
-   user_id int(10) NOT NULL auto_increment,
+   user_id SERIAL PRIMARY KEY,
    username varchar(40) NOT NULL,
    user_regdate varchar(20) NOT NULL,
    user_password varchar(32) NOT NULL,
@@ -282,27 +277,26 @@ CREATE TABLE phpbb_users (
    user_from varchar(100),
    user_intrest varchar(150),
    user_sig varchar(255),
-   user_viewemail tinyint(3),
-   user_theme int(10),
+   user_viewemail int2,
+   user_theme int,
    user_aim varchar(255),
    user_yim varchar(255),
    user_msnm varchar(255),
-   user_posts int(10) DEFAULT '0',
-   user_attachsig tinyint(3),
-   user_desmile tinyint(3),
-   user_html tinyint(3),
-   user_bbcode tinyint(3),
-   user_rank int(10) DEFAULT '0',
-   user_level int(10) DEFAULT '1',
+   user_posts int DEFAULT '0',
+   user_attachsig int2,
+   user_desmile int2,
+   user_html int2,
+   user_bbcode int2,
+   user_rank int DEFAULT '0',
+   user_level int DEFAULT '1',
    user_lang varchar(255),
    user_timezone varchar(4),
-   user_active tinyint(3),
+   user_active int2,
    user_actkey varchar(32),
    user_newpasswd varchar(32),
-   user_notify tinyint(3),
-   PRIMARY KEY (user_id)
+   user_notify int2
 );
-
+CREATE INDEX users_user_id ON phpbb_users (user_id);
 
 # --------------------------------------------------------
 #
@@ -310,15 +304,15 @@ CREATE TABLE phpbb_users (
 #
 
 CREATE TABLE phpbb_whosonline (
-   id int(3) NOT NULL auto_increment,
+   id SERIAL PRIMARY KEY,
    ip varchar(255),
    name varchar(255),
    count varchar(255),
    date varchar(255),
    username varchar(40),
-   forum int(10),
-   PRIMARY KEY (id)
+   forum int
 );
+CREATE INDEX whosonline_id ON phpbb_whosonline (id);
 
 
 # --------------------------------------------------------
@@ -327,9 +321,9 @@ CREATE TABLE phpbb_whosonline (
 #
 
 CREATE TABLE phpbb_words (
-   word_id int(10) NOT NULL auto_increment,
+   word_id SERIAL PRIMARY KEY,
    word varchar(100) NOT NULL,
-   replacement varchar(100) NOT NULL,
-   PRIMARY KEY (word_id)
+   replacement varchar(100) NOT NULL
 );
+CREATE INDEX words_word_id ON phpbb_words (word_id);
 
