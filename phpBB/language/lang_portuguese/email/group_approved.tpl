@@ -1,4 +1,4 @@
-Subject: O seu pedido foi aceite
+Assunto: Pedido foi aceite.
 
 Parabéns,
 

@@ -1,4 +1,4 @@
-Subject: Activação de Senha Nova
+Assunto: Activação de Senha nova
 
 Olá {USERNAME}
 

@@ -1,4 +1,5 @@
-Subject: Bem-vindo ao Fórum {SITENAME}
+Assunto: Benvido a {SITENAME}
+
 
 {WELCOME_MSG}
 

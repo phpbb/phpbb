@@ -1,4 +1,4 @@
-Subject: Reactivar o seu registo!
+Assunto: Reactivar o seu Registo
 
 Olá {USERNAME},
 

@@ -1,4 +1,4 @@
-Subject: Registo activado
+Assunto: Registo Activo
 
 Olá {USERNAME},
 

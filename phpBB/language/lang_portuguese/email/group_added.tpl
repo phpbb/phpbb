@@ -1,4 +1,4 @@
-Subject: Você foi adicionado a este Grupo de utilizadores
+Assunto: Utilizador Adicionado a Grupo 
 
 Parabéns,
 

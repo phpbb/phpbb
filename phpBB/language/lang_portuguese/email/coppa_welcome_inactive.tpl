@@ -1,10 +1,10 @@
-Subject: Bem-vindo ao Fórum {SITENAME}
+Assunto: Benvido a {SITENAME}
 
 {WELCOME_MSG}
 
 De acordo com a acta COPPA a sua conta encontra-se presentemente inactiva.
 
-Por favor imprimir esta mensagem e peça aos seus pais ou encarregado de educação que a assine e coloque a data. Posteriormente deverá esta mensagem ser enviada por fax para:
+Por favor imprimir esta mensagem e peça aos seus pais o encarregado de educação que a assine e coloque a data. Posteriormente deverá esta mensagem ser enviada por fax para:
 
 {FAX_INFO}
 

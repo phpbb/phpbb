@@ -532,12 +532,13 @@ $lang['Rank_image_explain'] = "Usar isto para definir uma pequena imagem associa
 
 $lang['Must_select_rank'] = "Deve escolher um Escalão";
 $lang['No_assigned_rank'] = "Não foi especificado nenhum Escalão Especial";
+$lang['No_update_ranks'] = "O escalão foi removido com sucesso, no entanto registos de utilizadores que usem este escalão não foram actualizados. Terá que actualizar manualmente o escalão nesses registos";
 
 $lang['Rank_updated'] = "O escalão foi actualizado com sucesso";
 $lang['Rank_added'] = "O escalão foi adicionado com sucesso";
 $lang['Rank_removed'] = "O escalão foi removido com sucesso";
 
-$lang['Click_return_rankadmin'] = "Premir %sAqui%s para voltar a Gerência de Escalões";
+$lang['Click_return_rankadmin'] = "Premir %sAqui%s para voltar à Gerência de Escalões";
 
 
 //

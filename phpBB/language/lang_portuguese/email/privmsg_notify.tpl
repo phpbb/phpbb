@@ -1,4 +1,4 @@
-Subject: Chegou uma Mensagem Privada nova
+Assunto: Notificação de Mensagem Privada
 
 Olá {USERNAME},
 

@@ -1,4 +1,4 @@
-Subject: Foi feito um pedido para se juntar ao seu Grupo
+Assunto: Pedido para pertencer ao seu Grupo
 
 Estimado {GROUP_MODERATOR},
 

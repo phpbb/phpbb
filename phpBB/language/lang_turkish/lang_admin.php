@@ -89,7 +89,7 @@ $lang['OFF'] = "Kapalý";
 //
 $lang['Database_Utilities'] = "Veritabaný Ýþlemleri";
 
-$lang['Restore'] = "Geri Yüklem";
+$lang['Restore'] = "Geri Yükleme";
 $lang['Backup'] = "Yedekleme";
 $lang['Restore_explain'] = "Bu iþlem bir dosyadan tüm phpBB veritabaný tablolarýný <B>geri yükleyecektir</B>. Eðer serverýnýz izin veriyorsa gzip ile sýkýþtýrýlmýþ bir text dosyasý yükleyebilirsiniz, otomatik olarak açýlacaktýr. <b>UYARI</b> Bu iþlem bütün bulunan verileri silecek yerine yenilerini yazacaktýr. Geri yükleme uzun sürebilir, tamamlanana kadar lütfen bu sayfayý kapatmayýnýz.";
 $lang['Backup_explain'] = "Buradan tüm phpBB verilerinizi yedekleyebilirsiniz. Eðer ayný veritabanýnda saklamak istediðiniz baþka tablolarýnýz da varsa, aþaðýdaki Ek Tablolar bölümüne isimlerini virgülle ayýrarak giriniz. Eðer serverýnýz izin veriyorsa backup dosyanýzý gzip ile sýkýþtýrýp da alabilirsiniz.";
@@ -177,7 +177,7 @@ $lang['Simple_Permission'] = "Basit Mod";
 
 $lang['User_Level'] = "Kullanýcý seviyesi";
 $lang['Auth_User'] = "Kullanýcý";
-$lang['Auth_Admin'] = "Adminr";
+$lang['Auth_Admin'] = "Admin";
 $lang['Group_memberships'] = "Grup üyelikleri";
 $lang['Usergroup_members'] = "Bu grubun üyeleri";
 
@@ -257,7 +257,7 @@ $lang['Abilities_settings'] = "Kullanýcý ve Forum Temel Ayarlarý";
 $lang['Max_poll_options'] = "Max. anket seçeneði sayýsý";
 $lang['Flood_Interval'] = "Flood Aralýðý";
 $lang['Flood_Interval_explain'] = "Kullanýcýnýn iki mesajý arasýnda beklemesi gereken süre";
-$lang['Board_email_form'] = "Kullýnýcýlar arasý e-mail";
+$lang['Board_email_form'] = "Kullanýcýlar arasý e-mail";
 $lang['Board_email_form_explain'] = "Bu site aracýlýðý ile kullanýcýlarýn birbirlerine e-mail göndermesini saðlar";
 $lang['Topics_per_page'] = "Her sayfadaki baþlýk sayýsý";
 $lang['Posts_per_page'] = "Her sayfadaki mesaj sayýsý";
@@ -354,7 +354,7 @@ $lang['Forum_delete_explain'] = "Aþaðýdaki form ile forum ya da kategori silebil
 
 $lang['Forum_settings'] = "Genel Forum Ayarlarý";
 $lang['Forum_name'] = "Forum adý";
-$lang['Forum_desc'] = "AÇýklama";
+$lang['Forum_desc'] = "Açýklama";
 $lang['Forum_status'] = "Forum statüsü";
 $lang['Forum_pruning'] = "Otomatik Mesaj Temizleme";
 
@@ -372,7 +372,7 @@ $lang['Edit_Category_explain'] = "Bir kategorinin ismini deðiþtirmek için bu for
 
 $lang['Forums_updated'] = "Forum ve Kategori bilgisi baþarýyla güncellendi";
 
-$lang['Must_delete_forums'] = "Bu kategoriyi silmeden önce içindkei tüm forumlarý silmelisiniz";
+$lang['Must_delete_forums'] = "Bu kategoriyi silmeden önce içindeki tüm forumlarý silmelisiniz";
 
 $lang['Click_return_forumadmin'] = "Forum yönetim paneline dönmek için %sburaya%s týklayýn";
 
@@ -398,7 +398,7 @@ $lang['smiley_import_inst'] = "Smiley dosyasýný zip ile açmalý ve uygun smiley k
 $lang['smiley_import'] = "Smiley Paketi Kurma";
 $lang['choose_smile_pak'] = "Smiley Paket Dosyasý (.pak) Seçin";
 $lang['import'] = "Smiley Paketi Kur";
-$lang['smile_conflicts'] = "Ýkimlemlerde ne yapýlmalý?";
+$lang['smile_conflicts'] = "Ýkilemlerde ne yapýlmalý?";
 $lang['del_existing_smileys'] = "Kurumdan önce varolan smileyleri sil";
 $lang['import_smile_pack'] = "Smiley Paketi Kur";
 $lang['export_smile_pack'] = "Smiley Paketi Yarat";
@@ -488,7 +488,7 @@ $lang['Prune_success'] = "Mesaj temizliði baþarýlý!";
 $lang['Words_title'] = "Kelime Sansürleme";
 $lang['Words_explain'] = "Buradan otomatik olaran sansürlenecek kelimeleri ekleyebilir, silebilir, deðiþtirebilirsiniz. Ayrýca insanlar bu kelimeleri kullanýcý isimlerinde de kullanamazlar. Wildcard olarak * kullanabilirsiniz, Örn: *siklo* ansiklopedi'yi, siklo* siklon'û, *siklo dersiklo'yu sansürleyecektir.";
 $lang['Word'] = "Kelime";
-$lang['Edit_word_censor'] = "SAnsürlü kelimeyi deðiþtir";
+$lang['Edit_word_censor'] = "Sansürlü kelimeyi deðiþtir";
 $lang['Replacement'] = "Yerine konacak";
 $lang['Add_new_word'] = "Yeni kelime ekle";
 $lang['Update_word'] = "Sansürü güncelle";
@@ -512,7 +512,7 @@ $lang['Compose'] = "Oluþtur";
 $lang['Recipients'] = "Alýcýlar";
 $lang['All_users'] = "Tüm Kullanýcýlar";
 
-$lang['Email_successfull'] = "Mesajýnýz Gçnderilmiþtir";
+$lang['Email_successfull'] = "Mesajýnýz Gönderilmiþtir";
 $lang['Click_return_massemail'] = "Toptan e-mail formuna dönmek için %sburaya%s týklayýnýz";
 
 
@@ -520,7 +520,7 @@ $lang['Click_return_massemail'] = "Toptan e-mail formuna dönmek için %sburaya%s 
 // Ranks admin
 //
 $lang['Ranks_title'] = "Rütbe Yönetimi";
-$lang['Ranks_explain'] = "Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility";
+$lang['Ranks_explain'] = "Buradan kullanýcýlarýnýza verilecek rütbeler yaratabilir, silebilir ve deðiþtirebilirsiniz. Hatta kullanýcý yönetiminden kullanýclara verilebilecek özel rütbeler de yaratabilirsiniz.";
 
 $lang['Add_new_rank'] = "Yeni rütbe ekle";
 

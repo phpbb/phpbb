@@ -1,4 +1,4 @@
-Subject: Novo registo de utilizador
+Assunto: Novo Registo de Utilizador
 
 Olá,
 
