@@ -808,7 +808,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if( $postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] )
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\" alt=\"\" border=\"0\" /><br />" : "";
+				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
 			}
 		}
 	}
@@ -819,7 +819,7 @@ for($i = 0; $i < $total_posts; $i++)
 			if( $postrow[$i]['user_posts'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
 			{
 				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = ($ranksrow[$j]['rank_image']) ? "<img src=\"" . $ranksrow[$j]['rank_image'] . "\" alt=\"\" border=\"0\" /><br />" : "";
+				$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : "";
 			}
 		}
 	}
