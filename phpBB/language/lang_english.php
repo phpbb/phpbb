@@ -198,6 +198,7 @@ $lang['All_Topics'] = "All Topics";
 $lang['Topic_Announcement'] = "<b>Announcement:</b>";
 $lang['Topic_Sticky'] = "<b>Sticky:</b>";
 $lang['Topic_Moved'] = "<b>Moved:</b>";
+$lang['Topic_Poll'] = "<b>[ Poll ]</b>";
 
 //
 // Viewtopic

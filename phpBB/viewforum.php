@@ -395,6 +395,11 @@ if($total_topics)
 			$topic_type = "";
 		}
 
+		if( $topic_rowset[$i]['topic_vote'] )
+		{
+			$topic_type .= $lang['Topic_Poll'] . " ";
+		}
+
 		$topic_id = $topic_rowset[$i]['topic_id'];
 
 		$replies = $topic_rowset[$i]['topic_replies'];
