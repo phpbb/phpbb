@@ -447,7 +447,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
-	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
+	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($forum_status == ITEM_LOCKED) ? $user->img('btn_locked', $user->lang['FORUM_LOCKED']) : $user->img('btn_post', $user->lang['POST_NEW_TOPIC']),
@@ -467,8 +467,8 @@ $template->assign_vars(array(
 	'YIM_IMG' 			=> $user->img('btn_yim', $user->lang['YIM']) ,
 	'JABBER_IMG'		=> $user->img('btn_jabber', $user->lang['JABBER']) ,
 	'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_POST']),
-	'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['POST_BEEN_REPORTED']),
-	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', $user->lang['POST_NOT_BEEN_APPROVED']),
+	'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
+	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
 
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
@@ -675,7 +675,7 @@ if ($start > $total_posts / 2)
 
 	if ($start + $config['posts_per_page'] > $total_posts)
 	{
-		$limit = min($config['posts_per_page'], max(0, $total_posts - $start));
+		$limit = min($config['posts_per_page'], max(1, $total_posts - $start));
 	}
 
 	$sort_order = preg_replace('/(ASC|DESC)/e', "('\$1' == 'ASC') ? 'DESC' : 'ASC'", $sort_order);
@@ -781,6 +781,12 @@ do
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
 
+	// Is a signature attached? Are we going to display it?
+	if ($row['enable_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
+	{
+		$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
+	}
+
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
 	if (!isset($user_cache[$poster_id]))
@@ -813,7 +819,6 @@ do
 			if ($row['user_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
 			{
 				$user_sig = $row['user_sig'];
-				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 			}
 
 			$id_cache[] = $poster_id;
@@ -822,7 +827,7 @@ do
 				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 				'karma'			=> (!empty($row['user_karma'])) ? $row['user_karma'] : 0, 
-				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',  
+				'karma_img'		=> '<img src="images/karma' . $row['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$row['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' .  $user->lang['KARMA'][$row['user_karma']] . '" />',
 
 				'sig'					=> $user_sig,
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
@@ -1040,7 +1045,7 @@ foreach ($rowset as $i => $row)
 	}
 
 	// End signature parsing, only if needed
-	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
+	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = ($config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
 
