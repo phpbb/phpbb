@@ -553,11 +553,10 @@ else if( $group_id )
 		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( !$db->sql_numrows($result) )
+	if( !($group_info = $db->sql_fetchrow($result)) )
 	{
 		message_die(GENERAL_MESSAGE, $lang['Group_not_exist']); 
 	}
-	$group_info = $db->sql_fetchrow($result);
 
 	//
 	// Get moderator details for this group
@@ -1064,8 +1063,7 @@ else
 	//
 	$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 
 		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-		WHERE
-			ug.user_id = " . $userdata['user_id'] . "  
+		WHERE ug.user_id = " . $userdata['user_id'] . "  
 			AND ug.group_id = g.group_id
 			AND g.group_single_user <> " . TRUE . "
 		ORDER BY g.group_name, ug.user_id";
@@ -1074,21 +1072,31 @@ else
 		message_die(GENERAL_ERROR, "Error getting group information", "", __LINE__, __FILE__, $sql);
 	}
 
-	$in_group = array();
-	$s_member_groups_opt = "";
-	$s_pending_groups_opt = "";
-	while( $row = $db->sql_fetchrow($result) )
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		$in_group[] = $row['group_id'];
-		if ( $row['user_pending'] )
+		$in_group = array();
+		$s_member_groups_opt = "";
+		$s_pending_groups_opt = "";
+
+		do
 		{
-			$s_pending_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+			$in_group[] = $row['group_id'];
+			if ( $row['user_pending'] )
+			{
+				$s_pending_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+			}
+			else
+			{
+				$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+			}
 		}
-		else
-		{
-			$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
-		}
+		while( $row = $db->sql_fetchrow($result) );
 	}
+	else
+	{
+		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
+	}
+
 	$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
 	$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 
