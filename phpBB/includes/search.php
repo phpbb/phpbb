@@ -172,6 +172,7 @@ function add_search_words($post_id, $post_text, $post_title = "")
 		{
 			case 'postgresql':
 			case 'msaccess':
+			case 'mssql-odbc':
 			case 'oracle':
 			case 'db2':
 				$sql = "SELECT word_id, word_text     
@@ -208,7 +209,6 @@ function add_search_words($post_id, $post_text, $post_title = "")
 						$value_sql .= ( ( $value_sql != "" ) ? ", " : "" ) . "('" . $word[$i] . "')";
 						break;
 					case 'mssql':
-					case 'mssql-odbc':
 						$value_sql .= ( ( $value_sql != "" ) ? " UNION ALL " : "" ) . "SELECT '" . $word[$i] . "'";
 						break;
 					default:
@@ -233,7 +233,6 @@ function add_search_words($post_id, $post_text, $post_title = "")
 						VALUES $value_sql"; 
 					break;
 				case 'mssql':
-				case 'mssql-odbc':
 					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
 						$value_sql"; 
 					break;
