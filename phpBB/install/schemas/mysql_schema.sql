@@ -207,7 +207,7 @@ CREATE TABLE phpbb_forums (
    prune_viewed tinyint(4) UNSIGNED NOT NULL,
    prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (forum_id),
-   KEY left_id (left_id),
+   KEY left_right_id (left_id, right_id),
    KEY forum_last_post_id (forum_last_post_id)
 );
 
@@ -249,6 +249,8 @@ CREATE TABLE phpbb_groups (
    group_avatar_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    group_rank smallint(5) DEFAULT '-1' NOT NULL,
    group_colour varchar(6) DEFAULT '' NOT NULL,
+   group_sig_chars mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+   group_pm_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
    group_chgpass smallint(6) DEFAULT '0' NOT NULL, 
    group_description varchar(255) DEFAULT '' NOT NULL,
    group_legend tinyint(1) DEFAULT '1' NOT NULL, 
@@ -285,6 +287,7 @@ CREATE TABLE phpbb_log (
   user_id mediumint(8) DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  reportee_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
   log_ip varchar(40) NOT NULL,
   log_time int(11) NOT NULL,
   log_operation text,
@@ -293,6 +296,7 @@ CREATE TABLE phpbb_log (
   KEY log_type (log_type),
   KEY forum_id (forum_id),
   KEY topic_id (topic_id),
+  KEY reportee_id (reportee_id), 
   KEY user_id (user_id)
 );
 
@@ -840,16 +844,6 @@ CREATE TABLE phpbb_users (
    KEY user_birthday (user_birthday(6)),
    KEY user_email_hash (user_email_hash), 
    KEY username (username)
-);
-
-# Table: 'phpbb_users_notes'
-CREATE TABLE phpbb_users_notes (
-  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  reporter_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  report_date int(11) DEFAULT '0' NOT NULL,
-  report_log varchar(255) DEFAULT '' NOT NULL,
-  report_text text DEFAULT '' NOT NULL,
-  KEY user_id (user_id,reporter_id)
 );
 
 # Table: 'phpbb_words'
