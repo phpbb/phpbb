@@ -32,8 +32,9 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
+
+$user->setup();
 
 
 // Grab data
@@ -311,7 +312,7 @@ switch ($mode)
 				$post_count_sql";
 		$result = $db->sql_query($sql);
 
-		$num_real_posts = min($row['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
+		$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
@@ -683,9 +684,9 @@ switch ($mode)
 			{
 				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
 
-				$sql = "SELECT DISTINCT poster_id 
-					FROM " . POSTS_TABLE . " 
-					WHERE poster_ip " . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)";
+				$sql = 'SELECT DISTINCT poster_id 
+					FROM ' . POSTS_TABLE . ' 
+					WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)";
 				$result = $db->sql_query($sql);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -898,7 +899,7 @@ function show_profile($data)
 		'USERNAME'		=> $username, 
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '', 
 		'RANK_TITLE'	=> $rank_title, 
-		'KARMA'			=> (!empty($row['user_karma'])) ? $data['user_karma'] : 0, 
+		'KARMA'			=> (!empty($data['user_karma'])) ? $data['user_karma'] : 0, 
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,

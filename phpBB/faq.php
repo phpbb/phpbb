@@ -26,14 +26,15 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
-// End session management
+
+$user->setup();
+
 
 // Load the appropriate faq file
-if ( isset($_GET['mode']) )
+if (isset($_GET['mode']))
 {
-	switch( $_GET['mode'] )
+	switch($_GET['mode'])
 	{
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
@@ -62,7 +63,7 @@ $faq_block_titles = array();
 
 for($i = 0; $i < count($faq); $i++)
 {
-	if ( $faq[$i][0] != '--' )
+	if ($faq[$i][0] != '--')
 	{
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
@@ -73,7 +74,7 @@ for($i = 0; $i < count($faq); $i++)
 	}
 	else
 	{
-		$j = ( $counter != 0 ) ? $j + 1 : 0;
+		$j = ($counter != 0) ? $j + 1 : 0;
 
 		$faq_block_titles[$j] = $faq[$i][1];
 
@@ -91,7 +92,7 @@ $template->assign_vars(array(
 
 for($i = 0; $i < count($faq_block); $i++)
 {
-	if ( count($faq_block[$i]) )
+	if (count($faq_block[$i]))
 	{
 		$template->assign_block_vars('faq_block', array(
 			'BLOCK_TITLE' => $faq_block_titles[$i])

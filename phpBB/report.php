@@ -26,8 +26,9 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
+
+$user->setup();
 
 
 // var definitions

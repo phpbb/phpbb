@@ -52,8 +52,9 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
 $user->start();
-$user->setup();
 $auth->acl($user->data);
+
+$user->setup();
 
 
 // Obtain initial var settings
