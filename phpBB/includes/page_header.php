@@ -43,11 +43,14 @@ if($board_config['gzip_compress'])
 	{
 		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
 		{ 
-			$do_gzip_compress = TRUE;
-			ob_start();
-			ob_implicit_flush(0); 
+			if(extension_loaded("zlib"))
+			{
+				$do_gzip_compress = TRUE;
+				ob_start();
+				ob_implicit_flush(0); 
 
-			header("Content-Encoding: gzip"); 
+				header("Content-Encoding: gzip"); 
+			}
 		}
 	}
 }
@@ -79,7 +82,7 @@ $s_last_visit = create_date($board_config['default_dateformat'], $userdata['sess
 // Get basic (usernames + totals) online
 // situation
 //
-$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in
+$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_in, s.session_ip 
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ".( time() - 300 );
@@ -89,20 +92,25 @@ if(!$result)
 	message_die(GENERAL_ERROR, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
 }
 
+$userlist_ary = array();
+$userlist_visible = array();
 $logged_visible_online = 0;
 $logged_hidden_online = 0;
 $guests_online = 0;
+
 while($row = $db->sql_fetchrow($result))
 {
 	if($row['session_logged_in'])
 	{
-		if($row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN)
+		if($row['user_allow_viewonline'])
 		{
-			$userlist_ary[] = "<a href=\"" . append_sid("profile." . $phpEx . "?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+			$userlist_ary[] = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+			$userlist_visible[] = 1;
 		}
 		else
 		{
-			$logged_hidden_online++;
+			$userlist_ary[] = "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . "\">" . $row['username'] . "</a>";
+			$userlist_visible[] = 0;
 		}
 	}
 	else
@@ -111,20 +119,28 @@ while($row = $db->sql_fetchrow($result))
 	}
 }
 
-$userlist = "";
+$online_userlist = "";
 for($i = 0; $i < count($userlist_ary); $i++)
 {
-	if( !strstr($userlist, $userlist_ary[$i]) )
+	if( !strstr($userlist, ">" . $userlist_ary[$i] . "</a>") )
 	{
-		$userlist .= ($userlist != "") ? ", " . $userlist_ary[$i] : $userlist_ary[$i];
-		$logged_visible_online++;
+		if( $userlist_visible[$i] || $userdata['user_level'] == ADMIN )
+		{
+			$online_userlist .= ($online_userlist != "") ? ", " . $userlist_ary[$i] : $userlist_ary[$i];
+			$logged_visible_online++;
+		}
+		else
+		{
+			$logged_hidden_online++;
+		}
 	}
 }
+
 $l_g_user_s = ($guests_online == 1) ? $lang['User'] : $lang['Users'];
 $l_h_user_s = ($logged_hidden_online == 1) ? $lang['User'] : $lang['Users'];
 $l_r_user_s = ($logged_visible_online == 1) ? $lang['User'] : $lang['Users'];
 $l_is_are = ($logged_visible_online == 1) ? $lang['is'] : $lang['are'];
-$userlist = ($logged_visible_online > 0) ? $lang['Registered'] ." $l_r_user_s: " . $userlist : $lang['Registered'] . " $l_r_user_s: ".$lang['None'];
+$online_userlist = ($logged_visible_online > 0) ? $lang['Registered'] . " $l_r_user_s: " . $online_userlist : $lang['Registered'] . " $l_r_user_s: " . $lang['None'];
 
 //
 // Obtain number of new private messages
@@ -168,7 +184,7 @@ $template->assign_vars(array(
 	"PAGE_TITLE" => $page_title,
 	"META_INFO" => $meta_tags,
 	"TOTAL_USERS_ONLINE" => $lang['There'] . " $l_is_are $logged_visible_online " . $lang['Registered'] . " $l_r_user_s, $logged_hidden_online " . $lang['Hidden'] . " $l_h_user_s ". $lang['and'] . " $guests_online " . $lang['Guest'] . " $l_g_user_s " . $lang['online'],
-	"LOGGED_IN_USER_LIST" => $userlist,
+	"LOGGED_IN_USER_LIST" => $online_userlist,
 	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
 	"LAST_VISIT_DATE" => $s_last_visit,
 
