@@ -274,25 +274,6 @@ for($i = 0; $i < count($previous_days); $i++)
 }
 $select_topic_days .= "</select>";
 
-//
-// Grab all the basic data (all topics except announcements)
-// for this forum
-//
-$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
-	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
-	WHERE t.forum_id = $forum_id
-		AND t.topic_poster = u.user_id
-		AND p.post_id = t.topic_last_post_id
-		AND p.poster_id = u2.user_id
-		AND t.topic_type <> " . POST_ANNOUNCE . " 
-		$limit_topics_time
-	ORDER BY t.topic_type DESC, t.topic_last_post_id DESC 
-	LIMIT $start, ".$board_config['topics_per_page'];
-if( !$t_result = $db->sql_query($sql) )
-{
-   message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
-}
-$total_topics = $db->sql_numrows($t_result);
 
 //
 // All announcement data, this keeps announcements
@@ -306,11 +287,49 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.poster_id = u2.user_id
 		AND t.topic_type = " . POST_ANNOUNCE . " 
 	ORDER BY t.topic_last_post_id DESC ";
-if( !$ta_result = $db->sql_query($sql) )
+if( !$result = $db->sql_query($sql) )
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
 }
-$total_announcements = $db->sql_numrows($ta_result);
+
+$topic_rowset = array();
+$total_announcements = 0;
+while( $row = $db->sql_fetchrow($result) )
+{
+	$topic_rowset[] = $row;
+	$total_announcements++;
+}
+
+$db->sql_freeresult($result);
+
+//
+// Grab all the basic data (all topics except announcements)
+// for this forum
+//
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time 
+	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2
+	WHERE t.forum_id = $forum_id
+		AND t.topic_poster = u.user_id
+		AND p.post_id = t.topic_first_post_id
+		AND p2.post_id = t.topic_last_post_id
+		AND u2.user_id = p2.poster_id 
+		AND t.topic_type <> " . POST_ANNOUNCE . " 
+		$limit_topics_time
+	ORDER BY t.topic_type DESC, t.topic_last_post_id DESC 
+	LIMIT $start, ".$board_config['topics_per_page'];
+if( !$result = $db->sql_query($sql) )
+{
+   message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
+}
+
+$total_topics = 0;
+while( $row = $db->sql_fetchrow($result) )
+{
+	$topic_rowset[] = $row;
+	$total_topics++;
+}
+
+$db->sql_freeresult($result);
 
 //
 // Total topics ...
@@ -349,10 +368,20 @@ if( $is_auth['auth_mod'] )
 {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"" . append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id") . "\">", "</a>");
 }
-else
-{
-	$s_auth_mod_img = "";
-}
+
+//
+// Mozilla navigation bar
+//
+$nav_links['up'] = array(
+	'url' => append_sid("index.".$phpEx),
+	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+);
+
+//
+// Dump out the page header and load viewforum template
+//
+$page_title = $lang['View_forum'] . " - " . $forum_row['forum_name'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
 	"body" => "viewforum_body.tpl",
@@ -391,6 +420,8 @@ $template->assign_vars(array(
 	"L_MARK_TOPICS_READ" => $lang['Mark_all_topics'], 
 	"L_POST_NEW_TOPIC" => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
 
+	"S_AUTH_LIST" => $s_auth_can, 
+
 	"U_MARK_READ" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"))
 );
 //
@@ -402,31 +433,9 @@ $template->assign_vars(array(
 //
 if( $total_topics )
 {
-	//
-	// First get announcements
-	//
-	while( $ta_row = $db->sql_fetchrow($ta_result) )
-	{
-		$topic_rowset[] = $ta_row;
-	}
-	//
-	// Now get everything else
-	//
-	while( $t_row = $db->sql_fetchrow($t_result) )
-	{
-		$topic_rowset[] = $t_row;
-	}
-
 	for($i = 0; $i < $total_topics; $i++)
 	{
-		if( count($orig_word) )
-		{
-			$topic_title = preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']);
-		}
-		else
-		{
-			$topic_title = $topic_rowset[$i]['topic_title'];
-		}
+		$topic_title = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
@@ -455,29 +464,29 @@ if( $total_topics )
 		if( ( $replies + 1 ) > $board_config['posts_per_page'] )
 		{
 			$total_pages = ceil(($replies+1)/$board_config['posts_per_page']);
-			$goto_page = " [ <img src=\"" . $images['icon_gotopost'] . "\" alt=\"" . $lang['Goto_page'] . "\" title=\"" . $lang['Goto_page'] . "\" />" . $lang['Goto_page'] . ": ";
+			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
 
 			$times = 1;
 			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
 			{
-				$goto_page .= "<a href=\"".append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . "\">$times</a>";
-				if( $times == 1 && $total_pages > 4)
+				$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+				if( $times == 1 && $total_pages > 4 )
 				{
-					$goto_page .= " ... ";
+					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
-					$j += ($total_pages-4) * $board_config['posts_per_page'];
+					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
 				}
-				else if ($times < $total_pages)
+				else if ( $times < $total_pages )
 				{
-					$goto_page .= ", ";
+					$goto_page .= ', ';
 				}
 				$times++;
 			}
-			$goto_page .= " ] ";
+			$goto_page .= ' ] ';
 		}
 		else
 		{
-			$goto_page = "";
+			$goto_page = '';
 		}
 
 		if( $topic_rowset[$i]['topic_status'] == TOPIC_MOVED )
@@ -485,8 +494,8 @@ if( $total_topics )
 			$topic_type = $lang['Topic_Moved'] . " ";
 			$topic_id = $topic_rowset[$i]['topic_moved_id'];
 
-			$folder_image = "<img src=\"" . $images['folder'] . "\" alt=\"" . $lang['No_new_posts'] . "\" title=\"" . $lang['No_new_posts'] . "\" />";
-			$newest_post_img = "";
+			$folder_image = '<img src="' . $images['folder'] . '" alt="' . $lang['No_new_posts'] . '" title="' . $lang['No_new_posts'] . '" />';
+			$newest_post_img = '';
 		}
 		else
 		{
@@ -554,51 +563,51 @@ if( $total_topics )
 
 						if( $unread_topics )
 						{
-							$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
+							$folder_image = '<img src="' . $folder_new . '" alt="' . $lang['New_posts'] . '" title="' . $lang['New_posts'] . '" />';
 
-							$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
+							$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 						}
 						else
 						{
 							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-							$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
-							$newest_post_img = "";
+							$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
+							$newest_post_img = '';
 						}
 					}
 					else
 					{
-						$folder_image = "<img src=\"$folder_new\" alt=\"" . $lang['New_posts'] . "\" title=\"" . $lang['New_posts'] . "\" />";
+						$folder_image = '<img src="' . $folder_new . '" alt="' . $lang['New_posts'] . '" title="' . $lang['New_posts'] . '" />';
 
-						$newest_post_img = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest\"><img src=\"" . $images['icon_newest_reply'] . "\" alt=\"" . $lang['View_newest_post'] . "\" title=\"" . $lang['View_newest_post'] . "\" border=\"0\" /></a> ";
+						$newest_post_img = '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
 				}
 				else 
 				{
 					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-					$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
-					$newest_post_img = "";
+					$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
+					$newest_post_img = '';
 				}
 			}
 			else
 			{
 				$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
-				$folder_image = "<img src=\"$folder\" alt=\"$folder_alt\" title=\"$folder_alt\" border=\"0\" />";
-				$newest_post_img = "";
+				$folder_image = '<img src="' . $folder . '" alt="' . $folder_alt . '" title="' . $folder_alt . '" border="0" />';
+				$newest_post_img = '';
 			}
 		}
 		
 		$view_topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
 
-		$topic_poster = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']) . "\">" : "";
+		$topic_poster = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $topic_rowset[$i]['user_id']) . '">' : '';
 		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != "" ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
-		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? "</a>" : "";
+		$topic_poster .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
 
-		$last_post = $last_post_time . "<br />";
-		$last_post .= ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username'] != "" ) ? $topic_rowset[$i]['post_username'] . " " : $lang['Guest'] . " " ) : "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . "\">" . $topic_rowset[$i]['user2'] . "</a> ";
-		$last_post .= "<a href=\"" . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . "\"><img src=\"" . $images['icon_latest_reply'] . "\" alt=\"" . $lang['View_latest_post'] . "\" title=\"" . $lang['View_latest_post'] . "\" border=\"0\" /></a>";
+		$last_post = $last_post_time . '<br />';
+		$last_post .= ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username'] != "" ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "="  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a> ';
+		$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . "=" . $topic_rowset[$i]['topic_last_post_id']) . "#" . $topic_rowset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
 		$views = $topic_rowset[$i]['topic_views'];
 		
@@ -628,9 +637,7 @@ if( $total_topics )
 		"PAGINATION" => generate_pagination("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
 		"PAGE_NUMBER" => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )), 
 
-		"L_GOTO_PAGE" => $lang['Goto_page'],
-
-		"S_NO_TOPICS" => FALSE)
+		"L_GOTO_PAGE" => $lang['Goto_page'])
 	);
 
 }
@@ -647,20 +654,6 @@ else
 	$template->assign_block_vars("notopicsrow", array() );
 
 }
-
-//
-// Mozilla navigation bar
-//
-$nav_links['up'] = array(
-	'url' => append_sid("index.".$phpEx),
-	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-);
-
-//
-// Dump out the page header and load viewforum template
-//
-$page_title = $lang['View_forum'] . " - " . $forum_row['forum_name'];
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 //
 // Parse the page and print

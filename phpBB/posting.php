@@ -418,15 +418,11 @@ if( $mode != "newtopic" )
 	{
 		if( $post_id )
 		{
-			$sql = "SELECT p2.post_id, t.topic_id, t.topic_status, t.topic_last_post_id, t.topic_vote, f.forum_id, f.forum_name, f.forum_status, f.forum_last_post_id 
-				FROM " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+			$sql = "SELECT t.topic_id, t.topic_status, t.topic_first_post_id, t.topic_last_post_id, t.topic_vote, f.forum_id, f.forum_name, f.forum_status, f.forum_last_post_id 
+				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 				WHERE p.post_id = $post_id 
-					AND p2.topic_id = p.topic_id 
 					AND t.topic_id = p.topic_id
-					AND f.forum_id = t.forum_id
-				ORDER BY p2.post_time ASC
-				LIMIT 1";
-
+					AND f.forum_id = t.forum_id";
 		}
 		else
 		{
@@ -452,7 +448,7 @@ if( $mode != "newtopic" )
 		{
 			$topic_id = $check_row['topic_id'];
 
-			$is_first_post_topic = ($check_row['post_id'] == $post_id) ? TRUE : 0;
+			$is_first_post_topic = ($check_row['topic_first_post_id'] == $post_id) ? TRUE : 0;
 			$is_last_post_topic = ($check_row['topic_last_post_id'] == $post_id) ? TRUE : 0;
 			$is_last_post_forum = ($check_row['forum_last_post_id'] == $post_id) ? TRUE : 0;
 
@@ -931,8 +927,9 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 
 			if( $db->sql_query($sql) )
 			{
+				$first_post_sql = ( $mode == "newtopic" ) ?", topic_first_post_id = $new_post_id" : "";
 				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_last_post_id = $new_post_id";
+					SET topic_last_post_id = $new_post_id" . $first_post_sql;
 				if($mode == "reply")
 				{
 					$sql .= ", topic_replies = topic_replies + 1 ";
@@ -1436,8 +1433,23 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 								// the middle(!) Only moderators can delete these posts, all we need do
 								// is update the forums table data as necessary
 								//
+								$first_post_sql = "";
+								if( $is_first_post_topic )
+								{
+									$sql = "SELECT MIN(post_id) AS first_post 
+										FROM " . POSTS_TABLE . "
+										WHERE topic_id = $topic_id";
+									if($result = $db->sql_query($sql))
+									{
+										if( $row = $db->sql_fetchrow($result) )
+										{
+											$first_post_sql = ", topic_first_post_id = " . $row['first_post'];
+										}
+									}
+								}
+
 								$sql = "UPDATE " . TOPICS_TABLE . "
-									SET topic_replies = topic_replies - 1 
+									SET topic_replies = topic_replies - 1" . $first_post_sql . " 
 									WHERE topic_id = $topic_id";
 
 								$sql_forum_upd = "forum_posts = forum_posts - 1";
