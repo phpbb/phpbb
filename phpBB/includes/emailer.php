@@ -160,11 +160,19 @@ class emailer
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
 			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
 		}
+		else
+		{
+			$this->subject = (($this->subject != '') ? $this->subject : 'No Subject');
+		}
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
 			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
+		}
+		else
+		{
+			$this->encoding = trim($lang['ENCODING']);
 		}
 
 		if ($drop_header != '')
