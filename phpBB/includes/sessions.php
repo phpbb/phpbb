@@ -84,7 +84,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 					// No match; don't login, set as anonymous user
 					$login = 0; 
 					$enable_autologin = 0; 
-					$user_id = ANONYMOUS;
+					$user_id = $userdata['user_id'] = ANONYMOUS;
 				}
 			}
 			else
@@ -92,7 +92,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 				// Autologin is not set. Don't login, set as anonymous user
 				$login = 0;
 				$enable_autologin = 0;
-				$user_id = ANONYMOUS;
+				$user_id = $userdata['user_id'] = ANONYMOUS;
 			}
 		}
 		else
@@ -182,7 +182,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
-	$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
+	$SID = ($sessionmethod == SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
 
 	return $userdata;
 }
@@ -250,9 +250,9 @@ function session_pagestart($user_ip, $thispage_id)
 			$ip_check_s = substr($userdata['session_ip'], 0, 6);
 			$ip_check_u = substr($user_ip, 0, 6);
 
-			if ( $ip_check_s == $ip_check_u )
+			if ($ip_check_s == $ip_check_u)
 			{
-				$SID = ( $sessionmethod == SESSION_METHOD_GET ) ? 'sid=' . $session_id : '';
+				$SID = ($sessionmethod == SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
 
 				//
 				// Only update session DB a minute or so after last update

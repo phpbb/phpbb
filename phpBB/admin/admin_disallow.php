@@ -41,8 +41,12 @@ if( isset($HTTP_POST_VARS['add_name']) )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 
-	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? $HTTP_POST_VARS['disallowed_user'] : $HTTP_GET_VARS['disallowed_user'];
+	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? trim($HTTP_POST_VARS['disallowed_user']) : trim($HTTP_GET_VARS['disallowed_user']);
 
+	if ($disallowed_user == '')
+	{
+		message_die(MESSAGE, $lang['Fields_empty']);
+	}
 	if( !validate_username($disallowed_user) )
 	{
 		$message = $lang['Disallowed_already'];

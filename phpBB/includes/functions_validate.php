@@ -164,12 +164,12 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	// contains at least one dot.
 	if ( $website != "" )
 	{
-		if ( !preg_match('#^http:\/\/#i', $website) )
+		if ( !preg_match('#^http[s]?:\/\/#i', $website) )
 		{
 			$website = 'http://' . $website;
 		}
 
-		if ( !preg_match('#^http\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website) )
+		if ( !preg_match('#^http[s]?\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website) )
 		{
 			$website = '';
 		}

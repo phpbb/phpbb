@@ -28,7 +28,7 @@ if ( !defined('IN_PHPBB') )
 //
 // Show the overall footer.
 //
-$admin_link = ( $userdata['user_level'] == ADMIN ) ? '<a href="' . append_sid("admin/index.$phpEx") . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
+$admin_link = ( $userdata['user_level'] == ADMIN ) ? '<a href="admin/index.' . $phpEx . '?sid=' . $userdata['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
 
 $template->set_filenames(array(
 	'overall_footer' => ( empty($gen_simple_header) ) ? 'overall_footer.tpl' : 'simple_footer.tpl')
