@@ -178,6 +178,8 @@ $lang['Forgotten_password'] = "I forgot my password";
 
 $lang['Log_me_in'] = "Log me on automatically each visit";
 
+$lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
+
 
 //
 // Index page
@@ -541,6 +543,13 @@ $lang['Account_active_admin'] = "The account has now been activated";
 $lang['Reactivate'] = "Reactivate your account!";
 $lang['COPPA'] = "Your account has been created but has to be approved, please check your email for details.";
 
+$lang['Registration'] = "Registration Agreement Terms";
+$lang['Reg_agreement'] = "While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.";
+
+$lang['Agree_under_13'] = "I Agree to these terms and am <b>under</b> 13 years of age";
+$lang['Agree_over_13'] = "I Agree to these terms and am <b>over</b> 13 years of age";
+$lang['Agree_not'] = "I do not agree to these terms";
+
 $lang['Wrong_activation'] = "The activation key you supplied does not match any in the database";
 $lang['Send_password'] = "Send me a new password"; 
 $lang['Password_updated'] = "A new password has been created, please check your email for details on how to activate it";
@@ -859,7 +868,7 @@ $lang['days_long'][6] = "Saturday";
 $lang['days_short'][0] = "Sun";
 $lang['days_short'][1] = "Mon";
 $lang['days_short'][2] = "Tue";
-$lang['days_short'][3] = "Web";
+$lang['days_short'][3] = "Wed";
 $lang['days_short'][4] = "Thu";
 $lang['days_short'][5] = "Fri";
 $lang['days_short'][6] = "Sat";
@@ -901,8 +910,6 @@ $lang['General_Error'] = "General Error";
 $lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occurred";
 $lang['A_critical_error'] = "A Critical Error Occurred";
-
-$lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
 
 //
 // That's all Folks!

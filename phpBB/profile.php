@@ -456,6 +456,11 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$template->assign_vars(array(
 					"COPPA" => $coppa,
+					"REGISTRATION" => $lang['Registration'], 
+					"AGREEMENT" => $lang['Reg_agreement'], 
+					"AGREE_OVER_13" => $lang['Agree_over_13'], 
+					"AGREE_UNDER_13" => $lang['Agree_under_13'], 
+					"DO_NOT_AGREE" => $lang['Agree_not'], 
 
 					"U_AGREE_OVER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true"),
 					"U_AGREE_UNDER13" => append_sid("profile.$phpEx?mode=register&amp;agreed=true&amp;coppa=true"))
@@ -523,6 +528,28 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			$user_avatar = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar'] : "";
 			$user_avatar_type = ( empty($user_avatar_loc) && $mode == "editprofile" ) ? $userdata['user_avatar_type'] : "";
+
+			if( isset($HTTP_POST_VARS['avatargallery']) || isset($HTTP_POST_VARS['submitavatar']) || isset($HTTP_POST_VARS['cancelavatar']) )
+			{
+				$username = stripslashes($username);
+				$email = stripslashes($email);
+				$password = "";
+				$password_confirm = "";
+
+				$icq = stripslashes($icq);
+				$aim = stripslashes($aim);
+				$msn = stripslashes($msn);
+				$yim = stripslashes($yim);
+
+				$website = stripslashes($website);
+				$location = stripslashes($location);
+				$occupation = stripslashes($occupation);
+				$interests = stripslashes($interests);
+				$signature = stripslashes($signature);
+
+				$user_lang = stripslashes($user_lang);
+				$user_dateformat = stripslashes($user_dateformat);
+			}
 		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
@@ -1383,17 +1410,17 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 				$s_hidden_vars = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" /><input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="user_id" value="' . $user_id . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="username" value="' . addslashes($username) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="email" value="' . addslashes($email) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . addslashes($icq) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="aim" value="' . addslashes($aim) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="msn" value="' . addslashes($msn) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="yim" value="' . addslashes($yim) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="website" value="' . addslashes($website) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="location" value="' . addslashes($location) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="occupation" value="' . addslashes($occupation) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="interests" value="' . addslashes($interests) . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="signature" value="' . addslashes($signature) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="username" value="' . $username . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="email" value="' . $email . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="icq" value="' . $icq . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="aim" value="' . $aim . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="msn" value="' . $msn . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="yim" value="' . $yim . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="website" value="' . $website . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="location" value="' . $location . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="occupation" value="' . $occupation . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="interests" value="' . $interests . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="signature" value="' . $signature . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
@@ -1406,7 +1433,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 				$s_hidden_vars .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
 				$s_hidden_vars .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
 				$s_hidden_vars .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
-				$s_hidden_vars .= '<input type="hidden" name="dateformat" value="' . addslashes($user_dateformat) . '" />';
+				$s_hidden_vars .= '<input type="hidden" name="dateformat" value="' . $user_dateformat . '" />';
 
 				$template->assign_vars(array(
 					"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
