@@ -869,6 +869,7 @@ else
 		//
 		if ( $upgrade == 1 && $upgrade_now == $lang['upgrade_submit'] )
 		{
+			define('INSTALLING', true);
 			require('upgrade.'.$phpEx);
 			exit;
 		}
