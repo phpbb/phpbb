@@ -189,12 +189,11 @@ set_error_handler('msg_handler');
 $user		= new user();
 $auth		= new auth();
 $cache		= new acm();
+$template	= new template();
 $db			= new sql_db();
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
-
-$template	= new template($db);
 
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
