@@ -148,13 +148,22 @@ $template = new template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Grab global variables, re-cache if necessary
-if (!($config = $cache->get('config')))
+if ($config = $cache->get('config'))
+{
+	$sql = 'SELECT * 
+		FROM ' . CONFIG_TABLE . '
+		WHERE is_dynamic = 1';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$config[$row['config_name']] = $row['config_value'];
+	}
+}
+else
 {
 	$config = array();
 
-/*
-		WHERE is_dynamic = 1';
-*/
 	$sql = 'SELECT * 
 		FROM ' . CONFIG_TABLE;
 	$result = $db->sql_query($sql);
