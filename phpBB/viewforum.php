@@ -27,8 +27,8 @@ include('template.inc');
 include('functions/sessions.'.$phpEx);
 include('functions/auth.'.$phpEx);
 include('functions/functions.'.$phpEx);
-include('db.'.$phpEx);
 include('functions/error.'.$phpEx);
+include('db.'.$phpEx);
 
 if(isset($forum_id))
 {
