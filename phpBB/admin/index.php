@@ -271,7 +271,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	}
 	else if( preg_match("/^mssql/", SQL_LAYER) )
 	{
-		$sql = "SELECT ((SUM(size) * 8) * 1024) as dbsize 
+		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
 			FROM sysfiles"; 
 		if( $result = $db->sql_query($sql) )
 		{
