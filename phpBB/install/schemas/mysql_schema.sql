@@ -585,10 +585,8 @@ CREATE TABLE phpbb_topics (
    poll_last_vote int(11),
    PRIMARY KEY (topic_id),
    KEY forum_id (forum_id),
-   KEY topic_moved_id (topic_moved_id),
+   KEY forum_id_type (forum_id, topic_type), 
    KEY topic_last_post_time (topic_last_post_time),
-   KEY poll_last_vote (poll_last_vote),
-   KEY topic_type (topic_type)
 );
 
 # Table: 'phpbb_topic_marking'

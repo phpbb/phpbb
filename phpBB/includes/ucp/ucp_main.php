@@ -38,37 +38,51 @@ class ucp_main extends ucp
 		{
 			case 'front':
 
-				if ($config['load_db_lastread'])
+				if ($config['load_db_lastread'] || $config['load_db_track'])
 				{
-					$sql = 'SELECT mark_time 
-						FROM ' . FORUMS_TRACK_TABLE . ' 
-						WHERE forum_id = 0
-							AND user_id = ' . $user->data['user_id'];
-					$result = $db->sql_query($sql);
+					if ($config['load_db_lastread'])
+					{
+						$sql = 'SELECT mark_time 
+							FROM ' . FORUMS_TRACK_TABLE . ' 
+							WHERE forum_id = 0
+								AND user_id = ' . $user->data['user_id'];
+						$result = $db->sql_query($sql);
 
-					$track_data = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+						$track_data = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+					}
+
+					switch (SQL_LAYER)
+					{
+						case 'oracle':
+							break;
+
+						default:
+							$sql_from = '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))';
+							break;
+					}
+					$sql_select = ', tt.mark_type, tt.mark_time';
+
 				}
 				else
 				{
-					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
-					$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
+					$sql_from = TOPICS_TABLE . ' t ';
+					$sql_select = '';
 				}
+
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
 				$i = 0;
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
 				$folder_new = $folder . '_new';
 
-				$sql_tracking = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')' : '';
-				$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
 				$sql = "SELECT t.* $sql_select 
-					FROM (" . TOPICS_TABLE . " t
-						$sql_tracking)
+					FROM $sql_from
 					WHERE t.forum_id = 0
-						AND t.topic_type = " . POST_ANNOUNCE . '
+						AND t.topic_type = " . POST_GLOBAL . '
 					ORDER BY t.topic_last_post_time DESC';
-				$result = $db->sql_query_limit($sql, $config['topics_per_page']);
+				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -82,16 +96,31 @@ class ucp_main extends ucp
 						$folder_new = 'folder_locked_new';
 					}
 
-					$unread_topic = ($user->data['user_id'] != ANONYMOUS) ? true : false;
-					if ($user->data['user_id'] != ANONYMOUS)
-					{
-						$topic_check = (!$config['load_db_lastread']) ? $tracking_topics[$topic_id] : $row['mark_time'];
-						$forum_check = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $track_data['mark_time'];
+					$unread_topic = true;
 
-						if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
+					$topic_check = (!$config['load_db_lastread']) ? base_convert($tracking_topics[0][base_convert($topic_id, 10, 36)], 36, 10) + $config['board_startdate'] : $row['mark_time'];
+
+					if (!$config['load_db_lastread'])
+					{
+						$forum_check = '';
+						foreach ($tracking_topics as $forum_id => $tracking_time)
 						{
-							$unread_topic = false;
+							if ($tracking_time[0] > $forum_check)
+							{
+								$forum_check = $tracking_time[0];
+							}
 						}
+						$forum_check = base_convert($forum_check, 36, 10) + $config['board_startdate'];
+					}
+					else
+					{
+						$forum_check = $track_data['mark_time'];
+					}
+
+					
+					if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
+					{
+						$unread_topic = false;
 					}
 
 					$newest_post_img = ($unread_topic) ? "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread\">" . $user->img('icon_post_newest', 'VIEW_NEWEST_POST') . '</a> ' : '';
@@ -106,7 +135,7 @@ class ucp_main extends ucp
 
 					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
 
-					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
+					$last_post_img = "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'] . '">' . $user->img('icon_post_latest', 'VIEW_LATEST_POST') . '</a>';
 
 					$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
 
@@ -277,22 +306,21 @@ class ucp_main extends ucp
 							break;
 
 						default:
-							$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
+							$sql_from = '(' . FORUMS_TABLE . ' f  LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id))';
 							break;
 					}
 					$lastread_select = ', ft.mark_time ';
 				}
 				else
 				{
-					$sql_lastread = $lastread_select = '';
+					$sql_from = FORUMS_TABLE . ' f ';
+					$lastread_select = '';
 
-					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_t'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_t']) : array();
-					$tracking_forums = (isset($_COOKIE[$config['cookie_name'] . '_f'])) ? unserialize($_COOKIE[$config['cookie_name'] . '_f']) : array();
+					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 				}
 
 				$sql = "SELECT f.*$lastread_select 
-					FROM (" . FORUMS_TABLE . " f 
-					$sql_lastread), " . FORUMS_WATCH_TABLE . ' fw
+					FROM $sql_from, " . FORUMS_WATCH_TABLE . ' fw
 					WHERE fw.user_id = ' . $user->data['user_id'] . ' 
 						AND f.forum_id = fw.forum_id 
 					ORDER BY left_id';
@@ -304,7 +332,7 @@ class ucp_main extends ucp
 					$forum_id = $row['forum_id'];
 
 					$unread_forum = false;
-					$forum_check = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $row['mark_time'];
+					$forum_check = (!$config['load_db_lastread']) ? $tracking_topics[$forum_id][0] : $row['mark_time'];
 
 					if ($forum_check < $row['forum_last_post_time'])
 					{
@@ -419,8 +447,8 @@ class ucp_main extends ucp
 					$unread_topic = ($user->data['user_id'] != ANONYMOUS) ? true : false;
 					if ($user->data['user_id'] != ANONYMOUS)
 					{
-						$topic_check = (!$config['load_db_lastread']) ? $tracking_topics[$topic_id] : $row['mark_time'];
-						$forum_check = (!$config['load_db_lastread']) ? $tracking_forums[$forum_id] : $row['forum_mark_time'];
+						$topic_check = (!$config['load_db_lastread']) ? ((isset($tracking_topics[$forum_id][base_convert($topic_id, 10, 36)])) ? base_convert($tracking_topics[$forum_id36][$topic_id36], 36, 10) + $config['board_startdate'] : 0) : $row['mark_time'];
+						$forum_check = (!$config['load_db_lastread']) ? ((isset($tracking_topics[$forum_id][0])) ? base_convert($tracking_topics[$forum_id][0], 36, 10) + $config['board_startdate'] : 0) : $row['forum_mark_time'];
 
 						if ($topic_check > $row['topic_last_post_time'] || $forum_check > $row['topic_last_post_time'])
 						{
@@ -438,20 +466,20 @@ class ucp_main extends ucp
 						$folder_img .= '_posted';
 					}
 
-					if (($replies + 1) > intval($config['posts_per_page']))
+					if (($replies + 1) > $config['posts_per_page'])
 					{
-						$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));
+						$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
 						$goto_page = ' [ ' . $user->img('icon_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
 
 						$times = 1;
-						for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
+						for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 						{
 							$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$j\">$times</a>";
 							if ($times == 1 && $total_pages > 4)
 							{
 								$goto_page .= ' ... ';
 								$times = $total_pages - 3;
-								$j += ($total_pages - 4) * intval($config['posts_per_page']);
+								$j += ($total_pages - 4) * $config['posts_per_page'];
 							}
 							else if ($times < $total_pages)
 							{

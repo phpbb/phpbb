@@ -157,7 +157,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_delete', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_poll', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_vote', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_votechg', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_global', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_announce', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_sticky', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_attach', 1);

@@ -128,10 +128,6 @@ if (isset($_GET['view']) && !$post_id)
 }
 
 
-// Look at this query ... perhaps a re-think? Perhaps store topic ids rather
-// than last/first post ids and have a redirect at the top of this page
-// for latest post, newest post for a given topic_id?
-
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
@@ -173,19 +169,6 @@ if ($user->data['user_id'] != ANONYMOUS)
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-
-
-
-
-// Note2: after much inspection, having to find a valid forum_id when making return_to_topic links
-// for global announcements in mcp is a pain. The easiest solution is to let admins choose under
-// what forum topics should be seen when forum_id is not specified (preferably a public forum)
-if (!$forum_id)
-{
-	$forum_id = 2;
-}
-
-
 $sql = 'SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_attachment, t.topic_status, ' . (($auth->acl_get('m_approve')) ? 't.topic_replies_real AS topic_replies' : 't.topic_replies') . ', t.topic_last_post_id, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password' . $extra_fields . '
 	FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f' . $join_sql_table . "
 	WHERE $join_sql
@@ -195,9 +178,6 @@ $sql = 'SELECT t.topic_id, t.forum_id AS real_forum_id, t.topic_title, t.topic_a
 			)
 		$order_sql";
 $result = $db->sql_query($sql);
-
-
-
 
 if (!$topic_data = $db->sql_fetchrow($result))
 {
@@ -220,6 +200,7 @@ if ($topic_data['forum_password'])
 // Extract the data
 extract($topic_data);
 
+
 // Start auth check
 if (!$auth->acl_get('f_read', $forum_id))
 {
@@ -231,7 +212,125 @@ if (!$auth->acl_get('f_read', $forum_id))
 	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
-// KARMA BITS GO HERE AT PRESENT - Removed for now
+
+
+
+
+// Not final in the slightest! Far too simplistic
+if (isset($_GET['rate']))
+{
+	// Check for rating count for previous X time
+
+
+	// Grab existing rating for this post, if it exists
+	$sql = 'SELECT * 
+		FROM ' . RATINGS_TABLE . ' 
+		WHERE user_id = ' . $user->data['user_id'] . "
+			AND post_id = $post_id";
+	$result = $db->sql_query($sql);
+
+	switch ($_GET['rate'])
+	{
+		case 'good':
+			$rate = 1;
+			break;
+		case 'bad':
+			$rate = -1;
+			break;
+	}
+
+	$updated = ($row = $db->sql_fetchrow($result)) ? true : false;
+	$db->sql_freeresult($result);
+
+	// Insert rating if appropriate
+	$sql = (!$updated) ? 'INSERT INTO ' . RATINGS_TABLE . ' (user_id, post_id, rating, rating_time) VALUES (' . $user->data['user_id'] . ", $post_id, $rate, " . time() . ')' : 'UPDATE ' . RATINGS_TABLE . " SET rating = $rate, rating_time = " . time() . " WHERE post_id = $post_id AND user_id = " . $user->data['user_id'];
+	$db->sql_query($sql);
+
+	// Rating sum and count since first post
+	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
+		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
+		WHERE p2.post_id = $post_id 
+			AND p.poster_id = p2.poster_id 
+			AND p.post_time < " . (time() - (30 * 86400)) . ' 
+			AND r.post_id = p.post_id 
+			AND r.user_id <> p2.poster_id 
+		GROUP BY p.poster_id';
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$total_ratings = $row['total_ratings'];
+	$historic_rating = ($row['rated'] / $row['total_ratings']) * 0.30;
+
+	// Rating sum and count past thirty days
+	$sql = 'SELECT p.poster_id, SUM(r.rating) AS rated, COUNT(r.rating) as total_ratings
+		FROM ' . RATINGS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . " p2  
+		WHERE p2.post_id = $post_id
+			AND p.poster_id = p2.poster_id  
+			AND p.post_time > " . (time() - (30 * 86400)) . ' 
+			AND r.post_id = p.post_id 
+			AND r.user_id <> p2.poster_id 
+		GROUP BY p.poster_id';
+	$result = $db->sql_query($sql);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$total_ratings += $row['total_ratings'];
+	$thirty_day_rating = ($row['rated'] / $row['total_ratings']) * 0.50;
+
+	if ($total_ratings > $config['min_ratings'])
+	{
+		// Post count and reg date for this user
+		$sql = 'SELECT user_id, user_regdate, user_posts 
+			FROM ' . USERS_TABLE . ' 
+			WHERE user_id = ' . $row['poster_id'];
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$post_count_rating = ($row['user_posts'] / $config['num_posts']) * 0.1;
+		$day_rating = (($row['user_regdate'] > $config['board_startdate']) ? $config['board_startdate'] / $row['user_regdate'] : 1) * 0.1;
+		$poster_id = $row['user_id'];
+
+		// Number of rated posts by this user
+/*		$sql = 'SELECT COUNT(DISTINCT(p.post_id)) AS rated_posts
+			FROM ' . RATINGS_TABLE . ' r , ' . POSTS_TABLE . " p 
+			WHERE p.poster_id = $poster_id  
+				AND r.post_id = p.post_id
+				AND r.user_id <> $poster_id";
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);*/
+
+		$karma = ($historic_rating + $thirty_day_rating + $day_rating + $post_count_rating) * 5;
+		$karma = ($karma < 0) ? floor($karma) : (($karma > 0) ? ceil($karma) : 0);
+
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_karma = $karma 
+			WHERE user_id = $poster_id";
+		$db->sql_query($sql);
+	}
+
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id");
+	$message = ($updated) ? $user->lang['RATING_UPDATED'] : $user->lang['RATING_ADDED'];
+	$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_POST'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$post_id#$post_id\">", '</a>');
+	trigger_error($message);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // What is start equal to?
 if (!empty($post_id))
@@ -331,7 +430,7 @@ gen_forum_rules('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id)) ? ((intval($topic_status) == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
@@ -378,8 +477,8 @@ $template->assign_vars(array(
 	'FORUM_DESC'	=> strip_tags($forum_desc),
     'TOPIC_ID' 		=> $topic_id,
     'TOPIC_TITLE' 	=> $topic_title,
-	'PAGINATION' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : $pagination,
-	'PAGE_NUMBER' 	=> (isset($_GET['view']) && $_GET['view'] == 'print') ? '' : on_page($total_posts, $config['posts_per_page'], $start),
+	'PAGINATION' 	=> $pagination,
+	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts), 
 	'MCP' 			=> ($auth->acl_get('m_', $forum_id)) ? sprintf($user->lang['MCP'], "<a href=\"mcp.$phpEx?sid=" . $user->session_id . "&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param&amp;posts_per_page=" . $config['posts_per_page'] . '">', '</a>') : '',
 	'MODERATORS'	=> (sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
@@ -588,7 +687,7 @@ $sql = "SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, 
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
-$result = (isset($_GET['view']) && $_GET['view'] == 'print') ? $db->sql_query($sql) : $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
 
 if (!$row = $db->sql_fetchrow($result))
 {
@@ -634,26 +733,26 @@ do
 	}
 
 	$rowset[] = array(
-		'post_id'				=> $row['post_id'],
+		'post_id'			=> $row['post_id'],
 		'post_time'			=> $row['post_time'],
-		'poster'					=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
-		'user_id'				=> $row['user_id'],
-		'topic_id'				=> $row['topic_id'],
-		'forum_id'				=> $row['forum_id'],
+		'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
+		'user_id'			=> $row['user_id'],
+		'topic_id'			=> $row['topic_id'],
+		'forum_id'			=> $row['forum_id'],
 		'post_subject'		=> $row['post_subject'],
 		'post_edit_count'	=> $row['post_edit_count'],
 		'post_edit_time'	=> $row['post_edit_time'],
-		'icon_id'				=> $row['icon_id'],
-		'post_approved'	=> $row['post_approved'],
+		'icon_id'			=> $row['icon_id'],
+		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
 		'post_text'			=> $row['post_text'],
 		'post_encoding'		=> $row['post_encoding'],
-		'bbcode_uid'			=> $row['bbcode_uid'],
-		'bbcode_bitfield'		=> $row['bbcode_bitfield'],
-		'enable_html'			=> $row['enable_html'],
-		'enable_smilies'		=> $row['enable_smilies'],
-		'enable_sig'			=> $row['enable_sig'],
-		'display_notice'		=> $display_notice
+		'bbcode_uid'		=> $row['bbcode_uid'],
+		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
+		'enable_html'		=> $row['enable_html'],
+		'enable_smilies'	=> $row['enable_smilies'],
+		'enable_sig'		=> $row['enable_sig'],
+		'display_notice'	=> $display_notice
 	);
 
 	
@@ -668,23 +767,23 @@ do
 		if ($poster_id == ANONYMOUS)
 		{
 			$user_cache[$poster_id] = array(
-				'joined'			=>	'',
+				'joined'		=>	'',
 				'posts'			=>	'',
 				'from'			=>	'',
-				'avatar'			=>	'',
-				'rank_title'		=>	'',
+				'avatar'		=>	'',
+				'rank_title'	=>	'',
 				'rank_image'	=>	'',
-				'sig'				=>	'',
+				'sig'			=>	'',
 				'posts'			=>	'',
-				'profile'			=>	'',
-				'pm'				=>	'',
+				'profile'		=>	'',
+				'pm'			=>	'',
 				'email'			=>	'',
 				'www'			=>	'',
 				'icq_status_img'=>	'',
-				'icq'				=>	'',
-				'aim'				=>	'',
+				'icq'			=>	'',
+				'aim'			=>	'',
 				'msn'			=>	'',
-				'search'			=>	''
+				'search'		=>	''
 			);
 		}
 		else
@@ -845,13 +944,16 @@ if (count($attach_list))
 	}
 }
 
+
+// Instantiate BBCode if need be
 if ($bbcode_bitfield)
 {
-	// Instantiate BBCode class
 	include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 	$bbcode = new bbcode($bbcode_bitfield);
 }
 
+
+// Output the posts
 foreach ($rowset as $i => $row)
 {
 	$poster_id = $row['user_id'];
@@ -987,14 +1089,12 @@ foreach ($rowset as $i => $row)
 		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'=> $l_edited_by,
 
-		'RATING'		=> $rating, 
-
 		'MINI_POST_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'KARMA_IMG'			=> $user_cache[$poster_id]['karma_img'], 
 
-		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=" . $row['forum_id'] . "&amp;p=" . $row['post_id'] : '',
+		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '', 
 		'U_IP' 				=> ($auth->acl_get('m_ip', $forum_id)) ? "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip" : '',
 		'U_DELETE' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'] : '',
@@ -1039,18 +1139,17 @@ unset($rowset);
 unset($user_cache);
 
 
-
 // Update topic view and if necessary attachment view counters ... but only
 // if this is the first 'page view'
 if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 {
-	$sql = 'UPDATE ' . TOPICS_TABLE . "
-		SET topic_views = topic_views + 1, topic_last_view_time = " . time() . "
+	$sql = 'UPDATE ' . TOPICS_TABLE . '
+		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
 		WHERE topic_id = $topic_id";
 	$db->sql_query($sql);
 
 	// Update the attachment download counts
-	if (count($update_count))
+	if (sizeof($update_count))
 	{
 		$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' 
 			SET download_count = download_count + 1 
@@ -1061,7 +1160,8 @@ if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 
 
 // Mark topics read
-markread('topic', $forum_id, $topic_id, $row['post_time']);
+$mark_forum_id = ($topic_type == POST_GLOBAL) ? 0 : $forum_id;
+markread('topic', $mark_forum_id, $topic_id, $row['post_time']);
 
 
 // Change encoding if appropriate

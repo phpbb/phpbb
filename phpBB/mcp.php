@@ -812,20 +812,20 @@ switch ($mode)
 		switch ($mode)
 		{
 			case 'make_global':
-				$set_sql = 'topic_type = ' . POST_ANNOUNCE;
-			break;
+				$set_sql = 'topic_type = ' . POST_GLOBAL;
+				break;
 
 			case 'make_announce':
 				$set_sql = 'topic_type = ' . POST_ANNOUNCE;
-			break;
+				break;
 
 			case 'make_sticky':
 				$set_sql = 'topic_type = ' . POST_STICKY;
-			break;
+				break;
 
 			case 'make_normal':
 				$set_sql = 'topic_type = ' . POST_NORMAL;
-			break;
+				break;
 		}
 		if ($topic_info['forum_id'] == 0 && $mode != 'make_global')
 		{

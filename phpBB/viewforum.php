@@ -217,7 +217,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		$sql = 'SELECT COUNT(topic_id) AS num_topics
 			FROM ' . TOPICS_TABLE . "
 			WHERE forum_id = $forum_id
-				AND (topic_last_post_time >= $min_post_time)
+				AND topic_type <> " . POST_ANNOUNCE . "  
+				AND topic_last_post_time >= $min_post_time
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
 		$result = $db->sql_query($sql);
 
@@ -304,7 +305,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$total_topics = 0;
 	$row_ary = array();
 
-
 	switch (SQL_LAYER)
 	{
 		case 'oracle':
@@ -320,9 +320,9 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql = "SELECT t.* $sql_select 
 		FROM $sql_from 
 		WHERE t.forum_id IN ($forum_id, 0)
-			AND t.topic_type = " . POST_ANNOUNCE . "
+			AND t.topic_type IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ") 
 		ORDER BY $sql_sort_order";
-	$result = $db->sql_query_limit($sql, $config['topics_per_page']);
+	$result = $db->sql_query($sql);
 
 	while($row = $db->sql_fetchrow($result))
 	{
@@ -366,7 +366,6 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		{
 			$topic_id = $row['topic_id'];
 
-
 			if ($config['load_db_lastread'])
 			{
 				$mark_time_topic = $row['mark_time'];
@@ -374,7 +373,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			else
 			{
 				$topic_id36 = base_convert($topic_id, 10, 36);
-				$mark_time_topic = (isset($tracking_topics[$forum_id][$topic_id36])) ? base_convert($tracking_topics[$forum_id][$topic_id36], 36, 10) + $config['board_startdate'] : 0;
+				$forum_id36 = ($row['topic_type'] == POST_GLOBAL) ? 0 : $row['forum_id'];
+				$mark_time_topic = (isset($tracking_topics[$forum_id36][$topic_id36])) ? base_convert($tracking_topics[$forum_id36][$topic_id36], 36, 10) + $config['board_startdate'] : 0;
 			}
 
 
@@ -465,20 +465,20 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 
 			// Goto message generation
-			if (($replies + 1) > intval($config['posts_per_page']))
+			if (($replies + 1) > $config['posts_per_page'])
 			{
-				$total_pages = ceil(($replies + 1) / intval($config['posts_per_page']));
+				$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
 				$goto_page = ' [ ' . $user->img('icon_post', 'GOTO_PAGE') . $user->lang['GOTO_PAGE'] . ': ';
 
 				$times = 1;
-				for($j = 0; $j < $replies + 1; $j += intval($config['posts_per_page']))
+				for($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 				{
 					$goto_page .= "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$j\">$times</a>";
 					if ($times == 1 && $total_pages > 4)
 					{
 						$goto_page .= ' ... ';
 						$times = $total_pages - 3;
-						$j += ($total_pages - 4) * intval($config['posts_per_page']);
+						$j += ($total_pages - 4) * $config['posts_per_page'];
 					}
 					else if ($times < $total_pages)
 					{
@@ -505,26 +505,21 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 			$last_post_author = ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] . '">' . $row['topic_last_poster_name'] . '</a>';
 
-			$first_post_time = $user->format_date($row['topic_time'], $config['board_timezone']);
-
-			$last_post_time = $user->format_date($row['topic_last_post_time']);
-
-			$last_view_time = $user->format_date($row['topic_last_view_time']);
 
 			// This will allow the style designer to output a different header 
 			// or even seperate the list of announcements from sticky and normal
 			// topics
-			$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
+			$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 			// Send vars to template
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID' 			=> $forum_id,
 				'TOPIC_ID' 			=> $topic_id,
 				'TOPIC_AUTHOR' 		=> $topic_author,
-				'FIRST_POST_TIME' 	=> $first_post_time,
-				'LAST_POST_TIME'	=> $last_post_time,
+				'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time'], $config['board_timezone']),
+				'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
+				'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 				'LAST_POST_AUTHOR' 	=> $last_post_author,
-				'LAST_VIEW_TIME'	=> $last_view_time,
 				'GOTO_PAGE' 		=> $goto_page, 
 				'REPLIES' 			=> ($auth->acl_get('m_approve')) ? $row['topic_replies_real'] : $row['topic_replies'],
 				'VIEWS' 			=> $row['topic_views'],
@@ -542,13 +537,13 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				'S_TOPIC_TYPE'			=> $row['topic_type'], 
 				'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false, 
 
-				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
+				'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_', $forum_id)) ? TRUE : FALSE,
 				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);
 
-			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE) ? 1 : 0;
+			$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 			$i++;
 
 
