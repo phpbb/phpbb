@@ -6,7 +6,11 @@
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
+<<<<<<< login.php
  *   $Id$
+=======
+ *   $Id$
+>>>>>>> 1.21
  *                                                            
  * 
  ***************************************************************************/ 
@@ -57,15 +61,16 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
 
 				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
+
 				if($session_id)
 				{
 					if(!empty($HTTP_POST_VARS['forward_page']))
 					{
-						header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
+						header("Location: " . append_sid($HTTP_POST_VARS['forward_page']));
 					}
 					else
 					{
-						header(append_sid("Location: index.$phpEx"));
+						header("Location: " . append_sid("index.$phpEx"));
 					}
 				}
 				else
@@ -91,11 +96,11 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		}
 		if(!empty($HTTP_POST_VARS['forward_page']))
 		{
-			header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
+			header("Location: " . append_sid($HTTP_POST_VARS['forward_page']));
 		}
 		else
 		{
-			header(append_sid("Location: index.$phpEx"));
+			header("Location: " . append_sid("index.$phpEx"));
 		}
 	}
 	else
@@ -106,43 +111,70 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		}
 		else
 		{
-			header(append_sid("Location: index.$phpEx"));
+			header("Location: " . append_sid("index.$phpEx"));
 		}
 	}
 }
 else
 {
 	//
-	// Do a full login page dohickey
+	// Do a full login page dohickey if
+	// user not already logged in
 	//
-	$page_title = "Log In";
-	include('includes/page_header.'.$phpEx);
-	$template->set_filenames(
-		array(
-			"body" => "login_body.tpl",
-		)
-	);
-	if(isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']))
+	if(!$userdata['session_logged_in'])
 	{
-		$mode = (isset($HTTP_POST_VARS['mode'])) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
-		$forward_page .= "?mode=".$mode;
+		$page_title = "Log In";
+		include('includes/page_header.'.$phpEx);
+		$template->set_filenames(array(
+			"body" => "login_body.tpl")
+		);
+
+		if(isset($HTTP_POST_VARS['forward_page']) || isset($HTTP_GET_VARS['forward_page']))
+		{
+			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
+			
+			if(preg_match("/^forward_page=(.*)(&sid=[0-9]*)$|^forward_page=(.*)$/si", $forward_to, $forward_matches))
+			{
+				$forward_to = ($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
+
+				$forward_match = explode("&", $forward_to);
+
+				if(count($forward_match) > 1)
+				{
+					$forward_page = $forward_match[0] . "?";
+
+					for($i = 1; $i < count($forward_match); $i++)
+					{
+						$forward_page .= $forward_match[$i];
+						if($i < count($forward_match) - 1)
+						{
+							$forward_page .= "&";
+						}
+					}
+				}
+			}
+		}
+
+		$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
+	
+		$template->assign_vars(array(
+			"FORWARD_PAGE" => $forward_page,
+			"USERNAME" => $username,
+
+			"L_SEND_PASSWORD" => $lang['Forgotten_password'],
+
+			"U_SEND_PASSWORD" => append_sid("sendpassword.$phpEx")
+			)
+		);
+
+		$template->pparse("body");
+
+		include('includes/page_tail.'.$phpEx);
 	}
-
-	$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
-
-	$template->assign_vars(array(
-		"L_SEND_PASSWORD" => $lang['Forgotten_password'],
-
-		"FORWARD_PAGE" => $forward_page,
-		"USERNAME" => $username,
-
-		"U_SEND_PASSWORD" => append_sid("sendpassword.".$phpEx)
-		)
-	);
-
-	$template->pparse("body");
-
-	include('includes/page_tail.'.$phpEx);
+	else
+	{
+		header("Location: index.$phpEx");
+	}
 
 }
 
