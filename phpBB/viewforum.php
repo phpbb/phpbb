@@ -270,7 +270,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.poster_id = u2.user_id
 		AND t.topic_type <> " . POST_ANNOUNCE . " 
 		$limit_topics_time
-	ORDER BY t.topic_type DESC, p.post_time DESC
+	ORDER BY t.topic_type DESC, t.topic_last_post_id DESC 
 	LIMIT $start, ".$board_config['topics_per_page'];
 if( !$t_result = $db->sql_query($sql) )
 {
@@ -289,7 +289,7 @@ $sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as i
 		AND p.post_id = t.topic_last_post_id
 		AND p.poster_id = u2.user_id
 		AND t.topic_type = " . POST_ANNOUNCE . " 
-	ORDER BY p.post_time DESC";
+	ORDER BY t.topic_last_post_id DESC ";
 if( !$ta_result = $db->sql_query($sql) )
 {
    message_die(GENERAL_ERROR, "Couldn't obtain topic information", "", __LINE__, __FILE__, $sql);
