@@ -1124,7 +1124,9 @@ if( ( $submit || $confirm ) && !$error )
 										message_die(GENERAL_ERROR, "Couldn't obtain new last post id for the forum", "", __LINE__, __FILE__, $sql);
 									}
 
-									$new_last_sql = ", forum_last_post_id = " . $row['new_post_id'];
+									$last_post_id_forum = ( !empty($row['new_post_id']) ) ? $row['new_post_id'] : 0;
+
+									$new_last_sql = ", forum_last_post_id = " . $last_post_id_forum;
 								}
 								else
 								{
