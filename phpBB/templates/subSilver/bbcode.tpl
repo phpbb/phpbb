@@ -1,5 +1,3 @@
-// bbcode.tpl -- bbcode replacement templates.
-
 <!-- BEGIN ulist_open -->
 <ul>
 <!-- END ulist_open -->

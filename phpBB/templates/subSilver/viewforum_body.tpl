@@ -9,8 +9,7 @@
 	</tr>
 	<tr> 
 	  <td align="left" valign="middle" width="50"><a href="{U_POST_NEW_TOPIC}"><img src="{IMG_POST}" border="0" alt="{L_NEW_TOPIC}" width="82" height="25" /></a></td>
-	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index.php" class="nav">phpBB 
-		v2.0&nbsp;Forum Index</a> -> {FORUM_NAME}</span></td>
+	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index.php" class="nav">{SITENAME} - {L_INDEX}</a> -> {FORUM_NAME}</span></td>
 	  <td align="right" valign="bottom" class="nav" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
 	</tr>
   </table>
@@ -68,8 +67,8 @@
 	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NONEWPOSTS}" width="19" height="18" /></td>
 	<td class="gensmall">Old topic</td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="No new posts" width="19" height="18" /></td>
-	<td class="gensmall"> Announement</td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="{L_NONEWPOSTS}" width="19" height="18" /></td>
+	<td class="gensmall">Announcement</td>
 	<td class="gensmall">&nbsp;</td>
 	<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
 	<td class="gensmall">Topic is locked</td>
@@ -81,7 +80,7 @@
 	<td width="20" align="center"><img src="templates/subSilver/images/folder_hot.gif" alt="{L_NEWPOSTS}" width="19" height="18" /></td>
 	<td class="gensmall">Hot topic</td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="No new posts" width="19" height="18" /></td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="{L_NONEWPOSTS}" width="19" height="18" /></td>
 	<td class="gensmall">Sticky post</td>
 	<td class="gensmall">&nbsp;&nbsp;</td>
 	<td class="gensmall">&nbsp;</td>
