@@ -158,7 +158,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		$location = (!empty($HTTP_POST_VARS['location'])) ? trim(strip_tags($HTTP_POST_VARS['location'])) : "";
 		$occupation = (!empty($HTTP_POST_VARS['occupation'])) ? trim(strip_tags($HTTP_POST_VARS['occupation'])) : "";
 		$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(strip_tags($HTTP_POST_VARS['interests'])) : "";
-		$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(strip_tags(str_replace("<br />", "\n", $HTTP_POST_VARS['signature']))) : "";
+		$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(str_replace("<br />", "\n", $HTTP_POST_VARS['signature'])) : "";
 
 		validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
@@ -285,8 +285,9 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		if( $user_status == 0 )
 		{
 			// User is (made) inactive. Delete all their sessions.
-			$sql = "DELETE FROM ". SESSIONS_TABLE ." WHERE session_user_id = $user_id";
-			if( !$result = $db->sql_query($sql) )
+			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
+				WHERE session_user_id = $user_id";
+			if( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't delete this user's sessions", "", __LINE__, __FILE__, $sql);
 			}
@@ -295,22 +296,23 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 		if( $signature != "" )
 		{
 			$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
-			if( $board_config['allow_html'] )
+			if ( $allowhtml )
 			{
 				$sig_length_check = preg_replace("/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is", "\\1\\3\\4", $sig_length_check);
 			}
+			$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", stripslashes($signature));
 
 			// Only create a new bbcode_uid when there was no uid yet.
-			if($signature_bbcode_uid == '')
+			if ( $signature_bbcode_uid == '' )
 			{
-				$signature_bbcode_uid = ( $board_config['allow_bbcode'] ) ? make_bbcode_uid() : "";
+				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
 			}
-			$signature = prepare_message($signature, $board_config['allow_html'], $board_config['allow_bbcode'], $board_config['allow_smilies'], $signature_bbcode_uid);
+			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
-			if( strlen($sig_length_check) > $board_config['max_sig_chars'] )
-			{
+			if ( strlen($sig_length_check) > $board_config['max_sig_chars'] )
+			{ 
 				$error = TRUE;
-				if( isset($error_msg) )
+				if ( isset($error_msg) )
 				{
 					$error_msg .= "<br />";
 				}
@@ -597,7 +599,7 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 					WHERE ug.user_id = $user_id 
 						AND g.group_id = ug.group_id 
 						AND g.group_single_user = 1";
-				if( !$result = $db->sql_query($sql) )
+				if( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't obtain group information for this user", "", __LINE__, __FILE__, $sql);
 				}
@@ -605,66 +607,58 @@ if( $mode == "edit" || $mode == "save" && ( isset($HTTP_POST_VARS['username']) |
 				$row = $db->sql_fetchrow($result);
 				
 				$sql = "UPDATE " . POSTS_TABLE . "
-					SET poster_id = '-1', post_username = '$username' 
+					SET poster_id = " . ANONYMOUS . ", post_username = '$username' 
 					WHERE poster_id = $user_id";
-				if( $result = $db->sql_query($sql) )
+				if( !$db->sql_query($sql) )
 				{
-					$sql = "UPDATE " . TOPICS_TABLE . "
-						SET topic_poster = '-1'
-						WHERE topic_poster = $user_id";
-					if( $result = $db->sql_query($sql) )
-					{
-						$sql = "DELETE FROM " . USERS_TABLE . "
-							WHERE user_id = $user_id";
-						if( $result = $db->sql_query($sql) )
-						{
-							$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-								WHERE user_id = $user_id";
-							if( $result = $db->sql_query($sql) )
-							{
-								$sql = "DELETE FROM " . GROUPS_TABLE . "
-									WHERE group_id = " . $row['group_id'];
-								if( $result = $db->sql_query($sql) )
-								{
-									$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-										WHERE user_id = $user_id";
-									$result = @$db->sql_query($sql);
-
-									$message = $lang['User_deleted'];
-								}
-								else
-								{
-									$error = TRUE;
-								}
-							}
-							else
-							{
-								$error = TRUE;
-							}
-						}
-						else
-						{
-							$error = TRUE;
-						}
-					}
-					else
-					{
-						$error = TRUE;
-					}
-				}
-				else
-				{
-					$error = TRUE;
+					message_die(GENERAL_ERROR, "Couldn't update posts for this user", "", __LINE__, __FILE__, $sql);
 				}
 
-				if( $error == TRUE )
+				$sql = "UPDATE " . TOPICS_TABLE . "
+					SET topic_poster = " . ANONYMOUS . " 
+					WHERE topic_poster = $user_id";
+				if( !$db->sql_query($sql) )
 				{
-					if( isset($error_msg) )
-					{
-						$error_msg .= "<br />";
-					}
-					$error_msg .= $lang['Admin_user_fail'];
+					message_die(GENERAL_ERROR, "Couldn't update topics for this user", "", __LINE__, __FILE__, $sql);
 				}
+
+				$sql = "DELETE FROM " . USERS_TABLE . "
+					WHERE user_id = $user_id";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete user", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+					WHERE user_id = $user_id";
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete user from user_group table", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE FROM " . GROUPS_TABLE . "
+					WHERE group_id = " . $row['group_id'];
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete group for this user", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+					WHERE group_id = " . $row['group_id'];
+				if( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete group for this user", "", __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+					WHERE user_id = $user_id";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete user from topic watch table", "", __LINE__, __FILE__, $sql);
+				}
+
+				$message = $lang['User_deleted'];
+
 			}
 			else
 			{
