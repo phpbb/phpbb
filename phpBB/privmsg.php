@@ -1601,7 +1601,7 @@ else if ( $submit || $refresh || $mode != '' )
 		'HTML_STATUS' => $html_status, 
 		'SMILIES_STATUS' => $smilies_status, 
 		'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
-		'FORUM_NAME' => $lang['Private_message'], 
+		'FORUM_NAME' => $lang['Private_Message'], 
 
 		'BOX_NAME' => $l_box_name, 
 		'INBOX_IMG' => $inbox_img, 
