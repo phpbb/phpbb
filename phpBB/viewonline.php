@@ -30,9 +30,7 @@ $user->setup();
 $auth->acl($user->data);
 // End session management
 
-//
 // Forum info
-//
 $sql = "SELECT forum_id, forum_name
 	FROM " . FORUMS_TABLE;
 $result = $db->sql_query($sql);
@@ -98,7 +96,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['session_ip'] != $prev_ip)
 		{
-			$username = $user->lang['Guest'];
+			$username = $user->lang['GUEST'];
 			$view_online = true;
 			$guest_users++;
 
@@ -123,7 +121,7 @@ while ($row = $db->sql_fetchrow($result))
 			case 'posting':
 			case 'viewforum':
 			case 'viewtopic':
-				preg_match('/f=([0-9]+)/', $row['session_page'], $forum_id);
+				preg_match('#f=([0-9]+)#', $row['session_page'], $forum_id);
 				$forum_id = $forum_id[1];
 
 				if ($auth->acl_gets('f_list', 'a_', $forum_id))
