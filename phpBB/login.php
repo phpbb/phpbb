@@ -52,7 +52,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		$result = $db->sql_query($sql);
 		if(!$result)
 		{
-			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Error in obtaining userdata : login", "", __LINE__, __FILE__, $sql);
 		}
 
 		$rowresult = $db->sql_fetchrow($result);
@@ -61,7 +61,6 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		{
 			if( $rowresult['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
-				header("HTTP/1.0 302 Redirect");
 				header("Location: " . append_sid("index.$phpEx", true));
 			}
 			else
@@ -76,18 +75,16 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					{
 						if( !empty($HTTP_POST_VARS['redirect']) )
 						{
-							header("HTTP/1.0 302 Redirect");
 							header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 						}
 						else
 						{
-							header("HTTP/1.0 302 Redirect");
 							header("Location: " . append_sid("index.$phpEx", true));
 						}
 					}
 					else
 					{
-						message_die(CRITICAL_ERROR, "Couldn't start session : login", __LINE__, __FILE__);
+						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
 					}
 				}
 				else
@@ -126,12 +123,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
@@ -139,12 +134,10 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	{
 		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("HTTP/1.0 302 Redirect");
 			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
@@ -155,7 +148,7 @@ else
 	// Do a full login page dohickey if
 	// user not already logged in
 	//
-	if(!$userdata['session_logged_in'])
+	if( !$userdata['session_logged_in'] )
 	{
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -202,7 +195,7 @@ else
 			$forward_page = "";
 		}
 
-		$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
+		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : "";
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 
@@ -223,8 +216,7 @@ else
 	}
 	else
 	{
-		header("HTTP/1.0 302 Redirect");
-		header("Location: index.$phpEx");
+		header("Location: " . append_sid("index.$phpEx", true));
 	}
 
 }
