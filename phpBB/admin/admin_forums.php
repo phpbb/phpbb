@@ -553,6 +553,7 @@ if( !empty($mode) )
 				"L_MOVE_CONTENTS" => $lang['Move_contents'], 
 				"L_FORUM_NAME" => $lang['Forum_name'], 
 
+				"S_HIDDEN_FIELDS" => $s_hidden_fields,
 				'S_FORUM_ACTION' => append_sid("admin_forums.$phpEx"), 
 				'S_SELECT_TO' => $select_to,
 				'S_SUBMIT_VALUE' => $buttonvalue)
