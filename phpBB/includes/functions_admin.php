@@ -1426,8 +1426,9 @@ function cache_moderators()
 				break;
 
 			case 'mssql':
+			case 'sqlite':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
-					VALUES ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
+					 ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
 				$db->sql_query($sql);
 				break;
 
