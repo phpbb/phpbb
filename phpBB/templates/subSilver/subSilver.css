@@ -1,9 +1,11 @@
 /*
+
     The original subSilver Theme for phpBB version 2+
   Created by subBlue design  [ http://www.subBlue.com ]
            Copyright 2000, 2003 phpBB Group
 
-  $Id $
+  $Id$
+
 */
 
 /* 
@@ -37,7 +39,14 @@ body {
 	scrollbar-arrow-color:		#006699;
 	scrollbar-track-color:		#EFEFEF;
 	scrollbar-darkshadow-color: #98AAB1;
-	background-image: url('templates/subSilver/images/background.png');
+	background: white url('templates/subSilver/images/background.png') repeat-x;
+}
+
+h1 {
+	color: black;
+	font: bold 1.4em Verdana, Arial, Helvetica, serif;
+	text-decoration: none; 
+	margin: 0px;
 }
 
 h3 {
@@ -177,6 +186,12 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 	background-color: #ACBBC6;
 }
 
+.titles {
+	color: black;
+	font: 1.4em Verdana, Arial, Helvetica, serif;
+	text-decoration: none; 
+}
+
 /* Main table cell colours and backgrounds */
 .row1 { 
 	background-color: #EFEFEF;
@@ -246,16 +261,5 @@ span.hilit {color:red;font-weight:bold}
   colour as the background no one will know ;)
 */
 .helpline { background-color: #DEE3E7; border-style: none; }
-
-
-
-
-
-
-/* The largest text used in the index page title and toptic title etc. */
-.maintitle,h1,h2	{
-			font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
-			text-decoration: none; line-height : 120%; color : #000000;
-}
 
 /* --------------------------- */
