@@ -18,6 +18,7 @@ class session
 	var $browser = '';
 	var $ip = '';
 	var $page = '';
+	var $cur_page = '';
 	var $load;
 
 	// Called at each page start ... checks for, updates and/or creates a session
@@ -28,18 +29,22 @@ class session
 		$current_time = time();
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
+
+		// Generate Valid URL
+		$this->cur_page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1.' . $phpEx . '?\2', htmlspecialchars($this->page));
+
 		$this->page = preg_replace('#^.*?([a-z]+?)\.' . $phpEx . '\?sid=[a-z0-9]*?(&.*)?$#i', '\1\2', $this->page);
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$sessiondata = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : '';
+			$sessiondata = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : array();
 			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
-			$sessiondata = '';
+			$sessiondata = array();
 			$this->session_id = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
@@ -79,10 +84,11 @@ class session
 		// session_id exists so go ahead and attempt to grab all data in preparation
 		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id == $_GET['sid']))
 		{
-			$sql = 'SELECT u.*, s.*
-				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
+			$sql = 'SELECT u.*, s.*, g.*
+				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . ' u, ' . GROUPS_TABLE . " g
 				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
-					AND u.user_id = s.session_user_id";
+					AND u.user_id = s.session_user_id
+					AND g.group_id = u.group_id";
 			$result = $db->sql_query($sql);
 
 			$this->data = $db->sql_fetchrow($result);
@@ -171,12 +177,19 @@ class session
 		}
 
 		// Grab user data ... join on session if it exists for session time
-		$sql = 'SELECT u.*, s.session_time, s.session_id 
+		$sql = 'SELECT u.*, s.session_time, s.session_id, g.*
+			FROM (' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g
+			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
+			WHERE u.user_id = $user_id
+				AND u.group_id = g.group_id
+			ORDER BY s.session_time DESC";
+
+/*		$sql = 'SELECT u.*, s.session_time, s.session_id 
 			FROM (' . USERS_TABLE . ' u
 			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
 			WHERE u.user_id = $user_id
-			ORDER BY s.session_time DESC";
-		$result = $db->sql_query($sql);
+			ORDER BY s.session_time DESC";*/
+		$result = $db->sql_query_limit($sql, 1);
 
 		$this->data = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -472,7 +485,7 @@ class user extends session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'])) ? $this->data['user_lang'] : $config['default_lang'];
+			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : $config['default_lang'];
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
@@ -494,7 +507,7 @@ class user extends session
 				{
 					// Set correct format ... guess full xx_YY form
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
-					if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 					{
 						$this->lang_name = $accept_lang;
 						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
@@ -504,7 +517,7 @@ class user extends session
 					{
 						// No match on xx_YY so try xx
 						$accept_lang = substr($accept_lang, 0, 2);
-						if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 						{
 							$this->lang_name = $accept_lang;
 							$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
@@ -550,6 +563,36 @@ class user extends session
 		$db->sql_freeresult($result);
 		unset($row);
 		unset($row2);
+
+		// Set theme info
+		$theme_info = array();
+		$default_theme_info = array(
+			'pagination_sep' => ', ',
+			'pagination_goto_page' => true,
+			'avatar_img_class' => ''
+		);
+
+		foreach ($this->theme as $style_priority => $row)
+		{
+			if (file_exists($phpbb_root_path . 'styles/' . $row['theme_path'] . '/theme/theme_info.' . $phpEx))
+			{
+				$theme_info = array();
+				include($phpbb_root_path . 'styles/' . $row['theme_path'] . '/theme/theme_info.' . $phpEx);
+				if (sizeof($theme_info))
+				{
+					$this->theme[$style_priority] = array_merge($this->theme[$style_priority], $theme_info);
+				}
+			}
+
+			foreach ($default_theme_info as $key => $value)
+			{
+				if (!isset($this->theme[$style_priority][$key]))
+				{
+					$this->theme[$style_priority][$key] = $value;
+				}
+			}
+		}
+		unset($theme_info, $default_theme_info);
 
 		$template->set_template();
 
@@ -638,7 +681,7 @@ class user extends session
 
 		if (!$use_db)
 		{
-			require($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
+			require ($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx");
 		}
 		else if ($use_db)
 		{
@@ -669,7 +712,7 @@ class user extends session
 	{
 		global $config, $db;
 
-		if ($this->lang_id)
+		if (isset($this->lang_id))
 		{
 			return $this->lang_id;
 		}
@@ -706,10 +749,16 @@ class user extends session
 
 	function img($img, $alt = '', $width = false, $suffix = '')
 	{
-		static $imgs;
+		static $imgs, $phpbb_root_path;
 
 		if (empty($imgs[$img . $suffix]) || $width)
 		{
+			if (!$this->theme['primary'][$img])
+			{
+				$imgs[$img . $suffix] = $alt; //'{{IMG:' . $img . '}}';
+				return $imgs[$img . $suffix];
+			}
+			
 			if (!$width)
 			{
 				list($imgsrc, $height, $width) = explode('*', $this->theme['primary'][$img]);
@@ -729,7 +778,7 @@ class user extends session
 			$height = ($height) ? ' height="' . $height . '"' : '';
 			$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
 
-			$imgs[$img . $suffix] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '"/>';
+			$imgs[$img . $suffix] = '<img src=' . $imgsrc . $width . $height . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '" />';
 		}
 
 		return $imgs[$img . $suffix];
@@ -825,6 +874,10 @@ class auth
 				$i = 0;
 				while ($subseq = substr($seq, $i, 6))
 				{
+					if (!isset($this->acl[$f]))
+					{
+						$this->acl[$f] = '';
+					}
 					$this->acl[$f] .= str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT);
 					$i += 6;
 				}
@@ -843,11 +896,17 @@ class auth
 			$cache[$f][$opt] = false;
 			if (isset($this->acl_options['global'][$opt]))
 			{
-				$cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
+				if (isset($this->acl[0]))
+				{
+					$cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
+				}
 			}
 			if (isset($this->acl_options['local'][$opt]))
 			{
-				$cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
+				if (isset($this->acl[$f]))
+				{
+					$cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
+				}
 			}
 		}
 
