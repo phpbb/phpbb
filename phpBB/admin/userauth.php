@@ -29,6 +29,51 @@ $auth_field_match = array(
 );
 $forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_votecreate", "auth_vote", "auth_attachments");
 
+$forum_auth_key_fields = array("auth_view", "auth_read", "auth_post", "auth_reply");
+
+// ----------
+// Start Functions
+//
+function a_auth_check_user($type, $key, $u_auth, $is_admin)
+{
+
+	$single_user = 0;
+	$auth_user = array();
+
+	while( list($entry, $u_ary) = each($u_auth) )
+	{
+		if(!$single_user)
+		{
+			$single_user = $u_ary['group_single_user'];
+			
+			$result = 0;
+			switch($type)
+			{
+				case AUTH_ACL:
+					$result = $u_ary[$key];
+
+				case AUTH_MOD:
+					$result = $result || $u_ary['auth_mod'];
+
+				case AUTH_ADMIN:
+					$result = $result || $is_admin;
+					break;
+			}
+
+			$auth_user['auth'] = (!$single_user) ? ( $auth_user || $result ) : $result;
+
+		}
+		$auth_user['single_group'] = ($single_user) ? "single" : "group";
+
+	}
+	
+	return $auth_user;
+}
+//
+// Start Functions
+// ----------
+
+
 //
 //
 //
@@ -67,16 +112,18 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	if( !$HTTP_POST_VARS['makeadmin'] && $HTTP_POST_VARS['curadmin'] )
 	{
 		//
-		// Delete any entries granting moderator
-		// status in auth_access
+		// Delete any entries granting in auth_access
 		//
 		$sql_unmod = "DELETE FROM " . AUTH_ACCESS_TABLE . "     
 			WHERE group_id = $group_id";
 		if(!$result = $db->sql_query($sql_unmod))
 		{
 			// Error, couldn't delete entries
-		}
+		} 
 
+		//
+		// Update users level, reset to USER
+		//
 		$sql_userlevel = "UPDATE " . USERS_TABLE . " 
 			SET user_level = " . USER . " 
 			WHERE user_id = $user_id";
@@ -91,10 +138,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	else if( $HTTP_POST_VARS['makeadmin'] && !$HTTP_POST_VARS['curadmin'] )
 	{
 		//
-		// Need to switch on admin
-		// level, this also requires
-		// we remove this user from all
-		// auth fields(?)
+		// Switch user_level to ADMIN
 		//
 		$sql_userlevel = "UPDATE " . USERS_TABLE . " 
 			SET user_level = " . ADMIN . " 
@@ -103,43 +147,37 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		{
 			// Error, couldn't set user level
 		}
-
+			
+		// This needs changing -> Remove the
+		// user from auth_access where special 
+		// access permissions are granted but leave
+		// moderator status
 		//
+		// ---------------------------------------
 		// Delete any entries in auth_access, they
 		// are unrequired if user is becoming an 
 		// admin
 		//
-		$sql_unmod = "DELETE FROM " . AUTH_ACCESS_TABLE . "     
+		$sql_unauth = "DELETE FROM " . AUTH_ACCESS_TABLE . "     
 			WHERE aa.group_id = $group_id";
-		if(!$result = $db->sql_query($sql_unmod))
+		if(!$result = $db->sql_query($sql_unauth))
 		{
 			// Error, couldn't delete entries
 		}
 
 		//
-		// Remove user from any groups
 		//
-		$sql_rmgrp = "DELETE FROM " . USER_GROUP_TABLE . "     
-			WHERE user_id = $user_id 
-				AND group_id <> $group_id";
-		if(!$result = $db->sql_query($sql_rmgrp))
-		{
-			// Error, couldn't delete entries
-		}
-
-	
-		$sql_mod = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_mod)  
-			VALUES ($group_id, 0, 1)";
-		if(!$result = $db->sql_query($sql_mod))
-		{
-			// Error, couldn't delete entries
-		}
+		// ----------------------------------------
 
 		header("Location: userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
 
 	}
 	else
 	{
+
+		$change_mod_ary = (isset($HTTP_POST_VARS['moderator'])) ? $HTTP_POST_VARS['moderator'] : 0;
+		$change_prv_ary = (isset($HTTP_POST_VARS['private'])) ? $HTTP_POST_VARS['private'] : 0;
+
 		//
 		// Pull all the group info
 		// for this user
@@ -149,7 +187,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			WHERE ug.user_id = $user_id 
 				AND g.group_id = ug.group_id 
 				AND aa.group_id = ug.group_id 
-				AND g.group_single_user <> 1";
+				AND g.group_single_user <> " . TRUE;
 		$au_result = $db->sql_query($sql);
 
 		$num_u_access = $db->sql_numrows($au_result);
@@ -157,6 +195,87 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		{
 			$u_access = $db->sql_fetchrowset($au_result);
 		}
+
+		//
+		// The data above lists access and moderator permissions
+		// for this user given by all the groups they belong to.
+		// These values must be checked against those requested
+		// by the admin and where necessary the admin is 
+		// informed of problems. For example, if a group the user
+		// belongs to already grants the user moderator status
+		// then the user won't have moderator status enabled.
+		// If the user has a group entry preventing access to a 
+		// forum then again, we must warn the admin that giving
+		// the user access goes against the group permissions
+		// (although in this case we'll go ahead and add the user)
+		//
+		
+		//
+		// Check against moderator table ...
+		//
+		$valid_auth_mod_chg = array();
+		reset($change_mod_ary);
+		while(list($chg_forum_id, $value) = each($change_mod_ary))
+		{
+			$a_match = $value;
+			for($i = 0; $i < count($u_access); $i++)
+			{
+				$forum_id = $u_access[$i]['forum_id'];
+
+				if($forum_id == $chg_forum_id && $u_access[$i]['auth_mod'] == 1)
+				{
+					$a_match = 0;
+				}
+			}
+	
+			$valid_auth_mod_chg[$chg_forum_id] = $a_match;
+
+		}
+		//
+		// valid_auth_mod_chg now contains an array (key is forum_id)
+		// where the value is 1 if the user should be an admin and 0
+		// where the user is prevented (either by the admin disallowing
+		// or the user belonging to a group which already moderates)
+		//
+
+		print_r($valid_auth_mod_chg);
+		echo "<BR><BR>";
+
+		//
+		// Check against priv access table ...
+		//
+		$valid_auth_prv_chg = array();
+		reset($change_prv_ary);
+		while(list($chg_forum_id, $value) = each($change_prv_ary))
+		{
+			$a_match = $value;
+			for($i = 0; $i < count($u_access); $i++)
+			{
+				$forum_id = $u_access[$i]['forum_id'];
+
+				if($forum_id == $chg_forum_id)
+				{
+					for($k = 0; $k < count($forum_auth_key_fields); $k++)
+					{
+						$a_match = $a_match && $u_access[$i][$forum_auth_key_fields[$k]];
+					}
+				}
+			}
+	
+			$valid_auth_prv_chg[$chg_forum_id] = $a_match;
+
+		}
+		//
+		// valid_auth_mod_chg now contains an array (key is forum_id)
+		// where the value is 1 if the user should be an admin and 0
+		// where the user is prevented (either by the admin disallowing
+		// or the user belonging to a group which already moderates)
+		//
+
+		print_r($valid_auth_prv_chg);
+		echo "<BR><BR>";
+
+		exit;
 
 		header("Location: userauth.$phpEx?" . POST_USERS_URL . "=$user_id");
 
@@ -220,7 +339,13 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 			for($j = 0; $j < count($forum_auth_fields); $j++)
 			{
 				$basic_auth_level[$forum_row['forum_id']] = "public";
-				if($forum_row[$forum_auth_fields[$j]] == AUTH_ACL)
+
+				if($forum_row[$forum_auth_fields[$j]] == AUTH_REG)
+				{
+					$basic_auth_level[$forum_row['forum_id']] = "registered";
+					$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
+				}
+				else if($forum_row[$forum_auth_fields[$j]] == AUTH_ACL)
 				{
 					$basic_auth_level[$forum_row['forum_id']] = "private";
 					$basic_auth_level_fields[$forum_row['forum_id']][] = $forum_auth_fields[$j];
@@ -245,18 +370,21 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	$u_result = $db->sql_query($sql);
 	$userinf = $db->sql_fetchrowset($u_result);
 
-	$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, aa.auth_admin, g.group_single_user  
+	$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_votecreate, aa.auth_vote, aa.auth_attachments, aa.auth_mod, g.group_single_user  
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
 		WHERE ug.user_id = $user_id 
 			AND g.group_id = ug.group_id 
-			AND aa.group_id = ug.group_id 
-			AND g.group_single_user = 1";
+			AND aa.group_id = ug.group_id";
 	$au_result = $db->sql_query($sql);
 
 	$num_u_access = $db->sql_numrows($au_result);
 	if($num_u_access)
 	{
-		$u_access = $db->sql_fetchrowset($au_result);
+		while($u_row = $db->sql_fetchrow($au_result))
+		{
+			$u_access[$u_row['forum_id']][] = $u_row;
+			$num_forum_access[$u_row['forum_id']]++;
+		}
 	}
 
 	$is_admin = ($userinf[0]['user_level'] == ADMIN && $userinf[0]['user_id'] != ANONYMOUS) ? 1 : 0;
@@ -282,11 +410,29 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 					break;
 
 				case AUTH_ACL:
-					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+					if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
+					{
+						$result = a_auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin);
+						$auth_user_group[$f_forum_id][$key] = $result['single_group'];
+						$auth_user[$f_forum_id][$key] = $result['auth'];
+					}
+					else
+					{
+						$auth_user[$f_forum_id][$key] = 0;
+					}
 					break;
 		
 				case AUTH_MOD:
-					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_MOD, $key, $u_access, $is_admin) : 0;
+					if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
+					{
+						$result = a_auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin);
+						$auth_user_group[$f_forum_id][$key] = $result['single_group'];
+						$auth_user[$f_forum_id][$key] = $result['auth'];
+					}
+					else
+					{
+						$auth_user[$f_forum_id][$key] = 0;
+					}
 					break;
 	
 				case AUTH_ADMIN:
@@ -301,7 +447,16 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 		//
 		// Is user a moderator?
 		//
-		$auth_user[$f_forum_id]['auth_mod'] = ($user_id != ANONYMOUS) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
+		{
+			$result = a_auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin);
+			$auth_user_group[$f_forum_id]['auth_mod'] = $result['single_group'];
+			$auth_user[$f_forum_id]['auth_mod'] = $result['auth'];
+		}
+		else
+		{
+			$auth_user[$f_forum_id][$key] = 0;
+		}
 	}
 
 	while(list($forumkey, $user_ary) = each($auth_user))
@@ -309,10 +464,23 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 		$simple_auth[$forumkey] = 1;
 		while(list($fieldkey, $value) = each($user_ary))
 		{
-			$simple_auth[$forumkey] = $simple_auth[$forumkey] && $value;
+			$simple_auth[$forumkey] = $simple_auth[$forumkey] && $value; 
 		}
 	}
 	reset($auth_user);
+
+	while(list($forumkey, $user_ary) = each($auth_user_group))
+	{
+		$simple_auth_acl[$forumkey] = "single";
+		$simple_auth_mod[$forumkey] = "single";
+
+		while(list($fieldkey, $value) = each($user_ary))
+		{
+			$simple_auth_acl[$forumkey] = ($simple_auth_acl[$forumkey] != "group") ? $value : "group";
+			$simple_auth_mod[$forumkey] = ($simple_auth_mod[$forumkey] != "group") ? $value : "group";
+		}
+	}
+
 
 	$i = 0;
 	if($adv == -1)
@@ -329,10 +497,14 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 						$allowed = 0;
 					}
 				}
-				$optionlist_grant = "<select name=\"simple[$forumkey]\">";
-				if($allowed)
+				$optionlist_grant = "<select name=\"private[$forumkey]\">";
+				if($is_admin || $user_ary['auth_mod'])
 				{
-					$optionlist_grant .= "<option value=\"1\" selected>Allowed Access</option>";
+					$optionlist_grant .= "<option value=\"1\">Allowed Access</option>";
+				}
+				else if($allowed)
+				{
+					$optionlist_grant .= "<option value=\"1\" selected>Allowed Access</option><option value=\"0\">Disallowed Access</option>";
 				}
 				else
 				{
@@ -344,9 +516,10 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 			{
 				$optionlist_grant = "";
 			}
+
 			if($user_ary['auth_mod'])
 			{
-				$optionlist_mod = "<option value=\"1\" selected>Is a Moderator</option>";
+				$optionlist_mod = "<option value=\"1\" selected>Is a Moderator</option><option value=\"0\">Is not a Moderator</option>";
 			}
 			else
 			{
@@ -355,25 +528,60 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 			switch($basic_auth_level[$forumkey])
 			{
 				case 'public':
-					$row_class = "authall";
+					$min_auth = "ANY";
+					break;
+				case 'registered':
+					$min_auth = "REG";
 					break;
 				case 'private':
-					$row_class = "authacl";
+					$min_auth = "ACL";
 					break;
 				case 'moderate':
-					$row_class = "authmod";
+					$min_auth = "MOD";
 					break;
 				case 'admin':
-					$row_class = "authadmin";
+					$min_auth = "MOD";
 					break;
 				default:
-					$row_class = "authall";
+					$min_auth = "authall";
 					break;
 			}
+			$single_group_acl = "";
+			if(!empty($simple_auth_acl[$forumkey]))
+			{
+				switch($simple_auth_acl[$forumkey])
+				{
+					case 'single':
+						$single_group_acl = "authuser";
+						break;
+					case 'group':
+						$single_group_acl = "authgroup";
+						break;
+				}
+			}
+			$single_group_mod = "";
+			if(!empty($simple_auth_mod[$forumkey]))
+			{
+				switch($simple_auth_mod[$forumkey])
+				{
+					case 'single':
+						$single_group_mod = "authuser";
+						break;
+					case 'group':
+						$single_group_mod = "authgroup";
+						break;
+				}
+			}
+
+			$row_class = ($i%2) ? "row2" : "row1";
 
 			$template->assign_block_vars("forums", array(
-				"ROW_CLASS" => $row_class,
-				"FORUM_NAME" => $forum_access[$i]['forum_name'],
+				"ROW_CLASS" => $row_class, 
+				"MIN_AUTH" => $min_auth, 
+				"FORUM_NAME" => $forum_access[$i]['forum_name'], 
+
+				"AUTH_TYPE_ACL" => $row_class . $single_group_acl, 
+				"AUTH_TYPE_MOD" => $row_class . $single_group_mod, 
 
 				"SELECT_GRANT_LIST" => "$optionlist_grant",
 				"SELECT_MOD_LIST" => "<select name=\"moderator[$forumkey]\">$optionlist_mod</select>")

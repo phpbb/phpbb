@@ -14,13 +14,14 @@
 	TH {background-color:#CCCCCC;font-family:Verdana,serif;font-size:8pt}
 	TD {font-family:Verdana,serif;font-size:8pt}
 
-	TD.cell1 {background-color:#DDDDDD}
-	TD.cell2 {background-color:#EEEEEE}
+	TD.row1 {background-color:#DDDDDD}
+	TD.row2 {background-color:#EEEEEE}
 
-	TD.authall {background-color:#EEEEEE;text-align:center}
-	TD.authacl {background-color:#DDDDDD;text-align:center}
-	TD.authmod {background-color:#CCCCCC;text-align:center}
-	TD.authadmin {background-color:#BBBBBB;text-align:center}
+	TD.row1authuser {background-color:#FF8888;text-align:center}
+	TD.row2authuser {background-color:#EE8888;text-align:center}
+
+	TD.row1authgroup {background-color:#77FF77;text-align:center}
+	TD.row2authgroup {background-color:#66EE66;text-align:center}
 
 	SELECT.small	{width:140px;font-family:"Courier New",courier;font-size:8pt;}
 	INPUT.text		{font-family:"Courier New",courier;font-size:8pt;}
@@ -31,8 +32,6 @@
 
 <h1>User Authorisation Control</h1>
 
-<p>Remember that users are also granted access via usergroups so be sure to check group auth control when assigning and changing access rights!</p>
-
 <h2>Username: {USERNAME}</h2>
 <p>This user is {USERTYPE} and {USER_GROUP_LIST}
 
@@ -42,42 +41,38 @@
 
 <h3>Access to Forums</h3>
 
-<p>The following table lists all forums on you board. Different colour rows indicate different levels of authorisation required for a user to do one or more basic function, eg. view, read, post, reply. By design Administrators have access to and are moderators of every forum (you cannot alter individual settings for Administrators, you must first set them as users by unchecking the box above)</p>
+<p>The Min Auth Reqd. field indicates the minimum authorisation rights required to carry out one or more basic forum operation, eg. view, read, post or reply. The colour coded rows in the table whether access is granted by the user or group rights, if access is granted by group rights then you should visit the Group Auth Admin page to alter it.</p>
 
 <div align="center"><table cellspacing="1" cellpadding="4" border="0">
 	<tr>
-		<th width="25%">Forum Name</th>
+		<th width="30%">Forum Name</th>
+		<th>Min Auth Reqd.</th>
 		<th>Simple Access Control</th>
 		<th>Moderator</th>
 	</tr>
 	<!-- BEGIN forums -->
 	<tr>
-		<td class="{forums.ROW_CLASS}">{forums.FORUM_NAME}</td>
-		<td class="{forums.ROW_CLASS}">{forums.SELECT_GRANT_LIST}</td>
-		<td class="{forums.ROW_CLASS}">{forums.SELECT_MOD_LIST}</td>
+		<td class="{forums.ROW_CLASS}" align="center">{forums.FORUM_NAME}</td>
+		<td class="{forums.ROW_CLASS}" align="center">{forums.MIN_AUTH}</td>
+		<td class="{forums.AUTH_TYPE_ACL}">{forums.SELECT_GRANT_LIST}</td>
+		<td class="{forums.AUTH_TYPE_MOD}">{forums.SELECT_MOD_LIST}</td>
 	</tr>
 	<!-- END forums -->
 	<tr>
-		<td colspan="3" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Request Update">&nbsp;&nbsp;&nbsp;<input type="reset" value="Reset Changes"></td>
+		<td colspan="4" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="Request Update">&nbsp;&nbsp;&nbsp;<input type="reset" value="Reset Changes"></td>
 	</tr>
 </table></div>
 
 </form>
 
-<div align="center"><p>The colour coded rows in the table indicate the access level required to view, read, post or reply in the forum.</p>
+<div align="center"><p>The Min Auth Reqd. field indicates the minimum authorisation rights required to carry out one or more basic forum operation, eg. view, read or post. The colour coded rows in the table whether access is granted by the user or group rights.</p>
 
 <table cellspacing="1" cellpadding="4" border="0">
 	<tr>
-		<td class="authall">Any or registered users can access this forum</td>
+		<td class="row1authuser">Access rights are granted by User Auth Control</td>
 	</tr>
 	<tr>
-		<td class="authacl">Users must be granted special access</td>
-	</tr>
-	<tr>
-		<td class="authmod">Users must be moderators</td>
-	</tr>
-	<tr>
-		<td class="authadmin">Users must be admins</td>
+		<td class="row1authgroup">Access rights are granted by Group Auth Control</td>
 	</tr>
 </table></div>
 
