@@ -263,7 +263,7 @@ function storeCaret(textEl) {
 	if (textEl.createTextRange) { textEl.caretPos = document.selection.createRange().duplicate(); }
 }
 
-function colorPalette()
+function colorPalette(dir, width, height)
 {
 	var r = 0, g = 0, b = 0;
 	var numberList = new Array(6);
@@ -275,16 +275,30 @@ function colorPalette()
 	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
 	for(r = 0; r < 5; r++)
 	{
-		for(g = 0; g < 5; g++)
+		if (dir == 'h')
 		{
 			document.writeln('<tr>');
+		}
+		for(g = 0; g < 5; g++)
+		{
+			if (dir == 'v')
+			{
+				document.writeln('<tr>');
+			}
 			for(b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="10" height="6" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
+			if (dir == 'v')
+			{
+				document.writeln('</tr>');
+			}
+		}
+		if (dir == 'h')
+		{
 			document.writeln('</tr>');
 		}
 	}
