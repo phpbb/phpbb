@@ -38,8 +38,8 @@ switch($dbms)
 		include($phpbb_root_path . 'db/mssql.'.$phpEx);
 		break;
 
-	case 'odbc':
-		include($phpbb_root_path . 'db/odbc.'.$phpEx);
+	case 'msaccess':
+		include($phpbb_root_path . 'db/msaccess.'.$phpEx);
 		break;
 
 	case 'oracle':
