@@ -94,7 +94,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, s.session_logged_
 	WHERE u.user_id = s.session_user_id
 		AND ( s.session_time >= ".( time() - 300 ) . " 
 			OR u.user_session_time >= " . ( time() - 300 ) . " )  
-	ORDER BY u.user_session_time DESC";
+	ORDER BY u.username ASC";
 $result = $db->sql_query($sql);
 if(!$result)
 {
