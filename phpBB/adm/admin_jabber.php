@@ -12,9 +12,7 @@
 // -------------------------------------------------------------
 
 // TODO
-// Create new user on server
-// Advise what transports on server
-// Register transport usernames/passwords (links to online reg systems)
+// Check/enter/update transport info
 
 if (!empty($setmodules))
 {
@@ -90,6 +88,9 @@ if ($jab_enable && ($jab_host != $config['jab_host'] || $jab_username != $config
 		$message = $user->lang['JAB_CHANGED'];
 		$log = 'JAB_CHANGED';
 	}
+
+	sleep(1);
+	$jabber->Disconnect();
 }
 else if ($jab_password != $config['jab_password'])
 {
@@ -192,7 +193,7 @@ $jab_yim_enable_no	= (!$new['jab_yim_enable']) ? 'checked="checked"' : '';
 		<td class="row2"><input class="post" type="text" name="jab_host" value="<?php echo $new['jab_host']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_PORT']; ?>: </b></td>
+		<td class="row1" width="40%"><b><?php echo $user->lang['JAB_PORT']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['JAB_PORT_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" name="jab_port" value="<?php echo $new['jab_port']; ?>" /></td>
 	</tr>
 	<tr>
