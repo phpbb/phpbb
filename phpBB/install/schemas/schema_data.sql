@@ -66,6 +66,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_phr', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_onlinetrack', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
