@@ -74,9 +74,6 @@ class parse_message
 			unset($matches);
 		}
 
-		// Specialchars message here ... ?
-//		$message = htmlspecialchars($message, ENT_COMPAT, $user->lang['ENCODING']);
-
 		if ($warn_msg)
 		{
 			return $warn_msg;
@@ -93,24 +90,20 @@ class parse_message
 
 	function html(&$message, $html)
 	{
-		global $config, $user;
+		global $config;
+
+		$message = str_replace(array('<', '>'), array('&lt;', '&gt;'), $message);
 
 		if ($html)
 		{
 			// If $html is true then "allowed_tags" are converted back from entity
 			// form, others remain
-			$allowed_tags = split(',', str_replace(' ', '', $config['allow_html_tags']));
+			$allowed_tags = split(',', $config['allow_html_tags']);
 
-			$match = array();
-			$replace = array();
-
-			foreach ($allowed_tags as $tag)
+			if (sizeof($allowed_tags))
 			{
-				$match[] = '#&lt;(\/?' . str_replace('*', '.*?', $tag) . ')&gt;#i';
-				$replace[] = '<\1>';
+				$message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<\1\2>', $message);
 			}
-
-			$message = preg_replace($match, $replace, $message);
 		}
 
 		return;
@@ -188,15 +181,6 @@ class parse_message
 		$allowed_ext = explode(',', $config['attach_ext']);
 	}
 
-	function smiley_sort($a, $b)
-	{
-		if ( strlen($a['code']) == strlen($b['code']) )
-		{
-			return 0;
-		}
-
-		return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
-	}
 }
 
 // Parses a given message and updates/maintains the fulltext tables
@@ -235,12 +219,12 @@ class fulltext_search
 		// Filter out non-alphabetical chars
 		$text = str_replace($drop_char_match, $drop_char_replace, $text);
 
-		if ( !empty($stopwords_list) )
+		if (!empty($stopwords_list))
 		{
 			$text = str_replace($stopwords, '', $text);
 		}
 
-		if ( !empty($synonyms) )
+		if (!empty($synonyms))
 		{
 			for ($j = 0; $j < count($synonyms); $j++)
 			{
@@ -314,7 +298,7 @@ class fulltext_search
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
-			while ( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$word_ids[$row['word_text']] = $row['word_id'];
 			}
@@ -358,7 +342,7 @@ class fulltext_search
 
 		foreach ($words['del'] as $word_in => $word_ary)
 		{
-			$title_match = ( $word_in == 'title' ) ? 1 : 0;
+			$title_match = ($word_in == 'title') ? 1 : 0;
 
 			$sql = '';
 			if (sizeof($word_ary))
@@ -395,10 +379,8 @@ class fulltext_search
 		}
 	}
 
-	//
 	// Tidy up indexes, tag 'common words', remove
 	// words no longer referenced in the match table, etc.
-	//
 	function search_tidy()
 	{
 		global $db;
@@ -419,7 +401,7 @@ class fulltext_search
 			$in_sql = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $row['word_id'];
+				$in_sql .= (( $in_sql != '') ? ', ' : '') . $row['word_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -449,28 +431,26 @@ class fulltext_search
 			$in_sql = '';
 			do
 			{
-				$in_sql .= ',' . $row['word_id'];
+				$in_sql .= ', ' . $row['word_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
-			$db->sql_freeresult($result);
 
 			$sql = 'DELETE FROM ' . SEARCH_WORD_TABLE . '
-				WHERE word_id IN (' . substr($in_sql, 1) . ')';
+				WHERE word_id IN (' . substr($in_sql, 2) . ')';
 			$db->sql_query($sql);
 		}
+		$db->sql_freeresult($result);
 	}
 }
 
-//
 // Fill smiley templates (or just the variables) with smileys
 // Either in a window or inline
-//
 function generate_smilies($mode)
 {
 	global $SID, $auth, $db, $user, $config, $template;
 	global $starttime, $phpEx, $phpbb_root_path;
 
-	if ($mode == 'window' )
+	if ($mode == 'window')
 	{
 		$page_title = $user->lang['Review_topic'] . " - $topic_title";
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -480,7 +460,7 @@ function generate_smilies($mode)
 		);
 	}
 
-	$where_sql = ( $mode == 'inline' ) ? 'WHERE display_on_posting = 1 ' : '';
+	$where_sql = ($mode == 'inline') ? 'WHERE display_on_posting = 1 ' : '';
 	$sql = "SELECT emoticon, code, smile_url, smile_width, smile_height
 		FROM " . SMILIES_TABLE . "
 		$where_sql
@@ -495,7 +475,7 @@ function generate_smilies($mode)
 		{
 			if (!in_array($row['smile_url'], $smile_array))
 			{
-				if ($mode == 'window' || ( $mode == 'inline' && $num_smilies < 20 ))
+				if ($mode == 'window' || ($mode == 'inline' && $num_smilies < 20))
 				{
 					$template->assign_block_vars('emoticon', array(
 						'SMILEY_CODE' 	=> $row['code'],
