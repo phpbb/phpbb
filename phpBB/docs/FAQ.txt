@@ -1,0 +1,125 @@
+FAQ/FAQ suggestions
+-------------------
+
+### ALPHA Info ###
+    ----------
+
+* Why isn't X working?
+
+Please remember this is alpha software, we _do_not_ recommend you use this software in a live environment! We do not offer support for phpBB 2.0 alpha nor should you expect us to immdiately fix problems. The code is in continual development and as features are added it sometimes breaks other things, we generally know about these problems from our own testing. They will be fixed, promise(!) but we cannot give times so please don't ask. Please also don't ask developers for updates to be made to the CVS repository, files will be committed when we've completed work and/or fixed problems (and usually completed some local testing). If you would like information on commits to the repository you can subscribe to the check-ins mailing list at: http://lists.sourceforge.net/lists/listinfo/phpbb-checkins or view recent check-ins @: http://www.geocrawler.com/lists/3/SourceForge/9113/0/
+
+* I've found a bug where should I report it?
+
+We don't doubt you've found a 'bug'! However while we appreciate people telling us of serious issues with the board (incompatibilities with different DB's, login issues, etc.) we cannot respond to individual bug reports. phpBB 2.0 is in continual development and we generally know of most bugs and problems, they will be fixed, hopefully(!). When we move to beta status we'll be accepting bug reports under certain circumstances, the Release Candidate release is the point where bug checking and removal will really take place.
+
+* I've fixed a problem, where should I send the patch?
+
+While we appreciate people showing enthusiasm for the development of phpBB 2.0 the alpha status of the board probably means your patch is redundant, sorry :( This could be because the 'problem' is fixed or it could be that the 'problem' was actually an incomplete feature (or one in the middle of some change).
+
+* When will phpBB 2.0 be released?
+
+Your guess is as good as ours! We honestly cannot fix a release date, phpBB is produced by the developers in their spare time and therefore deadlines cannot be set. At some point in the nearish future we'll move to beta status, the details of what this will mean have yet to be decided (it may be a public beta or it may be closed beta). Following this will be a public Release Candidate series (maybe one release, maybe more) followed by a full public release (at this time gzip'd and zip'd archives of the code will become available on the phpbb.com website and full support will be available).
+
+* Can I help with testing?
+
+See previous responses.
+
+* Can I be a beta tester?
+
+See previous responses.
+
+* Can I produce a template/theme?
+
+Yes, you're more than welcome to start working on templates for phpBB 2.0! Please remember though that not all pages are complete and the variables available to pages may change (we also welcome suggestions as to additional variables you'd like to have, or redundant variables you never use). The current two themes, Default and PSO do not use all the variables available from the template engine, for now you'll need to examine the code to determine all the variables available. We also hope to introduce simple IF...ELSE...ENDIF clauses into the template engine which will allow even greater freedom (and more compact template sets) over what you can do. Please also feel free to post your designs to either the phpBB 2.0 test board or the phpBB board, we'd like to see them!
+
+* Can I suggest a feature for phpBB 2.x?
+
+Yes, we enjoy reading original requests for features. First though you should visit the phpBB Groups support forums (http://www.phpbb.com/) and search to see if the request has already been filed, if it has then check our reply. If not then type away! We cannot guarantee any requests will make it into a future version but we do look at all suggestions. Please remember that the feature list for phpBB 2.0 (the first release of the new board) is now effectively fixed, therefore no more major features will likely be added to it. The next stable release, phpBB 2.2 will include several features requested and additional suggestions will be taken into account when we fix the feature list for this.
+
+* Can I help with development?
+
+The phpBB Groups team leader is James Atkinson (theFinn), if you believe you'd be a great asset to the group then you should contact him (at the phpBB website) with details. However, you may also be interested in contributing to a thriving hacks community. This exists outside the core group but is a very important part of the philosophy of phpBB: opensource development, and we wholeheartedly support it, visit http://hacks.phpbb.com/ for more information (the admins there are members of the phpBB Group)
+
+* Why is X feature not in phpBB?
+
+There could be any number of reasons, perhaps we've not had much call for it, perhaps it's not appropriate for this type of software, maybe we're programming it(!) or perhaps it's on a feature list for a future version. See above for details on suggesting a feature but please don't badger the developers with calls for a feature, if it's popular you can guarantee it'll be in a future version (we intend to keep this the best free PHP based bulletin board software there is)
+
+* Why is phpBB 1.x faster than phpBB 2.0?
+
+The original phpBB 1.0 saw a very large decrease in page generation times from version 1.0/1.2 to 1.4. This was achieved by rewriting many of the SQL queries and splitting the database. These changes came about from work on phpBB 2.0. With phpBB 2.0 we have introduced numerous additional functions and features, not least of which is full templating (the separation of page design from code). This results in a slowdown from phpBB 1.4, we suspect though that the new features will outweigh the small difference in page generation times.
+
+----------------------------------
+
+
+### ADMINS ###
+    ------
+
+* Can I suggest a feature for phpBB 2.0?
+
+Yes, we enjoy reading original requests for features. First though you should visit the phpBB Groups support forums (http://www.phpbb.com/) and search to see if the request has already been filed, if it has then check our reply. If not then type away! We cannot guarantee any requests will make it into a future version but we do look at all suggestions.
+
+* Can I help with development?
+
+The phpBB Groups team leader is James Atkinson (theFinn), if you believe you'd be a great asset to the group then you should contact him (at the phpBB website) with details. However, you may also be interested in contributing to a thriving hacks community. This exists outside the core group but is a very important part of the philosophy of phpBB: opensource development, and we wholeheartedly support it, visit http://hacks.phpbb.com/ for more information (the admins there are members of the phpBB Group)
+
+* Why is X feature not in phpBB?
+
+There could be any number of reasons, perhaps we've not had much call for it, perhaps it's not appropriate for this type of software, maybe we're programming it(!) or perhaps it's on a feature list for a future version. See above for details on suggesting a feature but please don't badger the developers with calls for a feature, if it's popular you can guarantee it'll be in a future version (we intend to keep this the best free PHP based bulletin board software there is)
+
+* What about phpBB 1.x?
+
+With the release of phpBB 2.0 we recommend all users upgrade. The additional features are numerous and the internal workings have been streamlined and cleaned up. While we'll continue to support phpBB 1.x (and hacks will no doubt still be produced) we will not be updating it in any serious way (only very serious bugs will be fixed).
+
+* Why is phpBB 1.x faster than phpBB 2.0?
+
+The original phpBB 1.0 saw a very large decrease in page generation times from version 1.0/1.2 to 1.4. This was achieved by rewriting many of the SQL queries and splitting the database. These changes came about from work on phpBB 2.0. With phpBB 2.0 we have introduced numerous additional functions and features, not least of which is full templating (the separation of page design from code). This results in a slowdown from phpBB 1.4, we suspect though that the new features will outweigh the small difference in page generation times.
+
+----------------------------------
+
+
+### END USERS ###
+    ---------
+
+* Why do email addresses look like 'name at domain.com'?
+
+They look this way in order to reduce the possibility of email address gathering programs from finding your email address. These 'bots' look for email addresses in web pages and store them where they are often used to send you spam email. In order to send email to someone you will need to remove the ' at ' in the address and replace it with usual '@'
+
+* Why do I get logged off automatically?
+
+If you do not check the "Log me in automatically" box when you login the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in check the box during login, this is not recommended if you access the board from a shared computer, eg. library, internet cafe, university cluster, etc.
+
+* Why can't I upload an avatar image?
+
+An avatar is a small image generally unique to a user displayed next to their posts. It is up to the board administrator to enable avatars (and the way in which avatars can be set). If you are unable to use avatars then this is the decision of the board admin, you should ask them their reasons (we're sure they'll be good!)
+
+* Why am I showing up more than once in the online listing?
+
+You shouldn't! phpBB 2.0 includes controls to prevent a user being logged in twice from different machines. However, if the connection between your machine and the system serving this board is interrupted mid-transmission it may possibly corrupt the cookie data used to identify you. In this case the session management code will interpret you as a 'returning user' (if you checked the automatic login box) and create a new session. If you suspect this is not the problem you should contact the board administrator as soon as possible.
+
+* Why can't I login?
+
+Have you registered?! Seriously, you must register in order to login. Have you been banned from the board (a message will be displayed if you have)? If so then you should contact the webmaster or board administrator to find out why. If you have registered and are not banned and you still cannot login then check and double check your username and password. Usually this is the problem, if not then contact the board administrator they may have incorrect configuration settings for the board.
+
+* How do I upload my own template or theme?
+
+It is up to the board administrator to upload new templates, most webmasters/admins will have designed a template to match their website and therefore probably won't be interested in using a different template (no harm in asking though!). However, the phpBB Group would certainly be interested in any template you create, drop on by the website at http://www.phpbb.com/ and add it to the gallery (pending a setting up of a template gallery!). Themes may be changeable by the end user depending on whether the admin allows it, check your profile, if the theme setting contains a "Create your own theme" button you can change the colours and fonts yourself.
+
+* I keep getting unwanted private messages!
+
+In the future we will be adding an ignore list to the private messaging system. For now though if you keep receiving unwanted private messages from someone inform the board admin, they have the power to prevent a user from sending private messages at all.
+
+* How do I become a usergroup moderator?
+
+Usergroups are initially created by the board admin, they also assign a board moderator. If you are interested in creating a usergroup then your first point of contact should be the admin.
+
+* How do I join a usergroup?
+
+To join a usergroup click the usergroup link on the page header (dependent on template design), you can then view all usergroups and request to join one. The board administrator will need to approve your request, they may ask why you want to join the group. Please don't pester a group moderator if they turn your request down, they'll have their reasons.
+
+* Why can't I access X forum?
+
+Some groups may be limited to certain users or groups. To view, read, post, etc. you may need special authorisation, only the forum moderator and board admin can grant this access, you should contact them.
+
+* How do I prevent my username appearing in the online user listings?
+
+In your profile you will find an option "Hide your online status", if you switch this "on" you'll only appear to board admins.
