@@ -51,7 +51,7 @@ function marklist(form_name, status)
 
 <table class="tablebg" width="20%" cellspacing="1" cellpadding="4" border="0" align="left">
 	<tr>
-		<th height="28">{L_OPTIONS}</th>
+		<th>{L_OPTIONS}</th>
 	</tr>
 	<!-- BEGIN ucp_section -->
 	<tr>
@@ -60,8 +60,8 @@ function marklist(form_name, status)
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<!-- BEGIN ucp_subsection -->
 				<tr>
-					<td class="nav">&#187;</td>
-					<td class="nav" height="20"><!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{ucp_section.ucp_subsection.L_TITLE}</b><!-- ELSE --><a href="{ucp_section.ucp_subsection.U_TITLE}">{ucp_section.ucp_subsection.L_TITLE}</a><!-- ENDIF --></td>
+					<td class="nav">&#187;&nbsp;</td>
+					<td class="nav" width="100%" height="20"><!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{ucp_section.ucp_subsection.L_TITLE}</b><!-- ELSE --><a href="{ucp_section.ucp_subsection.U_TITLE}">{ucp_section.ucp_subsection.L_TITLE}</a><!-- ENDIF --></td>
 				</tr>
 			<!-- END ucp_subsection -->
 			</table>
@@ -71,6 +71,37 @@ function marklist(form_name, status)
 		</td>
 	</tr>
 	<!-- END ucp_section -->
+	<tr>
+		<th>{L_FRIENDS}</th>
+	</tr>
+	<tr>
+		<td class="row1"><table width="100%" cellspacing="1" cellpadding="0" border="0">
+			<tr>
+				<td class="genmed" height="20" align="center"><b style="color:green">{L_FRIENDS_ONLINE}</td>
+			</tr>
+			<!-- BEGIN friends_online -->
+			<tr>
+				<td class="gensmall" align="center"><a href="{friends_online.U_PROFILE}">{friends_online.USERNAME}</a></td>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td class="genmed" align="center">{L_NO_FRIENDS_ONLINE}</td>
+			</tr>
+			<!-- END friends_online -->
+			<tr>
+				<td class="genmed" height="20" align="center"><b style="color:red">{L_FRIENDS_OFFLINE}</td>
+			</tr>
+			<!-- BEGIN friends_offline -->
+			<tr>
+				<td class="gensmall" align="center"><a href="{friends_offline.U_PROFILE}">{friends_offline.USERNAME}</a></td>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td class="genmed" align="center">{L_NO_FRIENDS_OFFLINE}</td>
+			</tr>
+			<!-- END friends_offline -->
+		</table></td>
+	</tr>
 </table>
 
 <table cellspacing="0" cellpadding="0" border="0" align="left">

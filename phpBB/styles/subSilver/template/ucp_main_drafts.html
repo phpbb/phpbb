@@ -1,0 +1,106 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+	<tr>
+		<th colspan="5" height="28">{L_UCP}</th>
+	</tr>
+	<tr>
+		<td colspan="5" class="row3" align="center"><span class="gensmall">{L_DRAFTS_EXPLAIN}</span></td>
+	</tr>
+	<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</span></td>
+	</tr>
+	<!-- ENDIF -->
+
+	<!-- IF not S_EDIT_DRAFT -->
+
+	<!-- IF S_DRAFT_ROWS -->
+	<tr>
+		<th>{L_SAVE_DATE}</th>
+		<th>{L_DRAFT_TITLE}</th>
+		<th>{L_TOPIC}</th>
+		<th>{L_OPTIONS}</th>
+		<th>{L_DELETE}</th>
+	</tr>
+	<!-- ENDIF -->
+
+	<!-- BEGIN draftrow -->
+
+	<!-- IF draftrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+
+		<td class="postdetails">{draftrow.DATE}</td>
+		<td><b class="topictitle">{draftrow.TITLE}</b></td>
+		<td class="topictitle"><!-- IF draftrow.S_POST_TOPIC -->{L_CURRENT_TOPIC}<!-- ELSEIF draftrow.TOPIC_TITLE --><a href="{draftrow.U_VIEW_TOPIC}" target="_blank">{draftrow.TOPIC_TITLE}</a><!-- ELSE --><i>{L_NEW_OR_DELETED_TOPIC}</i><!-- ENDIF --></td>
+		<td align="center"><span class="gen"><!-- IF draftrow.S_FROM_POST --><a href="">{L_INSERT}</a><br /><!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></td>
+		<td align="center"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" /></td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row1">
+		<td colspan="5" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
+	</tr>
+	<!-- END draftrow -->
+
+	<tr>
+		<td class="cat" colspan="5" height="28" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
+	</tr>
+
+	<!-- ELSEIF S_EDIT_DRAFT -->
+	<tr>
+		<td class="row1" width="22%"><b class="genmed">{L_DRAFT_TITLE}:</b></td>
+		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="draft_title" size="45" maxlength="60" tabindex="1" value="{DRAFT_TITLE}" /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
+		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{POST_SUBJECT}" /></td>
+	</tr>
+	<tr> 
+		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}: </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
+		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
+			<tr align="center" valign="middle">
+				<td><input class="btnbbcode" type="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
+				<td><input class="btnbbcode" type="button" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
+			</tr>
+			<tr>
+				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+							<option value="7">{L_FONT_TINY}</option>
+							<option value="9">{L_FONT_SMALL}</option>
+							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+							<option value="18">{L_FONT_LARGE}</option>
+							<option  value="24">{L_FONT_HUGE}</option>
+						</select></td>
+						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
+					</tr>
+				</table></td>
+			</tr>
+			<tr>
+				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="{L_STYLES_TIP}" /></td>
+			</tr>
+			<tr>
+				<td colspan="9"><textarea class="post" name="message" rows="10" cols="76" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{POST_MESSAGE}</textarea></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr class="row3">
+		<td colspan="9" align="left" class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" height="28" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp; <input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+	</tr>
+	<!-- ENDIF -->
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

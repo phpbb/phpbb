@@ -1,0 +1,61 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="80%" cellspacing="1" cellpadding="4" border="0" align="right">
+	<tr>
+		<th colspan="4" height="28">{L_UCP}</th>
+	</tr>
+	<tr class="row1">
+		<td class="genmed" colspan="4" align="center">{L_UCP_WELCOME}</td>
+	</tr>
+	<tr>
+		<th colspan="4" height="28">{L_WATCHED_FORUMS}</th>
+	</tr>
+
+	<!-- BEGIN forumrow -->
+
+	<!-- IF forumrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+
+		<td width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+		<td width="100%" class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></span></td>
+		<td class="gensmall" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+		<td> <input type="checkbox" name="f[{forumrow.FORUM_ID}]" /> </td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row1">
+		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_WATCHED_FORUMS}</b></td>
+	</tr>
+	<!-- END forumrow -->
+
+	<tr>
+		<th colspan="4" height="28">{L_WATCHED_TOPICS}</th>
+	</tr>
+
+	<!-- BEGIN topicrow -->
+
+	<!-- IF topicrow.S_ROW_COUNT is even -->
+	<tr class="row1">
+	<!-- ELSE -->
+	<tr class="row2">
+	<!-- ENDIF -->
+
+		<td width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+		<td width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.ATTACH_ICON_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<td class="postdetails" align="center" valign="middle" nowrap="nowrap">{topicrow.LAST_POST_TIME}<br />{topicrow.LAST_POST_AUTHOR} {topicrow.LAST_POST_IMG}</td>
+		<td> <input type="checkbox" name="t[{topicrow.TOPIC_ID}]" /> </td>
+	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row1">
+		<td colspan="4" height="25" align="center"><b class="genmed">{L_NO_WATCHED_TOPICS}</b></td>
+	</tr>
+	<!-- END topicrow -->
+
+	<tr>
+		<td class="cat" colspan="4" height="28" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
+	</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

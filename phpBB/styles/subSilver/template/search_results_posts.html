@@ -23,7 +23,10 @@
 	</tr>
 	<!-- BEGIN searchresults -->
 	<tr class="row2">
-		<td colspan="2"><span class="topictitle">{L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a> in forum: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></span></td>
+	<!-- IF searchresults.S_IGNORE_POST -->
+		<td class="gensmall" colspan="2" height="25" align="center">{searchresults.L_IGNORE_POST}</td>
+	<!-- ELSE -->
+		<td colspan="2"><a name="{searchresults.POST_ID}"></a><span class="topictitle">{L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a> in forum: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></span></td>
 	</tr>
 	<tr class="row1">
 		<td width="150" align="center" valign="middle"><b class="postauthor">{searchresults.POSTER_NAME}</b></td>
@@ -46,6 +49,7 @@
 			</tr>
 		</table></td>
 	</tr>
+	<!-- ENDIF -->
 	<tr>
 		<td class="spacer" colspan="2"><img src="images/spacer.gif" height="1" alt="" /></td>
 	</tr>
