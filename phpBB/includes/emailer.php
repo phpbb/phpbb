@@ -130,6 +130,7 @@ class emailer
 
 	function parse_email()
 	{
+		global $lang;
 		@reset($this->vars);
 		while (list($key, $val) = @each($this->vars))
 		{
@@ -147,7 +148,7 @@ class emailer
 		// do this here because the subject may contain a variable
 		//
 		$match = array();
-		preg_match("/^(Subject:(.*?)(?:\r\n)+?)?(Charset:(.*?)(?:\r\n)+?)?(.*?)$/is", $this->msg, $match);
+		preg_match("/^(Subject:(.*?)[\r\n]+?)?(Charset:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
 
 		$this->msg = ( isset($match[5]) ) ? trim($match[5]) : '';
 		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
@@ -207,6 +208,7 @@ class emailer
 	//
 	function attachFile($filename, $mimetype = "application/octet-stream", $szFromAddress, $szFilenameToDisplay)
 	{
+		global $lang;
 		$mime_boundary = "--==================_846811060==_";
 
 		$this->mailMsg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->mailMsg;
