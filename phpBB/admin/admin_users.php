@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,23 +19,37 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
-if( !empty($setmodules) )
+if ( !empty($setmodules) )
 {
+	if ( !$acl->get_acl_admin('user') )
+	{
+		return;
+	}
+
 	$filename = basename(__FILE__);
 	$module['Users']['Manage'] = $filename;
 
 	return;
 }
 
-$phpbb_root_path = "../";
+define('IN_PHPBB', 1);
+//
+// Include files
+//
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_post.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
+
+//
+// Do we have forum admin permissions?
+//
+if ( !$acl->get_acl_admin('user') )
+{
+	return;
+}
 
 //
 // Set mode
@@ -53,7 +66,7 @@ else
 //
 // Begin program
 //
-if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS[POST_USERS_URL]) || isset( $HTTP_POST_VARS[POST_USERS_URL]) ) )
+if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) || isset($HTTP_GET_VARS['u']) || isset( $HTTP_POST_VARS['u']) ) )
 {
 	//
 	// Ok, the profile has been modified and submitted, let's update
@@ -65,7 +78,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		$this_userdata = get_userdata($user_id);
 		if( !$this_userdata )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
+			message_die(MESSAGE, $lang['No_user_id_specified'] );
 		}
 
 		$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags( $HTTP_POST_VARS['username'] ) ) : '';
@@ -204,10 +217,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			// User is (made) inactive. Delete all their sessions.
 			$sql = "DELETE FROM " . SESSIONS_TABLE . " 
 				WHERE session_user_id = $user_id";
-			if( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete this users sessions', '', __LINE__, __FILE__, $sql);
-			}
+			$db->sql_query($sql);
 		}
 
 		if( $signature != "" )
@@ -239,7 +249,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		//
 		// Avatar stuff
 		//
-		$avatar_sql = "";
+		$avatar_sql = '';
 		if( isset($HTTP_POST_VARS['avatardel']) )
 		{
 			if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
@@ -515,63 +525,44 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 					WHERE ug.user_id = $user_id 
 						AND g.group_id = ug.group_id 
 						AND g.group_single_user = 1";
-				if( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not obtain group information for this user', '', __LINE__, __FILE__, $sql);
-				}
+				$result = $db->sql_query($sql);
 
 				$row = $db->sql_fetchrow($result);
-				
+				$db->sql_freeresult($result);
+
+				$db->sql_transaction();
+
 				$sql = "UPDATE " . POSTS_TABLE . "
 					SET poster_id = " . ANONYMOUS . ", post_username = '$username' 
 					WHERE poster_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update posts for this user', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "UPDATE " . TOPICS_TABLE . "
 					SET topic_poster = " . ANONYMOUS . " 
 					WHERE topic_poster = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE FROM " . USERS_TABLE . "
 					WHERE user_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 					WHERE user_id = $user_id";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user from user_group table', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE FROM " . GROUPS_TABLE . "
 					WHERE group_id = " . $row['group_id'];
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
 					WHERE group_id = " . $row['group_id'];
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
 
 				$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 					WHERE user_id = $user_id";
-				if ( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
-				}
+				$db->sql_query($sql);
+
+				$db->sql_transaction('commit');
 
 				$message = $lang['User_deleted'];
 
@@ -581,30 +572,22 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
 					WHERE user_id = $user_id";
-				if( $result = $db->sql_query($sql) )
+				$result = $db->sql_query($sql);
+
+				if ( isset($rename_user) )
 				{
-					if( isset($rename_user) )
-					{
-						$sql = "UPDATE " . GROUPS_TABLE . "
-							SET group_name = '".str_replace("\'", "''", $rename_user)."'
-							WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'] )."'";
-						if( !$result = $db->sql_query($sql) )
-						{
-							message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
-						}
-					}
-					$message .= $lang['Admin_user_updated'];
+					$sql = "UPDATE " . GROUPS_TABLE . "
+						SET group_name = '".str_replace("\'", "''", $rename_user)."'
+						WHERE group_name = '".str_replace("\'", "''", $this_userdata['username'] )."'";
+					$db->sql_query($sql);
 				}
-				else
-				{
-					$error = TRUE;
-					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Admin_user_fail'];
-				}
+
+				$message .= $lang['Admin_user_updated'];
 			}
 
-			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . "admin_users.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpE$SID?pane=right" . '">', '</a>');
 
-			message_die(GENERAL_MESSAGE, $message);
+			message_die(MESSAGE, $message);
 		}
 		else
 		{
@@ -646,7 +629,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$this_userdata = get_userdata($user_id);
 			if( !$this_userdata )
 			{
-				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
+				message_die(MESSAGE, $lang['No_user_id_specified'] );
 			}
 		}
 		else
@@ -654,7 +637,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			$this_userdata = get_userdata( $HTTP_POST_VARS['username'] );
 			if( !$this_userdata )
 			{
-				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
+				message_die(MESSAGE, $lang['No_user_id_specified'] );
 			}
 		}
 
@@ -870,10 +853,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		$sql = "SELECT * FROM " . RANKS_TABLE . "
 			WHERE rank_special = 1
 			ORDER BY rank_title";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Could not obtain ranks data', '', __LINE__, __FILE__, $sql);
-		}
+		$result = $db->sql_query($sql);
 
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 		while( $row = $db->sql_fetchrow($result) )
@@ -1001,7 +981,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'S_FORM_ENCTYPE' => $form_enctype,
 
 			'HTML_STATUS' => $html_status,
-			'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
+			'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'), 
 			'SMILIES_STATUS' => $smilies_status,
 
 			'L_DELETE_USER' => $lang['User_delete'],
@@ -1009,7 +989,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_SELECT_RANK' => $lang['Rank_title'],
 
 			'S_HIDDEN_FIELDS' => $s_hidden_fields,
-			'S_PROFILE_ACTION' => append_sid("admin_users.$phpEx"))
+			'S_PROFILE_ACTION' => "admin_users.$phpEx$SID")
 		);
 
 		if( file_exists('./../' . $board_config['avatar_path'] ) )
@@ -1027,7 +1007,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 		}
 	}
 
-	$template->pparse('body');
+	$template->display('body');
 
 }
 else
@@ -1041,7 +1021,7 @@ else
 		ORDER BY username";
 	$result = $db->sql_query($sql);
 
-	$select_list = '<select name="' . POST_USERS_URL . '">';
+	$select_list = '<select name="u">';
 	while( $row = $db->sql_fetchrow($result) )
 	{
 		$select_list .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
@@ -1059,12 +1039,12 @@ else
 		'L_LOOK_UP' => $lang['Look_up_user'],
 		'L_FIND_USERNAME' => $lang['Find_username'],
 
-		'U_SEARCH_USER' => append_sid("../search.$phpEx?mode=searchuser"), 
+		'U_SEARCH_USER' => "../search.$phpEx$SID&amp;mode=searchuser", 
 
-		'S_USER_ACTION' => append_sid("admin_users.$phpEx"),
+		'S_USER_ACTION' => "admin_users.$phpEx$SID",
 		'S_USER_SELECT' => $select_list)
 	);
-	$template->pparse('body');
+	$template->display('body');
 
 }
 

@@ -1,13 +1,12 @@
 <?php
 /***************************************************************************
- *                             (admin) index.php
+ *                            index.php [ admin/ ]
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
- *
  *
  ***************************************************************************/
 
@@ -21,24 +20,66 @@
  ***************************************************************************/
 
 define('IN_PHPBB', 1);
-$no_page_header = TRUE;
-$phpbb_root_path = "../";
+
+//
+// Define some vars
+//
+$pane = ( isset($HTTP_GET_VARS['pane']) ) ? $HTTP_GET_VARS['pane'] : '';
+$update = ( $pane == 'right' ) ? true : false;
+
+//
+// Include files
+//
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
+require('pagestart.' . $phpEx);
+
+//
+// Do we have any admin permissions at all?
+//
+if ( !$acl->get_acl_admin() )
+{
+	message_die(MESSAGE, 'No_admin');
+}
 
 //
 // Generate relevant output
 //
-if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
+if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'top' )
 {
-	$update = false;
-	require('pagestart.' . $phpEx);
+	include('page_header_admin.'.$phpEx);
 
+?>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tr>
+		<td><a href="index.<?php echo $phpEx; ?>?pane=right" target="main"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
+		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+	</tr>
+</table>
+
+<?php
+
+	include('page_footer_admin.'.$phpEx);
+
+}
+else if ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
+{
+	//
+	// Cheat and use the meta tag to change some stylesheet info
+	//
+	$meta = '<style type="text/css">body {background-color: #98AAB1}</style>';
+	include('page_header_admin.'.$phpEx);
+
+	//
+	// Grab module information using Bart's "neat-o-module" system (tm)
+	//
 	$dir = @opendir('.');
 
 	$setmodules = 1;
-	while( $file = @readdir($dir) )
+	while ( $file = @readdir($dir) )
 	{
-		if( preg_match('/^admin_.*?\.' . $phpEx . '$/', $file) )
+		if ( preg_match('/^admin_(.*?)\.' . $phpEx . '$/', $file) )
 		{
 			include($file);
 		}
@@ -48,90 +89,96 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	unset($setmodules);
 
-	include('page_header_admin.'.$phpEx);
+?>
 
-	$template->set_filenames(array(
-		'body' => 'admin/index_navigate.tpl')
-	);
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<td width="100%"><table width="100%" cellpadding="4" cellspacing="1" border="0">
+			<tr>
+				<th class="menu" height="25">&#0187; <?php echo $lang['Return_to']; ?></th>
+			</tr>
+			<tr>
+				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx; ?>?pane=right" target="main"><?php echo $lang['Admin_Index']; ?></a></td>
+			</tr>
+			<tr>
+				<td class="row2"><a class="genmed" href="../" target="_top"><?php echo $lang['Forum_index']; ?></a></td>
+			</tr>
+<?php
 
-	$template->assign_vars(array(
-		'U_FORUM_INDEX' => append_sid("../index.$phpEx"),
-		'U_ADMIN_INDEX' => "index.$phpEx$SID&amp;pane=right",
+	@ksort($module);
 
-		'L_FORUM_INDEX' => $lang['Main_index'],
-		'L_ADMIN_INDEX' => $lang['Admin_Index'], 
-		'L_PREVIEW_FORUM' => $lang['Preview_forum'])
-	);
-
-	ksort($module);
-
-	while( list($cat, $action_array) = each($module) )
+	foreach ( $module as $cat => $action_ary )
 	{
 		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace('/_/', ' ', $cat);
 
-		$template->assign_block_vars('catrow', array(
-			'ADMIN_CATEGORY' => $cat)
-		);
+?>
+			<tr> 
+				<th class="menu" height="25">&#0187; <?php echo $cat; ?></th>
+			</tr>
+<?php
 
-		ksort($action_array);
+		ksort($action_ary);
 
-		$row_count = 0;
-		while( list($action, $file)	= each($action_array) )
+		foreach ( $action_ary as $action => $file ) 
 		{
-			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
 			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
-			$template->assign_block_vars('catrow.modulerow', array(
-				'ROW_COLOR' => "#" . $row_color,
-				'ROW_CLASS' => $row_class, 
+			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+?>
+			<tr> 
+				<td class="<?php echo $cell_bg; ?>"><a class="genmed" href="<?php echo $file; ?>" target="main"><?php echo $action; ?></a></td>
+			</tr>
+<?php
 
-				'ADMIN_MODULE' => $action,
-				'U_ADMIN_MODULE' => append_sid($file))
-			);
-			$row_count++;
 		}
 	}
 
-	$template->pparse("body");
+?>
+		</table></td>
+	</tr>
+</table>
+</body>
+</html>
+<?php
 
+	//
+	// Output footer but don't include copyright info
+	//
+	$ignore_copyright = true;
 	include('page_footer_admin.'.$phpEx);
+
 }
-elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
+elseif ( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 {
-	$update = true;
-	require('pagestart.' . $phpEx);
+	if ( ( isset($HTTP_POST_VARS['activate']) || isset($HTTP_POST_VARS['delete']) ) && !empty($HTTP_POST_VARS['mark']) )
+	{
+		if ( is_array($HTTP_POST_VARS['mark']) )
+		{
+			$in_sql = '';
+			foreach( $HTTP_POST_VARS['mark'] as $user_id )
+			{
+				$in_sql .= ( ( $in_sql != '' ) ? ', ' : '' ) . $user_id;
+			}
 
-	include('page_header_admin.'.$phpEx);
+			if ( $in_sql != '' )
+			{
+				$sql = ( isset($HTTP_POST_VARS['activate']) ) ? "UPDATE " . USERS_TABLE . " SET user_active = 1 WHERE user_id IN ($in_sql)" : "DELETE FROM " . USERS_TABLE . " WHERE user_id IN ($in_sql)";
+				$db->sql_query($sql);
 
-	$template->set_filenames(array(
-		'body' => 'admin/index_body.tpl')
-	);
+				$sql = "UPDATE " . CONFIG_TABLE . " 
+					SET config_value = config_value - " . sizeof($HTTP_POST_VARS['mark']) . " 
+					WHERE config_name = 'num_users'";
+				$db->sql_query($sql);
 
-	$template->assign_vars(array(
-		'L_WELCOME' => $lang['Welcome_phpBB'],
-		'L_ADMIN_INTRO' => $lang['Admin_intro'],
-		'L_FORUM_STATS' => $lang['Forum_stats'],
-		'L_WHO_IS_ONLINE' => $lang['Who_is_Online'],
-		'L_LOCATION' => $lang['Location'],
-		'L_LAST_UPDATE' => $lang['Last_updated'],
-		'L_IP_ADDRESS' => $lang['IP_Address'],
-		'L_STATISTIC' => $lang['Statistic'],
-		'L_VALUE' => $lang['Value'],
-		'L_NUMBER_POSTS' => $lang['Number_posts'],
-		'L_POSTS_PER_DAY' => $lang['Posts_per_day'],
-		'L_NUMBER_TOPICS' => $lang['Number_topics'],
-		'L_TOPICS_PER_DAY' => $lang['Topics_per_day'],
-		'L_NUMBER_USERS' => $lang['Number_users'],
-		'L_USERS_PER_DAY' => $lang['Users_per_day'],
-		'L_BOARD_STARTED' => $lang['Board_started'],
-		'L_AVATAR_DIR_SIZE' => $lang['Avatar_dir_size'],
-		'L_DB_SIZE' => $lang['Database_size'], 
-		'L_FORUM_LOCATION' => $lang['Forum_Location'],
-		'L_STARTED' => $lang['Login'],
-		'L_GZIP_COMPRESSION' => $lang['Gzip_compression'])
-	);
+				$log_action = ( isset($HTTP_POST_VARS['activate']) ) ? 'log_index_activate' : 'log_index_delete'; 
+				add_admin_log($log_action, sizeof($HTTP_POST_VARS['mark']));
+			}
+		}
+	}
+	else if ( isset($HTTP_POST_VARS['remind']) )
+	{
+
+	}
 
 	//
 	// Get forum statistics
@@ -150,11 +197,11 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 	$avatar_dir_size = 0;
 
-	if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']))
+	if ( $avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']) )
 	{
-		while( $file = @readdir($avatar_dir) )
+		while ( $file = @readdir($avatar_dir) )
 		{
-			if( $file != '.' && $file != '..' )
+			if ( $file != '.' && $file != '..' )
 			{
 				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . '/' . $file);
 			}
@@ -166,11 +213,11 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		// Borrowed the code from the PHP.net annoted manual, origanally written by:
 		// Jesse (jesse@jess.on.ca)
 		//
-		if($avatar_dir_size >= 1048576)
+		if ( $avatar_dir_size >= 1048576 )
 		{
 			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
 		}
-		else if($avatar_dir_size >= 1024)
+		else if ( $avatar_dir_size >= 1024 )
 		{
 			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . ' KB';
 		}
@@ -186,17 +233,17 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		$avatar_dir_size = $lang['Not_available'];
 	}
 
-	if($posts_per_day > $total_posts)
+	if ( $posts_per_day > $total_posts )
 	{
 		$posts_per_day = $total_posts;
 	}
 
-	if($topics_per_day > $total_topics)
+	if ( $topics_per_day > $total_topics )
 	{
 		$topics_per_day = $total_topics;
 	}
 
-	if($users_per_day > $total_users)
+	if ( $users_per_day > $total_users )
 	{
 		$users_per_day = $total_users;
 	}
@@ -207,43 +254,40 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if( preg_match('/^mysql/', SQL_LAYER) )
+	if ( preg_match('/^mysql/', SQL_LAYER) )
 	{
-		$sql = "SELECT VERSION() AS mysql_version";
-		if($result = $db->sql_query($sql))
+		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
+		
+		if ( $row = $db->sql_fetchrow($result) )
 		{
-			$row = $db->sql_fetchrow($result);
 			$version = $row['mysql_version'];
 
-			if( preg_match('/^(3\.23|4\.)/', $version) )
+			if ( preg_match('/^(3\.23|4\.)/', $version) )
 			{
 				$db_name = ( preg_match('/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)/', $version) ) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
-				if($result = $db->sql_query($sql))
+				$result = $db->sql_query($sql);
+				
+				$dbsize = 0;
+				while ( $row = $db->sql_fetchrow($result) )
 				{
-					$tabledata_ary = $db->sql_fetchrowset($result);
-
-					$dbsize = 0;
-					for($i = 0; $i < count($tabledata_ary); $i++)
+					if ( $row['Type'] != 'MRG_MyISAM' )
 					{
-						if( $tabledata_ary[$i]['Type'] != 'MRG_MyISAM' )
+						if ( $table_prefix != '' )
 						{
-							if( $table_prefix != "" )
+							if ( strstr($row['Name'], $table_prefix) )
 							{
-								if( strstr($tabledata_ary[$i]['Name'], $table_prefix) )
-								{
-									$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
-								}
-							}
-							else
-							{
-								$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+								$dbsize += $row['Data_length'] + $row['Index_length'];
 							}
 						}
+						else
+						{
+							$dbsize += $row['Data_length'] + $row['Index_length'];
+						}
 					}
-				} // Else we couldn't get the table status.
+				}
 			}
 			else
 			{
@@ -255,18 +299,13 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			$dbsize = $lang['Not_available'];
 		}
 	}
-	else if( preg_match('/^mssql/', SQL_LAYER) )
+	else if ( preg_match('/^mssql/', SQL_LAYER) )
 	{
 		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
 			FROM sysfiles"; 
-		if( $result = $db->sql_query($sql) )
-		{
-			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
-		}
-		else
-		{
-			$dbsize = $lang['Not_available'];
-		}
+		$result = $db->sql_query($sql);
+		
+		$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
 	}
 	else
 	{
@@ -275,298 +314,205 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 	if ( is_integer($dbsize) )
 	{
-		if( $dbsize >= 1048576 )
-		{
-			$dbsize = sprintf('%.2f MB', ( $dbsize / 1048576 ));
-		}
-		else if( $dbsize >= 1024 )
-		{
-			$dbsize = sprintf('%.2f KB', ( $dbsize / 1024 ));
-		}
-		else
-		{
-			$dbsize = sprintf('%.2f Bytes', $dbsize);
-		}
+		$dbsize = ( $dbsize >= 1048576 ) ? sprintf('%.2f MB', ( $dbsize / 1048576 )) : ( ( $dbsize >= 1024 ) ? sprintf('%.2f KB', ( $dbsize / 1024 )) : sprintf('%.2f Bytes', $dbsize) );
 	}
 
-	$template->assign_vars(array(
-		'NUMBER_OF_POSTS' => $total_posts,
-		'NUMBER_OF_TOPICS' => $total_topics,
-		'NUMBER_OF_USERS' => $total_users,
-		'START_DATE' => $start_date,
-		'POSTS_PER_DAY' => $posts_per_day,
-		'TOPICS_PER_DAY' => $topics_per_day,
-		'USERS_PER_DAY' => $users_per_day,
-		'AVATAR_DIR_SIZE' => $avatar_dir_size,
-		'DB_SIZE' => $dbsize, 
-		'GZIP_COMPRESSION' => ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF'])
-	);
-	//
-	// End forum statistics
-	//
+	page_header($lang['Admin_Index']);
 
-	//
-	// Get users online information.
-	//
-	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_ip, s.session_start 
-		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-		WHERE s.session_logged_in = " . TRUE . " 
-			AND u.user_id = s.session_user_id 
-			AND u.user_id <> " . ANONYMOUS . " 
-			AND u.user_session_time >= " . ( time() - 300 ) . " 
-		ORDER BY u.user_session_time DESC";
-	if(!$result = $db->sql_query($sql))
+?>
+
+<h1><?php echo $lang['Welcome_phpBB']; ?></h1>
+
+<p><?php echo $lang['Admin_intro']; ?></p>
+
+<h1><?php echo $lang['Forum_stats']; ?></h1>
+
+<table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
+	<tr> 
+		<th width="25%" nowrap="nowrap" height="25"><?php echo $lang['Statistic']; ?></th>
+		<th width="25%"><?php echo $lang['Value']; ?></th>
+		<th width="25%" nowrap="nowrap"><?php echo $lang['Statistic']; ?></th>
+		<th width="25%"><?php echo $lang['Value']; ?></th>
+	</tr>
+	<tr> 
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_posts']; ?>:</td>
+		<td class="row2"><b><?php echo $total_posts; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Posts_per_day']; ?>:</td>
+		<td class="row2"><b><?php echo $posts_per_day; ?></b></td>
+	</tr>
+	<tr> 
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_topics']; ?>:</td>
+		<td class="row2"><b><?php echo $total_topics; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Topics_per_day']; ?>:</td>
+		<td class="row2"><b><?php echo $topics_per_day; ?></b></td>
+	</tr>
+	<tr> 
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_users']; ?>:</td>
+		<td class="row2"><b><?php echo $total_users; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Users_per_day']; ?>:</td>
+		<td class="row2"><b><?php echo $users_per_day; ?></b></td>
+	</tr>
+	<tr> 
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Board_started']; ?>:</td>
+		<td class="row2"><b><?php echo $start_date; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Avatar_dir_size']; ?>:</td>
+		<td class="row2"><b><?php echo $avatar_dir_size; ?></b></td>
+	</tr>
+	<tr> 
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Database_size']; ?>:</td>
+		<td class="row2"><b><?php echo $dbsize; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $lang['Gzip_compression']; ?>:</td>
+		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF']; ?></b></td>
+	</tr>
+</table>
+
+<h1><?php echo $lang['Admin_log']; ?></h1>
+
+<p><?php echo $lang['Admin_log_index_explain']; ?></p>
+
+<table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
+	<tr> 
+		<th width="15%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
+		<th width="15%"><?php echo $lang['IP']; ?></th>
+		<th width="20%"><?php echo $lang['Time']; ?></th>
+		<th width="45%" nowrap="nowrap"><?php echo $lang['Action']; ?></th>
+	</tr>
+<?php
+
+	$log_data = view_admin_log(5);
+
+	for($i = 0; $i < sizeof($log_data); $i++)
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
+		$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+	
+?>
+	<tr>
+		<td class="<?php echo $cell_bg; ?>"><?php echo $log_data[$i]['username']; ?></td>
+		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $log_data[$i]['ip']; ?></td>
+		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $cell_bg; ?>"><?php echo $log_data[$i]['action']; ?></td>
+	</tr>
+<?php
+
 	}
-	$onlinerow_reg = $db->sql_fetchrowset($result);
 
-	$sql = "SELECT session_page, session_time, session_ip, session_start   
-		FROM " . SESSIONS_TABLE . "
-		WHERE session_logged_in = 0
-			AND session_time >= " . ( time() - 300 ) . "
-		ORDER BY session_time DESC";
-	if(!$result = $db->sql_query($sql))
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
-	}
-	$onlinerow_guest = $db->sql_fetchrowset($result);
+?>
+</table>
 
-	$sql = "SELECT forum_name, forum_id
-		FROM " . FORUMS_TABLE;
-	if($forums_result = $db->sql_query($sql))
+<h1><?php echo $lang['Inactive_users']; ?></h1>
+
+<p><?php echo $lang['Inactive_users_explain']; ?></p>
+
+<form method="post" name="inactive" action="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>"><table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
+	<tr> 
+		<th width="45%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
+		<th width="45%"><?php echo $lang['Joined']; ?></th>
+		<th width="5%" nowrap="nowrap"><?php echo $lang['Mark']; ?></th>
+	</tr>
+<?php
+
+	$sql = "SELECT user_id, username, user_regdate 
+		FROM " . USERS_TABLE . " 
+		WHERE user_active = 0 
+		ORDER BY user_regdate ASC";
+	$result = $db->sql_query($sql);
+
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		while($forumsrow = $db->sql_fetchrow($forums_result))
+		do
 		{
-			$forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
+			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+?>
+	<tr>
+		<td class="<?php echo $cell_bg; ?>"><a href="<?php echo 'admin_users.' . $phpEx . $SID . '&amp;u=' . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
+		<td class="<?php echo $cell_bg; ?>"><?php echo create_date($board_config['default_dateformat'], $row['user_regdate'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $cell_bg; ?>">&nbsp;<input type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" />&nbsp;</td>
+	</tr>
+<?php
 		}
-	}
-	else
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
-	}
+		while ( $row = $db->sql_fetchrow($result) );
 
-	$reg_userid_ary = array();
-
-	if( count($onlinerow_reg) )
-	{
-		$registered_users = 0;
-
-		for($i = 0; $i < count($onlinerow_reg); $i++)
-		{
-			if( !inarray($onlinerow_reg[$i]['user_id'], $reg_userid_ary) )
-			{
-				$reg_userid_ary[] = $onlinerow_reg[$i]['user_id'];
-
-				$username = $onlinerow_reg[$i]['username'];
-
-				if( $onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
-				{
-					$registered_users++;
-					$hidden = FALSE;
-				}
-				else
-				{
-					$hidden_users++;
-					$hidden = TRUE;
-				}
-
-				if( $onlinerow_reg[$i]['user_session_page'] < 1 )
-				{
-					switch($onlinerow_reg[$i]['user_session_page'])
-					{
-						case PAGE_INDEX:
-							$location = $lang['Forum_index'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_POSTING:
-							$location = $lang['Posting_message'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_LOGIN:
-							$location = $lang['Logging_on'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_SEARCH:
-							$location = $lang['Searching_forums'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_PROFILE:
-							$location = $lang['Viewing_profile'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_VIEWONLINE:
-							$location = $lang['Viewing_online'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_VIEWMEMBERS:
-							$location = $lang['Viewing_member_list'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_PRIVMSGS:
-							$location = $lang['Viewing_priv_msgs'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						case PAGE_FAQ:
-							$location = $lang['Viewing_FAQ'];
-							$location_url = "index.$phpEx?pane=right";
-							break;
-						default:
-							$location = $lang['Forum_index'];
-							$location_url = "index.$phpEx?pane=right";
-					}
-				}
-				else
-				{
-					$location_url = append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['user_session_page']);
-					$location = $forum_data[$onlinerow_reg[$i]['user_session_page']];
-				}
-
-				$row_color = ( $registered_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( $registered_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
-
-				$reg_ip = $onlinerow_reg[$i]['session_ip'];
-
-				$template->assign_block_vars("reg_user_row", array(
-					'ROW_COLOR' => "#" . $row_color,
-					'ROW_CLASS' => $row_class,
-					'USERNAME' => $username, 
-					'STARTED' => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']), 
-					'LASTUPDATE' => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
-					'FORUM_LOCATION' => $location,
-					'IP_ADDRESS' => $reg_ip, 
-
-					'U_WHOIS_IP' => "http://www.samspade.org/t/ipwhois?a=$reg_ip", 
-					'U_USER_PROFILE' => append_sid("admin_users.$phpEx?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
-					'U_FORUM_LOCATION' => append_sid($location_url))
-				);
-			}
-		}
+?>
+	<tr>
+		<td class="cat" colspan="3" height="28" align="right"><input class="liteoption" type="submit" name="activate" value="Activate" />&nbsp; <input class="liteoption" type="submit" name="remind" value="Remind" />&nbsp; <input class="liteoption" type="submit" name="delete" value="Delete" />&nbsp;</td>
+	</tr>
+<?php
 
 	}
 	else
 	{
-		$template->assign_vars(array(
-			"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
-		);
+
+?>
+	<tr>
+		<td class="row1" colspan="3" align="center"><?php echo $lang['No_inactive_users']; ?></td>
+	</tr>
+<?php
+
 	}
 
-	//
-	// Guest users
-	//
-	if( count($onlinerow_guest) )
-	{
-		$guest_users = 0;
 
-		for($i = 0; $i < count($onlinerow_guest); $i++)
+?>
+</table>
+
+<table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr> 
+		<td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b></td>
+	</tr>
+</table></form>
+
+		</td>
+	</tr>
+</table>
+
+<script language="Javascript" type="text/javascript">
+	//
+	// Should really check the browser to stop this whining ...
+	//
+	function marklist(status)
+	{
+		for (i = 0; i < document.inactive.length; i++)
 		{
-			$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
-			$guest_users++;
-
-			if( $onlinerow_guest[$i]['session_page'] < 1 )
-			{
-				switch( $onlinerow_guest[$i]['session_page'] )
-				{
-					case PAGE_INDEX:
-						$location = $lang['Forum_index'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_POSTING:
-						$location = $lang['Posting_message'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_LOGIN:
-						$location = $lang['Logging_on'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_SEARCH:
-						$location = $lang['Searching_forums'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_PROFILE:
-						$location = $lang['Viewing_profile'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_VIEWONLINE:
-						$location = $lang['Viewing_online'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_VIEWMEMBERS:
-						$location = $lang['Viewing_member_list'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_PRIVMSGS:
-						$location = $lang['Viewing_priv_msgs'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					case PAGE_FAQ:
-						$location = $lang['Viewing_FAQ'];
-						$location_url = "index.$phpEx?pane=right";
-						break;
-					default:
-						$location = $lang['Forum_index'];
-						$location_url = "index.$phpEx?pane=right";
-				}
-			}
-			else
-			{
-				$location_url = append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
-				$location = $forum_data[$onlinerow_guest[$i]['session_page']];
-			}
-
-			$row_color = ( $guest_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( $guest_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
-
-			$guest_ip = $onlinerow_guest[$i]['session_ip'];
-
-			$template->assign_block_vars('guest_user_row', array(
-				'ROW_COLOR' => "#" . $row_color,
-				'ROW_CLASS' => $row_class,
-				'USERNAME' => $lang['Guest'],
-				'STARTED' => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']), 
-				'LASTUPDATE' => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
-				'FORUM_LOCATION' => $location,
-				'IP_ADDRESS' => $guest_ip, 
-
-				'U_WHOIS_IP' => "http://www.samspade.org/t/ipwhois?a=$guest_ip", 
-				'U_FORUM_LOCATION' => append_sid($location_url))
-			);
+			document.inactive.elements[i].checked = status;
 		}
-
 	}
-	else
-	{
-		$template->assign_vars(array(
-			'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'])
-		);
-	}
+</script>
 
-	$template->pparse('body');
+<?php
 
-	include('page_footer_admin.'.$phpEx);
+	page_footer();
 
 }
 else
 {
-	$update = false;
-	require('pagestart.' . $phpEx);
-
 	//
-	// Generate frameset
+	// Output the frameset ...
 	//
-	$template->set_filenames(array(
-		"body" => "admin/index_frameset.tpl")
-	);
+	header("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	header("Content-type: text/html; charset=" . $lang['ENCODING']);
 
-	$template->assign_vars(array(
-		'S_FRAME_NAV' => "index.$phpEx$SID&amp;pane=left",
-		'S_FRAME_MAIN' => "index.$phpEx$SID&amp;pane=right")
-	);
+?>
+<html>
+<head>
+<title><?php echo $lang['Admin_title']; ?></title>
+</head>
 
-	header ('Expires: ' . gmdate("D, d M Y H:i:s", time()) . ' GMT');
-	header ('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
+<frameset rows="60, *" border="0" framespacing="0" frameborder="NO">
+	<frame src="<?php echo "index.$phpEx$SID&amp;pane=top"; ?>" name="title" noresize marginwidth="0" marginheight="0" scrolling="NO">
+	<frameset cols="155,*" rows="*" border="2" framespacing="0" frameborder="yes"> 
+		<frame src="<?php echo "index.$phpEx$SID&amp;pane=left"; ?>" name="nav" marginwidth="3" marginheight="3" scrolling="yes">
+		<frame src="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>" name="main" marginwidth="0" marginheight="0" scrolling="auto">
+	</frameset>
+</frameset>
 
-	$template->pparse("body");
+<noframes>
+	<body bgcolor="white" text="#000000">
+		<p><?php echo $lang['No_frames']; ?></p>
+	</body>
+</noframes>
+</html>
+<?php
+
 	exit;
 }
 

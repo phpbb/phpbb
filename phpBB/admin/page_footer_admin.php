@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,22 +21,23 @@
 
 if ( !defined('IN_PHPBB') )
 {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
-//
-// Show the overall footer.
-//
-$template->set_filenames(array(
-	'page_footer' => 'admin/page_footer.tpl')
-);
+if ( !$ignore_copyright )
+{
 
-$template->assign_vars(array(
-	'PHPBB_VERSION' => '2' . $board_config['version'], 
-	'TRANSLATION_INFO' => $lang['TRANSLATION_INFO'])
-);
+?>
 
-$template->pparse('page_footer');
+<div align="center"><span class="copyright">Powered by phpBB <?php echo $board_config['version']; ?> &copy; 2002 <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a></span></div>
+
+<br clear="all" />
+
+</body>
+</html>
+<?php
+
+}
 
 //
 // Close our DB connection.
@@ -48,7 +48,7 @@ $db->sql_close();
 // Compress buffered output if required
 // and send to browser
 //
-if( $do_gzip_compress )
+if ( $do_gzip_compress )
 {
 	//
 	// Borrowed from php.net!
@@ -62,10 +62,10 @@ if( $do_gzip_compress )
 	$gzip_contents = gzcompress($gzip_contents, 9);
 	$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
 
-	echo '\x1f\x8b\x08\x00\x00\x00\x00\x00';
+	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;
-	echo pack('V', $gzip_crc);
-	echo pack('V', $gzip_size);
+	echo pack("V", $gzip_crc);
+	echo pack("V", $gzip_size);
 }
 
 exit;

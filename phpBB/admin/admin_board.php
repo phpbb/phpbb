@@ -8,120 +8,132 @@
  *
  *   $Id$
  *
+ ***************************************************************************/
+
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
-if( !empty($setmodules) )
+if ( !empty($setmodules) )
 {
+	if ( !$acl->get_acl_admin('general') )
+	{
+		return;
+	}
+
 	$file = basename(__FILE__);
-	$module['General']['Configuration'] = "$file?mode=config";
+	$module['General']['Avatar_Setup'] = "$file?mode=avatars";
+	$module['General']['Basic_Config'] = "$file?mode=basic";
+	$module['General']['Cookie_Parameters'] = "$file?mode=cookies";
+	$module['General']['Default_Settings'] = "$file?mode=gendefs";
+	$module['Users']['Default_Settings'] = "$file?mode=userdefs";
 	return;
 }
 
 //
 // Let's set the root dir for phpBB
 //
+define('IN_PHPBB', 1);
 $phpbb_root_path = "../";
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
+
+if ( !$acl->get_acl_admin('general') )
+{
+	return;
+}
 
 //
 // Pull all config data
 //
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
-if(!$result = $db->sql_query($sql))
+$result = $db->sql_query($sql);
+
+while ( $row = $db->sql_fetchrow($result) )
 {
-	message_die(CRITICAL_ERROR, "Could not query config information in admin_board", "", __LINE__, __FILE__, $sql);
-}
-else
-{
-	while( $row = $db->sql_fetchrow($result) )
+	$config_name = $row['config_name'];
+	$config_value = $row['config_value'];
+	$default_config[$config_name] = $config_value;
+	
+	$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+
+	if ( isset($HTTP_POST_VARS['submit']) )
 	{
-		$config_name = $row['config_name'];
-		$config_value = $row['config_value'];
-		$default_config[$config_name] = $config_value;
-		
-		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
-
-		if( isset($HTTP_POST_VARS['submit']) )
-		{
-			$sql = "UPDATE " . CONFIG_TABLE . " SET
-				config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
-				WHERE config_name = '$config_name'";
-			if( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
-			}
-		}
-	}
-
-	if( isset($HTTP_POST_VARS['submit']) )
-	{
-		$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], "<a href=\"" . append_sid("admin_board.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
-
-		message_die(GENERAL_MESSAGE, $message);
+		$sql = "UPDATE " . CONFIG_TABLE . " SET
+			config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
+			WHERE config_name = '$config_name'";
+		$db->sql_query($sql);
 	}
 }
 
-$style_select = style_select($new['default_style'], 'default_style', "../templates");
-$lang_select = language_select($new['default_lang'], 'default_lang', "../language");
+if ( isset($HTTP_POST_VARS['submit']) )
+{
+	$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], '<a href="' . "admin_board.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID?pane=right" . '">', '</a>');
+
+	message_die(MESSAGE, $message);
+}
+
+$style_select = style_select($new['default_style'], 'default_style', '../templates');
+$lang_select = language_select($new['default_lang'], 'default_lang', '../language');
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
-$disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
-$disable_board_no = ( !$new['board_disable'] ) ? "checked=\"checked\"" : "";
+$disable_board_yes = ( $new['board_disable'] ) ? 'checked="checked"' : '';
+$disable_board_no = ( !$new['board_disable'] ) ? 'checked="checked"' : '';
 
-$cookie_secure_yes = ( $new['cookie_secure'] ) ? "checked=\"checked\"" : "";
-$cookie_secure_no = ( !$new['cookie_secure'] ) ? "checked=\"checked\"" : "";
+$cookie_secure_yes = ( $new['cookie_secure'] ) ? 'checked="checked"' : '';
+$cookie_secure_no = ( !$new['cookie_secure'] ) ? 'checked="checked"' : '';
 
 $html_tags = $new['allow_html_tags'];
 
-$override_user_style_yes = ( $new['override_user_style'] ) ? "checked=\"checked\"" : "";
-$override_user_style_no = ( !$new['override_user_style'] ) ? "checked=\"checked\"" : "";
+$override_user_style_yes = ( $new['override_user_style'] ) ? 'checked="checked"' : '';
+$override_user_style_no = ( !$new['override_user_style'] ) ? 'checked="checked"' : '';
 
-$html_yes = ( $new['allow_html'] ) ? "checked=\"checked\"" : "";
-$html_no = ( !$new['allow_html'] ) ? "checked=\"checked\"" : "";
+$html_yes = ( $new['allow_html'] ) ? 'checked="checked"' : '';
+$html_no = ( !$new['allow_html'] ) ? 'checked="checked"' : '';
 
-$bbcode_yes = ( $new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
-$bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
+$bbcode_yes = ( $new['allow_bbcode'] ) ? 'checked="checked"' : '';
+$bbcode_no = ( !$new['allow_bbcode'] ) ? 'checked="checked"' : '';
 
-$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
-$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
-$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? 'checked="checked"' : '';
+$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? 'checked="checked"' : '';
+$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? 'checked="checked"' : '';
 
-$board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
-$board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
+$board_email_form_yes = ( $new['board_email_form'] ) ? 'checked="checked"' : '';
+$board_email_form_no = ( !$new['board_email_form'] ) ? 'checked="checked"' : '';
 
-$gzip_yes = ( $new['gzip_compress'] ) ? "checked=\"checked\"" : "";
-$gzip_no = ( !$new['gzip_compress'] ) ? "checked=\"checked\"" : "";
+$gzip_yes = ( $new['gzip_compress'] ) ? 'checked="checked"' : '';
+$gzip_no = ( !$new['gzip_compress'] ) ? 'checked="checked"' : '';
 
-$privmsg_on = ( !$new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
-$privmsg_off = ( $new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
+$privmsg_on = ( !$new['privmsg_disable'] ) ? 'checked="checked"' : '';
+$privmsg_off = ( $new['privmsg_disable'] ) ? 'checked="checked"' : '';
 
-$prune_yes = ( $new['prune_enable'] ) ? "checked=\"checked\"" : "";
-$prune_no = ( !$new['prune_enable'] ) ? "checked=\"checked\"" : "";
+$prune_yes = ( $new['prune_enable'] ) ? 'checked="checked"' : '';
+$prune_no = ( !$new['prune_enable'] ) ? 'checked="checked"' : '';
 
-$smile_yes = ( $new['allow_smilies'] ) ? "checked=\"checked\"" : "";
-$smile_no = ( !$new['allow_smilies'] ) ? "checked=\"checked\"" : "";
+$smile_yes = ( $new['allow_smilies'] ) ? 'checked="checked"' : '';
+$smile_no = ( !$new['allow_smilies'] ) ? 'checked="checked"' : '';
 
-$sig_yes = ( $new['allow_sig'] ) ? "checked=\"checked\"" : "";
-$sig_no = ( !$new['allow_sig'] ) ? "checked=\"checked\"" : "";
+$sig_yes = ( $new['allow_sig'] ) ? 'checked="checked"' : '';
+$sig_no = ( !$new['allow_sig'] ) ? 'checked="checked"' : '';
 
-$namechange_yes = ( $new['allow_namechange'] ) ? "checked=\"checked\"" : "";
-$namechange_no = ( !$new['allow_namechange'] ) ? "checked=\"checked\"" : "";
+$namechange_yes = ( $new['allow_namechange'] ) ? 'checked="checked"' : '';
+$namechange_no = ( !$new['allow_namechange'] ) ? 'checked="checked"' : '';
 
-$avatars_local_yes = ( $new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
-$avatars_local_no = ( !$new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
-$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
-$avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
-$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
-$avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
+$avatars_local_yes = ( $new['allow_avatar_local'] ) ? 'checked="checked"' : '';
+$avatars_local_no = ( !$new['allow_avatar_local'] ) ? 'checked="checked"' : '';
+$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
+$avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? 'checked="checked"' : '';
+$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
+$avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? 'checked="checked"' : '';
 
-$smtp_yes = ( $new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
-$smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
+$smtp_yes = ( $new['smtp_delivery'] ) ? 'checked="checked"' : '';
+$smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
 
 $template->set_filenames(array(
 	"body" => "admin/board_config_body.tpl")
@@ -131,10 +143,8 @@ $template->set_filenames(array(
 // Escape any quotes in the site description for proper display in the text
 // box on the admin page 
 //
-$new['site_desc'] = str_replace('"', '&quot;', $new['site_desc']);
-$new['sitename'] = str_replace('"', '&quot;', strip_tags($new['sitename']));
 $template->assign_vars(array(
-	"S_CONFIG_ACTION" => append_sid("admin_board.$phpEx"),
+	"S_CONFIG_ACTION" => "admin_board.$phpEx$SID",
 
 	"L_YES" => $lang['Yes'],
 	"L_NO" => $lang['No'],
@@ -232,8 +242,8 @@ $template->assign_vars(array(
 	"SERVER_NAME" => $new['server_name'], 
 	"SCRIPT_PATH" => $new['script_path'], 
 	"SERVER_PORT" => $new['server_port'], 
-	"SITENAME" => $new['sitename'],
-	"SITE_DESCRIPTION" => $new['site_desc'], 
+	"SITENAME" => htmlentities($new['sitename']),
+	"SITE_DESCRIPTION" => htmlentities($new['site_desc']), 
 	"S_DISABLE_BOARD_YES" => $disable_board_yes,
 	"S_DISABLE_BOARD_NO" => $disable_board_no,
 	"ACTIVATION_NONE" => USER_ACTIVATION_NONE, 
@@ -308,8 +318,6 @@ $template->assign_vars(array(
 	"COPPA_MAIL" => $new['coppa_mail'],
 	"COPPA_FAX" => $new['coppa_fax'])
 );
-
-$template->pparse("body");
 
 include('page_footer_admin.'.$phpEx);
 

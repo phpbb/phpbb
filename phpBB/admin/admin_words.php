@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,216 +19,214 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
-if( !empty($setmodules) )
+if ( !empty($setmodules) )
 {
+	if ( !$acl->get_acl_admin('general') )
+	{
+		return;
+	}
+
 	$file = basename(__FILE__);
 	$module['General']['Word_Censor'] = "$file";
 	return;
 }
 
+define('IN_PHPBB', 1);
 //
-// Load default header
+// Include files
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+//
+// Do we have forum admin permissions?
+//
+if ( !$acl->get_acl_admin('general') )
 {
-	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	return;
+}
+
+//
+//
+//
+if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 }
 else 
 {
 	//
 	// These could be entered via a form button
 	//
-	if( isset($HTTP_POST_VARS['add']) )
+	if ( isset($HTTP_POST_VARS['add']) )
 	{
-		$mode = "add";
+		$mode = 'add';
 	}
-	else if( isset($HTTP_POST_VARS['save']) )
+	else if ( isset($HTTP_POST_VARS['save']) )
 	{
-		$mode = "save";
+		$mode = 'save';
 	}
 	else
 	{
-		$mode = "";
+		$mode = '';
 	}
 }
 
-if( $mode != "" )
+if( $mode != '' )
 {
-	if( $mode == "edit" || $mode == "add" )
+	switch ( $mode )
 	{
-		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+		case 'edit':
+		case 'add':
+			$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
 
-		$template->set_filenames(array(
-			"body" => "admin/words_edit_body.tpl")
-		);
-
-		$s_hidden_fields = '';
-
-		if( $mode == "edit" )
-		{
-			if( $word_id )
+			$s_hidden_fields = '';
+			if ( $mode == 'edit' )
 			{
+				if ( !$word_id )
+				{
+					message_die(MESSAGE, $lang['No_word_selected']);
+				}
+
 				$sql = "SELECT * 
 					FROM " . WORDS_TABLE . " 
 					WHERE word_id = $word_id";
-				if(!$result = $db->sql_query($sql))
-				{
-					message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
-				}
+				$result = $db->sql_query($sql);
 
 				$word_info = $db->sql_fetchrow($result);
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			}
+
+			page_header($lang['General']);
+
+?>
+
+<h1><?php echo $lang['Words_title']; ?></h1>
+
+<p><?php echo $lang['Words_explain']; ?></p>
+
+<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+	<tr>
+		<th colspan="2"><?php echo $lang['Edit_word_censor']; ?></th>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Word']; ?></td>
+		<td class="row2"><input type="text" name="word" value="<?php echo $word_info['word']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $lang['Replacement']; ?></td>
+		<td class="row2"><input type="text" name="replacement" value="<?php echo $word_info['replacement']; ?>" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="save" value="<?php echo $lang['Submit']; ?>" /></td>
+	</tr>
+</table></form>
+
+<?php
+
+			break;
+
+		case 'save':
+			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
+			$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : '';
+			$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : '';
+
+			if ( $word == '' || $replacement == '' )
+			{
+				message_die(MESSAGE, $lang['Must_enter_word']);
+			}
+
+			$sql = ( $word_id ) ? "UPDATE " . WORDS_TABLE . " SET word = '" . str_replace("\'", "''", $word) . "', replacement = '" . str_replace("\'", "''", $replacement) . "' WHERE word_id = $word_id" : "INSERT INTO " . WORDS_TABLE . " (word, replacement) VALUES ('" . str_replace("\'", "''", $word) . "', '" . str_replace("\'", "''", $replacement) . "')";
+			$db->sql_query($sql);
+
+			$log_action = ( $word_id ) ? 'log_edit_word' : 'log_add_word';
+			add_admin_log($log_action, stripslashes($word));
+
+			$message = ( $word_id ) ? $lang['Word_updated'] : $lang['Word_added'];
+			$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . "admin_words.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+
+			message_die(MESSAGE, $message);
+			break;
+
+		case 'delete':
+
+			if ( isset($HTTP_POST_VARS['id']) || isset($HTTP_GET_VARS['id']) )
+			{
+				$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			}
 			else
 			{
-				message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
+				message_die(MESSAGE, $lang['Must_specify_word']);
 			}
-		}
 
-		$template->assign_vars(array(
-			"WORD" => $word_info['word'],
-			"REPLACEMENT" => $word_info['replacement'],
-
-			"L_WORDS_TITLE" => $lang['Words_title'],
-			"L_WORDS_TEXT" => $lang['Words_explain'],
-			"L_WORD_CENSOR" => $lang['Edit_word_censor'],
-			"L_WORD" => $lang['Word'],
-			"L_REPLACEMENT" => $lang['Replacement'],
-			"L_SUBMIT" => $lang['Submit'],
-
-			"S_WORDS_ACTION" => append_sid("admin_words.$phpEx"),
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
-		);
-
-		$template->pparse("body");
-
-		include('page_footer_admin.'.$phpEx);
-	}
-	else if( $mode == "save" )
-	{
-		$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
-		$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : "";
-		$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : "";
-
-		if($word == "" || $replacement == "")
-		{
-			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
-		}
-
-		if( $word_id )
-		{
-			$sql = "UPDATE " . WORDS_TABLE . " 
-				SET word = '" . str_replace("\'", "''", $word) . "', replacement = '" . str_replace("\'", "''", $replacement) . "' 
-				WHERE word_id = $word_id";
-			$message = $lang['Word_updated'];
-		}
-		else
-		{
-			$sql = "INSERT INTO " . WORDS_TABLE . " (word, replacement) 
-				VALUES ('" . str_replace("\'", "''", $word) . "', '" . str_replace("\'", "''", $replacement) . "')";
-			$message = $lang['Word_added'];
-		}
-
-		if(!$result = $db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, "Could not insert data into words table", $lang['Error'], __LINE__, __FILE__, $sql);
-		}
-
-		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
-
-		message_die(GENERAL_MESSAGE, $message);
-	}
-	else if( $mode == "delete" )
-	{
-		if( isset($HTTP_POST_VARS['id']) ||  isset($HTTP_GET_VARS['id']) )
-		{
-			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
-		}
-		else
-		{
-			$word_id = 0;
-		}
-
-		if( $word_id )
-		{
 			$sql = "DELETE FROM " . WORDS_TABLE . " 
 				WHERE word_id = $word_id";
+			$db->sql_query($sql);
 
-			if(!$result = $db->sql_query($sql))
-			{
-				message_die(GENERAL_ERROR, "Could not remove data from words table", $lang['Error'], __LINE__, __FILE__, $sql);
-			}
+			add_admin_log('log_delete_word');
 
-			$message = $lang['Word_removed'] . "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . "admin_words.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
-			message_die(GENERAL_MESSAGE, $message);
-		}
-		else
-		{
-			message_die(GENERAL_MESSAGE, $lang['Must_specify_word']);
-		}
+			message_die(MESSAGE, $message);
+			break;
 	}
+
 }
 else
 {
-	$template->set_filenames(array(
-		"body" => "admin/words_list_body.tpl")
-	);
+
+	page_header($lang['General']);
+
+?>
+
+<h1><?php echo $lang['Words_title']; ?></h1>
+
+<p><?php echo $lang['Words_explain']; ?></p>
+
+<form method="post" action="<?php echo "admin_words.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
+	<tr>
+		<th><?php echo $lang['Word']; ?></th>
+		<th><?php echo $lang['Replacement']; ?></th>
+		<th colspan="2"><?php echo $lang['Action']; ?></th>
+	</tr>
+
+<?php
 
 	$sql = "SELECT * 
 		FROM " . WORDS_TABLE . " 
 		ORDER BY word";
-	if( !$result = $db->sql_query($sql) )
+	$result = $db->sql_query($sql);
+
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		message_die(GENERAL_ERROR, "Could not query words table", $lang['Error'], __LINE__, __FILE__, $sql);
+		do
+		{
+			$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
+
+?>
+	<tr>
+		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $row['word']; ?></td>
+		<td class="<?php echo $cell_bg; ?>" align="center"><?php echo $row['replacement']; ?></td>
+		<td class="<?php echo $cell_bg; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=edit&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Edit']; ?></a>&nbsp;</td>
+		<td class="<?php echo $cell_bg; ?>">&nbsp;<a href="<?php echo "admin_words.$phpEx$SID&amp;mode=delete&amp;id=" . $row['word_id']; ?>"><?php echo $lang['Delete']; ?></a>&nbsp;</td>
+	</tr>
+<?php
+
+		}
+		while ( $row = $db->sql_fetchrow($result) );
 	}
 
-	$word_rows = $db->sql_fetchrowset($result);
-	$word_count = count($word_rows);
+?>
+	<tr>
+		<td class="cat" colspan="5" height="28" align="center"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" name="add" value="<?php echo $lang['Add_new_word']; ?>" /></td>
+	</tr>
+</table></form>
 
-	$template->assign_vars(array(
-		"L_WORDS_TITLE" => $lang['Words_title'],
-		"L_WORDS_TEXT" => $lang['Words_explain'],
-		"L_WORD" => $lang['Word'],
-		"L_REPLACEMENT" => $lang['Replacement'],
-		"L_EDIT" => $lang['Edit'],
-		"L_DELETE" => $lang['Delete'],
-		"L_ADD_WORD" => $lang['Add_new_word'],
-		"L_ACTION" => $lang['Action'],
+<?php
 
-		"S_WORDS_ACTION" => append_sid("admin_words.$phpEx"),
-		"S_HIDDEN_FIELDS" => '')
-	);
-
-	for($i = 0; $i < $word_count; $i++)
-	{
-		$word = $word_rows[$i]['word'];
-		$replacement = $word_rows[$i]['replacement'];
-		$word_id = $word_rows[$i]['word_id'];
-
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-		$template->assign_block_vars("words", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"WORD" => $word,
-			"REPLACEMENT" => $replacement,
-
-			"U_WORD_EDIT" => append_sid("admin_words.$phpEx?mode=edit&amp;id=$word_id"),
-			"U_WORD_DELETE" => append_sid("admin_words.$phpEx?mode=delete&amp;id=$word_id"))
-		);
-	}
 }
 
-$template->pparse("body");
-
-include('page_footer_admin.'.$phpEx);
+page_footer()
 
 ?>
