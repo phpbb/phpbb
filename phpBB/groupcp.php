@@ -59,6 +59,7 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	$sql = "SELECT group_moderator 
 		FROM " . GROUPS_TABLE . "  
 		WHERE group_id = $group_id";
+		
 	if( !$result = $db->sql_query($sql) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain user and group information", "", __LINE__, __FILE__, $sql);
@@ -66,7 +67,7 @@ if( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 
 	$row = $db->sql_fetchrow($result);
 
-	if( $row['user_id'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN )
+	if( $row['group_moderator'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN )
 	{
 		$template->assign_vars(array(
 			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
