@@ -1239,6 +1239,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 
 	if ($ids != '')
 	{
+		// TODO: Paul - correct call to check f_read for specific users ?
 		$sql = "SELECT a.user_id
 			FROM " . ACL_OPTIONS_TABLE . " ao, " . ACL_USERS_TABLE . " a 
 			WHERE a.user_id IN (" . $ids . ")
@@ -1288,24 +1289,24 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	//
 	if ($topic_notification)
 	{
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
-			FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_TABLE . " f
-			WHERE tw.topic_id = $topic_id 
-				AND tw.user_id NOT IN ($sql_ignore_users) 
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name
+			FROM ' . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_TABLE . ' f
+			WHERE tw.topic_id = ' . $topic_id . '
+				AND tw.user_id NOT IN (' . $sql_ignore_users . ') 
 				AND tw.notify_status = 0
-				AND f.forum_id = $forum_id
+				AND f.forum_id = ' . $forum_id . '
 				AND t.topic_id = tw.topic_id 
-				AND u.user_id = tw.user_id";
+				AND u.user_id = tw.user_id';
 	}
 	else if ($newtopic_notification)
 	{
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
-			FROM " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
-			WHERE fw.forum_id = $forum_id 
-				AND fw.user_id NOT IN ($sql_ignore_users) 
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, f.forum_name 
+			FROM ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . ' f 
+			WHERE fw.forum_id = ' . $forum_id . '
+				AND fw.user_id NOT IN (' . $sql_ignore_users . ') 
 				AND fw.notify_status = 0
 				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id";
+				AND u.user_id = fw.user_id';
 	}
 	else
 	{
@@ -1354,14 +1355,14 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		$already_notified = ($update_watched_sql_topic == '') ? '' : $update_watched_sql_topic . ', ';
 		$already_notified .= ($update_watched_sql_forum == '') ? '' : $update_watched_sql_forum . ', ';
 
-		$sql = "SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . FORUMS_WATCH_TABLE . " fw, " . FORUMS_TABLE . " f 
-			WHERE fw.forum_id = $forum_id 
-				AND fw.user_id NOT IN ($already_notified $sql_ignore_users) 
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, t.topic_title, f.forum_name 
+			FROM ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . FORUMS_WATCH_TABLE . ' fw, ' . FORUMS_TABLE . ' f 
+			WHERE fw.forum_id = ' . $forum_id . '
+				AND fw.user_id NOT IN (' . $already_notified . ' ' . $sql_ignore_users . ') 
 				AND fw.notify_status = 0
-				AND t.topic_id = $topic_id
+				AND t.topic_id = ' . $topic_id . '
 				AND f.forum_id = fw.forum_id
-				AND u.user_id = fw.user_id";
+				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
 			
 		if ($row = $db->sql_fetchrow($result))
@@ -1382,9 +1383,8 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		}
 	}
 
-	// We're going to try and minimise the number of emails we send by using bcc.
-	// The complication here is that different templates and/or localisations may
-	// be required so we need to account for these.
+	// We are using an email queue here, no emails are sent now, only queued.
+	// Returned to use the TO-Header, default package size is 100 (should be admin-definable) !?
 	if (sizeof($email_users) && $config['email_enable'])
 	{
 		global $phpbb_root_path, $phpEx;
@@ -1392,28 +1392,26 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 		@set_time_limit(60);
 
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-		$emailer = new emailer();
+		$emailer = new emailer(true); // use queue
 
-		$bcc_list_ary = array();
+		$email_list_ary = array();
 		foreach ($email_users as $row)
 		{ 
-			$pos = sizeof($bcc_list_ary[$row['email_template']][$row['user_lang']]);
-			$bcc_list_ary[$row['email_template']][$row['user_lang']][$pos]['email'] = $row['user_email'];
-			$bcc_list_ary[$row['email_template']][$row['user_lang']][$pos]['name'] = $row['username'];
+			$pos = sizeof($email_list_ary[$row['email_template']]);
+			$email_list_ary[$row['email_template']][$pos]['email'] = $row['user_email'];
+			$email_list_ary[$row['email_template']][$pos]['name'] = $row['username'];
+			$email_list_ary[$row['email_template']][$pos]['lang'] = $row['user_lang'];
 		}
 		unset($email_users);
 
-		foreach ($bcc_list_ary as $email_template => $bcc_list)
+		foreach ($email_list_ary as $email_template => $email_list)
 		{
-			foreach ($bcc_list as $lang => $bcc)
+			foreach ($email_list as $addr)
 			{
-				$emailer->template($email_template, $lang);
+				$emailer->template($email_template, $addr['lang']);
 
 				$emailer->replyto($config['board_email']);
-				foreach ($bcc as $addr)
-				{
-					$emailer->bcc($addr['email'], $addr['name']);
-				}
+				$emailer->to($addr['email'], $addr['name']);
 
 				$emailer->assign_vars(array(
 					'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
@@ -1431,9 +1429,11 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 				$emailer->reset();
 			}
 		}
+	
+		$emailer->queue->save();
 	}
-	unset($bcc_list_ary);
-
+	unset($email_list_ary);
+	
 	if ($delete_users_topic != '')
 	{
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "

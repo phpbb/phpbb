@@ -24,11 +24,18 @@ class emailer
 	var $msg, $subject, $extra_headers;
 	var $to_addres, $cc_address, $bcc_address;
 	var $reply_to, $from;
+	var $use_queue, $queue;
 
 	var $tpl_msg = array();
 
-	function emailer()
+	function emailer($use_queue = false)
 	{
+		$this->use_queue = $use_queue;
+		if ($use_queue)
+		{
+			$this->queue = new Queue();
+			$this->queue->init('emailer', 100);
+		}
 		$this->reset();
 	}
 
@@ -141,7 +148,7 @@ class emailer
 			return false;
 		}
 
-    	// Escape all quotes, else the eval will fail.
+		// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
 		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
 
@@ -202,7 +209,22 @@ class emailer
 		$this->extra_headers = (($this->replyto !='') ? "Reply-to: <$this->replyto>\r\n" : '') . (($this->from != '') ? "From: <$this->from>\r\n" : "From: <" . $config['board_email'] . ">\r\n") . "Return-Path: <" . $config['board_email'] . ">\r\nMessage-ID: <" . md5(uniqid(time())) . "@" . $config['server_name'] . ">\r\nMIME-Version: 1.0\r\nContent-type: text/plain; charset=" . $this->encoding . "\r\nContent-transfer-encoding: 8bit\r\nDate: " . gmdate('D, d M Y H:i:s Z', time()) . "\r\nX-Priority: 3\r\nX-MSMail-Priority: Normal\r\nX-Mailer: PHP\r\n" . (($cc != '') ? "Cc:$cc\r\n" : '')  . (($bcc != '') ? "Bcc:$bcc\r\n" : '') . trim($this->extra_headers); 
 
 		// Send message ... removed $this->encode() from subject for time being
-		$result = ($config['smtp_delivery']) ? smtpmail($to, $this->subject, $this->msg, $this->extra_headers) : mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
+		if (!$this->use_queue)
+		{
+			$result = ($config['smtp_delivery']) ? smtpmail($to, $this->subject, $this->msg, $this->extra_headers) : mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\r\n", $this->msg), $this->extra_headers);
+		}
+		else
+		{
+			$this->queue->put('emailer', array(
+				'smtp_delivery' => $config['smtp_delivery'],
+				'to' => $to,
+				'subject' => $this->subject,
+				'msg' => $this->msg,
+				'extra_headers' => $this->extra_headers)
+			);
+
+			$result = true;
+		}
 
 		// Did it work?
 		if (!$result)
@@ -430,6 +452,172 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fclose($socket);
 
 	return TRUE;
+}
+
+// This class is for handling queues - to be placed into another file ?
+// At the moment it is only handling the email queue
+class Queue
+{
+	var $data = array();
+	var $queue_data = array();
+	var $package_size = 0;
+	var $cache_file = '';
+
+	function Queue()
+	{
+		global $phpEx, $phpbb_root_path;
+
+		$this->data = array();
+		$this->cache_file = $phpbb_root_path . 'cache/queue.' . $phpEx;
+	}
+
+	//--TEMP
+	function queue_filled()
+	{
+		if (file_exists($this->cache_file))
+		{
+			return true;
+		}
+
+		return false;
+	}
+	
+	function init($object, $package_size)
+	{
+		$this->data[$object] = array();
+		$this->data[$object]['package_size'] = $package_size;
+		$this->data[$object]['data'] = array();
+	}
+
+	function put($object, $scope)
+	{
+		$this->data[$object]['data'][] = $scope;
+	}
+
+	//--TEMP
+	function show()
+	{
+		echo ";<pre>";
+		print_r($this->data);
+		echo "</pre>;";
+	}
+
+	function process()
+	{
+		global $_SERVER, $_ENV;
+
+		if (file_exists($this->cache_file))
+		{
+			include($this->cache_file);
+		}
+			
+		foreach ($this->queue_data as $object => $data_array)
+		{
+			$package_size = $data_array['package_size'];
+
+			$num_items = (count($data_array['data']) < $package_size) ? count($data_array['data']) : $package_size;
+
+			if ($object == 'emailer')
+			{
+				@set_time_limit(60);
+			}
+
+			for ($i = 0; $i < $num_items; $i++)
+			{
+				foreach ($data_array['data'][0] as $var => $value)
+				{
+					$$var = $value;
+				}
+				
+				if ($object == 'emailer')
+				{
+					$result = ($smtp_delivery) ? smtpmail($to, $subject, $msg, $extra_headers) : mail($to, $subject, preg_replace("#(?<!\r)\n#s", "\r\n", $msg), $extra_headers);
+				
+					if (!$result)
+					{
+						$message = '<u>EMAIL ERROR</u> [ ' . (($smtp_delivery) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $result . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
+						trigger_error($message, E_USER_ERROR);
+					}
+				}
+				array_shift($this->queue_data[$object]['data']);
+			}
+
+			if (count($this->queue_data[$object]['data']) == 0)
+			{
+				unset($this->queue_data[$object]);
+			}
+		}
+	
+		if (count($this->queue_data) == 0)
+		{
+			unlink($this->cache_file);
+		}
+		else
+		{
+			$file = '<?php $this->queue_data=' . $this->format_array($this->queue_data) . '; ?>';
+
+			if ($fp = @fopen($this->cache_file, 'wb'))
+			{
+				@flock($fp, LOCK_EX);
+				fwrite($fp, $file);
+				@flock($fp, LOCK_UN);
+				fclose($fp);
+			}
+		}
+	}
+
+	function save()
+	{
+		if (file_exists($this->cache_file))
+		{
+			include($this->cache_file);
+			
+			foreach ($this->queue_data as $object => $data_array)
+			{
+				if (count($this->data[$object]))
+				{
+					$this->data[$object]['data'] = array_merge($data_array['data'], $this->data[$object]['data']);
+				}
+			}
+		}
+		
+		$file = '<?php $this->queue_data=' . $this->format_array($this->data) . '; ?>';
+
+		if ($fp = @fopen($this->cache_file, 'wb'))
+		{
+			@flock($fp, LOCK_EX);
+			fwrite($fp, $file);
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+		}
+	}
+
+	// From acm_file.php
+	function format_array($array)
+	{
+		$lines = array();
+		foreach ($array as $k => $v)
+		{
+			if (is_array($v))
+			{
+				$lines[] = "'$k'=>" . $this->format_array($v);
+			}
+			elseif (is_int($v))
+			{
+				$lines[] = "'$k'=>$v";
+			}
+			elseif (is_bool($v))
+			{
+				$lines[] = "'$k'=>" . (($v) ? 'TRUE' : 'FALSE');
+			}
+			else
+			{
+				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
+			}
+		}
+		return 'array(' . implode(',', $lines) . ')';
+	}
+
 }
 
 ?>
