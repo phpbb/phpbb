@@ -483,20 +483,34 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// Mark the lowest nesting level if needed.
 						if ($mark_lowest_level && ($curr_nesting_depth == 1))
 						{
+							if ($open_tag[0] == '[code]')
+							{
+								$code_entities_match = array('#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#');
+								$code_entities_replace = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;');
+								$between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
+							}
 							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
 						}
 						else
 						{
-							if ($open_is_regexp)
+							if ($open_tag[0] == '[code]')
 							{
-								$text = $before_start_tag . $start_tag;
+								$text = $before_start_tag . '&#91;code&#93;';
+								$text .= $between_tags . '&#91;/code&#93;';
 							}
 							else
 							{
-								$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+								if ($open_is_regexp)
+								{
+									$text = $before_start_tag . $start_tag;
+								}
+								else
+								{
+									$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+								}
+								$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 							}
-							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 						}
 
 						$text .= $after_end_tag;
@@ -606,7 +620,7 @@ function make_clickable($text)
 	// matches an "xxxx://yyyy" URL at the start of a line, or after a space.
 	// xxxx can only be alpha characters.
 	// yyyy is anything up to the first space, newline, or comma.
-	$ret = preg_replace("#([\n ])([a-z]+?)://([^,\t \n\r]+)#i", "\\1<a href=\"\\2://\\3\" target=\"_blank\">\\2://\\3</a>", $ret);
+	$ret = preg_replace("#([\n ])([a-z]+?)://([^\t <\n\r]+)#i", "\\1<a href=\"\\2://\\3\" target=\"_blank\">\\2://\\3</a>", $ret);
 
 	// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 	// Must contain at least 2 dots. xxxx contains either alphanum, or "-"
@@ -614,7 +628,7 @@ function make_clickable($text)
 	// zzzz is optional.. will contain everything up to the first space, newline, or comma.
 	// This is slightly restrictive - it's not going to match stuff like "forums.foo.com"
 	// This is to keep it from getting annoying and matching stuff that's not meant to be a link.
-	$ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[^,\t \n\r]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
+	$ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[^\t <\n\r]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
 
 	// matches an email@domain type address at the start of a line, or after a space.
 	// Note: Only the followed chars are valid; alphanums, "-", "_" and or ".".

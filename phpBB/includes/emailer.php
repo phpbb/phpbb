@@ -38,8 +38,8 @@ class emailer
 		$this->use_smtp = $use_smtp;
 		$this->tpl_file = NULL;
 		$this->address = NULL;
- 		$this->msg = "";
-	   $this->mimeOut = "";
+ 		$this->msg = '';
+		$this->mimeOut = '';
 	}
 
 	//
@@ -47,11 +47,11 @@ class emailer
 	//
 	function reset()
 	{
-		$this->tpl_file = "";
-		$this->address = "";
-		$this->msg = "";
-		$this->memOut = "";
-		$this->vars = "";
+		$this->tpl_file = '';
+		$this->address = '';
+		$this->msg = '';
+		$this->memOut = '';
+		$this->vars = '';
 	}
 
 	//
@@ -59,13 +59,8 @@ class emailer
 	//
 	function email_address($address)
 	{
-
-		$success = true;
-
 		$this->address = '';
 		$this->address .= $address;
-
-		return $success;
 	}
 
 	//
@@ -84,30 +79,27 @@ class emailer
 		$this->extra_headers = $headers;
 	}
 
-	function use_template($template_file, $template_lang = "")
+	function use_template($template_file, $template_lang = '')
 	{
 		global $board_config, $phpbb_root_path;
 
-		if( $template_lang == "" )
+		if ( $template_lang == '' )
 		{
 			$template_lang = $board_config['default_lang'];
 		}
 
-		$template_file = $phpbb_root_path . "language/lang_" . $template_lang . "/email/" . $template_file . ".tpl";
-		if( !file_exists($template_file) )
+		$this->tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
+		if ( !file_exists($this->tpl_file) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't find template file: $template_file", "", __LINE__, __FILE__);
-		}
-		else
-		{
-			$this->tpl_file = $template_file;
-			if( !$this->load_msg() )
-			{
-				message_die(GENERAL_ERROR, "Couldn't load template file: $template_file", "", __LINE__, __FILE__);
-			}
+			message_die(GENERAL_ERROR, 'Could not find email template file ' . $template_file, '', __LINE__, __FILE__);
 		}
 
-		return TRUE;
+		if ( !$this->load_msg() )
+		{
+			message_die(GENERAL_ERROR, 'Could not load email template file ' . $template_file, '', __LINE__, __FILE__);
+		}
+
+		return true;
 	}
 
 	//
@@ -115,35 +107,25 @@ class emailer
 	//
 	function load_msg()
 	{
-		if ($this->tpl_file == NULL)
+		if ( $this->tpl_file == NULL )
 		{
-			message_die(GENERAL_ERROR, "No template file set", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
-		else
+
+		if ( !($fd = fopen($this->tpl_file, 'r')) )
 		{
-			if(!($fd = fopen($this->tpl_file, 'r')))
-			{
-				message_die(GENERAL_ERROR, "fopen failed opening template file", "", __LINE__, __FILE__);
-			}
-			else
-			{
-				$this->msg .= fread($fd, filesize($this->tpl_file));
-				fclose($fd);
-			}
+			message_die(GENERAL_ERROR, 'Failed opening template file', '', __LINE__, __FILE__);
 		}
-		return TRUE;
+
+		$this->msg .= fread($fd, filesize($this->tpl_file));
+		fclose($fd);
+
+		return true;
 	}
 
 	function assign_vars($vars)
 	{
-		if(empty($this->vars))
-		{
-			$this->vars = $vars;
-		}
-		else
-		{
-			$this->vars .= $vars;
-		}
+		$this->vars = ( empty($this->vars) ) ? $vars : $this->vars . $vars;
 	}
 
 	function parse_email()
@@ -165,12 +147,13 @@ class emailer
 		// do this here because the subject may contain a variable
 		//
 		$match = array();
-		preg_match("/^(Subject:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
+		preg_match("/^(Subject:(.*?)[\r\n]+?)?(Charset:(.*?)[\r\n]+?)?(.*?)$/is", $this->msg, $match);
 
-		$this->msg = ( isset($match[3]) ) ? trim($match[3]) : '';
+		$this->msg = ( isset($match[5]) ) ? trim($match[5]) : '';
 		$this->subject = ( $this->subject != '' ) ? $this->subject : trim($match[2]);
+		$this->encoding = ( trim($match[4]) != '' ) ? trim($match[4]) : 'iso-8859-1';
 
-		return TRUE;
+		return true;
 	}
 
 	//
@@ -180,45 +163,53 @@ class emailer
 	{
 		global $phpEx, $phpbb_root_path;
 
-		if ($this->address == NULL)
+		if ( $this->address == NULL )
 		{
-			message_die(GENERAL_ERROR, "No email address set", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'No email address set', '', __LINE__, __FILE__);
+		}
+
+		if ( !$this->parse_email() )
+		{
+			return false;
+		}
+
+		//
+		// Add date and encoding type
+		//
+		$universal_extra = "MIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . gmdate('D, d M Y H:i:s', time()) . " UT\n";
+		$this->extra_headers = $universal_extra . $this->extra_headers; 
+
+		if ( $this->use_smtp )
+		{
+			if ( !defined('SMTP_INCLUDED') ) 
+			{
+				include($phpbb_root_path . 'includes/smtp.' . $phpEx);
+			}
+
+			$result = smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers);
 		}
 		else
 		{
-			if(!$this->parse_email())
-			{
-				return FALSE;
-			}
-			if($this->use_smtp)
-			{
-				if(!defined('SMTP_INCLUDED')) 
-				{
-					include($phpbb_root_path . "includes/smtp.".$phpEx);
-				}
-				if(!smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers))
-				{
-					message_die(GENERAL_ERROR, "Sending via SMTP failed", "", __LINE__, __FILE__);
-				}
-			}
-			else
-			{
-				@mail($this->address, $this->subject, $this->msg, $this->extra_headers);
-			}
+			$result = @mail($this->address, $this->subject, $this->msg, $this->extra_headers);
 		}
 
-		return TRUE;
+		if ( !$result )
+		{
+			message_die(GENERAL_ERROR, 'Failed sending email', '', __LINE__, __FILE__);
+		}
+
+		return true;
 	}
 
 
 	//
-   // Attach files via MIME.
+	// Attach files via MIME.
 	//
-	function attachFile($filename, $mimetype="application/octet-stream", $szFromAddress, $szFilenameToDisplay)
+	function attachFile($filename, $mimetype = "application/octet-stream", $szFromAddress, $szFilenameToDisplay)
 	{
 		$mime_boundary = "--==================_846811060==_";
 
-		$this->mailMsg = "--".$mime_boundary."\nContent-Type: text/plain;\n\tcharset=\"iso-8859-1\"\n\n".$this->mailMsg;
+		$this->mailMsg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"iso-8859-1\"\n\n" . $this->mailMsg;
 
 		if ($mime_filename)
 		{
@@ -234,11 +225,11 @@ class emailer
 		$this->mimeOut .= "Content-Transfer-Encoding: quoted-printable\n";
 		$this->mimeOut .= "Content-Disposition: attachment;\n\tfilename=\"$szFilenameToDisplay\"\n\n";
 
-		if ($mimetype == "message/rfc822")
+		if ( $mimetype == "message/rfc822" )
 		{
 			$this->mimeOut .= "From: ".$szFromAddress."\n";
 			$this->mimeOut .= "To: ".$this->emailAddress."\n";
-			$this->mimeOut .= "Date: ".date("D, d M Y G:i:s ").$this->getTimeZoneInEmailFormat()."\n";
+			$this->mimeOut .= "Date: ".date("D, d M Y H:i:s") . " UT\n";
 			$this->mimeOut .= "Reply-To:".$szFromAddress."\n";
 			$this->mimeOut .= "Subject: ".$this->mailSubject."\n";
 			$this->mimeOut .= "X-Mailer: PHP/".phpversion()."\n";
