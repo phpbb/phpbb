@@ -564,8 +564,6 @@ if (!empty($poll_start))
 		$forum_status != ITEM_LOCKED) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
 
-	echo ">$s_can_vote :: >$s_display_results :: >$voted_id";
-
 	if ($update && $s_can_vote)
 	{
 		if (!sizeof($voted_id) || sizeof($voted_id) > $poll_max_options)
