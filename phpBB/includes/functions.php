@@ -717,7 +717,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	{
 		do 
 		{
-			$orig_word[] = "#\b(" . str_replace("*", "\w*?", $row['word']) . ")\b#is";
+			$orig_word[] = "#\b(" . str_replace("\*", "\w*?", preg_quote($row['word'])) . ")\b#is";
 			$replacement_word[] = $row['replacement'];
 		}
 		while ( $row = $db->sql_fetchrow($result) );
