@@ -181,8 +181,6 @@ $cache = new acm();
 $template = new template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-// 20030218 Ashe: $dbport is not set by the installer
-
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
 {
@@ -198,7 +196,7 @@ if ($config = $cache->get('config'))
 }
 else
 {
-	$config = array();
+	$config = $cached_config = array();
 
 	$sql = 'SELECT * 
 		FROM ' . CONFIG_TABLE;
@@ -206,11 +204,17 @@ else
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		if (!$row['is_dynamic'])
+		{
+			$cached_config[$row['config_name']] = $row['config_value'];
+		}
+
 		$config[$row['config_name']] = $row['config_value'];
 	}
 	$db->sql_freeresult($result);
 
-	$cache->put('config', $config);
+	$cache->put('config', $cached_config);
+	unset($cached_config);
 }
 
 /*
