@@ -292,13 +292,29 @@ else if ( $mode == 'read' )
 		{
 			if ( $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs'] )
 			{
-				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+				$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
 						AND privmsgs_date = " . $sent_info['oldest_post_time'] . " 
 						AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
+				if ( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not find oldest privmsgs', '', __LINE__, __FILE__, $sql);
+				}
+				$old_privmsgs_id = $db->sql_fetchrow($result);
+				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+			
+				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+					WHERE privmsgs_id = $old_privmsgs_id";
 				if ( !$db->sql_query($sql) )
 				{
-					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs', '', __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (sent)', '', __LINE__, __FILE__, $sql);
+				}
+
+				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
+					WHERE privmsgs_text_id = $old_privmsgs_id";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (sent)', '', __LINE__, __FILE__, $sql);
 				}
 			}
 		}
@@ -856,15 +872,31 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 	{
 		if ( $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] )
 		{
-			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+			$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
 				WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
 							AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
 						OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
 							AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") ) 
 					AND privmsgs_date = " . $saved_info['oldest_post_time'];
+			if ( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not find oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
+			}
+			$old_privmsgs_id = $db->sql_fetchrow($result);
+			$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+		
+			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+				WHERE privmsgs_id = $old_privmsgs_id";
 			if ( !$db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs', '', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
+				WHERE privmsgs_text_id = $old_privmsgs_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (save)', '', __LINE__, __FILE__, $sql);
 			}
 		}
 	}
@@ -1070,15 +1102,31 @@ else if ( $submit || $refresh || $mode != '' )
 			{
 				if ( $inbox_info['inbox_items'] >= $board_config['max_inbox_privmsgs'] )
 				{
-					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+					$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
 						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
 								OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
 								OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . "  ) 
 							AND privmsgs_date = " . $inbox_info['oldest_post_time'] . " 
 							AND privmsgs_to_userid = " . $to_userdata['user_id'];
+					if ( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not find oldest privmsgs (inbox)', '', __LINE__, __FILE__, $sql);
+					}
+					$old_privmsgs_id = $db->sql_fetchrow($result);
+					$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+				
+					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
+						WHERE privmsgs_id = $old_privmsgs_id";
 					if ( !$db->sql_query($sql) )
 					{
-						message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs', '', __LINE__, __FILE__, $sql);
+						message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (inbox)'.$sql, '', __LINE__, __FILE__, $sql);
+					}
+
+					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
+						WHERE privmsgs_text_id = $old_privmsgs_id";
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (inbox)', '', __LINE__, __FILE__, $sql);
 					}
 				}
 			}
