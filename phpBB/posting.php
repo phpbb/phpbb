@@ -19,8 +19,21 @@
  *
  ***************************************************************************/
 
+// TODO for 2.2:
+// 
+// * deletion of posts/polls? or should this (at least posts) be entirely handled by the mcp?
+// * topic review
+// * post preview (poll preview too?)
+// * check for reply since started posting upon submission?
+// * hidden form element containing sid to prevent remote posting - Edwin van Vliet
+// * attachments -> Acyd Burns Mod functionality
+// * bbcode parsing -> see functions_posting.php
+// * lock topic option within posting
+// * multichoice polls
+// * permission defined ability for user to add poll options
+
 // Grab all data
-import_request_variables('GP');
+import_request_variables('GP', 's_');
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
@@ -40,20 +53,6 @@ if (!empty($cancel))
 	$redirect = (intval($p)) ? "viewtopic.$phpEx$SID&p=" . intval($p) . "#" . intval($p) : ((intval($t)) ? "viewtopic.$phpEx$SID&t=" . intval($t) : ((intval($f)) ? "viewforum.$phpEx$SID&f=" . intval($f) : "index.$phpEx$SID"));
 	redirect($redirect);
 }
-
-
-// TODO:
-// * deletion of posts/polls? or should this (at least posts)
-// be entirely handled by the mcp?
-// * topic review
-// * post preview (poll preview too?)
-// * check for reply since started posting upon submission?
-// * hidden form element containing sid to prevent remote
-// posting - Edwin van Vliet
-// * attachments
-// * bbcode parsing
-// * lock topic option within posting
-
 
 // ---------
 // POST INFO
@@ -518,6 +517,7 @@ if (isset($post))
 	$template->assign_vars(array(
 		'ERROR_MESSAGE' => $err_msg)
 	);
+
 } // isset($post)
 
 // PROCESS SUBMIT
