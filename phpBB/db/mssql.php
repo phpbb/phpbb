@@ -121,10 +121,11 @@ class sql_db
 			// you do will potentially impact performance
 			// compared to an 'in-built' limit
 			//
-			if(eregi(" LIMIT ", $query))
+			if(eregi("LIMIT", $query))
 			{
-				eregi("^([a-zA-Z0-9 \*\,\'\"\+\?\.\(\)]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
-	
+
+				eregi("^([[:alnum:] \*\,\'\"\+\?\.\(\)_=[:cntrl:]]+) LIMIT ([0-9]+)[, ]*([0-9]+)*", $query, $limits);
+
 				$query = $limits[1];
 				if($limits[3])
 				{
@@ -298,7 +299,7 @@ class sql_db
 			if($this->query_limit_success[$query_id])
 			{
 				empty($this->rowset);
-				while($this->rowset = mssql_fetch_array($query_id))
+				while($this->rowset = @mssql_fetch_array($query_id))
 				{
 					$result[] = $this->rowset;
 				}
@@ -306,7 +307,7 @@ class sql_db
 			else if($this->query_limit_numrows[$query_id] == -1)
 			{
 				empty($this->rowset);
-				while($this->rowset = @mssql_fetch_array($this->query_result))
+				while($this->rowset = @mssql_fetch_array($query_id))
 				{
 					$result[] = $this->rowset;
 				}
