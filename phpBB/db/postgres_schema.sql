@@ -86,32 +86,32 @@ CREATE TABLE phpbb_categories (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_config (
    config_id int2 NOT NULL,
-   board_disable int2 DEFAULT '0' NOT NULL,
-   board_startdate int4,
+   board_disable int2 DEFAULT '0' NOT NULL, 
+   board_startdate int4, 
    sitename varchar(100) NOT NULL,
    cookie_name char(20),
    cookie_path char(25),
-   cookie_domain char(50),
-   cookie_secure int2,
-   session_length int4,
+   cookie_domain char(50), 
+   cookie_secure int2, 
+   session_length int4, 
    allow_html int2 NOT NULL,
-   allow_html_tags char(255) DEFAULT 'b,u,i,pre,font color' NOT NULL,
+   allow_html_tags char(255) DEFAULT 'b,u,i,pre,font color' NOT NULL, 
    allow_bbcode int2 NOT NULL,
    allow_smilies int2 NOT NULL,
    allow_sig int2 NOT NULL,
    allow_namechange int2 NOT NULL,
    allow_theme_create int2 NOT NULL,
-   allow_avatar_local int2 DEFAULT '0' NOT NULL,
-   allow_avatar_remote int2 DEFAULT '0' NOT NULL,
+   allow_avatar_local int2 DEFAULT '0' NOT NULL, 
+   allow_avatar_remote int2 DEFAULT '0' NOT NULL, 
    allow_avatar_upload int2 DEFAULT '0' NOT NULL,
    posts_per_page int2 NOT NULL,
    topics_per_page int2 NOT NULL,
    hot_threshold int2 NOT NULL,
    email_sig varchar(255) NOT NULL,
    email_from varchar(100) NOT NULL,
-   smtp_delivery int2 DEFAULT '0' NOT NULL,
-   smtp_host varchar(50),
-   require_activation int2 DEFAULT '0' NOT NULL,
+   smtp_delivery int2 DEFAULT '0' NOT NULL, 
+   smtp_host varchar(50), 
+   require_activation int2 DEFAULT '0' NOT NULL, 
    default_theme int4 NOT NULL,
    default_dateformat varchar(20) NOT NULL,
    default_lang varchar(50) NOT NULL,
@@ -121,11 +121,11 @@ CREATE TABLE phpbb_config (
    avatar_max_width int2 DEFAULT '70' NOT NULL,
    avatar_max_height int2 DEFAULT '70' NOT NULL,
    avatar_path varchar(255) DEFAULT 'images/avatars' NOT NULL,
-   smilies_patch varchar(50) DEFAULT 'images/smiles' NOT NULL,
+   smilies_patch varchar(50) DEFAULT 'images/smiles' NOT NULL, 
    override_themes int2 NOT NULL,
    flood_interval int NOT NULL,
-   prune_enable int2 DEFAULT '1' NOT NULL,
-   gzip_compress int2 DEFAULT '0' NOT NULL,
+   prune_enable int2 DEFAULT '1' NOT NULL, 
+   gzip_compress int2 DEFAULT '0' NOT NULL, 
    CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_id)
 );
 
@@ -148,7 +148,7 @@ CREATE TABLE phpbb_forums (
    cat_id int4,
    forum_name varchar(150),
    forum_desc text,
-   forum_status int2 DEFAULT '0' NOT NULL,
+   forum_status int2 DEFAULT '0' NOT NULL, 
    forum_order int4 DEFAULT '1' NOT NULL,
    forum_posts int4 DEFAULT '0' NOT NULL,
    forum_topics int4 DEFAULT '0' NOT NULL,
@@ -190,10 +190,10 @@ CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
 -------------------------------------------------------- */
 CREATE TABLE phpbb_groups (
    group_id int4 DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
-   group_type int2 DEFAULT '1' NOT NULL,
+   group_type int2 DEFAULT '1' NOT NULL, 
    group_name varchar(100) NOT NULL,
    group_description varchar(255) NOT NULL,
-   group_moderator int4 NOT NULL,
+   group_moderator int4 NOT NULL, 
    group_single_user int2 NOT NULL
 );
 
@@ -206,15 +206,15 @@ CREATE TABLE phpbb_posts (
    topic_id int4 DEFAULT '0' NOT NULL,
    forum_id int4 DEFAULT '0' NOT NULL,
    poster_id int4 DEFAULT '0' NOT NULL,
-   post_time int4 DEFAULT '0' NOT NULL,
-   post_username varchar(30),
+   post_time int4 DEFAULT '0' NOT NULL, 
+   post_username varchar(30), 
    poster_ip char(8) DEFAULT '' NOT NULL,
    enable_bbcode int2 DEFAULT '1' NOT NULL,
    enable_html int2 DEFAULT '0' NOT NULL,
    enable_smilies int2 DEFAULT '1' NOT NULL,
-   bbcode_uid varchar(10) DEFAULT '' NOT NULL,
+   bbcode_uid varchar(10) DEFAULT '' NOT NULL, 
    post_edit_time int4,
-   post_edit_count int2 DEFAULT '0' NOT NULL,
+   post_edit_count int2 DEFAULT '0' NOT NULL, 
    CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
 );
 CREATE  INDEX forum_id_phpbb_posts_index ON phpbb_posts (forum_id);
@@ -412,7 +412,6 @@ CREATE TABLE phpbb_topics (
    topic_type int2 DEFAULT '0' NOT NULL,
    topic_notify int2 DEFAULT '0',
    topic_last_post_id int4 DEFAULT '0' NOT NULL,
-   topic_moved_id int4,
    CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
 );
 CREATE  INDEX _phpbb_topics_index ON phpbb_topics (forum_id, topic_id);
@@ -426,7 +425,7 @@ CREATE TABLE phpbb_topics_watch (
   topic_id int4,
   user_id int4,
   notify_status int2 NOT NULL default '0',
-  CONSTRAINT phpbb_topics_watch_pkey PRIMARY KEY (topic_id),
+  KEY topic_id (topic_id),
   KEY user_id (user_id)
 );
 CREATE  INDEX _phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
@@ -472,10 +471,10 @@ CREATE TABLE phpbb_users (
    user_allowhtml int2,
    user_allowbbcode int2,
    user_allowsmile int2,
-   user_allow_pm int2 DEFAULT '1' NOT NULL,
-   user_allowavatar int2 DEFAULT '1' NOT NULL,
-   user_allow_viewonline int2 DEFAULT '1' NOT NULL,
-   user_notify_pm int2 DEFAULT '1' NOT NULL,
+   user_allow_pm int2 DEFAULT '1' NOT NULL, 
+   user_allowavatar int2 DEFAULT '1' NOT NULL, 
+   user_allow_viewonline int2 DEFAULT '1' NOT NULL, 
+   user_notify_pm int2 DEFAULT '1' NOT NULL, 
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_level int4 DEFAULT '1',
