@@ -26,8 +26,7 @@ function generate_smilies($mode)
 	global $SID, $auth, $db, $user, $config, $template;
 	global $starttime, $phpEx, $phpbb_root_path;
 
-	// TODO: To be added to the schema - discuss this first please :)
-	$config['max_smilies_inline'] = 20;
+	$max_smilies_inline = 20;
 
 	if ($mode == 'window')
 	{
@@ -55,7 +54,7 @@ function generate_smilies($mode)
 		{
 			if (!in_array($row['smile_url'], $smile_array))
 			{
-				if ($mode == 'window' || ($mode == 'inline' && $num_smilies < $config['max_smilies_inline']))
+				if ($mode == 'window' || ($mode == 'inline' && $num_smilies < $max_smilies_inline))
 				{
 					$template->assign_block_vars('emoticon', array(
 						'SMILEY_CODE' 	=> $row['code'],
@@ -73,7 +72,7 @@ function generate_smilies($mode)
 		while ($row = $db->sql_fetchrow($result));
 		$db->sql_freeresult($result);
 
-		if ($mode == 'inline' && $num_smilies >= $config['max_smilies_inline'])
+		if ($mode == 'inline' && $num_smilies >= $max_smilies_inline)
 		{
 			$template->assign_vars(array(
 				'S_SHOW_EMOTICON_LINK' 	=> true,
@@ -548,7 +547,7 @@ function user_notification($mode, $subject, $forum_id, $topic_id, $post_id)
 	}
 }
 
-// Format text to be displayed - from viewtopic.php
+// Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
 function format_display($message, $html, $bbcode, $uid, $url, $smilies, $sig)
 {
 	global $auth, $forum_id, $config, $censors, $user;
@@ -651,8 +650,73 @@ function submit_poll($topic_id, $mode, $poll)
 	}
 }
 	
+// Submit Attachment
+function submit_attachment($post_id, $topic_id, $user_id, $mode, $attachment_data)
+{
+	global $db, $config, $auth;
+
+	// Insert Attachment ?
+	if ((!empty($post_id)) && ($mode == 'post' || $mode == 'reply' || $mode == 'edit'))
+	{
+		for ($i = 0; $i < count($attachment_data['attach_id']); $i++)
+		{
+			if ($attachment_data['attach_id'][$i] != '-1')
+			{
+				// update entry in db if attachment already stored in db and filespace
+				$attach_sql = array(
+					'comment' => trim($attachment_data['comment'][$i])
+				);
+			
+				$sql = 'UPDATE ' . ATTACHMENTS_DESC_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . ' WHERE attach_id = ' . $attachment_data['attach_id'][$i];
+				$db->sql_query($sql);
+			}
+			else
+			{
+				// insert attachment into db 
+				$attach_sql = array(
+					'physical_filename' => $attachment_data['physical_filename'][$i],
+					'real_filename' => $attachment_data['real_filename'][$i],
+					'comment' => trim($attachment_data['comment'][$i]),
+					'extension' => $attachment_data['extension'][$i],
+					'mimetype' => $attachment_data['mimetype'][$i],
+					'filesize' => $attachment_data['filesize'][$i],
+					'filetime' => $attachment_data['filetime'][$i],
+					'thumbnail' => $attachment_data['thumbnail'][$i]
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_DESC_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+
+				$attach_sql = array(
+					'attach_id' => $db->sql_nextid(),
+					'post_id' => $post_id,
+					'privmsgs_id' => 0,
+					'user_id_from' => $user_id,
+					'user_id_to' => 0
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+			}
+		}
+
+		if (count($attachment_data['attach_id']) > 0)
+		{
+			$sql = "UPDATE " . POSTS_TABLE . "
+				SET post_attachment = 1
+				WHERE post_id = " . $post_id;
+			$db->sql_query($sql);
+
+			$sql = "UPDATE " . TOPICS_TABLE . "
+				SET topic_attachment = 1
+				WHERE topic_id = " . $topic_id;
+			$db->sql_query($sql);
+		}
+	}
+}
+
 // Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data)
+function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template;
 
@@ -673,8 +737,9 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			'topic_type'				=> $topic_type,
 			'topic_approved'			=> (($post_data['enable_moderate']) && !$auth->acl_gets('f_ignorequeue', 'm_', 'a_', $post_data['forum_id'])) ? 0 : 1, 
 			'icon_id'					=> $post_data['icon_id'],
+			'topic_attachment'			=> (sizeof($attachment_data['physical_filename'])) ? 1 : 0,
 			'topic_poster'				=> intval($user->data['user_id']), 
-			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username'])), 
+			'topic_first_poster_name'	=> ($username != '') ? stripslashes($username) : (($user->data['user_id'] == ANONYMOUS) ? '' : stripslashes($user->data['username']))
 		);
 
 		if (!empty($poll['poll_options']))
@@ -682,9 +747,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			$topic_sql = array_merge($topic_sql, array(
 				'poll_title'			=> stripslashes($poll['poll_title']),
 				'poll_start'			=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
-				'poll_length'			=> $poll['poll_length'] * 3600
-			));
+				'poll_length'			=> $poll['poll_length'] * 3600)
+			);
 		}
+
 		$sql = ($mode == 'post') ? 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $topic_sql) : 'UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_sql) . ' WHERE topic_id = ' . $post_data['topic_id'];
 		$db->sql_query($sql);
 
@@ -728,6 +794,13 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	if (!empty($poll['poll_options']))
 	{
 		submit_poll($post_data['topic_id'], $mode, $poll);
+	}
+
+	// Attachments
+	if (!empty($attachment_data['physical_filename']))
+	{
+		$poster_id = ($mode == 'edit') ? $post_data['poster_id'] : intval($user->data['user_id']);
+		submit_attachment($post_data['post_id'], $post_data['topic_id'], $poster_id, $mode, $attachment_data);
 	}
 
 	// Fulltext parse
@@ -818,7 +891,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
 	markread($mark_mode, $post_data['forum_id'], $post_data['topic_id'], $post_data['post_id']);
 
-	$db->sql_transaction('commit');
+//	$db->sql_transaction('commit');
 
 	// Send Notifications
 	if (($mode != 'edit') && ($mode != 'delete'))
@@ -912,6 +985,9 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 		$user_update_sql .= 'user_posts = user_posts - 1';
 	}
 
+	// Delete Attachment
+	delete_attachment($post_id);
+
 	// TODO: delete common words... maybe just call search_tidy ?
 //	$search->del_words($post_id);
 
@@ -991,6 +1067,680 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 	trigger_error($message);
 
 	return;
+}
+
+// Delete Attachment
+function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = -1, $user_id = -1)
+{
+	global $db;
+
+	// Generate Array, if it's not an array
+	if ( ($post_id_array == -1) && ($attach_id_array == -1) && ($page == -1) )
+	{
+		return;
+	}
+
+	if ( ($post_id_array == -1) && ($attach_id_array != -1) )
+	{
+		$post_id_array = array();
+
+		if (!is_array($attach_id_array))
+		{
+			if (strstr($attach_id_array, ', '))
+			{
+				$attach_id_array = explode(', ', $attach_id_array);
+			}
+			else if (strstr($attach_id_array, ','))
+			{
+				$attach_id_array = explode(',', $attach_id_array);
+			}
+			else
+			{
+				$attach_id = intval($attach_id_array);
+				$attach_id_array = array();
+				$attach_id_array[] = $attach_id;
+			}
+		}
+	
+		// Get the post_ids to fill the array
+		$p_id = ($page == 'privmsgs') ? 'privmsgs_id' : 'post_id';
+
+		$sql = "SELECT " . $p_id . " 
+			FROM " . ATTACHMENTS_TABLE . " 
+			WHERE attach_id IN (" . implode(', ', $attach_id_array) . ")
+			GROUP BY " . $p_id;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_id_array[] = intval($row[$p_id]);
+		}
+		$db->sql_freeresult($result);
+		
+		if (count($post_id_array) == 0)
+		{
+			return;
+		}
+	}
+		
+	if (!is_array($post_id_array))
+	{
+		if (trim($post_id_array) == '')
+		{
+			return;
+		}
+
+		if (strstr($post_id_array, ', '))
+		{
+			$post_id_array = explode(', ', $post_id_array);
+		}
+		else if (strstr($post_id_array, ','))
+		{
+			$post_id_array = explode(',', $post_id_array);
+		}
+		else
+		{
+			$post_id = intval($post_id_array);
+
+			$post_id_array = array();
+			$post_id_array[] = $post_id;
+		}
+	}
+		
+	if (count($post_id_array) == 0)
+	{
+		return;
+	}
+
+	// First of all, determine the post id and attach_id
+	if ($attach_id_array == -1)
+	{
+		$attach_id_array = array();
+
+		// Get the attach_ids to fill the array
+		$whereclause = ($page == 'privmsgs') ? 'WHERE privmsgs_id IN (' . implode(', ', $post_id_array) . ')' : 'WHERE post_id IN (' . implode(', ', $post_id_array) . ')';
+			
+		$sql = "SELECT attach_id 
+			FROM " . ATTACHMENTS_TABLE . " " . 
+			$whereclause . " 
+			GROUP BY attach_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$attach_id_array[] = intval($row['attach_id']);
+		}
+		$db->sql_freeresult($result);
+		
+		if (count($attach_id_array) == 0)
+		{
+			return;
+		}
+	}
+	
+	if (!is_array($attach_id_array))
+	{
+		if (strstr($attach_id_array, ', '))
+		{
+			$attach_id_array = explode(', ', $attach_id_array);
+		}
+		else if (strstr($attach_id_array, ','))
+		{
+			$attach_id_array = explode(',', $attach_id_array);
+		}
+		else
+		{
+			$attach_id = intval($attach_id_array);
+
+			$attach_id_array = array();
+			$attach_id_array[] = $attach_id;
+		}
+	}
+
+	if (count($attach_id_array) == 0)
+	{
+		return;
+	}
+
+	if ($page == 'privmsgs')
+	{
+		$sql_id = 'privmsgs_id';
+		if ($user_id != -1)
+		{
+			$post_id_array_2 = array();
+
+			$sql = "SELECT privmsgs_type, privmsgs_to_userid, privmsgs_from_userid
+				FROM " . PRIVMSGS_TABLE . "
+				WHERE privmsgs_id IN (" . implode(', ', $post_id_array) . ")";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				switch (intval($row['privmsgs_type']))
+				{
+					case PRIVMSGS_READ_MAIL:
+					case PRIVMSGS_NEW_MAIL:
+					case PRIVMSGS_UNREAD_MAIL:
+						if ($row['privmsgs_to_userid'] == $user_id)
+						{
+							$post_id_array_2[] = $privmsgs_id;
+						}
+						break;
+					case PRIVMSGS_SENT_MAIL:
+						if ($row['privmsgs_from_userid'] == $user_id)
+						{
+							$post_id_array_2[] = $privmsgs_id;
+						}
+						break;
+					case PRIVMSGS_SAVED_OUT_MAIL:
+						if ($row['privmsgs_from_userid'] == $user_id)
+						{
+							$post_id_array_2[] = $privmsgs_id;
+						}
+						break;
+					case PRIVMSGS_SAVED_IN_MAIL:
+						if ($row['privmsgs_to_userid'] == $user_id)
+						{
+							$post_id_array_2[] = $privmsgs_id;
+						}
+						break;
+				}
+			}
+			$db->sql_freeresult($result);
+			$post_id_array = $post_id_array_2;
+		}
+	}
+	else
+	{
+		$sql_id = 'post_id';
+	}
+
+	$sql = "DELETE FROM " . ATTACHMENTS_TABLE . " 
+		WHERE attach_id IN (" . implode(', ', $attach_id_array) . ") 
+			AND " . $sql_id . " IN (" . implode(', ', $post_id_array) . ")";
+	$db->sql_query($sql);
+	
+	foreach ($attach_id_array as $attach_id)
+	{
+		$sql = "SELECT attach_id 
+			FROM " . ATTACHMENTS_TABLE . " 
+			WHERE attach_id = " . $attach_id;
+		$select_result = $db->sql_query($sql);			
+
+		if (!is_array($db->sql_fetchrow($select_result)))
+		{
+			$sql = "SELECT attach_id, physical_filename, thumbnail
+				FROM " . ATTACHMENTS_DESC_TABLE . "
+				WHERE attach_id = " . $attach_id;
+			$result = $db->sql_query($sql);	
+		
+			// delete attachments
+			while ($row = $db->sql_fetchrow($result))
+			{
+				phpbb_unlink($row['physical_filename']);
+				if (intval($row['thumbnail']) == 1)
+				{
+					phpbb_unlink($row['physical_filename'], 'thumbnail');
+				}
+					
+				$sql = "DELETE FROM " . ATTACHMENTS_DESC_TABLE . "
+					WHERE attach_id = " . $row['attach_id'];
+				$db->sql_query($sql);
+			}
+			$db->sql_freeresult($result);
+		}
+		$db->sql_freeresult($select_result);
+	}
+	
+	// Now Sync the Topic/PM
+	if ($page == 'privmsgs')
+	{
+		foreach ($post_id_array as $privmsgs_id)
+		{
+			$sql = "SELECT attach_id 
+				FROM " . ATTACHMENTS_TABLE . " 
+				WHERE privmsgs_id = " . $privmsgs_id;
+			$select_result = $db->sql_query($sql);
+
+			if (!is_array($db->sql_fetchrow($select_result)))
+			{
+				$sql = "UPDATE " . PRIVMSGS_TABLE . " 
+					SET privmsgs_attachment = 0 
+					WHERE privmsgs_id = " . $privmsgs_id;
+				$db->sql_query($sql);
+			}
+			$db->sql_freeresult($select_result);
+		}
+	}
+	else
+	{
+		$sql = "SELECT topic_id 
+			FROM " . POSTS_TABLE . " 
+			WHERE post_id IN (" . implode(', ', $post_id_array) . ") 
+			GROUP BY topic_id";
+		$result = $db->sql_query($sql);
+	
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_id = intval($row['topic_id']);
+
+			$sql = "SELECT post_id 
+				FROM " . POSTS_TABLE . " 
+				WHERE topic_id = " . $topic_id . "
+				GROUP BY post_id";
+			$result2 = $db->sql_query($sql);		
+			
+			$post_ids = array();
+
+			while ($post_row = $db->sql_fetchrow($result2))
+			{
+				$post_ids[] = intval($post_row['post_id']);
+			}
+			$db->sql_freeresult($result2);
+
+			if (count($post_ids))
+			{
+				$post_id_sql = implode(', ', $post_ids);
+	
+				$sql = "SELECT attach_id 
+					FROM " . ATTACHMENTS_TABLE . " 
+					WHERE post_id IN (" . $post_id_sql . ") ";
+				$select_result = $db->sql_query_limit($sql, 1);
+				$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
+				$db->sql_freeresult($select_result);
+
+				$sql = "UPDATE " . TOPICS_TABLE . " 
+					SET topic_attachment = " . $set_id . " 
+					WHERE topic_id = " . $topic_id;
+				$db->sql_query($sql);
+				
+				foreach ($post_ids as $post_id)
+				{
+					$sql = "SELECT attach_id 
+						FROM " . ATTACHMENTS_TABLE . " 
+						WHERE post_id = " . $post_id;
+					$select_result = $db->sql_query_limit($sql, 1);
+					$set_id = ( !is_array($db->sql_fetchrow($select_result))) ? 0 : 1;
+					$db->sql_freeresult($select_result);
+		
+					$sql = "UPDATE " . POSTS_TABLE . " 
+						SET post_attachment = " . $set_id . " 
+						WHERE post_id = " . $post_id;
+					$db->sql_query($sql);
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+}
+
+// Upload Attachment - filedata is generated here
+function upload_attachment($filename)
+{
+	global $_POST, $_FILES, $auth, $user, $config, $db;
+
+	$filedata = array();
+	$filedata['error'] = false;
+	$filedata['err_msg'] = '';
+	$filedata['post_attach'] = ($filename != '') ? true : false;
+
+	if (!$filedata['post_attach'])
+	{
+		return ($filedata);
+	}
+
+	$r_file = $filename;
+	$file = $_FILES['fileupload']['tmp_name'];
+	$filedata['mimetype'] = $_FILES['fileupload']['type'];
+		
+	// Opera add the name to the mime type
+	$filedata['mimetype'] = ( strstr($filedata['mimetype'], '; name') ) ? str_replace(strstr($filedata['mimetype'], '; name'), '', $filedata['mimetype']) : $filedata['mimetype'];
+	$filedata['extension'] = strrchr(strtolower($filename), '.');
+	$filedata['extension'][0] = ' ';
+	$filedata['extension'] = strtolower(trim($filedata['extension']));
+	$filedata['extension'] = (is_array($filedata['extension'])) ? '' : $filedata['extension'];
+	
+	$filedata['filesize'] = (!@filesize($file)) ? intval($_FILES['size']) : @filesize($file);
+
+	$sql = "SELECT g.allow_group, g.max_filesize, g.cat_id
+		FROM " . EXTENSION_GROUPS_TABLE . " g, " . EXTENSIONS_TABLE . " e
+		WHERE (g.group_id = e.group_id) AND (e.extension = '" . $filedata['extension'] . "')";
+	$result = $db->sql_query_limit($sql, 1);
+
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$allowed_filesize = ( intval($row['max_filesize']) != 0 ) ? intval($row['max_filesize']) : intval($config['max_filesize']);
+	$cat_id = intval($row['cat_id']);
+
+	// check Filename
+	if ( preg_match("/[\\/:*?\"<>|]/i", $filename) )
+	{ 
+		$filedata['error'] = true;
+		$filedata['err_msg'] = sprintf($user->lang['INVALID_FILENAME'], $filename);
+		$filedata['post_attach'] = false;
+		return ($filedata);
+	}
+
+	// check php upload-size
+	if ( ($file == 'none') ) 
+	{
+		$filedata['error'] = true;
+		$filedata['err_msg'] = (@ini_get('upload_max_filesize') == '') ? $user->lang['ATTACHMENT_PHP_SIZE_NA'] : sprintf($user->lang['ATTACHMENT_PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+		$filedata['post_attach'] = false;
+		return ($filedata);
+	}
+
+	// Check Extension
+	if (intval($row['allow_group']) == 0)
+	{
+		$filedata['error'] = true;
+		$filedata['err_msg'] = sprintf($user->lang['DISALLOWED_EXTENSION'], $filedata['extension']);
+		$filedata['post_attach'] = false;
+		return ($filedata);
+	} 
+/*
+	// Check Image Size, if it is an image
+	if ( (!$acl->gets('m_', 'a_')) && ($cat_id == IMAGE_CAT) )
+	{
+		list($width, $height) = image_getdimension($file);
+
+		if ( ($width != 0) && ($height != 0) && (intval($attach_config['img_max_width']) != 0) && (intval($attach_config['img_max_height']) != 0) )
+		{
+			if ( ($width > intval($attach_config['img_max_width'])) || ($height > intval($attach_config['img_max_height'])) )
+			{
+				$error = TRUE;
+				if(!empty($error_msg))
+				{
+					$error_msg .= '<br />';
+				}
+				$error_msg .= sprintf($lang['Error_imagesize'], intval($attach_config['img_max_width']), intval($attach_config['img_max_height']));
+			}
+		}
+	}
+*/
+	// check Filesize 
+	if ( ($allowed_filesize != 0) && ($filedata['filesize'] > $allowed_filesize) && (!$acl->gets('m_', 'a_')) )
+	{
+		$size_lang = ($allowed_filesize >= 1048576) ? $user->lang['MB'] : ( ($allowed_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+
+		if ($allowed_filesize >= 1048576)
+		{
+			$allowed_filesize = round($allowed_filesize / 1048576 * 100) / 100;
+		}
+		else if($allowed_filesize >= 1024)
+		{
+			$allowed_filesize = round($allowed_filesize / 1024 * 100) / 100;
+		}
+			
+		$filedata['error'] = true;
+		$filedata['err_msg'] = sprintf($user->lang['ATTACHMENT_TOO_BIG'], $allowed_filesize, $size_lang);
+		$filedata['post_attach'] = false;
+		return ($filedata);
+	}
+
+	// Check our complete quota
+	if ($config['attachment_quota'] != 0)
+	{
+		if ($config['total_filesize'] + $filedata['filesize'] > $config['attachment_quota'])
+		{
+			$filedata['error'] = true;
+			$filedata['err_msg'] = $user->lang['ATTACH_QUOTA_REACHED'];
+			$filedata['post_attach'] = false;
+			return ($filedata);
+		}
+	}
+
+/*
+	// If we are at Private Messaging, check our PM Quota
+	if ($this->page == PAGE_PRIVMSGS)
+	{
+		$to_user = ( isset($_POST['username']) ) ? $_POST['username'] : '';
+				
+		if (intval($config['pm_filesize_limit']) != 0)
+		{
+			$total_filesize = get_total_attach_pm_filesize('from_user', $user->data['user_id']);
+
+			if ( ($total_filesize + $filedata['filesize'] > intval($config['pm_filesize_limit'])) ) 
+			{
+				$error = TRUE;
+				if(!empty($error_msg))
+				{
+					$error_msg .= '<br />';
+				}
+				$error_msg .= $lang['Attach_quota_sender_pm_reached'];
+			}
+		}
+
+		// Check Receivers PM Quota
+		if ((!empty($to_user)) && ($userdata['user_level'] != ADMIN))
+		{
+			$sql = "SELECT user_id
+				FROM " . USERS_TABLE . "
+				WHERE username = '" . $to_user . "'";
+			$result = $db->sql_query($sql);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$user_id = intval($row['user_id']);
+			$u_data = get_userdata($user_id);
+			$this->get_quota_limits($u_data, $user_id);
+
+			if (intval($attach_config['pm_filesize_limit']) != 0)
+			{
+				$total_filesize = get_total_attach_pm_filesize('to_user', $user_id);
+						
+				if ($total_filesize + $this->filesize > intval($attach_config['pm_filesize_limit'])) 
+				{
+					$error = TRUE;
+					if(!empty($error_msg))
+					{
+						$error_msg .= '<br />';
+					}
+					$error_msg .= sprintf($lang['Attach_quota_receiver_pm_reached'], $to_user);
+				}
+			}
+		}
+	}
+*/			
+	$filedata['thumbnail'] = 0;
+				
+	// Prepare Values
+	$filedata['filetime'] = time(); 
+	$filedata['filename'] = stripslashes($r_file);
+
+	$filedata['destination_filename'] = strtolower($filedata['filename']);
+	$filedata['destination_filename'] = $user->data['user_id'] . '_' . $filedata['filetime'] . '.' . $filedata['extension'];
+				
+	$filedata['filename'] = str_replace("'", "\'", $filedata['filename']);
+			
+/*
+	// Do we have to create a thumbnail ?
+	if ( ($cat_id == IMAGE_CAT) && ($config['img_create_thumbnail']) )
+	{
+		$this->thumbnail = 1;
+	}
+*/
+
+	// Upload Attachment
+	if (!$config['use_ftp_upload'])
+	{
+		// Descide the Upload method
+		if ( @ini_get('open_basedir') )
+		{
+			$upload_mode = 'move';
+		}
+		else if ( @ini_get('safe_mode') )
+		{
+			$upload_mode = 'move';
+		}
+		else
+		{
+			$upload_mode = 'copy';
+		}
+	}
+	else
+	{
+		$upload_mode = 'ftp';
+	}
+
+	// Ok, upload the File
+	$result = move_uploaded_attachment($upload_mode, $file, $filedata);
+
+	if ($result != '')
+	{
+		$filedata['error'] = true;
+		$filedata['err_msg'] = $result;
+		$filedata['post_attach'] = false;
+	}
+	return ($filedata);
+}
+
+// Move/Upload File - could be used for Avatars too ?
+function move_uploaded_attachment($upload_mode, $source_filename, &$filedata)
+{
+	global $user, $config;
+
+	$destination_filename = $filedata['destination_filename'];
+	$thumbnail = (isset($filedata['thumbnail'])) ? $filedata['thumbnail'] : false;
+
+	switch ($upload_mode)
+	{
+		case 'copy':
+
+			if ( !@copy($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			{
+				if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+				{
+					return (sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename));
+				}
+			} 
+			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			break;
+
+		case 'move':
+			if ( !@move_uploaded_file($source_filename, $config['upload_dir'] . '/' . $destination_filename) ) 
+			{ 
+				if ( !@copy($source_file, $config['upload_dir'] . '/' . $destination_filename) ) 
+				{
+					return (sprintf($user->lang['GENERAL_UPLOAD_ERROR'], './' . $config['upload_dir'] . '/' . $destination_filename));
+				}
+			} 
+			@chmod($config['upload_dir'] . '/' . $destination_filename, 0666);
+			break;
+
+		case 'ftp':
+/*
+			$conn_id = init_ftp();
+
+			// Binary or Ascii ?
+			$mode = FTP_BINARY;
+			if ( (preg_match("/text/i", $filedata['mimetype'])) || (preg_match("/html/i", $filedata['mimetype'])) )
+			{
+				$mode = FTP_ASCII;
+			}
+
+			$res = @ftp_put($conn_id, $destination_filename, $source_filename, $mode);
+				
+			if (!$res)
+			{
+				@ftp_quit($conn_id);
+				return (sprintf($user->lang['Ftp_error_upload'], $config['ftp_path']));
+			}
+
+			@ftp_site($conn_id, 'CHMOD 0644 ' . $destination_filename);
+			@ftp_quit($conn_id);
+			break;
+*/
+	}
+
+	$filedata['thumbnail'] = 0;
+/*	if ($filedata['thumbnail'])
+	{
+		if ($upload_mode == 'ftp')
+		{
+			$source = $source_filename;
+			$destination = 'thumbs/t_' . $destination_filename;
+		}
+		else
+		{
+			$source = $config['upload_dir'] . '/' . $destination_filename;
+			$destination = phpbb_realpath($config['upload_dir']);
+			$destination .= '/thumbs/t_' . $destination_filename;
+		}
+
+		if (!create_thumbnail($source, $destination, $filedata['mimetype']))
+		{
+			if (!create_thumbnail($source_filename, $destination_filename, $filedata['mimetype']))
+			{
+				$filedata['thumbnail'] = 0;
+			}
+		}
+	}*/
+	return ('');
+}
+
+// Deletes an Attachment
+function phpbb_unlink($filename, $mode = false)
+{
+	global $config, $user;
+
+	$config['use_ftp_upload'] = 0;
+
+	if (!$config['use_ftp_upload'])
+	{
+		if ($mode == 'thumbnail')
+		{
+			$filename = $config['upload_dir'] . '/thumbs/t_' . $filename;
+		}
+		else
+		{
+			$filename = $config['upload_dir'] . '/' . $filename;
+		}
+
+		$deleted = @unlink($filename);
+
+		if (@file_exists($filename))
+		{
+			$filesys = eregi_replace('/','\\', $filename);
+			$deleted = @system("del $filesys");
+
+			if (@file_exists($filename)) 
+			{
+				$deleted = @chmod($filename, 0777);
+				$deleted = @unlink($filename);
+				$deleted = @system("del $filename");
+			}
+		}
+	}
+	else
+	{
+/*		$conn_id = attach_init_ftp($mode);
+
+		if ($mode == MODE_THUMBNAIL)
+		{
+			$filename = 't_' . $filename;
+		}
+		
+		$res = @ftp_delete($conn_id, $filename);
+		if (!$res)
+		{
+			if (ATTACH_DEBUG)
+			{
+				$add = ( $mode == MODE_THUMBNAIL ) ? ('/' . THUMB_DIR) : ''; 
+				message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));
+			}
+
+			return ($deleted);
+		}
+
+		@ftp_quit($conn_id);
+
+		$deleted = TRUE;*/
+	}
+
+	return ($deleted);
 }
 
 ?>

@@ -391,6 +391,9 @@ $lang = array(
 	'ADD_FILE' => 'Add File',
 	'FILENAME' => 'Filename',
 	'FILE_COMMENT' => 'File comment',
+	'POSTED_ATTACHMENTS' => 'Posted attachments',
+	'UPDATE_COMMENT' => 'Update comment',
+	'DELETE_FILE' => 'Delete File',
 	'DISABLE_HTML' => 'Disable HTML',
 	'DISABLE_BBCODE' => 'Disable BBCode',
 	'DISABLE_SMILIES' => 'Disable Smilies',
@@ -624,6 +627,19 @@ $lang = array(
 	'No_email_match' => 'The email address you supplied does not match the one listed for that username',
 	'New_password_activation' => 'New password activation',
 	'Password_activated' => 'Your account has been re-activated. To logon please use the password supplied in the email you received',
+
+
+	'GENERAL_UPLOAD_ERROR' => 'Upload Error: Could not upload Attachment to %s',
+	'TOO_MANY_ATTACHMENTS' => 'Attachment cannot be added, since the max. number of %d Attachments in this post was achieved',
+	'INVALID_FILENAME' => '%s is an invalid filename',
+	'ATTACHMENT_PHP_SIZE_NA' => 'The Attachment is too big.<br />Couldn\'t get the maximum Size defined in PHP.<br />The Attachment Mod is unable to determine the maximum Upload Size defined in the php.ini file.',
+	'ATTACHMENT_PHP_SIZE_OVERRUN' => 'The Attachment is too big.<br />Maximum Upload Size: %d MB.<br />Please note that this Size is defined in php.ini, this means it\'s set by PHP and the Attachment Mod can not override this value.',
+	'DISALLOWED_EXTENSION' => 'The Extension %s is not allowed',
+	'BYTES' => 'Bytes',
+	'KB' => 'KB',
+	'MB' => 'MB',
+	'ATTACHMENT_TOO_BIG' => 'The Attachment is too big.<br />Max Size: %1d %2s',
+	'ATTACH_QUOTA_REACHED' => 'Sorry, but the maximum filesize for all Attachments is reached. Please contact the Board Administrator if you have questions.',
 
 
 	'FIND_USERNAME'			=> 'Find a member',

@@ -224,6 +224,9 @@ switch ($mode)
 		$namechange_yes = ($new['allow_namechange']) ? 'checked="checked"' : '';
 		$namechange_no = (!$new['allow_namechange']) ? 'checked="checked"' : '';
 
+		$attachments_yes = ($new['allow_attachments']) ? 'checked="checked"' : '';
+		$attachments_no = (!$new['allow_attachments']) ? 'checked="checked"' : '';
+
 ?>
 	<tr>
 		<td class="row1" width="50%"><?php echo $user->lang['Default_style']; ?></td>
@@ -264,6 +267,10 @@ switch ($mode)
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_name_change']; ?>: </td>
 		<td class="row2"><input type="radio" name="allow_namechange" value="1" <?php echo $namechange_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" <?php echo $namechange_no; ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><?php echo $user->lang['ALLOW_ATTACHMENTS']; ?>: </td>
+		<td class="row2"><input type="radio" name="allow_attachments" value="1" <?php echo $attachments_yes; ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0" <?php echo $attachments_no; ?> /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
 		<td class="row1"><?php echo $user->lang['Allow_HTML']; ?>: </td>

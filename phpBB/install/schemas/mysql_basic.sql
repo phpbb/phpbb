@@ -20,6 +20,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode','1')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange','0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify','1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local','0');
@@ -81,6 +82,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('lastread', '432000');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '262144');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir', 'files', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
@@ -346,3 +351,51 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1
 # -- reasons
 INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 1, 0, 'warez', 'The reported post contains links to pirated or illegal software.' );
 INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 2, 1, 'other', 'The reported post does not fit into any other category, please use the description field.' );
+
+# -- forbidden_extensions
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (1,'php');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (2,'php3');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (3,'php4');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (4,'phtml');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (5,'pl');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (6,'asp');
+INSERT INTO phpbb_forbidden_extensions (extension_id, extension) VALUES (7,'cgi');
+
+# -- extension_groups
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (1,'Images',1,1,1,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (2,'Archives',0,1,1,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (3,'Plain Text',0,0,1,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (4,'Documents',0,0,1,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (5,'Real Media',0,0,2,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (6,'Streams',2,0,1,0);
+INSERT INTO phpbb_extension_groups (group_id, group_name, cat_id, allow_group, download_mode, max_filesize) VALUES (7,'Flash Files',3,0,1,0);
+
+# -- extensions
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (1, 1,'gif', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (2, 1,'png', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (3, 1,'jpeg', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (4, 1,'jpg', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (5, 1,'tif', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (6, 1,'tga', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (7, 2,'gtar', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (8, 2,'gz', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (9, 2,'tar', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (10, 2,'zip', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (11, 2,'rar', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (12, 2,'ace', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (13, 3,'txt', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (14, 3,'c', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (15, 3,'h', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (16, 3,'cpp', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (17, 3,'hpp', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (18, 3,'diz', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (19, 4,'xls', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (20, 4,'doc', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (21, 4,'dot', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (22, 4,'pdf', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (23, 4,'ai', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (24, 4,'ps', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (25, 4,'ppt', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (26, 5,'rm', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (27, 6,'wma', '');
+INSERT INTO phpbb_extensions (extension_id, group_id, extension, comment) VALUES (28, 7,'swf', '');

@@ -37,7 +37,7 @@ function checkForm()
 </script>
 <script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
 
-<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)">
+<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)" {S_FORM_ENCTYPE}>
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td colspan="2" align="left" valign="bottom"><a class="titles" href="{U_VIEW_FORUM}" title="{FORUM_DESC}">{FORUM_NAME}</a><!-- IF TOPIC_TITLE --> :: <a class="titles" href="{U_VIEWTOPIC}">{TOPIC_TITLE}</a><!-- ENDIF --><br /><b class="gensmall">{L_MODERATORS}: {MODERATORS}</b><br /><br /><b class="gensmall">{LOGGED_IN_USER_LIST}</b></td>
@@ -210,41 +210,11 @@ function checkForm()
 			<!-- ENDIF -->
 		</table></td>
 	</tr>
+	<!-- IF S_SHOW_ATTACH_BOX -->
+	<!-- INCLUDE posting_attach_body.html -->
+	<!-- ENDIF -->
 	<!-- IF S_SHOW_POLL_BOX -->
 	<!-- INCLUDE posting_poll_body.html -->
-	<!-- ENDIF -->
-	<!-- IF S_SHOW_ATTACH_BOX -->
-	<tr>
-		<th colspan="2">{L_ADD_ATTACHMENT}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
-	</tr>
-
-	<tr>
-		<td class="row1"><span class="gen"><b>{L_FILENAME}</b></span></td>
-	    <td class="row2"><input class="post" type="file" name="fileupload" size="50" value="{FILENAME}"></td>
-	</tr>
-	<tr>
-		<td class="row1"><span class="gen"><b>{L_FILE_COMMENT}</b></span></td>
-	    <td class="row2"><input class="post" type="text" name="filecomment" size="40" maxlength="60" value="{FILE_COMMENT}" />&nbsp;<input class="liteoption" type="submit" name="add_attachment" value="{L_ADD_FILE}" /></td>
-	</tr>
-	<!-- IF S_HAS_ATTACHMENTS -->
-	<tr>
-		<th colspan="2">{L_POSTED_ATTACHMENTS}</th>
-	</tr>
-	<!-- BEGIN attach_row -->
-	<tr>
-		<td class="row1"><span class="gen"><b>{L_FILE_NAME}</b></span></td>
-		<td class="row2"><span class="gen"><a class="gen" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILE_NAME}</a></span></td>
-		</tr>
-    	<tr>
-			<td class="row1"><span class="gen"><b>{L_FILE_COMMENT}</b></span></td>
-			<td class="row2"><input type="text" name="comment_list[]" size="40" class="post" maxlength="60" value="{attach_row.FILE_COMMENT}" /> &nbsp;<input type="submit" name="edit_comment[{attach_row.ATTACH_FILENAME}]" value="{L_UPDATE_COMMENT}" class="liteoption" />	&nbsp;<input type="submit" name="del_attachment[{attach_row.ATTACH_FILENAME}]" value="{L_DELETE_ATTACHMENT}" class="liteoption" /></td>
-		</tr>
-		{attach_row.S_HIDDEN}
-	<!-- END attach_row -->
-	<!-- ENDIF -->
 	<!-- ENDIF -->
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="liteoption" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="mainoption" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" /><!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="liteoption" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->&nbsp; <input class="liteoption" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" /></td>

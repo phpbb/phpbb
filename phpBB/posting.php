@@ -80,7 +80,9 @@ $cancel = (isset($_POST['cancel'])) ? true : false;
 $confirm = (isset($_POST['confirm'])) ? true : false;
 $delete = (isset($_POST['delete'])) ? true : false;
 
-if (($delete) && (!$preview) && ($submit))
+$refresh = isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']);
+
+if (($delete) && (!$preview) && (!$refresh) && ($submit))
 {
 	$mode = 'delete';
 }
@@ -103,7 +105,7 @@ $forum_fields = array('forum_name' => 's', 'parent_id' => 'i', 'forum_parents' =
 
 $topic_fields = array('topic_status' => 'i', 'topic_first_post_id' => 'i', 'topic_last_post_id' => 'i', 'topic_type' => 'i', 'topic_title' => 's', 'poll_last_vote' => 'i', 'poll_start' => 'i', 'poll_title' => 's', 'poll_length' => 'i');
 
-$post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i');
+$post_fields = array('post_time' => 'i', 'poster_id' => 'i', 'post_username' => 's', 'post_text' => 's', 'post_subject' => 's', 'post_checksum' => 's', 'post_attachment' => 'i', 'bbcode_uid' => 's', 'enable_magic_url' => 'i', 'enable_sig' => 'i', 'enable_smilies' => 'i', 'enable_bbcode' => 'i');
 
 switch ($mode)
 {
@@ -247,6 +249,46 @@ if ($sql != '')
 		$db->sql_freeresult($result);
 	}
 
+	$attachment_data = array();
+
+	$attachment_data['filecomment'] = ( isset($_POST['filecomment']) ) ? trim( strip_tags($_POST['filecomment'])) : '';
+	$attachment_data['filename'] = ( $_FILES['fileupload']['name'] != 'none' ) ? trim($_FILES['fileupload']['name']) : '';
+
+	// Get Attachment Data
+	$attachment_data['physical_filename'] = ( isset($_POST['attachment_list']) ) ? $_POST['attachment_list'] : array();
+	$attachment_data['comment'] = ( isset($_POST['comment_list']) ) ? $_POST['comment_list'] : array();
+	$attachment_data['real_filename'] = ( isset($_POST['filename_list']) ) ? $_POST['filename_list'] : array();
+	$attachment_data['extension'] = ( isset($_POST['extension_list']) ) ? $_POST['extension_list'] : array();
+	$attachment_data['mimetype'] = ( isset($_POST['mimetype_list']) ) ? $_POST['mimetype_list'] : array();
+	$attachment_data['filesize'] = ( isset($_POST['filesize_list']) ) ? $_POST['filesize_list'] : array();
+	$attachment_data['filetime'] = ( isset($_POST['filetime_list']) ) ? $_POST['filetime_list'] : array();
+	$attachment_data['attach_id'] = ( isset($_POST['attach_id_list']) ) ? $_POST['attach_id_list'] : array();
+	$attachment_data['thumbnail'] = ( isset($_POST['attach_thumbnail_list']) ) ? $_POST['attach_thumbnail_list'] : array();
+	
+	if (($post_attachment) && (!$submit) && (!$refresh) && (!$preview) && ($mode == 'edit'))
+	{
+		$sql = "SELECT d.*
+			FROM " . ATTACHMENTS_TABLE . " a, " . ATTACHMENTS_DESC_TABLE . " d
+			WHERE a.post_id = " . $post_id . "
+				AND a.attach_id = d.attach_id
+			ORDER BY d.filetime DESC";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$attachment_data['attach_id'][] = intval($row['attach_id']);
+			$attachment_data['physical_filename'][] = trim($row['physical_filename']);
+			$attachment_data['comment'][] = trim($row['comment']);
+			$attachment_data['real_filename'][] = trim($row['real_filename']);
+			$attachment_data['extension'][] = trim($row['extension']);
+			$attachment_data['mimetype'][] = trim($row['mimetype']);
+			$attachment_data['filesize'][] = intval($row['filesize']);
+			$attachment_data['filetime'][] = intval($row['filetime']);
+			$attachment_data['thumbnail'][] = intval($row['thumbnail']);
+		}
+		$db->sql_freeresult($result);
+	}
+	
 	if (($poster_id == ANONYMOUS) || (!$poster_id))
 	{
 		$username = ($post_validate) ? trim($post_username) : '';
@@ -290,6 +332,7 @@ $perm = array(
 
 	'u_delete' => $auth->acl_get('f_delete', $forum_id),
 
+	'f_attach' => $auth->acl_get('f_attach', 'a_', $forum_id),
 	'f_news' => $auth->acl_gets('f_news', 'm_', 'a_', $forum_id),
 	'f_announce' => $auth->acl_gets('f_announce', 'm_', 'a_', $forum_id),
 	'f_sticky' => $auth->acl_gets('f_sticky', 'm_', 'a_', $forum_id),
@@ -383,7 +426,7 @@ if ($mode == 'delete')
 	trigger_error('USER_CANNOT_DELETE');
 }
 
-if (($submit) || ($preview))
+if (($submit) || ($preview) || ($refresh))
 {
 	$topic_cur_post_id	= (isset($_POST['topic_cur_post_id'])) ? intval($_POST['topic_cur_post_id']) : false;
 	$subject			= (!empty($_POST['subject'])) ? trim(htmlspecialchars(strip_tags($_POST['subject']))) : '';
@@ -440,13 +483,18 @@ if (($submit) || ($preview))
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false)) != '')
+		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
 	}
 
-	if (($mode != 'edit') && (!$preview))
+	if (($result = $message_parser->parse_attachments($mode, $post_id, $submit, $preview, $refresh, $attachment_data)) != '')
+	{
+		$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
+	}
+
+	if (($mode != 'edit') && (!$preview) && (!$refresh))
 	{
 		// Flood check
 		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
@@ -550,7 +598,7 @@ if (($submit) || ($preview))
 			'notify_set'			=> $notify_set
 		);
 		
-		submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $post_data);
+		submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attachment_data, $post_data);
 	}	
 
 	$post_text = stripslashes($message);
@@ -604,12 +652,12 @@ $poll_options_tmp = implode("\n", $poll_options);
 decode_text($poll_options_tmp);
 $poll_options = explode("\n", $poll_options_tmp);
 
-if (($mode == 'quote') && (!$preview))
+if (($mode == 'quote') && (!$preview) && (!$refresh))
 {
 	$post_text = ' [quote' . ( (empty($username)) ? ']' : '="' . addslashes(trim($username)) . '"]') . trim($post_text) . '[/quote] ';
 }
 
-if ( (($mode == 'reply') || ($mode == 'quote')) && (!$preview) )
+if ( (($mode == 'reply') || ($mode == 'quote')) && (!$preview) && (!$refresh))
 {
 	$post_subject = ( ( !preg_match('/^Re:/', $post_subject) ) ? 'Re: ' : '' ) . $post_subject;
 }
@@ -703,6 +751,7 @@ generate_forum_nav($forum_data);
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . time() . '" />';
 
+$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments']) ? '' : 'enctype="multipart/form-data"';
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
@@ -752,13 +801,14 @@ $template->assign_vars(array(
 	'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? 'checked="checked"' : '',
 	'S_TYPE_TOGGLE'			=> $topic_type_toggle,
 	'S_SAVE_ALLOWED'		=> ($perm['f_save']) ? true : false,
-	
+	'S_FORM_ENCTYPE'		=> $form_enctype,
+
 	'S_POST_ACTION' 		=> $s_action,
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
 
 // Poll entry
-if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($auth->acl_gets('m_edit', 'a_', $forum_id)) ))
+if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_post_id) && (empty($poll_last_vote)) )) && ( ($auth->acl_get('f_poll', $forum_id)) || ($perm['m_edit']) ))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX' 	=> true,
@@ -769,6 +819,60 @@ if ( ( ($mode == 'post') || ( ($mode == 'edit') && ($post_id == $topic_first_pos
 		'POLL_TITLE' 	=> $poll_title,
 		'POLL_OPTIONS'	=> (!empty($poll_options)) ? implode("\n", $poll_options) : '',
 		'POLL_LENGTH' 	=> $poll_length)
+	);
+}
+
+// Attachment entry
+if (($perm['f_attach']) || ($perm['m_edit']))
+{
+	$template->assign_vars(array(
+		'S_SHOW_ATTACH_BOX' => true)
+	);
+
+	if (count($attachment_data['physical_filename']) > 0)
+	{
+		$template->assign_vars(array(
+			'S_HAS_ATTACHMENTS' => true)
+		);
+		
+		for ($i = 0; $i < count($attachment_data['physical_filename']); $i++)
+		{
+			$attachment_data['real_filename'][$i] = stripslashes($attachment_data['real_filename'][$i]);
+
+			$hidden =  '<input type="hidden" name="attachment_list[]" value="' . $attachment_data['physical_filename'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="filename_list[]" value="' . $attachment_data['real_filename'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="extension_list[]" value="' . $attachment_data['extension'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="mimetype_list[]" value="' . $attachment_data['mimetype'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="filesize_list[]" value="' . $attachment_data['filesize'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="filetime_list[]" value="' . $attachment_data['filetime'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="attach_id_list[]" value="' . $attachment_data['attach_id'][$i] . '" />';
+			$hidden .= '<input type="hidden" name="attach_thumbnail_list[]" value="' . $attachment_data['thumbnail'][$i] . '" />';
+				
+			if ( $attachment_data['attach_id'][$i] == '-1' )
+			{
+				$download_link = $config['upload_dir'] . '/' . $attachment_data['physical_filename'][$i];
+			}
+			else
+			{
+				$download_link = $phpbb_root_path . "download." . $phpEx . "$SID?id=" . $attachment_data['attach_id'][$i];
+			}
+
+			$template->assign_block_vars('attach_row', array(
+				'FILENAME' => $attachment_data['real_filename'][$i],
+				'ATTACH_FILENAME' => $attachment_data['physical_filename'][$i],
+				'FILE_COMMENT' => stripslashes(htmlspecialchars($attachment_data['comment'][$i])),
+				'ATTACH_ID' => $attachment_data['attach_id'][$i],
+
+				'U_VIEW_ATTACHMENT' => $download_link,
+				'S_HIDDEN' => $hidden)
+			);
+		}
+	}
+
+	$template->assign_vars(array(
+		'FILE_COMMENT' => stripslashes(htmlspecialchars($attachment_data['filecomment'])),
+		'FILESIZE' => $config['max_filesize'],
+		'FILENAME' => $attachment_data['filename'])
 	);
 }
 

@@ -111,10 +111,14 @@ define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
 define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
+define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
+define('ATTACHMENTS_DESC_TABLE', $table_prefix.'attach_desc');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('DISALLOW_TABLE', $table_prefix.'disallow'); //
+define('EXTENSIONS_TABLE', $table_prefix.'extensions');
+define('EXTENSION_GROUPS_TABLE', $table_prefix.'extension_groups');
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');

@@ -6,30 +6,51 @@
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_attach_desc'
+# Table structure for table `phpbb_attachments`
+#
+CREATE TABLE phpbb_attachments (
+  attach_id INTEGER DEFAULT 0 NOT NULL,
+  post_id INTEGER DEFAULT 0 NOT NULL,
+  privmsgs_id INTEGER DEFAULT 0 NOT NULL,
+  user_id_from INTEGER NOT NULL,
+  user_id_to INTEGER NOT NULL
+); 
+
+CREATE INDEX phpbb_attachments_attach_id ON phpbb_attachments (attach_id);
+CREATE INDEX phpbb_attachments_post_id ON phpbb_attachments (post_id);
+CREATE INDEX phpbb_attachments_privmsgs_id ON phpbb_attachments (privmsgs_id);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table `phpbb_attach_desc`
 #
 CREATE TABLE phpbb_attach_desc (
-  attach_id NUMERIC NOT NULL,
-  attach_filename VARCHAR(255) DEFAULT '' NOT NULL,
+  attach_id INTEGER NOT NULL,
+  physical_filename VARCHAR(255) NOT NULL,
+  real_filename VARCHAR(255) NOT NULL,
   download_count INTEGER DEFAULT 0 NOT NULL,
-  filename VARCHAR(255) DEFAULT '' NOT NULL,
-  comment VARCHAR(60),
-  mimetype VARCHAR(60),
-  filesize INTEGER DEFAULT 0 NOT NULL,
-  filetime INTEGER DEFAULT 0 NOT NULL, 
-  PRIMARY KEY (attach_id) 
+  comment VARCHAR(255) DEFAULT '',
+  extension VARCHAR(100),
+  mimetype VARCHAR(100),
+  filesize INTEGER NOT NULL,
+  filetime INTEGER DEFAULT 0 NOT NULL,
+  thumbnail SMALLINT DEFAULT 0 NOT NULL,
+  PRIMARY KEY (attach_id)
 );
 
 CREATE GENERATOR phpbb_attach_desc_gen;
 SET GENERATOR phpbb_attach_desc_gen TO 0;
+CREATE INDEX phpbb_attach_desc_filetime ON phpbb_attach_desc (filetime);
+CREATE INDEX phpbb_attach_desc_physical_filename ON phpbb_attach_desc (physical_filename);
+CREATE INDEX phpbb_attach_desc_filesize ON phpbb_attach_desc (filesize);
 
 CREATE TRIGGER phpbb_attach_desc_trig 
-	FOR phpbb_attach_desc BEFORE INSERT  
+	FOR phpbb_attach_desc BEFORE INSERT
 	AS BEGIN 
 		IF (NEW.attach_id IS NULL) THEN 
-			NEW.attach_id = GEN_ID(phpbb_attach_desc_gen, 1)| 
+			NEW.attach_id = GEN_ID(phpbb_attach_desc_gen, 1)|
 	END;
-
 
 # --------------------------------------------------------
 #
@@ -188,6 +209,74 @@ CREATE TRIGGER phpbb_disallow_trig
 
 # --------------------------------------------------------
 #
+# Table structure for table 'phpbb_extensions'
+#
+CREATE TABLE phpbb_extensions (
+  extension_id INTEGER NOT NULL,
+  group_id INTEGER DEFAULT 0 NOT NULL,
+  extension VARCHAR(100) NOT NULL,
+  comment VARCHAR(100),
+  PRIMARY KEY (extension_id)
+);
+
+CREATE GENERATOR phpbb_extensions_gen;
+SET GENERATOR phpbb_extensions_gen TO 0;
+
+CREATE TRIGGER phpbb_extensions_trig 
+	FOR phpbb_extensions BEFORE INSERT
+	AS BEGIN 
+		IF (NEW.extension_id IS NULL) THEN 
+			NEW.extension_id = GEN_ID(phpbb_extensions_gen, 1)|
+	END;
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_extension_groups'
+#
+CREATE TABLE phpbb_extension_groups (
+  group_id INTEGER NOT NULL,
+  group_name VARCHAR(20) NOT NULL,
+  cat_id SMALLINT DEFAULT 0 NOT NULL, 
+  allow_group SMALLINT DEFAULT 0 NOT NULL,
+  download_mode SMALLINT UNSIGNED DEFAULT 1 NOT NULL,
+  max_filesize INTEGER DEFAULT 0 NOT NULL,
+  PRIMARY KEY (group_id)
+);
+
+CREATE GENERATOR phpbb_extension_groups_gen;
+SET GENERATOR phpbb_extension_groups_gen TO 0;
+
+CREATE TRIGGER phpbb_extension_groups_trig 
+	FOR phpbb_extension_groups BEFORE INSERT
+	AS BEGIN 
+		IF (NEW.group_id IS NULL) THEN 
+			NEW.group_id = GEN_ID(phpbb_extension_groups_gen, 1)|
+	END;
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_forbidden_extensions'
+#
+CREATE TABLE phpbb_forbidden_extensions (
+  extension_id INTEGER NOT NULL, 
+  extension VARCHAR(100) NOT NULL, 
+  PRIMARY KEY (extension_id)
+);
+
+CREATE GENERATOR phpbb_forbidden_extensions_gen;
+SET GENERATOR phpbb_forbidden_extensions_gen TO 0;
+
+CREATE TRIGGER phpbb_forbidden_extensions_trig 
+	FOR phpbb_forbidden_extensions BEFORE INSERT
+	AS BEGIN 
+		IF (NEW.extension_id IS NULL) THEN 
+			NEW.extension_id = GEN_ID(phpbb_forbidden_extensions_gen, 1)|
+	END;
+
+
+# --------------------------------------------------------
+#
 # Table structure for table 'phpbb_forums'
 #
 CREATE TABLE phpbb_forums (
@@ -329,7 +418,7 @@ CREATE TRIGGER phpbb_lang_trig
 	FOR phpbb_lang BEFORE INSERT
 	AS BEGIN 
 		IF (NEW.lang_id IS NULL) THEN 
-			NEW.lang_id = GEN_ID(phpbb_icons_gen, 1)|
+			NEW.lang_id = GEN_ID(phpbb_lang_gen, 1)|
 	END;
 
 
@@ -460,7 +549,6 @@ CREATE TABLE phpbb_posts (
    topic_id INTEGER DEFAULT 0 NOT NULL,
    forum_id SMALLINT DEFAULT 0 NOT NULL,
    poster_id INTEGER DEFAULT 0 NOT NULL,
-   attach_id INTEGER DEFAULT 0 NOT NULL,
    icon_id SMALLINT DEFAULT 1 NOT NULL,
    poster_ip VARCHAR(40) DEFAULT '' NOT NULL,
    post_time INTEGER DEFAULT 0 NOT NULL,
@@ -476,6 +564,7 @@ CREATE TABLE phpbb_posts (
    post_text BLOB SUB_TYPE 1 DEFAULT '' NOT NULL,
    post_checksum VARCHAR(32) DEFAULT '' NOT NULL,
    post_encoding VARCHAR(11) DEFAULT 'iso-8859-15' NOT NULL, 
+   post_attachment SMALLINT DEFAULT 0 NOT NULL,
    bbcode_bitfield INTEGER DEFAULT 0 NOT NULL,
    bbcode_uid VARCHAR(10) DEFAULT '' NOT NULL,
    post_edit_time INTEGER DEFAULT 0 NOT NULL,
@@ -503,7 +592,7 @@ CREATE TRIGGER phpbb_posts_trig
 #
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id INTEGER NOT NULL,
-   attach_id INTEGER DEFAULT 0 NOT NULL,
+   privmsgs_attachment SMALLINT DEFAULT 0 NOT NULL,
    privmsgs_type SMALLINT DEFAULT 0 NOT NULL,
    privmsgs_subject VARCHAR(60) DEFAULT 0 NOT NULL,
    privmsgs_from_userid INTEGER DEFAULT 0 NOT NULL,
@@ -875,6 +964,7 @@ CREATE TABLE phpbb_topics (
    topic_id INTEGER NOT NULL,
    forum_id INTEGER DEFAULT 0 NOT NULL,
    icon_id SMALLINT DEFAULT 1 NOT NULL,
+   topic_attachment SMALLINT DEFAULT 0 NOT NULL,
    topic_approved SMALLINT DEFAULT 1 NOT NULL,
    topic_reported SMALLINT DEFAULT 0 NOT NULL,
    topic_title VARCHAR(60) NOT NULL,

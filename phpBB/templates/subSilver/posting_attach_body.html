@@ -1,0 +1,36 @@
+
+	<tr>
+		<th colspan="2">{L_ADD_ATTACHMENT}</th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
+	</tr>
+
+	<tr> 
+		<td class="row1"><b class="gen">{L_FILENAME}</b></td> 
+	    <td class="row2"><input class="post" type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="{FILENAME}" /></td> 
+	</tr> 
+	<tr> 
+		<td class="row1"><b class="gen">{L_FILE_COMMENT}</b></td> 
+	    <td class="row2"><textarea class="post" name="filecomment" rows="3" cols="35" wrap="virtual" size="40">{FILE_COMMENT}</textarea>&nbsp;
+		<input class="liteoption" type="submit" name="add_file" value="{L_ADD_FILE}" /></td> 
+	</tr> 
+
+	<!-- IF S_HAS_ATTACHMENTS -->
+	<tr>
+		<th colspan="2">{L_POSTED_ATTACHMENTS}</th>
+	</tr>
+
+		<!-- BEGIN attach_row -->
+		<tr> 
+			<td class="row1"><b class="gen">{L_FILENAME}</b></td>
+			<td class="row2"><a class="gen" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILENAME}</a></td> 
+		</tr>
+   		<tr> 
+			<td class="row1"><b class="gen">{L_FILE_COMMENT}</b></td> 
+			<td class="row2"><textarea class="post" name="comment_list[]" rows="3" cols="35" wrap="virtual" size=40>{attach_row.FILE_COMMENT}</textarea> &nbsp;<input class="liteoption" type="submit" name="edit_comment[{attach_row.ATTACH_FILENAME}]" value="{L_UPDATE_COMMENT}" /> &nbsp;<input class="liteoption" type="submit" name="delete_file[{attach_row.ATTACH_FILENAME}]" value="{L_DELETE_FILE}" /></td>
+		</tr>
+		{attach_row.S_HIDDEN}	
+		<!-- END attach_row -->
+
+	<!-- ENDIF -->

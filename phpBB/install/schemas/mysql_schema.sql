@@ -6,18 +6,37 @@
 
 # --------------------------------------------------------
 #
-# Table structure for table 'phpbb_attach_desc'
+# Table structure for table `phpbb_attachments`
+#
+CREATE TABLE phpbb_attachments (
+  attach_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL, 
+  privmsgs_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  user_id_from mediumint(8) NOT NULL,
+  user_id_to mediumint(8) NOT NULL,
+  KEY attach_id (attach_id)
+); 
+
+
+# --------------------------------------------------------
+#
+# Table structure for table `phpbb_attachments_desc`
 #
 CREATE TABLE phpbb_attach_desc (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  attach_filename varchar(255) NOT NULL,
+  physical_filename varchar(255) NOT NULL,
+  real_filename varchar(255) NOT NULL,
   download_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  filename varchar(255) NOT NULL,
-  comment varchar(60),
-  mimetype varchar(60),
+  comment varchar(255),
+  extension varchar(100),
+  mimetype varchar(100),
   filesize int(20) NOT NULL,
   filetime int(11) DEFAULT '0' NOT NULL,
-  PRIMARY KEY (attach_id)
+  thumbnail tinyint(1) DEFAULT '0' NOT NULL,
+  PRIMARY KEY (attach_id),
+  KEY filetime (filetime),
+  KEY physical_filename (physical_filename(10)),
+  KEY filesize (filesize)
 );
 
 
@@ -131,6 +150,45 @@ CREATE TABLE phpbb_disallow (
    disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    disallow_username varchar(30),
    PRIMARY KEY (disallow_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_extensions'
+#
+CREATE TABLE phpbb_extensions (
+  extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+  group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  extension varchar(100) NOT NULL,
+  comment varchar(100),
+  PRIMARY KEY (extension_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_extension_groups'
+#
+CREATE TABLE phpbb_extension_groups (
+  group_id mediumint(8) NOT NULL auto_increment,
+  group_name char(20) NOT NULL,
+  cat_id tinyint(2) DEFAULT '0' NOT NULL, 
+  allow_group tinyint(1) DEFAULT '0' NOT NULL,
+  download_mode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+  max_filesize int(20) DEFAULT '0' NOT NULL,
+  PRIMARY KEY (group_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_forbidden_extensions'
+#
+CREATE TABLE phpbb_forbidden_extensions (
+  extension_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
+  extension varchar(100) NOT NULL, 
+  PRIMARY KEY (extension_id)
 );
 
 
@@ -327,7 +385,6 @@ CREATE TABLE phpbb_posts (
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   attach_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    icon_id tinyint(4) UNSIGNED DEFAULT '1' NOT NULL,
    poster_ip varchar(40) NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
@@ -343,6 +400,7 @@ CREATE TABLE phpbb_posts (
    post_text text,
    post_checksum varchar(32) NOT NULL,
    post_encoding varchar(11) DEFAULT 'iso-8859-15' NOT NULL, 
+   post_attachment tinyint(1) DEFAULT '0' NOT NULL,
    bbcode_bitfield int(11) UNSIGNED DEFAULT '0' NOT NULL,
    bbcode_uid varchar(10) NOT NULL,
    post_edit_time int(11),
@@ -360,7 +418,7 @@ CREATE TABLE phpbb_posts (
 #
 CREATE TABLE phpbb_privmsgs (
    privmsgs_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-   attach_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   privmsgs_attachment tinyint(1) DEFAULT '0' NOT NULL,
    privmsgs_type tinyint(4) DEFAULT '0' NOT NULL,
    privmsgs_subject varchar(60) DEFAULT '0' NOT NULL,
    privmsgs_from_userid mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -636,6 +694,7 @@ CREATE TABLE phpbb_topics (
    topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
    forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
    icon_id tinyint(4) UNSIGNED DEFAULT '1' NOT NULL,
+   topic_attachment tinyint(1) DEFAULT '0' NOT NULL,
    topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
    topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    topic_title varchar(60) NOT NULL,

@@ -500,6 +500,7 @@ $lang = array_merge($lang, array(
 	'Max_sig_length' => 'Maximum signature length',
 	'Max_sig_length_explain' => 'Maximum number of characters in user signatures',
 	'Allow_name_change' => 'Allow Username changes',
+	'ALLOW_ATTACHMENTS' => 'Allow Attachments',
 
 
 	'Forum_admin_explain' => 'In phpBB 2.2 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
