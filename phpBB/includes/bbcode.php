@@ -11,12 +11,17 @@
 // 
 // -------------------------------------------------------------
 
+// BBCODE - able to be used standalone
+//
+
 class bbcode
 {
 	var $bbcode_uid = '';
 	var $bbcode_bitfield = 0;
 	var $bbcode_cache = array();
 	var $bbcode_template = array();
+
+	var $bbcodes = array();
 
 	var $template_bitfield = 0;
 	var $template_filename = '';
@@ -30,14 +35,14 @@ class bbcode
 		}
 	}
 
-	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = FALSE)
+	function bbcode_second_pass(&$message, $bbcode_uid = '', $bbcode_bitfield = false)
 	{
 		if ($bbcode_uid)
 		{
 			$this->bbcode_uid = $bbcode_uid;
 		}
 
-		if ($bbcode_bitfield !== FALSE)
+		if ($bbcode_bitfield !== false)
 		{
 			$this->bbcode_bitfield = $bbcode_bitfield;
 			// Init those added with a new bbcode_bitfield (already stored codes will not get parsed again)
@@ -371,6 +376,8 @@ class bbcode
 	
 	function bbcode_tpl_replace($tpl_name, $tpl)
 	{
+		global $user;
+		
 		static $replacements = array(
 			'quote_username_open'	=>	array('{USERNAME}'	=>	'$1'),
 			'color'					=>	array('{COLOR}'		=>	'$1', '{TEXT}'			=>	'$2'),
@@ -458,7 +465,19 @@ class bbcode
 				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
 				$code = str_replace('  ', '&nbsp; ', $code);
 				$code = str_replace('  ', ' &nbsp;', $code);
-				$code = preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $code);
+
+				$match = array(
+					'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+					'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+					'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+					'#<!\-\- l \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- l \-\->#',
+					'#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+					'#^[\n]#'
+				);
+	
+				$replace = array('\1', '\1', '\1', '\1', '\1', '');
+				
+				$code = preg_replace($match, $replace, $code);
 		}
 
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
@@ -466,4 +485,5 @@ class bbcode
 		return $code;
 	}
 }
+
 ?>

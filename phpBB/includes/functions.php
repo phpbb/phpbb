@@ -117,49 +117,6 @@ function get_userdata($user)
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
-// prepare text to be displayed/previewed...
-// This function is here to save memory (this function is used by viewforum/viewtopic/posting... and to include another huge file is pure memory waste)
-function parse_text_display($text, $text_rules)
-{
-	global $bbcode, $user;
-
-	$text_flags = explode(':', $text_rules);
-
-	$allow_bbcode = (int) $text_flags[0] & 1;
-	$allow_smilies = (int) $text_flags[0] & 2;
-	$allow_magic_url = (int) $text_flags[0] & 4;
-
-	$bbcode_uid = trim($text_flags[1]);
-	$bbcode_bitfield = (int) $text_flags[2];
-
-	// Really, really process bbcode only if we have something to process...
-	if (!$bbcode && $allow_bbcode && strpos($text, '[') !== false)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode();
-	}
-
-	// Second parse bbcode here
-	if ($allow_bbcode)
-	{
-		$bbcode->bbcode_second_pass($text, $bbcode_uid, $bbcode_bitfield);
-	}
-
-	// If we allow users to disable display of emoticons we'll need an appropriate
-	// check and preg_replace here
-	if ($allow_smilies)
-	{
-		$text = smilie_text($text, !$allow_smilies);
-	}
-
-	// Replace naughty words such as farty pants
-	$text = str_replace("\n", '<br />', censor_text($text));
-
-	return $text;
-}
-
 // Create forum rules for given forum
 function generate_forum_rules($forum_data)
 {
@@ -172,13 +129,20 @@ function generate_forum_rules($forum_data)
 
 	if ($forum_data['forum_rules'])
 	{
-		$text_flags = explode(':', $forum_data['forum_rules_flags']);
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		$bbcode = new bbcode($forum_data['forum_rules_bbcode_bitfield']);
+		
+		$bbcode->bbcode_second_pass($forum_data['forum_rules'], $forum_data['forum_rules_bbcode_uid']);
+
+		$forum_data['forum_rules'] = smilie_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
+		$forum_data['forum_rules'] = str_replace("\n", '<br />', censor_text($forum_data['forum_rules']));
+		unset($bbcode);
 	}
 
 	$template->assign_vars(array(
 		'S_FORUM_RULES'	=> true,
 		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
-		'FORUM_RULES'	=> (!$forum_data['forum_rules_link']) ? parse_text_display($forum_data['forum_rules'], $forum_data['forum_rules_flags']) : '')
+		'FORUM_RULES'	=> $forum_data['forum_rules'])
 	);
 }
 
@@ -834,10 +798,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 
 //	$page_string = $user->lang['GOTO_PAGE'] . ' ' . $page_string;
-	if ($user->theme['primary']['pagination_goto_page'])
-	{
-		$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
-	}
+	$page_string = '<a href="javascript:jumpto();">' . $user->lang['GOTO_PAGE'] . '</a> ' . $page_string;
 
 	$template->assign_var('BASE_URL', $base_url);
 	$template->assign_var('PER_PAGE', $per_page);
@@ -1544,7 +1505,7 @@ function page_header($page_title = '')
 						$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
 					}
 
-					if ($row['user_allow_viewonline'] && $row['session_allow_viewonline'])
+					if ($row['user_allow_viewonline'] && $row['session_viewonline'])
 					{
 						$user_online_link = $row['username'];
 						$logged_visible_online++;

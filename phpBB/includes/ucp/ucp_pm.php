@@ -347,7 +347,7 @@ class ucp_pm extends module
 
 		$template->assign_vars(array( 
 			'L_TITLE'			=> $user->lang['UCP_PM_' . strtoupper($mode)],
-			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=$action")
+			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode" . ((isset($action)) ? "&amp;action=$action" : ''))
 		);
 
 		$this->display($user->lang['UCP_PM'], $tpl_file);

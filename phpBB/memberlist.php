@@ -783,7 +783,7 @@ switch ($mode)
 				'AVATAR_IMG'	=> $avatar_img,
 				'RANK_IMG'		=> $rank_img,
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;address_list[g][$group_id]=to" : '',)
+				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;g=$group_id" : '',)
 			);
 
 			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
@@ -997,7 +997,7 @@ function show_profile($data)
 
 		'U_PROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '',
-		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;mode=pm&amp;action=send&amp;u=$user_id" : '',
+		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',

@@ -42,6 +42,8 @@ class ucp_prefs extends module
 						'allowpm'		=> true,
 					);
 
+					$var_ary['report_pm_notify'] = false;
+
 					foreach ($var_ary as $var => $default)
 					{
 						$data[$var] = request_var($var, $default);
@@ -57,11 +59,11 @@ class ucp_prefs extends module
 					extract($data);
 					unset($data);
 
-					// Set the popuppm option
-					$user->optionset('popuppm', $popuppm);
-
 					if (!sizeof($error))
 					{
+						$user->optionset('popuppm', $popuppm);
+						$user->optionset('report_pm_notify', $report_pm_notify);
+
 						$sql_ary = array(
 							'user_allow_pm'			=> $allowpm,
 							'user_allow_viewemail'	=> $viewemail,
@@ -107,6 +109,9 @@ class ucp_prefs extends module
 				$popuppm = (isset($popuppm)) ? $popuppm : $user->optionget('popuppm');
 				$popup_pm_yes = ($popuppm) ? ' checked="checked"' : '';
 				$popup_pm_no = (!$popuppm) ? ' checked="checked"' : '';
+				$report_pm_notify = (isset($report_pm_notify)) ? $report_pm_notify : $user->optionget('report_pm_notify');
+				$report_pm_notify_yes = ($report_pm_notify) ? ' checked="checked"' : '';
+				$report_pm_notify_no = (!$report_pm_notify) ? ' checked="checked"' : '';
 				$dst = (isset($dst)) ? $dst : $user->data['user_dst'];
 				$dst_yes = ($dst) ? ' checked="checked"' : '';
 				$dst_no = (!$dst) ? ' checked="checked"' : '';
@@ -132,6 +137,8 @@ class ucp_prefs extends module
 					'NOTIFY_PM_NO'		=> $notify_pm_no,
 					'POPUP_PM_YES'		=> $popup_pm_yes,
 					'POPUP_PM_NO'		=> $popup_pm_no,
+					'REPORT_PM_YES'		=> $report_pm_notify_yes,
+					'REPORT_PM_NO'		=> $report_pm_notify_no,
 					'DST_YES'			=> $dst_yes,
 					'DST_NO'			=> $dst_no,
 					'NOTIFY_EMAIL'		=> ($notifymethod == NOTIFY_EMAIL) ? 'checked="checked"' : '',
@@ -143,9 +150,8 @@ class ucp_prefs extends module
 					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),
 					'S_TZ_OPTIONS'		=> tz_select($tz),
-					'S_CAN_HIDE_ONLINE'	=> true,
-					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false,
-					)
+					'S_CAN_HIDE_ONLINE'	=> true, 
+					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 				break;
 

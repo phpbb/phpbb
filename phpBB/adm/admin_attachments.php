@@ -423,6 +423,7 @@ if ($submit && $mode == 'orphan')
 				upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $config['upload_dir'], $upload_list[$row['post_id']]);
 			}
 		}
+		unset($message_parser);
 	}
 }
 

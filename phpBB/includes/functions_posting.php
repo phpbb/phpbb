@@ -90,101 +90,6 @@ function generate_smilies($mode, $forum_id)
 	}
 }
 
-// Format text to be displayed - from viewtopic.php - centralizing this would be nice ;)
-function format_display(&$message, &$signature, $uid, $siguid, $enable_html, $enable_bbcode, $enable_url, $enable_smilies, $enable_sig, $bbcode = '')
-{
-	global $auth, $forum_id, $config, $user, $phpbb_root_path;
-
-	if (!$bbcode)
-	{
-		global $bbcode;
-	}
-
-	// Second parse bbcode here
-	if ($enable_bbcode)
-	{
-		$bbcode->bbcode_second_pass($message, $uid);
-	}
-
-	// If we allow users to disable display of emoticons we'll need an appropriate 
-	// check and preg_replace here
-	$message = smilie_text($message, !$enable_smilies);
-
-	// Replace naughty words such as farty pants
-	$message = str_replace("\n", '<br />', censor_text($message));
-
-	// Signature
-	if ($enable_sig && $config['allow_sig'] && $signature && $auth->acl_get('f_sigs', $forum_id))
-	{
-		$signature = trim($signature);
-
-		$bbcode->bbcode_second_pass($signature, $siguid);
-		$signature = smilie_text($signature);
-
-		$signature = str_replace("\n", '<br />', censor_text($signature));
-	}
-	else
-	{
-		$signature = '';
-	}
-
-	return $message;
-}
-
-// Three simple functions we use for bbcode/smilie/url capable text
-
-// prepare text to be inserted into db...
-function parse_text_insert($text, $allow_bbcode, $allow_smilies, $allow_magic_url, &$text_flags)
-{
-	global $message_parser;
-
-	$text_flags += ($allow_bbcode) ? 1 : 0;
-	$text_flags += ($allow_smilies) ? 2 : 0;
-	$text_flags += ($allow_magic_url) ? 4 : 0;
-
-	$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#", '#&amp;(\#[0-9]+;)#');
-	$replace = array("\n", '', "\n\n", '&\1');
-	$text = preg_replace($match, $replace, $text);
-
-	// Parse BBCode
-	if (!method_exists('parse_message', 'parse_message') || !isset($message_parser))
-	{
-		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
-		$message_parser = new parse_message();
-	}
-
-	$message_parser->message = $text;
-
-	if ($allow_bbcode && strpos($text, '[') !== false)
-	{
-		$message_parser->bbcode_init();
-		$message_parser->bbcode();
-	}
-
-	// Parse Emoticons
-	$message_parser->emoticons($allow_smilies);
-
-	// Parse URL's
-	$message_parser->magic_url($allow_magic_url);
-	
-	$text_flags = $text_flags . ':' . $message_parser->bbcode_uid . ':' . $message_parser->bbcode_bitfield;
-
-	return $message_parser->message;
-}
-
-// prepare text to be displayed within a form (fetched from db)
-function parse_text_form_display($text, $text_rules)
-{
-	// We use decode_text here...
-	$text_rules = explode(':', $text_rules);
-	$bbcode_uid = trim($text_rules[1]);
-
-	decode_text($text, $bbcode_uid);
-
-	return $text;
-}
-
 // Update Last Post Informations
 function update_last_post_information($type, $id)
 {
@@ -444,6 +349,7 @@ function get_img_size_format($width, $height)
 	}
 }
 
+// Return supported image types
 function get_supported_image_types($type)
 {
 	if (@extension_loaded('gd'))
@@ -581,30 +487,30 @@ function create_thumbnail($source, $new_file, $mimetype)
 }
 
 // DECODE TEXT -> This will/should be handled by bbcode.php eventually
-function decode_text(&$message, $bbcode_uid = '')
+function decode_message(&$message, $bbcode_uid = '')
 {
 	global $config;
 
 	$server_protocol = ($config['cookie_secure']) ? 'https://' : 'http://';
 	$server_port = ($config['server_port'] <> 80) ? ':' . trim($config['server_port']) . '/' : '/';
 
-	$match = array(
-		'<br />',
-		"[/*:m:$bbcode_uid]",
-		":u:$bbcode_uid",
-		":o:$bbcode_uid",
-		":$bbcode_uid"
-	);
-
-	$replace = array(
-		"\n",
-		'',
-		'',
-		'',
-		''
-	);
+	$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
+	$replace = array("\n", '', '', '', '');
 
 	$message = ($bbcode_uid) ? str_replace($match, $replace, $message) : str_replace('<br />', "\n", $message);
+
+	// HTML
+	if ($config['allow_html_tags'])
+	{
+		// If $html is true then "allowed_tags" are converted back from entity
+		// form, others remain
+		$allowed_tags = split(',', $config['allow_html_tags']);
+			
+		if (sizeof($allowed_tags))
+		{
+			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
+		}
+	}
 
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
@@ -625,19 +531,6 @@ function decode_text(&$message, $bbcode_uid = '')
 	);
 	
 	$message = preg_replace($match, $replace, $message);
-
-	// HTML
-	if ($config['allow_html_tags'])
-	{
-		// If $html is true then "allowed_tags" are converted back from entity
-		// form, others remain
-		$allowed_tags = split(',', $config['allow_html_tags']);
-			
-		if (sizeof($allowed_tags))
-		{
-			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
-		}
-	}
 
 	return;
 }
@@ -663,6 +556,7 @@ function phpbb_strtolower($string)
 	return $new_string;
 }
 
+// Generate Topic Icons for display
 function posting_gen_topic_icons($mode, $icon_id)
 {
 	global $phpbb_root_path, $config, $template;
@@ -700,15 +594,16 @@ function posting_gen_topic_icons($mode, $icon_id)
 	return false;
 }
 
-function posting_gen_inline_attachments($message_parser)
+// Assign Inline attachments (build option fields)
+function posting_gen_inline_attachments($attachment_data)
 {
 	global $template;
 
-	if (sizeof($message_parser->attachment_data))
+	if (sizeof($attachment_data))
 	{
 		$s_inline_attachment_options = '';
 		
-		foreach ($message_parser->attachment_data as $i => $attachment)
+		foreach ($attachment_data as $i => $attachment)
 		{
 			$s_inline_attachment_options .= '<option value="' . $i . '">' . $attachment['real_filename'] . '</option>';
 		}
@@ -721,6 +616,7 @@ function posting_gen_inline_attachments($message_parser)
 	return false;
 }
 
+// Build topic types able to be selected
 function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 {
 	global $auth, $user, $template, $topic_type;
@@ -776,7 +672,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	return $toggle;
 }
 
-function posting_gen_attachment_entry($message_parser)
+function posting_gen_attachment_entry($attachment_data, $filename_data)
 {
 	global $template, $config, $phpbb_root_path, $SID, $phpEx;
 		
@@ -784,14 +680,14 @@ function posting_gen_attachment_entry($message_parser)
 		'S_SHOW_ATTACH_BOX'	=> true)
 	);
 
-	if (sizeof($message_parser->attachment_data))
+	if (sizeof($attachment_data))
 	{
 		$template->assign_vars(array(
 			'S_HAS_ATTACHMENTS'	=> true)
 		);
 		
 		$count = 0;
-		foreach ($message_parser->attachment_data as $attach_row)
+		foreach ($attachment_data as $attach_row)
 		{
 			$hidden = '';
 			$attach_row['real_filename'] = stripslashes($attach_row['real_filename']);
@@ -819,12 +715,12 @@ function posting_gen_attachment_entry($message_parser)
 	}
 
 	$template->assign_vars(array(
-		'FILE_COMMENT'	=> $message_parser->filename_data['filecomment'], 
+		'FILE_COMMENT'	=> $filename_data['filecomment'], 
 		'FILESIZE'		=> $config['max_filesize'],
-		'FILENAME'		=> $message_parser->filename_data['filename'])
+		'FILENAME'		=> $filename_data['filename'])
 	);
 
-	return sizeof($message_parser->attachment_data);
+	return sizeof($attachment_data);
 }
 
 // Load Drafts
@@ -1027,7 +923,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 	$topic_title = ($topic_notification) ? $topic_title : $subject;
-	decode_text($topic_title);
 	$topic_title = censor_text($topic_title);
 
 	// Get banned User ID's

@@ -323,7 +323,7 @@ class custom_profile
 
 		$profile_row['field_name'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 
-		$value = (isset($_REQUEST[$profile_row['field_name']])) ? request_var($profile_row['field_name'], 0) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+		$value = (isset($_REQUEST[$profile_row['field_name']])) ? request_var($profile_row['field_name'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
 
 		switch ($field_validation)
 		{

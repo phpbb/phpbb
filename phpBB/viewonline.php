@@ -107,7 +107,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		if (!$row['user_allow_viewonline'] || !$row['session_viewonline'])
 		{
-			$view_online = ($auth->acl_gets('u_viewonline')) ? true : false;
+			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
 			$logged_hidden_online++;
 
 			$username = '<i>' . $username . '</i>';

@@ -196,6 +196,8 @@ function compose_pm($id, $mode, $action)
 			// Rebuild TO and BCC Header
 			$address_list = rebuild_header(array('to' => $to_address, 'bcc' => $bcc_address));
 		}
+
+		$check_value = (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 	}
 	else
 	{
@@ -211,6 +213,8 @@ function compose_pm($id, $mode, $action)
 			$address_list['g'][$to_group_id] = 'to';
 		}
 		unset($to_user_id, $to_group_id);
+		
+		$check_value = 0;
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
@@ -221,11 +225,16 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	if (!isset($icon_id))
+	{
+		$icon_id = 0;
+	}
+
 	$message_parser = new parse_message();
 
 	$message_subject = (isset($message_subject)) ? $message_subject : '';
-	$message_text = ($action == 'reply') ? '' : ((isset($message_text)) ? $message_text : '');
-	$icon_id = 0;
+	$message_parser->message = ($action == 'reply') ? '' : ((isset($message_text)) ? $message_text : '');
+	unset($message_text);
 
 	$s_action = "{$phpbb_root_path}ucp.$phpEx?sid={$user->session_id}&amp;i=$id&amp;mode=$mode&amp;action=$action";
 	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
@@ -406,10 +415,15 @@ function compose_pm($id, $mode, $action)
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 		$enable_sig			= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
-		// Faster than crc32
-		$check_value	= (($preview || $refresh) && isset($_POST['status_switch'])) ? (int) $_POST['status_switch'] : (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
-		$status_switch	= (isset($_POST['status_switch']) && (int) $_POST['status_switch'] != $check_value);
-
+		if ($submit)
+		{
+			$status_switch	= (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+			$status_switch = ($status_switch != $check_value);
+		}
+		else
+		{
+			$status_switch = 1;
+		}
 
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments($action, $msg_id, $submit, $preview, $refresh, true);
@@ -418,10 +432,15 @@ function compose_pm($id, $mode, $action)
 		$message_md5 = md5($message_parser->message);
 
 		// Check checksum ... don't re-parse message if the same
-		if ($action != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview)
+		$update_message = ($action != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview) ? true : false;
+
+		if ($update_message)
 		{
-			// Parse message
 			$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
+		}
+		else
+		{
+			$message_parser->bbcode_bitfield = $bbcode_bitfield;
 		}
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
@@ -475,13 +494,24 @@ function compose_pm($id, $mode, $action)
 				'post_edit_user'		=> ($action == 'edit') ? $user->data['user_id'] : (int) $post_edit_user,
 				'author_ip'				=> (int) $author_ip,
 				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_uid'			=> $message_parser->bbcode_uid,
+				'message'				=> $message_parser->message,
+				'attachment_data'		=> $message_parser->attachment_data,
+				'filename_data'			=> $message_parser->filename_data,
 				'address_list'			=> $address_list
 			);
+			unset($message_parser);
 			
-			submit_pm($action, $message_parser->message, $subject, $message_parser->bbcode_uid, $message_parser->attachment_data, $message_parser->filename_data, $pm_data);
+			$msg_id = submit_pm($action, $subject, $username, $pm_data, $update_message);
+
+			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view_messages&amp;action=view_message&amp;p=" . $data['msg_id'];
+			$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";
+			meta_refresh(3, $return_message_url);
+
+			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>');
+			trigger_error($message);
 		}	
 
-		$message_text = $message_parser->message;
 		$message_subject = stripslashes($subject);
 	}
 
@@ -490,17 +520,27 @@ function compose_pm($id, $mode, $action)
 	{
 		$post_time = ($action == 'edit') ? $post_time : $current_time;
 
-		$preview_subject = censor_text($subject);
+		$preview_message = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];
 		$preview_signature_uid = $user->data['user_sig_bbcode_uid'];
 		$preview_signature_bitfield = $user->data['user_sig_bbcode_bitfield'];
 
-		include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($message_parser->bbcode_bitfield | $preview_signature_bitfield);
+		// Signature
+		if ($enable_sig && $config['allow_sig'] && $preview_signature)
+		{
+			$parse_sig = new parse_message($preview_signature);
+			$parse_sig->bbcode_uid = $preview_signature_uid;
+			$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
 
-		$preview_message = $message_parser->message;
-		format_display($preview_message, $preview_signature, $message_parser->bbcode_uid, $preview_signature_uid, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $enable_sig, $bbcode);
+			$parse_sig->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+			$preview_signature = $parse_sig->message;
+			unset($parse_sig);
+		}
+		else
+		{
+			$preview_signature = '';
+		}
 
 		// Attachment Preview
 		if (sizeof($message_parser->attachment_data))
@@ -511,23 +551,30 @@ function compose_pm($id, $mode, $action)
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
 			display_attachments(0, 'attachment', $message_parser->attachment_data, $update_count, true);
 		}
-	}
 
+		$preview_subject = censor_text($subject);
+
+		if (!sizeof($error))
+		{
+			$template->assign_vars(array(
+				'PREVIEW_SUBJECT'		=> $preview_subject,
+				'PREVIEW_MESSAGE'		=> $preview_message, 
+				'PREVIEW_SIGNATURE'		=> $preview_signature, 
+		
+				'S_DISPLAY_PREVIEW'		=> true)
+			);				
+		}
+		unset($message_text);
+	}
 
 	// Decode text for message display
 	$bbcode_uid = (($action == 'quote' || $action == 'forward')&& !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
 
-	decode_text($message_text, $bbcode_uid);
-
-	if ($subject)
-	{
-		decode_text($subject, $bbcode_uid);
-	}
-
+	$message_parser->decode_message($bbcode_uid);
 
 	if ($action == 'quote' && !$preview && !$refresh)
 	{
-		$message_text = '[quote="' . $quote_username . '"]' . censor_text(trim($message_text)) . "[/quote]\n";
+		$message_parser->message = '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 	}
 	
 	if (($action == 'reply' || $action == 'quote') && !$preview && !$refresh)
@@ -537,12 +584,6 @@ function compose_pm($id, $mode, $action)
 
 	if ($action == 'forward' && !$preview && !$refresh)
 	{
-		$user->lang['FWD_ORIGINAL_MESSAGE'] = '-------- Original Message --------';
-		$user->lang['FWD_SUBJECT'] = 'Subject: %s';
-		$user->lang['FWD_DATE'] = 'Date: %s';
-		$user->lang['FWD_FROM'] = 'From: %s';
-		$user->lang['FWD_TO'] = 'To: %s';
-		
 		$fwd_to_field = write_pm_addresses(array('to' => $to_address), 0, true);
 
 		$forward_text = array();
@@ -552,10 +593,14 @@ function compose_pm($id, $mode, $action)
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
-		$message_text = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx$SID&mode=viewprofile&u={$author_id}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_text)) . "\n[/quote]";
+		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx$SID&mode=viewprofile&u={$author_id}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
 	}
 
+	$attachment_data = $message_parser->attachment_data;
+	$filename_data = $message_parser->filename_data;
+	$message_text = $message_parser->message;
+	unset($message_parser);
 
 	// MAIN PM PAGE BEGINS HERE
 
@@ -570,7 +615,7 @@ function compose_pm($id, $mode, $action)
 	}
 	
 	// Generate inline attachment select box
-	posting_gen_inline_attachments($message_parser);
+	posting_gen_inline_attachments($attachment_data);
 
 	// Build address list for display
 	// array('u' => array($author_id => 'to'));
@@ -683,10 +728,7 @@ function compose_pm($id, $mode, $action)
 		'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
-		'MESSAGE'				=> trim($message_text),
-		'PREVIEW_SUBJECT'		=> ($preview && !sizeof($error)) ? $preview_subject : '',
-		'PREVIEW_MESSAGE'		=> ($preview && !sizeof($error)) ? $preview_message : '', 
-		'PREVIEW_SIGNATURE'		=> ($preview && !sizeof($error)) ? $preview_signature : '', 
+		'MESSAGE'				=> $message_text,
 		'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -695,7 +737,6 @@ function compose_pm($id, $mode, $action)
 		'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '', 
 
-		'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
 		'S_HTML_ALLOWED'		=> $html_status,
@@ -719,276 +760,8 @@ function compose_pm($id, $mode, $action)
 	// Attachment entry
 	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)
 	{
-		posting_gen_attachment_entry($message_parser);
+		posting_gen_attachment_entry($attachment_data, $filename_data);
 	}
-}
-
-// Submit PM
-function submit_pm($mode, $message, $subject, $bbcode_uid, $attach_data, $filename_data, $data)
-{
-	global $db, $auth, $user, $config, $phpEx, $SID, $template;
-
-	// We do not handle erasing posts here
-	if ($mode == 'delete')
-	{
-		return;
-	}
-	
-	$current_time = time();
-
-	// Collect some basic informations about which tables and which rows to update/insert
-	$sql_data = array();
-	$root_level = 0;
-
-	// Recipient Informations
-	$recipients = $to = $bcc = array();
-
-	if ($mode != 'edit')
-	{
-		// Build Recipient List
-		foreach (array('u', 'g') as $ug_type)
-		{
-			if (sizeof($data['address_list'][$ug_type]))
-			{
-				foreach ($data['address_list'][$ug_type] as $id => $field)
-				{
-					$field = ($field == 'to') ? 'to' : 'bcc';
-					if ($ug_type == 'u')
-					{
-						$recipients[$id] = $field;
-					}
-					${$field}[] = $ug_type . '_' . (int) $id;
-				}
-			}
-		}
-
-		if (sizeof($data['address_list']['g']))
-		{
-			$sql = 'SELECT group_id, user_id
-				FROM ' . USER_GROUP_TABLE . '
-				WHERE group_id IN (' . implode(', ', array_keys($data['address_list']['g'])) . ')
-					AND user_pending = 0';
-			$result = $db->sql_query($sql);
-	
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
-				$recipients[$row['user_id']] = $field;
-			}
-			$db->sql_freeresult($result);
-		}
-
-		if (!sizeof($recipients))
-		{
-			trigger_error('NO_RECIPIENT');
-		}
-	}
-
-	$sql = '';
-	switch ($mode)
-	{
-		case 'reply':
-		case 'quote':
-			$root_level = ($data['reply_from_root_level']) ? $data['reply_from_root_level'] : $data['reply_from_msg_id']; 
-
-			// Set message_replied switch for this user
-			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-				SET replied = 1
-				WHERE user_id = ' . $user->data['user_id'] . '
-					AND msg_id = ' . $data['reply_from_msg_id'];
-
-		case 'forward':
-		case 'post':
-			$sql_data = array(
-				'root_level'		=> $root_level,
-				'author_id'			=> (int) $user->data['user_id'],
-				'icon_id'			=> $data['icon_id'], 
-				'author_ip' 		=> $user->ip,
-				'message_time'		=> $current_time,
-				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_html' 		=> $data['enable_html'],
-				'enable_smilies' 	=> $data['enable_smilies'],
-				'enable_magic_url' 	=> $data['enable_urls'],
-				'enable_sig' 		=> $data['enable_sig'],
-				'message_subject'	=> $subject,
-				'message_text' 		=> $message,
-				'message_checksum'	=> $data['message_md5'],
-				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
-				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $bbcode_uid,
-				'to_address'		=> implode(':', $to),
-				'bcc_address'		=> implode(':', $bcc)
-			);
-			break;
-
-		case 'edit':
-			$sql_data = array(
-				'icon_id'			=> $data['icon_id'],
-				'message_edit_time'	=> $current_time,
-				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_html' 		=> $data['enable_html'],
-				'enable_smilies' 	=> $data['enable_smilies'],
-				'enable_magic_url' 	=> $data['enable_urls'],
-				'enable_sig' 		=> $data['enable_sig'],
-				'message_subject'	=> $subject,
-				'message_text' 		=> $message,
-				'message_checksum'	=> $data['message_md5'],
-				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (sizeof($filename_data['physical_filename'])) ? 1 : 0,
-				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $bbcode_uid
-			);
-			break;
-	}
-
-	if (sizeof($sql_data))
-	{
-		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'forward')
-		{
-			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
-			$data['msg_id'] = $db->sql_nextid();
-		}
-		else if ($mode == 'edit')
-		{
-			$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
-				SET message_edit_count = message_edit_count + 1, ' . $db->sql_build_array('UPDATE', $sql_data) . ' 
-				WHERE msg_id = ' . $data['msg_id'];
-			$db->sql_query($sql);
-		}
-	}
-	
-	if ($mode != 'edit')
-	{
-		$db->sql_transaction();
-	
-		if ($sql)
-		{
-			$db->sql_query($sql);
-		}
-		unset($sql);
-
-		foreach ($recipients as $user_id => $type)
-		{
-			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'msg_id'	=> $data['msg_id'],
-				'user_id'	=> $user_id,
-				'author_id'	=> $user->data['user_id'],
-				'folder_id'	=> PRIVMSGS_NO_BOX,
-				'new'		=> 1,
-				'unread'	=> 1,
-				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
-			);
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . ' 
-			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1
-			WHERE user_id IN (' . implode(', ', array_keys($recipients)) . ')';
-		$db->sql_query($sql);
-
-		// Put PM into outbox
-		$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'msg_id'	=> (int) $data['msg_id'],
-			'user_id'	=> (int) $user->data['user_id'],
-			'author_id'	=> (int) $user->data['user_id'],
-			'folder_id'	=> PRIVMSGS_OUTBOX,
-			'new'		=> 0,
-			'unread'	=> 0,
-			'forwarded'	=> ($mode == 'forward') ? 1 : 0))
-		);
-
-		$db->sql_transaction('commit');
-	}
-
-	// Set user last post time
-	if ($mode == 'reply' || $mode == 'quote' || $mode == 'forward' || $mode == 'post')
-	{
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_lastpost_time = $current_time
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
-	}
-
-	$db->sql_transaction();
-
-	// Submit Attachments
-	if (count($attach_data) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit', 'forward')))
-	{
-		$space_taken = $files_added = 0;
-
-		foreach ($attach_data as $pos => $attach_row)
-		{
-			if ($attach_row['attach_id'])
-			{
-				// update entry in db if attachment already stored in db and filespace
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
-					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
-					WHERE attach_id = " . (int) $attach_row['attach_id'];
-				$db->sql_query($sql);
-			}
-			else
-			{
-				// insert attachment into db 
-				$attach_sql = array(
-					'post_msg_id'		=> $data['msg_id'],
-					'topic_id'			=> 0,
-					'in_message'		=> 1,
-					'poster_id'			=> $user->data['user_id'],
-					'physical_filename'	=> $attach_row['physical_filename'],
-					'real_filename'		=> $attach_row['real_filename'],
-					'comment'			=> $attach_row['comment'],
-					'extension'			=> $attach_row['extension'],
-					'mimetype'			=> $attach_row['mimetype'],
-					'filesize'			=> $attach_row['filesize'],
-					'filetime'			=> $attach_row['filetime'],
-					'thumbnail'			=> $attach_row['thumbnail']
-				);
-
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
-				$db->sql_query($sql);
-
-				$space_taken += $attach_row['filesize'];
-				$files_added++;
-			}
-		}
-		
-		if (count($attach_data))
-		{
-			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-				SET message_attachment = 1
-				WHERE msg_id = ' . $data['msg_id'];
-			$db->sql_query($sql);
-		}
-
-		set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-		set_config('num_files', $config['num_files'] + $files_added, true);
-	}
-
-	$db->sql_transaction('commit');
-
-	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
-	if ($draft_id)
-	{
-		$sql = 'DELETE FROM ' . DRAFTS_TABLE . " 
-			WHERE draft_id = $draft_id 
-				AND user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
-	}
-
-	// Send Notifications
-	if ($mode != 'edit')
-	{
-		pm_notification($mode, stripslashes($user->data['username']), $recipients, stripslashes($subject), stripslashes($message));
-	}
-
-	$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view_messages&amp;action=view_message&amp;p=" . $data['msg_id'];
-	$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";
-	meta_refresh(3, $return_message_url);
-
-	$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>');
-	trigger_error($message);
 }
 
 // For composing messages, handle list actions
@@ -1058,96 +831,6 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		}
 	}
 
-}
-
-// PM Notification
-function pm_notification($mode, $author, $recipients, $subject, $message)
-{
-	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
-
-	decode_text($subject);
-	$subject = censor_text($subject);
-	
-	// Get banned User ID's
-	$sql = 'SELECT ban_userid 
-		FROM ' . BANLIST_TABLE;
-	$result = $db->sql_query($sql);
-
-	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
-	
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (isset($row['ban_userid']))
-		{
-			unset($recipients[$row['ban_userid']]);
-		}
-	}
-	$db->sql_freeresult($result);
-
-	if (!sizeof($recipients))
-	{
-		return;
-	}
-
-	$recipient_list = implode(', ', array_keys($recipients));
-
-	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type, user_jabber 
-		FROM ' . USERS_TABLE . "
-		WHERE user_id IN ($recipient_list)";
-	$result = $db->sql_query($sql);
-
-	$msg_list_ary = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (trim($row['user_email']))
-		{
-			$msg_list_ary[] = array(
-				'method'	=> $row['method'],
-				'email'		=> $row['user_email'],
-				'jabber'	=> $row['user_jabber'],
-				'name'		=> $row['username'],
-				'lang'		=> $row['user_lang']
-			);
-		}
-	}
-	$db->sql_freeresult($result);
-	
-	if (!sizeof($msg_list_ary))
-	{
-		return;
-	}
-
-	include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-	$messenger = new messenger();
-
-	$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-	foreach ($msg_list_ary as $pos => $addr)
-	{
-		$messenger->template('privmsg_notify', $addr['lang']);
-
-		$messenger->replyto($config['board_email']);
-		$messenger->to($addr['email'], $addr['name']);
-		$messenger->im($addr['jabber'], $addr['name']);
-
-		$messenger->assign_vars(array(
-			'EMAIL_SIG'		=> $email_sig,
-			'SITENAME'		=> $config['sitename'],
-			'SUBJECT'		=> $subject,
-			'AUTHOR_NAME'	=> $author,
-
-			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=unread")
-		);
-
-		$messenger->send($addr['method']);
-		$messenger->reset();
-	}
-	unset($msg_list_ary);
-
-	if ($messenger->queue)
-	{
-		$messenger->queue->save();
-	}
 }
 
 // Return number of recipients

@@ -100,9 +100,6 @@ if ($update)
 				'forum_desc'			=> str_replace("\n", '<br />', request_var('forum_desc', '')),
 				'forum_rules'			=> request_var('forum_rules', ''),
 				'forum_rules_link'		=> request_var('forum_rules_link', ''),
-				'rules_allow_bbcode'	=> request_var('parse_bbcode', false),
-				'rules_allow_smilies'	=> request_var('parse_smilies', false),
-				'rules_allow_urls'		=> request_var('parse_urls', false),
 				'forum_image'			=> request_var('forum_image', ''),
 				'forum_style'			=> request_var('forum_style', 0),
 				'display_on_index'		=> request_var('display_on_index', FALSE),
@@ -119,6 +116,25 @@ if ($update)
 				'forum_password'		=> request_var('forum_password', ''),
 				'forum_password_confirm'=> request_var('forum_password_confirm', '')
 			);
+
+			if ($forum_data['forum_rules'])
+			{
+				include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+				$allow_bbcode = request_var('parse_bbcode', false);
+				$allow_smilies = request_var('parse_smilies', false);
+				$allow_urls = request_var('parse_urls', false);
+
+				$forum_data['forum_rules_flags'] = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
+
+				$message_parser = new parse_message($forum_data['forum_rules']);
+				$message_parser->parse(false, $allow_bbcode, $allow_urls, $allow_smilies);
+			
+				$forum_data['forum_rules'] = $message_parser->message;
+				$forum_data['forum_rules_bbcode_uid'] = $message_parser->bbcode_uid;
+				$forum_data['forum_rules_bbcode_bitfield'] = $message_parser->bbcode_bitfield;
+				unset($message_parser);
+			}
 
 			$errors = update_forum_data($forum_data);
 
@@ -144,6 +160,7 @@ switch ($mode)
 {
 	case 'add':
 	case 'edit':
+
 		if (isset($_POST['update']))
 		{
 			extract($forum_data);
@@ -167,7 +184,7 @@ switch ($mode)
 			$forum_rules_flags		+= (request_var('parse_smilies', false)) ? 2 : 0;
 			$forum_rules_flags		+= (request_var('parse_urls', false)) ? 4 : 0;
 		}
-		
+
 		// Show form to create/modify a forum
 		if ($mode == 'edit')
 		{
@@ -189,12 +206,9 @@ switch ($mode)
 
 			$forum_password_confirm = $forum_password;
 
-			$flags = explode(':', $forum_rules_flags);
-		
-			$bbcode_checked		= ((int) $flags[0] & 1) ? ' checked="checked"' : '';
-			$smilies_checked	= ((int) $flags[0] & 2) ? ' checked="checked"' : '';
-			$urls_checked		= ((int) $flags[0] & 4) ? ' checked="checked"' : '';
-			unset($flags);
+			$bbcode_checked		= ($forum_rules_flags & 1) ? ' checked="checked"' : '';
+			$smilies_checked	= ($forum_rules_flags & 2) ? ' checked="checked"' : '';
+			$urls_checked		= ($forum_rules_flags & 4) ? ' checked="checked"' : '';
 		}
 		else
 		{
@@ -221,22 +235,23 @@ switch ($mode)
 			}
 		}
 
-		// Forum Rules
 		if ($forum_rules)
 		{
 			include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-
-			// Split text rules (we saved the status and bbcode codes here)
-			if (strpos($forum_rules_flags, ':') === false && is_numeric($forum_rules_flags))
-			{
-				// text not parsed yet... a hard time for us...
-				$forum_rules_flags = 0;
-				$forum_rules = parse_text_insert($forum_rules, request_var('parse_bbcode', false), request_var('parse_smilies', false), request_var('parse_urls', false), $forum_rules_flags);
-			}
-
-			$forum_rules_preview = parse_text_display($forum_rules, $forum_rules_flags);
-		}
+			include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		
+			$message_parser = new parse_message($forum_rules);
+			if (isset($forum_rules_bbcode_uid))
+			{
+				$message_parser->bbcode_uid = $forum_rules_bbcode_uid;
+				$message_parser->bbcode_bitfield = $forum_rules_bbcode_bitfield;
+			}
+			else
+			{
+				$message_parser->parse(false, ($forum_rules_flags & 1), ($forum_rules_flags & 4), ($forum_rules_flags & 2));
+			}
+		}
+
 		$forum_type_options = '';
 		$forum_type_ary = array(FORUM_CAT => 'CAT', FORUM_POST => 'FORUM', FORUM_LINK => 'LINK');
 		foreach ($forum_type_ary as $value => $lang)
@@ -390,19 +405,26 @@ switch ($mode)
 		<td class="row2"><input class="post" type="text" size="40" name="forum_rules_link" value="<?php echo $forum_rules_link ?>" /></td>
 	</tr>
 <?php
-	if ($forum_rules_preview)
+	if ($forum_rules)
 	{
 ?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_RULES_PREVIEW'] ?>: </b></td>
-		<td class="row2"><?php echo $forum_rules_preview; ?></td>
+		<td class="row2"><?php echo $message_parser->format_display(false, ($forum_rules_flags & 1), ($forum_rules_flags & 4), ($forum_rules_flags & 2), false); ?></td>
 	</tr>
 <?php
 	}
 ?>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['FORUM_RULES'] ?>: </b><br /><span class="gensmall"><?php echo $user->lang['FORUM_RULES_EXPLAIN']; ?></span></td>
-		<td class="row2"><table cellspacing="2" cellpadding="0" border="0"><tr><td colspan="6"><textarea class="post" rows="4" cols="70" name="forum_rules"><?php echo ($forum_rules) ? parse_text_form_display($forum_rules, $forum_rules_flags) : ''; ?></textarea></td></tr><tr>
+		<td class="row2"><table cellspacing="2" cellpadding="0" border="0"><tr><td colspan="6"><textarea class="post" rows="4" cols="70" name="forum_rules">
+<?php 
+		if ($forum_rules)
+		{
+			$message_parser->decode_message();
+			echo $message_parser->message;
+		}
+?></textarea></td></tr><tr>
 			<td width="10"><input type="checkbox" name="parse_bbcode"<?php echo $bbcode_checked; ?> /></td><td><?php echo $user->lang['PARSE_BBCODE']; ?></td><td width="10"><input type="checkbox" name="parse_smilies"<?php echo $smilies_checked; ?> /></td><td><?php echo $user->lang['PARSE_SMILIES']; ?></td><td width="10"><input type="checkbox" name="parse_urls"<?php echo $urls_checked; ?> /></td><td><?php echo $user->lang['PARSE_URLS']; ?></td></tr></table>
 		</td>
 	</tr>
@@ -969,21 +991,6 @@ function update_forum_data(&$forum_data)
 	unset($forum_data['prune_announce']);
 	unset($forum_data['prune_sticky']);
 	unset($forum_data['forum_password_confirm']);
-
-	// Parse Forum Rules
-	$forum_data['forum_rules_flags'] = 0;
-
-	if ($forum_data['forum_rules'])
-	{
-		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-
-		$forum_data['forum_rules'] = parse_text_insert($forum_data['forum_rules'], $forum_data['rules_allow_bbcode'], $forum_data['rules_allow_smilies'], $forum_data['rules_allow_urls'], $forum_data['forum_rules_flags']);
-	}
-
-	unset($forum_data['rules_allow_smilies']);
-	unset($forum_data['rules_allow_urls']);
-	unset($forum_data['rules_allow_bbcode']);
 
 	// What are we going to do tonight Brain? The same thing we do everynight,
 	// try to take over the world ... or decide whether to continue update

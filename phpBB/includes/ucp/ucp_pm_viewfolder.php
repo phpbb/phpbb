@@ -167,8 +167,6 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 //				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;mode=mod_queue&amp;t=$topic_id")
 			);
 
-			$i++;
-
 			unset($folder_info['rowset'][$message_id]);
 		}
 	
@@ -270,7 +268,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 		'PAGE_NUMBER'	=> on_page($pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
-		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post_pm', $post_alt),
+		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('btn_locked', 'PM_LOCKED') : $user->img('btn_post_pm', 'POST_PM'),
 
 		'REPORTED_IMG'	=> $user->img('icon_reported', 'MESSAGE_REPORTED'),
 

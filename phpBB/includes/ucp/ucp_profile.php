@@ -359,6 +359,8 @@ class ucp_profile extends module
 
 				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
+				$s_hidden_fields = '';
+
 				$var_ary = array(
 					'enable_html'		=> (bool) $config['allow_html'],
 					'enable_bbcode'		=> (bool) $config['allow_bbcode'],
@@ -373,8 +375,18 @@ class ucp_profile extends module
 					$$var = request_var($var, $default);
 				}
 
-				if ($submit)
+				$html_status = ($config['allow_html']) ? true : false; 
+				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
+				$smilies_status = ($config['allow_smilies']) ? true : false; 
+
+				// NOTE: allow_img and allow_flash do not exist in config table
+				$img_status = ($config['allow_img']) ? true : false; 
+				$flash_status = ($config['allow_flash']) ? true : false; 
+
+				if ($submit || $preview)
 				{
+					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+
 					if (strlen($signature) > $config['max_sig_chars'])
 					{
 						$error[] = $user->lang['SIGNATURE_TOO_LONG'];
@@ -382,62 +394,44 @@ class ucp_profile extends module
 
 					if (!sizeof($error))
 					{
-						include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-
 						$message_parser = new parse_message($signature);
-						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
 
-						$sql_ary = array(
-							'user_sig'					=> (string) $message_parser->message,
-							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
-							'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
-						);
+						// Allowing Quote BBCode
+						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+						
+						if (sizeof($message_parser->warn_msg))
+						{
+							$error[] = implode('<br />', $message_parser->warn_msg);
+						}
+						
+						if (!sizeof($error) && $submit)
+						{
+							$sql_ary = array(
+								'user_sig'					=> (string) $message_parser->message, 
+								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+								'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
+							);
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+							$sql = 'UPDATE ' . USERS_TABLE . ' 
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
 
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
-						trigger_error($message);
+							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+							trigger_error($message);
+						}
 					}
 				}
 
 				$signature_preview = '';
 				if ($preview)
 				{
-					$signature_preview = $signature;
-
-					// Fudge-o-rama ...
-					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-
-					$message_parser = new parse_message($signature_preview);
-					$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-					$signature_preview = $message_parser->message;
-
-					if ($enable_bbcode)
-					{
-						include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-						$bbcode = new bbcode($message_parser->bbcode_bitfield);
-
-						$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
-					}
-					// If we allow users to disable display of emoticons
-					// we'll need an appropriate check and preg_replace here
-					$signature_preview = smilie_text($signature_preview, !$enable_smilies);
-
-					// Replace naughty words such as farty pants
-					$signature_preview = str_replace("\n", '<br />', censor_text($signature_preview));
+					// Now parse it for displaying
+					$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+					unset($message_parser);
 				}
 
-				$html_status = ($config['allow_html']) ? true : false;
-				$bbcode_status = ($config['allow_bbcode']) ? true : false;
-				$smilies_status = ($config['allow_smilies']) ? true : false;
-				// NOTE: allow_img and allow_flash do not exist in config table
-				$img_status = ($config['allow_img']) ? true : false;
-				$flash_status = ($config['allow_flash']) ? true : false;
-
-				decode_text($signature, $user->data['user_sig_bbcode_uid']);
+				decode_message($signature, $user->data['user_sig_bbcode_uid']);
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -449,24 +443,27 @@ class ucp_profile extends module
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'HTML_STATUS'	=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
-					'BBCODE_STATUS'	=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
-					'SMILIES_STATUS'=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-					'IMG_STATUS'	=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'	=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+					'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
+					'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+					'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+					'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+					'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_HTML_ALLOWED'	=> $config['allow_html'],
-					'S_BBCODE_ALLOWED'	=> $config['allow_bbcode'],
-					'S_SMILIES_ALLOWED'	=> $config['allow_smilies'],)
+					'S_HTML_ALLOWED'		=> $config['allow_html'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_bbcode'], 
+					'S_SMILIES_ALLOWED'		=> $config['allow_smilies'],)
 				);
 				break;
 
 			case 'avatar':
 
 				$display_gallery = (isset($_POST['displaygallery'])) ? true : false;
-				$avatar_category = request_var('category', '');
+				$category = request_var('category', '');
+				$delete = (isset($_POST['delete'])) ? true : false;
+				$avatarselect = request_var('avatarselect', '');
+				$s_hidden_fields = '';
 
 				// Can we upload?
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
@@ -506,6 +503,12 @@ class ucp_profile extends module
 						{
 							list($type, $filename, $width, $height) = avatar_remote($data, $error);
 						}
+						else if ($avatarselect && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
+						{
+							$type = AVATAR_GALLERY;
+							$filename = $avatarselect;
+							list($width, $height) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $filename);
+						}
 						else if ($delete && $auth->acl_get('u_chgavatar'))
 						{
 							$type = $filename = $width = $height = '';
@@ -530,7 +533,7 @@ class ucp_profile extends module
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'])
+							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'] && $user->data['user_avatar_type'] != AVATAR_GALLERY)
 							{
 								avatar_delete($user->data['user_avatar']);
 							}
@@ -543,6 +546,9 @@ class ucp_profile extends module
 
 					extract($data);
 					unset($data);
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$lang['\\1'])) ? \$lang['\\1'] : '\\1'", $error);
 				}
 
 				// Generate users avatar
@@ -573,16 +579,16 @@ class ucp_profile extends module
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),)
 				);
 
+				$s_categories = $s_pages = '';
 				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
 				{
 					$avatar_list = avatar_gallery($category, $error);
-
 					$category = (!$category) ? key($avatar_list) : $category;
 
 					$s_category_options = '';
 					foreach (array_keys($avatar_list) as $cat)
 					{
-						$s_category_options .= '<option value="' . $cat . '">' . $cat . '</option>';
+						$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
 					}
 
 					$template->assign_vars(array(
@@ -590,7 +596,9 @@ class ucp_profile extends module
 						'S_CAT_OPTIONS'		=> $s_category_options)
 					);
 
-					foreach ($avatar_list[$category] as $avatar_row_ary)
+					$avatar_list = $avatar_list[$category];
+
+					foreach ($avatar_list as $avatar_row_ary)
 					{
 						$template->assign_block_vars('avatar_row', array());
 
@@ -602,10 +610,12 @@ class ucp_profile extends module
 							);
 
 							$template->assign_block_vars('avatar_row.avatar_option_column', array(
-								'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],)
+								'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+								'S_OPTIONS_AVATAR'	=> $avatar_col_ary['file'])
 							);
 						}
 					}
+					unset($avatar_list);			
 				}
 				else
 				{

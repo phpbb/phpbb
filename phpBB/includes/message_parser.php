@@ -18,6 +18,11 @@
 	- need size limit checks on img/flash tags ... probably warrants some discussion
 */
 
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 // case-insensitive strpos() - needed for some functions
 if (!function_exists('stripos'))
 {
@@ -32,183 +37,22 @@ if (!function_exists('stripos'))
 	}
 }
 
-// Main message parser for posting, pm, etc. takes raw message
-// and parses it for attachments, html, bbcode and smilies
-class parse_message
+if (!class_exists('bbcode'))
+{
+	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+}
+
+// BBCODE_FIRSTPASS
+//
+
+// BBCODE first pass class (functions for parsing messages for db storage)
+class bbcode_firstpass extends bbcode
 {
 	var $message = '';
 	var $warn_msg = array();
 
-	var $bbcodes = array();
-	var $bbcode_uid = '';
-	var $bbcode_bitfield = 0;
-
-	var $attachment_data = array();
-	var $filename_data = array();
-
-	var $smilies = '';
-
-	// Init - give message here or manually
-	function parse_message($message = '')
-	{
-		// Init BBCode UID
-		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
-
-		if ($message)
-		{
-			$this->message = $message;
-		}
-	}
-
-	// Parse Message : public
-	function parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true)
-	{
-		global $config, $db, $user;
-
-		// Do some general 'cleanup' first before processing message,
-		// e.g. remove excessive newlines(?), smilies(?)
-		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
-		$replace = array("\n", '', "\n\n");
-		$this->message = preg_replace($match, $replace, trim($this->message));
-
-		// Message length check
-		if (!strlen($this->message) || ($config['max_post_chars'] && strlen($this->message) > $config['max_post_chars']))
-		{
-			$this->warn_msg[] = (!strlen($this->message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
-			return $this->warn_msg;
-		}
-
-		// Parse HTML
-		if ($allow_html && $config['allow_html_tags'])
-		{
-			$this->html($config['allow_html_tags']);
-		}
-
-		// Parse BBCode
-		if ($allow_bbcode && strpos($this->message, '[') !== false)
-		{
-			$this->bbcode_init();
-			$disallow = array('img', 'flash', 'quote');
-			foreach ($disallow as $bool)
-			{
-				if (!${'allow_' . $bool . '_bbcode'})
-				{
-					$this->bbcodes[$bool]['disabled'] = true;
-				}
-			}
-			$this->bbcode();
-		}
-
-		// Parse Emoticons
-		if ($allow_smilies)
-		{
-			$this->emoticons($config['max_post_smilies']);
-		}
-
-		// Parse URL's
-		if ($allow_magic_url)
-		{
-			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
-		}
-		
-		return implode('<br />', $this->warn_msg);
-	}
-
-	// Parse HTML
-	function html($allowed_tags)
-	{
-		// If $allow_html is true then "allowed_tags" are converted back from entity
-		// form, others remain
-		$allowed_tags = split(',', $allowed_tags);
-			
-		if (sizeof($allowed_tags))
-		{
-			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
-		}
-	}
-
-	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
-	// Cuts down displayed size of link if over 50 chars, turns absolute links
-	// into relative versions when the server/script path matches the link
-	function magic_url($server_protocol, $server_name, $server_port, $script_path)
-	{
-		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
-
-		$match = $replace = array();
-
-		// Be sure to not let the matches cross over. ;)
-
-		// relative urls for this board
-		$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
-		$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
-
-		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
-		$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
-
-		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
-		$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
-
-		// matches an email@domain type address at the start of a line, or after a space.
-		$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
-		$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
-
-		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
-			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
-			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
-			default a match against < will always fail, since it is a &lt; sequence within the text.
-			Replacing with <&amp;lt; and switching back thereafter produces no problems, because < will never show up with &amp;lt; in
-			the same text (due to this specialcharing). The < is put in front of &amp;lt; to let the url break gracefully.
-			I hope someone can lend me a hand here, telling me how to achive the wanted result without switching to ereg_replace.
-		*/
-		$this->message = preg_replace($match, $replace, str_replace('&lt;', '<&amp;lt;', $this->message));
-		$this->message = str_replace('<&amp;lt;', '&lt;', $this->message);
-	}
-
-	// Parse Emoticons
-	function emoticons($max_smilies = 0)
-	{
-		global $db, $user, $phpbb_root_path;
-
-		// NOTE: obtain_* function? chaching the table contents?
-		// For now setting the ttl to 10 minutes
-		$sql = 'SELECT * 
-			FROM ' . SMILIES_TABLE;
-		$result = $db->sql_query($sql, 600);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$match = $replace = array();
-
-			do
-			{
-				// (assertion)
-				$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			if ($max_smilies)
-			{
-				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
-				unset($matches);
-
-				if ($num_matches !== false && $num_matches > $max_smilies)
-				{
-					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
-					return;
-				}
-			}
-
-			$this->message = trim(preg_replace($match, $replace, $this->message));
-		}
-		$db->sql_freeresult($result);
-	}
-
 	// Parse BBCode
-	function bbcode()
+	function parse_bbcode()
 	{
 		if (!$this->bbcodes)
 		{
@@ -288,6 +132,7 @@ class parse_message
 				$rowset[] = $row;
 			}
 		}
+		
 		foreach ($rowset as $row)
 		{
 			$this->bbcodes[$row['bbcode_tag']] = array(
@@ -336,7 +181,7 @@ class parse_message
 			}
 
 			$code = substr($code, 0, -7);
-			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
+//			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
 
 			switch (strtolower($stx))
 			{
@@ -392,7 +237,7 @@ class parse_message
 					$str_from = array('<', '>', '[', ']', '.');
 					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;');
 
-					$out .= '[code:' . $this->bbcode_uid . ']' . trim(str_replace($str_from, $str_to, $code)) . '[/code:' . $this->bbcode_uid . ']';
+					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 			}
 
 			if (preg_match('#(.*?)\[code(?:=[a-z]+)?\](.+)#is', $in, $m))
@@ -576,7 +421,7 @@ class parse_message
 
 					array_push($close_tags, '/quote:' . $this->bbcode_uid);
 
-					if ($m[1])
+					if (isset($m[1]) && $m[1])
 					{
 						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;$1', $m[1]);
 						$end_tags = array();
@@ -708,6 +553,271 @@ class parse_message
 		}
 
 		return '[url' . (($var1) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
+	}
+}
+
+// PARSE_MESSAGE EXTENDS BBCODE 
+//
+
+// Main message parser for posting, pm, etc. takes raw message
+// and parses it for attachments, html, bbcode and smilies
+class parse_message extends bbcode_firstpass
+{
+	var $attachment_data = array();
+	var $filename_data = array();
+
+	// Helps ironing out user error
+	var $message_status = '';
+
+	var $allow_img_bbcode = true;
+	var $allow_flash_bbcode = true;
+	var $allow_quote_bbcode = true;
+
+	// Init - give message here or manually
+	function parse_message($message = '')
+	{
+		// Init BBCode UID
+		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
+
+		if ($message)
+		{
+			$this->message = $message;
+		}
+	}
+
+	// Parse Message : public
+	function parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $update_this_message = true)
+	{
+		global $config, $db, $user;
+
+		$this->allow_img_bbcode = $allow_img_bbcode;
+		$this->allow_flash_bbcode = $allow_flash_bbcode;
+		$this->allow_quote_bbcode = $allow_quote_bbcode;
+
+		// If false, then the parsed message get returned but internal message not processed.
+		if (!$update_this_message)
+		{
+			$tmp_message = $this->message;
+			$return_message = &$this->message;
+		}
+
+		if ($this->message_status == 'display')
+		{
+			$this->decode_message();
+		}
+
+		// Do some general 'cleanup' first before processing message,
+		// e.g. remove excessive newlines(?), smilies(?)
+		// Transform \r\n and \r into \n
+		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
+		$replace = array("\n", '', "\n\n");
+		$this->message = preg_replace($match, $replace, trim($this->message));
+
+		// Message length check
+		if (!strlen($this->message) || ($config['max_post_chars'] && strlen($this->message) > $config['max_post_chars']))
+		{
+			$this->warn_msg[] = (!strlen($this->message)) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
+			return $this->warn_msg;
+		}
+
+		// Parse HTML
+		if ($allow_html && $config['allow_html_tags'])
+		{
+			$this->html($config['allow_html_tags']);
+		}
+
+		// Parse BBCode
+		if ($allow_bbcode && strpos($this->message, '[') !== false)
+		{
+			$this->bbcode_init();
+			$disallow = array('img', 'flash', 'quote');
+			foreach ($disallow as $bool)
+			{
+				if (!${'allow_' . $bool . '_bbcode'})
+				{
+					$this->bbcodes[$bool]['disabled'] = true;
+				}
+			}
+			$this->parse_bbcode();
+		}
+
+		// Parse Emoticons
+		if ($allow_smilies)
+		{
+			$this->emoticons($config['max_post_smilies']);
+		}
+
+		// Parse URL's
+		if ($allow_magic_url)
+		{
+			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
+		}
+
+		if (!$update_this_message)
+		{
+			unset($this->message);
+			$this->message = $tmp_message;
+			return $return_message;
+		}
+
+		$this->message_status = 'parsed';
+		return;
+		//return implode('<br />', $this->warn_msg);
+	}
+
+	// Formatting text for display
+	function format_display($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
+	{
+		// If false, then the parsed message get returned but internal message not processed.
+		if (!$update_this_message)
+		{
+			$tmp_message = $this->message;
+			$return_message = &$this->message;
+		}
+
+		if ($this->message_status == 'plain')
+		{
+			// Force updating message - of course.
+			$this->parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, true);
+		}
+
+		// Parse BBcode
+		if ($allow_bbcode)
+		{
+			$this->bbcode_cache_init();
+
+			// We are giving those parameters to be able to use the bbcode class on its own
+			$this->bbcode_second_pass($this->message, $this->bbcode_uid);
+		}
+
+		$this->message = smilie_text($this->message, !$allow_smilies);
+
+		// Replace naughty words such as farty pants
+		$this->message = str_replace("\n", '<br />', censor_text($this->message));
+
+		if (!$update_this_message)
+		{
+			unset($this->message);
+			$this->message = $tmp_message;
+			return $return_message;
+		}
+
+		$this->message_status = 'display';
+		return;
+	}	
+	
+	// Decode message to be placed back into form box
+	function decode_message($custom_bbcode_uid = '', $update_this_message = true)
+	{
+		// If false, then the parsed message get returned but internal message not processed.
+		if (!$update_this_message)
+		{
+			$tmp_message = $this->message;
+			$return_message = &$this->message;
+		}
+
+		($custom_bbcode_uid) ? decode_message($this->message, $custom_bbcode_uid) : decode_message($this->message, $this->bbcode_uid);
+
+		if (!$update_this_message)
+		{
+			unset($this->message);
+			$this->message = $tmp_message;
+			return $return_message;
+		}
+
+		$this->message_status = 'plain';
+	}
+	
+	// Parse HTML
+	function html($allowed_tags)
+	{
+		// If $allow_html is true then "allowed_tags" are converted back from entity
+		// form, others remain
+		$allowed_tags = split(',', $allowed_tags);
+			
+		if (sizeof($allowed_tags))
+		{
+			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<$1$2>', $this->message);
+		}
+	}
+
+	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
+	// Cuts down displayed size of link if over 50 chars, turns absolute links
+	// into relative versions when the server/script path matches the link
+	function magic_url($server_protocol, $server_name, $server_port, $script_path)
+	{
+		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
+
+		$match = $replace = array();
+
+		// Be sure to not let the matches cross over. ;)
+
+		// relative urls for this board
+		$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
+		$replace[] = '$1<!-- l --><a href="$2/$3" target="_blank">$3</a><!-- l -->';
+
+		// matches a xxxx://aaaaa.bbb.cccc. ...
+		$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
+		$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- m -->'";
+
+		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+		$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
+		$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace(' ', '%20', '\$2'), 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- w -->'";
+
+		// matches an email@domain type address at the start of a line, or after a space.
+		$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
+		$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+
+		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
+			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
+			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
+			default a match against < will always fail, since it is a &lt; sequence within the text.
+			Replacing with <&amp;lt; and switching back thereafter produces no problems, because < will never show up with &amp;lt; in
+			the same text (due to this specialcharing). The < is put in front of &amp;lt; to let the url break gracefully.
+			I hope someone can lend me a hand here, telling me how to achive the wanted result without switching to ereg_replace.
+		*/
+		$this->message = preg_replace($match, $replace, str_replace('&lt;', '<&amp;lt;', $this->message));
+		$this->message = str_replace('<&amp;lt;', '&lt;', $this->message);
+	}
+
+	// Parse Emoticons
+	function emoticons($max_smilies = 0)
+	{
+		global $db, $user, $phpbb_root_path;
+
+		// NOTE: obtain_* function? chaching the table contents?
+		// For now setting the ttl to 10 minutes
+		$sql = 'SELECT * 
+			FROM ' . SMILIES_TABLE;
+		$result = $db->sql_query($sql, 600);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$match = $replace = array();
+
+			do
+			{
+				// (assertion)
+				$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILE_PATH}/' . $row['smile_url'] . '" border="0" alt="' . $row['emoticon'] . '" title="' . $row['emoticon'] . '" /><!-- s' . $row['code'] . ' -->';
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			if ($max_smilies)
+			{
+				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+				unset($matches);
+
+				if ($num_matches !== false && $num_matches > $max_smilies)
+				{
+					$this->warn_msg[] = $user->lang['TOO_MANY_SMILIES'];
+					return;
+				}
+			}
+
+			$this->message = trim(preg_replace($match, $replace, $this->message));
+		}
+		$db->sql_freeresult($result);
 	}
 
 	// Parse Attachments
@@ -889,6 +999,9 @@ class parse_message
 	{
 		global $auth, $forum_id, $user, $config;
 
+		// Need a second look at
+		return;
+		/*
 		// Process poll options
 		if ($poll_data['poll_option_text'] && (($auth->acl_get('f_poll', $forum_id) && !$poll_data['poll_last_vote']) || $auth->acl_get('m_edit', $forum_id)))
 		{
@@ -902,6 +1015,7 @@ class parse_message
 
 			$poll_data['poll_option_text'] = $this->message;
 			$this->message = $message;
+			unset($message);
 
 			$poll['poll_options'] = explode("\n", trim($poll_data['poll_option_text']));
 			$poll['poll_options_size'] = sizeof($poll['poll_options']);
@@ -934,6 +1048,7 @@ class parse_message
 
 		$poll['poll_start'] = $poll_data['poll_start'];
 		$poll['poll_max_options'] = ($poll_data['poll_max_options'] < 1) ? 1 : (($poll_data['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll_data['poll_max_options']);
+		*/
 	}
 }
 

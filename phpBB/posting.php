@@ -157,6 +157,11 @@ if ($sql)
 	$poll_length = (isset($poll_length)) ? (($poll_length) ? (int) $poll_length / 86400 : (int) $poll_length) : 0;
 	$poll_start = (isset($poll_start)) ? (int) $poll_start : 0;
 	$poll_options = array();
+	
+	if (!isset($icon_id))
+	{
+		$icon_id = 0;
+	}
 
 	// Get Poll Data
 	if ($poll_start)
@@ -176,6 +181,12 @@ if ($sql)
 
 	$message_parser = new parse_message();
 
+	if (isset($post_text))
+	{
+		$message_parser->message = $post_text;
+		unset($post_text);
+	}
+
 	$message_parser->get_submitted_attachment_data();
 
 	// Set uninitialized variables
@@ -187,6 +198,7 @@ if ($sql)
 			$$var_name = $default_value;
 		}
 	}
+	unset($uninit, $var_name, $default_value);
 
 	if ($post_attachment && !$submit && !$refresh && !$preview && $mode == 'edit')
 	{
@@ -212,7 +224,8 @@ if ($sql)
 	}
 
 	$enable_urls = $enable_magic_url;
-
+	
+	$enable_html = (isset($enable_html)) ? $enable_html : $config['allow_html'];
 
 	if (!in_array($mode, array('quote', 'edit', 'delete')))
 	{
@@ -240,6 +253,8 @@ if ($sql)
 		}
 		$db->sql_freeresult($result);
 	}
+
+	$check_value = (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 }
 
 // Notify user checkbox
@@ -479,7 +494,6 @@ if ($submit || $preview || $refresh)
 	$topic_cur_post_id	= request_var('topic_cur_post_id', 0);
 
 	$subject			= request_var('subject', '');
-//	$subject			= request_var('subject', '', false, true);
 
 	if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
 	{
@@ -488,8 +502,6 @@ if ($submit || $preview || $refresh)
 
 	$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
 	$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
-//	$message_parser->message = request_var('message', '', true, true);
-
 
 	$username			= (isset($_POST['username'])) ? request_var('username', '') : $username;
 	$post_edit_reason	= (isset($_POST['edit_reason']) && !empty($_POST['edit_reason']) && $mode == 'edit' && $user->data['user_id'] != $poster_id) ? request_var('edit_reason', '') : '';
@@ -510,10 +522,15 @@ if ($submit || $preview || $refresh)
 
 	$poll_delete		= (isset($_POST['poll_delete']));
 
-	// Faster than crc32
-	$check_value	= (($preview || $refresh) && isset($_POST['status_switch'])) ? (int) $_POST['status_switch'] : (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
-	$status_switch	= (isset($_POST['status_switch']) && (int) $_POST['status_switch'] != $check_value);
-
+	if ($submit)
+	{
+		$status_switch	= (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+		$status_switch = ($status_switch != $check_value);
+	}
+	else
+	{
+		$status_switch = 1;
+	}
 
 	if ($poll_delete && (($mode == 'edit' && $poll_options && !$poll_last_vote && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
@@ -564,9 +581,9 @@ if ($submit || $preview || $refresh)
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
-	$update_message = ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview) ? true : false;
 
 	// Check checksum ... don't re-parse message if the same
+	$update_message = ($mode != 'edit' || $message_md5 != $post_checksum || $status_switch) ? true : false;
 
 	// Parse message
 	if ($update_message)
@@ -773,14 +790,18 @@ if ($submit || $preview || $refresh)
 				'notify_set'			=> $notify_set,
 				'poster_ip'				=> (isset($poster_ip)) ? (int) $poster_ip : $user->ip,
 				'post_edit_locked'		=> (int) $post_edit_locked,
-				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield
+				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_uid'			=> $message_parser->bbcode_uid,
+				'message'				=> $message_parser->message,
+				'attachment_data'		=> $message_parser->attachment_data,
+				'filename_data'			=> $message_parser->filename_data
 			);
+			unset($message_parser);
 
-			submit_post($mode, $message_parser->message, $subject, $username, $topic_type, $message_parser->bbcode_uid, $poll, $message_parser->attachment_data, $message_parser->filename_data, $post_data, $update_message);
+			submit_post($mode, $subject, $username, $topic_type, $poll, $post_data, $update_message);
 		}
 	}
 
-	$post_text = $message_parser->message;
 	$post_subject = stripslashes($subject);
 }
 
@@ -789,33 +810,43 @@ if (!sizeof($error) && $preview)
 {
 	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
-	$preview_subject = censor_text($subject);
+	$preview_message = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
 
 	$preview_signature = ($mode == 'edit') ? $user_sig : $user->data['user_sig'];
 	$preview_signature_uid = ($mode == 'edit') ? $user_sig_bbcode_uid : $user->data['user_sig_bbcode_uid'];
 	$preview_signature_bitfield = ($mode == 'edit') ? $user_sig_bbcode_bitfield : $user->data['user_sig_bbcode_bitfield'];
 
-	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-	$bbcode = new bbcode($message_parser->bbcode_bitfield | $preview_signature_bitfield);
+	// Signature
+	if ($enable_sig && $config['allow_sig'] && $preview_signature && $auth->acl_get('f_sigs', $forum_id))
+	{
+		$parse_sig = new parse_message($preview_signature);
+		$parse_sig->bbcode_uid = $preview_signature_uid;
+		$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
 
-	$preview_message = $message_parser->message;
-	format_display($preview_message, $preview_signature, $message_parser->bbcode_uid, $preview_signature_uid, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $enable_sig);
-
+		// Not sure about parameters for bbcode/smilies/urls... in signatures
+		$parse_sig->format_display($config['allow_html'], $config['allow_bbcode'], true, $config['allow_smilies']);
+		$preview_signature = $parse_sig->message;
+		unset($parse_sig);
+	}
+	else
+	{
+		$preview_signature = '';
+	}
+	
+	$preview_subject = censor_text($subject);
+	
 	// Poll Preview
 	if (($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && !$poll_last_vote)) && ($auth->acl_get('f_poll', $forum_id) || $auth->acl_get('m_edit', $forum_id)) && $poll_title)
 	{
-		decode_text($poll_title, $message_parser->bbcode_uid);
-		$preview_poll_title = format_display($poll_title, $null, $message_parser->bbcode_uid, false, $enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false, false);
-
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS' => (sizeof($poll_options)),
-			'POLL_QUESTION'		 => $preview_poll_title)
+			'POLL_QUESTION'		 => $poll_title)
 		);
 
 		foreach ($poll_options as $option)
 		{
 			$template->assign_block_vars('poll_option', array(
-				'POLL_OPTION_CAPTION'	=> format_display(stripslashes($option), $enable_html, $enable_bbcode, $message_parser->bbcode_uid, $enable_urls, $enable_smilies, false, false))
+				'POLL_OPTION_CAPTION'	=> $option)
 			);
 		}
 	}
@@ -829,39 +860,39 @@ if (!sizeof($error) && $preview)
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
 		display_attachments($forum_id, 'attachment', $message_parser->attachment_data, $update_count, true);
 	}
-}
 
+	if (!sizeof($error))
+	{
+		$template->assign_vars(array(
+			'PREVIEW_SUBJECT'		=> $preview_subject,
+			'PREVIEW_MESSAGE'		=> $preview_message,
+			'PREVIEW_SIGNATURE'		=> $preview_signature,
+
+			'S_DISPLAY_PREVIEW'		=> true)
+		);
+	}
+
+	unset($post_text);
+}
 
 // Decode text for message display
 $bbcode_uid = ($mode == 'quote' && !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
-
-decode_text($post_text, $bbcode_uid);
-
-if ($subject)
-{
-	decode_text($subject, $bbcode_uid);
-}
-
-// Save us some processing time. ;)
-if (is_array($poll_options) && sizeof($poll_options))
-{
-	$poll_options_tmp = implode("\n", $poll_options);
-	decode_text($poll_options_tmp);
-	$poll_options = explode("\n", $poll_options_tmp);
-}
-
+$message_parser->decode_message($bbcode_uid);
 
 if ($mode == 'quote' && !$preview && !$refresh)
 {
-	$post_text = '[quote="' . $quote_username . '"]' . censor_text(trim($post_text)) . "[/quote]\n";
+	$message_parser->message = '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 }
-
 
 if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
 {
 	$post_subject = ((!preg_match('/^Re:/', $post_subject)) ? 'Re: ' : '') . censor_text($post_subject);
 }
 
+$attachment_data = $message_parser->attachment_data;
+$filename_data = $message_parser->filename_data;
+$post_text = $message_parser->message;
+unset($message_parser);
 
 // MAIN POSTING PAGE BEGINS HERE
 
@@ -872,7 +903,7 @@ get_moderators($moderators, $forum_id);
 generate_smilies('inline', $forum_id);
 
 // Generate inline attachment select box
-posting_gen_inline_attachments($message_parser);
+posting_gen_inline_attachments($attachment_data);
 
 
 // Do show topic type selection only in first post.
@@ -930,6 +961,8 @@ $forum_data = array(
 	'forum_desc'	=> $forum_desc,
 	'forum_rules'	=> $forum_rules,
 	'forum_rules_flags' => $forum_rules_flags,
+	'forum_rules_bbcode_uid' => $forum_rules_bbcode_uid,
+	'forum_rules_bbcode_bitfield' => $forum_rules_bbcode_bitfield,
 	'forum_rules_link' => $forum_rules_link
 );
 
@@ -941,7 +974,6 @@ generate_forum_rules($forum_data);
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
-$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_gets('f_attach', 'u_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
@@ -958,10 +990,7 @@ $template->assign_vars(array(
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
-	'MESSAGE'				=> trim($post_text),
-	'PREVIEW_SUBJECT'		=> ($preview && !sizeof($error)) ? $preview_subject : '',
-	'PREVIEW_MESSAGE'		=> ($preview && !sizeof($error)) ? $preview_message : '',
-	'PREVIEW_SIGNATURE'		=> ($preview && !sizeof($error)) ? $preview_signature : '',
+	'MESSAGE'				=> $post_text,
 	'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -979,7 +1008,6 @@ $template->assign_vars(array(
 
 	'S_PRIVMSGS'			=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
-	'S_DISPLAY_PREVIEW'		=> ($preview && !sizeof($error)),
 	'S_EDIT_POST'			=> ($mode == 'edit'),
 	'S_EDIT_REASON'			=> ($mode == 'edit' && $user->data['user_id'] != $poster_id),
 	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)),
@@ -1032,9 +1060,10 @@ else if ($mode == 'edit' && $poll_last_vote && ($auth->acl_get('f_poll', $forum_
 }
 
 // Attachment entry
-if ($auth->acl_gets('f_attach', 'u_attach', $forum_id) && $config['allow_attachments'] && $form_enctype)
+// Not using acl_gets here, because it is using OR logic
+if ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype)
 {
-	posting_gen_attachment_entry($message_parser);
+	posting_gen_attachment_entry($attachment_data, $filename_data);
 }
 
 // Output page ...
@@ -1200,7 +1229,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 
 // Submit Post
-function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_uid, $poll, $attach_data, $filename_data, $data, $update_message = true)
+function submit_post($mode, $subject, $username, $topic_type, $poll, $data, $update_message = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template, $phpbb_root_path;
 
@@ -1251,12 +1280,12 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'enable_sig' 		=> $data['enable_sig'],
 				'post_username'		=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : '',
 				'post_subject'		=> $subject,
-				'post_text' 		=> $message,
+				'post_text' 		=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($filename_data['physical_filename']) && sizeof($filename_data['physical_filename'])) ? 1 : 0,
+				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data']['physical_filename'])) ? 1 : 0, // sizeof($data['filename_data']['physical_filename'])
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $bbcode_uid,
+				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked']
 			);
 			break;
@@ -1305,15 +1334,15 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($filename_data['physical_filename']) && sizeof($filename_data['physical_filename'])) ? 1 : 0,
+				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $bbcode_uid,
+				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked'])
 			);
 
 			if ($update_message)
 			{
-				$sql_data[POSTS_TABLE]['sql']['post_text'] = $message;
+				$sql_data[POSTS_TABLE]['sql']['post_text'] = $data['message'];
 			}
 
 			break;
@@ -1333,7 +1362,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'topic_first_poster_name' => ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username'],
 				'topic_type'		=> $topic_type,
 				'topic_time_limit'	=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'	=> (isset($filename_data['physical_filename']) && sizeof($filename_data['physical_filename'])) ? 1 : 0
+				'topic_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data']['physical_filename'])) ? 1 : 0
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1379,7 +1408,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				'poll_max_options'			=> ($poll['poll_options']) ? $poll['poll_max_options'] : 1,
 				'poll_length'				=> ($poll['poll_options']) ? $poll['poll_length'] * 86400 : 0,
 
-				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((sizeof($filename_data['physical_filename'])) ? 1 : 0) : $data['topic_attachment']
+				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((sizeof($data['filename_data']['physical_filename'])) ? 1 : 0) : $data['topic_attachment']
 			);
 			break;
 	}
@@ -1539,11 +1568,11 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Submit Attachments
-	if (count($attach_data) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
+	if (sizeof($data['attachment_data']) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
 	{
 		$space_taken = $files_added = 0;
 
-		foreach ($attach_data as $pos => $attach_row)
+		foreach ($data['attachment_data'] as $pos => $attach_row)
 		{
 			if ($attach_row['attach_id'])
 			{
@@ -1580,7 +1609,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			}
 		}
 
-		if (count($attach_data))
+		if (sizeof($data['attachment_data']))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 1
@@ -1675,10 +1704,10 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	}
 
 	// Fulltext parse
-	if ($data['message_md5'] != $data['post_checksum'] && $data['enable_indexing'])
+	if ($update_message && $data['enable_indexing'])
 	{
 		$search = new fulltext_search();
-		$result = $search->add($mode, $data['post_id'], $message, $subject);
+		$result = $search->add($mode, $data['post_id'], $data['message'], $subject);
 	}
 
 	$db->sql_transaction('commit');

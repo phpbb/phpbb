@@ -1019,7 +1019,14 @@ function get_folder_status($folder_id, $folder)
 {
 	global $db, $user, $config;
 
-	$folder = $folder[$folder_id];
+	if (isset($folder[$folder_id]))
+	{
+		$folder = $folder[$folder_id];
+	}
+	else
+	{
+		return false;
+	}
 	$return = array();
 
 	$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
@@ -1036,5 +1043,372 @@ function get_folder_status($folder_id, $folder)
 
 	return $return;
 }
+
+//
+// COMPOSE MESSAGES
+//
+
+// Submit PM
+function submit_pm($mode, $subject, $data, $update_message, $put_in_outbox = true)
+{
+	global $db, $auth, $user, $config, $phpEx, $SID, $template;
+
+	// We do not handle erasing posts here
+	if ($mode == 'delete')
+	{
+		return;
+	}
+	
+	$current_time = time();
+
+	// Collect some basic informations about which tables and which rows to update/insert
+	$sql_data = array();
+	$root_level = 0;
+
+	// Recipient Informations
+	$recipients = $to = $bcc = array();
+
+	if ($mode != 'edit')
+	{
+		// Build Recipient List
+		// u|g => array($user_id => 'to'|'bcc')
+		foreach (array('u', 'g') as $ug_type)
+		{
+			if (sizeof($data['address_list'][$ug_type]))
+			{
+				foreach ($data['address_list'][$ug_type] as $id => $field)
+				{
+					$field = ($field == 'to') ? 'to' : 'bcc';
+					if ($ug_type == 'u')
+					{
+						$recipients[$id] = $field;
+					}
+					${$field}[] = $ug_type . '_' . (int) $id;
+				}
+			}
+		}
+
+		if (sizeof($data['address_list']['g']))
+		{
+			$sql = 'SELECT group_id, user_id
+				FROM ' . USER_GROUP_TABLE . '
+				WHERE group_id IN (' . implode(', ', array_keys($data['address_list']['g'])) . ')
+					AND user_pending = 0';
+			$result = $db->sql_query($sql);
+	
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
+				$recipients[$row['user_id']] = $field;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		if (!sizeof($recipients))
+		{
+			trigger_error('NO_RECIPIENT');
+		}
+	}
+
+	$sql = '';
+	
+	switch ($mode)
+	{
+		case 'reply':
+		case 'quote':
+			$root_level = ($data['reply_from_root_level']) ? $data['reply_from_root_level'] : $data['reply_from_msg_id']; 
+
+			// Set message_replied switch for this user
+			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+				SET replied = 1
+				WHERE user_id = ' . $user->data['user_id'] . '
+					AND msg_id = ' . $data['reply_from_msg_id'];
+
+		case 'forward':
+		case 'post':
+			$sql_data = array(
+				'root_level'		=> $root_level,
+				'author_id'			=> (int) $user->data['user_id'],
+				'icon_id'			=> $data['icon_id'], 
+				'author_ip' 		=> $user->ip,
+				'message_time'		=> $current_time,
+				'enable_bbcode' 	=> $data['enable_bbcode'],
+				'enable_html' 		=> $data['enable_html'],
+				'enable_smilies' 	=> $data['enable_smilies'],
+				'enable_magic_url' 	=> $data['enable_urls'],
+				'enable_sig' 		=> $data['enable_sig'],
+				'message_subject'	=> $subject,
+				'message_text' 		=> $data['message'],
+				'message_checksum'	=> $data['message_md5'],
+				'message_encoding'	=> $user->lang['ENCODING'],
+				'message_attachment'=> (sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
+				'bbcode_uid'		=> $data['bbcode_uid'],
+				'to_address'		=> implode(':', $to),
+				'bcc_address'		=> implode(':', $bcc)
+			);
+			break;
+
+		case 'edit':
+			$sql_data = array(
+				'icon_id'			=> $data['icon_id'],
+				'message_edit_time'	=> $current_time,
+				'enable_bbcode' 	=> $data['enable_bbcode'],
+				'enable_html' 		=> $data['enable_html'],
+				'enable_smilies' 	=> $data['enable_smilies'],
+				'enable_magic_url' 	=> $data['enable_urls'],
+				'enable_sig' 		=> $data['enable_sig'],
+				'message_subject'	=> $subject,
+				'message_text' 		=> $data['message'],
+				'message_checksum'	=> $data['message_md5'],
+				'message_encoding'	=> $user->lang['ENCODING'],
+				'message_attachment'=> (sizeof($data['filename_data']['physical_filename'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
+				'bbcode_uid'		=> $data['bbcode_uid']
+			);
+			break;
+	}
+
+	if (sizeof($sql_data))
+	{
+		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'forward')
+		{
+			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
+			$data['msg_id'] = $db->sql_nextid();
+		}
+		else if ($mode == 'edit')
+		{
+			$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
+				SET message_edit_count = message_edit_count + 1, ' . $db->sql_build_array('UPDATE', $sql_data) . ' 
+				WHERE msg_id = ' . $data['msg_id'];
+			$db->sql_query($sql);
+		}
+	}
+	
+	if ($mode != 'edit')
+	{
+		$db->sql_transaction();
+	
+		if ($sql)
+		{
+			$db->sql_query($sql);
+		}
+		unset($sql);
+
+		foreach ($recipients as $user_id => $type)
+		{
+			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'msg_id'	=> $data['msg_id'],
+				'user_id'	=> $user_id,
+				'author_id'	=> $user->data['user_id'],
+				'folder_id'	=> PRIVMSGS_NO_BOX,
+				'new'		=> 1,
+				'unread'	=> 1,
+				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
+			);
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . ' 
+			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1
+			WHERE user_id IN (' . implode(', ', array_keys($recipients)) . ')';
+		$db->sql_query($sql);
+
+		// Put PM into outbox
+		if ($put_in_outbox)
+		{
+			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'msg_id'	=> (int) $data['msg_id'],
+				'user_id'	=> (int) $user->data['user_id'],
+				'author_id'	=> (int) $user->data['user_id'],
+				'folder_id'	=> PRIVMSGS_OUTBOX,
+				'new'		=> 0,
+				'unread'	=> 0,
+				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
+			);
+		}
+
+		$db->sql_transaction('commit');
+	}
+
+	// Set user last post time
+	if ($mode == 'reply' || $mode == 'quote' || $mode == 'forward' || $mode == 'post')
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_lastpost_time = $current_time
+			WHERE user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
+	}
+
+	$db->sql_transaction();
+
+	// Submit Attachments
+	if (sizeof($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit', 'forward')))
+	{
+		$space_taken = $files_added = 0;
+
+		foreach ($data['attachment_data'] as $pos => $attach_row)
+		{
+			if ($attach_row['attach_id'])
+			{
+				// update entry in db if attachment already stored in db and filespace
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
+					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
+					WHERE attach_id = " . (int) $attach_row['attach_id'];
+				$db->sql_query($sql);
+			}
+			else
+			{
+				// insert attachment into db 
+				$attach_sql = array(
+					'post_msg_id'		=> $data['msg_id'],
+					'topic_id'			=> 0,
+					'in_message'		=> 1,
+					'poster_id'			=> $user->data['user_id'],
+					'physical_filename'	=> $attach_row['physical_filename'],
+					'real_filename'		=> $attach_row['real_filename'],
+					'comment'			=> $attach_row['comment'],
+					'extension'			=> $attach_row['extension'],
+					'mimetype'			=> $attach_row['mimetype'],
+					'filesize'			=> $attach_row['filesize'],
+					'filetime'			=> $attach_row['filetime'],
+					'thumbnail'			=> $attach_row['thumbnail']
+				);
+
+				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
+					$db->sql_build_array('INSERT', $attach_sql);
+				$db->sql_query($sql);
+
+				$space_taken += $attach_row['filesize'];
+				$files_added++;
+			}
+		}
+		
+		if (sizeof($data['attachment_data']))
+		{
+			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+				SET message_attachment = 1
+				WHERE msg_id = ' . $data['msg_id'];
+			$db->sql_query($sql);
+		}
+
+		if ($space_taken && $files_added)
+		{
+			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
+			set_config('num_files', $config['num_files'] + $files_added, true);
+		}
+	}
+
+	$db->sql_transaction('commit');
+
+	// Delete draft if post was loaded...
+	$draft_id = request_var('draft_loaded', 0);
+	if ($draft_id)
+	{
+		$sql = 'DELETE FROM ' . DRAFTS_TABLE . " 
+			WHERE draft_id = $draft_id 
+				AND user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
+	}
+
+	// Send Notifications
+	if ($mode != 'edit')
+	{
+		pm_notification($mode, stripslashes($user->data['username']), $recipients, stripslashes($subject), stripslashes($data['message']));
+	}
+
+	return $data['msg_id'];
+}
+
+// PM Notification
+function pm_notification($mode, $author, $recipients, $subject, $message)
+{
+	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
+
+	$subject = censor_text($subject);
+	
+	// Get banned User ID's
+	$sql = 'SELECT ban_userid 
+		FROM ' . BANLIST_TABLE;
+	$result = $db->sql_query($sql);
+
+	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
+	
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (isset($row['ban_userid']))
+		{
+			unset($recipients[$row['ban_userid']]);
+		}
+	}
+	$db->sql_freeresult($result);
+
+	if (!sizeof($recipients))
+	{
+		return;
+	}
+
+	$recipient_list = implode(', ', array_keys($recipients));
+
+	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type, user_jabber 
+		FROM ' . USERS_TABLE . "
+		WHERE user_id IN ($recipient_list)";
+	$result = $db->sql_query($sql);
+
+	$msg_list_ary = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (trim($row['user_email']))
+		{
+			$msg_list_ary[] = array(
+				'method'	=> $row['method'],
+				'email'		=> $row['user_email'],
+				'jabber'	=> $row['user_jabber'],
+				'name'		=> $row['username'],
+				'lang'		=> $row['user_lang']
+			);
+		}
+	}
+	$db->sql_freeresult($result);
+	
+	if (!sizeof($msg_list_ary))
+	{
+		return;
+	}
+
+	include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+	$messenger = new messenger();
+
+	$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+	foreach ($msg_list_ary as $pos => $addr)
+	{
+		$messenger->template('privmsg_notify', $addr['lang']);
+
+		$messenger->replyto($config['board_email']);
+		$messenger->to($addr['email'], $addr['name']);
+		$messenger->im($addr['jabber'], $addr['name']);
+
+		$messenger->assign_vars(array(
+			'EMAIL_SIG'		=> $email_sig,
+			'SITENAME'		=> $config['sitename'],
+			'SUBJECT'		=> $subject,
+			'AUTHOR_NAME'	=> $author,
+
+			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=unread")
+		);
+
+		$messenger->send($addr['method']);
+		$messenger->reset();
+	}
+	unset($msg_list_ary);
+
+	if ($messenger->queue)
+	{
+		$messenger->queue->save();
+	}
+
+	unset($messenger);
+}
+
 
 ?>

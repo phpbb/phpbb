@@ -1044,7 +1044,6 @@ function marklist(match, status)
 					'user_notify_pm'		=> true, 
 					'user_allow_pm'			=> true, 
 					'user_notify'			=> false, 
-					'user_min_karma'		=> (int) -5, 
 
 					'sk'		=> (string) 't', 
 					'sd'		=> (string) 'd', 
@@ -1072,7 +1071,6 @@ function marklist(match, status)
 					'user_dateformat'	=> array('string', false, 3, 15), 
 					'user_lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
 					'user_tz'			=> array('num', false, -13, 13),
-					'user_min_karma'	=> array('num', false, -5, 5),
 
 					'sk'	=> array('string', false, 1, 1), 
 					'sd'	=> array('string', false, 1, 1), 
@@ -1101,7 +1099,6 @@ function marklist(match, status)
 						'user_notify_pm'		=> $user_notify_pm,
 						'user_options'			=> $user_options, 
 						'user_notify'			=> $user_notify,
-						'user_min_karma'		=> $user_min_karma, 
 						'user_dst'				=> $user_dst,
 						'user_dateformat'		=> $user_dateformat,
 						'user_lang'				=> $user_lang,
@@ -1127,7 +1124,7 @@ function marklist(match, status)
 
 			$colspan = 2;
 
-			$option_ary = array('user_allow_viewemail', 'user_allow_massemail', 'user_allow_pm', 'user_allow_viewonline', 'user_notify_pm', 'user_dst', 'user_notify', 'user_min_karma');
+			$option_ary = array('user_allow_viewemail', 'user_allow_massemail', 'user_allow_pm', 'user_allow_viewonline', 'user_notify_pm', 'user_dst', 'user_notify');
 
 			foreach ($option_ary as $option)
 			{
@@ -1495,13 +1492,18 @@ function marklist(match, status)
 					$$var = request_var($var, $default);
 				}
 
-				if (!$preview)
+				// NOTE: allow_img and allow_flash do not exist in config table
+				$img_status = ($config['allow_img']) ? true : false; 
+				$flash_status = ($config['allow_flash']) ? true : false; 
+
+				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+				$message_parser = new parse_message($signature);
+
+				// Allowing Quote BBCode
+				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+
+				if ($submit)
 				{
-					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-
-					$message_parser = new parse_message($signature);
-					$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-
 					$sql_ary = array(
 						'user_sig'					=> (string) $message_parser->message, 
 						'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
@@ -1513,6 +1515,7 @@ function marklist(match, status)
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
 
+					unset($message_parser);
 					trigger_error($user->lang['PROFILE_UPDATED']);
 				}
 			}
@@ -1524,32 +1527,12 @@ function marklist(match, status)
 			$signature_preview = '';
 			if ($preview)
 			{
-				$signature_preview = $signature;
-
-				// Fudge-o-rama ...
-				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-
-				$message_parser = new parse_message($signature_preview);
-				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
-				$signature_preview = $message_parser->message;
-
-				if ($enable_bbcode)
-				{
-					include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-					$bbcode = new bbcode($message_parser->bbcode_bitfield);
-
-					$bbcode->bbcode_second_pass($signature_preview, $message_parser->bbcode_uid);
-				}
-
-				// If we allow users to disable display of emoticons
-				// we'll need an appropriate check and preg_replace here
-				$signature_preview = smilie_text($signature_preview, !$enable_smilies);
-
-				// Replace naughty words such as farty pants
-				$signature_preview = str_replace("\n", '<br />', censor_text($signature_preview));
+				// Now parse it for displaying
+				$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+				unset($message_parser);
 			}
 
-			decode_text($user_sig, $user_sig_bbcode_uid);
+			decode_message($user_sig, $user_sig_bbcode_uid);
 
 ?>
 			<tr>

@@ -147,7 +147,7 @@ class messenger
 	}
 
 	// Send the mail out to the recipients set previously in var $this->address
-	function send($method = NOTIFY_EMAIL)
+	function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
 
@@ -196,6 +196,11 @@ class messenger
 		if ($drop_header)
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
+		}
+
+		if ($break)
+		{
+			return;
 		}
 
 		switch ($method)

@@ -476,7 +476,7 @@ class user extends session
 	var $lang_path;
 	var $img_lang;
 
-	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'html' => 7, 'bbcode' => 8, 'smile' => 9, 'popuppm' => 10);
+	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'html' => 7, 'bbcode' => 8, 'smile' => 9, 'popuppm' => 10, 'report_pm_notify' => 11);
 	var $keyvalues = array();
 
 	function setup($lang_set = false, $style = false)
@@ -571,34 +571,11 @@ class user extends session
 		// Set theme info
 		$theme_info = array();
 
-		$default_theme_info = array(
-			'pagination_sep'		=> ', ',
-			'pagination_goto_page'	=> true,
-			'avatar_img_class'		=> ''
-		);
-
-		foreach ($this->theme as $style_priority => $row)
+		// Add to template database
+		foreach (array_keys($this->theme) as $style_priority)
 		{
-			if (file_exists($phpbb_root_path . 'styles/' . $row['theme_path'] . '/theme/theme_info.' . $phpEx))
-			{
-				$theme_info = array();
-				include($phpbb_root_path . 'styles/' . $row['theme_path'] . '/theme/theme_info.' . $phpEx);
-
-				if (sizeof($theme_info))
-				{
-					$this->theme[$style_priority] = array_merge($this->theme[$style_priority], $theme_info);
-				}
-			}
-
-			foreach ($default_theme_info as $key => $value)
-			{
-				if (!isset($this->theme[$style_priority][$key]))
-				{
-					$this->theme[$style_priority][$key] = $value;
-				}
-			}
+			$this->theme[$style_priority]['pagination_sep'] = ', ';
 		}
-		unset($theme_info, $default_theme_info);
 
 		$template->set_template();
 
@@ -776,7 +753,7 @@ class user extends session
 
 		if (empty($imgs[$img . $suffix]) || $width)
 		{
-			if (!$this->theme['primary'][$img])
+			if (!isset($this->theme['primary'][$img]) || !$this->theme['primary'][$img])
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
 				$imgs[$img . $suffix] = '';

@@ -1038,9 +1038,14 @@ function avatar_upload($data, &$error)
 
 function avatar_gallery($category, &$error)
 {
-	global $config;
+	global $config, $phpbb_root_path, $user;
 
 	$path = $phpbb_root_path . $config['avatar_gallery_path'];
+
+	if (!file_exists($path) || !is_dir($path))
+	{
+		return array($user->lang['NONE'] => array());
+	}
 
 	// To be replaced with SQL ... before M3 completion
 	$dp = @opendir($path);
@@ -1073,6 +1078,11 @@ function avatar_gallery($category, &$error)
 	}
 	closedir($dp);
 
+	if (!sizeof($data))
+	{
+		return array($user->lang['NONE'] => array());
+	}
+	
 	@ksort($data);
 
 	return $data;

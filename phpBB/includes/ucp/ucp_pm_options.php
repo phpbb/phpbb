@@ -212,7 +212,17 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$db->sql_freeresult($result);
 
 	$s_full_folder_options = $s_to_folder_options = $s_folder_options = '';
-	
+
+	if ($user->data['user_full_folder'] == FULL_FOLDER_NONE)
+	{
+		// -3 here to let the correct folder id be selected
+		$to_folder_id = $config['full_folder_action']-3;
+	}
+	else
+	{
+		$to_folder_id = $user->data['user_full_folder'];
+	}
+
 	foreach ($folder as $folder_id => $folder_ary)
 	{
 		$s_full_folder_options .= '<option value="' . $folder_id . '"' . (($user->data['user_full_folder'] == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . ' (' . $folder_ary['message_status'] . ')</option>';
