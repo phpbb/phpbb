@@ -192,12 +192,13 @@ define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
+define('USERS_NOTES_TABLE', $table_prefix.'users_notes');
 define('WORDS_TABLE', $table_prefix.'words');
 define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
 define('ZEBRA_TABLE', $table_prefix.'zebra');
 
-define('STRIP', get_magic_quotes_gpc() ? true : false);
+define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Set PHP error handler to ours
 set_error_handler('msg_handler');
