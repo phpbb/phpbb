@@ -1007,6 +1007,24 @@ $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$
 $lang['Table_Prefix'] = "Prefix for tables in database";
 $lang['Unwriteable_config'] = "Your config file is unwriteable at present. A copy of the config file will be downloaded to your when you click the button below. You should upload this file to the same directory as phpBB 2. Once this is done you should log in using the administrator name and password you provided on the previous form and visit the admin control centre (a link will appear at the bottom of each screen once logged in) to check the general configuration. Thank you for choosing phpBB 2.";
 $lang['Download_config'] = "Download Config";
+
+//
+// Ranks admin
+//
+$lang['Must_select_rank'] = "Sorry, you didn't select a rank.  Please go back and try again.";
+$lang['Ranks_title'] = "Rank Administration";
+$lang['Ranks_explain'] = "Here you can add, edit, view, and delete ranks. This is also a place to create custom ranks.";
+$lang['Rank_title'] = "Rank Title";
+$lang['Rank_special'] = "Special rank?";
+$lang['Rank_minimum'] = "Minimum Posts";
+$lang['Rank_maximum'] = "Maximum Posts";
+$lang['Rank_updated'] = "The rank was successfully updated.";
+$lang['Rank_added'] = "The rank was successfully added.";
+$lang['Rank_removed'] = "The rank was successfully deleted.";
+$lang['Add_new_rank'] = "Add new rank";
+$lang['Rank_image'] = "Rank Image";
+$lang['Rank_image_explain'] = "This is the place to set a custom image for everyone in the rank. Please enter a URL, beginning with http://";
+
 //
 // End
 // -------------------------------------------------
