@@ -635,19 +635,19 @@ do
 
 	$rowset[] = array(
 		'post_id'				=> $row['post_id'],
-		'post_time'				=> $row['post_time'],
-		'poster'				=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
+		'post_time'			=> $row['post_time'],
+		'poster'					=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 		'user_id'				=> $row['user_id'],
 		'topic_id'				=> $row['topic_id'],
 		'forum_id'				=> $row['forum_id'],
-		'post_subject'			=> $row['post_subject'],
-		'post_edit_count'		=> $row['post_edit_count'],
-		'post_edit_time'		=> $row['post_edit_time'],
+		'post_subject'		=> $row['post_subject'],
+		'post_edit_count'	=> $row['post_edit_count'],
+		'post_edit_time'	=> $row['post_edit_time'],
 		'icon_id'				=> $row['icon_id'],
-		'post_approved'			=> $row['post_approved'],
-		'post_reported'			=> $row['post_reported'],
-		'post_text'				=> $row['post_text'],
-		'post_encoding'			=> $row['post_encoding'],
+		'post_approved'	=> $row['post_approved'],
+		'post_reported'		=> $row['post_reported'],
+		'post_text'			=> $row['post_text'],
+		'post_encoding'		=> $row['post_encoding'],
 		'bbcode_uid'			=> $row['bbcode_uid'],
 		'bbcode_bitfield'		=> $row['bbcode_bitfield'],
 		'enable_html'			=> $row['enable_html'],
@@ -668,39 +668,32 @@ do
 		if ($poster_id == ANONYMOUS)
 		{
 			$user_cache[$poster_id] = array(
-				'joined'		=>	'',
+				'joined'			=>	'',
 				'posts'			=>	'',
 				'from'			=>	'',
-				'avatar'		=>	'',
-				'rank_title'	=>	'',
+				'avatar'			=>	'',
+				'rank_title'		=>	'',
 				'rank_image'	=>	'',
-				'sig'			=>	'',
+				'sig'				=>	'',
 				'posts'			=>	'',
-				'profile'		=>	'',
-				'pm'			=>	'',
+				'profile'			=>	'',
+				'pm'				=>	'',
 				'email'			=>	'',
 				'www'			=>	'',
 				'icq_status_img'=>	'',
-				'icq'			=>	'',
-				'aim'			=>	'',
+				'icq'				=>	'',
+				'aim'				=>	'',
 				'msn'			=>	'',
-				'search'		=>	''
+				'search'			=>	''
 			);
 		}
 		else
 		{
 			$user_sig = '';
-			if ($row['enable_sig'] && $row['user_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
+			if ($row['user_sig'] && $config['allow_sig'] && $user->data['user_viewsigs'])
 			{
 				$user_sig = $row['user_sig'];
 				$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
-
-//				if (!$auth->acl_get('f_html', $forum_id))
-//				{
-//					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-//				}
-
-				$user_sig = ($row['user_allowsmile'] || $config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
 			}
 
 			$user_cache[$poster_id] = array(
@@ -859,7 +852,7 @@ if ($bbcode_bitfield)
 	$bbcode = new bbcode($bbcode_bitfield);
 }
 
-foreach ($rowset as $key => $row)
+foreach ($rowset as $i => $row)
 {
 	$poster_id = $row['user_id'];
 
@@ -871,7 +864,7 @@ foreach ($rowset as $key => $row)
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true, 
-			'S_ROW_COUNT'	=> $i++,
+			'S_ROW_COUNT'	=> $i,
 
 			'L_IGNORE_POST' => sprintf($user->lang['POST_BELOW_KARMA'], $row['poster'], $row['user_karma'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=karma#' . $row['post_id'] . '">', '</a>'))
 		);
@@ -888,7 +881,7 @@ foreach ($rowset as $key => $row)
 		{
 			$template->assign_block_vars('postrow', array(
 				'S_IGNORE_POST'	=> true, 
-				'S_ROW_COUNT'	=> $i++,
+				'S_ROW_COUNT'	=> $i,
 
 				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
 			);
@@ -898,8 +891,10 @@ foreach ($rowset as $key => $row)
 	}
 
 	// End signature parsing, only if needed
-	if ($user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
+	if ($row['enable_sig'] && $user_cache[$poster_id]['sig'] && empty($user_cache['sig_parsed']))
 	{
+		$user_cache[$poster_id]['sig'] = ($config['enable_smilies']) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_cache[$poster_id]['sig']) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_cache[$poster_id]['sig']);
+
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
@@ -989,7 +984,7 @@ foreach ($rowset as $key => $row)
 		'POST_DATE' 	=> $user->format_date($row['post_time']),
 		'POST_SUBJECT' 	=> $row['post_subject'],
 		'MESSAGE' 		=> $message,
-		'SIGNATURE' 	=> $user_cache[$poster_id]['sig'],
+		'SIGNATURE' 	=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'=> $l_edited_by,
 
 		'RATING'		=> $rating, 
@@ -1023,7 +1018,7 @@ foreach ($rowset as $key => $row)
 		'U_MINI_POST'		=> "viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_POST_ID' 		=> ($unread_post_id == $row['post_id']) ? 'unread' : $row['post_id'],
 
-		'S_ROW_COUNT'		=> $i++,
+		'S_ROW_COUNT'		=> $i,
 		'S_CAN_RATE'		=> ($auth->acl_get('f_rate', $forum_id) && $row['post_approved'] && !$row['post_reported'] && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? true : false, 
 		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
@@ -1037,7 +1032,7 @@ foreach ($rowset as $key => $row)
 		display_attachments($attachments[$row['post_id']], $update_count);
 	}
 
-	unset($rowset[$key]);
+	unset($rowset[$i]);
 	unset($attachments[$row['post_id']]);
 }
 unset($rowset);
