@@ -296,11 +296,11 @@ if($total_topics)
 
 		$topic_type = $topic_rowset[$x]['topic_type'];
 
-		if($topic_type == ANNOUCE)
+		if($topic_type == POST_ANNOUNCE)
 		{
 			$topic_type = $lang['Annoucement'] . " ";
 		}
-		else if($topic_type == STICKY)
+		else if($topic_type == POST_STICKY)
 		{
 			$topic_type = $lang['Sticky'] . " ";
 		}
