@@ -834,6 +834,7 @@ CREATE TABLE phpbb_users (
    username varchar(30) DEFAULT '' NOT NULL,
    user_password varchar(32) DEFAULT '' NOT NULL,
    user_email varchar(60) DEFAULT '' NOT NULL,
+   user_birthday varchar(10) DEFAULT '' NOT NULL, 
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_karma tinyint(1) DEFAULT '3' NOT NULL, 
