@@ -190,7 +190,7 @@ INSERT INTO phpbb_auth_prefetch (user_id, forum_id, auth_option_id, auth_allow_d
 
 
 # -- Demo Topic
-INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_last_post_id) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 1, 0, 0, 1, 1);
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_last_post_id, topic_last_poster_id, topic_last_post_time) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 1, 0, 0, 1, 1, 2, 972086460);
 
 
 # -- Demo Post
