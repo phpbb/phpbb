@@ -31,7 +31,7 @@ class parse_message
 		$this->message_mode = $message_type;
 	}
 	
-	function parse(&$message, $html, $bbcode, $uid, $url, $smilies, $attach = false)
+	function parse(&$message, $html, $bbcode, $uid, $url, $smilies, $attach)
 	{
 		global $config, $db, $user;
 
@@ -54,7 +54,7 @@ class parse_message
 		if (intval($config['max_post_smilies']) && $smilies )
 		{
 			$sql = "SELECT code	
-			FROM " . SMILIES_TABLE;
+				FROM " . SMILIES_TABLE;
 			$result = $db->sql_query($sql);
 
 			$match = 0;
@@ -156,7 +156,7 @@ class parse_message
 		global $db, $user;
 
 		$sql = "SELECT * 
-		FROM " . SMILIES_TABLE;
+			FROM " . SMILIES_TABLE;
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))

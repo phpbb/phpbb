@@ -164,12 +164,6 @@ function decode_text(&$message)
 	return;
 }
 
-// Quote Text
-function quote_text(&$message, $username = '')
-{
-	$message = ' [quote' . ( (empty($username)) ? ']' : '="' . addslashes(trim($username)) . '"]') . trim($message) . '[/quote] ';
-}
-
 // Topic Review
 function topic_review($topic_id, $is_inline_review = false)
 {
@@ -332,27 +326,28 @@ function update_last_post_information($type, $id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($type == 'forum')
+	switch ($type)
 	{
-		// Update forums: last post info, topics, posts ... we need to update
-		// each parent too ...
-		$forum_ids = $id;
-		$forum_parents = trim($row['forum_parents']);
+		case 'forum':
+			// Update forums: last post info, topics, posts ... we need to update
+			// each parent too ...
+			$forum_ids = $id;
+			$forum_parents = trim($row['forum_parents']);
 
-		if ($forum_parents != '')
-		{
-			$forum_parents = unserialize($forum_parents);
-			foreach ($forum_parents as $parent_forum_id => $parent_name)
+			if ($forum_parents != '')
 			{
-				$forum_ids .= ', ' . $parent_forum_id;
+				$forum_parents = unserialize($forum_parents);
+				foreach ($forum_parents as $parent_forum_id => $parent_name)
+				{
+					$forum_ids .= ', ' . $parent_forum_id;
+				}
 			}
-		}
 		
-		$where_clause = 'forum_id IN (' . $forum_ids . ')';
-	}
-	else if ($type == 'topic')
-	{
-		$where_clause = 'topic_id = ' . $id;
+			$where_clause = 'forum_id IN (' . $forum_ids . ')';
+			break;
+		case 'topic':
+			$where_clause = 'topic_id = ' . $id;
+			break;	
 	}
 
 	$update_sql = array(
@@ -650,7 +645,8 @@ function submit_poll($topic_id, $mode, $poll)
 	if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
 	{
 		$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-		WHERE poll_option_id > " . sizeof($poll['poll_options']) . " AND topic_id = " . $topic_id;
+			WHERE poll_option_id > " . sizeof($poll['poll_options']) . " 
+				AND topic_id = " . $topic_id;
 		$db->sql_query($sql);
 	}
 }
@@ -845,11 +841,11 @@ function delete_poll($topic_id)
 	global $db;
 
 	$sql = "DELETE FROM " . POLL_OPTIONS_TABLE . "
-	WHERE topic_id = " . $topic_id;
+		WHERE topic_id = " . $topic_id;
 	$db->sql_query($sql);
 
 	$sql = "DELETE FROM " . POLL_VOTES_TABLE . "
-	WHERE topic_id = " . $topic_id;
+		WHERE topic_id = " . $topic_id;
 	$db->sql_query($sql);
 
 	$topic_sql = array(
@@ -873,7 +869,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 	$db->sql_transaction();
 
 	$sql = "DELETE FROM " . POSTS_TABLE . " 
-	WHERE post_id = " . $post_id;
+		WHERE post_id = " . $post_id;
 	$db->sql_query($sql);
 
 	// User tries to delete the post twice ? Exit... we do not want the topics table screwed up.
@@ -894,12 +890,12 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 	if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
 	{
 		$sql = "DELETE FROM " . TOPICS_TABLE . " 
-		WHERE topic_id = " . $topic_id . "
-		OR topic_moved_id = " . $topic_id;
+			WHERE topic_id = " . $topic_id . "
+				OR topic_moved_id = " . $topic_id;
 		$db->sql_query($sql);
 
 		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-		WHERE topic_id = " . $topic_id;
+			WHERE topic_id = " . $topic_id;
 		$db->sql_query($sql);
 
 		$forum_update_sql .= ($forum_update_sql != '') ? ', ' : '';
@@ -945,27 +941,24 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $post_data)
 	if (($forum_update_sql != '') || (count($forum_sql) > 0))
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . ' SET ' . ( (count($forum_sql) > 0) ? $db->sql_build_array('UPDATE', $forum_sql) : '') . 
-		( ($forum_update_sql != '') ? ((count($forum_sql) > 0) ? ', ' . $forum_update_sql : $forum_update_sql) : '') . ' 
-		WHERE forum_id = ' . $forum_id;
-
+			( ($forum_update_sql != '') ? ((count($forum_sql) > 0) ? ', ' . $forum_update_sql : $forum_update_sql) : '') . ' 
+			WHERE forum_id = ' . $forum_id;
 		$db->sql_query($sql);
 	}
 
 	if (($topic_update_sql != '') || (count($topic_sql) > 0))
 	{
 		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . ( (count($topic_sql) > 0) ? $db->sql_build_array('UPDATE', $topic_sql) : '') . 
-		( ($topic_update_sql != '') ? ((count($topic_sql) > 0) ? ', ' . $topic_update_sql : $topic_update_sql) : '') . ' 
-		WHERE topic_id = ' . $topic_id;
-
+			( ($topic_update_sql != '') ? ((count($topic_sql) > 0) ? ', ' . $topic_update_sql : $topic_update_sql) : '') . ' 
+			WHERE topic_id = ' . $topic_id;
 		$db->sql_query($sql);
 	}
 
 	if (($user_update_sql != '') || (count($user_sql) > 0))
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . ( (count($user_sql) > 0) ? $db->sql_build_array('UPDATE', $user_sql) : '') . 
-		( ($user_update_sql != '') ? ((count($user_sql) > 0) ? ', ' . $user_update_sql : $user_update_sql) : '') . ' 
-		WHERE user_id = ' . $post_data['user_id'];
-
+			( ($user_update_sql != '') ? ((count($user_sql) > 0) ? ', ' . $user_update_sql : $user_update_sql) : '') . ' 
+			WHERE user_id = ' . $post_data['user_id'];
 		$db->sql_query($sql);
 	}
 

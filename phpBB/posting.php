@@ -127,7 +127,7 @@ switch ($mode)
 		}
 
 		$sql = "SELECT t.*, f.*
-		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
 			WHERE t.topic_id = " . $topic_id . "
 				AND f.forum_id = t.forum_id";
 
@@ -182,8 +182,7 @@ if ($sql != '')
 	$topic_id = intval($row['topic_id']);
 	$post_id = intval($row['post_id']);
 
-	@reset($forum_fields);
-	while (list($var, $type) = each($forum_fields))
+	foreach ($forum_fields as $var => $type)
 	{
 		switch ($type)
 		{
@@ -198,8 +197,7 @@ if ($sql != '')
 		}
 	}
 
-	@reset($topic_fields);
-	while (list($var, $type) = each($topic_fields))
+	foreach ($topic_fields as $var => $type)
 	{
 		switch ($type)
 		{
@@ -214,8 +212,7 @@ if ($sql != '')
 		}
 	}
 
-	@reset($post_fields);
-	while (list($var, $type) = each($post_fields))
+	foreach ($post_fields as $var => $type)
 	{
 		switch ($type)
 		{
@@ -238,9 +235,9 @@ if ($sql != '')
 	if ($poll_start)
 	{
 		$sql = "SELECT poll_option_text 
-		FROM " . POLL_OPTIONS_TABLE . "
-		WHERE topic_id = " . $topic_id . "
-		ORDER BY poll_option_id";
+			FROM " . POLL_OPTIONS_TABLE . "
+			WHERE topic_id = " . $topic_id . "
+			ORDER BY poll_option_id";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -276,9 +273,9 @@ if ($sql != '')
 if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
 {
 	$sql = "SELECT topic_id
-	FROM " . TOPICS_WATCH_TABLE . "
-	WHERE topic_id = " . $topic_id . "
-	AND user_id = " . $user->data['user_id'];
+		FROM " . TOPICS_WATCH_TABLE . "
+		WHERE topic_id = " . $topic_id . "
+			AND user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
 	$notify_set = ($db->sql_fetchrow($result)) ? true : false;
@@ -300,10 +297,6 @@ $perm = array(
 	'f_sigs' => $auth->acl_gets('f_sigs', 'm_', 'a_', $forum_id),
 	'f_save' => $auth->acl_gets('f_save', 'm_', 'a_', $forum_id)
 );
-
-// DEBUG - Show Permissions
-//debug_print_permissions($perm);
-// DEBUG - Show Permissions
 
 if ( (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', $forum_id)) && ($forum_postable) )
 {
@@ -447,7 +440,7 @@ if (($submit) || ($preview))
 	if ($mode != 'edit' || $message_md5 != $post_checksum)
 	{
 		// Parse message
-		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies)) != '')
+		if (($result = $message_parser->parse($message, $enable_html, $enable_bbcode, $bbcode_uid, $enable_urls, $enable_smilies, false)) != '')
 		{
 			$err_msg .= ((!empty($err_msg)) ? '<br />' : '') . $result;
 		}
@@ -459,7 +452,7 @@ if (($submit) || ($preview))
 		$where_sql = ($user->data['user_id'] == ANONYMOUS) ? "poster_ip = '$user->ip'" : 'poster_id = ' . $user->data['user_id'];
 		$sql = "SELECT MAX(post_time) AS last_post_time
 			FROM " . POSTS_TABLE . "
-			WHERE $where_sql";
+			WHERE " . $where_sql;
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -613,7 +606,7 @@ $poll_options = explode("\n", $poll_options_tmp);
 
 if (($mode == 'quote') && (!$preview))
 {
-	quote_text($post_text, $username);
+	$post_text = ' [quote' . ( (empty($username)) ? ']' : '="' . addslashes(trim($username)) . '"]') . trim($post_text) . '[/quote] ';
 }
 
 if ( (($mode == 'reply') || ($mode == 'quote')) && (!$preview) )
@@ -642,8 +635,7 @@ if ( ($mode == 'post') || (($mode == 'edit') && ($post_id == $topic_first_post_i
 //		'global_announce' => array('const' => POST_GLOBAL_ANNOUNCE, 'lang' => 'POST_GLOBAL_ANNOUNCE')
 	);
 	
-	@reset($topic_types);
-	while (list($auth_key, $topic_value) = each($topic_types))
+	foreach ($topic_types as $auth_key => $topic_value)
 	{
 		if ($perm['f_' . $auth_key])
 		{
@@ -796,20 +788,5 @@ if ($mode == 'reply' || $mode == 'quote')
 }
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-
-function debug_print_permissions($perm)
-{
-	global $forum_id;
-
-	@reset($perm);
-	echo '<span class="gensmall">Permission Settings -> Forum ID ' . $forum_id . ': <br />';
-
-	while (list($perm_key, $authed) = each($perm))
-	{
-		echo $perm_key . ' -> ' . (($authed) ? 'yes' : 'no') . '<br />';
-	}
-
-	echo '</span>';
-}
 
 ?>
