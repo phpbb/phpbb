@@ -73,12 +73,12 @@ class acm
 		$dir = opendir($this->cache_dir);
 		while ($entry = readdir($dir))
 		{
-			if ($entry{0} == '.' || substr($entry, 0, 4) != 'sql_')
+			if (substr($entry, 0, 4) != 'sql_')
 			{
 				continue;
 			}
 
-			if (filemtime($this->cache_dir . $entry) + $max_age < time() )
+			if (time() > filemtime($this->cache_dir . $entry) + $max_age)
 			{
 				unlink($this->cache_dir . $entry);
 			}
@@ -88,7 +88,7 @@ class acm
 		{
 			foreach ($this->vars_ts as $var_name => $timestamp)
 			{
-				if ($timestamp + $max_age < time())
+				if (time() > $timestamp + $max_age)
 				{
 					$this->destroy($var_name);
 				}
@@ -113,9 +113,32 @@ class acm
 		$this->is_modified = TRUE;
 	}
 
-	function destroy($var_name)
+	function destroy($var_name, $table = '')
 	{
-		if (isset($this->vars[$var_name]))
+		if ($var_name == 'sql' && !empty($table))
+		{
+			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
+
+			$dir = opendir($this->cache_dir);
+			while ($entry = readdir($dir))
+			{
+				if (substr($entry, 0, 4) != 'sql_')
+				{
+					continue;
+				}
+
+				$fp = fopen($this->cache_dir . $entry, 'rb');
+				$file = fread($fp, filesize($this->cache_dir . $entry));
+				@fclose($fp);
+
+				if (preg_match('#/\*.*?\W' . $regex . '\W.*?\*/#s', $file, $m))
+				{
+					unlink($this->cache_dir . $entry);
+				}
+				@closedir($dir);
+			}
+		}
+		elseif (isset($this->vars[$var_name]))
 		{
 			$this->is_modified = TRUE;
 			unset($this->vars[$var_name]);
@@ -132,7 +155,7 @@ class acm
 
 		if ($max_age > 0 && isset($this->vars_ts[$var_name]))
 		{
-			if ($this->vars_ts[$var_name] + $max_age < time())
+			if (time() > $this->vars_ts[$var_name] + $max_age)
 			{
 				$this->destroy($var_name);
 				return FALSE;
@@ -175,7 +198,7 @@ class acm
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 
 		$filemtime = intval(@filemtime($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx));
-		if ($filemtime + $max_age < time())
+		if (time() > $filemtime + $max_age)
 		{
 			return FALSE;
 		}

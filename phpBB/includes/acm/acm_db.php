@@ -136,7 +136,7 @@ class acm
 		$this->is_modified = TRUE;
 	}
 
-	function destroy($var_name)
+	function destroy($var_name, $void = NULL)
 	{
 		if (isset($this->vars[$var_name]))
 		{
