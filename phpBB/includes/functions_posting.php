@@ -264,9 +264,7 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 		}
 	}
 
-/*
-	// TODO
-	// Check Free Disk Space - need testing under windows [commented out]
+	// TODO - Check Free Disk Space - need testing under windows [commented out]
 	if ($free_space = disk_free_space($config['upload_dir']))
 	{
 		if ($free_space <= $filedata['filesize'])
@@ -276,7 +274,6 @@ function upload_attachment($filename, $local = false, $local_storage = '')
 			return $filedata;
 		}
 	}
-*/
 
 	$filedata['thumbnail'] = 0;
 				
