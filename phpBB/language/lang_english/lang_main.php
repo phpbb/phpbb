@@ -36,7 +36,7 @@ $lang['ENCODING'] = "utf-8";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
-
+$lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
 // Common, these terms are used
@@ -113,6 +113,8 @@ $lang['Click_return_modcp'] = "Click %sHere%s to return to the Moderator Control
 $lang['Click_return_group'] = "Click %sHere%s to return to group information";
 
 $lang['Admin_panel'] = "Go to Administration Panel";
+
+$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
 
 
 //
@@ -220,6 +222,8 @@ $lang['Rules_delete_cannot'] = "You <b>cannot</b> delete your posts in this foru
 $lang['Rules_vote_can'] = "You <b>can</b> vote in polls in this forum";
 $lang['Rules_vote_cannot'] = "You <b>cannot</b> vote in polls in this forum";
 $lang['Rules_moderate'] = "You <b>can</b> %smoderate this forum%s"; // %s replaced by a href links, do not remove! 
+
+$lang['No_topics_post_one'] = "There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one";
 
 
 //
@@ -449,7 +453,7 @@ $lang['Occupation'] = "Occupation";
 $lang['Poster_rank'] = "Poster rank";
 
 $lang['Total_posts'] = "Total posts";
-$lang['User_post_pct_stats'] = "%d%% of total"; // 15% of total
+$lang['User_post_pct_stats'] = "%.2f%% of total"; // 1.25% of total
 $lang['User_post_day_stats'] = "%.2f posts per day"; // 1.5 posts per day
 $lang['Search_user_posts'] = "Find all posts by %s"; // Find all posts by username
 
@@ -696,6 +700,11 @@ $lang['Users_granted_access'] = "<b>users granted special access</b>";
 $lang['Moderators'] = "<b>moderators</b>";
 $lang['Administrators'] = "<b>administrators</b>";
 
+$lang['Not_Moderator'] = "You are not a moderator of this forum";
+$lang['Not_Authorised'] = "Not Authorised";
+
+$lang['You_been_banned'] = "You have been banned from this forum<br />Please contact the webmaster or board administrator for more information";
+
 
 //
 // Viewonline
@@ -836,6 +845,47 @@ $lang['tz']['10'] = "(GMT +10:00 hours) Melbourne, Papua New Guinea, Sydney, Vla
 $lang['tz']['11'] = "(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands";
 $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island";
 
+$lang['days_long'][0] = "Sunday";
+$lang['days_long'][1] = "Monday";
+$lang['days_long'][2] = "Tuesday";
+$lang['days_long'][3] = "Wednesday";
+$lang['days_long'][4] = "Thursday";
+$lang['days_long'][5] = "Friday";
+$lang['days_long'][6] = "Saturday";
+
+$lang['days_short'][0] = "Sun";
+$lang['days_short'][1] = "Mon";
+$lang['days_short'][2] = "Tue";
+$lang['days_short'][3] = "Web";
+$lang['days_short'][4] = "Thu";
+$lang['days_short'][5] = "Fri";
+$lang['days_short'][6] = "Sat";
+
+$lang['months_long'][0] = "January";
+$lang['months_long'][1] = "February";
+$lang['months_long'][2] = "March";
+$lang['months_long'][3] = "April";
+$lang['months_long'][4] = "May";
+$lang['months_long'][5] = "June";
+$lang['months_long'][6] = "July";
+$lang['months_long'][7] = "August";
+$lang['months_long'][8] = "September";
+$lang['months_long'][9] = "October";
+$lang['months_long'][10] = "November";
+$lang['months_long'][11] = "December";
+
+$lang['months_short'][0] = "Jan";
+$lang['months_short'][1] = "Feb";
+$lang['months_short'][2] = "Mar";
+$lang['months_short'][3] = "Apr";
+$lang['months_short'][4] = "May";
+$lang['months_short'][5] = "Jun";
+$lang['months_short'][6] = "Jul";
+$lang['months_short'][7] = "Aug";
+$lang['months_short'][8] = "Sep";
+$lang['months_short'][9] = "Oct";
+$lang['months_short'][10] = "Nov";
+$lang['months_short'][11] = "Dec";
 
 //
 // Errors (not related to a
@@ -844,19 +894,12 @@ $lang['tz']['12'] = "(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Isl
 $lang['Information'] = "Information";
 $lang['Critical_Information'] = "Critical Information";
 
-$lang['You_been_banned'] = "You have been banned from this forum<br />Please contact the webmaster or board administrator for more information";
-$lang['No_topics_post_one'] = "There are no posts in this forum<br />Click on the <b>Post New Topic</b> link on this page to post one";
-$lang['Board_disable'] = "Sorry but this board is currently unavailable, please try again later";
-
 $lang['General_Error'] = "General Error";
 $lang['Critical_Error'] = "Critical Error";
 $lang['An_error_occured'] = "An Error Occured";
 $lang['A_critical_error'] = "A Critical Error Occured";
 
 $lang['Error_login'] = "You have specified an incorrect or inactive username or an invalid password";
-
-$lang['Not_Moderator'] = "You are not a moderator of this forum";
-$lang['Not_Authorised'] = "Not Authorised";
 
 //
 // That's all Folks!

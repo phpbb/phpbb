@@ -172,7 +172,7 @@ if(($selected_members = $db->sql_numrows($result)) > 0)
 
 		$from = (!empty($members[$i]['user_from'])) ? stripslashes($members[$i]['user_from']) : "&nbsp;";
 
-		$joined = create_date($board_config['default_dateformat'], $members[$i]['user_regdate'], $board_config['board_timezone']);
+		$joined = create_date($lang['DATE_FORMAT'], $members[$i]['user_regdate'], $board_config['board_timezone']);
 
 		$posts = ($members[$i]['user_posts']) ? $members[$i]['user_posts'] : 0;
 

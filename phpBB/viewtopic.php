@@ -719,7 +719,7 @@ for($i = 0; $i < $total_posts; $i++)
 
 	$poster_from = ($postrow[$i]['user_from'] && $postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Location'] . ": " . $postrow[$i]['user_from'] : "";
 
-	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($board_config['default_dateformat'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
+	$poster_joined = ($postrow[$i]['user_id'] != ANONYMOUS) ? $lang['Joined'] . ": " . create_date($lang['DATE_FORMAT'], $postrow[$i]['user_regdate'], $board_config['board_timezone']) : "";
 
 	if( $postrow[$i]['user_avatar_type'] && $poster_id != ANONYMOUS )
 	{
