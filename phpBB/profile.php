@@ -882,37 +882,73 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					if($result = $db->sql_query($sql))
 					{
-						if($require_activation)
+						$sql = "INSERT INTO ".GROUPS_TABLE." 
+							(group_name, group_note) 
+							VALUES 
+							('$username', 'Personal User')";
+						if($result = $db->sql_query($sql))
 						{
-						$msg = $l_accountinactive;
-							$email_msg = $l_welcomeemailactivate;
-						}
-						else if($coppa)
-						{
-							$msg = $l_coppa;
-							$email_msg = $l_welcomecoppa;
+							$group_id = $db->sql_nextid();
+
+							$sql = "INSERT INTO ".USER_GROUP_TABLE." 
+								(user_id, group_id)
+								VALUES
+								($new_user_id, $group_id)";
+							if($result = $db->sql_query($sql))
+							{
+								if($require_activation)
+								{
+								$msg = $l_accountinactive;
+									$email_msg = $l_welcomeemailactivate;
+								}
+								else if($coppa)
+								{
+									$msg = $l_coppa;
+									$email_msg = $l_welcomecoppa;
+								}
+								else
+								{
+									$msg = $l_acountadded;
+									$email_msg = $l_welcomemail;
+								}
+					
+								if(!$coppa)
+								{
+									$email_msg .= "\r\n" . $board_config['board_email'];
+									mail($email, $l_welcomesubj, $email_msg, "From: ".$board_config['board_email_from']."\r\n");
+								}
+
+								$template->set_filenames(array(
+									"reg_header" => "error_body.tpl"
+								));
+								$template->assign_vars(array(
+									"ERROR_MESSAGE" => $msg
+								));
+								$template->pparse("reg_header");
+					
+								include('includes/page_tail.'.$phpEx);
+							}
+							else
+							{
+								$error = TRUE;
+								$err = $db->sql_error();
+								$error_msg = "Query Error: ".$err["message"];
+								if(DEBUG)
+								{
+									$error_msg .= "<br>Query: $sql";
+								}
+							}
 						}
 						else
 						{
-							$msg = $l_acountadded;
-							$email_msg = $l_welcomemail;
+							$error = TRUE;
+							$err = $db->sql_error();
+							$error_msg = "Query Error: ".$err["message"];
+							if(DEBUG)
+							{
+								$error_msg .= "<br>Query: $sql";
+							}
 						}
-					
-						if(!$coppa)
-						{
-							$email_msg .= "\r\n" . $board_config['board_email'];
-							mail($email, $l_welcomesubj, $email_msg, "From: ".$board_config['board_email_from']."\r\n");
-						}
-
-						$template->set_filenames(array(
-							"reg_header" => "error_body.tpl"
-						));
-						$template->assign_vars(array(
-							"ERROR_MESSAGE" => $msg
-						));
-						$template->pparse("reg_header");
-					
-						include('includes/page_tail.'.$phpEx);
 					}
 					else
 					{
