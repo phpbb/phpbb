@@ -57,15 +57,15 @@ function admin_ldap(&$new)
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_server']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_server_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['LDAP_SERVER']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_SERVER_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="40" name="ldap_server" value="<?php echo $new['ldap_server']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_dn']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_dn_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['LDAP_DN']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_DN_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="40" name="ldap_base_dn" value="<?php echo $new['ldap_base_dn']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_uid']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_uid_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['LDAP_UID']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_UID_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="40" name="ldap_uid" value="<?php echo $new['ldap_uid']; ?>" /></td>
 	</tr>
 <?php
