@@ -1,0 +1,74 @@
+<!-- BEGIN DENIED -->
+	<span class="postbody">[{L_DENIED}]</span><br /><br />
+<!-- END DENIED -->
+
+<!-- BEGIN WM_STREAM -->
+	<span class="postbody">{COMMENT}</span><br />
+	<object id="wmp" classid="CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,0,0,0" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject"> 
+	<param name="FileName" value="{U_DOWNLOAD_LINK}"> 
+	<param name="ShowControls" value="1"> 
+	<param name="ShowDisplay" value="0"> 
+	<param name="ShowStatusBar" value="1"> 
+	<param name="AutoSize" value="1"> 
+	<param name="AutoStart" value="0"> 
+	<param name="Visible" value="1"> 
+	<param name="AnimationStart" value="0"> 
+	<param name="Loop" value="0"> 
+		<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows95/downloads/contents/wurecommended/s_wufeatured/mediaplayer/default.asp" src="{U_DOWNLOAD_LINK}" name=MediaPlayer2 showcontrols=1 showdisplay=0 showstatusbar=1 autosize=1 autostart=0 visible=1 animationatstart=0 loop=0></embed> 
+	</object>
+	<br /><span class="gensmall">{DOWNLOAD_NAME} - {L_DOWNLOADED_VIEWED} {L_DOWNLOAD_COUNT}</span><br /><br />
+<!-- END WM_STREAM -->
+
+<!-- BEGIN RM_STREAM -->
+	<span class="postbody">{COMMENT}</span><br />
+	<object id=rmstream_{ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="0">
+	<param name="src" value="{U_FORUM}/{U_DOWNLOAD_LINK}">
+	<param name="autostart" value="false">
+	<param name="controls" value="ImageWindow">
+	<param name="console" value="{U_DOWNLOAD_LINK}">
+	<param name="prefetch" value="true">
+		<embed name=rmstream_{ATTACH_ID} type="audio/x-pn-realaudio-plugin" src="{U_FORUM}/{U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="video" prefetch="true"></embed>
+	</object>
+	<br />
+	<object id=ctrls_{ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
+	<param name="controls" value="ControlPanel">
+	<param name="console" value="{U_DOWNLOAD_LINK}">
+	<embed name=ctrls_{ATTACH_ID} type="audio/x-pn-realaudio-plugin" width="0" height="36" controls="ControlPanel" console="video"></embed>
+	</object>
+
+	<script language="Javascript">
+	<!--
+ 	    while (!document.rmstream_{ATTACH_ID}.GetClipWidth())
+		{
+		}
+
+		var width = document.rmstream_{ATTACH_ID}.GetClipWidth();
+		var height = document.rmstream_{ATTACH_ID}.GetClipHeight();
+
+		document.rmstream_{ATTACH_ID}.width = width;
+		document.rmstream_{ATTACH_ID}.height = height;
+		document.ctrls_{ATTACH_ID}.width = width;
+	//-->
+	</script>
+	<br /><span class="gensmall">{DOWNLOAD_NAME} - {L_DOWNLOADED_VIEWED} {L_DOWNLOAD_COUNT}</span><br /><br />
+<!-- END RM_STREAM -->
+
+<!-- BEGIN IMAGE -->
+	<span class="postbody">{COMMENT}<br />
+	<img src="{U_DOWNLOAD_LINK}" alt="{DOWNLOAD_NAME}" /></span>
+	<br /><span class="gensmall">{DOWNLOAD_NAME} - {L_DOWNLOADED_VIEWED} {L_DOWNLOAD_COUNT}</span><br /><br />
+<!-- END IMAGE -->
+
+<!-- BEGIN THUMBNAIL -->
+	<span class="postbody">{COMMENT}<br />
+	<a href="{U_DOWNLOAD_LINK}" target="_blank"><img src="{THUMB_IMG}" alt="{DOWNLOAD_NAME}" border="0" /></a></span>
+	<br /><span class="gensmall">{DOWNLOAD_NAME} - {L_DOWNLOADED_VIEWED} {L_DOWNLOAD_COUNT}</span><br /><br />
+<!-- END THUMBNAIL -->
+
+<!-- BEGIN FILE -->
+	<span class="postbody">{COMMENT}</span><br />
+	<span class="postbody">{UPLOAD_IMG}
+	<a href="{U_DOWNLOAD_LINK}" target="_blank">{DOWNLOAD_NAME}</a> - {FILESIZE} {SIZE_VAR}<br /></span>
+	<span class="gensmall">{L_DOWNLOADED_VIEWED} {L_DOWNLOAD_COUNT}</span><br /><br />
+<!-- END FILE -->
+			

@@ -1,3 +1,4 @@
+<!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
 <table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
@@ -158,11 +159,16 @@
 			<tr>
 				<td valign="top">
 					<span class="postbody">{postrow.MESSAGE}</span>
-					<!-- IF postrow.S_HAS_ATTACHMENTS --><!-- INCLUDE viewtopic_attach_body.html --><!-- ENDIF -->
+					<!-- IF postrow.S_HAS_ATTACHMENTS -->
+					<!-- BEGIN attachment -->
+						<br /><br /><hr />{postrow.attachment.DISPLAY_ATTACHMENT}
+					<!-- END attachment -->
+					<!-- ENDIF -->
+
 					<!-- IF postrow.S_DISPLAY_NOTICE --><span class="gensmall" style="color:red;"><br /><br />{L_DOWNLOAD_NOTICE}</span><!-- ENDIF -->
 					<!-- IF postrow.SIGNATURE --><span class="postbody"><br />_________________<br />{postrow.SIGNATURE}</span><!-- ENDIF -->
-					<span class="gensmall">{postrow.EDITED_MESSAGE}</span>
-					<span class="gensmall">{postrow.BUMPED_MESSAGE}</span>
+					<!-- IF postrow.EDITED_MESSAGE --><span class="gensmall">{postrow.EDITED_MESSAGE}</span><!-- ENDIF -->
+					<!-- IF postrow.BUMPED_MESSAGE --><span class="gensmall">{postrow.BUMPED_MESSAGE}</span><!-- ENDIF -->
 				</td>
 			</tr>
 			<tr>
