@@ -435,7 +435,7 @@ function create_date($format, $gmepoch, $tz)
 	if ( empty($translate) && $board_config['default_lang'] != 'english' )
 	{
 		@reset($lang['datetime']);
-		while ( list($match, $replace) = @each($lang['datetime']) )
+		foreach ( $lang['datetime'] as $match => $replace )
 		{
 			$translate[$match] = $replace;
 		}
@@ -580,7 +580,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //    failures, etc.
 // -> ERROR : Use for any error, a simple page will be output
 //
-function message_die($msg_code, $msg_text = '', $msg_title = '')
+function message_die($msg_code, $msg_text = '', $msg_title = '', $display_header = false)
 {
 	global $db, $session, $acl, $template, $board_config, $theme, $lang, $userdata, $user_ip;
 	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
@@ -599,7 +599,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 
 			if ( defined('IN_ADMIN') )
 			{
-				page_message($msg_title, $msg_text);
+				page_message($msg_title, $msg_text, $display_header);
 			}
 			else
 			{
