@@ -40,9 +40,7 @@ $page_title = "Modertator Control Panel";
 $forum_id = ($HTTP_POST_VARS[POST_FORUM_URL]) ? $HTTP_POST_VARS[POST_FORUM_URL] : $HTTP_GET_VARS[POST_FORUM_URL];
 $topic_id = ($HTTP_POST_VARS[POST_TOPIC_URL]) ? $HTTP_POST_VARS[POST_TOPIC_URL] : $HTTP_GET_VARS[POST_TOPIC_URL];
 
-
-
-if(empty($forum_id) || !isset($forum_id))
+if( empty($forum_id) || !isset($forum_id) )
 {
 	$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics
 		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
@@ -750,34 +748,53 @@ switch($mode)
 		}
 	break;
 	case 'ip':
-			$post_id = $HTTP_GET_VARS[POST_POST_URL];
-			if(!$post_id)
+			$post_id = ( isset($HTTP_GET_VARS[POST_POST_URL]) ) ? $HTTP_GET_VARS[POST_POST_URL] : "";
+			$rdns_ip_num = ( isset($HTTP_GET_VARS['rdns']) ) ? $HTTP_GET_VARS['rdns'] : "";
+
+			if( !$post_id )
 			{
 				message_die(GENERAL_ERROR, "Error, no post id found", "Error", __LINE__, __FILE__);
 			}
 
 			// Look up relevent data for this post
-			$sql = "SELECT poster_ip, poster_id FROM ".POSTS_TABLE." WHERE post_id = $post_id";
+			$sql = "SELECT poster_ip, poster_id 
+				FROM " . POSTS_TABLE . " 
+				WHERE post_id = $post_id";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get poster IP information", "Error", __LINE__, __FILE__, $sql);
 			}
 
 			$post_row = $db->sql_fetchrow($result);
+
 			$ip_this_post = decode_ip($post_row['poster_ip']);
+			$ip_this_post = ( $rdns_ip_num == $ip_this_post ) ? gethostbyaddr($ip_this_post) : $ip_this_post;
+
 			$poster_id = $post_row['poster_id'];
 
-			$template->assign_vars(array("L_IPINFO" => $lang['IP_info'],
-				"L_IPTHISPOST" => $lang['IP_on_this_post'],
-				"L_OTHERIPS" => $lang['Other_IPS_this_user'],
-				"L_OTHERUSERS" => $lang['Other_users_this_IP'],
-				"L_SEARCHPOSTS" => $lang['Search_user_posts'],
-				"IP" => $ip_this_post));
+			$template->assign_vars(array(
+				"L_IP_INFO" => $lang['IP_info'],
+				"L_THIS_POST_IP" => $lang['This_posts_IP'],
+				"L_OTHER_IPS" => $lang['Other_IP_this_user'],
+				"L_OTHER_USERS" => $lang['Users_this_IP'],
+				"L_SEARCH_POSTS" => $lang['Search_user_posts'], 
+				"L_LOOKUP_IP" => $lang['Lookup_IP'], 
+
+				"SEARCH_IMG" => $images['icon_search'], 
+
+				"IP" => $ip_this_post, 
+					
+				"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip_this_post))
+			);
 
 			//
 			// Get other IP's this user has posted under
 			//
-			$sql = "SELECT DISTINCT poster_ip FROM " . POSTS_TABLE . " WHERE poster_id = $poster_id AND poster_ip <> '".$post_row['poster_ip']."'";
+			$sql = "SELECT DISTINCT poster_ip 
+				FROM " . POSTS_TABLE . " 
+				WHERE poster_id = $poster_id 
+					AND poster_ip <> '" . $post_row['poster_ip'] . "' 
+				ORDER BY poster_ip DESC";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get IP information for this user", "Error", __LINE__, __FILE__, $sql);
@@ -787,13 +804,27 @@ switch($mode)
 			for($i = 0; $i < count($poster_ips); $i++)
 			{
 				$ip = decode_ip($poster_ips[$i]['poster_ip']);
-				$template->assign_block_vars("iprow", array("IP" => $ip));
+				$ip = ( $rdns_ip_num == $ip ) ? gethostbyaddr($ip) : $ip;
+
+				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+				$template->assign_block_vars("iprow", array(
+					"ROW_COLOR" => "#" . $row_color, 
+					"ROW_CLASS" => $row_class, 
+					"IP" => $ip, 
+
+					"U_LOOKUP_IP" => append_sid("modcp.$phpEx?mode=ip&" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $ip))
+				);
 			}
 
 			//
 			// Get other users who've posted under this IP
 			//
-			$sql = "SELECT DISTINCT u.username, u.user_id FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p WHERE p.poster_id = u.user_id AND p.poster_ip = '".$post_row['poster_ip']."'";
+			$sql = "SELECT DISTINCT u.username, u.user_id 
+				FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p 
+				WHERE p.poster_id = u.user_id 
+					AND p.poster_ip = '" . $post_row['poster_ip'] . "'";
 			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not get posters information based on IP", "Error", __LINE__, __FILE__, $sql);
@@ -803,16 +834,19 @@ switch($mode)
 			for($i = 0; $i < count($poster_ids); $i++)
 			{
 				$id = $poster_ids[$i]['user_id'];
-				$username = $poster_ids[$i]['username'];
+				$username = ( $is == ANONYMOUS ) ? $lang['Guest'] : $poster_ids[$i]['username'];
 
-				if($id == ANONYMOUS)
-				{
-					$username = $lang['Guest'];
-				}
+				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				$template->assign_block_vars("userrow", array("U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$id"),
+				$template->assign_block_vars("userrow", array(
 					"USERNAME" => $username,
-					"U_SEARCHPOSTS" => append_sid("search.$phpEx?a=" . urlencode($username) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1")));
+					"ROW_COLOR" => "#" . $row_color, 
+					"ROW_CLASS" => $row_class, 
+
+					"U_PROFILE" => append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=$id"),
+					"U_SEARCHPOSTS" => append_sid("search.$phpEx?a=" . urlencode($username) . "&amp;f=all&amp;b=0&amp;d=DESC&amp;c=100&amp;dosearch=1"))
+				);
 			}
 
 			$template->pparse("viewip");
