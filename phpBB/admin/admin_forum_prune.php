@@ -19,19 +19,6 @@
  *
  ***************************************************************************/
 
-/***************************************************************************
-*	This file is for the setup of the auto_pruning and also will allow for
-*	immediate forum pruning as well.
-***************************************************************************/
-//
-// 	Warning: Parts of this code were shamelessly stolen verbatim from Paul's
-//	work on the Auth admin stuff :) JLH
-//
-
-//
-//First we through in the modules stuff :)
-//
-
 if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
@@ -77,9 +64,16 @@ $sql = "SELECT f.*
 	WHERE c.cat_id = f.cat_id
 	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
-$f_result = $db->sql_query($sql);
+if( !($result = $db->sql_query($sql)) )
+{
+	message_die(GENERAL_ERROR, "Couldn't obtain list of forums for pruning", "", __LINE__, __FILE__, $sql);
+}
 
-$forum_rows = $db->sql_fetchrowset($f_result);
+$forum_rows = array();
+while( $row = $db->sql_fetchrow($result) )
+{
+	$forum_rows[] = $row;
+}
 
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
@@ -89,37 +83,31 @@ if( isset($HTTP_POST_VARS['doprune']) )
 	$prunedays = ( isset($HTTP_POST_VARS['prunedays']) ) ? intval($HTTP_POST_VARS['prunedays']) : 0;
 
 	// Convert days to seconds for timestamp functions...
-	$prunesecs = $prunedays * 1440 * 60;
-	$prunedate = time() - $prunesecs;
+	$prunedate = time() - ( $prunedays * 86400 );
 
 	$template->set_filenames(array(
 		"body" => "admin/forum_prune_result_body.tpl")
 	);
 
-	$i = 0;
-
-	reset($forum_rows);
-	while(list(, $forum_data) = each ($forum_rows))
+	for($i = 0; $i < count($forum_rows); $i++)
 	{
-		$p_result = prune($forum_data['forum_id'], $prunedate);
-		sync("forum", $forum_data['forum_id']);
+		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
+		sync('forum', $forum_rows[$i]['forum_id']);
 	
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 	
-		$i++;
-	
 		$template->assign_block_vars("prune_results", array(
 			"ROW_COLOR" => "#" . $row_color, 
 			"ROW_CLASS" => $row_class, 
-			"FORUM_NAME" => $forum_data['forum_name'],
+			"FORUM_NAME" => $forum_rows[$i]['forum_name'],
 			"FORUM_TOPICS" => $p_result['topics'],
 			"FORUM_POSTS" => $p_result['posts'])
 		);
 	}
 
-
 	$template->assign_vars(array(
+		"L_FORUM_PRUNE" => $lang['Forum_Prune'],
 		"L_FORUM" => $lang['Forum'],
 		"L_TOPICS_PRUNED" => $lang['Topics_pruned'],
 		"L_POSTS_PRUNED" => $lang['Posts_pruned'],
@@ -141,14 +129,14 @@ else
 			"body" => "admin/forum_prune_select_body.tpl")
 		);
 
-		$select_list = "<select name=\"" . POST_FORUM_URL . "\">\n";
-		$select_list .= "<option value=\"-1\">" . $lang['All_Forums'] . "</option>\n";
+		$select_list = '<select name="' . POST_FORUM_URL . '">';
+		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
 		for($i = 0; $i < count($forum_rows); $i++)
 		{
-			$select_list .= "<option value=\"" . $forum_rows[$i]['forum_id'] . "\">" . $forum_rows[$i]['forum_name'] . "</option>\n";
+			$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 		}
-		$select_list .= "</select>\n";
+		$select_list .= '</select>';
 
 		//
 		// Assign the template variables.
@@ -176,9 +164,9 @@ else
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
-		$prune_data .= "<input type=\"text\" name=\"prunedays\" size=\"4\"> " . $lang['Days'];
+		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $lang['Days'];
 
-		$hidden_input = "<input type=\"hidden\" name=\"" . POST_FORUM_URL . "\" value=\"$forum_id\">";
+		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
 		//
 		// Assign the template variables.
