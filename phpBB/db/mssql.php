@@ -38,6 +38,8 @@ class sql_db
 	var $row;
 	var $num_queries = 0;
 
+	var $query_array = array();
+
 	//
 	// Constructor
 	//
@@ -143,6 +145,8 @@ class sql_db
 					$num_rows = $limits[2];
 				}
 	
+//				$this->query_array[] = $query;
+
 				@mssql_query("SET ROWCOUNT ".($row_offset + $num_rows));
 
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
@@ -166,6 +170,10 @@ class sql_db
 			}
 			else if(eregi("^INSERT ", $query))
 			{
+//				$this->query_array[] = $query;
+
+				$query = preg_replace("/\\\'/s", "''", $query);
+
 				$this->query_result = @mssql_query($query, $this->db_connect_id);
 
 				if($this->query_result)
@@ -188,6 +196,8 @@ class sql_db
 			}
 			else 
 			{
+//				$this->query_array[] = $query;
+
 				if(eregi("SELECT", $query))
 				{
 					$this->query_result = @mssql_query($query, $this->db_connect_id);
