@@ -752,13 +752,7 @@ class parse_message
 				unset($this->attachment_data[$index]);
 				
 				// Reindex Array
-				$attachment_data = $this->attachment_data;
-				unset($this->attachment_data);
-				foreach ($attachment_data as $element)
-				{
-					$this->attachment_data[] = $element;
-				}
-				unset($attachment_data);
+				$this->attachment_data = array_values($this->attachment_data);
 			}
 			else if ($edit_comment || $add_file || $preview)
 			{

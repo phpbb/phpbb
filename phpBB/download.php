@@ -77,6 +77,11 @@ if (!in_array($attachment['extension'], $extensions['_allowed_']))
 	trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 }
 
+if (!download_allowed())
+{
+	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
+}
+
 $download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 
 if ($thumbnail)
@@ -197,6 +202,101 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	flush();
 	exit;
 }
+
+function download_allowed()
+{
+	global $config, $user, $db;
+
+	if (!$config['secure_downloads'])
+	{
+		return true;
+	}
+
+	$url = trim(getenv('HTTP_REFERER'));
+	if ($url == '')
+	{
+		$url = trim($_SERVER['HTTP_REFERER']);
+	}
+
+	if ($url == '')
+	{
+		return ($config['secure_allow_empty_referer']) ? true : false;
+	}
+
+	// Split URL into domain and script part
+	$url = explode('?', str_replace(array('http://', 'https://'), array('', ''), $url));
+	$hostname = trim($url[0]);
+	unset($url);
+
+	$allowed = ($config['secure_allow_deny']) ? FALSE : TRUE;
+	$iplist = array();
+
+	$ip_ary = gethostbynamel($hostname);
+
+	foreach ($ip_ary as $ip)
+	{
+		if (!empty($ip))
+		{
+			$iplist[] = $ip;
+		}
+	}
+	
+	// Check for own server...
+	if (preg_match('#^.*?' . $config['server_name'] . '.*?$#i', $hostname))
+	{
+		$allowed = true;
+	}
+	
+	// Get IP's and Hostnames
+	if (!$allowed)
+	{
+		$sql = 'SELECT site_ip, site_hostname, ip_exclude
+			FROM ' . SITELIST_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!empty($row['site_ip']))
+			{
+				foreach ($iplist as $ip)
+				{
+					if (preg_match('#^' . str_replace('*', '.*?', $row['site_ip']) . '$#i', $ip))
+					{
+						if (!empty($row['ip_exclude']))
+						{
+							$allowed = ($config['secure_allow_deny']) ? false : true;
+							break 2;
+						}
+						else
+						{
+							$allowed = ($config['secure_allow_deny']) ? true : false;
+						}
+					}
+				}
+			}
+
+			if (!empty($row['site_hostname']))
+			{
+				if (preg_match('#^' . str_replace('*', '.*?', $row['site_hostname']) . '$#i', $hostname))
+				{
+					if (!empty($row['ip_exclude']))
+					{
+						$allowed = ($config['secure_allow_deny']) ? false : true;
+						break;
+					}
+					else
+					{
+						$allowed = ($config['secure_allow_deny']) ? true : false;
+					}
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	
+	return $allowed;
+}
+
 //
 // FUNCTIONS
 // ---------

@@ -181,6 +181,7 @@ define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SEARCH_WORD_TABLE', $table_prefix.'search_wordlist');
 define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
+define('SITELIST_TABLE', $table_prefix.'sitelist');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('STYLES_TABLE', $table_prefix.'styles');
 define('STYLES_TPL_TABLE', $table_prefix.'styles_template');

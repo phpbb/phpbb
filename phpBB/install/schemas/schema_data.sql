@@ -91,6 +91,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edite
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','address@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact','contact@yourdomain.tld');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name','mail');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
@@ -143,6 +144,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_dir', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_display_inlined','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_link_width','0');

@@ -272,8 +272,10 @@ class messenger
 		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
 		$headers .= "X-Priority: 3\n";
 		$headers .= "X-MSMail-Priority: Normal\n";
-		$headers .= "X-Mailer: PHP\n";
-		$headers .= "X-MimeOLE: Produced By phpBB2\n";
+		$headers .= "X-Mailer: PhpBB\n";
+		$headers .= "X-MimeOLE: phpBB\n";
+		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
+
 		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
 		$headers .= "Content-type: text/plain; charset=" . $this->encoding . "\n";
 		$headers .= "Content-transfer-encoding: 8bit\n";
@@ -281,9 +283,9 @@ class messenger
 		// Send message ... removed $this->encode() from subject for time being
 		if (!$use_queue)
 		{
-			$mail_to = ($to == '') ? 'Undisclosed-Recipients:;' : $to;
+			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, $this->msg, $err_msg, $headers) : @mail($mail_to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $headers);
+			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, $this->msg, $err_msg, $headers) : @$config['mail_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", $this->msg)), $headers);
 
 			if (!$result)
 			{
@@ -406,7 +408,7 @@ class queue
 		$this->data[$object]['data'][] = $scope;
 	}
 
-	// Thinking about a lock file...
+	// Using lock file...
 	function process()
 	{
 		global $db, $config, $phpEx, $phpbb_root_path;
@@ -483,10 +485,10 @@ class queue
 				{
 					case 'email':
 						$err_msg = '';
-						$to = (!$to) ? 'Undisclosed-Recipients:;' : $to;
+						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, $msg, $err_msg, $headers) : mail($to, $subject, preg_replace("#(?<!\r)\n#s", "\r\n", $msg), $headers);
-				
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, $msg, $err_msg, $headers) : 					$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", $msg)), $headers);
+
 						if (!$result)
 						{
 							@unlink($this->cache_file . '.lock');
@@ -562,7 +564,7 @@ class queue
 		
 		$file = '<?php $this->queue_data = ' . $this->format_array($this->data) . '; ?>';
 
-		if ($fp = @fopen($this->cache_file, 'w'))
+		if ($fp = fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, $file);

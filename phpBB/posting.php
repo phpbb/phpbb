@@ -511,7 +511,7 @@ if ($submit || $preview || $refresh)
 	$enable_bbcode 		= (!$bbcode_status || !empty($_POST['disable_bbcode'])) ? FALSE : TRUE;
 	$enable_smilies		= (!$smilies_status || !empty($_POST['disable_smilies'])) ? FALSE : TRUE;
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$enable_sig			= (!$config['allow_sig']) ? FALSE : ((!empty($_POST['attach_sig'])) ? TRUE : FALSE);
+	$enable_sig			= (!$config['allow_sig']) ? FALSE : ((!empty($_POST['attach_sig']) && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE);
 
 	$notify				= (!empty($_POST['notify'])) ? TRUE : FALSE;
 	$topic_lock			= (isset($_POST['lock_topic'])) ? TRUE : FALSE;
@@ -1034,7 +1034,7 @@ $template->assign_vars(array(
 	'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'		=> $smilies_status,
 	'S_SMILIES_CHECKED' 	=> ($smilies_checked) ? ' checked="checked"' : '',
-	'S_SIG_ALLOWED'			=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig']) ? TRUE : FALSE,
+	'S_SIG_ALLOWED'			=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig'] && $user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE,
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'		=> ($user->data['user_id'] != ANONYMOUS) ? TRUE : FALSE,
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? ' checked="checked"' : '',
@@ -1151,7 +1151,7 @@ page_footer();
 // User Notification
 function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
 {
-	global $db, $user, $censors, $config, $phpbb_root_path, $phpEx;
+	global $db, $user, $censors, $config, $phpbb_root_path, $phpEx, $auth;
 
 	$topic_notification = ($mode == 'reply' || $mode == 'quote') ? TRUE : FALSE;
 	$forum_notification = ($mode == 'post') ? TRUE : FALSE;
@@ -1251,25 +1251,23 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		return;
 	}
 
-/*
-	foreach (discover_auth(array_keys($notify_rows), array('f_read'), $forum_id) as $user_id => $forum_ary)
+	foreach ($auth->acl_get_list(array_keys($notify_rows), 'f_read', $forum_id) as $forum_id => $forum_ary)
 	{
-		foreach ($forum_ary as $forum_id => $option_ary)
+		foreach ($forum_ary as $auth_option => $user_ary)
 		{
-			if (array_sum(array_values($option_ary)))
+			foreach ($user_ary as $user_id)
 			{
 				$notify_rows[$user_id]['allowed'] = true;
-				break;
 			}
 		}
 	}
-*/
+
 
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$email_users = $delete_ids = $update_notification = array();
 	foreach ($notify_rows as $user_id => $row)
-	{//!$row['allowed'] || 
-		if (!trim($row['user_email']))
+	{
+		if (!$row['allowed'] || !trim($row['user_email']))
 		{
 			$delete_ids[$row['notify_type']][] = $row['user_id'];
 		}
@@ -1280,10 +1278,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		}
 	}
 	unset($notify_rows);
-
-
-
-
 
 	// Now, we are able to really send out notifications
 	if (sizeof($msg_users))
@@ -1298,11 +1292,11 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{ 
 			$pos = sizeof($msg_list_ary[$row['template']]);
 
-			$msg_list_ary[$row['template']][$pos]['method'] = $row['method'];
-			$msg_list_ary[$row['template']][$pos]['email'] = $row['user_email'];
-			$msg_list_ary[$row['template']][$pos]['jabber'] = $row['user_jabber'];
-			$msg_list_ary[$row['template']][$pos]['name'] = $row['username'];
-			$msg_list_ary[$row['template']][$pos]['lang'] = $row['user_lang'];
+			$msg_list_ary[$row['template']][$pos]['method']	= $row['method'];
+			$msg_list_ary[$row['template']][$pos]['email']	= $row['user_email'];
+			$msg_list_ary[$row['template']][$pos]['jabber']	= $row['user_jabber'];
+			$msg_list_ary[$row['template']][$pos]['name']	= $row['username'];
+			$msg_list_ary[$row['template']][$pos]['lang']	= $row['user_lang'];
 		}
 		unset($email_users);
 
@@ -1523,7 +1517,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 	$db->sql_transaction('commit');
 
 	// Collect the necessary informations for updating the tables
-	$sql_data['forum'] = '';
+	$sql_data[FORUMS_TABLE] = '';
 	switch ($post_mode)
 	{
 		case 'delete_topic':
@@ -1532,16 +1526,13 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data['forum'] .= 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
-				$sql_data['forum'] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
+				$sql_data[FORUMS_TABLE] .= 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
+				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
 			}
 
-			$update = update_last_post_information('forum', $forum_id);
-			if (sizeof($update))
-			{
-				$sql_data['forum'] .= ($sql_data['forum'] != '') ? ', ' . implode(', ', $update) : implode(', ', $update);
-			}
-			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE] != '') ? ', ' : '';
+			$sql_data[FORUMS_TABLE] .= implode(', ', update_last_post_information('forum', $forum_id));
+			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 			break;
 
 		case 'delete_first_post':
@@ -1557,11 +1548,11 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$sql_data['topic'] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
-			$sql_data['topic'] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
 			break;
@@ -1569,20 +1560,17 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 		case 'delete_last_post':
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$update = update_last_post_information('forum', $forum_id);
-			if (sizeof($update))
-			{
-				$sql_data['forum'] .= ($sql_data['forum'] != '') ? ', ' . implode(', ', $update) : implode(', ', $update);
-			}
-			$sql_data['topic'] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE] != '') ? ', ' : '';
+			$sql_data[FORUMS_TABLE] .= implode(', ', update_last_post_information('forum', $forum_id));
+			$sql_data[TOPICS_TABLE] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+
 			$update = update_last_post_information('topic', $topic_id);
-
 			if (sizeof($update))
 			{
-				$sql_data['topic'] .= ', ' . implode(', ', $update);
+				$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update);
 				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update[0]);
 			}
 			else
@@ -1613,37 +1601,26 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, $data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data['forum'] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$sql_data['topic'] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 			$next_post_id = (int) $row['post_id'];
 	}
 				
-	$sql_data['user'] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
+	$sql_data[USERS_TABLE] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
 	set_config('num_posts', $config['num_posts'] - 1, TRUE);
 
 	$db->sql_transaction();
 
-	if (isset($sql_data['forum']) && $sql_data['forum'] != '')
-	{
-		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' 
-			SET ' . $sql_data['forum'] . "
-			WHERE forum_id = $forum_id");
-	}
+	$where_sql = array(FORUMS_TABLE => "forum_id = $forum_id", TOPICS_TABLE => "topic_id = $topic_id", USERS_TABLE => 'user_id = ' . $data['poster_id']);
 
-	if (isset($sql_data['topic']) && $sql_data['topic'] != '')
+	foreach ($sql_data as $table => $update_sql)
 	{
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
-			SET ' . $sql_data['topic'] . "
-			WHERE topic_id = $topic_id");
-	}
-
-	if (isset($sql_data['user']) && $sql_data['user'] != '')
-	{
-		$db->sql_query('UPDATE ' . USERS_TABLE . ' 
-			SET ' . $sql_data['user'] . ' 
-			WHERE user_id = ' . $data['poster_id']);
+		if ($update_sql != '')
+		{
+			$db->sql_query("UPDATE $table SET $update_sql WHERE " . $where_sql[$table]);
+		}
 	}
 
 	$db->sql_transaction('commit');
@@ -1688,7 +1665,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		case 'post':
 		case 'reply':
-			$sql_data['post']['sql'] = array(
+			$sql_data[POSTS_TABLE]['sql'] = array(
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id' 		=> (int) $user->data['user_id'],
 				'icon_id'			=> $data['icon_id'], 
@@ -1716,17 +1693,17 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		case 'edit':
 			if (!$auth->acl_gets('m_', 'a_'))
 			{
-				$sql_data['post']['sql'] = array(
+				$sql_data[POSTS_TABLE]['sql'] = array(
 					'post_edit_time'	=> $current_time
 				);
 	
-				$sql_data['post']['stat'][] = 'post_edit_count = post_edit_count + 1';
+				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
 			}
 
 		case 'edit_topic':
 		case 'edit_last_post':
 		
-			$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
+			$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id' 		=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
@@ -1753,7 +1730,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	switch ($post_mode)
 	{
 		case 'post':
-			$sql_data['topic']['sql'] = array(
+			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'topic_poster'		=> (int) $user->data['user_id'],
 				'topic_time'		=> $current_time,
 				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
@@ -1768,7 +1745,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 
 			if (!empty($poll['poll_options']))
 			{
-				$sql_data['topic']['sql'] = array_merge($sql_data['topic']['sql'], array(
+				$sql_data[TOPICS_TABLE]['sql'] = array_merge($sql_data[TOPICS_TABLE]['sql'], array(
 					'poll_title'		=> $poll['poll_title'],
 					'poll_start'		=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time, 
 					'poll_max_options'	=> $poll['poll_max_options'], 
@@ -1776,22 +1753,21 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				);
 			}
 			
-			$sql_data['user']['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
-			$sql_data['forum']['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
 			break;
 			
 		case 'reply':
-			$sql_data['topic']['stat'][] = 'topic_replies_real = topic_replies_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
-			$sql_data['topic']['stat'][] = 'topic_bumped = 0, topic_bumper = 0';
-			$sql_data['user']['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . ((!$auth->acl_get('f_moderate', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1'; //(!$auth->acl_get('f_moderate', $data['forum_id'])) ? 'forum_posts = forum_posts + 1' : '';
 			break;
 
 		case 'edit_topic':
 		case 'edit_first_post':
 
-			$sql_data['topic']['sql'] = array(
+			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
 				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id'])) ? 0 : 1, 
@@ -1815,15 +1791,15 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	if ($post_mode == 'post')
 	{
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . 
-			$db->sql_build_array('INSERT', $sql_data['topic']['sql']);
+			$db->sql_build_array('INSERT', $sql_data[TOPICS_TABLE]['sql']);
 		$db->sql_query($sql);
 
 		$data['topic_id'] = $db->sql_nextid();
 
-		$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
+		$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
 			'topic_id' => $data['topic_id'])
 		);
-		unset($sql_data['topic']['sql']);
+		unset($sql_data[TOPICS_TABLE]['sql']);
 	}
 
 	// Submit new post
@@ -1831,19 +1807,19 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	{
 		if ($post_mode == 'reply')
 		{
-			$sql_data['post']['sql'] = array_merge($sql_data['post']['sql'], array(
+			$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
 				'topic_id' => $data['topic_id'])
 			);
 		}
 
 		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .
-			$db->sql_build_array('INSERT', $sql_data['post']['sql']);
+			$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 
 		if ($post_mode == 'post')
 		{
-			$sql_data['topic']['sql'] = array(
+			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'topic_first_post_id' => $data['post_id'],
 				'topic_last_post_id' => $data['post_id'],
 				'topic_last_post_time' => $current_time,
@@ -1852,7 +1828,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			);
 		}
 
-		unset($sql_data['post']['sql']);
+		unset($sql_data[POSTS_TABLE]['sql']);
 	}
 
 	$make_global = FALSE;
@@ -1872,36 +1848,36 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 		{
 			// Decrement topic/post count
 			$make_global = TRUE;
-			$sql_data['forum']['stat'] = array();
+			$sql_data[FORUMS_TABLE]['stat'] = array();
 
-			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts - ' . ($row['topic_replies_real'] + 1);
-			$sql_data['forum']['stat'][] = 'forum_topics_real = forum_topics_real - 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics - 1' : '');
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($row['topic_replies_real'] + 1);
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real - 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics - 1' : '');
 		}
 		// unglobalise
 		else if ((int)$row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
 		{
 			// Increment topic/post count
 			$make_global = TRUE;
-			$sql_data['forum']['stat'] = array();
+			$sql_data[FORUMS_TABLE]['stat'] = array();
 
-			$sql_data['forum']['stat'][] = 'forum_posts = forum_posts + ' . ($row['topic_replies_real'] + 1);
-			$sql_data['forum']['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics + 1' : '');
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + ' . ($row['topic_replies_real'] + 1);
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics + 1' : '');
 		}
 	}
 
 	// Update the topics table
-	if (isset($sql_data['topic']['sql']))
+	if (isset($sql_data[TOPICS_TABLE]['sql']))
 	{
 		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
-			SET ' . $db->sql_build_array('UPDATE', $sql_data['topic']['sql']) . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_data[TOPICS_TABLE]['sql']) . '
 			WHERE topic_id = ' . $data['topic_id']);
 	}
 
 	// Update the posts table
-	if (isset($sql_data['post']['sql']))
+	if (isset($sql_data[POSTS_TABLE]['sql']))
 	{
 		$db->sql_query('UPDATE ' . POSTS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $sql_data['post']['sql']) . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
 			WHERE post_id = ' . $data['post_id']);
 	}
 
@@ -2017,7 +1993,7 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 			// We get the last post information not for posting or replying, we can assume the correct params here, which is much faster
 			if ($post_mode == 'edit_last_post')
 			{
-				$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 			}
 			else if (!$auth->acl_get('f_moderate', $data['forum_id']))
 			{
@@ -2025,24 +2001,32 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 				$update_sql .= ", forum_last_post_time = $current_time";
 				$update_sql .= ', forum_last_poster_id = ' . $user->data['user_id'];
 				$update_sql .= ", forum_last_poster_name = '" . (($user->data['user_id'] == ANONYMOUS) ? $db->sql_escape(stripslashes($username)) : $db->sql_escape($user->data['username'])) . "'";
-				$sql_data['forum']['stat'][] = $update_sql;
+				$sql_data[FORUMS_TABLE]['stat'][] = $update_sql;
 			}
 		}
-		$sql_data['topic']['stat'][] = implode(', ', update_last_post_information('topic', $data['topic_id']));
+
+		$update = update_last_post_information('topic', $data['topic_id']);
+		if (sizeof($update))
+		{
+			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update);
+		}
 	}
 
 	if ($make_global)
 	{
-		$sql_data['forum']['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+		$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
 	}
 
 	if ($post_mode == 'edit_topic')
 	{
-		$sql_data['topic']['stat'] = implode(', ', update_last_post_information('topic', $data['topic_id']));
+		$update = update_last_post_information('topic', $data['topic_id']);
+		if (sizeof($update))
+		{
+			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update);
+		}
 	}
 
 	// Update total post count, do not consider moderated posts/topics
-	// Mental Note: adjust Resync Stats in admin index if you delete these comments.
 	if (!$auth->acl_get('f_moderate', $data['forum_id']))
 	{
 		if ($post_mode == 'post')
@@ -2060,32 +2044,14 @@ function submit_post($mode, $message, $subject, $username, $topic_type, $bbcode_
 	// Update forum stats
 	$db->sql_transaction();
 
-	if (implode('', $sql_data['post']['stat']) != '')
-	{
-		$db->sql_query('UPDATE ' . POSTS_TABLE . ' 
-			SET ' . implode(', ', $sql_data['post']['stat']) . '
-			WHERE post_id = ' . $data['post_id']);
-	}
+	$where_sql = array(POSTS_TABLE => 'post_id = ' . $data['post_id'], TOPICS_TABLE => 'topic_id = ' . $data['topic_id'], FORUMS_TABLE => 'forum_id = ' . $data['forum_id'], USERS_TABLE => 'user_id = ' . $user->data['user_id']);
 
-	if (implode('', $sql_data['topic']['stat']) != '')
+	foreach ($sql_data as $table => $update_ary)
 	{
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . ' 
-			SET ' . implode(', ', $sql_data['topic']['stat']) . '
-			WHERE topic_id = ' . $data['topic_id']);
-	}
-
-	if (implode('', $sql_data['forum']['stat']) != '')
-	{
-		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' 
-			SET ' . implode(', ', $sql_data['forum']['stat']) . '
-			WHERE forum_id = ' . $data['forum_id']);
-	}
-
-	if (implode('', $sql_data['user']['stat']) != '')
-	{
-		$db->sql_query('UPDATE ' . USERS_TABLE . ' 
-			SET ' . implode(', ', $sql_data['user']['stat']) . '
-			WHERE user_id = ' . $user->data['user_id']);
+		if (implode('', $update_ary['stat']) != '')
+		{
+			$db->sql_query("UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table]);
+		}
 	}
 
 	// Fulltext parse

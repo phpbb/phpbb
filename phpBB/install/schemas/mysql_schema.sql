@@ -481,6 +481,15 @@ CREATE TABLE phpbb_sessions (
    KEY session_user_id (session_user_id) 
 );
 
+# Table: 'phpbb_sitelist'
+CREATE TABLE phpbb_sitelist (
+   site_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+   site_ip varchar(40) DEFAULT '' NOT NULL,
+   site_hostname varchar(255) DEFAULT '' NOT NULL,
+   ip_exclude tinyint(1) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (site_id)
+)
+
 # Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
    smile_id tinyint(4) UNSIGNED NOT NULL auto_increment,

@@ -127,6 +127,10 @@ $lang += array(
 	'LOG_UNBAN_IP'			=> '<b>Unbanned ip</b><br />&#187; %s',
 	'LOG_UNBAN_EMAIL'		=> '<b>Unbanned email</b><br />&#187; %s',
 
+	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
+	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
+	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
+	
 	'LOG_SERVER_CONFIG'		=> '<b>Altered server settings</b>',
 	'LOG_DEFAULT_CONFIG'	=> '<b>Altered board defaults</b>',
 	'LOG_SETTING_CONFIG'	=> '<b>Altered board settings</b>',
@@ -669,6 +673,8 @@ $lang += array(
 	'ENABLE_EMAIL_EXPLAIN'		=> 'If this is set to disabled no emails will be sent by the board at all.',
 	'BOARD_EMAIL_FORM'			=> 'Users send email via board',
 	'BOARD_EMAIL_FORM_EXPLAIN'	=> 'This function keeps email addresses completely private.',
+	'EMAIL_FUNCTION_NAME'		=> 'Email Function Name',
+	'EMAIL_FUNCTION_NAME_EXPLAIN' => 'The email function used to send mails through PHP.',
 	'EMAIL_PACKAGE_SIZE'		=> 'Email Package Size',
 	'EMAIL_PACKAGE_SIZE_EXPLAIN' => 'This is the number of emails sent in one package.',
 	'ADMIN_EMAIL'				=> 'Return Email Address',
@@ -1687,14 +1693,36 @@ $lang += array(
 	'NOT_ASSIGNED'				=> 'Not assigned',
 
 	'ORPHAN_ATTACHMENTS'		=> 'Orphan Attachments', // Title
-	'ORPHAN_ATTACHMENTS_EXPLAIN'=> 'Here you are able to see files within the Attachments upload directory but not assigned to posts. This happens mostly if users are attaching files but not submitting the post. You are able to delete the files or attach them to existing posts. Attaching to posts requires a valid post id, you have to determine this id by yourself, this feature is mainly for those people wanting to upload files with another program and assigning those (mostly large) files to an existing post.',
+	'ORPHAN_ATTACHMENTS_EXPLAIN' => 'Here you are able to see files within the Attachments upload directory but not assigned to posts. This happens mostly if users are attaching files but not submitting the post. You are able to delete the files or attach them to existing posts. Attaching to posts requires a valid post id, you have to determine this id by yourself, this feature is mainly for those people wanting to upload files with another program and assigning those (mostly large) files to an existing post.',
 	'UPLOADING_FILES'			=> 'Uploading Files',
 	'UPLOADING_FILE_TO'			=> 'Uploading File "%1$s" to Post Number %2$d...',
 	'UPLOAD_DENIED_FORUM'		=> 'You do not have the permission to upload files to forum "%s"',
 	'ATTACH_POST_ID'			=> 'Post ID',
 	'ATTACH_TO_POST'			=> 'Attach file to post',
 	'SUCCESSFULLY_UPLOADED'		=> 'Succeessfully uploaded',
-	'ADMIN_UPLOAD_ERROR'		=> 'Errors while trying to attach file: %s' 
+	'ADMIN_UPLOAD_ERROR'		=> 'Errors while trying to attach file: %s',
+
+	'SECURE_DOWNLOADS'				=> 'Enable secure downloads',
+	'SECURE_DOWNLOADS_EXPLAIN'		=> 'With this option enabled, downloads are limited to ip\'s/hostnames you defined.',
+	'SECURE_ALLOW_DENY'				=> 'Allow/Deny Order',
+	'SECURE_ALLOW_DENY_EXPLAIN'		=> 'This setting only applies to downloading files',
+	'ORDER_ALLOW_DENY'				=> 'Allow listed IPs, deny all others',
+	'ORDER_DENY_ALLOW'				=> 'Deny listed IPs, allow all others',
+	'SECURE_EMPTY_REFERER'			=> 'Allow empty referer',
+	'SECURE_EMPTY_REFERER_EXPLAIN'	=> 'Secure downloads are based on referers. Do you want to allow downloads for those ommitting the referer?',
+
+	'DEFINE_ALLOWED_IPS'			=> 'Define allowed IPs/Hostnames',
+	'DEFINE_DISALLOWED_IPS'			=> 'Define disallowed IPs/Hostnames',
+	'EXCLUDE_FROM_ALLOWED_IP'		=> 'Exclude IP from allowed IPs/Hostnames',
+	'EXCLUDE_FROM_DISALLOWED_IP'	=> 'Exclude IP from disallowed IPs/Hostnames',
+	'REMOVE_ALLOWED_IPS'			=> 'Remove or Un-exclude allowed IPs/Hostnames',
+	'REMOVE_DISALLOWED_IPS'			=> 'Remove or Un-exclude disallowed IPs/Hostnames',
+	'DOWNLOAD_ADD_IPS_EXPLAIN'		=> 'To specify several different IP\'s or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *',
+	'DOWNLOAD_REMOVE_IPS_EXPLAIN'	=> 'You can remove (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IP\'s have a blue background.',
+	'EXCLUDE_ENTERED_IP'			=> 'Enable this to exclude the entered IP/Hostname.',
+	'NO_IPS_DEFINED'				=> 'No IPs or Hostnames defined',
+
+	'SECURE_DOWNLOAD_UPDATE_SUCESSFUL' => 'The IP list has been updated successfully'
 );
 
 // Installation

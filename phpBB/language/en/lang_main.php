@@ -684,6 +684,10 @@ $lang += array(
 	'DOWNLOAD_NONE'			=> '0 Times',	// replace %d with count
 	'DOWNLOAD_COUNT'		=> '%d Time',	// replace %d with count
 	'DOWNLOAD_COUNTS'		=> '%d Times',	// replace %d with count
+
+	'LINKAGE_FORBIDDEN'		=> 'You are not authorized to view, download or link from/to this Site.',
+	'NO_ATTACHMENT_SELECTED' => 'You haven\'t selected an attachment to download or view.',
+	'ERROR_NO_ATTACHMENT'	=> 'The selected Attachment does not exist anymore'
 );
 
 // ucp_main

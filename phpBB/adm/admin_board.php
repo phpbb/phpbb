@@ -113,7 +113,12 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($config_name == 'bump_interval' && $submit)
 	{
-		$new['bump_interval'] = request_var('bump_interval', 0) . request_var('bump_type', '');
+		$new['bump_interval'] = request_var('bump_interval', 2) . request_var('bump_type', 'd');
+	}
+
+	if ($config_name == 'email_function_name')
+	{
+		$new['email_function_name'] = (empty($new['email_function_name']) || !function_exists($new['email_function_name'])) ? 'mail' : str_replace(array('(', ')'), array('', ''), trim($new['email_function_name']));
 	}
 
 	if ($mode == 'attach')
@@ -172,6 +177,11 @@ while ($row = $db->sql_fetchrow($result))
 	}
 }
 
+if ($mode == 'attach')
+{
+	perform_site_list();
+}
+
 if ($submit)
 {
 	add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
@@ -180,7 +190,6 @@ if ($submit)
 	{
 		// Check Settings
 		test_upload($error, $new['upload_dir'], false);
-//		test_upload($error, $new['upload_dir'] . '/thumbs', true);
 	}
 
 	if (!sizeof($error))
@@ -252,6 +261,15 @@ switch ($mode)
 		$create_thumbnail_yes = ($new['img_create_thumbnail']) ? 'checked="checked"' : '';
 		$create_thumbnail_no = (!$new['img_create_thumbnail']) ? 'checked="checked"' : '';
 
+		$secure_downloads_yes = ($new['secure_downloads']) ? 'checked="checked"' : '';
+		$secure_downloads_no = (!$new['secure_downloads']) ? 'checked="checked"' : '';
+
+		$secure_allow_deny_yes = ($new['secure_allow_deny']) ? 'checked="checked"' : '';
+		$secure_allow_deny_no = (!$new['secure_allow_deny']) ? 'checked="checked"' : '';
+	
+		$secure_allow_empty_referer_yes = ($new['secure_allow_empty_referer']) ? 'checked="checked"' : '';
+		$secure_allow_empty_referer_no = (!$new['secure_allow_empty_referer']) ? 'checked="checked"' : '';
+
 ?>
 
 	<tr>
@@ -283,6 +301,18 @@ switch ($mode)
 		<td class="row2"><input type="text" size="3" maxlength="3" name="max_attachments_pm" class="post" value="<?php echo $new['max_attachments_pm']; ?>" /></td>
 	</tr>
 	<tr>
+		<td class="row1"><b><?php echo $user->lang['SECURE_DOWNLOADS']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_DOWNLOADS_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="secure_downloads" value="1" <?php echo $secure_downloads_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0" <?php echo $secure_downloads_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['SECURE_ALLOW_DENY']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_ALLOW_DENY_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="secure_allow_deny" value="1" <?php echo $secure_allow_deny_yes ?> /> <?php echo $user->lang['ORDER_ALLOW_DENY']; ?>&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0" <?php echo $secure_allow_deny_no ?> /> <?php echo $user->lang['ORDER_DENY_ALLOW']; ?></td>
+	</tr>
+	<tr>
+		<td class="row1"><b><?php echo $user->lang['SECURE_EMPTY_REFERER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['SECURE_EMPTY_REFERER_EXPLAIN']; ?></span></td>
+		<td class="row2"><input type="radio" name="secure_allow_empty_referer" value="1" <?php echo $secure_allow_empty_referer_yes ?> /> <?php echo $user->lang['YES']; ?>&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0" <?php echo $secure_allow_empty_referer_no ?> /> <?php echo $user->lang['NO']; ?></td>
+	</tr>
+	<tr>
 	  <th align="center" colspan="2"><?php echo $user->lang['SETTINGS_CAT_IMAGES']; ?></th>
 	</tr>
 	<tr>
@@ -294,13 +324,13 @@ switch ($mode)
 	</tr>
 <?php
 	
-	// Check Thumbnail Support
-	if (!$new['img_imagick'] && !count(get_supported_image_types()))
-	{
-		$new['img_create_thumbnail'] = '0';
-	}
-	else
-	{
+		// Check Thumbnail Support
+		if (!$new['img_imagick'] && !count(get_supported_image_types()))
+		{
+			$new['img_create_thumbnail'] = '0';
+		}
+		else
+		{
 
 ?>
 	<tr>
@@ -313,7 +343,7 @@ switch ($mode)
 	</tr>
 <?php
 
-	}
+		}
 
 ?>
 	<tr>
@@ -328,7 +358,86 @@ switch ($mode)
 		<td class="row1"><b><?php echo $user->lang['IMAGE_LINK_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['IMAGE_LINK_SIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input type="text" size="3" maxlength="4" name="img_link_width" value="<?php echo $new['img_link_width']; ?>" class="post" /> px X <input type="text" size="3" maxlength="4" name="img_link_height" value="<?php echo $new['img_link_height']; ?>" class="post" /> px</td>
 	</tr>
-	
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+	</tr>
+	</table>
+<?php
+		// Secure Download Options - Same procedure as with banning
+		if ($new['secure_downloads'])
+		{
+			$allow_deny = ($new['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
+		
+			$sql = 'SELECT *
+				FROM ' . SITELIST_TABLE;
+			$result = $db->sql_query($sql);
+
+			$defined_ips = '';
+			$ips = array();
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$value = ($row['site_ip']) ? $row['site_ip'] : $row['site_hostname'];
+				if ($value)
+				{
+					$defined_ips .=  '<option' . (($row['ip_exclude']) ? ' class="sep"' : '') . ' value="' . $row['site_id'] . '">' . $value . '</option>';
+					$ips[$row['site_id']] = $value;
+				}
+			}
+			$db->sql_freeresult($result);
+?>
+	<br />
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+		<tr>
+			<th colspan="2"><?php echo $user->lang['DEFINE_' . $allow_deny . '_IPS']; ?></th>
+		</tr>
+		<tr>
+			<td colspan="2" class="row3"><?php echo $user->lang['DOWNLOAD_ADD_IPS_EXPLAIN']; ?></td>
+		<tr>
+			<td class="row1" width="45%"><b><?php echo $user->lang['IP_HOSTNAME']; ?>: </b></td>
+			<td class="row2"><textarea cols="40" rows="3" name="ips"></textarea></td>
+		</tr>
+		<tr>
+			<td class="row1" width="45%"><b><?php echo $user->lang['EXCLUDE_FROM_' . $allow_deny . '_IP']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EXCLUDE_ENTERED_IP']; ?></span></td>
+			<td class="row2"><input type="radio" name="ipexclude" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
+		</tr>
+		<tr>
+			<td class="cat" colspan="2" align="center"> <input type="submit" name="securesubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" />&nbsp; </td>
+		</tr>
+		<tr>
+			<th colspan="2"><?php echo $user->lang['REMOVE_' . $allow_deny . '_IPS']; ?></th>
+		</tr>
+<?php
+
+			if ($defined_ips != '')
+			{
+
+?>
+		<tr>
+			<td colspan="2" class="row3"><?php echo $user->lang['DOWNLOAD_REMOVE_IPS_EXPLAIN']; ?></td>
+		<tr>
+		<tr>
+			<td class="row1" width="45%"><?php echo $user->lang['IP_HOSTNAME']; ?>: <br /></td>
+			<td class="row2"> <select name="unip[]" multiple="multiple" size="10"><?php echo $defined_ips; ?></select></td>
+		</tr>
+		<tr>
+			<td class="cat" colspan="2" align="center"><input type="submit" name="unsecuresubmit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp; <input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
+		</tr>
+<?php
+
+			}
+			else
+			{
+
+?>
+		<tr>
+			<td class="row1" colspan="2" align="center"><?php echo $user->lang['NO_IPS_DEFINED']; ?></td>
+		</tr>
+<?php
+			}
+		}
+?>
+	</table>
 <?php
 
 		break;
@@ -677,6 +786,10 @@ switch ($mode)
 		<td class="row2"><input type="radio" name="board_email_form" value="1" <?php echo $board_email_form_yes; ?> /> <?php echo $user->lang['ENABLED']; ?>&nbsp;&nbsp;<input type="radio" name="board_email_form" value="0" <?php echo $board_email_form_no; ?> /> <?php echo $user->lang['DISABLED']; ?></td>
 	</tr>
 	<tr>
+		<td class="row1"><b><?php echo $user->lang['EMAIL_FUNCTION_NAME']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EMAIL_FUNCTION_NAME_EXPLAIN']; ?></span></td>
+		<td class="row2"><input class="post" type="text" size="20" maxlength="50" name="email_function_name" value="<?php echo $new['email_function_name']; ?>" /></td>
+	</tr>
+	<tr>
 		<td class="row1"><b><?php echo $user->lang['EMAIL_PACKAGE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['EMAIL_PACKAGE_SIZE_EXPLAIN']; ?></span></td>
 		<td class="row2"><input class="post" type="text" size="5" maxlength="5" name="email_package_size" value="<?php echo $new['email_package_size']; ?>" /></td>
 	</tr>
@@ -971,11 +1084,17 @@ switch ($mode)
 		break;
 }
 
+	if ($mode != 'attach')
+	{
 ?>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['RESET']; ?>" class="btnlite" /></td>
 	</tr>
-</table></form>
+</table>
+<?php
+	}
+?>
+</form>
 
 <?php
 
@@ -1046,6 +1165,183 @@ function test_upload(&$error, $upload_dir, $create_directory = false)
 	{
 		$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $real_upload_dir);
 		return;
+	}
+}
+
+function perform_site_list()
+{
+	global $db, $user;
+
+	if (isset($_REQUEST['securesubmit']))
+	{
+		// Grab the list of entries
+		$ips = request_var('ips', '');
+		$ip_list = array_unique(explode("\n", $ips));
+		$ip_list_log = implode(', ', $ip_list);
+
+		$ip_exclude = (!empty($_POST['ipexclude'])) ? 1 : 0;
+
+		$iplist = array();
+		$hostlist = array();
+
+		foreach ($ip_list as $item)
+		{
+			if (preg_match('#^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$#', trim($item), $ip_range_explode))
+			{
+				// Don't ask about all this, just don't ask ... !
+				$ip_1_counter = $ip_range_explode[1];
+				$ip_1_end = $ip_range_explode[5];
+
+				while ($ip_1_counter <= $ip_1_end)
+				{
+					$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
+					$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
+
+					if($ip_2_counter == 0 && $ip_2_end == 254)
+					{
+						$ip_2_counter = 256;
+						$ip_2_fragment = 256;
+
+						$iplist[] = "'$ip_1_counter.*'";
+					}
+
+					while ($ip_2_counter <= $ip_2_end)
+					{
+						$ip_3_counter = ($ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[3] : 0;
+						$ip_3_end = ($ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[7];
+
+						if ($ip_3_counter == 0 && $ip_3_end == 254)
+						{
+							$ip_3_counter = 256;
+							$ip_3_fragment = 256;
+
+							$iplist[] = "'$ip_1_counter.$ip_2_counter.*'";
+						}
+
+						while ($ip_3_counter <= $ip_3_end)
+						{
+							$ip_4_counter = ($ip_3_counter == $ip_range_explode[3] && $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[4] : 0;
+							$ip_4_end = ($ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end) ? 254 : $ip_range_explode[8];
+
+							if ($ip_4_counter == 0 && $ip_4_end == 254)
+							{
+								$ip_4_counter = 256;
+								$ip_4_fragment = 256;
+
+								$iplist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.*'";
+							}
+
+							while ($ip_4_counter <= $ip_4_end)
+							{
+								$iplist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter'";
+								$ip_4_counter++;
+							}
+							$ip_3_counter++;
+						}
+						$ip_2_counter++;
+					}
+					$ip_1_counter++;
+				}
+			}
+			else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($item)))
+			{
+				$iplist[] = "'" . trim($item) . "'";
+			}
+			else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($item)))
+			{
+				$hostlist[] = "'" . trim($item) . "'";
+			}
+			else if (preg_match("#^([a-z0-9\-\*\._/]+?)$#is", trim($item)))
+			{
+				$hostlist[] = "'" . trim($item) . "'";
+			}
+		}
+
+		$sql = 'SELECT site_ip, site_hostname
+			FROM ' . SITELIST_TABLE . "
+			WHERE ip_exclude = $ip_exclude";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$iplist_tmp = array();
+			$hostlist_tmp = array();
+			do
+			{
+				if ($row['site_ip'])
+				{
+					$iplist_tmp[] = "'" . $row['site_ip'] . "'";
+				}
+				else if ($row['site_hostname'])
+				{
+					$hostlist_tmp[] = "'" . $row['site_hostname'] . "'";
+				}
+				break;
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			$iplist = array_unique(array_diff($iplist, $iplist_tmp));
+			$hostlist = array_unique(array_diff($hostlist, $hostlist_tmp));
+			unset($iplist_tmp);
+			unset($hostlist_tmp);
+		}
+
+		if (sizeof($iplist))
+		{
+			foreach ($iplist as $ip_entry)
+			{
+				$sql = 'INSERT INTO ' . SITELIST_TABLE . " (site_ip, ip_exclude)
+					VALUES ($ip_entry, $ip_exclude)";
+				$db->sql_query($sql);
+			}
+		}
+
+		if (sizeof($hostlist))
+		{
+			foreach ($hostlist as $host_entry)
+			{
+				$sql = 'INSERT INTO ' . SITELIST_TABLE . ' (site_hostname, ip_exclude)
+					VALUES ($host_entry, $ip_exclude)";
+				$db->sql_query($sql);
+			}
+		}
+		
+		if (!empty($ip_list_log))
+		{
+			// Update log
+			$log_entry = ($ip_exclude) ? 'LOG_DOWNLOAD_EXCLUDE_IP' : 'LOG_DOWNLOAD_IP';
+			add_log('admin', $log_entry, $ip_list_log);
+		}
+
+		trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCESSFUL']);
+	}
+	else if (isset($_POST['unsecuresubmit']))
+	{
+		$unip_sql = implode(', ', array_map('intval', $_POST['unip']));
+
+		if ($unip_sql != '')
+		{
+			$l_unip_list = '';
+		
+			// Grab details of ips for logging information later
+			$sql = 'SELECT site_ip, site_hostname
+				FROM ' . SITELIST_TABLE . "
+				WHERE site_id IN ($unip_sql)";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$l_unip_list .= (($l_unip_list != '') ? ', ' : '') . (($row['site_ip']) ? $row['site_ip'] : $row['site_hostname']);
+			}
+
+			$sql = 'DELETE FROM ' . SITELIST_TABLE . "
+				WHERE site_id IN ($unip_sql)";
+			$db->sql_query($sql);
+
+			add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
+		}
+
+		trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCESSFUL']);
 	}
 }
 
