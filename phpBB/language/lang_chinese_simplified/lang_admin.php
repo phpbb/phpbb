@@ -21,10 +21,11 @@
  *
  ***************************************************************************/
 
-/* Chinese GB Simplified Translation by inker
- * email : inker@byink.com    
- * last modify : 2002/2/21                           
- */
+//
+// Chinese GB Simplified Translation by inker
+// http://www.byink.com    
+// last modify : 2002/2/26                           
+//
 
 //
 // Format is same as lang_main
@@ -193,7 +194,7 @@ $lang['Click_return_forumauth'] = "点击 %s这里%s 返回版面权限设定";
 // Banning
 //
 $lang['Ban_control'] = "封锁控制";
-$lang['Ban_explain'] = "在这个选项中您可以设定会员的封锁. 您可以封锁一个指定的会员，一个指定范围的 IP 地址或是计算机主机名称, 这些方法禁止被封锁的会员进入论坛首页. 您也可以指定封锁电子邮件地址来防止注册会员使用不同的帐号重复注册. 请注意当您只是封锁一个电子邮件地址时将不会影响到会员在您论坛的登入或是发表文章, 您应该使用前面两种方式其中之一或是两种一起来建立封锁.";
+$lang['Ban_explain'] = "在这个选项中您可以设定会员的封锁. 您可以封锁一个指定的会员，一个指定范围的 IP 地址或是计算机主机名称, 这些方法禁止被封锁的会员进入论坛首页. 您也可以指定封锁电子邮件地址来防止注册会员使用不同的帐号重复注册. 请注意当您只是封锁一个电子邮件地址时将不会影响到会员在您论坛的登陆或是发表文章, 您应该使用前面两种方式其中之一或是两种一起来建立封锁.";
 $lang['Ban_explain_warn'] = "当您输入一个IP地址范围时, 这个范围内所有的IP地址都将会被封锁. 您可以使用统配符 * 定义要封锁的ip地址来降低被攻击的可能. 如果您一定要输入一个范围请尽量保持精简和适当以免影响正常的使用.";
 
 $lang['Select_username'] = "选择一个会员名称";
@@ -243,7 +244,7 @@ $lang['General_settings'] = "论坛基本设定";
 $lang['Site_name'] = "论坛名称";
 $lang['Site_desc'] = "论坛描述";
 $lang['Board_disable'] = "关闭论坛";
-$lang['Board_disable_explain'] = "这将会关闭论坛. 当您执行这个设定时请勿登出,您将无法重新登入!";
+$lang['Board_disable_explain'] = "这将会关闭论坛. 当您执行这个设定时请勿登出,您将无法重新登陆!";
 $lang['Acct_activation'] = "启用帐号激活";
 $lang['Acc_None'] = "关闭"; // These three entries are the type of activation
 $lang['Acc_User'] = "由会员激活";
@@ -276,7 +277,7 @@ $lang['Smilies_path_explain'] = "在您 phpBB 2 根目录底下的路径, 例如: images/smi
 $lang['Allow_sig'] = "允许使用签名档";
 $lang['Max_sig_length'] = "签名档长度限定";
 $lang['Max_sig_length_explain'] = "用户个人签名最多可使用字数";
-$lang['Allow_name_change'] = "允许更改登入名称";
+$lang['Allow_name_change'] = "允许更改登陆名称";
 
 $lang['Avatar_settings'] = "个人头像设定";
 $lang['Allow_local'] = "使用系统相册";
@@ -314,7 +315,7 @@ $lang['Sentbox_limits'] = "寄件夹最大容量";
 $lang['Savebox_limits'] = "储存夹最大容量";
 
 $lang['Cookie_settings'] = "Cookie 设定"; 
-$lang['Cookie_settings_explain'] = "这些设定控制著 Cookie 的定义, 就一般的情况, 使用系统预设值就可以了. 如果您要更改这些设定, 请谨慎设定, 不当的设定将影响会员的登入";
+$lang['Cookie_settings_explain'] = "这些设定控制著 Cookie 的定义, 就一般的情况, 使用系统预设值就可以了. 如果您要更改这些设定, 请谨慎设定, 不当的设定将影响会员的登陆";
 
 $lang['Cookie_name'] = "Cookie 名称";
 $lang['Cookie_domain'] = "Cookie 域名";
@@ -675,7 +676,7 @@ $lang['Admin_Password_confirm'] = "系统管理员密码 [ 确认 ]";
 
 $lang['Inst_Step_2'] = "您的系统管理员帐号已被建立, 论坛的基本安装已经完成, 稍后您将抵达论坛的管理页面.  请确认您已检查基本配置的设定并做适当的修改. 再一次感谢您选择使用 phpBB 2 论坛系统.";
 
-$lang['Unwriteable_config'] = "您的系统设定档无法写入, 您可以点击下方按钮下载设定文件, 再将这个文件上传至 phpBB 2 论坛的资料夹. 在完成后您必须使用管理员帐号跟密码登入并进入系统管理控制面板 (在您登入后, 下方将出现一个进入\"系统管理控制面板\"的链接) 检查您的基本配置设定. 最后感谢您选择使用安装 phpBB 2 论坛系统.";
+$lang['Unwriteable_config'] = "您的系统设定档无法写入, 您可以点击下方按钮下载设定文件, 再将这个文件上传至 phpBB 2 论坛的资料夹. 在完成后您必须使用管理员帐号跟密码登陆并进入系统管理控制面板 (在您登陆后, 下方将出现一个进入\"系统管理控制面板\"的链接) 检查您的基本配置设定. 最后感谢您选择使用安装 phpBB 2 论坛系统.";
 $lang['Download_config'] = "下载设定文件";
 
 $lang['ftp_choose'] = "选择下载方式";
@@ -685,8 +686,8 @@ $lang['ftp_info'] = "输入您的 FTP 信息";
 $lang['Attempt_ftp'] = "使用 FTP 上传设定文件:";
 $lang['Send_file'] = "自行上传设定文件";
 $lang['ftp_path'] = "安装 phpBB 2 的 FTP 路径:";
-$lang['ftp_username'] = "您的 FTP 登入名称:";
-$lang['ftp_password'] = "您的 FTP 登入密码:";
+$lang['ftp_username'] = "您的 FTP 登陆名称:";
+$lang['ftp_password'] = "您的 FTP 登陆密码:";
 $lang['Transfer_config'] = "开始传输";
 $lang['NoFTP_config'] = "FTP 上传设定文件失败. 请下载设定文件并使用手动上传.";
 

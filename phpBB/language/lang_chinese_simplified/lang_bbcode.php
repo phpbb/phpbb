@@ -22,8 +22,8 @@
 
 //
 // Chinese GB Simplified Translation by inker
-// email : inker@byink.com    
-// last modify : 2002/2/23                           
+// http://www.byink.com    
+// last modify : 2002/2/26                           
 //
 
 // 
@@ -45,11 +45,11 @@
 //
   
 $faq[] = array("--","介绍");
-$faq[] = array("什么是 BBCode 代码?", "BBCode 代码是一种 HTML 的特别语法, 您是否使用 BBCode 代码取决于管理员的开放与否, 另外您也可以在每个文章的发表版面中取消这个功能. BBCode代码的型式类似HTML语法, 可以使用 [ and ] 而不可以使用 &lt; 及 &gt;标签, 它提供了更好的操作方便性和控制面板的编排. 您可以在文章发表的表格上方发现 BBCode 代码的便捷按钮 (置放位置会依不同的布景样式而有所不同). 以下还有更详细的介绍.");
+$faq[] = array("什么是 BBCode 代码?", "BBCode 代码是一种 HTML 的特别语法, 您是否使用 BBCode 代码取决于管理员的开放与否, 另外您也可以在每个文章的发表版面中取消这个功能. BBCode代码的型式类似HTML语法, 可以使用 [ and ] 而不可以使用 &lt; and &gt;标签, 它提供了更好的操作方便性和控制面板的编排. 您可以在文章发表的表格上方发现 BBCode 代码的便捷按钮 (置放位置会依不同的布景样式而有所不同). 以下还有更详细的介绍.");
 
 $faq[] = array("--","文字格式");
 $faq[] = array("如何创建粗体, 斜体及加底线的文字?", "BBCode 代码提供一些文字标签方便您快速的更改文字的基本形式. 如下: <ul><li>粗体 <b>[b][/b]</b>, 如: <br /><br /><b>[b]</b>你好<b>[/b]</b><br /><br />会变成<b>你好</b><br /><br /></li><li>要使用底线时, 可用<b>[u][/u]</b>, 如:<br /><br /><b>[u]</b>你好<b>[/u]</b><br /><br />变成<u>你好</u><br /><br /></li><li>要斜体显示时, 可用 <b>[i][/i]</b>, 如:<br /><br />真是<b>[i]</b>太好了<b>[/i]</b><br /><br />将会变成 这个真是<i>太好了</i></li></ul>");
-$faq[] = array("如何修改文字的颜色以及大小?", "在您的文章中修改文字颜色及大小，可以使用以下的标签. 请注意, 显示的效果视您的浏览器和系统而定: <ul><li>更改文字色彩时, 可使用 <b>[color=][/color]</b>. 您可以指定一个可被辨识的颜色名称(例如. red, blue, yellow, 等等.) 或是使用颜色编码, 例如: #FFFFFF, #000000. 举例来说, 要制作一份红色文字您必须使用:<br /><br /><b>[color=red]</b>你好<b>[/color]</b><br /><br />或是<br /><br /><b>[color=#FF0000]</b>你好!<b>[/color]</b><br /><br />都将显示:<span style=\"color:red\">哈罗!</span><br /><br /></li><li>改变文字的大小也是使用类似的设定, 语句为 <b>[size=][/size]</b>. 这个语句的功能除了使用数值形式以像素来显示您的文字大字外, 其它的根据您使用的样式而定, 起始值为 1 (但是可能会小到您无法看见) 到 29 为止 (超大). 举例说明:<br /><br /><b>[size=9]</b>小<b>[/size]</b><br /><br />将会产生 <span style=\"font-size:9px\">小</span><br /><br />当情形:<br /><br /><b>[size=24]</b><b>[/size]</b><br /><br />将会显示 <span style=\"font-size:24px\">大</span></li></ul>");
+$faq[] = array("如何修改文字的颜色以及大小?", "在您的文章中修改文字颜色及大小，可以使用以下的标签. 请注意, 显示的效果视您的浏览器和系统而定: <ul><li>更改文字色彩时, 可使用 <b>[color=][/color]</b>. 您可以指定一个可被辨识的颜色名称(例如. red, blue, yellow, 等等.) 或是使用颜色编码, 例如: #FFFFFF, #000000. 举例来说, 要制作一份红色文字您必须使用:<br /><br /><b>[color=red]</b>你好<b>[/color]</b><br /><br />或是<br /><br /><b>[color=#FF0000]</b>你好!<b>[/color]</b><br /><br />都将显示:<span style=\"color:red\">你好!</span><br /><br /></li><li>改变文字的大小也是使用类似的设定, 语句为 <b>[size=][/size]</b>. 这个语句的功能除了使用数值形式以像素来显示您的文字大字外, 其它的根据您使用的样式而定, 起始值为 1 (但是可能会小到您无法看见) 到 29 为止 (超大). 举例说明:<br /><br /><b>[size=9]</b>小<b>[/size]</b><br /><br />将会产生 <span style=\"font-size:9px\">小</span><br /><br />当情形:<br /><br /><b>[size=24]</b><b>[/size]</b><br /><br />将会显示 <span style=\"font-size:24px\">大</span></li></ul>");
 $faq[] = array("我可以结合使用不同的标签功能吗?", "当然可以, 例如要吸引大家的注意时, 您可以使用:<br /><br /><b>[size=18][color=red][b]</b>看我这儿!<b>[/b][/color][/size]</b><br /><br /> 将会显示出 <span style=\"color:red;font-size:18px\"><b>看我这儿!</b></span><br /><br />我们并不建议您显示太多这类的文字! 但是这些还是由您自行决定. 在使用 BBCode 代码时, 请尽量使用正确的标签, 以下就是错误的使用方式:<br /><br /><b>[b][u]</b>错误示范<b>[/b][/u]</b>");
 
 $faq[] = array("--","引拥, 显示代码或固定宽度的文字");

@@ -21,8 +21,8 @@
 
 //
 // Chinese GB Simplified Translation by inker
-// email : inker@byink.com    
-// last modify : 2002/2/23                           
+// http://www.byink.com    
+// last modify : 2002/2/26                           
 //
 
 //
@@ -56,7 +56,7 @@ $lang['Replies'] = "»Ø¸´";
 $lang['Views'] = "ÔÄ¶Á";
 $lang['Post'] = "ÎÄÕÂ";
 $lang['Posts'] = "ÎÄÕÂ";
-$lang['Posted'] = "Posted";
+$lang['Posted'] = "·¢±íÓÚ";
 $lang['Username'] = "»áÔ±Ãû³Æ";
 $lang['Password'] = "ÃÜÂë";
 $lang['Email'] = "Email";
@@ -113,7 +113,7 @@ $lang['Reply_with_quote'] = "ÒıÓÃ²¢»Ø¸´";
 $lang['Click_return_topic'] = "µã»÷ %sÕâÀï%s ·µ»ØÖ÷Ìâ"; // %s's here are for uris, do not remove!
 $lang['Click_return_login'] = "µã»÷ %sÕâÀï%s ÔÙÊÔÒ»±é";
 $lang['Click_return_forum'] = "µã»÷ %sÕâÀï%s ·µ»ØÂÛÌ³";
-$lang['Click_view_message'] = "µã»÷ %sÕâÀï%s ÔÄ¶ÁÄãµÄÌû×Ó";
+$lang['Click_view_message'] = "µã»÷ %sÕâÀï%s ÔÄ¶ÁÄúµÄÌû×Ó";
 $lang['Click_return_modcp'] = "µã»÷ %sÕâÀï%s ·µ»Ø°ßÖñ¹ÜÀíÇø";
 $lang['Click_return_group'] = "µã»÷ %sÕâÀï%s ·µ»ØÍÅ¶ÓĞÅÏ¢Çø(to return to group information)";
 
@@ -141,18 +141,18 @@ $lang['Guest_user_total'] = "%d Î»ÓÎ¿Í";
 $lang['Record_online_users'] = "×î¸ßÔÚÏß¼ÍÂ¼ÊÇ <b>%s</b> ÈË %s"; // first %s = number of users, second %s is the date.
 
 $lang['Admin_online_color'] = "%sÂÛÌ³¹ÜÀíÔ±%s";
-$lang['Mod_online_color'] = "%s°æÃæ¹ÜÀíÔ±%s";
+$lang['Mod_online_color'] = "%s°ßÖñ%s";
 
 $lang['You_last_visit'] = "ÄúÉÏ´Î·ÃÎÊÊ±¼äÊÇ %s"; // %s replaced by date/time
 $lang['Current_time'] = "ÏÖÔÚµÄÊ±¼äÊÇ %s"; // %s replaced by time
 
 $lang['Search_new'] = "ÔÄ¶ÁÉÏ´Î·ÃÎÊºóµÄÌû×Ó";
-$lang['Search_your_posts'] = "ÔÄ¶ÁÄã·¢±íµÄÌû×Ó";
+$lang['Search_your_posts'] = "ÔÄ¶ÁÄú·¢±íµÄÌû×Ó";
 $lang['Search_unanswered'] = "ÔÄ¶ÁÉĞÎ´»Ø´ğµÄÌû×Ó";
 
 $lang['Register'] = "×¢²á";
 $lang['Profile'] = "¸öÈË×ÊÁÏ";
-$lang['Edit_profile'] = "±à¼­ÄãµÄ¸öÈË×ÊÁÏ";
+$lang['Edit_profile'] = "±à¼­ÄúµÄ¸öÈË×ÊÁÏ";
 $lang['Search'] = "ËÑË÷";
 $lang['Memberlist'] = "»áÔ±ÁĞ±í";
 $lang['FAQ'] = "³£¼ûÎÊÌâ";
@@ -188,13 +188,13 @@ $lang['Forum_is_locked'] = "¹Ø±ÕµÄÂÛÌ³";
 //
 // Login
 //
-$lang['Enter_password'] = "ÇëÊäÈëÄúµÄÓÃ»§ÃûºÍÃÜÂëµÇÈë";
-$lang['Login'] = "µÇÈë";
+$lang['Enter_password'] = "ÇëÊäÈëÄúµÄÓÃ»§ÃûºÍÃÜÂëµÇÂ½";
+$lang['Login'] = "µÇÂ½";
 $lang['Logout'] = "×¢Ïú";
 
 $lang['Forgotten_password'] = "ÎÒÍü¼ÇÁËÃÜÂë!";
 
-$lang['Log_me_in'] = "ä¯ÀÀÊ±×Ô¶¯µÇÈë";
+$lang['Log_me_in'] = "ä¯ÀÀÊ±×Ô¶¯µÇÂ½";
 
 $lang['Error_login'] = "ÄúÌá¹©µÄÓÃ»§Ãû»òÃÜÂë²»ÕıÈ·";
 
@@ -219,13 +219,13 @@ $lang['Forums_marked_read'] = "ËùÓĞÂÛÌ³ÒÑ±í¼ÇÎªÒÑ¶Á";
 //
 $lang['View_forum'] = "ä¯ÀÀÂÛÌ³";
 
-$lang['Forum_not_exist'] = "ÄãÑ¡ÔñµÄÂÛÌ³²»´æÔÚ";
-$lang['Reached_on_error'] = "ÄãÑ¡ÔñµÄÂÛÌ³³ö´íÁË";
+$lang['Forum_not_exist'] = "ÄúÑ¡ÔñµÄÂÛÌ³²»´æÔÚ";
+$lang['Reached_on_error'] = "ÄúÑ¡ÔñµÄÂÛÌ³³ö´íÁË";
 
 $lang['Display_topics'] = "ÏÔÊ¾ÒÔÇ°µÄÌû×Ó";
 $lang['All_Topics'] = "ËùÓĞµÄÌû×Ó";
 
-$lang['Topic_Announcement'] = "<b>Í¨¸æ:</b>";
+$lang['Topic_Announcement'] = "<b>¹«¸æ:</b>";
 $lang['Topic_Sticky'] = "<b>ÖÃ¶¥:</b>";
 $lang['Topic_Moved'] = "<b>ÒÆ¶¯:</b>";
 $lang['Topic_Poll'] = "<b>[ Í¶Æ± ]</b>";
@@ -233,17 +233,17 @@ $lang['Topic_Poll'] = "<b>[ Í¶Æ± ]</b>";
 $lang['Mark_all_topics'] = "±ê¼ÇËùÓĞÌû×ÓÎªÒÑ¶Á";
 $lang['Topics_marked_read'] = "Õâ¸öÂÛÌ³µÄËùÓĞÌû×ÓÒÑ±ê¼ÇÎªÒÑ¶Á";
 
-$lang['Rules_post_can'] = "Äã<b>¿ÉÒÔ</b>·¢²¼ĞÂÖ÷Ìâ";
-$lang['Rules_post_cannot'] = "Äã<b>²»ÄÜ</b>·¢²¼ĞÂÖ÷Ìâ";
-$lang['Rules_reply_can'] = "Äã<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³»Ø¸´Ö÷Ìâ";
-$lang['Rules_reply_cannot'] = "Äã<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³»Ø¸´Ö÷Ìâ";
-$lang['Rules_edit_can'] = "Äã<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³±à¼­×Ô¼ºµÄÌû×Ó";
-$lang['Rules_edit_cannot'] = "Äã<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³±à¼­×Ô¼ºµÄÌû×Ó";
-$lang['Rules_delete_can'] = "Äã<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³É¾³ı×Ô¼ºµÄÌû×Ó";
-$lang['Rules_delete_cannot'] = "Äã<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³É¾³ı×Ô¼ºµÄÌû×Ó";
-$lang['Rules_vote_can'] = "Äã<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³·¢±íÍ¶Æ±";
-$lang['Rules_vote_cannot'] = "Äã<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³·¢±íÍ¶Æ±";
-$lang['Rules_moderate'] = "Äã<b>¿ÉÒÔ</b>%s¹ÜÀíÕâ¸öÂÛÌ³%s"; // %s replaced by a href links, do not remove! 
+$lang['Rules_post_can'] = "Äú<b>¿ÉÒÔ</b>·¢²¼ĞÂÖ÷Ìâ";
+$lang['Rules_post_cannot'] = "Äú<b>²»ÄÜ</b>·¢²¼ĞÂÖ÷Ìâ";
+$lang['Rules_reply_can'] = "Äú<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³»Ø¸´Ö÷Ìâ";
+$lang['Rules_reply_cannot'] = "Äú<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³»Ø¸´Ö÷Ìâ";
+$lang['Rules_edit_can'] = "Äú<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³±à¼­×Ô¼ºµÄÌû×Ó";
+$lang['Rules_edit_cannot'] = "Äú<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³±à¼­×Ô¼ºµÄÌû×Ó";
+$lang['Rules_delete_can'] = "Äú<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³É¾³ı×Ô¼ºµÄÌû×Ó";
+$lang['Rules_delete_cannot'] = "Äú<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³É¾³ı×Ô¼ºµÄÌû×Ó";
+$lang['Rules_vote_can'] = "Äú<b>¿ÉÒÔ</b>ÔÚÕâ¸öÂÛÌ³·¢±íÍ¶Æ±";
+$lang['Rules_vote_cannot'] = "Äú<b>²»ÄÜ</b>ÔÚÕâ¸öÂÛÌ³·¢±íÍ¶Æ±";
+$lang['Rules_moderate'] = "Äú<b>¿ÉÒÔ</b>%s¹ÜÀíÕâ¸öÂÛÌ³%s"; // %s replaced by a href links, do not remove! 
 
 $lang['No_topics_post_one'] = "Õâ¸öÂÛÌ³Àï»¹Ã»ÓĞÌû×Ó<br />µã»÷<b>·¢±íÖ÷Ìâ</b>·¢±íÒ»¸öÌû×Ó";
 
@@ -262,7 +262,7 @@ $lang['View_results'] = "ä¯ÀÀ½á¹û";
 
 $lang['No_newer_topics'] = "Õâ¸öÂÛÌ³Ã»ÓĞ¸üĞÂµÄÖ÷Ìâ";
 $lang['No_older_topics'] = "Õâ¸öÂÛÌ³Ã»ÓĞ¸ü¾ÉµÄÖ÷Ìâ";
-$lang['Topic_post_not_exist'] = "ÄãÑ¡ÔñµÄÖ÷Ìâ²»´æÔÚ";
+$lang['Topic_post_not_exist'] = "ÄúÑ¡ÔñµÄÖ÷Ìâ²»´æÔÚ";
 $lang['No_posts_topic'] = "Õâ¸öÖ÷ÌâÀïÃ»ÓĞÌû×Ó";
 
 $lang['Display_posts'] = "ÏÔÊ¾ÒÔÇ°µÄÖ÷Ìâ";
@@ -280,9 +280,9 @@ $lang['Edit_delete_post'] = "±à¼­/É¾³ıÌû×Ó";
 $lang['View_IP'] = "ä¯ÀÀ·¢±íÕßµÄIPµØÖ·";
 $lang['Delete_post'] = "É¾³ıÕâ¸öÌû×Ó";
 
-$lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
+$lang['wrote'] = "Ğ´µ½"; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = "ÒıÓÃ"; // comes before bbcode quote output.
-$lang['Code'] = "Code"; // comes before bbcode code output.
+$lang['Code'] = "´úÂë"; // comes before bbcode code output.
 
 $lang['Edited_time_total'] = "×îºó½øĞĞ±à¼­µÄÊÇ %s on %s, ×Ü¼ÆµÚ %d ´Î±à¼­"; // Last edited by me on 12 Oct 2001, edited 1 time in total
 $lang['Edited_times_total'] = "×îºó½øĞĞ±à¼­µÄÊÇ %s on %s, ×Ü¼ÆµÚ %d ´Î±à¼­"; // Last edited by me on 12 Oct 2001, edited 2 times in total
@@ -313,33 +313,33 @@ $lang['Post_topic_as'] = "Post topic as";
 $lang['Edit_Post'] = "±à¼­ÎÄÕÂ";
 $lang['Options'] = "Ñ¡Ïî";
 
-$lang['Post_Announcement'] = "ÉùÃ÷";
+$lang['Post_Announcement'] = "¹«¸æ";
 $lang['Post_Sticky'] = "ÖÃ¶¥";
 $lang['Post_Normal'] = "ÆÕÍ¨";
 
-$lang['Confirm_delete'] = "ÄãÈ·¶¨ÒªÉ¾³ıÕâ¸öÖ÷ÌâÂğ?";
-$lang['Confirm_delete_poll'] = "ÄãÈ·¶¨ÒªÉ¾³ıÕâ¸öÍ¶Æ±Âğ?";
+$lang['Confirm_delete'] = "ÄúÈ·¶¨ÒªÉ¾³ıÕâ¸öÖ÷ÌâÂğ?";
+$lang['Confirm_delete_poll'] = "ÄúÈ·¶¨ÒªÉ¾³ıÕâ¸öÍ¶Æ±Âğ?";
 
-$lang['Flood_Error'] = "Äã²»ÄÜÔÚ·¢ÌùºóÂíÉÏ·¢±íĞÂÌù£¬Çë¹ıÒ»»áÔÙÊÔ.";
-$lang['Empty_subject'] = "Äã·¢±íµÄÌû×Ó±ØĞëÓĞÒ»¸öÖ÷Ìâ.";
-$lang['Empty_message'] = "Äã·¢±íµÄÌû×Ó±ØĞëÓĞÄÚÈİ.";
-$lang['Forum_locked'] = "Õâ¸öÂÛÌ³ÒÑ¾­±»Ëø¶¨,Äã²»ÄÜ·¢±í,»Ø¸´»òÕß±à¼­Ìû×Ó.";
-$lang['Topic_locked'] = "Õâ¸öÂÛÌâÒÑ¾­±»Ëø¶¨,Äã²»ÄÜ·¢±í,»Ø¸´»òÕß±à¼­Ìû×Ó.";
-$lang['No_post_id'] = "ÇëÑ¡ÔñÄãÒª±à¼­µÄÖ÷Ìâ";
-$lang['No_topic_id'] = "ÇëÑ¡ÔñÄãÒª»Ø¸´µÄÖ÷Ìâ";
-$lang['No_valid_mode'] = "ÄãÖ»¿ÉÒÔÑ¡Ôñ·¢±í,»Ø¸´»òÕßÒıÓÃÌû×Ó,ÇëºóÍËÖØÊÔ.";
+$lang['Flood_Error'] = "Äú²»ÄÜÔÚ·¢ÌùºóÂíÉÏ·¢±íĞÂÌù£¬Çë¹ıÒ»»áÔÙÊÔ.";
+$lang['Empty_subject'] = "Äú·¢±íµÄÌû×Ó±ØĞëÓĞÒ»¸öÖ÷Ìâ.";
+$lang['Empty_message'] = "Äú·¢±íµÄÌû×Ó±ØĞëÓĞÄÚÈİ.";
+$lang['Forum_locked'] = "Õâ¸öÂÛÌ³ÒÑ¾­±»Ëø¶¨,Äú²»ÄÜ·¢±í,»Ø¸´»òÕß±à¼­Ìû×Ó.";
+$lang['Topic_locked'] = "Õâ¸öÂÛÌâÒÑ¾­±»Ëø¶¨,Äú²»ÄÜ·¢±í,»Ø¸´»òÕß±à¼­Ìû×Ó.";
+$lang['No_post_id'] = "ÇëÑ¡ÔñÄúÒª±à¼­µÄÖ÷Ìâ";
+$lang['No_topic_id'] = "ÇëÑ¡ÔñÄúÒª»Ø¸´µÄÖ÷Ìâ";
+$lang['No_valid_mode'] = "ÄúÖ»¿ÉÒÔÑ¡Ôñ·¢±í,»Ø¸´»òÕßÒıÓÃÌû×Ó,ÇëºóÍËÖØÊÔ.";
 $lang['No_such_post'] = "Ã»ÓĞÕâ¸öÌû×Ó,ÇëºóÍËÖØÊÔ.";
-$lang['Edit_own_posts'] = "¶Ô²»ÆğÄãÖ»¿ÉÒÔ±à¼­×Ô¼ºµÄÌû×Ó.";
-$lang['Delete_own_posts'] = "¶Ô²»ÆğÄãÖ»¿ÉÒÔÉ¾³ı×Ô¼ºµÄÌû×Ó.";
-$lang['Cannot_delete_replied'] = "¶Ô²»ÆğÄã¿ÉÄÜ²»¿ÉÒÔÉ¾³ıÒÑ¾­±»»Ø¸´µÄÌû×Ó.";
-$lang['Cannot_delete_poll'] = "¶Ô²»ÆğÄã²»¿ÉÒÔÉ¾³ıÕı´¦ÓÚ»î¶¯×´Ì¬µÄÍ¶Æ±.";
-$lang['Empty_poll_title'] = "Äã±ØĞë¸øÄã·¢±íµÄÍ¶Æ±½¨Á¢Ò»¸öÖ÷Ìâ.";
-$lang['To_few_poll_options'] = "Äã±ØĞëÒª½¨Á¢ÖÁÉÙÁ½¸öÍ¶Æ±µÄÑ¡Ïî.";
-$lang['To_many_poll_options'] = "ÄãÑ¡Ôñ½¨Á¢Ì«¶àµÄÍ¶Æ±µÄÑ¡Ïî";
+$lang['Edit_own_posts'] = "¶Ô²»ÆğÄúÖ»¿ÉÒÔ±à¼­×Ô¼ºµÄÌû×Ó.";
+$lang['Delete_own_posts'] = "¶Ô²»ÆğÄúÖ»¿ÉÒÔÉ¾³ı×Ô¼ºµÄÌû×Ó.";
+$lang['Cannot_delete_replied'] = "¶Ô²»ÆğÄú¿ÉÄÜ²»¿ÉÒÔÉ¾³ıÒÑ¾­±»»Ø¸´µÄÌû×Ó.";
+$lang['Cannot_delete_poll'] = "¶Ô²»ÆğÄú²»¿ÉÒÔÉ¾³ıÕı´¦ÓÚ»î¶¯×´Ì¬µÄÍ¶Æ±.";
+$lang['Empty_poll_title'] = "Äú±ØĞë¸øÄú·¢±íµÄÍ¶Æ±½¨Á¢Ò»¸öÖ÷Ìâ.";
+$lang['To_few_poll_options'] = "Äú±ØĞëÒª½¨Á¢ÖÁÉÙÁ½¸öÍ¶Æ±µÄÑ¡Ïî.";
+$lang['To_many_poll_options'] = "ÄúÑ¡Ôñ½¨Á¢Ì«¶àµÄÍ¶Æ±µÄÑ¡Ïî";
 $lang['Post_has_no_poll'] = "Õâ¸öÖ÷ÌâÃ»ÓĞ½¨Á¢Í¶Æ±";
 
 $lang['Add_poll'] = "½¨Á¢Ò»¸öÍ¶Æ±";
-$lang['Add_poll_explain'] = "Èç¹ûÄã²»Ïë½¨Á¢Í¶Æ±Çë²»ÒªÌîĞ´Õâ¸öÑ¡Ïî.";
+$lang['Add_poll_explain'] = "Èç¹ûÄú²»Ïë½¨Á¢Í¶Æ±Çë²»ÒªÌîĞ´Õâ¸öÑ¡Ïî.";
 $lang['Poll_question'] = "Í¶Æ±ÎÊÌâ";
 $lang['Poll_option'] = "Í¶Æ±Ñ¡Ïî";
 $lang['Add_option'] = "½¨Á¢Ñ¡Ïî";
@@ -365,10 +365,10 @@ $lang['Attach_signature'] = "¸öĞÔÇ©Ãû (ÄúµÄ¸öĞÔÇ©Ãû¿ÉÒÔÔÚ¸öÈË×ÊÁÏÀï¸ü¸Ä)";
 $lang['Notify'] = "·¢ÌùÊ±ÌáĞÑÎÒ";
 $lang['Delete_post'] = "É¾³ıÕâ¸öÖ÷Ìâ";
 
-$lang['Stored'] = "ÄãµÄÌû×ÓÒÑ¾­³É¹¦µÄ´¢´æ";
-$lang['Deleted'] = "ÄãµÄÌû×ÓÒÑ¾­³É¹¦µÄ±»É¾³ı";
-$lang['Poll_delete'] = "Äã½¨Á¢µÄÍ¶Æ±ÒÑ¾­³É¹¦µÄ±»É¾³ı";
-$lang['Vote_cast'] = "ÄãµÄÑ¡Æ±ÒÑ¾­Í¶³ö";
+$lang['Stored'] = "ÄúµÄÌû×ÓÒÑ¾­³É¹¦µÄ´¢´æ";
+$lang['Deleted'] = "ÄúµÄÌû×ÓÒÑ¾­³É¹¦µÄ±»É¾³ı";
+$lang['Poll_delete'] = "Äú½¨Á¢µÄÍ¶Æ±ÒÑ¾­³É¹¦µÄ±»É¾³ı";
+$lang['Vote_cast'] = "ÄúµÄÑ¡Æ±ÒÑ¾­Í¶³ö";
 
 $lang['Topic_reply_notification'] = "»ØÌûÍ¨Öª";
 
@@ -376,13 +376,13 @@ $lang['bbcode_b_help'] = "´ÖÌå: [b]text[/b]  (alt+b)";
 $lang['bbcode_i_help'] = "´óĞ´: [i]text[/i]  (alt+i)";
 $lang['bbcode_u_help'] = "ÏÂ»®Ïß: [u]text[/u]  (alt+u)";
 $lang['bbcode_q_help'] = "ÒıÓÃÎÄ±¾: [quote]text[/quote]  (alt+q)";
-$lang['bbcode_c_help'] = "ÏÔÊ¾code : [code]code[/code]  (alt+c)";
-$lang['bbcode_l_help'] = "List: [list]text[/list] (alt+l)";
-$lang['bbcode_o_help'] = "Ordered list: [list=]text[/list]  (alt+o)";
+$lang['bbcode_c_help'] = "ÏÔÊ¾´úÂë : [code]code[/code]  (alt+c)";
+$lang['bbcode_l_help'] = "ÁĞ±í: [list]text[/list] (alt+l)";
+$lang['bbcode_o_help'] = "°´ĞòÁĞ±í: [list=]text[/list]  (alt+o)";
 $lang['bbcode_p_help'] = "²åÈëÍ¼Ïñ: [img]http://image_url[/img]  (alt+p)";
 $lang['bbcode_w_help'] = "²åÈëÁ´½ÓÍøÖ·: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)";
 $lang['bbcode_a_help'] = "¹Ø±ÕËùÓĞ¿ªÆôµÄbbCode±êÇ©";
-$lang['bbcode_s_help'] = "×ÖÌåÑÕÉ«: [color=red]text[/color]  ÌáÊ¾: ÄãÒ²¿ÉÒÔÊ¹ÓÃÈç color=#FF0000 ÕâÑùµÄhtmlÓï¾ä";
+$lang['bbcode_s_help'] = "×ÖÌåÑÕÉ«: [color=red]text[/color]  ÌáÊ¾: ÄúÒ²¿ÉÒÔÊ¹ÓÃÈç color=#FF0000 ÕâÑùµÄhtmlÓï¾ä";
 $lang['bbcode_f_help'] = "×ÖÌå´óĞ¡: [size=x-small]small text[/size]";
 
 $lang['Emoticons'] = "±íÇéÍ¼°¸";
@@ -412,8 +412,8 @@ $lang['font_normal'] = "Õı³£";
 $lang['font_large'] = "´ó";
 $lang['font_huge'] = "×î´ó";
 
-$lang['Close_Tags'] = "Close Tags";
-$lang['Styles_tip'] = "Tip: Styles can be applied quickly to selected text";
+$lang['Close_Tags'] = "Íê³É±êÇ©";
+$lang['Styles_tip'] = "ÌáÊ¾: ÎÄ×Ö·ç¸ñ¿ÉÒÔ¿ìËÙÊ¹ÓÃÔÚÑ¡ÔñµÄÎÄ×ÖÉÏ";
 
 
 //
@@ -421,7 +421,7 @@ $lang['Styles_tip'] = "Tip: Styles can be applied quickly to selected text";
 //
 $lang['Private_Messaging'] = "Õ¾ÄÚĞÅ¼ş";
 
-$lang['Login_check_pm'] = "µÇÈë²é¿´ÄúµÄÕ¾ÄÚĞÅ¼ş";
+$lang['Login_check_pm'] = "µÇÂ½²é¿´ÄúµÄÕ¾ÄÚĞÅ¼ş";
 $lang['New_pms'] = "ÄúÓĞ %d ·âĞÂµÄÕ¾ÄÚĞÅ¼ş"; // You have 2 new messages
 $lang['New_pm'] = "ÄúÓĞ %d ·âĞÂµÄÕ¾ÄÚĞÅ¼ş"; // You have 1 new message
 $lang['No_new_pm'] = "ÄúÃ»ÓĞĞÂµÄÕ¾ÄÚĞÅ¼ş";
@@ -436,7 +436,7 @@ $lang['Inbox'] = "ÊÕ¼şÏä";
 $lang['Outbox'] = "ÒÑ·¢ËÍµÄĞÅ¼şÏä";
 $lang['Savebox'] = "²İ¸åÏä";
 $lang['Sentbox'] = "·¢¼şÏä";
-$lang['Flag'] = "±àºÅ";
+$lang['Flag'] = "±ê¼Ç";
 $lang['Subject'] = "Ö÷Ìâ";
 $lang['From'] = "À´×Ô";
 $lang['To'] = "·¢ËÍÖÁ";
@@ -456,13 +456,17 @@ $lang['All_Messages'] = "ËùÓĞµÄÕ¾ÄÚĞÅ¼ş";
 $lang['No_messages_folder'] = "Õâ¸öÎÄ¼ş¼ĞÀïÃ»ÓĞĞÅ¼ş";
 
 $lang['PM_disabled'] = "Õâ¸öÂÛÌ³µÄÕ¾ÄÚĞÅ¼şÒÑ¾­±»½ûÓÃ";
-$lang['Cannot_send_privmsg'] = "¶Ô²»ÆğÂÛÌ³¹ÜÀíÔ±ÒÑ¾­½ûÖ¹Äã·¢ËÍÕ¾ÄÚĞÅ¼ş";
+$lang['Cannot_send_privmsg'] = "¶Ô²»ÆğÂÛÌ³¹ÜÀíÔ±ÒÑ¾­½ûÖ¹Äú·¢ËÍÕ¾ÄÚĞÅ¼ş";
 $lang['No_to_user'] = "Äú±ØĞëÖ¸¶¨Õ¾ÄÚĞÅ¼ş·¢ËÍµÄ¶ÔÏó";
 $lang['No_such_user'] = "¶Ô²»ÆğÕâ¸öÓÃ»§²»´æÔÚ";
 
-$lang['Message_sent'] = "ÄãµÄÕ¾ÄÚĞÅ¼ş·¢ËÍ³É¹¦";
+$lang['Disable_HTML_pm'] = "ÔÚÕâ¸öĞÅ¼şÀï½ûÖ¹HTMLÓïÑÔ";
+$lang['Disable_BBCode_pm'] = "ÔÚÕâ¸öĞÅ¼şÀï½ûÖ¹BBCode";
+$lang['Disable_Smilies_pm'] = "ÔÚÕâ¸öĞÅ¼şÀï½ûÖ¹±íÇé·ûºÅ";
 
-$lang['Click_return_inbox'] = "µã»÷ %sÕâÀï%s ·µ»ØÄãµÄÊÕ¼şÏä";
+$lang['Message_sent'] = "ÄúµÄÕ¾ÄÚĞÅ¼ş·¢ËÍ³É¹¦";
+
+$lang['Click_return_inbox'] = "µã»÷ %sÕâÀï%s ·µ»ØÄúµÄÊÕ¼şÏä";
 $lang['Click_return_index'] = "µã»÷ %sÕâÀï%s ·µ»ØÊ×Ò³";
 
 $lang['Send_a_new_message'] = "·¢ËÍÒ»¸öĞÂµÄÕ¾ÄÚĞÅ¼ş";
@@ -499,10 +503,10 @@ $lang['Viewing_user_profile'] = "ä¯ÀÀ¸öÈË×ÊÁÏ :: %s"; // %s is username
 $lang['About_user'] = "¹ØÓÚ %s"; // %s is username
 
 $lang['Preferences'] = "Ñ¡Ïî";
-$lang['Items_required'] = "´ø * µÄÏîÄ¿ÊÇ±ØĞëÑ¡ÔñµÄ";
+$lang['Items_required'] = "´ø*µÄÏîÄ¿ÊÇ±ØĞëÌîĞ´µÄ";
 $lang['Registration_info'] = "×¢²áĞÅÏ¢";
 $lang['Profile_info'] = "¸öÈË×ÊÁÏ";
-$lang['Profile_info_warn'] = "Õâ¸öĞÅÏ¢½«±»¹«¿ª";
+$lang['Profile_info_warn'] = "ÒÔÏÂĞÅÏ¢½«±»¹«¿ª";
 $lang['Avatar_panel'] = "Í·Ïñ¿ØÖÆÃæ°å";
 $lang['Avatar_gallery'] = "Í·Ïñ»­¼¯";
 
@@ -538,7 +542,7 @@ $lang['Always_html'] = "×ÜÊÇ¿ªÆô HTML";
 $lang['Always_bbcode'] = "×ÜÊÇ¿ªÆô BBCode";
 $lang['Always_add_sig'] = "×ÜÊÇ·¢±íÎÒµÄ¸öÈËÇ©Ãû";
 $lang['Always_notify'] = "×ÜÊÇÌáĞÑÎÒµ±ÓĞÈË»Ø¸´ÎÒµÄÌû×Ó";
-$lang['Always_notify_explain'] = "µ±ÓĞÈË»Ø¸´ÎÒµÄÌû×ÓÊ±·¢ËÍÒ»·âµç×ÓÓÊ¼şÌáĞÑÎÒ.Õâ¸öÑ¡Ïî¿ÉÒÔ±»¸ü¸Äµ±Äú·¢±íÖ÷ÌâÊ±";
+$lang['Always_notify_explain'] = "µ±ÓĞÈË»Ø¸´ÎÒµÄÌû×ÓÊ±·¢ËÍÒ»·âµç×ÓÓÊ¼şÌáĞÑÎÒ.Õâ¸öÑ¡Ïî¿ÉÒÔÔÚÄú·¢±íÖ÷ÌâÊ±¸ü¸Ä";
 
 $lang['Board_style'] = "ÂÛÌ³·ç¸ñ";
 $lang['Board_lang'] = "ÂÛÌ³ÓïÑÔ";
@@ -547,13 +551,13 @@ $lang['Timezone'] = "Ê±Çø";
 $lang['Date_format'] = "ÈÕÆÚ¸ñÊ½";
 $lang['Date_format_explain'] = "ÈÕÆÚ¸ñÊ½µÄÓï·¨ºÍ PHP <a href=\"http://www.php.net/date\" target=\"_other\">date() Óï¾ä</a>ÍêÈ«ÏàÍ¬";
 $lang['Signature'] = "¸öÈËÇ©Ãû";
-$lang['Signature_explain'] = "ÄúÌîĞ´µÄ¸öÈËÇ©Ãû¿ÉÒÔ·¢±íÔÚÄúµÄÌû×Óºó.¸öÈËÇ©ÃûÓĞ%d¸ö×Ö·ûµÄÏŞÖÆ";
-$lang['Public_view_email'] = "×ÜÊÇÏÖÊµÎÒµÄµç×ÓÓÊ¼şµØÖ·";
+$lang['Signature_explain'] = "ÄúÌîĞ´µÄ¸öÈËÇ©Ãû¿ÉÒÔ·¢±íÔÚÄúµÄÌû×ÓÏÂ·½.¸öÈËÇ©ÃûÓĞ%d¸ö×Ö·ûµÄÏŞÖÆ";
+$lang['Public_view_email'] = "×ÜÊÇÏÔÊ¾ÎÒµÄµç×ÓÓÊ¼şµØÖ·";
 
 $lang['Current_password'] = "ÏÖÔÚµÄÃÜÂë";
 $lang['New_password'] = "ĞÂµÄÃÜÂë";
 $lang['Confirm_password'] = "È·ÈÏĞÂÃÜÂë";
-$lang['password_if_changed'] = "Ö»ÓĞµ±ÄúÏ£Íû¸ü¸ÄÃÜÂëÊ±²ÅĞèÒªÌá¹©ÏÖÔÚÊ¹ÓÃµÄÃÜÂë";
+$lang['password_if_changed'] = "Ö»ÓĞµ±ÄúÏ£Íû¸ü¸ÄÃÜÂëÊ±²ÅĞèÒªÌá¹©ĞÂµÄÃÜÂë";
 $lang['password_confirm_if_changed'] = "Ö»ÓĞµ±ÄúÏ£Íû¸ü¸ÄÃÜÂëÊ±²ÅĞèÒªÈ·ÈÏĞÂµÄÃÜÂë";
 
 $lang['Avatar'] = "Í·Ïñ";
@@ -595,8 +599,8 @@ $lang['Welcome_subject'] = "»¶Ó­Äú·ÃÎÊ %s ÂÛÌ³"; // Welcome to my.com forums
 $lang['New_account_subject'] = "ĞÂÓÃ»§ÕÊ»§";
 $lang['Account_activated_subject'] = "ÕË»§¼¤»î";
 
-$lang['Account_added'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.ÄúÏÖÔÚ¾Í¿ÉÒÔÊ¹ÓÃÄúµÄÓÃ»§ÃûºÍÃÜÂëµÇÈë";
-$lang['Account_inactive'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.µ«ÊÇ±¾ÂÛÌ³ĞèÒª¼¤»îÕË»§.Çë²ì¿´ÄúµÄµç×ÓÓÊ¼şÀí½â¸ü¶àµÄĞÅÏ¢.";
+$lang['Account_added'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.ÄúÏÖÔÚ¾Í¿ÉÒÔÊ¹ÓÃÄúµÄÓÃ»§ÃûºÍÃÜÂëµÇÂ½";
+$lang['Account_inactive'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.±¾ÂÛÌ³ĞèÒª¼¤»îÕË»§.Çë²é¿´ÄúµÄµç×ÓÓÊ¼şÁË½â¼¤»îµÄĞÅÏ¢.";
 $lang['Account_inactive_admin'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.µ«ÊÇ±¾ÂÛÌ³ĞèÒªÂÛÌ³¹ÜÀíÔ±¼¤»îÕË»§. Ò»·âµç×ÓÓÊ¼şÒÑ¾­±»·¢ËÍµ½¹ÜÀíÔ±,ÄúµÄÕË»§±»¼¤»îÊ±Äú½«ÊÕµ½Í¨Öª.";
 $lang['Account_active'] = "¸ĞĞ»ÄúµÄ×¢²á,ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢.";
 $lang['Account_active_admin'] = "ÕË»§ÏÖÔÚÒÑ¾­±»³É¹¦¼¤»î";
@@ -604,18 +608,18 @@ $lang['Reactivate'] = "ÖØĞÂ¼¤»îÄúµÄÕË»§!";
 $lang['COPPA'] = "ÄúµÄÕË»§ÒÑ¾­±»½¨Á¢µ«ÊÇĞèÒª±»Åú×¼,Çë²é¿´ÄúµÄµç×ÓÓÊ¼şÁË½âÏ¸½Ú.";
 
 $lang['Registration'] = "×¢²á·şÎñÌõ¿î";
-$lang['Reg_agreement'] = "¾¡¹ÜÂÛÌ³¹ÜÀí³ÉÔ±»á¾¡¿ÉÄÜ¾¡¿ìÉ¾³ı»ò±à¼­ÓĞÕùÒé»òÊÇ²»½¡¿µµÄÌû×Ó,µ«ÊÇËûÃÇ²»¿ÉÄÜÔÄ¶ÁËùÓĞµÄÌû×ÓÄÚÈİ.Òò´ËÄúÒò¸Ã³ĞÈÏÕâ¸öÂÛÌ³ÉÏËùÓĞµÄÖ÷ÌâÖ»ÓÉËüµÄ·¢±íÕß³Ğµ£ÔğÈÎ,¶ø²»ÊÇÂÛÌ³µÄ¹ÜÀí³ÉÔ±ÃÇ(³ı·ÇÊÇÓÉËûÃÇ·¢±íµÄ).<br /><br />Äú±ØĞèÍ¬Òâ²»·¢±í´øÓĞÈèÂî,Òù»à,´ÖË×,·Ì°ù,´øÓĞ³ğºŞĞÔ,¿ÖÏÅµÄ,²»½¡¿µµÄ»òÊÇÈÎºÎÎ¥·´·¨ÂÉµÄÄÚÈİ. Èç¹ûÄãÕâÑù×ö½«µ¼ÖÂÄãµÄÕË»§½«Á¢¼´ºÍÓÀ¾ÃĞÔµÄ±»·âËø.(ÄãµÄÍøÂç·şÎñÌá¹©ÉÌÒ²»á±»Í¨Öª). ÔÚÕâ¸öÇé¿öÏÂ,Õâ¸öIPµØÖ·µÄËùÓĞÓÃ»§¶¼½«±»¼ÇÂ¼.Äú±ØĞëÍ¬ÒâÏµÍ³¹ÜÀí³ÉÔ±ÃÇÓĞÔÚÈÎºÎÊ±¼äÉ¾³ı,ĞŞ¸Ä,ÒÆ¶¯»ò¹Ø±ÕÈÎºÎÖ÷ÌâµÄÈ¨Á¦. ×÷ÎªÒ»¸öÊ¹ÓÃÕß, Äú±ØĞëÍ¬ÒâÄúËùÌá¹©µÄÈÎºÎ×ÊÁÏ¶¼½«±»´æÈëÊı¾İ¿âÖĞ,ÕâĞ©×ÊÁÏ³ı·ÇÓĞÄúµÄÍ¬Òâ,ÏµÍ³¹ÜÀíÔ±ÃÇ¾ø²»»á¶ÔµÚÈı·½¹«¿ª,È»¶øÎÒÃÇ²»ÄÜ±£Ö¤ÈÎºÎ¿ÉÄÜµ¼ÖÂ×ÊÁÏĞ¹Â¶µÄº§¿ÍÈëÇÖĞĞÎª.<br /><br />Õâ¸öÌÖÂÛÇøÏµÍ³Ê¹ÓÃcookieÀ´´¢´æÄúµÄ¸öÈËĞÅÏ¢(ÔÚÄúÊ¹ÓÃµÄ±¾µØ¼ÆËã»ú), ÕâĞ©cookie²»°üº¬ÈÎºÎÄúÔø¾­ÊäÈë¹ıµÄĞÅÏ¢,ËüÃÇÖ»ÎªÁË·½±ãÄúÄÜ¸ü·½±ãµÄä¯ÀÀ. µç×ÓÓÊ¼şµØÖ·Ö»ÓÃÀ´È·ÈÏÄúµÄ×¢²áºÍ·¢ËÍÃÜÂëÊ¹ÓÃ.(Èç¹ûÄúÍü¼ÇÁËÃÜÂë,½«»á·¢ËÍĞÂÃÜÂëµÄµØÖ·)<br /><br />µã»÷ÏÂÃæµÄÁ´½Ó´ú±íÄúÍ¬ÒâÊÜµ½ÕâĞ©·şÎñÌõ¿îµÄÔ¼Êø.";
+$lang['Reg_agreement'] = "¾¡¹ÜÂÛÌ³¹ÜÀí³ÉÔ±»á¾¡¿ÉÄÜ¾¡¿ìÉ¾³ı»ò±à¼­ÓĞÕùÒé»òÊÇ²»½¡¿µµÄÌû×Ó,µ«ÊÇËûÃÇ²»¿ÉÄÜÔÄ¶ÁËùÓĞµÄÌû×ÓÄÚÈİ.Òò´ËÄúÒò¸Ã³ĞÈÏÕâ¸öÂÛÌ³ÉÏËùÓĞµÄÖ÷ÌâÖ»ÓÉËüµÄ·¢±íÕß³Ğµ£ÔğÈÎ,¶ø²»ÊÇÂÛÌ³µÄ¹ÜÀí³ÉÔ±ÃÇ(³ı·ÇÊÇÓÉËûÃÇ·¢±íµÄ).<br /><br />Äú±ØĞèÍ¬Òâ²»·¢±í´øÓĞÈèÂî,Òù»à,´ÖË×,·Ì°ù,´øÓĞ³ğºŞĞÔ,¿ÖÏÅµÄ,²»½¡¿µµÄ»òÊÇÈÎºÎÎ¥·´·¨ÂÉµÄÄÚÈİ. Èç¹ûÄúÕâÑù×ö½«µ¼ÖÂÄúµÄÕË»§½«Á¢¼´ºÍÓÀ¾ÃĞÔµÄ±»·âËø.(ÄúµÄÍøÂç·şÎñÌá¹©ÉÌÒ²»á±»Í¨Öª). ÔÚÕâ¸öÇé¿öÏÂ,Õâ¸öIPµØÖ·µÄËùÓĞÓÃ»§¶¼½«±»¼ÇÂ¼.Äú±ØĞëÍ¬ÒâÏµÍ³¹ÜÀí³ÉÔ±ÃÇÓĞÔÚÈÎºÎÊ±¼äÉ¾³ı,ĞŞ¸Ä,ÒÆ¶¯»ò¹Ø±ÕÈÎºÎÖ÷ÌâµÄÈ¨Á¦. ×÷ÎªÒ»¸öÊ¹ÓÃÕß, Äú±ØĞëÍ¬ÒâÄúËùÌá¹©µÄÈÎºÎ×ÊÁÏ¶¼½«±»´æÈëÊı¾İ¿âÖĞ,ÕâĞ©×ÊÁÏ³ı·ÇÓĞÄúµÄÍ¬Òâ,ÏµÍ³¹ÜÀíÔ±ÃÇ¾ø²»»á¶ÔµÚÈı·½¹«¿ª,È»¶øÎÒÃÇ²»ÄÜ±£Ö¤ÈÎºÎ¿ÉÄÜµ¼ÖÂ×ÊÁÏĞ¹Â¶µÄº§¿ÍÈëÇÖĞĞÎª.<br /><br />Õâ¸öÌÖÂÛÇøÏµÍ³Ê¹ÓÃcookieÀ´´¢´æÄúµÄ¸öÈËĞÅÏ¢(ÔÚÄúÊ¹ÓÃµÄ±¾µØ¼ÆËã»ú), ÕâĞ©cookie²»°üº¬ÈÎºÎÄúÔø¾­ÊäÈë¹ıµÄĞÅÏ¢,ËüÃÇÖ»ÎªÁË·½±ãÄúÄÜ¸ü·½±ãµÄä¯ÀÀ. µç×ÓÓÊ¼şµØÖ·Ö»ÓÃÀ´È·ÈÏÄúµÄ×¢²áºÍ·¢ËÍÃÜÂëÊ¹ÓÃ.(Èç¹ûÄúÍü¼ÇÁËÃÜÂë,½«»á·¢ËÍĞÂÃÜÂëµÄµØÖ·)<br /><br />µã»÷ÏÂÃæµÄÁ´½Ó´ú±íÄúÍ¬ÒâÊÜµ½ÕâĞ©·şÎñÌõ¿îµÄÔ¼Êø.";
 
 $lang['Agree_under_13'] = "ÎÒÍ¬Òâ²¢ÇÒÎÒ<b>Ğ¡ÓÚ</b>13Ëê";
 $lang['Agree_over_13'] = "ÎÒÍ¬Òâ²¢ÇÒÎÒ<b>´óÓÚ</b>13Ëê";
 $lang['Agree_not'] = "ÎÒ²»Í¬Òâ";
 
-$lang['Wrong_activation'] = "ÄãÌá¹©µÄ¼¤»îÃÜÂëºÍÊı¾İ¿âÖĞµÄ²»Æ¥Åä";
+$lang['Wrong_activation'] = "ÄúÌá¹©µÄ¼¤»îÃÜÂëºÍÊı¾İ¿âÖĞµÄ²»Æ¥Åä";
 $lang['Send_password'] = "·¢ËÍÒ»¸öĞÂµÄ¼¤»îÃÜÂë¸øÎÒ"; 
-$lang['Password_updated'] = "Äã¸öĞÂµÄ¼¤»îÃÜÂëÒÑ¾­±»½¨Á¢,Çë²é¿´ÄúµÄµç×ÓÓÊ¼şÁË½â¼¤»îÏ¸½Ú";
-$lang['No_email_match'] = "ÄãÌá¹©µÄµç×ÓÓÊ¼şµØÖ·ºÍÊı¾İ¿âÖĞµÄ²»Æ¥Åä";
+$lang['Password_updated'] = "Äú¸öĞÂµÄ¼¤»îÃÜÂëÒÑ¾­±»½¨Á¢,Çë²é¿´ÄúµÄµç×ÓÓÊ¼şÁË½â¼¤»îÏ¸½Ú";
+$lang['No_email_match'] = "ÄúÌá¹©µÄµç×ÓÓÊ¼şµØÖ·ºÍÊı¾İ¿âÖĞµÄ²»Æ¥Åä";
 $lang['New_password_activation'] = "ĞÂÃÜÂë¼¤»î";
-$lang['Password_activated'] = "ÄúµÄÕË»§ÒÑ¾­±»ÖØĞÂ¼¤»î.ÇëÊ¹ÓÃÄãÊÕµ½µÄµç×ÓÓÊ¼şÖĞµÄÃÜÂëµÇÈë";
+$lang['Password_activated'] = "ÄúµÄÕË»§ÒÑ¾­±»ÖØĞÂ¼¤»î.ÇëÊ¹ÓÃÄúÊÕµ½µÄµç×ÓÓÊ¼şÖĞµÄÃÜÂëµÇÂ½";
 
 $lang['Send_email_msg'] = "·¢ËÍÒ»·âµç×ÓÓÊ¼ş";
 $lang['No_user_specified'] = "Ã»ÓĞÑ¡ÔñÓÃ»§";
@@ -623,7 +627,7 @@ $lang['user_prevent_email'] = "ÕâÃûÓÃ»§²»Ï£ÍûÊÕµ½µç×ÓÓÊ¼ş,Äú¿ÉÒÔ·¢ËÍÕ¾ÄÚĞÅ¼ş¸øÕâ
 $lang['user_not_exist'] = "ÓĞ»§²»´æÔÚ";
 $lang['CC_email'] = "¸´ÖÆÕâ·âµç×ÓÓÊ¼ş·¢ËÍ¸ø×Ô¼º";
 $lang['Email_message_desc'] = "Õâ·âÓÊ¼ş½«±»ÒÔ´¿ÎÄ±¾¸ñÊ½·¢ËÍ,Çë²»Òª°üº¬ÈÎºÎ HTML »òÕß BBCode.ÕâÆªÓÊ¼şµÄ»Ø¸´µØÖ·½«Ö¸ÏòÄúµÄµç×ÓÓÊ¼şµØÖ·.";
-$lang['Flood_email_limit'] = "Äã²»ÄÜÏÖÔÚ·¢ËÍÆäËûµÄµç×ÓÓÊ¼ş,Çë¹ıÒ»»áÔÙÊÔ.";
+$lang['Flood_email_limit'] = "Äú²»ÄÜÏÖÔÚ·¢ËÍÆäËûµÄµç×ÓÓÊ¼ş,Çë¹ıÒ»»áÔÙÊÔ.";
 $lang['Recipient'] = "ÊÕĞÅÈË";
 $lang['Email_sent'] = "ÓÊ¼şÒÑ¾­±»·¢ËÍ";
 $lang['Send_email'] = "·¢ËÍµç×ÓÓÊ¼ş";
@@ -668,19 +672,19 @@ $lang['Group_open'] = "¿ªÆôÍÅ¶Ó";
 $lang['Group_closed'] = "¹Ø±ÕÍÅ¶Ó";
 $lang['Group_hidden'] = "Òş²ØÍÅ¶Ó";
 
-$lang['Current_memberships'] = "Ä¿Ç°µÄ³ÉÔ±";
-$lang['Non_member_groups'] = "ÎŞ³ÉÔ±µÄÍÅ¶Ó";
-$lang['Memberships_pending'] = "ÉóºËÖĞµÄ³ÉÔ±";
+$lang['Current_memberships'] = "Ä¿Ç°ÄúËùÔÚµÄÍÅ¶Ó";
+$lang['Non_member_groups'] = "Ã»ÓĞ³ÉÔ±µÄÍÅ¶Ó";
+$lang['Memberships_pending'] = "ÄúÕıÔÚ±»ÉóºËÖĞµÄÍÅ¶Ó";
 
 $lang['No_groups_exist'] = "Ã»ÓĞÍÅ¶Ó´æÔÚ";
 $lang['Group_not_exist'] = "²»´æÔÚÕâ¸öÍÅ¶Ó";
 
 $lang['Join_group'] = "¼ÓÈëÍÅ¶Ó";
 $lang['No_group_members'] = "Õâ¸öÍÅ¶ÓÃ»ÓĞ³ÉÔ±";
-$lang['Group_hidden_members'] = "Õâ¸öÍÅ¶Ó´¦ÓÚÒş²Ø×´Ì¬,Äú²»ÄÜä¯ÀÀËüµÄ³ÉÔ±";
+$lang['Group_hidden_members'] = "Õâ¸öÍÅ¶Ó´¦ÓÚÒş²Ø×´Ì¬,Äú²»ÄÜ²é¿´ËüµÄ³ÉÔ±";
 $lang['No_pending_group_members'] = "Õâ¸öÍÅ¶Ó²»´æÔÚÉóºËÖĞ³ÉÔ±";
 $lang["Group_joined"] = "ÄúÒÑ¾­ÉêÇë¼ÓÈëÕâ¸öÍÅ¶Ó,<br />µ±ÄúµÄÉêÇëÍ¨¹ıÉóºËÄú½«ÊÜµ½ÌáĞÑ";
-$lang['Group_request'] = "¼ÓÈëÕâ¸öÍÅ¶ÓµÄÉêÇëÒÑ¾­½¨Á¢";
+$lang['Group_request'] = "¼ÓÈëÕâ¸öÍÅ¶ÓµÄÉêÇëÒÑ¾­Ìá½»";
 $lang['Group_approved'] = "ÄúµÄÉêÇëÒÑ¾­±»Åú×¼ÁË";
 $lang['Group_added'] = "ÄúÒÑ¾­±»¼ÓÈëÕâ¸öÍÅ¶Ó"; 
 $lang['Already_member_group'] = "ÄúÒÑ¾­ÊÇÕâ¸öÍÅ¶ÓµÄ³ÉÔ±";
@@ -688,7 +692,7 @@ $lang['user_is_member_group'] = "ÓÃ»§ÒÑ¾­ÊÇÕâ¸öÍÅ¶ÓµÄ³ÉÔ±";
 $lang['Group_type_updated'] = "³É¹¦¸üĞÂÍÅ¶ÓÀàĞÍ";
 
 $lang['Could_not_add_user'] = "ÄúÑ¡ÔñµÄÓÃ»§²»´æÔÚ";
-$lang['Could_not_anon_user'] = "Äú²»ÄÜ½¨Á¢ÄäÃûµÄÍÅ¶Ó³ÉÔ±";
+$lang['Could_not_anon_user'] = "Äú²»ÄÜ½¨Á¢ÄÄúûµÄÍÅ¶Ó³ÉÔ±";
 
 $lang['Confirm_unsub'] = "ÄúÈ·¶¨Òª´ÓÕâ¸öÍÅ¶Ó½â³ıÉêÇëÂğ?";
 $lang['Confirm_unsub_pending'] = "ÄúµÄÍÅ¶ÓÉêÇë»¹Ã»ÓĞ±»Åú×¼,ÄúÈ·¶¨Òª½â³ıÉêÇëÂğ?";
@@ -697,15 +701,15 @@ $lang['Unsub_success'] = "ÄúÒÑ¾­´ÓÕâ¸öÍÅ¶Ó½â³ıÁËÉêÇë.";
 
 $lang['Approve_selected'] = "Ñ¡ÔñÅú×¼";
 $lang['Deny_selected'] = "Ñ¡Ôñ¾Ü¾ø";
-$lang['Not_logged_in'] = "¼ÓÈëÍÅ¶ÓÇ°Äú±ØĞëÊ×ÏÈµÇÈë.";
+$lang['Not_logged_in'] = "¼ÓÈëÍÅ¶ÓÇ°Äú±ØĞëÊ×ÏÈµÇÂ½.";
 $lang['Remove_selected'] = "Ñ¡ÔñÒÆ³ı";
 $lang['Add_member'] = "Ôö¼Ó³ÉÔ±";
 $lang['Not_group_moderator'] = "Äú²»ÊÇÕâ¸öÍÅ¶ÓµÄ¹ÜÀíÔ±,ÄúÎŞ·¨Ö´ĞĞÍÅ¶ÓµÄ¹ÜÀí¹¦ÄÜ.";
 
-$lang['Login_to_join'] = "ÇëµÇÈëÀ´¼ÓÈë»òÕß¹ÜÀíÍÅ¶Ó³ÉÔ±";
+$lang['Login_to_join'] = "ÇëµÇÂ½¼ÓÈë»òÕß¹ÜÀíÍÅ¶Ó³ÉÔ±";
 $lang['This_open_group'] = "ÕâÊÇÒ»¸ö¿ª·ÅµÄÍÅ¶Ó,µã»÷ÉêÇë³ÉÔ±";
-$lang['This_closed_group'] = "ÕâÊÇÒ»¸ö¹Ø±ÕµÄÍÅ¶Ó, ²»½ÓÊÜĞÂµÄ³ÉÔ±";
-$lang['This_hidden_group'] = "ÕâÊÇÒ»¸öÒş²ØµÄÍÅ¶Ó, ²»ÈİĞí×Ô¶¯Ôö¼Ó³ÉÔ±";
+$lang['This_closed_group'] = "ÕâÊÇÒ»¸ö¹Ø±ÕµÄÍÅ¶Ó,²»½ÓÊÜĞÂµÄ³ÉÔ±";
+$lang['This_hidden_group'] = "ÕâÊÇÒ»¸öÒş²ØµÄÍÅ¶Ó,²»ÈİĞí×Ô¶¯Ôö¼Ó³ÉÔ±";
 $lang['Member_this_group'] = "ÄúÊÇÕâ¸öÍÅ¶ÓµÄ³ÉÔ±";
 $lang['Pending_this_group'] = "ÄúµÄÉêÇëÕıÔÚÉóºËÖĞ";
 $lang['Are_group_moderator'] = "ÄúÊÇÍÅ¶Ó¹ÜÀíÔ±";
@@ -723,9 +727,9 @@ $lang['Search_query'] = "ËÑË÷Ä¿±ê";
 $lang['Search_options'] = "ËÑË÷Ñ¡Ïî";
 
 $lang['Search_keywords'] = "ËÑË÷¹Ø¼ü×Ö";
-$lang['Search_keywords_explain'] = "Äú¿ÉÒÔÊ¹ÓÃ<u>AND</u>À´±ê¼ÇÄúÏ£Íû½á¹ûÀï±ØĞë³öÏÖµÄ¹Ø¼ü×Ö,»òÕßÊ¹ÓÃ<u>OR</u>À´±ê¼ÇÄúÏ£Íû½á¹ûÀï¿ÉÄÜ³öÏÖµÄ¹Ø¼ü×ÖºÍ<u>NOT</u>À´±ê¼ÇÄú²»Ï£Íû½á¹ûÀï³öÏÖµÄ¹Ø¼ü×Ö.Ê¹ÓÃÍ¨Åä·û * ±ê¼ÇÅúÁ¿·ûºÏµÄ½á¹û";
+$lang['Search_keywords_explain'] = "Äú¿ÉÒÔÊ¹ÓÃ<u>AND</u>À´±ê¼ÇÄúÏ£Íû½á¹ûÀï±ØĞë³öÏÖµÄ¹Ø¼ü×Ö,»òÕßÊ¹ÓÃ<u>OR</u>À´±ê¼ÇÄúÏ£Íû½á¹ûÀï¿ÉÄÜ³öÏÖµÄ¹Ø¼ü×ÖºÍ<u>NOT</u>À´±ê¼ÇÄú²»Ï£Íû½á¹ûÀï³öÏÖµÄ¹Ø¼ü×Ö.Äú¿ÉÒÔÊ¹ÓÃÍ¨Åä·û*±ê¼ÇÅúÁ¿·ûºÏµÄ½á¹û";
 $lang['Search_author'] = "ËÑË÷×÷Õß";
-$lang['Search_author_explain'] = "Ê¹ÓÃÍ¨Åä·û * ÅúÁ¿·ûºÏµÄ½á¹û";
+$lang['Search_author_explain'] = "Äú¿ÉÒÔÊ¹ÓÃÍ¨Åä·û*±ê¼ÇÅúÁ¿·ûºÏµÄ½á¹û";
 
 $lang['Search_for_any'] = "ËÑË÷ÈÎÒâµÄÄÚÈİ»òÕßÄúÌá¹©µÄËÑË÷Ä¿±ê";
 $lang['Search_for_all'] = "ËÑË÷ËùÓĞµÄÄÚÈİ";
@@ -757,7 +761,7 @@ $lang['Close_window'] = "¹Ø±Õ´°¿Ú";
 // Auth related entries
 //
 // Note the %s will be replaced with one of the following 'user' arrays
-$lang['Sorry_auth_announce'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³·¢±íÉêÃ÷";
+$lang['Sorry_auth_announce'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³·¢±í¹«¸æ";
 $lang['Sorry_auth_sticky'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³·¢±íÖÃ¶¥"; 
 $lang['Sorry_auth_read'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³ä¯ÀÀÖ÷Ìâ"; 
 $lang['Sorry_auth_post'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³·¢±íÖ÷Ìâ"; 
@@ -767,7 +771,7 @@ $lang['Sorry_auth_delete'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³É¾³ıÖ÷Ìâ";
 $lang['Sorry_auth_vote'] = "¶Ô²»ÆğÖ»ÓĞ %s ¿ÉÒÔÔÚÕâ¸öÂÛÌ³·¢±íÍ¶Æ±"; 
 
 // These replace the %s in the above strings
-$lang['Auth_Anonymous_users'] = "<b>ÄäÃûÓÃ»§</b>";
+$lang['Auth_Anonymous_users'] = "<b>ÄÄúûÓÃ»§</b>";
 $lang['Auth_Registered_users'] = "<b>×¢²áÓÃ»§</b>";
 $lang['Auth_users_granted_access'] = "<b>ÌØÈ¨ÓÃ»§</b>";
 $lang['Auth_Moderators'] = "<b>°ßÖñ</b>";
@@ -776,7 +780,7 @@ $lang['Auth_Administrators'] = "<b>¹ÜÀíÔ±</b>";
 $lang['Not_Moderator'] = "Äú²»ÊÇÕâ¸öÂÛÌ³µÄ°ßÖñ";
 $lang['Not_Authorised'] = "Ã»ÓĞÊÚÈ¨";
 
-$lang['You_been_banned'] = "Õâ¸öÂÛÌ³ÒÑ¾­½ûÖ¹Äã·ÃÎÊ<br />ÇëÁªÂçÂÛÌ³¹ÜÀíÔ±ÁË½âÏ¸½Ú";
+$lang['You_been_banned'] = "Õâ¸öÂÛÌ³ÒÑ¾­½ûÖ¹Äú·ÃÎÊ<br />ÇëÁªÂçÂÛÌ³¹ÜÀíÔ±ÁË½âÏ¸½Ú";
 
 
 //
@@ -799,7 +803,7 @@ $lang['Forum_Location'] = "ÂÛÌ³Î»ÖÃ";
 $lang['Last_updated'] = "×î½ü¸üĞÂ";
 
 $lang['Forum_index'] = "ÂÛÌ³Ê×Ò³";
-$lang['Logging_on'] = "µÇÈë";
+$lang['Logging_on'] = "µÇÂ½";
 $lang['Posting_message'] = "·¢±íÌû×Ó";
 $lang['Searching_forums'] = "ËÑË÷ÂÛÌ³";
 $lang['Viewing_profile'] = "ä¯ÀÀ¸öÈË×ÊÁÏ";
@@ -903,7 +907,7 @@ $lang['tz']['-5'] = "(GMT -5:00 hours) ¶«²¿Ê±¼ä (ÃÀ¹ú &amp; ¼ÓÄÃ´ó), ²¨¸ç´ó, ÀûÂ
 $lang['tz']['-4'] = "(GMT -4:00 hours) ´óÎ÷ÑóÊ±¼ä (¼ÓÄÃ´ó), ¼ÓÀ­¼ÓË¹, À­°ÍË¹";
 $lang['tz']['-3.5'] = "(GMT -3:30 hours) Å¦·ÒÀ¼";
 $lang['tz']['-3'] = "(GMT -3:00 hours) °ÍÎ÷, ²¼ÒËÅµË¹°¬ÀûË¹, ÇÇÖÎ¶Ù, ¸£¿ËÀ¼Èºµº";
-$lang['tz']['-2'] = "(GMT -2:00 hours) ÖĞ´óÎ÷Ñó, ÑÇÉ­ËÉµº, Ê¥ºÕÀÕÄÃ";
+$lang['tz']['-2'] = "(GMT -2:00 hours) ÖĞ´óÎ÷Ñó, ÑÇÉ­ËÉµº, Ê¥ºÕÀÕÄú";
 $lang['tz']['-1'] = "(GMT -1:00 hours) ÑÇËÙ¶ûÈºµº, Î¬µÂ½Çµº";
 $lang['tz']['0'] = "(GMT) ¿¨Èø²¼À¼¿¨, ¶¼°ØÁÖ, °®¶¡±¤, Â×¶Ø, ÀïË¹±¾, ÃÉÂŞÎ¬ÑÇ";
 $lang['tz']['1'] = "(GMT +1:00 hours) °¢Ä·Ë¹ÌØµ¤, °ØÁÖ, ²¼Â³Èû¶û, ¸ç±¾¹ş¸ù, ÂíµÂÀï, °ÍÀè, ÂŞÂí";
