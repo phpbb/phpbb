@@ -19,6 +19,8 @@
  *
  ***************************************************************************/
 
+define('IN_PHPBB', true);
+
 if ( !defined('INSTALLING') )
 {
 	error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
@@ -47,7 +49,7 @@ $dbms = 'mysql';
 
 include('includes/db.'.$phpEx);
 include('includes/bbcode.'.$phpEx);
-include('includes/search.'.$phpEx);
+include('includes/functions_search.'.$phpEx);
 
 set_time_limit(0); // Unlimited execution time
 

@@ -20,12 +20,12 @@
  *
  ***************************************************************************/
 
+define('IN_PHPBB', true);
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/post.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/search.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 
 //
 // Check and set various parameters
@@ -40,7 +40,7 @@ while( list($var, $param) = @each($params) )
 	}
 	else
 	{
-		$$var = "";
+		$$var = '';
 	}
 }
 
@@ -55,14 +55,14 @@ $topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? $HTTP_POST_VARS['topict
 // If the mode is set to topic review then output
 // that review ...
 //
-if( $mode == "topicreview" )
+if( $mode == 'topicreview' )
 {
 	require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
 
 	topic_review($topic_id, false);
 	exit;
 }
-else if( $mode == "smilies" )
+else if( $mode == 'smilies' )
 {
 	generate_smilies("window", PAGE_POSTING);
 	exit;
@@ -95,7 +95,7 @@ if( isset($HTTP_POST_VARS['cancel']) )
 		$post_append = "";
 	}
 
-	header("Location: " . append_sid($redirect) . $post_append, true);
+	header('Location: ' . append_sid($redirect) . $post_append, true);
 }
 
 //
@@ -116,33 +116,33 @@ switch( $mode )
 	case 'newtopic':
 		if( $topic_type == POST_ANNOUNCE )
 		{
-			$is_auth_type = "auth_announce";
+			$is_auth_type = 'auth_announce';
 		}
 		else if( $topic_type == POST_STICKY )
 		{
-			$is_auth_type = "auth_sticky";
+			$is_auth_type = 'auth_sticky';
 		}
 		else
 		{
-			$is_auth_type = "auth_post";
+			$is_auth_type = 'auth_post';
 		}
 		break;
 	case 'reply':
 	case 'quote':
-		$is_auth_type = "auth_reply";
+		$is_auth_type = 'auth_reply';
 		break;
 	case 'editpost':
-		$is_auth_type = "auth_edit";
+		$is_auth_type = 'auth_edit';
 		break;
 	case 'delete':
 	case 'poll_delete':
-		$is_auth_type = "auth_delete";
+		$is_auth_type = 'auth_delete';
 		break;
 	case 'vote':
-		$is_auth_type = "auth_vote";
+		$is_auth_type = 'auth_vote';
 		break;
 	case 'topicreview':
-		$is_auth_type = "auth_read";
+		$is_auth_type = 'auth_read';
 		break;
 	default:
 		message_die(GENERAL_MESSAGE, $lang['No_post_mode']);
@@ -153,7 +153,7 @@ switch( $mode )
 // Here we do various lookups to find topic_id, forum_id, post_id etc.
 // Doing it here prevents spoofing (eg. faking forum_id, topic_id or post_id
 //
-$error_msg = "";
+$error_msg = '';
 $post_data = array();
 switch ( $mode )
 {
@@ -219,12 +219,12 @@ if ( $result = $db->sql_query($sql) )
 	{ 
 	   message_die(GENERAL_MESSAGE, $lang['Forum_locked']); 
 	} 
-	else if ( $mode != "newtopic" && $post_info['topic_status'] == TOPIC_LOCKED && !$is_auth['auth_mod']) 
+	else if ( $mode != 'newtopic' && $post_info['topic_status'] == TOPIC_LOCKED && !$is_auth['auth_mod']) 
 	{ 
 	   message_die(GENERAL_MESSAGE, $lang['Topic_locked']); 
 	} 
 
-	if ( $mode == "editpost" || $mode == "delete" || $mode == "poll_delete" )
+	if ( $mode == 'editpost' || $mode == 'delete' || $mode == 'poll_delete' )
 	{
 		$topic_id = $post_info['topic_id'];
 
@@ -292,12 +292,12 @@ if ( $result = $db->sql_query($sql) )
 	}
 	else
 	{
-		if ( $mode == "quote" )
+		if ( $mode == 'quote' )
 		{
 			$topic_id = $post_info['topic_id'];
 		}
 
-		$post_data['first_post'] = ( $mode == "newtopic" ) ? true : 0;
+		$post_data['first_post'] = ( $mode == 'newtopic' ) ? true : 0;
 		$post_data['last_post'] = false;
 		$post_data['has_poll'] = false;
 		$post_data['edit_poll'] = false;
@@ -374,7 +374,7 @@ if ( $submit || $refresh )
 }
 else
 {
-	if ( $mode != "newtopic" )
+	if ( $mode != 'newtopic' )
 	{
 		$sql = "SELECT topic_id 
 			FROM " . TOPICS_WATCH_TABLE . "
@@ -406,7 +406,7 @@ if ( ( $delete || $poll_delete || $mode == "delete" ) && !$confirm )
 	$s_hidden_fields = '<input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
 	$s_hidden_fields .= ( $delete || $mode == "delete" ) ? '<input type="hidden" name="mode" value="delete" />' : '<input type="hidden" name="mode" value="poll_delete" />';
 
-	$l_confirm = ( $delete || $mode == "delete" ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'];
+	$l_confirm = ( $delete || $mode == 'delete' ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'];
 
 	//
 	// Output confirmation page
@@ -414,25 +414,25 @@ if ( ( $delete || $poll_delete || $mode == "delete" ) && !$confirm )
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(
-		"confirm_body" => "confirm_body.tpl")
+		'confirm_body' => 'confirm_body.tpl')
 	);
 
 	$template->assign_vars(array(
-		"MESSAGE_TITLE" => $lang['Information'],
-		"MESSAGE_TEXT" => $l_confirm,
+		'MESSAGE_TITLE' => $lang['Information'],
+		'MESSAGE_TEXT' => $l_confirm,
 
-		"L_YES" => $lang['Yes'],
-		"L_NO" => $lang['No'],
+		'L_YES' => $lang['Yes'],
+		'L_NO' => $lang['No'],
 
-		"S_CONFIRM_ACTION" => append_sid("posting.$phpEx"),
-		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+		'S_CONFIRM_ACTION' => append_sid("posting.$phpEx"),
+		'S_HIDDEN_FIELDS' => $s_hidden_fields)
 	);
 
-	$template->pparse("confirm_body");
+	$template->pparse('confirm_body');
 
 	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 }
-else if ( $mode == "vote" )
+else if ( $mode == 'vote' )
 {
 	//
 	// Vote in a poll
@@ -496,7 +496,7 @@ else if ( $mode == "vote" )
 		}
 
 		$template->assign_vars(array(
-			"META" => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
+			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">')
 		);
 		$message .=  '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 		message_die(GENERAL_MESSAGE, $message);
@@ -507,26 +507,25 @@ else if ( $submit || $confirm )
 	//
 	// Submit post/vote (newtopic, edit, reply, etc.)
 	//
-	$return_message = "";
-	$return_meta = "";
+	$return_message = '';
+	$return_meta = '';
 
 	switch ( $mode )
 	{
 		case 'editpost':
-
 		case 'newtopic':
 		case 'reply':
-			$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : "";
-			$subject = ( !empty($HTTP_POST_VARS['subject']) ) ? $HTTP_POST_VARS['subject'] : "";
-			$message = ( !empty($HTTP_POST_VARS['message']) ) ? $HTTP_POST_VARS['message'] : "";
-			$poll_title = ( isset($HTTP_POST_VARS['poll_title']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_title'] : "";
-			$poll_options = ( isset($HTTP_POST_VARS['poll_option_text']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_option_text'] : "";
-			$poll_length = ( isset($HTTP_POST_VARS['poll_length']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_length'] : "";
-			$bbcode_uid = "";
+			$username = ( !empty($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : '';
+			$subject = ( !empty($HTTP_POST_VARS['subject']) ) ? $HTTP_POST_VARS['subject'] : '';
+			$message = ( !empty($HTTP_POST_VARS['message']) ) ? $HTTP_POST_VARS['message'] : '';
+			$poll_title = ( isset($HTTP_POST_VARS['poll_title']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_title'] : '';
+			$poll_options = ( isset($HTTP_POST_VARS['poll_option_text']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_option_text'] : '';
+			$poll_length = ( isset($HTTP_POST_VARS['poll_length']) && $is_auth['auth_pollcreate'] ) ? $HTTP_POST_VARS['poll_length'] : '';
+			$bbcode_uid = '';
 
 			prepare_post($mode, $post_data, $bbcode_on, $html_on, $smilies_on, $error_msg, $username, $bbcode_uid, $subject, $message, $poll_title, $poll_options, $poll_length);
 
-			if ( $error_msg == "" )
+			if ( $error_msg == '' )
 			{
 				$topic_type = ( $topic_type != $post_data['topic_type'] && !$is_auth['auth_sticky'] && !$is_auth['auth_announce'] ) ? $post_data['topic_type'] : $topic_type;
 
@@ -541,12 +540,17 @@ else if ( $submit || $confirm )
 			break;
 	}
 
-	if ( $error_msg == "" )
+	if ( $mode != 'editpost' )
 	{
-		if ( $mode == "newtopic" || $mode == "reply" )
+		update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $post_data['poster_id']);
+	}
+
+	if ( $error_msg == '' )
+	{
+		if ( $mode == 'newtopic' || $mode == 'reply' )
 		{
-			$tracking_topics = ( !empty($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
-			$tracking_forums = ( !empty($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+			$tracking_topics = ( !empty($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
+			$tracking_forums = ( !empty($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : array();
 
 			if ( count($tracking_topics) + count($tracking_forums) == 100 && empty($tracking_topics[$topic_id]) )
 			{
@@ -556,7 +560,7 @@ else if ( $submit || $confirm )
 
 			$tracking_topics[$topic_id] = time();
 
-			setcookie($board_config['cookie_name'] . "_t", serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			setcookie($board_config['cookie_name'] . '_t', serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 		}
 
 		$template->assign_vars(array(
@@ -566,16 +570,13 @@ else if ( $submit || $confirm )
 	}
 }
 
-//
-//
-//
-if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
+if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != '' )
 {
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['username']))) : "";
-	$subject = ( !empty($HTTP_POST_VARS['subject']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['subject']))) : "";
-	$message = ( !empty($HTTP_POST_VARS['message']) ) ? trim(stripslashes($HTTP_POST_VARS['message'])) : "";
+	$username = ( !empty($HTTP_POST_VARS['username']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['username']))) : '';
+	$subject = ( !empty($HTTP_POST_VARS['subject']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['subject']))) : '';
+	$message = ( !empty($HTTP_POST_VARS['message']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['message']))) : '';
 
-	$poll_title = ( !empty($HTTP_POST_VARS['poll_title']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['poll_title']))) : "";
+	$poll_title = ( !empty($HTTP_POST_VARS['poll_title']) ) ? htmlspecialchars(trim(stripslashes($HTTP_POST_VARS['poll_title']))) : '';
 	$poll_length = ( isset($HTTP_POST_VARS['poll_length']) ) ? max(0, intval($HTTP_POST_VARS['poll_length'])) : 0;
 
 	$poll_options = array();
@@ -601,11 +602,11 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 
 	if ( $mode == 'newtopic' || $mode == 'reply')
 	{
-		$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 	}
 	else if ( $mode == 'editpost' )
 	{
-		$user_sig = ( $post_info['user_sig'] != "" ) ? $post_info['user_sig'] : "";
+		$user_sig = ( $post_info['user_sig'] != '' ) ? $post_info['user_sig'] : '';
 	}
 	
 	if( $preview )
@@ -614,8 +615,8 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 		$replacement_word = array();
 		obtain_word_list($orig_word, $replacement_word);
 
-		$bbcode_uid = ( $bbcode_on ) ? make_bbcode_uid() : "";
-		$preview_message = stripslashes(prepare_message(addslashes($message), $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+		$bbcode_uid = ( $bbcode_on ) ? make_bbcode_uid() : '';
+		$preview_message = stripslashes(prepare_message(addslashes(unprepare_message($message)), $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
 		$preview_subject = $subject;
 		$preview_username = $username;
 
@@ -624,13 +625,13 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 		//
 		if( !$html_on )
 		{
-			if( $user_sig != "" || !$userdata['user_allowhtml'] )
+			if( $user_sig != '' || !$userdata['user_allowhtml'] )
 			{
-				$user_sig = preg_replace("#(<)([\/]?.*?)(>)#is", "&lt;\\2&gt;", $user_sig);
+				$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $user_sig);
 			}
 		}
 
-		if( $attach_sig && $user_sig != "" && $userdata['user_sig_bbcode_uid'] )
+		if( $attach_sig && $user_sig != '' && $userdata['user_sig_bbcode_uid'] )
 		{
 			$user_sig = bbencode_second_pass($user_sig, $userdata['user_sig_bbcode_uid']);
 		}
@@ -642,12 +643,12 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 
 		if( !empty($orig_word) )
 		{
-			$preview_username = ( !empty($username) ) ? preg_replace($orig_word, $replacement_word, $preview_username) : "";
-			$preview_subject = ( !empty($subject) ) ? preg_replace($orig_word, $replacement_word, $preview_subject) : "";
-			$preview_message = ( !empty($preview_message) ) ? preg_replace($orig_word, $replacement_word, $preview_message) : "";
+			$preview_username = ( !empty($username) ) ? preg_replace($orig_word, $replacement_word, $preview_username) : '';
+			$preview_subject = ( !empty($subject) ) ? preg_replace($orig_word, $replacement_word, $preview_subject) : '';
+			$preview_message = ( !empty($preview_message) ) ? preg_replace($orig_word, $replacement_word, $preview_message) : '';
 		}
 
-		if( $user_sig != "" )
+		if( $user_sig != '' )
 		{
 			$user_sig = make_clickable($user_sig);
 		}
@@ -655,7 +656,7 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 
 		if( $smilies_on )
 		{
-			if( $userdata['user_allowsmile'] && $user_sig != "" )
+			if( $userdata['user_allowsmile'] && $user_sig != '' )
 			{
 				$user_sig = smilies_pass($user_sig);
 			}
@@ -663,39 +664,39 @@ if( $refresh || isset($HTTP_POST_VARS['del_poll_option']) || $error_msg != "" )
 			$preview_message = smilies_pass($preview_message);
 		}
 
-		if( $attach_sig && $user_sig != "" )
+		if( $attach_sig && $user_sig != '' )
 		{
-			$preview_message = $preview_message . "<br /><br />_________________<br />" . $user_sig;
+			$preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
 		}
 
-		$preview_message = str_replace("\n", "<br />", $preview_message);
+		$preview_message = str_replace("\n", '<br />', $preview_message);
 
 		$template->set_filenames(array(
-			"preview" => "posting_preview.tpl")
+			'preview' => 'posting_preview.tpl')
 		);
 
 		$template->assign_vars(array(
-			"TOPIC_TITLE" => $preview_subject,
-			"POST_SUBJECT" => $preview_subject,
-			"POSTER_NAME" => $preview_username,
-			"POST_DATE" => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
-			"MESSAGE" => $preview_message,
+			'TOPIC_TITLE' => $preview_subject,
+			'POST_SUBJECT' => $preview_subject,
+			'POSTER_NAME' => $preview_username,
+			'POST_DATE' => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
+			'MESSAGE' => $preview_message,
 
-			"L_POST_SUBJECT" => $lang['Post_subject'], 
-			"L_PREVIEW" => $lang['Preview'],
-			"L_POSTED" => $lang['Posted'])
+			'L_POST_SUBJECT' => $lang['Post_subject'], 
+			'L_PREVIEW' => $lang['Preview'],
+			'L_POSTED' => $lang['Posted'])
 		);
-		$template->assign_var_from_handle("POST_PREVIEW_BOX", "preview");
+		$template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
 	}
-	else if( $error_msg != "" )
+	else if( $error_msg != '' )
 	{
 		$template->set_filenames(array(
-			"reg_header" => "error_body.tpl")
+			'reg_header' => 'error_body.tpl')
 		);
 		$template->assign_vars(array(
-			"ERROR_MESSAGE" => $error_msg)
+			'ERROR_MESSAGE' => $error_msg)
 		);
-		$template->assign_var_from_handle("ERROR_BOX", "reg_header");
+		$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
 	}
 }
 else
@@ -705,21 +706,21 @@ else
 	//
 	if ( $mode == 'newtopic' )
 	{
-		$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 
-		$username = ($userdata['session_logged_in']) ? $userdata['username'] : "";
-		$poll_title = "";
-		$poll_length = "";
-		$subject = "";
-		$message = "";
+		$username = ($userdata['session_logged_in']) ? $userdata['username'] : '';
+		$poll_title = '';
+		$poll_length = '';
+		$subject = '';
+		$message = '';
 	}
 	else if ( $mode == 'reply' )
 	{
-		$user_sig = ( $userdata['user_sig'] != "" ) ? $userdata['user_sig'] : "";
+		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 
-		$username = ( $userdata['session_logged_in'] ) ? $userdata['username'] : "";
-		$subject = "";
-		$message = "";
+		$username = ( $userdata['session_logged_in'] ) ? $userdata['username'] : '';
+		$subject = '';
+		$message = '';
 
 	}
 	else if ( $mode == 'quote' || $mode == 'editpost' )
@@ -727,9 +728,9 @@ else
 		$subject = ( $post_data['first_post'] ) ? $post_info['topic_title'] : $post_info['post_subject'];
 		$message = $post_info['post_text'];
 
-		if ( $mode == "editpost" )
+		if ( $mode == 'editpost' )
 		{
-			$attach_sig = ( $post_info['enable_sig'] && $post_info['user_sig'] != "" ) ? TRUE : 0; 
+			$attach_sig = ( $post_info['enable_sig'] && $post_info['user_sig'] != '' ) ? TRUE : 0; 
 			$user_sig = $post_info['user_sig'];
 
 			$html_on = ( $post_info['enable_html'] ) ? true : false;
@@ -742,12 +743,14 @@ else
 			$user_sig = $userdata['user_sig'];
 		}
 
-		if ( $post_info['bbcode_uid'] != "" )
+		if ( $post_info['bbcode_uid'] != '' )
 		{
-			$message = preg_replace("/\:(([a-z0-9]:)?)" . $post_info['bbcode_uid'] . "/si", "", $message);
+			$message = preg_replace('/\:(([a-z0-9]:)?)' . $post_info['bbcode_uid'] . '/s', '', $message);
 		}
-		$message = str_replace("<br />", "\n", $message);
-		$message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $message);
+
+		$message = str_replace('<', '&lt;', $message);
+		$message = str_replace('>', '&gt;', $message);
+		$message = str_replace('<br />', "\n", $message);
 
 		if ( $mode == 'quote' )
 		{
@@ -761,11 +764,11 @@ else
 
 			if ( !empty($orig_word) )
 			{
-				$subject = ( !empty($subject) ) ? preg_replace($orig_word, $replace_word, $subject) : "";
-				$message = ( !empty($message) ) ? preg_replace($orig_word, $replace_word, $message) : "";
+				$subject = ( !empty($subject) ) ? preg_replace($orig_word, $replace_word, $subject) : '';
+				$message = ( !empty($message) ) ? preg_replace($orig_word, $replace_word, $message) : '';
 			}
 
-			if ( !preg_match("/^Re:/", $subject) && strlen($subject) > 0 )
+			if ( !preg_match('/^Re:/', $subject) && strlen($subject) > 0 )
 			{
 				$subject = 'Re: ' . $subject;
 			}
@@ -774,7 +777,7 @@ else
 		}
 		else
 		{
-			$username = ( $post_info['user_id'] == ANONYMOUS && !empty($post_info['post_username']) ) ? $post_info['post_username'] : "";
+			$username = ( $post_info['user_id'] == ANONYMOUS && !empty($post_info['post_username']) ) ? $post_info['post_username'] : '';
 		}
 	}
 }
@@ -784,7 +787,7 @@ else
 //
 if( $user_sig != '' )
 {
-	$template->assign_block_vars("signature_checkbox", array());
+	$template->assign_block_vars('signature_checkbox', array());
 }
 
 //
@@ -793,7 +796,7 @@ if( $user_sig != '' )
 if ( $board_config['allow_html'] )
 {
 	$html_status = $lang['HTML_is_ON'];
-	$template->assign_block_vars("html_checkbox", array());
+	$template->assign_block_vars('html_checkbox', array());
 }
 else
 {
@@ -806,7 +809,7 @@ else
 if ( $board_config['allow_bbcode'] )
 {
 	$bbcode_status = $lang['BBCode_is_ON'];
-	$template->assign_block_vars("bbcode_checkbox", array());
+	$template->assign_block_vars('bbcode_checkbox', array());
 }
 else
 {
@@ -819,16 +822,16 @@ else
 if ( $board_config['allow_smilies'] )
 {
 	$smilies_status = $lang['Smilies_are_ON'];
-	$template->assign_block_vars("smilies_checkbox", array());
+	$template->assign_block_vars('smilies_checkbox', array());
 }
 else
 {
 	$smilies_status = $lang['Smilies_are_OFF'];
 }
 
-if( !$userdata['session_logged_in'] || ( $mode == "editpost" && $post_info['poster_id'] == ANONYMOUS ) )
+if( !$userdata['session_logged_in'] || ( $mode == 'editpost' && $post_info['poster_id'] == ANONYMOUS ) )
 {
-	$template->assign_block_vars("username_select", array());
+	$template->assign_block_vars('username_select', array());
 }
 
 //
@@ -836,9 +839,9 @@ if( !$userdata['session_logged_in'] || ( $mode == "editpost" && $post_info['post
 //
 if ( $userdata['session_logged_in'] )
 {
-	if ( $mode != "editpost" || ( $mode == "editpost" && $post_info['poster_id'] != ANONYMOUS ) )
+	if ( $mode != 'editpost' || ( $mode == 'editpost' && $post_info['poster_id'] != ANONYMOUS ) )
 	{
-		$template->assign_block_vars("notify_checkbox", array());
+		$template->assign_block_vars('notify_checkbox', array());
 	}
 }
 
@@ -847,7 +850,7 @@ if ( $userdata['session_logged_in'] )
 //
 if ( $mode == 'editpost' && ( ( $is_auth['auth_delete'] && $post_data['last_post'] && ( !$post_data['has_poll'] || $post_data['edit_poll'] ) ) || $is_auth['auth_mod'] ) )
 {
-	$template->assign_block_vars("delete_checkbox", array());
+	$template->assign_block_vars('delete_checkbox', array());
 }
 
 //
@@ -856,7 +859,7 @@ if ( $mode == 'editpost' && ( ( $is_auth['auth_delete'] && $post_data['last_post
 $topic_type_toggle = '';
 if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) )
 {
-	$template->assign_block_vars("type_toggle", array());
+	$template->assign_block_vars('type_toggle', array());
 
 	if( $is_auth['auth_sticky'] )
 	{
@@ -878,7 +881,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 		$topic_type_toggle .= ' /> ' . $lang['Post_Announcement'] . '&nbsp;&nbsp;';
 	}
 
-	if ( $topic_type_toggle != "" )
+	if ( $topic_type_toggle != '' )
 	{
 		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
@@ -913,158 +916,158 @@ generate_smilies("inline", PAGE_POSTING);
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	"body" => "posting_body.tpl", 
-	"pollbody" => "posting_poll_body.tpl", 
-	"jumpbox" => "jumpbox.tpl", 
-	"reviewbody" => "posting_topic_review.tpl")
+	'body' => 'posting_body.tpl', 
+	'pollbody' => 'posting_poll_body.tpl', 
+	'jumpbox' => 'jumpbox.tpl', 
+	'reviewbody' => 'posting_topic_review.tpl')
 );
 
 $jumpbox = make_jumpbox();
 $template->assign_vars(array(
-	"L_GO" => $lang['Go'],
-	"L_JUMP_TO" => $lang['Jump_to'],
-	"L_SELECT_FORUM" => $lang['Select_forum'],
+	'L_GO' => $lang['Go'],
+	'L_JUMP_TO' => $lang['Jump_to'],
+	'L_SELECT_FORUM' => $lang['Select_forum'],
 	
-	"S_JUMPBOX_LIST" => $jumpbox,
-	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"))
+	'S_JUMPBOX_LIST' => $jumpbox,
+	'S_JUMPBOX_ACTION' => append_sid("viewforum.$phpEx"))
 );
-$template->assign_var_from_handle("JUMPBOX", "jumpbox");
+$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
 
 $template->assign_vars(array(
-	"FORUM_NAME" => $forum_name,
-	"L_POST_A" => $page_title,
-	"L_POST_SUBJECT" => $lang['Post_subject'], 
+	'FORUM_NAME' => $forum_name,
+	'L_POST_A' => $page_title,
+	'L_POST_SUBJECT' => $lang['Post_subject'], 
 
-	"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+	'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
 );
 
 //
 // This enables the forum/topic title to be output for posting
 // but not for privmsg (where it makes no sense)
 //
-$template->assign_block_vars("switch_not_privmsg", array());
+$template->assign_block_vars('switch_not_privmsg', array());
 
 //
 // Output the data to the template
 //
 $template->assign_vars(array(
-	"USERNAME" => $username,
-	"SUBJECT" => $subject,
-	"MESSAGE" => $message,
-	"HTML_STATUS" => $html_status,
-	"BBCODE_STATUS" => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
-	"SMILIES_STATUS" => $smilies_status, 
+	'USERNAME' => $username,
+	'SUBJECT' => $subject,
+	'MESSAGE' => $message,
+	'HTML_STATUS' => $html_status,
+	'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
+	'SMILIES_STATUS' => $smilies_status, 
 
-	"L_SUBJECT" => $lang['Subject'],
-	"L_MESSAGE_BODY" => $lang['Message_body'],
-	"L_OPTIONS" => $lang['Options'],
-	"L_PREVIEW" => $lang['Preview'],
-	"L_SPELLCHECK" => $lang['Spellcheck'],
-	"L_SUBMIT" => $lang['Submit'],
-	"L_CANCEL" => $lang['Cancel'],
-	"L_CONFIRM_DELETE" => $lang['Confirm_delete'],
-	"L_DISABLE_HTML" => $lang['Disable_HTML_post'], 
-	"L_DISABLE_BBCODE" => $lang['Disable_BBCode_post'], 
-	"L_DISABLE_SMILIES" => $lang['Disable_Smilies_post'], 
-	"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
-	"L_NOTIFY_ON_REPLY" => $lang['Notify'], 
-	"L_DELETE_POST" => $lang['Delete_post'],
+	'L_SUBJECT' => $lang['Subject'],
+	'L_MESSAGE_BODY' => $lang['Message_body'],
+	'L_OPTIONS' => $lang['Options'],
+	'L_PREVIEW' => $lang['Preview'],
+	'L_SPELLCHECK' => $lang['Spellcheck'],
+	'L_SUBMIT' => $lang['Submit'],
+	'L_CANCEL' => $lang['Cancel'],
+	'L_CONFIRM_DELETE' => $lang['Confirm_delete'],
+	'L_DISABLE_HTML' => $lang['Disable_HTML_post'], 
+	'L_DISABLE_BBCODE' => $lang['Disable_BBCode_post'], 
+	'L_DISABLE_SMILIES' => $lang['Disable_Smilies_post'], 
+	'L_ATTACH_SIGNATURE' => $lang['Attach_signature'], 
+	'L_NOTIFY_ON_REPLY' => $lang['Notify'], 
+	'L_DELETE_POST' => $lang['Delete_post'],
 
-	"L_BBCODE_B_HELP" => $lang['bbcode_b_help'], 
-	"L_BBCODE_I_HELP" => $lang['bbcode_i_help'], 
-	"L_BBCODE_U_HELP" => $lang['bbcode_u_help'], 
-	"L_BBCODE_Q_HELP" => $lang['bbcode_q_help'], 
-	"L_BBCODE_C_HELP" => $lang['bbcode_c_help'], 
-	"L_BBCODE_L_HELP" => $lang['bbcode_l_help'], 
-	"L_BBCODE_O_HELP" => $lang['bbcode_o_help'], 
-	"L_BBCODE_P_HELP" => $lang['bbcode_p_help'], 
-	"L_BBCODE_W_HELP" => $lang['bbcode_w_help'], 
-	"L_BBCODE_A_HELP" => $lang['bbcode_a_help'], 
-	"L_BBCODE_S_HELP" => $lang['bbcode_s_help'], 
-	"L_BBCODE_F_HELP" => $lang['bbcode_f_help'], 
-	"L_EMPTY_MESSAGE" => $lang['Empty_message'],
+	'L_BBCODE_B_HELP' => $lang['bbcode_b_help'], 
+	'L_BBCODE_I_HELP' => $lang['bbcode_i_help'], 
+	'L_BBCODE_U_HELP' => $lang['bbcode_u_help'], 
+	'L_BBCODE_Q_HELP' => $lang['bbcode_q_help'], 
+	'L_BBCODE_C_HELP' => $lang['bbcode_c_help'], 
+	'L_BBCODE_L_HELP' => $lang['bbcode_l_help'], 
+	'L_BBCODE_O_HELP' => $lang['bbcode_o_help'], 
+	'L_BBCODE_P_HELP' => $lang['bbcode_p_help'], 
+	'L_BBCODE_W_HELP' => $lang['bbcode_w_help'], 
+	'L_BBCODE_A_HELP' => $lang['bbcode_a_help'], 
+	'L_BBCODE_S_HELP' => $lang['bbcode_s_help'], 
+	'L_BBCODE_F_HELP' => $lang['bbcode_f_help'], 
+	'L_EMPTY_MESSAGE' => $lang['Empty_message'],
 
-	"L_FONT_COLOR" => $lang['Font_color'], 
-	"L_COLOR_DEFAULT" => $lang['color_default'], 
-	"L_COLOR_DARK_RED" => $lang['color_dark_red'], 
-	"L_COLOR_RED" => $lang['color_red'], 
-	"L_COLOR_ORANGE" => $lang['color_orange'], 
-	"L_COLOR_BROWN" => $lang['color_brown'], 
-	"L_COLOR_YELLOW" => $lang['color_yellow'], 
-	"L_COLOR_GREEN" => $lang['color_green'], 
-	"L_COLOR_OLIVE" => $lang['color_olive'], 
-	"L_COLOR_CYAN" => $lang['color_cyan'], 
-	"L_COLOR_BLUE" => $lang['color_blue'], 
-	"L_COLOR_DARK_BLUE" => $lang['color_dark_blue'], 
-	"L_COLOR_INDIGO" => $lang['color_indigo'], 
-	"L_COLOR_VIOLET" => $lang['color_violet'], 
-	"L_COLOR_WHITE" => $lang['color_white'], 
-	"L_COLOR_BLACK" => $lang['color_black'], 
+	'L_FONT_COLOR' => $lang['Font_color'], 
+	'L_COLOR_DEFAULT' => $lang['color_default'], 
+	'L_COLOR_DARK_RED' => $lang['color_dark_red'], 
+	'L_COLOR_RED' => $lang['color_red'], 
+	'L_COLOR_ORANGE' => $lang['color_orange'], 
+	'L_COLOR_BROWN' => $lang['color_brown'], 
+	'L_COLOR_YELLOW' => $lang['color_yellow'], 
+	'L_COLOR_GREEN' => $lang['color_green'], 
+	'L_COLOR_OLIVE' => $lang['color_olive'], 
+	'L_COLOR_CYAN' => $lang['color_cyan'], 
+	'L_COLOR_BLUE' => $lang['color_blue'], 
+	'L_COLOR_DARK_BLUE' => $lang['color_dark_blue'], 
+	'L_COLOR_INDIGO' => $lang['color_indigo'], 
+	'L_COLOR_VIOLET' => $lang['color_violet'], 
+	'L_COLOR_WHITE' => $lang['color_white'], 
+	'L_COLOR_BLACK' => $lang['color_black'], 
 
-	"L_FONT_SIZE" => $lang['Font_size'], 
-	"L_FONT_TINY" => $lang['font_tiny'], 
-	"L_FONT_SMALL" => $lang['font_small'], 
-	"L_FONT_NORMAL" => $lang['font_normal'], 
-	"L_FONT_LARGE" => $lang['font_large'], 
-	"L_FONT_HUGE" => $lang['font_huge'], 
+	'L_FONT_SIZE' => $lang['Font_size'], 
+	'L_FONT_TINY' => $lang['font_tiny'], 
+	'L_FONT_SMALL' => $lang['font_small'], 
+	'L_FONT_NORMAL' => $lang['font_normal'], 
+	'L_FONT_LARGE' => $lang['font_large'], 
+	'L_FONT_HUGE' => $lang['font_huge'], 
 
-	"L_BBCODE_CLOSE_TAGS" => $lang['Close_Tags'], 
-	"L_STYLES_TIP" => $lang['Styles_tip'], 
+	'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'], 
+	'L_STYLES_TIP' => $lang['Styles_tip'], 
 
-	"U_VIEWTOPIC" => ( $mode == 'reply' ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : "", 
-	"U_REVIEW_TOPIC" => ( $mode == 'reply' ) ? append_sid("posting.$phpEx?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : "", 
+	'U_VIEWTOPIC' => ( $mode == 'reply' ) ? append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '', 
+	'U_REVIEW_TOPIC' => ( $mode == 'reply' ) ? append_sid("posting.$phpEx?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : '', 
 
-	"S_HTML_CHECKED" => ( !$html_on ) ? 'checked="checked"' : "", 
-	"S_BBCODE_CHECKED" => ( !$bbcode_on ) ? 'checked="checked"' : "", 
-	"S_SMILIES_CHECKED" => ( !$smilies_on ) ? 'checked="checked"' : "", 
-	"S_SIGNATURE_CHECKED" => ( $attach_sig ) ? 'checked="checked"' : "", 
-	"S_NOTIFY_CHECKED" => ( $notify_user ) ? 'checked="checked"' : "", 
-	"S_TYPE_TOGGLE" => $topic_type_toggle, 
-	"S_TOPIC_ID" => $topic_id, 
-	"S_POST_ACTION" => append_sid("posting.$phpEx"),
-	"S_HIDDEN_FORM_FIELDS" => $hidden_form_fields)
+	'S_HTML_CHECKED' => ( !$html_on ) ? 'checked="checked"' : '', 
+	'S_BBCODE_CHECKED' => ( !$bbcode_on ) ? 'checked="checked"' : '', 
+	'S_SMILIES_CHECKED' => ( !$smilies_on ) ? 'checked="checked"' : '', 
+	'S_SIGNATURE_CHECKED' => ( $attach_sig ) ? 'checked="checked"' : '', 
+	'S_NOTIFY_CHECKED' => ( $notify_user ) ? 'checked="checked"' : '', 
+	'S_TYPE_TOGGLE' => $topic_type_toggle, 
+	'S_TOPIC_ID' => $topic_id, 
+	'S_POST_ACTION' => append_sid("posting.$phpEx"),
+	'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields)
 );
 
 //
 // Poll entry switch/output
 //
-if( ( $mode == "newtopic" || ( $mode == "editpost" && $post_data['first_post'] ) ) && $is_auth['auth_pollcreate'] )
+if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) ) && $is_auth['auth_pollcreate'] )
 {
 	$template->assign_vars(array(
-		"L_ADD_A_POLL" => $lang['Add_poll'],  
-		"L_ADD_POLL_EXPLAIN" => $lang['Add_poll_explain'],   
-		"L_POLL_QUESTION" => $lang['Poll_question'],   
-		"L_POLL_OPTION" => $lang['Poll_option'],  
-		"L_ADD_OPTION" => $lang['Add_option'],
-		"L_UPDATE_OPTION" => $lang['Update'],
-		"L_DELETE_OPTION" => $lang['Delete'], 
-		"L_POLL_LENGTH" => $lang['Poll_for'],  
-		"L_DAYS" => $lang['Days'], 
-		"L_POLL_LENGTH_EXPLAIN" => $lang['Poll_for_explain'], 
-		"L_POLL_DELETE" => $lang['Delete_poll'],
+		'L_ADD_A_POLL' => $lang['Add_poll'],  
+		'L_ADD_POLL_EXPLAIN' => $lang['Add_poll_explain'],   
+		'L_POLL_QUESTION' => $lang['Poll_question'],   
+		'L_POLL_OPTION' => $lang['Poll_option'],  
+		'L_ADD_OPTION' => $lang['Add_option'],
+		'L_UPDATE_OPTION' => $lang['Update'],
+		'L_DELETE_OPTION' => $lang['Delete'], 
+		'L_POLL_LENGTH' => $lang['Poll_for'],  
+		'L_DAYS' => $lang['Days'], 
+		'L_POLL_LENGTH_EXPLAIN' => $lang['Poll_for_explain'], 
+		'L_POLL_DELETE' => $lang['Delete_poll'],
 		
-		"POLL_TITLE" => $poll_title,
-		"POLL_LENGTH" => $poll_length)
+		'POLL_TITLE' => $poll_title,
+		'POLL_LENGTH' => $poll_length)
 	);
 
 	if( $mode == 'editpost' && $post_data['edit_poll'] )
 	{
-		$template->assign_block_vars("poll_delete_toggle", array());
+		$template->assign_block_vars('poll_delete_toggle', array());
 	}
 
 	if( !empty($poll_options) )
 	{
 		while( list($option_id, $option_text) = each($poll_options) )
 		{
-			$template->assign_block_vars("poll_option_rows", array(
-				"POLL_OPTION" => $option_text, 
+			$template->assign_block_vars('poll_option_rows', array(
+				'POLL_OPTION' => $option_text, 
 
-				"S_POLL_OPTION_NUM" => $option_id)
+				'S_POLL_OPTION_NUM' => $option_id)
 			);
 		}
 	}
 
-	$template->assign_var_from_handle("POLLBOX", "pollbody");
+	$template->assign_var_from_handle('POLLBOX', 'pollbody');
 }
 
 //
@@ -1075,14 +1078,14 @@ if( $mode == 'reply' )
 	require($phpbb_root_path . 'includes/topic_review.'.$phpEx);
 	topic_review($topic_id, true);
 
-	$template->assign_block_vars("switch_inline_mode", array());
-	$template->assign_var_from_handle("TOPIC_REVIEW_BOX", "reviewbody");
+	$template->assign_block_vars('switch_inline_mode', array());
+	$template->assign_var_from_handle('TOPIC_REVIEW_BOX', 'reviewbody');
 }
 
 //
 // Parse and print the body
 //
-$template->pparse("body");
+$template->pparse('body');
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

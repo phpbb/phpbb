@@ -22,8 +22,10 @@
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
+define('IN_PHPBB', true);
 $phpbb_root_path='./';
 include($phpbb_root_path.'extension.inc');
+include($phpbb_root_dir . 'includes/functions_selects.'.$phpEx);
 
 $userdata = array();
 $lang = array();

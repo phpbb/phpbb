@@ -20,11 +20,12 @@
  *
  ***************************************************************************/
 
+define('IN_PHPBB', true);
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/search.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
 //
 // Start session management

@@ -29,11 +29,13 @@
  * topics via the moderator operations buttons on all of the viewtopic pages.
  */
 
+define('IN_PHPBB', true);
 $phpbb_root_path = "./";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/search.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
 //
 // Obtain initial var settings
