@@ -42,7 +42,7 @@ CREATE TABLE phpbb_user_group (
 # Table structure for table 'phpbb_groups'
 #
 CREATE TABLE phpbb_groups (
-   group_id mediumint(8) NOT NULL auto_increment,
+   group_id mediumint(8) NOT NULL,
    group_type tinyint(4) DEFAULT '1' NOT NULL, 
    group_name varchar(40) NOT NULL,
    group_description varchar(255) NOT NULL,
@@ -453,7 +453,7 @@ CREATE TABLE phpbb_topics_watch (
 # Table structure for table 'phpbb_users'
 #
 CREATE TABLE phpbb_users (
-   user_id mediumint(8) NOT NULL auto_increment,
+   user_id mediumint(8) NOT NULL,
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
