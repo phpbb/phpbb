@@ -1493,7 +1493,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			// Let's do an overall check for settings/versions which would prevent
 			// us from doing file uploads....
 			//
-			if( phpversion() >= '4.0.0 )
+			if( phpversion() >= '4.0.0' )
 			{
 				$file_uploads = ini_get('file_uploads');
 			}
