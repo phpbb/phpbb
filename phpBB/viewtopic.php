@@ -193,7 +193,7 @@ if(!empty($post_id))
 $is_auth = array();
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
-if(!$is_auth['auth_view'] || !$is_auth['auth_read'])
+if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
 {
 	//
 	// The user is not authed to read this forum ...
@@ -772,7 +772,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Define the little post icon
 	//
-	if( $postrow[$i]['post_time'] > $userdata['session_last_visit'] && $postrow[$i]['post_time'] > $topic_last_read )
+	if( $userdata['session_logged_in'] && $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read )
 	{
 		$mini_post_img = '<img src="' . $images['icon_minipost_new'] . '" alt="' . $lang['New_post'] . '" title="' . $lang['New_post'] . '" border="0" />';
 	}
