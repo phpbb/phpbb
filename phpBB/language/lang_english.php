@@ -962,7 +962,7 @@ $lang['Inst_Step_2'] = "Your admin username has been created.  At this point you
 $lang['Finish_Install'] = "Finish Installation";
 $lang['Install_db_error'] = "An error occured trying to update the database";
 $lang['ODBC_Instructs'] = "Someone please write some odbc instructions in the \$lang['ODBC_Instructs'] variable!";
-
+$lang['Table_Prefix'] = "Table Name Prefix";
 
 //
 // End
