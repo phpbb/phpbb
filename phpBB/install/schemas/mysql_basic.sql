@@ -86,7 +86,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('lastread', '432000
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
-INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir', 'files', 1);
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_dir', 'files');
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
