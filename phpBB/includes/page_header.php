@@ -35,24 +35,24 @@ if($board_config['gzip_compress'])
 {
 	$phpver = phpversion();
 
-	if($phpver >= "4.0.4pl1")
+	if($phpver >= '4.0.4pl1')
 	{
-		if(extension_loaded("zlib"))
+		if(extension_loaded('zlib'))
 		{
-			ob_start("ob_gzhandler");
+			ob_start('ob_gzhandler');
 		}
 	}
-	else if($phpver > "4.0")
+	else if($phpver > '4.0')
 	{
 		if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip'))
 		{
-			if(extension_loaded("zlib"))
+			if(extension_loaded('zlib'))
 			{
 				$do_gzip_compress = TRUE;
 				ob_start();
 				ob_implicit_flush(0);
 
-				header("Content-Encoding: gzip");
+				header('Content-Encoding: gzip');
 			}
 		}
 	}
@@ -61,18 +61,9 @@ if($board_config['gzip_compress'])
 //
 // Parse and show the overall header.
 //
-if( empty($gen_simple_header) )
-{
-	$template->set_filenames(array(
-		"overall_header" => "overall_header.tpl")
-	);
-}
-else
-{
-	$template->set_filenames(array(
-		"overall_header" => "simple_header.tpl")
-	);
-}
+$template->set_filenames(array(
+	'overall_header' => ( empty($gen_simple_header) ) ? 'overall_header.tpl' : 'simple_header.tpl')
+);
 
 //
 // Generate logged in/logged out status
@@ -80,7 +71,7 @@ else
 if($userdata['session_logged_in'])
 {
 	$u_login_logout = "login.$phpEx?logout=true";
-	$l_login_logout = $lang['Logout'] . " [ " . $userdata["username"] . " ]";
+	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata["username"] . ' ]';
 }
 else
 {
@@ -88,14 +79,14 @@ else
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : "";
+$s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : '';
 
 //
 // Get basic (usernames + totals) online
 // situation
 //
 $user_forum_sql = ( !empty($forum_id) ) ? "AND ( u.user_session_page = $forum_id 
-	OR s.session_page = $forum_id)" : "";
+	OR s.session_page = $forum_id)" : '';
 
 $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
@@ -107,7 +98,7 @@ $sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.s
 $result = $db->sql_query($sql);
 if(!$result)
 {
-	message_die(GENERAL_ERROR, "Couldn't obtain user/online information.", "", __LINE__, __FILE__, $sql);
+	message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 }
 
 $userlist_ary = array();
@@ -116,7 +107,7 @@ $userlist_visible = array();
 $logged_visible_online = 0;
 $logged_hidden_online = 0;
 $guests_online = 0;
-$online_userlist = "";
+$online_userlist = '';
 
 $prev_user_id = 0;
 $prev_user_ip = '';
@@ -129,7 +120,7 @@ while( $row = $db->sql_fetchrow($result) )
 		// Skip multiple sessions for one user
 		if( $row['user_id'] != $prev_user_id )
 		{
-			$style_color = "";
+			$style_color = '';
 			if( $row['user_level'] == ADMIN )
 			{
 				$row['username'] = '<b>' . $row['username'] . '</b>';
@@ -175,26 +166,26 @@ if( empty($online_userlist) )
 {
 	$online_userlist = $lang['None'];
 }
-$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . " " . $online_userlist;
+$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
 
 $total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-if($total_online_users > $board_config['record_online_users'])
+if ( $total_online_users > $board_config['record_online_users'])
 {
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '$total_online_users'
 		WHERE config_name = 'record_online_users'";
-	if( !$result = $db->sql_query($sql) )
+	if ( !$result = $db->sql_query($sql) )
 	{
-		message_die(GENERAL_ERROR, "Couldn't update online user record (nr of users)", "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_ERROR, 'Could not update online user record (nr of users)', '', __LINE__, __FILE__, $sql);
 	}
 
 	$sql = "UPDATE " . CONFIG_TABLE . "
 		SET config_value = '" . time() . "'
 		WHERE config_name = 'record_online_date'";
-	if( !$result = $db->sql_query($sql) )
+	if ( !$result = $db->sql_query($sql) )
 	{
-		message_die(GENERAL_ERROR, "Couldn't update online user record (date)", "", __LINE__, __FILE__, $sql);
+		message_die(GENERAL_ERROR, 'Could not update online user record (date)', '', __LINE__, __FILE__, $sql);
 	}
 
 	$board_config['record_online_users'] = $total_online_users;
@@ -276,7 +267,7 @@ if( $userdata['session_logged_in'] )
 				WHERE user_id = " . $userdata['user_id'];
 			if( !$status = $db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, "Could not update private message new/read time for user.", "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
 			}
 
 			$s_privmsg_new = 1;
@@ -341,124 +332,124 @@ while(list($nav_item, $nav_array) = @each($nav_links) )
 // should all S_x_ACTIONS for forms.
 //
 $template->assign_vars(array(
-	"SITENAME" => $board_config['sitename'], 
-	"SITE_DESCRIPTION" => $board_config['site_desc'], 
-	"PAGE_TITLE" => $page_title,
-	"TOTAL_USERS_ONLINE" => $l_online_users,
-	"LOGGED_IN_USER_LIST" => $online_userlist,
-	"PRIVATE_MESSAGE_INFO" => $l_privmsgs_text,
-	"PRIVATE_MESSAGE_INFO_UNREAD" => $l_privmsgs_text_unread,
-	"PRIVATE_MESSAGE_NEW_FLAG" => $s_privmsg_new, 
-	"LAST_VISIT_DATE" => sprintf($lang['You_last_visit'], $s_last_visit), 
-	"CURRENT_TIME" => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
+	'SITENAME' => $board_config['sitename'], 
+	'SITE_DESCRIPTION' => $board_config['site_desc'], 
+	'PAGE_TITLE' => $page_title,
+	'TOTAL_USERS_ONLINE' => $l_online_users,
+	'LOGGED_IN_USER_LIST' => $online_userlist,
+	'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
+	'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
+	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new, 
+	'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit), 
+	'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),  
 
-	"PRIVMSG_IMG" => $icon_pm,
+	'PRIVMSG_IMG' => $icon_pm,
 
-	"L_USERNAME" => $lang['Username'],
-	"L_PASSWORD" => $lang['Password'],
-	"L_LOGIN" => $lang['Login'],
-	"L_LOG_ME_IN" => $lang['Log_me_in'],
-	"L_INDEX" => sprintf($lang['Forum_Index'], $board_config['sitename']),
-	"L_REGISTER" => $lang['Register'],
-	"L_PROFILE" => $lang['Profile'],
-	"L_SEARCH" => $lang['Search'],
-	"L_PRIVATEMSGS" => $lang['Private_Messages'],
-	"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
-	"L_MEMBERLIST" => $lang['Memberlist'],
-	"L_FAQ" => $lang['FAQ'],
-	"L_USERGROUPS" => $lang['Usergroups'],
-	"L_FORUM" => $lang['Forum'],
-	"L_TOPICS" => $lang['Topics'],
-	"L_REPLIES" => $lang['Replies'],
-	"L_VIEWS" => $lang['Views'],
-	"L_POSTS" => $lang['Posts'],
-	"L_LASTPOST" => $lang['Last_Post'],
-	"L_NO_NEW_POSTS" => $lang['No_new_posts'],
-	"L_NEW_POSTS" => $lang['New_posts'],
-	"L_NO_NEW_POSTS_HOT" => $lang['No_new_posts_hot'],
-	"L_NEW_POSTS_HOT" => $lang['New_posts_hot'],
-	"L_NO_NEW_POSTS_LOCKED" => $lang['No_new_posts_locked'], 
-	"L_NEW_POSTS_LOCKED" => $lang['New_posts_locked'], 
-	"L_ANNOUNCEMENT" => $lang['Post_Announcement'], 
-	"L_STICKY" => $lang['Post_Sticky'], 
-	"L_POSTED" => $lang['Posted'],
-	"L_JOINED" => $lang['Joined'],
-	"L_AUTO_LOGIN" => $lang['Log_me_in'],
-	"L_AUTHOR" => $lang['Author'],
-	"L_SUBJECT" => $lang['Subject'],
-	"L_MESSAGE" => $lang['Message'],
-	"L_LOGIN_LOGOUT" => $l_login_logout,
-	"L_SEARCH_NEW" => $lang['Search_new'], 
-	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
-	"L_SEARCH_SELF" => $lang['Search_your_posts'], 
-	"L_WHOSONLINE_ADMIN" => sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'), 
-	"L_WHOSONLINE_MOD" => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'), 
-	"L_RECORD_USERS" => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
+	'L_USERNAME' => $lang['Username'],
+	'L_PASSWORD' => $lang['Password'],
+	'L_LOGIN' => $lang['Login'],
+	'L_LOG_ME_IN' => $lang['Log_me_in'],
+	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
+	'L_REGISTER' => $lang['Register'],
+	'L_PROFILE' => $lang['Profile'],
+	'L_SEARCH' => $lang['Search'],
+	'L_PRIVATEMSGS' => $lang['Private_Messages'],
+	'L_WHO_IS_ONLINE' => $lang['Who_is_Online'],
+	'L_MEMBERLIST' => $lang['Memberlist'],
+	'L_FAQ' => $lang['FAQ'],
+	'L_USERGROUPS' => $lang['Usergroups'],
+	'L_FORUM' => $lang['Forum'],
+	'L_TOPICS' => $lang['Topics'],
+	'L_REPLIES' => $lang['Replies'],
+	'L_VIEWS' => $lang['Views'],
+	'L_POSTS' => $lang['Posts'],
+	'L_LASTPOST' => $lang['Last_Post'],
+	'L_NO_NEW_POSTS' => $lang['No_new_posts'],
+	'L_NEW_POSTS' => $lang['New_posts'],
+	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'],
+	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'],
+	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
+	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
+	'L_ANNOUNCEMENT' => $lang['Post_Announcement'], 
+	'L_STICKY' => $lang['Post_Sticky'], 
+	'L_POSTED' => $lang['Posted'],
+	'L_JOINED' => $lang['Joined'],
+	'L_AUTO_LOGIN' => $lang['Log_me_in'],
+	'L_AUTHOR' => $lang['Author'],
+	'L_SUBJECT' => $lang['Subject'],
+	'L_MESSAGE' => $lang['Message'],
+	'L_LOGIN_LOGOUT' => $l_login_logout,
+	'L_SEARCH_NEW' => $lang['Search_new'], 
+	'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'],
+	'L_SEARCH_SELF' => $lang['Search_your_posts'], 
+	'L_WHOSONLINE_ADMIN' => sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'), 
+	'L_WHOSONLINE_MOD' => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'), 
+	'L_RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
 
-	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
-	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
-	"U_SEARCH_NEW" => append_sid("search.$phpEx?search_id=newposts"), 
-	"U_INDEX" => append_sid("index.".$phpEx),
-	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
-	"U_PROFILE" => append_sid("profile.".$phpEx."?mode=editprofile"),
-	"U_PRIVATEMSGS" => append_sid("privmsg.".$phpEx."?folder=inbox"), 
-	"U_PRIVATEMSGS_POPUP" => append_sid("privmsg.".$phpEx."?mode=newpm"), 
-	"U_SEARCH" => append_sid("search.".$phpEx),
-	"U_MEMBERLIST" => append_sid("memberlist.".$phpEx), 
-	"U_MODCP" => append_sid("modcp.".$phpEx), 
-	"U_FAQ" => append_sid("faq.".$phpEx),
-	"U_VIEWONLINE" => append_sid("viewonline.$phpEx"),
-	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
-	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
-	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
+	'U_SEARCH_UNANSWERED' => append_sid('search.'.$phpEx.'?search_id=unanswered'),
+	'U_SEARCH_SELF' => append_sid('search.'.$phpEx.'?search_id=egosearch'), 
+	'U_SEARCH_NEW' => append_sid('search.'.$phpEx.'?search_id=newposts'), 
+	'U_INDEX' => append_sid('index.'.$phpEx),
+	'U_REGISTER' => append_sid('profile.'.$phpEx.'?mode=register'),
+	'U_PROFILE' => append_sid('profile.'.$phpEx.'?mode=editprofile'),
+	'U_PRIVATEMSGS' => append_sid('privmsg.'.$phpEx.'?folder=inbox'), 
+	'U_PRIVATEMSGS_POPUP' => append_sid('privmsg.'.$phpEx.'?mode=newpm'), 
+	'U_SEARCH' => append_sid('search.'.$phpEx),
+	'U_MEMBERLIST' => append_sid('memberlist.'.$phpEx), 
+	'U_MODCP' => append_sid('modcp.'.$phpEx), 
+	'U_FAQ' => append_sid('faq.'.$phpEx),
+	'U_VIEWONLINE' => append_sid('viewonline.'.$phpEx),
+	'U_LOGIN_LOGOUT' => append_sid($u_login_logout),
+	'U_MEMBERSLIST' => append_sid('memberlist.'.$phpEx),
+	'U_GROUP_CP' => append_sid('groupcp.'.$phpEx),
 
-	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
-	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
-	"S_CONTENT_DIR_LEFT" => $lang['LEFT'], 
-	"S_CONTENT_DIR_RIGHT" => $lang['RIGHT'], 
-	"S_TIMEZONE" => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
-	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
+	'S_CONTENT_DIRECTION' => $lang['DIRECTION'], 
+	'S_CONTENT_ENCODING' => $lang['ENCODING'], 
+	'S_CONTENT_DIR_LEFT' => $lang['LEFT'], 
+	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'], 
+	'S_TIMEZONE' => sprintf($lang['All_times'], $lang[$board_config['board_timezone']]),
+	'S_LOGIN_ACTION' => append_sid('login.'.$phpEx),
 
-	"T_HEAD_STYLESHEET" => $theme['head_stylesheet'],
-	"T_BODY_BACKGROUND" => $theme['body_background'],
-	"T_BODY_BGCOLOR" => "#".$theme['body_bgcolor'],
-	"T_BODY_TEXT" => "#".$theme['body_text'],
-	"T_BODY_LINK" => "#".$theme['body_link'],
-	"T_BODY_VLINK" => "#".$theme['body_vlink'],
-	"T_BODY_ALINK" => "#".$theme['body_alink'],
-	"T_BODY_HLINK" => "#".$theme['body_hlink'],
-	"T_TR_COLOR1" => "#".$theme['tr_color1'],
-	"T_TR_COLOR2" => "#".$theme['tr_color2'],
-	"T_TR_COLOR3" => "#".$theme['tr_color3'],
-	"T_TR_CLASS1" => $theme['tr_class1'],
-	"T_TR_CLASS2" => $theme['tr_class2'],
-	"T_TR_CLASS3" => $theme['tr_class3'],
-	"T_TH_COLOR1" => "#".$theme['th_color1'],
-	"T_TH_COLOR2" => "#".$theme['th_color2'],
-	"T_TH_COLOR3" => "#".$theme['th_color3'],
-	"T_TH_CLASS1" => $theme['th_class1'],
-	"T_TH_CLASS2" => $theme['th_class2'],
-	"T_TH_CLASS3" => $theme['th_class3'],
-	"T_TD_COLOR1" => "#".$theme['td_color1'],
-	"T_TD_COLOR2" => "#".$theme['td_color2'],
-	"T_TD_COLOR3" => "#".$theme['td_color3'],
-	"T_TD_CLASS1" => $theme['td_class1'],
-	"T_TD_CLASS2" => $theme['td_class2'],
-	"T_TD_CLASS3" => $theme['td_class3'],
-	"T_FONTFACE1" => $theme['fontface1'],
-	"T_FONTFACE2" => $theme['fontface2'],
-	"T_FONTFACE3" => $theme['fontface3'],
-	"T_FONTSIZE1" => $theme['fontsize1'],
-	"T_FONTSIZE2" => $theme['fontsize2'],
-	"T_FONTSIZE3" => $theme['fontsize3'],
-	"T_FONTCOLOR1" => "#".$theme['fontcolor1'],
-	"T_FONTCOLOR2" => "#".$theme['fontcolor2'],
-	"T_FONTCOLOR3" => "#".$theme['fontcolor3'],
-	"T_SPAN_CLASS1" => $theme['span_class1'],
-	"T_SPAN_CLASS2" => $theme['span_class2'],
-	"T_SPAN_CLASS3" => $theme['span_class3'],
+	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],
+	'T_BODY_BACKGROUND' => $theme['body_background'],
+	'T_BODY_BGCOLOR' => '#'.$theme['body_bgcolor'],
+	'T_BODY_TEXT' => '#'.$theme['body_text'],
+	'T_BODY_LINK' => '#'.$theme['body_link'],
+	'T_BODY_VLINK' => '#'.$theme['body_vlink'],
+	'T_BODY_ALINK' => '#'.$theme['body_alink'],
+	'T_BODY_HLINK' => '#'.$theme['body_hlink'],
+	'T_TR_COLOR1' => '#'.$theme['tr_color1'],
+	'T_TR_COLOR2' => '#'.$theme['tr_color2'],
+	'T_TR_COLOR3' => '#'.$theme['tr_color3'],
+	'T_TR_CLASS1' => $theme['tr_class1'],
+	'T_TR_CLASS2' => $theme['tr_class2'],
+	'T_TR_CLASS3' => $theme['tr_class3'],
+	'T_TH_COLOR1' => '#'.$theme['th_color1'],
+	'T_TH_COLOR2' => '#'.$theme['th_color2'],
+	'T_TH_COLOR3' => '#'.$theme['th_color3'],
+	'T_TH_CLASS1' => $theme['th_class1'],
+	'T_TH_CLASS2' => $theme['th_class2'],
+	'T_TH_CLASS3' => $theme['th_class3'],
+	'T_TD_COLOR1' => '#'.$theme['td_color1'],
+	'T_TD_COLOR2' => '#'.$theme['td_color2'],
+	'T_TD_COLOR3' => '#'.$theme['td_color3'],
+	'T_TD_CLASS1' => $theme['td_class1'],
+	'T_TD_CLASS2' => $theme['td_class2'],
+	'T_TD_CLASS3' => $theme['td_class3'],
+	'T_FONTFACE1' => $theme['fontface1'],
+	'T_FONTFACE2' => $theme['fontface2'],
+	'T_FONTFACE3' => $theme['fontface3'],
+	'T_FONTSIZE1' => $theme['fontsize1'],
+	'T_FONTSIZE2' => $theme['fontsize2'],
+	'T_FONTSIZE3' => $theme['fontsize3'],
+	'T_FONTCOLOR1' => '#'.$theme['fontcolor1'],
+	'T_FONTCOLOR2' => '#'.$theme['fontcolor2'],
+	'T_FONTCOLOR3' => '#'.$theme['fontcolor3'],
+	'T_SPAN_CLASS1' => $theme['span_class1'],
+	'T_SPAN_CLASS2' => $theme['span_class2'],
+	'T_SPAN_CLASS3' => $theme['span_class3'],
 	
-	"NAV_LINKS" => $nav_links_html)
+	'NAV_LINKS' => $nav_links_html)
 );
 
 //
@@ -466,23 +457,23 @@ $template->assign_vars(array(
 //
 if( !$userdata['session_logged_in'] )
 {
-	$template->assign_block_vars("switch_user_logged_out", array());
+	$template->assign_block_vars('switch_user_logged_out', array());
 }
 else
 {
-	$template->assign_block_vars("switch_user_logged_in", array());
+	$template->assign_block_vars('switch_user_logged_in', array());
 
 	if( !empty($userdata['user_popup_pm']) )
 	{
-		$template->assign_block_vars("switch_enable_pm_popup", array());
+		$template->assign_block_vars('switch_enable_pm_popup', array());
 	}
 }
 
-header ("Cache-Control: no-store, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0");
-header ("Pragma: no-cache");
-header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
-header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header ('Cache-Control: private, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0');
+header ('Pragma: no-cache');
+header ('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+header ('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-$template->pparse("overall_header");
+$template->pparse('overall_header');
 
 ?>
