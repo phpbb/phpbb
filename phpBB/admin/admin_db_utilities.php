@@ -40,7 +40,6 @@ if($setmodules == 1)
 $phpbb_root_path = "./../";
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-
 //
 // Start session management
 //
@@ -74,8 +73,15 @@ define("VERBOSE", 0);
 @set_time_limit(1200);
 
 //
+// Pull in the functions for splitting an sql file into individual statements
+//
+
+include($phpbb_root_path . 'includes/sql_parse'.$phpEx);
+
+//
 // The following functions are adapted from phpMyAdmin and upgrade_20.php
 //
+
 //
 // This function is used for grabbing the sequences for postgres...
 //
@@ -652,91 +658,6 @@ function output_table_content($content)
 	$backup_sql .= $content . "\n";
 
 	return;
-}
-
-//
-// remove_remarks will strip the sql comment lines out of an uploaded sql file
-//
-function remove_remarks($sql)
-{
-	$lines = explode("\n", $sql);
-	
-	// try to keep mem. use down
-	$sql = "";
-	
-	$linecount = count($lines);
-	$output = "";
-
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if (($i != ($linecount - 1)) || (strlen($lines[$i]) > 0))
-		{
-			if ($lines[$i][0] != "#")
-			{
-				$output .= $lines[$i] . "\n";
-			}
-			else
-			{
-				$output .= "\n";
-			}
-			// Trading a bit of speed for lower mem. use here.
-			$lines[$i] = "";
-		}
-	}
-	
-	return $output;
-	
-}
-
-//
-// split_sql_file will split an uploaded sql file into single sql statements.
-// Note: expects trim() to have already been run on $sql.
-//
-function split_sql_file($sql, $delimiter)
-{
-	// Split up our string into "possible" SQL statements.
-	$tokens = explode($delimiter, $sql);
-	// try to save memory.
-	$sql = "";
-	$output = array();
-	
-	// we don't actually care about the matches preg gives us.
-	$matches = array();
-	
-	// this is faster than calling count($oktens) every time thru the loop.
-	$token_count = count($tokens);
-	for ($i = 0; $i < $token_count; $i++)
-	{
-		// Don't wanna add an empty string as the last thing in the array.
-		if (($i != ($token_count - 1)) || (strlen($tokens[$i] > 0)))
-		{
-			// This is the total number of single quotes in the token.
-			$total_quotes = preg_match_all("/'/", $tokens[$i], $matches);
-			// Counts single quotes that are preceded by an odd number of backslashes, 
-			// which means they're escaped quotes.
-			$escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $tokens[$i], $matches);
-			
-			$unescaped_quotes = $total_quotes - $escaped_quotes;
-			
-			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
-			if (($unescaped_quotes % 2) == 0)
-			{
-				// It's a complete sql statement.
-				$output[] = $tokens[$i];
-				// save memory.
-				$tokens[$i] = "";
-			}
-			else
-			{
-				// it's not complete, so prepend it onto the next token and continue the loop as usual.
-				$tokens[$i + 1] = $tokens[$i] . ";" .  $tokens[$i + 1];
-				// save memory.
-				$tokens[$i] = "";
-			}
-		}
-	}
-
-	return $output;
 }
 //
 // End Functions
