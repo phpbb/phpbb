@@ -130,7 +130,6 @@ CREATE TABLE phpbb_forums (
 
    parent_id smallint(5) UNSIGNED NOT NULL, 
    forum_order smallint(5) UNSIGNED DEFAULT '1' NOT NULL, 
-
    left_id smallint(5) UNSIGNED NOT NULL, 
    right_id smallint(5) UNSIGNED NOT NULL, 
 
