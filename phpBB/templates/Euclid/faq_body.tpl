@@ -49,7 +49,7 @@
 			</tr>
 			<!-- BEGIN faq_row -->  
 			<tr> 
-				<td align="left" valign="top" class="{faq_block.faq_row.ROW_CLASS}"><span class="gen"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b><br /><br /><span class="gensmall">{faq_block.faq_row.FAQ_ANSWER}</span></td>
+				<td align="left" valign="top" class="{faq_block.faq_row.ROW_CLASS}"><span class="gen"><a name="{faq_block.faq_row.U_FAQ_ID}"></a><b>{faq_block.faq_row.FAQ_QUESTION}</b><br /><br /><span class="gensmall">{faq_block.faq_row.FAQ_ANSWER}</span><br /><br /><span class="gensmall"><a href="#Top" class="postlink">{L_BACK_TO_TOP}</a></span></td>
 			</tr>
 			<!-- END faq_row -->
 		</table></td>

@@ -1,6 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- ?xml version="1.0" encoding="UTF-8"? -->
-<!--DOCTYPE PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd" -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
@@ -9,7 +7,6 @@
 <title>{SITENAME} -+- {PAGE_TITLE}</title>
 <style type="text/css">
 <!--
-
 BODY {background-color:{T_BODY_BGCOLOR};color:{T_BODY_TEXT};scrollbar-base-color:{T_TH_COLOR2};scrollbar-arrow-color:{T_TH_COLOR1}}
 P	{font-family:{T_FONTFACE1};font-size:10pt}
 
@@ -42,7 +39,6 @@ A:hover {color:{T_BODY_HLINK};text-decoration:underline}
 HR {border: solid {T_FONTCOLOR1} 0px; border-top-width: 1px; height: 0px; }
 
 @import url("templates/Euclid/ie_form_elements.css"); 
-
 //-->
 </style>
 </head>

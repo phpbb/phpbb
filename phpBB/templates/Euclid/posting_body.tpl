@@ -263,52 +263,56 @@ function storeCaret(textEl) {
 							<tr>
 								<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 									<tr> 
-										<td><span class="gensmall"> &nbsp;Font color:<select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')"><option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="gensmall">Default</option><option style="color:darkred; background-color: white" value="darkred" class="gensmall">Dark Red</option><option style="color:red; background-color: white" value="red" class="gensmall">Red</option><option style="color:orange; background-color: white" value="orange" class="gensmall">Orange</option><option style="color:brown; background-color: white" value="brown" class="gensmall">Brown</option><option style="color:yellow; background-color: white" value="yellow" class="gensmall">Yellow</option><option style="color:green; background-color: white" value="green" class="gensmall">Green</option><option style="color:olive; background-color: white" value="olive" class="gensmall">Olive</option><option style="color:cyan; background-color: white" value="cyan" class="gensmall">Cyan</option><option style="color:blue; background-color: white" value="blue" class="gensmall">Blue</option><option style="color:darkblue; background-color: white" value="darkblue" class="gensmall">Dark Blue</option><option style="color:indigo; background-color: white" value="indigo" class="gensmall">Indigo</option><option style="color:violet; background-color: white" value="violet" class="gensmall">Violet</option><option style="color:white; background-color: white" value="white" class="gensmall">White</option><option style="color:black; background-color: white" value="black" class="gensmall">Black</option></select> &nbsp;Font size: <select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')"><option value="9" class="gensmall">Tiny</option><option value="10" class="gensmall">Small</option><option value="12" selected class="gensmall">Normal</option><option value="18" class="gensmall">Large</option><option  value="24" class="gensmall">Huge</option></select></span></td>
-										<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="gensmall" onMouseOver="helpline('a')">Close Tags</a></span></td>
+										<td><span class="gensmall"> &nbsp;{L_FONT_COLOR}: <select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]')" onMouseOver="helpline('s')">
+										<option style="color:black; background-color: #FFFFFF " value="{T_FONTCOLOR1}" class="genmed">{L_COLOR_DEFAULT}</option>
+										<option style="color:darkred; background-color: #DEE3E7" value="darkred" class="genmed">{L_COLOR_DARK_RED}</option>
+										<option style="color:red; background-color: #DEE3E7" value="red" class="genmed">{L_COLOR_RED}</option>
+										<option style="color:orange; background-color: #DEE3E7" value="orange" class="genmed">{L_COLOR_ORANGE}</option>
+										<option style="color:brown; background-color: #DEE3E7" value="brown" class="genmed">{L_COLOR_BROWN}</option>
+										<option style="color:yellow; background-color: #DEE3E7" value="yellow" class="genmed">{L_COLOR_YELLOW}</option>
+										<option style="color:green; background-color: #DEE3E7" value="green" class="genmed">{L_COLOR_GREEN}</option>
+										<option style="color:olive; background-color: #DEE3E7" value="olive" class="genmed">{L_COLOR_OLIVE}</option>
+										<option style="color:cyan; background-color: #DEE3E7" value="cyan" class="genmed">{L_COLOR_CYAN}</option>
+										<option style="color:blue; background-color: #DEE3E7" value="blue" class="genmed">{L_COLOR_BLUE}</option>
+										<option style="color:darkblue; background-color: #DEE3E7" value="darkblue" class="genmed">{L_COLOR_DARK_BLUE}</option>
+										<option style="color:indigo; background-color: #DEE3E7" value="indigo" class="genmed">{L_COLOR_INDIGO}</option>
+										<option style="color:violet; background-color: #DEE3E7" value="violet" class="genmed">{L_COLOR_VIOLET}</option>
+										<option style="color:white; background-color: #DEE3E7" value="white" class="genmed">{L_COLOR_WHITE}</option>
+										<option style="color:black; background-color: #DEE3E7" value="black" class="genmed">{L_COLOR_BLACK}</option>
+										</select> &nbsp;{L_FONT_SIZE}: <select name="addbbcode20" onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" onMouseOver="helpline('f')">
+										<option value="9" class="genmed">{L_FONT_TINY}</option>
+										<option value="10" class="genmed">{L_FONT_SMALL}</option>
+										<option value="12" selected="selected" class="genmed">{L_FONT_NORMAL}</option>
+										<option value="18" class="genmed">{L_FONT_LARGE}</option>
+										<option  value="24" class="genmed">{L_FONT_HUGE}</option>
+										</select></span></td>
+										<td nowrap="nowrap" align="right"><span class="gensmall"><a href="javascript:bbstyle(-1)" class="gensmall" onMouseOver="helpline('a')">{L_BBCODE_CLOSE_TAGS}</a></span></td>
 									</tr>
 								</table></td>
 							</tr>
 							<tr> 
-								<td colspan="9"><span class="gensmall"><input style="background-color: {T_TD_COLOR2}; border-style: none;" type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" value="Tip: Styles can be applied quickly to selected text" /></span></td>
+								<td colspan="9"><span class="gensmall"><input style="background-color: {T_TD_COLOR2}; border-style: none;" type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" value="{L_STYLES_TIP}" /></span></td>
 							</tr>
 							<tr> 
 								<td colspan="9"><span class="gen"><textarea name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></span></td>
 							</tr>
 						</table></td>
 						<td width="50%" valign="middle"><table border="0" cellspacing="0" cellpadding="5" align="center">
-							<tr	align="center">
-								<td colspan="4"><span class="gensmall"><b>Emoticons</b></span></td>
+							<tr align="center"> 
+								<td colspan="{S_SMILIES_COLSPAN}" class="gensmall"><b>{L_EMOTICONS}</b></td>
 							</tr>
-							<tr align="center" valign="middle">
-								<td><a href="javascript:emoticon(':)')"><img src="images/smiles/icon_smile.gif" width="15" height="15"	border="0" alt="Smile"></a></td>
-								<td><a href="javascript:emoticon(':D')"><img src="images/smiles/icon_biggrin.gif" width="15" height="15"	border="0" alt="Big grin"></a></td>
-								<td><a href="javascript:emoticon(':lol:')"> <img src="images/smiles/icon_lol.gif" width="15" height="15"	border="0" alt="Laugh"></a></td>
-								<td><a href="javascript:emoticon(';)')"><img src="images/smiles/icon_wink.gif" width="15" height="15"	border="0" alt="Wink"></a></td>
+							<!-- BEGIN smilies_row -->
+							<tr align="center" valign="middle"> 
+								<!-- BEGIN smilies_col -->
+								<td><a href="javascript:emoticon('{smilies_row.smilies_col.SMILEY_CODE}')"><img src="{smilies_row.smilies_col.SMILEY_IMG}" border="0" alt="{smilies_row.smilies_col.SMILEY_DESC}" title="{smilies_row.smilies_col.SMILEY_DESC}" /></a></td>
+								<!-- END smilies_col -->
 							</tr>
-							<tr align="center" valign="middle">
-								<td><a href="javascript:emoticon(':|')"><img src="images/smiles/icon_neutral.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':(')"><img src="images/smiles/icon_sad.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_confused.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':shock:')"><img src="images/smiles/icon_eek.gif" width="15" height="15"	border="0"></a></td>
+							<!-- END smilies_row -->
+							<!-- BEGIN switch_smilies_extra -->
+							<tr align="center"> 
+								<td colspan="{S_SMILIES_COLSPAN}"><span class="gensmall"><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=300,resizable=yes,WIDTH=250');return false;" target="_phpbbsmilies" class="nav">{L_MORE_SMILIES}</a></td>
 							</tr>
-							<tr align="center" valign="middle">
-								<td><a href="javascript:emoticon(':roll:')"><img src="images/smiles/icon_rolleyes.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon('8)')"><img src="images/smiles/icon_cool.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':p')"><img src="images/smiles/icon_razz.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':oops:')"><img src="images/smiles/icon_redface.gif" width="15" height="15"	border="0"></a></td>
-							</tr>
-							<tr align="center" valign="middle">
-								<td><a href="javascript:emoticon(':evil:')"><img src="images/smiles/icon_evil.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':x')"><img src="images/smiles/icon_mad.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':cry:')"><img src="images/smiles/icon_cry.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':o')"><img src="images/smiles/icon_surprised.gif" width="15" height="15"	border="0"></a></td>
-							</tr>
-							<tr align="center" valign="middle">
-								<td><a href="javascript:emoticon(':idea:')"><img src="images/smiles/icon_idea.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':?:')"><img src="images/smiles/icon_question.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':!:')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15"	border="0"></a></td>
-								<td><a href="javascript:emoticon(':arrow:')"><img src="images/smiles/icon_arrow.gif" width="15" height="15"	border="0"></a></td>
-							</tr>
+							<!-- END switch_smilies_extra -->
 						</table></td>
 					</tr>
 				</table></td>
