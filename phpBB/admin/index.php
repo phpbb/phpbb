@@ -508,7 +508,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			}
 			else
 			{
-				$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
+				$location_url = append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
 				$location = $forum_data[$onlinerow_guest[$i]['session_page']];
 			}
 
