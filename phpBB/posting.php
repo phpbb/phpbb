@@ -1214,8 +1214,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$email_users = $delete_ids = $update_notification = array();
 	foreach ($notify_rows as $user_id => $row)
-	{
-		if (!$row['allowed'] || !trim($row['user_email']))
+	{//!$row['allowed'] || 
+		if (!trim($row['user_email']))
 		{
 			$delete_ids[$row['notify_type']][] = $row['user_id'];
 		}
