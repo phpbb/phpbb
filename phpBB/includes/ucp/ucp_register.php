@@ -220,13 +220,13 @@ class ucp_register extends ucp
 				
 					$emailer->template($email_template, $user->data['user_lang']);
 					$emailer->replyto($config['board_contact']);
-					$emailer->to($data['user_email'], $data['username']);
+					$emailer->to($data['email'], $data['username']);
 
 					$emailer->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'WELCOME_MSG'	=> sprintf($user->lang['Welcome_subject'], $config['sitename']),
-						'USERNAME'		=> $username,
-						'PASSWORD'		=> $password_confirm,
+						'USERNAME'		=> $data['username'],
+						'PASSWORD'		=> $data['password_confirm'],
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&k=$user_actkey")
@@ -252,7 +252,7 @@ class ucp_register extends ucp
 						$emailer->to($config['board_contact']);
 
 						$emailer->assign_vars(array(
-							'USERNAME' => $username,
+							'USERNAME' => $data['username'],
 							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 			
 							'U_ACTIVATE' => generate_board_url() . "/ucp.$phpEx?mode=activate&k=$user_actkey")
