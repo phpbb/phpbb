@@ -488,7 +488,7 @@ CREATE TABLE phpbb_sitelist (
    site_hostname varchar(255) DEFAULT '' NOT NULL,
    ip_exclude tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (site_id)
-)
+);
 
 # Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
