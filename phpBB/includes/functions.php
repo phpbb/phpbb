@@ -187,40 +187,72 @@ function make_jumpbox($action, $forum_id = false)
 	global $auth, $template, $lang, $db, $nav_links, $phpEx;
 
 	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }">';
-/*
-	$sql = "SELECT forum_id, forum_name, left_id, right_id
-		FROM " . FORUMS_TABLE . "
-		ORDER BY left_id ASC";
+
+	$sql = 'SELECT forum_id, forum_name, forum_status, left_id, right_id
+		FROM ' . FORUMS_TABLE . '
+		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
 	$right = 0;
-	$subforum = '';
+	$padding = '';
+	$forum_list = '';
 	while ( $row = $db->sql_fetchrow($result) )
 	{
-		if ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') )
+		if ( $row['left_id'] < $right  )
 		{
-			if ( $row['left_id'] < $right  )
+			$padding .= '&nbsp; &nbsp;';
+		}
+		else if ( $row['left_id'] > $right + 1 )
+		{
+			$padding = substr($subforum, 0, -18 * ( $row['left_id'] - $right + 1 ));
+		}
+
+		$right = $row['right_id'];
+
+		$linefeed = FALSE;
+		if ( ( $auth->acl_get('f_list', $forum_id) || $auth->acl_get('a_') ))
+		{
+			if ($row['forum_status'] == ITEM_CATEGORY)
 			{
-				$subforum .= '&nbsp; &nbsp;';
+				$linefeed = TRUE;
+				$boxstring .= '<option value="-1">&nbsp;&nbsp;</option>';
 			}
-			else if ( $row['left_id'] > $right + 1 )
+			elseif ($row['parent_id'] == 0)
 			{
-				$subforum = substr($subforum, 0, -13 * ( $row['left_id'] - $right + 1 ));
+				if ($linefeed)
+				{
+					$linefeed = FALSE;
+					$boxstring .= '<option value="-1">&nbsp;&nbsp;</option>';
+				}
+			}
+			else
+			{
+				$linefeed = TRUE;
 			}
 
-			$right = $row['right_id'];
+			$selected = ( $row['forum_id'] == $forum_id ) ? ' selected="selected"' : '';
+			$boxstring .= '<option value="' . (($row['forum_status'] == ITEM_CATEGORY) ? 'c' : '') . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 
-			$selected = ( $row['forum_id'] == $forum_id ) ? 'selected="selected"' : '';
-			$boxstring .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $subforum . $row['forum_name'] . '</option>';
+			if ($row['forum_status'] == ITEM_CATEGORY)
+			{
+				$boxstring .= '<option value="-1">' . $padding . '----------------</option>';
+			}
 
 			$nav_links['chapter forum'][$row['forum_id']] = array (
-				'url' => "viewforum.$phpEx$SID&f=" . $row['forum_id'],
+				'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
 				'title' => $row['forum_name']
 			);
 		}
+
 	}
 	$db->sql_freeresult($result);
-*/
+
+	if (!$right)
+	{
+		$boxstring .= '<option value="-1">' . $lang['No_forums'] . '</option>';
+	}
+	$boxstring .= '</select>';
+
 	$template->assign_vars(array(
 		'L_GO' => $lang['Go'],
 		'L_JUMP_TO' => $lang['Jump_to'],
@@ -555,7 +587,10 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 function redirect($location)
 {
 	global $db;
-	$db->sql_close();
+	if (isset($db))
+	{
+		$db->sql_close();
+	}
 
 	$header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
 	header($header_location . $location);
@@ -633,9 +668,10 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 			break;
 
 		case ERROR:
+			$db->sql_close();
+
 			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
 			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
-			$db->sql_close();
 			break;
 	}
 
@@ -658,9 +694,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		case E_ERROR:
 		case E_USER_ERROR:
+			$db->sql_close();
+
 			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
 			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
-			$db->sql_close();
 			break;
 
 		case E_USER_NOTICE:

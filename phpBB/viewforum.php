@@ -22,6 +22,14 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
+
+if (preg_match('/^c([0-9]+)$/', $_POST['f'], $m))
+{
+	$header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
+	header($header_location . "index.$phpEx?sid=" . $_GET['sid'] . '&c=' . $m[1]);
+	exit;
+}
+
 include($phpbb_root_path . 'common.'.$phpEx);
 
 //
@@ -117,9 +125,7 @@ foreach ($forum_branch as $row)
 	{
 		if ($row['parent_id'] == $forum_data['forum_id'])
 		{
-			//
 			// Root-level forum
-			//
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
 
@@ -130,14 +136,13 @@ foreach ($forum_branch as $row)
 		}
 		elseif ($row['parent_id'] == $branch_root_id)
 		{
-			//
 			// Forum directly under a category
-			//
 			$forum_rows[] = $row;
 			$parent_id = $row['forum_id'];
 		}
 		elseif ($row['forum_status'] != ITEM_CATEGORY)
 		{
+			// Subforum
 			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
 				$subforums[$parent_id][] = $row;
@@ -578,7 +583,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html'
 ));
-make_jumpbox('viewforum.'.$phpEx . $SID);
+make_jumpbox('viewforum.'.$phpEx . $SID, $forum_id);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

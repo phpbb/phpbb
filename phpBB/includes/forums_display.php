@@ -111,16 +111,16 @@ foreach ($forum_rows as $row)
 
 		if (isset($subforums[$forum_id]))
 		{
-			foreach ($subforums as $row)
+			foreach ($subforums[$forum_id] as $row)
 			{
 				$alist[$row['forum_id']] = $row['forum_name'];
 			}
 			asort($alist);
 
 			$links = array();
-			foreach ($alist as $forum_id => $forum_name)
+			foreach ($alist as $subforum_id => $subforum_name)
 			{
-				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $forum_id . '">' . htmlspecialchars($forum_name) . '</a>';
+				$links[] = '<a href="viewforum.' . $phpEx . $SID . '&f=' . $subforum_id . '">' . htmlspecialchars($subforum_name) . '</a>';
 			}
 			$subforums_list = implode(', ', $links);
 
