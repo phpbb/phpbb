@@ -93,22 +93,19 @@ if (
 	if ( $mode == 'editprofile' )
 	{
 		$user_id = intval($HTTP_POST_VARS['user_id']);
-		$current_email = trim(strip_tags($HTTP_POST_VARS['current_email']));
+		$current_email = trim(htmlspecialchars($HTTP_POST_VARS['current_email']));
 	}
 
 	$strip_var_list = array('username' => 'username', 'email' => 'email', 'icq' => 'icq', 'aim' => 'aim', 'msn' => 'msn', 'yim' => 'yim', 'website' => 'website', 'location' => 'location', 'occupation' => 'occupation', 'interests' => 'interests');
 
-	// Strip all tags from data ... may p**s some people off, could use
-	// htmlspecialchars but given the fields are limited in length we'd end
-	// up with (possibly) losing some data. Of course we could store the data
-	// "as is" and specialchar it as it's output but then we run into potential
-	// performance issues ... whichever way we go we'll end up  being moaned at
-	// "hum ho, ho hum" (TM)
+	// Strip all tags from data ... may p**s some people off, bah, strip_tags is
+	// doing the job but can still break HTML output ... have no choice, have
+	// to use htmlspecialchars ... be prepared to be moaned at.
 	while( list($var, $param) = @each($strip_var_list) )
 	{
 		if ( !empty($HTTP_POST_VARS[$param]) )
 		{
-			$$var = trim(strip_tags($HTTP_POST_VARS[$param]));
+			$$var = trim(htmlspecialchars($HTTP_POST_VARS[$param]));
 		}
 	}
 
@@ -157,7 +154,7 @@ if (
 	{
 		if ( preg_match('/^[a-z_]+$/i', $HTTP_POST_VARS['language']) )
 		{
-			$user_lang = strip_tags($HTTP_POST_VARS['language']);
+			$user_lang = htmlspecialchars($HTTP_POST_VARS['language']);
 		}
 		else
 		{
@@ -171,11 +168,11 @@ if (
 	}
 
 	$user_timezone = ( isset($HTTP_POST_VARS['timezone']) ) ? doubleval($HTTP_POST_VARS['timezone']) : $board_config['board_timezone'];
-	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(strip_tags($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
+	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
 
-	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? strip_tags($HTTP_POST_VARS['avatarlocal']) : '' );
+	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
 
-	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(strip_tags($HTTP_POST_VARS['avatarremoteurl'])) : '';
+	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['avatarremoteurl'])) : '';
 	$user_avatar_upload = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : ( ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '' );
 	$user_avatar_name = ( !empty($HTTP_POST_FILES['avatar']['name']) ) ? $HTTP_POST_FILES['avatar']['name'] : '';
 	$user_avatar_size = ( !empty($HTTP_POST_FILES['avatar']['size']) ) ? $HTTP_POST_FILES['avatar']['size'] : 0;
@@ -222,7 +219,6 @@ if ( $userdata['session_logged_in'] && $mode =="register" && $username == $userd
 {
 	message_die(GENERAL_MESSAGE, $lang['Username_taken'], '', __LINE__, __FILE__);
 }
-
 
 //
 // Did the user submit? In this case build a query to update the users profile in the DB
