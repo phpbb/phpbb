@@ -631,7 +631,16 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 			if( $signature != "" )
 			{
-				if( strlen($signature) > $board_config['max_sig_chars'] )
+				$sig_length_check = preg_replace("/(\[.*?)(=.*?)\]/is", "\\1]", $signature);
+				if( $allowhtml )
+				{
+					$sig_length_check = preg_replace("/(<.*?)(=.*?)([ \/]?" . ">)/is", "\\1\\3", $signature);
+				}
+
+				$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
+				$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
+
+				if( strlen($sig_length_check) > $board_config['max_sig_chars'] )
 				{
 					$error = TRUE;
 					if( isset($error_msg) )
@@ -639,11 +648,6 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 						$error_msg .= "<br />";
 					}
 					$error_msg .= $lang['Signature_too_long'];
-				}
-				else
-				{
-					$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : "";
-					$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 				}
 			}
 
