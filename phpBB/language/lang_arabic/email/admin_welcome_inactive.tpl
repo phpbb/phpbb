@@ -1,16 +1,16 @@
 {WELCOME_MSG}
 
-Please keep this email for your records. Your account information is as follows:
+ÇáÑÌÇÁ ÇáÇÍÊİÇÙ ÈåĞå ÇáÑÓÇáÉ İí ãßÇä Âãä. ãÚáæãÇÊ ÍÓÇÈß åí:
 
 ----------------------------
-Username: {USERNAME}
-Password: {PASSWORD}
+ÇÓã ÇáãÓÊÎÏã: {USERNAME}
+ßáãÉ ÇáÓÑ: {PASSWORD}
 ----------------------------
 
-Your account is currently inactive, the administrator of the board will need to activate it before you can log in. You will receive another email when this has occured.
+ÍÓÇÈß ÇáÇä ÛíÑ äÔØ, Úáì ãÏíÑ ÇáãæŞÚ ÊÔÛíáå ŞÈá Çä ÊÓÊØíÚ ÇáÏÎæá. Óæİ íÕáß ÈÑíÏ ÂÎÑ íÚáãß ÈĞáß.
 
-Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
+áÇ ÊäÓì ßáãÉ ÇáÓÑ¡ İŞÏ Êã ÊÔİíÑåÇ İí ŞÇÚÏÉ ÇáÈíÇäÇÊ æáä äÓÊØíÚ ÇÓÊÑÌÇÚåÇ. áßä, ÅĞÇ äÓíÊ ßáãÉ ÇáÓÑ ÊÓÊØíÚ ÇáØáÈ ãä ÇáãÏíÑ ÈÇÚÇÏÉ ÊÔÛíá ÍÓÇÈß æÊßæíä ßáãÉ ÓÑ ÌÏíÏÉ.
 
-Thank you for registering.
+ÔßÑÇ áÊÓÌíáß æãÑÍÈÇ Èß.
 
 {EMAIL_SIG}

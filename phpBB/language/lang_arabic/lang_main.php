@@ -21,13 +21,22 @@
 
 //
 // Translation by waheed
+// The format of this file is:
+//
+// ---> $lang['message'] = "text";
+//
+// You should also try to set a locale and a character
+// encoding (plus direction). The encoding and direction
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
 //
 
 //setlocale(LC_ALL, "ar");
 $lang['ENCODING'] = "windows-1256";
-$lang['DIRECTION'] = "RTL";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "rtl";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -285,6 +294,7 @@ $lang['Start_watching_topic'] = "ÊÇÈÚ ÑÏæÏ Úáì åĞÇ ÇáãæÖæÚ";
 $lang['No_longer_watching'] = "áŞÏ ÊæŞİÊ Úä ãÊÇÈÚÉ åĞÇ ÇáãæÖæÚ";
 $lang['You_are_watching'] = "ÇäÊ ÇáÂä ÊÊÇÈÚ åĞÇ ÇáãæÖæÚ";
 
+$lang['Total_votes'] = "ãÌãæÚ ÇáÊÕæíÊÇÊ";
 
 //
 // Posting/Replying (Not private messaging!)

@@ -1,15 +1,15 @@
-Hello {USERNAME}
+ãÑÍÈÇ {USERNAME}
 
-You are receiving this email because you have (or someone pretending to be you has) requested a new password be sent for your account on {SITENAME}. If you did not request this email then please ignore it, if you keep receiving it please contact the board administrator.
+áŞÏ æÕáÊ áß åĞå ÇáÑÓÇáÉ áÃäß (Ãæ ÔÎÕÇ íÏÚí Çäå ÇäÊ) ŞÏ ØáÈ ßáãÉ ÓÑ ÌÏíÏÉ ÊÑÓá áÍÓÇÈß İí ÇáãæŞÚ {SITENAME}. ÇĞÇ áã Êßä ÇäÊ ãŞÏã ÇáØáÈ ÊÌÇåá åĞå ÇáÑÓÇáÉ, ÇĞÇ ßÇäÊ åĞå ÇáÑÓÇáÉ ÊÕáß ÈÇÓÊãÑÇÑ Úáíß ÇáÇÊÕÇá ÈãÏíÑ ÇáãæŞÚ.
 
-To use the new password you need to activate it. To do this click the link provided below.
+áÇÓÊÚãÇá ßáãÉ ÇáÓÑ ÇáÌÏíÏÉ Úáíß ÊÔÛíáåÇ. ááÊÔÛíá ÇÖÛØ Úáì ÇáæÕáÉ ÇáÊÇáíÉ.
 
 {U_ACTIVATE}
 
-If sucessful you will be able to login using the following password:
+ÇĞÇ ÊãÊ ÇáÚãáíÉ ÈäÌÇÍ Óæİ ÊÓÊØíÚ ÇÓÊÚãÇá ßáãÉ ÇáÓÑ ÇáÊÇáíÉ:
 
-Password: {PASSWORD}
+ßáãÉ ÇáÓÑ: {PASSWORD}
 
-You can of course change this password yourself via the profile page. If you have any difficulties please contact the board administrator.
+ØÈÚÇ ÈæÓÚß ÊÛííÑ ßáãÉ ÇáÓÑ ÈäİÓß ÎáÇá ÕİÍÉ ãÚáæãÇÊß ÇáÔÎÕíÉ. ÇĞÇ æÇÌåÊ ÕÚæÈÉ Úáíß ÇáÇÊÕÇá ÈãÏíÑ ÇáãæŞÚ.
 
 {EMAIL_SIG}

@@ -1,10 +1,10 @@
-The following is an email sent to you by an administrator of "{SITENAME}". If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
+åĞå ÑÓÇáÉ ãä ãÏíÑ  "{SITENAME}". ÇĞÇ ßÇäÊ åĞå ÇáÑÓÇáÉ ÇÚáÇäÇÊ, ÊÍÊæí Úáì áÛÉ ÈĞíÆÉ Ãæ Çí ßáÇã ÛíÑ ãáÇÆã ÇáÑÌÇÁ ãÑÇÓáÉ ãÓÄæá ÇáãæŞÚ Úáì ÇáÚäæÇä ÇáÊÇáí:
 
 {BOARD_EMAIL}
 
-Include this full email (particularly the headers). 
+ÇÑİŞ ÇáÑÓÇáÉ ÇáÊí Êã ÇÑÓÇáå ÈÇáßÇãá (ÎÕæÕÇ ÑÃÓ ÇáÑÓÇáÉ). 
 
-Message sent to you follows:
+ÇáÑÓÇáÉ ÊÊÈÚ:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}

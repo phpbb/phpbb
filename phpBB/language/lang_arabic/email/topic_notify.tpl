@@ -1,10 +1,10 @@
-Hello {USERNAME},
+убЭШЧ {USERNAME},
 
-You are receiving this email because you are watching the topic, "{TOPIC_TITLE}" at {SITENAME}. This topic has received a reply since your last visit. You can use the following link to view the replies made, no more notifications will be sent until you visit the topic.
+ЧбгсЪ сп хах ЧсбгЧсЩ сЧфп исШЪ убЧоШЩ Чсуцжцк, "{TOPIC_TITLE}" нэ Чсуцок {SITENAME}. соЯ цес бЯ ссуцжцк уфа ТЮб вэЧбЩ сп. ЪгЪиэк ЧгЪкуЧс ЧсцесЩ ЧсЪЧсэЩ ссцецс Чсь ЧсбЯ, сф ЪгЪсу ЪфШэх ТЮб ЭЪь Ъоцу ШвэЧбЩ Чсуцжцк.
 
 {U_TOPIC}
 
-If you no longer wish to watch this topic you can either click the "Stop watching this topic link" found at the bottom of the topic above, or by clicking the following link:
+ЧаЧ су Ъпф ЪблШ ШуЪЧШкЩ Чсуцжцк Чжли ксь  "Ъцон кф уЪЧШкЩ Чсуцжцк" ЧсуцЬцЯЩ нэ ТЮб Чсуцжцк Чсуапцб ЧксЧх, Уц ШЧсжли ксь ЧсцесЩ ЧсЪЧсэЩ:
 
 {U_STOP_WATCHING_TOPIC}
 

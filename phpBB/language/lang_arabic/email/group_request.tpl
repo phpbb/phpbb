@@ -1,7 +1,7 @@
-Dear {GROUP_MODERATOR},
+«·”Ìœ/… {GROUP_MODERATOR},
 
-A user has requested to join a group you moderator on {SITENAME}.
-To approve or deny this request for group membership please visit the following link:
+Â‰«ﬂ ÿ·» „‰ „” Œœ„ ··„‘«—ﬂ… ›Ì «·„Ã„Ê⁄… ›Ì «·„Êﬁ⁄ {SITENAME}.
+··„Ê«›ﬁ… √Ê —›÷ «·ÿ·» ‰—ÃÊ “Ì«—… «·Ê’·… «· «·Ì…:
 
 {U_GROUPCP}
 

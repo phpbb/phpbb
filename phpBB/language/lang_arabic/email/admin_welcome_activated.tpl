@@ -1,5 +1,5 @@
-Hello {USERNAME},
+ãÑÍÈÇ {USERNAME},
 
-Your account on "{SITENAME}" has now been activated, you may login using the username and password you received in a previous email.
+ÍÓÇÈß İí ÇáãæŞÚ "{SITENAME}" ŞÏ Êã ÊÔÛíáå, ÊÓÊØíÚ ÇÓÊÚãÇá ÇÓã ÇáãÓÊÎÏã æßáãÉ ÇáÓÑ İí ÇáÈÑíÏ ÇáÓÇÈŞ ááÏÎæá Úáì ÇáãæŞÚ.
 
 {EMAIL_SIG}

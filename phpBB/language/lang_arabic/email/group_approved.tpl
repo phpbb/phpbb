@@ -1,7 +1,7 @@
-Congratulations,
+уШбцп,
 
-Your request to join the "{GROUP_NAME}" group on {SITENAME} has been approved.
-Click on the following link to see your group membership.
+Ъу ЧсуцЧноЩ ксь исШп ЧсЧфйуЧу ссуЬуцкЩ "{GROUP_NAME}" нэ Чсуцок {SITENAME}.
+Чжли ксьЧсцесЩ ЧсЪЧсэЩ ссЧисЧк ксь ЧсуЬуцкЩ.
 
 {U_GROUPCP}
 

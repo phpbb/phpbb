@@ -1,9 +1,9 @@
-Congratulations,
+דָׁזß,
 
-You have been added to the "{GROUP_NAME}" group on {SITENAME}.
-This action was done by the group moderator or the site administrator, contact them for more information.
+Êד ַײַÝÊß בבדּדזÚֹ "{GROUP_NAME}" Ýם ַבדזÞÚ {SITENAME}.
+Êד ַײַÝÊß ָזַ׃״ֹ ֶׁם׃ ַבדזÞÚ ֳז ַבדֿםׁ, ַׁ׃בוד בדÚבזדַÊ ַײַÝםֹ.
 
-You can view your groups information here:
+Ê׃Ê״םÚ ַבַ״בַÚ Úבל דÚבזדַÊ ַבדּדזÚֹ והַ:
 {U_GROUPCP}
 
 {EMAIL_SIG}

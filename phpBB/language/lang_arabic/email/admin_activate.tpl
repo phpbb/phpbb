@@ -1,6 +1,6 @@
-Hello,
+ãÑÍÈÇ,
 
-The account owned by "{USERNAME}" has been deactivated or newly created, you should check the details of this user (if required) and activate it using the following link:
+ÇáÍÓÇÈ ÇáĞí íãáßå ÇáãÓÊÎÏã "{USERNAME}" ŞÏ ÃæŞİ Ãæ ÇÚíÏ Êßæíäå, Úáíß ÇáÊÏŞíŞ Úáì ÊİÇÕíáå (ÇĞÇ ßÇäÊ åäÇß ÍÇÌÉ áĞáß) æãä Ëã ÊÔÛíáå ÈÇÓÊÚãÇá ÇáæÕáÉ ÇáÊÇáíÉ:
 
 {U_ACTIVATE}
 

@@ -1,6 +1,6 @@
-Hello {USERNAME},
+ãÑÍÈÇ {USERNAME},
 
-Your account on "{SITENAME}" has been deactivated, most likely due to changes made to your profile. In order to reactivate your account you must click on the link below:
+áŞÏ Êã ÊæŞíİ ÍÓÇÈß İí ÇáãæŞÚ "{SITENAME}" , ŞÏ íÑÌÚ Ğáß Çáì ÊÛííÑÇÊ ŞãÊ ÈåÇ áãÚáæãÇÊß ÇáÔÎÕíÉ. ÍÊì ÊŞæã ÈÇÚÇÏÉ ÊÔÛíá ÍÓÈÇÈß Úáíß ÇáÖÛØ Úáì ÇáæÕáÉ ÇáÊÇáíÉ:
 
 {U_ACTIVATE}
 

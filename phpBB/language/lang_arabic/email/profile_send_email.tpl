@@ -1,12 +1,12 @@
-Hello {TO_USERNAME},
+„—Õ»« {TO_USERNAME},
 
-The following is an email sent to you by {FROM_USERNAME} via your account on {SITENAME}. If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:
+Â–Â «·—”«·… ﬁœ «—”·Â« {FROM_USERNAME} ·Õ”«»ﬂ ›Ì «·„Êﬁ⁄ {SITENAME}. «–« ﬂ«‰  Â–Â «·—”«·… «⁄·«‰« ,  Õ ÊÌ ⁄·Ï ·€… »–Ì∆… √Ê «Ì ﬂ·«„ €Ì— „·«∆„ «·—Ã«¡ „—«”·… „”ƒÊ· «·„Êﬁ⁄ ⁄·Ï «·⁄‰Ê«‰ «· «·Ì:
 
 {BOARD_EMAIL}
 
-Include this full email (particularly the headers). Please note that the reply address to this email has been set to that of {FROM_USERNAME}.
+«—›ﬁ «·—”«·… «· Ì  „ «—”«·Â »«·ﬂ«„· (Œ’Ê’« —√” «·—”«·. ·«ÕŸ «‰ «·—œ ·Â–Â «·—”«·… ”ÌﬂÊ‰ «·Ï {FROM_USERNAME}.
 
-Message sent to you follows
+Â–Â ÂÌ «·—”«·… «·„—”·… «·Ìﬂ
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {MESSAGE}
