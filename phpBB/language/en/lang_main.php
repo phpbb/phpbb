@@ -382,6 +382,7 @@ $lang = array(
 	'USER_CANNOT_QUOTE' => 'You cannot quote posts in this forum',
 	'USER_CANNOT_EDIT' => 'You cannot edit posts in this forum',
 	'USER_CANNOT_DELETE' => 'You cannot delete posts in this forum',
+	'USER_CANNOT_REPORT' => 'You cannot report posts in this forum',
 	'CANNOT_DELETE_REPLIED' => 'Sorry but you may not delete posts that have been replied to',
 	'CANNOT_DELETE_POLL' => 'Sorry but you cannot delete an active poll',
 	'EDIT_OWN_POSTS' => 'Sorry but you can only edit your own posts',

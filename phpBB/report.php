@@ -55,13 +55,17 @@ $forum_id = $row['forum_id'];
 $topic_id = $row['topic_id'];
 
 // Checking permissions
-if (!$auth->acl_gets('f_list', 'm_', 'a_', $forum_id))
+if (!$auth->acl_get('f_list', $forum_id))
 {
 	trigger_error('POST_NOT_EXIST');
 }
-if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
+if (!$auth->acl_get('f_read', $forum_id))
 {
 	trigger_error('USER_CANNOT_READ');
+}
+if (!$auth->acl_get('f_report', $forum_id))
+{
+	trigger_error('USER_CANNOT_REPORT');
 }
 
 // Has the report been cancelled?
