@@ -62,11 +62,17 @@ if(!$forums_result)
 {
 	error_die(SQL_QUERY, "Couldn't obtain user/online forums information.", __LINE__, __FILE__);
 }
-$forumsrow = $db->sql_fetchrowset($forums_result);
-
-if(!$onlinerow || !$forumsrow)
+else
 {
-	error_die(SQL_QUERY, "Couldn't fetchrow", __LINE__, __FILE__);
+	while($forumsrow = $db->sql_fetchrow($forums_result))
+	{
+		$forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
+	}
+}
+
+if(!$onlinerow || !$forum_data)
+{
+	error_die(SQL_QUERY, "Couldn't fetchrow.", __LINE__, __FILE__);
 }
 
 $template->assign_vars(array(
@@ -117,7 +123,7 @@ if($online_count)
 			$guest_users++;
 		}
 
-		if($onlinerow[$i]['session_page'] < 0)
+		if($onlinerow[$i]['session_page'] < 1)
 		{
 			switch($onlinerow[$i]['session_page'])
 			{
@@ -164,15 +170,8 @@ if($online_count)
 		}
 		else
 		{
-			for($j = 0; $j < count($forumsrow); $j++)
-			{
-				if($onlinerow[$i]['session_page'] == $forumsrow[$j]['forum_id'])
-				{
-					$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$forumsrow[$j]['forum_id']);
-					$location = $forumsrow[$j]['forum_name'];
-					break;
-				}
-			}
+			$location_url = append_sid("viewforum.".$phpEx."?".POST_FORUM_URL."=".$onlinerow[$i]['session_page']);
+			$location = $forum_data[$onlinerow[$i]['session_page']];
 		}
 
 		//
