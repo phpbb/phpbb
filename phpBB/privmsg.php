@@ -1290,7 +1290,7 @@ else if( $submit || $refresh || $mode != "" )
 				
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
 
-				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]";
+				$privmsg_message = "[quote=\"" . $to_username . "\"]\n" . $privmsg_message . "\n[/quote]\n";
 
 				$mode = "reply";
 			}
