@@ -97,11 +97,11 @@ $hidden_users = 0;
 $reg_counter = 0;
 $guest_counter = 0;
 $prev_user = 0;
-$prev_ip = 0;
+$prev_ip = '';
 
 while ( $row = $db->sql_fetchrow($result) )
 {
-	$view_online = 0;
+	$view_online = false;
 
 	if ( $row['session_logged_in'] ) 
 	{
@@ -123,14 +123,14 @@ while ( $row = $db->sql_fetchrow($result) )
 
 			if ( !$row['user_allow_viewonline'] )
 			{
-				$view_online = ( $userdata['user_level'] == ADMIN ) ? 1 : 0;
+				$view_online = ( $userdata['user_level'] == ADMIN ) ? true : false;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '<i>';
 			}
 			else
 			{
-				$view_online = 1;
+				$view_online = true;
 				$registered_users++;
 			}
 
@@ -146,7 +146,7 @@ while ( $row = $db->sql_fetchrow($result) )
 	{
 		if ( $row['session_ip'] != $prev_ip )
 		{
-			$view_online = 1;
+			$view_online = true;
 			$guest_users++;
 	
 			$username = $lang['Guest'];
