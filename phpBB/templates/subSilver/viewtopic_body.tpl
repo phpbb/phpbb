@@ -1,4 +1,3 @@
- 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
 	<td align="left" valign="bottom" colspan="2"><span class="maintitle">{TOPIC_TITLE}</span><br />
@@ -55,7 +54,7 @@
 	<td width="22%" align="left" valign="middle" class="{postrow.ROW_CLASS}"><span class="nav"><a href="#top" class="nav">Back 
 	  to top</a></span></td>
 	<td width="78%" height="28" class="{postrow.ROW_CLASS}" nowrap="nowrap" valign="bottom"> 
-	  <table cellspacing="0" cellpadding="0" border="0" height="18">
+	  <table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 		<tr> 
 		  <td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} 
 			{postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}&nbsp;</td><td valign="top" align="left" width="100%" nowrap="nowrap">{postrow.ICQ_STATUS_IMG}{postrow.ICQ_ADD_IMG}</td>
@@ -90,7 +89,7 @@
 	  </td>
   </tr>
   <tr>
-	<td align="left"><span class="nav">{PAGE_NUMBER}</span></td>
+	<td align="left" colspan="3"><span class="nav">{PAGE_NUMBER}</span></td>
   </tr>
 </table>
 
