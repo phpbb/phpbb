@@ -74,7 +74,7 @@ if(!empty($HTTP_CLIENT_IP))
 }
 else if(!empty($HTTP_X_FORWARDED_FOR))
 {
-	$client_ip = (ereg("([0-9]+\.[0-9]+\.[0-9]+\.[0-9])+", $HTTP_X_FORWARDED_FOR, $ip_list)) ? $ip_list[0] : $REMOTE_ADDR;
+	$client_ip = (ereg("([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)", $HTTP_X_FORWARDED_FOR, $ip_list)) ? $ip_list[0] : $REMOTE_ADDR;
 }
 else if(!empty($HTTP_PROXY_USER))
 {
