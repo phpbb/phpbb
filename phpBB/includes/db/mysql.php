@@ -120,12 +120,7 @@ class sql_db
 		{
 			global $cache;
 		
-			$this->query_result =  false;
-
-			if ($max_age && method_exists($cache, 'sql_load'))
-			{
-				$cache->sql_load($query, $max_age);
-			}
+			$this->query_result = ($max_age && method_exists($cache, 'sql_load')) ? $cache->sql_load($query, $max_age) : false;
 
 			if (!$this->query_result)
 			{
