@@ -576,7 +576,8 @@ else
 	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate the database
-	$db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+	$db = new sql_db();
+	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 	// Load the appropriate schema and basic data
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';

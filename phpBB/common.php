@@ -184,7 +184,8 @@ $user = new user();
 $auth = new auth();
 $cache = new acm();
 $template = new template();
-$db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+$db = new sql_db();
+$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 // Grab global variables, re-cache if necessary
 if ($config = $cache->get('config'))
