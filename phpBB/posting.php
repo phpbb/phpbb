@@ -747,21 +747,20 @@ if( ( $submit || $confirm ) && !$error )
 									$email_set = $db->sql_fetchrowset($result);
 									$update_watched_sql = "";
 
+									include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+									$emailer = new emailer($board_config['smtp_delivery']);
+
+									$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
+									$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
+
 									for($i = 0; $i < count($email_set); $i++)
 									{
 										if( $email_set[$i]['user_email'] != "")
 										{
-											include($phpbb_root_path . 'includes/emailer.'.$phpEx);
-											$emailer = new emailer($board_config['smtp_delivery']);
-
-											$email_headers = "From: " . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\r\n";
-
 											$emailer->use_template("topic_notify");
 											$emailer->email_address($email_set[$i]['user_email']);
 											$emailer->set_subject($lang['Topic_reply_notification']);
 											$emailer->extra_headers($email_headers);
-
-											$path = (dirname($HTTP_SERVER_VARS['REQUEST_URI']) == "/") ? "" : dirname($HTTP_SERVER_VARS['REQUEST_URI']);
 
 											$emailer->assign_vars(array(
 												"EMAIL_SIG" => str_replace("<br />", "\n", "-- \n" . $board_config['board_email_sig']),
