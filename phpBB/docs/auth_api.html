@@ -1,0 +1,88 @@
+<html>
+<head>
+<link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
+<style type="text/css">
+<!--
+p,ul,td {font-size:10pt;}
+h2 {font-size:15pt;font-weight:bold;color:red}
+h3 {font-size:12pt;color:blue}
+//-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#006699">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+
+<h1>Using the <i><u>auth</u></i> class</h1>
+
+<h2>What is it?</h2>
+
+<p>The <i><u>auth</u></i> class contains methods related to authorisation users to access various board functions, e.g. posting, viewing, replying, logging in (and out), etc. If you need to check whether a user can carry out a task or handle user login/logouts this class is required.</p>
+
+<h2>Initialisation</h2>
+
+<p>To use any methods contained with the <i><u>auth</u></i> class it first needs to be instantiated. This is best achieved early in the execution of the script in the following manner:
+
+<pre>$auth = new auth();</pre>
+
+<p>Once an instance of the object has been created you are free to call the various methods it contains. Please note that should you wish to use the <i><u>auth_admin</u></i> methods you will need to instantiate this seperately but in the same way.</p>
+
+<h3><i>acl</i></h3>
+
+<p>The <i>acl</i> method is the initialisation routine for all the acl functions. If you intend calling any acl method you must first call this. The method takes as its one and only required parameter a hash of userdata. This hash must contain at least the following information; user_id, user_permissions and user_founder. It is called in the following way:
+
+<pre>$auth->acl(<i>userdata</i>);</pre>
+
+<p>Where userdata is the hash containing the aforementioned data.</p>
+
+<h3><i>acl_get</i></h3>
+
+<p>This method is the primary way of determining what a user can and cannot do for a given option in, optionally, a given forum. The method should be called in the following way:</p>
+
+<pre>$result = $auth->acl_get(<i>option</i>[, <i>forum</i>]);</pre>
+
+<p>Where option is a string representing the required option, e.g. 'f_list', 'm_edit', 'a_adduser', etc. The optional forum term is the integer forum_id.</p>
+
+<pThe method returns a positive integer when the user is allowed to carry out the option and a zero if denied.</p>
+
+<h3><i>acl_gets</i></h3>
+
+<p>This method is funtionally similar to <i>acl_get</i> in that it returns information on whether a user can or cannot carry out a given task. The difference here is the ability to test several different options in one go. This may be useful for testing whether a user is a moderator or an admin in one call. Rather than having to call and check <i>acl_get</i> twice.</p>
+
+<p>The method should be called thus:</p>
+
+<pre>$result = $auth->acl_gets(<i>option1</i>[, <i>option2</i>, ..., <i>optionN</i>, <i>forum</i>]);</pre>
+
+<p>As with the <i>acl_get</i> method the options are strings representing the required permissions to check. The forum again is an integer representing a given forum_id.</p>
+
+<h3><i>acl_cache</i></h3>
+
+<p>This should be considered a private method and not be called externally. It handles the generation of the user_permissions data from the basic user and group authorisation data. When necessary this method is called automatically by <i>acl</i>.</p>
+
+<h3><i>login</i></h3>
+
+<p></p>
+
+<h2>Admin related functions</h2>
+
+<p>A number of additional methods are available related to <i><u>auth</u></i>. These handle more basic functions such as adding user and group permissions, new options and clearing the user cache. These methods are contained within a seperate class, <i><u>auth_admin</u></i>. This can be found in the functions_admin source.</p>
+
+<p>To use any methods this class contains it first needs to be instantiated seperately from <i><u>auth</u></i>. This is achieved in the same way as <i><u>auth</u></i>:</p>
+
+<pre>$authadmin = new auth_admin();</pre>
+
+<p>This instance gives you access to both the methods of this specific class and that of <i><u>auth</u></i>.</p>
+
+
+				</td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+</body>
+</html>
