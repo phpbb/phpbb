@@ -825,7 +825,6 @@ if (in_array($submit, array('options', 'presetsave', 'presetdel', 'update')) || 
 		if (option)
 		{
 			document.acl.set.selectedIndex = 0;
-			var expr = new RegExp(/\d+/);
 			for (i = 0; i < document.acl.length; i++)
 			{
 				var elem = document.acl.elements[i];
@@ -854,7 +853,8 @@ if (in_array($submit, array('options', 'presetsave', 'presetdel', 'update')) || 
 							break;
 
 						default:
-						    option_name = elem.name.substr(9, elem.name.length - 10);
+							option_start = elem.name.search(/\[(\w+?)\]$/);
+							option_name = elem.name.substr(option_start + 1, elem.name.length - option_start - 2);
 
 							if (presets[option].yes.indexOf(option_name + ',') != -1 && elem.value == <?php echo ACL_YES; ?>)
 								elem.checked = true;
@@ -911,7 +911,7 @@ if (in_array($submit, array('options', 'presetsave', 'presetdel', 'update')) || 
 			</tr>
 			<tr>
 				<td class="row1" width="150">Will set options in: <br /><span class="gensmall"></span></td>
-				<td class="row2"><select name="f[<?php echo $which_mode; ?>][]" multiple="4" onchange="this.form.submit()"><?php 
+				<td class="row2"><select name="f[<?php echo $which_mode; ?>][]" multiple="4"><?php 
 		
 		echo make_forum_select($forum_id[$which_mode], false); 
 		
