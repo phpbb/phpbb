@@ -161,7 +161,7 @@ class ucp_profile extends module
 						// Need to update config, forum, topic, posting, messages, etc.
 						if ($username != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])
 						{
-							update_username($user->data['username'], $username);
+							user_update_name($user->data['username'], $username);
 						}
 
 						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
@@ -493,21 +493,17 @@ class ucp_profile extends module
 					{
 						$data['user_id'] = $user->data['user_id'];
 
-						if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
+						if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
 						{
-							$data = avatar_upload($data, $error);
-						}
-						else if ($data['uploadurl'] && $can_upload)
-						{
-							$data = avatar_upload($data, $error);
+							list($type, $filename, $width, $height) = avatar_upload($data, $error);
 						}
 						else if ($data['remotelink'] && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 						{
-							$data = avatar_remote($data, $error);
+							list($type, $filename, $width, $height) = avatar_remote($data, $error);
 						}
 						else if ($delete && $auth->acl_get('u_chgavatar'))
 						{
-							$data['filename'] = $data['width'] = $data['height'] = '';
+							$type = $filename = $width = $height = '';
 						}
 					}
 
@@ -517,10 +513,10 @@ class ucp_profile extends module
 						if (sizeof($data))
 						{
 							$sql_ary = array(
-								'user_avatar'			=> $data['filename'], 
-								'user_avatar_type'		=> $data['type'], 
-								'user_avatar_width'		=> $data['width'], 
-								'user_avatar_height'	=> $data['height'], 
+								'user_avatar'			=> $filename, 
+								'user_avatar_type'		=> $type, 
+								'user_avatar_width'		=> $width, 
+								'user_avatar_height'	=> $height, 
 							);
 
 							$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -529,7 +525,7 @@ class ucp_profile extends module
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($user->data['user_avatar'] != '' && $data['filename'] != $user->data['user_avatar'])
+							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'])
 							{
 								avatar_delete($user->data['user_avatar']);
 							}
