@@ -91,8 +91,19 @@ if( isset($HTTP_POST_VARS['submit']) )
 	if( !$error )
 	{
 		include($phpbb_root_path . 'includes/emailer.'.$phpEx);
+		//
+		// Let's do some checking to make sure that mass mail functions
+		// are working in win32 versions of php.
+		//
+		if( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
+		{
+			// We are running on windows, force delivery to use
+			// our smtp functions since php's are broken by default
+			$board_config['smtp_delivery'] = 1;
+			$board_config['smtp_host'] = get_cfg_var('SMTP');
+		}
 		$emailer = new emailer($board_config['smtp_delivery']);
-
+	
 		$email_headers = "From: " . $board_config['board_email'] . "\n";
 
 		$bcc_list = "";
