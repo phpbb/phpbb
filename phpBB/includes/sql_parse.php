@@ -43,11 +43,11 @@ function remove_comments($sql)
 	$in_comment = false;
 	for($i = 0; $i < $linecount; $i++)
 	{
-		if(ereg("^\/\*", $lines[$i])
+		if( ereg("^\/\*", $lines[$i]) )
 		{
 			$in_comment = true;
 		}
-		if(ereg("\*\/$", $lines[$i])
+		if( ereg("\*\/$", $lines[$i]) )
 		{
 			$in_comment = false;
 		}
