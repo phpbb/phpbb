@@ -23,35 +23,36 @@
  ***************************************************************************/ 
 
 /*
-	$type's accepted (eventually!):
-	VIEW, READ, POST, REPLY, EDIT, DELETE, VOTE, VOTECREATE
+	$type's accepted (pre-pend with AUTH_):
+	VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, VOTECREATE, 
+	ATTACH
 
-	Possible options to send to auth (not all are functional yet!):
+	$types pending (for future versions, pre-pend with AUTH_):
+	ALLOW_HTML, ALLOW_BBCODE, ALLOW_SMILIES
 
-	* If you include a type then a specific lookup will
-	be done and the single result returned
+	Possible options ($type/forum_id combinations):
 
-	* If you set type to ALL an array of all auth types
+	* If you include a type and forum_id then a specific lookup will be done and 
+	the single result returned
+
+	* If you set type to AUTH_ALL and specify a forum_id an array of all auth types
 	will be returned
 
-	* If you provide a forum_id a specific lookup on that
-	forum will be done
+	* If you provide a forum_id a specific lookup on that forum will be done
 
-	* If you set forum_id to LIST_ALL an array of all
-	forums to which the user has access of type will be returned
-	<- used for index and search? (type VIEW and READ respectively)
+	* If you set forum_id to AUTH_LIST_ALL and specify a type an array listing the
+	results for all forums will be returned 
 	
-	* If you set forum_id to LIST_ALL and type to ALL a 
-	multidimensional array containing the auth permissions
-	for all types and all forums for that user is returned
+	* If you set forum_id to AUTH_LIST_ALL and type to AUTH_ALL a multidimensional
+	array containing the auth permissions for all types and all forums for that
+	user is returned
 
-	* If you set $userdata to ALL, then the permissions of all
-	users listed in the auth_access table will be returned for 
-	the given type and forum_id <- use to check for moderators?
+	All results are returned as associative arrays, even when a single auth type is
+	specified.
 
-	All results are returned as associative arrays, even
-	when a single auth type is specified
-
+	If available you can send an array (either one or two dimensional) containing the
+	forum auth levels, this will prevent the auth function having to do its own
+	lookup
 */
 function auth($type, $forum_id, $userdata, $f_access = -1)
 {
@@ -123,10 +124,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	}
 
 	//
-	// If f_access has been passed, or auth
-	// is needed to return an array of forums
-	// then we need to pull the auth information
-	// on the given forum (or all forums)
+	// If f_access has been passed, or auth is needed to return an array of forums
+	// then we need to pull the auth information on the given forum (or all forums)
 	//
 	if($f_access == -1)
 	{
@@ -138,13 +137,13 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 
 		if(!$af_result)
 		{
-			error_die(QUERY_ERROR, "Failed obtaining forum access control lists");
+			message_die(GENERAL_ERROR, "Failed obtaining forum access control lists", "", __LINE__, __FILE__, $sql);
 		}
 		else
 		{
 			if(!$db->sql_numrows($af_result))
 			{
-				error_die(GENERAL_ERROR, "No forum access control lists exist!");
+				message_die(GENERAL_ERROR, "No forum access control lists exist!", "", __LINE__, __FILE__, $sql);
 			}
 			else
 			{
@@ -154,10 +153,8 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	}
 
 	//
-	// If the user isn't logged on then
-	// all we need do is check if the forum
-	// has the type set to ALL, if yes then
-	// they're good to go, if not then they
+	// If the user isn't logged on then all we need do is check if the forum
+	// has the type set to ALL, if yes they are good to go, if not then they
 	// are denied access
 	//
 	$auth_user = array();
@@ -175,7 +172,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$au_result = $db->sql_query($sql);
 		if(!$au_result)
 		{
-			message_die(QUERY_ERROR, "Failed obtaining forum access control lists");
+			message_die(GENERAL_ERROR, "Failed obtaining forum access control lists", "", __LINE__, __FILE__, $sql);
 		}
 
 		$num_u_access = $db->sql_numrows($au_result);
@@ -213,36 +210,27 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 		$key = $auth_fields[$i];
 
 		//
-		// If the user is logged on and the forum type is either
-		// ALL or REG then the user has access
+		// If the user is logged on and the forum type is either ALL or REG then the user has access
 		//
-		// If the type if ACL, MOD or ADMIN then we need to see
-		// if the user has specific permissions to do whatever it
-		// is they want to do ... to do this we pull relevant
-		// information for the user (and any groups they belong to)
+		// If the type if ACL, MOD or ADMIN then we need to see if the user has specific permissions
+		// to do whatever it is they want to do ... to do this we pull relevant information for the
+		// user (and any groups they belong to)
 		//
-		// Now we compare the users access level against the forums
-		// We assume here that a moderator and admin automatically
-		// have access to an ACL forum, similarly we assume admins
-		// meet an auth requirement of MOD
+		// Now we compare the users access level against the forums. We assume here that a moderator
+		// and admin automatically have access to an ACL forum, similarly we assume admins meet an
+		// auth requirement of MOD
 		//
-		// The access level assigned to a single user automatically 
-		// takes precedence over any levels granted by that user being
-		// a member of a multi-user usergroup, eg. a user who is banned
-		// from a forum won't gain access to it even if they belong to
-		// a group which has access (and vice versa). This check is
-		// done via the single_user check
+		// The access level assigned to a single user automatically takes precedence over any levels
+		// granted by that user being a member of a multi-user usergroup, eg. a user who is banned
+		// from a forum won't gain access to it even if they belong to a group which has access (and
+		// vice versa). This check is done via the single_user check
 		//
-		// PS : I appologise for the fantastically clear and hugely
-		// readable code here ;) Simple gist is, if this row of
-		// auth_access doesn't represent a single user then OR the
-		// contents of relevant auth_access levels against the current
-		// level (allows maximum group privileges to be assigned). If
-		// the row does represent a single user then forget any previous
-		// group results and instead set the auth to whatever the OR'd
-		// contents of the access levels are.
+		// PS : I appologise for the fantastically clear and hugely readable code here ;) Simple gist
+		// is, if this row of auth_access doesn't represent a single user then OR the  contents of
+		// relevant auth_access levels against the current level (allows maximum group privileges to
+		// be assigned). If the row does represent a single user then forget any previous group results
+		// and instead set the auth to whatever the OR'd contents of the access levels are.
 		//
-
 		if($forum_id != AUTH_LIST_ALL)
 		{
 			$value = $f_access[$key];
@@ -338,8 +326,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	}
 
 	//
-	// Is user an admin (this is
-	// really redundant at this time)
+	// Is user an admin (this is really redundant at this time)
 	//
 	if($forum_id != AUTH_LIST_ALL)
 	{
@@ -355,12 +342,10 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 	}
 
 	return $auth_user;
-
 }
 
 function auth_check_user($type, $key, $u_access, $is_admin)
 {
-
 	$single_user = 0;
 	$auth_user = 0;
 
