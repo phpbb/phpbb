@@ -146,35 +146,6 @@ else
 	$topic_type = POST_NORMAL;
 }
 
-
-//
-// Notify on reply
-//
-if($mode == "reply" && $topic_id )
-{
-	if( $submit || $refresh )
-	{
-		$notify_user = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;
-	}
-	else
-	{
-		$sql = "SELECT topic_id 
-			FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id
-				AND user_id = " . $userdata['user_id'];
-		if( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
-		}
-
-		$notify_user = ( $db->sql_numrows($result) ) ? TRUE : $userdata['user_notify'];
-	}
-}
-else
-{
-	$notify_user = ( $submit || $preview ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['user_notify'];
-}
-
 //
 // Set toggles for various options
 //
@@ -460,6 +431,34 @@ if( !$is_auth[$is_auth_type] )
 //
 
 //
+// Notify on reply
+//
+if( ( $mode == "reply" || $mode == "editpost" ) && $topic_id )
+{
+	if( $submit || $refresh )
+	{
+		$notify_user = ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0;
+	}
+	else
+	{
+		$sql = "SELECT topic_id 
+			FROM " . TOPICS_WATCH_TABLE . "
+			WHERE topic_id = $topic_id
+				AND user_id = " . $userdata['user_id'];
+		if( !$result = $db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
+		}
+
+		$notify_user = ( $db->sql_numrows($result) ) ? TRUE : $userdata['user_notify'];
+	}
+}
+else
+{
+	$notify_user = ( $submit || $preview ) ? ( ( !empty($HTTP_POST_VARS['notify']) ) ? TRUE : 0 ) : $userdata['user_notify'];
+}
+
+//
 // End variable checks and definitions
 // -----------------------------------
 
@@ -471,7 +470,7 @@ if( !$is_auth[$is_auth_type] )
 
 if( $submit && $mode != "vote" )
 {
-	if( isset($HTTP_POST_VARS['username']) )
+	if( !empty($HTTP_POST_VARS['username']) )
 	{
 		$post_username = trim(strip_tags($HTTP_POST_VARS['username']));
 
@@ -734,7 +733,7 @@ if( ( $submit || $confirm ) && !$error )
 							//
 							// Email users who are watching this topic
 							//
-							if($mode == "reply")
+							if( $mode == "reply" )
 							{
 								$sql = "SELECT u.user_id, u.username, u.user_email, t.topic_title
 									FROM " . TOPICS_WATCH_TABLE . " tw, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u
@@ -795,7 +794,7 @@ if( ( $submit || $confirm ) && !$error )
 							//
 							// Handle notification request ... 
 							//
-							if( isset($notify) )
+							if( isset($notify_user) )
 							{
 								if($mode == "reply")
 								{
@@ -810,7 +809,7 @@ if( ( $submit || $confirm ) && !$error )
 
 									if( $db->sql_numrows($result) )
 									{
-										if( !$notify )
+										if( !$notify_user )
 										{
 											$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 												WHERE topic_id = $new_topic_id
@@ -821,7 +820,7 @@ if( ( $submit || $confirm ) && !$error )
 											}
 										}
 									}
-									else if( $notify )
+									else if( $notify_user )
 									{
 										$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 											VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
@@ -831,7 +830,7 @@ if( ( $submit || $confirm ) && !$error )
 										}
 									}
 								}
-								else if( $notify )
+								else if( $notify_user )
 								{
 									$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 										VALUES (" . $userdata['user_id'] . ", $new_topic_id, 0)";
@@ -891,7 +890,6 @@ if( ( $submit || $confirm ) && !$error )
 	}
 	else if( $mode == "editpost" )
 	{
-
 		$sql = "SELECT poster_id
 			FROM " . POSTS_TABLE . "
 			WHERE post_id = $post_id";
@@ -952,7 +950,6 @@ if( ( $submit || $confirm ) && !$error )
 			}
 			else if( $confirm && ( $delete || $poll_delete ) )
 			{
-
 				//
 				// Delete poll
 				//
@@ -1028,16 +1025,25 @@ if( ( $submit || $confirm ) && !$error )
 							{
 								//
 								// Delete the topic completely, updating the forum_last_post_id
-								// if necessary
+								// if necessary and removing any users currently watching this topic
 								//
 								if( $db->sql_query($sql) )
 								{
 									$sql = "DELETE FROM " . TOPICS_TABLE . "
 										WHERE topic_id = $topic_id";
+									if( $db->sql_query($sql) )
+									{
+										$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+											WHERE topic_id = $topic_id";
 
-									$sql_forum_upd = "forum_posts = forum_posts - 1, forum_topics = forum_topics - 1";
+										$sql_forum_upd = "forum_posts = forum_posts - 1, forum_topics = forum_topics - 1";
 
-									$if_die_msg = "Error deleting from topics table";
+										$if_die_msg = "Error deleting from topics watch table";
+									}
+									else
+									{
+										message_die(GENERAL_ERROR, "Error deleting from topics table", "", __LINE__, __FILE__, $sql);
+									}
 								}
 								else
 								{
@@ -1186,6 +1192,44 @@ if( ( $submit || $confirm ) && !$error )
 			else
 			{
 				$edited_sql = "";
+			}
+
+			//
+			// Handle changing user notification
+			//
+			if( isset($notify_user) )
+			{
+				$sql = "SELECT *
+					FROM " . TOPICS_WATCH_TABLE . "
+					WHERE topic_id = $topic_id
+						AND user_id = " . $userdata['user_id'];
+				if( !$result = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtain topic watch information", "", __LINE__, __FILE__, $sql);
+				}
+
+				if( $db->sql_numrows($result) )
+				{
+					if( !$notify_user )
+					{
+						$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
+							WHERE topic_id = $topic_id
+								AND user_id = " . $userdata['user_id'];
+						if( !$result = $db->sql_query($sql) )
+						{
+							message_die(GENERAL_ERROR, "Couldn't delete topic watch information", "", __LINE__, __FILE__, $sql);
+						}
+					}
+				}
+				else if( $notify_user )
+				{
+					$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
+						VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
+					if( !$result = $db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't insert topic watch information", "", __LINE__, __FILE__, $sql);
+					}
+				}
 			}
 
 			$sql = "UPDATE " . POSTS_TABLE . "
@@ -1649,7 +1693,8 @@ else
 				}
 			}
 
-			$post_username = $postrow['username'];
+			$post_user_id = $postrow['user_id'];
+			$post_username = ( $post_user_id == ANONYMOUS && $postrow['post_username'] != "") ? $postrow['post_username'] : $postrow['username'];
 			$post_subject = $postrow['post_subject'];
 			$post_message = $postrow['post_text'];
 
@@ -1679,7 +1724,7 @@ else
 
 				$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
-				$post_message = $poster . " " . $lang['wrote'] . ":\n\n[quote]\n" . $post_message . "\n[/quote]";
+				$post_message = $post_username . " " . $lang['wrote'] . ":\n\n[quote]\n" . $post_message . "\n[/quote]";
 
 				$mode = "reply";
 			}
@@ -1882,7 +1927,7 @@ if( $error )
 // User not logged in so offer up a username
 // field box
 //
-if( !$userdata['session_logged_in'] )
+if( !$userdata['session_logged_in'] || ( $mode == "editpost" && $post_user_id == ANONYMOUS ) )
 {
 	$template->assign_block_vars("username_select", array());
 }
@@ -1940,7 +1985,10 @@ if( $user_sig != "" )
 //
 if( $userdata['session_logged_in'] )
 {
-	$template->assign_block_vars("notify_checkbox", array());
+	if( $mode != "editpost" || ( $mode == "editpost" && $post_user_id != ANONYMOUS ) )
+	{
+		$template->assign_block_vars("notify_checkbox", array());
+	}
 }
 
 //

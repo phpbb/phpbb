@@ -155,7 +155,7 @@ else
 		$board_config[$row['config_name']] = $row['config_value'];
 	}
 	$board_config['allow_html_tags'] = split(",", $board_config['allow_html_tags']);
-	$board_config['board_email'] = str_replace("<br />", "\n", $board_config['email_sig']);
+	$board_config['board_email'] = str_replace("<br />", "\n", "-- \n" . $board_config['email_sig']);
 	$board_config['default_template'] = stripslashes($board_config['sys_template']);
 	$board_config['board_timezone'] = $board_config['system_timezone'];
 }
