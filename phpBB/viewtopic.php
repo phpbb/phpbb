@@ -506,7 +506,7 @@ $bbcode_bitfield = 0;
 $i = 0;
 
 // Go ahead and pull all data for this topic
-$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.*
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
@@ -540,6 +540,7 @@ do
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
 	$bbcode_bitfield |= $row['bbcode_bitfield'];
+	$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
 }
 while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
@@ -683,19 +684,24 @@ foreach ($rowset as $row)
 			$user_sig = ($row['user_sig'] && $config['allow_sig']) ? $row['user_sig'] : '';
 			if ($user_sig && $auth->acl_get('f_sigs', $forum_id))
 			{
-				if (!$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'])
-				{
-					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-				}
+//				if (!$auth->acl_get('f_html', $forum_id))
+//				{
+//					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
+//				}
 
 				$user_sig = (empty($row['user_allowsmile']) || empty($config['enable_smilies'])) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILE_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $user_sig) : str_replace('<img src="{SMILE_PATH}', '<img src="' . $config['smilies_path'], $user_sig);
+
+				if ($row['user_sig_bbcode_bitfield'])
+				{
+					$bbcode->bbcode_second_pass(&$user_sig, $row['user_sig_bbcode_uid'], $row['user_sig_bbcode_bitfield']);
+				}
 
 				if (count($censors))
 				{
 					$user_sig = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $user_sig . '<'), 1, -1));
 				}
 
-				$user_sig = '<br />_________________<br />' . nl2br($user_sig);
+				$user_sig = nl2br($user_sig);
 			}
 
 			$profile_url = "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
@@ -876,10 +882,8 @@ foreach ($rowset as $row)
 		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
+	$message = str_replace("\n", "\n<br />\n", $message);
 
-	$message = nl2br($message);
-
-	
 	// Editing information
 	if (intval($row['post_edit_count']))
 	{
@@ -964,8 +968,8 @@ foreach ($rowset as $row)
 		'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 		'U_MINI_POST'	=> $mini_post_url,
-		'U_POST_ID' 	=> $u_post_id
-	));
+		'U_POST_ID' 	=> $u_post_id)
+	);
 
 	// Process Attachments for this post
 	if (sizeof($attachments[$row['post_id']]) && $row['post_attachment'])
@@ -979,7 +983,7 @@ foreach ($rowset as $row)
 
 			$upload_image = '';
 
-			if ( ($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == '') )
+			if (($user->img('icon_attach', '') != '') && (trim($extensions[$attachment['extension']]['upload_icon']) == ''))
 			{
 				$upload_image = $user->img('icon_attach', '');
 			}
@@ -990,6 +994,7 @@ foreach ($rowset as $row)
 	
 			$filesize = $attachment['filesize'];
 			$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+
 			if ($filesize >= 1048576)
 			{
 				$filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
@@ -1192,12 +1197,13 @@ foreach ($rowset as $row)
 unset($rowset);
 unset($user_cache);
 
+
 // Mark topics read
 markread('topic', $forum_id, $topic_id, $topic_data['topic_last_post_id']);
 
 
 // Update the topic view counter, excepted when the user was already reading it
-if (!preg_match("/&t=$topic_id\\b/", $user->data['session_page'] . ' '))
+if (!preg_match("#&t=$topic_id#", $user->data['session_page']))
 {
 	$sql = "UPDATE " . TOPICS_TABLE . "
 		SET topic_views = topic_views + 1
