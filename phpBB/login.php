@@ -50,24 +50,24 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		}
 
 		$rowresult = $db->sql_fetchrow($result);
-		if(count($rowresult))
+
+		if( count($rowresult) )
 		{
-	 		if((md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0)
+	 		if( (md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0 )
 			{
-				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : FALSE;
+				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : 0;
 
 				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 
-				if($session_id)
+				if( $session_id )
 				{
-					if( !empty($HTTP_POST_VARS['forward_page']) )
+					if( !empty($HTTP_POST_VARS['redirect']) )
 					{
-//						echo $HTTP_POST_VARS['forward_page'];
-						header("Location: " . $HTTP_POST_VARS['forward_page']);
+						header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 					}
 					else
 					{
-						header("Location: " . append_sid("index.$phpEx"));
+						header("Location: " . append_sid("index.$phpEx", true));
 					}
 				}
 				else
@@ -91,24 +91,25 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		{
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
-		if( !empty($HTTP_POST_VARS['forward_page']) )
+
+		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header("Location: " . append_sid($HTTP_POST_VARS['forward_page']));
+			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("Location: " . append_sid("index.$phpEx"));
+			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
 	else
 	{
-		if( !empty($HTTP_POST_VARS['forward_page']) )
+		if( !empty($HTTP_POST_VARS['redirect']) )
 		{
-			header(append_sid("Location: ".$HTTP_POST_VARS['forward_page']));
+			header("Location: " . append_sid($HTTP_POST_VARS['redirect'], true));
 		}
 		else
 		{
-			header("Location: " . append_sid("index.$phpEx"));
+			header("Location: " . append_sid("index.$phpEx", true));
 		}
 	}
 }
@@ -120,18 +121,17 @@ else
 	//
 	if(!$userdata['session_logged_in'])
 	{
-		$page_title = "Log In";
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
 			"body" => "login_body.tpl")
 		);
 
-		if( isset($HTTP_POST_VARS['forward_page']) || isset($HTTP_GET_VARS['forward_page']) )
+		if( isset($HTTP_POST_VARS['redirect']) || isset($HTTP_GET_VARS['redirect']) )
 		{
-			echo $forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
+			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
 
-			if( preg_match("/^forward_page=(.*)(&sid=[0-9]*)$|^forward_page=(.*)$/si", $forward_to, $forward_matches) )
+			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
 
@@ -139,16 +139,21 @@ else
 
 				if(count($forward_match) > 1)
 				{
-					$forward_page = $forward_match[0] . "?";
+					$forward_page = "";
 
 					for($i = 1; $i < count($forward_match); $i++)
 					{
-						$forward_page .= $forward_match[$i];
-						if($i < count($forward_match) - 1)
+						if( !ereg("sid=", $forward_match[$i]) )
 						{
-							$forward_page .= "&";
+							if( $forward_page != "" )
+							{
+								$forward_page .= "&";
+							}
+							$forward_page .= $forward_match[$i];
 						}
 					}
+
+					$forward_page = $forward_match[0] . "?" . $forward_page;
 				}
 				else
 				{
@@ -163,14 +168,16 @@ else
 
 		$username = ($userdata['user_id'] != ANONYMOUS) ? $userdata['username'] : "";
 
+		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
+
 		$template->assign_vars(array(
-			"FORWARD_PAGE" => $forward_page,
 			"USERNAME" => $username,
 
 			"L_SEND_PASSWORD" => $lang['Forgotten_password'],
 
-			"U_SEND_PASSWORD" => append_sid("profile.$phpEx?mode=sendpassword")
-			)
+			"U_SEND_PASSWORD" => append_sid("profile.$phpEx?mode=sendpassword"), 
+			
+			"S_HIDDEN_FIELDS" => $s_hidden_fields)
 		);
 
 		$template->pparse("body");

@@ -85,7 +85,7 @@ if( $cancel )
 	{
 		$redirect = "index.$phpEx";
 	}
-	header("Location: " . append_sid($redirect));
+	header("Location: " . append_sid($redirect, true));
 }
 
 //

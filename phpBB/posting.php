@@ -94,21 +94,25 @@ if( $cancel )
 {
 	if($post_id != "")
 	{
-		$redirect = "viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id";
+		$redirect = "viewtopic.$phpEx?" . POST_POST_URL . "=$post_id";
+		$post_append = "#$post_id";
 	}
 	else if($topic_id != "")
 	{
 		$redirect = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id";
+		$post_append = "";
 	}
 	else if($forum_id != "")
 	{
 		$redirect = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id";
+		$post_append = "";
 	}
 	else
 	{
 		$redirect = "index.$phpEx";
+		$post_append = "";
 	}
-	header("Location:" . append_sid($redirect));
+	header("Location:" . append_sid($redirect) . $post_append, true);
 }
 //
 // Continue var definitions
@@ -416,7 +420,7 @@ if( !$is_auth[$is_auth_type] )
 				break;
 		}
 
-		header("Location: " . append_sid("login.$phpEx?forward_page=posting.$phpEx&" . $redirect));
+		header("Location: " . append_sid("login.$phpEx?redirect=posting.$phpEx&" . $redirect, true));
 
 	}
 	else
@@ -1201,7 +1205,7 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 			}
 			else
 			{
-				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id"));
+				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 			}
 		}
 		else

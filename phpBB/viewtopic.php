@@ -79,12 +79,12 @@ if( isset($HTTP_GET_VARS["view"]) && empty($HTTP_GET_VARS[POST_POST_URL]) )
 			else
 			{
 				$post_id = $row['post_id'];
-				header("Location: viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id");
+				header("Location: " . append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=$post_id#$post_id", true));
 			}
 		}
 		else
 		{
-			header("Location: viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			header("Location: " . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id", true));
 		}
 	}
 	else if($HTTP_GET_VARS["view"] == "next")
@@ -297,7 +297,7 @@ else
 	{
 		if( $HTTP_GET_VARS['unwatch'] == "topic" )
 		{
-			header("Location: " . append_sid("login.$phpEx?forward_page=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic"));
+			header("Location: " . append_sid("login.$phpEx?redirect=viewtopic.$phpEx&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
 	}
 	else

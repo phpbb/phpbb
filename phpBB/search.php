@@ -19,6 +19,808 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+/*
+
+/* ====================================================================
+ * Copyright (c) 2000 Steven Haryanto.  All rights reserved.
+ *
+ * KwIndex
+ *   A PHP module to do full text indexing with MySQL database
+ * 
+ * This module is released under the GNU General Public License. See:
+ *   http://www.gnu.org/copyleft/gpl.html
+ * 
+ * Version
+ *   0.04, Sat Dec  2 14:54:41 2000
+ *   based on DBIx::KwIndex 0.03
+ *
+ * For documentation, support and latest version, visit:
+ *   http://steven.haryan.to/php/KwIndex.html
+ * 
+ * ====================================================================
+ *
+ */
+/*
+
+class KwIndex {
+
+	# CONSTRUCTOR
+	#############
+
+	function KwIndex($args) {
+		# check for argument type
+		if (!is_array(&$args))
+			die("KwIndex: constructor: syntax: KwIndex(array \$args)");
+
+		# check for unknown arguments
+		$known_arguments = array_flip(array(
+			"linkid", "db_name", "hostname", "username", "password", 
+			"index_name", "wordlist_cardinality", "doclist_cardinality", 
+			"stoplist_cardinality", "vectorlist_cardinality",
+			"max_word_length", "use_persistent_connection"));
+		while(list($k,$v) = each($args))
+			if (!isset($known_arguments[$k]))
+				die("KwIndex: constructor: unknown argument `$k'");
+
+		# required for required arguments
+		if (!isset($args["db_name"]))
+			die("KwIndex: constructor: You must specify 'db_name'");
+		if (!isset($args["linkid"]) &&
+		    (!isset($args["hostname"]) || !isset($args["username"]) || 
+		     !isset($args["password"])))
+			die("KwIndex: constructor: You must either specify 'linkid' or ".
+			    "arguments to mysql_connect ('hostname', 'username', and ".
+				   "'password')");
+
+		# supply default values for optional arguments
+		if (!isset($args["index_name"]))
+			$args["index_name"] = "kwindex";
+		if (!isset($args["wordlist_cardinality"]))
+			$args["wordlist_cardinality"] = 100000;
+		if (!isset($args["stoplist_cardinality"]))
+			$args["stoplist_cardinality"] = 10000;
+		if (!isset($args["vectorlist_cardinality"]))
+			$args["vectorlist_cardinality"] = 100000000;
+		if (!isset($args["doclist_cardinality"]))
+			$args["doclist_cardinality"] = 1000000;
+		if (!isset($args["max_word_length"]))
+			$args["max_word_length"] = 32;
+		if (!isset($args["use_persistent_connection"]))
+			$args["use_persistent_connection"] = 1;
+
+		# set object attributes
+		$this->db_name = $args["db_name"];
+		$this->index_name = $args["index_name"];
+		$this->wordlist_cardinality = $args["wordlist_cardinality"];
+		$this->stoplist_cardinality = $args["stoplist_cardinality"];
+		$this->vectorlist_cardinality = $args["vectorlist_cardinality"];
+		$this->doclist_cardinality = $args["doclist_cardinality"];
+		$this->max_word_length = $args["max_word_length"];
+
+		if (!isset($args["linkid"])) {
+			if ($args["use_persistent_connection"]) {
+				$linkid = mysql_pconnect($args["hostname"], $args["username"],
+				                         $args["password"]);
+			} else {
+				$linkid = mysql_connect($args["hostname"], $args["username"],
+				                        $args["password"]);
+			}
+			if (!$linkid)
+				die("KwIndex: constructor: Can't connect to database: ".
+				    mysql_error());
+		} else {
+			$linkid = $args["linkid"];
+		}
+
+		$this->linkid = $linkid;
+		$idx = $this->index_name;
+
+		if (!mysql_select_db($this->db_name, $linkid)) 
+			die("KwIndex: constructor: Can't select DB: ".
+			    mysql_error($linkid));
+
+		if (!$this->_index_exists()) $this->_create_index();
+
+		# load stoplist as keys of array
+		$this->stoplist = array();
+		if (!($res = mysql_query("SELECT word FROM ${idx}_stoplist",
+		                         $linkid)))
+			die("KwIndex: constructor: Can't load stoplist: ".
+			    mysql_error($linkid));
+		while($row = mysql_fetch_row($res)) {
+			$this->stoplist[ strtolower($row[0]) ] = 1;
+		}
+	} // constructor
+
+
+	# PUBLIC METHODS
+	################
+
+	function &document_sub($doc_ids) {
+		die("KwIndex: document_sub: this method must be overriden");
+	}
+
+	function add_document($doc_ids) {
+		if (!is_array(&$doc_ids))
+			die("KwIndex: syntax: add_document(array \$doc_ids)");
+
+		if (!sizeof(&$doc_ids)) return 1;
+
+		$wordlist = array();
+			# structure: ( 'word1' => [ [doc_id,freq], ... ], ... )
+		$doclist = array();
+			# format: ( doc_id => n, ... ); # n = number of words in document
+
+		# retrieve documents
+		####################
+		$docs = $this->document_sub(&$doc_ids);
+
+		if(!is_array(&$docs))
+			die("KwIndex: add_document: ".
+			    "'document_sub' does not return an array");
+		if (sizeof(&$doc_ids) < sizeof(&$docs))
+			die("KwIndex: add_document: ".
+			    "'document_sub' does not return enough documents");
+		if (sizeof(&$doc_ids) > sizeof(&$docs))
+			die("KwIndex: add_document: ".
+			    "'document_sub' returns too many documents");
+    
+		# split documents into words
+		############################
+		while(list($id, $doc) = each($docs)) {
+			if (!isset($doc) || !strlen($doc)) continue;
+    	
+			$words = $this->_split_to_words($doc);
+			$num_of_words = sizeof(&$words);
+				# note: this means that numbers, etc are counted
+			$doclist[$id] = $num_of_words;
+
+			# filter non-qualifying words: 1-char length, numbers, words
+			# that are too long
+
+			$w2 = array();
+			while(list($k, $v) = each($words)) {
+				$len = strlen($v);
+				$lower_v = strtolower($v);
+				if ($len > 1 &&
+				    $len <= $this->max_word_length && 
+				    preg_match("/[a-z]/", $lower_v) &&
+				    !isset($this->stoplist[$lower_v])) ++$w2[ $lower_v ];
+			}
+
+			while(list($k, $v) = each($w2)) {
+				$lower_k = strtolower($k); 
+				if (!isset($wordlist[$lower_k]))
+					$wordlist[$lower_k] = array();
+				array_push($wordlist[$lower_k], array($id, $v/$num_of_words));
+			}
+		}
+
+#_debug("wordlist: ", Dumper($wordlist));
+
+		# submit to database
+		####################
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+
+		# lock the tables in case some other process remove a certain word
+		# between step 0 and 1 and 2 and 3
+		if(!mysql_query("LOCK TABLES ${idx}_doclist WRITE, ".
+		                            "${idx}_vectorlist WRITE, ".
+		                            "${idx}_wordlist WRITE",
+		                $linkid)) {
+			$this->ERROR = "Can't lock tables when adding documents: ".
+			                mysql_error($linkid);
+			return;
+		}
+
+		# 0
+		# add the docs first
+#_debug( "doclist = ", Dumper($doclist));
+		while(list($k,$v) = each($doclist)) {
+			if(!mysql_query("REPLACE INTO ${idx}_doclist (id,n) VALUES (".
+			                   "'".(addslashes($k))."'".
+			                   ",".
+			                   "'".(addslashes($v))."'".
+			                   ")",
+		                    $linkid)) {
+				$this->ERROR = "Can't add doc id=`$_' to doclist: ".
+				               mysql_error($linkid);
+				mysql_query("UNLOCK TABLES", $linkid);
+				return;
+			}
+		}
+
+		# 1
+		# and then add the words 
+		while(list($k,$v) = each($wordlist)) {
+			if(!mysql_query("INSERT IGNORE INTO ${idx}_wordlist (word) ".
+			                        "VALUES (".
+			                           "'".(addslashes($k))."'".
+			                        ")",
+		                    $linkid)) {
+				$this->ERROR = "Can't add word `$k' to wordlist: ".
+				               mysql_error($linkid);
+				mysql_query("UNLOCK TABLES", $linkid);
+				return;
+			}
+		}
+
+		# 2
+		# get the resulting word ids
+		$word_ids = array();
+		$e_wordlist = array();
+		reset($wordlist);
+		while(list($k,$v) = each($wordlist))
+			array_push($e_wordlist, "'".addslashes($k)."'");
+
+		if (sizeof(&$wordlist)) {
+			if(!($res = mysql_query("SELECT id,word FROM ${idx}_wordlist ".
+			                           "WHERE word IN (".
+			                              join(',', $e_wordlist).
+			                           ")",
+			                        $linkid))) {
+				$this->ERROR = "Can't get data from wordlist: ".
+				               mysql_error($linkid);
+				mysql_query('UNLOCK TABLES', $linkid);
+				return;
+			}
+			while($row = mysql_fetch_row($res)) {
+#echo "row = ", Dumper($row), "<br>\n";
+				$word_ids[ $row[1] ] = $row[0];
+			}
+		}
+
+		# 3
+		# now add the vectors
+#_debug("word_ids = ", Dumper($word_ids));
+		reset($wordlist);
+		while (list($word, $hitlist) = each($wordlist)) {
+			while(list($i, $hit) = each($hitlist)) {
+#echo "adding word=$word, hit = ($hit[0], $hit[1])<br>\n";
+				if(!mysql_query("INSERT INTO ${idx}_vectorlist (wid,did,f)".
+				                  "VALUES (".
+				                     ("'".addslashes($word_ids[$word]))."',".
+				                     ("'".addslashes($hit[0]))."',".
+				                     ("'".addslashes($hit[1]))."')",
+				                $linkid)) {
+					$this->ERROR = "Can't add to vectorlist: ".
+					               mysql_error($linkid);
+					mysql_query('UNLOCK TABLES', $linkid);
+					return;
+				}
+			}
+		}
+
+		# if all goes well, return TRUE
+		mysql_query('UNLOCK TABLES', $linkid);
+		return 1;
+	}
+
+
+	function remove_document($doc_ids) {
+		if (!is_array(&$doc_ids))
+			die("KwIndex: syntax: remove_document(array \$doc_ids)");
+
+		if (!sizeof(&$doc_ids)) return 1;
+
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+
+		if(!mysql_query("LOCK TABLES ${idx}_doclist WRITE, ".
+		                            "${idx}_vectorlist WRITE",
+		                $linkid)) {
+			$this->ERROR = "Can't lock tables when removing documents: ".
+			                mysql_error($linkid);
+			return;
+		}
+
+		if(!mysql_query("DELETE FROM ${idx}_doclist WHERE id IN (".
+		                   join(',', $doc_ids).")",
+		                $linkid)) {
+			$this->ERROR = "Can't delete from doclist: ".
+			               mysql_error($linkid);
+			mysql_query('UNLOCK TABLES', $linkid);
+			return;
+		}
+
+		if(!mysql_query("DELETE FROM ${idx}_vectorlist WHERE did IN (".
+		                   join(',', $doc_ids).")",
+		                $linkid)) {
+			$this->ERROR = "Can't delete from vectorlist: ".
+			               mysql_error($linkid);
+			mysql_query('UNLOCK TABLES', $linkid);
+			return;
+		}
+
+		# if all goes well, return TRUE
+		mysql_query("UNLOCK TABLES", $linkid);
+		return 1;
+	}
+
+
+	function update_document($doc_ids) {
+		if (!is_array(&$doc_ids))
+			die("KwIndex: syntax: update_document(array \$doc_ids)");
+
+		if (!sizeof(&$doc_ids)) return 1;
+
+		return $this->remove_document(&$doc_ids) && 
+		       $this->add_document(&$doc_ids);
+	}
+
+
+	# find all words that are contained in at least $k % of all documents
+
+	function &common_word($k = 80) {
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+
+		# first select the number of documents
+		$num = $this->document_count();
+		if ($num == -1) {
+			$this->ERROR = "Can't retrieve the number of documents: ".
+			               mysql_error($linkid);
+			return;
+		}
+
+		# get the statistics from vectorlist
+		if(!($res1 = mysql_query("SELECT wid,COUNT(*)/$num as k FROM
+		                             ${idx}_vectorlist GROUP BY wid HAVING k>=".
+		                             ($k/100),
+		                         $linkid))) {
+			$this->ERROR = "Can't retrieve common words: ".
+			               mysql_error($linkid);
+			return;
+		}
+		$wids = array();
+		while($row = mysql_fetch_row($res1)) array_push($wids, $row[0]);
+
+		# convert it to word by consulting the wordlist table
+		$words = array();
+		if (sizeof(&$wids)) {
+			if (!($res2 = mysql_query("SELECT word FROM ${idx}_wordlist ".
+			                             "WHERE id IN (".join(',', $wids).
+			                              ")",
+			                          $linkid))) {
+				$this->ERROR = "Can't retrieve common words: ".
+				               mysql_error($linkid);
+				return;
+			}
+
+			while($row = mysql_fetch_row($res2))
+				array_push($words, $row[0]);
+		}
+
+		return $words;
+	}
+
+
+	# find all words that are not contained in all documents (vectorlist)
+	# XXX not yet written
+
+	function &orphan_word() {
+		return array();
+	}
+
+
+	# remove words from index
+
+	function remove_word($words) {
+		if (!is_array(&$words))
+			die("KwIndex: syntax: remove_word(array \$words)");
+
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+	
+		if(!mysql_query("LOCK TABLES ${idx}_wordlist WRITE, ".
+		                            "${idx}_vectorlist WRITE",
+		                $linkid)) {
+			$this->ERROR = "Can't lock tables when removing words: ".
+			                mysql_error($linkid);
+			return;
+		}
+
+		$e_words = array();
+		while(list($k,$v) = each($words))
+			array_push($e_words, "'".addslashes(strtolower($v))."'");
+
+		# retrieve word ids
+		if(!($res0 = mysql_query("SELECT id FROM ${idx}_wordlist WHERE ".
+		                            "word IN (".join(',', $e_words).")",
+		                         $linkid))) {
+			$this->ERROR = "Can't delete from wordlist: ".
+			               mysql_error($linkid);
+			mysql_query('UNLOCK TABLES', $linkid);
+			return;
+		}
+		
+		$word_ids = array();
+		while($row = mysql_fetch_row($res0))
+			array_push($word_ids, $row[0]);
+		$word_ids = join(',', $word_ids); # we'll make it a string
+
+		if (!strlen($word_ids)) return 1;
+	
+		# delete from wordlist
+		if(!mysql_query("DELETE FROM ${idx}_wordlist WHERE id IN ".
+		                   "($word_ids)",
+		                $linkid)) {
+			$this->ERROR = "Can't delete from wordlist: ".
+			               mysql_error($linkid);
+			mysql_query("UNLOCK TABLES", $linkid);
+			return;
+		}
+		if(!mysql_query("DELETE FROM ${idx}_vectorlist WHERE wid IN ".
+		                   "($word_ids)", $linkid)) {
+			$this->ERROR = "Can't delete from vectorlist: ".
+			               mysql_error($linkid);
+			mysql_query("UNLOCK TABLES", $linkid);
+			return;
+		}
+
+		return 1;
+	}
+
+	# add stop words. note: you must manually delete previously indexed
+	# words with delete_word()
+
+	function add_stop_word($words) {
+		if (!is_array(&$words))
+			die("KwIndex: syntax: add_stop_word(array words)");
+			
+		if (!sizeof(&$words)) return 1;
+		
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+	
+		while(list($k, $v) = each($words)) {
+			$lv = strtolower($v);
+			if(!mysql_query("REPLACE INTO ${idx}_stoplist (word) VALUES (".
+			                   ("'".addslashes($lv)."'").
+			                   ")", $linkid)) {
+				$this->ERROR = "Can't add to stoplist: ".
+				               mysql_error($linkid);
+				return;
+			}
+			$this->stoplist[ $lv ] = 1;
+		}
+
+		return 1;
+	}
+
+	# remove stop words from index
+
+	function remove_stop_word($words) {
+		if (!is_array(&$words))
+			die("KwIndex: syntax: remove_stop_word(array words)");
+
+		if (!sizeof(&$words)) return 1;
+		
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+
+		$e_words = array();
+		while(list($k,$v) = each($words))
+			array_push($e_words, "'".addslashes(strtolower($v))."'");
+		 
+		if(!mysql_query("DELETE FROM ${idx}_stoplist WHERE word IN (".
+		                   join(',', $e_words).")",
+		                $linkid)) {
+			$this->ERROR = "Can't delete from stoplist: ".
+			               mysql_error($linkid);
+			return;
+		}
+
+		while(list($k,$v) = each($words))
+			unset($this->stoplist[ strtolower($v) ]);
+		
+		return 1;
+	}
+
+	function is_stop_word($word) {
+		return isset($this->stoplist[ strtolower($word) ]);
+	}
+
+	function &_search_or_match_count($is_count, &$args) {
+		if (!isset($args["words"]))
+			die("KwIndex: search: option 'words' must be defined");
+
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+
+		# split the words if we are offered a single string/not array
+		# (assume it's a phrase)
+
+		$words = array();
+		if (is_array(&$args["words"])) {
+			$words = $args["words"];
+		} else {
+			$words = $this->_split_to_words($args["words"]);
+		}
+
+		# delete duplicate words, convert them all to lowercase
+		$hashwords = array();
+		while(list($k,$v) = each($words)) $hashwords[ strtolower($v) ] = 1;
+		$words = array_keys(&$hashwords);
+		
+		if (!sizeof(&$words)) {
+			if ($is_count) {
+				return 0;
+			} else {
+				return array();
+			}
+		}
+
+		# first we retrieve the word ids
+		$op = $args["re"] ? 'REGEXP':'LIKE';
+		$bool = isset($args['boolean']) && $args['boolean'] &&
+		        strtoupper($args['boolean']) == 'AND' ? 'AND':'OR';
+		
+		$op_phrases = array();
+		while(list($k,$v) = each($words))
+			array_push($op_phrases, "word $op '".addslashes($v)."'");
+		
+		if (!($res0 = mysql_query("SELECT id FROM ${idx}_wordlist WHERE ".
+		                             join(' OR ', $op_phrases),
+		                          $linkid))) {
+			$this->ERROR = "Can't retrieve word ids: ".mysql_error($linkid);
+			return;
+		}
+		$word_ids = array();
+		while($row = mysql_fetch_row($res0)) array_push($word_ids, $row[0]);
+		
+		if (!sizeof(&$word_ids) || 
+		    ($bool == 'AND' && sizeof(&$word_ids) < sizeof(&$words))) {
+			if ($is_count) {
+				return 0;
+			} else {
+				return array();
+			}
+		}
+
+		# and then we search the vectorlist
+		$can_optimize=0;
+		$stmt = '';
+
+		if ($is_count) {
+
+			if ($bool == 'AND' && !$args['re']) {
+				$stmt = 'SELECT did,count(wid) as c '.
+			    	    "FROM ${idx}_vectorlist WHERE wid IN (".
+				           join(',',$word_ids).
+				         ") ".
+				        "GROUP BY did ".
+				        "HAVING c >= ".sizeof(&$word_ids);
+			} else {
+				$can_optimize=1;
+				$stmt = "SELECT COUNT(DISTINCT did) ".
+				        "FROM ${idx}_vectorlist WHERE wid IN (".
+				           join(',',$word_ids).
+				        ")";
+			}
+
+		} else { // ! $is_count
+
+			$stmt = "SELECT did, count(wid) as c, avg(f) as a, ".
+			               "count(wid)*count(wid)*count(wid)*avg(f) as ca ".
+
+			        "FROM ${idx}_vectorlist WHERE wid IN (".
+			            join(',',$word_ids).
+			        ") ".
+
+			        "GROUP BY did ".
+			        ($bool == 'AND' && !$args['re'] ? 
+			        "HAVING c >= ".sizeof(&$word_ids):'').
+			        " ORDER BY ca DESC ".
+			        (isset($args['num']) ? "LIMIT " . (isset($args['start']) ?
+			        (($args['start'] - 1).",".$args['num']) : $args['num'])
+			        :'');
+
+		}
+
+_debug("search SQL: ", $stmt);
+
+		if(!($res = mysql_query($stmt, $linkid))) {
+			$this->ERROR = "Can't search vectorlist: ".mysql_error($linkid);
+			return;
+		}
+
+		if ($is_count) {
+
+			if ($can_optimize) {
+				$row = mysql_fetch_row($res);
+				return $row[0];
+			} else {
+				return mysql_num_rows($res);
+			}
+	
+		} else { // ! $is_count
+
+			$doc_ids = array();
+			while($row = mysql_fetch_row($res)) array_push($doc_ids, $row[0]);
+			return $doc_ids;
+		}
+	}
+
+	function &search($args) {
+		return $this->_search_or_match_count(0, &$args);
+	}
+
+	function &match_count($args) {
+		return $this->_search_or_match_count(1, &$args);
+	}
+
+	function remove_index() {
+		$linkid = $this->linkid;
+    	$idx = $this->index_name;
+
+		if(!mysql_query("DROP TABLE IF EXISTS ${idx}_wordlist", $linkid)) {
+			$this->ERROR = "Can't remove table ${idx}_wordlist: ".
+			               mysql_error($linkid);
+			return;
+		}
+		if(!mysql_query("DROP TABLE IF EXISTS ${idx}_doclist", $linkid)) {
+			$this->ERROR = "Can't remove table ${idx}_doclist: ".
+			               mysql_error($linkid);
+			return;
+		}
+		if(!mysql_query("DROP TABLE IF EXISTS ${idx}_vectorlist", $linkid)) {
+			$this->ERROR = "Can't remove table ${idx}_vectorlist: ".
+			               mysql_error($linkid);
+			return;
+		}
+		if(!mysql_query("DROP TABLE IF EXISTS ${idx}_stoplist", $linkid)) {
+			$this->ERROR = "Can't remove table ${idx}_stoplist: ".
+			               mysql_error($linkid);
+			return;
+		}
+		
+		return 1;
+	}
+
+	function empty_index() {
+		return $this->remove_index() && $this->_create_index();
+	}
+
+	# number of documents in the collection
+	function document_count() {
+		$linkid = $this->linkid;
+    	$idx = $this->index_name;
+	    
+   		if (!($res = mysql_query("SELECT COUNT(*) FROM ${idx}_doclist", 
+   		                         $linkid))) return;
+   		$row = mysql_fetch_row($res);
+   		return $row[0];
+	}
+
+	# number of unique words 
+	function word_count() {
+		$linkid = $this->linkid;
+		$idx = $this->index_name;
+	    
+		if (!($res = mysql_query("SELECT COUNT(*) FROM ${idx}_wordlist", 
+		                         $linkid))) return;
+		$row = mysql_fetch_row($res);
+		return $row[0];
+	}
+
+
+	# PRIVATE METHODS
+	#################
+
+	function &_split_to_words($str) {
+		preg_match_all("/\b(\w[\w']*\w+|\w+)\b/", $str, $matches);
+		return $matches[1];
+	}
+
+	function _create_index() {
+		$linkid = $this->linkid;
+    	$idx = $this->index_name;
+
+		$stmt = '';
+
+		# drop previous tables, if they exist
+		if (!$this->remove_index()) return;
+
+		# create doclist table
+		$stmt = "CREATE TABLE ${idx}_doclist " . 
+		        '(id ' . $this->_int_column_type($this->doclist_cardinality).
+		        ' AUTO_INCREMENT PRIMARY KEY, ' .
+		        ' n ' . $this->_int_column_type($this->wordlist_cardinality).
+		        ' NOT NULL'.
+		        ')';
+		if (!mysql_query($stmt, $linkid))
+			die("KwIndex: Can't create table ${idx}_doclist: ".
+			    mysql_error($linkid));
+		
+		# create wordlist table
+		$stmt = "CREATE TABLE ${idx}_wordlist " . 
+		        '(id ' . $this->_int_column_type($this->wordlist_cardinality) .
+		        ' AUTO_INCREMENT PRIMARY KEY, ' .
+		        " word VARCHAR($this->max_word_length)" .
+		        ' BINARY NOT NULL, ' .
+		        "UNIQUE (word) " .
+		        ')';
+		if(!mysql_query($stmt, $linkid))
+			die("KwIndex: Can't create table ${idx}_wordlist: ".
+			    mysql_error($linkid));
+
+		# create stoplist table
+		$stmt = "CREATE TABLE ${idx}_stoplist " .
+		        '(id ' . $this->_int_column_type($this->wordlist_cardinality).
+		        ' AUTO_INCREMENT PRIMARY KEY, ' .
+		        " word VARCHAR($this->max_word_length)" .
+		        ' BINARY NOT NULL, ' .
+		        "UNIQUE (word) " .
+		        ')';
+		if (!mysql_query($stmt, $linkid)) 
+			die("KwIndex: Can't create table ${idx}_stoplist: ".
+			    mysql_error($linkid));
+
+		# create vectorlist table
+		$stmt = "CREATE TABLE ${idx}_vectorlist " .
+		        '(wid '. $this->_int_column_type($this->wordlist_cardinality). 
+		        ' NOT NULL, ' .
+		        'did '. $this->_int_column_type($this->doclist_cardinality). 
+		        ' NOT NULL, '.
+		        'UNIQUE (wid,did), '.
+		        'f FLOAT(10,4) NOT NULL'.
+		        ')';
+		if (!mysql_query($stmt, $linkid)) {
+			die("KwIndex: Can't create table ${idx}_stoplist: ".
+			    mysql_error($linkid));
+    	}
+    	
+		$this->stoplist = array();
+
+		return 1;
+	}
+
+	function _int_column_type($cardinality) {
+		if ($cardinality >= 16*1024*1024) return 'INT UNSIGNED';
+		if ($cardinality >= 64*1024) return 'MEDIUMINT UNSIGNED';
+		if ($cardinality >= 256) return 'SMALLINT UNSIGNED';
+		return 'TINYINT UNSIGNED';
+	}
+
+	function &_index_tables() {
+		$idx = $this->index_name;
+
+		$tables = array(
+			"${idx}_doclist",
+			"${idx}_wordlist",
+			"${idx}_vectorlist",
+			"${idx}_stoplist");
+
+		return $tables;
+	}
+
+	function _index_exists() {
+		$linkid = $this->linkid;
+    	$idx = $this->index_name;
+
+		if (!($res = mysql_list_tables($this->db_name, $linkid)))
+			die("Can't list table: ".mysql_error($linkid));
+		
+		$existing_tables = array();
+		$i = 0;
+		while ($i < mysql_num_rows($res)) {
+			$existing_tables[ mysql_tablename($res, $i) ] = 1;
+			$i++;
+		}
+
+		$index_tables = $this->_index_tables();
+		while(list($k,$v) = each($index_tables)) {
+			if (!isset($existing_tables[$v])) return 0;
+		}
+		
+		return 1;
+	}
+
+} // class
+
+*/
 
 //
 // Massive overhaul for phpBB2, originally based on search code
@@ -279,6 +1081,15 @@ init_userprefs($userdata);
 //
 // Define initial vars
 //
+if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+{
+	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+}
+else
+{
+	$mode = "";
+}
+
 if( isset($HTTP_POST_VARS['search_keywords']) || isset($HTTP_GET_VARS['search_keywords']) )
 {
 	$query_keywords = ( isset($HTTP_POST_VARS['search_keywords']) ) ? $HTTP_POST_VARS['search_keywords'] : $HTTP_GET_VARS['search_keywords'];
@@ -649,7 +1460,7 @@ if( $query_keywords != "" || $query_author != "" || $search_id )
 		}
 		else
 		{
-			header("Location: " . append_sid("search.$phpEx"));
+			header("Location: " . append_sid("search.$phpEx", true));
 		}
 	}
 

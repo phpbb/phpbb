@@ -55,7 +55,8 @@
 	  {LOGGED_IN_USER_LIST}</span></td>
   </tr>
 </table>
-<!-- BEGIN loginbox -->
+
+<!-- BEGIN user_logged_out -->
 <form method="post" action="{S_LOGIN_ACTION}">
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
@@ -69,13 +70,13 @@
 		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
 		<input class="text" type="checkbox" name="autologin" />
 		&nbsp;&nbsp;&nbsp; 
-		<input type="submit" class="mainoption" name="submit" value="{L_LOGIN}" />
+		<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" />
 		</span> </td>
 	</tr>
   </table>
 </form>
+<!-- END user_logged_out -->
 
-		<!-- END loginbox -->
 <br />&nbsp;
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 

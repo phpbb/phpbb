@@ -416,14 +416,13 @@ function session_end($session_id, $user_id)
 // around every single URL and form action. If you replace the session
 // code you must include this routine, even if it's empty.
 //
-function append_sid($url)
+function append_sid($url, $non_html_amp = false)
 {
 	global $SID;
 
 	if(!empty($SID) && !eregi("sid=", $url))
 	{
-//		$url = ereg_replace("[&?]+$", "", $url);
-		$url .= ( (strpos($url, "?") != false) ?  "&amp;" : "?" ) . $SID;
+		$url .= ( (strpos($url, "?") != false) ?  ( ( $non_html_amp ) ? "&" : "&amp;" ) : "?" ) . $SID;
 	}
 
 	return($url);

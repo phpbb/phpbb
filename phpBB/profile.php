@@ -416,7 +416,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		if( !$userdata['session_logged_in'] && $mode == "editprofile" )
 		{
-			header(append_sid("Location: login.$phpEx?forward_page=profile.$phpEx&mode=editprofile"));
+			header("Location: " . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
 
 		$page_title = ($mode == "editprofile") ? $lang['Edit_profile'] : $lang['Register'];

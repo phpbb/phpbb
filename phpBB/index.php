@@ -346,11 +346,6 @@ if($total_categories = $db->sql_numrows($q_categories))
 							$moderators_links .= ", ";
 						}
 
-						if( !($mod_count % 2) && $mod_count != 0 )
-						{
-							$moderators_links .= "<br />";
-						}
-
 						if( $forum_mods_single_user[$forum_id][$mods])
 						{
 							$moderators_links .= "<a href=\"" . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $forum_mods_id[$forum_id][$mods]) . "\">" . $forum_mods_name[$forum_id][$mods] . "</a>";

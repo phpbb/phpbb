@@ -55,7 +55,7 @@ $folder = ( !empty($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : ( 
 //
 if( $cancel )
 {
-	header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+	header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
 }
 
 //
@@ -120,7 +120,7 @@ if( $mode == "read" )
 
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id"));
+		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
 	if( $folder )
@@ -191,7 +191,7 @@ if( $mode == "read" )
 	//
 	if( !( $privmsg = $db->sql_fetchrow($pm_status) ) )
 	{
-		header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+		header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
 	}
 
 	$privmsg_id = $privmsg['privmsgs_id'];
@@ -510,7 +510,7 @@ else if( ( $delete && $mark_list ) || $delete_all )
 {
 	if(!$userdata['session_logged_in'])
 	{
-		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&amp;folder=inbox"));
+		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 
 	if( !$confirm )
@@ -652,7 +652,7 @@ else if( $save && $mark_list && $folder != "savebox" && $folder != "outbox")
 {
 	if( !$userdata['session_logged_in'] )
 	{
-		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=inbox"));
+		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 	}
 
 	//
@@ -740,7 +740,7 @@ else if( $submit || $refresh || $mode != "" )
 
 	if(!$userdata['session_logged_in'])
 	{
-		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&amp;folder=$folder&amp;mode=$mode"));
+		header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode", true));
 	}
 
 	if( $mode == "searchuser" )
@@ -1140,7 +1140,7 @@ else if( $submit || $refresh || $mode != "" )
 			}
 			if(!$db->sql_numrows($pm_edit_status))
 			{
-				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
 
 			$privmsg = $db->sql_fetchrow($pm_edit_status);
@@ -1174,7 +1174,7 @@ else if( $submit || $refresh || $mode != "" )
 			}
 			if( !$db->sql_numrows($pm_reply_status) )
 			{
-//				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder"));
+//				header("Location: " . append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
 			$privmsg = $db->sql_fetchrow($pm_reply_status);
 
@@ -1500,7 +1500,7 @@ else if( $submit || $refresh || $mode != "" )
 //
 if(!$userdata['session_logged_in'])
 {
-	header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&amp;folder=inbox"));
+	header("Location: " . append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=inbox", true));
 }
 
 $page_title = $lang['Private_Messaging'];

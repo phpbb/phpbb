@@ -34,11 +34,7 @@
 			  </span> </td>
 		  </tr>
 		  <tr align="center"> 
-			<td colspan="2"> 
-			  <input type="hidden" name="forward_page" value="{FORWARD_PAGE}" />
-			  <input type="hidden" name="login" value="login" />
-			  <input type="submit" name="submit" class="mainoption" value="{L_LOGIN}" />
-			</td>
+			<td colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" /></td>
 		  </tr>
 		  <tr align="center"> 
 			<td colspan="2"><span class="gensmall"><a href="{U_SEND_PASSWORD}" class="gensmall">{L_SEND_PASSWORD}</a></span></td>
