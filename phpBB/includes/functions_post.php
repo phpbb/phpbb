@@ -671,7 +671,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					while (list($user_lang, $bcc_list) = each($bcc_list_ary))
 					{
 						$emailer->use_template('topic_notify', $user_lang);
-						$emailer->email_address(' ');
+						$emailer->email_address(':;', 'Topic_reply_notification', $user_lang);
 						// The Topic_reply_notification lang string below will be used
 						// if for some reason the mail template subject cannot be read 
 						// ... note it will not necessarily be in the posters own language!

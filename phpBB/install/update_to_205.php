@@ -857,6 +857,16 @@ switch ($row['config_value'])
 			break;
 }
 
+echo "<h2>Updating version and optimizing tables</h2>\n";
+echo "<p>Progress :: <b>";
+flush();
+
+// update the version
+$sql = "UPDATE " . CONFIG_TABLE . "
+	SET config_value = '$updates_to_version'
+	WHERE config_name = 'version'";
+_sql($sql, $errored, $error_ary);
+
 // Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
 // the version number update
@@ -872,12 +882,6 @@ switch (SQL_LAYER)
 		_sql("VACUUM ANALYZE", $errored, $error_ary);
 		break;
 }
-
-// Very last thing, update the version
-$sql = "UPDATE " . CONFIG_TABLE . "
-	SET config_value = '$updates_to_version'
-	WHERE config_name = 'version'";
-_sql($sql, $errored, $error_ary);
 
 echo "</b> <b class=\"ok\">Done</b><br />Result &nbsp; :: \n";
 

@@ -57,9 +57,34 @@ class emailer
 	//
 	// Sets an email address to send to
 	//
-	function email_address($address)
+	function email_address($address, $lang_var = '', $template_lang = '')
 	{
+		global $board_config, $phpbb_root_path, $phpEx;
+
 		$this->address = '';
+
+		// If a language variable for non-disclosure is passed, we prepend it to the address.
+		if ($lang_var != '')
+		{
+			if ( $template_lang == '' )
+			{
+				$template_lang = $board_config['default_lang'];
+			}
+
+			$language_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $template_lang . '/lang_main.' . $phpEx);
+
+			if ( !@file_exists(@phpbb_realpath($language_file)) )
+			{
+				$language_file = @phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
+			}
+			
+			if ( @file_exists(@phpbb_realpath($language_file)) )
+			{
+				include($language_file);
+				$this->address .= $lang[$lang_var];
+			}
+		}
+
 		$this->address .= $address;
 	}
 
