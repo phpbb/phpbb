@@ -120,7 +120,22 @@ switch ($action)
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_NAME']; ?>:</td>
-		<td class="row1"><input type="text" name="group_name" value="<?php echo (!empty($group_name)) ? $group_name : ''; ?>" size="40" maxlength="40" /></td>
+		<td class="row1"><?php 
+	
+	if ($group_type != GROUP_SPECIAL)
+	{
+		
+?><input type="text" name="group_name" value="<?php echo (!empty($group_name)) ? $group_name : ''; ?>" size="40" maxlength="40" /><?php
+	
+	}
+	else
+	{
+		
+?><b><?php echo (!empty($user->lang['G_' . $group_name])) ? $user->lang['G_' . $group_name] : $group_name; ?></b><?php
+	
+	}
+	
+?></td>
 	</tr>
 	<tr>
 		<td class="row2"><?php echo $user->lang['GROUP_DESC']; ?>:</td>
@@ -291,7 +306,7 @@ switch ($action)
 				$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
 
 				$group_id = $row['group_id'];
-				$group_name = (!empty($user->lang[$row['group_name']]))? $user->lang[$row['group_name']] : $row['group_name'];
+				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 
 ?>
 	<tr>
