@@ -118,6 +118,7 @@ if( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not query categories list', '', __LINE__, __FILE__, $sql);
 }
 
+$category_rows = array();
 while( $category_rows[] = $db->sql_fetchrow($result) );
 $db->sql_freeresult($result);
 

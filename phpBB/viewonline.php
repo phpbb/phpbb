@@ -46,7 +46,7 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx);
 
 $template->assign_vars(array(
-	'L_WHOSONLINE' => $lang['Who_is_online'],
+	'L_WHOSONLINE' => $lang['Who_is_Online'],
 	'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
 	'L_USERNAME' => $lang['Username'],
 	'L_FORUM_LOCATION' => $lang['Forum_Location'],

@@ -41,6 +41,7 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not obtain ranks information', '', __LINE__, __FILE__, $sql);
 }
 
+$ranksrow = array();
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$ranksrow[] = $row;

@@ -841,10 +841,17 @@ switch( $mode )
 					'S_FORUM_SELECT' => make_forum_select("new_forum_id", false, $forum_id))
 				);
 
+				//
+				// Define censored word matches
+				//
+				$orig_word = array();
+				$replacement_word = array();
+				obtain_word_list($orig_word, $replacement_word);
+
 				for($i = 0; $i < $total_posts; $i++)
 				{
 					$post_id = $postrow[$i]['post_id'];
-					$poster_id = $postrow[$i]['user_id'];
+					$poster_id = $postrow[$i]['poster_id'];
 					$poster = $postrow[$i]['username'];
 
 					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
@@ -869,13 +876,6 @@ switch( $mode )
 					{
 						$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
-
-					//
-					// Define censored word matches
-					//
-					$orig_word = array();
-					$replacement_word = array();
-					obtain_word_list($orig_word, $replacement_word);
 
 					if ( count($orig_word) )
 					{

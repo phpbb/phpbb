@@ -100,7 +100,7 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	'body' => 'faq_body.tpl')
 );
-make_jumpbox('viewforum.'.$phpEx, $forum_id);
+make_jumpbox('viewforum.'.$phpEx);
 
 $template->assign_vars(array(
 	'L_FAQ_TITLE' => $l_title, 

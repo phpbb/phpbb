@@ -769,7 +769,7 @@ function generate_smilies($mode, $page_id)
 
 		$gen_simple_header = TRUE;
 
-		$page_title = $lang['Review_topic'] . " - $topic_title";
+		$page_title = $lang['Emoticons'] . " - $topic_title";
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(

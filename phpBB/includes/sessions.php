@@ -47,6 +47,12 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 
+	//
+	if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) 
+	{
+		$session_id = '';
+	}
+
 	$last_visit = 0;
 	$current_time = time();
 	$expiry_time = $current_time - $board_config['session_length'];
@@ -217,6 +223,12 @@ function session_pagestart($user_ip, $thispage_id)
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 
+	// 
+	if (!preg_match('/^[A-Za-z0-9]*$/', $session_id))
+	{
+		$session_id = '';
+	}
+
 	//
 	// Does a session exist?
 	//
@@ -345,6 +357,11 @@ function session_end($session_id, $user_id)
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 
+	if (!preg_match('/^[A-Za-z0-9]*$/', $session_id))
+	{
+		return;
+	}
+	
 	//
 	// Delete existing session
 	//

@@ -425,7 +425,7 @@ else if ( $group_id )
 			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
 				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
 				WHERE g.group_id = $group_id
-					AND aa.group_id = g.group_id(+)";
+					AND aa.group_id (+) = g.group_id";
 			break;
 
 		default:
@@ -1149,6 +1149,8 @@ else
 	// Select all group that the user is a member of or where the user has
 	// a pending membership.
 	//
+	$in_group = array();
+	
 	if ( $userdata['session_logged_in'] ) 
 	{
 		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 

@@ -43,22 +43,32 @@ $ini_val = (@phpversion() >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
 // Unset globally registered vars - PHP5 ... hhmmm
 if (@$ini_val('register_globals') == '1' || strtolower(@$ini_val('register_globals')) == 'on')
 {
-	$var_prefix = (phpversion() >= '4.3.0') ? '' : 'HTTP';
-	$var_suffix = (phpversion() >= '4.3.0') ? '' : '_VARS';
+	$var_prefix = 'HTTP';
+	$var_suffix = '_VARS';
+	
+	$test = array('_GET', '_POST', '_SERVER', '_COOKIE', '_ENV');
 
-	if(is_array(${$var_prefix . '_GET' . $var_suffix}))
+	foreach ($test as $var)
 	{
-		unset_vars(${$var_prefix . '_GET' . $var_suffix});
+		if (is_array(${$var_prefix . $var . $var_suffix}))
+		{
+			unset_vars(${$var_prefix . $var . $var_suffix});
+		}
+
+		if (is_array(${$var}))
+		{
+			unset_vars(${$var});
+		}
 	}
 
-	if(is_array(${$var_prefix . '_POST' . $var_suffix}))
+	if (is_array(${'_FILES'}))
 	{
-		unset_vars(${$var_prefix . '_POST' . $var_suffix});
+		unset_vars(${'_FILES'});
 	}
 
-	if(is_array(${$var_prefix . '_COOKIE' . $var_suffix}))
+	if (is_array(${'HTTP_POST_FILES'}))
 	{
-		unset_vars(${$var_prefix . '_COOKIE' . $var_suffix});
+		unset_vars(${'HTTP_POST_FILES'});
 	}
 }
 

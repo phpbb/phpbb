@@ -493,7 +493,7 @@ else if ( $mode == 'read' )
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-	$temp_url = append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$poster_id");
+	$temp_url = append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id_from");
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
@@ -1042,7 +1042,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 				$saved_sql .= " SET privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " 
 					WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
 						AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-							OR privmsgs_type = " . PRIVMSGS_UNERAD_MAIL . " ) ";
+							OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) ";
 				break;
 
 			case 'sentbox':
@@ -1852,7 +1852,7 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // New message
 //
-$post_new_mesg_url = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['post_new'] . '" alt="' . $lang['Post_new_message'] . '" border="0" /></a>';
+$post_new_mesg_url = '<a href="' . append_sid("privmsg.$phpEx?mode=post") . '"><img src="' . $images['post_new'] . '" alt="' . $lang['Send_a_new_message'] . '" border="0" /></a>';
 
 //
 // General SQL to obtain messages
@@ -1932,8 +1932,8 @@ if ( $submit_msgdays && ( !empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET
 }
 else
 {
-	$limit_msg_time = '';
-	$post_days = 0;
+	$limit_msg_time = $limit_msg_time_total = '';
+	$msg_days = 0;
 }
 
 $sql .= $limit_msg_time . " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
@@ -2063,7 +2063,7 @@ $template->assign_vars(array(
 	'S_POST_NEW_MSG' => $post_new_mesg_url,
 	'S_SELECT_MSG_DAYS' => $select_msg_days,
 
-	'U_POST_NEW_TOPIC' => $post_new_topic_url)
+	'U_POST_NEW_TOPIC' => append_sid("privmsg.$phpEx?mode=post"))
 );
 
 //
