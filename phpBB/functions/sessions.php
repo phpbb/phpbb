@@ -6,11 +6,10 @@
  *   copyright            : (C) 2001 The phpBB Group        
  *   email                : support@phpbb.com                           
  *                                                          
- *   $Id$                                                           
+ *   $Id$
  *                                                            
  * 
  ***************************************************************************/ 
-
 
 /***************************************************************************  
  *                                                     
@@ -22,119 +21,339 @@
  * 
  ***************************************************************************/ 
 
-
-/**
- * new_session()
- * Adds a new session to the database for the given userid.
- * Returns the new session ID.
- * Also deletes all expired sessions from the database, based on the given session lifespan.
- */
-function new_session($userid, $remote_ip, $lifespan, $db) 
-{
-   
-   mt_srand( (double) microtime() * 1000000);
-   $sessid = mt_rand();
-   
-   $currtime = (string) (time());
-   $expirytime = (string) (time() - $lifespan);
-   
-   $deleteSQL = "DELETE FROM ".SESSIONS_TABLE." WHERE (start_time < $expirytime)";
-   $delresult = $db->sql_query($deleteSQL);
-   
-   if (!$delresult) 
-     {
-	error_die($db, SESSION_CREATE);
-     }
-   
-   $sql = "INSERT INTO ".SESSIONS_TABLE." (sess_id, user_id, start_time, remote_ip) VALUES ($sessid, $userid, $currtime, '$remote_ip')";
-   
-   $result = $db->sql_query($sql);
-   
-   if ($result) 
-     {
-	return $sessid;
-     } 
-   else 
-     {
-	error_die($db, SESSION_CREATE);
-     } // if/else
-   
-} // new_session()
-
-/*
- * Sets the sessID cookie for the given session ID. the $cookietime parameter
- * is no longer used, but just hasn't been removed yet. It'll break all the modules
- * (just login) that call this code when it gets removed.
- * Sets a cookie with no specified expiry time. This makes the cookie last until the
- * user's browser is closed. (at last that's the case in IE5 and NS4.7.. Haven't tried
- * it with anything else.)
- */
-function set_session_cookie($sessid, $cookietime, $cookiename, $cookiepath, $cookiedomain, $cookiesecure) 
-{
-   // This sets a cookie that will persist until the user closes their browser window.
-   // since session expiry is handled on the server-side, cookie expiry time isn't a big deal.
-   setcookie($cookiename, $sessid, '', $cookiepath, $cookiedomain, $cookiesecure);
-
-} // set_session_cookie()
-
-/*
- * Returns the userID associated with the given session, based on
- * the given session lifespan $cookietime and the given remote IP
- * address. If no match found, returns 0.
- */
-function get_userid_from_session($sessid, $cookietime, $remote_ip, $db) 
-{
-   $mintime = time() - $cookietime;
-	$sql = "SELECT user_id 
-			FROM ".SESSIONS_TABLE." 
-			WHERE (sess_id = $sessid)
-			AND (start_time > $mintime) 
-			AND (remote_ip = '$remote_ip')";
-   $result = $db->sql_query($sql);
-   if (!$result) 
-     {
-	error_die($db, "Error doing DB query in get_userid_from_session()");
-     }
-   $rowset = $db->sql_fetchrowset();
-   $num_rows = $db->sql_numrows();
-   if ($num_rows == 0) 
-     {
-	return 0;
-     } 
-   else 
-     {
-	return $rowset[0]["user_id"];
-     }
-   
-} // get_userid_from_session()
-
-
-function update_session_time($sessid, $db) 
+//
+// session_begin()
+//
+// Adds/updates a new session to the database for the given userid.
+// Returns the new session ID on success.
+//
+function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $password = "") 
 {
 
-   $newtime = (string) time();
-   $sql = "UPDATE ".SESSIONS_TABLE." SET start_time=$newtime WHERE (sess_id = $sessid)";
-   $result = $db->sql_query($sql);
-   if (!$result) 
-     {
-	$db_error = $db->sql_error();
-	error_die($db, "Error doing DB update in update_session_time(). Reason: " . $db_error["message"]);
-     }
-   return 1;
+	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $HTTP_COOKIE_VARS;
 
-} // update_session_time()
+	$current_time = time();
+	$expiry_time = $current_time - $session_length;
+	$int_ip = encode_ip($user_ip);
 
-function end_user_session($userid, $db) 
+	if($user_id == ANONYMOUS)
+	{
+		$login = 0;
+	}
+	
+	$sql = "UPDATE ".SESSIONS_TABLE."
+		SET session_user_id = $user_id, session_time = $current_time, session_logged_in = $login
+		WHERE (session_id = ".$HTTP_COOKIE_VARS[$cookiename]['sessionid'].")
+			AND (session_ip = $int_ip)";
+	$result = $db->sql_query($sql);
+	if(!$result || !$db->sql_affectedrows())
+	{
+		mt_srand( (double) microtime() * 1000000);
+		$session_id = mt_rand();
+	
+		$sql = "INSERT INTO ".SESSIONS_TABLE."
+				(session_id, session_user_id, session_time, session_ip, session_logged_in)
+				VALUES
+				($session_id, $user_id, $current_time, $int_ip, $login)";
+		$result = $db->sql_query($sql);
+		if(!$result)
+		{
+			if(DEBUG)
+			{
+				error_die($db, GENERAL_ERROR, "Error creating new session : session_pagestart");
+			}
+			else
+			{
+				error_die($db, SESSION_CREATE);
+			}
+		}
+
+		setcookie($cookiename."[sessionid]", $session_id, $session_length);
+	}
+	else
+	{
+		$session_id = $HTTP_COOKIE_VARS[$cookiename]['sessionid'];
+	}
+
+	if(!empty($password) && AUTOLOGON)
+	{
+		setcookie($cookiename."[useridref]", $password, $cookielife);
+	}
+	setcookie($cookiename."[userid]", $user_id, $cookielife);
+	setcookie($cookiename."[sessionstart]", $current_time, $cookielife);
+	setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+
+	return $session_id;
+   
+} // session_begin
+
+
+//
+// Checks for a given user session, tidies session
+// table and updates user sessions at each page refresh
+//
+function session_pagestart($db, $user_ip, $session_length)
 {
-   $sql = "DELETE FROM ".SESSIONS_TABLE." WHERE (user_id = $userid)";
-   $result = $db->sql_query($sql, $db);
-   if (!$result) 
-     {
-	$db_error = $db->sql_error();
-	error_die($db, "Delete failed in end_user_session(). Reason: " . $db_error["message"]);
-     }
-   return 1;
 
-} // end_session()
+	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+	global $HTTP_COOKIE_VARS;
+
+	unset($userdata);
+
+	$current_time = time();
+
+	//
+	// Delete expired sessions
+	//
+	$expiry_time = $current_time - $session_length;
+	$sql = "DELETE FROM ".SESSIONS_TABLE."
+		WHERE session_time < $expiry_time";
+	$result = $db->sql_query($sql);
+	if(!$result)
+	{
+		if(DEBUG)
+		{
+			error_die($db, GENERAL_ERROR, "Error clearing sessions table : session_pagestart");
+		}
+		else
+		{
+			error_die($db, SESSION_CREATE);
+		}
+	}
+	
+	if(isset($HTTP_COOKIE_VARS[$cookiename]['userid'])) 
+	{
+		//
+		// userid exists so go ahead and grab all
+		// data in preparation
+		//
+		$userid = $HTTP_COOKIE_VARS[$cookiename]['userid'];
+		$int_ip = encode_ip($user_ip);
+		$sql = "SELECT u.*, s.session_id, s.session_time, s.session_logged_in, b.ban_ip, b.ban_userid
+			FROM ".USERS_TABLE." u
+			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = $int_ip OR b.ban_userid = u.user_id)
+				AND ( b.ban_start < $current_time AND b.ban_end > $current_time ) )
+			LEFT JOIN ".SESSIONS_TABLE." s ON ( u.user_id = s.session_user_id  AND s.session_ip = $int_ip )
+			WHERE u.user_id = $userid";
+		$result = $db->sql_query($sql);
+		if (!$result) 
+		{
+			if(DEBUG)
+			{
+				error_die($db, GENERAL_ERROR, "Error doing DB query userdata row fetch : session_pagestart");
+			}
+			else
+			{
+				error_die($db, SESSION_CREATE);
+			}
+		}
+		$userdata = $db->sql_fetchrow($result);
+
+		//
+		// Check for user and ip ban ...
+		// 
+		if($userdata['ban_ip'] || $userdata['ban_userid'])
+		{
+			error_die($db, BANNED);
+		}
+	
+		//
+		// Now, check to see if a session exists.
+		// If it does then update it, if it doesn't
+		// then create one.
+		//
+		if(isset($HTTP_COOKIE_VARS[$cookiename]['sessionid'])) 
+		{
+
+			//
+			// Is the id the same as that in the cookie?
+			// If it is then we see if it needs updating
+			//
+			if($HTTP_COOKIE_VARS[$cookiename]['sessionid'] == $userdata['session_id'])
+			{
+
+				//
+				// Only update session DB a minute or so after last update
+				//
+				if($current_time - $userdata['session_time'] > 60)
+				{
+
+					$ip = encode_ip($user_ip);
+					$sql = "UPDATE ".SESSIONS_TABLE."
+						SET session_time = '$current_time'
+						WHERE (session_id = ".$userdata['session_id'].")
+							AND (session_ip = $ip)
+							AND (session_user_id = ".$userdata['user_id'].")";
+					$result = $db->sql_query($sql);
+					if(!$result)
+					{
+						if(DEBUG)
+						{
+							error_die($db, GENERAL_ERROR, "Error updating sessions table : session_pagestart");
+						}
+						else
+						{
+							error_die($db, SESSION_CREATE);
+						}
+					}
+					else
+					{
+						//
+						// Update was success, send current time to cookie
+						// and return userdata
+						//
+						setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+
+						return $userdata;
+					} // if (affectedrows)
+
+				} // if (current_time)
+
+				//
+				// We didn't need to update session
+				// so just return userdata
+				//
+				return $userdata;
+
+			} // if (cookie session_id = DB session id)
+
+		} // if session_id cookie set
+			
+		//
+		// If we reach here then we have a valid
+		// user_id set in the cookie but no
+		// active session. So, try and create
+		// new session (uses AUTOLOGON to determine
+		// if user should be logged back on automatically)
+		//
+		if(AUTOLOGON && isset($HTTP_COOKIE_VARS[$cookiename]['useridref']))
+		{
+			if($HTTP_COOKIE_VARS[$cookiename]['useridref'] == $userdata['user_password'])
+			{
+				$autologon = 1;
+				$password = $userdata['user_password'];
+				$userdata['session_logged_in'] = 1;
+			}
+			else
+			{
+				$autologon = 0;
+				$password = "";
+				$userdata['session_logged_in'] = 0;
+			}
+		}
+		else
+		{
+			$autologon = 0;
+			$password = "";
+			$userdata['session_logged_in'] = 0;
+		}
+		$result = session_begin($db, $userdata['user_id'], $user_ip, $session_length, $autologon, $password);
+		if(!$result)
+		{
+			if(DEBUG)
+			{
+				error_die($db, GENERAL_ERROR, "Error creating ".$userdata['user_id']." session : session_pagestart");
+			}
+			else
+			{
+				error_die($db, SESSION_CREATE);
+			}
+		}
+
+	}
+	else
+	{
+
+		//
+		// No userid cookie exists so we'll
+		// check for an IP ban and set up
+		// a new anonymous session
+		//
+		$int_ip = encode_ip($user_ip);
+		$sql = "SELECT ban_ip
+			FROM ".BANLIST_TABLE."
+			WHERE ban_ip = $int_ip";
+		$result = $db->sql_query($sql);
+		if (!$result) 
+		{
+			if(DEBUG)
+			{
+				error_die($db, GENERAL_ERROR, "Error doing DB query non-userid ban_ip row fetch : session_pagestart");
+			}
+			else
+			{
+				error_die($db, SESSION_CREATE);
+			}
+		}
+		$banned_ip = $db->sql_fetchrow($result);
+
+		//
+		// Check for user and ip ban ...
+		// 
+		if($banned_ip['ban_ip'])
+		{
+			error_die($db, BANNED);
+		}
+		else
+		{
+
+			$result = session_begin($db, ANONYMOUS, $user_ip, $session_length);
+			if(!$result)
+			{
+				if(DEBUG)
+				{
+					error_die($db, GENERAL_ERROR, "Error creating anonymous session : session_pagestart");
+				}
+				else
+				{
+					error_die($db, SESSION_CREATE);
+				}
+			}
+			$userdata['session_logged_in'] = 0;
+
+		}
+
+	}
+
+	return $userdata;
+
+} // session_check()
+
+//
+// session_end closes out a session
+// deleting the corresponding entry
+// in the sessions table
+//
+function session_end($db, $session_id, $user_id) 
+{
+
+	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
+
+	$current_time = time();
+
+	$sql = "DELETE FROM ".SESSIONS_TABLE."
+		WHERE (session_user_id = $user_id)
+			AND (session_id = $session_id)";
+	$result = $db->sql_query($sql, $db);
+	if (!$result) 
+	{
+		if(DEBUG)
+		{
+			$db_error = $db->sql_error();
+			error_die($db, "Delete failed in end_user_session(). Reason: " . $db_error["message"]);
+		}
+		else
+		{
+			error_die($db, SESSION_CREATE);
+		}
+	}
+
+	setcookie($cookiename."[sessionid]", "");
+	setcookie($cookiename."[sessionend]", $current_time, $cookielife);
+
+	return true;
+
+} // session_end()
 
 ?>
