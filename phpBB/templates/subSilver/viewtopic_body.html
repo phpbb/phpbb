@@ -105,14 +105,28 @@
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
-			<!-- IF postrow.S_POST_REPORTED -->
-			<tr>
-				<td colspan="2" class="gen"><a href="{postrow.U_MCP_REPORT}">{L_POST_BEEN_REPORTED}</a></td>
-			</tr>
+			<!-- IF postrow.S_POST_UNAPPROVED -->
+			<tr><td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr align="left" valign="middle">
+					<td><a href="{postrow.U_MCP_POST_DETAILS}">{UNAPPROVED_IMG}</a></td>
+					<td class="gensmall" width="100%">&nbsp;{L_POST_NOT_BEEN_APPROVED}&nbsp;<a href="{postrow.U_MCP_APPROVE}">{L_APPROVE_POST}</a></td>
+				</tr>
+			</table></td></tr>
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
-			<!-- ENDIF -->			
+			<!-- ENDIF -->
+			<!-- IF postrow.S_POST_REPORTED -->
+			<tr><td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr align="left" valign="middle">
+					<td><a href="{postrow.U_MCP_REPORT}">{REPORTED_IMG}</a></td>
+					<td class="gensmall" width="100%">&nbsp;<a href="{postrow.U_MCP_REPORT}">{L_POST_BEEN_REPORTED}</a></td>
+				</tr>
+			</table></td></tr>
+			<tr>
+				<td colspan="2"><hr /></td>
+			</tr>
+			<!-- ENDIF -->
 			<tr>
 				<td><span class="postbody">{postrow.MESSAGE}{postrow.SIGNATURE}</span><span class="gensmall">{postrow.EDITED_MESSAGE}</span></td>
 			</tr>
@@ -175,7 +189,6 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td align="left"><!-- IF S_SHOW_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
 		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>

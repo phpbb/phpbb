@@ -230,6 +230,9 @@ if ($forum_data['forum_postable'])
 		'FOLDER_ANNOUNCE_IMG' 	=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
 		'FOLDER_ANNOUNCE_NEW_IMG'=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
 
+		'REPORTED_IMG'			=> $user->img('item_reported', 'TOPIC_BEEN_REPORTED'),
+		'UNAPPROVED_IMG'		=> $user->img('item_unapproved', 'TOPIC_NOT_BEEN_APPROVED'),
+
 		'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
 		'S_IS_POSTABLE'		=>	TRUE,
@@ -284,7 +287,7 @@ if ($forum_data['forum_postable'])
 			LEFT JOIN ' . LASTREAD_TABLE . ' lr ON lr.topic_id = t.topic_id
 				AND lr.user_id = ' . $user->data['user_id'] . ")
 			WHERE t.forum_id = $forum_id 
-				AND t.topic_approved = 1 
+				" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 				AND t.topic_type <> " . POST_ANNOUNCE . " 
 				$limit_topics_time
 			ORDER BY t.topic_type DESC, $sort_order_sql
@@ -488,6 +491,7 @@ if ($forum_data['forum_postable'])
 				'S_USER_POSTED'			=> ($row['lastread_type'] == LASTREAD_POSTED) ? true : false, 
 
 				'S_TOPIC_REPORTED' => (!empty($row['topic_reported']) && $auth->acl_gets('m_', 'a_', $forum_id)) ? TRUE : FALSE,
+				'S_TOPIC_UNAPPROVED'	=> (!$row['topic_approved'] && $auth->acl_gets('m_approve', 'a_', $forum_id)) ? TRUE : FALSE,
 
 				'U_VIEW_TOPIC'	=> $view_topic_url)
 			);

@@ -51,6 +51,9 @@ if (empty($topic_id) && empty($post_id))
 // Start session management
 $user->start();
 
+// Configure style, language, etc.
+$user->setup(false, $forum_style);
+$auth->acl($user->data);
 
 // Find topic id if user requested a newer or older topic
 if (isset($_GET['view']) && empty($post_id))
@@ -64,7 +67,7 @@ if (isset($_GET['view']) && empty($post_id))
 				WHERE s.session_id = '$user->session_id'
 					AND u.user_id = s.session_user_id 
 					AND p.topic_id = $topic_id 
-					AND p.post_approved = 1 
+					" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1') . " 
 					AND p.post_time >= u.user_lastvisit
 				ORDER BY p.post_time ASC";
 			$result = $db->sql_query_limit($sql, 1);
@@ -113,7 +116,21 @@ if (isset($_GET['view']) && empty($post_id))
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 $join_sql_table = (!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
-$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = " . TRUE . " AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = " . TRUE . " AND p2.post_id <= $post_id";
+if (!$post_id)
+{
+	$join_sql = "t.topic_id = $topic_id";
+}
+else
+{
+	if ($auth->acl_gets('m_approve', 'a_', $forum_id))
+	{
+		$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
+	}
+	else
+	{
+		$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = 1 AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = 1 AND p2.post_id <= $post_id";
+	}
+}
 $extra_fields = (!$post_id)  ? '' : ", COUNT(p2.post_id) AS prev_posts";
 $order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style ORDER BY p.post_id ASC";
 
@@ -151,11 +168,6 @@ if (!$topic_data = $db->sql_fetchrow($result))
 	trigger_error('NO_TOPIC');
 }
 extract($topic_data);
-
-
-// Configure style, language, etc.
-$user->setup(false, $forum_style);
-$auth->acl($user->data);
 
 
 // Start auth check
@@ -204,7 +216,7 @@ if ($sort_days)
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-			AND post_approved = 1";
+		" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	$result = $db->sql_query($sql);
 
 	$start = 0;
@@ -340,6 +352,9 @@ $template->assign_vars(array(
 	'POST_IMG' 	=> $post_img,
 	'REPLY_IMG' => $reply_img,
 
+	'REPORTED_IMG'		=> $user->img('item_reported', 'POST_BEEN_REPORTED'),
+	'UNAPPROVED_IMG'	=> $user->img('item_unapproved', 'POST_NOT_BEEN_APPROVED'),
+
 	'S_TOPIC_LINK' 			=> 't',
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
@@ -442,7 +457,7 @@ $i = 0;
 $sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_karma, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, u.user_avatar_type, p.*
 	FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 	WHERE p.topic_id = $topic_id
-		AND p.post_approved = " . TRUE . "
+		" . (($auth->acl_gets('m_approve', 'a_', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
 		$limit_posts_time
 		AND u.user_id = p.poster_id
 	ORDER BY $sort_order";
@@ -852,7 +867,9 @@ if ($row = $db->sql_fetchrow($result))
 			'L_MINI_POST_ALT'	=> $mini_post_alt,
 
 			'S_ROW_COUNT'	=> $i++,
-			'S_POST_APPROVED' => (!empty($row['post_approved'])) ? TRUE : FALSE,
+
+			'S_POST_UNAPPROVED'	=> (!empty($row['post_approved'])) ? TRUE : FALSE,
+			'U_MCP_APPROVE'		=> "mcp.$phpEx$SID&amp;mode=approve&amp;p=" . $row['post_id'],
 
 			'U_MINI_POST'	=> $mini_post_url,
 			'U_POST_ID' 	=> $u_post_id

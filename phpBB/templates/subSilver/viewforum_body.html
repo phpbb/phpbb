@@ -53,7 +53,18 @@
 		<!-- IF S_TOPIC_ICONS -->
 		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_ICON_IMG}</td>
 		<!-- ENDIF -->
-		<td class="row1" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
+		<td class="row1" width="100%">
+			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_TOPIC_REPORTED -->
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr align="left" valign="middle" class="topictitle">
+					<td><!-- IF topicrow.S_TOPIC_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;<!-- ENDIF --></td>
+					<td width="100%">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</td>
+				</tr>
+			</table>
+			<!-- ELSE -->
+			<span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span>
+			<!-- ENDIF -->
+		</td>
 		<td class="row2" align="center" valign="middle"><span class="name">{topicrow.TOPIC_AUTHOR}</span></td>
 		<td class="row1" align="center" valign="middle"><span class="postdetails">{topicrow.REPLIES}</span></td>
 		<td class="row2" align="center" valign="middle"><span class="postdetails">{topicrow.VIEWS}</span></td>
@@ -130,7 +141,6 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td align="left"><!-- IF S_SHOW_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
 		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>
