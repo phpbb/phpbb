@@ -105,7 +105,7 @@ function prepare_bbcode_template($bbcode_tpl)
 	$bbcode_tpl['url3'] = str_replace('{DESCRIPTION}', '\\6', $bbcode_tpl['url3']);
 
 	$bbcode_tpl['url4'] = str_replace('{URL}', 'http://\\1', $bbcode_tpl['url']);
-	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\6', $bbcode_tpl['url4']);
+	$bbcode_tpl['url4'] = str_replace('{DESCRIPTION}', '\\5', $bbcode_tpl['url4']);
 
 	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
 
@@ -210,7 +210,7 @@ function bbencode_second_pass($text, $uid)
 	$replacements[] = $bbcode_tpl['url3'];
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[] = "#\[url=((www|ftp)\.([\w\-]+\.)*?[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)\](.*?)\[/url\]#si";
+	$patterns[] = "#\[url=(([\w\-]+\.)*?[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)\](.*?)\[/url\]#si";
 	$replacements[] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
