@@ -28,26 +28,29 @@ function get_db_stat($mode)
 
 	switch($mode){
 		case 'postcount':
-			$sql = 'SELECT count(*) AS total FROM '.POSTS_TABLE;
+			$sql = "SELECT count(*) AS total 
+				FROM ".POSTS_TABLE;
 		break;
 
 		case 'usercount':
-			$sql = 'SELECT count(*) AS total
-						FROM '. USERS_TABLE .'
-						WHERE user_id != '.ANONYMOUS.'
-						AND user_level != '.DELETED;
+			$sql = "SELECT count(*) AS total
+						FROM ". USERS_TABLE ."
+						WHERE user_id <> ".ANONYMOUS."
+							AND user_level <> ".DELETED;
 		break;
 
 		case 'newestuser':
-			$sql = 'SELECT user_id, username
-						FROM '.USERS_TABLE.'
-						WHERE user_id != ' . ANONYMOUS. '
-						AND user_level != '. DELETED .'
-						ORDER BY user_id DESC LIMIT 1';
+			$sql = "SELECT user_id, username
+						FROM ".USERS_TABLE."
+						WHERE user_id <> " . ANONYMOUS. "
+							AND user_level <> ". DELETED ."
+						ORDER BY user_id DESC 
+						LIMIT 1";
 		break;
 
 		case 'usersonline':
-			$sql = "SELECT COUNT(*) AS online FROM ".SESSIONS_TABLE;
+			$sql = "SELECT COUNT(*) AS online 
+				FROM ".SESSIONS_TABLE;
 			break;
 	}
 
@@ -80,7 +83,7 @@ function make_jumpbox()
 	global $db;
 	global $l_jumpto, $l_noforums, $l_nocategories;
 
-	$sql = "SELECT c.*
+	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
 		FROM ".CATEGORIES_TABLE." c, ".FORUMS_TABLE." f
 		WHERE f.cat_id = c.cat_id
 		GROUP BY c.cat_id, c.cat_title, c.cat_order
@@ -112,17 +115,17 @@ function make_jumpbox()
 		for($i = 0; $i < $total_categories; $i++)
 		{
 			$boxstring .= "<option value=\"-1\">&nbsp;</option>\n";
-			$boxstring .= "<option value=\"-1\">".stripslashes($category_rows[$i]["cat_title"])."</OPTION>\n";
-			$boxstring .= "<option value=\"-1\">----------------</OPTION>\n";
+			$boxstring .= "<option value=\"-1\">".stripslashes($category_rows[$i]['cat_title'])."</option>\n";
+			$boxstring .= "<option value=\"-1\">----------------</option>\n";
 
 			if($total_forums)
 			{
 				for($y = 0; $y < $total_forums; $y++)
 				{
-					if(  $forum_rows[$y]["cat_id"] == $category_rows[$i]["cat_id"] )
+					if(  $forum_rows[$y]['cat_id'] == $category_rows[$i]['cat_id'] )
 					{
-						$name = stripslashes($forum_rows[$y]["forum_name"]);
-						$boxstring .=  "<option value=\"".$forum_rows[$y]["forum_id"]."\">$name</OPTION>\n";
+						$name = stripslashes($forum_rows[$y]['forum_name']);
+						$boxstring .=  "<option value=\"".$forum_rows[$y]['forum_id']."\">$name</option>\n";
 					}
 				}
 			}
@@ -208,7 +211,7 @@ function setuptheme($theme)
 
 	$sql = "SELECT * 
 		FROM ".THEMES_TABLE." 
-		WHERE themes_id = '$theme'";
+		WHERE themes_id = $theme";
 	
 	if(!$result = $db->sql_query($sql))
 	{
@@ -272,6 +275,7 @@ function create_date($format, $gmepoch, $tz)
 //
 // Append $SID to a url
 // Borrowed from phplib
+// and modified
 //
 function append_sid($url)
 {
