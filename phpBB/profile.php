@@ -345,7 +345,7 @@ if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 
 		$aim_img = ($profiledata['user_aim']) ? "<a href=\"aim:goim?screenname=" . $profiledata['user_aim'] . "&amp;message=Hello+Are+you+there?\"><img src=\"" . $images['icon_aim'] . "\" border=\"0\" alt=\"" . $lang['AIM'] . "\" /></a>" : "&nbsp;";
 
-		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>" : "&nbsp;";
+		$msnm_img = ($profiledata['user_msnm']) ? "<a href=\"mailto:" . $profiledata['user_msnm'] . "\"><img src=\"" . $images['icon_msnm'] . "\" border=\"0\" alt=\"" . $lang['MSNM'] . "\" /></a>&nbsp;" . $profiledata['user_msnm'] : "&nbsp;";
 
 		$yim_img = ( $profiledata['user_yim'] ) ? "<a href=\"http://edit.yahoo.com/config/send_webmesg?.target=" . $members[$i]['user_yim'] . "&amp;.src=pg\"><img src=\"" . $images['icon_yim'] . "\" border=\"0\" alt=\"" . $lang['YIM'] . "\" /></a>" : "&nbsp;";
 
