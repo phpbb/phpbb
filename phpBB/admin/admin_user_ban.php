@@ -31,32 +31,17 @@ if($setmodules == 1)
 	return;
 }
 
-$phpbb_root_path = "./../";
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
-
-$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "unban";
-
 //
-// Start session management
+// Include required files, get $phpEx and check permissions
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
-init_userprefs($userdata);
-//
-// End session management
-//
-if( !$userdata['session_logged_in'] )
-{
-	header("Location: ../login.$phpEx?forward_page=admin/");
-}
-else if( $userdata['user_level'] != ADMIN )
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
-}
+require('pagestart.inc');
 
 //
 // Start program
 //
+
+$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "unban";
+
 if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 {
 	include('page_header_admin.'.$phpEx);

@@ -153,7 +153,7 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 
 	$avatar_dir_size = 0;
 
-	if ($avatar_dir = opendir($phpbb_root_path . $board_config['avatar_path']))
+	if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']))
 	{	
 		while($file = readdir($avatar_dir))
 		{
@@ -163,6 +163,11 @@ elseif( $HTTP_GET_VARS['pane'] == 'right' )
 			}
 		}
 		closedir($avatar_dir);
+	}
+	else
+	{
+		// Couldn't open Avatar dir.
+		$avatar_dir_size = '?';
 	}
 
 	//
