@@ -12,9 +12,7 @@
 // -------------------------------------------------------------
 
 // TODO
-// Remove hard-coded text strings
-// Hidden/Normal type for "Special Groups"
-// Group avatar handling ...
+// Avatar gallery ...
 // Mass user pref setting via group membership
 
 if (!empty($setmodules))
@@ -43,18 +41,22 @@ if (!$auth->acl_get('a_group'))
 }
 
 // Check and set some common vars
-$update		= (isset($_POST['update'])) ? true : false;
 $mode		= request_var('mode', '');
 $action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
 $group_id	= request_var('g', 0);
 $mark_ary	= request_var('mark', 0);
 $name_ary	= request_var('usernames', '');
 $leader		= request_var('leader', 0);
+$default	= request_var('default', 0);
 $start		= request_var('start', 0);
+$update		= (isset($_POST['update'])) ? true : false;
+$confirm	= (isset($_POST['confirm'])) ? true : false;
+$cancel		= (isset($_POST['cancel'])) ? true : false;
 
 // Clear some vars
+$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+
 $group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
-$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 // Grab basic data for group, if group_id is set and exists
 if ($group_id)
@@ -77,42 +79,37 @@ switch ($mode)
 		// Page header
 		adm_page_header($user->lang['MANAGE']);
 
+		// Common javascript
+?>
+
+<script language="Javascript" type="text/javascript">
+<!--
+function marklist(match, status)
+{
+	len = eval('document.' + match + '.length');
+	for (i = 0; i < len; i++)
+	{
+		eval('document.' + match + '.elements[i].checked = ' + status);
+	}
+}
+
+//-->
+</script>
+
+<?php
+
 		// Which page?
 		switch ($action)
 		{
 			case 'approve':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
-
-				approve_user($group_id, $mark_ary, false, $group_name);
-				trigger_error($user->lang['USERS_APPROVED']);
-				break;
-
-			case 'default':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
-
-				set_default_group($group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, false, false);
-				trigger_error($user->lang['GROUP_DEFS_UPDATED']);
-				break;
-	
 			case 'demote':
 			case 'promote':
-			case 'deleteusers':
-			case 'delete':
 				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				if ($error = group_memberships($action, $group_id, $mark_ary, false, $group_name))
-				{
-					trigger_error($user->lang[$error]);
-				}
+				group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
 
 				switch ($action)
 				{
@@ -122,14 +119,92 @@ switch ($mode)
 					case 'promote':
 						$message = 'GROUP_MODS_PROMOTED';
 						break;
-					case 'delete':
-						$message = 'GROUP_DELETED';
-						break;
-					case 'deleteusers':
-						$message = 'GROUP_USERS_REMOVE';
+					case 'approve':
+						$message = 'USERS_APPROVED';
 						break;
 				}
 				trigger_error($user->lang[$message]);
+				break;
+
+			case 'default':
+				if (!$group_id)
+				{
+					trigger_error($user->lang['NO_GROUP']);
+				}
+
+				if (!$mark_ary)
+				{
+					$start = 0;
+					do
+					{
+						$sql = 'SELECT user_id 
+							FROM ' . USER_GROUP_TABLE . "
+							WHERE group_id = $group_id 
+							ORDER BY user_id 
+							LIMIT $start, 200";
+						$result = $db->sql_query($sql);
+
+						$mark_ary = array();
+						if ($row = $db->sql_fetchrow($result))
+						{
+							do
+							{
+								$mark_ary[] = $row['user_id'];
+							}
+							while ($row = $db->sql_fetchrow($result));
+
+							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height);
+
+							$start = (sizeof($user_id_ary) < 200) ? 0 : $start + 200;
+						}
+						else
+						{
+							$start = 0;
+						}
+						$db->sql_freeresult($result);
+					}
+					while ($start);
+				}
+				else
+				{
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height);
+				}
+
+				trigger_error($user->lang['GROUP_DEFS_UPDATED']);
+				break;
+
+			case 'deleteusers':
+			case 'delete':
+				if (!$cancel && !$confirm)
+				{
+					adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
+				}
+				else
+				{
+					if (!$group_id)
+					{
+						trigger_error($user->lang['NO_GROUP']);
+					}
+
+					switch ($action)
+					{
+						case 'delete':
+							$error = group_delete($group_id, $group_name);
+							break;
+
+						case 'deleteusers':
+							$error = group_user_del($group_id, $mark_ary, false, $group_name);
+							break;
+					}
+
+					if ($error)
+					{
+						trigger_error($user->lang[$error]);
+					}
+
+					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
+					trigger_error($user->lang[$message]);
+				}
 				break;
 
 			case 'addusers':
@@ -146,7 +221,7 @@ switch ($mode)
 				$name_ary = array_unique(explode("\n", $name_ary));
 
 				// Add user/s to group
-				if ($error = add_to_group($action, $group_id, false, $name_ary, $leader, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
+				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height))
 				{
 					trigger_error($user->lang[$error]);
 				}
@@ -157,15 +232,73 @@ switch ($mode)
 
 			case 'edit':
 			case 'add':
+
 				if ($action == 'edit' && !$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
+				$name	= request_var('group_name', '');
+				$desc	= request_var('group_description', '');
+				$type	= request_var('group_type', 0);
+
+				$colour	= request_var('group_colour', '');
+				$rank	= request_var('group_rank', 0);
+
+				$data['uploadurl']	= request_var('uploadurl', '');
+				$data['remotelink'] = request_var('remotelink', '');
+				$delete				= request_var('delete', '');
+
+				if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
+				{
+					$data['width']		= request_var('width', '');
+					$data['height']		= request_var('height', '');
+
+					// Avatar stuff
+					$var_ary = array(
+						'uploadurl'		=> array('string', true, 5, 255), 
+						'remotelink'	=> array('string', true, 5, 255), 
+						'width'			=> array('string', true, 1, 3), 
+						'height'		=> array('string', true, 1, 3), 
+					);
+
+					if (!($error = validate_data($data, $var_ary)))
+					{
+						$data['user_id'] = "g$group_id";
+
+						if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
+						{
+							list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_upload($data, $error);
+						}
+						else if ($data['remotelink'])
+						{
+							list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_remote($data, $error);
+						}
+					}
+				}
+				else if ($delete)
+				{
+					$avatar = '';
+					$avatar_type = $avatar_width = $avatar_height = 0;
+				}
+
 				// Did we submit?
 				if ($update)
 				{
-					if (!($error = create_group($action, $group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height)))
+					if (($avatar && $group_avatar != $avatar) || $delete)
+					{
+						avatar_delete($group_avatar);
+					}
+
+					// Only set the rank, colour, etc. if it's changed or if we're adding a new
+					// group. This prevents existing group members being updated if no changes 
+					// were made.
+					foreach (array('name', 'desc', 'type', 'rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height') as $test)
+					{
+						${'group_' . $test} = ($action == 'add' || (isset($$test) && $$test != ${'group_' . $test})) ? $$test : false;
+					}
+
+					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height)))
 					{
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($message);
@@ -173,7 +306,7 @@ switch ($mode)
 				}
 				else if (!$group_id)
 				{
-					$group_name = (!empty($_POST['group_name'])) ? stripslashes(htmlspecialchars($_POST['group_name'])) : '';
+					$group_name = request_var('group_name', '');
 					$group_description = $group_colour = $group_avatar = '';
 					$group_type = GROUP_FREE;
 				}
@@ -399,14 +532,16 @@ function swatch()
 </table></form>
 <?php
 
+				adm_page_footer();
 				break;
+		}
 
-			// Show list of leaders, existing and pending members
-			case 'list':
-				if (!$group_id)
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
+		if ($mode == 'list' || $group_id)
+		{
+			if (!$group_id)
+			{
+				trigger_error($user->lang['NO_GROUP']);
+			}
 
 ?>
 
@@ -417,7 +552,7 @@ function swatch()
 <form name="list" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th width="55%"><?php echo $user->lang['USERNAME']; ?></th>
-		<th width="3%" nowrap="nowrap">Default</th>
+		<th width="3%" nowrap="nowrap"><?php echo $user->lang['DEFAULT']; ?></th>
 		<th width="20%"><?php echo $user->lang['JOINED']; ?></th>
 		<th width="20%"><?php echo $user->lang['POSTS']; ?></th>
 		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
@@ -562,7 +697,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right"><?php echo $user->lang['SELECT_OPTION']; ?>: <select name="action"><option value="">----------</option><?php
+		<td class="cat" colspan="5" align="right"><select name="action"><option class="sep" value=""><?php echo $user->lang['SELECT_OPTION']; ?></option><?php
 
 				foreach(array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE') as $option => $lang)
 				{
@@ -610,10 +745,9 @@ function swatch()
 
 <?php
 
-				break;
+			adm_page_footer();
+		}
 
-			// Management front end
-			default:
 
 ?>
 
@@ -713,52 +847,6 @@ function swatch()
 
 <?php
 
-				break;
-
-
-
-
-
-		}
-
-		// Common javascript
-?>
-
-<script language="Javascript" type="text/javascript">
-<!--
-function marklist(match, status)
-{
-	len = eval('document.' + match + '.length');
-	for (i = 0; i < len; i++)
-	{
-		eval('document.' + match + '.elements[i].checked = ' + status);
-	}
-}
-
-function getElement(id)
-{ 
-	return document.getElementById ? document.getElementById(id) : document.all ? document.all(id) : null; 
-} 
-
-function showbox(id)
-{ 
-	var el = getElement(id); 
-	if (el && el.style) 
-		el.style.display = ''; 
-} 
-
-function hidebox(id)
-{ 
-	var el = getElement(id); 
-	if (el && el.style) 
-		el.style.display = 'none'; 
-} 
-
-//-->
-</script>
-
-<?php
-
 		adm_page_footer();
 		break;
 
@@ -768,12 +856,12 @@ function hidebox(id)
 
 		if ($update)
 		{
+			$user_lang	= request_var('lang', '');
+			$user_tz	= request_var('tz', 0.0);
+			$user_dst	= request_var('dst', 0);
 		}
 		else
 		{
-			$user_lang = (!empty($_POST['user_lang'])) ? htmlspecialchars($_POST['user_lang']) : '';
-			$user_tz = (isset($_POST['user_tz'])) ? doubleval($_POST['user_tz']) : '';
-			$user_dst = (isset($_POST['user_dst'])) ? intval($_POST['user_dst']) : '';
 		}
 
 ?>
@@ -781,7 +869,7 @@ function hidebox(id)
 
 <p><?php echo $user->lang['GROUP_SETTINGS_EXPLAIN']; ?></p>
 
-<form method="post" action="admin_groups.<?php echo "$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;action=edit&amp;g=$group_id"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_SETTINGS']; ?></th>
 	</tr>
