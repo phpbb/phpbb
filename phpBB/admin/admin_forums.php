@@ -199,7 +199,7 @@ switch ($mode)
 			$right_id = $left_id + 1;
 		}
 
-		$sql = 'INSERT INTO ' . FORUMS_TABLE . " (forum_id, forum_name, forum_desc, parent_id, left_id, right_id, forum_status, forum_style, post_count_inc, moderate, prune_enable, prune_days, prune_freq)
+		$sql = 'INSERT INTO ' . FORUMS_TABLE . " (forum_id, forum_name, forum_desc, parent_id, left_id, right_id, forum_status, forum_style, post_count_inc, moderated, prune_enable, prune_days, prune_freq)
 				VALUES ($forum_id, '$forum_name', '$forum_desc', $parent_id, $left_id, $right_id, $forum_status, $forum_style, $post_count_inc, $moderated, $prune_enable, $prune_days, $prune_freq)";
 		$db->sql_query($sql);
 
