@@ -119,9 +119,9 @@ if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 //
 // Do the forum Prune
 //
-if(($is_auth['auth_mod'] || ($is_auth['auth_admin'})) && ($board_config['prune_enable']))
+if( ( $is_auth['auth_mod'] || $is_auth['auth_admin'] ) && $board_config['prune_enable'] )
 {
-	if(($forum_row[0]['prune_next'] < time()) && ($forum_row[0]['prune_enable']))
+	if( $forum_row[0]['prune_next'] < time() && $forum_row[0]['prune_enable'] )
 	{
 		include('includes/prune.php');
 		auto_prune($forum_id);
