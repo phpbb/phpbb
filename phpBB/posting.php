@@ -1182,9 +1182,10 @@ if( ( $submit || $confirm || $mode == "delete"  ) && !$error )
 		//
 		// Flood control
 		//
+		$where_sql = ( $userdata['user_id'] == ANONYMOUS ) ? "poster_ip = '$user_ip'" : "poster_id = " . $userdata['user_id'];
 		$sql = "SELECT MAX(post_time) AS last_post_time
 			FROM " . POSTS_TABLE . "
-			WHERE poster_ip = '$user_ip'";
+			WHERE $where_sql";
 		if($result = $db->sql_query($sql))
 		{
 			$db_row = $db->sql_fetchrow($result);
