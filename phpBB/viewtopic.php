@@ -754,7 +754,7 @@ for($i = 0; $i < $total_posts; $i++)
 				$poster_avatar = ( $board_config['avatar_upload_db'] ) ? "<img src=\"avatar.$phpEx?p=" . $postrow[$i]['post_id'] . "\" alt=\"\" />" : "<img src=\"" . $board_config['avatar_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"\" />";
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"\" />";
+				$poster_avatar = "<img src=\"" . $postrow[$i]['user_avatar'] . "\" width=\"".$board_config['avatar_max_width']."\" height=\"".$board_config['avatar_max_height']."\" alt=\"\" border=\"\" />";
 				break;
 			case USER_AVATAR_GALLERY:
 				$poster_avatar = "<img src=\"" . $board_config['avatar_gallery_path'] . "/" . $postrow[$i]['user_avatar'] . "\" alt=\"\" border=\"\" />";
