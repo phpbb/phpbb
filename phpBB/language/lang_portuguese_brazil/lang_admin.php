@@ -38,7 +38,7 @@ $lang['Configuration'] = 'Configuração';
 $lang['Permissions'] = 'Permissões';
 $lang['Manage'] = 'Gerenciar';
 $lang['Disallow'] = 'Nomes Proibídos';
-$lang['Prune'] = 'Desbastar';
+$lang['Prune'] = 'Limpar';
 $lang['Mass_Email'] = 'Email em Massa';
 $lang['Ranks'] = 'Ranks';
 $lang['Smilies'] = 'Smileys';
@@ -149,7 +149,7 @@ $lang['Conflict_mod_groupauth'] = 'O seguinte Usuário (ou Usuários) ainda possue
 
 $lang['Public'] = 'Público';
 $lang['Private'] = 'Particular';
-$lang['Registered'] = 'Registados';
+$lang['Registered'] = 'Registrados';
 $lang['Administrators'] = 'Administradores';
 $lang['Hidden'] = 'Oculto';
 
@@ -275,7 +275,7 @@ $lang['Default_language'] = 'Idioma padrão';
 $lang['Date_format'] = 'Formato da Data';
 $lang['System_timezone'] = 'Fuso Horário do sistema';
 $lang['Enable_gzip'] = 'Ativar compressão GZip';
-$lang['Enable_prune'] = 'Ativar Desbastar Fórum';
+$lang['Enable_prune'] = 'Ativar Limpeza de Fórum';
 $lang['Allow_HTML'] = 'Permitir HTML';
 $lang['Allow_BBCode'] = 'Permitir BBCode';
 // Anti-Spam MOD | Início
@@ -288,7 +288,7 @@ $lang['Allowed_tags'] = 'Tags HTML permitidas';
 $lang['Allowed_tags_explain'] = 'Separe as Tags com vírgulas';
 $lang['Allow_smilies'] = 'Permitir Smileys';
 $lang['Smilies_path'] = 'Pasta dos Smileys';
-$lang['Smilies_path_explain'] = 'Pasta sob o diretório raiz do seu phpBB p.e. images/smilies';
+$lang['Smilies_path_explain'] = 'Pasta sob o diretório raiz do seu phpBB p.e. images/smiles';
 $lang['Allow_sig'] = 'Permitir Assinaturas';
 $lang['Max_sig_length'] = 'Comprimento Máx. da Assinatura';
 $lang['Max_sig_length_explain'] = 'Número máximo de caracteres permitidos na assinatura do Usuário';
@@ -368,16 +368,18 @@ $lang['Forum_edit_delete_explain'] = 'O formulário abaixo lhe permitirá personal
 $lang['Move_contents'] = 'Mover todo o conteúdo';
 $lang['Forum_delete'] = 'Remover Fórum';
 $lang['Forum_delete_explain'] = 'O formulário abaixo lhe permitirá remover um fórum (ou categoria) e decidir onde pretende colocar todos os tópicos (ou fóruns) existentes.';
+$lang['Status_locked'] = 'Trancado';
+$lang['Status_unlocked'] = 'Destrancado';
 
 $lang['Forum_settings'] = 'Configurações Gerais dos Fóruns';
 $lang['Forum_name'] = 'Nome do Fórum';
 $lang['Forum_desc'] = 'Descrição';
 $lang['Forum_status'] = 'Estado';
-$lang['Forum_pruning'] = 'Auto-desbastar';
+$lang['Forum_pruning'] = 'Auto-limpar';
 
 $lang['prune_freq'] = 'Verificar o tempo dos tópicos a cada';
 $lang['prune_days'] = 'Remover tópicos que não tenham sido respondidos em';
-$lang['Set_prune_data'] = 'Você ativou a função para auto-desbastar o fórum mas não especificou a frequência ou número de dias em que o mesmo deve ser feito. Volte e especifice esse valor';
+$lang['Set_prune_data'] = 'Você ativou a função para auto-limpar o fórum mas não especificou a frequência ou número de dias em que o mesmo deve ser limpo. Volte e especifice esse valor';
 
 $lang['Move_and_Delete'] = 'Mover e Remover';
 
@@ -495,9 +497,9 @@ $lang['Look_up_group'] = 'Procurar Grupo';
 //
 // Prune Administration
 //
-$lang['Forum_Prune'] = 'Desbastar Fórum';
+$lang['Forum_Prune'] = 'Limpar Fórum';
 $lang['Forum_Prune_explain'] = 'Esta operação removerá qualquer tópico que não possua resposta dentro do limite de dias especificado. Se não for mencionado um número de dias todos os tópicos serão removidos. Isto não remove tópicos que possuam uma Enquete ativa nem Anúncios. Você terá que removê-los manualmente.';
-$lang['Do_Prune'] = 'Desbastar';
+$lang['Do_Prune'] = 'Limpar';
 $lang['All_Forums'] = 'Todos os Fóruns';
 $lang['Prune_topics_not_posted'] = 'Remover todos os tópicos sem resposta durante um período de ';
 $lang['Topics_pruned'] = 'Tópicos Removidos';
@@ -569,7 +571,7 @@ $lang['Click_return_rankadmin'] = 'Clique %sAqui%s para voltar a Gerência de Ran
 // Disallow Username Admin
 //
 $lang['Disallow_control'] = 'Controle de Nomes de Usuários Proibídos';
-$lang['Disallow_explain'] = 'Aqui você poderá controlar nomes de Usuários que não serão permitidos a serem usados.  Nomes proibídos podem conter asteriscos '*' para abranger um maior número de variações na palavra.  Note que não podem ser especificados Nomes de Usuários que já se encontrem registados, devendo primeiro ser removidos e então especificá-los aqui para não mais serem usados.';
+$lang['Disallow_explain'] = 'Aqui você poderá controlar nomes de Usuários que não serão permitidos a serem usados.  Nomes proibídos podem conter asteriscos '*' para abranger um maior número de variações na palavra.  Note que não podem ser especificados Nomes de Usuários que já se encontrem registrados, devendo primeiro ser removidos e então especificá-los aqui para não mais serem usados.';
 
 $lang['Delete_disallow'] = 'Remover';
 $lang['Delete_disallow_title'] = 'Remover um Nome de Usuário Proibido';
@@ -583,7 +585,7 @@ $lang['No_disallowed'] = 'Não há Nomes de Usuários Proibidos';
 
 $lang['Disallowed_deleted'] = 'O Nome de Usuário Proibido foi removido com sucesso';
 $lang['Disallow_successful'] = 'O Nome de Usuário Proibido foi adicionado com sucesso';
-$lang['Disallowed_already'] = 'O nome que especificou não pode ser proibido. Pode ser que já exista na lista de Nomes Proibidos, na lista de Palavras Censuradas ou encontre-se atualmente em uso por algum Usuário registado';
+$lang['Disallowed_already'] = 'O nome que especificou não pode ser proibido. Pode ser que já exista na lista de Nomes Proibidos, na lista de Palavras Censuradas ou encontre-se atualmente em uso por algum Usuário registrado';
 
 $lang['Click_return_disallowadmin'] = 'Clique %sAqui%s para voltar aa Painel de Controle de Nomes de Usuários Proibidos';
 

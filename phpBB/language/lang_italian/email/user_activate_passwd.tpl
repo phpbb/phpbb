@@ -3,8 +3,8 @@ Charset: iso-8859-1
 
 Ciao {USERNAME}
 
-Hai ricevuto questa email perchè tu (o qualcuno per te) hai richiesto l'invio di una nuova password per il tuo account su {SITENAME}. 
-Se non sei stato tu a richiedere questa email per favore ignorala, se continui a riceverla per favore contatta l'amministratore del forum. 
+Hai ricevuto questa email perchè tu (o qualcuno per te) hai richiesto l'invio di una nuova password per il tuo account su {SITENAME}.
+Se non sei stato tu a richiedere questa email per favore ignorala, se continui a riceverla per favore contatta l'amministratore del forum.
 
 Per usare la nuova password la devi attivare. Per fare ciò clicca sul link qui sotto.
 

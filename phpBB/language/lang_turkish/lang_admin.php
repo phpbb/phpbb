@@ -352,6 +352,8 @@ $lang['Move_contents'] = "Tüm içeriði taþý";
 $lang['Forum_delete'] = "Forumu sil";
 $lang['Forum_delete_explain'] = "Aþaðýdaki form ile forum ya da kategori silebilir, içeriklerini istediðiniz yere taþýyabilirsiniz";
 
+$lang['Status_locked'] = 'Kilitli';
+$lang['Status_unlocked'] = 'Kilitli deðil';
 $lang['Forum_settings'] = "Genel Forum Ayarlarý";
 $lang['Forum_name'] = "Forum adý";
 $lang['Forum_desc'] = "Açýklama";
@@ -462,13 +464,12 @@ $lang['reset_group_changes'] = "Deðiþiklikleri sil";
 $lang['No_group_name'] = "Bu grup için bir isim belirtmelisiniz";
 $lang['No_group_moderator'] = "Bu grup için bir moderator belirtmelisiniz";
 $lang['No_group_mode'] = "Bu grup için bir mod belirmelisiniz, açýk ya da kapalý";
+$lang['No_group_action'] = 'Bir görev seçilmemiþ';
 $lang['delete_group_moderator'] = "Eski grup moderatorunu sil";
 $lang['delete_moderator_explain'] = "Grup moderatorunu deðiþtirirken, eski moderatoru gruptan atmak için burayý iþaretleyin. Aksi takdirde kullanýcý grubun normal bir üyesi olacaktýr.";
 $lang['Click_return_groupsadmin'] = "Grup yönetimine dönmek için %sburaya%s týklayýn.";
 $lang['Select_group'] = "Grup seç";
 $lang['Look_up_group'] = "Grubu incele";
-$lang['No_group_action'] = 'Bir görev seçilmemiþ';
-
 
 
 //
@@ -539,6 +540,7 @@ $lang['No_assigned_rank'] = "Hiç özel rütbe atanmamýþ";
 $lang['Rank_updated'] = "Rütbe baþarýyla güncellendi";
 $lang['Rank_added'] = "Rütbe baþarýyla eklendi";
 $lang['Rank_removed'] = "Rütbe baþarýyla silindi";
+$lang['No_update_ranks'] = 'Bu rütba baþarýyla silindi, ancak bu rütbeye sahip olan kullanýcýlarýn ayarlarý deðiþmedi.  Bu kullanýcýlarýn hesaplarýný kendiniz güncellemelisiniz';
 
 $lang['Click_return_rankadmin'] = "Rütbe yönetimine dönmek için %sburaya%s týklayýn";
 
@@ -661,19 +663,19 @@ $lang['Welcome_install'] = "PhpBB2 Yüklemesine Hoþgeldiniz";
 $lang['Initial_config'] = "Temel Ayarlar";
 $lang['DB_config'] = "Veritabaný Ayarlarý";
 $lang['Admin_config'] = "Admin Ayarlarý";
-$lang['continue_upgrade'] = "Config dosyasýný bilgisayarýnza indirdikten sonra \"Upgrade'e Devam\" butonuýyla upgrade iþlemine devam edebilirsiniz.";
-$lang['upgrade_submit'] = "Upgrade'e Devam";
+$lang['continue_upgrade'] = "Config dosyasýný bilgisayarýnza indirdikten sonra \"Upgrade'e Devam\" düðmesine basarak güncelleme iþlemine devam edebilirsiniz.";
+$lang['upgrade_submit'] = "Güncellemeye Devam";
 
-$lang['Installer_Error'] = "Install sýrasýnda bir problem oluþtu";
-$lang['Previous_Install'] = "Önceden yapýlmýþ bir install bulundu";
+$lang['Installer_Error'] = "Yükleme sýrasýnda bir problem oluþtu";
+$lang['Previous_Install'] = "Önceden yüklenmiþ bir PhpBB2 bulundu";
 $lang['Install_db_error'] = "Veritabanýný güncellerken bir hata oluþtu";
 
-$lang['Re_install'] = "Önceki install'unuz halen aktif. <br /><br />Eðer phpBB2'yi yeniden install etmek istiyorsanýz aþaðýdaki evet butonuna týklayýn. Bunu yaparken bunun þu andaki tüm verileri sileceðini, yedek yapýlmayacaðýný unutmayýn! Admin kullanýcý adý ve þifreniz yeniden yaratýlacaktýr; baþka hiçbir ayarýnýz korunmayacaktýr. <br /><br />Evet'e basmadan önce iyi düþünün!";
+$lang['Re_install'] = "Önceden yüklediðiniz PhpBB2 halen aktif. <br /><br />Eðer PhpBB2'yi yeniden yüklemek istiyorsanýz aþaðýdaki evet düðmesine basýn. Bunu yaparken bunun þu andaki tüm verileri sileceðini, yedek yapýlmayacaðýný unutmayýn! Admin kullanýcý adý ve þifreniz yeniden yaratýlacaktýr; baþka hiçbir ayarýnýz korunmayacaktýr. <br /><br />Evet'e basmadan önce iyi düþünün!";
 
-$lang['Inst_Step_0'] = "PhpBB2'yi seçtiðiniz için teþekkür ederiz. Install iþlemini bitirmek için lütfen aþaðýdaki boþluklarý doldurunuz. Install iþlemini yapacaðýnýz veritabanýnýn instaldan önce yaratýlmýþ olmasý gerektiðini unutmayýnýz. ODBC kullanan bir veritabanýna install yapacaksanýz, (Örn: MS Access) devam etmeden önce bir DSN yaratmalýsýnýz.";
+$lang['Inst_Step_0'] = "PhpBB2'yi seçtiðiniz için teþekkür ederiz. Yükleme iþlemini bitirmek için lütfen aþaðýdaki boþluklarý doldurunuz. Yükleme iþlemini yapacaðýnýz veritabanýnýn yüklemeden önce yaratýlmýþ olmasý gerektiðini unutmayýnýz. ODBC kullanan bir veritabanýna yükleme yapacaksanýz, (Örn: MS Access) devam etmeden önce bir DSN yaratmalýsýnýz.";
 
-$lang['Start_Install'] = "Installa baþla";
-$lang['Finish_Install'] = "Installý bitir";
+$lang['Start_Install'] = "Yüklemeye baþla";
+$lang['Finish_Install'] = "Yüklemeyi bitir";
 
 $lang['Default_lang'] = "Sitenin varsayýlan dili";
 $lang['DB_Host'] = "Veritabaný server adresi";
@@ -681,17 +683,17 @@ $lang['DB_Name'] = "Veritabaný adý";
 $lang['DB_Username'] = "Veritabaný kullanýcý adý";
 $lang['DB_Password'] = "Veritabaný þifresi";
 $lang['Database'] = "Veritabanýnýz";
-$lang['Install_lang'] = "Install dilini seçin";
+$lang['Install_lang'] = "Yükleme dilini seçin";
 $lang['dbms'] = "Veritabaný Türü";
 $lang['Table_Prefix'] = "Veritabanýndaki tablolarýn önadlarý";
 $lang['Admin_Username'] = "Admin kullanýcý adý";
 $lang['Admin_Password'] = "Admin þifresi";
 $lang['Admin_Password_confirm'] = "Admin þifresi [ Onayla ]";
 
-$lang['Inst_Step_2'] = "Admin kulllanýcý yaratýldý.  Bu noktada temel install tamamlandý. Þimdi yeni install ettiðiniz forumu yönetebileceðiniz bir sayfaya yönlendirilceksiniz. Genel ayarlarý kontrol edin ve kendi ihtiyaçlarýnýz doðrultusunda ayarlarý yaptýðýnýza emin olun. PhpBB2'yi seçtiðiniz için teþekkür ederiz.";
+$lang['Inst_Step_2'] = "Admin kulllanýcý yaratýldý.  Bu noktada temel yükleme tamamlandý. Þimdi yeni yüklediðiniz forumu yönetebileceðiniz bir sayfaya yönlendirilceksiniz. Genel ayarlarý kontrol edin ve kendi ihtiyaçlarýnýz doðrultusunda ayarlarý yaptýðýnýza emin olun. PhpBB2'yi seçtiðiniz için teþekkür ederiz.";
 
-$lang['Unwriteable_config'] = "Þu anda config dosyasýna yazýlamýyor. Aþaðýdaki butona nasýnca bu config dosyasýnýn bir kopyasý bilgisayarýnýza indirilecektir. Bu dosyayý phpBB2 ile ayný klasör içine göndermelisiniz. Bunu ypatýktan sonra bir önceki formla yaratýlan admin adý ve þifresini kullanarak yönetim paneline girmeli ve ayarlarý yapmalýsýnýz. (Login olduktan sonra ekranýn altýnda bir link gözükecektir). PhpBB2'yi seçtiðiniz için teþekkür ederiz.";
-$lang['Download_config'] = "Config Dosyasýný Ýndir";
+$lang['Unwriteable_config'] = "Þu anda config dosyasýna yazýlamýyor. Aþaðýdaki düðmeye nasýnca bu config dosyasýnýn bir kopyasý bilgisayarýnýza indirilecektir. Bu dosyayý phpBB2 ile ayný klasör içine göndermelisiniz. Bunu yaptýktan sonra bir önceki form'la yaratýlan admin adý ve þifresini kullanarak yönetim paneline girmeli ve ayarlarý yapmalýsýnýz. (Login olduktan sonra ekranýn altýnda bir link gözükecektir). PhpBB2'yi seçtiðiniz için teþekkür ederiz.";
+$lang['Download_config'] = "Config dosyasýný Ýndir";
 
 $lang['ftp_choose'] = "Download Metodunu Seçin";
 $lang['ftp_option'] = "<br />PHP'nin bu versiyonunda ftp komutlarýna izin verildiði için direk config dosyasýný yerine ftp ile gönderebilirsiniz.";
@@ -705,11 +707,11 @@ $lang['ftp_password'] = "FTP ÞÝfresi";
 $lang['Transfer_config'] = "Transfere baþla";
 $lang['NoFTP_config'] = "FTP iþlemi baþarýsýz. Lütfen config doyasýný indirip kendiniz gönderiniz";
 
-$lang['Install'] = "Install";
+$lang['Install'] = "Yükle";
 $lang['Upgrade'] = "Güncelle";
 
 
-$lang['Install_Method'] = "Install Metodunu Seçin";
+$lang['Install_Method'] = "Yükleme Metodunu Seçin";
 
 $lang['Install_No_Ext'] = "Server'ýnýz seçtiðiniz veritabaný türünü desteklemiyor";
 

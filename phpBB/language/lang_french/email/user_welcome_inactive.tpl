@@ -1,5 +1,6 @@
-Charset: ISO-8859-1
-
+Subject: Bienvenue sur les forums de {SITENAME}
+Charset: iso-8859-1
+ 
 {WELCOME_MSG}
 
 Veuillez conserver cet email dans vos archives. Les informations concernant votre compte:

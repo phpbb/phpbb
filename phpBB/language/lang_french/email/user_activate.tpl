@@ -1,5 +1,5 @@
 Subject: Réactivez votre compte
-Charset: ISO-8859-1
+Charset: iso-8859-1
 
 Bonjour {USERNAME},
 

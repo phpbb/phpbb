@@ -32,9 +32,9 @@
 // setlocale(LC_ALL, 'tr_TR.ISO-8859-9');
 
 $lang['ENCODING'] = 'iso-8859-9';
-$lang['DIRECTION'] = 'LTR';
-$lang['LEFT'] = 'LEFT';
-$lang['RIGHT'] = 'RIGHT';
+$lang['DIRECTION'] = 'ltr';
+$lang['LEFT'] = 'left';
+$lang['RIGHT'] = 'right';
 $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -134,10 +134,8 @@ $lang['Guest_users_total'] = '%d Misafir';
 $lang['Guest_user_total'] = '%d Misafir';
 $lang['Record_online_users'] = 'Sitede bugüne kadar en çok <b>%s</b> kiþi %s tarihinde online oldu.'; // first %s = number of users, second %s is the date.
 
-$lang['Legend'] = 'Lejand';
 $lang['Admin_online_color'] = '%sAdmin%s';
 $lang['Mod_online_color'] = '%sModerator%s';
-$lang['User_online_color'] = '%sKullanýcý%s';
 
 $lang['You_last_visit'] = 'Son ziyaretiniz: %s'; // %s replaced by date/time
 $lang['Current_time'] = 'Forum Saati: %s'; // %s replaced by time
@@ -242,11 +240,6 @@ $lang['Rules_vote_cannot'] = 'Bu forumdaki anketlerde oy <b>kullanamazsýnýz</b>'
 $lang['Rules_moderate'] = 'Bu forumu %smodere%s <b>edebilirsiniz</b>'; // %s replaced by a href links, do not remove!
 
 $lang['No_topics_post_one'] = 'Bu forumda hiç mesaj yok<br />Yeni bir tane göndermek için<b>Yeni Baþlýk Yolla</b> linkine týklayýn';
-
-$lang['Stop_watching_forum'] = 'Bu forumu takip etmeyi býrak';
-$lang['Start_watching_forum'] = 'Bu forumu yeni mesajlar için takip et';
-$lang['No_longer_watching_forum'] = 'Bu forumu artýk takip etmiyorsunuz';
-$lang['You_are_watching_forum'] = 'Þu anda bu forumu takip ediyorsunuz';
 
 
 //
@@ -436,14 +429,14 @@ $lang['You_new_pm'] = 'Yeni bir özel mesaj sizi bekliyor';
 $lang['You_new_pms'] = 'Yeni özel mesajlar sizi bekliyor';
 $lang['You_no_new_pm'] = 'Bekleyen yeni mesajýnýz yok';
 
+$lang['Unread_message'] = 'Okunmamýþ mesaj';
+$lang['Read_message'] = 'Okunmuþ mesaj';
+
 $lang['Read_pm'] = 'Mesajý oku';
 $lang['Post_new_pm'] = 'Mesajý gönder';
 $lang['Post_reply_pm'] = 'Mesaja cevap ver';
 $lang['Post_quote_pm'] = 'Alýntý yap';
 $lang['Edit_pm'] = 'Mesajý düzenle';
-
-$lang['Unread_message'] = 'Okunmamýþ mesaj';
-$lang['Read_message'] = 'Okunmuþ mesaj';
 
 $lang['Inbox'] = 'Gelenler';
 $lang['Outbox'] = 'Gönderilenler';
@@ -576,6 +569,7 @@ $lang['password_confirm_if_changed'] = 'Sadece þifrenizi deðiþtirdiyseniz yeni þ
 
 $lang['Avatar'] = 'Avatar';
 $lang['Avatar_explain'] = 'Mesajlarýnýzýn yanýndaki küçük resim. Bir seferde sadece bir resim gösterilebilir, geniþliði %d pixelden, yüksekliði %d pixelden ve boyutu %dkB\'tan büyük olamaz.';
+$lang['Upload_Avatar_file'] = 'Bilgisayarýnýzdan bir avatar yollayýn';
 $lang['Upload_Avatar_URL'] = 'Bir URL\'den Avatar gönderin';
 $lang['Upload_Avatar_URL_explain'] = 'Avatar\'ýn olduðu sitenin URL\'sini girin, buraya kopyalanacaktýr';
 $lang['Pick_local_Avatar'] = 'Avatar\'ý galeriden seçin';
@@ -1004,7 +998,7 @@ $lang['An_error_occured'] = 'Bir hata oluþtu';
 $lang['A_critical_error'] = 'Kritik bir hata oluþtu';
 
 // Translator credit
-$lang['TRANSLATION_INFO'] = "Türkçe Çeviri : <a href=\"mailto:onurturgay@ieee.metu.edu.tr\">Onur Turgay</a> & <a href=\"mailto:erdem@smtg.org\">Erdem Çorapçýoðlu</a>";
+$lang['TRANSLATION_INFO'] = "Türkçe Çeviri : Onur Turgay & Erdem Çorapçýoðlu";
 //
 // That's all Folks!
 // -------------------------------------------------

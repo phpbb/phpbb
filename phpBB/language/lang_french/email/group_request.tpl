@@ -1,5 +1,5 @@
 Subject: Une demande pour rejoindre votre groupe a été formulée
-Charset: ISO-8859-1
+Charset: iso-8859-1
 
 Cher {GROUP_MODERATOR},
 

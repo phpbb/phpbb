@@ -4,7 +4,7 @@ La seguente email ti è stata inviata da un amministratore di "{SITENAME}". Se il
 
 {BOARD_EMAIL}
 
-Includi questa email completa (in particolare le intestazioni). 
+Includi questa email completa (in particolare le intestazioni).
 
 Questo è il messaggio che ti è stato inviato:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,5 +1,5 @@
 Subject: Vous avez été ajouté à un groupe
-Charset: ISO-8859-1
+Charset: iso-8859-1
 
 Félicitations,
 

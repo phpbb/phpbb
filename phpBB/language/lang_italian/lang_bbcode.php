@@ -19,13 +19,13 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
- 
+
 //
 //	Translation produced by tesno
 //	http://www.snowbox.it/
 //
 
-// 
+//
 // To add an entry to your BBCode guide simply add a line to this file in this format:
 // $faq[] = array("question", "answer");
 // If you want to separate a section enter $faq[] = array("--","Block heading goes here if wanted");
@@ -42,7 +42,7 @@
 // users browsing in your language may be confused to find they're BBCode doesn't work :D You can change
 // references which are 'in-line' within the text though.
 //
-  
+
 $faq[] = array("--","Introduzione");
 $faq[] = array("Cos'è il BBCode?", "BBCode è un ampliamento/attrezzo speciale del codice HTML. L'uso del BBCode nei tuoi messaggi nel forum è determinato dall'amministratore. Inoltre puoi disabilitare il BBCode in ogni messaggio attraverso il modulo di invio. Il BBCode stesso ha uno stile simile all'HTML, i tags sono racchiusi in parentesi quadre [ e ] piuttosto che in &lt; e &gt; e offre grande controllo su cosa e come vogliamo mostrare qualcosa. La facilità di utilizzo del BBCode nei tuoi messaggi dipende dal modello che stai utilizzando. Per ogni problema puoi far riferimento a questa guida.");
 
@@ -63,10 +63,10 @@ $faq[] = array("--", "Creare Links");
 $faq[] = array("Linkare un altro sito", "Il BBCode di phpBB supporta diversi modi per creare URI, Uniform Resource Indicators meglio conosciuti come URL.<ul><li>Il primo di questi utilizza il tag <b>[url=][/url]</b>, qualunque cosa digiti dopo il segno = genererà il contenuto del tag che si comporterà come URL. Per esempio per linkarsi a phpBB.com devi usare:<br /><br /><b>[url=http://www.phpbb.com/]</b>Visita phpBB!<b>[/url]</b><br /><br />Questo genera il seguente link, <a href=\"http://www.phpbb.com/\" target=\"_blank\">Visita phpBB!</a> Come puoi vedere il link si apre in una nuova finestra così l'utente può continuare a navigare nei forum.</li><li>Se vuoi che l'URL stesso venga mostrato come link puoi fare questo semplicemente usando:<br /><br /><b>[url]</b>http://www.phpbb.com/<b>[/url]</b><br /><br />Questo genera il seguente link, <a href=\"http://www.phpbb.com/\" target=\"_blank\">http://www.phpbb.com/</a></li><li>Inoltre phpBB dispone di una cosa chiamata <i>Magic Links</i>, questo cambierà ogni URL sintatticamente corretta in un link senza la necessità di specificare nessun tag o http://. Per esempio digitando www.phpbb.com nel tuo messaggio automaticamente verrà cambiato in <a href=\"http://www.phpbb.com/\" target=\"_blank\">www.phpbb.com</a> e verrà mostrato nel messaggio finale.</li><li>La stessa cosa accade per gli indirizzi email, puoi specificare un indirizzo esplicitamente, per esempio:<br /><br /><b>[email]</b>no.one@domain.adr<b>[/email]</b><br /><br />che mostrerà <a href=\"emailto:no.one@domain.adr\">no.one@domain.adr</a> o puoi digitare no.one@domain.adr nel tuo messaggio e verrà automaticamente convertito.</li></ul>Come per tutti i tag del BBCode puoi includere le URL in ogni altro tag come <b>[img][/img]</b> (guarda il successivo punto), <b>[b][/b]</b>, ecc. Come per i tag di formattazione dipende da te verificare che tutti i tag siano correttamente aperti e chiusi, per esempio:<br /><br /><b>[url=http://www.phpbb.com/][img]</b>http://www.phpbb.com/images/phplogo.gif<b>[/url][/img]</b><br /><br /> <u>non</u> è corretto e potrebbe cancellare il tuo messaggio. Quindi presta attenzione. ");
 
 $faq[] = array("--", "Mostrare immagini nei messaggi");
-$faq[] = array("Aggiungere una immagine al messaggio", "Il BBCode di phpBB incorpora un tag per l'inclusione di immagini nei tuoi messaggi. Ci sono due cose importanti da ricordare nell'usare questo tag; a molti utenti non piacciono molte immagini nei messaggi e in secondo luogo l'immagine deve essere già disponibile su internet (non può esistere solo sul tuo computer per esempio, a meno che tu non abbia un webserver!). Non c'è modo di salvare le immagini localmente con phpBB (forse nella prossima release di phpBB). Per mostrare delle immagini devi inserire l'URL che rimanda all'immagine con il tag <b>[img][/img]</b>. Per esempio:<br /><br /><b>[img]</b>http://www.phpbb.com/images/phplogo.gif<b>[/img]</b><br /><br />Puoi inserire un'immagine nel tag <b>[url][/url]</b> se vuoi, es.<br /><br /><b>[url=http://www.phpbb.com/][img]</b>http://www.phpbb.com/images/phplogo.gif<b>[/img][/url]</b><br /><br />genera:<br /><br /><a href=\"http://www.phpbb.com/\" target=\"_blank\"><img src=\"http://www.phpbb.com/images/phplogo.gif\" border=\"0\" alt=\"\" /></a><br />");
+$faq[] = array("Aggiungere una immagine al messaggio", "Il BBCode di phpBB incorpora un tag per l'inclusione di immagini nei tuoi messaggi. Ci sono due cose importanti da ricordare nell'usare questo tag; a molti utenti non piacciono molte immagini nei messaggi e in secondo luogo l'immagine deve essere già disponibile su internet (non può esistere solo sul tuo computer per esempio, a meno che tu non abbia un webserver!). Non c'è modo di salvare le immagini localmente con phpBB (forse nella prossima release di phpBB). Per mostrare delle immagini devi inserire l'URL che rimanda all'immagine con il tag <b>[img][/img]</b>. Per esempio:<br /><br /><b>[img]</b>http://www.phpbb.com/images/phplogo.gif<b>[/img]</b><br /><br />Puoi inserire un'immagine nel tag <b>[url][/url]</b> se vuoi, es.<br /><br /><b>[url=http://www.phpbb.com/][img]</b>http://www.phpbb.com/images/phplogo.gif<b>[/img][/url]</b><br /><br />genera:<br /><br /><a href=\"http://www.phpbb.com/\" target=\"_blank\"><img src=\"templates/subSilver/images/logo_phpBB_med.gif\" border=\"0\" alt=\"\" /></a><br />");
 
 $faq[] = array("--", "Altre Cose");
-$faq[] = array("Posso aggiungere i miei tag personali?", "No, non direttamente in phpBB 2.0. Stiamo cercndo di rendere i tag del BBCode più versatili per la prossima versione");
+$faq[] = array("Posso aggiungere i miei tag personali?", "No, non direttamente in phpBB 2.0. Stiamo cercando di rendere i tag del BBCode più versatili per la prossima versione");
 
 //
 // This ends the BBCode guide entries

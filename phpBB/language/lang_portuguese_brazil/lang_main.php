@@ -28,9 +28,9 @@ $lang['ENCODING'] = 'iso-8859-1';
 $lang['DIRECTION'] = 'ltr';
 $lang['LEFT'] = 'left';
 $lang['RIGHT'] = 'right';
-$lang['DATE_FORMAT'] = 'l, j \d\e F \d\e Y'; // This should be changed to the default date format for your language, php date() format
+$lang['DATE_FORMAT'] = 'F \d\e Y'; // This should be changed to the default date format for your language, php date() format
 $lang['JOINED_DATE_FORMAT'] = 'F \d\e Y'; // Date format of Joined date, php date() format
-$lang['TRANSLATION_INFO'] = 'Traduzido por: <a href="http://usuarios.lycos.es/suportephpbb">Suporte phpBB</a>';
+$lang['TRANSLATION_INFO'] = 'Traduzido por: <a href="http://www.suportephpbb.cjb.net/">Suporte phpBB</a>';
 
 //
 // Common, these terms are used
@@ -119,9 +119,9 @@ $lang['Browsing_forum'] = 'Usuários no Fórum:';
 $lang['Online_users_zero_total'] = 'Não há <b>nenhum</b> Usuários online :: ';
 $lang['Online_users_total'] = 'Há <b>%d</b> Usuários online :: ';
 $lang['Online_user_total'] = 'Há <b>%d</b> Usuário online :: ';
-$lang['Reg_users_zero_total'] = 'Nenhum Usuários Registado, ';
+$lang['Reg_users_zero_total'] = 'Nenhum Usuários Registrado, ';
 $lang['Reg_users_total'] = '%d usuários Registrados, ';
-$lang['Reg_user_total'] = '%d usuário Registado, ';
+$lang['Reg_user_total'] = '%d usuário Registrado, ';
 $lang['Hidden_users_zero_total'] = 'Nenhum Invisível e ';
 $lang['Hidden_user_total'] = '%d Invisível e ';
 $lang['Hidden_users_total'] = '%d Invisíveis e ';
@@ -140,7 +140,7 @@ $lang['Search_new'] = 'Ler mensagens desde sua Última Visita';
 $lang['Search_your_posts'] = 'Verificar as SUAS mensagens';
 $lang['Search_unanswered'] = 'Ler mensagens SEM resposta';
 
-$lang['Register'] = 'Registar';
+$lang['Register'] = 'Registrar';
 $lang['Profile'] = 'Perfil';
 $lang['Edit_profile'] = 'Editar o seu Perfil';
 $lang['Search'] = 'Pesquisar';
@@ -159,10 +159,10 @@ $lang['Moderators'] = 'Moderadores';
 $lang['Posted_articles_zero_total'] = 'Há atualmente um total de <b>0</b> mensagens'; // Number of posts
 $lang['Posted_articles_total'] = 'Os nossos Usuários colocaram um total de <b>%d</b> mensagens'; // Number of posts
 $lang['Posted_article_total'] = 'Os nossos Usuários colocaram um total de <b>%d</b> mensagens'; // Number of posts
-$lang['Registered_users_zero_total'] = 'Não Temos <b>nenhum</b> Usuários registados'; // # registered users
-$lang['Registered_users_total'] = 'Temos <b>%d</b> Usuários registados'; // # registered users
-$lang['Registered_user_total'] = 'Temos <b>%d</b> Usuários registados'; // # registered users
-$lang['Newest_user'] = 'Dêem boas vindas ao nosso mais nosso usuário: <b>%s%s%s</b>'; // a href, username, /a
+$lang['Registered_users_zero_total'] = 'Não Temos <b>nenhum</b> Usuários registrados'; // # registered users
+$lang['Registered_users_total'] = 'Temos <b>%d</b> Usuários registrados'; // # registered users
+$lang['Registered_user_total'] = 'Temos <b>%d</b> Usuários registrados'; // # registered users
+$lang['Newest_user'] = 'Dêem boas vindas ao nosso mais novo usuário: <b>%s%s%s</b>'; // a href, username, /a
 
 $lang['No_new_posts_last_visit'] = 'Não há novas mensagens desde a sua última visita';
 $lang['No_new_posts'] = 'Não há mensagens novas';
@@ -363,7 +363,7 @@ $lang['Delete_post'] = 'Excluir esta mensagem';
 $lang['Stored'] = 'A sua mensagem foi enviada com sucesso';
 $lang['Deleted'] = 'A sua mensagem foi excluída com sucesso';
 $lang['Poll_delete'] = 'A sua enquete foi excluída com sucesso';
-$lang['Vote_cast'] = 'O seu voto foi registado';
+$lang['Vote_cast'] = 'O seu voto foi registrado';
 
 $lang['Topic_reply_notification'] = 'Notificação de Resposta a Tópico';
 
@@ -595,12 +595,12 @@ $lang['Profile_updated_inactive'] = 'O seu perfil foi atualizado, entretanto voc
 $lang['Already_activated'] = 'Você já ativou sua conta';
 
 $lang['Password_mismatch'] = 'As Senhas digitadas não coincidem';
-$lang['Current_password_mismatch'] = 'A Senha fornecida não é igual à registada no Banco de Dados';
+$lang['Current_password_mismatch'] = 'A Senha fornecida não é igual à registrada no Banco de Dados';
 $lang['Password_long'] = 'A sua Senha não pode ter mais que 32 caracteres';
 $lang['Username_taken'] = 'Este nome de Usuário já está em uso';
 $lang['Username_invalid'] = 'Este nome de Usuário contém algum caracter inválido, tal como "';
 $lang['Username_disallowed'] = 'Não é permitido o uso deste nome de Usuário';
-$lang['Email_taken'] = 'Esse endereço de email já se encontra registado por outro Usuário';
+$lang['Email_taken'] = 'Esse endereço de email já se encontra registrado por outro Usuário';
 $lang['Email_banned'] = 'Este endereço de email encontra-se Banido';
 $lang['Email_invalid'] = 'Este endereço de email é Inválido';
 $lang['Signature_too_long'] = 'A sua assinatura é muito grande';
@@ -613,19 +613,19 @@ $lang['Welcome_subject'] = 'Bem-vindo ao Fórum %s'; // Welcome to my.com forums
 $lang['New_account_subject'] = 'Novo Usuário Registrado';
 $lang['Account_activated_subject'] = 'Registo Ativado';
 
-$lang['Account_added'] = 'Obrigado por ter registado, o seu registo foi criado. Você pode logar-se com o seu nome de Usuário e respectiva Senha';
+$lang['Account_added'] = 'Obrigado por ter registrado, o seu registo foi criado. Você pode logar-se com o seu nome de Usuário e respectiva Senha';
 $lang['Account_inactive'] = 'O seu registo foi criado. Contudo este fórum requer que o mesmo seja ativado, uma senha para o tal foi enviada para o endereço de email fornecido. Por favor verifique o seu email para mais informações';
 $lang['Account_inactive_admin'] = 'O seu registo foi criado. Contudo este fórum requer que o mesmo seja ativado pelo administrador. O Pedido foi-lhe enviado e você será informado quando o seu registo for ativado';
-$lang['Account_active'] = 'O seu registo foi ativado. Obrigado por ter se registado';
+$lang['Account_active'] = 'O seu registo foi ativado. Obrigado por ter se registrado';
 $lang['Account_active_admin'] = 'O seu registo agora foi ativado';
 $lang['Reactivate'] = 'Reativar Registo!';
 $lang['COPPA'] = 'O seu registo foi criado mas deve ser aprovado, por favor verifique o seu email para mais detalhes.';
 
 $lang['Registration'] = 'Condições de Aceitação de Registro';
-$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens eenviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registo você concorda em seguir estas condições.';
+$lang['Reg_agreement'] = 'Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens. Como tal você reconhece que todas as mensagens eenviadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou os encarregados das páginas (exceto menasgens colocadas por essas pessoas) não sendo por tal responsáveis.<br /><br />Você aceita <b>não colocar qualquer mensagem abusiva, obscena, vulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei aplicável. Tal acontecendo implicará em sua expulsão imediata e permanente</b>. <b>Os endereços de IP de todas as mensagens são registrados para ajudar a implementar essas condições.</b> Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum têm o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer momento que eles assim o decidam e seja implícito. Como Usuário você aceita que qualquer informação que forneceu acima seja guardada num Banco de Dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa ou ato de \'hacking\', intromissão forçada e ilegal que conduza a exposição dessa informação.<br /><br />Este sistema de fóruns usa \'cookies\' para guardar informação no seu computador. Esses \'cookies\' não possúem nenhuma das informações acima fornecida, apenas servem apenas para melhorar o seu conforto enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a Senha (bem como para enviar novas senhas caso se esqueça da que acabou de enviar).<br /><br />Ao clicar abaixo para prosseguir com o registo você concorda em seguir estas condições.';
 
 $lang['Agree_under_13'] = 'Aceito estes termos e tenho  <b>menos que</b> 13 anos de idade';
-$lang['Agree_over_13'] = 'Aceito estes termos e tenho <b>mais que</b> 13 anos de idade';
+$lang['Agree_over_13'] = 'Aceito estes termos e tenho <b>mais que</b> ou <b>exatamente</b> 13 anos de idade';
 $lang['Agree_not'] = 'Não aceito estes termos';
 
 $lang['Wrong_activation'] = 'A senha de activação fornecida não coincide com nenhuma que se encontra no Banco de Dados';
@@ -788,7 +788,7 @@ $lang['Sorry_auth_vote'] = 'Apenas %s podem votar neste fórum';
 
 // These replace the %s in the above strings
 $lang['Auth_Anonymous_Users'] = '<b>usuários anônimos</b>';
-$lang['Auth_Registered_Users'] = '<b>usuários registados</b>';
+$lang['Auth_Registered_Users'] = '<b>usuários registrados</b>';
 $lang['Auth_Users_granted_access'] = '<b>usuários com acesso especial</b>';
 $lang['Auth_Moderators'] = '<b>moderadores</b>';
 $lang['Auth_Administrators'] = '<b>administradores</b>';
