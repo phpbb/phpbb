@@ -21,14 +21,6 @@
  ***************************************************************************/
 
 //
-// Translation by:
-//
-// Yoichi Iwaki  :: yoichi01@rr.iij4u.or.jp
-//
-// For questions and comments use: yoichi01@rr.iij4u.or.jp
-//
-
-//
 // Format is same as lang_main
 //
 
@@ -47,7 +39,7 @@ $lang['Permissions'] = "ƒp[ƒ~ƒbƒVƒ‡ƒ“";
 $lang['Manage'] = "ŠÇ—";
 $lang['Disallow'] = "Žg—p‹ÖŽ~‚Ì–¼‘O";
 $lang['Prune'] = "ƒvƒ‹[ƒjƒ“ƒOi™’’èj";
-$lang['Mass_Email'] = "Mass Mail";
+$lang['Mass_Email'] = "‘å—Êƒ[ƒ‹";
 $lang['Ranks'] = "ƒ‰ƒ“ƒN";
 $lang['Smilies'] = "ƒXƒ}ƒCƒŠ[";
 $lang['Ban_Management'] = "ŒfŽ¦”Â‚ÌŽg—p‹ÖŽ~";
@@ -160,6 +152,14 @@ $lang['Registered'] = "“o˜^ƒ†[ƒU[‚Ì‚Ý";
 $lang['Administrators'] = "ŠÇ—ŽÒ‚Ì‚Ý";
 $lang['Hidden'] = "•s‰ÂŽ‹";
 
+// These are displayed in the drop down boxes for advanced
+// mode forum auth, try and keep them short! 
+$lang['Forum_ALL'] = "‚·‚×‚Ä"; 
+$lang['Forum_REG'] = "“o˜^"; 
+$lang['Forum_PRIVATE'] = "“Á’è"; 
+$lang['Forum_MOD'] = "MOD"; 
+$lang['Forum_ADMIN'] = "ŠÇ—ŽÒ"; 
+
 $lang['View'] = "ŠÏ‰{";
 $lang['Read'] = "“Ç‚Þ";
 $lang['Post'] = "“Še";
@@ -237,6 +237,12 @@ $lang['Config_explain'] = "ŒfŽ¦”Â‘S‘Ì‚Ìˆê”ÊÝ’è‚ðs‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·Bƒ†[ƒU[‚Æƒ
 $lang['Click_return_config'] = "ˆê”ÊÝ’è‰æ–Ê‚É–ß‚éê‡‚Í%s‚±‚¿‚ç%s‚ðƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢";
 
 $lang['General_settings'] = "ˆê”Ê“I‚ÈŒfŽ¦”ÂÝ’è";
+$lang['Server_name'] = "ƒhƒƒCƒ“–¼"; 
+$lang['Server_name_explain'] = "‚±‚ÌŒfŽ¦”Â‚ÌƒhƒƒCƒ“–¼"; 
+$lang['Script_path'] = "ƒXƒNƒŠƒvƒg‚ÌƒpƒX"; 
+$lang['Script_path_explain'] = "ƒhƒƒCƒ“–¼‚©‚çŒ©‚½ phpBB2 ‚ÌˆÊ’u"; 
+$lang['Server_port'] = "ƒT[ƒo[‚Ìƒ|[ƒg"; 
+$lang['Server_port_explain'] = "ƒT[ƒo[‚ªŽg‚¤ƒ|[ƒgB•’Ê‚Í80‚Å‚·‚ªAˆÙ‚È‚éê‡‚Ì‚Ý‚±‚Ì’l‚ð•Ï‚¦‚Ä‚­‚¾‚³‚¢"; 
 $lang['Site_name'] = "ƒTƒCƒg–¼";
 $lang['Site_desc'] = "ƒTƒCƒg‚ÉŠÖ‚·‚é‹Lq";
 $lang['Board_disable'] = "ŒfŽ¦”Â‚Ì’âŽ~";
@@ -259,7 +265,7 @@ $lang['Default_style'] = "ƒfƒtƒHƒ‹ƒgƒXƒ^ƒCƒ‹";
 $lang['Override_style'] = "ƒfƒtƒHƒ‹ƒgƒXƒ^ƒCƒ‹—Dæ";
 $lang['Override_style_explain'] = "ƒ†[ƒU[‚ªŽw’è‚µ‚½ƒXƒ^ƒCƒ‹‚ðƒfƒtƒHƒ‹ƒgƒXƒ^ƒCƒ‹‚É’u‚«Š·‚¦‚Ü‚·";
 $lang['Default_language'] = "ƒfƒtƒHƒ‹ƒgŒ¾Œê";
-$lang['Date_format'] = "“ú•t‚ÌƒtƒH[ƒ}ƒbƒg";
+$lang['Date_format'] = "“ú•t‚ÌƒtƒH[ƒ}ƒbƒgiY”NMd“ú(D) H:i ‚ð„‘Ej";
 $lang['System_timezone'] = "ƒ^ƒCƒ€ƒ][ƒ“";
 $lang['Enable_gzip'] = "GZip ˆ³k";
 $lang['Enable_prune'] = "ƒvƒ‹[ƒjƒ“ƒO";
@@ -289,8 +295,7 @@ $lang['Avatar_storage_path_explain'] = "phpBB‚ÌƒfƒBƒŒƒNƒgƒŠ“à‚ÌƒpƒX‚Å‚ ‚é•K—v‚ª‚
 $lang['Avatar_gallery_path'] = "ƒ†[ƒU[‰æ‘œ‚ÌƒpƒX";
 $lang['Avatar_gallery_path_explain'] = "phpBB‚ÌƒfƒBƒŒƒNƒgƒŠ“à‚ÌƒpƒX‚Å‚ ‚é•K—v‚ª‚ ‚è‚Ü‚· i—áF images/avatars/galleryj";
 
-$lang['COPPA_settings'] = "COPPAiŽq‹Ÿ‚ÌƒIƒ“ƒ‰ƒCƒ“Eƒvƒ‰ƒCƒoƒV[
-•ÛŒì–@jÝ’è";
+$lang['COPPA_settings'] = "COPPAiŽq‹Ÿ‚ÌƒIƒ“ƒ‰ƒCƒ“Eƒvƒ‰ƒCƒoƒV[•ÛŒì–@jÝ’è";
 $lang['COPPA_fax'] = "COPPAƒtƒ@ƒbƒNƒX”Ô†";
 $lang['COPPA_mail'] = "COPPAƒ[ƒ‹ƒAƒhƒŒƒX";
 $lang['COPPA_mail_explain'] = "—˜—pŽÒ‚Ì—¼e‚ªCOPPA“o˜^ƒtƒH[ƒ€‚ð‘—‚é‚½‚ß‚Ìƒ[ƒ‹ƒAƒhƒŒƒX";
@@ -302,6 +307,10 @@ $lang['Email_sig_explain'] = "ŒfŽ¦”Â‚©‚ç‘—M‚³‚ê‚é‘S‚Ä‚Ìƒ[ƒ‹‚ÉA‚±‚±‚É“ü—Í‚³‚ê
 $lang['Use_SMTP'] = "SMTPƒT[ƒo[‚ÌŽg—p";
 $lang['Use_SMTP_explain'] = "Žw’è‚³‚ê‚½ƒT[ƒo[‚ð‰î‚µ‚Äƒ[ƒ‹‚ð‘—‚è‚½‚¢A–”‚Í‘—‚é•K—v‚ª‚ ‚éê‡‚É—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢";
 $lang['SMTP_server'] = "SMTPƒT[ƒo[‚ÌƒAƒhƒŒƒX";
+$lang['SMTP_username'] = "SMTP ƒ†[ƒU[–¼"; 
+$lang['SMTP_username_explain'] = "ƒ†[ƒU[–¼‚ÍSMTPƒT[ƒo[‚ª‚»‚ê‚ð—v‹‚·‚éê‡‚Ì‚Ý“ü—Í‚µ‚Ä‚­‚¾‚³‚¢"; 
+$lang['SMTP_password'] = "SMTP ƒpƒXƒ[ƒh"; 
+$lang['SMTP_password_explain'] = "ƒpƒXƒ[ƒh‚ÍSMTPƒT[ƒo[‚ª‚»‚ê‚ð—v‹‚·‚éê‡‚Ì‚Ý“ü—Í‚µ‚Ä‚­‚¾‚³‚¢"; 
 
 $lang['Disable_privmsg'] = "ƒvƒ‰ƒCƒx[ƒgƒƒbƒZ[ƒW";
 $lang['Inbox_limits'] = "ŽóMƒ{ƒbƒNƒX‚ÌÅ‘åƒƒbƒZ[ƒW”";
@@ -310,11 +319,12 @@ $lang['Savebox_limits'] = "•ÛŠÇƒ{ƒbƒNƒX‚ÌÅ‘åƒƒbƒZ[ƒW”";
 
 $lang['Cookie_settings'] = "CookieÝ’è"; 
 $lang['Cookie_settings_explain'] = "CookieÝ’è‚ÍŠù‚És‚í‚ê‚Ä‚¢‚éó‘Ô‚É‚ ‚è‚Ü‚·B‚Ù‚Æ‚ñ‚Ç‚Ìê‡‚Í‚±‚Ì‚Ü‚Ü‚Å–â‘è‚ ‚è‚Ü‚¹‚ñBÝ’è‚ð•ÏX‚·‚éê‡‚ÍTd‚És‚Á‚Ä‚­‚¾‚³‚¢BÝ’è‚ðŒë‚é‚ÆAƒ†[ƒU[‚ªƒƒOƒCƒ“‚Å‚«‚È‚­‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B";
-$lang['Cookie_name'] = "Cookie–¼";
-$lang['Cookie_domain'] = "CookieƒhƒƒCƒ“";
+$lang['Cookie_domain'] = "CookieƒhƒƒCƒ“"; 
+$lang['Cookie_name'] = "Cookie–¼"; 
 $lang['Cookie_path'] = "CookieƒpƒX";
-$lang['Session_length'] = "ƒZƒbƒVƒ‡ƒ“‚Ì’·‚³ i•b’PˆÊj";
-$lang['Cookie_secure'] = "CookieƒZƒLƒ…ƒA ihttpsj";
+$lang['Cookie_secure'] = "CookieƒZƒLƒ…ƒA ihttpsj"; 
+$lang['Cookie_secure_explain'] = "ƒT[ƒo[‚ªSSL‚ðŒo—R‚µ‚Ä‚¢‚éê‡‚Ì‚Ý—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢B‚»‚êˆÈŠO‚Ìê‡‚Í–³Œø‚Ì‚Ü‚Ü‚É‚µ‚Ä‚­‚¾‚³‚¢"; 
+$lang['Session_length'] = "ƒZƒbƒVƒ‡ƒ“‚Ì’·‚³ i•b’PˆÊj"; 
 
 
 //
@@ -475,7 +485,7 @@ $lang['Prune_success'] = "ƒtƒH[ƒ‰ƒ€‚Ìƒvƒ‹[ƒjƒ“ƒO‚ÍŠ®—¹‚µ‚Ü‚µ‚½";
 // Word censor
 //
 $lang['Words_title'] = "Œ¾ŒêƒtƒBƒ‹ƒ^[";
-$lang['Words_explain'] = "Œ¾ŒêƒtƒBƒ‹ƒ^[‚Ì’Ç‰Á/íœ/•ÒW‚ðs‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·BŒ¾ŒêƒtƒBƒ‹ƒ^[‚ÍA“Še‚³‚ê‚é•¶Í‚©‚çŒ¾ŒêƒtƒBƒ‹ƒ^[‚É“o˜^‚³‚ê‚Ä‚¢‚éŒ¾—t‚ðŒ©‚Â‚¯o‚µA‚»‚ÌŒ¾—t‚ðŽw’è‚³‚ê‚½‚à‚Ì‚É’uŠ·‚·‚é‹@”\‚Å‚·Bƒ†[ƒU[“o˜^Žž‚É‚ÍA‚±‚ÌŒ¾ŒêƒtƒBƒ‹ƒ^[‚É’Ç‰Á‚³‚ê‚Ä‚¢‚éŒ¾—t‚ð–¼‘O‚ÉŠÜ‚Þ‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñBƒƒCƒ‹ƒhƒJ[ƒh‚ðŽg—p‚·‚éê‡‚Í*‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢Bi—áF *test*‚Æ‚¢‚¤Œ¾ŒêƒtƒBƒ‹ƒ^[‚Ìê‡Adetestalbe, detest‚Æ‚¢‚Á‚½Œ¾—t‚à’uŠ·‚µ‚Ü‚·j";
+$lang['Words_explain'] = "Œ¾ŒêƒtƒBƒ‹ƒ^[‚Ì’Ç‰Á/íœ/•ÒW‚ðs‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·BŒ¾ŒêƒtƒBƒ‹ƒ^[‚ÍA“Še‚³‚ê‚é•¶Í‚©‚çŒ¾ŒêƒtƒBƒ‹ƒ^[‚É“o˜^‚³‚ê‚Ä‚¢‚éŒ¾—t‚ðŒ©‚Â‚¯o‚µA‚»‚ÌŒ¾—t‚ðŽw’è‚³‚ê‚½‚à‚Ì‚É’uŠ·‚·‚é‹@”\‚Å‚·Bƒ†[ƒU[“o˜^Žž‚É‚ÍA‚±‚ÌŒ¾ŒêƒtƒBƒ‹ƒ^[‚É’Ç‰Á‚³‚ê‚Ä‚¢‚éŒ¾—t‚ð–¼‘O‚ÉŠÜ‚Þ‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñBƒƒCƒ‹ƒhƒJ[ƒh‚ðŽg—p‚·‚éê‡‚Í*‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢Bi—áF *test*‚Æ‚¢‚¤Œ¾ŒêƒtƒBƒ‹ƒ^[‚Ìê‡Adetestable, detest‚Æ‚¢‚Á‚½Œ¾—t‚à’uŠ·‚µ‚Ü‚·j";
 $lang['Word'] = "‘ÎÛ";
 $lang['Edit_word_censor'] = "Œ¾ŒêƒtƒBƒ‹ƒ^[‚Ì•ÒW";
 $lang['Replacement'] = "’uŠ·";
@@ -526,6 +536,7 @@ $lang['No_assigned_rank'] = "“Á•Êƒ‰ƒ“ƒN‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ";
 $lang['Rank_updated'] = "ƒ‰ƒ“ƒN‚ÍXV‚³‚ê‚Ü‚µ‚½";
 $lang['Rank_added'] = "ƒ‰ƒ“ƒN‚Í’Ç‰Á‚³‚ê‚Ü‚µ‚½";
 $lang['Rank_removed'] = "ƒ‰ƒ“ƒN‚Ííœ‚³‚ê‚Ü‚µ‚½";
+$lang['No_update_ranks'] = "ƒ‰ƒ“ƒN‚Ííœ‚³‚ê‚Ü‚µ‚½‚ªA‚±‚Ìƒ‰ƒ“ƒN‚ðŽg—p‚µ‚Ä‚¢‚éƒAƒJƒEƒ“ƒg‚ÍXV‚³‚ê‚Ä‚¢‚È‚¢B‚±‚ÌƒAƒJƒEƒ“ƒg‚Ìƒ‰ƒ“ƒN‚ðŽè“®‚ÅƒŠƒZƒbƒg‚µ‚Ä‚­‚¾‚³‚¢"; 
 
 $lang['Click_return_rankadmin'] = "ƒ‰ƒ“ƒNŠÇ—‰æ–Ê‚É–ß‚éê‡‚Í%s‚±‚¿‚ç%s‚ðƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢";
 
@@ -698,8 +709,14 @@ $lang['Upgrade'] = "ƒAƒbƒvƒOƒŒ[ƒh";
 
 $lang['Install_Method'] = "ƒCƒ“ƒXƒg[ƒ‹•û–@‚ð‘I‘ð‚µ‚Ä‚­‚¾‚³‚¢";
 
+$lang['Install_No_Ext'] = "ƒT[ƒo[‚ÌPHPÝ’è‚Í‚¨‘I‚Ñ‚Ìƒf[ƒ^ƒx[ƒX‚ÌŽí—Þ‚ðƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢"; 
+
+$lang['Install_No_PCRE'] = "phpBB2 Requires the Perl-Compatible Regular Expressions Module for php which your php configuration doesn't appear to support!"; 
+
 //
 // That's all Folks!
 // -------------------------------------------------
-
+// Translation by:
+// Yoichi Iwaki  :: yoichi01@rr.iij4u.or.jp
+// For questions and comments use: yoichi01@rr.iij4u.or.jp
 ?>

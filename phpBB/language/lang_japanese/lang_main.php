@@ -26,13 +26,17 @@
 //
 // For questions and comments use: yoichi01@rr.iij4u.or.jp
 //
+//Final touches by sorrydaijin@hotmail.com
+
+
+
 
 setlocale(LC_ALL, "ja_JP.SJIS");
 $lang['ENCODING'] = "shift_jis";
 $lang['DIRECTION'] = "ltr";
 $lang['LEFT'] = "left";
 $lang['RIGHT'] = "right";
-$lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
+$lang['DATE_FORMAT'] =  "Y”NM d“ú"; // This should be changed to the default date format for your language, php date() format 
 
 //
 // Common, these terms are used
@@ -91,10 +95,10 @@ $lang['Page_of'] = "Page <b>%d</b> of <b>%d</b>"; // Replaces with: Page 1 of 2 
 
 $lang['ICQ'] = "ICQƒiƒ“ƒo[";
 $lang['AIM'] = "AIMƒAƒhƒŒƒX";
-$lang['MSNM'] = "MSN Messenger";
-$lang['YIM'] = "Yahoo Messenger";
+$lang['MSNM'] = "MSN ƒƒbƒZƒ“ƒWƒƒ[";
+$lang['YIM'] = "Yahoo ƒƒbƒZƒ“ƒWƒƒ[";
 
-$lang['Forum_Index'] = "%s :: ƒtƒH[ƒ‰ƒ€ˆê——";  // eg. sitename Forum Index, %s can be removed if you prefer
+$lang['Forum_Index'] = "%s ƒtƒH[ƒ‰ƒ€ˆê——";  // eg. sitename Forum Index, %s can be removed if you prefer
 
 $lang['Post_new_topic'] = "ƒgƒsƒbƒN‚ÌV‹K“Še";
 $lang['Reply_to_topic'] = "•ÔM";
@@ -116,6 +120,7 @@ $lang['Board_disable'] = "\‚µ–ó‚ ‚è‚Ü‚¹‚ñ‚ªAŒ»İŒf¦”Â‚Í•Â½‚³‚ê‚Ä‚¢‚Ü‚·BŠÔ
 // Global Header strings
 //
 $lang['Registered_users'] = "“o˜^ƒ†[ƒU[:";
+$lang['Browsing_forum'] = "‚±‚ÌƒtƒH[ƒ‰ƒ€‚ğ‰{——’†‚Ìƒ†[ƒU[:"; 
 $lang['Online_users_zero_total'] = "ƒIƒ“ƒ‰ƒCƒ“ó‘Ô‚Ìƒ†[ƒU[‚Í<b>0</b>‚Å‚· :: ";
 $lang['Online_users_total'] = "ƒIƒ“ƒ‰ƒCƒ“ó‘Ô‚Ìƒ†[ƒU[‚Í<b>%d</b>l‚¢‚Ü‚· :: ";
 $lang['Online_user_total'] = "ƒIƒ“ƒ‰ƒCƒ“ó‘Ô‚Ìƒ†[ƒU[‚Í<b>%d</b>l‚¢‚Ü‚· :: ";
@@ -128,9 +133,11 @@ $lang['Hidden_user_total'] = "‰B‚êƒ†[ƒU[i%dlj, ";
 $lang['Guest_users_zero_total'] = "ƒQƒXƒgi0lj";
 $lang['Guest_users_total'] = "ƒQƒXƒgƒ†[ƒU[i%dlj";
 $lang['Guest_user_total'] = "ƒQƒXƒgƒ†[ƒU[i%dlj";
+$lang['Record_online_users'] = "ƒ†[ƒU[”‚Ì‹L˜^‚Í %sl <b>(%s)</b>"; // first %s = number of users, second %s is the date.@modified for GOLD compliance 
 
 $lang['Admin_online_color'] = "%sAdministrator%s";
 $lang['Mod_online_color'] = "%sModerator%s";
+
 $lang['You_last_visit'] = "ÅŒã‚É–K‚ê‚½“ú•t - %s"; // %s replaced by date/time
 $lang['Current_time'] = "Œ»İ‚Ì - %s"; // %s replaced by time
 
@@ -198,7 +205,7 @@ $lang['Private_Message'] = "ƒvƒ‰ƒCƒx[ƒgƒƒbƒZ[ƒW";
 $lang['Private_Messages'] = "ƒvƒ‰ƒCƒx[ƒgƒƒbƒZ[ƒW";
 $lang['Who_is_Online'] = "ƒIƒ“ƒ‰ƒCƒ“ŠÇ—";
 
-$lang['Mark_all_forums'] = ">> ‘S‚Ä‚Ì‹L–ƒ}[ƒN‚·‚éi‘S‚Ä‚ÌƒgƒsƒbƒN‚ªhV‚µ‚¢‹L––³‚µh‚Æ‚È‚è‚Ü‚·j";
+$lang['Mark_all_forums'] = ">> ‘S‚Ä‚Ì‹L–‚ğƒ}[ƒN‚·‚éi‘S‚Ä‚ÌƒgƒsƒbƒN‚ªhV‚µ‚¢‹L––³‚µh‚Æ‚È‚è‚Ü‚·j";
 $lang['Forums_marked_read'] = "‘S‚Ä‚ÌƒtƒH[ƒ‰ƒ€‚Ì‹L–‚Íƒ}[ƒN‚³‚ê‚Ü‚µ‚½";
 
 
@@ -286,6 +293,7 @@ $lang['Start_watching_topic'] = "‚±‚ÌƒgƒsƒbƒN‚Ì•ÔM‚Ìƒ`ƒFƒbƒN";
 $lang['No_longer_watching'] = "ƒgƒsƒbƒN‚Ì•ÔM‚Ìƒ`ƒFƒbƒN‚ğ‰ğœ‚µ‚Ü‚µ‚½";
 $lang['You_are_watching'] = "ƒgƒsƒbƒN‚Ì•ÔM‚Ìƒ`ƒFƒbƒN‚ğŠJn‚µ‚Ü‚µ‚½";
 
+$lang['Total_votes'] = "“Š•[”"; 
 
 //
 // Posting/Replying (Not private messaging!)
@@ -424,12 +432,12 @@ $lang['Inbox'] = "óMƒ{ƒbƒNƒX";
 $lang['Outbox'] = "‘—Mƒ{ƒbƒNƒX";
 $lang['Savebox'] = "•ÛŠÇƒ{ƒbƒNƒX";
 $lang['Sentbox'] = "‘—MÏ‚İƒ{ƒbƒNƒX";
-$lang['Flag'] = "<nobr>ƒtƒ‰ƒO";
-$lang['Subject'] = "<nobr>Œ–¼";
-$lang['From'] = "<nobr>‘—MÒ";
-$lang['To'] = "<nobr>ˆ¶æ";
+$lang['Flag'] = "ƒtƒ‰ƒO"; 
+$lang['Subject'] = "Œ–¼"; 
+$lang['From'] = "‘—MÒ"; 
+$lang['To'] = "ˆ¶æ"; 
 $lang['Date'] = "“ú";
-$lang['Mark'] = "<nobr>ƒ`ƒFƒbƒN";
+$lang['Mark'] = "ƒ`ƒFƒbƒN";
 $lang['Sent'] = "‘—MÏ‚İ";
 $lang['Saved'] = "•Û‘¶Ï‚İ";
 $lang['Delete_marked'] = "ƒ`ƒFƒbƒN€–Ú‚ğíœ";
@@ -447,6 +455,10 @@ $lang['PM_disabled'] = "‚±‚ÌŒf¦”Â‚Å‚Íƒvƒ‰ƒCƒx[ƒgƒƒbƒZ[ƒW‚Í‹@”\‚µ‚Ä‚¢‚Ü‚¹‚ñ";
 $lang['Cannot_send_privmsg'] = "c”O‚È‚ª‚çAŠÇ—l‚É‚æ‚Á‚Äƒvƒ‰ƒCƒx[ƒgƒƒbƒZ[ƒW‚Ìg—p‚ğ‹Ö~‚³‚ê‚Ä‚¢‚Ü‚·";
 $lang['No_to_user'] = "³‚µ‚¢–¼‘O‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
 $lang['No_such_user'] = "‚»‚Ì‚æ‚¤‚È–¼‘O‚Ìƒ†[ƒU[‚Í‘¶İ‚µ‚Ü‚¹‚ñ";
+
+$lang['Disable_HTML_pm'] = "HTML‚ğ–³Œø‚É‚·‚é"; 
+$lang['Disable_BBCode_pm'] = "BBCode‚ğ–³Œø‚É‚·‚é"; 
+$lang['Disable_Smilies_pm'] = "ƒXƒ}ƒCƒŠ[‚ğ–³Œø‚É‚·‚é"; 
 
 $lang['Message_sent'] = "ƒƒbƒZ[ƒW‚Í‘—M‚³‚ê‚Ü‚µ‚½";
 
@@ -513,7 +525,7 @@ $lang['Search_user_posts'] = "%s‚Ì“Še‹L–‚ğ‘S‚ÄŒŸõ"; // Find all posts by user
 
 $lang['No_user_id_specified'] = "‚»‚Ìƒ†[ƒU[‚Í‘¶İ‚µ‚Ü‚¹‚ñ";
 $lang['Wrong_Profile'] = "©•ªˆÈŠO‚Ìİ’èAƒ†[ƒU[î•ñ‚ğ•ÏX‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ";
-$lang['Sorry_banned_or_taken_email'] = "‚»‚Ìƒ[ƒ‹ƒAƒhƒŒƒX‚Í‹Ö~‚³‚ê‚Ä‚¢‚é‚©AŠù‚É“o˜^‚³‚ê‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B•Ê‚Ìƒ[ƒ‹ƒAƒhƒŒƒX‚ÅÄ‚Ñ‚µ‚Ä‚­‚¾‚³‚¢B‚»‚ê‚Å‚à‘Ê–Ú‚Èê‡‚ÍAŒf¦”Â‚ÌŠÇ—Ò‚É–â‚¢‡‚í‚¹‚Ä‚­‚¾‚³‚¢B";
+
 $lang['Only_one_avatar'] = "ƒ†[ƒU[‰æ‘œ‚Í1í—Ş‚µ‚©w’è‚Å‚«‚Ü‚¹‚ñ";
 $lang['File_no_data'] = "w’è‚µ‚½URL‚Ìƒtƒ@ƒCƒ‹‚É‚Íƒf[ƒ^‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚¹‚ñ";
 $lang['No_connection_URL'] = "w’è‚µ‚½URL‚ÉÚ‘±‚Å‚«‚Ü‚¹‚ñ";
@@ -541,6 +553,7 @@ $lang['Public_view_email'] = "ƒ[ƒ‹ƒAƒhƒŒƒX‚ğí‚É•\¦";
 $lang['Current_password'] = "Œ»İ‚ÌƒpƒXƒ[ƒh";
 $lang['New_password'] = "V‚µ‚¢ƒpƒXƒ[ƒh";
 $lang['Confirm_password'] = "V‚µ‚¢ƒpƒXƒ[ƒhiŠm”Fj";
+$lang['Confirm_password_explain'] = "ƒpƒXƒ[ƒh‚âƒ[ƒ‹ƒAƒhƒŒƒX‚ğ•ÏX‚·‚éê‡AƒpƒXƒ[ƒh‚ÌŠm”F‚ğs‚Á‚Ä‚­‚¾‚³‚¢"; 
 $lang['password_if_changed'] = "ƒpƒXƒ[ƒh‚ğ•ÏX‚µ‚½‚¢ê‡‚Ì‚İ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
 $lang['password_confirm_if_changed'] = "ƒpƒXƒ[ƒh‚ğ•ÏX‚·‚éê‡‚Ì‚İ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
 
@@ -572,7 +585,13 @@ $lang['Profile_updated_inactive'] = "İ’è‚ÍXV‚³‚ê‚Ü‚µ‚½‚ªAd—v‚ÈÚ×‚à•ÏX‚µ‚
 
 $lang['Password_mismatch'] = "“ü—Í‚µ‚½ƒpƒXƒ[ƒh‚Íˆê’v‚µ‚Ü‚¹‚ñ‚Å‚µ‚½";
 $lang['Current_password_mismatch'] = "“ü—Í‚µ‚½Œ»İ‚ÌƒpƒXƒ[ƒh‚ÍAƒf[ƒ^ƒx[ƒX‚É•ÛŠÇ‚³‚ê‚Ä‚¢‚é‚à‚Ì‚Æˆê’v‚µ‚Ü‚¹‚ñ‚Å‚µ‚½";
-$lang['Invalid_username'] = "‚»‚Ì–¼‘O‚ÍŠù‚É“o˜^‚³‚ê‚Ä‚¢‚é‚©Ag—p‹Ö~‚Ì–¼‘O‚Æ‚µ‚Ä“o˜^‚³‚ê‚Ä‚¢‚Ü‚·B‚ ‚é‚¢‚Í \" ‚Ì‚æ‚¤‚È‹L†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B";
+$lang['Password_long'] = "ƒpƒXƒ[ƒh‚Í32šˆÈ“à‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢"; 
+$lang['Username_taken'] = "‚±‚Ìƒ†[ƒU[–¼‚ÍŠù‚Ég‚í‚ê‚Ä‚¢‚é"; 
+$lang['Username_invalid'] = "‚±‚Ìƒ†[ƒU[–¼‚É\"‚È‚Ç‚Ì–³Œø‚È‹L†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·"; 
+$lang['Username_disallowed'] = "‚±‚Ìƒ†[ƒU[–¼‚Ìg—p‚Í‹Ö~‚³‚ê‚Ä‚¢‚é"; 
+$lang['Email_taken'] = "‚»‚ÌE-mailƒAƒhƒŒƒX‚Í‚Ù‚©‚Ìƒ†[ƒU[‚Ég—p‚³‚ê‚Ä‚¢‚é"; 
+$lang['Email_banned'] = "‚»‚ÌE-mailƒAƒhƒŒƒX‚Í‹Ö~‚³‚ê‚Ä‚¢‚é"; 
+$lang['Email_invalid'] = "‚»‚ÌE-mailƒAƒhƒŒƒX‚Í–³Œø‚Å‚·"; 
 $lang['Signature_too_long'] = "ƒTƒCƒ“‚ª’·‚·‚¬‚Ü‚·";
 $lang['Fields_empty'] = "•K—v–€‚Ì—“‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢";
 $lang['Avatar_filetype'] = "ƒ†[ƒU[‰æ‘œ‚Í.jpg, .gif, .png‚Å‚ ‚é•K—v‚ª‚ ‚è‚Ü‚·";
@@ -588,7 +607,7 @@ $lang['Account_inactive'] = "ƒAƒJƒEƒ“ƒg‚Íì¬‚³‚ê‚Ü‚µ‚½B‚µ‚©‚µA‚±‚ÌŒf¦”Â‚Å‚Íƒ
 $lang['Account_inactive_admin'] = "ƒAƒJƒEƒ“ƒg‚Íì¬‚³‚ê‚Ü‚µ‚½B‚µ‚©‚µA‚±‚ÌŒf¦”Â‚Å‚ÍŠÇ—Ò‚É‚æ‚éƒAƒJƒEƒ“ƒg‚ÌƒAƒNƒeƒBƒx[ƒVƒ‡ƒ“‚ª•K—v‚Æ‚È‚Á‚Ä‚¢‚Ü‚·BŠÇ—Ò‚ªƒAƒJƒEƒ“ƒg‚ğƒAƒNƒeƒBƒu‚É‚µ‚½ŒãA‚ ‚È‚½‚Ìƒ[ƒ‹ƒAƒhƒŒƒX‚ÉƒAƒNƒeƒBƒx[ƒVƒ‡ƒ“Š®—¹‚Ìƒ[ƒ‹‚ª‘—M‚³‚ê‚Ü‚·B";
 $lang['Account_active'] = "ƒAƒJƒEƒ“ƒg‚ÍƒAƒNƒeƒBƒu‚Æ‚È‚è‚Ü‚µ‚½B“o˜^‚µ‚Ä‚¢‚½‚¾‚«A‚Ü‚±‚Æ‚É‚ ‚è‚ª‚Æ‚¤‚²‚´‚¢‚Ü‚·";
 $lang['Account_active_admin'] = "ƒAƒJƒEƒ“ƒg‚ÍƒAƒNƒeƒBƒu‚Æ‚È‚è‚Ü‚µ‚½";
-$lang['Reactivate'] = "Reactivate your account!";
+$lang['Reactivate'] = "ƒAƒJƒEƒ“ƒg‚ğÄ‚Ñ—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢!";
 $lang['COPPA'] = "ƒAƒJƒEƒ“ƒg‚Íì¬‚³‚ê‚Ü‚µ‚½‚ªA³‘ø‚³‚ê‚é•K—v‚ª‚ ‚è‚Ü‚·BÚ×‚ÉŠÖ‚µ‚Ä‚Íƒ[ƒ‹‚ğŒ©‚Ä‚­‚¾‚³‚¢B";
 
 $lang['Registration'] = "“o˜^‹K–ñ";
@@ -720,6 +739,7 @@ $lang['Search_for_all'] = "‘S‚Ä‚Ì’PŒê‚ğŒŸõ";
 
 $lang['Search_title_msg'] = "ƒgƒsƒbƒN‚Ì‘è–¼‚Æ–{•¶‚ğŒŸõ";
 $lang['Search_msg_only'] = "–{•¶‚Ì‚İ‚ğŒŸõ";
+
 $lang['Return_first'] = "ŒŸõŒ‹‰Ê‚ÌŠe‹L–‚Ì•\¦•¶š”: "; // followed by xxx characters in a select box
 $lang['characters_posts'] = "•¶š";
 
@@ -873,6 +893,7 @@ $lang['4.5'] = "GMT +4:30";
 $lang['5'] = "GMT +5:00";
 $lang['5.5'] = "GMT +5:30";
 $lang['6'] = "GMT +6:00";
+$lang['6.5'] = "GMT + 6.5"; 
 $lang['7'] = "GMT +7:00";
 $lang['8'] = "¼‘¤•W€ (‹B)";
 $lang['9'] = "GMT +9:00";
