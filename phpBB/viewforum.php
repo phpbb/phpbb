@@ -119,10 +119,11 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
 $previous_days = array(0, 1, 7, 14, 30, 60, 180, 364);
 $previous_days_text = array("$l_All_Topics", "1 $l_Day", "7 $l_Days", "2 $l_Weeks", "1 $l_Month", "2 $l_Months", "6 $l_Months", "1 $l_Year");
 
-if(!empty($HTTP_POST_VARS['postdays']))
+if(!empty($HTTP_POST_VARS['postdays']) || !empty($HTTP_GET_VARS['postdays']))
 {
 
-	$min_post_time = time() - ($HTTP_POST_VARS['postdays'] * 86400);
+	$post_days = (!empty($HTTP_POST_VARS['postdays'])) ? $HTTP_POST_VARS['postdays'] : $HTTP_GET_VARS['postdays'];
+	$min_post_time = time() - ($post_days * 86400);
 
 	$sql = "SELECT COUNT(*) AS forum_topics 
 		FROM ".TOPICS_TABLE."  
@@ -133,23 +134,25 @@ if(!empty($HTTP_POST_VARS['postdays']))
 	{
 		error_die(SQL_QUERY, "Couldn't obtain limited topics count information.", __LINE__, __FILE__);
 	}
-	$topics_count = $db->sql_numrows($result);
+	$topics_count = $db->sql_fetchfield("forum_topics", -1, $result);
 
 	$limit_posts_time = "AND t.topic_time > $min_post_time ";
-	$start = 0;
+
+	if(!empty($HTTP_POST_VARS['postdays']))
+	{
+		$start = 0;
+	}
 }
 else
 {
 	$limit_posts_time = "";
+	$post_days = 0;
 }
 
-$select_post_days .= "<select name=\"postdays\">";
+$select_post_days = "<select name=\"postdays\">";
 for($i = 0; $i < count($previous_days); $i++)
 {
-	if(isset($HTTP_POST_VARS['postdays']))
-	{
-		$selected = ($HTTP_POST_VARS['postdays'] == $previous_days[$i]) ? " selected" : "";
-	}
+	$selected = ($post_days == $previous_days[$i]) ? " selected" : "";
 	$select_post_days .= "<option value=\"".$previous_days[$i]."\"$selected>".$previous_days_text[$i]."</option>";
 }
 $select_post_days .= "</select>";
@@ -268,7 +271,6 @@ if($total_topics)
 			"TOPIC_ID" => $topic_id,
 			"FOLDER" => $folder_img, 
 			"TOPIC_POSTER" => $topic_poster,
-			"U_TOPIC_POSTER_PROFILE" => $topic_poster_profile_url,
 			"GOTO_PAGE" => $goto_page,
 			"REPLIES" => $replies,
 			"TOPIC_TITLE" => $topic_title,
@@ -277,12 +279,13 @@ if($total_topics)
 			"LAST_POST_USER" => $last_post_user,
 
 			"U_VIEW_TOPIC" => $view_topic_url,
-			"U_LAST_POST_USER_PROFILE" => $last_post_profile_url)
+			"U_LAST_POST_USER_PROFILE" => $last_post_profile_url,
+			"U_TOPIC_POSTER_PROFILE" => $topic_poster_profile_url)
 		);
 	}
 
 	$template->assign_vars(array(
-		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id", $topics_count, $board_config['topics_per_page'], $start))
+		"PAGINATION" => generate_pagination("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id&postdays=$post_days", $topics_count, $board_config['topics_per_page'], $start))
 	);
 
 	$template->pparse("body");
