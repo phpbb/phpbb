@@ -286,7 +286,7 @@ class parse_message
 					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 					foreach ($conf as $ini_var)
 					{
-						ini_set($ini_var, str_replace('highlight.', 'hl_', $ini_var));
+						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 					}
 
 					ob_start();
@@ -294,16 +294,16 @@ class parse_message
 					$code = ob_get_contents();
 					ob_end_clean();
 
-					$str_from = array('<font color="hl_', '</font>', '<code>', '</code>','[', ']', '.');
-					$str_to = array('<span class="hl_', '</span>', '', '', '&#91;', '&#93;', '&#46;');
+					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.');
+					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;');
 
 					if ($remove_tags)
 					{
-						$str_from[] = '<span class="hl_default">&lt;?php&nbsp;</span>';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;</span>';
 						$str_to[] = '';
-						$str_from[] = '<span class="hl_default">&lt;?php&nbsp;';
-						$str_to[] = '<span class="hl_default">';
-						$str_from[] = '<span class="hl_default">?&gt;</span>';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
+						$str_to[] = '<span class="syntaxdefault">';
+						$str_from[] = '<span class="syntaxdefault">?&gt;</span>';
 						$str_to[] = '';
 					}
 
@@ -929,9 +929,9 @@ class fulltext_search
 		$words = array();
 		if ($mode == 'edit')
 		{
-			$sql = "SELECT w.word_id, w.word_text, m.title_match
-				FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m
-				WHERE m.post_id = " . intval($post_id) . "
+			$sql = 'SELECT w.word_id, w.word_text, m.title_match
+				FROM ' . SEARCH_WORD_TABLE . ' w, ' . SEARCH_MATCH_TABLE . " m
+				WHERE m.post_id = $post_id 
 					AND w.word_id = m.word_id";
 			$result = $db->sql_query($sql);
 
@@ -967,9 +967,9 @@ class fulltext_search
 		// and then add (or remove) matches between the words and this post
 		if (sizeof($unique_add_words))
 		{
-			$sql = "SELECT word_id, word_text
-				FROM " . SEARCH_WORD_TABLE . "
-				WHERE word_text IN (" . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_add_words)) . ")";
+			$sql = 'SELECT word_id, word_text
+				FROM ' . SEARCH_WORD_TABLE . '
+				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'\1\'', $unique_add_words)) . ")";
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
@@ -986,29 +986,26 @@ class fulltext_search
 			{
 				switch (SQL_LAYER)
 				{
-					case 'postgresql':
-					case 'msaccess':
-					case 'mssql-odbc':
-					case 'oracle':
-					case 'db2':
-						foreach ($new_words as $word)
-						{
-							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
-								VALUES ('" . $word . "')";
-							$db->sql_query($sql);
-						}
-
-						break;
 					case 'mysql':
 					case 'mysql4':
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
-							VALUES " . implode(', ', preg_replace('#^(.*)$#', '(\'\1\')',  $new_words));
+						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text)
+							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'\1\')',  $new_words));
 						$db->sql_query($sql);
 						break;
+
 					case 'mssql':
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
-							VALUES " . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \'\1\'',  $new_words));
+					case 'sqlite':
+						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\\1'",  $new_words));
 						$db->sql_query($sql);
+						break;
+
+					default:
+						foreach ($new_words as $word)
+						{
+							$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
+								VALUES ('$word')";
+							$db->sql_query($sql);
+						}
 						break;
 				}
 			}

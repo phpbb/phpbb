@@ -434,20 +434,6 @@ function swatch()
 		// Insert the new users 
 		switch (SQL_LAYER)
 		{
-			case 'postgresql':
-			case 'msaccess':
-			case 'mssql-odbc':
-			case 'oracle':
-			case 'db2':
-				foreach ($user_id_ary as $user_id)
-				{
-					$sql = "INSERT INTO $table_sql (user_id, group_id)
-						VALUES ($user_id, $group_id)";
-					$db->sql_query($sql);
-				}
-
-				break;
-
 			case 'mysql':
 			case 'mysql4':
 				$sql = "INSERT INTO $table_sql (user_id, group_id)
@@ -456,9 +442,18 @@ function swatch()
 				break;
 
 			case 'mssql':
-				$sql = "INSERT INTO $table_sql (user_id, group_id)
-					VALUES " . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id)",  $user_id_ary));
+			case 'sqlite':
+				$sql = "INSERT INTO $table_sql (user_id, group_id) " . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id)",  $user_id_ary));
 				$db->sql_query($sql);
+				break;
+
+			default:
+				foreach ($user_id_ary as $user_id)
+				{
+					$sql = "INSERT INTO $table_sql (user_id, group_id)
+						VALUES ($user_id, $group_id)";
+					$db->sql_query($sql);
+				}
 				break;
 		}
 

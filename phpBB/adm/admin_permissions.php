@@ -3,7 +3,7 @@
  *                           admin_permissions.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
+ *   copyright            : © 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$

@@ -557,9 +557,11 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 							case 'mysql':
 							case 'mysql4':
 								$sql .= (($sql != '') ? ', ' : '') . '(' . $user->data['user_id'] . ', ' . $row['forum_id'] . ", $current_time)";
+								$sql = 'VALUES ' . $sql;
 								break;
 
 							case 'mssql':
+							case 'sqlite':
 								$sql = (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ', ' . $row['forum_id'] . ", $current_time";
 								break;
 
@@ -572,8 +574,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 
 						if ($sql != '')
 						{
-							$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . ' (user_id, forum_id, mark_time)
-								VALUES ' . $sql;
+							$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . " (user_id, forum_id, mark_time) $sql";
 							$db->sql_query($sql);
 						}
 					}
@@ -940,6 +941,10 @@ function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
 		// If we get an integer zero then we are inactive, else the username/password is wrong
 		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
 	}
+
+	$sql = 'DELETE FROM ' . CONFIRM_TABLE . ' 
+		WHERE confirm_time < ' . (time() - $config['session_length']);
+//	$db->sql_query($sql);
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err, 

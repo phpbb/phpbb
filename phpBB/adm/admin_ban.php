@@ -257,11 +257,12 @@ if (isset($_REQUEST['bansubmit']))
 					break;
 
 				case 'mssql':
+				case 'sqlite':
 					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
 					break;
 
 				default:
-					$sql = "INSERT INTO " . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
+					$sql = 'INSERT INTO ' . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
 						VALUES ($ban_entryx, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
 					$db->sql_query($sql);
 					$sql = '';
@@ -270,7 +271,7 @@ if (isset($_REQUEST['bansubmit']))
 
 		if ($sql != '')
 		{
-			$sql = "INSERT INTO " . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
+			$sql = 'INSERT INTO ' . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
 				VALUES $sql";
 			$db->sql_query($sql);
 		}

@@ -201,13 +201,16 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 						{
 							case 'mysql':
 							case 'mysql4':
-								$value_sql .= (($value_sql != '') ? ', ' : '') . '(\'' . $word[$i] . '\')';
+								$value_sql .= (($value_sql != '') ? ', ' : '') . "('" . $word[$i] . "')";
 								break;
+
 							case 'mssql':
+							case 'sqlite':
 								$value_sql .= (($value_sql != '') ? ' UNION ALL ' : '') . "SELECT '" . $word[$i] . "'";
 								break;
+
 							default:
-								$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+								$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
 									VALUES ('" . $word[$i] . "')";
 								$db->sql_query($sql);
 								break;
@@ -221,11 +224,13 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 					{
 						case 'mysql':
 						case 'mysql4':
-							$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text)
+							$sql = 'INSERT IGNORE INTO ' . SEARCH_WORD_TABLE . " (word_text)
 								VALUES $value_sql";
 							break;
+
 						case 'mssql':
-							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text)
+						case 'sqlite':
+							$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
 								$value_sql";
 							break;
 					}
@@ -240,7 +245,7 @@ if (isset($_POST['start']) || isset($_GET['batchstart']))
 
 				if ($match_sql != '')
 				{
-					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
+					$sql = 'INSERT INTO ' . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
 						SELECT $post_id, word_id, $title_match
 							FROM " . SEARCH_WORD_TABLE . "
 							WHERE word_text IN ($match_sql)";
