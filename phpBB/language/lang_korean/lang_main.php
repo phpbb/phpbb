@@ -21,23 +21,12 @@
  *
  ***************************************************************************/
 
-//
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
-//
 
-//setlocale(LC_ALL, "en");
+//setlocale(LC_ALL, "kr");
 $lang['ENCODING'] = "euc-kr";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "Y³â m¿ù dÀÏ"; // This should be changed to the default date format for your language, php date() format
 
 //

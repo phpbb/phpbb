@@ -1,3 +1,5 @@
+Subject: Aktivering af nyt kodeord
+
 Hej {USERNAME}
 
 Du modtager denne email fordi du (eller nogen der lader som om, de er dig) har bedt om et nyt kodeord tilsendt til din konto på {SITENAME}. Hvis du ikke har bedt om denne email, så skal du bare ignorere den. Hvis du bliver ved med at modtage den, kontakt da venligst forumets administrator.

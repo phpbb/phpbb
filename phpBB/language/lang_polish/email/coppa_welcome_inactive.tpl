@@ -1,3 +1,5 @@
+Subject: Witamy na Forum {SITENAME}
+
 {WELCOME_MSG}
 
 Zgodnie z aktem COPPA Twoje konto jest obecnie nieaktywne.

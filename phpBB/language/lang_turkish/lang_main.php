@@ -29,11 +29,11 @@
 //
 
 
-//setlocale(LC_ALL, "en");
+//setlocale(LC_ALL, "tr");
 $lang['ENCODING'] = "iso-8859-9";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //

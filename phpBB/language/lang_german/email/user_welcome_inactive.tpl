@@ -1,3 +1,5 @@
+Subject: Willkommen auf {SITENAME}
+
 {WELCOME_MSG}
 
 Bitte halte diese E-Mail gespeichert, falls du dein Passwort vergessen solltest. Deine Login-Daten sind die folgenden:

@@ -1,3 +1,5 @@
+Subject: Je moet je account opnieuw activeren!
+
 Hallo {USERNAME},
 
 Je account op "{SITENAME}" is gedeactiveerd, waarschijnlijk door veranderingen

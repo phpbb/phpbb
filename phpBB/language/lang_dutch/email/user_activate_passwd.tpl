@@ -1,3 +1,5 @@
+Subject: Nieuw wachtwoord activatie
+
 Hallo {USERNAME}
 
 Deze email is verstuurd omdat jij (of iemand die zich voordeed als

@@ -1,3 +1,5 @@
+Subject: Välkommen till {SITENAME} Forum
+
 {WELCOME_MSG}
 
 Spara detta meddelande för framtida behov.  Dina kontouppgifter är:

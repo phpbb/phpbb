@@ -1,3 +1,5 @@
+Subject: Foi feito um pedido para se juntar ao seu Grupo
+
 Estimado {GROUP_MODERATOR},
 
 Um utilizador apresentou um pedido para entrar num grupo no qual você é moderador em {SITENAME}.

@@ -1,3 +1,5 @@
+Subject: Téma hozzászólás-értesítés - {TOPIC_TITLE}
+
 Helló {USERNAME},
 
 Ezt a levelet azért kapta, mert a {SITENAME} fórumon a "{TOPIC_TITLE}" téma figyelését kérte. A témára válasz érkezett, kattintson az alábbi linkre a válasz megtekintéséhez.

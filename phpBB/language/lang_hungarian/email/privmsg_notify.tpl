@@ -1,3 +1,5 @@
+Subject: Új privát üzenete érkezett
+
 Helló {USERNAME},
 
 Új privát üzenete érkezett a "{SITENAME}" fórumon lévõ azonosítójára. Az eseményrõl a korábbiakban értesítést kért. Az új üzenetet megtekintheti az alábbi linkre kattintva:

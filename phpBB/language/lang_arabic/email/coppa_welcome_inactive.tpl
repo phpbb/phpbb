@@ -1,3 +1,5 @@
+Subject: √Â·« Ê”Â·« »ﬂ„ ›Ì „‰ œÏ {SITENAME}
+
 {WELCOME_MSG}
 
 In compliance with the COPPA act your account is currently inactive.

@@ -1,3 +1,5 @@
+Subject: Activação de Senha Nova
+
 Olá {USERNAME}
 
 Está a receber este email porque você (ou alguém passando por si) pediu que uma senha nova relativa à sua conta em {SITENAME} fosse enviada. Se não solicitou este email por favor ignore-o. Caso continue a recebe-lo por favor contacte o Administrador dos fóruns.

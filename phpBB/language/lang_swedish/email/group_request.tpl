@@ -1,3 +1,5 @@
+Subject: En förfrågan att om att bli medlem i din grupp har gjorts
+
 Hej {GROUP_MODERATOR},
 
 En användare har ansökt om att delta i en grupp du ansvarar för på {SITENAME}.

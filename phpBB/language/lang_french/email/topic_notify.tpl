@@ -1,3 +1,5 @@
+Subject: Notification de Réponse au Sujet - {TOPIC_TITLE}
+
 Bonjour {USERNAME},
 
 Vous recevez cet email parce que vous surveillez le sujet, "{TOPIC_TITLE}" sur {SITENAME}. Ce sujet a reçu une réponse depuis votre dernière visite. Vous pouvez utiliser le lien suivant pour voir les réponses qui ont été faites, aucune autre notification ne vous sera envoyé jusqu'à ce que vous visitez le sujet.

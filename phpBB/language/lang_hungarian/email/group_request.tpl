@@ -1,3 +1,5 @@
+Subject: A request to join your group has been made
+
 Kedves {GROUP_MODERATOR},
 
 Egy felhasználó szeretne csatlakozni egy csoporthoz, aminek a moderátora a {SITENAME} fórumon.

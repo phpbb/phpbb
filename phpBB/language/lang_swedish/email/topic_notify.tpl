@@ -1,3 +1,5 @@
+Subject: Meddelande om svar på inlägg - {TOPIC_TITLE}
+
 Hej {USERNAME},
 
 Du får detta meddelande för att du bevakar ämnet, "{TOPIC_TITLE}" på {SITENAME}. Ämnet har fått ett svar sedan ditt senaste besök. Du kan använder länken nedan för att se svaren, inga fler meddelande ska skickas till dig tills du besöka ämnet.

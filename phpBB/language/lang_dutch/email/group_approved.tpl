@@ -1,3 +1,5 @@
+Subject: Je aanmelding is goedgekeurd
+
 Hallo,
 
 Je verzoek om toegevoegd te worden aan de "{GROUP_NAME}" groep is goedgekeurd.

@@ -1,3 +1,5 @@
+Subject: Velkommen til forumene på {SITENAME}
+
 {WELCOME_MSG}
 
 I tråd med COPPA er medlemskapet ditt ikke aktivert.

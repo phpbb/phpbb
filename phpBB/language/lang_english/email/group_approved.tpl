@@ -1,3 +1,5 @@
+Subject: Your request has been approved
+
 Congratulations,
 
 Your request to join the "{GROUP_NAME}" group on {SITENAME} has been approved.

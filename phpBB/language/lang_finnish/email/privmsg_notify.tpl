@@ -1,3 +1,5 @@
+Subject: Uusi yksityinen viesti on saapunut
+
 Tervehdys {USERNAME},
 
 Olet saanut uuden yksityisen viestin käyttäjätunnuksellesi sivustolla "{SITENAME}" ja olet pyytänyt ilmoittamaan tapahtumasta. Voit katsoa uutta viestiäsi klikkaamalla seuraavaa linkkiä:

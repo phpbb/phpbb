@@ -27,9 +27,9 @@
 
 //setlocale(LC_ALL, "pl");
 $lang['ENCODING'] = "iso-8859-2";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //
@@ -591,9 +591,9 @@ $lang['Signature_too_long'] = "Twój podpis jest za d³ugi";
 $lang['Fields_empty'] = "Musisz wype³niæ wymagane pola";
 $lang['Avatar_filetype'] = "Emblemat musi byæ typu .jpg, .gif lub .png";
 $lang['Avatar_filesize'] = "Rozmiar emblematu musi byæ wiêkszy ni¿ 0 kB i mniejszy ni¿"; // followed by xx kB, xx being the size
-$lang['Avatar_imagesize'] = "Emblemat musi byæ mniejszy ni¿ " . $board_config['avatar_max_width'] . " pikseli szeroko¶ci i " . $board_config['avatar_max_height'] . " pikseli wysoko¶ci"; 
+$lang['Avatar_imagesize'] = "Emblemat musi byæ mniejszy ni¿ %d pikseli szeroko¶ci i %d pikseli wysoko¶ci"; 
 
-$lang['Welcome_subject'] = "Witamy na Forum " . $board_config['sitename'];
+$lang['Welcome_subject'] = "Witamy na Forum %s";
 $lang['New_account_subject'] = "Nowe Konto";
 $lang['Account_activated_subject'] = "Konto Aktywowane";
 

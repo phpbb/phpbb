@@ -1,3 +1,5 @@
+Subject: Återaktivera ditt konto!
+
 Hej {USERNAME},
 
 Ditt konto på "{SITENAME}" har inaktiverats, troligtvis pga ändringar som gjorts i din profil. Aktivera ditt konto genom att klicka på länken nedan:

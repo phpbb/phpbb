@@ -1,3 +1,5 @@
+Subject: Új jelszó aktiválása
+
 Helló {USERNAME},
 
 Ezt a levelet azért kapta, mert Ön (vagy valaki Ön helyett) új jelszó elküldését kérte a {SITENAME} fórumon lévõ azonosítójához. Amennyiben nem kérte ezt az levelet, hagyja figyelmen kívül. Ha a továbbiakban is kapna ilyen leveleket, vegye fel a kapcsolatot a fórum adminisztrátorával.

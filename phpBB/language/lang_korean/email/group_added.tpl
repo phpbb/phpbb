@@ -1,3 +1,5 @@
+Subject: 이 유저그룹에 추가되었습니다.
+
 Congratulations,
 
 You have been added to the "{GROUP_NAME}" group on {SITENAME}.

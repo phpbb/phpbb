@@ -1,3 +1,5 @@
+Subject: Velkommen til forumene på {SITENAME}
+
 {WELCOME_MSG}
 
 Ta vare på denne e-posten, medlemsinformasjonen din er som følger :

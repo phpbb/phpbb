@@ -1,3 +1,5 @@
+Subject: Du bist dieser Gruppe beigetreten
+
 Gratulation,
 
 Du wurdest zur Gruppe "{GROUP_NAME}" auf {SITENAME} hinzugefügt.

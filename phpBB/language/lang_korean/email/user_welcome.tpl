@@ -1,3 +1,5 @@
+Subject: {SITENAME}
+
 안녕하세요..{WELCOME_MSG} 입니다..
 {WELCOME_MSG} 에 가입하신것을 진심으로 환영합니다.
 등록하신 계정정보는 다음과 같습니다. 

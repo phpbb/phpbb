@@ -1,3 +1,5 @@
+Subject: Aktiver nytt passord
+
 Hei {USERNAME}
 
 Du har mottatt denne e-posten fordi du (eller noen som utgir seg for deg) har bedt om at et nytt passord på {SITENAME}. Hvis du ikke har bedt om nytt passord kan du overse denne e-posten, vennligst gi beskjed til forumets administrator.

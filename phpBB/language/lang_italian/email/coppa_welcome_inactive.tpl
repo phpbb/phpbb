@@ -1,3 +1,5 @@
+Subject: Benvenuto nel forum di {SITENAME}
+
 {WELCOME_MSG}
 
 In accordo con l'atto COPPA il tuo account è al momento inattivo.

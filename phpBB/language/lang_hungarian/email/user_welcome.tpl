@@ -1,3 +1,5 @@
+Subject: Üdvözöljük a {SITENAME} fórumán
+
 {WELCOME_MSG}
 
 Tartsa meg ezt a levelet, hogy a késõbbiekben segítségként felhasználhassa. Az azonosítójának információi az alábbiak:

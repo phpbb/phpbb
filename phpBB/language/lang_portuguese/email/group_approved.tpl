@@ -1,3 +1,5 @@
+Subject: O seu pedido foi aceite
+
 Parabéns,
 
 O seu pedido para entrar no grupo "{GROUP_NAME}" em {SITENAME} foi aprovado.

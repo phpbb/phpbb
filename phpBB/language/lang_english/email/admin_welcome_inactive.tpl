@@ -1,3 +1,5 @@
+Subject: Welcome to {SITENAME} Forums
+
 {WELCOME_MSG}
 
 Please keep this email for your records. Your account information is as follows:

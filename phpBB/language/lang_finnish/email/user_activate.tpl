@@ -1,3 +1,5 @@
+Subject: Aktivoi uudelleen käyttäjätunnuksesi!
+
 Tervehdys {USERNAME},
 
 Käyttäjätunnuksesi sivustolla "{SITENAME}" on passivoitu. Todennäköisesti johtuen muutoksista käyttäjätiedoissasi. Käyttäjätunnuksen uudelleen aktivoimiseksi klikkaa linkkiä alapuolella:

@@ -1,3 +1,5 @@
+Subject: Er is een nieuw bericht
+
 Hallo {USERNAME},
 
 Je heb een nieuw bericht ontvangen op "{SITENAME}" en hebt in je profiel

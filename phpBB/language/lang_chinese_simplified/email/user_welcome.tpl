@@ -1,3 +1,5 @@
+Subject: 欢迎您访问 {SITENAME} 论坛
+
 {WELCOME_MSG}
 
 请妥善保留这封电子邮件. 您的帐号资料如下:

@@ -1,3 +1,5 @@
+Subject: Witamy na Forum {SITENAME}
+
 {WELCOME_MSG}
 
 Prosimy o zachowanie lub wydrukowanie tej wiadomo¶ci. Twoje konto ma poni¿sze dane:

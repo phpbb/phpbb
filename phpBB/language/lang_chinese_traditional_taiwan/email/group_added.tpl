@@ -1,3 +1,5 @@
+Subject: 您已經被加入這個會員群組
+
 恭喜您,
 
 您已經正式加入"{SITENAME}"的"{GROUP_NAME}"這個群組.

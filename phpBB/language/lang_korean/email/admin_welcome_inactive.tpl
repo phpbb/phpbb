@@ -1,3 +1,5 @@
+Subject: {SITENAME}
+
 {WELCOME_MSG} ¿‘¥œ¥Ÿ.
 
 Please keep this email for your records. Your account information is as follows:

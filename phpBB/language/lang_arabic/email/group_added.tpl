@@ -1,3 +1,5 @@
+Subject: Êד ÇÖÇÝÊ‗ בבדÌדזÚÉ
+
 דÈÑז‗,
 
 Êד ÇÖÇÝÊ‗ בבדÌדזÚÉ "{GROUP_NAME}" Ýם ÇבדזÞÚ {SITENAME}.

@@ -1,3 +1,5 @@
+Subject: Varsel om svar på Tema - {TOPIC_TITLE}
+
 Hei {USERNAME},
 
 Du mottar denne e-posten fordi du abonnerer på emnet, "{TOPIC_TITLE}", i forumet på {SITENAME}.

@@ -1,3 +1,5 @@
+Subject: Activation d'un nouveau mot de passe
+
 Bonjour {USERNAME}
 
 Vous recevez cet email parce que vous avez (ou quelqu'un qui prétend être vous) demandé à ce qu'un nouveau mot de passe vous soit envoyé pour votre compte sur {SITENAME}. Si vous n'avez pas demandé cet email, veuillez l'ignorer alors, si vous continuez à le recevoir, veuillez contacter l'administrateur du forum.

@@ -1,3 +1,5 @@
+Subject: Grubunuza katýlmak için bir baþvuru var
+
 Degerli {GROUP_MODERATOR},
 
 {SITENAME} sitesinde bulunan bir kullanici yoneticisi oldugunuz bir gruba girmek istiyor.

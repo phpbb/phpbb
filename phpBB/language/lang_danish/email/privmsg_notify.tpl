@@ -1,3 +1,5 @@
+Subject: Ny Privat besked er ankommet
+
 Hej {USERNAME},
 
 Du har modtaget en ny privat besked til din konto på "{SITENAME}" og du har valgt, at blive orienteret når det sker. Du kan se din nye besked ved at klikke på følgende link:

@@ -1,3 +1,5 @@
+Subject: Ny lösenords aktivering
+
 Hej {USERNAME}
 
 Du får detta meddelande eftersom du (eller någon som ger sig ut att vara dig) har begärt ett nytt lösenord till ditt konto på {SITENAME}. Om du inte har begärt detta kan du bortse från detta meddelande, om du i fortsättningen får fler sådana meddelanden var god och ta kontakt med administratören.

@@ -1,3 +1,5 @@
+Subject: New password activation
+
 Hello {USERNAME}
 
 You are receiving this email because you have (or someone pretending to be you has) requested a new password be sent for your account on {SITENAME}. If you did not request this email then please ignore it, if you keep receiving it please contact the board administrator.

@@ -1,3 +1,5 @@
+Subject: Emnet er besvaret - {TOPIC_TITLE}
+
 Hej {USERNAME},
 
 Du modtager denne email, fordi du følger med i emnet, "{TOPIC_TITLE}" på {SITENAME}. Dette emne et svar, siden dit sidste besøg. Du kan bruge følgende link, for at se de nye svar. Der vil ikke blive afsendt flere orienteringer, før du besøger dette emne.

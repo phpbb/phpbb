@@ -1,3 +1,5 @@
+Subject: Un Nouveau Message Privé vient d'arriver
+
 Hello {USERNAME},
 
 Vous avez reçu un nouveau message privé sur votre compte sur "{SITENAME}" et avez demandé à être averti dans ce cas. Vous pouvez voir votre nouveau message en cliquant sur le lien suivant:

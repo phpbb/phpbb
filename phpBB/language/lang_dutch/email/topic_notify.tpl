@@ -1,3 +1,5 @@
+Subject: Melding van het plaatsen van een reactie - {TOPIC_TITLE}
+
 Hallo {USERNAME},
 
 Je hebt deze email ontvangen omdat je geabonneerd bent op het onderwerp:

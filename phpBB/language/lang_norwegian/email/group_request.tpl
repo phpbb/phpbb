@@ -1,3 +1,5 @@
+Subject: En søknad om deltagelse i din gruppe er levert
+
 Hei {GROUP_MODERATOR},
 
 Et medlem har søkt om medlemskap i en gruppe du modererer på {SITENAME}.

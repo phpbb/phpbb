@@ -1,3 +1,5 @@
+Subject: Uuden salasanan aktivointi
+
 Tervehdys {USERNAME}
 
 Saat tämän sähköpostin koska olet (tai joku joka väittää olevansa sinä) pyytänyt uutta salasanaa lähetettäväksi käyttäjätunnuksellesi sivustolla {SITENAME}. Jos et pyytänyt tätä sähköpostia, älä piittaa tästä. Jos saat tämän toistuvasti ota yhteys järjestelmän ylläpitoon.

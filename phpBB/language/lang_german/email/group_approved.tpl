@@ -1,3 +1,5 @@
+Subject: Deine Anfrage wurde akzeptiert
+
 Gratulation,
 
 Deine Anfrage für die Gruppe "{GROUP_NAME}" auf {SITENAME} wurde akzeptiert.

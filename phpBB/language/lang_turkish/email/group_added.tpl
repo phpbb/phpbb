@@ -1,3 +1,5 @@
+Subject: Bu gruba eklendiniz
+
 Tebrikler,
 
 {SITENAME} de bulunan "{GROUP_NAME}" grubuna katildiniz.

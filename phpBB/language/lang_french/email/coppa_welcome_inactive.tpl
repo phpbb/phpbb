@@ -1,3 +1,5 @@
+Subject: Bienvenue sur les Forums {SITENAME}
+
 {WELCOME_MSG}
 
 Conformément à l'acte de la COPPA, votre compte est actuellement inactif.

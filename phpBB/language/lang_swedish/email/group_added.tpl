@@ -1,3 +1,5 @@
+Subject: Du har lagts till i den här användar gruppen
+
 Gratulera,
 
 Du har godkännts för "{GROUP_NAME}" gruppen på {SITENAME}.

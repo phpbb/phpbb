@@ -1,3 +1,5 @@
+Subject: Je bent toegevoegd aan deze groep
+
 Hallo,
 
 Je bent toegevoegd aan de groep "{GROUP_NAME}" groep door een van de

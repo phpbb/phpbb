@@ -1,3 +1,5 @@
+Subject: Välkommen till {SITENAME} Forum
+
 {WELCOME_MSG}
 
 I enlighet med 'COPPA act' är ditt konto inte aktiverat.

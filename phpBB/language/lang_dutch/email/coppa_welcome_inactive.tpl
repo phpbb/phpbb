@@ -1,3 +1,5 @@
+Subject: Welkom op {SITENAME}
+
 {WELCOME_MSG}
 
 In verband met de COPPA wetgeving is je account nog niet actief.

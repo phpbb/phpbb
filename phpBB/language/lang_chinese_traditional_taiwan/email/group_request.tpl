@@ -1,3 +1,5 @@
+Subject: 有一個會員申請加入您的群組
+
 親愛的 {GROUP_MODERATOR} 您好,
 
 有一個會員提出申請加入你在"{SITENAME}"所管理的會員群組.

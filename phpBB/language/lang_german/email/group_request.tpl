@@ -1,3 +1,5 @@
+Subject: Eine Anfrage zum Beitritt in diese Gruppe wurde erstellt
+
 Hallo {GROUP_MODERATOR}!
 
 Ein User möchte einer Gruppe auf {SITENAME} beitreten, bei der du der Moderator bist.

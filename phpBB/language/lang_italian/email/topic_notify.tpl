@@ -1,3 +1,5 @@
+Subject: Notifica di risposta all'argomento - {TOPIC_TITLE}
+
 Ciao {USERNAME},
 
 Hai ricevuto questa email perchè stai controllando l'argomento "{TOPIC_TITLE}" su {SITENAME}. Questo argomento ha ricevuto risposte dalla tua ultima visita. Puoi usare il seguente link per vedere le risposte, nessun altro avviso ti sarà inviato finchè non avrai consultato l'argomento.

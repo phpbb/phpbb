@@ -1,3 +1,5 @@
+Subject: Witamy na Forum {SITENAME}
+
 {WELCOME_MSG}
 
 Prosimy o zachowanie lub wydrukowanie tego email'a. Informacje o Twoim koncie s± nastêpuj±ce:

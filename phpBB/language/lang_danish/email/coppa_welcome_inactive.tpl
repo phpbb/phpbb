@@ -1,3 +1,5 @@
+Subject: Velkommen til {SITENAME} Forum
+
 {WELCOME_MSG}
 
 I overensstemmelse med COPPA lovgivning er din konto på nuværende tidspunkt ikke aktiv.

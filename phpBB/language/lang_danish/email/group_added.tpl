@@ -1,3 +1,5 @@
+Subject: Du er nu tilføjet til denne bruger gruppe
+
 Tillykke,
 
 Du er blevet tilføjet "{GROUP_NAME}" gruppen på {SITENAME}.

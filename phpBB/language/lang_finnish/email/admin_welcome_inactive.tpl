@@ -1,3 +1,5 @@
+Subject: Tervetuloa {SITENAME} Foorumeihin
+
 {WELCOME_MSG}
 
 Ole hyvä ja säilytä tämä viesti. Käyttäjätietosi ovat seuraavanlaiset:

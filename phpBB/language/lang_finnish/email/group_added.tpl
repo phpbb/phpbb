@@ -1,3 +1,5 @@
+Subject: Sinut on lis‰tty t‰h‰n k‰ytt‰j‰ryhm‰‰n
+
 Onneksi olkoon,
 
 Sinut on lis‰tty ryhm‰‰n "{GROUP_NAME}" sivustolla {SITENAME}.

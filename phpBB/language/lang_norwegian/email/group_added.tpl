@@ -1,3 +1,5 @@
+Subject: Du er nå lagt til i denne grupppen
+
 Gratulerer,
 
 Du er lagt til som medlem i gruppen, "{GROUP_NAME}", i forumet på {SITENAME}.

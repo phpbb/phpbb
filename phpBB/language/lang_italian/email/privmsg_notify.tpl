@@ -1,3 +1,5 @@
+Subject: Hai un nuovo messaggio privato
+
 Ciao {USERNAME},
 
 Hai ricevuto un nuovo messaggio privato sul tuo account su "{SITENAME}" e hai richiesto di esserne informato. Puoi consultare il tuo nuovo messaggio clickando sul seguente link:

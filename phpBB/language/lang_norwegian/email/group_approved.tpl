@@ -1,3 +1,5 @@
+Subject: Din søknad er innvilget
+
 Gratulerer,
 
 Din søknad om medlemskap i "{GROUP_NAME}" i forumet på {SITENAME} er innvilget.

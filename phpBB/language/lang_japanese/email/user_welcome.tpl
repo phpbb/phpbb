@@ -1,3 +1,5 @@
+Subject: ‚æ‚¤‚±‚»{SITENAME}‚ÌŒfŽ¦”Â‚Ö
+
 {WELCOME_MSG}
 
 

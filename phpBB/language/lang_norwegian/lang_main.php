@@ -23,23 +23,12 @@
 //   Norwegian translation by lanes, shantra & water
 // 
 
-//
-// The format of this file is:
-//
-// ---> $lang['message'] = "text";
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
-//
 
 //setlocale(LC_ALL, "no");
 $lang['ENCODING'] = "iso-8859-1";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "VENSTRE";
-$lang['RIGHT'] = "HØYRE";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =	"d M Y"; // This should be changed to the default date format for your language, php date() format
 
 //

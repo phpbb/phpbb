@@ -1,3 +1,5 @@
+Subject: Aktivierung des neuen Passwortes
+
 Hallo {USERNAME}!
 
 Du erhältst diese Mail, weil du (oder jemand, der sich für dich ausgibt), ein neues Passwort für {SITENAME} angefordert hat. Wenn du diese E-Mail nicht angefordert hast, kannst ud sie ignorieren.

@@ -1,3 +1,5 @@
+Subject: Verzoek om lid te worden van een groep
+
 Hallo {GROUP_MODERATOR},
 
 Een gebruiker heeft verzocht toegevoegd te worden aan een groep die jij

@@ -1,3 +1,5 @@
+Subject: Du har mottatt en Privat Melding
+
 Hei {USERNAME},
 
 Du har mottatt en ny privat melding i forumet på "{SITENAME}", og har bedt om at dette varsles med e-post. Du kan lese meldingen ved å klikke på linken under :

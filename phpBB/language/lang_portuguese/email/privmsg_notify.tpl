@@ -1,3 +1,5 @@
+Subject: Chegou uma Mensagem Privada nova
+
 Olá {USERNAME},
 
 Recebeu uma Mensagem Privada nova na sua conta em "{SITENAME}" e você tinha pedido para ser notificado caso tal acontecesse. Pode ver essa mensagem carregando no seguinte endereço:

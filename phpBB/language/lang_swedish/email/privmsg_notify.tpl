@@ -1,3 +1,5 @@
+Subject: Du har fått ett Privat Meddelande
+
 Hej {USERNAME},
 
 Du har fått ett nytt privatmeddelande till ditt konto på "{SITENAME}" och du har bett att få ett meddelande om detta. Du kan titta på meddelandet genom att klicka på länken nedan:

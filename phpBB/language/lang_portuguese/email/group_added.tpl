@@ -1,3 +1,5 @@
+Subject: Você foi adicionado a este Grupo de utilizadores
+
 Parabéns,
 
 Você foi adicionado ao grupo "{GROUP_NAME}" em {SITENAME}.

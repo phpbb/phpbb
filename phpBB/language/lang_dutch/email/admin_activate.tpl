@@ -1,3 +1,5 @@
+Subject: Nieuw gebruikers account
+
 Hallo,
 
 Het account "{USERNAME}" is net aangemaakt of gedeactiveerd. Kijk aub de

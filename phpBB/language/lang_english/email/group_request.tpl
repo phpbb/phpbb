@@ -1,3 +1,5 @@
+Subject: A request to join your group has been made
+
 Dear {GROUP_MODERATOR},
 
 A user has requested to join a group you moderator on {SITENAME}.

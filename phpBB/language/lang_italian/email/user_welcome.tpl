@@ -1,3 +1,5 @@
+Subject: Benvenuto nel forum di {SITENAME}
+
 {WELCOME_MSG}
 
 Per favore conserva questa email per la tua registrazione. I tuoi dati per l'account sono i seguenti:

@@ -27,9 +27,9 @@
 
 //setlocale(LC_ALL, "ru");
 $lang['ENCODING'] = "windows-1251";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d.m.Y"; // This should be changed to the default date format for your language, php date() format
 
 //

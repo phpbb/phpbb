@@ -1,3 +1,5 @@
+Subject: Tervetuloa {SITENAME} Foorumeihin
+
 {WELCOME_MSG}
 
 COPPA säännöstön mukaisesti käyttäjätunnustasi ei ole vielä aktivoitu.

@@ -1,3 +1,5 @@
+Subject: Din förfrågan har blivit godkänd
+
 Gratulera,
 
 Din förfrågan att delta i "{GROUP_NAME}" grupp på {SITENAME} har godkännts.

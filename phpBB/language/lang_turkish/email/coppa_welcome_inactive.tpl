@@ -1,3 +1,5 @@
+Subject: {SITENAME} Forumlarýna Hoþgeldiniz
+
 {WELCOME_MSG}
 
 COPPA ilkelerine gore kullanici hesabiniz suanda inaktif durumdadir.

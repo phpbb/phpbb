@@ -1,3 +1,5 @@
+Subject: Welkom op {SITENAME}
+
 {WELCOME_MSG}
 
 Hieronder een overzicht van je login informatie:

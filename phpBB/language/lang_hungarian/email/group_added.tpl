@@ -1,3 +1,5 @@
+Subject: Sikeresen csatlakozott a csoporthoz
+
 Gratulálunk,
 
 Sikeresen csatlakozott a "{GROUP_NAME}" csoporthoz a {SITENAME} fórumon.

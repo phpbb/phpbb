@@ -1,3 +1,5 @@
+Subject: Velkommen til {SITENAME} Forum
+
 {WELCOME_MSG}
 
 Opbevar venligst denne email til fremtidig brug. Din kontoinformation er som følger:

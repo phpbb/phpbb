@@ -1,3 +1,5 @@
+Subject: Cevap gözleme - {TOPIC_TITLE}
+
 Merhaba {USERNAME},
 
 Bu msgi almanizin nedeni, {SITENAME} de bulununan "{TOPIC_TITLE}" baslikta yeni msglar olmasidir. Asagidaki linke tiklyarak konuya ulasabilirsiniz.

@@ -1,3 +1,5 @@
+Subject: {SITENAME}
+
 안녕하세요.. {WELCOME_MSG} 입니다..
 
 Please keep this email for your records. Your account information is as follows:

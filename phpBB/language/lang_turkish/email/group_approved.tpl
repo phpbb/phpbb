@@ -1,3 +1,5 @@
+Subject: Baþvurunuz onaylanmýþtýr
+
 Tebrikler,
 
 "{GROUP_NAME}" grubuna girme talebiniz kabul edildi.  {SITENAME} 

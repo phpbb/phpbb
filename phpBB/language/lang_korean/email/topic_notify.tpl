@@ -1,3 +1,5 @@
+Subject: 답변글이 등록되었습니다. - {TOPIC_TITLE}
+
 안녕하세요.. {USERNAME}님.!
 
 {SITENAME} 에서 작성한 {TOPIC_TITLE} 에 대한

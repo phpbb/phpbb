@@ -1,3 +1,5 @@
+Subject: Benvenuto nel forum di {SITENAME}
+
 {WELCOME_MSG}
 
 Per favore conserva questa email. Queste sono le informazioni sul tuo account:

@@ -1,3 +1,5 @@
+Subject: 您已经被加入这个团队
+
 恭喜,
 
 您已经成功加入"{SITENAME}"的"{GROUP_NAME}"这个群组.

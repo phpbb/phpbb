@@ -1,3 +1,5 @@
+Subject: Aktywacja nowego has³a
+
 Witaj {USERNAME}
 
 Otrzymujesz ten email poniewa¿ Ty (albo kto¶ podaj±cy siê za Ciebie) poprosi³ o nowe has³o dla Twojego konta na {SITENAME}. Je¿eli nie prosi³e¶ o ten email zignoruj go, a je¶li otrzymasz go ponownie skontaktuj siê z administratorem forum.

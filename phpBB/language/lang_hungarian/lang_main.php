@@ -43,11 +43,11 @@
 
 
 //setlocale(LC_ALL, "en");
-$lang['TRANSLATION_INFO'] = "Magyar fordítás &copy; 2002 <a class=\"copyright\"href=\"mailto:mauzi@expertlan.hu\">Egerváry Gergely</a>";
+$lang['TRANSLATION_INFO'] = 'Magyar fordítás &copy; 2002 <a class="copyright" href="mailto:mauzi@expertlan.hu">Egerváry Gergely</a>';
 $lang['ENCODING'] = "iso-8859-2";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "Y M d"; // This should be changed to the default date format for your language, php date() format
 
 //

@@ -1,3 +1,5 @@
+Subject: Welkom op {SITENAME}
+
 {WELCOME_MSG}
 
 Je account is NIET actief. Je kan het account activeren door op onderstaande link te klikken:

@@ -1,3 +1,5 @@
+Subject: Willkommen auf {SITENAME}
+
 {WELCOME_MSG}
 
 Gem‰ﬂ den COPPA-Richtlinien ist dein Account im Moment inaktiv.

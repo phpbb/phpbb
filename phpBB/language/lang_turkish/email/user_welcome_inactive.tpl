@@ -1,3 +1,5 @@
+Subject: {SITENAME} Forumlarýna Hoþgeldiniz
+
 {WELCOME_MSG}
 
 Lutfen bu msgi saklayiniz. Kullanici bilgileriniz asagidadir.

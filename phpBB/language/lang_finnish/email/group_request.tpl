@@ -1,3 +1,5 @@
+Subject: Ryhmään on tehty jäseneksi liittymispyyntö
+
 Arvoisa {GROUP_MODERATOR},
 
 Käyttäjä on pyytänyt lupaa liittyä ryhmään, jonka moderaattori sinä olet sivustolla {SITENAME}.

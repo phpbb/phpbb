@@ -25,12 +25,13 @@
 //
 
 
-setlocale(LC_ALL, "el");
+//setlocale(LC_ALL, "el");
 $lang['ENCODING'] = "iso-8859-7";
-$lang['DIRECTION'] = "LTR";
-$lang['LEFT'] = "LEFT";
-$lang['RIGHT'] = "RIGHT";
+$lang['DIRECTION'] = "ltr";
+$lang['LEFT'] = "left";
+$lang['RIGHT'] = "right";
 $lang['DATE_FORMAT'] =  "d M Y"; // This should be changed to the default date format for your language, php date() format
+
 
 //
 // Common, these terms are used

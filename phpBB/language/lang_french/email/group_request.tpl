@@ -1,3 +1,5 @@
+Subject: Une requête d'adhésion à votre groupe a été faites
+
 Cher {GROUP_MODERATOR},
 
 Un utilisateur demande à adhérer un groupe duquel vous êtes modérateur sur {SITENAME}.

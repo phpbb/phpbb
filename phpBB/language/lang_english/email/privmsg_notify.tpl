@@ -1,3 +1,5 @@
+Subject: New Private Message has arrived
+
 Hello {USERNAME},
 
 You have received a new private message to your account on "{SITENAME}" and you have requested that you be notified on this event. You can view your new message by clicking on the following link:

@@ -1,3 +1,5 @@
+Subject: 欢迎您访问 {SITENAME} 论坛
+
 {WELCOME_MSG}
 
 依照"美国儿童网路隐私保护法"规定, 您的帐号尚未激活.

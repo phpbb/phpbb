@@ -1,3 +1,5 @@
+Subject: Zosta³e¶ dodany do tej grupy
+
 Gratulacje,
 
 Zosta³e¶ przyjêty do grupy "{GROUP_NAME}" na {SITENAME}.

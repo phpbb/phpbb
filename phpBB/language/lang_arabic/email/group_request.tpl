@@ -1,3 +1,5 @@
+Subject: Êד ÊÞÏםד ØבÈ‗ בבÇÔÊÑÇ‗ Ýם ÇבדÌדזÚÉ
+
 ÇבÓםÏ/É {GROUP_MODERATOR},
 
 והÇ‗ ØבÈ דה דÓÊÎÏד בבדÔÇÑ‗É Ýם ÇבדÌדזÚÉ Ýם ÇבדזÞÚ {SITENAME}.

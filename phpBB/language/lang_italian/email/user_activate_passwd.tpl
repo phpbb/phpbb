@@ -1,3 +1,5 @@
+Subject: Attivazione nuova password
+
 Ciao {USERNAME}
 
 Hai ricevuto questa email perchè tu (o qualcuno per te) hai richiesto l'invio di una nuova password per il tuo account su {SITENAME}. 

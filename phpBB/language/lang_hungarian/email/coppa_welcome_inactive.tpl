@@ -1,3 +1,5 @@
+Subject: Üdvözöljük a {SITENAME} fórumán
+
 {WELCOME_MSG}
 
 A COPPA szabályainak értelmében az azonosítója jelenleg inaktív.

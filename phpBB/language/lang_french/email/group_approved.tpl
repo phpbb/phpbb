@@ -1,3 +1,5 @@
+Subject: Votre requête a été approuvée
+
 Félicitations,
 
 Votre demande d'adhésion au groupe "{GROUP_NAME}" sur {SITENAME} a été approuvée.

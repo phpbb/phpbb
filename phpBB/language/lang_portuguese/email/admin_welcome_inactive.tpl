@@ -1,3 +1,5 @@
+Subject: Bem-vindo ao Fórum {SITENAME}
+
 {WELCOME_MSG}
 
 Por favor guardar este email para seu arquivo. A informação da sua conta é a seguinte:

@@ -1,3 +1,5 @@
+Subject: Welkom op {SITENAME}
+
 {WELCOME_MSG}
 
 Je account is aagemaakt met de volgende gegevens.

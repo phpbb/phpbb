@@ -1,3 +1,5 @@
+Subject: You have been added to this usergroup
+
 Congratulations,
 
 You have been added to the "{GROUP_NAME}" group on {SITENAME}.

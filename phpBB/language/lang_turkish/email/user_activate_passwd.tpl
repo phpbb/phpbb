@@ -1,3 +1,5 @@
+Subject: Yeni þifre aktivasyonu
+
 Merhaba {USERNAME}
 
 {SITENAME} de bulunan hesabinizdan yeni sifre gonderilmesi icin istekte bulunuldu. Eger siz istemediyseniz admin ile iletisime gecin.
