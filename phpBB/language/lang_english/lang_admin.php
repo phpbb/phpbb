@@ -297,16 +297,17 @@ $lang['Click_return_forumauth'] = 'Click %sHere%s to return to Forum Permissions
 //
 // Banning
 //
-$lang['Ban_explain'] = 'Here you can control the banning of users. You can achieve this by banning either or both of a specific user or an individual or range of IP addresses or hostnames. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log.';
+$lang['Ban_explain'] = 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (255 character) reason for the ban if you wish. This will be displayed in the admin log. The length of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <u>Other</u> for the ban length and enter a date in yyyy-mm-dd format.';
 
 $lang['Ban_length'] = 'Length of ban';
 $lang['Permanent'] = 'Permanent';
 $lang['30_Mins'] = '30 Minutes';
 $lang['1_Hour'] = '1 Hour';
 $lang['6_Hours'] = '6 Hours';
+$lang['Other'] = 'Other';
 $lang['Ban_reason'] = 'Reason for ban';
 
-$lang['Ban_username_explain'] = 'You can ban multiple users in one go just enter each name on a new line';
+$lang['Ban_username_explain'] = 'You can ban multiple users in one go by entering each name on a new line. Use the <u>Find a Username</u> facility to look up and add one or more users automatically.';
 $lang['Unban_username'] = 'Un-ban usernames';
 $lang['Unban_username_explain'] = 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 

@@ -70,10 +70,26 @@ $current_time = time();
 //
 if ( isset($HTTP_POST_VARS['bansubmit']) )
 {
-	$ban_end = ( !empty($HTTP_POST_VARS['banlength']) ) ? $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ) : 0;
 	$ban_reason = ( isset($HTTP_POST_VARS['banreason']) ) ? $HTTP_POST_VARS['banreason'] : '';
 	$ban_list = array_unique(explode("\n", $HTTP_POST_VARS['ban']));
 	$ban_list_log = implode(', ', $ban_list);
+
+	if ( !empty($HTTP_POST_VARS['banlength']) ) 
+	{
+		if ( $HTTP_POST_VARS['banlength'] != -1 || empty($HTTP_POST_VARS['banlengthother']) )
+		{
+			$ban_end = max($current_time, $current_time + ( intval($HTTP_POST_VARS['banlength']) * 60 ));
+		}
+		else
+		{
+			$ban_other = explode('-', $HTTP_POST_VARS['banlengthother']);
+			$ban_end = max($current_time, gmmktime(0, 0, 0, $ban_other[1], $ban_other[2], $ban_other[0]));
+		}
+	}
+	else
+	{
+		$ban_end = 0;
+	}
 
 	$banlist = array();
 
@@ -313,8 +329,7 @@ else if ( isset($HTTP_POST_VARS['unbansubmit']) )
 		add_admin_log('log_unban_' . $mode, sizeof($HTTP_POST_VARS['unban']));
 	}
 
-	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . "admin_ban.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
-	message_die(MESSAGE, $message);
+	message_die(MESSAGE, $lang['Ban_update_sucessful']);
 }
 
 //
@@ -332,7 +347,7 @@ $db->sql_query($sql);
 //
 // Ban length options
 //
-$ban_end_text = array(0 => $lang['Permanent'], 30 => $lang['30_Mins'], 60 => $lang['1_Hour'], 360 => $lang['6_Hours'], 1440 => $lang['1_Day'], 10080 => $lang['7_Days'], 20160 => $lang['2_Weeks'], 40320 => $lang['1_Month']);
+$ban_end_text = array(0 => $lang['Permanent'], 30 => $lang['30_Mins'], 60 => $lang['1_Hour'], 360 => $lang['6_Hours'], 1440 => $lang['1_Day'], 10080 => $lang['7_Days'], 20160 => $lang['2_Weeks'], 40320 => $lang['1_Month'], -1 => $lang['Other']);
 
 $ban_end_options = '';
 foreach ( $ban_end_text as $length => $text )
@@ -497,7 +512,7 @@ switch ( $mode )
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $lang['Ban_length']; ?>:</td>
-		<td class="row2"><select name="banlength"><?php echo $ban_end_options; ?></select></td>
+		<td class="row2"><select name="banlength"><?php echo $ban_end_options; ?></select>&nbsp; <input type="text" name="banlengthother" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
 		<td class="row2" width="45%"><?php echo $lang['Ban_reason']; ?>:</td>
