@@ -138,7 +138,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 	}
 	$forum_rows = $db->sql_fetchrowset($q_forums);
 
-	$sql = "SELECT f.forum_id, t.topic_id 
+	$sql = "SELECT f.forum_id, t.topic_id, p.post_time  
 		FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
 		WHERE t.forum_id = f.forum_id  
 			AND p.post_id = t.topic_last_post_id 
@@ -150,7 +150,7 @@ if($total_categories = $db->sql_numrows($q_categories))
 
 	while( $topic_data = $db->sql_fetchrow($new_topic_ids) )
 	{
-		$new_topic_data[$topic_data['forum_id']][] = $topic_data['topic_id'];
+		$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
 	}
 
 	//
@@ -248,15 +248,22 @@ if($total_categories = $db->sql_numrows($q_categories))
 					$unread_topics = false;
 					if( count($new_topic_data[$forum_id]) )
 					{
-						for($k = 0; $k < count($new_topic_data[$forum_id]); $k++)
+						while( list($check_topic_id, $check_post_time) = each($new_topic_data[$forum_id]) )
 						{
-							if( !isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k]]) )
+							if( !isset($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $check_topic_id]) )
 							{
 								if($mark_read == "forums")
 								{
-									setcookie('phpbb2_' . $forum_id . '_' . $new_topic_data[$forum_id][$k], time(), 0, $cookiepath, $cookiedomain, $cookiesecure);
+									setcookie('phpbb2_' . $forum_id . '_' . $check_topic_id, time(), 0, $cookiepath, $cookiedomain, $cookiesecure);
 								}
 								else
+								{
+									$unread_topics = true;
+								}
+							}
+							else
+							{
+								if($HTTP_COOKIE_VARS['phpbb2_' . $forum_id . '_' . $check_topic_id] < $check_post_time )
 								{
 									$unread_topics = true;
 								}
@@ -321,16 +328,17 @@ if($total_categories = $db->sql_numrows($q_categories))
 						$mod_count++;
 					}
 				}
+
 				if($moderators_links == "")
 				{
 					$moderators_links = "&nbsp;";
 				}
 
-				$row_color = "#" . ( ( !($count%2) ) ? $theme['td_color1'] : $theme['td_color2'] );
+				$row_color = ( !($count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$template->assign_block_vars("catrow.forumrow",	array(
-					"ROW_COLOR" => $row_color,
+					"ROW_COLOR" => "#" . $row_color,
 					"ROW_CLASS" => $row_class, 
 					"FOLDER" => $folder_image,
 					"FORUM_NAME" => stripslashes($forum_rows[$j]['forum_name']),
