@@ -23,6 +23,9 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+$pagetype = "viewforum";
+$page_title = "View Forum - $forum_name";
+
 // Check if the user has acutally sent a forum ID with his/her request
 // If not give them a nice error page.
 if(isset($forum_id))
@@ -68,9 +71,8 @@ for($x = 0; $x < $db->sql_numrows($result); $x++)
      $forum_moderators .= ", ";
    $forum_moderators .= "<a href=\"profile.$phpEx?mode=viewprofile&user_id=".$forum_row[$x]["user_id"]."\">".$forum_row[$x]["username"]."</a>";
 }
-$pagetype = "viewforum";
-$page_title = "View Forum - $forum_name";
-include('page_header.'.$phpEx);
+
+include('includes/page_header.'.$phpEx);
 
 $template->set_block("body", "topicrow", "topics");
 
@@ -150,6 +152,6 @@ else
 	error_die($db, NO_POSTS);
 }
 			       
-include('page_tail.'.$phpEx);
+include('includes/page_tail.'.$phpEx);
 
 ?>

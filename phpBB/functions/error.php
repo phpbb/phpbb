@@ -36,7 +36,7 @@ function error_die($db, $error_code = "", $error_msg = "")
 	  {
 	     include('language/lang_english.'.$phpEx);
 	  }
-	include('page_header.'.$phpEx);
+	include('includes/page_header.'.$phpEx);
      }
    if(!$error_msg)
    {
@@ -77,7 +77,7 @@ function error_die($db, $error_code = "", $error_msg = "")
    $template->set_file(array("error_body" => "error_body.tpl"));
    $template->set_var(array("ERROR_MESSAGE" => $error_msg));
    $template->pparse("output", "error_body");
-   include('page_tail.'.$phpEx);
+   include('includes/page_tail.'.$phpEx);
    exit();
 }
    

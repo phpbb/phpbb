@@ -23,25 +23,24 @@
  ***************************************************************************/ 
 
 include('config.'.$phpEx);
+include('includes/constants.'.$phpEx);
 
 // Find Users real IP (if possible)
 $ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 define("USER_IP",$ip);
 unset($ip);
 
-include('template.inc');
 // Setup what template to use. Currently just use default
+include('includes/template.inc');
 $template = new Template("./templates/Default", "remove");
 
 include('functions/error.'.$phpEx);
 include('functions/sessions.'.$phpEx);
 include('functions/auth.'.$phpEx);
 include('functions/functions.'.$phpEx);
-include('db.'.$phpEx);
+include('includes/db.'.$phpEx);
 
-// Initalize these variables to keep them safe.
-$user_logged_in = 0;
-$logged_in = 0;
+// Initalize to keep safe
 $userdata = Array();
 
 // Setup forum wide options.
@@ -68,7 +67,9 @@ else
 	$default_lang = $config[0]["default_lang"];
 	$sys_lang = $default_lang;            
 }
+
 include('language/lang_'.$default_lang.'.'.$phpEx);
+
 // Check if user is banned
 if(!auth("ip ban", $db, "", USER_IP))
 {

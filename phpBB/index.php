@@ -24,6 +24,9 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+$pagetype = "index";
+$page_title = "Forum Index";
+
 $total_users = get_user_count($db, "");
 $total_posts = get_total_posts($db, "");
 $newest_userdata = get_newest_user($db, "");
@@ -36,9 +39,7 @@ if(empty($viewcat))
 	$viewcat = -1;
 }
 
-$pagetype = "index";
-$page_title = "Forum Index";
-include('page_header.'.$phpEx);
+include('includes/page_header.'.$phpEx);
 
 $template->set_block("body", "catrow", "cats");
 $template->set_block("catrow", "forumrow", "forums");
@@ -182,5 +183,5 @@ else
 }
 $template->pparse("output", "body");
 
-include('page_tail.'.$phpEx);
+include('includes/page_tail.'.$phpEx);
 ?>

@@ -1,6 +1,6 @@
 <?php
 /***************************************************************************
- *				 viewtopic.php
+ *				 						   viewtopic.php
  *                            -------------------
  *   begin                : Saturday, Feb 13, 2001
  *   copyright            : (C) 2001 The phpBB Group
@@ -22,6 +22,9 @@
  ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
+
+$page_title = "View Topic - $topic_title";
+$topic_title = stripslashes($topic_info[0]["topic_title"]);
 
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
@@ -73,11 +76,9 @@ for($x = 0; $x < $total_rows; $x++)
 // Add checking for private forums here
 //
 
-$page_title = "View Topic - $topic_title";
-$topic_title = stripslashes($topic_info[0]["topic_title"]);
 $total_replies = $topic_info[0]["topic_replies"] + 1;
 $pagetype = "viewtopic";
-include('page_header.'.$phpEx);
+include('includes/page_header.'.$phpEx);
 
 if(!isset($start))
 {
@@ -252,6 +253,6 @@ $template->set_var(array("PAGES" => $pages,
 
 $template->pparse("output", array("posts", "body"));
 
-include('page_tail.'.$phpEx);
+include('includes/page_tail.'.$phpEx);
 
 ?>
