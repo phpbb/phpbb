@@ -137,6 +137,7 @@ else
 if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else
 {
@@ -590,7 +591,7 @@ else if ( $group_id )
 					$sql_in = '';
 					for($i = 0; $i < count($members); $i++)
 					{
-						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . $members[$i];
+						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . intval($members[$i]);
 					}
 
 					if ( isset($HTTP_POST_VARS['approve']) )
