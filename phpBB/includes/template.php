@@ -134,7 +134,7 @@ class template
 
 		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
 
-		$recompile = (($config['load_tplcompile'] && filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
+		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
