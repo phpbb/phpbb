@@ -19,7 +19,7 @@ CREATE SEQUENCE phpbb_topics_id_seq start 1 increment 1 maxvalue 2147483647 minv
 CREATE SEQUENCE phpbb_users_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_words_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 CREATE SEQUENCE phpbb_groups_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
-
+CREATE SEQUENCE phpbb_forum_prune_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
 
 /* --------------------------------------------------------
   Table structure for table phpbb_auth_access
@@ -39,7 +39,9 @@ CREATE TABLE phpbb_auth_access (
    auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
+   CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id)
 );
+CREATE  INDEX group_id_phpbb_auth_access_index ON phpbb_auth_access (forum_id);
 
 
 /* --------------------------------------------------------
@@ -164,13 +166,13 @@ CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
   Table structure for table phpbb_forum_prune
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forum_prune (
-   prune_id int4 NOT NULL auto_increment,
+   prune_id int4 DEFAULT nextval('phpbb_forum_prune_id_seq'::text) NOT NULL,
    forum_id int4 NOT NULL,
    prune_days int4 NOT NULL,
    prune_freq int4 NOT NULL,
    CONSTRAINT phpbb_forum_prune_pkey PRIMARY KEY (prune_id)
 );
-CREATE  INDEX prune_id_phpbb_forum_prune_index ON phpbb_forum_prune (cat_id);
+CREATE  INDEX prune_id_phpbb_forum_prune_index ON phpbb_forum_prune (prune_id);
 CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
 
 
@@ -178,12 +180,11 @@ CREATE  INDEX forum_id_phpbb_forum_prune_index ON phpbb_forum_prune (forum_id);
   Table structure for table phpbb_groups
 -------------------------------------------------------- */
 CREATE TABLE phpbb_groups (
-   group_id int4 DEFAULT '0' NOT NULL,
-   group_name varchar(100) DEFAULT '' NOT NULL,
-   group_description varchar(255) DEFAULT '' NOT NULL,
+   group_id int4 DEFAULT nextval('phpbb_groups_id_seq'::text) NOT NULL,
+   group_name varchar(100) NOT NULL,
+   group_description varchar(255) NOT NULL,
    group_moderator int4 NOT NULL, 
-   group_single_user int2 NOT NULL,
-   CONSTRAINT phpbb_groups_pkey PRIMARY_KEY (group_id)
+   group_single_user int2 NOT NULL
 );
 
 
