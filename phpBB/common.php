@@ -28,6 +28,15 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitia
 //error_reporting(E_ALL);
 set_magic_quotes_runtime(0);
 
+// Be paranoid with passed vars
+if (@ini_get('register_globals'))
+{
+	foreach ($_REQUEST as $var_name => $void)
+	{
+		unset(${$var_name});
+	}
+}
+
 // If magic quotes is off, addslashes
 if (!get_magic_quotes_gpc())
 {
@@ -35,6 +44,7 @@ if (!get_magic_quotes_gpc())
 	$_POST = slash_input_data($_POST);
 	$_COOKIE = slash_input_data($_COOKIE);
 }
+
 
 require($phpbb_root_path . 'config.'.$phpEx);
 
@@ -139,6 +149,7 @@ define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
 define('ATTACHMENTS_DESC_TABLE', $table_prefix.'attach_desc');
 define('BANLIST_TABLE', $table_prefix.'banlist');
+define('BBCODES_TABLE', $table_prefix.'bbcodes');
 define('CACHE_TABLE', $table_prefix.'cache');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
