@@ -304,7 +304,7 @@ if ( isset($_POST['bansubmit']) )
 		add_admin_log('log_ban_' . $mode, $ban_reason, $ban_list_log);
 	}
 
-	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . "admin_ban.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+	$message = $user->lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($user->lang['Click_return_banadmin'], '<a href="' . "admin_ban.$phpEx$SID&amp;mode=$mode" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 	message_die(MESSAGE, $message);
 
 }
@@ -325,7 +325,7 @@ else if ( isset($_POST['unbansubmit']) )
 		add_admin_log('log_unban_' . $mode, sizeof($_POST['unban']));
 	}
 
-	message_die(MESSAGE, $lang['Ban_update_sucessful']);
+	message_die(MESSAGE, $user->lang['Ban_update_sucessful']);
 }
 
 //
@@ -343,7 +343,7 @@ $db->sql_query($sql);
 //
 // Ban length options
 //
-$ban_end_text = array(0 => $lang['Permanent'], 30 => $lang['30_Mins'], 60 => $lang['1_Hour'], 360 => $lang['6_Hours'], 1440 => $lang['1_Day'], 10080 => $lang['7_Days'], 20160 => $lang['2_Weeks'], 40320 => $lang['1_Month'], -1 => $lang['Other']);
+$ban_end_text = array(0 => $user->lang['Permanent'], 30 => $user->lang['30_Mins'], 60 => $user->lang['1_Hour'], 360 => $user->lang['6_Hours'], 1440 => $user->lang['1_Day'], 10080 => $user->lang['7_Days'], 20160 => $user->lang['2_Weeks'], 40320 => $user->lang['1_Month'], -1 => $user->lang['Other']);
 
 $ban_end_options = '';
 foreach ( $ban_end_text as $length => $text )
@@ -357,13 +357,13 @@ foreach ( $ban_end_text as $length => $text )
 switch ( $mode )
 {
 	case 'user':
-		$l_title = $lang['Ban_users'];
+		$l_title = $user->lang['Ban_users'];
 		break;
 	case 'email':
-		$l_title = $lang['Ban_emails'];
+		$l_title = $user->lang['Ban_emails'];
 		break;
 	case 'ip':
-		$l_title = $lang['Ban_ips'];
+		$l_title = $user->lang['Ban_ips'];
 		break;
 }
 
@@ -374,7 +374,7 @@ page_header($l_title);
 
 ?>
 
-<p><?php echo $lang['Ban_explain']; ?></p>
+<p><?php echo $user->lang['Ban_explain']; ?></p>
 
 <?php
 
@@ -406,13 +406,13 @@ switch ( $mode )
 		}
 		$db->sql_freeresult($result);
 
-		$l_ban_title = $lang['Ban_users'];
-		$l_ban_explain = $lang['Ban_username_explain'];
-		$l_unban_title = $lang['Unban_username'];
-		$l_unban_explain = $lang['Unban_username_explain'];
-		$l_ban_cell = $lang['Username'];
-		$l_no_ban_cell = $lang['No_banned_users'];
-		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../search.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650\');return false;" />';
+		$l_ban_title = $user->lang['Ban_users'];
+		$l_ban_explain = $user->lang['Ban_username_explain'];
+		$l_unban_title = $user->lang['Unban_username'];
+		$l_unban_explain = $user->lang['Unban_username_explain'];
+		$l_ban_cell = $user->lang['Username'];
+		$l_no_ban_cell = $user->lang['No_banned_users'];
+		$s_submit_extra = '<input type="submit" name="usersubmit" value="' . $user->lang['Find_username'] . '" class="liteoption" onClick="window.open(\'../search.' . $phpEx . $SID . '&amp;mode=searchuser&amp;field=ban\', \'_phpbbsearch\', \'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650\');return false;" />';
 
 		break;
 
@@ -440,12 +440,12 @@ switch ( $mode )
 		}
 		$db->sql_freeresult($result);
 
-		$l_ban_title = $lang['Ban_ips'];
-		$l_ban_explain = $lang['Ban_IP_explain'];
-		$l_unban_title = $lang['Unban_IP'];
-		$l_unban_explain = $lang['Unban_IP_explain'];
-		$l_ban_cell = $lang['IP_hostname'];
-		$l_no_ban_cell = $lang['No_banned_ip'];
+		$l_ban_title = $user->lang['Ban_ips'];
+		$l_ban_explain = $user->lang['Ban_IP_explain'];
+		$l_unban_title = $user->lang['Unban_IP'];
+		$l_unban_explain = $user->lang['Unban_IP_explain'];
+		$l_ban_cell = $user->lang['IP_hostname'];
+		$l_no_ban_cell = $user->lang['No_banned_ip'];
 		$s_submit_extra = '';
 
 		break;
@@ -474,12 +474,12 @@ switch ( $mode )
 		}
 		$db->sql_freeresult($result);
 
-		$l_ban_title = $lang['Ban_emails'];
-		$l_ban_explain = $lang['Ban_email_explain'];
-		$l_unban_title = $lang['Unban_email'];
-		$l_unban_explain = $lang['Unban_email_explain'];
-		$l_ban_cell = $lang['Email_address'];
-		$l_no_ban_cell = $lang['No_banned_email'];
+		$l_ban_title = $user->lang['Ban_emails'];
+		$l_ban_explain = $user->lang['Ban_email_explain'];
+		$l_unban_title = $user->lang['Unban_email'];
+		$l_unban_explain = $user->lang['Unban_email_explain'];
+		$l_ban_cell = $user->lang['Email_address'];
+		$l_no_ban_cell = $user->lang['No_banned_email'];
 		$s_submit_extra = '';
 
 		break;
@@ -507,15 +507,15 @@ switch ( $mode )
 		<td class="row1"><textarea cols="40" rows="3" name="ban"></textarea></td>
 	</tr>
 	<tr>
-		<td class="row2" width="45%"><?php echo $lang['Ban_length']; ?>:</td>
+		<td class="row2" width="45%"><?php echo $user->lang['Ban_length']; ?>:</td>
 		<td class="row2"><select name="banlength"><?php echo $ban_end_options; ?></select>&nbsp; <input type="text" name="banlengthother" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
-		<td class="row2" width="45%"><?php echo $lang['Ban_reason']; ?>:</td>
+		<td class="row2" width="45%"><?php echo $user->lang['Ban_reason']; ?>:</td>
 		<td class="row2"><input type="text" name="banreason" maxlength="255" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
+		<td class="cat" colspan="2" align="center"> <input type="submit" name="bansubmit" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" />&nbsp; <?php echo $s_submit_extra; ?></td>
 	</tr>
 </table>
 
@@ -551,7 +551,7 @@ switch ( $mode )
 ?>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $lang['Submit']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" /></td>
 	</tr>
 </table></form>
 

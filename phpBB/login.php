@@ -58,13 +58,13 @@ if ( isset($login) || isset($logout)  )
 				'META' => '<meta http-equiv="refresh" content="3;url=' . "login.$phpEx$SID&amp;redirect=$redirect" . '">')
 			);
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . "login.$phpEx$SID&amp;redirect=$redirect" . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+			$message = $user->lang['Error_login'] . '<br /><br />' . sprintf($user->lang['Click_return_login'], '<a href="' . "login.$phpEx$SID&amp;redirect=$redirect" . '">', '</a>') . '<br /><br />' .  sprintf($user->lang['Click_return_index'], '<a href="' . "index.$phpEx$SID" . '">', '</a>');
 			message_die(MESSAGE, $message);
 		}
 	}
 	else if ( $user->data['user_id'] )
 	{
-		$session->destroy($user->data);
+		$user->destroy();
 	}
 
 	//
@@ -77,15 +77,15 @@ if ( isset($login) || isset($logout)  )
 if ( !$user->data['user_id'] )
 {
 	$template->assign_vars(array(
-		'L_ENTER_PASSWORD' => $lang['Enter_password'],
-		'L_SEND_PASSWORD' => $lang['Forgotten_password'],
+		'L_ENTER_PASSWORD'	=> $user->lang['Enter_password'],
+		'L_SEND_PASSWORD' 	=> $user->lang['Forgotten_password'],
 
-		'U_SEND_PASSWORD' => "profile.$phpEx$SID&amp;mode=sendpassword",
+		'U_SEND_PASSWORD' 	=> "profile.$phpEx$SID&amp;mode=sendpassword",
 
-		'S_HIDDEN_FIELDS' => '<input type="hidden" name="redirect" value="' . $redirect . '" />')
+		'S_HIDDEN_FIELDS' 	=> '<input type="hidden" name="redirect" value="' . $redirect . '" />')
 	);
 
-	$page_title = $lang['Login'];
+	$page_title = $user->lang['Login'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(

@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-$this->lang = array_merge($this->lang, array(
+$lang = array_merge($lang, array(
 	'Admin_title' => 'Administration Panel',
 	'No_admin' => 'You are not authorised to administer this board',
 	'No_frames' => 'Sorry, your browser does not support frames',

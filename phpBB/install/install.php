@@ -32,9 +32,8 @@ $lang = array();
 
 if ( !get_magic_quotes_gpc() )
 {
-	$HTTP_GET_VARS = slash_input_data($HTTP_GET_VARS);
-	$HTTP_POST_VARS = slash_input_data($HTTP_POST_VARS);
-	$HTTP_COOKIE_VARS = slash_input_data($HTTP_COOKIE_VARS);
+	$_GET = slash_input_data($_GET);
+	$_POST = slash_input_data($_POST);
 }
 
 /***************************************************************************
@@ -45,49 +44,74 @@ if ( !get_magic_quotes_gpc() )
  *	and the default template.
  *
  **************************************************************************/
+$default_language = 'en';
 
-$default_language = 'english';
+if ( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) )
+{
+	$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	foreach ( $accept_lang_ary as $accept_lang )
+	{
+		// Set correct format ... guess full xx_YY form
+		$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+		if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
+		{
+			$default_language = $accept_lang;
+			break;
+		}
+		else
+		{
+			// No match on xx_YY so try xx
+			$accept_lang = substr($accept_lang, 0, 2);
+			if ( file_exists($phpbb_root_path . 'language/' . $accept_lang) )
+			{
+				$default_language = $accept_lang;
+				break;
+			}
+		}
+	}
+}
+
 $default_template = 'subSilver';
 
 $available_dbms = array(
 	'mysql' => array(
 		'LABEL' => 'MySQL 3.x',
-		'SCHEMA' => 'mysql', 
+		'SCHEMA' => 'mysql',
 		'DELIM' => ';',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => 'remove_remarks'
-	), 
+	),
 	'mysql4' => array(
 		'LABEL' => 'MySQL 4.x',
-		'SCHEMA' => 'mysql', 
-		'DELIM' => ';', 
+		'SCHEMA' => 'mysql',
+		'DELIM' => ';',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => 'remove_remarks'
-	), 
+	),
 	'postgres' => array(
 		'LABEL' => 'PostgreSQL 7.x',
-		'SCHEMA' => 'postgres', 
-		'DELIM' => ';', 
+		'SCHEMA' => 'postgres',
+		'DELIM' => ';',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => 'remove_comments'
-	), 
+	),
 	'mssql' => array(
 		'LABEL' => 'MS SQL Server 7/2000',
-		'SCHEMA' => 'mssql', 
-		'DELIM' => 'GO', 
+		'SCHEMA' => 'mssql',
+		'DELIM' => 'GO',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => 'remove_comments'
 	),
 	'msaccess' => array(
 		'LABEL' => 'MS Access [ ODBC ]',
-		'SCHEMA' => '', 
-		'DELIM' => '', 
+		'SCHEMA' => '',
+		'DELIM' => '',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => ''
 	),
 	'mssql-odbc' =>	array(
 		'LABEL' => 'MS SQL Server [ ODBC ]',
-		'SCHEMA' => 'mssql', 
+		'SCHEMA' => 'mssql',
 		'DELIM' => 'GO',
 		'DELIM_BASIC' => ';',
 		'COMMENTS' => 'remove_comments'
@@ -100,7 +124,7 @@ $available_dbms = array(
 // define('NO_FTP', true);
 
 /***************************************************************************
-*		
+*
 *						End Install Customization Section
 *
 ***************************************************************************/
@@ -116,57 +140,55 @@ if ( @file_exists('../config.'.$phpEx) )
 //
 // Obtain various vars
 //
-$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? true : false;
-$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? true : false;
+$confirm = ( isset($_POST['confirm']) ) ? true : false;
+$cancel = ( isset($_POST['cancel']) ) ? true : false;
 
-if ( isset($HTTP_POST_VARS['install_step']) || isset($HTTP_GET_VARS['install_step']) )
+if ( isset($_POST['install_step']) || isset($_GET['install_step']) )
 {
-	$install_step = ( isset($HTTP_POST_VARS['install_step']) ) ? $HTTP_POST_VARS['install_step'] : $HTTP_GET_VARS['install_step'];
+	$install_step = ( isset($_POST['install_step']) ) ? $_POST['install_step'] : $_GET['install_step'];
 }
 else
 {
 	$install_step = '';
 }
 
-$upgrade = ( !empty($HTTP_POST_VARS['upgrade']) ) ? $HTTP_POST_VARS['upgrade']: '';
-$upgrade_now = ( !empty($HTTP_POST_VARS['upgrade_now']) ) ? $HTTP_POST_VARS['upgrade_now']:'';
+$upgrade = ( !empty($_POST['upgrade']) ) ? $_POST['upgrade']: '';
+$upgrade_now = ( !empty($_POST['upgrade_now']) ) ? $_POST['upgrade_now']:'';
 
-$dbms = isset($HTTP_POST_VARS['dbms']) ? $HTTP_POST_VARS['dbms'] : '';
-$language = ( !empty($HTTP_POST_VARS['language']) ) ? $HTTP_POST_VARS['language'] : $default_language;
+$dbms = isset($_POST['dbms']) ? $_POST['dbms'] : '';
+$language = ( !empty($_POST['language']) ) ? $_POST['language'] : $default_language;
 
-$dbhost = ( !empty($HTTP_POST_VARS['dbhost']) ) ? $HTTP_POST_VARS['dbhost'] : '';
-$dbuser = ( !empty($HTTP_POST_VARS['dbuser']) ) ? $HTTP_POST_VARS['dbuser'] : '';
-$dbpasswd = ( !empty($HTTP_POST_VARS['dbpasswd']) ) ? $HTTP_POST_VARS['dbpasswd'] : '';
-$dbname = ( !empty($HTTP_POST_VARS['dbname']) ) ? $HTTP_POST_VARS['dbname'] : '';
+$dbhost = ( !empty($_POST['dbhost']) ) ? $_POST['dbhost'] : '';
+$dbuser = ( !empty($_POST['dbuser']) ) ? $_POST['dbuser'] : '';
+$dbpasswd = ( !empty($_POST['dbpasswd']) ) ? $_POST['dbpasswd'] : '';
+$dbname = ( !empty($_POST['dbname']) ) ? $_POST['dbname'] : '';
 
-$table_prefix = ( !empty($HTTP_POST_VARS['prefix']) ) ? $HTTP_POST_VARS['prefix'] : '';
+$table_prefix = ( !empty($_POST['prefix']) ) ? $_POST['prefix'] : '';
 
-$admin_name = ( !empty($HTTP_POST_VARS['admin_name']) ) ? $HTTP_POST_VARS['admin_name'] : '';
-$admin_pass1 = ( !empty($HTTP_POST_VARS['admin_pass1']) ) ? $HTTP_POST_VARS['admin_pass1'] : '';
-$admin_pass2 = ( !empty($HTTP_POST_VARS['admin_pass2']) ) ? $HTTP_POST_VARS['admin_pass2'] : '';
+$admin_name = ( !empty($_POST['admin_name']) ) ? $_POST['admin_name'] : '';
+$admin_pass1 = ( !empty($_POST['admin_pass1']) ) ? $_POST['admin_pass1'] : '';
+$admin_pass2 = ( !empty($_POST['admin_pass2']) ) ? $_POST['admin_pass2'] : '';
 
-$ftp_path = ( !empty($HTTP_POST_VARS['ftp_path']) ) ? $HTTP_POST_VARS['ftp_path'] : '';
-$ftp_user = ( !empty($HTTP_POST_VARS['ftp_user']) ) ? $HTTP_POST_VARS['ftp_user'] : '';
-$ftp_pass = ( !empty($HTTP_POST_VARS['ftp_pass']) ) ? $HTTP_POST_VARS['ftp_pass'] : '';
+$ftp_path = ( !empty($_POST['ftp_path']) ) ? $_POST['ftp_path'] : '';
+$ftp_user = ( !empty($_POST['ftp_user']) ) ? $_POST['ftp_user'] : '';
+$ftp_pass = ( !empty($_POST['ftp_pass']) ) ? $_POST['ftp_pass'] : '';
 
-$server_name = ( !empty($HTTP_POST_VARS['server_name']) ) ? $HTTP_POST_VARS['server_name'] : '';
-$server_port = ( !empty($HTTP_POST_VARS['server_port']) ) ? $HTTP_POST_VARS['server_port'] : '';
-$board_email = ( !empty($HTTP_POST_VARS['board_email']) ) ? $HTTP_POST_VARS['board_email'] : '';
-$script_path = ( !empty($HTTP_POST_VARS['script_path']) ) ? $HTTP_POST_VARS['script_path'] : '';
+$server_name = ( !empty($_POST['server_name']) ) ? $_POST['server_name'] : '';
+$server_port = ( !empty($_POST['server_port']) ) ? $_POST['server_port'] : '';
+$board_email = ( !empty($_POST['board_email']) ) ? $_POST['board_email'] : '';
+$script_path = ( !empty($_POST['script_path']) ) ? $_POST['script_path'] : '';
 
 //
 // Do we install/upgrade/update or quit back to index?
 //
 if ( !defined('PHPBB_INSTALLED') )
 {
-	include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	include($phpbb_root_path . 'includes/session.'.$phpEx);
+	include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-	//
 	// Import language file, setup template ...
-	//
-	include($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx);
-	include($phpbb_root_path . 'language/lang_' . $language . '/lang_admin.'.$phpEx);
+	include($phpbb_root_path . 'language/' . $language . '/lang_main.'.$phpEx);
+	include($phpbb_root_path . 'language/' . $language . '/lang_admin.'.$phpEx);
 
 	if ( $upgrade == 1 )
 	{
@@ -183,30 +205,30 @@ else
 //
 // What shall we do?
 //
-if ( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1  && !defined("PHPBB_INSTALLED") && empty($HTTP_POST_VARS['upgrade_now']) )
+if ( !empty($_POST['send_file']) && $_POST['send_file'] == 1  && !defined("PHPBB_INSTALLED") && empty($_POST['upgrade_now']) )
 {
 	//
 	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
-	// because we add slahes at the top if its off, and they are added automaticlly 
+	// because we add slahes at the top if its off, and they are added automaticlly
 	// if it is on.
 	//
-	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	$_POST['config_data'] = stripslashes($_POST['config_data']);
 
 	header("Content-Type: text/x-delimtext; name=\"config.$phpEx\"");
 	header("Content-disposition: attachment; filename=config.$phpEx");
-	echo $HTTP_POST_VARS['config_data'];
+	echo $_POST['config_data'];
 	exit;
 
 }
-else if ( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 2 && !defined("PHPBB_INSTALLED")  )
+else if ( !empty($_POST['send_file']) && $_POST['send_file'] == 2 && !defined("PHPBB_INSTALLED")  )
 {
 	//
 	// Ok we couldn't write the config file so let's try ftping it.
 	//
 
-	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
+	$_POST['config_data'] = stripslashes($_POST['config_data']);
 
-	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($HTTP_POST_VARS['config_data']) . '" />';
+	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($_POST['config_data']) . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
 	if ( $upgrade == 1 )
@@ -225,7 +247,7 @@ else if ( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] =
 		"L_FTP_USER" => $lang['ftp_username'],
 		"L_SUBMIT" => $lang['Transfer_config'],
 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+		"S_HIDDEN_FIELDS" => $s_hidden_fields,
 		"S_FORM_ACTION" => "install.$phpEx")
 	);
 
@@ -234,13 +256,13 @@ else if ( !empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] =
 	exit;
 
 }
-else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
+else if( !empty($_POST['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 {
 	//
 	// Here we'll actually send the file...
 	//
-	$HTTP_POST_VARS['config_data'] = stripslashes($HTTP_POST_VARS['config_data']);
-	
+	$_POST['config_data'] = stripslashes($_POST['config_data']);
+
 	$conn_id = @ftp_connect('localhost');
 	$login_result = @ftp_login($conn_id, "$ftp_user", "$ftp_pass");
 
@@ -249,7 +271,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 		//
 		// Error couldn't get connected... Go back to option to send file...
 		//
-		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($HTTP_POST_VARS['config_data']) . '" />';
+		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($_POST['config_data']) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 
 		page_header($lang['NoFTP_config'], "install.$phpEx");
@@ -293,7 +315,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 
 		$fp = @fopen($tmpfname, 'w');
 
-		@fwrite($fp, $HTTP_POST_VARS['config_data']);
+		@fwrite($fp, $_POST['config_data']);
 
 		@fclose($fp);
 
@@ -308,7 +330,7 @@ else if( !empty($HTTP_POST_VARS['ftp_file']) && !defined("PHPBB_INSTALLED")  )
 
 		unlink($tmpfname);
 
-		if( $upgrade == 1 )	
+		if( $upgrade == 1 )
 		{
 			require('upgrade.'.$phpEx);
 			exit;
@@ -335,7 +357,7 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 {
 	//
 	// Ok we haven't installed before so lets work our way through the various
-	// steps of the install process.  This could turn out to be quite a lengty 
+	// steps of the install process.  This could turn out to be quite a lengty
 	// process.
 	//
 	// Step 0 gather the pertinant info for database setup...
@@ -345,36 +367,36 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 	//
 	// Guess at some basic info used for install..
 	//
-	if ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']) )
+	if ( !empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']) )
 	{
-		$server_name = ( !empty($HTTP_SERVER_VARS['SERVER_NAME']) ) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+		$server_name = ( !empty($_SERVER['SERVER_NAME']) ) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 	}
-	else if ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']) )
+	else if ( !empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']) )
 	{
-		$server_name = ( !empty($HTTP_SERVER_VARS['HTTP_HOST']) ) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+		$server_name = ( !empty($_SERVER['HTTP_HOST']) ) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 	}
 	else
 	{
 		$server_name = '';
 	}
 
-	if ( !empty($HTTP_SERVER_VARS['SERVER_PORT']) || !empty($HTTP_ENV_VARS['SERVER_PORT']) )
+	if ( !empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT']) )
 	{
-		$server_port = ( !empty($HTTP_SERVER_VARS['SERVER_PORT']) ) ? $HTTP_SERVER_VARS['SERVER_PORT'] : $HTTP_ENV_VARS['SERVER_PORT'];
+		$server_port = ( !empty($_SERVER['SERVER_PORT']) ) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 	}
 	else
 	{
 		$server_port = '80';
 	}
 
-	$script_path = preg_replace('/install\/install\.'.$phpEx.'/i', '', $HTTP_SERVER_VARS['PHP_SELF']);
+	$script_path = preg_replace('/install\/install\.'.$phpEx.'/i', '', $_SERVER['PHP_SELF']);
 
 	//
 	//
 	//
 	$instruction_text = $lang['Inst_Step_0'];
 /*
-	if ( (($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2']) && $install_step != '0') || ( empty($HTTP_POST_VARS['admin_pass1']) && !empty($dbhost)) )
+	if ( (($_POST['admin_pass1'] != $_POST['admin_pass2']) && $install_step != '0') || ( empty($_POST['admin_pass1']) && !empty($dbhost)) )
 	{
 		$instruction_text = $lang['Password_mismatch'] . '<br />' . $instruction_text;
 	}
@@ -390,7 +412,7 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 	$upgrade_option = '<option value="0">' . $lang['Install'] . '</option>';
 	$upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option>';
 	$upgrade_option .= '<option value="2">' . $lang['Update'] . '</option>';
-	
+
 	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" />';
 
 	page_header($instruction_text, "install.$phpEx");
@@ -440,7 +462,7 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 	<tr>
 		<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_name']; ?>: </span></td>
 		<td class="row2"><input type="text" name="server_name" value="<?php echo $server_name; ?>" /></td>
-	</tr> 
+	</tr>
 	<tr>
 		<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_port']; ?>: </span></td>
 		<td class="row2"><input type="text" name="server_port" value="<?php echo $server_port; ?>" /></td>
@@ -456,7 +478,7 @@ else if ( ( empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin
 	<tr>
 		<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_email']; ?>: </span></td>
 		<td class="row2"><input type="text" name="board_email" value="<?php echo ( $board_email != '' ) ? $board_email : ''; ?>" /></td>
-	</tr> 
+	</tr>
 	<tr>
 		<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password']; ?>: </span></td>
 		<td class="row2"><input type="password" name="admin_pass1" value="<?php echo ( $admin_pass1 != '' ) ? $admin_pass1 : ''; ?>" /></td>
@@ -505,7 +527,7 @@ else
 		}
 
 		if ( !extension_loaded( $check_exts ) && !extension_loaded( $check_other ) )
-		{	
+		{
 /*			$template->assign_block_vars("switch_error_install", array());
 
 			$template->assign_vars(array(
@@ -526,8 +548,8 @@ else
 	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
 
 	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
-	$delimiter = $available_dbms[$dbms]['DELIM']; 
-	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC']; 
+	$delimiter = $available_dbms[$dbms]['DELIM'];
+	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
 	if ( $install_step == 1 || $reinstall )
 	{
@@ -553,7 +575,7 @@ else
 				{
 					$db->sql_query($sql_query[$i]);
 				}
-		
+
 				//
 				// Ok tables have been built, let's fill in the basic information
 				//
@@ -572,7 +594,7 @@ else
 			}
 
 			//
-			// Ok at this point they have entered their admin password, let's go 
+			// Ok at this point they have entered their admin password, let's go
 			// ahead and create the admin account with some basic default information
 			// that they can customize later, and write out the config file.  After
 			// this we are going to pass them over to the admin_forum.php script
@@ -584,72 +606,52 @@ else
 			//
 			// Update the default admin user with their information.
 			//
-			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value)
 				VALUES ('board_startdate', " . time() . ")";
 			$db->sql_query($sql);
 
-			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
+			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value)
 				VALUES ('default_lang', '" . str_replace("\'", "''", $language) . "')";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $server_name . "' 
+				SET config_value = '" . $server_name . "'
 				WHERE config_name = 'server_name'";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $server_port . "' 
+				SET config_value = '" . $server_port . "'
 				WHERE config_name = 'server_port'";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $script_path . "' 
+				SET config_value = '" . $script_path . "'
 				WHERE config_name = 'script_path'";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $board_email . "' 
+				SET config_value = '" . $board_email . "'
 				WHERE config_name = 'board_email'";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $server_name . "' 
+				SET config_value = '" . $server_name . "'
 				WHERE config_name = 'cookie_domain'";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE " . $table_prefix . "config
-				SET config_value = '" . $admin_name . "' 
+				SET config_value = '" . $admin_name . "'
 				WHERE config_name = 'newest_username'";
 			$db->sql_query($sql);
 
-			$sql = "UPDATE " . $table_prefix . "users 
+			$sql = "UPDATE " . $table_prefix . "users
 				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_md5) . "', user_lang = '" . str_replace("\'", "''", $language) . "', user_email='" . str_replace("\'", "''", $board_email) . "'
 				WHERE username = 'Admin'";
 			$db->sql_query($sql);
 
-			$sql = "UPDATE " . $table_prefix . "users 
+			$sql = "UPDATE " . $table_prefix . "users
 				SET user_regdate = " . time();
 			$db->sql_query($sql);
-
-			//
-			// Change session table to HEAP if MySQL version matches
-			//
-			if ( preg_match("/^mysql/", $dbms) )
-			{
-				$sql = "SELECT VERSION() AS mysql_version";
-				if($result = $db->sql_query($sql))
-				{
-					$row = $db->sql_fetchrow($result);
-					$version = $row['mysql_version'];
-
-					if( preg_match("/^(3\.23)|(4\.)/", $version) )
-					{
-						$sql = "ALTER TABLE " . $table_prefix . "sessions 
-							TYPE=HEAP";
-						$db->sql_query($sql);
-					}
-				}
-			}
 
 /*			if ( $error != '' )
 			{
@@ -681,7 +683,7 @@ else
 			$config_data .= '$dbuser = "' . $dbuser . '";' . "\n";
 			$config_data .= '$dbpasswd = "' . $dbpasswd . '";' . "\n\n";
 			$config_data .= '$table_prefix = "' . $table_prefix . '";' . "\n\n";
-			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
+			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 			@umask(0111);
@@ -740,7 +742,7 @@ else
 					"L_INSTRUCTION_TEXT" => $lang['Unwriteable_config'],
 					"L_SUBMIT" => $lang['Download_config'],
 
-					"S_HIDDEN_FIELDS" => $s_hidden_fields, 
+					"S_HIDDEN_FIELDS" => $s_hidden_fields,
 					"S_FORM_ACTION" => "install.$phpEx")
 				);
 
@@ -759,7 +761,7 @@ else
 //			$template->assign_block_vars("switch_common_install", array());
 		}
 
-		// 
+		//
 		// First off let's check and see if we are supposed to be doing an upgrade.
 		//
 		if ( $upgrade == 1 && $upgrade_now == $lang['upgrade_submit'] )
@@ -769,7 +771,7 @@ else
 			exit;
 		}
 		//
-		// Ok we are basically done with the install process let's go on 
+		// Ok we are basically done with the install process let's go on
 		// and let the user configure their board now.
 		//
 		// We are going to do this by calling the admin_board.php from the
@@ -794,27 +796,21 @@ else
 	}
 }
 
-//
 // addslashes to vars if magic_quotes_gpc is off this is a security precaution
 // to prevent someone trying to break out of a SQL statement.
-//
 function slash_input_data(&$data)
 {
 	if ( is_array($data) )
 	{
-		while( list($k, $v) = each($data) )
+		foreach ( $data as $k => $v )
 		{
 			$data[$k] = ( is_array($v) ) ? slash_input_data($v) : addslashes($v);
 		}
-
-		@reset($data);
 	}
 	return $data;
 }
 
-//
-//
-//
+// Output page -> header
 function page_header($l_instructions, $s_action)
 {
 	global $phpEx, $lang;
@@ -854,15 +850,13 @@ td.cat	{ background-image: url('../admin/images/cellpic1.gif') }
 
 }
 
-//
-//
-//
+// Output page -> footer
 function page_footer($l_submit, $s_hidden_fields)
 {
 	global $lang;
 
 ?>
-	<tr> 
+	<tr>
 		<td class="cat" align="center" colspan="2"><?php echo $s_hidden_fields; ?><input class="mainoption" type="submit" value="<?php echo $l_submit; ?>" /></td>
 	</tr>
 </table></form>

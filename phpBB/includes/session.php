@@ -24,7 +24,7 @@ class session
 	var $session_id = '';
 	var $data = array();
 	var $browser = '';
-	var $user_ip = '';
+	var $ip = '';
 	var $page = '';
 	var $load;
 
@@ -388,6 +388,7 @@ class user extends session
 		{
 			include($this->lang_path . 'lang_admin.' . $phpEx);
 		}
+		$this->lang = &$lang;
 
 /*
 		if ( is_array($lang_set) )
@@ -759,7 +760,7 @@ class auth
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	function login($username, $password, $autologin = false)
 	{
-		global $board_config, $session, $phpEx;
+		global $board_config, $user, $phpEx;
 
 		$method = trim($board_config['auth_method']);
 
@@ -770,14 +771,13 @@ class auth
 			$method = 'login_' . $method;
 			if ( function_exists($method) )
 			{
-				if ( !($user = $method($username, $password)) )
+				if ( !($login = $method($username, $password)) )
 				{
 					return false;
 				}
 
 				$autologin = ( isset($autologin) ) ? md5($password) : '';
-
-				return ( $user['user_active'] ) ? $session->create($user['user_id'], $autologin) : false;
+				return ( $login['user_active'] ) ? $user->create($login['user_id'], $autologin) : false;
 			}
 		}
 

@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-$this->lang = array_merge($this->lang, array(
+$lang = array_merge($lang, array(
 	'ENCODING' => 'iso-8859-15',
 	'DIRECTION' => 'ltr',
 	'LEFT' => 'left',
