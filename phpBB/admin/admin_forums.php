@@ -302,7 +302,9 @@ if( !empty($mode) )
 
 			$forumstatus == ( FORUM_LOCKED ) ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
 			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
+
 			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n"; 
+
 
 
 			$template->set_filenames(array(
@@ -604,6 +606,40 @@ if( !empty($mode) )
 			// Either delete or move all posts in a forum
 			if($to_id == -1)
 			{
+				// Delete polls in this forum
+				$sql = "SELECT v.vote_id 
+					FROM " . VOTE_DESC_TABLE . " v, " . TOPICS_TABLE . " t 
+					WHERE t.forum_id = $forum_id 
+						AND v.topic_id = t.topic_id";
+				if (!($result = $db->sql_query($sql)))
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtain list of vote ids", "", __LINE__, __FILE__, $sql);
+				}
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$vote_ids = '';
+					do
+					{
+						$vote_ids = (($vote_ids != '') ? ', ' : '') . $row['vote_id'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
+						WHERE vote_id IN ($vote_ids)";
+					$db->sql_query($sql);
+
+					$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
+						WHERE vote_id IN ($vote_ids)";
+					$db->sql_query($sql);
+
+					$sql = "DELETE FROM " . VOTE_USERS_TABLE . " 
+						WHERE vote_id IN ($vote_ids)";
+					$db->sql_query($sql);
+				}
+				$db->sql_freeresult($result);
+				
+				
 				include($phpbb_root_path . "includes/prune.$phpEx");
 				prune($from_id, 0); // Delete everything from forum
 			}
@@ -616,6 +652,7 @@ if( !empty($mode) )
 				{
 					message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
 				}
+
 				if($db->sql_numrows($result) != 2)
 				{
 					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
@@ -637,6 +674,58 @@ if( !empty($mode) )
 				sync('forum', $to_id);
 			}
 
+			// Alter Mod level if appropriate - 2.0.4
+			$sql = "SELECT ug.user_id 
+				FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
+				WHERE a.forum_id <> $forum_id 
+					AND a.auth_mod = 1
+					AND ug.group_id = a.group_id";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
+			}
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$user_ids = '';
+				do
+				{
+					$user_ids = (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
+				}
+				while ($row = $db->sql_fetchrow($result));
+
+				$sql = "SELECT ug.user_id 
+					FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
+					WHERE a.forum_id = $forum_id 
+						AND a.auth_mod = 1
+						AND ug.group_id = a.group_id
+						AND ug.user_id NOT IN ($user_ids)";
+				if( !$result2 = $db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
+				}
+					
+				if ($row = $db->sql_fetchrow($result2))
+				{
+					$user_ids = '';
+					do
+					{
+						$user_ids = (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
+					}
+					while ($row = $db->sql_fetchrow($result2));
+
+					$sql = "UPDATE " . USERS_TABLE . " 
+						SET user_level = " . USER . " 
+						WHERE user_id IN ($user_ids) 
+							AND user_level <> " . ADMIN;
+					$db->sql_query($sql);
+				}
+				$db->sql_freeresult($result);
+
+			}
+			$db->sql_freeresult($result2);
+
+			
 			$sql = "DELETE FROM " . FORUMS_TABLE . "
 				WHERE forum_id = $from_id";
 			if( !$result = $db->sql_query($sql) )

@@ -717,7 +717,7 @@ else if ( $group_id )
 						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\n";
 
 						$emailer->use_template('group_approved');
-						$emailer->email_address($userdata['user_email']);
+						$emailer->email_address(' ');//$userdata['user_email']
 						$emailer->set_subject();//$lang['Group_approved']
 						$emailer->extra_headers($email_headers);
 

@@ -88,7 +88,7 @@ class emailer
 			$template_lang = $board_config['default_lang'];
 		}
 
-		$this->tpl_file = realpath($phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl');
+		$this->tpl_file = @realpath($phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl');
 
 		if ( !file_exists($this->tpl_file) )
 		{

@@ -1013,6 +1013,7 @@ switch( $mode )
 		$template->set_filenames(array(
 			'body' => 'modcp_body.tpl')
 		);
+		make_jumpbox('modcp.'.$phpEx);
 
 		//
 		// Define censored word matches
