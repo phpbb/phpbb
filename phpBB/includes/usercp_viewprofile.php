@@ -31,7 +31,7 @@ if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == 
 {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
-$profiledata = get_userdata(intval($HTTP_GET_VARS[POST_USERS_URL]));
+$profiledata = get_userdata($HTTP_GET_VARS[POST_USERS_URL]);
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
@@ -41,6 +41,7 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not obtain ranks information', '', __LINE__, __FILE__, $sql);
 }
 
+$ranksrow = array();
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$ranksrow[] = $row;
@@ -168,6 +169,15 @@ $search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
 $page_title = $lang['Viewing_profile'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
+if (function_exists('get_html_translation_table'))
+{
+	$u_search_author = urlencode(strtr($profiledata['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
+}
+else
+{
+	$u_search_author = urlencode(str_replace(array('&amp;', '&#039;', '&quot;', '&lt;', '&gt;'), array('&', "'", '"', '<', '>'), $profiledata['username']));
+}
+
 $template->assign_vars(array(
 	'USERNAME' => $profiledata['username'],
 	'JOINED' => create_date($lang['DATE_FORMAT'], $profiledata['user_regdate'], $board_config['board_timezone']),
@@ -222,7 +232,7 @@ $template->assign_vars(array(
 	'L_OCCUPATION' => $lang['Occupation'],
 	'L_INTERESTS' => $lang['Interests'],
 
-	'U_SEARCH_USER' => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username'])),
+	'U_SEARCH_USER' => append_sid("search.$phpEx?search_author=" . $u_search_author),
 
 	'S_PROFILE_ACTION' => append_sid("profile.$phpEx"))
 );

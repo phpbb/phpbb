@@ -26,8 +26,8 @@ if ( !defined('IN_PHPBB') )
 }
 
 // Debug Level
-define('DEBUG', 1); // Debugging on
-//define('DEBUG', 0); // Debugging off
+//define('DEBUG', 1); // Debugging on
+define('DEBUG', 1); // Debugging off
 
 
 // User Levels <- Do not change the values of USER or ADMIN
@@ -148,6 +148,7 @@ define('AUTH_ATTACH', 11);
 
 
 // Table names
+define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
