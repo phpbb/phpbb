@@ -101,10 +101,6 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 	$message = smilie_text($message, !$smilies);
 
 	// Replace naughty words such as farty pants
-/*	if (sizeof($censors))
-	{
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $message . '<'), 1, -1));
-	}*/
 	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Signature
@@ -115,10 +111,6 @@ function format_display(&$message, &$signature, $uid, $siguid, $html, $bbcode, $
 		$bbcode->bbcode_second_pass($signature, $siguid);
 		$signature = smilie_text($signature);
 
-/*		if (sizeof($censors))
-		{
-			$signature = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace(\$censors['match'], \$censors['replace'], '\\0')", '>' . $signature . '<'), 1, -1));
-		}*/
 		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 	else
@@ -541,19 +533,6 @@ function decode_text(&$message, $bbcode_uid)
 
 	$message = ($bbcode_uid) ? str_replace($search, $replace, $message) : str_replace('<br />', "\n", $message);
 
-	// HTML
-	if ($config['allow_html_tags'])
-	{
-		// If $html is true then "allowed_tags" are converted back from entity
-		// form, others remain
-		$allowed_tags = split(',', $config['allow_html_tags']);
-			
-		if (sizeof($allowed_tags))
-		{
-			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
-		}
-	}
-
 	$match = array(
 		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
@@ -573,6 +552,19 @@ function decode_text(&$message, $bbcode_uid)
 	);
 	
 	$message = preg_replace($match, $replace, $message);
+
+	// HTML
+	if ($config['allow_html_tags'])
+	{
+		// If $html is true then "allowed_tags" are converted back from entity
+		// form, others remain
+		$allowed_tags = split(',', $config['allow_html_tags']);
+			
+		if (sizeof($allowed_tags))
+		{
+			$message = preg_replace('#\<(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')\>#is', '&lt;$1$2&gt;', $message);
+		}
+	}
 
 	return;
 }

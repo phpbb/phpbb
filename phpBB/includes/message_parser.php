@@ -100,7 +100,7 @@ class parse_message
 
 		// Parse URL's
 		$this->magic_url($url);
-
+		
 		return implode('<br />', $this->warn_msg);
 	}
 
