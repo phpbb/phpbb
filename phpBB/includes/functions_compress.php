@@ -1,23 +1,15 @@
 <?
-/***************************************************************************
- *                           functions_compress.php
- *                            -------------------
- *   begin                : Saturday, Jul 19, 2003
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
-
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : functions_compress.php
+// STARTED   : Sat Jul 19 2003
+// COPYRIGHT : © 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
 class compress 
 {
@@ -29,13 +21,10 @@ class compress
 
 		$skip_files = explode(',', $skip_files);
 
-		// Remove prefix from src path 
+		// Remove rm prefix from src path 
 		$src_path = ($src_rm_prefix) ? preg_replace('#^(' . preg_quote($src_rm_prefix) . ')#', '', $src) : $src;
-		// Add prefix
-		if ($src_add_prefix)
-		{
-			$src_path = $src_add_prefix . ((substr($src_add_prefix, -1) != '/') ? '/' : '') . $src_path;
-		}
+		// Add src prefix
+		$src_path = ($src_add_prefix) ? ($src_add_prefix . ((substr($src_add_prefix, -1) != '/') ? '/' : '') . $src_path) : $src_path;
 		// Remove initial "/" if present
 		$src_path = (substr($src_path, 0, 1) == '/') ? substr($src_path, 1) : $src_path;
 
@@ -58,7 +47,7 @@ class compress
 
 			$filelist = array();
 			$filelist = filelist($phpbb_root_path . $src, '', '*');
-			ksort($filelist);
+			krsort($filelist);
 
 			if ($src_path)
 			{
@@ -99,8 +88,8 @@ class compress
 	}
 }
 
-// Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, Marc Delisle
-// http://www.phpmyadmin.net/
+// Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
+// Marc Delisle, http://www.phpmyadmin.net/
 //
 // Modified extensively by psoTFX, © phpBB Group, 2003
 //
@@ -110,7 +99,7 @@ class compress_zip extends compress
 {
 	var $datasec = array();
 	var $ctrl_dir = array();
-	var $eof_ctrl_dir = "\x50\x4b\x05\x06\x00\x00\x00\x00";
+	var $eof_ctrl_dir = 0x06054b50;
 
 	var $old_offset = 0;
 	var $datasec_len = 0;
@@ -258,6 +247,7 @@ class compress_zip extends compress
 		fclose($this->fp);
 	}
 
+	// Create the structures ... note we assume version made by is MSDOS
 	function data($name, $data, $mtime = false, $is_dir = false)
 	{
 		$name = str_replace('\\', '/', $name);
@@ -278,25 +268,35 @@ class compress_zip extends compress
 			$zdata = gzcompress($data);
 			$zdata = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
 			$c_len = strlen($zdata);
+
+			// Did we compress? No, then use data as is
+			if ($c_len > $unc_len)
+			{
+				$zdata = $data;
+				$c_len = $unc_len;
+			}
 		}
 		unset($data);
 
-		$fr = "\x50\x4b\x03\x04"; //
-		$fr .= "\x14\x00";	// ver needed to extract 4
-		$fr .= "\x00\x00";	// gen purpose bit flag 6
-		$fr .= "\x08\x00";	// compression method 8
-		$fr .= $hexdtime;				// last mod time and date 10
-		$fr .= pack('V', $crc);			// crc32 14
-		$fr .= pack('V', $c_len);		// compressed filesize 18
-		$fr .= pack('V', $unc_len);		// uncompressed filesize 22
-		$fr .= pack('v', strlen($name));// length of filename 26
-		$fr .= pack('v', 0);			// extra field length 28
-		$fr .= $name; // 30
+		// If we didn't compress set method to store, else deflate
+		$c_method = ($c_len == $unc_len) ? "\x00\x00" : "\x08\x00"; 
+
+		$fr = "\x50\x4b\x03\x04";		// Local file header 4bytes
+		$fr .= "\x14\x00";				// ver needed to extract 2bytes
+		$fr .= "\x00\x00";				// gen purpose bit flag 2bytes
+		$fr .= $c_method;				// compression method 2bytes
+		$fr .= $hexdtime;				// last mod time and date 2+2bytes
+		$fr .= pack('V', $crc);			// crc32 4bytes
+		$fr .= pack('V', $c_len);		// compressed filesize 4bytes
+		$fr .= pack('V', $unc_len);		// uncompressed filesize 4bytes
+		$fr .= pack('v', strlen($name));// length of filename 2bytes
+		$fr .= pack('v', 0);			// extra field length 2bytes
+		$fr .= $name;
 		$fr .= $zdata;
 		unset($zdata);
-		$fr .= pack('V', $crc);
-		$fr .= pack('V', $c_len);	// compressed filesize
-		$fr .= pack('V', $unc_len);	// uncompressed filesize
+		$fr .= pack('V', $crc);			// crc32 4bytes
+		$fr .= pack('V', $c_len);		// compressed filesize 4bytes
+		$fr .= pack('V', $unc_len);		// uncompressed filesize 4bytes
 
 		$this->datasec_len += strlen($fr);
 
@@ -308,15 +308,15 @@ class compress_zip extends compress
 		// Are we a file or a directory? Set archive for file
 		$attrib = ($is_dir) ? 16 : 32;
 
-		$cdrec = "\x50\x4b\x01\x02";
-		$cdrec .= "\x00\x00";                // version made by
-		$cdrec .= "\x14\x00";                // version needed to extract
-		$cdrec .= "\x00\x00";                // gen purpose bit flag
-		$cdrec .= "\x08\x00";                // compression method
-		$cdrec .= $hexdtime;                 // last mod time & date
-		$cdrec .= pack('V', $crc);           // crc32
-		$cdrec .= pack('V', $c_len);         // compressed filesize
-		$cdrec .= pack('V', $unc_len);       // uncompressed filesize
+		$cdrec = "\x50\x4b\x01\x02";		// header 4bytes
+		$cdrec .= "\x00\x00";               // version made by
+		$cdrec .= "\x14\x00";               // version needed to extract
+		$cdrec .= "\x00\x00";               // gen purpose bit flag
+		$cdrec .= $c_method;				// compression method 
+		$cdrec .= $hexdtime;                // last mod time & date
+		$cdrec .= pack('V', $crc);          // crc32
+		$cdrec .= pack('V', $c_len);        // compressed filesize
+		$cdrec .= pack('V', $unc_len);      // uncompressed filesize
 		$cdrec .= pack('v', strlen($name)); // length of filename
 		$cdrec .= pack('v', 0);             // extra field length
 		$cdrec .= pack('v', 0);             // file comment length
@@ -335,13 +335,15 @@ class compress_zip extends compress
 	function file()
 	{
 		$ctrldir = implode('', $this->ctrl_dir);
+		$comment = 'Created by phpBB 2.2';
 
-		return $ctrldir . $this->eof_ctrl_dir .
+		return $ctrldir . "\x50\x4b\x05\x06\x00\x00\x00\x00" . 
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries "on this disk"
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries overall
 			pack('V', strlen($ctrldir)) .			// size of central dir
 			pack('V', $this->datasec_len) .			// offset to start of central dir
-			"\x00\x00";								// .zip file comment length
+			pack('v', strlen($comment)) .			// .zip file comment length
+			$comment;
 	}
 }
 
