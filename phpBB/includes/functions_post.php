@@ -524,12 +524,12 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 		}
 
-		$forum_update_sql = 'forum_posts = forum_posts - 1'; 
 		$topic_update_sql .= 'topic_replies = topic_replies - 1';
 		if ( $post_data['last_post'] )
 		{
 			if ( $post_data['first_post'] )
 			{
+				$forum_update_sql .= ', forum_topics = forum_topics - 1';
 				$sql = "DELETE FROM " . TOPICS_TABLE . " 
 					WHERE topic_id = $topic_id 
 						OR topic_moved_id = $topic_id";
@@ -573,7 +573,22 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	remove_search_post($post_id);
-
+	//
+	// Ok we set variables above that were intended to update the topics table
+	// so let's go ahead and use it already :)
+	//
+	if( !empty($topic_update_sql) && !($post_data['first_post'] && $post_data['last_post']) )
+	{
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+			SET ' . $topic_update_sql . "
+			WHERE topic_id =  $topic_id OR
+				topic_moved_id = $topic_id";
+		if ( !($db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Error in updating reply counts', '', __LINE__, __FILE__, $sql);	
+		}	
+	}
+	
 	if ( $mode == 'delete' && $post_data['first_post'] && $post_data['last_post'] )
 	{
 		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_id) . '">';
