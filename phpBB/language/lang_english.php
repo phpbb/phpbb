@@ -778,6 +778,11 @@ $lang['smiley_config'] = "Smiley Configuration";
 $lang['Code'] = "Code";
 $lang['Smile'] = "Smile";
 $lang['Emotion'] = "Emotion";
+
+// User Management
+$lang['User_admin'] = "Administration";
+$lang['User_admin_explain'] = "Here you can change your user's information. Do not abuse this power.<br />Deleting users is not provided here, nor is changing admin status. <br />Use the banning and user permission pages respectively.";
+
 //
 // End
 // -------------------------------------------------
