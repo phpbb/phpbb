@@ -3,7 +3,7 @@
 
 <P>{L_SMILEY_TEXT}</p>
 
-<form method="get" action="{S_SMILEY_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+<form method="post" action="{S_SMILEY_ACTION}"><table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
 	<tr>
 		<th class="thCornerL">{L_CODE}</th>
 		<th class="thTop">{L_SMILE}</th>
