@@ -319,7 +319,7 @@ for($i = 0; $i < $total_posts; $i++)
 	//
 	// Generate ranks
 	//
-	if( $postrow[$i]['user_id'] == ANONYMOUS )
+	if( empty($postrow[$i]['user_rank']) || $postrow[$i]['user_id'] == ANONYMOUS )
 	{
 		$poster_rank = "";
 		$rank_image = "";
