@@ -71,8 +71,8 @@ $lang['Years'] = "Years";
 $lang['All_times'] = "All times are"; // This is followed by GMT and the timezone offset
 $lang['GMT'] = "GMT";
 
-$lang['Next'] = "Next Page";
-$lang['Previous'] = "Previous Page";
+$lang['Next'] = "Next";
+$lang['Previous'] = "Previous";
 $lang['Goto_page'] = "Goto page";
 $lang['Page'] = "Page"; // Followed by the current page number then 'of x' where x is total pages
 $lang['of'] = "of"; // See Page above
