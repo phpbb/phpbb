@@ -284,25 +284,6 @@ switch ($row['config_value'])
 					END OF DROP FORUM -- don't remove anything after this point!
 				   -------------------------------------------------------------- */
 
-				/* ---------------------------------------------------------------------
-					DROP GROUP TABLE -- if this may cause you problems you can safely
-					comment it out, remember to manually add the IDENTITY setting on
-					the group_id column
-				   --------------------------------------------------------------------- */
-				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . "
-					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
-				$sql[] = "INSERT INTO Tmp_" . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user)
-						SELECT group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
-				$sql[] = "DROP TABLE " . GROUPS_TABLE;
-				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
-				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD
-					CONSTRAINT [PK_" . $table_prefix . "groups] PRIMARY KEY CLUSTERED (group_id) ON [PRIMARY]";
-				$sql[] = "CREATE INDEX [IX_" . $table_prefix . "groups]
-					ON " . GROUPS_TABLE . " (group_single_user) ON [PRIMARY]";
-				/* --------------------------------------------------------------
-					END OF DROP GROUP -- don't remove anything after this point!
-				   -------------------------------------------------------------- */
-
 				$sql[] = "DROP INDEX " . RANKS_TABLE . ".IX_" . $table_prefix . "ranks";
 				$sql[] = "ALTER TABLE " . RANKS_TABLE . " DROP
 					COLUMN rank_max";
@@ -385,38 +366,18 @@ switch ($row['config_value'])
 			case 'mysql4':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
 					MODIFY COLUMN user_id  mediumint(8) NOT NULL,
-					MODIFY COLUMN user_timezone decimal(4,2) DEFAULT '0' NOT NULL";
+					MODIFY COLUMN user_timezone decimal(5,2) DEFAULT '0' NOT NULL";
 				break;
 			case 'postgresql':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
 					RENAME COLUMN user_timezone TO user_timezone_old";
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
-					ADD COLUMN user_timezone decimal(4)";
+					ADD COLUMN user_timezone decimal(5)";
 				break;
 			case 'mssql':
 			case 'mssql-odbc':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
-					ALTER COLUMN [user_timezone] [decimal] (4,2) NOT NULL";
-				/* ---------------------------------------------------------------------
-					DROP GROUP TABLE -- if this may cause you problems you can safely
-					comment it out, remember to manually add the IDENTITY setting on
-					the group_id column
-				   --------------------------------------------------------------------- */
-				$sql[] = "CREATE TABLE Tmp_" . GROUPS_TABLE . "
-					(group_id int IDENTITY (1, 1) NOT NULL, group_type smallint NULL, group_name varchar(50) NOT NULL, group_description varchar(255) NOT NULL, group_moderator int NULL, group_single_user smallint NOT NULL) ON [PRIMARY]";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " ON";
-				$sql[] = "INSERT INTO Tmp_" . GROUPS_TABLE . " (group_id, group_type, group_name, group_description, group_moderator, group_single_user)
-					SELECT group_id, group_type, group_name, group_description, group_moderator, group_single_user FROM " . GROUPS_TABLE . " TABLOCKX";
-				$sql[] = "SET IDENTITY_INSERT " . GROUPS_TABLE . " OFF";
-				$sql[] = "DROP TABLE " . GROUPS_TABLE;
-				$sql[] = "EXECUTE sp_rename N'Tmp_" . GROUPS_TABLE . "', N'" . GROUPS_TABLE . "', 'OBJECT'";
-				$sql[] = "ALTER TABLE " . GROUPS_TABLE . " ADD
-					CONSTRAINT [PK_" . $table_prefix . "groups] PRIMARY KEY CLUSTERED (group_id) ON [PRIMARY]";
-				$sql[] = "CREATE INDEX [IX_" . $table_prefix . "groups]
-					ON " . GROUPS_TABLE . " (group_single_user) ON [PRIMARY]";
-				/* --------------------------------------------------------------
-					END OF DROP GROUP -- don't remove anything after this point!
-				   -------------------------------------------------------------- */
+					ALTER COLUMN [user_timezone] [decimal] (5,2) NOT NULL";
 				break;
 		}
 

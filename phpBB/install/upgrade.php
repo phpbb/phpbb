@@ -764,12 +764,12 @@ if ( !empty($next) )
 
 			$sql = "SELECT COUNT(*) AS total, MAX(user_id) AS maxid 
 				FROM " . USERS_TABLE;
-			$result = query($sql, "Couldn't get max post_id.");
+			$result = query($sql, "Couldn't get max user_id.");
 
-			$maxid = $db->sql_fetchrow($result);
+			$row = $db->sql_fetchrow($result);
 
-			$totalposts = $maxid['total'];
-			$maxid = $maxid['maxid'];
+			$totalposts = $row['total'];
+			$maxid = $row['maxid'];
 
 			$sql = "ALTER TABLE " . USERS_TABLE . " 
 				ADD user_sig_bbcode_uid CHAR(10),
@@ -811,12 +811,13 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
-				$group_id = 1;
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user) 
-						VALUES ($group_id, '" . addslashes($row['username']) . "', 'Personal User', 1)";
+					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user) 
+						VALUES ('" . addslashes($row['username']) . "', 'Personal User', 1)";
 					query($sql, "Wasn't able to insert user ".$row['user_id']." into table ".GROUPS_TABLE);
+
+					$group_id = $db->sql_nextid();
 
 					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)	
 						VALUES ($group_id, " . $row['user_id'] . ", 0)";
@@ -827,8 +828,6 @@ if ( !empty($next) )
 						// We already converted this post to the new style BBcode, skip this post.
 						continue;
 					}
-
-					$group_id++;
 
 					//
 					// Nathan's bbcode2 conversion
