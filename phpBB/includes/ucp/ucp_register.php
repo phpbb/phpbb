@@ -81,7 +81,7 @@ class ucp_register extends ucp
 					'email'				=> '7,60', 
 					'email_confirm'		=> '7,60',
 				),
-				'int'	=> array('tz')
+				'float'	=> array('tz')
 			);
 			$data = $this->normalise_data($_POST, $normalise);
 

@@ -78,9 +78,9 @@ class ucp_profile extends ucp
 					if (!sizeof($this->error))
 					{
 						$sql_ary = array(
-							'username'		=> ($auth->acl_get('u_chgname') & $config['allow_namechange']) ? $data['username'] : $user->data['username'], 
+							'username'		=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'], 
 							'user_email'	=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'], 
-							'user_password'	=> (!empty($data['user_password'])) ? md5($data['username']) : $user->data['user_password']
+							'user_password'	=> ($auth->acl_get('u_chgpasswd') && !empty($data['user_password'])) ? md5($data['username']) : $user->data['user_password']
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -118,9 +118,9 @@ class ucp_profile extends ucp
 					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']), 
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']), 
 				
-					'S_CHANGE_USERNAME' => $config['allow_namechange'] & $auth->acl_get('u_chgname'), 
-					'S_CHANGE_EMAIL'	=> $auth->acl_get('u_chgemail'),
-					'S_CHANGE_PASSWORD'	=> $auth->acl_get('u_chgpass'), )
+					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false, 
+					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
+					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
 				);
 
 				break;
@@ -346,14 +346,18 @@ class ucp_profile extends ucp
 
 			case 'avatar':
 
+				// Can we upload? 
+				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || @ini_get('file_uploads') == 'On')) ? true : false;
+
+
 				if (isset($_POST['submit']))
 				{
 					$data = array();
-					if (!empty($_FILES['uploadfile']['tmp_name']))
+					if (!empty($_FILES['uploadfile']['tmp_name']) && $can_upload)
 					{
 						$this->avatar_upload($data);
 					}
-					else if (!empty($_POST['uploadurl']))
+					else if (!empty($_POST['uploadurl']) && $can_upload)
 					{
 						$normalise = array(
 							'string' => array(
@@ -364,7 +368,7 @@ class ucp_profile extends ucp
 
 						$this->avatar_upload($data);
 					}
-					else if (!empty($_POST['remotelink']))
+					else if (!empty($_POST['remotelink']) && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
 					{
 						$normalise = array(
 							'string' => array(
@@ -377,7 +381,7 @@ class ucp_profile extends ucp
 
 						$this->avatar_remote($data);
 					}
-					else if (!empty($_POST['delete']))
+					else if (!empty($_POST['delete']) && $auth->acl_get('u_chgavatar'))
 					{
 						$data['filename'] = $data['width'] = $data['height'] = '';
 					}
@@ -416,25 +420,8 @@ class ucp_profile extends ucp
 					unset($data);
 				}
 
-/*
-				for ($i = 0; $i < count($avatar_images[$category]); $i++)
-				{
-					$template->assign_block_vars('avatar_row', array());
 
-					for ($j = 0; $j < count($avatar_images[$category][$i]); $j++)
-					{
-						$template->assign_block_vars('avatar_row.avatar_column', array(
-							'AVATAR_IMAGE'		=> $config['avatar_gallery_path'] . '/' . $avatar_images[$category][$i][$j],
-							'AVATAR_NAME'		=> $avatar_name[$category][$i][$j])
-						);
-
-						$template->assign_block_vars('avatar_row.avatar_option_column', array(
-							'S_OPTIONS_AVATAR'	=> $avatar_images[$category][$i][$j])
-						);
-					}
-				}
-*/
-
+				// Generate users avatar
 				$avatar_img = '';
 				if ($user->data['user_avatar'])
 				{
@@ -452,6 +439,7 @@ class ucp_profile extends ucp
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" border="0" alt="" />';
 				}
 
+
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($this->error)) ? implode('<br />', $this->error) : '', 
 
@@ -464,18 +452,15 @@ class ucp_profile extends ucp
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)), 
 
-					'S_FORM_ENCTYPE'		=> ' enctype="multipart/form-data"', 
-					'S_UPLOAD_AVATAR_FILE'	=> true,
-					'S_UPLOAD_AVATAR_URL'	=> true, 
-					'S_LINK_AVATAR'			=> true, 
-					'S_GALLERY_AVATAR'		=> false,
+					'S_FORM_ENCTYPE'		=> $can_upload ? ' enctype="multipart/form-data"' : '', 
+					'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
+					'S_UPLOAD_AVATAR_URL'	=> $can_upload, 
+					'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false, 
+					'S_GALLERY_AVATAR'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false,
 					'S_AVATAR_CAT_OPTIONS'	=> $s_categories, 
 					'S_AVATAR_PAGE_OPTIONS'	=> $s_pages,)
 				);
 
-				break;
-
-			default: 
 				break;
 		}
 

@@ -4,7 +4,7 @@
 	<tr> 
 		<td width="20%" height="100%"><table width="100%" height="100%" cellspacing="1" cellpadding="4" border="0">
 			<tr>
-				<th>{L_OPTIONS}</th>
+				<th>{L_UCP_OPTIONS}</th>
 			</tr>
 			<!-- BEGIN ucp_subsection -->
 			<tr>
@@ -59,11 +59,11 @@
 				<td class="row1"><b class="genmed">{L_CONFIRM_PASSWORD}: </b><br /><span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
 				<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="255" value="{PASSWORD_CONFIRM}" /></td>
 			</tr>
+			<!-- ENDIF -->
 			<tr> 
 				<td class="row1"><b class="genmed">{L_CURRENT_PASSWORD}: </b><br /><span class="gensmall">{L_CURRENT_PASSWORD_EXPLAIN}</span></td>
 				<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="255" value="{CUR_PASSWORD}" /></td>
 			</tr>
-			<!-- ENDIF -->
 			<!-- ENDIF -->
 
 			<!-- IF S_DISPLAY_PROFILE_INFO -->
@@ -211,7 +211,7 @@
 			<!-- IF S_DISPLAY_AVATAR -->
 			<tr> 
 				<td class="row1" width="50%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-				<td class="row2" align="center">{AVATAR}<br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+				<td class="row2" align="center"><br /><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="templates/subSilver/images/no_avatar.gif" alt="" /><!-- ENDIF --><br /><br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
 			</tr>
 			<!-- IF S_UPLOAD_AVATAR_FILE -->
 			<tr> 
