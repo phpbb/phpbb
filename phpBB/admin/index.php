@@ -128,8 +128,7 @@ else
 	$template->assign_vars(array(
 		"S_FRAME_HEADER" => "index.$phpEx?pane=top",
 		"S_FRAME_NAV" => "index.$phpEx?pane=left",
-		"S_FRAME_MAIN" => "index.$phpEx?pane=right",
-		)
+		"S_FRAME_MAIN" => "index.$phpEx?pane=right")
 	);
 
 	$template->pparse("body");
