@@ -251,7 +251,9 @@ CREATE TABLE phpbb_groups (
    group_colour varchar(6) DEFAULT '' NOT NULL,
    group_chgpass smallint(6) DEFAULT '0' NOT NULL, 
    group_description varchar(255) DEFAULT '' NOT NULL,
-   PRIMARY KEY (group_id)
+   group_legend tinyint(1) DEFAULT '1' NOT NULL, 
+   PRIMARY KEY (group_id),
+   KEY group_legend (group_legend)
 );
 
 # Table: 'phpbb_icons'
@@ -561,6 +563,7 @@ CREATE TABLE phpbb_styles_imageset (
   imageset_name varchar(30) DEFAULT '' NOT NULL,
   imageset_copyright varchar(50) DEFAULT '' NOT NULL,
   imageset_path varchar(30) DEFAULT '' NOT NULL,
+  site_logo varchar(200) DEFAULT '' NOT NULL, 
   btn_post varchar(200) DEFAULT '' NOT NULL,
   btn_post_pm varchar(200) DEFAULT '' NOT NULL,
   btn_reply varchar(200) DEFAULT '' NOT NULL,
