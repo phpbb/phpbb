@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<form action="{S_MODCP_ACTION}" method="post">
+<form action="{S_MODCP_ACTION}" method="post"><input type="hidden" name="mode" value="move">
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 	  <td align="left" class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></td>
@@ -17,15 +17,28 @@
 			<td>&nbsp;</td>
 		  </tr>
 		  <tr> 
-			<td align="center"><span class="gen">{L_MOVE_TO_FORUM} &nbsp; {S_FORUM_SELECT}<br /><br />
+			<td align="center"><table border="0" cellspacing="0" cellpadding="0">
+				<tr><td align="left">
+					{L_SELECTED_TOPICS}<br /><br />
+					<ul><!-- BEGIN topiclist -->
+						<li>{topiclist.TOPIC_TITLE}
+					<!-- END topiclist --></ul>
+				</td></tr>
+			</table></td>
+		  </tr>
+		  <tr> 
+			<td>&nbsp;</td>
+		  </tr>
+		  <tr> 
+			<td align="center"><span class="gen">{L_MOVE_TO_FORUM} &nbsp; <select name="new_forum_id">{S_FORUM_SELECT}</select><br /><br />
 			  <input type="checkbox" name="move_leave_shadow" checked="checked" />{L_LEAVE_SHADOW}<br />
 			  <br />
 			  {MESSAGE_TEXT}</span><br />
 			  <br />
 			  {S_HIDDEN_FIELDS} 
-			  <input class="mainoption" type="submit" name="confirm" value="{L_YES}" />
+			  <input class="mainoption" type="submit" name="confirm" value="{L_CONFIRM}" />
 			  &nbsp;&nbsp; 
-			  <input class="liteoption" type="submit" name="cancel" value="{L_NO}" />
+			  <input class="liteoption" type="submit" name="cancel" value="{L_CANCEL}" />
 			</td>
 		  </tr>
 		  <tr> 

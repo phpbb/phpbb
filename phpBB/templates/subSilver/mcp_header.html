@@ -1,0 +1,41 @@
+<!-- INCLUDE overall_header.html -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+	<!-- IF FORUM_NAME -->
+	<tr>
+		<td align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- IF PAGINATION -->
+	<tr>
+		<td align="left" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<!-- INCLUDE jumpbox.html -->
+	<tr>
+		<td valign="bottom">
+			<table cellspacing="1" cellpadding="4" border="0" bgcolor="#006699" align="left">
+				<tr>
+					<!-- BEGIN tab -->
+					<td class="cat">&nbsp;<span class="nav">
+						<!-- IF tab.S_IS_SELECTED -->
+							<a href="{tab.U_LINK}"><i>{tab.NAME}</i></a>
+						<!-- ELSE -->
+							<a href="{tab.U_LINK}">{tab.NAME}</a>
+						<!-- ENDIF -->
+						</span>&nbsp;</td>
+					<!-- END tab -->
+				</tr>
+			</table>
+		</td>
+		<td align="right" valign="bottom">
+			<table cellspacing="1" cellpadding="4" border="0">
+				<tr>
+					<td><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
