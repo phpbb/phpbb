@@ -192,8 +192,8 @@ if (!$language)
 	}
 }
 
-include($phpbb_root_path . 'language/' . $language . '/lang_main.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/lang_admin.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/common.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/admin.'.$phpEx);
 
 
 // Here we do a number of tests and where appropriate reset the installation level
