@@ -141,11 +141,23 @@ if($total_categories)
 		error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
 	}
 
-	$sql = "SELECT f.forum_id, u.username, u.user_id
-		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".FORUM_MODS_TABLE." m
-		WHERE m.forum_id = f.forum_id
-			AND u.user_id = m.user_id
-		ORDER BY f.forum_id, m.user_id";
+	//
+	// Note that this doesn't resolve conflicts where a user
+	// is banned/disallowed mod right from a group but that
+	// group has moderation rights ... but then hopefully
+	// this sort of stuff can be resolved in the admin
+	// section ... or at least brought to the attention
+	// of the board admin, after that it's really their
+	// business (besides when it comes to 'actual' moderating
+	// a more precise auth() check is done anyway ...)
+	//
+	$sql = "SELECT f.forum_id, u.username, u.user_id   
+		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa 
+		WHERE aa.forum_id = f.forum_id 
+			AND aa.auth_mod = 1 
+			AND ug.group_id = aa.group_id 
+			AND u.user_id = ug.user_id 
+		ORDER BY f.forum_id, u.user_id";
 	if(!$q_forum_mods = $db->sql_query($sql))
 	{
 		error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
@@ -163,7 +175,6 @@ if($total_categories)
 
 	for($i = 0; $i < $total_categories; $i++)
 	{
-
 		$template->assign_block_vars("catrow",
 			array(
 				"CAT_ID" => $category_rows[$i]['cat_id'],
@@ -186,14 +197,10 @@ if($total_categories)
 				{
 					$last_post_time = create_date($board_config['default_dateformat'], $forum_rows[$j]['post_time'], $board_config['default_timezone']);
 
-					$topic_last_post_start = floor(($forum_rows[$j]['topic_replies']) / $board_config['posts_per_page']) * $board_config['posts_per_page'];
-					$last_post_get = ($topic_last_post_start) ? "&start=".$topic_last_post_start : "";
-					$last_post_get .= "#".$forum_rows[$j]['topic_last_post_id'];
-
 					$last_post = $last_post_time."<br>by ";
 					$last_post .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]['user_id']) ."\">".$forum_rows[$j]['username']."</a>&nbsp;";
 
-					$last_post .= "<a href=\"".append_sid("viewtopic.".$phpEx."?".POST_TOPIC_URL."=".$forum_rows[$j]['topic_id']).$last_post_get."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
+					$last_post .= "<a href=\"".append_sid("viewtopic.".$phpEx."?".POST_POST_URL."=".$forum_rows[$j]['topic_last_post_id']) . "#" . $forum_rows[$j]['topic_last_post_id']."\"><img src=\"".$images['latest_reply']."\" width=\"20\" height=\"11\" border=\"0\" alt=\"View Latest Post\"></a>";
 				}
 				else
 				{
