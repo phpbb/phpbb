@@ -81,22 +81,14 @@ init_userprefs($userdata);
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata);
 	
-
-if($is_auth['auth_mod'] || $is_auth['auth_admin'])
-{
-	$is_mod = TRUE;
-}
-else
-{
-	$is_mod = FALSE;
-}
+$is_mod = ( $is_auth['auth_mod'] ) ? TRUE : FALSE;
 //
 // End Auth Check
 //
 
 if(!$is_mod)
 {
-	message_die(CRITICAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised'], __LINE__, __FILE__);
+	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
 
 
