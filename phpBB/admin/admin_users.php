@@ -943,6 +943,7 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'USER_ACTIVE_NO' => (!$user_status) ? 'checked="checked"' : '', 
 			'RANK_SELECT_BOX' => $rank_select_box,
 
+			'L_USERNAME' => $lang['Username'],
 			'L_USER_TITLE' => $lang['User_admin'],
 			'L_USER_EXPLAIN' => $lang['User_admin_explain'],
 			'L_NEW_PASSWORD' => $lang['New_password'], 
