@@ -43,6 +43,7 @@ if( $setmodules == 1 )
 // Include required files, get $phpEx and check permissions
 //
 require('pagestart.inc');
+include($phpbb_root_path . 'includes/prune.php');
 
 // 
 // Get the forum ID for pruning 
@@ -99,8 +100,6 @@ if($submit == "Prune")
 	$prunesecs = $prunedays * 1440 * 60;
 	$prunedate = time() - $prunesecs;
 
-	include('page_header_admin.'.$phpEx);
-
 	$template->set_filenames(array(
 		"body" => "admin/forum_prune_result_body.tpl")
 	);
@@ -132,8 +131,6 @@ else
 		//
 		// Output a selection table if no forum id has been specified.
 		//
-		include('page_header_admin.'.$phpEx);
-
 		$template->set_filenames(array(
 			"body" => "admin/forum_prune_select_body.tpl")
 		);
@@ -160,8 +157,6 @@ else
 		//
 		// Output the form to retrieve Prune information.
 		//
-		include('page_header_admin.'.$phpEx);
-
 		$template->set_filenames(array(
 			"body" => "admin/forum_prune_body.tpl")
 		);

@@ -164,11 +164,6 @@ $f_result = $db->sql_query($sql);
 
 $forum_rows = $db->sql_fetchrowset($f_result);
 
-//
-// Page header
-//
-include('page_header_admin.'.$phpEx);
-
 if(empty($forum_id))
 {
 	//

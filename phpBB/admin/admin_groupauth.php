@@ -480,8 +480,6 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_GROUPS_URL]))
 	{
 		$warning_list = "<br />" . $lang['Conflict_message_groupauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] ." <a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=$group_id\">" . $lang['HERE'] . "</a> " . $lang['return_group_auth_admin'] . "<br />";
 
-		include('page_header_admin.'.$phpEx);
-
 		$template->set_filenames(array(
 			"body" => "admin/admin_message_body.tpl")
 		);
@@ -518,9 +516,6 @@ else if(empty($HTTP_GET_VARS[POST_GROUPS_URL]))
 	}
 	$select_list .= "</select>";
 
-	$template_header = "admin/page_header.tpl";
-	include('page_header_admin.'.$phpEx);
-
 	$template->set_filenames(array(
 		"body" => "admin/auth_select_body.tpl")
 	);
@@ -550,9 +545,6 @@ else
 	{
 		$adv = FALSE;
 	}
-
-	$template_header = "admin/page_header.tpl";
-	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_ug_body.tpl")

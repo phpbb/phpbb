@@ -44,8 +44,6 @@ $mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : "unban";
 
 if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 {
-	include('page_header_admin.'.$phpEx);
-
 	if($HTTP_POST_VARS['bancontrol'] == "ban")
 	{
 		$user_bansql = "";
@@ -345,8 +343,6 @@ if( isset($HTTP_POST_VARS['submit']) && isset($HTTP_POST_VARS['bancontrol']) )
 }
 else
 {
-	include('page_header_admin.'.$phpEx);
-
 	if( $mode == "ban" )
 	{
 		$userban_count = 0;

@@ -545,8 +545,6 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		{
 			$warning_list = "<br />" . $lang['Conflict_message_userauth'] . "<br/><br/>" . $warning_list . "<br />" . $lang['Click'] . " <a href=\"admin_userauth.$phpEx?" . POST_USERS_URL . "=$user_id\">" . $lang['HERE'] . "</a> ". $lang['return_user_auth_admin'] . "<br />";
 
-			include('page_header_admin.'.$phpEx);
-
 			$template->set_filenames(array(
 				"body" => "admin/admin_message_body.tpl")
 			);
@@ -584,8 +582,6 @@ else if(empty($HTTP_GET_VARS[POST_USERS_URL]))
 	}
 	$select_list .= "</select>";
 
-	include('page_header_admin.'.$phpEx);
-
 	$template->set_filenames(array(
 		"body" => "admin/auth_select_body.tpl")
 	);
@@ -615,9 +611,6 @@ else
 	{
 		$adv = FALSE;
 	}
-
-	$template_header = "admin/page_header.tpl";
-	include('page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => "admin/auth_ug_body.tpl")
