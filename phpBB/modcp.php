@@ -115,7 +115,6 @@ include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 $template->set_filenames(array(
 	"body" => "modcp_body.tpl",
 	"confirm" => "confirm_body.tpl",
-	"viewip" => "modcp_viewip.tpl",
 	"split_body" => "split_body.tpl")
 );
 
