@@ -313,28 +313,6 @@ function setup_style($style)
 	return $row;
 }
 
-function generate_activation_key()
-{
-	$chars = array(
-		"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J",
-		"k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T",
-		"u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8",
-		"9","0");
-
-	$max_elements = count($chars) - 1;
-
-	srand((double)microtime()*1000000);
-
-	$act_key = '';
-	for($i = 0; $i < 8; $i++)
-	{
-		$act_key .= $chars[rand(0, $max_elements)];
-	}
-	$act_key_md = md5($act_key);
-
-	return $act_key_md;
-}
-
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode(".", $dotquad_ip);
@@ -352,7 +330,7 @@ function decode_ip($int_ip)
 //
 function create_date($format, $gmepoch, $tz)
 {
-	return gmdate($format, $gmepoch + (3600 * $tz));
+	return @gmdate($format, $gmepoch + (3600 * $tz));
 }
 
 //
@@ -746,83 +724,6 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 
 	return true;
-}
-
-//
-// Username search
-//
-function username_search($search_match, $is_inline_review = 0, $default_list = "")
-{
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
-	global $starttime;
-
-	$author_list = '';
-	if ( !empty($search_match) )
-	{
-		$username_search = preg_replace("/\*/", "%", trim(strip_tags($search_match)));
-
-		$sql = "SELECT username 
-			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
-			ORDER BY username";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain search results", "", __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				$author_list .= '<option value="' . $row['username'] . '">' .$row['username'] . '</option>';
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		else
-		{
-			$author_list = '<option>' . $lang['No_match']. '</option>';
-		}
-
-	}
-
-	if ( !$is_inline_review )
-	{
-		$gen_simple_header = TRUE;
-		$page_title = $lang['Search'];
-		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-		$template->set_filenames(array(
-			"search_user_body" => "search_username.tpl")
-		);
-
-		$template->assign_vars(array(
-			"L_CLOSE_WINDOW" => $lang['Close_window'], 
-			"L_SEARCH_USERNAME" => $lang['Find_username'], 
-			"L_UPDATE_USERNAME" => $lang['Select_username'], 
-			"L_SELECT" => $lang['Select'], 
-			"L_SEARCH" => $lang['Search'], 
-			"L_SEARCH_EXPLAIN" => $lang['Search_author_explain'], 
-			"L_CLOSE_WINDOW" => $lang['Close_window'], 
-
-			"S_AUTHOR_OPTIONS" => $author_list, 
-			"S_SEARCH_ACTION" => append_sid("search.$phpEx?mode=searchuser"))
-		);
-
-		//
-		// If we have results then dump them out and enable
-		// the appropriate switch block
-		//
-		if ( !empty($author_list) )
-		{
-			$template->assign_block_vars("switch_select_name", array());
-		}
-
-		$template->pparse("search_user_body");
-
-		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
-	}
-
-	return($author_list);
 }
 
 //
