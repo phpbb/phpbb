@@ -203,7 +203,7 @@ while ($row = $db->sql_fetchrow($result))
 				$location_url = "viewonline.$phpEx$SID";
 				break;
 
-			case 'memberslist':
+			case 'memberlist':
 				$location = $user->lang['VIEWING_MEMBERS'];
 				$location_url = "memberlist.$phpEx$SID";
 				break;
