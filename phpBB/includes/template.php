@@ -271,6 +271,11 @@ class Template
 	{
 		global $config;
 
+		// Remove any "loose" php ... we want to give admins the ability
+		// to switch on/off PHP for a given template. Allowing unchecked
+		// php is a no-no
+		$code = preg_replace('#\<\?php(.*?)\?\>#is', '', $code);
+
 		// Pull out all block/statement level elements and seperate
 		// plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
@@ -291,7 +296,6 @@ class Template
 		{
 			$this->compile_var_tags($text_blocks[$i]);
 		}
-
 
 		$compile_blocks = array();
 
@@ -371,18 +375,18 @@ class Template
 			$template_php .= (!$no_echo) ? ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
+		// There will be a number of occassions where we switch into and out of
+		// PHP mode instantaneously. Rather than "burden" the parser with this
+		// we'll strip out such occurences, minimising such switching
 		$template_php = str_replace(' ?><?php ', '', $template_php);
 
-		return  (!$no_echo) ? str_replace("\\'", "'", $template_php) : "\$$echo_var .= '" . addslashes($template_php) . "'";
+		return  (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
 	}
 
 	function compile_var_tags(&$text_blocks)
 	{
 		// change template varrefs into PHP varrefs
 		$varrefs = array();
-
-		$text_blocks = str_replace('\\', '\\\\', $text_blocks);
-		$text_blocks = str_replace('\'', '\\\'', $text_blocks);
 
 		// This one will handle varrefs WITH namespaces
 		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)([a-z0-9\-_]+?)\}#is', $text_blocks, $varrefs);
@@ -405,7 +409,7 @@ class Template
 		{
 			global $user;
 
-			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
+			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
 
