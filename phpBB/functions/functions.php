@@ -409,4 +409,11 @@ function decode_ip($int_ip)
 
 }
 
+//
+// Create date/time from format and timezone
+//
+function create_date($format, $gmepoch, $tz)
+{
+	return (date($format, $gmepoch + (3600 * $tz)));
+}
 ?>
