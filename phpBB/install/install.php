@@ -14,7 +14,8 @@
 define('IN_PHPBB', true);
 
 // Error reporting level and runtime escaping
-//error_reporting  (E_ERROR | E_WARNING | E_PARSE);
+//error_reporting(E_ERROR | E_WARNING | E_PARSE);
+error_reporting(E_ALL);
 set_magic_quotes_runtime(0);
 
 @set_time_limit(120);
@@ -27,13 +28,16 @@ include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-// Slash data if necessary
-if (!get_magic_quotes_gpc())
+// Be paranoid with passed vars
+if (@ini_get('register_globals'))
 {
-	$_GET = slash_input_data($_GET);
-	$_POST = slash_input_data($_POST);
-	$_COOKIE = slash_input_data($_POST);
+	foreach ($_REQUEST as $var_name => $void)
+	{
+		unset(${$var_name});
+	}
 }
+
+define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Instantiate classes for future use
 $user = new user();
@@ -54,16 +58,15 @@ if (@file_exists($phpbb_root_path . 'config.'.$phpEx))
 
 
 // Obtain various vars
-$stage = (isset($_POST['stage'])) ? intval($_POST['stage']) : 0;
+$stage = request_var('stage', 0);
 //, 'acm_type'
 // These are all strings so we'll just traverse an array
 $var_ary = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
 
 foreach ($var_ary as $var)
 {
-	$$var = (isset($_POST[$var])) ? htmlspecialchars($_POST[$var]) : false;
+	$$var = request_var($var, '');
 }
-
 
 // Set some vars
 define('ANONYMOUS', 1);
@@ -429,7 +432,7 @@ if ($stage == 0)
 
 <h1><?php echo $lang['DIRECTORIES_AND_FILES']; ?></h2>
 
-<h2><? echo $lang['REQUIRED']; ?></h2>
+<h2><? echo $lang['INSTALL_REQUIRED']; ?></h2>
 
 <p><?php echo $lang['INSTALL_REQUIRED_FILES']; ?></p>
 
@@ -638,7 +641,7 @@ if ($stage == 1)
 	</tr>
 <?php
 
-	if (sizeof($error['admin']))
+	if (isset($error['admin']) && sizeof($error['admin']))
 	{
 ?>
 	<tr>
@@ -685,7 +688,7 @@ if ($stage == 1)
 	</tr>
 <?php
 
-	if (sizeof($error['db']))
+	if (isset($error['db']) && sizeof($error['db']))
 	{
 ?>
 	<tr>
@@ -736,7 +739,7 @@ if ($stage == 1)
 	</tr>
 <?php
 
-	if (sizeof($error['server']))
+	if (isset($error['server']) && sizeof($error['server']))
 	{
 ?>
 	<tr>
@@ -1021,7 +1024,7 @@ if ($stage == 2)
 
 // Everything should now be in place so we'll go ahead with the actual
 // setup of the database. Hopefully nothing will go wrong from this
-// point on ... it really shouldn""""""ttttttt
+// point on ... it really shouldn't
 if ($stage == 3)
 {
 	// If we get here and the extension isn't loaded we know that we
@@ -1053,7 +1056,6 @@ if ($stage == 3)
 		// How should we treat this schema?
 		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
 		$delimiter = $available_dbms[$dbms]['DELIM'];
-		$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
 		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
 		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
@@ -1149,7 +1151,7 @@ if ($stage == 3)
 			WHERE config_name = 'newest_username'",
 
 		'UPDATE ' . $table_prefix . "users
-			SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email) . "'
+			SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "'
 			WHERE username = 'Admin'",
 
 		'UPDATE ' . $table_prefix . "moderator_cache
@@ -1201,6 +1203,12 @@ if ($stage == 4)
 	define('USERS_TABLE', $table_prefix . 'users');
 	define('GROUPS_TABLE', $table_prefix . 'groups');
 	define('BANLIST_TABLE', $table_prefix . 'banlist');
+	define('CONFIG_TABLE', $table_prefix . 'config');
+	define('USER_NORMAL', 0);
+	define('USER_INACTIVE', 1);
+	define('USER_IGNORE', 2);
+	define('USER_FOUNDER', 3);
+	
 
 	$sql = "SELECT *
 		FROM {$table_prefix}config";
@@ -1241,20 +1249,6 @@ exit;
 // ---------
 // FUNCTIONS
 //
-
-// addslashes to vars if magic_quotes_gpc is off this is a security precaution
-// to prevent someone trying to break out of a SQL statement.
-function slash_input_data(&$data)
-{
-	if (is_array($data))
-	{
-		foreach ($data as $k => $v)
-		{
-			$data[$k] = (is_array($v)) ? slash_input_data($v) : addslashes($v);
-		}
-	}
-	return $data;
-}
 
 // Output page -> header
 function inst_page_header()
@@ -1362,6 +1356,7 @@ function inst_language_select($default = '')
 	@asort($lang);
 	@reset($lang);
 
+	$user_select = '';
 	foreach ($lang as $displayname => $filename)
 	{
 		$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
@@ -1460,7 +1455,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 		$db->sql_close();
 	}
 
-	if ($error_connect && !sizeof($error['db']))
+	if ($error_connect && (!isset($error['db']) || !sizeof($error['db'])))
 	{
 		$error['db'][] = $lang['INSTALL_DB_CONNECT'];
 	}
