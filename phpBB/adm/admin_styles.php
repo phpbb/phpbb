@@ -1319,7 +1319,9 @@ function csspreview()
 	<tr>
 		<td class="<?php echo $row_class; ?>" width="100%"><?php 
 			
-				echo (is_writeable($phpbb_root_path . 'styles/themes/' . $row['css_external'])) ? sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>') : $row['theme_name'];
+//				echo (is_writeable($phpbb_root_path . 'styles/themes/' . $row['css_external'])) ? sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>') : $row['theme_name'];
+
+				echo sprintf('%s%s%s', "<a href=\"admin_styles.$phpEx$SID&amp;mode=themes&amp;action=edit&amp;id=" . $row['theme_id'] . '">', $row['theme_name'], '</a>');
 
 ?></td>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=recreate&amp;id=" . $row['theme_id']; ?>">Regenerate</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=delete&amp;id=" . $row['theme_id']; ?>">Delete</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=export&amp;id=" . $row['theme_id']; ?>">Export</a> | <a href="<?php echo "admin_styles.$phpEx$SID&amp;mode=themes&amp;action=preview&amp;id=" . $row['theme_id']; ?>">Preview</a>&nbsp;</td>
