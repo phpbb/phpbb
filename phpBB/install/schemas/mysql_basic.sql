@@ -194,15 +194,15 @@ INSERT INTO phpbb_styles_theme (theme_id, css_data, css_external) VALUES (1, 'bo
 
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 2, 'Admin');
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 2, 'Admin', 972086460);
 
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id,  forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name) VALUES (2, 'Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 2, 'Admin');
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id,  forum_postable, forum_posts, forum_topics, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time) VALUES (2, 'Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 2, 'Admin', 972086460);
 
 
 # -- Users
 INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 1, 'Anonymous', 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 0, 1, 0, 1, 1, NULL, '', '', '', '', '', '', 0, 0);
 
-# -- username: admin    password: admin (change this or remove it once everything is working!)
+# -- username: Admin    password: admin (change this or remove it once everything is working!)
 INSERT INTO phpbb_users (user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active, user_founder) VALUES ( 2, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', '', 1, 1, '', '', '', 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'en', 0, 'd M Y h:i a', '', '', 0, 1, 1);
 
 
@@ -249,11 +249,11 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_de
 
 
 # -- Moderator cache
-INSERT INTO phpbb_moderator_cache (user_id, forum_id, username) VALUES (2, 2, 'admin');
+INSERT INTO phpbb_moderator_cache (user_id, forum_id, username) VALUES (2, 2, 'Admin');
 
 
 # -- Demo Topic
-INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_last_post_id, topic_last_poster_id, topic_last_post_time) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 2, 0, 0, 1, 1, 2, 972086460);
+INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, forum_id, topic_status, topic_type, topic_first_post_id, topic_first_poster_name, topic_last_post_id, topic_last_poster_id, topic_last_poster_name, topic_last_post_time) VALUES (1, 'Welcome to phpBB 2', 2, '972086460', 0, 0, 2, 0, 0, 1, 'Admin', 1, 2, 'Admin', 972086460);
 
 
 # -- Demo Post
@@ -330,3 +330,8 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 10, 
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 11, 1, 0 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 12, 1, 1 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1, 1 );
+
+
+# -- reasons
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 1, 0, 'warez', 'The reported post contains links to pirated or illegal software.' );
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES ( 2, 1, 'other', 'The reported post does not fit into any other category, please use the description field.' );

@@ -332,6 +332,7 @@ CREATE TABLE phpbb_posts (
    poster_ip varchar(40) NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    post_approved tinyint(1) DEFAULT '1' NOT NULL,
+   post_reported tinyint(1) DEFAULT '0' NOT NULL,
    enable_bbcode tinyint(1) DEFAULT '1' NOT NULL,
    enable_html tinyint(1) DEFAULT '0' NOT NULL,
    enable_smilies tinyint(1) DEFAULT '1' NOT NULL,
@@ -412,6 +413,34 @@ CREATE TABLE phpbb_ratings (
   rating tinyint(4) NOT NULL, 
   KEY post_id (post_id),
   KEY user_id (user_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_reports_reasons'
+#
+CREATE TABLE phpbb_reports_reasons (
+  reason_id smallint(6) NOT NULL auto_increment,
+  reason_priority tinyint(4) NOT NULL default '0',
+  reason_name varchar(255) NOT NULL default '',
+  reason_description text NOT NULL,
+  PRIMARY KEY  (reason_id)
+);
+
+
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_reports'
+#
+CREATE TABLE phpbb_reports (
+  report_id smallint(5) unsigned NOT NULL auto_increment,
+  reason_id smallint(5) unsigned NOT NULL default '0',
+  post_id mediumint(8) unsigned NOT NULL default '0',
+  user_id mediumint(8) unsigned NOT NULL default '0',
+  report_time int(10) unsigned NOT NULL default '0',
+  report_text text NOT NULL,
+  PRIMARY KEY  (report_id)
 );
 
 
@@ -614,6 +643,7 @@ CREATE TABLE phpbb_topics (
    forum_id smallint(8) UNSIGNED DEFAULT '0' NOT NULL,
    icon_id tinyint(4) UNSIGNED DEFAULT '1' NOT NULL,
    topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+   topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    topic_title varchar(60) NOT NULL,
    topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_time int(11) DEFAULT '0' NOT NULL,
