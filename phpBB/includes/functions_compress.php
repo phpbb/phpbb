@@ -99,7 +99,7 @@ class compress_zip extends compress
 {
 	var $datasec = array();
 	var $ctrl_dir = array();
-	var $eof_ctrl_dir = 0x06054b50;
+	var $eof_cdh = "\x50\x4b\x05\x06\x00\x00\x00\x00";
 
 	var $old_offset = 0;
 	var $datasec_len = 0;
@@ -144,11 +144,11 @@ class compress_zip extends compress
 		{
 			$buffer = fread($this->fp, 46);
 
-			$tmp = unpack("Vcrc/Vc_size/Vuc_size/vstrlen", substr($buffer, 16, 14));
+			$tmp = unpack("vc_method/Vmtime/Vcrc/Vc_size/Vuc_size/vstrlen", substr($buffer, 10, 20));
+			$c_method = (int) trim($tmp['c_method']);
 			$crc = (int) trim($tmp['crc']);
 			$strlen = (int) trim($tmp['strlen']);
 			$uc_size = (int) trim($tmp['uc_size']);
-			$c_size = (int) trim($tmp['c_size']);
 
 			$tmp = unpack("Vattrib/Voffset", substr($buffer, 38, 8));
 			$attrib = (int) trim($tmp['attrib']);
@@ -158,10 +158,10 @@ class compress_zip extends compress
 
 			if ($attrib == 32)
 			{
+				$seek_ary[$j]['c_method'] = $c_method;
 				$seek_ary[$j]['crc'] = $crc;
 				$seek_ary[$j]['strlen'] = $strlen;
 				$seek_ary[$j]['uc_size'] = $uc_size;
-				$seek_ary[$j]['c_size'] = $c_size;
 
 				$seek_ary[$j]['offset'] = $offset;
 				$seek_ary[$j]['filename'] = $dst . $filename;
@@ -192,12 +192,16 @@ class compress_zip extends compress
 		{
 			$filename = $seek['filename'];
 
+//			fseek($this->fp, $seek['offset'] + 8); // To grab file header info
+//			fseek($this->fp, $seek['offset'] + 30 + $tmp['strlen'] + $tmp['c_size']); // To grab file header info2
+
+			// Jump to data
 			fseek($this->fp, $seek['offset'] + 30 + $seek['strlen']);
 
 			// Was data compressed? If so we have to fudge a solution thanks
 			// to some "issues" with gzuncompress. Else we just write out the
 			// data
-			if ($seek['uc_size'] != $seek['c_size'])
+			if ($seek['c_method'] == 8)
 			{
 				// Temp gzip file -> .gz header -> data -> gz footer
 				if (!($fp = fopen($filename . '.gz', 'wb')))
@@ -234,7 +238,7 @@ class compress_zip extends compress
 					trigger_error("Could not create $filename");
 				}
 
-				fwrite($fp, fread($this->fp, $seek['c_size']));
+				fwrite($fp, fread($this->fp, $seek['uc_size']));
 				fclose($fp);
 			}
 		}
@@ -270,7 +274,7 @@ class compress_zip extends compress
 			$c_len = strlen($zdata);
 
 			// Did we compress? No, then use data as is
-			if ($c_len > $unc_len)
+			if ($c_len >= $unc_len)
 			{
 				$zdata = $data;
 				$c_len = $unc_len;
@@ -281,8 +285,13 @@ class compress_zip extends compress
 		// If we didn't compress set method to store, else deflate
 		$c_method = ($c_len == $unc_len) ? "\x00\x00" : "\x08\x00"; 
 
+		// Are we a file or a directory? Set archive for file
+		$attrib = ($is_dir) ? 16 : 32;
+		$var_ext = ($is_dir) ? "\x0a" : "\x14";
+
+		// File Record Header
 		$fr = "\x50\x4b\x03\x04";		// Local file header 4bytes
-		$fr .= "\x14\x00";				// ver needed to extract 2bytes
+		$fr .= "$var_ext\x00";			// ver needed to extract 2bytes
 		$fr .= "\x00\x00";				// gen purpose bit flag 2bytes
 		$fr .= $c_method;				// compression method 2bytes
 		$fr .= $hexdtime;				// last mod time and date 2+2bytes
@@ -290,6 +299,7 @@ class compress_zip extends compress
 		$fr .= pack('V', $c_len);		// compressed filesize 4bytes
 		$fr .= pack('V', $unc_len);		// uncompressed filesize 4bytes
 		$fr .= pack('v', strlen($name));// length of filename 2bytes
+
 		$fr .= pack('v', 0);			// extra field length 2bytes
 		$fr .= $name;
 		$fr .= $zdata;
@@ -300,17 +310,14 @@ class compress_zip extends compress
 
 		$this->datasec_len += strlen($fr);
 
-		// Add data to file ... by writing data out incrementally we
-		// save some memory
+		// Add data to file ... by writing data out incrementally we save some memory
 		fwrite($this->fp, $fr);
 		unset($fr);
 
-		// Are we a file or a directory? Set archive for file
-		$attrib = ($is_dir) ? 16 : 32;
-
+		// Central Directory Header
 		$cdrec = "\x50\x4b\x01\x02";		// header 4bytes
 		$cdrec .= "\x00\x00";               // version made by
-		$cdrec .= "\x14\x00";               // version needed to extract
+		$cdrec .= "$var_ext\x00";           // version needed to extract
 		$cdrec .= "\x00\x00";               // gen purpose bit flag
 		$cdrec .= $c_method;				// compression method 
 		$cdrec .= $hexdtime;                // last mod time & date
@@ -322,7 +329,7 @@ class compress_zip extends compress
 		$cdrec .= pack('v', 0);             // file comment length
 		$cdrec .= pack('v', 0);             // disk number start
 		$cdrec .= pack('v', 0);             // internal file attributes
-		$cdrec .= pack('V', $attrib);       // external file attributes
+		$cdrec .= pack('V', $attrib);		// external file attributes
 		$cdrec .= pack('V', $this->old_offset); // relative offset of local header
 		$cdrec .= $name;
 
@@ -335,15 +342,13 @@ class compress_zip extends compress
 	function file()
 	{
 		$ctrldir = implode('', $this->ctrl_dir);
-		$comment = 'Created by phpBB 2.2';
 
-		return $ctrldir . "\x50\x4b\x05\x06\x00\x00\x00\x00" . 
+		return $ctrldir . $this->eof_cdh . 
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries "on this disk"
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries overall
 			pack('V', strlen($ctrldir)) .			// size of central dir
 			pack('V', $this->datasec_len) .			// offset to start of central dir
-			pack('v', strlen($comment)) .			// .zip file comment length
-			$comment;
+			"\x00\x00";								// .zip file comment length
 	}
 }
 
