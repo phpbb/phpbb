@@ -45,7 +45,7 @@ $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 
 
 if( !isset($topic_id) && !isset($post_id) )
 {
-	message_die(GENERAL_MESSAGE, $lang['Topic_post_not_exist'], $lang['Error'], __LINE__, __FILE__);
+	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
 //
