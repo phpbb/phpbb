@@ -1,4 +1,4 @@
-<?php
+orig_word<?php
 /***************************************************************************
  *                                search.php
  *                            -------------------
@@ -785,6 +785,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
 			$message = $searchset[$i]['post_text'];
+			$topic_title = $searchset[$i]['topic_title'];
 
 			if( $showresults == "posts" )
 			{
@@ -845,7 +846,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 
 					if( count($orig_word) )
 					{
-						$topic_title = preg_replace($orig_word, $replacement_word, $searchset[$i]['topic_title']);
+						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 						$post_subject = ( $searchset[$i]['post_subject'] != "" ) ? preg_replace($orig_word, $replacement_word, $searchset[$i]['post_subject']) : $topic_title;
 
 						$message = preg_replace($orig_word, $replacement_word, $message);
