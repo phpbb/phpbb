@@ -69,6 +69,7 @@ else
 $search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? $HTTP_GET_VARS['search_id'] : '';
 
 $show_results = ( isset($HTTP_POST_VARS['show_results']) ) ? $HTTP_POST_VARS['show_results'] : 'posts';
+$show_results = ($show_results == 'topics') ? 'topics' : 'posts';
 
 if ( isset($HTTP_POST_VARS['search_terms']) )
 {
@@ -144,7 +145,8 @@ if ( $mode == 'searchuser' )
 else if ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
-	
+	$search_results = '';
+
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
 	$limiter = 5000;
