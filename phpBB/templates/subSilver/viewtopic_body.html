@@ -198,7 +198,7 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 
-		<td class="nav" width="150" align="center" valign="middle"><a href="#top">{L_BACK_TO_TOP}</a></td>
+		<td class="nav" width="150" align="center" valign="middle"><!-- IF MCP --><a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a><!-- ELSE --><a href="#top">{L_BACK_TO_TOP}</a><!-- ENDIF --></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td valign="middle" nowrap="nowrap"><!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_WWW --><a href="{postrow.U_WWW}" target="_userwww">{WWW_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_AIM --><a href="{postrow.U_AIM}" onclick="im_popup('{postrow.U_AIM}', 550, 320); return false">{AIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_YIM --><a href="{postrow.U_YIM}" onclick="im_popup('{postrow.U_YIM}', 780, 550); return false">{YIM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_MSN --><a href="{postrow.U_MSN}" onclick="im_popup('{postrow.U_MSN}', 550, 320); return false">{MSN_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_JABBER --><a href="{postrow.U_JABBER}" onclick="im_popup('{postrow.U_JABBER}', 550, 320); return false">{JABBER_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_ICQ --><script language="JavaScript" type="text/javascript"><!-- 
