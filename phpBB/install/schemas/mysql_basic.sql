@@ -99,98 +99,98 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('sessio
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 
 # -- auth options
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_list', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_read', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_post', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_reply', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_quote', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_edit', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_delete', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_poll', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_vote', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_announce', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_sticky', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_attach', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_download', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_html', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_bbcode', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_smilies', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_img', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_flash', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_sigs', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_search', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_email', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_rate', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_print', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_ignoreflood', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_postcount', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_moderate', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local) VALUES ('f_report', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_list', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_read', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_post', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_reply', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_quote', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_edit', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_delete', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_poll', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_vote', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_announce', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_sticky', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_attach', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_download', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_html', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_bbcode', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_smilies', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_img', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_flash', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_sigs', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_search', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_email', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_rate', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_print', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_ignoreflood', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_postcount', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_moderate', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_report', 1);
 
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_edit', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_delete', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_move', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_lock', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_split', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_merge', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_approve', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_unrate', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_auth', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_ip', 1, 1);
-INSERT INTO phpbb_auth_options (auth_value, is_local, is_global) VALUES ('m_info', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_edit', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_delete', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_move', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_lock', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_split', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_merge', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_approve', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_unrate', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_auth', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_ip', 1, 1);
+INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_info', 1, 1);
 
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_server', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_defaults', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_board', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_cookies', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_clearlogs', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_words', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_icons', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_bbcode', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_attach', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_email', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_styles', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_user', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_useradd', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_userdel', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ranks', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_ban', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_names', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_group', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_groupadd', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_groupdel', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forum', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumadd', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_forumdel', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_prune', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_auth', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authmods', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authadmins', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authusers', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authgroups', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_authdeps', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_backup', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_restore', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_search', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_events', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('a_cron', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_server', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_defaults', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_board', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_cookies', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_clearlogs', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_words', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_icons', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_bbcode', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_attach', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_email', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_styles', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_user', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_useradd', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_userdel', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_ranks', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_ban', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_names', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_group', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_groupadd', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_groupdel', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_forum', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_forumadd', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_forumdel', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_prune', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_auth', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authmods', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authadmins', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authusers', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authgroups', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authdeps', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_backup', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_restore', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_search', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_events', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_cron', 1);
 
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendemail', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_readpm', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_sendpm', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewonline', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_viewprofile', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_setavatar', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgavatar', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chggrp', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgemail', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgname', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_chgpasswd', 1);
-INSERT INTO phpbb_auth_options (auth_value, is_global) VALUES ('u_search', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendemail', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_readpm', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendpm', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewonline', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewprofile', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_setavatar', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgavatar', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chggrp', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgemail', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgname', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_chgpasswd', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_search', 1);
 
 
 # -- phpbb_styles
@@ -238,36 +238,36 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending) VALUES (5, 2, 0);
 
 
 # -- User auth
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'm_%';
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
 
 
 # -- Group auth
 # -- give very limited rights to GUEST and INACTIVE groups
 # -- give basic, typically non-contencious rights to REGISTERED users
 # -- give all admin rights to ADMIN group
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_bbcode', 'f_search', 'f_print');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 1, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 1, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_quote', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html', 'f_rate');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value LIKE 'a_%';
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 1, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 2, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('u_', 'u_sendemail', 'u_readpm', 'u_sendpm', 'u_viewprofile', 'u_chgavatar', 'u_chgemail', 'u_chgpasswd', 'u_search');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_value IN ('u_viewonline', 'u_chgcolor', 'u_chgname');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_', 'u_sendemail', 'u_readpm', 'u_sendpm', 'u_viewprofile', 'u_chgavatar', 'u_chgemail', 'u_chgpasswd', 'u_search');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 2 FROM phpbb_auth_options WHERE auth_option IN ('u_viewonline', 'u_chgcolor', 'u_chgname');
 
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_allow_deny) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_value IN ('u_%');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('u_%');
 
 
 # -- Moderator cache
@@ -279,7 +279,7 @@ INSERT INTO phpbb_topics (topic_id, topic_title, topic_poster, topic_time, topic
 
 
 # -- Demo Post
-INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip, post_subject, post_text) VALUES (1, 1, 2, 2, 972086460, NULL, '127.0.0.1', NULL, 'This is an example post in your phpBB 2.2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
+INSERT INTO phpbb_posts (post_id, topic_id, forum_id, poster_id, post_time, post_username, poster_ip, post_subject, post_text) VALUES (1, 1, 2, 2, 972086460, NULL, '127.0.0.1', 'Welcome to phpBB 2', 'This is an example post in your phpBB 2.2 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!');
 
 # -- Smilies
 INSERT INTO phpbb_smilies (code, smile_url, emoticon, smile_width, smile_height) VALUES ( ':D', 'icon_biggrin.gif', 'Very Happy', 15, 15);

@@ -93,7 +93,7 @@ CREATE TABLE phpbb_auth_options (
 CREATE TABLE phpbb_auth_presets (
   preset_id tinyint(4) NOT NULL auto_increment, 
   preset_name varchar(50) DEFAULT '' NOT NULL, 
-  preset_user_id mediumint(5) DEFAULT 0 UNSIGNED NOT NULL, 
+  preset_user_id mediumint(5) UNSIGNED DEFAULT '0' NOT NULL, 
   preset_type varchar(2) DEFAULT '' NOT NULL, 
   preset_data text DEFAULT '' NOT NULL,
   PRIMARY KEY (preset_id),
