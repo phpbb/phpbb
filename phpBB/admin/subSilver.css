@@ -1,0 +1,195 @@
+/*
+	$Id $	
+
+	    The original "subSilver" theme for phpBB2
+	Created by subBlue design :: http://www.subBlue.com
+	        Copyright (c) 2002 phpBB Group
+*/
+
+body {
+	background-color:	white;
+	margin:				0px;
+	border:				0px;
+	padding:			0px;
+	scrollbar-face-color:		#DEE3E7;
+	scrollbar-highlight-color:	white;
+	scrollbar-shadow-color:		#DEE3E7;
+	scrollbar-3dlight-color:	#D1D7DC;
+	scrollbar-arrow-color:		#006699;
+	scrollbar-track-color:		#EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+p {
+	font-size:	8pt;
+}
+
+.maintitle,h1,h2 {
+	color:				black;
+	font-family:		'Trebuchet MS',Verdana,Arial,Helvetica,sans-serif;
+	font-weight:		bold; 
+	font-size:			22px; 
+	text-decoration:	none; 
+	line-height:		120%; 
+}
+
+.subtitle {
+	font-family:	Arial,Helvetica,sans-serif;
+	font-size:		12pt;
+	font-weight:	bold;
+}
+
+/*
+	Tables
+*/
+th,td,p { 
+	font-family:	Verdana,Arial,Helvetica,sans-serif;
+	font-size:		8pt;
+}
+
+th	{
+	height:				25px;
+	background-color:	#006699;
+	color:				#FFA34F;
+	font-size:			11px;
+	font-weight:		bold;
+}
+
+th.menu {
+	text-align: left;
+}
+
+td.cat {
+	height:				28px;
+	background-color:	#D1D7DC; 
+}
+
+.row1 {
+	background-color:	#EFEFEF;
+}
+.row2 {
+	background-color:	#DEE3E7;
+}
+.row3 {
+	background-color:	#D1D7DC;
+}
+
+/*
+	Anchors
+*/
+a:link,a:active,a:visited {
+	color:	#006699;
+}
+a.gen, a.genmed, a.gensmall {
+	color:				#006699;
+	text-decoration:	none;
+}
+a.nav {
+	color:				#006699;
+	text-decoration:	none;
+}
+a.copyright {
+	color:				#444444;
+	text-decoration:	none;
+}
+
+a.gen:hover, a.genmed:hover, a.gensmall:hover {
+	color:				#DD6900;
+	text-decoration:	underline;
+}
+a:hover {
+	color:				#DD6900;
+	text-decoration:	underline;
+}
+a.nav:hover {
+	text-decoration:	underline;
+}
+a.copyright:hover {
+	color:				black;
+	text-decoration:	underline;
+}
+
+/*
+	Non-tag specific
+*/
+.gen {
+	font-size:	12px;
+}
+.genmed {
+	font-size:	11px;
+}
+.gensmall {
+	font-size:	10px;
+}
+.gen, .genmed, .gensmall {
+	color:	black;
+}
+.nav {
+	color:			black;
+	font-weight:	bold;
+	font-size:		11px;
+}
+.name {
+	color:		black;
+	font-size:	11px;
+}
+.postdetails { 
+	color:		black;
+	font-size:	10px;
+}
+.copyright {
+	color:			#444444; 
+	font-size:		10px;
+	font-family:	Verdana,Arial,Helvetica,sans-serif; 
+	letter-spacing:	-1px;
+}
+
+/*
+	Misc
+*/
+hr	{ 
+	height:				0px; 
+	border:				solid #D1D7DC 0px; 
+	border-top-width:	1px;
+}
+
+/*
+	Forms
+*/
+input, textarea, select {
+	color:			black;
+	font:			normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color:	black;
+}
+
+input.text {
+	font-family:	'Courier New',courier;
+}
+
+input.post, textarea.post, select {
+	background-color:	white;
+}
+
+input {
+	text-indent:	2px;
+}
+
+input.button {
+	background-color:	#EFEFEF;
+	color:				black;
+	font-family:		Verdana, Arial, Helvetica, sans-serif;
+	font-size:			11px;
+}
+
+input.mainoption {
+	background-color:	#FAFAFA;
+	font-weight:		bold;
+}
+
+input.liteoption {
+	background-color:	#FAFAFA;
+	font-weight:		normal;
+}
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("formIE.css");
