@@ -1,40 +1,40 @@
 <?php
-/***************************************************************************  
+/***************************************************************************
  *                              page_tail.php
- *                            -------------------                         
- *   begin                : Saturday, Feb 13, 2001 
- *   copyright            : (C) 2001 The phpBB Group        
- *   email                : support@phpbb.com                           
- *                                                          
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
  *   $Id$
- *                                                            
- * 
- ***************************************************************************/ 
+ *
+ *
+ ***************************************************************************/
 
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- *                                                          
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *
+ ***************************************************************************/
 
 //
 // Load/parse the footer template we need based on pagetype.
 //
-switch($pagetype) 
+switch($pagetype)
 {
 	case 'index':
 		$template->pparse("footer");
 		break;
-	
+
 	case 'viewforum':
 		$template->pparse("footer");
 		break;
-		
+
 	case 'viewtopic':
 		$template->pparse("footer");
 		break;
@@ -48,12 +48,14 @@ switch($pagetype)
 //
 // Show the overall footer.
 //
-if($userdata['session_logged_in']) 
+if($userdata['session_logged_in'])
 {
 	$admin_link = "<a href=\"admin/index.php\">Administration Panel</a>";
 }
+$current_time = time();
 $template->assign_vars(array("PHPBB_VERSION" => "2.0-alpha",
-	"ADMIN_LINK" => $admin_link));
+									  "CURRENT_TIME" => create_date($date_format, $current_time, $sys_timezone),
+									  "ADMIN_LINK" => $admin_link));
 
 $template->pparse("overall_footer");
 
