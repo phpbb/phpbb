@@ -54,7 +54,6 @@ $image_msnm = "$url_images/msnm.gif";
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
-$template = new Template("./templates/Default");
 include('includes/template.inc');
 
 include('includes/error.'.$phpEx);
@@ -96,6 +95,8 @@ else
 	$sys_timezone = $config["system_timezone"];
 	$sys_template = $config['sys_template'];
 	$sys_lang = $default_lang;
+
+	
 }
 
 include('language/lang_'.$default_lang.'.'.$phpEx);
