@@ -388,7 +388,7 @@ switch ($mode)
 		if ($old_forum_type == FORUM_POST && $forum_type == FORUM_CAT)
 		{
 
-?><br /><input type="radio" name="action" value="delete" checked="checked" /> <?php echo $user->lang['Delete_all_posts'] ?> &nbsp;<input type="radio" name="action" value="move" /> <?php echo $user->lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select><?php
+?><br /><input type="radio" name="action" value="delete" checked="checked" /> <?php echo $user->lang['DELETE_ALL_POSTS'] ?> &nbsp;<input type="radio" name="action" value="move" /> <?php echo $user->lang['MOVE_POSTS_TO'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select><?php
 
 		}
 
@@ -455,7 +455,7 @@ switch ($mode)
 	</tr>
 <?php
 
-		if ($forum_type == FORUM_POST)
+		if ($forum_type == FORUM_POST || $forum_type == FORUM_CAT)
 		{
 
 ?>
@@ -463,6 +463,13 @@ switch ($mode)
 		<td class="row1"><?php echo $user->lang['FORUM_STYLE'] ?>: </td>
 		<td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['DEFAULT_STYLE'] ?></option><?php echo $styles_list ?></select></td>
 	</tr>
+<?php
+
+		}
+		if ($forum_type == FORUM_POST)
+		{
+
+?>
 	<tr>
 		<td class="row1"><?php echo $user->lang['ENABLE_TOPIC_ICONS'] ?>: </td>
 		<td class="row2"><input type="radio" name="enable_icons" value="1"<?php echo $topic_icons_yes; ?> /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="enable_icons" value="0"<?php echo $topic_icons_no; ?> /> <?php echo $user->lang['NO']; ?></td>
@@ -848,7 +855,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		// Start transaction
-		$db->sql_transaction();
+		$db->sql_transaction('begin');
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET left_id = left_id + ' . ($diff_up + 1) . ', right_id = right_id + ' . ($diff_up + 1) . '
