@@ -33,7 +33,6 @@
 // * permission defined ability for user to add poll options
 // * Spellcheck? aspell? or some such?
 // * Posting approval
-// * Report to Admin Checkbox/Button for Moderation ? psoTFX - No, these will be handled by the MCP/viewtopic
 // * After Submit got clicked, disable the button (prevent double-posts), could be solved in a more elegant way
 
 define('IN_PHPBB', true);
@@ -66,13 +65,11 @@ if ($cancel)
 	redirect($redirect);
 }
 
-// POST INFO
-
 // What is all this following SQL for? Well, we need to know
 // some basic information in all cases before we do anything.
-$first_validate = false;
-$second_validate = false;
-$third_validate = false;
+$forum_validate = false;
+$topic_validate = false;
+$post_validate = false;
 
 $forum_fields = array('f.forum_id', 'f.forum_name', 'f.parent_id', 'f.forum_parents', 'f.forum_status', 'f.forum_postable', 'f.enable_icons', 'f.enable_post_count', 'f.enable_moderate');
 $topic_fields = array('t.topic_id', 't.topic_status', 't.topic_first_post_id', 't.topic_last_post_id', 't.topic_type', 't.topic_title');
@@ -90,7 +87,7 @@ switch ($mode)
 			FROM " . FORUMS_TABLE . " f
 			WHERE forum_id = " . $forum_id;
 
-		$first_validate = true;
+		$forum_validate = true;
 		break;
 
 	case 'reply':
@@ -104,8 +101,8 @@ switch ($mode)
 			WHERE t.topic_id = " . $topic_id . "
 				AND f.forum_id = t.forum_id";
 
-		$first_validate = true;
-		$second_validate = true;
+		$forum_validate = true;
+		$topic_validate = true;
 		break;
 		
 	case 'quote':
@@ -116,14 +113,24 @@ switch ($mode)
 			trigger_error($user->lang['NO_POST']);
 		}
 
-		$sql = "SELECT " . implode(',', $post_fields) . ", " . implode(',', $topic_fields) . ", " . implode(',', $forum_fields) . "
-			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
+		$sql = "SELECT " . implode(',', $post_fields) . ", " . implode(',', $topic_fields) . ", " . implode(',', $forum_fields) . ", u.username
+			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f, " . USERS_TABLE . " u
 			WHERE p.post_id = " . $post_id . "
 				AND t.topic_id = p.topic_id
+				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id";
-		$first_validate = true;
-		$second_validate = true;
-		$third_validate = true;
+		$forum_validate = true;
+		$topic_validate = true;
+		$post_validate = true;
+		break;
+
+	case 'topicreview':
+		if (!$topic_id)
+		{
+			trigger_error($user->lang['NO_TOPIC']);
+		}
+
+		topic_review($topic_id, false);
 		break;
 
 	case 'smilies':
@@ -143,32 +150,39 @@ if ($sql != '')
 	$db->sql_freeresult($result);
 
 	$forum_id = intval($forum_id);
-	$parent_id = ($first_validate) ? intval($parent_id) : false;
-	$forum_parents = ($first_validate) ? trim($forum_parents) : '';
-	$forum_name = ($first_validate) ? trim($forum_name) : '';
-	$forum_status = ($first_validate) ? intval($forum_status) : false;
-	$forum_postable = ($first_validate) ? intval($forum_postable) : false;
-	$enable_post_count = ($first_validate) ? intval($enable_post_count) : false;
-	$enable_moderate = ($first_validate) ? intval($enable_moderate) : false;
-	$enable_icons = ($first_validate) ? intval($enable_icons) : false;
+	$parent_id = ($forum_validate) ? intval($parent_id) : false;
+	$forum_parents = ($forum_validate) ? trim($forum_parents) : '';
+	$forum_name = ($forum_validate) ? trim($forum_name) : '';
+	$forum_status = ($forum_validate) ? intval($forum_status) : false;
+	$forum_postable = ($forum_validate) ? intval($forum_postable) : false;
+	$enable_post_count = ($forum_validate) ? intval($enable_post_count) : false;
+	$enable_moderate = ($forum_validate) ? intval($enable_moderate) : false;
+	$enable_icons = ($forum_validate) ? intval($enable_icons) : false;
 
 	$topic_id = intval($topic_id);
-	$topic_status = ($second_validate) ? intval($topic_status) : false;
-	$topic_first_post_id = ($second_validate) ? intval($topic_first_post_id) : false;
-	$topic_last_post_id = ($second_validate) ? intval($topic_last_post_id) : false;
-	$topic_type = ($second_validate) ? intval($topic_type) : false;
-	$topic_title = ($second_validate) ? trim($topic_title) : '';
+	$topic_status = ($topic_validate) ? intval($topic_status) : false;
+	$topic_first_post_id = ($topic_validate) ? intval($topic_first_post_id) : false;
+	$topic_last_post_id = ($topic_validate) ? intval($topic_last_post_id) : false;
+	$topic_type = ($topic_validate) ? intval($topic_type) : false;
+	$topic_title = ($topic_validate) ? trim($topic_title) : '';
 
 	$post_id = intval($post_id);
-	$post_time = ($third_validate) ? intval($post_time) : false;
-	$poster_id = ($third_validate) ? intval($poster_id) : false;
-	$post_username = ($third_validate) ? trim($post_username) : '';
-	$post_text = ($third_validate) ? trim($post_text) : '';
-	$post_checksum = ($third_validate) ? trim($post_checksum) : '';
-	$bbcode_uid = ($third_validate) ? trim($bbcode_uid) : '';
-}
+	$post_time = ($post_validate) ? intval($post_time) : false;
+	$poster_id = ($post_validate) ? intval($poster_id) : false;
+	
+	if (($poster_id == ANONYMOUS) || (!$poster_id))
+	{
+		$username = ($post_validate) ? trim($post_username) : '';
+	}
+	else
+	{
+		$username = ($post_validate) ? trim($username) : '';
+	}
 
-// PERMISSION CHECKS
+	$post_text = ($post_validate) ? trim($post_text) : '';
+	$post_checksum = ($post_validate) ? trim($post_checksum) : '';
+	$bbcode_uid = ($post_validate) ? trim($bbcode_uid) : '';
+}
 
 // Notify user checkbox
 if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
@@ -200,7 +214,7 @@ $perm = array(
 );
 
 // DEBUG - Show Permissions
-debug_print_permissions($perm);
+//debug_print_permissions($perm);
 // DEBUG - Show Permissions
 
 if ( (!$auth->acl_gets('f_' . $mode, 'm_', 'a_', $forum_id)) && ($forum_postable) )
@@ -245,7 +259,7 @@ if (($submit) || ($preview))
 	$enable_smilies		= (!intval($config['allow_smilies'])) ? 0 : ((!empty($_POST['disable_smilies'])) ? 0 : 1);
 	$enable_urls 		= (!empty($_POST['disable_magic_url'])) ? 0 : 1;
 	$enable_sig 		= (empty($_POST['attach_sig'])) ? 1 : 0;
-	$notify				= (!empty($_POST['notify'])) ? 0 : 1;
+	$notify				= (!empty($_POST['notify'])) ? 1 : 0;
 
 	$err_msg = '';
 	$current_time = time();
@@ -391,9 +405,9 @@ if ($preview)
 decode_text($post_text);
 decode_text($subject);
 
-if ($mode == 'quote')
+if (($mode == 'quote') && (!$preview))
 {
-	quote_text($post_text, $post_username);
+	quote_text($post_text, $username);
 }
 
 // MAIN POSTING PAGE BEGINS HERE
@@ -454,6 +468,9 @@ $lock_topic_checked = (isset($topic_lock)) ? $topic_lock : (($topic_status == IT
 
 // Page title & action URL, include session_id for security purpose
 $s_action = "posting.$phpEx?sid=" . $user->session_id . "&amp;mode=$mode&amp;f=" . $forum_id;
+$s_action .= ($topic_id) ? '&amp;t=' . $topic_id : '';
+$s_action .= ($post_id) ? '&amp;p=' . $post_id : '';
+
 switch ($mode)
 {
 	case 'post':
@@ -463,13 +480,11 @@ switch ($mode)
 	case 'quote':
 	case 'reply':
 		$page_title = $user->lang['POST_REPLY'];
-		$s_action .= '&amp;t=' . intval($topic_id);
 		break;
 
+	case 'delete':
 	case 'edit':
 		$page_title = $user->lang['EDIT_POST'];
-		$s_action .= '&amp;p=' . intval($post_id);
-		break;
 }
 
 // Build navigation links
@@ -492,7 +507,7 @@ $template->assign_vars(array(
 	'FORUM_DESC'			=> (!empty($forum_desc)) ? strip_tags($forum_desc) : '',
 	'TOPIC_TITLE' 			=> $topic_title,
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : $user->lang['NONE'],
-	'USERNAME'				=> $post_username,
+	'USERNAME'				=> (((!$preview) && ($mode != 'quote')) || ($preview)) ? stripslashes($username) : '',
 	'SUBJECT'				=> (!empty($topic_title)) ? $topic_title : $post_subject,
 	'PREVIEW_SUBJECT'		=> ($preview) ? $preview_subject : '',
 	'MESSAGE'				=> trim($post_text),
@@ -508,8 +523,10 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;" . $forum_id . "&amp;t=" . $topic_id : '',
+	'U_REVIEW_TOPIC'		=> ($mode != 'post') ? "posting.$phpEx$SID&amp;mode=topicreview&amp;f=" . $forum_id . "&amp;t=" . $topic_id : '',
 
 	'S_DISPLAY_PREVIEW'		=> ($preview),
+	'S_DISPLAY_REVIEW'		=> ($mode == 'reply' || $mode == 'quote') ? true : false,
 	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && ( ($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $perm['u_delete']) || ($perm['m_delete']))) ? true : false,
@@ -541,6 +558,12 @@ $template->set_filenames(array(
 );
 
 make_jumpbox('viewforum.'.$phpEx);
+
+// Topic review
+if ($mode == 'reply' || $mode == 'quote')
+{
+	topic_review($topic_id, true);
+}
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

@@ -415,23 +415,23 @@ class parse_message
 			set_config('num_posts', $config['num_posts'] + 1, TRUE);
 		}
 
-		// Topic notification
-		if (!empty($misc_info['notify']) && ($mode == 'reply' || empty($misc_info['notify_set'])))
+		// Topic Notification
+		if ((!$misc_info['notify_set']) && ($misc_info['notify']))
 		{
 			$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id)
 				VALUES (" . $user->data['user_id'] . ", " . $misc_info['topic_id'] . ")";
 			$db->sql_query($sql);
 		}
-		else if (empty($misc_info['notify']) && !empty($misc_info['notify_set']))
+		else if (($misc_info['notify_set']) && (!$misc_info['notify']))
 		{
 			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
 				WHERE user_id = " . $user->data['user_id'] . "
 					AND topic_id = " . $misc_info['topic_id'];
 			$db->sql_query($sql);
 		}
-
+		
 		// Mark this topic as read and posted to.
-		$mark_mode = ($mode == 'reply' || $mode == 'post') ? 'post' : 'topic';
+		$mark_mode = ($mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
 		markread($mark_mode, $misc_info['forum_id'], $misc_info['topic_id'], $misc_info['post_id']);
 
 		$db->sql_transaction('commit');
