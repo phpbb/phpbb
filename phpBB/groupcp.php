@@ -623,7 +623,7 @@ else if( $group_id )
 	}
 
 	$group_members = $db->sql_fetchrowset($result); 
-	$modgroup_pending_count = count($group_members);
+	$members_count = count($group_members);
 	$db->sql_freeresult($result);
 
 	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm
