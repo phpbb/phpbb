@@ -868,7 +868,7 @@ if ( !empty($next) )
 					$row['user_website'] = addslashes($website);
 					
 					$row['user_icq'] = (ereg("^[0-9]+$", $row['user_icq'])) ? $row['user_icq'] : '';
-					reset($checklength);
+					@reset($checklength);
 
 					while($field = each($checklength))
 					{

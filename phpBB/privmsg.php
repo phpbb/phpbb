@@ -1455,7 +1455,7 @@ else if ( $submit || $refresh || $mode != '' )
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = (  $board_config['allow_sig'] ) ? $privmsg['user_sig'] : '';
+			$user_sig = ( $board_config['allow_sig'] ) ? (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL && %) ? $user_sig : $privmsg['user_sig']) : '';
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
@@ -1679,6 +1679,7 @@ else if ( $submit || $refresh || $mode != '' )
 	// Signature toggle selection - only show if
 	// the user has a signature
 	//
+	echo ";".$user_sig.";";
 	if ( $user_sig != '' )
 	{
 		$template->assign_block_vars('switch_signature_checkbox', array());

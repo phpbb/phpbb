@@ -56,6 +56,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
 	{
 		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
 	}
+	$db->sql_freeresult($result);
 		
 	if( $sql_topics != '' )
 	{
@@ -73,6 +74,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
 		{
 			$sql_post .= ( ( $sql_post != '' ) ? ', ' : '' ) . $row['post_id'];
 		}
+		$db->sql_freeresult($result);
 
 		if ( $sql_post != '' )
 		{

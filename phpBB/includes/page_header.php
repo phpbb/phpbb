@@ -389,7 +389,6 @@ $template->assign_vars(array(
 	'U_FAQ' => append_sid('faq.'.$phpEx),
 	'U_VIEWONLINE' => append_sid('viewonline.'.$phpEx),
 	'U_LOGIN_LOGOUT' => append_sid($u_login_logout),
-	'U_MEMBERSLIST' => append_sid('memberlist.'.$phpEx),
 	'U_GROUP_CP' => append_sid('groupcp.'.$phpEx),
 
 	'S_CONTENT_DIRECTION' => $lang['DIRECTION'],
