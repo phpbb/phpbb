@@ -195,7 +195,7 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 extract($topic_data);
 
 // We make this check here because the correct forum_id is determined
-$topic_replies = ($auth->acl_get('m_approve', $forum_id) ? $topic_replies_real : $topic_replies;
+$topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_replies_real : $topic_replies;
 unset($topic_replies_real);
 
 if ($user->data['user_id'] != ANONYMOUS)
