@@ -60,7 +60,7 @@
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
 	  <td align="left" valign="middle">{POST_PM_IMG}</td>
-	  <td align="left" width="100%">&nbsp;<span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+	  <td align="left" width="100%">&nbsp;<span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
 	  <td align="right" nowrap="nowrap"><span class="gensmall">{L_DISPLAY_MESSAGES}: 
 		<select name="msgdays">{S_MSG_DAYS_OPTIONS}
 		</select>

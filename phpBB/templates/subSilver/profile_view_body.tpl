@@ -1,7 +1,7 @@
  
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
   </tr>
 </table>
 
@@ -47,8 +47,7 @@
 	</td>
   </tr>
   <tr> 
-	<td class="catLeft" align="center" height="28"><b><span class="gen">{L_CONTACT} 
-	  {USERNAME} </span></b></td>
+	<td class="catLeft" align="center" height="28"><b><span class="gen">{L_CONTACT} {USERNAME} </span></b></td>
   </tr>
   <tr> 
 	<td class="row1" valign="top"> 

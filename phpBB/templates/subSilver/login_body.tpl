@@ -1,18 +1,18 @@
  
+<form action="{S_LOGIN_ACTION}" method="post">
+
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left" class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></td>
+	<td align="left" class="nav"><a href="{U_INDEX}" class="nav"{{L_INDEX}</a></td>
   </tr>
 </table>
-<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
   <tr> 
-	<th height="25" class="thHead">Please enter your username and password 
-	  to login</th>
+	<th height="25" class="thHead">{L_ENTER_PASSWORD}</th>
   </tr>
   <tr> 
-	<td class="row1"> 
-	  <form action="{S_LOGIN_ACTION}" method="post">
-		<table border="0" cellpadding="3" cellspacing="1" width="100%">
+	<td class="row1"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 		  <tr> 
 			<td colspan="2" align="center">&nbsp;</td>
 		  </tr>
@@ -29,9 +29,7 @@
 			</td>
 		  </tr>
 		  <tr align="center"> 
-			<td colspan="2"><span class="gen">{L_AUTO_LOGIN}: 
-			  <input type="checkbox" name="autologin" />
-			  </span> </td>
+			<td colspan="2"><span class="gen">{L_AUTO_LOGIN}: <input type="checkbox" name="autologin" /></span></td>
 		  </tr>
 		  <tr align="center"> 
 			<td colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" /></td>
@@ -39,9 +37,8 @@
 		  <tr align="center"> 
 			<td colspan="2"><span class="gensmall"><a href="{U_SEND_PASSWORD}" class="gensmall">{L_SEND_PASSWORD}</a></span></td>
 		  </tr>
-		</table>
-	  </form>
-	</td>
+		</table></td>
   </tr>
 </table>
-<br />
+
+</form>

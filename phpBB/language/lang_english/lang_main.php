@@ -31,8 +31,8 @@
 // varies ... give it your best guess!
 //
 
-setlocale(LC_ALL, "en");
-$lang['ENCODING'] = "iso-8859-1";
+//setlocale(LC_ALL, "en");
+$lang['ENCODING'] = "utf-8";
 $lang['DIRECTION'] = "LTR";
 $lang['LEFT'] = "LEFT";
 $lang['RIGHT'] = "RIGHT";
@@ -59,6 +59,7 @@ $lang['Author'] = "Author";
 $lang['Time'] = "Time";
 $lang['Hours'] = "Hours";
 $lang['Message'] = "Message";
+
 $lang['1_Day'] = "1 Day";
 $lang['7_Days'] = "7 Days";
 $lang['2_Weeks'] = "2 Weeks";
@@ -98,6 +99,13 @@ $lang['YIM'] = "Yahoo Messenger";
 $lang['Post_new_topic'] = "Post new topic";
 $lang['Reply_to_topic'] = "Reply to topic";
 $lang['Reply_with_quote'] = "Reply with quote";
+
+$lang['Click_return_topic'] = "Click %sHere%s to return to the topic"; // %s's here are for uris, do not remove!
+$lang['Click_return_login'] = "Click %sHere%s to try again";
+$lang['Click_return_forum'] = "Click %sHere%s to return to the forum";
+$lang['Click_view_message'] = "Click %sHere%s to view your message";
+$lang['Click_return_modcp'] = "Click %sHere%s to return to the Moderator Control Panel";
+$lang['Click_return_group'] = "Click %sHere%s to return to group information";
 
 $lang['Admin_panel'] = "Go to Administration Panel";
 
@@ -163,7 +171,7 @@ $lang['Log_me_in'] = "Log me on automatically each visit";
 // Index page
 //
 $lang['No_Posts'] = "No Posts";
-$lang['Forum_Index'] = "Forum Index";
+$lang['Forum_Index'] = "%s Forum Index";  // eg. sitename Forum Index, %s can be removed if you prefer
 $lang['No_forums'] = "This board has no forums";
 
 $lang['Private_Message'] = "Private Message";
@@ -229,13 +237,17 @@ $lang['Oldest_First'] = "Oldest First";
 
 $lang['Return_to_top'] = "Return to top";
 
-$lang['Read_profile'] = "Read profile users profile"; // Followed by username of poster
-$lang['Send_email'] = "Send email to user"; // Followed by username of poster
+$lang['Read_profile'] = "View users profile"; 
+$lang['Send_email'] = "Send email to user";
 $lang['Visit_website'] = "Visit posters website";
 $lang['ICQ_status'] = "ICQ Status";
 $lang['Edit_delete_post'] = "Edit/Delete this post";
 $lang['View_IP'] = "View IP of poster";
 $lang['Delete_post'] = "Delete this post";
+
+$lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
+$lang['Quote'] = "Quote"; // comes before bbcode quote output.
+$lang['Code'] = "Code"; // comes before bbcode code output.
 
 $lang['Edited_time_total'] = "Last edited by %s on %s, edited %d time in total"; // Last edited by me on 12 Oct 2001, edited 1 time in total
 $lang['Edited_times_total'] = "Last edited by %s on %s, edited %d times in total"; // Last edited by me on 12 Oct 2001, edited 2 times in total
@@ -324,21 +336,10 @@ $lang['Attach_signature'] = "Attach signature (signatures can be changed in prof
 $lang['Notify'] = "Notify me when a reply is posted";
 $lang['Delete_post'] = "Delete this post";
 
-$lang['wrote'] = "wrote"; // proceeds the username and is followed by the quoted text
-$lang['Quote'] = "Quote"; // comes before bbcode quote output.
-$lang['Code'] = "Code"; // comes before bbcode code output.
-
 $lang['Stored'] = "Your message has been entered successfully";
 $lang['Deleted'] = "Your message has been deleted successfully";
 $lang['Poll_delete'] = "Your poll has been deleted successfully";
 $lang['Vote_cast'] = "Your vote has been cast";
-
-$lang['Click_return_topic'] = "Click %sHere%s to return to the topic"; // %s's here are for uris, do not remove!
-$lang['Click_return_login'] = "Click %sHere%s to try again";
-$lang['Click_return_forum'] = "Click %sHere%s to return to the forum";
-$lang['Click_view_message'] = "Click %sHere%s to view your message";
-$lang['Click_return_modcp'] = "Click %sHere%s to return to the Moderator Control Panel";
-$lang['Click_return_group'] = "Click %sHere%s to return to group information";
 
 $lang['Topic_reply_notification'] = "Topic Reply Notification";
 
@@ -355,8 +356,8 @@ $lang['No_new_pm'] = "You have no new messages";
 
 $lang['Inbox'] = "Inbox";
 $lang['Outbox'] = "Outbox";
-$lang['Savedbox'] = "Saved box";
-$lang['Sentbox'] = "Sent box";
+$lang['Savebox'] = "Savebox";
+$lang['Sentbox'] = "Sentbox";
 $lang['Flag'] = "Flag";
 $lang['Subject'] = "Subject";
 $lang['From'] = "From";

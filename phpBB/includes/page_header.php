@@ -202,7 +202,7 @@ $template->assign_vars(array(
 	"L_PASSWORD" => $lang['Password'],
 	"L_LOGIN" => $lang['Login'],
 	"L_LOG_ME_IN" => $lang['Log_me_in'],
-	"L_INDEX" => $lang['Forum_Index'],
+	"L_INDEX" => sprintf($lang['Forum_Index'], $board_config['sitename']),
 	"L_REGISTER" => $lang['Register'],
 	"L_PROFILE" => $lang['Profile'],
 	"L_SEARCH" => $lang['Search'],
@@ -234,6 +234,7 @@ $template->assign_vars(array(
 	"L_BY" => $lang['by'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 	"L_SEARCH_UNANSWERED" => $lang['Search_unanswered'],
+	"L_SEARCH_SELF" => $lang['Search_your_posts'],
 
 	"U_INDEX" => append_sid("index.".$phpEx),
 	"U_REGISTER" => append_sid("profile.".$phpEx."?mode=register"),
@@ -247,7 +248,7 @@ $template->assign_vars(array(
 	"U_MEMBERSLIST" => append_sid("memberlist.".$phpEx),
 	"U_GROUP_CP" => append_sid("groupcp.".$phpEx),
 	"U_SEARCH_UNANSWERED" => append_sid("search.".$phpEx."?search_id=unanswered"),
-
+	"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"), 
 
 	"S_CONTENT_DIRECTION" => $lang['DIRECTION'], 
 	"S_CONTENT_ENCODING" => $lang['ENCODING'], 
@@ -308,15 +309,6 @@ if( !$userdata['session_logged_in'] )
 else
 {
 	$template->assign_block_vars("switch_user_logged_in", array());
-	//
-	// Bart's quick ego search
-	//
-	$template->assign_block_vars("egosearch", array(
-		"L_SEARCH_SELF" => $lang['Search_your_posts'],
-		"U_SEARCH_SELF" => append_sid("search.".$phpEx."?search_id=egosearch"))
-	);
-
-
 }
 
 header ("Cache-Control: no-store, no-cache, must-revalidate");

@@ -106,11 +106,11 @@ $inbox_url = ($folder != "inbox" || $mode != "") ? '<a href="' . append_sid("pri
 $outbox_img = ($folder != "outbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
 $outbox_url = ($folder != "outbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
 
-$sentbox_img = ($folder != "sentbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sent'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sent'] . '" />';
-$sentbox_url = ($folder != "sentbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sent'] . '</a>' : $lang['Sent'];
+$sentbox_img = ($folder != "sentbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentbox_url = ($folder != "sentbox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
 
-$savebox_img = ($folder != "savebox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Saved'] . '" />';
-$savebox_url = ($folder != "savebox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Saved'] . '</a>' : $lang['Saved'];
+$savebox_img = ($folder != "savebox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$savebox_url = ($folder != "savebox" || $mode != "") ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
 // ----------
 // Start main

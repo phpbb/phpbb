@@ -2,7 +2,7 @@
 <form method="post" action="{S_MODE_ACTION}">
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr> 
-	  <td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+	  <td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
 	  <td align="right" nowrap="nowrap"><span class="genmed">{L_SELECT_SORT_METHOD}:&nbsp;{S_MODE_SELECT}&nbsp;&nbsp;{L_ORDER}&nbsp;{S_ORDER_SELECT}&nbsp;&nbsp; 
 		<input type="submit" name="submit" value="{L_SUBMIT}" class="liteoption" />
 		</span></td>

@@ -1,9 +1,10 @@
  
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
   </tr>
 </table>
+
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
   <tr> 
 	<th height="25" class="thHead">{L_IP_INFO}</th>
@@ -43,15 +44,15 @@
   </tr>
   <!-- BEGIN iprow -->
   <tr> 
-	<td class="{iprow.ROW_CLASS}"> 
-	  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<td class="{iprow.ROW_CLASS}"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 		<tr> 
 		  <td>&nbsp;<span class="gen">{iprow.IP}</span></td>
 		  <td align="right"><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> 
 			]&nbsp;</span></td>
 		</tr>
-	  </table>
-	</td>
+	  </table></td>
   </tr>
   <!-- END iprow -->
 </table>
+
+<br clear="all" />

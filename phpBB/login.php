@@ -53,9 +53,9 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 		if( count($rowresult) )
 		{
-	 		if( (md5($password) == $rowresult['user_password']) && $rowresult['user_active'] != 0 )
+	 		if( md5($password) == $rowresult['user_password'] && $rowresult['user_active'] )
 			{
-				$autologin = (isset($HTTP_POST_VARS['autologin'])) ? TRUE : 0;
+				$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
 				$session_id = session_begin($rowresult['user_id'], $user_ip, PAGE_INDEX, $session_length, TRUE, $autologin);
 
@@ -189,6 +189,7 @@ else
 		$template->assign_vars(array(
 			"USERNAME" => $username,
 
+			"L_ENTER_PASSWORD" => $lang['Enter_password'], 
 			"L_SEND_PASSWORD" => $lang['Forgotten_password'],
 
 			"U_SEND_PASSWORD" => append_sid("profile.$phpEx?mode=sendpassword"), 

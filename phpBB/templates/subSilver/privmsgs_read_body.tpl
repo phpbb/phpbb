@@ -18,7 +18,7 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr>
 	  <td valign="middle">{REPLY_PM_IMG}</td>
-	  <td width="100%"><span class="nav">&nbsp;<a href="{U_INDEX}" class="nav">{SITENAME}&nbsp;{L_INDEX}</a></span></td>
+	  <td width="100%"><span class="nav">&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
   </tr>
 </table>
 
