@@ -162,9 +162,6 @@ $template->assign_vars(array(
 	"U_LOGIN_LOGOUT" => append_sid($u_login_logout),
 
 	"S_TIMEZONE" => $s_timezone,
-	"S_FORUMS_URL" => POST_FORUM_URL,
-	"S_TOPICS_URL" => POST_TOPIC_URL,
-	"S_USERS_URL" => POST_USERS_URL,
 	"S_LOGIN_ACTION" => append_sid("login.$phpEx"),
 	"S_JUMPBOX_ACTION" => append_sid("viewforum.$phpEx"),
 	"S_PROFILE_ACTION" => append_sid("profile.$phpEx"),
@@ -322,7 +319,9 @@ switch($pagetype)
 		$template->assign_vars(array(
 			"L_POSTNEWIN" => $l_postnewin,
 			"FORUM_ID" => $forum_id,
-			"FORUM_NAME" => $forum_name)
+			"FORUM_NAME" => $forum_name,
+			
+			"U_VIEW_FORUM" => append_sid("viewforum.$phpEx?".POST_FORUM_URL."=$forum_id"))
 		);
 		$template->pparse("header");
 		break;
