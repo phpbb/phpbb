@@ -11,7 +11,6 @@
 // 
 // -------------------------------------------------------------
 
-
 if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_group'))
@@ -30,6 +29,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require('pagestart.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_user.'.$phpEx);
 
 // Do we have general permissions?
 if (!$auth->acl_get('a_group') )
@@ -37,16 +37,19 @@ if (!$auth->acl_get('a_group') )
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-
-
 // Check and set some common vars
 $update		= (isset($_POST['update'])) ? true : false;
-$mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
-$group_id	= (isset($_REQUEST['g'])) ? intval($_REQUEST['g']) : '';
+$mode		= (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : false;
+$group_id	= (isset($_REQUEST['g'])) ? intval($_REQUEST['g']) : false;
+$mark_ary	= (!empty($_POST['mark'])) ? array_map('intval', $_POST['mark']) : false;
+$name_ary	= (!empty($_POST['usernames'])) ? array_unique(explode("\n", $_POST['usernames'])) : false;
+$start		= (isset($_GET['start']) && $action == 'member') ? intval($_GET['start']) : 0;
+$start_mod	= (isset($_GET['start']) && $action == 'leader') ? intval($_GET['start']) : 0;
+$group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
 
-if (isset($_POST['addgroup']))
+if (isset($_POST['add']))
 {
-	$action = 'addgroup';
+	$action = 'add';
 }
 else if (isset($_POST['addleaders']) || isset($_POST['addusers']))
 {
@@ -57,13 +60,8 @@ else
 	$action = (isset($_REQUEST['action'])) ? htmlspecialchars($_REQUEST['action']) : '';
 }
 
-$start		= (isset($_GET['start']) && $action == 'member') ? intval($_GET['start']) : 0;
-$start_mod	= (isset($_GET['start']) && $action == 'leader') ? intval($_GET['start']) : 0;
 
-
-
-// Grab basic data for group, if group_id is set since it's used
-// in several places below
+// Grab basic data for group, if group_id is set and exists
 if ($group_id)
 {
 	$sql = 'SELECT * 
@@ -77,8 +75,6 @@ if ($group_id)
 	}
 	$db->sql_freeresult($result);
 }
-
-
 
 switch ($mode)
 {
@@ -94,6 +90,17 @@ switch ($mode)
 				{
 					trigger_error($user->lang['NO_GROUP']);
 				}
+
+
+				break;
+
+			case 'deleteusers':
+				if (!$group_id)
+				{
+					trigger_error($user->lang['NO_GROUP']);
+				}
+
+
 				break;
 
 			case 'approve':
@@ -102,33 +109,8 @@ switch ($mode)
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				if (!empty($_POST['mark']))
-				{
-					$id_ary = array_map('intval', $_POST['mark']);
-
-					$sql = 'UPDATE ' . USER_GROUP_TABLE . ' 
-						SET user_pending = 1 
-						WHERE user_id IN (' . implode(', ', $id_ary) . ")
-							AND group_id = $group_id";
-					$db->sql_query($sql);
-
-					$sql = 'SELECT username 
-						FROM ' . USERS_TABLE . ' 
-						WHERE user_id IN (' . implode(', ', $id_ary) . ')';
-					$result = $db->sql_query($sql);
-
-					$usernames = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$usernames[] = $row['username'];
-					}
-					$db->sql_freeresult($result);
-
-					add_log('admin', 'LOG_GROUP_APPROVE', $group_name, implode(', ', $usernames));
-					unset($usernames);
-
-					trigger_error($user->lang['USERS_APPROVED']);
-				}
+				approve_user($group_id, $mark_ary, false, $group_name);
+				trigger_error($user->lang['USERS_APPROVED']);
 				break;
 
 			case 'default':
@@ -137,66 +119,12 @@ switch ($mode)
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				$id_ary = (!empty($_POST['mark'])) ? array_map('intval', $_POST['mark']) : false;
-
-				switch (SQL_LAYER)
-				{
-					case 'mysql':
-					case 'mysql4':
-						$start = 0;
-						do
-						{
-							$sql = 'SELECT user_id 
-								FROM ' . USER_GROUP_TABLE . "
-								WHERE group_id = $group_id 
-								ORDER BY user_id 
-								LIMIT $start, 200";
-							$result = $db->sql_query($sql);
-
-							$user_id_ary = array();
-							if ($row = $db->sql_fetchrow($result))
-							{
-								do
-								{
-									$user_id_ary[] = $row['user_id'];
-								}
-								while ($row = $db->sql_fetchrow($result));
-
-								$sql = 'UPDATE ' . USERS_TABLE . "
-									SET group_id = $group_id, user_colour = '$group_colour', user_rank = $group_rank 
-									WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
-								$db->sql_query($sql);
-
-								$start = (sizeof($user_id_ary) < 200) ? 0 : $start + 200;
-							}
-							else
-							{
-								$start = 0;
-							}
-							$db->sql_freeresult($result);
-						}
-						while ($start);
-						break;
-
-					default:
-						$sql = 'UPDATE ' . USERS_TABLE . " 
-							SET group_id = $group_id, user_colour = '$group_color', user_rank = $group_rank  
-							WHERE user_id IN (
-								SELECT user_id
-									FROM " . USER_GROUP_TABLE . "
-									WHERE group_id = $group_id
-							)";
-						$db->sql_query($sql);
-						break;
-				}
-
-				add_log('admin', 'LOG_GROUP_DEFAULTS', $group_name);
-
+				set_default_group($group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, false, false);
 				trigger_error($user->lang['GROUP_DEFS_UPDATED']);
 				break;
 
 			case 'edit':
-			case 'addgroup':
+			case 'add':
 				if ($action == 'edit' && !$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP']);
@@ -205,69 +133,11 @@ switch ($mode)
 				// Did we submit?
 				if ($update)
 				{
-					if ($group_type != GROUP_SPECIAL)
+					if (!($error = create_group($action, $group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar)))
 					{
-						$group_name = (!empty($_POST['group_name'])) ? stripslashes(htmlspecialchars($_POST['group_name'])) : '';
-						$group_type = (!empty($_POST['group_type'])) ? intval($_POST['group_type']) : '';
-					}
-					$group_description = (!empty($_POST['group_description'])) ? stripslashes(htmlspecialchars($_POST['group_description'])) : '';
-					$group_colour2 = (!empty($_POST['group_colour'])) ? stripslashes(htmlspecialchars($_POST['group_colour'])) : '';
-					$group_avatar2 = (!empty($_POST['group_avatar'])) ? stripslashes(htmlspecialchars($_POST['group_avatar'])) : '';
-					$group_rank2 = (isset($_POST['group_rank'])) ? intval($_POST['group_rank']) : '';
-
-					// Check data
-					if (!strlen($group_name) || strlen($group_name) > 40)
-					{
-						$error[] = (!strlen($group_name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
-					}
-
-					if (strlen($group_description) > 255)
-					{
-						$error[] = $user->lang['GROUP_ERR_DESC_LONG'];
-					}
-
-					if ($group_type < GROUP_OPEN || $group_type > GROUP_FREE)
-					{
-						$error[] = $user->lang['GROUP_ERR_TYPE'];
-					}
-
-					// Update DB
-					if (!sizeof($error))
-					{
-						// Update group preferences
-						$sql_ary = array(
-							'group_name'		=> (string) $group_name,
-							'group_description'	=> (string) $group_description,
-							'group_type'		=> (int) $group_type,
-							'group_rank'		=> (int) $group_rank2,
-							'group_colour'		=> (string) $group_colour2,
-						);
-
-						$sql = ($action == 'edit') ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-						$db->sql_query($sql);
-
-						if ($group_id && ($group_colour != $group_colour2 || $group_rank != $group_rank2 || $group_avatar != $group_avatar2))
-						{
-							$sql_ary = array(
-								'user_rank'		=> (string) $group_rank2,
-								'user_colour'	=> (string) $group_colour2,
-							);
-
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE group_id = $group_id";
-							$db->sql_query($sql);
-						}
-
-						$log = ($action == 'edit') ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
-						add_log('admin', $log, $group_name);
-
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($message);
 					}
-
-					$group_colour = &$group_colour2;
-					$group_rank = &$group_rank2;
-					$group_avatar = &$group_avatar2;
 				}
 				else if (!$group_id)
 				{
@@ -278,7 +148,7 @@ switch ($mode)
 
 ?>
 
-<h1><?php echo $user->lang['MANAGE'] . ' : <i>' . $group_name . '</i>'; ?></h1>
+<h1><?php echo $user->lang['MANAGE']; ?></h1>
 
 <p><?php echo $user->lang['GROUP_EDIT_EXPLAIN']; ?></p>
 
@@ -408,154 +278,19 @@ function swatch()
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
-				$username_ary = (!empty($_POST['usernames'])) ? array_unique(explode("\n", $_POST['usernames'])) : '';
-				if (!$username_ary)
+				if (!$name_ary)
 				{
 					trigger_error($user->lang['NO_USERS']);
 				}
 
-				$sql_where = array();
-				foreach ($username_ary as $username)
+				// Add user/s to group
+				if ($error = add_to_group($action, $group_id, false, $name_ary, $group_colour, $group_rank, $group_avatar, $group_avatar_type))
 				{
-					if ($username = trim($username))
-					{
-						$sql_where[] = "'$username'";
-					}
-				}
-				unset($username_ary);
-
-				// Grab the user ids
-				$sql = 'SELECT user_id, username 
-					FROM ' . USERS_TABLE . ' 
-					WHERE username IN (' . implode(', ', $sql_where) . ')';
-				$result = $db->sql_query($sql);
-
-				if (!($row = $db->sql_fetchrow($result)))
-				{
-					trigger_error($user->lang['NO_USERS']);
+					trigger_error($user->lang[$error]);
 				}
 
-				$id_ary = $username_ary = array();
-				do
-				{
-					$username_ary[$row['user_id']] = $row['username'];
-					$id_ary[] = $row['user_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
-
-				// Remove users who are already members of this group
-				$sql = 'SELECT user_id, group_leader  
-					FROM ' . USER_GROUP_TABLE . '   
-					WHERE user_id IN (' . implode(', ', $id_ary) . ") 
-						AND group_id = $group_id";
-				$result = $db->sql_query($sql);
-
-				$add_id_ary = $update_id_ary = array();
-				if ($row = $db->sql_fetchrow($result))
-				{
-					do
-					{
-						$add_id_ary[] = $row['user_id'];
-
-						if ($action == 'addleaders' && !$row['group_leader'])
-						{
-							$update_id_ary[] = $row['user_id'];
-						}
-					}
-					while ($row = $db->sql_fetchrow($result));
-				}
-				$db->sql_freeresult($result);
-
-				// Do all the users exist in this group?
-				$add_id_ary = array_diff($id_ary, $add_id_ary);
-				unset($id_ary);
-
-				// If we have no users 
-				if (!sizeof($add_id_ary) && !sizeof($update_id_ary))
-				{
-					trigger_error($user->lang['GROUP_USERS_EXIST']);
-				}
-
-				if (sizeof($add_id_ary))
-				{
-					$group_leader = ($action == 'addleaders') ? 1  : 0;
-
-					// Insert the new users 
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-							$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-								VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
-							$db->sql_query($sql);
-							break;
-
-						case 'mssql':
-						case 'sqlite':
-							$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-								" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
-							$db->sql_query($sql);
-							break;
-
-						default:
-							foreach ($add_id_ary as $user_id)
-							{
-								$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader)
-									VALUES ($user_id, $group_id, $group_leader)";
-								$db->sql_query($sql);
-							}
-							break;
-					}
-
-					$sql = 'UPDATE ' . USERS_TABLE . " 
-						SET user_permissions = '' 
-						WHERE user_id IN (" . implode(', ', $add_id_ary) . ')';
-					$db->sql_query($sql);
-				}
-
-				$usernames = array();
-				if (sizeof($update_id_ary))
-				{
-					$sql = 'UPDATE ' . USER_GROUP_TABLE . ' 
-						SET group_leader = 1 
-						WHERE user_id IN (' . implode(', ', $update_id_ary) . ")
-							AND group_id = $group_id";
-					$db->sql_query($sql);
-
-					foreach ($update_id_ary as $id)
-					{
-						$usernames[] = $username_ary[$id];
-					}
-				}
-				else
-				{
-					foreach ($add_id_ary as $id)
-					{
-						$usernames[] = $username_ary[$id];
-					}
-				}
-				unset($username_ary);
-
-				// Update user settings (color, rank) if applicable
-				// TODO
-				// Do not update users who are not approved
-				if (!empty($_POST['default']))
-				{
-					$sql = 'UPDATE ' . USERS_TABLE . " 
-						SET group_id = $group_id, user_colour = '$group_colour', user_rank = " . intval($group_rank) . "  
-						WHERE user_id IN (" . implode(', ', array_merge($add_id_ary, $update_id_ary)) . ")";
-					$db->sql_query($sql);
-				}
-				unset($update_id_ary);
-				unset($add_id_ary);
-
-				$log = ($mode == 'addleaders') ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
-				add_log('admin', $log, $group_name, implode(', ', $usernames));
-
-				$message = ($mode == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
 				trigger_error($user->lang[$message]);
-
 				break;
 
 
@@ -675,7 +410,7 @@ function swatch()
 ?>
 
 	<tr>
-		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="delete">Delete</option></select> &nbsp; <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE_MARKED']; ?>" /> &nbsp; <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE_ALL']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="default">Default</option><option value="delete">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
 	</tr>
 </table>
 
@@ -785,7 +520,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="delete">Delete</option></select> &nbsp; <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE_MARKED']; ?>" /> &nbsp; <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE_ALL']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" align="right">Select option: <select name="action"><option value="approve">Approve</option><option value="default">Default</option><option value="delete">Delete</option></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['UPDATE']; ?>" />&nbsp;</td>
 	</tr>
 </table>
 
@@ -872,7 +607,7 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right">Create new group: <input class="post" type="text" name="group_name" maxlength="30" /> <input class="btnmain" type="submit" name="addgroup" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
+		<td class="cat" colspan="5" align="right">Create new group: <input class="post" type="text" name="group_name" maxlength="30" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
 </table>
 
@@ -905,7 +640,7 @@ function swatch()
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;g=$group_id"; ?>"><?php echo $user->lang['EDIT']; ?></a>&nbsp;</td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<?php 
 	
-						echo ($row['group_type'] != GROUP_SPECIAL) ? "<a href=\"admin_groups.$phpEx$SID&amp;mode=$mode&amp;&amp;action=delete&amp;g=$group_id\">" . $user->lang['DELETE'] . '</a>' : $user->lang['DELETE'];
+						echo ($row['group_type'] != GROUP_SPECIAL) ? "<a href=\"admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;g=$group_id\">" . $user->lang['DELETE'] . '</a>' : $user->lang['DELETE'];
 
 ?>&nbsp;</td>
 	</tr>
@@ -1095,5 +830,17 @@ adm_page_footer();
 <?php
 
 */
+
+
+function delete_group()
+{
+
+}
+
+function remove_from_group($type, $id, $user_id)
+{
+
+}
+
 
 ?>

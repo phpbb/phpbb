@@ -1,24 +1,19 @@
 <?php
-/***************************************************************************
- *                             functions_ucp.php
- *                            -------------------
- *   begin                : Saturday, Feb 13, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
- *
- *   $Id$
- *
- ***************************************************************************/
+// -------------------------------------------------------------
+//
+// $Id$
+//
+// FILENAME  : functions_user.php
+// STARTED   : Sat Dec 16, 2000
+// COPYRIGHT : © 2001, 2003 phpBB Group
+// WWW       : http://www.phpbb.com/
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
+// 
+// -------------------------------------------------------------
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
+//
+// User functions
+//
 
 // Generates an alphanumeric random string of given length
 function gen_rand_string($num_chars)
@@ -330,6 +325,368 @@ function avatar_upload(&$data)
 
 	// Set type
 	$data['type'] = AVATAR_UPLOAD;
+
+	return false;
+}
+
+//
+// Usergroup functions
+//
+
+function add_to_group($action, $group_id, $user_id_ary, $username_ary, $colour, $rank, $avatar, $avatar_type)
+{
+	global $db;
+
+	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
+
+	if ($$which_ary  && !is_array($$which_ary ))
+	{
+		$user_id_ary = array($user_id_ary);
+	}
+
+	$sql_in = array();
+	foreach ($$which_ary as $v)
+	{
+		if ($v = trim($v))
+		{
+			$sql_in[] = ($which_ary == 'user_id_ary') ? $v : "'$v'";
+		}
+	}
+	unset($$which_ary);
+
+	// Grab the user id/username records
+	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username';
+	$sql = 'SELECT user_id, username 
+		FROM ' . USERS_TABLE . " 
+		WHERE $sql_where IN (" . implode(', ', $sql_in) . ')';
+	$result = $db->sql_query($sql);
+
+	if (!($row = $db->sql_fetchrow($result)))
+	{
+		return 'NO_USERS';
+	}
+
+	$id_ary = $username_ary = array();
+	do
+	{
+		$username_ary[$row['user_id']] = $row['username'];
+		$id_ary[] = $row['user_id'];
+	}
+	while ($row = $db->sql_fetchrow($result));
+	$db->sql_freeresult($result);
+
+	// Remove users who are already members of this group
+	$sql = 'SELECT user_id, group_leader  
+		FROM ' . USER_GROUP_TABLE . '   
+		WHERE user_id IN (' . implode(', ', $id_ary) . ") 
+			AND group_id = $group_id";
+	$result = $db->sql_query($sql);
+
+	$add_id_ary = $update_id_ary = array();
+	if ($row = $db->sql_fetchrow($result))
+	{
+		do
+		{
+			$add_id_ary[] = $row['user_id'];
+
+			if ($action == 'addleaders' && !$row['group_leader'])
+			{
+				$update_id_ary[] = $row['user_id'];
+			}
+		}
+		while ($row = $db->sql_fetchrow($result));
+	}
+	$db->sql_freeresult($result);
+
+	// Do all the users exist in this group?
+	$add_id_ary = array_diff($id_ary, $add_id_ary);
+	unset($id_ary);
+
+	// If we have no users 
+	if (!sizeof($add_id_ary) && !sizeof($update_id_ary))
+	{
+		return 'GROUP_USERS_EXIST';
+	}
+
+	if (sizeof($add_id_ary))
+	{
+		$group_leader = ($action == 'addleaders') ? 1  : 0;
+
+		// Insert the new users 
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
+					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
+				$db->sql_query($sql);
+				break;
+
+			case 'mssql':
+			case 'sqlite':
+				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
+					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $group_leader)",  $add_id_ary));
+				$db->sql_query($sql);
+				break;
+
+			default:
+				foreach ($add_id_ary as $user_id)
+				{
+					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader)
+						VALUES ($user_id, $group_id, $group_leader)";
+					$db->sql_query($sql);
+				}
+				break;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . " 
+			SET user_permissions = '' 
+			WHERE user_id IN (" . implode(', ', $add_id_ary) . ')';
+		$db->sql_query($sql);
+	}
+
+	$usernames = array();
+	if (sizeof($update_id_ary))
+	{
+		$sql = 'UPDATE ' . USER_GROUP_TABLE . ' 
+			SET group_leader = 1 
+			WHERE user_id IN (' . implode(', ', $update_id_ary) . ")
+				AND group_id = $group_id";
+		$db->sql_query($sql);
+
+		foreach ($update_id_ary as $id)
+		{
+			$usernames[] = $username_ary[$id];
+		}
+	}
+	else
+	{
+		foreach ($add_id_ary as $id)
+		{
+			$usernames[] = $username_ary[$id];
+		}
+	}
+	unset($username_ary);
+
+	// Update user settings (color, rank) if applicable
+	// TODO
+	// Do not update users who are not approved
+	if (!empty($_POST['default']))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . " 
+			SET group_id = $group_id, user_colour = '$color', user_rank = " . intval($rank) . "  
+			WHERE user_id IN (" . implode(', ', array_merge($add_id_ary, $update_id_ary)) . ")";
+		$db->sql_query($sql);
+	}
+	unset($update_id_ary);
+	unset($add_id_ary);
+
+	if (!function_exists('add_log'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	}
+
+	$log = ($action == 'addleaders') ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
+	add_log('admin', $log, $group_name, implode(', ', $usernames));
+
+	return false;
+}
+
+function create_group($action, $group_id, &$type, &$name, &$desc, &$colour, &$rank, &$avatar)
+{
+	global $db, $user;
+
+	$error = array();
+
+	if (isset($type) && $type != GROUP_SPECIAL)
+	{
+		$name = (!empty($_POST['group_name'])) ? stripslashes(htmlspecialchars($_POST['group_name'])) : '';
+		$type = (!empty($_POST['group_type'])) ? intval($_POST['group_type']) : '';
+	}
+	$desc = (!empty($_POST['group_description'])) ? stripslashes(htmlspecialchars($_POST['group_description'])) : '';
+	$colour2 = (!empty($_POST['group_colour'])) ? stripslashes(htmlspecialchars($_POST['group_colour'])) : '';
+	$avatar2 = (!empty($_POST['group_avatar'])) ? stripslashes(htmlspecialchars($_POST['group_avatar'])) : '';
+	$rank2 = (isset($_POST['group_rank'])) ? intval($_POST['group_rank']) : '';
+
+	// Check data
+	if (!strlen($name) || strlen($name) > 40)
+	{
+		$error[] = (!strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
+	}
+
+	if (strlen($desc) > 255)
+	{
+		$error[] = $user->lang['GROUP_ERR_DESC_LONG'];
+	}
+
+	if ($type < GROUP_OPEN || $type > GROUP_FREE)
+	{
+		$error[] = $user->lang['GROUP_ERR_TYPE'];
+	}
+
+	// Update DB
+	if (!sizeof($error))
+	{
+		// Update group preferences
+		$sql_ary = array(
+			'group_name'		=> (string) $name,
+			'group_description'	=> (string) $desc,
+			'group_type'		=> (int) $type,
+			'group_rank'		=> (int) $rank2,
+			'group_colour'		=> (string) $colour2,
+		);
+
+		$sql = ($action == 'edit' && $group_id) ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
+		if ($group_id && ($colour != $colour2 || $rank != $rank2 || $avatar != $avatar2))
+		{
+			$sql_ary = array(
+				'user_rank'		=> (string) $rank2,
+				'user_colour'	=> (string) $colour2,
+			);
+
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+				WHERE group_id = $group_id";
+			$db->sql_query($sql);
+		}
+
+		if (!function_exists('add_log'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+		}
+
+		$log = ($action == 'edit') ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
+		add_log('admin', $log, $group_name);
+	}
+
+	$colour = $colour2;
+	$rank = $rank2;
+	$avatar = $avatar2;
+
+	return (sizeof($error)) ? $error : false;
+}
+
+
+function set_default_group($id, $user_id_ary, $username_ary, &$name, &$colour, &$rank, $avatar, $avatar_type)
+{
+	global $db;
+
+	if (!is_array($$which_ary))
+	{
+		$$which_ary = array($$which_ary);
+	}
+
+	if (is_array($user_id_ary) || is_array($username_ary))
+	{
+		$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
+
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET group_id = $id, user_colour = '$colour', user_rank = $rank  
+			WHERE $sql_where";
+		$db->sql_query($sql);
+	}
+	else
+	{
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				// With no subselect we do mysql updates in batches to ward off
+				// potential issues with large groups
+
+				$start = 0;
+				do
+				{
+					$sql = 'SELECT user_id 
+						FROM ' . USER_GROUP_TABLE . "
+						WHERE group_id = $id 
+						ORDER BY user_id 
+						LIMIT $start, 200";
+					$result = $db->sql_query($sql);
+
+					$user_id_ary = array();
+					if ($row = $db->sql_fetchrow($result))
+					{
+						do
+						{
+							$user_id_ary[] = $row['user_id'];
+						}
+						while ($row = $db->sql_fetchrow($result));
+
+						$sql = 'UPDATE ' . USERS_TABLE . "
+							SET group_id = $id, user_colour = '$colour', user_rank = $rank 
+							WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
+						$db->sql_query($sql);
+
+						$start = (sizeof($user_id_ary) < 200) ? 0 : $start + 200;
+					}
+					else
+					{
+						$start = 0;
+					}
+					$db->sql_freeresult($result);
+				}
+				while ($start);
+				break;
+
+			default:
+				$sql = 'UPDATE ' . USERS_TABLE . " 
+					SET group_id = $id, user_colour = '$colour', user_rank = $rank  
+					WHERE user_id IN (
+						SELECT user_id
+							FROM " . USER_GROUP_TABLE . "
+							WHERE group_id = $id
+					)";
+				$db->sql_query($sql);
+				break;
+		}
+	}
+
+	if (!function_exists('add_log'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+	}
+
+	add_log('admin', 'LOG_GROUP_DEFAULTS', $name);
+
+	return false;
+}
+
+// TODO
+// approve group
+function approve_user($group_id, $user_id_ary, $username_ary, &$group_name) 
+{
+	global $db;
+
+	$sql_where = ($user_id_ary) ? 'user_id IN (' . implode(', ', $user_id_ary) . ')' : 'username IN (' . implode(', ', $username_ary) . ')';
+
+	$sql = 'SELECT user_id, username 
+		FROM ' . USERS_TABLE . " 
+		WHERE $sql_where";
+	$result = $db->sql_query($sql);
+
+	$usernames = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$username_ary[] = $row['username'];
+		$user_id_ary[] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+		
+	$sql = 'UPDATE ' . USER_GROUP_TABLE . ' 
+		SET user_pending = 0 
+		WHERE user_id IN (' . implode(', ', $user_id_ary) . ")
+			AND group_id = $group_id";
+	$db->sql_query($sql);
+
+	add_log('admin', 'LOG_GROUP_APPROVE', $group_name, implode(', ', $username_ary));
+
+	unset($username_ary);
+	unset($user_id_ary);
 
 	return false;
 }
