@@ -134,7 +134,7 @@ class sql_db
 					$this->result_rowset[$this->result] = array();
 
 					$row_outer = ( isset($row_offset) ) ? $row_offset + 1 : 1;
-					$row_outer_max = ( isset($num_rows) ) ? $num_rows + 1 : 1E9;
+					$row_outer_max = ( isset($num_rows) ) ? $row_offset + $num_rows + 1 : 1E9;
 					$row_inner = 0;
 
 					while( odbc_fetch_row($this->result, $row_outer) && $row_outer < $row_outer_max )
