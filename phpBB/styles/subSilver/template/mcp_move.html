@@ -1,14 +1,8 @@
 <!-- $Id$ -->
-<!-- INCLUDE overall_header.html -->
+<!-- INCLUDE mcp_header.html -->
 
-<form action="{S_MCP_ACTION}" name="main" method="post">{S_HIDDEN_FIELDS}<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
-		<td align="left" class="nav"><a href="{U_INDEX}">{L_INDEX}</a></td>
-	</tr>
-</table>
-
-<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
-	<tr> 
+<form action="{S_MCP_ACTION}" name="mcp" method="post">{S_HIDDEN_FIELDS}<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
 		<th height="28" valign="middle">{L_MODE_TITLE}</th>
 	</tr>
 	<tr>
@@ -18,7 +12,7 @@
 			</tr>
 			<tr> 
 				<td align="center"><span class="gen"><!-- IF L_MODE_EXPLAIN -->{L_MODE_EXPLAIN}<br /><br /><!-- ENDIF -->{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br />
-					<!-- IF S_LEAVE_SHADOW --><input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br /><br /><!-- ENDIF -->
+					<!-- IF S_CAN_LEAVE_SHADOW --><input type="checkbox" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br /><br /><!-- ENDIF -->
 					<input class="btnmain" type="submit" name="confirm" value="{L_CONFIRM}" />
 					&nbsp;&nbsp; 
 					<input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" />
@@ -32,4 +26,4 @@
 </table>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+<!-- INCLUDE mcp_footer.html -->
