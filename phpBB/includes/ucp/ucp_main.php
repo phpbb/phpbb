@@ -211,7 +211,7 @@ class ucp_main extends module
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
 					'RANK_TITLE'		=> $rank_title, 
-					'KARMA'				=> $user->lang['KARMA'][$user->data['user_karma']], 
+					'KARMA'				=> ($config['enable_karma']) ? $user->lang['KARMA'][$user->data['user_karma']] : '', 
 					'JOINED'			=> $user->format_date($user->data['user_regdate'], $user->lang['DATE_FORMAT']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
@@ -227,7 +227,9 @@ class ucp_main extends module
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
-					'KARMA_IMG'		=> '<img src="images/karma' . $user->data['user_karma'] . '.gif" alt="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user->data['user_karma']] . '" title="' . $user->lang['KARMA_LEVEL'] . ': ' . $user->lang['KARMA'][$user->data['user_karma']] . '" />', 
+					'KARMA_IMG'			=> ($config['enable_karma']) ? $user->img('karma_center', $user->lang['KARMA'][$user->data['user_karma']], false, (int) $user->data['user_karma']) : '', 
+					'KARMA_LEFT_IMG'	=> $user->img('karma_left', ''),
+					'KARMA_RIGHT_IMG'	=> $user->img('karma_right', ''),
 
 					'S_GROUP_OPTIONS'	=> $group_options, 
 
