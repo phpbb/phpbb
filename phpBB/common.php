@@ -54,6 +54,7 @@ $image_msnm = "$url_images/msnm.gif";
 // Find Users real IP (if possible)
 $user_ip = ($HTTP_X_FORWARDED_FOR) ? $HTTP_X_FORWARDED_FOR : $REMOTE_ADDR;
 
+$template = new Template("./templates/Default");
 include('includes/template.inc');
 
 include('includes/error.'.$phpEx);
