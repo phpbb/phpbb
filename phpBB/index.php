@@ -127,11 +127,12 @@ if($total_categories)
 		default:
 			// This works on: MySQL, MSSQL and ODBC (Access)
 			$limit_forums = ($viewcat != -1) ? "WHERE f.cat_id = $viewcat " : "";
-			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time
-				FROM (( ".FORUMS_TABLE." f
+			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, af.auth_view, af.auth_read, af.auth_post, af.auth_reply, af.auth_edit, af.auth_delete, af.auth_votecreate, af.auth_vote 
+				FROM ((( ".FORUMS_TABLE." f
 				LEFT JOIN ".POSTS_TABLE." p ON f.forum_last_post_id = p.post_id )
 				LEFT JOIN ".TOPICS_TABLE." t ON p.post_id = t.topic_last_post_id )
-				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id 
+				LEFT JOIN ".USERS_TABLE." u ON p.poster_id = u.user_id )
+				LEFT JOIN ".AUTH_FORUMS_TABLE." af ON af.forum_id = f.forum_id 
 				$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -140,6 +141,8 @@ if($total_categories)
 	{
 		error_die(SQL_QUERY, "Could not query forums information.", __LINE__, __FILE__);
 	}
+	$total_forums = $db->sql_numrows($q_forums);
+	$forum_rows = $db->sql_fetchrowset($q_forums);
 
 	//
 	// Note that this doesn't resolve conflicts where a user
@@ -162,9 +165,6 @@ if($total_categories)
 	{
 		error_die(SQL_QUERY, "Could not query forum moderator information.", __LINE__, __FILE__);
 	}
-
-	$total_forums = $db->sql_numrows($q_forums);
-	$forum_rows = $db->sql_fetchrowset($q_forums);
 	$forum_mods_list = $db->sql_fetchrowset($q_forum_mods);
 
 	for($i = 0; $i < count($forum_mods_list); $i++)
@@ -173,23 +173,25 @@ if($total_categories)
 		$forum_mods['forum_'.$forum_mods_list[$i]['forum_id'].'_id'][] = $forum_mods_list[$i]['user_id'];
 	}
 
+	//
+	// Find which forums are visible for
+	// this user
+	//
+	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_rows);
+
+	//
+	// Okay, let's build the index
+	//
+	$gen_cat = array();
+
 	for($i = 0; $i < $total_categories; $i++)
 	{
-		$template->assign_block_vars("catrow",
-			array(
-				"CAT_ID" => $category_rows[$i]['cat_id'],
-				"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
-				"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id'])
-			)
-		);
-
 		for($j = 0; $j < $total_forums; $j++)
 		{
-
-			if( ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $viewcat == -1 ) ||
-				( $category_rows[$i]['cat_id'] == $viewcat) )
+			if( ( ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $viewcat == -1) ||
+				($category_rows[$i]['cat_id'] == $viewcat) ) && 
+				$is_auth_ary[$forum_rows[$j]['forum_id']]['auth_view'])
 			{
-
 				$folder_image = "<img src=\"".$images['folder']."\">";
 				$posts = $forum_rows[$j]['forum_posts'];
 				$topics = $forum_rows[$j]['forum_topics'];
@@ -231,6 +233,17 @@ if($total_categories)
 					$moderators_links .= "<a href=\"".append_sid("profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_mods['forum_'.$forum_rows[$j]['forum_id'].'_id'][$mods])."\">".$forum_mods['forum_'.$forum_rows[$j]['forum_id'].'_name'][$mods]."</a>";
 				}
 
+				if(!$gen_cat[$category_rows[$i]['cat_id']])
+				{
+					$category_rows[$i]['cat_id']. " : " . $gen_cat[$category_rows[$i]['cat_id']]."<br>";
+					$template->assign_block_vars("catrow", array(
+						"CAT_ID" => $category_rows[$i]['cat_id'],
+						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+						"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']))
+					);
+					$gen_cat[$category_rows[$i]['cat_id']] = 1;
+				}
+
 				$template->assign_block_vars("catrow.forumrow", 
 					array(
 						"FOLDER" => $folder_image,
@@ -243,13 +256,21 @@ if($total_categories)
 						"MODERATORS" => $moderators_links,
 
 						"U_VIEWFORUM" => append_sid("viewforum." . $phpEx . "?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id'] . "&" . $forum_rows[$j]['forum_posts']))
+				);
+			}
+			else if($viewcat != -1)
+			{
+				if(!$gen_cat[$category_rows[$i]['cat_id']])
+				{
+					$template->assign_block_vars("catrow", array(
+						"CAT_ID" => $category_rows[$i]['cat_id'],
+						"CAT_DESC" => stripslashes($category_rows[$i]['cat_title']),
+						"U_VIEWCAT" => append_sid("index." . $phpEx . "?viewcat=" . $category_rows[$i]['cat_id']))
 					);
-//						"LAST_POST_USER" => "$forum_rows[$j]['username']",
-//						"U_LAST_POST_USER_PROFILE" => "profile.$phpEx?mode=viewprofile&".POST_USERS_URL."=".$forum_rows[$j]['user_id']",
-//						"U_LAST_POST" => "viewtopic.".$phpEx."?t=".$forum_rows[$j]['topic_id'],
+					$gen_cat[$category_rows[$i]['cat_id']] = 1;
+				}
 			}
 		}
-
 	} // for ... categories
 
 }// if ... total_categories

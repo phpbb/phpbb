@@ -92,7 +92,7 @@ if(!$forum_row)
 //
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row[0]);
 
-if(!$is_auth['auth_read'])
+if(!$is_auth['auth_read'] || !$is_auth['auth_view'])
 {
 	//
 	// Ooopss, user is not authed
