@@ -294,6 +294,9 @@ $lang = array(
 	'TOPIC_BEEN_REPORTED' => 'This topic has been reported',
 	'TOPIC_NOT_BEEN_APPROVED' => 'This topic has not been approved',
 
+	'APPROVE_POST' => 'Approve this post',
+	'READ_REPORTS' => 'Read post reports',
+
 	'wrote' => 'wrote',
 	'Quote' => 'Quote',
 	'Code' => 'Code',
