@@ -174,11 +174,11 @@ class parse_message
 		// [quote] moved to the second position
 		$this->bbcode_array = array(
 			8	=> array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise'	=>	"\$this->bbcode_code('\\1', '\\2')"),
-			0	=> array('#\[quote(?:="(.*?)")?\](.+?)\[/quote\]#ise'	=>	"'[quote:" . $this->bbcode_uid . "' . \$this->bbcode_quote_username('\\1') . ']\\2[/quote:" . $this->bbcode_uid . "]'"),
+			0	=> array('#\[quote(?:="(.*?)")?\](.+?)\[/quote\]#ise'=>	"'[quote:" . $this->bbcode_uid . "' . \$this->bbcode_quote_username('\\1') . ']\\2[/quote:" . $this->bbcode_uid . "]'"),
 // TODO: validation regexp
 			11	=> array('#\[flash\](.*?)\[/flash\]#i'				=>	'[flash:' . $this->bbcode_uid . ']\1[/flash:' . $this->bbcode_uid . ']'),
-			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	'$this->validate_email("\1", "\2")'),
-			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'	=>	'$this->bbcode_list("\0")'),
+			10	=> array('#\[email(=.*?)?\](.*?)\[/email\]#ise'		=>	"\$this->validate_email('\\1', '\\2')"),
+			9	=> array('#\[list(=[a-z|0-1]+)?\].*\[/list\]#ise'	=>	"\$this->bbcode_list('\\0')"),
 			7	=> array('#\[u\](.*?)\[/u\]#is'						=>	'[u:' . $this->bbcode_uid . ']\1[/u:' . $this->bbcode_uid . ']'),
 			6	=> array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is'
 																	=>	'[color=\1:' . $this->bbcode_uid . ']\2[/color:' . $this->bbcode_uid . ']'),
@@ -186,7 +186,7 @@ class parse_message
 																	=>	'[size=\1:' . $this->bbcode_uid . ']\2[/size:' . $this->bbcode_uid . ']'),
 			4	=> array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#i'
 																	=>	'[img:' . $this->bbcode_uid . ']\1\2[/img:' . $this->bbcode_uid . ']'),
-			3	=> array('#\[url=?(.*?)?\](.*?)\[/url\]#ise'		=>	'$this->validate_url("\1", "\2")'),
+			3	=> array('#\[url=?(.*?)?\](.*?)\[/url\]#ise'		=>	"\$this->validate_url('\\1', '\\2')"),
 			2	=> array('#\[i\](.*?)\[/i\]#is'						=>	'[i:' . $this->bbcode_uid . ']\1[/i:' . $this->bbcode_uid . ']'),
 			1	=> array('#\[b\](.*?)\[/b\]#is'						=>	'[b:' . $this->bbcode_uid . ']\1[/b:' . $this->bbcode_uid . ']')
 		);
@@ -366,9 +366,9 @@ class parse_message
 		}
 		if ($valid)
 		{
-			return (empty($var1)) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']';
+			return (empty($var1)) ? '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']' : "[url=$url:" . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']';
 		}
-		return '[url' . $var1 . ']' . $var2 . '[/url]';
+		return '[url' . $var1 . ']' . stripslashes($var2) . '[/url]';
 	}
 
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.

@@ -699,10 +699,12 @@ if ($preview)
 }
 
 // Decode text for message display
-decode_text($post_text, $message_parser->bbcode_uid);
+$bbcode_uid = ($mode == 'quote' && !$preview) ? $row['bbcode_uid'] : $message_parser->bbcode_uid;
+
+decode_text($post_text, $bbcode_uid);
 if ($subject)
 {
-	decode_text($subject, $message_parser->bbcode_uid);
+	decode_text($subject, $bbcode_uid);
 }
 
 // Save us some processing time. ;)
