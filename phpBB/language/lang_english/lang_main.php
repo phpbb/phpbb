@@ -20,27 +20,21 @@
  ***************************************************************************/
 
 //
-// The format of this file is:
+// The format of this file is ---> $lang['message'] = 'text';
 //
-// ---> $lang['message'] = 'text';
-//
-// You should also try to set a locale and a character
-// encoding (plus direction). The encoding and direction
-// will be sent to the template. The locale may or may
-// not work, it's dependent on OS support and the syntax
-// varies ... give it your best guess!
+// Note that DIRECTION, LEFT and RIGHT should _NOT_ be
+// translated! They indicate the direction of text and
+// are sent to the template
 //
 
-//setlocale(LC_ALL, 'en');
 $lang['ENCODING'] = 'iso-8859-1';
-$lang['DIRECTION'] = 'LTR';
-$lang['LEFT'] = 'LEFT';
-$lang['RIGHT'] = 'RIGHT';
+$lang['DIRECTION'] = 'ltr'; // rtl for Arabic, Hebrew, etc.
+$lang['LEFT'] = 'left'; // right for Arabic, Hebrew, etc.
+$lang['RIGHT'] = 'right'; // left for Arabic, Hebrew, etc.
 $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date format for your language, php date() format
 
 //
-// Common, these terms are used
-// extensively on several pages
+// Common, these terms are used extensively on several pages
 //
 $lang['Forum'] = 'Forum';
 $lang['Category'] = 'Category';
@@ -340,6 +334,8 @@ $lang['Empty_poll_title'] = 'You must enter a title for your poll';
 $lang['To_few_poll_options'] = 'You must enter at least two poll options';
 $lang['To_many_poll_options'] = 'You have tried to enter too many poll options';
 $lang['Post_has_no_poll'] = 'This post has no poll';
+$lang['Already_voted'] = 'You have already voted in this poll';
+$lang['No_vote_option'] = 'You must specify an option when voting';
 
 $lang['Add_poll'] = 'Add a Poll';
 $lang['Add_poll_explain'] = 'If you do not want to add a poll to your topic leave the fields blank';
@@ -434,6 +430,14 @@ $lang['No_unread_pm'] = 'You have no unread messages';
 $lang['You_new_pm'] = 'A new private message is waiting for you in your Inbox';
 $lang['You_new_pms'] = 'New private messages are waiting for you in your Inbox';
 $lang['You_no_new_pm'] = 'No new private messages are waiting for you';
+$lang['Unread_message'] = 'Unread message';
+$lang['Read_message'] = 'Read message';
+
+$lang['Read_pm'] = 'Read message';
+$lang['Post_new_pm'] = 'Post message';
+$lang['Post_reply_pm'] = 'Reply to message';
+$lang['Post_quote_pm'] = 'Quote message';
+$lang['Edit_pm'] = 'Edit message';
 
 $lang['Inbox'] = 'Inbox';
 $lang['Outbox'] = 'Outbox';
@@ -615,6 +619,7 @@ $lang['Account_inactive_admin'] = 'Your account has been created. However, this 
 $lang['Account_active'] = 'Your account has now been activated. Thank you for registering';
 $lang['Account_active_admin'] = 'The account has now been activated';
 $lang['Reactivate'] = 'Reactivate your account!';
+$lang['Already_activated'] = 'You have already activated your account';
 $lang['COPPA'] = 'Your account has been created but has to be approved, please check your email for details.';
 
 $lang['Registration'] = 'Registration Agreement Terms';
@@ -878,20 +883,20 @@ $lang['All_times'] = 'All times are %s'; // eg. All times are GMT - 12 Hours (ti
 
 $lang['-12'] = 'GMT - 12 Hours';
 $lang['-11'] = 'GMT - 11 Hours';
-$lang['-10'] = 'HST (Hawaii)';
+$lang['-10'] = 'GMT - 10 Hours';
 $lang['-9'] = 'GMT - 9 Hours';
-$lang['-8'] = 'PST (U.S./Canada)';
-$lang['-7'] = 'MST (U.S./Canada)';
-$lang['-6'] = 'CST (U.S./Canada)';
-$lang['-5'] = 'EST (U.S./Canada)';
+$lang['-8'] = 'GMT - 8 Hours';
+$lang['-7'] = 'GMT - 7 Hours';
+$lang['-6'] = 'GMT - 6 Hours';
+$lang['-5'] = 'GMT - 5 Hours';
 $lang['-4'] = 'GMT - 4 Hours';
 $lang['-3.5'] = 'GMT - 3.5 Hours';
 $lang['-3'] = 'GMT - 3 Hours';
-$lang['-2'] = 'Mid-Atlantic';
+$lang['-2'] = 'GMT - 2 Hours';
 $lang['-1'] = 'GMT - 1 Hours';
 $lang['0'] = 'GMT';
-$lang['1'] = 'CET (Europe)';
-$lang['2'] = 'EET (Europe)';
+$lang['1'] = 'GMT + 1 Hour';
+$lang['2'] = 'GMT + 2 Hours';
 $lang['3'] = 'GMT + 3 Hours';
 $lang['3.5'] = 'GMT + 3.5 Hours';
 $lang['4'] = 'GMT + 4 Hours';
@@ -901,45 +906,45 @@ $lang['5.5'] = 'GMT + 5.5 Hours';
 $lang['6'] = 'GMT + 6 Hours';
 $lang['6.5'] = 'GMT + 6.5 Hours';
 $lang['7'] = 'GMT + 7 Hours';
-$lang['8'] = 'WST (Australia)';
+$lang['8'] = 'GMT + 8 Hours';
 $lang['9'] = 'GMT + 9 Hours';
-$lang['9.5'] = 'CST (Australia)';
-$lang['10'] = 'EST (Australia)';
+$lang['9.5'] = 'GMT + 9.5 Hours';
+$lang['10'] = 'GMT + 10 Hours';
 $lang['11'] = 'GMT + 11 Hours';
 $lang['12'] = 'GMT + 12 Hours';
 
 // These are displayed in the timezone select box
-$lang['tz']['-12'] = '(GMT -12:00 hours) Eniwetok, Kwajalein';
-$lang['tz']['-11'] = '(GMT -11:00 hours) Midway Island, Samoa';
-$lang['tz']['-10'] = '(GMT -10:00 hours) Hawaii';
-$lang['tz']['-9'] = '(GMT -9:00 hours) Alaska';
-$lang['tz']['-8'] = '(GMT -8:00 hours) Pacific Time (US &amp; Canada), Tijuana';
-$lang['tz']['-7'] = '(GMT -7:00 hours) Mountain Time (US &amp; Canada), Arizona';
-$lang['tz']['-6'] = '(GMT -6:00 hours) Central Time (US &amp; Canada), Mexico City';
-$lang['tz']['-5'] = '(GMT -5:00 hours) Eastern Time (US &amp; Canada), Bogota, Lima, Quito';
-$lang['tz']['-4'] = '(GMT -4:00 hours) Atlantic Time (Canada), Caracas, La Paz';
-$lang['tz']['-3.5'] = '(GMT -3:30 hours) Newfoundland';
-$lang['tz']['-3'] = '(GMT -3:00 hours) Brassila, Buenos Aires, Georgetown, Falkland Is';
-$lang['tz']['-2'] = '(GMT -2:00 hours) Mid-Atlantic, Ascension Is., St. Helena';
-$lang['tz']['-1'] = '(GMT -1:00 hours) Azores, Cape Verde Islands';
-$lang['tz']['0'] = '(GMT) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia';
-$lang['tz']['1'] = '(GMT +1:00 hours) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome';
-$lang['tz']['2'] = '(GMT +2:00 hours) Cairo, Helsinki, Kaliningrad, South Africa';
-$lang['tz']['3'] = '(GMT +3:00 hours) Baghdad, Riyadh, Moscow, Nairobi';
-$lang['tz']['3.5'] = '(GMT +3:30 hours) Tehran';
-$lang['tz']['4'] = '(GMT +4:00 hours) Abu Dhabi, Baku, Muscat, Tbilisi';
-$lang['tz']['4.5'] = '(GMT +4:30 hours) Kabul';
-$lang['tz']['5'] = '(GMT +5:00 hours) Ekaterinburg, Islamabad, Karachi, Tashkent';
-$lang['tz']['5.5'] = '(GMT +5:30 hours) Bombay, Calcutta, Madras, New Delhi';
-$lang['tz']['6'] = '(GMT +6:00 hours) Almaty, Colombo, Dhaka, Novosibirsk';
-$lang['tz']['6.5'] = '(GMT +6:30 hours) Rangoon';
-$lang['tz']['7'] = '(GMT +7:00 hours) Bangkok, Hanoi, Jakarta';
-$lang['tz']['8'] = '(GMT +8:00 hours) Beijing, Hong Kong, Perth, Singapore, Taipei';
-$lang['tz']['9'] = '(GMT +9:00 hours) Osaka, Sapporo, Seoul, Tokyo, Yakutsk';
-$lang['tz']['9.5'] = '(GMT +9:30 hours) Adelaide, Darwin';
-$lang['tz']['10'] = '(GMT +10:00 hours) Canberra, Guam, Melbourne, Sydney, Vladivostok';
-$lang['tz']['11'] = '(GMT +11:00 hours) Magadan, New Caledonia, Solomon Islands';
-$lang['tz']['12'] = '(GMT +12:00 hours) Auckland, Wellington, Fiji, Marshall Island';
+$lang['tz']['-12'] = 'GMT - 12 Hours';
+$lang['tz']['-11'] = 'GMT - 11 Hours';
+$lang['tz']['-10'] = 'GMT - 10 Hours';
+$lang['tz']['-9'] = 'GMT - 9 Hours';
+$lang['tz']['-8'] = 'GMT - 8 Hours';
+$lang['tz']['-7'] = 'GMT - 7 Hours';
+$lang['tz']['-6'] = 'GMT - 6 Hours';
+$lang['tz']['-5'] = 'GMT - 5 Hours';
+$lang['tz']['-4'] = 'GMT - 4 Hours';
+$lang['tz']['-3.5'] = 'GMT - 3.5 Hours';
+$lang['tz']['-3'] = 'GMT - 3 Hours';
+$lang['tz']['-2'] = 'GMT - 2 Hours';
+$lang['tz']['-1'] = 'GMT - 1 Hours';
+$lang['tz']['0'] = 'GMT';
+$lang['tz']['1'] = 'GMT + 1 Hour';
+$lang['tz']['2'] = 'GMT + 2 Hours';
+$lang['tz']['3'] = 'GMT + 3 Hours';
+$lang['tz']['3.5'] = 'GMT + 3.5 Hours';
+$lang['tz']['4'] = 'GMT + 4 Hours';
+$lang['tz']['4.5'] = 'GMT + 4.5 Hours';
+$lang['tz']['5'] = 'GMT + 5 Hours';
+$lang['tz']['5.5'] = 'GMT + 5.5 Hours';
+$lang['tz']['6'] = 'GMT + 6 Hours';
+$lang['tz']['6.5'] = 'GMT + 6.5 Hours';
+$lang['tz']['7'] = 'GMT + 7 Hours';
+$lang['tz']['8'] = 'GMT + 8 Hours';
+$lang['tz']['9'] = 'GMT + 9 Hours';
+$lang['tz']['9.5'] = 'GMT + 9.5 Hours';
+$lang['tz']['10'] = 'GMT + 10 Hours';
+$lang['tz']['11'] = 'GMT + 11 Hours';
+$lang['tz']['12'] = 'GMT + 12 Hours';
 
 $lang['datetime']['Sunday'] = 'Sunday';
 $lang['datetime']['Monday'] = 'Monday';
