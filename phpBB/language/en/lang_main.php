@@ -95,11 +95,13 @@ $lang = array(
 	'VIEW_LATEST_POST' => 'View latest post',
 	'VIEW_NEWEST_POST' => 'View newest post',
 	'PAGE_OF' => 'Page <b>%1$d</b> of <b>%2$d</b>',
-	'ICQ'	=> 'ICQ Number',
-	'AIM'	=> 'AIM Address',
-	'MSNM'	=> 'MSN Messenger',
-	'YIM'	=> 'Yahoo Messenger',
+
+	'ICQ'	=> 'ICQ',
+	'AIM'	=> 'AIM',
+	'MSNM'	=> 'MSNM',
+	'YIM'	=> 'YIM',
 	'RANK'	=> 'Rank',
+
 	'FORUM_INDEX' => 'Board Index', 
 
 	'ALL_TIMES' => 'All times are %s %s',
@@ -624,10 +626,9 @@ $lang = array(
 	'DOWNLOAD_COUNT'		=> '%d Time',	// replace %d with count
 	'DOWNLOAD_COUNTS'		=> '%d Times',	// replace %d with count
 
+
 	'UCP'			=> 'User Control Panel',
-	'UCP_Main'		=> 'Control Panel',
-	'UCP_Profile' => 'Profile Settings',
-	'UCP_Lists' => 'Black/White Lists',
+
 	'UCP_Priv_messages' => 'Private Messages',
 	'SUBSCRIBED_TOPICS' => 'Subscribed Topics',
 	'SUBSCRIBED_FORUMS' => 'Subscribed Forums',
@@ -642,11 +643,15 @@ $lang = array(
 	'Avatar_settings' => 'Avatar Settings',
 	'Signature_settings' => 'Signature Settings',
 
+	'UCP_MAIN'		=> 'Overview',
 
 	'UCP_PREFERENCES'	=> 'Preferences',
 	'UCP_PERSONAL'		=> 'Personal Settings', 
 	'UCP_VIEW'			=> 'Viewing Posts', 
 	'UCP_POST'			=> 'Posting Messages',
+
+	
+	'UCP_MESSAGING'		=> 'Private Messaging', 
 
 
 	'UCP_LISTS'			=> 'Buddy/Ignore Lists',
@@ -656,16 +661,19 @@ $lang = array(
 	'UCP_REG_DETAILS'	=> 'Registration details', 
 	'UCP_AVATAR'		=> 'Your avatar',
 
-	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details.',
+	'PROFILE_INFO_NOTICE'	=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'WEBSITE'		=> 'Website',
 	'LOCATION'		=> 'Location',
 	'CONTACT'		=> 'Contact', 
-	'JABBER'		=> 'Jabber', 
 	'EMAIL_ADDRESS' => 'Email address',
 	'INTERESTS'		=> 'Interests',
 	'OCCUPATION'	=> 'Occupation',
 	'BIRTHDAY'		=> 'Birthday', 
-
+	'UCP_ICQ'		=> 'ICQ Number',
+	'UCP_AIM'		=> 'AOL Instant Messenger',
+	'UCP_MSNM'		=> 'MSN Messenger',
+	'UCP_YIM'		=> 'Yahoo Messenger',
+	'JABBER'		=> 'Jabber Address', 
 
 	'UCP_SIGNATURE'		=> 'Your signature', 
 	'SIGNATURE_NOTICE'	=> 'Please note that some forums limit the size and content of your signature. Be sure to read any forum or board rules to ensure you comply with them.', 

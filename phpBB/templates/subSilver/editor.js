@@ -20,7 +20,7 @@ var is_mac    = (clientPC.indexOf("mac")!=-1);
 
 // Shows the help messages in the helpline window
 function helpline(help) {
-	document.post.helpbox.value = eval(help + "_help");
+	document.forms[form_name].helpbox.value = eval(help + "_help");
 }
 
 // Replacement for arrayname.length property
@@ -49,13 +49,13 @@ function arraypop(thearray) {
 
 function emoticon(text) {
 	text = ' ' + text + ' ';
-	if (document.post.message.createTextRange && document.post.message.caretPos) {
-		var caretPos = document.post.message.caretPos;
+	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) {
+		var caretPos = document.forms[form_name].elements[text_name].caretPos;
 		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].focus();
 	} else {
-	document.post.message.value  += text;
-	document.post.message.focus();
+	document.forms[form_name].elements[text_name].value  += text;
+	document.forms[form_name].elements[text_name].focus();
 	}
 }
 
@@ -63,19 +63,19 @@ function bbfontstyle(bbopen, bbclose) {
 	if ((clientVer >= 4) && is_ie && is_win) {
 		theSelection = document.selection.createRange().text;
 		if (!theSelection) {
-			document.post.message.value += bbopen + bbclose;
-			document.post.message.focus();
+			document.forms[form_name].elements[text_name].value += bbopen + bbclose;
+			document.forms[form_name].elements[text_name].focus();
 			return;
 		}
 		document.selection.createRange().text = bbopen + theSelection + bbclose;
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].focus();
 		return;
 	} else {
-		document.post.message.value += bbopen + bbclose;
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].value += bbopen + bbclose;
+		document.forms[form_name].elements[text_name].focus();
 		return;
 	}
-	storeCaret(document.post.message);
+	storeCaret(document.forms[form_name].message);
 }
 
 
@@ -88,19 +88,19 @@ function bbstyle(bbnumber) {
 	if (bbnumber == -1) { // Close all open tags & default button names
 		while (bbcode[0]) {
 			butnumber = arraypop(bbcode) - 1;
-			document.post.message.value += bbtags[butnumber + 1];
-			buttext = eval('document.post.addbbcode' + butnumber + '.value');
+			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
+			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
 			if (buttext != "[*]")
 			{
-				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 			}
 		}
-		document.post.addbbcode10.value = "List";
+		document.forms[form_name].addbbcode10.value = "List";
 		bbtags[10] = "[list]";
-		document.post.addbbcode12.value = "List=";
+		document.forms[form_name].addbbcode12.value = "List=";
 		bbtags[12] = "[list=]";
 		imageTag = false; // All tags are closed including image tags :D
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].focus();
 		return;
 	}
 
@@ -110,7 +110,7 @@ function bbstyle(bbnumber) {
 	if (theSelection) {
 		// Add tags around selection
 		document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].focus();
 		theSelection = '';
 		return;
 	}
@@ -127,7 +127,7 @@ function bbstyle(bbnumber) {
 	{
 		if (donotinsert)
 		{
-			document.post.addbbcode12.value = "List=";
+			document.forms[form_name].addbbcode12.value = "List=";
 			tmp_help = o_help;
 			o_help = e_help;
 			e_help = tmp_help;
@@ -135,7 +135,7 @@ function bbstyle(bbnumber) {
 		}
 		else
 		{
-			document.post.addbbcode12.value = "[*]";
+			document.forms[form_name].addbbcode12.value = "[*]";
 			tmp_help = o_help;
 			o_help = e_help;
 			e_help = tmp_help;
@@ -147,7 +147,7 @@ function bbstyle(bbnumber) {
 	{
 		if (donotinsert)
 		{
-			document.post.addbbcode10.value = "List";
+			document.forms[form_name].addbbcode10.value = "List";
 			tmp_help = l_help;
 			l_help = e_help;
 			e_help = tmp_help;
@@ -155,7 +155,7 @@ function bbstyle(bbnumber) {
 		}
 		else
 		{
-			document.post.addbbcode10.value = "[*]";
+			document.forms[form_name].addbbcode10.value = "[*]";
 			tmp_help = l_help;
 			l_help = e_help;
 			e_help = tmp_help;
@@ -168,43 +168,43 @@ function bbstyle(bbnumber) {
 				butnumber = arraypop(bbcode) - 1;
 				if (bbtags[butnumber] != "[*]")
 				{
-					document.post.message.value += bbtags[butnumber + 1];
+					document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
 				}
 				else
 				{
-					document.post.message.value += bbtags[butnumber];
+					document.forms[form_name].elements[text_name].value += bbtags[butnumber];
 				}
-				buttext = eval('document.post.addbbcode' + butnumber + '.value');
+				buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
 				if (bbtags[butnumber] != "[*]")
 				{
-					eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+					eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
 				}
 				imageTag = false;
 			}
-			document.post.message.focus();
+			document.forms[form_name].elements[text_name].focus();
 			return;
 	} else { // Open tags
 
 		if (imageTag && (bbnumber != 14)) {		// Close image tag before adding another
-			document.post.message.value += bbtags[15];
+			document.forms[form_name].elements[text_name].value += bbtags[15];
 			lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
-			document.post.addbbcode14.value = "Img";	// Return button back to normal state
+			document.forms[form_name].addbbcode14.value = "Img";	// Return button back to normal state
 			imageTag = false;
 		}
 
 		// Open tag
-		document.post.message.value += bbtags[bbnumber];
+		document.forms[form_name].elements[text_name].value += bbtags[bbnumber];
 		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
 		if (bbtags[bbnumber] != "[*]")
 		{
 			arraypush(bbcode,bbnumber+1);
-			eval('document.post.addbbcode'+bbnumber+'.value += "*"');
+			eval('document.forms[form_name].addbbcode'+bbnumber+'.value += "*"');
 		}
-		document.post.message.focus();
+		document.forms[form_name].elements[text_name].focus();
 		return;
 	}
 
-	storeCaret(document.post.message);
+	storeCaret(document.forms[form_name].message);
 }
 
 // Insert at Claret position. Code from

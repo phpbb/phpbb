@@ -384,7 +384,7 @@ function tz_select($default = '')
 	{
 		if (is_numeric($offset))
 		{
-			$selected = ($offset === $default) ? ' selected="selected"' : '';
+			$selected = ($offset == $default) ? ' selected="selected"' : '';
 			$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
 		}
 	}

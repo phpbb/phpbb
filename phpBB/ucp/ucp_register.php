@@ -21,7 +21,7 @@
 
 class ucp_register extends ucp
 {
-	function main()
+	function main($id)
 	{
 		global $config, $db, $user, $SID, $template, $phpEx;
 
@@ -64,7 +64,7 @@ class ucp_register extends ucp
 				);
 			}
 
-			ucp::output($user->lang['REGISTER'], 'ucp_agreement.html');
+			$this->output($user->lang['REGISTER'], 'ucp_agreement.html');
 		}
 
 		// Check and initialize some variables if needed
@@ -72,7 +72,7 @@ class ucp_register extends ucp
 		if (isset($_POST['submit']))
 		{
 			// Load the userdata manipulation methods
-			ucp::load('includes/functions_user');
+			$this->loadfile('includes/functions_user');
 			$userdata = new userdata();
 
 			if ($message = $userdata->add_user($coppa))
@@ -130,7 +130,7 @@ class ucp_register extends ucp
 			}
 			$db->sql_freeresult($result);
 
-			$code = ucp::gen_rand_string(6);
+			$code = $this->gen_rand_string(6);
 			$confirm_id = md5(uniqid($user_ip));
 
 			$sql = "INSERT INTO " . CONFIRM_TABLE . " (confirm_id, session_id, code) 
@@ -176,7 +176,7 @@ class ucp_register extends ucp
 		);
 
 		//
-		ucp::output($user->lang['REGISTER'], 'ucp_register.html');
+		$this->output($user->lang['REGISTER'], 'ucp_register.html');
 	}
 }
 

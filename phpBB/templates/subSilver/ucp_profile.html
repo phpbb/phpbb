@@ -1,41 +1,4 @@
 <!-- $Id$ -->
-
-<script language="javascript" type="text/javascript">
-<!--
-
-// Define the bbCode tags
-bbcode = new Array();
-bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[flash]','[/flash]','[url]','[/url]');
-imageTag = false;
-
-// Helpline messages
-b_help = "{L_BBCODE_B_HELP}";
-i_help = "{L_BBCODE_I_HELP}";
-u_help = "{L_BBCODE_U_HELP}";
-q_help = "{L_BBCODE_Q_HELP}";
-c_help = "{L_BBCODE_C_HELP}";
-l_help = "{L_BBCODE_L_HELP}";
-o_help = "{L_BBCODE_O_HELP}";
-p_help = "{L_BBCODE_P_HELP}";
-w_help = "{L_BBCODE_W_HELP}";
-a_help = "{L_BBCODE_A_HELP}";
-s_help = "{L_BBCODE_S_HELP}";
-f_help = "{L_BBCODE_F_HELP}";
-e_help = "{L_BBCODE_E_HELP}";
-
-function checkForm()
-{
-	if (document.post.message.value.length < 2) {
-		alert('{L_EMPTY_MESSAGE}');
-		return false;
-	} else {
-//		document.post.post.disabled = true;
-		return true;
-	}
-}
-//-->
-</script>
-<script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
 <!-- INCLUDE ucp_header.html -->
 
 	<tr> 
@@ -99,22 +62,22 @@ function checkForm()
 
 			<!-- IF S_DISPLAY_PROFILE -->
 			<tr> 
-				<td class="row2" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
+				<td class="row3" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_ICQ}: </b></td>
+				<td class="row1"><b class="genmed">{L_UCP_ICQ}: </b></td>
 				<td class="row2"><input class="post" type="text" name="icq" size="30" maxlength="15" value="{ICQ}" /></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_AIM}: </b></td>
+				<td class="row1"><b class="genmed">{L_UCP_AIM}: </b></td>
 				<td class="row2"><input class="post" type="text" name="aim" size="30" maxlength="255" value="{AIM}" /></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_MSNM}: </b></td>
+				<td class="row1"><b class="genmed">{L_UCP_MSNM}: </b></td>
 				<td class="row2"><input class="post" type="text" name="msn" size="30" maxlength="255" value="{MSN}" /></td>
 			</tr>
 			<tr> 
-				<td class="row1"><b class="genmed">{L_YIM}: </b></td>
+				<td class="row1"><b class="genmed">{L_UCP_YIM}: </b></td>
 				<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="{YIM}" /></td>
 			</tr>
 			<tr> 
@@ -175,7 +138,7 @@ function checkForm()
 						</table></td>
 					</tr>
 					<tr>
-						<td colspan="10" width="450"><input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" /></td>
+						<td colspan="10" width="450"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" style="width:450px;font-size:10px" value="{L_STYLES_TIP}" /></td>
 					</tr>
 					<tr>
 						<td colspan="10" align="center"><textarea class="post" name="signature" rows="6" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>

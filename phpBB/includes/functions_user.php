@@ -209,12 +209,12 @@ class userdata extends user
 			
 			if ($config['require_activation'] == USER_ACTIVATION_NONE)
 			{
-				set_config('newest_user_id', $userdata['user_id']);
+				set_config('newest_user_id', $user_id);
 				set_config('newest_username', $userdata['username']);
 				set_config('num_users', $config['num_users'] + 1, TRUE);
 			}
 			unset($userdata);
-				
+
 			return $message;
 		}
 

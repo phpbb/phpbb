@@ -1,7 +1,38 @@
 <!-- $Id$ -->
 <!-- INCLUDE overall_header.html -->
 
-<form method="post" name="ucp" action="{S_UCP_ACTION}" {S_FORM_ENCTYPE}><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<script language="javascript" type="text/javascript">
+<!--
+
+
+var form_name = 'ucp';
+var text_name = 'signature';
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[flash]','[/flash]','[url]','[/url]');
+imageTag = false;
+
+// Helpline messages
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
+e_help = "{L_BBCODE_E_HELP}";
+
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
+
+<form method="post" name="ucp" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}><table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
 		<td class="nav" colspan="2" align="left" valign="middle"><a href="{U_INDEX}">{L_INDEX}</a></td>
 	</tr>

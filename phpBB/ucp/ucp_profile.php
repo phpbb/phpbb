@@ -1,13 +1,12 @@
 <?php
 /***************************************************************************
- *                            usercp_profile.php
+ *                              ucp_profile.php
  *                            -------------------
  *   begin                : Saturday, Feb 21, 2003
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
- *
  *
  ***************************************************************************/
 
@@ -18,29 +17,29 @@
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
- *
  ***************************************************************************/
 
 
 class ucp_profile extends ucp
 {
-	function main($module_id)
+	function main($id)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpEx;
 
 		$submode = ($_REQUEST['mode']) ? htmlspecialchars($_REQUEST['mode']) : 'reg_details';
 
-		$submodules['REG_DETAILS']	= "module_id=$module_id&amp;mode=reg_details";
-		$submodules['PROFILE']		= "module_id=$module_id&amp;mode=profile";
-		$submodules['SIGNATURE']	= "module_id=$module_id&amp;mode=signature";       
-		$submodules['AVATAR']		= "module_id=$module_id&amp;mode=avatar";                               
+		$submodules['REG_DETAILS']	= "i=$id&amp;mode=reg_details";
+		$submodules['PROFILE']		= "i=$id&amp;mode=profile";
+		$submodules['SIGNATURE']	= "i=$id&amp;mode=signature";       
+		$submodules['AVATAR']		= "i=$id&amp;mode=avatar";                               
 
-		ucp::subsection($submodules, $submode);
+		$this->subsection($submodules, $submode);
 		unset($submodules);
 
 		switch ($submode)
 		{
 			case 'reg_details':
+
 				$template->assign_vars(array(
 					'USERNAME'	=> $user->data['username'], 
 					'EMAIL'		=> $user->data['user_email'], 
@@ -53,24 +52,30 @@ class ucp_profile extends ucp
 
 			case 'profile':
 
+				list($day, $month, $year) = explode('-', $user->data['user_birthday']);
+
 				$s_birthday_day_options = '';
 				for ($i = 1; $i < 32; $i++)
 				{
-					$selected = '';
-					$s_birthday_day_options .= "<option value=\"$i\">$i</option>";
+					$selected = ($i == $day) ? ' selected="selected"' : '';
+					$s_birthday_day_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
+
 				$s_birthday_month_options = '';
 				for ($i = 1; $i < 13; $i++)
 				{
-					$selected = '';
-					$s_birthday_month_options .= "<option value=\"$i\">$i</option>";
+					$selected = ($i == $month) ? ' selected="selected"' : '';
+					$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
 				$s_birthday_year_options = '';
-				for ($i = 1900; $i < 2004; $i++)
+
+				$now = getdate();
+				for ($i = $now['year'] - 100; $i < $now['year']; $i++)
 				{
-					$selected = '';
-					$s_birthday_year_options .= "<option value=\"$i\">$i</option>";
+					$selected = ($i == $year) ? ' selected="selected"' : '';
+					$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
+				unset($now);
 
 				$template->assign_vars(array(
 					'ICQ'		=> $user->data['user_icq'], 
@@ -90,7 +95,8 @@ class ucp_profile extends ucp
 				break;
 
 			case 'signature':
-				ucp::load('includes/functions_posting');
+
+				$this->loadfile('includes/functions_posting');
 
 				$html_status = ($config['allow_html']) ? true : false; 
 				$bbcode_status = ($config['allow_bbcode']) ? true : false; 
@@ -116,7 +122,7 @@ class ucp_profile extends ucp
 
 					if (!sizeof($error))
 					{
-						ucp::load('includes/message_parser');
+						$this->loadfile('includes/message_parser');
 
 						$message_parser = new parse_message();
 						$message_parser->message = trim(stripslashes($signature));
@@ -134,7 +140,7 @@ class ucp_profile extends ucp
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;module_id=$module_id&amp;mode=$submode");
+						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode");
 						trigger_error('');
 					}
 				}
@@ -146,7 +152,7 @@ class ucp_profile extends ucp
 
 					global $phpbb_root_path;
 
-					ucp::load('includes/message_parser');
+					$this->loadfile('includes/message_parser');
 
 					$signature_preview = $signature;
 
@@ -157,7 +163,7 @@ class ucp_profile extends ucp
 
 					if ($enable_bbcode)
 					{
-						ucp::load('includes/bbcode');
+						$this->loadfile('includes/bbcode');
 						$bbcode = new bbcode($message_parser->bbcode_bitfield);
 
 						// Second parse bbcode here
@@ -207,6 +213,7 @@ class ucp_profile extends ucp
 
 				$template->assign_vars(array(
 					'AVATAR'	=> '<img src="images/avatars/upload/' . $user->data['user_avatar'] . '" />', 
+
 					'S_UPLOAD_AVATAR_FILE'	=> true,
 					'S_UPLOAD_AVATAR_URL'	=> true, 
 					'S_LINK_AVATAR'			=> true, 
@@ -224,10 +231,10 @@ class ucp_profile extends ucp
 
 			'S_DISPLAY_' . strtoupper($submode)	=> true, 
 			'S_HIDDEN_FIELDS'					=> $s_hidden_fields,
-			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;module_id=$module_id&amp;mode=$submode")
+			'S_UCP_ACTION'						=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$submode")
 		);
 
-		ucp::output($user->lang['UCP_PROFILE'], 'ucp_profile.html');
+		$this->output($user->lang['UCP_PROFILE'], 'ucp_profile.html');
 	}
 }
 
