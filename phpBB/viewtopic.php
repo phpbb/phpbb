@@ -22,7 +22,7 @@
  ***************************************************************************/
 include('extension.inc');
 include('common.'.$phpEx);
-include('functions/bbcode.'.$phpEx);
+include('includes/bbcode.'.$phpEx);
 
 if(!isset($HTTP_GET_VARS['topic']))  // For backward compatibility
 {
