@@ -257,8 +257,8 @@ function bbstyle(formObj, bbnumber) {
 				</tr>
 				<tr align="center" valign="middle"> 
 				  <td><a href="javascript:emoticon(':idea:')"><img src="images/smiles/icon_idea.gif" width="15" height="15" border="0" alt="Idea" /></a></td>
-				  <td><a href="javascript:emoticon(':?')"><img src="images/smiles/icon_question.gif" width="15" height="15" border="0" alt="Question" /></a></td>
-				  <td><a href="javascript:emoticon(':!')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15" border="0" alt="Exclaim" /></a></td>
+				  <td><a href="javascript:emoticon(':?:')"><img src="images/smiles/icon_question.gif" width="15" height="15" border="0" alt="Question" /></a></td>
+				  <td><a href="javascript:emoticon(':!:')"><img src="images/smiles/icon_exclaim.gif" width="15" height="15" border="0" alt="Exclaim" /></a></td>
 				  <td><a href="javascript:emoticon(':arrow:')"><img src="images/smiles/icon_arrow.gif" width="15" height="15" border="0" alt="Arrow" /></a></td>
 				</tr>
 			  </table>
