@@ -943,7 +943,9 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 
 			'L_USER_TITLE' => $lang['User_admin'],
 			'L_USER_EXPLAIN' => $lang['User_admin_explain'],
+			'L_NEW_PASSWORD' => $lang['New_password'], 
 			'L_PASSWORD_IF_CHANGED' => $lang['password_if_changed'],
+			'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
 			'L_PASSWORD_CONFIRM_IF_CHANGED' => $lang['password_confirm_if_changed'],
 			'L_SUBMIT' => $lang['Submit'],
 			'L_RESET' => $lang['Reset'],
@@ -995,7 +997,6 @@ if( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) |
 			'L_REGISTRATION_INFO' => $lang['Registration_info'],
 			'L_PROFILE_INFO' => $lang['Profile_info'],
 			'L_PROFILE_INFO_NOTICE' => $lang['Profile_info_warn'],
-			'L_CONFIRM' => $lang['Confirm'],
 			'L_EMAIL_ADDRESS' => $lang['Email_address'],
 			'S_FORM_ENCTYPE' => $form_enctype,
 
