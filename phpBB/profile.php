@@ -395,7 +395,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 				{
 						
 					$sql = "UPDATE ".USERS_TABLE." 
-						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_desmile = $allowsmilies, user_html = $allowhtml, user_bbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme 
+						SET username = '$username'".$passwd_sql.", user_email = '$email', user_icq = '$icq', user_website = '$website', user_occ = '$occ', user_from = '$location', user_interests = '$interests', user_sig = '$signature', user_viewemail = $viewemail, user_aim = '$aim', user_yim = '$yim', user_msnm = '$msn', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_timezone = $user_timezone, user_dateformat = '$user_dateformat', user_lang = '$user_lang', user_template = '$user_template', user_theme = $user_theme 
 						WHERE user_id = $user_id";
 				
 					if($result = $db->sql_query($sql))
@@ -444,9 +444,9 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 				$viewemail = $userdata['user_viewemail'];
 				$attachsig = $userdata['user_attachsig'];
-				$allowhtml = $userdata['user_html'];
-				$allowbbcode = $userdata['user_bbcode'];
-				$allowsmilies = $userdata['user_desmile'];
+				$allowhtml = $userdata['user_allowhtml'];
+				$allowbbcode = $userdata['user_allowbbcode'];
+				$allowsmilies = $userdata['user_allowsmile'];
 
 				$user_theme = $userdata['user_theme'];
 				$user_lang = $userdata['user_lang'];
@@ -557,11 +557,11 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 			$interests = (!empty($HTTP_POST_VARS['interests'])) ? trim(addslashes($HTTP_POST_VARS['interests'])) : "";
 			$signature = (!empty($HTTP_POST_VARS['signature'])) ? trim(addslashes($HTTP_POST_VARS['signature'])) : "";
 
-			$viewemail = $HTTP_POST_VARS['viewemail'];
-			$attachsig = $HTTP_POST_VARS['attachsig'];
-			$allowhtml = $HTTP_POST_VARS['allowhtml'];
-			$allowbbcode = $HTTP_POST_VARS['allowbbcode'];
-			$allowsmilies = $HTTP_POST_VARS['allowsmilies'];
+			$viewemail = (!empty($HTTP_POST_VARS['viewemail'])) ? $HTTP_POST_VARS['viewemail'] : 0;
+			$attachsig = (!empty($HTTP_POST_VARS['attachsig'])) ? $HTTP_POST_VARS['attachsig'] : 0;
+			$allowhtml = (!empty($HTTP_POST_VARS['allowhtml'])) ? $HTTP_POST_VARS['allowhtml'] : 0;
+			$allowbbcode = (!empty($HTTP_POST_VARS['allowbbcode'])) ? $HTTP_POST_VARS['allowbbcode'] : 1;
+			$allowsmilies = (!empty($HTTP_POST_VARS['allowsmilies'])) ? $HTTP_POST_VARS['allowsmilies'] : 1;
 
 			$user_theme = ($HTTP_POST_VARS['theme']) ? $HTTP_POST_VARS['theme'] : $board_config['default_theme'];
 			$user_lang = ($HTTP_POST_VARS['language']) ? $HTTP_POST_VARS['language'] : $board_config['default_lang'];
@@ -666,7 +666,7 @@ if(isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']))
 
 					$md_pass = md5($password);
 					$sql = "INSERT INTO ".USERS_TABLE." 
-						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_desmile, user_html, user_bbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
+						(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ,	user_from, user_interests, user_sig, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_timezone, user_dateformat, user_lang, user_template, user_theme, user_active, user_actkey) 
 						VALUES 
 						($new_user_id, '$username', '$regdate', '$md_pass', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$viewemail', '$aim', '$yim', '$msn', $attachsig, $allowsmilies, '$allowhtml', $allowbbcode, $user_timezone, '$user_dateformat', '$user_lang', '$user_template', $user_theme, ";
 					if($require_activation || $coppa == 1)
