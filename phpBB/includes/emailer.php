@@ -195,7 +195,10 @@ class emailer
 			}
 			if($this->use_smtp)
 			{
-				include($phpbb_root_path . "includes/smtp.".$phpEx);
+				if(!defined('SMTP_INCLUDED')) 
+				{
+					include($phpbb_root_path . "includes/smtp.".$phpEx);
+				}
 				if(!smtpmail($this->address, $this->subject, $this->msg, $this->extra_headers))
 				{
 					message_die(GENERAL_ERROR, "Sending via SMTP failed", "", __LINE__, __FILE__);

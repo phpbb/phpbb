@@ -33,6 +33,7 @@
 *						to the opened socket to the server and the second the
 *						response code you are looking for.
 ****************************************************************************/
+define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response)
 {
 	if(!($server_response = fgets($socket, 100)))
