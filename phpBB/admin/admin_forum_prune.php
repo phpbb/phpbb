@@ -97,7 +97,7 @@ if( isset($HTTP_POST_VARS['doprune']) )
 	);
 
 	$i = 0;
-	reset($forum_rows);
+	@reset($forum_rows);
 	while(list(, $forum_data) = each ($forum_rows))
 	{
 		$p_result = prune($forum_data['forum_id'], $prunedate);
