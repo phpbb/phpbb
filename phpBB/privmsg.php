@@ -34,6 +34,96 @@ if( !empty($board_config['privmsg_disable']) )
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
+// -----------------------
+// Page specific functions
+//
+// This isn't really specific since it's used in posting too,
+// however I'm too lazy to move them both to functions at the 
+// moment. Of course in 2.2 all the posting routines should
+// be better 'integrated' so this won't be an issue
+//
+function generate_smilies($mode)
+{
+	global $db, $board_config, $template, $lang, $images, $theme, $phpEx;
+	global $user_ip, $forum_id, $session_length;
+	global $userdata;
+
+	if( $mode == 'window' )
+	{
+		$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+		init_userprefs($userdata);
+
+		$gen_simple_header = TRUE;
+
+		$page_title = $lang['Review_topic'] ." - $topic_title";
+		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+		$template->set_filenames(array(
+			"smiliesbody" => "posting_smilies.tpl")
+		);
+	}
+
+	$sql = "SELECT * 
+		FROM " . SMILIES_TABLE . " 
+		GROUP BY emoticon 
+		ORDER BY smilies_id";
+	if( $result = $db->sql_query($sql) )
+	{
+		if( $num_smilies = $db->sql_numrows($result) )
+		{
+			$rowset = $db->sql_fetchrowset($result);
+
+			$j = 0;
+			$s_colspan = 0;
+			$smilies_count = ( $mode == 'inline' ) ? min(20, $num_smilies) : $num_smilies;
+			$smilies_split_row = ( $mode == 'inline' ) ? 3 : 7;
+			for($i = 0; $i < $smilies_count; $i++)
+			{
+				if( !$j )
+				{
+					$template->assign_block_vars("smilies_row", array());
+				}
+
+				$template->assign_block_vars("smilies_row.smilies_col", array(
+					"SMILEY_CODE" => $rowset[$i]['code'],
+					"SMILEY_IMG" => "images/smiles/" . $rowset[$i]['smile_url'],
+					"SMILEY_DESC" => $rowset[$i]['emoticon'])
+				);
+
+				$s_colspan = max($s_colspan, $j + 1);
+
+				$j = ( $j == $smilies_split_row ) ? 0 : $j + 1;
+			}
+
+			if( $mode == 'inline' && $num_smilies > 20)
+			{
+				$template->assign_block_vars("switch_smilies_extra", array());
+
+				$template->assign_vars(array(
+					"L_MORE_SMILIES" => $lang['More_emoticons'], 
+					"U_MORE_SMILIES" => append_sid("posting.$phpEx?mode=smilies"))
+				);
+			}
+
+			$template->assign_vars(array(
+				"L_EMOTICONS" => $lang['Emoticons'], 
+				"L_CLOSE_WINDOW" => $lang['Close_window'], 
+				"S_SMILIES_COLSPAN" => $s_colspan)
+			);
+		}
+	}
+
+	if( $mode == 'window' )
+	{
+		$template->pparse("smiliesbody");
+
+		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	}
+}
+//
+// End page specific functions
+// ---------------------------
+
 //
 // Var definitions
 //
@@ -1537,13 +1627,18 @@ else if( $submit || $refresh || $mode != "" )
 		$s_hidden_fields .= "<input type=\"hidden\" name=\"" . POST_POST_URL . "\" value=\"$privmsg_id\" />";
 	}
 
+	//
+	// Send smilies to template
+	//
+	generate_smilies('inline');
+
 	$template->assign_vars(array(
 		"SUBJECT" => preg_replace($html_entities_match, $html_entities_replace, $privmsg_subject), 
 		"USERNAME" => preg_replace($html_entities_match, $html_entities_replace, $to_username),
 		"MESSAGE" => $privmsg_message,
 		"HTML_STATUS" => $html_status, 
 		"SMILIES_STATUS" => $smilies_status, 
-		"BBCODE_STATUS" => $bbcode_status, 
+		"BBCODE_STATUS" => sprintf($bbcode_status, '<a href="' . append_sid("faq.$phpEx?mode=bbcode") . '" target="_phpbbcode">', '</a>'), 
 		"FORUM_NAME" => $lang['Private_message'], 
 
 		"BOX_NAME" => $l_box_name, 
@@ -1570,6 +1665,47 @@ else if( $submit || $refresh || $mode != "" )
 		"L_DISABLE_BBCODE" => $lang['Disable_BBCode_post'], 
 		"L_DISABLE_SMILIES" => $lang['Disable_Smilies_post'], 
 		"L_ATTACH_SIGNATURE" => $lang['Attach_signature'], 
+
+		"L_BBCODE_B_HELP" => $lang['bbcode_b_help'], 
+		"L_BBCODE_I_HELP" => $lang['bbcode_i_help'], 
+		"L_BBCODE_U_HELP" => $lang['bbcode_u_help'], 
+		"L_BBCODE_Q_HELP" => $lang['bbcode_q_help'], 
+		"L_BBCODE_C_HELP" => $lang['bbcode_c_help'], 
+		"L_BBCODE_L_HELP" => $lang['bbcode_l_help'], 
+		"L_BBCODE_O_HELP" => $lang['bbcode_o_help'], 
+		"L_BBCODE_P_HELP" => $lang['bbcode_p_help'], 
+		"L_BBCODE_W_HELP" => $lang['bbcode_w_help'], 
+		"L_BBCODE_A_HELP" => $lang['bbcode_a_help'], 
+		"L_BBCODE_S_HELP" => $lang['bbcode_s_help'], 
+		"L_BBCODE_F_HELP" => $lang['bbcode_f_help'], 
+		"L_EMPTY_MESSAGE" => $lang['Empty_message'],
+
+		"L_FONT_COLOR" => $lang['Font_color'], 
+		"L_COLOR_DEFAULT" => $lang['color_default'], 
+		"L_COLOR_DARK_RED" => $lang['color_dark_red'], 
+		"L_COLOR_RED" => $lang['color_red'], 
+		"L_COLOR_ORANGE" => $lang['color_orange'], 
+		"L_COLOR_BROWN" => $lang['color_brown'], 
+		"L_COLOR_YELLOW" => $lang['color_yellow'], 
+		"L_COLOR_GREEN" => $lang['color_green'], 
+		"L_COLOR_OLIVE" => $lang['color_olive'], 
+		"L_COLOR_CYAN" => $lang['color_cyan'], 
+		"L_COLOR_BLUE" => $lang['color_blue'], 
+		"L_COLOR_DARK_BLUE" => $lang['color_dark_blue'], 
+		"L_COLOR_INDIGO" => $lang['color_indigo'], 
+		"L_COLOR_VIOLET" => $lang['color_violet'], 
+		"L_COLOR_WHITE" => $lang['color_white'], 
+		"L_COLOR_BLACK" => $lang['color_black'], 
+
+		"L_FONT_SIZE" => $lang['Font_size'], 
+		"L_FONT_TINY" => $lang['font_tiny'], 
+		"L_FONT_SMALL" => $lang['font_small'], 
+		"L_FONT_NORMAL" => $lang['font_normal'], 
+		"L_FONT_LARGE" => $lang['font_large'], 
+		"L_FONT_HUGE" => $lang['font_huge'], 
+
+		"L_BBCODE_CLOSE_TAGS" => $lang['Close_Tags'], 
+		"L_STYLES_TIP" => $lang['Styles_tip'], 
 
 		"S_HTML_CHECKED" => (!$html_on) ? "checked=\"checked\"" : "", 
 		"S_BBCODE_CHECKED" => (!$bbcode_on) ? "checked=\"checked\"" : "", 
