@@ -1,13 +1,12 @@
 <?php
 /***************************************************************************
- *										admin_forums.php
+ *                             admin_forums.php
  *                            -------------------
  *   begin                : Thursday, Jul 12, 2001
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
  *   $Id$
- *
  *
  ***************************************************************************/
 
@@ -494,7 +493,7 @@ if( !empty($mode) )
 			// There is no problem having duplicate forum names so we won't check for it.
 			//
 			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
-				VALUES ('" . $HTTP_POST_VARS['categoryname'] . "', $next_order)";
+				VALUES ('" . str_replace("\'", "''", $HTTP_POST_VARS['categoryname']) . "', $next_order)";
 			if( !$result = $db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
