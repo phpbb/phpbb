@@ -38,12 +38,12 @@ if ($config['gzip_compress'])
 // Generate logged in/logged out status
 if ($user->data['user_id'] != ANONYMOUS)
 {
-	$u_login_logout = 'login.'.$phpEx. $SID . '&amp;logout=true';
+	$u_login_logout = 'ucp.'.$phpEx. $SID . '&amp;mode=logout';
 	$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 }
 else
 {
-	$u_login_logout = 'login.'.$phpEx . $SID;
+	$u_login_logout = 'ucp.'.$phpEx . $SID . '&amp;mode=login';
 	$l_login_logout = $user->lang['LOGIN'];
 }
 
@@ -304,7 +304,6 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 	'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 	'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
 	'S_TIMEZONE' 			=> ($user->data['user_dst']) ? sprintf($user->lang['All_times'], $user->lang[$tz], $user->lang['tz']['dst']) : sprintf($user->lang['All_times'], $user->lang[$tz], ''),
 
 	'T_STYLESHEET_DATA'	=> $user->theme['css_data'],
@@ -312,6 +311,7 @@ $template->assign_vars(array(
 
 	'NAV_LINKS' => $nav_links_html)
 );
+//	'S_LOGIN_ACTION' 		=> 'login.'.$phpEx.$SID,
 
 /*if ($config['send_encoding'])
 {

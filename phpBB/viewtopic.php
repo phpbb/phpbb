@@ -173,14 +173,12 @@ extract($topic_data);
 // Start auth check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 {
-	if ($user->data['user_id'] == ANONYMOUS)
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$redirect = (isset($post_id)) ? "p=$post_id" : "t=$topic_id";
-		$redirect .= (isset($start)) ? "&start=$start" : '';
-		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
+		trigger_error($user->lang['SORRY_AUTH_READ']);
 	}
 
-	trigger_error($user->lang['SORRY_AUTH_READ']);
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 

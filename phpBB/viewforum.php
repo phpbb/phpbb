@@ -103,12 +103,12 @@ $auth->acl($user->data, $forum_id);
 // Permissions check
 if (!$auth->acl_gets('f_read', 'm_', 'a_', $forum_id))
 {
-	if ($user->data['user_id'] == ANONYMOUS)
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		redirect("login.$phpEx$SID&redirect=viewforum.$phpEx&f=$forum_id" . ((isset($start)) ? "&start=$start" : ''));
+		trigger_error('SORRY_AUTH_READ');
 	}
 
-	trigger_error('SORRY_AUTH_READ');
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])), '', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 

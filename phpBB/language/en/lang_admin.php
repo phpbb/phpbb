@@ -22,6 +22,7 @@
 $lang = array_merge($lang, array(
 	'ADMIN_TITLE'	=> 'Administration Panel',
 	'ADMIN'			=> 'Administration',
+	'LOGIN_ADMIN'	=> 'You must be a registered, logged in user before attempting to administer the board.', 
 	'NO_ADMIN'		=> 'You are not authorised to administer this board.',
 	'NO_FRAMES'		=> 'Sorry, your browser does not support frames.',
 	'RETURN_TO'		=> 'Return to ...',

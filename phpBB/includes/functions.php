@@ -444,7 +444,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					'META' => '<meta http-equiv="refresh" content="3;url=' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">')
 				);
 
-				$message = $user->lang['No_longer_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -478,7 +478,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					'META' => '<meta http-equiv="refresh" content="3;url=' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">')
 				);
 
-				$message = $user->lang['You_are_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -493,7 +493,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 		{
 			if ($_GET['unwatch'] == $mode)
 			{
-				redirect("login.$phpEx$SID&redirect=view$mode.$phpEx&" . $u_url . "=$match_id&unwatch=forum");
+				login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
 			}
 		}
 		else
@@ -505,7 +505,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 	if ($can_watch)
 	{
-		$s_watching = ($is_watching) ? '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start" . '">' . $user->lang['Stop_watching_' . $mode] . '</a>' : '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start" . '">' . $user->lang['Start_watching_' . $mode] . '</a>';
+		$s_watching = ($is_watching) ? '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start" . '">' . $user->lang['STOP_WATCHING_' . strtoupper($mode)] . '</a>' : '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start" . '">' . $user->lang['START_WATCHING_' . strtoupper($mode)] . '</a>';
 	}
 
 	return;
@@ -839,6 +839,56 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 
 	return;
 }
+
+// Generate login box or verify password
+function login_box($s_action, $s_hidden_fields = '', $login_explain = '')
+{
+	global $SID, $db, $user, $template, $auth, $phpbb_root_path, $phpEx;
+
+	$err = '';
+	if (isset($_POST['login']))
+	{
+		$autologin = (!empty($_POST['autologin'])) ? TRUE : FALSE;
+		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
+
+		if (($result = $auth->login($_POST['username'], $_POST['password'], $autologin, $viewonline)) === true)
+		{
+			return true;
+		}
+
+		// If we get a non-numeric (e.g. string) value we output an error
+		if (is_string($result))
+		{
+			trigger_error($result, E_USER_ERROR);
+		}
+
+		// If we get an integer zero then we are inactive, else the username/password is wrong
+		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
+	}
+
+	$template->assign_vars(array(
+		'LOGIN_ERROR'		=> $err, 
+		'LOGIN_EXPLAIN'		=> $login_explain, 
+
+		'U_SEND_PASSWORD' 	=> "ucp.$phpEx$SID&amp;mode=sendpassword",
+		'U_TERMS_USE'		=> "ucp.$phpEx$SID&amp;mode=terms", 
+		'U_PRIVACY'			=> "ucp.$phpEx$SID&amp;mode=privacy", 
+
+		'S_LOGIN_ACTION'	=> $s_action, 
+		'S_HIDDEN_FIELDS' 	=> $s_hidden_fields)
+	);
+
+	$page_title = $user->lang['LOGIN'];
+	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+	$template->set_filenames(array(
+		'body' => 'login_body.html')
+	);
+	make_jumpbox('viewforum.'.$phpEx);
+
+	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+}
+
 
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)

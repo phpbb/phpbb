@@ -69,91 +69,103 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
 
 
 // -----------------------
 // Page specific functions
 //
-if($_GET['mode'] || $_POST['mode'])
+if (!empty($_REQUEST['mode']))
 {
-	$mode = (!empty($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
-	
-	if($mode == 'viewprofile')
+	$mode = $_REQUEST['mode'];
+
+	switch ($mode)
 	{
-		include($phpbb_root_path . 'ucp/usercp_viewprofile.'.$phpEx);
-		exit;
-	}
-	else if($mode == 'activate')
-	{
-		include($phpbb_root_path . 'ucp/usercp_activate.'.$phpEx);
-	}
-	else if($mode == 'register')
-	{
-		if($user->data['user_id'] != ANONYMOUS)
-		{
-			redirect("index.$phpEx$SID");
-		}
-		else
-		{
+		case 'activate':
+			include($phpbb_root_path . 'ucp/usercp_activate.'.$phpEx);
+			break;
+
+		case 'register':
+			if ($user->data['user_id'] != ANONYMOUS)
+			{
+				redirect("index.$phpEx$SID");
+			}
 			include($phpbb_root_path . 'ucp/usercp_register.'.$phpEx);
-			exit;
-		}
+			break;
+
+		case 'login':
+			if ($user->data['user_id'] != ANONYMOUS)
+			{
+				redirect("index.$phpEx$SID");
+			}
+
+			define('IN_LOGIN', true);
+			login_box("ucp.$phpEx$SID&amp;mode=login");
+			redirect("index.$phpEx$SID");
+			break;
+
+		case 'logout':
+			if ($user->data['user_id'] != ANONYMOUS)
+			{
+				$user->destroy();
+			}
+
+			redirect("index.$phpEx$SID");
+			break;
+
 	}
 }
 
-// Database based module handing
-$selected_module = ($_GET['module_id']) ? $_GET['module_id'] : $_POST['module_id'];
-$sql = "SELECT module_id, module_name, module_filename FROM " . UCP_MODULES_TABLE . " ORDER BY module_order";
 
+// Some basic template vars
+$template->assign_vars(array(
+	'UCP_WELCOME_MSG'	=> $user->lang['UCP_WELCOME_MESSAGE'])
+);
+
+
+// Word censors $censors['match'] & $censors['replace']
+$censors = array();
+obtain_word_list($censors);
+
+
+// "Home" module
+$template->assign_block_vars('ucp_sections', array(
+	'U_SECTION'	=> "ucp.$phpEx$SID",
+	'SECTION'	=> $user->lang['UCP_Main'])
+);
+
+// Grab the other enabled UCP modules
+$selected_module = (!empty($_REQUEST['module_id'])) ? $_REQUEST['module_id'] : '';
+$sql = "SELECT module_id, module_name, module_filename 
+	FROM " . UCP_MODULES_TABLE . " 
+	ORDER BY module_order";
 $result = $db->sql_query($sql);
 
-$rowset = $db->sql_fetchrowset($result);
-
-// Default UCP link
-$template->assign_block_vars('ucp_sections', array('U_SECTION' => "ucp.$phpEx$SID",
-	'SECTION' => $user->lang['UCP_Main']));
-	
-foreach($rowset as $section)
+while ($row = $db->sql_fetchrow($result))
 {
-	$template->assign_block_vars('ucp_sections', array('U_SECTION' => "ucp.$phpEx$SID&amp;module_id=" . $section['module_id'] ,
-		'SECTION' => $section['module_name']));
+	$template->assign_block_vars('ucp_sections', array(
+		'U_SECTION'	=> "ucp.$phpEx$SID&amp;module_id=" . $row['module_id'],
+		'SECTION'	=> $row['module_name'])
+	);
 	
-	if($section['module_id'] == $selected_module)
+	if ($row['module_id'] == $selected_module)
 	{
-		$module_to_include = $section['module_filename'] . "." . $phpEx;
+		$module_to_include = $row['module_filename'] . '.' . $phpEx;
 		include($phpbb_root_path . $module_to_include);
 	}
 }
+$db->sql_freeresult($result);
 
 
-
-
-$page_title = $user->lang['User_control_panel'] . ' - ' . $this_section;
-include($phpbb_root_path . 'includes/page_header.'.$phpEx);
-
-// Setup word censor
-$orig_word = array();
-$replacement_word = array();
-obtain_word_list($orig_word, $replacement_word);
-
-$template->assign_vars(array('L_SUBSCRIBED_TOPICS' => $user->lang['SUBSCRIBED_TOPICS'],
-	'L_SUBSCRIBED_FORUMS' => $user->lang['SUBSCRIBED_FORUMS'],
-	'L_WELCOME_USERCP' => $user->lang['WELCOME_USERCP'],
-	'UCP_WELCOME_MSG' => $user->lang['UCP_WELCOME_MESSAGE'],
-	'L_ONLINE_BUDDIES' => $user->lang['ONLINE_BUDDIES'],
-	'L_UNREAD_PM' => $user->lang['UNREAD_PM']));
-
-//
 // Subscribed Topics
-//
-$sql = "SELECT tw.topic_id, t.topic_title, t.topic_last_post_time, t.poll_start, t.topic_replies, t.topic_type, t.forum_id FROM " . TOPICS_TABLE . " t, " . TOPICS_WATCH_TABLE . " tw
-	WHERE t.topic_id = tw.topic_id AND tw.user_id = " . $user->data['user_id'] . " ORDER BY t.topic_last_post_time DESC";
-
+$sql = "SELECT tw.topic_id, t.topic_title, t.topic_last_post_time, t.poll_start, t.topic_replies, t.topic_type, t.forum_id 
+	FROM " . TOPICS_TABLE . " t, " . TOPICS_WATCH_TABLE . " tw
+	WHERE t.topic_id = tw.topic_id 
+		AND tw.user_id = " . $user->data['user_id'] . " 
+	ORDER BY t.topic_last_post_time DESC";
 $result = $db->sql_query($sql);
 
 $topic_count = 0;
-while($row = $db->sql_fetchrow($result))
+while ($row = $db->sql_fetchrow($result))
 {
 	$replies = $row['topic_replies']; 
 	$topic_id = $row['topic_id'];
@@ -165,16 +177,19 @@ while($row = $db->sql_fetchrow($result))
 			$topic_type = $user->lang['Topic_Announcement'] . ' ';
 			$folder = 'folder_announce';
 			$folder_new = 'folder_announce_new';
-		break;
+			break;
+
 		case POST_STICKY:
 			$topic_type = $user->lang['Topic_Sticky'] . ' ';
 			$folder = 'folder_sticky';
 			$folder_new = 'folder_sticky_new';
-		break;
+			break;
+
 		case ITEM_LOCKED:
 			$folder = 'folder_locked';
 			$folder_new = 'folder_locked_new';
-		break;
+			break;
+
 		default:
 			if ($replies >= intval($config['hot_threshold']))
 			{
@@ -186,7 +201,7 @@ while($row = $db->sql_fetchrow($result))
 				$folder = 'folder';
 				$folder_new = 'folder_new';
 			}
-		break;
+			break;
 	}
 
 	$unread_topic = false;
@@ -200,34 +215,34 @@ while($row = $db->sql_fetchrow($result))
 	$folder_alt = ($unread_topic) ? 'New_posts' : (($row['topic_status'] == ITEM_LOCKED) ? 'Topic_locked' : 'No_new_posts');
 
 	$view_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id;
+
+	// Needs to be handled within this code rather than going out of UCP
 	$unsubscribe_img = '<a href="viewtopic.' . $phpEx . $SID . '&amp;t=' . $topic_id . '&amp;unwatch=topic">' . $user->img('icon_delete', 'Stop_watching_topic', FALSE) . '</a>';
 	
-	$template->assign_block_vars('subscribed_topics', array('TOPIC_FOLDER_IMG' => $user->img($folder_img, $folder_alt),
-		'NEWEST_POST_IMG' => $newest_post_img,
-		'TOPIC_TITLE' => (count($orig_word)) ? preg_replace($orig_word, $replacement_word, $row['topic_title']) : $row['topic_title'],
-		'UNSUBSCRIBE_IMG' => $unsubscribe_img,	
+	$template->assign_block_vars('subscribed_topics', array(
+		'TOPIC_FOLDER_IMG'	=> $user->img($folder_img, $folder_alt),
+		'NEWEST_POST_IMG'	=> $newest_post_img,
+		'UNSUBSCRIBE_IMG'	=> $unsubscribe_img,	
+
+		'TOPIC_TITLE'	=> (!empty($censors)) ? preg_replace($censors['match'], $censors['replace'], $row['topic_title']) : $row['topic_title'],
 		
-		'U_TOPIC' => $view_topic_url)
+		'U_TOPIC'	=> $view_topic_url)
 	);
 }
 $db->sql_freeresult($result);
-
-// 
 // End Subscribed Topics
-//
 
 
-//
 // Subscribed Forums
-//
-$sql = "SELECT f.forum_id, f.forum_last_post_time, f.forum_last_post_id, f.left_id, f.right_id, f.forum_status, f.forum_name, f.forum_desc FROM " . FORUMS_TABLE . " f, " . FORUMS_WATCH_TABLE . " fw
-	WHERE f.forum_id = fw.forum_id AND fw.user_id = " . $user->data['user_id'] . " ORDER BY f.forum_last_post_time DESC";
-
+$sql = "SELECT f.forum_id, f.forum_last_post_time, f.forum_last_post_id, f.left_id, f.right_id, f.forum_status, f.forum_name, f.forum_desc 
+	FROM " . FORUMS_TABLE . " f, " . FORUMS_WATCH_TABLE . " fw
+	WHERE f.forum_id = fw.forum_id 
+		AND fw.user_id = " . $user->data['user_id'] . " 
+	ORDER BY f.forum_last_post_time DESC";
 $result = $db->sql_query($sql);
 
-while($row = $db->sql_fetchrow($result))
+while ($row = $db->sql_fetchrow($result))
 {
-
 	$forum_id = $row['forum_id'];
 
 	$unread_topics = ($user->data['user_id'] && $row['forum_last_post_time'] > $user->data['user_lastvisit']) ? TRUE : FALSE;
@@ -252,47 +267,41 @@ while($row = $db->sql_fetchrow($result))
 	}
 
 	$last_post = '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'] . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
+
+	// Needs to be handled within this code rather than going out of UCP
 	$unsubscribe_img = '<a href="viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;unwatch=forum">' . $user->img('icon_delete', 'Stop_watching_forum', FALSE) . '</a>';	
 	
-	$template->assign_block_vars('subscribed_forums', array('FORUM_FOLDER_IMG' => $user->img($folder_image, $folder_alt),
+	$template->assign_block_vars('subscribed_forums', array(
+		'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 		'NEWEST_FORUM_POST_IMG' => $last_post,
-		'FORUM_NAME' => $row['forum_name'],
-		'UNSUBSCRIBE_IMG' => $unsubscribe_img,
+		'UNSUBSCRIBE_IMG'		=> $unsubscribe_img,
+
+		'FORUM_NAME'	=> $row['forum_name'],
 		
-		'U_FORUM' => 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
+		'U_FORUM'	=> 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'])
 	);
 }
-
-
-
-//
+$db->sql_freeresult($result);
 // End Subscribed forums
-//
 
-//
+
 // Buddy List
-//
 
-
-
-//
 // End Buddy List
-//
 
 
-//
 // Private Messages
-//
 
-
-// 
 // End Private Messages
-//
 
+
+// Output the page
+$page_title = $user->lang['User_control_panel'] . ' - ' . $this_section;
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
-	'body' => 'usercp_main.html'
-));
+	'body' => 'usercp_main.html')
+);
 
 include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 

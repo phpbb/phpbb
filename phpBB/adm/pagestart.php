@@ -32,6 +32,13 @@ require_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 // Start session management
 $user->start($update);
 $user->setup();
+
+// Did user forget to login? Give 'em a chance to here ...
+if ($user->data['user_id'] == ANONYMOUS)
+{
+	login_box("index.$phpEx$SID", '', $user->lang['LOGIN_ADMIN']);
+}
+
 $auth->acl($user->data);
 // End session management
 

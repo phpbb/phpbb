@@ -11,11 +11,18 @@
 	<tr> 
 		<th height="25">{L_LOGIN}</th>
 	</tr>
+	<!-- IF LOGIN_EXPLAIN neq '' -->
 	<tr>
-		<td class="row3" align="center"><span class="gensmall"><a href="{U_TERMS_USE}">{L_TERMS_USE}</a> &nbsp;<a href="{U_PRIVACY}">{L_PRIVACY}</a></span></td>
+		<td class="row3" align="center"><span class="gensmall">{LOGIN_EXPLAIN}</td>
 	</tr>
+	<!-- ENDIF -->
 	<tr> 
 		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
+			<!-- IF LOGIN_ERROR neq '' -->
+			<tr>
+				<td class="gensmall" colspan="2" align="center"><span style="color:red">{LOGIN_ERROR}</span></td>
+			</tr>
+			<!-- ENDIF -->
 			<tr> 
 				<td><b class="gensmall">{L_USERNAME}:</b></td>
 				<td><input class="post" type="text" name="username" size="25" maxlength="40" value="{USERNAME}" /><br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a></td>
@@ -31,6 +38,9 @@
 			<tr>
 				<td>&nbsp;</td>
 				<td><input type="checkbox" name="viewonline" /> <span class="gensmall">{L_HIDE_ME}</span></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><span class="gensmall"><a href="{U_TERMS_USE}">{L_TERMS_USE}</a> | <a href="{U_PRIVACY}">{L_PRIVACY}</a></span></td>
 			</tr>
 		</table></td>
 	</tr>

@@ -28,45 +28,43 @@ include($phpbb_root_path . 'common.'.$phpEx);
 $user->start();
 $user->setup();
 $auth->acl($user->data);
-// End session management
-
-
 
 // Grab data
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
+$mode = (isset($_REQUEST['mode'])) ? htmlspecialchars($_REQUEST['mode']) : '';
 $user_id = (isset($_GET['u'])) ? intval($_GET['u']) : ANONYMOUS;
 
 // Can this user view profiles/memberslist?
 if (!$auth->acl_gets('u_viewprofile', 'a_'))
 {
-	if ($user->data['user_id'] == ANONYMOUS)
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		redirect("login.$phpEx$SID&redirect=memberlist&mode=$mode&u=$user_id");
+		trigger_error($user->lang['NO_VIEW_USERS']);
 	}
-	trigger_error($user->lang['NO_VIEW_USERS']);
+
+	login_box(preg_replace('#.*?([a-z]+?\.' . $phpEx . '.*?)$#i', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])));
 }
 
 $start = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
-$form = (!empty($_GET['form'])) ? $_GET['form'] : 0;
-$field = (isset($_GET['field'])) ? $_GET['field'] : 'username';
+$form = (!empty($_GET['form'])) ? htmlspecialchars($_GET['form']) : 0;
+$field = (isset($_GET['field'])) ? htmlspecialchars($_GET['field']) : 'username';
 
 $sort_key = (!empty($_REQUEST['sk'])) ? htmlspecialchars($_REQUEST['sk']) : 'c';
 $sort_dir = (!empty($_REQUEST['sd'])) ? htmlspecialchars($_REQUEST['sd']) : 'a';
 
-$username = (!empty($_REQUEST['username'])) ? trim($_REQUEST['username']) : '';
-$email = (!empty($_REQUEST['email'])) ? trim($_REQUEST['email']) : '';
-$icq = (!empty($_REQUEST['icq'])) ? intval($_REQUEST['icq']) : '';
-$aim = (!empty($_REQUEST['aim'])) ? trim($_REQUEST['aim']) : '';
-$yahoo = (!empty($_REQUEST['yahoo'])) ? trim($_REQUEST['yahoo']) : '';
-$msn = (!empty($_REQUEST['msn'])) ? trim($_REQUEST['msn']) : '';
+$username = (!empty($_REQUEST['username'])) ? trim(htmlspecialchars($_REQUEST['username'])) : '';
+$email = (!empty($_REQUEST['email'])) ? trim(htmlspecialchars($_REQUEST['email'])) : '';
+$icq = (!empty($_REQUEST['icq'])) ? intval(htmlspecialchars($_REQUEST['icq'])) : '';
+$aim = (!empty($_REQUEST['aim'])) ? trim(htmlspecialchars($_REQUEST['aim'])) : '';
+$yahoo = (!empty($_REQUEST['yahoo'])) ? trim(htmlspecialchars($_REQUEST['yahoo'])) : '';
+$msn = (!empty($_REQUEST['msn'])) ? trim(htmlspecialchars($_REQUEST['msn'])) : '';
 
-$joined_select = (!empty($_REQUEST['joined_select'])) ? $_REQUEST['joined_select'] : 'lt';
-$active_select = (!empty($_REQUEST['active_select'])) ? $_REQUEST['active_select'] : 'lt';
-$count_select = (!empty($_REQUEST['count_select'])) ? $_REQUEST['count_select'] : 'eq';
-$joined = (!empty($_REQUEST['joined'])) ? explode('-', trim($_REQUEST['joined'])) : array();
-$active = (!empty($_REQUEST['active'])) ? explode('-', trim($_REQUEST['active'])) : array();
+$joined_select = (!empty($_REQUEST['joined_select'])) ? htmlspecialchars($_REQUEST['joined_select']) : 'lt';
+$active_select = (!empty($_REQUEST['active_select'])) ? htmlspecialchars($_REQUEST['active_select']) : 'lt';
+$count_select = (!empty($_REQUEST['count_select'])) ? htmlspecialchars($_REQUEST['count_select']) : 'eq';
+$joined = (!empty($_REQUEST['joined'])) ? explode('-', trim(htmlspecialchars($_REQUEST['joined']))) : array();
+$active = (!empty($_REQUEST['active'])) ? explode('-', trim(htmlspecialchars($_REQUEST['active']))) : array();
 $count = (!empty($_REQUEST['count'])) ? intval($_REQUEST['count']) : '';
-$ipdomain = (!empty($_REQUEST['ip'])) ? trim($_REQUEST['ip']) : '';
+$ipdomain = (!empty($_REQUEST['ip'])) ? trim(htmlspecialchars($_REQUEST['ip'])) : '';
 
 // Grab rank information for later
 $sql = "SELECT * 
@@ -81,9 +79,13 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-
+// What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
+	case 'leaders':
+		// Display a listing of board admins, moderators
+		break;
+
 	case 'viewprofile':
 		// Display a profile
 		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
@@ -145,6 +147,7 @@ switch ($mode)
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
+		// We left join on the session table to see if the user is currently online
 		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit, MAX(session_time) AS session_time  
 			FROM " . USERS_TABLE . " 
 			LEFT JOIN " . SESSIONS_TABLE . " ON session_user_id = user_id 
@@ -219,7 +222,7 @@ switch ($mode)
 			trigger_error($user->lang['NO_USER']);
 		}
 
-		if (empty($config['board_email_form']) || empty($config['email_enable']) || !$auth->acl_gets('u_sendemail', 'a_'))
+		if (empty($config['board_email_form']) || empty($config['email_enable']) || !$auth->acl_gets('u_sendemail', 'a_user'))
 		{
 			trigger_error($user->lang['NO_EMAIL']);
 		}
@@ -237,7 +240,7 @@ switch ($mode)
 		}
 
 		// Can we send email to this user?
-		if (empty($row['user_viewemail']) && !$auth->acl_get('a_'))
+		if (empty($row['user_viewemail']) && !$auth->acl_get('a_user'))
 		{
 			trigger_error($user->lang['NO_EMAIL']);
 		}
@@ -340,21 +343,19 @@ switch ($mode)
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-		$s_sort_key = '<select name="sk">';
+		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
 		{
 			$selected = ($sort_key == $key) ? ' selected="selected"' : '';
 			$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
-		$s_sort_key .= '</select>';
 
-		$s_sort_dir = '<select name="sd">';
+		$s_sort_dir = '';
 		foreach ($sort_dir_text as $key => $value)
 		{
 			$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
 			$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
-		$s_sort_dir .= '</select>';
 
 		// Additional sorting options for user search
 		$where_sql = '';
@@ -440,11 +441,22 @@ switch ($mode)
 		$total_users = ($row = $db->sql_fetchrow($result)) ? $row['total_users'] : 0;
 
 		// Pagination string
-		$pagination_url = ($mode == 'searchuser') ? "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field&amp;username=" . urlencode($username) . "&amp;email=" . urlencode($email) . "&amp;icq=$icq&amp;aim=" . urlencode($aim) . "&amp;yahoo=" . urlencode($yahoo) . "&amp;msn=" . urlencode($msn) . "&amp;joined=" . urlencode(implode('-', $joined)) . "&amp;active=" . urlencode(implode('-', $active)) . "&amp;count=$count&amp;ip=" . urlencode($ipdomain)  . "&amp;sd=$sort_dir&amp;sk=$sort_key&amp;joined_select=$joined_select&amp;active_select=$active_select&amp;count_select=$count_select" : "memberlist.$phpEx$SID&amp;mode=$mode&amp;sk=$sort_key&amp;sd=$sort_dir";
+		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
 
 		// Some search user specific data
 		if ($mode == 'searchuser')
 		{
+			// Build a relevant pagination_url
+			$global_var = (isset($_POST['submit'])) ? '_POST' : '_GET';
+			foreach ($$global_var as $key => $var)
+			{
+				if (in_array($key, array('submit', 'start', 'mode')) || $var == '')
+				{
+					continue;
+				}
+				$pagination_url .= '&amp;' . $key . '=' . urlencode($var);
+			}
+
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
@@ -487,6 +499,7 @@ switch ($mode)
 		$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_rank, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar, user_lastvisit
 			FROM " . USERS_TABLE . " 
 			WHERE user_id <> " . ANONYMOUS . " 
+				$where_sql 
 			ORDER BY $order_by 
 			LIMIT $start, " . $config['topics_per_page'];
 		$result = $db->sql_query($sql);
@@ -514,7 +527,8 @@ switch ($mode)
 	// Generate page
 	$template->assign_vars(array(
 		'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
-		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start),
+		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start), 
+		'TOTAL_USERS'	=> sprintf($user->lang['FOUND_USERS_TOTAL'], $total_users), 
 
 		'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser", 
 		'U_SORT_USERNAME'	=> "memberlist.$phpEx$SID&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
