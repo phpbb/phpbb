@@ -74,6 +74,7 @@ define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
 define('GROUP_HIDDEN', 2);
 define('GROUP_SPECIAL', 3);
+define('GROUP_FREE', 4);
 
 // Forum/Topic states
 define('ITEM_UNLOCKED', 0);
@@ -106,6 +107,7 @@ define('DISALLOW_TABLE', $table_prefix.'disallow'); //
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
+define('GROUPS_MODERATOR_TABLE', $table_prefix.'groups_moderator');
 define('ICONS_TABLE', $table_prefix.'icons');
 define('LASTREAD_TABLE', $table_prefix.'lastread');
 define('LOG_ADMIN_TABLE', $table_prefix.'log_admin');
