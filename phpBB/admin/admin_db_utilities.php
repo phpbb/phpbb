@@ -997,7 +997,12 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 
 							if($do_gzip_compress)
 							{
-								$sql_query = gzread(gzopen($backup_file_tmpname, 'rb'), filesize($backup_file_tmpname));
+								$gz_ptr = gzopen($backup_file_tmpname, 'rb');
+								$sql_query = "";
+								while( !gzeof($gz_ptr) )
+								{
+									$sql_query .= gzgets($gz_ptr, 100000);
+								}
 							}
 							else
 							{
@@ -1045,7 +1050,7 @@ if( isset($HTTP_GET_VARS['perform']) || isset($HTTP_POST_VARS['perform']) )
 								echo "Executing: $sql\n<br>";
 								flush();
 							}
-
+	
 							$result = $db->sql_query($sql);
 	
 							if(!$result && ( !(SQL_LAYER == 'postgres' && eregi("drop table", $sql) ) ) )
