@@ -423,7 +423,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 				break;
 		}
 */
-		$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.post_subject, p.post_id, p.post_time, p.post_username, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
+		$sql_fields = ( $show_results == "posts") ? "pt.post_text, pt.post_subject, p.post_id, p.post_time, p.post_username, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid" : "f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username" ;
 
 		$sql_from = ( $show_results == "posts") ? FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TEXT_TABLE . " pt" : FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2";
 
@@ -745,14 +745,14 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 			"L_TOPIC" => $lang['Topic'])
 		);
 
-		$highlight_matches = "";
+		$highlight_active = "";
 		for($j = 0; $j < count($split_search); $j++ )
 		{
 			$split_word = $split_search[$j];
 
 			if( $split_word != "and" && $split_word != "or" && $split_word != "not" )
 			{
-				$highlight_matches .= " " . $split_word;
+				$highlight_active .= " " . $split_word;
 
 				$search_string[] = "#\b(" . preg_quote(str_replace("*", ".*?", $split_word), "#") . ")\b#i";
 				$replace_string[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
@@ -766,20 +766,20 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 						$search_string[] = "#\b(" . preg_quote($match_synonym, "#") . ")\b#i";
 						$replace_string[] = "<font color=\"#" . $theme['fontcolor3'] . "\"><b>\\1</b></font>";
 
-						$highlight_matches .= " " . $match_synonym;
+						$highlight_active .= " " . $match_synonym;
 					}
 				} 
 			}
 		}
 
-		$highlight_matches = urlencode(trim($highlight_matches));
+		$highlight_active = urlencode(trim($highlight_active));
 
 		for($i = 0; $i < min($per_page, count($searchset)); $i++)
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $searchset[$i]['forum_id']);
-			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_matches");
+			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
 			$poster_url = append_sid("profile.$phpEx?mode=viewprofile&" . POST_USERS_URL . "=" . $searchset[$i]['user_id']);
-			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_matches#" . $searchset[$i]['post_id']);
+			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . "=" . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active#" . $searchset[$i]['post_id']);
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
@@ -925,7 +925,7 @@ else if( $query_keywords != "" || $query_author != "" || $search_id )
 					$times = 1;
 					for($j = 0; $j < $replies + 1; $j += $board_config['topics_per_page'])
 					{
-						$base_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j&amp;highlight=$highlight_matches");
+						$base_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j&amp;highlight=$highlight_active");
 
 						if( $times > 4 )
 						{
