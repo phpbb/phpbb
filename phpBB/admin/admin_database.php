@@ -38,12 +38,12 @@ if ( !empty($setmodules) )
 	}
 	
 	$filename = basename(__FILE__);
-	$module['DB']['DB_Backup'] = $filename . "?perform=backup";
+	$module['DB']['DB_Backup'] = $filename . "$SID&amp;perform=backup";
 
 	$file_uploads = @ini_get('file_uploads');
-	if( ($file_uploads != 0 || empty($file_uploads)) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') )
+	if( ( $file_uploads != 0 || empty($file_uploads) ) && strtolower($file_uploads) != 'off' && @phpversion() != '4.0.4pl1' )
 	{
-		$module['DB']['DB_Restore'] = $filename . "?perform=restore";
+		$module['DB']['DB_Restore'] = $filename . "$SID&amp;perform=restore";
 	}
 
 	return;

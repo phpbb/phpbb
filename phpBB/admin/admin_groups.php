@@ -24,9 +24,9 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
-	$module['Groups']['Create'] = $filename . "SID&amp;mode=create";
-	$module['Groups']['Delete'] = $filename . "SID&amp;mode=delete";
-	$module['Groups']['Manage'] = $filename . "SID&amp;mode=manage";
+	$module['Groups']['Create'] = $filename . "$SID&amp;mode=create";
+	$module['Groups']['Delete'] = $filename . "$SID&amp;mode=delete";
+	$module['Groups']['Manage'] = $filename . "$SID&amp;mode=manage";
 
 	return;
 }

@@ -27,7 +27,7 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['Users']['Mass_Email'] = $filename;
+	$module['Users']['Mass_Email'] = $filename . $SID;
 	
 	return;
 }

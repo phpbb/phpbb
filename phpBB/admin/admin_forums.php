@@ -25,7 +25,7 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['Forums']['Manage'] = $file;
+	$module['Forums']['Manage'] = $file . $SID;
 	return;
 }
 

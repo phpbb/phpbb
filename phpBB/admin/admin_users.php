@@ -27,7 +27,7 @@ if ( !empty($setmodules) )
 	}
 
 	$filename = basename(__FILE__);
-	$module['Users']['Manage'] = $filename;
+	$module['Users']['Manage'] = $filename . $SID;
 
 	return;
 }

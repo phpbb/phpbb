@@ -55,166 +55,227 @@ if ( !$acl->get_acl_admin('general') )
 if ( isset($HTTP_POST_VARS['start']) || isset($HTTP_GET_VARS['batchstart']) )
 {
 	//
-	// Do not change anything below this line.
-	//
-	@set_time_limit(0);
-
-	$common_percent = 0.4; // Percentage of posts in which a word has to appear to be marked as common
-
-	//
 	// Try and load stopword and synonym files
 	//
-	// This needs fixing! Shouldn't be hardcoded to English files!
 	$stopword_array = array();
 	$synonym_array = array();
 
 	$dir = opendir($phpbb_root_path . 'language/');
 	while ( $file = readdir($dir) )
 	{
-		if ( ereg('^lang_', $file) && !is_file($phpbb_root_path . 'language/' . $file) && !is_link($phpbb_root_path . 'language/' . $file) )
+		if ( preg_match('#^lang_#', $file) && !is_file($phpbb_root_path . 'language/' . $file) && !is_link($phpbb_root_path . 'language/' . $file) )
 		{
 			unset($tmp_array);
 			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_stopwords.txt');
-
 			if ( is_array($tmp_array) )
 			{
-				$stopword_array = array_merge($stopword_array, $tmp_array);
+				$stopword_array = array_unique(array_merge($stopword_array, $tmp_array));
 			}
 
 			unset($tmp_array);
 			$tmp_array = @file($phpbb_root_path . 'language/' . $file . '/search_synonyms.txt');
-
 			if ( is_array($tmp_array) )
 			{
-				$synonym_array = array_merge($synonym_array, $tmp_array);
+				$synonym_array = array_unique(array_merge($synonym_array, $tmp_array));
 			}
 		}
 	}
 
 	closedir($dir);
 
-	$sql = "UPDATE " . CONFIG_TABLE . " 
-		SET config_value = '1' 
-		WHERE config_name = 'board_disable'";
-	$db->sql_query($sql);
+	if ( !isset($HTTP_GET_VARS['batchstart']) )
+	{
+		//
+		// Take board offline
+		//
+		$sql = "UPDATE " . CONFIG_TABLE . " 
+			SET config_value = '1' 
+			WHERE config_name = 'board_disable'";
+		$db->sql_query($sql);
+
+		//
+		// Empty existing tables
+		//
+		$db->sql_query("TRUNCATE " . SEARCH_TABLE);
+		$db->sql_query("TRUNCATE " . SEARCH_WORD_TABLE);
+		$db->sql_query("TRUNCATE " . SEARCH_MATCH_TABLE);
+	}
 
 	//
 	// Fetch a batch of posts_text entries
 	//
-	$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
+	$sql = "SELECT COUNT(*) AS total, MAX(post_id) AS max_post_id, MIN(post_id) AS min_post_id 
 		FROM " . POSTS_TEXT_TABLE;
 	$result = $db->sql_query($sql);
 
-	$max_post_id = $db->sql_fetchrow($result);
+	$row = $db->sql_fetchrow($result);
+	$totalposts = $row['total'];
+	$max_post_id = $row['max_post_id'];
 
-	$totalposts = $max_post_id['total'];
-	$max_post_id = $max_post_id['max_post_id'];
-
-	$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
-
-	$batchcount = 0;
-	$batchsize = 200; // Process this many posts per loop
-	for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
+	$batchsize = 200; // Process this many posts per batch
+	$batchstart = ( !isset($HTTP_GET_VARS['batchstart']) ) ? $row['min_post_id'] : $HTTP_GET_VARS['batchstart'];
+	$batchcount = ( !isset($HTTP_GET_VARS['batchcount']) ) ? 1 : $HTTP_GET_VARS['batchcount'];
+	$batchend = $batchstart + $batchsize;
+		
+	$sql = "SELECT * 
+		FROM " . POSTS_TEXT_TABLE . " 
+		WHERE post_id 
+			BETWEEN $batchstart 
+				AND $batchend";
+	$result = $db->sql_query($sql);
+	
+	if ( $row = $db->sql_fetchrow($result) )
 	{
-		$batchstart = $postcounter + 1;
-		$batchend = $postcounter + $batchsize;
-		$batchcount++;
-		
-		$sql = "SELECT * 
-			FROM " . POSTS_TEXT_TABLE . " 
-			WHERE post_id 
-				BETWEEN $batchstart 
-					AND $batchend";
-		$result = $db->sql_query($sql);
-		
-		if ( $row = $db->sql_fetchrow($result) )
+		do
 		{
-			do
+			$post_id = $row['post_id']; 
+
+			$search_raw_words = array();
+			$search_raw_words['text'] = split_words(clean_words('post', $row['post_text'], $stopword_array, $synonym_array));
+			$search_raw_words['title'] = split_words(clean_words('post', $row['post_subject'], $stopword_array, $synonym_array));
+
+			$word = array();
+			$word_insert_sql = array();
+			foreach ( $search_raw_words as $word_in => $search_matches )
 			{
-
-//				print "\n<p>\n<a href='$PHP_SELF?batchstart=$batchstart'>Restart from posting $batchstart</a><br>\n";
-
-				$post_id = $row['post_id']; 
-
-				$matches = array();
-				$matches['text'] = split_words(clean_words('post', $row['post_text'], $stopword_array, $synonym_array));
-				$matches['title'] = split_words(clean_words('post', $row['post_subject'], $stopword_array, $synonym_array));
-
-				while( list($match_type, $match_ary) = @each($matches) )
+				$word_insert_sql[$word_in] = '';
+				if ( !empty($search_matches) )
 				{
-					$title_match = ( $match_type == 'title' ) ? 1 : 0;
+					for ($i = 0; $i < count($search_matches); $i++)
+					{ 
+						$search_matches[$i] = trim($search_matches[$i]);
 
-					$num_matches = count($match_ary);
+						if ( $search_matches[$i] != '' ) 
+						{
+							$word[] = $search_matches[$i];
+							$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != '' ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
+						} 
+					}
+				}
+			}
 
-					if ( $num_matches < 1 )
+			if ( count($word) )
+			{
+				$word_text_sql = '';
+				$word = array_unique($word);
+
+				for($i = 0; $i < count($word); $i++)
+				{
+					$word_text_sql .= ( ( $word_text_sql != '' ) ? ', ' : '' ) . "'" . $word[$i] . "'";
+				}
+
+				$check_words = array();
+				switch( SQL_LAYER )
+				{
+					case 'postgresql':
+					case 'msaccess':
+					case 'mssql-odbc':
+					case 'oracle':
+					case 'db2':
+						$sql = "SELECT word_id, word_text     
+							FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_text IN ($word_text_sql)";
+						$result = $db->sql_query($sql);
+
+						while ( $row = $db->sql_fetchrow($result) )
+						{
+							$check_words[$row['word_text']] = $row['word_id'];
+						}
+						break;
+				}
+
+				$value_sql = '';
+				$match_word = array();
+				for ($i = 0; $i < count($word); $i++)
+				{ 
+					$new_match = true;
+					if ( isset($check_words[$word[$i]]) )
 					{
-						// Skip this post if no words where found
-						continue;
+						$new_match = false;
 					}
 
-					// For all words in the posting
-					$sql_in = '';
-					$sql_insert = '';
-					$sql_select = '';
-
-					$word = array();
-					$word_count = array();
-
-					for($j = 0; $j < $num_matches; $j++)
+					if ( $new_match )
 					{
-						if ( $this_word = strtolower(trim($match_ary[$j])) )
+						switch( SQL_LAYER )
 						{
-							$word_count[$this_word] = ( isset($word_count[$this_word]) ) ? $word_count[$this_word] + 1 : 0;
-							$comma = ($sql_insert != '')? ', ': '';
-						
-							$sql_insert .= "$comma('" . $this_word . "')";
-							$sql_select .= "$comma'" . $this_word . "'";
+							case 'mysql':
+							case 'mysql4':
+								$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\')';
+								break;
+							case 'mssql':
+								$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
+								break;
+							default:
+								$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+									VALUES ('" . $word[$i] . "')"; 
+								$db->sql_query($sql);
+								break;
 						}
 					}
+				}
 
-					if ( $sql_insert == '' )
+				if ( $value_sql != '' )
+				{
+					switch ( SQL_LAYER )
 					{
-						message_die(ERROR, 'No words found to index');
+						case 'mysql':
+						case 'mysql4':
+							$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
+								VALUES $value_sql"; 
+							break;
+						case 'mssql':
+							$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+								$value_sql"; 
+							break;
 					}
-						
-					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
-						VALUES $sql_insert";
+
 					$db->sql_query($sql);
-
-					// Get the word_id's out of the DB (to see if they are already there)
-					$sql = "SELECT word_id, word_text
-						FROM " . SEARCH_WORD_TABLE . " 
-						WHERE word_text IN ($sql_select)
-						GROUP BY word_text";
-					$result2 = $db->sql_query($sql);
-
-					$sql_insert = array();
-					while( $row = $db->sql_fetchrow($result2) )
-					{
-						$sql_insert[] = "($post_id, " . $row['word_id'] . ", $title_match)";
-					}
-
-					$db->sql_freeresult($result2);
-
-					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
-						VALUES " . implode(', ', $sql_insert);
-					$db->sql_query($sql); 
-
-				} // All posts
+				}
 			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
 
-		// Remove common words after the first 2 batches and after every 4th batch after that.
-		if ( $batchcount % 4 == 3 )
-		{
-//			print "<br>Removing common words (words that appear in more than $common_percent of the posts)<br>\n";
-//			flush();
-//			print "Removed ". remove_common("global", $common_percent) ." words that where too common.<br>";
+			foreach ( $word_insert_sql as $word_in => $match_sql )
+			{
+				$title_match = ( $word_in == 'title' ) ? 1 : 0;
+
+				if ( $match_sql != '' )
+				{
+					$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
+						SELECT $post_id, word_id, $title_match  
+							FROM " . SEARCH_WORD_TABLE . " 
+							WHERE word_text IN ($match_sql)"; 
+					$db->sql_query($sql);
+				}
+			}
+
 		}
+		while ( $row = $db->sql_fetchrow($result) );
 	}
 
-	echo "<br>Done";
+	// Remove common words after the first 2 batches and after every 4th batch after that.
+	if ( $batchcount % 4 == 3 )
+	{
+//		remove_common('global', $board_config['common_search']);
+	}
+
+	$batchcount++;
+
+	if ( ( $batchstart + $batchsize ) < $max_post_id )
+	{
+		header("Location: admin_search.$phpEx$SID&batchstart=" . ( $batchstart + $batchsize ) . "&batchcount=$batch_count");
+		exit;
+	}
+	else
+	{
+		$sql = "UPDATE " . CONFIG_TABLE . " 
+			SET config_value = '0' 
+			WHERE config_name = 'board_disable'";
+		$db->sql_query($sql);
+
+		page_header($lang['DB']);
+
+		page_footer();
+	}
+
 	exit;
 
 }
@@ -235,7 +296,7 @@ else
 
 <form method="post" action="<?php echo "admin_search.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
-		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $lang['Start']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $lang['Start']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 

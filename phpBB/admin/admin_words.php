@@ -27,7 +27,7 @@ if ( !empty($setmodules) )
 	}
 
 	$file = basename(__FILE__);
-	$module['General']['Word_Censor'] = "$file";
+	$module['General']['Word_Censor'] = "$file$SID";
 	return;
 }
 
