@@ -853,11 +853,11 @@ class parse_message
 // Parses a given message and updates/maintains the fulltext tables
 class fulltext_search
 {
-	function split_words(&$text)
+	function split_words($mode, &$text, &$stopped_words)
 	{
 		global $user, $config;
 
-		static $drop_char_match, $drop_char_replace, $stopwords, $synonyms;
+		static $drop_char_match, $drop_char_replace, $stopwords, $replace_synonym, $match_synonym;
 
 		// Is the fulltext indexer disabled? If yes then we need not 
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
@@ -868,10 +868,22 @@ class fulltext_search
 
 		if (empty($drop_char_match))
 		{
-			$drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!', '*');
-			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
-			$stopwords = @file($user->lang_path . '/search_stopwords.txt');
-			$synonyms = @file($user->lang_path . '/search_synonyms.txt');
+			$drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!', '*');
+			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ',  ' ', ' ', ' ');
+
+			if ($fp = @fopen($user->lang_path . '/search_stopwords.txt', 'rb'))
+			{
+				$stopwords = explode("\n", str_replace("\r\n", "\n", fread($fp, filesize($user->lang_path . '/search_stopwords.txt'))));
+			}
+			fclose($fp);
+
+			if ($fp = @fopen($user->lang_path . '/search_synonyms.txt', 'rb'))
+			{
+				preg_match_all('#^(.*?) (.*?)$#ms', fread($fp, filesize($user->lang_path . '/search_synonyms.txt')), $match);
+				$replace_synonym = &$match[1];
+				$match_synonym = &$match[2];
+			}
+			fclose($fp);
 		}
 
 		$match = array();
@@ -888,31 +900,28 @@ class fulltext_search
 		// Sequences < min_search_chars & < max_search_chars
 		$match[] = '#\b([a-z0-9]{1,' . $config['min_search_chars'] . '}|[a-z0-9]{' . $config['max_search_chars'] . ',})\b#is';
 
-		$text = preg_replace($match, ' ', ' ' . strtolower($text) . ' ');
+		$text = str_replace($match, ' ', ' ' . strtolower($text) . ' ');
+		$text = str_replace(' and ', ' + ', $text);
+		$text = str_replace(' not ', ' - ', $text);
 
 		// Filter out non-alphabetical chars
 		$text = str_replace($drop_char_match, $drop_char_replace, $text);
 
-		if (!empty($stopwords_list))
+		// Split words
+		$text = explode(' ', preg_replace('#\s+#', ' ', $text));
+
+		if (!empty($stopwords))
 		{
-			$text = str_replace($stopwords, '', $text);
+			$stopped_words = array_intersect($text, $stopwords);
+			$text = array_diff($text, $stopwords);
 		}
 
-		if (!empty($synonyms))
+		if (!empty($replace_synonym))
 		{
-			for ($j = 0; $j < count($synonyms); $j++)
-			{
-				list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonyms[$j])));
-				if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) )
-				{
-					$text =  preg_replace('#\b' . trim($match_synonym) . '\b#', ' ' . trim($replace_synonym) . ' ', $text);
-				}
-			}
+			$text = str_replace($replace_synonym, $match_synonym, $text);
 		}
 
-		preg_match_all('#\b([\w]+)\b#', $text, $split_entries);
-
-		return array_unique($split_entries[1]);
+		return $text;
 	}
 
 	function add(&$mode, &$post_id, &$message, &$subject)
@@ -930,8 +939,10 @@ class fulltext_search
 //		$starttime = $mtime[1] + $mtime[0];
 
 		// Split old and new post/subject to obtain array of 'words'
-		$split_text = $this->split_words($message);
-		$split_title = ($subject) ? $this->split_words($subject) : array();
+		$stopped_words = array();
+		$split_text = $this->split_words('post', $message, $stopped_words);
+		$split_title = ($subject) ? $this->split_words('post', $subject, $stopped_words) : array();
+		unset($stopped_words);
 
 		$words = array();
 		if ($mode == 'edit')
@@ -1080,8 +1091,8 @@ class fulltext_search
 		}
 
 		// Remove common (> 60% of posts ) words
-		$sql = "SELECT SUM(forum_posts) AS total_posts 
-			FROM " . FORUMS_TABLE;
+		$sql = 'SELECT SUM(forum_posts) AS total_posts 
+			FROM ' . FORUMS_TABLE;
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
