@@ -47,8 +47,6 @@ $lang += array(
 	'POST_FORUM_LOCKED'		=> 'Forum is locked',
 	'POST_NEW_TOPIC'		=> 'Post new topic',
 
-	'SORRY_AUTH_READ'		=> 'You are not authorized to read this forum',
-
 	'TOPICS_MARKED'			=> 'The topics for this forum have now been marked read',
 
 	'VIEW_FORUM'			=> 'View Forum',
