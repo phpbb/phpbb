@@ -1,54 +1,77 @@
 <!-- INCLUDE overall_header.html -->
 
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-  <tr>
-	<td align="left" valign="bottom"><span class="maintitle">{L_SEARCH_MATCHES}</span><br /></td>
-  </tr>
+<form method="post" action="{S_SEARCH_ACTION}"><table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td colspan="2" align="left"><span class="titles">{SEARCH_MATCHES}</span><br /></td>
+	</tr>
+	<tr>
+		<td class="genmed">{L_SEARCHED_FOR} <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a> {L_IGNORED_TERMS} <b>{IGNORED_WORDS}</b></td>
+		<td align="right"><span class="genmed">{L_SEARCH_IN_RESULTS}: </span><input type="text" name="search_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
+	</tr>
 </table>
 
-<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-  <tr>
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-  </tr>
+<table width="95%" cellspacing="2" cellpadding="2" border="0" align="center">
+	<tr>
+		<td class="nav" align="left"><a href="{U_INDEX}">{L_INDEX}</a></td>
+	</tr>
 </table>
 
-<table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
-  <tr>
-	<th width="150" height="25" class="thCornerL" nowrap="nowrap">{L_AUTHOR}</th>
-	<th width="100%" class="thCornerR" nowrap="nowrap">{L_MESSAGE}</th>
-  </tr>
-  <!-- BEGIN searchresults -->
-  <tr>
-	<td class="catHead" colspan="2" height="28"><span class="topictitle">{L_TOPIC}:&nbsp;<a href="{searchresults.U_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span></td>
-  </tr>
-  <tr>
-	<td width="150" align="left" valign="top" class="row1" rowspan="2"><span class="name"><b>{searchresults.POSTER_NAME}</b></span><br />
-	  <br />
-	  <span class="postdetails">{L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br />
-	  {L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br />
-	</td>
-	<td width="100%" valign="top" class="row1">{searchresults.MINI_POST_IMG}<span class="postdetails">{L_FORUM}:&nbsp;<b><a href="{searchresults.U_FORUM}" class="postdetails">{searchresults.FORUM_NAME}</a></b>&nbsp; &nbsp;{L_POSTED}: {searchresults.POST_DATE}&nbsp; &nbsp;{L_SUBJECT}: <b><a href="{searchresults.U_POST}">{searchresults.POST_SUBJECT}</a></b></span></td>
-  </tr>
-  <tr>
-	<td valign="top" class="row1"><span class="postbody">{searchresults.MESSAGE}</span></td>
-  </tr>
-  <!-- END searchresults -->
-  <tr>
-	<td class="catBottom" colspan="2" height="28" align="center">&nbsp; </td>
-  </tr>
+<table class="tablebg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
+		<th width="100%" nowrap="nowrap">{L_MESSAGE}</th>
+	</tr>
+	<!-- BEGIN searchresults -->
+	<tr class="row2">
+		<td colspan="2"><span class="topictitle">{L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a> in forum: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></span></td>
+	</tr>
+	<tr class="row1">
+		<td width="150" align="center" valign="middle"><b class="postauthor">{searchresults.POSTER_NAME}</b></td>
+		<td><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td valign="middle">{searchresults.POST_ICON_IMG}</td>
+				<td>&nbsp;</td>
+				<td class="postdetails" width="100%" valign="middle">{L_SUBJECT}: <b><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></b></td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr class="row1">
+		<td width="150" align="center" valign="top"><br /><span class="postdetails">{L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br />{L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br /></td>
+		<td valign="top"><table width="100%" cellspacing="2" cellpadding="2" border="0">
+			<tr>
+				<td class="postbody">{searchresults.MESSAGE}</td>
+			</tr>
+			<tr>
+				<td class="postdetails" align="right">{searchresults.MINI_POST_IMG}{L_POSTED}: {searchresults.POST_DATE}</td>
+			</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="spacer" colspan="2"><img src="images/spacer.gif" height="1" alt="" /></td>
+	</tr>
+	<!-- END searchresults -->
+	<tr>
+		<td class="cat" colspan="2" valign="middle" align="center"><span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	</tr>
 </table>
 
-<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
-  <tr>
-	<td align="left" valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="nav">{PAGINATION}</span><br /><span class="gensmall">{S_TIMEZONE}</span></td>
-  </tr>
+<table width="95%" cellspacing="2" border="0" align="center" cellpadding="2">
+	<tr>
+		<td class="nav">{PAGE_NUMBER}</td>
+		<td class="gensmall" align="right">{S_TIMEZONE}</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td class="nav" align="right" valign="bottom" nowrap="nowrap">{PAGINATION}</td>
+	</tr>
 </table>
 
-<table width="100%" cellspacing="2" border="0" align="center">
-  <tr>
-	<td valign="top" align="right">{JUMPBOX}</td>
-  </tr>
+</form>
+
+<table width="95%" cellspacing="2" border="0" align="center">
+	<tr>
+		<td valign="top" align="right"><!-- INCLUDE jumpbox.html --></td>
+	</tr>
 </table>
 
 <!-- INCLUDE overall_footer.html -->

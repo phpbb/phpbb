@@ -1120,6 +1120,7 @@ $lang += array(
 	'SEARCH_FORUMS_EXPLAIN'	=> 'Select the forum or forums you wish to search in. For speed all subforums can be searched by selecting the parent and setting enable search subforums below.', 
 	'SEARCH_ALL_TERMS'		=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'		=> 'Search for any terms',
+	'SEARCH_SUBFORUMS'		=> 'Search subforums',
 	'SEARCH_WITHIN'			=> 'Search within', 
 	'SEARCH_TITLE_MSG'		=> 'Topic titles and message text',
 	'SEARCH_MSG_ONLY'		=> 'Message text only',
@@ -1144,10 +1145,13 @@ $lang += array(
 	'ALL_AVAILABLE'		=> 'All available',
 	'ALL_RESULTS'		=> 'All results', 
 
-	'NO_SEARCHABLE_FORUMS'	=> 'You do not have permissions to search any forum on this site',
-	'NO_SEARCH_MATCH'		=> 'No topics or posts met your search criteria',
+	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
+	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'FOUND_SEARCH_MATCH'	=> 'Search found %d match',
 	'FOUND_SEARCH_MATCHES'	=> 'Search found %d matches',
+	'SEARCHED_FOR'			=> 'Search term used', 
+	'IGNORED_TERMS'			=> 'ignored', 
+	'SEARCH_IN_RESULTS'		=> 'Search these results', 
 	
 	'NOT_AUTHORISED'	=> 'Not Authorised',
 );
