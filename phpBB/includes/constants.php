@@ -167,7 +167,7 @@ define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('THEMES_TABLE', $table_prefix.'themes');
-define('THEMES_NAME_TALBE', $table_prefix.'themes_name');
+define('THEMES_NAME_TABLE', $table_prefix.'themes_name');
 define('TOPICS_TABLE', $table_prefix.'topics');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
