@@ -3,7 +3,7 @@
 *                              functions_search.php
 *                              -------------------
 *     begin                : Wed Sep 05 2001
-*     copyright            : (C) 2001 The phpBB Group
+*     copyright            : (C) 2002 The phpBB Group
 *     email                : support@phpbb.com
 *
 *     $Id$
