@@ -63,7 +63,7 @@ else if( $userdata['user_level'] != ADMIN )
 define("VERBOSE", 0);
 
 //
-// Increase maximum execution time, but don't complain about it if it isn't
+// Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
 // allowed.
 //
 @set_time_limit(600);
@@ -71,9 +71,9 @@ define("VERBOSE", 0);
 $f_title = 'e_title';
 $f_msg = 'e_msg';
 
-if(isset($HTTP_GET_VARS['submit']))
+if(isset($HTTP_POST_VARS['submit']))
 {
-	$group_id = $HTTP_GET_VARS[POST_GROUPS_URL];
+	$group_id = $HTTP_POST_VARS[POST_GROUPS_URL];
 	if($group_id != -1)
 	{
 		$sql = 'SELECT u.user_email 
@@ -91,11 +91,11 @@ if(isset($HTTP_GET_VARS['submit']))
 	$g_list = $db->sql_fetchrowset($g_result);
 	
 	$email_headers = "From: " . $board_config['board_email_from'] . "\r\n";
-	$msg = stripslashes($HTTP_GET_VARS["$f_msg"]);
+	$msg = stripslashes($HTTP_POST_VARS["$f_msg"]);
 	
 	for($i = 0;$i < count($g_list); $i++)
 	{
-		mail($g_list[$i]['user_email'],$HTTP_GET_VARS["$f_title"],$msg,$email_headers);
+		mail($g_list[$i]['user_email'],$HTTP_POST_VARS["$f_title"],$msg,$email_headers);
 	}
 	include('page_header_admin.'.$phpEx);
 	echo '<b>'.$lang['Messages'].' '.$lang['Sent'].'!</b><br>';
@@ -117,7 +117,7 @@ for($i = 0;$i < count($group_list); $i++)
 $select_list .= "</SELECT>";
 
 //Don't include it twice
-if(!isset($HTTP_GET_VARS['submit']))
+if(!isset($HTTP_POST_VARS['submit']))
 {
 	include('page_header_admin.'.$phpEx);
 }

@@ -9,7 +9,7 @@
                 <td class="cat" align="center"><span class="cattitle"><b>{L_COMPOSE}</b></span></td>
         </tr>
         <tr>
-		<form method="get" action="{S_USER_ACTION}">
+		<form method="post" action="{S_USER_ACTION}">
                 <td class="row1" align="center">{L_GROUP_SELECT}&nbsp;&nbsp;&nbsp;{S_GROUP_SELECT}</td>
 	</tr>
 	<tr>
