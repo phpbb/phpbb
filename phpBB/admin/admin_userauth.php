@@ -985,7 +985,7 @@ else
 		"U_SWITCH_MODE" => $u_switch_mode,
 
 		"S_COLUMN_SPAN" => $s_column_span, 
-		"S_USER_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
+		"S_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
 		"S_HIDDEN_FIELDS" => $s_hidden_fields)
 	);
 
