@@ -682,7 +682,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	}
 	else
 	{
-		if ( intval($search_id) )
+		$search_id = intval($search_id);
+		if ( $search_id )
 		{
 			$sql = "SELECT search_array 
 				FROM " . SEARCH_TABLE . " 
