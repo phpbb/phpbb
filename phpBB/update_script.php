@@ -162,8 +162,9 @@ if ( $row = $db->sql_fetchrow($result) )
 			{
 				do
 				{
+					$ban_ip = str_replace('255', '256', decode_ip($row['ban_ip']));
 					$sql_update[] = "UPDATE " . BANLIST_TABLE . " 
-						SET ban_ip = '" . decode_ip($row['ban_ip']) . "'
+						SET ban_ip = '$ban_ip'
 						WHERE ban_id = " . $row['ban_id'];
 				}
 				while ( $row = $db->sql_fetchrow($result) );
