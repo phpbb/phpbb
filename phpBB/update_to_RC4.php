@@ -216,7 +216,7 @@ switch ( SQL_LAYER )
 			ON " . USERS_TABLE . " (user_session_time)";
 	
 		$sql[] = "ALTER TABLE " . TOPICS_TABLE . " ADD 
-			topic_first_post_id int NOT NULL";
+			topic_first_post_id int NULL";
 		$sql[] = "CREATE INDEX topic_first_post_id 
 			ON " . TOPICS_TABLE . " (topic_first_post_id)";
 
