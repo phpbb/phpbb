@@ -135,7 +135,6 @@ if ($sql)
 	$forum_id	= (int) $forum_id;
 	$topic_id	= (int) $topic_id;
 	$post_id	= (int) $post_id;
-	$icon_id	= 0;
 
 	$post_edit_locked = (isset($post_edit_locked)) ? (int) $post_edit_locked : 0;
 
@@ -857,26 +856,24 @@ if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
 // Forum moderators?
 get_moderators($moderators, $forum_id);
 
-
 // Generate smilie listing
 generate_smilies('inline', $forum_id);
-
-
-// Generate Topic icons
-$s_topic_icons = false;
-if ($enable_icons)
-{
-	$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
-}
 
 // Generate inline attachment select box
 posting_gen_inline_attachments($message_parser);
 
-// Topic type selection ... only for first post in topic.
-$topic_type_toggle = false;
+
+// Do show topic icons and topic type selection only in first post.
+$topic_type_toggle = $s_topic_icons = false;
+
 if ($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id))
 {
 	$topic_type_toggle = posting_gen_topic_types($forum_id, $topic_type);
+
+	if ($enable_icons)
+	{
+		$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
+	}
 }
 
 

@@ -714,7 +714,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT' 	=> $data['height'],
 	
-					'S_ICON_CHECKED' => ($id == $icon_id && $mode != 'reply') ? ' checked="checked"' : '')
+					'S_ICON_CHECKED' => ($id == $icon_id) ? ' checked="checked"' : '')
 				);
 			}
 		}
