@@ -36,18 +36,18 @@ $template->set_filenames(array(
 //
 if($userdata['session_logged_in'])
 {
-	$logged_in_status = "You are logged in as <b>".$userdata["username"]."</b>.";
-	$logged_in_status .= " [<a href=\"".append_sid("login.$phpEx?submit=logout")."\">Logout</a>]";
+	$logged_in_status = $lang['You_are_logged_in'] . " <b>".$userdata["username"]."</b>.";
+	$logged_in_status .= " [<a href=\"".append_sid("login.$phpEx?submit=logout")."\">".$lang['Logout']."</a>]";
 
 	$u_login_logout = "login.$phpEx?submit=logout";
-	$l_login_logout = "$l_logout : ".$userdata["username"]."";
+	$l_login_logout = $lang['Logout']." : ".$userdata["username"]."";
 }
 else
 {
-	$logged_in_status = "You are not logged in.";
+	$logged_in_status = $lang['You_are_not_logged_in'];
 
 	$u_login_logout = "login.$phpEx";
-	$l_login_logout = "$l_login";
+	$l_login_logout = $lang['Login'];
 }
 
 //
@@ -55,15 +55,15 @@ else
 //
 if($board_config['default_timezone'] < 0)
 {
-	$s_timezone = "$l_all_times GMT - ".(-$board_config['default_timezone'])." $l_hours";
+	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] ." - ".(-$board_config['default_timezone']) . " " . $lang['Hours'];
 }
 else if($board_config['default_timezone'] == 0)
 {
-	$s_timezone = "$l_all_times GMT";
+	$s_timezone = $lang['All_times'] . " " .$lang['GMT'];
 }
 else
 {
-	$s_timezone = "$l_all_times GMT + ".$board_config['default_timezone']." $l_hours";
+	$s_timezone = $lang['All_times'] . " " .$lang['GMT'] ." + ".$board_config['default_timezone'] . " " . $lang['Hours'];
 }
 
 //
@@ -135,7 +135,7 @@ $template->assign_vars(array(
 	"L_MEMBERLIST" => $l_memberslist,
 	"L_FAQ" => $l_faq,
 	"L_FORUM" => $l_forum,
-	"L_TOPICS" => $l_topics,
+	"L_TOPICS" => $l_topics, 
 	"L_REPLIES" => $l_replies,
 	"L_VIEWS" => $l_views,
 	"L_POSTS" => $l_posts,
@@ -204,6 +204,10 @@ $template->assign_vars(array(
 	"T_IMG2" => $theme['img2'],
 	"T_IMG3" => $theme['img3'],
 	"T_IMG4" => $theme['img4']));
+
+
+header ("Expires: " . gmdate("D, d M Y H:i:s", time()+10) . " GMT"); 
+header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 $template->pparse("overall_header");
 

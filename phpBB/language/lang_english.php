@@ -43,10 +43,14 @@ $lang['Post'] = "Post";
 $lang['Posts'] = "Posts";
 $lang['Message'] = "Message";
 $lang['Messages'] = "Messages";
+$lang['User'] = "User";
+$lang['Users'] = "Users";
 $lang['Poster'] = "Poster";
 $lang['Author'] = "Author";
 
 $lang['All_Topics'] = "All Topics";
+$lang['Hour'] = "Hour";
+$lang['Hours'] = "Hours";
 $lang['Day'] = "Day";
 $lang['Days'] = "Days";
 $lang['Week'] = "Week";
@@ -56,9 +60,17 @@ $lang['Months'] = "Months";
 $lang['Year'] = "Year";
 $lang['Years'] = "Years";
 
+$lang['All_times'] = "All times"; // This is followed by GMT and the timezone offset
+$lang['GMT'] = "GMT";
+
 //
 // Login
 //
+$lang['Login'] = "Login";
+$lang['Logout'] = "Logout";
+$lang['You_are_logged_in'] = "You are logged in as"; // This is followed by the username
+$lang['You_are_not_logged_in'] = "You are not logged in";
+$lang['Forgotten_password'] = "I forgot my password";
 
 //
 // Index page
